@@ -1,11 +1,11 @@
 <template>
 	<div>
 		<h3 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h3>
-		<p class="tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25">
+		<p class="em-h-25 tw-mb-6 tw-text-base tw-text-neutral-700">
 			{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}
 		</p>
 
-		<p class="tw-text-base tw-mb-6 em-h-25" v-if="availableLanguages.length === 0 && !loading">
+		<p class="em-h-25 tw-mb-6 tw-text-base" v-if="availableLanguages.length === 0 && !loading">
 			{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_NO_LANGUAGES_AVAILABLE') }}
 		</p>
 
@@ -105,7 +105,7 @@
 					style="width: 10vw; height: 10vw; margin: 0 auto"
 				/>
 				<h5 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
-				<p class="tw-text-base em-text-neutral-600">
+				<p class="em-text-neutral-600 tw-text-base">
 					{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}
 				</p>
 			</div>

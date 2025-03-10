@@ -332,7 +332,7 @@ export default {
 			</div>
 		</div>
 
-		<div class="tw-flex tw-justify-end tw-mt-7">
+		<div class="tw-mt-7 tw-flex tw-justify-end">
 			<button
 				type="button"
 				:disabled="disabledSubmit"

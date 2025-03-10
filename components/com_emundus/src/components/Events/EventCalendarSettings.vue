@@ -301,7 +301,7 @@ export default {
 		<div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6" v-if="!this.loading">
 			<div>
 				<div>
-					<label class="tw-flex tw-font-semibold tw-items-end tw-mb-0">
+					<label class="tw-mb-0 tw-flex tw-items-end tw-font-semibold">
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CALENDAR') }}
 					</label>
 					<span class="tw-text-base tw-text-neutral-600">
@@ -309,7 +309,7 @@ export default {
 					</span>
 				</div>
 
-				<div class="tw-mt-4 calendar-container" v-if="calendarApp" ref="calendar">
+				<div class="calendar-container tw-mt-4" v-if="calendarApp" ref="calendar">
 					<ScheduleXCalendar :calendar-app="calendarApp" class="tw-relative">
 						<template #timeGridEvent="{ calendarEvent }">
 							<EventDay :calendar-event="calendarEvent" :view="view" :preset="'full'" />

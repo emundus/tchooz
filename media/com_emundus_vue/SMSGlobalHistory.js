@@ -79,12 +79,12 @@ const _hoisted_4 = {
   selected: ""
 };
 const _hoisted_5 = ["value"];
-const _hoisted_6 = { class: "tw-flex tw-items-center tw-min-w-[15rem]" };
+const _hoisted_6 = { class: "tw-flex tw-min-w-[15rem] tw-items-center" };
 const _hoisted_7 = ["placeholder"];
 const _hoisted_8 = { key: 0 };
 const _hoisted_9 = { class: "from tw-mb-2 tw-flex tw-justify-between" };
 const _hoisted_10 = { class: "tw-flex tw-flex-col" };
-const _hoisted_11 = { class: "tw-text-neutral-500 tw-text-xs" };
+const _hoisted_11 = { class: "tw-text-xs tw-text-neutral-500" };
 const _hoisted_12 = { class: "tw-text-xs" };
 const _hoisted_13 = ["title"];
 const _hoisted_14 = ["title"];
@@ -119,14 +119,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("div", _hoisted_6, [
         withDirectives(createBaseVNode("input", {
           type: "text",
-          class: "!tw-rounded-coordinator !tw-h-[38px] tw-m-0",
+          class: "tw-m-0 !tw-h-[38px] !tw-rounded-coordinator",
           "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $data.search = $event),
           placeholder: _ctx.translate("COM_EMUNDUS_ACTIONS_SEARCH"),
           onKeyup: _cache[3] || (_cache[3] = (...args) => $options.onSearch && $options.onSearch(...args))
         }, null, 40, _hoisted_7), [
           [vModelText, $data.search]
         ]),
-        _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-mr-2 tw-cursor-pointer tw-ml-[-32px]" }, " search ", -1))
+        _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-ml-[-32px] tw-mr-2 tw-cursor-pointer" }, " search ", -1))
       ])
     ]),
     createVNode(_component_Pagination, {
@@ -140,7 +140,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.smsHistory, (sms) => {
         return openBlock(), createElementBlock("div", {
           key: sms.id,
-          class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded-lg tw-bg-white tw-p-6 tw-mb-4"
+          class: "em-card-shadow tw-mb-4 tw-rounded-lg tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
         }, [
           createBaseVNode("div", _hoisted_9, [
             createBaseVNode("div", _hoisted_10, [

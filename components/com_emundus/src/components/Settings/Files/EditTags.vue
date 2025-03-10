@@ -1,7 +1,7 @@
 <template>
 	<div class="tw-flex tw-flex-wrap tw-justify-start">
 		<div class="tw-w-10/12">
-			<div class="tw-grid tw-grid-cols-3 tw-mb-4">
+			<div class="tw-mb-4 tw-grid tw-grid-cols-3">
 				<button @click="pushTag" class="tw-btn-primary tw-mb-6 tw-w-max">
 					<div class="add-button-div em-flex-row">
 						<span class="material-symbols-outlined em-mr-4">add</span>
@@ -19,14 +19,14 @@
 					@mouseover="enableGrab(index)"
 					@mouseleave="disableGrab()"
 				>
-					<div class="tw-flex tw-items-center tw-justify-start tw-w-full">
+					<div class="tw-flex tw-w-full tw-items-center tw-justify-start">
 						<span class="handle tw-cursor-grab" :style="grab && indexGrab === index ? 'opacity: 1' : 'opacity: 0'">
 							<span class="material-symbols-outlined">drag_indicator</span>
 						</span>
 						<div class="status-field">
 							<div style="width: 100%">
 								<p
-									class="tw-px-2 tw-py-3 em-editable-content"
+									class="em-editable-content tw-px-2 tw-py-3"
 									contenteditable="true"
 									:id="'tag_label_' + tag.id"
 									@focusout="updateTag(tag)"
@@ -49,7 +49,7 @@
 								type="button"
 								:title="translate('COM_EMUNDUS_ONBOARD_DELETE_TAGS')"
 								@click="removeTag(tag, index)"
-								class="tw-flex tw-items-center tw-ml-2 tw-cursor-pointer"
+								class="tw-ml-2 tw-flex tw-cursor-pointer tw-items-center"
 							>
 								<span class="material-symbols-outlined tw-text-red-600">delete_outline</span>
 							</a>

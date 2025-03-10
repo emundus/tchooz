@@ -2,7 +2,7 @@
 	<div class="em-settings-menu">
 		<div class="tw-w-full" v-if="!loading">
 			<div v-if="$props.props.published">
-				<div class="tw-flex tw-items-center tw-pb-8 tw-cursor-pointer" @click="handleToogleContent">
+				<div class="tw-flex tw-cursor-pointer tw-items-center tw-pb-8" @click="handleToogleContent">
 					<span class="tw-text-xl tw-font-bold">{{ translate(name) }}</span>
 					<i
 						class="material-symbols-outlined scale-150"
@@ -14,7 +14,7 @@
 					<div
 						:key="keyNotif"
 						v-if="subSectionNotif === true"
-						class="tw-inline-flex tw-items-center tw-justify-center tw-w-6 tw-h-6 tw-bg-red-500 tw-box-border-2 tw-border-white tw-rounded-full -top-2 -end-2"
+						class="tw-box-border-2 -top-2 -end-2 tw-inline-flex tw-h-6 tw-w-6 tw-items-center tw-justify-center tw-rounded-full tw-border-white tw-bg-red-500"
 					></div>
 				</div>
 				<div :id="'SubSection-' + $props.name" name="SubSectionContent" style="display: none" class="flex flex-col">

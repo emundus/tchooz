@@ -1,11 +1,11 @@
 <template>
-	<div id="form-builder-create-page" class="tw-w-full em-p-32 tw-pt-4">
+	<div id="form-builder-create-page" class="em-p-32 tw-w-full tw-pt-4">
 		<div>
-			<h3 class="tw-mb-1 em-text-neutral-800">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+			<h3 class="em-text-neutral-800 tw-mb-1">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
-				<div class="tw-mt-4 tw-mb-4 card-wrapper" :class="{ selected: -1 === selected }" @click="selected = -1">
-					<div class="card em-shadow-cards tw-cursor-pointer tw-flex tw-items-center" @dblclick="createPage">
+				<div class="card-wrapper tw-mb-4 tw-mt-4" :class="{ selected: -1 === selected }" @click="selected = -1">
+					<div class="card em-shadow-cards tw-flex tw-cursor-pointer tw-items-center" @dblclick="createPage">
 						<span class="add_circle material-symbols-outlined tw-text-profile-full">add_circle</span>
 					</div>
 					<input
@@ -20,12 +20,12 @@
 				</div>
 			</section>
 			<div class="separator tw-mt-8">
-				<p class="line-head em-mt-4 em-p-8 tw-text-white tw-bg-profile-full">
+				<p class="line-head em-mt-4 em-p-8 tw-bg-profile-full tw-text-white">
 					{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_FROM_MODEL') }}
 				</p>
 				<div class="line tw-bg-profile-full"></div>
 			</div>
-			<section id="models" class="tw-flex tw-items-center tw-w-full">
+			<section id="models" class="tw-flex tw-w-full tw-items-center">
 				<div v-if="!loading" class="tw-w-full">
 					<div id="search-model-wrapper">
 						<input id="search-model" class="tw-mt-4" type="text" v-model="search" placeholder="Rechercher" />
@@ -81,7 +81,7 @@
 				<div v-else class="tw-w-full">
 					<skeleton width="206px" height="41px" classes="tw-mt-4 tw-mb-4 tw-rounded-coordinator"></skeleton>
 					<div class="models-card tw-grid">
-						<div v-for="i in 16" :key="i" class="tw-flex tw-flex-col card-wrapper tw-mr-6">
+						<div v-for="i in 16" :key="i" class="card-wrapper tw-mr-6 tw-flex tw-flex-col">
 							<skeleton width="150px" height="200px" classes="card em-shadow-cards model-preview"></skeleton>
 							<skeleton width="150px" height="20px" classes="em-p-4"></skeleton>
 						</div>
@@ -89,11 +89,11 @@
 				</div>
 			</section>
 		</div>
-		<div class="actions tw-justify-between tw-flex tw-items-center tw-w-full">
+		<div class="actions tw-flex tw-w-full tw-items-center tw-justify-between">
 			<button class="tw-btn-cancel !tw-w-auto tw-bg-white" @click="close(false)">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_CANCEL') }}
 			</button>
-			<button class="tw-btn-primary tw-w-auto tw-ml-2" :disabled="loading" @click="createPage">
+			<button class="tw-btn-primary tw-ml-2 tw-w-auto" :disabled="loading" @click="createPage">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_PAGE_CREATE_SAVE') }}
 			</button>
 		</div>

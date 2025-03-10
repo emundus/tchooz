@@ -274,20 +274,20 @@ const _sfc_main = {
 };
 const _hoisted_1 = {
   key: 0,
-  class: "tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10"
+  class: "tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4"
 };
-const _hoisted_2 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
+const _hoisted_2 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_3 = { key: 1 };
 const _hoisted_4 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_5 = { class: "tw-mt-4" };
 const _hoisted_6 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_7 = { class: "tw-mt-4 tw-flex tw-flex-col tw-gap-3" };
-const _hoisted_8 = { class: "tw-flex tw-justify-end tw-items-center tw-gap-2" };
+const _hoisted_8 = { class: "tw-flex tw-items-center tw-justify-end tw-gap-2" };
 const _hoisted_9 = ["onClick"];
 const _hoisted_10 = ["onClick"];
 const _hoisted_11 = { class: "tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_12 = { class: "tw-flex tw-justify-end" };
-const _hoisted_13 = { class: "tw-flex tw-justify-end tw-mt-7 tw-mb-2" };
+const _hoisted_13 = { class: "tw-mb-2 tw-mt-7 tw-flex tw-justify-end" };
 const _hoisted_14 = ["disabled"];
 const _hoisted_15 = { key: 0 };
 const _hoisted_16 = { key: 1 };
@@ -301,7 +301,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     !$data.loading ? (openBlock(), createElementBlock("div", {
       key: 0,
       class: normalizeClass({
-        "tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0 tw-border tw-border-neutral-300 tw-p-6": !$props.isModal
+        "tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-neutral-0 tw-p-6 tw-shadow-card": !$props.isModal
       })
     }, [
       $props.isModal ? (openBlock(), createElementBlock("div", _hoisted_1, [
@@ -316,14 +316,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ])) : (openBlock(), createElementBlock("div", _hoisted_3, [
         createBaseVNode("div", {
-          class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
+          class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
           onClick: _cache[1] || (_cache[1] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=events"))
         }, [
           _cache[5] || (_cache[5] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
           createBaseVNode("span", _hoisted_4, toDisplayString(_ctx.translate("BACK")), 1)
         ]),
         createBaseVNode("h1", _hoisted_5, toDisplayString(this.location && Object.keys(this.location).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION") + " " + this.location["name"] : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION")), 1),
-        _cache[6] || (_cache[6] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-8" }, null, -1))
+        _cache[6] || (_cache[6] = createBaseVNode("hr", { class: "tw-mb-8 tw-mt-1.5" }, null, -1))
       ])),
       createBaseVNode("div", _hoisted_6, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
@@ -345,7 +345,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.rooms, (room) => {
             return openBlock(), createElementBlock("div", {
               key: room.id,
-              class: "tw-flex tw-flex-col tw-gap-2 tw-bg-white tw-rounded-coordinator tw-border tw-border-neutral-400 tw-px-3 tw-py-4"
+              class: "tw-flex tw-flex-col tw-gap-2 tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-px-3 tw-py-4"
             }, [
               createBaseVNode("div", _hoisted_8, [
                 createBaseVNode("button", {
@@ -387,7 +387,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("button", {
               type: "button",
               onClick: _cache[2] || (_cache[2] = ($event) => $options.addRepeatBlock()),
-              class: "tw-mt-2 tw-w-auto tw-flex tw-items-center tw-gap-1"
+              class: "tw-mt-2 tw-flex tw-w-auto tw-items-center tw-gap-1"
             }, [
               _cache[9] || (_cache[9] = createBaseVNode("span", { class: "material-symbols-outlined !tw-text-neutral-900" }, "add", -1)),
               createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ROOM")), 1)

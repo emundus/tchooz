@@ -2,7 +2,7 @@
 	<div id="form-builder-documents">
 		<div
 			id="form-builder-title"
-			class="tw-cursor-pointer tw-flex tw-items-center tw-justify-between tw-p-4"
+			class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-p-4"
 			@click="$emit('show-documents')"
 		>
 			<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_DOCUMENTS') }}</span>

@@ -3,7 +3,7 @@
 		<div v-if="loading" class="em-loader"></div>
 		<div v-else>
 			<div class="tw-flex tw-items-center">
-				<div class="tw-h-10 country-select tw-flex tw-items-center tw-p-2 tw-justify-center">
+				<div class="country-select tw-flex tw-h-10 tw-items-center tw-justify-center tw-p-2">
 					<img
 						v-if="element.params.default_country"
 						:src="'../../../../../../images/emundus/flags/' + element.params.default_country.toLowerCase() + '.png'"

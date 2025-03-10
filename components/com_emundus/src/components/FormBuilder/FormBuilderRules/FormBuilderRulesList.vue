@@ -8,7 +8,7 @@
 				:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_RULE')"
 			/>
 			<div v-for="rule in publishedRules" :key="rule.id" class="draggables-list" @click="$emit('add-rule', rule.value)">
-				<div class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-gap-3 tw-p-3">
+				<div class="form-builder-element tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-gap-3 tw-p-3">
 					<span class="material-symbols-outlined">{{ rule.icon }}</span>
 					<span class="tw-w-full">{{ translate(rule.name) }}</span>
 					<span class="material-symbols-outlined">add_circle_outline</span>

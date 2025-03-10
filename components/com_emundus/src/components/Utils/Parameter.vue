@@ -4,7 +4,7 @@
 		<label
 			v-if="parameter.hideLabel !== true"
 			:for="paramId"
-			class="tw-flex tw-font-semibold tw-items-end"
+			class="tw-flex tw-items-end tw-font-semibold"
 			:class="parameter.helptext && helpTextType === 'above' ? 'tw-mb-0' : ''"
 		>
 			{{ translate(parameter.label) }}
@@ -114,8 +114,8 @@
 				<fieldset data-toggle="buttons" class="tw-flex tw-items-center tw-gap-2">
 					<label
 						:for="paramId + '_input_0'"
-						:class="[value == 0 ? 'tw-bg-red-700' : 'tw-bg-white tw-border-neutral-500 hover:tw-border-red-700']"
-						class="tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex"
+						:class="[value == 0 ? 'tw-bg-red-700' : 'tw-border-neutral-500 tw-bg-white hover:tw-border-red-700']"
+						class="tw-inline-flex tw-h-10 tw-w-60 tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"
 					>
 						<input
 							v-model="value"
@@ -131,8 +131,8 @@
 
 					<label
 						:for="paramId + '_input_1'"
-						:class="[value == 1 ? 'tw-bg-green-700' : 'tw-bg-white tw-border-neutral-500 hover:tw-border-green-700']"
-						class="tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex"
+						:class="[value == 1 ? 'tw-bg-green-700' : 'tw-border-neutral-500 tw-bg-white hover:tw-border-green-700']"
+						class="tw-inline-flex tw-h-10 tw-w-60 tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"
 					>
 						<input
 							v-model="value"
@@ -152,7 +152,7 @@
 			<div v-else-if="parameter.type === 'radiobutton'">
 				<fieldset
 					data-toggle="radio_buttons"
-					class="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-2 tw-gap-4"
+					class="tw-grid tw-grid-cols-1 tw-gap-4 md:tw-grid-cols-2 lg:tw-grid-cols-2"
 				>
 					<div v-for="option in parameter.options" :key="option.value" class="fabrikgrid_radio">
 						<input
@@ -196,7 +196,7 @@
 				</div>
 				<label
 					:for="paramId + '_input'"
-					class="tw-ml-2 !tw-mb-0 tw-font-bold tw-cursor-pointer tw-flex tw-items-center"
+					class="!tw-mb-0 tw-ml-2 tw-flex tw-cursor-pointer tw-items-center tw-font-bold"
 				>
 					<span v-if="parameter.iconLabel" class="material-symbols-outlined tw-mr-1 tw-text-neutral-900">{{
 						parameter.iconLabel
@@ -272,8 +272,8 @@
 		<!-- ERRORS -->
 		<div
 			v-if="errors[parameter.param] && !['yesno', 'toggle'].includes(parameter.type) && parameter.displayed"
-			class="tw-absolute tw-mt-1 tw-text-red-600 tw-min-h-[24px]"
-			:class="errors[parameter.param] ? 'tw-opacity-100 ' : 'tw-opacity-0'"
+			class="tw-absolute tw-mt-1 tw-min-h-[24px] tw-text-red-600"
+			:class="errors[parameter.param] ? 'tw-opacity-100' : 'tw-opacity-0'"
 			:id="'error-message-' + parameter.param"
 		>
 			{{ translate(errors[parameter.param]) }}

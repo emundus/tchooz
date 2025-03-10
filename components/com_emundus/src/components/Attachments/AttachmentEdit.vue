@@ -89,7 +89,7 @@
 			</div>
 		</div>
 
-		<div class="tw-w-full tw-flex tw-items-center tw-justify-between">
+		<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
 			<div id="toggle-display">
 				<span
 					v-if="displayed"

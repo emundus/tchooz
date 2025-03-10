@@ -5,10 +5,10 @@
 			<div class="em-style-options tw-mb-8">
 				<div class="tw-flex tw-items-center">
 					<div>
-						<h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
+						<h4 class="em-text-neutral-800 tw-mb-2 tw-flex tw-items-center">
 							Logo
 							<span
-								class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
 								@click="displayLogoTip"
 								>help_outline</span
 							>
@@ -53,7 +53,7 @@
 					</vue-dropzone>
 				</div>
 
-				<button id="btn-update-logo" @click="logo_updating = !logo_updating" class="tw-mt-2 tw-btn-primary">
+				<button id="btn-update-logo" @click="logo_updating = !logo_updating" class="tw-btn-primary tw-mt-2">
 					<span v-if="!logo_updating">{{ translate('COM_EMUNDUS_ONBOARD_UPDATE_LOGO') }}</span>
 					<span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
 				</button>
@@ -63,10 +63,10 @@
 			<div class="em-style-options tw-mb-8">
 				<div class="tw-flex tw-items-center">
 					<div>
-						<h4 class="em-text-neutral-800 tw-flex tw-items-center tw-mb-2">
+						<h4 class="em-text-neutral-800 tw-mb-2 tw-flex tw-items-center">
 							{{ translate('COM_EMUNDUS_ONBOARD_ICON') }}
 							<span
-								class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
 								@click="displayFaviconTip"
 								>help_outline</span
 							>
@@ -110,7 +110,7 @@
 					</vue-dropzone>
 				</div>
 
-				<button id="btn-update-favicon" @click="favicon_updating = !favicon_updating" class="tw-mt-2 tw-btn-primary">
+				<button id="btn-update-favicon" @click="favicon_updating = !favicon_updating" class="tw-btn-primary tw-mt-2">
 					<span v-if="!favicon_updating">{{ translate('COM_EMUNDUS_ONBOARD_UPDATE_ICON') }}</span>
 					<span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
 				</button>
@@ -163,7 +163,7 @@
 					</vue-dropzone>
 				</div>
 
-				<button id="btn-update-banner" @click="banner_updating = !banner_updating" class="tw-mt-2 tw-btn-primary">
+				<button id="btn-update-banner" @click="banner_updating = !banner_updating" class="tw-btn-primary tw-mt-2">
 					<span v-if="!banner_updating">{{ translate('COM_EMUNDUS_ONBOARD_UPDATE_BANNER') }}</span>
 					<span v-else>{{ translate('COM_EMUNDUS_ONBOARD_CANCEL') }}</span>
 				</button>

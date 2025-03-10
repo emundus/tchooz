@@ -103,7 +103,7 @@
 								<button
 									v-if="data.message.status === 'error' && data.message.message"
 									type="button"
-									class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+									class="tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500"
 									@click="errorModalToOpen = data.id"
 								>
 									{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_SHOW_DETAILS') }}
@@ -113,7 +113,7 @@
 						<td v-if="columns.includes('diff')">
 							<button
 								type="button"
-								class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+								class="tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500"
 								@click="modalToOpen = data.id"
 							>
 								{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_SHOW') }}
@@ -124,14 +124,14 @@
 							<button
 								v-if="data.message.status === 'error' && data.message.retry"
 								type="button"
-								class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+								class="tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500"
 								@click="retry(data.id)"
 							>
 								<span class="material-symbols-outlined tw-text-blue-500">replay</span>
 
 								{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LAUNCH_RETRY') }}
 							</button>
-							<span v-else class="tw-text-center tw-w-full tw-block"> - </span>
+							<span v-else class="tw-block tw-w-full tw-text-center"> - </span>
 						</td>
 
 						<td v-for="column in moreData" :key="column">{{ data.message[column] }}</td>
@@ -139,15 +139,15 @@
 						<modal
 							v-if="errorModalToOpen === data.id"
 							:name="'error-modal'"
-							:class="'placement-center tw-rounded tw-shadow-modal tw-p-4 tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden'"
+							:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-p-4 tw-shadow-modal'"
 							transition="nice-modal-fade"
 							:width="'60%'"
 							:delay="100"
 							:adaptive="true"
 							:clickToClose="false"
 						>
-							<div class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
-								<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+							<div class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
+								<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 									<h2>
 										{{ translate('COM_EMUNDUS_GLOBAL_ERROR_DETAILS') }}
 									</h2>
@@ -165,15 +165,15 @@
 						<modal
 							v-if="modalToOpen === data.id"
 							:name="'datas-modal'"
-							:class="'placement-center tw-rounded tw-shadow-modal tw-p-4 tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden'"
+							:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-p-4 tw-shadow-modal'"
 							transition="nice-modal-fade"
 							:width="'60%'"
 							:delay="100"
 							:adaptive="true"
 							:clickToClose="false"
 						>
-							<div class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
-								<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+							<div class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
+								<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 									<h2>
 										{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}
 									</h2>
@@ -192,7 +192,7 @@
 										!Array.isArray(data.message.new_data) ||
 										data.message.new_data.length > 0)
 								"
-								class="!tw-border !tw-border-slate-100 !tw-border-solid tw-rounded tw-text-sm"
+								class="tw-rounded !tw-border !tw-border-solid !tw-border-slate-100 tw-text-sm"
 							>
 								<thead>
 									<tr>

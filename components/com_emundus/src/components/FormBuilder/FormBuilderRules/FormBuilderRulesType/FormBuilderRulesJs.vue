@@ -1,13 +1,13 @@
 <template>
-	<div id="form-builder-rules-js" class="tw-self-start tw-w-full">
+	<div id="form-builder-rules-js" class="tw-w-full tw-self-start">
 		<h2>{{ titleLabel }}</h2>
-		<input class="tw-mt-2 tw-mb-4" v-model="label" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_NAME')" />
+		<input class="tw-mb-4 tw-mt-2" v-model="label" :placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_NAME')" />
 
 		<div id="form-builder-rules-js-conditions-block">
 			<div
 				v-for="(grouped_condition, index) in conditions"
 				:key="'condition-' + index"
-				class="tw-mt-2 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6"
+				class="tw-mt-2 tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4"
 			>
 				<form-builder-rules-js-conditions
 					@add-condition="addCondition"
@@ -38,7 +38,7 @@
 			<div
 				v-for="(action, index) in actions"
 				:key="index"
-				class="tw-mt-2 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6"
+				class="tw-mt-2 tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4"
 			>
 				<form-builder-rules-js-action
 					:elements="elements"
@@ -57,7 +57,7 @@
 		</div>
 
 		<hr />
-		<button class="tw-mt-4 tw-btn-primary tw-w-auto tw-float-right" @click="saveRule">
+		<button class="tw-btn-primary tw-float-right tw-mt-4 tw-w-auto" @click="saveRule">
 			{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_SAVE') }}
 		</button>
 	</div>

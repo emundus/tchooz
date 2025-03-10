@@ -4,12 +4,12 @@
 			<p class="tw-font-medium">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES') }}</p>
 			<span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
 		</div>
-		<ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
+		<ul id="properties-tabs" class="tw-flex tw-w-11/12 tw-items-center tw-justify-between tw-p-4">
 			<li
 				v-for="tab in activeTabs"
 				:key="tab.id"
 				:class="{ 'is-active': tab.active, 'tw-w-2/4': activeTabs.length == 2, 'tw-w-full': activeTabs.length == 1 }"
-				class="tw-p-4 tw-cursor-pointer"
+				class="tw-cursor-pointer tw-p-4"
 				@click="selectTab(tab)"
 			>
 				{{ translate(tab.label) }}
@@ -51,7 +51,7 @@
 					<div
 						v-for="(filetype, index) in fileTypes"
 						:key="filetype.value"
-						class="tw-flex tw-items-center tw-mb-1 tw-items-start"
+						class="tw-mb-1 tw-flex tw-items-start tw-items-center"
 					>
 						<input
 							type="checkbox"
@@ -62,7 +62,7 @@
 							v-model="document.selectedTypes[filetype.value]"
 							@change="checkFileType"
 						/>
-						<label :for="filetype.value" class="tw-font-normal !tw-mb-0 tw-ml-2">
+						<label :for="filetype.value" class="!tw-mb-0 tw-ml-2 tw-font-normal">
 							{{ translate(filetype.title) }} ({{ filetype.value }})</label
 						>
 					</div>
@@ -77,8 +77,8 @@
 			<div id="advanced-properties" class="tw-p-4" v-show="tabs[1].active">
 				<div v-show="hasImg" id="resolution" class="tw-mb-4">
 					<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_WIDTH') }}</label>
-					<div class="tw-w-full tw-flex tw-items-center tw-justify-between">
-						<div class="tw-w-2/4 tw-mr-1">
+					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
+						<div class="tw-mr-1 tw-w-2/4">
 							<label for="minResolutionW" class="tw-font-normal">{{
 								translate('COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER')
 							}}</label>
@@ -90,7 +90,7 @@
 								:max="document.maxResolution.width"
 							/>
 						</div>
-						<div class="tw-w-2/4 tw-ml-1">
+						<div class="tw-ml-1 tw-w-2/4">
 							<label for="maxResolutionW" class="tw-font-normal">{{
 								translate('COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER')
 							}}</label>
@@ -105,8 +105,8 @@
 					</div>
 
 					<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_IMAGE_HEIGHT') }}</label>
-					<div class="tw-w-full tw-flex tw-items-center tw-justify-between">
-						<div class="tw-w-2/4 tw-mr-1">
+					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
+						<div class="tw-mr-1 tw-w-2/4">
 							<label for="minResolutionH" class="tw-font-normal">{{
 								translate('COM_EMUNDUS_ONBOARD_MIN_RESOLUTION_PLACEHOLDER')
 							}}</label>
@@ -118,7 +118,7 @@
 								:max="document.maxResolution.height"
 							/>
 						</div>
-						<div class="tw-w-2/4 tw-ml-1">
+						<div class="tw-ml-1 tw-w-2/4">
 							<label for="maxResolutionH" class="tw-font-normal">{{
 								translate('COM_EMUNDUS_ONBOARD_MAX_RESOLUTION_PLACEHOLDER')
 							}}</label>

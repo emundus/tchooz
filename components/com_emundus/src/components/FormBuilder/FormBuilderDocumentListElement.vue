@@ -1,29 +1,29 @@
 <template>
 	<div id="form-builder-document-list-element" @click="editDocument">
-		<div class="section-card tw-mt-8 tw-mb-8 tw-w-full tw-flex tw-flex-col">
-			<div class="section-identifier tw-bg-profile-full tw-cursor-pointer">
+		<div class="section-card tw-mb-8 tw-mt-8 tw-flex tw-w-full tw-flex-col">
+			<div class="section-identifier tw-cursor-pointer tw-bg-profile-full">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }} {{ documentIndex }} / {{ totalDocuments }}
 			</div>
 			<div class="section-content" :class="{ closed: closedSection }">
 				<div v-if="documentData.id">
-					<div class="tw-w-full tw-flex tw-items-center tw-justify-between">
+					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
 						<span class="section-title">{{ documentData.name[shortDefaultLang] }}</span>
 
 						<div>
 							<span
-								class="material-symbols-outlined tw-cursor-pointer hover-opacity"
+								class="material-symbols-outlined hover-opacity tw-cursor-pointer"
 								@click="moveDocument('up')"
 								title="Move section upwards"
 								>keyboard_double_arrow_up</span
 							>
 							<span
-								class="material-symbols-outlined tw-cursor-pointer hover-opacity"
+								class="material-symbols-outlined hover-opacity tw-cursor-pointer"
 								@click="moveDocument('down')"
 								title="Move section downwards"
 								>keyboard_double_arrow_down</span
 							>
 							<span
-								class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer hover-opacity"
+								class="material-symbols-outlined hover-opacity tw-cursor-pointer tw-text-red-600"
 								@click="deleteDocument"
 								>delete</span
 							>

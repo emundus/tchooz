@@ -1,8 +1,8 @@
 <template>
 	<div class="em-settings-menu">
-		<div class="tw-w-full tw-mb-4">
+		<div class="tw-mb-4 tw-w-full">
 			<div class="tw-w-5/6">
-				<div class="tw-grid tw-grid-cols-3 tw-gap-6 tw-mb-4">
+				<div class="tw-mb-4 tw-grid tw-grid-cols-3 tw-gap-6">
 					<multiselect
 						v-model="lang"
 						label="title_native"

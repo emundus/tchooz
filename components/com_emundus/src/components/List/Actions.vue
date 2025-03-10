@@ -167,17 +167,17 @@ export default {
 				:position="'bottom-left'"
 				class="custom-popover-arrow"
 			>
-				<ul class="tw-items-center tw-p-4 tw-list-none tw-m-0">
+				<ul class="tw-m-0 tw-list-none tw-items-center tw-p-4">
 					<li
 						v-for="action in multipleActionsPopover"
 						:key="action.name"
 						@click="onClickAction(action)"
-						class="tw-py-1.5 tw-px-2"
+						class="tw-px-2 tw-py-1.5"
 						:class="{
 							'tw-cursor-not-allowed tw-text-neutral-500': !(
 								typeof action.showon === 'undefined' || evaluateShowOn(action.showon)
 							),
-							'tw-cursor-pointer tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator':
+							'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300':
 								(typeof action.showon !== 'undefined' && evaluateShowOn(action.showon)) ||
 								typeof action.showon === 'undefined',
 						}"
@@ -200,7 +200,7 @@ export default {
 			/>
 
 			<div
-				class="tw-flex tw-items-center tw-min-w-[15rem]"
+				class="tw-flex tw-min-w-[15rem] tw-items-center"
 				v-if="tab.displaySearch === true || typeof tab.displaySearch === 'undefined'"
 			>
 				<input
@@ -208,7 +208,7 @@ export default {
 					type="text"
 					v-model="searches[tabKey].search"
 					:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-					class="!tw-rounded-coordinator !tw-h-[38px] tw-m-0"
+					class="tw-m-0 !tw-h-[38px] !tw-rounded-coordinator"
 					:class="{
 						'em-disabled-events': items[tabKey].length < 1 && searches[tabKey].search === '',
 					}"
@@ -216,7 +216,7 @@ export default {
 					@change="searchItems"
 					@keyup="searchItems"
 				/>
-				<span class="material-symbols-outlined tw-mr-2 tw-cursor-pointer tw-ml-[-32px]" @click="searchItems">
+				<span class="material-symbols-outlined tw-ml-[-32px] tw-mr-2 tw-cursor-pointer" @click="searchItems">
 					search
 				</span>
 			</div>
@@ -226,10 +226,10 @@ export default {
 			<span
 				v-for="viewTypeOption in views"
 				:key="viewTypeOption.value"
-				class="material-symbols-outlined tw-border tw-cursor-pointer tw-p-4 tw-rounded-coordinator !tw-flex tw-items-center tw-justify-center tw-bg-neutral-0 tw-h-[38px] tw-w-[38px]"
+				class="material-symbols-outlined !tw-flex tw-h-[38px] tw-w-[38px] tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-0 tw-p-4"
 				:class="{
-					'active tw-text-main-500 tw-border-main-500': viewTypeOption.value === currentView,
-					'tw-text-neutral-600 tw-border-neutral-600': viewTypeOption.value !== currentView,
+					'active tw-border-main-500 tw-text-main-500': viewTypeOption.value === currentView,
+					'tw-border-neutral-600 tw-text-neutral-600': viewTypeOption.value !== currentView,
 				}"
 				@click="changeViewType(viewTypeOption)"
 				>{{ viewTypeOption.icon }}</span

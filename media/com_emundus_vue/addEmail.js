@@ -326,16 +326,16 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "tw-border tw-border-neutral-300 tw-shadow-card tw-rounded-coordinator tw-bg-white tw-p-6" };
+const _hoisted_1 = { class: "tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card" };
 const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_3 = { class: "tw-mt-4" };
 const _hoisted_4 = { class: "tw-mt-2" };
-const _hoisted_5 = { class: "tw-text-red-600 tw-mt-1" };
+const _hoisted_5 = { class: "tw-mt-1 tw-text-red-600" };
 const _hoisted_6 = { class: "tw-flex tw-flex-col tw-gap-4" };
 const _hoisted_7 = { class: "tw-font-medium" };
 const _hoisted_8 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-1 tw-mt-1"
+  class: "tw-mb-1 tw-mt-1 tw-text-red-600"
 };
 const _hoisted_9 = { class: "tw-text-red-600" };
 const _hoisted_10 = { class: "tw-font-medium" };
@@ -347,17 +347,17 @@ const _hoisted_12 = {
 };
 const _hoisted_13 = {
   key: 1,
-  class: "tw-text-red-600 tw-mb-1"
+  class: "tw-mb-1 tw-text-red-600"
 };
 const _hoisted_14 = { class: "tw-text-red-600" };
 const _hoisted_15 = {
   key: 0,
   class: "tw-mb-4"
 };
-const _hoisted_16 = { class: "tw-mt-1 tw-mb-1 tw-text-xs tw-text-neutral-700" };
+const _hoisted_16 = { class: "tw-mb-1 tw-mt-1 tw-text-xs tw-text-neutral-700" };
 const _hoisted_17 = {
   key: 0,
-  class: "tw-text-red-600 tw-mt-1"
+  class: "tw-mt-1 tw-text-red-600"
 };
 const _hoisted_18 = { class: "tw-text-red-600" };
 const _hoisted_19 = { class: "tw-font-medium" };
@@ -368,13 +368,13 @@ const _hoisted_23 = ["title"];
 const _hoisted_24 = {
   key: 0,
   id: "email-advanced-parameters",
-  class: "tw-mt-4 tw-pl-4 em-border-left-main-500 tw-flex tw-flex-col tw-gap-4"
+  class: "em-border-left-main-500 tw-mt-4 tw-flex tw-flex-col tw-gap-4 tw-pl-4"
 };
 const _hoisted_25 = { class: "tw-font-medium" };
 const _hoisted_26 = { class: "tw-mt-1 tw-text-neutral-700" };
 const _hoisted_27 = { class: "tw-font-medium" };
 const _hoisted_28 = { class: "tw-font-medium" };
-const _hoisted_29 = { class: "tw-text-xs tw-text-neutral-700 tw-mt-1" };
+const _hoisted_29 = { class: "tw-mt-1 tw-text-xs tw-text-neutral-700" };
 const _hoisted_30 = { id: "receivers_cc" };
 const _hoisted_31 = { class: "tw-font-medium" };
 const _hoisted_32 = { id: "receivers_bcc" };
@@ -409,7 +409,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("div", null, [
           createBaseVNode("div", null, [
             createBaseVNode("div", {
-              class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
+              class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
               onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=emails"))
             }, [
               _cache[15] || (_cache[15] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
@@ -422,7 +422,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ])
           ]),
-          _cache[18] || (_cache[18] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+          _cache[18] || (_cache[18] = createBaseVNode("hr", { class: "tw-mb-4 tw-mt-1.5" }, null, -1)),
           createBaseVNode("div", _hoisted_6, [
             createBaseVNode("div", null, [
               createBaseVNode("label", _hoisted_7, [
@@ -431,7 +431,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ]),
               withDirectives(createBaseVNode("input", {
                 type: "text",
-                class: normalizeClass(["tw-w-full tw-mt-1", { "is-invalid": _ctx.errors.subject }]),
+                class: normalizeClass(["tw-mt-1 tw-w-full", { "is-invalid": _ctx.errors.subject }]),
                 "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => _ctx.form.subject = $event)
               }, null, 2), [
                 [vModelText, _ctx.form.subject]
@@ -474,7 +474,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("p", _hoisted_16, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP")), 1),
               withDirectives(createBaseVNode("input", {
                 type: "text",
-                class: normalizeClass(["tw-w-full tw-mt-2", { "is-invalid !tw-border-red-600": _ctx.errors.button }]),
+                class: normalizeClass(["tw-mt-2 tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.button }]),
                 "onUpdate:modelValue": _cache[3] || (_cache[3] = ($event) => _ctx.form.button = $event)
               }, null, 2), [
                 [vModelText, _ctx.form.button]
@@ -495,17 +495,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ]),
-        _cache[21] || (_cache[21] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        _cache[21] || (_cache[21] = createBaseVNode("hr", { class: "tw-mb-4 tw-mt-1.5" }, null, -1)),
         createBaseVNode("div", _hoisted_20, [
           createBaseVNode("div", _hoisted_21, [
             createBaseVNode("h2", {
-              class: "tw-cursor-pointer tw-w-full",
+              class: "tw-w-full tw-cursor-pointer",
               onClick: _cache[4] || (_cache[4] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args))
             }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING")), 1),
             withDirectives(createBaseVNode("button", {
               title: _ctx.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
               type: "button",
-              class: "tw-bg-transparent tw-flex tw-flex-col",
+              class: "tw-flex tw-flex-col tw-bg-transparent",
               onClick: _cache[5] || (_cache[5] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args))
             }, _cache[19] || (_cache[19] = [
               createBaseVNode("span", { class: "material-symbols-outlined em-main-500-color" }, "add_circle_outline", -1)
@@ -516,7 +516,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               title: _ctx.translate("COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING"),
               type: "button",
               onClick: _cache[6] || (_cache[6] = (...args) => $options.displayAdvanced && $options.displayAdvanced(...args)),
-              class: "tw-bg-transparent tw-flex tw-flex-col"
+              class: "tw-flex tw-flex-col tw-bg-transparent"
             }, _cache[20] || (_cache[20] = [
               createBaseVNode("span", { class: "material-symbols-outlined em-main-500-color" }, "remove_circle_outline", -1)
             ]), 8, _hoisted_23), [
@@ -532,7 +532,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("label", _hoisted_27, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER")), 1),
               withDirectives(createBaseVNode("input", {
                 type: "text",
-                class: "tw-w-full fabrikinput tw-mt-1",
+                class: "fabrikinput tw-mt-1 tw-w-full",
                 "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => _ctx.form.name = $event)
               }, null, 512), [
                 [vModelText, _ctx.form.name]
@@ -542,7 +542,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("label", _hoisted_28, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS")), 1),
               withDirectives(createBaseVNode("input", {
                 type: "text",
-                class: "tw-w-full fabrikinput tw-mt-1",
+                class: "fabrikinput tw-mt-1 tw-w-full",
                 "onUpdate:modelValue": _cache[8] || (_cache[8] = ($event) => _ctx.form.emailfrom = $event),
                 placeholder: "reply-to@tchooz.io"
               }, null, 512), [
@@ -651,7 +651,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])) : createCommentVNode("", true)
         ]),
-        _cache[22] || (_cache[22] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-4" }, null, -1)),
+        _cache[22] || (_cache[22] = createBaseVNode("hr", { class: "tw-mb-4 tw-mt-1.5" }, null, -1)),
         createBaseVNode("div", _hoisted_39, [
           createBaseVNode("button", _hoisted_40, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")), 1)
         ])
@@ -660,7 +660,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_41)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-befdbb06"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-930a0947"]]);
 export {
   addEmail as default
 };

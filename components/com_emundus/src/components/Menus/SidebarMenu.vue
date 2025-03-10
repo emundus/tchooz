@@ -1,28 +1,28 @@
 <template>
 	<aside
 		id="logo-sidebar"
-		class="corner-bottom-left-background tw-sticky tw-left-0 tw-top-0 tw-h-screen tw-bg-white tw-border-r tw-border-gray-200 tw-transition-all"
+		class="corner-bottom-left-background tw-sticky tw-left-0 tw-top-0 tw-h-screen tw-border-r tw-border-gray-200 tw-bg-white tw-transition-all"
 		:class="minimized === true ? 'tw-w-[64px]' : 'tw-w-64'"
 		aria-label="Sidebar"
 	>
 		<div
-			class="tw-h-full tw-pb-4 tw-overflow-y-auto tw-bg-white"
+			class="tw-h-full tw-overflow-y-auto tw-bg-white tw-pb-4"
 			@mouseover="showMinimized = true"
 			@mouseleave="showMinimized = false"
 		>
-			<ul class="tw-flex tw-flex-col tw-items-left tw-gap-3 tw-p-3 tw-space-y-2 tw-font-large tw-list-none">
-				<li class="tw-w-10 tw-flex tw-items-center tw-justify-between">
+			<ul class="tw-items-left tw-font-large tw-flex tw-list-none tw-flex-col tw-gap-3 tw-space-y-2 tw-p-3">
+				<li class="tw-flex tw-w-10 tw-items-center tw-justify-between">
 					<span
-						class="tw-flex tw-items-center tw-group tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+						class="tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 						@click="clickReturn()"
 					>
 						<!-- The back button icon -->
-						<span class="material-symbols-outlined tw-text-neutral-600 tw-user-select-none">navigate_before</span>
+						<span class="material-symbols-outlined tw-user-select-none tw-text-neutral-600">navigate_before</span>
 						<!-- The back button label -->
 						<span class="tw-pl-1 tw-text-neutral-900" v-if="minimized === false">{{ translate('BACK') }}</span>
 					</span>
 					<span
-						class="material-symbols-outlined tw-absolute tw-right-[-12px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+						class="material-symbols-outlined tw-absolute tw-right-[-12px] tw-cursor-pointer tw-rounded-full tw-bg-neutral-400 !tw-text-xl/5"
 						:class="minimized ? 'tw-rotate-180' : ''"
 						v-show="showMinimized === true"
 						@click="handleSidebarSize"
@@ -35,15 +35,15 @@
 						<div
 							:id="'Menu-' + indexMenu"
 							@click="activeMenu = indexMenu"
-							class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
+							class="tw-user-select-none tw-group tw-flex tw-w-full tw-cursor-pointer tw-items-start tw-rounded-lg tw-p-2"
 							:class="
 								activeMenu === indexMenu
-									? 'tw-font-bold tw-text-profile-full tw-bg-profile-light'
+									? 'tw-bg-profile-light tw-font-bold tw-text-profile-full'
 									: 'hover:tw-bg-gray-200'
 							"
 						>
 							<span
-								class="material-symbols-outlined tw-font-bold tw-mr-2.5"
+								class="material-symbols-outlined tw-mr-2.5 tw-font-bold"
 								:class="activeMenu === indexMenu ? 'tw-text-profile-full' : ''"
 								name="icon-Menu"
 								:title="translate(menu.label)"
@@ -64,7 +64,7 @@
 		</div>
 
 		<div
-			class="tchoozy-corner-bottom-left-bakground-mask-image tw-h-1/3 tw-w-full tw-absolute tw-bottom-0 tw-bg-profile-full"
+			class="tchoozy-corner-bottom-left-bakground-mask-image tw-absolute tw-bottom-0 tw-h-1/3 tw-w-full tw-bg-profile-full"
 		></div>
 	</aside>
 </template>

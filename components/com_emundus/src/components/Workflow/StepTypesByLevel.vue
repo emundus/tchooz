@@ -1,7 +1,7 @@
 <template>
 	<div :class="'step-types-level-' + parentId + ' tw-p-2'">
 		<div v-for="type in stepTypesByParentId" :key="type.id">
-			<div class="tw-w-full tw-flex tw-flex-row tw-items-center tw-mb-2">
+			<div class="tw-mb-2 tw-flex tw-w-full tw-flex-row tw-items-center">
 				<span v-for="i in level" :key="i" class="material-symbols-outlined">horizontal_rule</span>
 				<input :id="'type-' + type.id + '-label'" :name="'type-' + type.id + '-label'" v-model="type.label" />
 				<span v-if="!type.system" class="material-symbols-outlined tw-cursor-pointer" @click="deleteType(type.id)">
@@ -17,8 +17,8 @@
 					:level="level + 1"
 				></StepTypesByLevel>
 			</div>
-			<div class="tw-w-full tw-flex tw-flex-row tw-items-center" v-if="level < levelMax">
-				<button @click="addChildrenStepType(type)" class="tw-btn-secondary tw-mt-2 tw-mb-2">
+			<div class="tw-flex tw-w-full tw-flex-row tw-items-center" v-if="level < levelMax">
+				<button @click="addChildrenStepType(type)" class="tw-btn-secondary tw-mb-2 tw-mt-2">
 					{{ translate('COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE') }}
 				</button>
 			</div>

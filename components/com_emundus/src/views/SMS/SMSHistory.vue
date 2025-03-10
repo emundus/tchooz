@@ -5,11 +5,11 @@
 			<div
 				v-for="sms in smsHistory"
 				:key="sms.id"
-				class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded-lg tw-bg-white tw-p-6 tw-mb-4"
+				class="em-card-shadow tw-mb-4 tw-rounded-lg tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
 			>
 				<div class="from tw-mb-2 tw-flex tw-justify-between">
 					<div class="tw-flex tw-flex-col">
-						<span class="tw-text-neutral-500 tw-text-xs">{{ sms.params.date }}</span>
+						<span class="tw-text-xs tw-text-neutral-500">{{ sms.params.date }}</span>
 						<span class="tw-text-xs">{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_FROM') }} {{ sms.user_name_from }}</span>
 					</div>
 					<div>

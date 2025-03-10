@@ -1,7 +1,7 @@
 <template>
 	<div
 		id="comments"
-		class="tw-p-4 tw-w-full tw-bg-[#f8f8f8] tw-flex tw-flex-col"
+		class="tw-flex tw-w-full tw-flex-col tw-bg-[#f8f8f8] tw-p-4"
 		:class="{ 'tw-border-l-4 tw-border-profile-full': border }"
 	>
 		<div v-if="comments.length > 0" id="filter-comments" class="tw-flex tw-flex-row tw-flex-wrap tw-gap-2 tw-pb-3">
@@ -29,7 +29,7 @@
 				:id="'file-comment-' + comment.id"
 				v-for="comment in parentComments"
 				:key="comment.id"
-				class="tw-group tw-shadow tw-rounded-lg tw-py-2 tw-px-4 tw-my-4 tw-border tw-bg-white"
+				class="tw-group tw-my-4 tw-rounded-lg tw-border tw-bg-white tw-px-4 tw-py-2 tw-shadow"
 				:class="{
 					'tw-border-transparent': comment.id != openedCommentId,
 					'tw-focus tw-border-profile-full': comment.id == openedCommentId,
@@ -37,15 +37,15 @@
 					'tw-white-bg': comment.opened == 1,
 				}"
 			>
-				<div class="file-comment-header tw-flex tw-flex-col tw-mb-3">
-					<div class="tw-flex tw-flex-row tw-justify-between tw-items-center">
+				<div class="file-comment-header tw-mb-3 tw-flex tw-flex-col">
+					<div class="tw-flex tw-flex-row tw-items-center tw-justify-between">
 						<div
-							class="file-comment-header-left tw-flex tw-flex-row tw-cursor-pointer tw-items-center tw-justify-between tw-w-full"
+							class="file-comment-header-left tw-flex tw-w-full tw-cursor-pointer tw-flex-row tw-items-center tw-justify-between"
 							@click="replyToComment(comment.id)"
 						>
 							<div class="tw-flex tw-flex-row tw-items-center">
 								<div
-									class="profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center"
+									class="profile-picture tw-mr-2 tw-flex tw-h-8 tw-w-8 tw-flex-row tw-items-center tw-justify-center tw-rounded-full tw-border-2"
 									:class="{ 'tw-bg-neutral-300': !comment.profile_picture }"
 								>
 									<div
@@ -61,8 +61,8 @@
 										>{{ comment.firstname.charAt(0).toUpperCase() }}{{ comment.lastname.charAt(0).toUpperCase() }}</span
 									>
 								</div>
-								<div class="tw-flex tw-flex-col tw-mr-3">
-									<span class="tw-text-neutral-500 tw-text-xs">{{
+								<div class="tw-mr-3 tw-flex tw-flex-col">
+									<span class="tw-text-xs tw-text-neutral-500">{{
 										comment.updated ? comment.updated : comment.date
 									}}</span>
 									<span class="tw-text-xs">{{ comment.username }}</span>
@@ -94,12 +94,12 @@
 								v-model="comment.comment_body"
 								@keyup.enter="updateComment(comment.id)"
 							></textarea>
-							<div class="tw-flex tw-flex-row tw-justify-end tw-mt-2">
+							<div class="tw-mt-2 tw-flex tw-flex-row tw-justify-end">
 								<button id="add-comment-btn" class="tw-btn-primary tw-w-fit" @click="updateComment(comment.id)">
 									<span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
 									<span class="material-symbols-outlined tw-ml-1 tw-text-neutral-300">send</span>
 								</button>
-								<button id="abort-update" class="tw-btn-secondary tw-w-fit tw-ml-2" @click="abortUpdateComment">
+								<button id="abort-update" class="tw-btn-secondary tw-ml-2 tw-w-fit" @click="abortUpdateComment">
 									<span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
 								</button>
 							</div>
@@ -108,12 +108,12 @@
 					</div>
 					<div
 						v-if="editable != comment.id"
-						class="file-comment-header-right tw-ease-in-out tw-duration-300 tw-opacity-0 group-hover:tw-opacity-100 tw-flex tw-flex-row"
+						class="file-comment-header-right tw-flex tw-flex-row tw-opacity-0 tw-duration-300 tw-ease-in-out group-hover:tw-opacity-100"
 					>
 						<span class="material-symbols-outlined tw-cursor-pointer" @click="replyToComment(comment.id)">reply</span>
 						<span
 							v-if="access.d || comment.user_id == user"
-							class="material-symbols-outlined tw-cursor-pointer em-red-500-color"
+							class="material-symbols-outlined em-red-500-color tw-cursor-pointer"
 							@click="deleteComment(comment.id)"
 							>delete</span
 						>
@@ -125,7 +125,7 @@
 						>
 					</div>
 				</div>
-				<i v-if="comment.updated_by > 0" class="tw-text-xs em-gray-color tw-mt-3">{{
+				<i v-if="comment.updated_by > 0" class="em-gray-color tw-mt-3 tw-text-xs">{{
 					translate('COM_EMUNDUS_COMMENTS_EDITED')
 				}}</i>
 
@@ -135,12 +135,12 @@
 				>
 					<hr />
 					<div :id="'file-comment-' + child.id" v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
-						<div class="child-comment tw-flex tw-flex-col tw-border-s-4 tw-my-3 tw-px-3">
-							<div class="file-comment-header tw-flex tw-flex-row tw-justify-between tw-mb-2">
+						<div class="child-comment tw-my-3 tw-flex tw-flex-col tw-border-s-4 tw-px-3">
+							<div class="file-comment-header tw-mb-2 tw-flex tw-flex-row tw-justify-between">
 								<div class="file-comment-header-left tw-flex tw-flex-col">
 									<div class="tw-flex tw-flex-row tw-items-center">
 										<div
-											class="profile-picture tw-h-8 tw-w-8 tw-rounded-full tw-border-2 tw-mr-2 tw-flex tw-flex-row tw-justify-center tw-items-center"
+											class="profile-picture tw-mr-2 tw-flex tw-h-8 tw-w-8 tw-flex-row tw-items-center tw-justify-center tw-rounded-full tw-border-2"
 										>
 											<div
 												v-if="comment.profile_picture"
@@ -153,8 +153,8 @@
 											></div>
 											<span v-else>{{ comment.firstname.charAt(0) }}{{ comment.lastname.charAt(0) }}</span>
 										</div>
-										<div class="tw-flex tw-flex-col tw-mr-3">
-											<span class="tw-text-neutral-500 tw-text-xs">{{
+										<div class="tw-mr-3 tw-flex tw-flex-col">
+											<span class="tw-text-xs tw-text-neutral-500">{{
 												child.updated ? child.updated : child.date
 											}}</span>
 											<span class="tw-text-xs">{{ child.username }}</span>
@@ -163,7 +163,7 @@
 								</div>
 							</div>
 
-							<div class="tw-flex tw-flex-row tw-justify-between tw-items-start">
+							<div class="tw-flex tw-flex-row tw-items-start tw-justify-between">
 								<div class="tw-w-full">
 									<div v-if="editable == child.id" class="tw-w-full">
 										<textarea
@@ -172,12 +172,12 @@
 											v-model="child.comment_body"
 											@keyup.enter="updateComment(child.id)"
 										></textarea>
-										<div class="tw-flex tw-flex-row tw-justify-end tw-mt-2">
+										<div class="tw-mt-2 tw-flex tw-flex-row tw-justify-end">
 											<button id="add-comment-btn" class="tw-btn-primary tw-w-fit" @click="updateComment(child.id)">
 												<span>{{ translate('COM_EMUNDUS_COMMENTS_UPDATE_COMMENT') }}</span>
 												<span class="material-symbols-outlined tw-ml-1 tw-text-neutral-300">send</span>
 											</button>
-											<button id="abort-update" class="tw-btn-secondary tw-w-fit tw-ml-2" @click="abortUpdateComment">
+											<button id="abort-update" class="tw-btn-secondary tw-ml-2 tw-w-fit" @click="abortUpdateComment">
 												<span>{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</span>
 											</button>
 										</div>
@@ -187,7 +187,7 @@
 								<div v-if="editable != child.id" class="tw-flex tw-flex-row tw-items-center">
 									<span
 										v-if="access.d || child.user_id == user"
-										class="material-symbols-outlined tw-cursor-pointer em-red-500-color"
+										class="material-symbols-outlined em-red-500-color tw-cursor-pointer"
 										@click="deleteComment(child.id)"
 										>delete</span
 									>
@@ -199,7 +199,7 @@
 									>
 								</div>
 							</div>
-							<i v-if="child.updated_by > 0" class="tw-text-xs em-gray-color tw-mt-3">{{
+							<i v-if="child.updated_by > 0" class="em-gray-color tw-mt-3 tw-text-xs">{{
 								translate('COM_EMUNDUS_COMMENTS_EDITED')
 							}}</i>
 						</div>
@@ -211,10 +211,10 @@
 							v-model="newChildCommentText"
 							:placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"
 						></textarea>
-						<div class="tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center tw-mt-2">
+						<div class="tw-mt-2 tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between">
 							<button
 								id="add-comment-btn"
-								class="tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit"
+								class="tw-btn-primary tw-w-fit tw-bg-profile-full tw-text-neutral-300"
 								:class="{ 'tw-cursor-not-allowed tw-opacity-50': newChildCommentText.length === 0 }"
 								:disabled="newChildCommentText.length === 0"
 								@click="addComment(comment.id)"
@@ -247,14 +247,14 @@
 
 				<p
 					v-if="comment.target_id > 0"
-					class="comment-target-label tw-text-sm em-gray-color tw-cursor-pointer tw-mt-4"
+					class="comment-target-label em-gray-color tw-mt-4 tw-cursor-pointer tw-text-sm"
 					@click="goToCommentTarget(comment)"
 				>
 					{{ getCommentTargetLabel(comment.target_id, comment.target_type) }}
 				</p>
 			</div>
 		</div>
-		<div v-else id="empty-comments" class="tw-text-center tw-my-4">
+		<div v-else id="empty-comments" class="tw-my-4 tw-text-center">
 			<img
 				src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg"
 				alt="empty-list"
@@ -271,11 +271,11 @@
 				id="new-comment"
 				@keyup.enter="addComment"
 				v-model="newCommentText"
-				class="tw-p-2 tw-mt-1"
+				class="tw-mt-1 tw-p-2"
 				:placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"
 			></textarea>
-			<div v-if="!isApplicant && applicantsAllowedToComment" class="tw-flex tw-flex-row tw-items-center tw-mt-3">
-				<div class="tw-flex tw-flex-row tw-items-center tw-mr-2">
+			<div v-if="!isApplicant && applicantsAllowedToComment" class="tw-mt-3 tw-flex tw-flex-row tw-items-center">
+				<div class="tw-mr-2 tw-flex tw-flex-row tw-items-center">
 					<input
 						type="radio"
 						name="visible_to_applicant"
@@ -296,10 +296,10 @@
 					<label for="visible-to-applicant" class="tw-m-0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</label>
 				</div>
 			</div>
-			<div class="tw-flex tw-flex-row tw-justify-end tw-mt-4">
+			<div class="tw-mt-4 tw-flex tw-flex-row tw-justify-end">
 				<button
 					id="add-comment-btn"
-					class="tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit"
+					class="tw-btn-primary tw-w-fit tw-bg-profile-full tw-text-neutral-300"
 					:class="{ '!tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0 }"
 					:disabled="newCommentText.length === 0"
 					@click="addComment(0)"
@@ -321,12 +321,12 @@
 				:clickToClose="false"
 				ref="modal"
 			>
-				<div class="tw-w-full tw-h-full tw-p-4 tw-flex tw-flex-col tw-justify-between">
+				<div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-justify-between tw-p-4">
 					<div>
 						<h2 class="tw-mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
 						<textarea
 							v-model="newCommentText"
-							class="tw-p-2 tw-h-full"
+							class="tw-h-full tw-p-2"
 							:placeholder="translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_PLACEHOLDER')"
 						></textarea>
 						<div v-if="!isApplicant && applicantsAllowedToComment" class="tw-flex tw-flex-row tw-items-center">
@@ -342,7 +342,7 @@
 									translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS')
 								}}</label>
 							</div>
-							<div class="tw-flex tw-flex-row tw-items-center tw-ml-2">
+							<div class="tw-ml-2 tw-flex tw-flex-row tw-items-center">
 								<input
 									type="radio"
 									name="visible_to_applicant"
@@ -361,7 +361,7 @@
 						<button @click="hideModal()" class="tw-btn-cancel">{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</button>
 						<button
 							id="add-comment-btn"
-							class="tw-btn-primary tw-bg-profile-full tw-text-neutral-300 tw-w-fit"
+							class="tw-btn-primary tw-w-fit tw-bg-profile-full tw-text-neutral-300"
 							:class="{ 'tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0 }"
 							:disabled="newCommentText.length === 0"
 							@click="addComment(0)"

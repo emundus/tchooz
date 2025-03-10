@@ -176,7 +176,7 @@ export default {
 <template>
 	<section id="tab-filters" class="tw-w-full">
 		<div v-if="availableFilters.length > 0" :class="{ 'tw-mb-4': displayedFilters.length > 0 }">
-			<label class="tw-font-medium tw-mb-2">
+			<label class="tw-mb-2 tw-font-medium">
 				{{ translate('COM_EMUNDUS_ADD_FILTER') }}
 			</label>
 			<div class="tw-grid tw-grid-cols-3 tw-gap-4">
@@ -227,7 +227,7 @@ export default {
 					<label class="!tw-mb-0 tw-font-medium">
 						{{ translate(filter.label) }}
 					</label>
-					<span class="material-icons-outlined tw-text-red-500 tw-cursor-pointer" @click="removeFilter(filter)">
+					<span class="material-icons-outlined tw-cursor-pointer tw-text-red-500" @click="removeFilter(filter)">
 						close
 					</span>
 				</div>

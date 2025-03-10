@@ -172,7 +172,7 @@ const _hoisted_3$4 = {
 };
 const _hoisted_4$4 = ["id"];
 const _hoisted_5$4 = ["onClick"];
-const _hoisted_6$4 = { class: "tw-flex tw-items-center tw-w-full tw-justify-center" };
+const _hoisted_6$4 = { class: "tw-flex tw-w-full tw-items-center tw-justify-center" };
 const _hoisted_7$4 = ["onClick"];
 const _hoisted_8$4 = {
   key: 0,
@@ -254,14 +254,14 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
           createVNode(TransitionGroup, {
             type: "transition",
             value: !$data.drag ? "flip-list" : null,
-            class: "tw-grid tw-grid-cols-3 tw-gap-6 tw-w-full handle"
+            class: "handle tw-grid tw-w-full tw-grid-cols-3 tw-gap-6"
           }, {
             default: withCtx(() => [
               (openBlock(true), createElementBlock(Fragment, null, renderList($data.documents, (document2, indexDoc) => {
                 return openBlock(), createElementBlock("div", {
                   id: "itemDoc" + document2.id,
                   key: document2.id,
-                  class: "em-document-dropzone-card tw-cursor-grab handle tw-mr-2"
+                  class: "em-document-dropzone-card handle tw-mr-2 tw-cursor-grab"
                 }, [
                   createBaseVNode("button", {
                     type: "button",
@@ -272,7 +272,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                   ]), 8, _hoisted_5$4),
                   createBaseVNode("div", _hoisted_6$4, [
                     createBaseVNode("div", {
-                      class: "tw-flex tw-flex-col tw-items-center em-edit-cursor",
+                      class: "em-edit-cursor tw-flex tw-flex-col tw-items-center",
                       onClick: ($event) => $options.editName(document2)
                     }, [
                       document2.ext === "pdf" ? (openBlock(), createElementBlock("img", _hoisted_8$4)) : ["docx", "doc", "odf"].includes(document2.ext) ? (openBlock(), createElementBlock("img", _hoisted_9$4)) : ["xls", "xlsx", "csv"].includes(document2.ext) ? (openBlock(), createElementBlock("img", _hoisted_10$4)) : ["png", "gif", "jpg", "jpeg"].includes(document2.ext) ? (openBlock(), createElementBlock("img", _hoisted_11$4)) : ["zip", "rar"].includes(document2.ext) ? (openBlock(), createElementBlock("img", _hoisted_12$4)) : ["svg"].includes(document2.ext) ? (openBlock(), createElementBlock("img", _hoisted_13$4)) : createCommentVNode("", true),
@@ -300,7 +300,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_17$2)) : createCommentVNode("", true)
   ]);
 }
-const AddDocumentsDropfiles = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-2c4c84b9"]]);
+const AddDocumentsDropfiles = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-e4db7f87"]]);
 const _sfc_main$4 = {
   name: "modalAddTrigger",
   components: {
@@ -432,7 +432,7 @@ const _sfc_main$4 = {
     }
   }
 };
-const _hoisted_1$4 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
+const _hoisted_1$4 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_2$3 = { class: "tw-mb-4" };
 const _hoisted_3$3 = { class: "tw-flex tw-items-center" };
 const _hoisted_4$3 = { value: "-1" };
@@ -443,7 +443,7 @@ const _hoisted_6$3 = {
 };
 const _hoisted_7$3 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-mb-2 tw-text-red-600"
 };
 const _hoisted_8$3 = { class: "tw-text-red-600" };
 const _hoisted_9$3 = { class: "tw-mb-4" };
@@ -451,7 +451,7 @@ const _hoisted_10$3 = { value: "-1" };
 const _hoisted_11$3 = ["value"];
 const _hoisted_12$3 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-mb-2 tw-text-red-600"
 };
 const _hoisted_13$3 = { class: "tw-text-red-600" };
 const _hoisted_14$2 = { class: "tw-mb-4" };
@@ -461,10 +461,10 @@ const _hoisted_17$1 = { value: "6" };
 const _hoisted_18$1 = { value: "1000" };
 const _hoisted_19$1 = {
   key: 0,
-  class: "tw-text-red-600 tw-mb-2"
+  class: "tw-mb-2 tw-text-red-600"
 };
 const _hoisted_20$1 = { class: "tw-text-red-600" };
-const _hoisted_21$1 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-2" };
+const _hoisted_21$1 = { class: "tw-mb-2 tw-flex tw-items-center tw-justify-between" };
 function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   return openBlock(), createBlock(_component_modal, {
@@ -569,7 +569,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["name", "class", "onClosed", "onBeforeOpen"]);
 }
-const ModalAddTrigger = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-c11d7264"]]);
+const ModalAddTrigger = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-12895ac9"]]);
 const _sfc_main$3 = {
   name: "addEmail",
   components: { ModalAddTrigger },
@@ -649,29 +649,29 @@ const _sfc_main$3 = {
 };
 const _hoisted_1$3 = { id: "candidate-action" };
 const _hoisted_2$2 = { class: "tw-flex tw-items-center" };
-const _hoisted_3$2 = { class: "tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full" };
+const _hoisted_3$2 = { class: "tw-flex tw-w-full tw-items-start tw-items-center tw-justify-between" };
 const _hoisted_4$2 = { class: "tw-mb-2" };
-const _hoisted_5$2 = { class: "tw-mt-2 tw-mb-2" };
+const _hoisted_5$2 = { class: "tw-mb-2 tw-mt-2" };
 const _hoisted_6$2 = { style: { "font-weight": "bold" } };
 const _hoisted_7$2 = { key: 0 };
 const _hoisted_8$2 = { key: 0 };
 const _hoisted_9$2 = { key: 1 };
 const _hoisted_10$2 = { key: 2 };
-const _hoisted_11$2 = { class: "tw-flex tw-items-center em-flex-end" };
+const _hoisted_11$2 = { class: "em-flex-end tw-flex tw-items-center" };
 const _hoisted_12$2 = ["onClick"];
 const _hoisted_13$2 = ["onClick", "title"];
 const _hoisted_14$1 = { id: "manager-action" };
 const _hoisted_15$1 = { class: "tw-flex tw-items-center" };
 const _hoisted_16 = { class: "tw-mt-4" };
-const _hoisted_17 = { class: "tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full" };
+const _hoisted_17 = { class: "tw-flex tw-w-full tw-items-start tw-items-center tw-justify-between" };
 const _hoisted_18 = { class: "tw-mb-2" };
-const _hoisted_19 = { class: "tw-mt-2 tw-mb-2" };
+const _hoisted_19 = { class: "tw-mb-2 tw-mt-2" };
 const _hoisted_20 = { style: { "font-weight": "bold" } };
 const _hoisted_21 = { key: 0 };
 const _hoisted_22 = { key: 0 };
 const _hoisted_23 = { key: 1 };
 const _hoisted_24 = { key: 2 };
-const _hoisted_25 = { class: "tw-flex tw-items-center em-flex-end" };
+const _hoisted_25 = { class: "em-flex-end tw-flex tw-items-center" };
 const _hoisted_26 = ["onClick"];
 const _hoisted_27 = ["onClick"];
 const _hoisted_28 = {
@@ -706,7 +706,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION")), 1),
       createBaseVNode("button", {
-        class: "tw-btn-primary tw-w-auto tw-mt-2",
+        class: "tw-btn-primary tw-mt-2 tw-w-auto",
         onClick: _cache[2] || (_cache[2] = ($event) => {
           $data.showModalAddTriggerApplicant = true;
           $data.triggerSelected = null;
@@ -771,7 +771,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION")), 1),
       createBaseVNode("button", {
-        class: "tw-btn-primary tw-w-auto tw-mt-2",
+        class: "tw-btn-primary tw-mt-2 tw-w-auto",
         onClick: _cache[3] || (_cache[3] = ($event) => {
           $data.showModalAddTriggerManual = true;
           $data.triggerSelected = null;
@@ -810,7 +810,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
                 ]),
                 createBaseVNode("div", _hoisted_25, [
                   createBaseVNode("a", {
-                    class: "tw-cursor-pointer tw-mr-2",
+                    class: "tw-mr-2 tw-cursor-pointer",
                     onClick: ($event) => $options.editTrigger(trigger)
                   }, _cache[6] || (_cache[6] = [
                     createBaseVNode("span", { class: "material-symbols-outlined" }, "edit", -1)
@@ -832,7 +832,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_28)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-99def3f1"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-a01444df"]]);
 const _sfc_main$2 = {
   name: "CampaignMore",
   props: {
@@ -949,7 +949,7 @@ const _hoisted_5$1 = ["id", "name", "onUpdate:modelValue"];
 const _hoisted_6$1 = ["for"];
 const _hoisted_7$1 = {
   key: 0,
-  class: "tw-flex tw-flex-row tw-w-full tw-gap-2"
+  class: "tw-flex tw-w-full tw-flex-row tw-gap-2"
 };
 const _hoisted_8$1 = { class: "tw-w-full" };
 const _hoisted_9$1 = ["for"];
@@ -975,7 +975,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
               type: "checkbox",
               "true-value": "1",
               "false-value": "0",
-              class: "tw-mt-2 em-toggle-check",
+              class: "em-toggle-check tw-mt-2",
               id: "step_" + step.id + "_infinite",
               name: "step_" + step.id + "_infinite",
               "onUpdate:modelValue": ($event) => step.infinite = $event
@@ -1011,7 +1011,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             }, {
               default: withCtx(({ inputValue, inputEvents }) => [
                 createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                  class: "tw-mt-2 form-control fabrikinput tw-w-full",
+                  class: "form-control fabrikinput tw-mt-2 tw-w-full",
                   id: "start_date_" + step.id + "_input",
                   name: "start_date_" + step.id
                 }), null, 16, _hoisted_10$1)
@@ -1039,7 +1039,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             }, {
               default: withCtx(({ inputValue, inputEvents }) => [
                 createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                  class: "tw-mt-2 form-control fabrikinput tw-w-full",
+                  class: "form-control fabrikinput tw-mt-2 tw-w-full",
                   id: "end_date_" + step.id + "_input",
                   name: "end_date_" + step.id
                 }), null, 16, _hoisted_13$1)
@@ -1322,28 +1322,28 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { id: "edit-campaign" };
-const _hoisted_2 = { class: "tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6" };
+const _hoisted_2 = { class: "em-card-shadow tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6" };
 const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
-const _hoisted_4 = { class: "tw-flex tw-items-center tw-mt-4" };
+const _hoisted_4 = { class: "tw-mt-4 tw-flex tw-items-center" };
 const _hoisted_5 = ["innerHTML"];
 const _hoisted_6 = {
   id: "campaign-info-line",
-  class: "tw-flex tw-items-center tw-mb-8"
+  class: "tw-mb-8 tw-flex tw-items-center"
 };
 const _hoisted_7 = { style: { "color": "var(--em-profile-color)", "font-weight": "700 !important" } };
-const _hoisted_8 = { class: "tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
+const _hoisted_8 = { class: "tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6" };
 const _hoisted_9 = {
   key: 0,
   class: "warning-message-program mb-1"
 };
-const _hoisted_10 = { class: "tw-text-red-600 flex flex-row" };
+const _hoisted_10 = { class: "flex flex-row tw-text-red-600" };
 const _hoisted_11 = {
   key: 0,
-  class: "tw-mt-2 tw-mb-8 em-pl-16"
+  class: "em-pl-16 tw-mb-8 tw-mt-2"
 };
 const _hoisted_12 = {
   key: 0,
-  class: "tw-flex tw-items-center tw-justify-end tw-mt-4"
+  class: "tw-mt-4 tw-flex tw-items-center tw-justify-end"
 };
 const _hoisted_13 = {
   key: 1,
@@ -1362,7 +1362,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_2, [
       createBaseVNode("div", null, [
         createBaseVNode("div", {
-          class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
+          class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
           onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
         }, [
           _cache[2] || (_cache[2] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
@@ -1446,7 +1446,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ["addDocumentsDropfiles"].includes(_ctx.selectedMenu) ? (openBlock(), createElementBlock("div", _hoisted_12, [
         createBaseVNode("button", {
           type: "button",
-          class: "tw-btn-primary tw-w-auto mb-4",
+          class: "mb-4 tw-btn-primary tw-w-auto",
           onClick: _cache[1] || (_cache[1] = (...args) => $options.next && $options.next(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")), 1)
       ])) : createCommentVNode("", true),
@@ -1454,7 +1454,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e18247dd"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3c203a59"]]);
 export {
   CampaignEdition as default
 };

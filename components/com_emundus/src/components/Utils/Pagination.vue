@@ -1,7 +1,7 @@
 <template>
 	<div class="tw-flex tw-items-center tw-justify-between tw-py-2" :class="stickyClass" :style="stickyStyle">
 		<div
-			class="tw-bg-white tw-px-3 tw-py-2 tw-flex tw-border tw-rounded-coordinator tw-border-neutral-300 tw-items-center tw-h-[40px]"
+			class="tw-flex tw-h-[40px] tw-items-center tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-px-3 tw-py-2"
 		>
 			<div class="tw-flex tw-items-center tw-gap-2">
 				<label for="pager-select" class="!tw-mb-0">{{ translate('COM_EMUNDUS_PAGINATION_DISPLAY') }}</label>
@@ -14,7 +14,7 @@
 		</div>
 
 		<div class="em-container-pagination-selectPage">
-			<ul class="tw-flex tw-items-center tw-gap-1 pagination pagination-sm">
+			<ul class="pagination pagination-sm tw-flex tw-items-center tw-gap-1">
 				<li class="tw-flex">
 					<a
 						class="tw-cursor-pointer"
@@ -29,7 +29,7 @@
 					:key="pageAvailable"
 					:class="{ active: pageAvailable === this.currentPage }"
 					@click="this.currentPage = pageAvailable"
-					class="tw-cursor-pointer tw-flex"
+					class="tw-flex tw-cursor-pointer"
 				>
 					<a>{{ pageAvailable }}</a>
 				</li>

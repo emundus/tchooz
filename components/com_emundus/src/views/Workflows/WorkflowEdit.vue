@@ -2,7 +2,7 @@
 	<div class="tw-m-2">
 		<div v-if="!loading">
 			<div
-				class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+				class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 				@click="goBack"
 			>
 				<span class="material-symbols-outlined">navigate_before</span>
@@ -18,7 +18,7 @@
 					</button>
 				</div>
 
-				<div class="tw-mt-4 tw-w-full tw-flex tw-flex-row tw-justify-between tw-items-center">
+				<div class="tw-mt-4 tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between">
 					<div>
 						<select v-if="sortByOptions.length > 0">
 							<option value="0">{{ translate('SORT_BY') }}</option>
@@ -31,10 +31,10 @@
 
 			<div
 				id="tabs-wrapper"
-				class="tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative"
+				class="tw-relative tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
 			>
 				<div v-if="activeTab.id === 'steps'" id="workflow-steps-wrapper" class="tw-flex tw-flex-col">
-					<a class="tw-btn-primary tw-h-fit tw-w-fit tw-mb-4 tw-cursor-pointer" type="button" @click="addStep">
+					<a class="tw-btn-primary tw-mb-4 tw-h-fit tw-w-fit tw-cursor-pointer" type="button" @click="addStep">
 						{{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }}
 					</a>
 
@@ -49,7 +49,7 @@
 							<div
 								v-for="step in steps"
 								:key="step.id"
-								class="workflow-step tw-rounded tw-border tw-shadow-sm tw-p-4"
+								class="workflow-step tw-rounded tw-border tw-p-4 tw-shadow-sm"
 								:class="{
 									'tw-bg-slate-50': step.state != 1,
 									'em-white-bg': step.state == 1,
@@ -57,8 +57,8 @@
 								}"
 							>
 								<div class="workflow-step-head tw-flex tw-flex-row tw-justify-between tw-gap-2">
-									<div class="tw-flex tw-flex-row tw-items-start tw-mb-4">
-										<span class="material-symbols-outlined tw-cursor-grab handle">drag_indicator</span>
+									<div class="tw-mb-4 tw-flex tw-flex-row tw-items-start">
+										<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
 										<h4 class="tw-line-clamp-2 tw-break-all">{{ step.label }}</h4>
 									</div>
 									<popover>
@@ -176,7 +176,7 @@
 
 									<div
 										v-if="!isApplicantStep(step)"
-										class="tw-mb-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer"
+										class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
 									>
 										<input
 											v-model="step.multiple"
@@ -187,7 +187,7 @@
 											:id="'step-' + step.id + '-multiple'"
 											class="tw-cursor-pointer"
 										/>
-										<label :for="'step-' + step.id + '-multiple'" class="tw-cursor-pointer tw-mb-0">{{
+										<label :for="'step-' + step.id + '-multiple'" class="tw-mb-0 tw-cursor-pointer">{{
 											translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE')
 										}}</label>
 									</div>
@@ -218,10 +218,10 @@
 						type="text"
 						v-model="searchThroughPrograms"
 						:placeholder="translate('COM_EMUNDUS_WORKFLOW_SEARCH_PROGRAMS_PLACEHOLDER')"
-						class="tw-w-full tw-p-2 tw-mb-4 tw-border tw-border-neutral-300 tw-rounded"
+						class="tw-mb-4 tw-w-full tw-rounded tw-border tw-border-neutral-300 tw-p-2"
 					/>
 
-					<div class="tw-mt-4 tw-flex tw-flex-row tw-items-center tw-cursor-pointer">
+					<div class="tw-mt-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center">
 						<input
 							id="check-all"
 							class="tw-cursor-pointer"
@@ -229,14 +229,14 @@
 							v-model="checkall"
 							@change="onClickCheckAllProgram"
 						/>
-						<label for="check-all" class="tw-cursor-pointer !tw-mb-0 tw-font-medium">{{
+						<label for="check-all" class="!tw-mb-0 tw-cursor-pointer tw-font-medium">{{
 							translate('COM_EMUNDUS_WORKFLOW_CHECK_ALL')
 						}}</label>
 					</div>
 
 					<div class="tw-mt-4 tw-grid tw-grid-cols-4 tw-gap-3 tw-overflow-auto">
 						<div v-for="program in displayedProgramsOptions" :key="program.id">
-							<div class="tw-mb-4 tw-flex tw-flex-row tw-items-baseline tw-cursor-pointer">
+							<div class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-baseline">
 								<input
 									:id="'program-' + program.id"
 									type="checkbox"
@@ -247,7 +247,7 @@
 								/>
 								<label
 									:for="'program-' + program.id"
-									class="tw-cursor-pointer tw-m-0"
+									class="tw-m-0 tw-cursor-pointer"
 									:class="{ 'tw-text-gray-300': isProgramAssociatedToAnotherWorkflow(program) }"
 								>
 									{{ program.label }}

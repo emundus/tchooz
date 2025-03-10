@@ -477,7 +477,7 @@ export default {
 <template>
 	<modal
 		:name="'calendar-slot-modal'"
-		:class="'placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden'"
+		:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-px-4 tw-shadow-modal'"
 		transition="nice-modal-fade"
 		:width="'60%'"
 		:delay="100"
@@ -486,8 +486,8 @@ export default {
 		@closed="beforeClose"
 		@before-open="beforeOpen"
 	>
-		<div class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
-			<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+		<div class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
+			<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 				<h2 v-if="slot">
 					{{ translate('COM_EMUNDUS_ONBOARD_EDIT_SLOT') }}
 				</h2>
@@ -547,10 +547,10 @@ export default {
 						>
 						</DatePicker>
 
-						<div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap tw-overflow-y-auto" style="max-height: 135px">
+						<div class="tw-flex tw-flex-wrap tw-items-center tw-gap-2 tw-overflow-y-auto" style="max-height: 135px">
 							<div
 								v-for="date in repeat_dates"
-								class="tw-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1 tw-bg-profile-full tw-text-white tw-rounded-full"
+								class="tw-flex tw-items-center tw-gap-1 tw-rounded-full tw-bg-profile-full tw-px-2 tw-py-1 tw-text-white"
 							>
 								<span @click="togglePopover">{{ formatDuplicateDate(date.id) }}</span>
 								<span class="material-symbols-outlined tw-text-white" @click="removeDate(date.id)">close</span>
@@ -563,9 +563,9 @@ export default {
 			</div>
 		</div>
 
-		<div class="tw-flex tw-mt-7 tw-mb-2" :class="{ 'tw-justify-end': !slot, 'tw-justify-between': slot }">
+		<div class="tw-mb-2 tw-mt-7 tw-flex" :class="{ 'tw-justify-end': !slot, 'tw-justify-between': slot }">
 			<div class="tw-flex tw-items-center tw-gap-4">
-				<button v-if="slot" type="button" class="tw-text-red-500 !tw-w-auto" @click.prevent="deleteSlot()">
+				<button v-if="slot" type="button" class="!tw-w-auto tw-text-red-500" @click.prevent="deleteSlot()">
 					{{ translate('COM_EMUNDUS_ONBOARD_ADD_SLOT_DELETE') }}
 				</button>
 			</div>
@@ -579,15 +579,15 @@ export default {
 			>
 				<ul
 					style="list-style-type: none; margin: 0; padding-left: 0px; white-space: nowrap"
-					class="tw-flex tw-flex-col tw-justify-center tw-h-full"
+					class="tw-flex tw-h-full tw-flex-col tw-justify-center"
 				>
-					<li class="tw-p-2 tw-cursor-pointer hover:tw-bg-neutral-300" @click="saveSlot(1)">
+					<li class="tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="saveSlot(1)">
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_SLOT_EDIT_ONLY_ONE') }}
 					</li>
-					<li class="tw-p-2 tw-cursor-pointer hover:tw-bg-neutral-300" @click="saveSlot(2)">
+					<li class="tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="saveSlot(2)">
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_SLOT_EDIT_ALL_FUTURES') }}
 					</li>
-					<li class="tw-p-2 tw-cursor-pointer hover:tw-bg-neutral-300" @click="saveSlot(3)">
+					<li class="tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300" @click="saveSlot(3)">
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_SLOT_EDIT_ALL') }}
 					</li>
 				</ul>

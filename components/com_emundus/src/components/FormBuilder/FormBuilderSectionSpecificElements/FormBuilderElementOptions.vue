@@ -4,13 +4,13 @@
 		<div v-else>
 			<draggable v-model="arraySubValues" handle=".handle-options" @end="updateOrder">
 				<div
-					class="element-option tw-flex tw-items-center tw-justify-between tw-mt-2 tw-mb-2"
+					class="element-option tw-mb-2 tw-mt-2 tw-flex tw-items-center tw-justify-between"
 					v-for="(option, index) in arraySubValues"
 					:key="option"
 					@mouseover="optionHighlight = index"
 					@mouseleave="optionHighlight = null"
 				>
-					<div class="tw-flex tw-items-center tw-w-full">
+					<div class="tw-flex tw-w-full tw-items-center">
 						<div class="tw-flex tw-items-center">
 							<span class="icon-handle" :style="optionHighlight === index ? 'opacity: 1' : 'opacity: 0'">
 								<span class="material-symbols-outlined handle-options tw-cursor-grab" style="font-size: 18px"
@@ -46,7 +46,7 @@
 					</div>
 				</div>
 			</draggable>
-			<div id="add-option" class="tw-flex tw-items-center lg:tw-justify-start md:tw-justify-center">
+			<div id="add-option" class="tw-flex tw-items-center md:tw-justify-center lg:tw-justify-start">
 				<span class="icon-handle" style="opacity: 0">
 					<span class="material-symbols-outlined handle-options" style="font-size: 18px">drag_indicator</span>
 				</span>

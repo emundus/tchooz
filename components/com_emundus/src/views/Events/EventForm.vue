@@ -142,7 +142,7 @@ export default {
 	<div class="events__add-event">
 		<div>
 			<div
-				class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 goback-btn"
+				class="goback-btn tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 				@click="goBack"
 			>
 				<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
@@ -157,7 +157,7 @@ export default {
 				}}
 			</h1>
 
-			<hr class="tw-mt-1.5 tw-mb-8" />
+			<hr class="tw-mb-8 tw-mt-1.5" />
 
 			<template v-if="!loading">
 				<Tabs
@@ -169,7 +169,7 @@ export default {
 					@change-tab-active="reloadEvent"
 				/>
 
-				<div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+				<div class="tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
 					<EventGlobalSettings v-if="tabs[0].active" :event="event" @reload-event="getEvent" />
 					<EventSlotsSettings v-if="tabs[1].active" :event="event" @reload-event="getEvent" />
 					<EventCalendarSettings

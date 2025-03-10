@@ -1,8 +1,8 @@
 <template>
-	<div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section tw-mt-8 tw-mb-8">
+	<div :id="'form-builder-page-section-' + section.group_id" class="form-builder-page-section tw-mb-8 tw-mt-8">
 		<div class="section-card tw-flex tw-flex-col">
 			<div
-				class="section-identifier tw-bg-profile-full tw-cursor-pointer tw-flex tw-items-center"
+				class="section-identifier tw-flex tw-cursor-pointer tw-items-center tw-bg-profile-full"
 				@click="closedSection = !closedSection"
 			>
 				<span class="material-symbols-outlined tw-mr-2 tw-text-white" v-show="section.repeat_group">library_add</span>
@@ -10,8 +10,8 @@
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="!closedSection">unfold_less</span>
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
 			</div>
-			<div class="section-content tw-w-full em-p-32" :class="{ closed: closedSection }">
-				<div class="tw-flex tw-items-center tw-justify-between tw-w-full">
+			<div class="section-content em-p-32 tw-w-full" :class="{ closed: closedSection }">
+				<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
 					<input
 						id="section-title"
 						class="editable-data tw-w-full"
@@ -23,24 +23,24 @@
 					/>
 					<div class="section-actions-wrapper">
 						<span
-							class="material-symbols-outlined tw-cursor-pointer hover-opacity"
+							class="material-symbols-outlined hover-opacity tw-cursor-pointer"
 							@click="moveSection('up')"
 							title="Move section upwards"
 							>keyboard_double_arrow_up</span
 						>
 						<span
-							class="material-symbols-outlined tw-cursor-pointer hover-opacity"
+							class="material-symbols-outlined hover-opacity tw-cursor-pointer"
 							@click="moveSection('down')"
 							title="Move section downwards"
 							>keyboard_double_arrow_down</span
 						>
 						<span
-							class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer delete hover-opacity"
+							class="material-symbols-outlined delete hover-opacity tw-cursor-pointer tw-text-red-600"
 							@click="deleteSection"
 							>delete</span
 						>
 						<span
-							class="material-symbols-outlined tw-cursor-pointer hover-opacity"
+							class="material-symbols-outlined hover-opacity tw-cursor-pointer"
 							@click="$emit('open-section-properties')"
 							>settings</span
 						>

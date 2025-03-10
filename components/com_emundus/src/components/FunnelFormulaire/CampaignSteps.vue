@@ -9,7 +9,7 @@
 						type="checkbox"
 						true-value="1"
 						false-value="0"
-						class="tw-mt-2 em-toggle-check"
+						class="em-toggle-check tw-mt-2"
 						:id="'step_' + step.id + '_infinite'"
 						:name="'step_' + step.id + '_infinite'"
 						v-model="step.infinite"
@@ -22,7 +22,7 @@
 				</span>
 			</div>
 
-			<div class="tw-flex tw-flex-row tw-w-full tw-gap-2" v-if="step.infinite == 0">
+			<div class="tw-flex tw-w-full tw-flex-row tw-gap-2" v-if="step.infinite == 0">
 				<div class="tw-w-full">
 					<label :for="'start_date_' + step.id">{{ translate('COM_EMUNDUS_CAMPAIGN_STEP_START_DATE') }}</label>
 					<DatePicker
@@ -42,7 +42,7 @@
 							<input
 								:value="inputValue"
 								v-on="inputEvents"
-								class="tw-mt-2 form-control fabrikinput tw-w-full"
+								class="form-control fabrikinput tw-mt-2 tw-w-full"
 								:id="'start_date_' + step.id + '_input'"
 								:name="'start_date_' + step.id"
 							/>
@@ -68,7 +68,7 @@
 							<input
 								:value="inputValue"
 								v-on="inputEvents"
-								class="tw-mt-2 form-control fabrikinput tw-w-full"
+								class="form-control fabrikinput tw-mt-2 tw-w-full"
 								:id="'end_date_' + step.id + '_input'"
 								:name="'end_date_' + step.id"
 							/>

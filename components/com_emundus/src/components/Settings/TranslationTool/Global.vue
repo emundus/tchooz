@@ -52,7 +52,7 @@
 					@remove="unpublishLanguage"
 					@select="publishLanguage"
 				></multiselect>
-				<a class="tw-cursor-pointer tw-mt-4 tw-text-base em-profile-color tw-underline" @click="purposeLanguage">{{
+				<a class="em-profile-color tw-mt-4 tw-cursor-pointer tw-text-base tw-underline" @click="purposeLanguage">{{
 					translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_OTHER_LANGUAGE')
 				}}</a>
 			</div>

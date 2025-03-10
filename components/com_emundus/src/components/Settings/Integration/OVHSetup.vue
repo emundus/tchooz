@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-neutral-300 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-p-4"
+		class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-3 tw-rounded-[15px] tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
 	>
 		<Info
 			:text="'COM_EMUNDUS_SETTINGS_INTEGRATION_OVH_SETUP_REQUIREMENTS'"
@@ -28,7 +28,7 @@
 				</div>
 
 				<div>
-					<button class="tw-btn-primary tw-w-fit tw-float-right" :disabled="disabledSubmit" @click="setupOvh()">
+					<button class="tw-btn-primary tw-float-right tw-w-fit" :disabled="disabledSubmit" @click="setupOvh()">
 						<span v-if="app.enabled === 0 && app.config === '{}'">{{
 							translate('COM_EMUNDUS_SETTINGS_INTEGRATION_ADD')
 						}}</span>

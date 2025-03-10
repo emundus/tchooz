@@ -2,7 +2,7 @@
 	<div class="tw-mt-8">
 		<div class="em-h4 tw-mb-4">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CONF_WRITING') }}</div>
 
-		<div class="tw-flex tw-items-center tw-mb-4">
+		<div class="tw-mb-4 tw-flex tw-items-center">
 			<span class="material-symbols-outlined">folder</span>
 			<span class="tw-ml-2 tw-mr-2">/{{ site }}</span>
 
@@ -10,7 +10,7 @@
 				<span class="tooltip-target b3 material-symbols-outlined">more_horiz</span>
 				<template slot="popover">
 					<div
-						class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300"
+						class="em-hover-background-neutral-300 tw-cursor-pointer tw-px-2 tw-py-3 tw-text-sm"
 						@click="addNode(null)"
 					>
 						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}

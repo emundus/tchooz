@@ -553,7 +553,7 @@ export default {
 				v-show="field.displayed"
 				:key="field.param"
 				:class="{
-					'tw-flex tw-items-end tw-justify-between tw-gap-2 tw-w-1/2': field.param === 'name',
+					'tw-flex tw-w-1/2 tw-items-end tw-justify-between tw-gap-2': field.param === 'name',
 					'tw-w-full': field.param !== 'name',
 				}"
 			>
@@ -592,7 +592,7 @@ export default {
 				<button
 					v-if="field.param === 'location' && field.value === 0"
 					type="button"
-					class="tw-mt-2 tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+					class="tw-mt-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500"
 					@click="openedLocationPopup = true"
 				>
 					<span class="material-symbols-outlined !tw-text-blue-500">add</span>
@@ -601,7 +601,7 @@ export default {
 				<button
 					v-else-if="field.param === 'location'"
 					type="button"
-					class="tw-mt-2 tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500"
+					class="tw-mt-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500"
 					@click="openedLocationPopup = true"
 				>
 					<span class="tw-underline">{{ translate('COM_EMUNDUS_ONBOARD_EDIT_LOCATION') }}</span>
@@ -609,7 +609,7 @@ export default {
 			</div>
 		</div>
 
-		<div class="tw-flex tw-justify-end tw-mt-7">
+		<div class="tw-mt-7 tw-flex tw-justify-end">
 			<button
 				type="button"
 				:disabled="disabledSubmit"

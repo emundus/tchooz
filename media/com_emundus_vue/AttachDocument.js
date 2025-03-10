@@ -154,7 +154,7 @@ const _sfc_main = {
 const _hoisted_1 = { class: "messages__vue_attach_document" };
 const _hoisted_2 = ["id"];
 const _hoisted_3 = ["name"];
-const _hoisted_4 = { class: "messages__attach_header tw-p-4 tw-w-full tw-flex tw-items-center-justify-end" };
+const _hoisted_4 = { class: "messages__attach_header tw-items-center-justify-end tw-flex tw-w-full tw-p-4" };
 const _hoisted_5 = { class: "messages__attach_content" };
 const _hoisted_6 = {
   key: 0,
@@ -287,7 +287,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_19)) : createCommentVNode("", true)
   ]);
 }
-const AttachDocument = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7085ee66"]]);
+const AttachDocument = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e25209bc"]]);
 export {
   AttachDocument as A
 };

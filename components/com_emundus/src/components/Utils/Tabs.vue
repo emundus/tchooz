@@ -4,11 +4,11 @@
 			<div
 				v-show="tab.displayed"
 				@click="changeTab(tab.id)"
-				class="tw-cursor-pointer tw-rounded-t-lg tw-flex tw-items-center tw-py-2 tw-px-4 tw-transition-colors tw-duration-300 tw-border-x tw-border-t"
+				class="tw-flex tw-cursor-pointer tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-4 tw-py-2 tw-transition-colors tw-duration-300"
 				:class="{
-					'tw-bg-white tw-border-profile-full': tab.active,
-					'tw-bg-neutral-200 tw-border-neutral-400': !tab.active,
-					'tw-bg-neutral-400 tw-border-neutral-600': tab.disabled,
+					'tw-border-profile-full tw-bg-white': tab.active,
+					'tw-border-neutral-400 tw-bg-neutral-200': !tab.active,
+					'tw-border-neutral-600 tw-bg-neutral-400': tab.disabled,
 				}"
 			>
 				<span
@@ -18,7 +18,7 @@
 				>
 				<span
 					:class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'"
-					class="tw-whitespace-nowrap em-profile-font"
+					class="em-profile-font tw-whitespace-nowrap"
 					>{{ translate(tab.name) }}</span
 				>
 			</div>

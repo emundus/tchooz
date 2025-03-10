@@ -5,15 +5,15 @@
 		v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
 		:class="{ unpublished: !element.publish || element.hidden, 'properties-active': propertiesOpened === element.id }"
 	>
-		<div class="tw-flex tw-items-start tw-justify-between tw-w-full tw-mb-2">
+		<div class="tw-mb-2 tw-flex tw-w-full tw-items-start tw-justify-between">
 			<div class="tw-w-11/12">
 				<label
-					class="tw-w-full tw-flex tw-items-center fabrikLabel control-label tw-mb-0"
+					class="fabrikLabel control-label tw-mb-0 tw-flex tw-w-full tw-items-center"
 					@click="triggerElementProperties"
 				>
 					<span
 						v-if="element.FRequire"
-						class="material-symbols-outlined !tw-text-xs tw-text-red-600 tw-mr-0"
+						class="material-symbols-outlined tw-mr-0 !tw-text-xs tw-text-red-600"
 						style="top: -5px; position: relative"
 						>emergency</span
 					>
@@ -21,7 +21,7 @@
 						v-if="element.label_value && element.labelsAbove != 2"
 						:ref="'element-label-' + element.id"
 						:id="'element-label-' + element.id"
-						class="tw-ml-2 element-title editable-data"
+						class="element-title editable-data tw-ml-2"
 						:name="'element-label-' + element.id"
 						type="text"
 						v-model="element.label[shortDefaultLang]"
@@ -34,15 +34,15 @@
 					element.params.rollover.replace(/(<([^>]+)>)/gi, '')
 				}}</span>
 			</div>
-			<div id="element-action-icons" class="tw-flex tw-items-end tw-mt-2">
+			<div id="element-action-icons" class="tw-mt-2 tw-flex tw-items-end">
 				<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
 				<span
 					id="delete-element"
-					class="material-symbols-outlined tw-text-red-600 tw-cursor-pointer"
+					class="material-symbols-outlined tw-cursor-pointer tw-text-red-600"
 					@click="deleteElement"
 					>delete</span
 				>
-				<span v-if="sysadmin" class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="openAdmin"
+				<span v-if="sysadmin" class="material-symbols-outlined tw-ml-2 tw-cursor-pointer" @click="openAdmin"
 					>content_copy</span
 				>
 			</div>

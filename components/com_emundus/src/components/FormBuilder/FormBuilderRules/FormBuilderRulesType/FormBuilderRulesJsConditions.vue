@@ -1,13 +1,13 @@
 <template>
-	<div id="form-builder-rules-js-conditions" class="tw-self-start tw-w-full">
-		<div class="tw-flex tw-justify-between tw-items-center">
+	<div id="form-builder-rules-js-conditions" class="tw-w-full tw-self-start">
+		<div class="tw-flex tw-items-center tw-justify-between">
 			<h3>{{ conditionLabel }}</h3>
 			<div class="tw-flex tw-items-center tw-gap-2">
 				<div class="tw-flex tw-items-center tw-gap-3" v-if="conditions.length > 1">
 					<span
 						v-for="type in group_types"
 						:key="type.id"
-						class="tw-cursor-pointer tw-p-2 tw-rounded-lg tw-ml-1 tw-border tw-border-neutral-500 tw-w-[50px] tw-flex tw-justify-center"
+						class="tw-ml-1 tw-flex tw-w-[50px] tw-cursor-pointer tw-justify-center tw-rounded-lg tw-border tw-border-neutral-500 tw-p-2"
 						@click="conditions_group = type.value"
 						:class="{ 'label-darkblue': conditions_group == type.value }"
 					>
@@ -20,13 +20,13 @@
 			</div>
 		</div>
 
-		<div class="tw-flex tw-flex-col tw-gap-2 tw-mt-4">
+		<div class="tw-mt-4 tw-flex tw-flex-col tw-gap-2">
 			<div
 				class="tw-ml-4 tw-flex tw-flex-col tw-gap-2"
 				v-for="(condition, condition_key) in conditions"
 				:key="condition_key"
 			>
-				<span v-if="conditions.length > 1 && condition_key != 0" class="tw-font-medium tw-ml-1 tw-mr-2">{{
+				<span v-if="conditions.length > 1 && condition_key != 0" class="tw-ml-1 tw-mr-2 tw-font-medium">{{
 					translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_' + conditions_group)
 				}}</span>
 				<form-builder-rules-js-condition
@@ -43,7 +43,7 @@
 		<button
 			type="button"
 			@click="$emit('add-condition', index)"
-			class="tw-btn-tertiary tw-mt-2 !tw-w-max tw-float-right"
+			class="tw-btn-tertiary tw-float-right tw-mt-2 !tw-w-max"
 		>
 			{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION') }}
 		</button>

@@ -1,11 +1,11 @@
 <template>
 	<div>
-		<div v-for="translation in translations_rows" class="tw-mb-8 em-neutral-100-box em-p-24">
+		<div v-for="translation in translations_rows" class="em-neutral-100-box em-p-24 tw-mb-8">
 			<div v-for="(field, index) in translation" class="tw-mb-6">
 				<p>{{ field.reference_label ? field.reference_label.toUpperCase() : field.reference_id }}</p>
 
-				<div class="tw-justify-between tw-items-start tw-mt-4 em-grid-50 em-ml-24">
-					<div v-html="field.default_lang" class="tw-text-neutral-700 tw-max-h-80 tw-overflow-auto"></div>
+				<div class="em-grid-50 em-ml-24 tw-mt-4 tw-items-start tw-justify-between">
+					<div v-html="field.default_lang" class="tw-max-h-80 tw-overflow-auto tw-text-neutral-700"></div>
 					<input
 						v-if="field.field_type === 'field'"
 						class="mb-0 em-input tw-w-full"

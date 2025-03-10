@@ -5,10 +5,10 @@
 				{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_WRITING') }}
 			</div>
 			<div class="tw-flex tw-items-center">
-				<a class="tw-mr-4 tw-cursor-pointer em-blue-500-color em-hover-blue-500" href="/export-tags" target="_blank">{{
+				<a class="em-blue-500-color em-hover-blue-500 tw-mr-4 tw-cursor-pointer" href="/export-tags" target="_blank">{{
 					translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_TAGS_LIST')
 				}}</a>
-				<div class="tw-cursor-pointer em-blue-500-color" @click="resetName">
+				<div class="em-blue-500-color tw-cursor-pointer" @click="resetName">
 					{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_RESET') }}
 				</div>
 			</div>
@@ -23,7 +23,7 @@
 				<div v-if="index + 1 !== selectedTags.length">{{ selectedSeparator }}</div>
 			</div>
 		</div>
-		<div class="tw-text-red-600 tw-mb-4" v-if="selectedTags.length === 0">
+		<div class="tw-mb-4 tw-text-red-600" v-if="selectedTags.length === 0">
 			{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_NAME_SELECT_A_TAG') }}
 		</div>
 
@@ -43,13 +43,13 @@
 				:placeholder="'Ajouter une balise'"
 			></multiselect>
 
-			<div v-for="(tag, index) in selectedTags" :key="index" class="em-ml-16 tw-flex tw-items-center em-tag-preview">
+			<div v-for="(tag, index) in selectedTags" :key="index" class="em-ml-16 em-tag-preview tw-flex tw-items-center">
 				<span>{{ tag.label }}</span>
-				<span class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="removeTag(tag.value)">close</span>
+				<span class="material-symbols-outlined tw-ml-2 tw-cursor-pointer" @click="removeTag(tag.value)">close</span>
 			</div>
 		</div>
 
-		<div class="tw-flex tw-items-center tw-mt-4">
+		<div class="tw-mt-4 tw-flex tw-items-center">
 			<span>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SEPARATOR') }} : </span>
 			<div
 				class="em-ml-16 em-separator tw-cursor-pointer"

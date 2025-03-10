@@ -285,11 +285,11 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { class: "tw-pt-4" };
-const _hoisted_2 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
+const _hoisted_2 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_3 = { key: 0 };
 const _hoisted_4 = { key: 1 };
 const _hoisted_5 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
-const _hoisted_6 = { class: "tw-flex tw-justify-between tw-mt-5 tw-mb-8" };
+const _hoisted_6 = { class: "tw-mb-8 tw-mt-5 tw-flex tw-justify-between" };
 const _hoisted_7 = ["disabled"];
 const _hoisted_8 = {
   key: 0,
@@ -315,7 +315,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         var _a, _b, _c, _d, _e;
         return withDirectives((openBlock(), createElementBlock("div", {
           key: field.param,
-          class: normalizeClass("tw-flex tw-flex-col tw-justify-between tw-gap-2 tw-w-full")
+          class: normalizeClass("tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-2")
         }, [
           field.displayed && field.param === "booking" ? (openBlock(), createBlock(_component_Parameter, {
             ref_for: true,

@@ -422,65 +422,65 @@ const _sfc_main = {
 const _hoisted_1 = { class: "tw-h-full tw-overflow-hidden" };
 const _hoisted_2 = {
   key: 0,
-  class: "tw-h-full tw-flex tw-flex-col"
+  class: "tw-flex tw-h-full tw-flex-col"
 };
 const _hoisted_3 = {
   key: 0,
-  class: "tw-pt-4 tw-px-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10"
+  class: "tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-px-4 tw-pt-4"
 };
-const _hoisted_4 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
+const _hoisted_4 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_5 = { class: "tw-p-4" };
 const _hoisted_6 = {
   key: 1,
-  class: "tw-pt-4 tw-px-4 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10"
+  class: "tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-px-4 tw-pt-4"
 };
-const _hoisted_7 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
+const _hoisted_7 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_8 = {
   key: 0,
-  class: "tw-h-[95%] tw-flex tw-flex-col tw-justify-between tw-items-center"
+  class: "tw-flex tw-h-[95%] tw-flex-col tw-items-center tw-justify-between"
 };
 const _hoisted_9 = { class: "tw-w-full" };
-const _hoisted_10 = { class: "tw-px-4 tw-mb-4" };
+const _hoisted_10 = { class: "tw-mb-4 tw-px-4" };
 const _hoisted_11 = ["placeholder"];
 const _hoisted_12 = { class: "tw-w-full" };
 const _hoisted_13 = ["onClick"];
 const _hoisted_14 = { class: "tw-w-full" };
 const _hoisted_15 = { class: "tw-flex tw-items-start tw-gap-2" };
-const _hoisted_16 = { class: "tw-font-semibold !tw-mb-0 tw-line-clamp-2" };
+const _hoisted_16 = { class: "!tw-mb-0 tw-line-clamp-2 tw-font-semibold" };
 const _hoisted_17 = {
   key: 0,
-  class: "tw-flex tw-items-center tw-justify-center tw-bg-red-500 tw-rounded-full tw-text-sm tw-text-white",
+  class: "tw-flex tw-items-center tw-justify-center tw-rounded-full tw-bg-red-500 tw-text-sm tw-text-white",
   style: { "min-width": "16px", "width": "16px", "height": "16px" }
 };
-const _hoisted_18 = { class: "tw-italic tw-text-sm" };
+const _hoisted_18 = { class: "tw-text-sm tw-italic" };
 const _hoisted_19 = {
   key: 0,
   class: "tw-w-full"
 };
-const _hoisted_20 = { class: "tw-cursor-pointer tw-font-semibold !tw-mb-0" };
+const _hoisted_20 = { class: "!tw-mb-0 tw-cursor-pointer tw-font-semibold" };
 const _hoisted_21 = ["onClick"];
 const _hoisted_22 = { class: "tw-w-full" };
 const _hoisted_23 = { class: "tw-font-semibold" };
-const _hoisted_24 = { class: "tw-italic tw-text-sm" };
+const _hoisted_24 = { class: "tw-text-sm tw-italic" };
 const _hoisted_25 = {
   key: 0,
-  class: "tw-px-4 tw-w-full"
+  class: "tw-w-full tw-px-4"
 };
 const _hoisted_26 = {
   key: 1,
-  class: "tw-flex tw-flex-col tw-h-[95%]"
+  class: "tw-flex tw-h-[95%] tw-flex-col"
 };
 const _hoisted_27 = { class: "tw-px-2" };
 const _hoisted_28 = { class: "tw-font-semibold" };
-const _hoisted_29 = { class: "tw-italic tw-text-sm" };
-const _hoisted_30 = { class: "tw-italic tw-text-sm" };
+const _hoisted_29 = { class: "tw-text-sm tw-italic" };
+const _hoisted_30 = { class: "tw-text-sm tw-italic" };
 const _hoisted_31 = {
   key: 0,
-  class: "tw-mt-2 tw-mx-3"
+  class: "tw-mx-3 tw-mt-2"
 };
 const _hoisted_32 = { class: "tw-flex tw-justify-end" };
 const _hoisted_33 = { class: "tw-flex tw-justify-start" };
-const _hoisted_34 = { class: "tw-flex tw-items-center tw-ml-4" };
+const _hoisted_34 = { class: "tw-ml-4 tw-flex tw-items-center" };
 const _hoisted_35 = { class: "tw-px-5" };
 const _hoisted_36 = { class: "tw-text-sm tw-font-bold" };
 const _hoisted_37 = { key: 0 };
@@ -488,7 +488,7 @@ const _hoisted_38 = { key: 1 };
 const _hoisted_39 = ["innerHTML"];
 const _hoisted_40 = {
   key: 0,
-  class: "tw-text-sm tw-text-italic"
+  class: "tw-text-italic tw-text-sm"
 };
 const _hoisted_41 = {
   key: 0,
@@ -497,10 +497,10 @@ const _hoisted_41 = {
 const _hoisted_42 = { class: "tw-w-full" };
 const _hoisted_43 = ["disabled", "placeholder"];
 const _hoisted_44 = { key: 2 };
-const _hoisted_45 = { class: "tw-flex tw-flex-col tw-gap-2 tw-items-center tw-justify-center tw-h-full tw-mt-6" };
+const _hoisted_45 = { class: "tw-mt-6 tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-2" };
 const _hoisted_46 = { class: "tw-text-neutral-500" };
 const _hoisted_47 = { key: 3 };
-const _hoisted_48 = { class: "tw-flex tw-flex-col tw-gap-2 tw-items-center tw-justify-center tw-h-full tw-mt-6" };
+const _hoisted_48 = { class: "tw-mt-6 tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-2" };
 const _hoisted_49 = {
   key: 0,
   class: "tw-text-neutral-500"
@@ -522,7 +522,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $data.createNewChatroom ? (openBlock(), createBlock(_component_modal, {
         key: 0,
         name: "messenger-files-modal",
-        class: normalizeClass("placement-center tw-bg-white tw-rounded tw-shadow-modal tw-max-h-[80vh] tw-overflow-y-auto"),
+        class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal"),
         transition: "nice-modal-fade",
         width: "40%",
         height: "30%",
@@ -564,7 +564,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             }, 8, ["options", "modelValue", "custom-label", "placeholder"]),
             createBaseVNode("button", {
               type: "button",
-              class: "tw-btn-primary !tw-w-auto tw-float-right tw-mt-3",
+              class: "tw-btn-primary tw-float-right tw-mt-3 !tw-w-auto",
               onClick: _cache[2] || (_cache[2] = (...args) => $options.createChatroom && $options.createChatroom(...args))
             }, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CREATE_CHATROOM")), 1)
           ])
@@ -606,7 +606,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   class: normalizeClass([$data.currentChatroom && chatroom.ccid === $data.currentChatroom.ccid ? "tw-bg-neutral-300" : "", "tw-mt-3"])
                 }, [
                   createBaseVNode("div", {
-                    class: "tw-px-4 tw-py-3 tw-w-full tw-cursor-pointer hover:tw-bg-neutral-200",
+                    class: "tw-w-full tw-cursor-pointer tw-px-4 tw-py-3 hover:tw-bg-neutral-200",
                     onClick: ($event) => $data.currentChatroom = chatroom
                   }, [
                     createBaseVNode("div", _hoisted_14, [
@@ -624,7 +624,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               _cache[17] || (_cache[17] = createBaseVNode("hr", null, null, -1)),
               createBaseVNode("div", {
                 onClick: _cache[5] || (_cache[5] = ($event) => $data.showClosedChatroom = !$data.showClosedChatroom),
-                class: "tw-cursor-pointer tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-4"
+                class: "tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-gap-2 tw-px-4"
               }, [
                 createBaseVNode("label", _hoisted_20, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CLOSED_CHATROOMS")), 1),
                 createBaseVNode("span", {
@@ -638,7 +638,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     class: normalizeClass([$data.currentChatroom && chatroom.ccid === $data.currentChatroom.ccid ? "tw-bg-neutral-300" : "", "tw-mt-3"])
                   }, [
                     createBaseVNode("div", {
-                      class: "tw-px-4 tw-py-3 tw-w-full tw-cursor-pointer hover:tw-bg-neutral-200",
+                      class: "tw-w-full tw-cursor-pointer tw-px-4 tw-py-3 hover:tw-bg-neutral-200",
                       onClick: ($event) => $data.currentChatroom = chatroom
                     }, [
                       createBaseVNode("div", _hoisted_22, [
@@ -668,7 +668,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("p", _hoisted_30, "N° " + toDisplayString($data.currentChatroom.fnum), 1)
           ]),
           createBaseVNode("div", {
-            class: normalizeClass(["tw-mt-2 tw-bg-neutral-300 tw-h-full tw-relative", { "tw-rounded": $props.applicant == true }])
+            class: normalizeClass(["tw-relative tw-mt-2 tw-h-full tw-bg-neutral-300", { "tw-rounded": $props.applicant == true }])
           }, [
             $data.messages_loading ? (openBlock(), createElementBlock("div", _hoisted_31, [
               createBaseVNode("div", _hoisted_32, [
@@ -706,10 +706,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   (openBlock(true), createElementBlock(Fragment, null, renderList(date.messages, (message) => {
                     return openBlock(), createElementBlock("div", {
                       key: message.message_id,
-                      class: normalizeClass(["tw-w-full tw-flex", message.me === true ? "tw-justify-end" : "tw-justify-start"])
+                      class: normalizeClass(["tw-flex tw-w-full", message.me === true ? "tw-justify-end" : "tw-justify-start"])
                     }, [
                       createBaseVNode("div", {
-                        class: normalizeClass(["tw-w-max-content tw-flex tw-flex-col tw-mx-3 tw-my-2", message.me === true ? "tw-text-right" : "tw-text-left"]),
+                        class: normalizeClass(["tw-w-max-content tw-mx-3 tw-my-2 tw-flex tw-flex-col", message.me === true ? "tw-text-right" : "tw-text-left"]),
                         style: { "word-wrap": "break-word" }
                       }, [
                         createBaseVNode("p", {
@@ -722,7 +722,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           ])
                         ], 2),
                         createBaseVNode("span", {
-                          class: normalizeClass(["tw-mt-1 tw-p-3 tw-w-full tw-max-w-[30vw] tw-text-start", {
+                          class: normalizeClass(["tw-mt-1 tw-w-full tw-max-w-[30vw] tw-p-3 tw-text-start", {
                             "tw-bg-blue-500 tw-text-white": message.me === true,
                             "tw-bg-white": message.me !== true,
                             "tw-rounded-applicant": $props.applicant == true,
@@ -738,14 +738,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }), 128))
             ], 6),
             createBaseVNode("div", {
-              class: normalizeClass(["tw-bottom-3 tw-px-3 tw-mr-3 tw-w-full", { "tw-sticky": $props.applicant == false, "tw-absolute": $props.applicant == true }])
+              class: normalizeClass(["tw-bottom-3 tw-mr-3 tw-w-full tw-px-3", { "tw-sticky": $props.applicant == false, "tw-absolute": $props.applicant == true }])
             }, [
               $data.currentChatroom.status == 1 ? (openBlock(), createElementBlock("div", _hoisted_41, [
                 createBaseVNode("div", _hoisted_42, [
                   withDirectives(createBaseVNode("textarea", {
                     type: "text",
                     id: "messenger_message",
-                    class: normalizeClass(["tw-p-2 tw-resize-none !tw-h-auto", { "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }]),
+                    class: normalizeClass(["!tw-h-auto tw-resize-none tw-p-2", { "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }]),
                     rows: "2",
                     disabled: $data.send_progress,
                     spellcheck: "true",
@@ -769,12 +769,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CLOSE_CHATROOM")), 1)) : createCommentVNode("", true),
               $data.currentChatroom.status == 0 ? (openBlock(), createElementBlock("div", {
                 key: 2,
-                class: normalizeClass(["tw-p-2 tw-bg-white tw-flex tw-items-center tw-gap-1", { "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }])
+                class: normalizeClass(["tw-flex tw-items-center tw-gap-1 tw-bg-white tw-p-2", { "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }])
               }, [
                 createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CHATROOM_CLOSED")), 1),
                 createBaseVNode("button", {
                   type: "button",
-                  class: "tw-cursor-pointer tw-text-blue-500 tw-text-underline",
+                  class: "tw-text-underline tw-cursor-pointer tw-text-blue-500",
                   onClick: _cache[11] || (_cache[11] = (...args) => $options.openChatroom && $options.openChatroom(...args))
                 }, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_OPEN_CHATROOM")), 1)
               ], 2)) : createCommentVNode("", true)

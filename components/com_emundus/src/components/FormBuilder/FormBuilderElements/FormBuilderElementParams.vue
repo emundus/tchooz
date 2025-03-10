@@ -106,7 +106,7 @@
 			<div v-else-if="param.type === 'repeatable'">
 				<div v-for="(repeat_param, key) in Object.entries(element.params[param.name])" :key="key">
 					<hr />
-					<div class="tw-flex tw-justify-between tw-items-center">
+					<div class="tw-flex tw-items-center tw-justify-between">
 						<label>-- {{ key + 1 }} --</label>
 						<button
 							v-if="key != 0 && key + 1 == Object.entries(element.params[param.name]).length"

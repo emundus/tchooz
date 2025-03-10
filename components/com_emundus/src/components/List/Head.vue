@@ -25,7 +25,7 @@ export default {
 
 <template>
 	<div class="head tw-py-6">
-		<div class="tw-flex tw-items-center tw-justify-between tw-mb-6">
+		<div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
 			<h1>{{ translate(title) }}</h1>
 			<a
 				v-if="addAction"

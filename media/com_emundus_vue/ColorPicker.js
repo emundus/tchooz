@@ -152,7 +152,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     class: "color-picker-container tw-relative"
   }, [
     createBaseVNode("div", {
-      class: "tw-rounded-full tw-h-[24px] tw-w-[24px] tw-cursor-pointer",
+      class: "tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full",
       style: normalizeStyle($options.selectedSwatchStyle),
       onClick: _cache[0] || (_cache[0] = (...args) => $options.togglePopover && $options.togglePopover(...args))
     }, null, 4),
@@ -163,7 +163,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.computedSwatches, (swatchRow, index) => {
         return openBlock(), createElementBlock("div", {
           key: index,
-          class: "vue-swatches__row tw-rounded-full tw-h-[24px] tw-w-[24px] tw-cursor-pointer hover:tw-scale-110",
+          class: "vue-swatches__row tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full hover:tw-scale-110",
           style: normalizeStyle($options.swatchStyle(swatchRow)),
           onClick: ($event) => $options.updateSwatch(swatchRow)
         }, null, 12, _hoisted_2);

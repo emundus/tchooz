@@ -3,7 +3,7 @@
 		<div class="em-h4 tw-mb-4">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}</div>
 		<div id="no-aspects" class="tw-flex tw-items-center" v-if="aspects.length < 1 && upload">
 			<input type="file" id="aspect-file" class="em-m-0" accept=".xml" />
-			<div class="tw-btn-primary em-w-33 em-ml-16 tw-cursor-pointer" @click="uploadAspectFile">
+			<div class="em-w-33 em-ml-16 tw-btn-primary tw-cursor-pointer" @click="uploadAspectFile">
 				{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_UPLOAD') }}
 			</div>
 		</div>

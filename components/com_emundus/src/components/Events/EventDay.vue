@@ -109,7 +109,7 @@ export default {
 
 <template>
 	<div
-		class="tw-flex tw-h-full tw-gap-2 tw-p-1 tw-flex-col tw-pl-2 tw-border tw-border-s-4 tw-overflow-auto"
+		class="tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2"
 		:style="{
 			backgroundColor: brightnessColor,
 			color: calendarEvent.color,
@@ -118,13 +118,13 @@ export default {
 	>
 		<div v-if="view === 'week'">
 			<div v-if="calendarEvent.title">
-				<span class="tw-text-xs tw-flex tw-text-ellipsis tw-overflow-hidden tw-font-semibold">
+				<span class="tw-flex tw-overflow-hidden tw-text-ellipsis tw-text-xs tw-font-semibold">
 					{{ calendarEvent.title }}
 				</span>
 			</div>
 
 			<div class="tw-flex tw-items-center tw-gap-2">
-				<span class="material-symbols-outlined tw-text-neutral-900 !tw-text-sm" :style="{ color: calendarEvent.color }"
+				<span class="material-symbols-outlined !tw-text-sm tw-text-neutral-900" :style="{ color: calendarEvent.color }"
 					>schedule</span
 				>
 				<p class="tw-text-xs" :style="{ color: calendarEvent.color }">
@@ -133,14 +133,14 @@ export default {
 			</div>
 
 			<div v-if="calendarEvent.availabilities_count" class="tw-flex tw-items-center tw-gap-2">
-				<span class="material-symbols-outlined tw-text-neutral-900 !tw-text-sm" :style="{ color: calendarEvent.color }"
+				<span class="material-symbols-outlined !tw-text-sm tw-text-neutral-900" :style="{ color: calendarEvent.color }"
 					>groups</span
 				>
-				<p class="tw-text-xs tw-whitespace-nowrap" :style="{ color: calendarEvent.color }">
+				<p class="tw-whitespace-nowrap tw-text-xs" :style="{ color: calendarEvent.color }">
 					{{ calendarEvent.booked_count }} / {{ calendarEvent.availabilities_count }}
 				</p>
 				<p
-					class="tw-text-xs tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap"
+					class="tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap tw-text-xs"
 					:style="{ color: calendarEvent.color }"
 				>
 					{{ translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER') }}
@@ -152,7 +152,7 @@ export default {
 			<div v-if="calendarEvent.registrants" class="tw-mb-1 tw-h-full">
 				<div
 					v-for="registrant in calendarEvent.registrants.datas"
-					class="tw-flex tw-items-center tw-gap-2 tw-py-1 tw-px-3 tw-rounded-md tw-border-2 tw-min-h-[30px]"
+					class="tw-flex tw-min-h-[30px] tw-items-center tw-gap-2 tw-rounded-md tw-border-2 tw-px-3 tw-py-1"
 					@click="openModal(this.calendarEvent, registrant)"
 					:style="{
 						backgroundColor: lightenColor(calendarEvent.color, 90),
@@ -166,11 +166,11 @@ export default {
 				</div>
 			</div>
 
-			<div v-if="availableSlots > 0" class="tw-flex tw-flex-col tw-gap-1 tw-h-full">
+			<div v-if="availableSlots > 0" class="tw-flex tw-h-full tw-flex-col tw-gap-1">
 				<div
 					v-for="n in generateNumbers"
 					:key="n"
-					class="tw-flex tw-items-center tw-justify-center tw-gap-2 tw-py-1 tw-px-3 tw-rounded-md tw-border-2 tw-border-dashed tw-bg-white tw-min-h-[30px]"
+					class="tw-flex tw-min-h-[30px] tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-border-2 tw-border-dashed tw-bg-white tw-px-3 tw-py-1"
 					@click="openModal(this.calendarEvent)"
 					@mouseover="availableSlotHovered = n"
 					@mouseleave="availableSlotHovered = -1"

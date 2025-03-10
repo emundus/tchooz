@@ -1,5 +1,5 @@
 <template>
-	<div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+	<div class="tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
 		<Tabs :tabs="tabs"></Tabs>
 
 		<template v-if="!loading && tabs[0].active">
@@ -8,7 +8,7 @@
 			<!-- ERROR MESSAGE -->
 			<template class="tw-hidden">
 				<div id="error_message_test" class="tw-mt-7">
-					<p class="tw-text-red-500 tw-mb-2 tw-text-center">
+					<p class="tw-mb-2 tw-text-center tw-text-red-500">
 						{{ translate('COM_EMUNDUS_GLOBAL_EMAIL_ERRORS_DETAILS') }}
 					</p>
 					<Info
@@ -65,7 +65,7 @@
 								class="tw-flex tw-items-start"
 								@click="showPortWarning"
 							>
-								<span class="material-symbols-outlined tw-scale-75 tw-text-orange-600 tw-pr-2">warning</span>
+								<span class="material-symbols-outlined tw-scale-75 tw-pr-2 tw-text-orange-600">warning</span>
 								<p>
 									{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING') }}
 									<u class="tw-ml-1">{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_SEE_ALL') }}</u
@@ -102,7 +102,7 @@
 				<template v-else>
 					<div class="tw-mt-7 tw-flex tw-items-end tw-gap-2">
 						<Parameter :parameter-object="default_email_sender_param" />
-						<div class="tw-flex tw-gap-1 tw-mb-3">
+						<div class="tw-mb-3 tw-flex tw-gap-1">
 							<span>@</span>
 							<span>{{ default_mail_from_server }}</span>
 						</div>
@@ -110,7 +110,7 @@
 				</template>
 
 				<!-- TEST SEND EMAIL && SAVE CONFIGURATION -->
-				<div class="tw-flex tw-justify-between tw-mt-7">
+				<div class="tw-mt-7 tw-flex tw-justify-between">
 					<button type="button" :disabled="disabledSubmit" class="tw-btn-tertiary tw-cursor-pointer" @click="testEmail">
 						<span class="material-symbols-outlined tw-mr-2">send</span
 						>{{ translate('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_BT') }}

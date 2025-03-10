@@ -429,7 +429,7 @@ export default {
 	<div
 		v-if="calendarApp"
 		:class="{
-			'tw-grid tw-gap-4 day-grid': view === 'day',
+			'day-grid tw-grid tw-gap-4': view === 'day',
 		}"
 	>
 		<template v-if="showModal">
@@ -437,7 +437,7 @@ export default {
 				<modal
 					:name="'modal-component'"
 					transition="nice-modal-fade"
-					:class="'placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto'"
+					:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
 					:width="'600px'"
 					:delay="100"
 					:adaptive="true"
@@ -450,12 +450,12 @@ export default {
 		</template>
 
 		<div v-if="view === 'day'" class="tw-flex tw-flex-col tw-gap-4">
-			<div v-for="calendar in calendars" class="tw-flex tw-gap-2 tw-cursor-pointer" @click="toggleCalendar(calendar)">
+			<div v-for="calendar in calendars" class="tw-flex tw-cursor-pointer tw-gap-2" @click="toggleCalendar(calendar)">
 				<input
 					:checked="calendar.show"
 					type="checkbox"
 					:style="checkboxCalendarStyle(calendar)"
-					class="tw-cursor-pointer event-checkbox tw-appearance-none tw-w-[20px] !tw-h-[20px] tw-rounded-md tw-relative"
+					class="event-checkbox tw-relative !tw-h-[20px] tw-w-[20px] tw-cursor-pointer tw-appearance-none tw-rounded-md"
 				/>
 				<p>{{ calendar.title ? calendar.title : calendar.name }}</p>
 			</div>
@@ -464,12 +464,12 @@ export default {
 		<div class="tw-flex tw-flex-col tw-gap-4">
 			<div
 				v-if="view === 'day'"
-				class="tw-grid tw-gap-3 calendars-list"
+				class="calendars-list tw-grid tw-gap-3"
 				style="padding-left: var(--sx-calendar-week-grid-padding-left)"
 			>
 				<div
 					v-for="calendar in calendars"
-					class="tw-bg-white tw-w-full tw-rounded-lg tw-px-6 tw-py-4 tw-shadow tw-border-neutral-400 tw-flex tw-flex-col tw-gap-2 tw-cursor-pointer"
+					class="tw-flex tw-w-full tw-cursor-pointer tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-bg-white tw-px-6 tw-py-4 tw-shadow"
 					:style="calendarStyle(calendar)"
 					@click="toggleCalendar(calendar)"
 					v-show="calendar.show"

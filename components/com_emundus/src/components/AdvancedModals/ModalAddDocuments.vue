@@ -13,7 +13,7 @@
 			@closed="beforeClose"
 			@before-open="beforeOpen"
 		>
-			<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+			<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 				<h4 v-if="currentDoc == null">
 					{{ translations.createDocument }}
 				</h4>
@@ -112,7 +112,7 @@
 				<div class="tw-mb-4">
 					<label for="nbmax" :class="{ 'is-invalid': errors.selectedTypes }">{{ translations.FileType }}* :</label>
 					<div :class="{ 'is-invalid': errors.selectedUsers }">
-						<div v-for="(type, index) in types" :key="index" class="tw-flex tw-items-center tw-mb-2">
+						<div v-for="(type, index) in types" :key="index" class="tw-mb-2 tw-flex tw-items-center">
 							<input type="checkbox" v-model="form.selectedTypes[type.value]" @change="selectType(type)" />
 							<div class="tw-ml-2">
 								<p>{{ type.title }} ({{ type.value }})</p>
@@ -199,7 +199,7 @@
 					</transition>
 				</div>
 			</div>
-			<div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
+			<div class="tw-mb-2 tw-flex tw-items-center tw-justify-between">
 				<button type="button" class="tw-btn-cancel !tw-w-auto" @click.prevent="$modal.hide('modalAddDocuments')">
 					{{ translations.Retour }}
 				</button>

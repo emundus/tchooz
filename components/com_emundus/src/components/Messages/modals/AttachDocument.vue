@@ -13,7 +13,7 @@
 				@closed="beforeClose"
 				@opened="getTypesByCampaign"
 			>
-				<div class="messages__attach_header tw-p-4 tw-w-full tw-flex tw-items-center-justify-end">
+				<div class="messages__attach_header tw-items-center-justify-end tw-flex tw-w-full tw-p-4">
 					<span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
 				</div>
 				<div class="messages__attach_content">

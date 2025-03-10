@@ -61,7 +61,7 @@ const _sfc_main = {
 const _hoisted_1 = ["innerHTML"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
-    class: normalizeClass([[$props.bgColor, $options.borderColor], "tw-rounded tw-flex tw-items-start tw-gap-2 tw-px-5 tw-py-6 tw-border"])
+    class: normalizeClass([[$props.bgColor, $options.borderColor], "tw-flex tw-items-start tw-gap-2 tw-rounded tw-border tw-px-5 tw-py-6"])
   }, [
     $props.displayIcon ? (openBlock(), createElementBlock("span", {
       key: 0,

@@ -105,7 +105,7 @@ const _hoisted_2$2 = {
   class: "tw-h-full"
 };
 const _hoisted_3$2 = { class: "tw-mt-1" };
-const _hoisted_4$2 = { class: "tw-list-none tw-flex tw-flex-row" };
+const _hoisted_4$2 = { class: "tw-flex tw-list-none tw-flex-row" };
 const _hoisted_5$2 = ["onClick"];
 const _hoisted_6$1 = ["src"];
 const _hoisted_7$1 = {
@@ -114,7 +114,7 @@ const _hoisted_7$1 = {
 };
 const _hoisted_8$1 = {
   key: 1,
-  class: "tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
+  class: "tw-m-2 tw-rounded tw-border tw-border-blue-500 tw-bg-blue-50 tw-p-2 tw-text-center tw-text-neutral-900"
 };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1$2, [
@@ -124,7 +124,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
             return openBlock(), createElementBlock("li", {
               key: evaluation.id,
-              class: normalizeClass(["tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
+              class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
               onClick: ($event) => $data.selectedTab = evaluation.id
             }, toDisplayString(evaluation.label), 11, _hoisted_5$2);
           }), 128))
@@ -132,7 +132,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? withDirectives((openBlock(), createElementBlock("iframe", {
         src: $options.selectedEvaluation.url,
-        class: "tw-w-full iframe-evaluation-list",
+        class: "iframe-evaluation-list tw-w-full",
         key: $data.selectedTab,
         onLoad: _cache[0] || (_cache[0] = ($event) => $options.iframeLoaded($event))
       }, null, 40, _hoisted_6$1)), [
@@ -144,7 +144,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-a6ce5238"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-f30c4159"]]);
 const client = new FetchClient("file");
 const filesService = {
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {
@@ -336,12 +336,12 @@ const _hoisted_1$1 = ["id"];
 const _hoisted_2$1 = { class: "tw-mb-4" };
 const _hoisted_3$1 = {
   key: 0,
-  class: "tw-p-4 tw-h-full"
+  class: "tw-h-full tw-p-4"
 };
 const _hoisted_4$1 = ["src"];
 const _hoisted_5$1 = {
   key: 1,
-  class: "tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
+  class: "tw-m-2 tw-rounded tw-border tw-border-blue-500 tw-bg-blue-50 tw-p-2 tw-text-center tw-text-neutral-900"
 };
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Tabs = resolveComponent("Tabs");
@@ -358,12 +358,12 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(), createElementBlock("iframe", {
         src: _ctx.selectedEvaluation.url,
         key: _ctx.selectedEvaluation.id,
-        class: "tw-w-full iframe-selected-evaluation"
+        class: "iframe-selected-evaluation tw-w-full"
       }, null, 8, _hoisted_4$1))
     ])) : (openBlock(), createElementBlock("p", _hoisted_5$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS")), 1))
   ], 8, _hoisted_1$1);
 }
-const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-7751a4ea"]]);
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-754fc6df"]]);
 const _sfc_main = {
   name: "ApplicationSingle",
   components: { Messages, EvaluationList, Comments, Attachments, Modal, Evaluations },
@@ -647,13 +647,13 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center" };
+const _hoisted_1 = { class: "em-modal-header tw-flex tw-w-full tw-items-center tw-bg-profile-full tw-px-3 tw-py-4" };
 const _hoisted_2 = {
-  class: "tw-flex tw-items-center tw-justify-between tw-w-full",
+  class: "tw-flex tw-w-full tw-items-center tw-justify-between",
   id: "evaluation-modal-close"
 };
 const _hoisted_3 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_4 = { class: "tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm" };
+const _hoisted_4 = { class: "tw-ml-2 tw-text-sm tw-text-neutral-900 tw-text-white" };
 const _hoisted_5 = {
   key: 0,
   class: "tw-text-sm",
@@ -671,7 +671,7 @@ const _hoisted_7 = {
 const _hoisted_8 = { id: "modal-applicationform" };
 const _hoisted_9 = { class: "scrollable" };
 const _hoisted_10 = {
-  class: "tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab em-bg-neutral-100",
+  class: "sticky-tab em-bg-neutral-100 tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300",
   style: { "z-index": "2" }
 };
 const _hoisted_11 = ["onClick"];
@@ -702,7 +702,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", _hoisted_3, [
             createBaseVNode("div", {
               onClick: _cache[0] || (_cache[0] = (...args) => $options.onClose && $options.onClose(...args)),
-              class: "tw-w-max tw-flex tw-items-center tw-cursor-pointer"
+              class: "tw-flex tw-w-max tw-cursor-pointer tw-items-center"
             }, [
               _cache[3] || (_cache[3] = createBaseVNode("span", {
                 class: "material-symbols-outlined tw-text-base",
@@ -715,12 +715,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ]),
           _ctx.fnums.length > 1 ? (openBlock(), createElementBlock("div", _hoisted_7, [
             createBaseVNode("span", {
-              class: "material-symbols-outlined tw-text-base tw-cursor-pointer",
+              class: "material-symbols-outlined tw-cursor-pointer tw-text-base",
               style: { "color": "white" },
               onClick: _cache[1] || (_cache[1] = (...args) => $options.openPreviousFnum && $options.openPreviousFnum(...args))
             }, "navigate_before"),
             createBaseVNode("span", {
-              class: "material-symbols-outlined tw-text-base tw-cursor-pointer",
+              class: "material-symbols-outlined tw-cursor-pointer tw-text-base",
               style: { "color": "white" },
               onClick: _cache[2] || (_cache[2] = (...args) => $options.openNextFnum && $options.openNextFnum(...args))
             }, "navigate_next")
@@ -777,7 +777,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     createBaseVNode("iframe", {
                       id: tab.name,
                       src: $options.replaceTagsIframeUrl(tab.url),
-                      class: "tw-w-full tw-h-screen"
+                      class: "tw-h-screen tw-w-full"
                     }, null, 8, _hoisted_16)
                   ])) : createCommentVNode("", true),
                   tab.type && tab.type === "evaluation-list" && _ctx.selected === tab.name ? (openBlock(), createBlock(_component_evaluation_list, {

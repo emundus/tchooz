@@ -1,5 +1,5 @@
 <template>
-	<div :id="'formBuilder'" class="tw-w-full tw-h-full">
+	<div :id="'formBuilder'" class="tw-h-full tw-w-full">
 		<modal
 			:name="'formBuilder'"
 			height="100vh"
@@ -11,18 +11,18 @@
 		>
 			<div
 				v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang"
-				class="tw-justify-center tw-bg-[#FEF6EE] tw-flex tw-items-center tw-gap-3 tw-p-2"
+				class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-bg-[#FEF6EE] tw-p-2"
 			>
 				<span class="material-symbols-outlined text-[#EF681F]">warning_amber</span>
 				<span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
 			</div>
-			<header class="tw-grid tw-grid-cols-3 tw-items-center tw-min-h-[48px]">
+			<header class="tw-grid tw-min-h-[48px] tw-grid-cols-3 tw-items-center">
 				<div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
 					<p
-						class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 tw-ml-2"
+						class="tw-ml-2 tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 						@click="clickGoBack"
 					>
-						<span id="go-back" class="material-symbols-outlined tw-text-neutral-600 em-pointer tw-mr-1">
+						<span id="go-back" class="material-symbols-outlined em-pointer tw-mr-1 tw-text-neutral-600">
 							navigate_before
 						</span>
 						{{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
@@ -32,7 +32,7 @@
 					</p>
 				</div>
 				<span
-					class="tw-text-sm tw-font-semibold editable-data tw-text-center"
+					class="editable-data tw-text-center tw-text-sm tw-font-semibold"
 					contenteditable="true"
 					ref="formTitle"
 					@focusout="updateFormTitle"
@@ -43,7 +43,7 @@
 				</span>
 				<div class="tw-flex tw-flex-col tw-items-end">
 					<button
-						class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto"
+						class="em-w-auto tw-btn-primary tw-gap-3 tw-px-6 tw-py-3"
 						v-if="
 							this.mode !== 'eval' &&
 							this.mode !== 'models' &&
@@ -52,15 +52,15 @@
 						"
 						@click="previewForm = true"
 					>
-						<span class="tw-text-white material-symbols-outlined"> remove_red_eye </span>
+						<span class="material-symbols-outlined tw-text-white"> remove_red_eye </span>
 						<label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW') }}</label>
 					</button>
 					<button
-						class="tw-btn-primary tw-px-6 tw-py-3 tw-gap-3 em-w-auto"
+						class="em-w-auto tw-btn-primary tw-gap-3 tw-px-6 tw-py-3"
 						v-if="previewForm"
 						@click="previewForm = false"
 					>
-						<span class="tw-text-white material-symbols-outlined"> handyman </span>
+						<span class="material-symbols-outlined tw-text-white"> handyman </span>
 						<label class="tw-mb-0" for="previewform">{{
 							translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER')
 						}}</label>
@@ -69,14 +69,14 @@
 			</header>
 
 			<div v-if="principalContainer === 'default'" class="body tw-flex tw-items-center tw-justify-between">
-				<aside class="left-panel tw-flex tw-justify-start tw-h-full tw-relative" v-show="!previewForm">
-					<div class="tabs tw-flex tw-flex-col tw-justify-start tw-h-full tw-p-3 tw-gap-3">
+				<aside class="left-panel tw-relative tw-flex tw-h-full tw-justify-start" v-show="!previewForm">
+					<div class="tabs tw-flex tw-h-full tw-flex-col tw-justify-start tw-gap-3 tw-p-3">
 						<div
 							v-for="(tab, i) in displayedLeftPanels"
 							:key="title + '_' + i"
 							@click="setSectionShown(tab.code)"
-							class="tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none"
-							:class="tab.active ? 'tw-font-bold tw-text-profile-full tw-bg-profile-light' : 'hover:tw-bg-gray-200'"
+							class="tw-user-select-none tw-group tw-flex tw-w-full tw-cursor-pointer tw-items-start tw-rounded-lg tw-p-2"
+							:class="tab.active ? 'tw-bg-profile-light tw-font-bold tw-text-profile-full' : 'hover:tw-bg-gray-200'"
 							:title="tab.title"
 						>
 							<span class="material-symbols-outlined tw-font-bold" :class="tab.active ? 'tw-text-profile-full' : ''">
@@ -120,7 +120,7 @@
 						@mouseleave="showMinimizedLeft = false"
 					>
 						<span
-							class="material-symbols-outlined tw-absolute tw-right-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+							class="material-symbols-outlined tw-absolute tw-right-[-12px] tw-top-[14px] tw-cursor-pointer tw-rounded-full tw-bg-neutral-400 !tw-text-xl/5"
 							:class="minimizedLeft ? 'tw-rotate-180' : ''"
 							v-show="showMinimizedLeft === true || minimizedLeft"
 							@click="handleSidebarSize('left')"
@@ -130,7 +130,7 @@
 				</aside>
 				<section
 					v-if="!previewForm && (activeTab === '' || activeTab === 'Elements')"
-					class="tw-flex tw-flex-col tw-w-full tw-h-full"
+					class="tw-flex tw-h-full tw-w-full tw-flex-col"
 					id="center_content"
 				>
 					<transition name="fade" mode="out-in">
@@ -192,7 +192,7 @@
 					</transition>
 				</section>
 
-				<div v-if="previewForm" class="tw-w-full tw-h-full" style="background: #fafafb">
+				<div v-if="previewForm" class="tw-h-full tw-w-full" style="background: #fafafb">
 					<h2 style="padding: 1.5rem">{{ translate('COM_EMUNDUS_ONBOARD_PREVIEW') }}</h2>
 					<iframe
 						width="100%"
@@ -210,17 +210,17 @@
 				<transition name="slide-fade" mode="out-in">
 					<aside
 						v-if="(rightPanel.tabs.includes(showInRightPanel) && activeTab === '') || activeTab === 'Elements'"
-						class="right-panel tw-h-full tw-flex tw-flex-col tw-relative"
+						class="right-panel tw-relative tw-flex tw-h-full tw-flex-col"
 						@mouseover="showMinimizedRight = true"
 						@mouseleave="showMinimizedRight = false"
 					>
 						<div
-							class="tw-w-[16px] !tw-h-0"
+							class="!tw-h-0 tw-w-[16px]"
 							@mouseover="showMinimizedRight = true"
 							@mouseleave="showMinimizedRight = false"
 						>
 							<span
-								class="material-symbols-outlined tw-absolute tw-left-[-12px] tw-top-[14px] !tw-text-xl/5 tw-bg-neutral-400 tw-rounded-full tw-cursor-pointer"
+								class="material-symbols-outlined tw-absolute tw-left-[-12px] tw-top-[14px] tw-cursor-pointer tw-rounded-full tw-bg-neutral-400 !tw-text-xl/5"
 								:class="minimizedRight ? 'tw-rotate-180' : ''"
 								v-show="showMinimizedRight === true || minimizedRight"
 								@click="handleSidebarSize('right')"
@@ -229,7 +229,7 @@
 						</div>
 						<transition name="fade" mode="out-in">
 							<div
-								:class="minimizedRight === true ? 'tw-max-w-0' : 'tw-max-w-md tw-min-w-[22rem]'"
+								:class="minimizedRight === true ? 'tw-max-w-0' : 'tw-min-w-[22rem] tw-max-w-md'"
 								class="tw-transition-all tw-duration-300"
 							>
 								<div

@@ -129,17 +129,17 @@ export default {
 				:popoverContentStyle="{ width: 'max-content' }"
 				class="custom-popover-arrow"
 			>
-				<ul class="tw-items-center tw-p-4 tw-list-none tw-m-0">
+				<ul class="tw-m-0 tw-list-none tw-items-center tw-p-4">
 					<li
 						v-for="exp in multipleExportsPopover"
 						:key="exp.name"
 						@click="onClickExport(exp)"
-						class="tw-py-1.5 tw-px-2"
+						class="tw-px-2 tw-py-1.5"
 						:class="{
 							'tw-cursor-not-allowed tw-text-neutral-500': !(
 								typeof exp.showon === 'undefined' || evaluateShowOn(exp.showon)
 							),
-							'tw-cursor-pointer tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator':
+							'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300':
 								(typeof exp.showon !== 'undefined' && evaluateShowOn(exp.showon)) || typeof exp.showon === 'undefined',
 						}"
 					>

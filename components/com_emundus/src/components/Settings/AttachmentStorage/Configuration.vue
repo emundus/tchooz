@@ -5,7 +5,7 @@
 		<div class="tw-flex tw-items-center">
 			<ul class="nav nav-tabs topnav">
 				<li v-for="(integration, index) in integrations" :key="'integration-' + index">
-					<a class="tw-text-neutral-700 tw-cursor-pointer" :class="currentIntegration === index ? 'w--current' : ''">
+					<a class="tw-cursor-pointer tw-text-neutral-700" :class="currentIntegration === index ? 'w--current' : ''">
 						{{ translate(integration) }}
 					</a>
 				</li>

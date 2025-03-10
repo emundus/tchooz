@@ -173,27 +173,27 @@ export default {
 
 <template>
 	<div>
-		<h1 class="tw-mt-4 tw-mb-8">{{ translate('COM_EMUNDUS_EVENTS_MY_RESERVATIONS') }}</h1>
+		<h1 class="tw-mb-8 tw-mt-4">{{ translate('COM_EMUNDUS_EVENTS_MY_RESERVATIONS') }}</h1>
 
 		<div v-if="myBookings.length > 0">
 			<div
 				v-for="booking in myBookings"
 				:key="booking.id"
-				class="tw-flex tw-items-center tw-p-6 tw-border tw-border-neutral-300 tw-rounded-coordinator-cards tw-bg-white tw-shadow-sm tw-mb-4 tw-mr-36"
+				class="tw-mb-4 tw-mr-36 tw-flex tw-items-center tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-sm"
 			>
 				<div v-if="cancelPopupOpenForBookingId === booking.id">
 					<modal
 						:name="'add-location-modal'"
-						:class="'placement-center tw-rounded tw-shadow-modal tw-px-6'"
+						:class="'placement-center tw-rounded tw-px-6 tw-shadow-modal'"
 						transition="nice-modal-fade"
 						:width="'600px'"
 						:delay="100"
 						:adaptive="true"
 						:clickToClose="false"
 					>
-						<h1 class="tw-text-center tw-mb-4 tw-mt-8">{{ translate('COM_EMUNDUS_EVENTS_CANCEL_RESERVATION') }}</h1>
+						<h1 class="tw-mb-4 tw-mt-8 tw-text-center">{{ translate('COM_EMUNDUS_EVENTS_CANCEL_RESERVATION') }}</h1>
 
-						<div class="tw-flex tw-flex-col tw-text-center tw-mb-5">
+						<div class="tw-mb-5 tw-flex tw-flex-col tw-text-center">
 							<p>{{ translate('COM_EMUNDUS_EVENTS_ARE_YOU_SURE_CANCEL_RESERVATION') }}</p>
 							<p class="tw-mb-1 tw-font-bold tw-leading-6">{{ booking.event_name }}</p>
 							<p class="tw-mb-1 tw-font-bold tw-leading-6">{{ booking.booking_date }}</p>
@@ -202,14 +202,14 @@ export default {
 						<Info
 							v-if="applicantTextBeforeCancel(booking)"
 							:text="applicantTextBeforeCancel(booking)"
-							class="tw-text-left tw-w-full tw-mt-4"
+							class="tw-mt-4 tw-w-full tw-text-left"
 							:icon="'warning'"
 							:bg-color="'tw-bg-orange-100'"
 							:icon-type="'material-icons'"
 							:icon-color="'tw-text-orange-600'"
 						/>
 
-						<div class="tw-flex tw-justify-between tw-mt-5 tw-mb-8">
+						<div class="tw-mb-8 tw-mt-5 tw-flex tw-justify-between">
 							<button class="tw-btn-primary" @click="changePopUpCancelState(booking.id)">
 								{{ translate('BACK') }}
 							</button>
@@ -224,7 +224,7 @@ export default {
 					<p class="tw-text-green-700">{{ booking.event_name }}</p>
 					<p class="tw-font-bold">{{ booking.booking_date }}</p>
 				</div>
-				<div class="tw-flex-1 tw-ml-12 tw-text-left">
+				<div class="tw-ml-12 tw-flex-1 tw-text-left">
 					<p class="tw-text-base tw-text-neutral-600">
 						{{ booking.name_location }}
 						<span v-if="booking.room_name">- {{ booking.room_name }}</span>
@@ -239,7 +239,7 @@ export default {
 						</a>
 					</div>
 				</div>
-				<div class="tw-flex-1 tw-flex tw-gap-2 tw-justify-end">
+				<div class="tw-flex tw-flex-1 tw-justify-end tw-gap-2">
 					<!-- <button class="tw-btn-primary">
             <span class="material-symbols-outlined">edit</span>
           </button> -->
