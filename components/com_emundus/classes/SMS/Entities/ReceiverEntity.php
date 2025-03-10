@@ -15,7 +15,7 @@ class ReceiverEntity
 	private function formatPhoneNumber(string $phone_number): string
 	{
 		if (!empty($phone_number)) {
-			//$phone_number = preg_replace('/[^0-9]/', '', $phone_number);
+			$phone_number = preg_replace('/[^+0-9]/', '', $phone_number);
 		}
 
 		return $phone_number;
