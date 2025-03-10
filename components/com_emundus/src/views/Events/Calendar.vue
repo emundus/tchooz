@@ -457,7 +457,7 @@ export default {
 					:style="checkboxCalendarStyle(calendar)"
 					class="event-checkbox tw-relative !tw-h-[20px] tw-w-[20px] tw-cursor-pointer tw-appearance-none tw-rounded-md"
 				/>
-				<p>{{ calendar.title ? calendar.title : calendar.name }}</p>
+				<p style="word-wrap: anywhere">{{ calendar.title ? calendar.title : calendar.name }}</p>
 			</div>
 		</div>
 

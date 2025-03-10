@@ -89,7 +89,7 @@ const _hoisted_5$1 = {
   class: "tw-flex tw-items-start tw-gap-2"
 };
 const _hoisted_6$1 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_7 = { class: "" };
+const _hoisted_7$1 = { class: "" };
 const _hoisted_8 = { class: "tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock(Fragment, null, [
@@ -123,7 +123,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : createCommentVNode("", true),
     createBaseVNode("div", _hoisted_6$1, [
       _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-900" }, "groups", -1)),
-      createBaseVNode("p", _hoisted_7, toDisplayString($props.calendarEvent.booked_count) + " / " + toDisplayString($props.calendarEvent.availabilities_count), 1),
+      createBaseVNode("p", _hoisted_7$1, toDisplayString($props.calendarEvent.booked_count) + " / " + toDisplayString($props.calendarEvent.availabilities_count), 1),
       createBaseVNode("p", _hoisted_8, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER")), 1)
     ])
   ], 64);
@@ -779,13 +779,14 @@ const _hoisted_1 = {
 };
 const _hoisted_2 = ["onClick"];
 const _hoisted_3 = ["checked"];
-const _hoisted_4 = { class: "tw-flex tw-flex-col tw-gap-4" };
-const _hoisted_5 = {
+const _hoisted_4 = { style: { "word-wrap": "anywhere" } };
+const _hoisted_5 = { class: "tw-flex tw-flex-col tw-gap-4" };
+const _hoisted_6 = {
   key: 0,
   class: "calendars-list tw-grid tw-gap-3",
   style: { "padding-left": "var(--sx-calendar-week-grid-padding-left)" }
 };
-const _hoisted_6 = ["onClick"];
+const _hoisted_7 = ["onClick"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   const _component_EventInformations = resolveComponent("EventInformations");
@@ -835,12 +836,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             style: normalizeStyle($options.checkboxCalendarStyle(calendar)),
             class: "event-checkbox tw-relative !tw-h-[20px] tw-w-[20px] tw-cursor-pointer tw-appearance-none tw-rounded-md"
           }, null, 12, _hoisted_3),
-          createBaseVNode("p", null, toDisplayString(calendar.title ? calendar.title : calendar.name), 1)
+          createBaseVNode("p", _hoisted_4, toDisplayString(calendar.title ? calendar.title : calendar.name), 1)
         ], 8, _hoisted_2);
       }), 256))
     ])) : createCommentVNode("", true),
-    createBaseVNode("div", _hoisted_4, [
-      $data.view === "day" ? (openBlock(), createElementBlock("div", _hoisted_5, [
+    createBaseVNode("div", _hoisted_5, [
+      $data.view === "day" ? (openBlock(), createElementBlock("div", _hoisted_6, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.calendars, (calendar) => {
           return withDirectives((openBlock(), createElementBlock("div", {
             class: "tw-flex tw-w-full tw-cursor-pointer tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-bg-white tw-px-6 tw-py-4 tw-shadow",
@@ -851,7 +852,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               "calendar-event": calendar,
               "can-be-selected": true
             }, null, 8, ["calendar-event"])
-          ], 12, _hoisted_6)), [
+          ], 12, _hoisted_7)), [
             [vShow, calendar.show]
           ]);
         }), 256))
@@ -879,7 +880,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2)) : createCommentVNode("", true);
 }
-const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7d4a2ed4"]]);
+const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2156cce0"]]);
 export {
   Calendar as default
 };

@@ -2549,7 +2549,7 @@ class EmundusModelSettings extends ListModel
 					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('esc.id'))
 					->where($this->db->quoteName('ecc.campaign_id') . ' IN (' . implode(',', $campaigns) . ')');
 
-				$this->db->setQuery($query, 0, $limit);
+				$this->db->setQuery($query);
 				$candidatures = $this->db->loadObjectList();
 
 				if (!empty($candidatures)) {
@@ -2596,6 +2596,9 @@ class EmundusModelSettings extends ListModel
 						usort($applicants, function ($a, $b) {
 							return strcmp($a->name, $b->name);
 						});
+
+						// Limit the number of results
+						$applicants = array_slice($applicants, 0, $limit);
 					}
 				}
 			}
