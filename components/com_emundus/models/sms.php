@@ -504,6 +504,10 @@ class EmundusModelSMS extends JModelList
 			require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 			$m_logs = new EmundusModelLogs();
 			$history = $m_logs->getActionsOnFnum($fnum, null, $this->action_id, 'c');
+			$history = array_filter($history, function($action) {
+				return $action->message === 'COM_EMUNDUS_SEND_SMS_SUCCESS';
+			});
+
 			$stored_sms = $this->getStoredSMS($fnum, ['pending', 'failed']);
 			$history = $this->formatStoredSMS($stored_sms, $history);
 		}
