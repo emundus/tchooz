@@ -215,7 +215,7 @@ $user = $this->userid;
 
     document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
         if (typeof export_pdf === 'function') {
-            export_pdf(JSON.stringify({0: <?= $this->fnum ?>}), null, 'forms');
+            export_pdf(JSON.stringify({0: "<?= $this->fnum ?>"}), null, 'forms');
         } else {
             console.error('Function export_pdf does not exist');
         }

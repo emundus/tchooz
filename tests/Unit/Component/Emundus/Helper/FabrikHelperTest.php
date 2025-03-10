@@ -125,61 +125,65 @@ class FabrikHelperTest extends UnitTestCase
 		$this->assertEmpty($this->helper::getValueByAlias("", 1)['raw'], 'Empty alias should return empty raw value');
 		$this->assertEmpty($this->helper::getValueByAlias("test", "")['raw'], 'Empty fnum should return empty raw value');
 
-		/*$form_id = $this->h_dataset->getUnitTestFabrikForm();
+		$form_id = $this->h_dataset->getUnitTestFabrikForm();
+		$applicant_id = $this->dataset['applicant'];
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$query = $db->createQuery();
 
-		$query->select('fe.id, fe.name, fe.params, fl.db_table_name ')
-			->from($db->quoteName('#__fabrik_elements', 'fe'))
-			->leftJoin($db->quoteName('#__fabrik_formgroup','ffg').' ON '.$db->quoteName('ffg.group_id').' = '.$db->quoteName('fe.group_id'))
-			->leftJoin($db->quoteName('#__fabrik_lists','fl').' ON '.$db->quoteName('fl.form_id').' = '.$db->quoteName('ffg.form_id'))
-			->where($db->quoteName('ffg.form_id') . ' = ' . $form_id);
+		$query->select('jfl.db_table_name')
+			->from($db->quoteName('#__fabrik_lists', 'jfl'))
+			->where($db->quoteName('jfl.form_id') . ' = ' . $form_id);
 
 		$db->setQuery($query);
-		$elements = $db->loadObjectList();
+		$db_table_name = $db->loadResult();
 
-		foreach ($elements as $element) {
+		$query->clear()
+			->select('jfe.*')
+			->from($db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id'))
+			->where($db->quoteName('jffg.form_id') . ' = ' . $form_id)
+			->andWhere($db->quoteName('jfe.name') . ' = ' . $db->quote('e_797_7973'));
 
+		$db->setQuery($query);
+		$element = $db->loadAssoc();
+
+		if (!empty($element)) {
+			$params = json_decode($element['params'], true);
+
+			if (empty($params['alias'])) {
+				$params['alias'] = 'alias_' . $element['id'];
+
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+					->where($db->quoteName('id') . ' = ' . $element['id']);
+				$db->setQuery($query);
+				$updated = $db->execute();
+				$this->assertTrue($updated, 'The params should be updated in the database');
+			}
+
+			$value = $this->helper::getValueByAlias($params['alias'], null, $applicant_id);
+			$this->assertEmpty($value['raw'], 'The value obtained should not be empty');
+
+			// insert a value in the database
+			$targeted_value = 'test';
 			$query->clear()
-				->select('tb.fnum, tb.' . $element->name)
-				->from($db->quoteName($element->db_table_name, 'tb'))
-				->where('tb.id = (SELECT MIN(id) FROM ' . $db->quoteName($element->db_table_name) . ')');
+				->insert($db->quoteName($db_table_name))
+				->columns($db->quoteName('fnum') . ', ' . $db->quoteName('e_797_7973') . ', ' . $db->quoteName('user'))
+				->values($db->quote($this->dataset['fnum']) . ', ' . $db->quote($targeted_value) . ', ' . $db->quote($applicant_id));
 
 			$db->setQuery($query);
-			$results = $db->loadObject();
+			$inserted = $db->execute();
+			$this->assertTrue($inserted, 'The value should be inserted in the database');
 
-			$fnum = $results->fnum;
-			$expected = $results->{$element->name};
+			$value = $this->helper::getValueByAlias($params['alias'],null, $applicant_id);
+			$this->assertEquals($targeted_value, $value['raw'], 'The value obtained should be the same as the value in the database');
 
-			if(isset($fnum)) {
-
-				$params = json_decode($element->params, true);
-
-				if(empty($params["alias"])) {
-
-					$params['alias'] = 'alias' . rand(0, 1000);
-
-					$query->clear()
-						->update($db->quoteName('#__fabrik_elements'))
-						->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-						->where($db->quoteName('id') . ' = ' . $db->quote($element->id))
-						->limit(1);
-					$db->setQuery($query);
-					$db->execute();
-				}
-
-				$alias_value = $this->helper::getValueByAlias($params["alias"], $fnum);
-				$value = $alias_value['value'];
-				$value_raw = $alias_value['raw'];
-
-				if(!empty($expected)) {
-					$expected_formatted = $this->helper::formatElementValue($element->name, $expected);
-					$this->assertEquals($expected_formatted, $value, 'The value formatted obtained should be the same as the value formatted in the database.');
-					$this->assertEquals($expected, $value_raw, 'The value obtained should be the same as the value in the database.');
-				}
-			}
-		}*/
+			$value = $this->helper::getValueByAlias($params['alias'],null, $applicant_id, 'column');
+			$this->assertIsArray($value['raw'], 'The value obtained should be an array using the column format');
+			$this->assertEquals($targeted_value, $value['raw'][0], 'The value obtained should be the same as the value in the database using the column format');
+		}
 	}
 
 	public function testencryptDatas()

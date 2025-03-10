@@ -264,6 +264,11 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de l\'utilisateur automatisé.', 'error');
 		}
 
+		if (!$this->forceHikashopLightMode())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du mode light de Hikashop.', 'error');
+		}
+
 		EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;
@@ -947,5 +952,34 @@ class Com_EmundusInstallerScript
 		}
 
 		return !empty($automated_user_id);
+	}
+
+	private function forceHikashopLightMode(): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select('config_namekey')
+			->from($this->db->quoteName('#__hikashop_config'))
+			->where($this->db->quoteName('config_namekey') . ' LIKE ' . $this->db->quote('dark_mode'));
+		$this->db->setQuery($query);
+		$dark_mode = $this->db->loadResult();
+
+		if(!empty($dark_mode))
+		{
+			$query->clear()
+				->update($this->db->quoteName('#__hikashop_config'))
+				->set($this->db->quoteName('config_value') . ' = 0')
+				->where($this->db->quoteName('config_namekey') . ' LIKE ' . $this->db->quote('dark_mode'));
+			$this->db->setQuery($query);
+			return $this->db->execute();
+		}
+		else {
+			$query->clear()
+				->insert($this->db->quoteName('#__hikashop_config'))
+				->columns($this->db->quoteName('config_namekey') . ', ' . $this->db->quoteName('config_value') . ', ' . $this->db->quoteName('config_default'))
+				->values($this->db->quote('dark_mode') . ', 0' . ', 0');
+			$this->db->setQuery($query);
+			return $this->db->execute();
+		}
 	}
 }

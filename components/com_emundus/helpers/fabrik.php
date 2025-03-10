@@ -1947,15 +1947,16 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 	/**
 	 * TODO: Get valueS by alias, why stop at one value?
-	 * @param         $alias  string The alias to search the element's value for
-	 * @param   null  $fnum   int    The form number to search the element's value for
-	 * @param   int   $user_id
+	 * @param         $alias        string The alias to search the element's value for
+	 * @param   null  $fnum         int    The form number to search the element's value for
+	 * @param         $user_id      int    The user id to search the element's value for
+     * @param         $load_option  string The query load method to use to retrieve the values
 	 *
 	 * @return mixed|string|null
 	 * @description Return the value of an element according to its alias in a form
 	 *
 	 */
-	static function getValueByAlias(string $alias, $fnum = null, $user_id = 0)
+	static function getValueByAlias(string $alias, ?string $fnum = null, int $user_id = 0, string $load_option = 'result'): array
 	{
 		$value = ['value' => '', 'raw' => ''];
 
@@ -1970,6 +1971,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 				if (!empty($fnum))
 				{
+					// ! this means that only applicants forms data will be retrieved !
 					require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 					$m_application = new EmundusModelApplication();
 					$fnumElements  = $m_application->getFabrikDataByFnum($fnum, 'element');
@@ -1985,7 +1987,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					{
 						$columns = array_keys($db->getTableColumns($element->db_table_name));
 
-						if (in_array('fnum', $columns) || in_array('user', $columns) || in_array('user_id', $columns))
+						if ((!empty($fnum) && in_array('fnum', $columns)) || (!empty($user_id) && in_array('user', $columns) || in_array('user_id', $columns)))
 						{
 							$query->clear()
                                 ->select($db->quoteName($element->name))
@@ -2010,7 +2012,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 							$query->order('id DESC');
 							$db->setQuery($query);
-							$raw_value = $db->loadResult();
+
+
+							if ($load_option == 'column') {
+                                $raw_value = $db->loadColumn();
+                            } else {
+								$raw_value = $db->loadResult();
+							}
 
 							if (!empty($raw_value))
 							{
