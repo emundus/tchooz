@@ -13,16 +13,16 @@ const _sfc_main = {
       search: "",
       status: [
         {
-          "value": "sent",
-          "label": this.translate("COM_EMUNDUS_SMS_SENT")
+          value: "sent",
+          label: this.translate("COM_EMUNDUS_SMS_SENT")
         },
         {
-          "value": "pending",
-          "label": this.translate("COM_EMUNDUS_SMS_PENDING")
+          value: "pending",
+          label: this.translate("COM_EMUNDUS_SMS_PENDING")
         },
         {
-          "value": "failed",
-          "label": this.translate("COM_EMUNDUS_SMS_FAILED")
+          value: "failed",
+          label: this.translate("COM_EMUNDUS_SMS_FAILED")
         }
       ],
       selectedStatus: ""

@@ -213,7 +213,9 @@ const _sfc_main = {
           if (notifications_counter) {
             notifications_counter.remove();
           }
-          let notifications_column = document.querySelector('a[id="' + this.currentChatroom.fnum + '"] .messenger__notifications_counter');
+          let notifications_column = document.querySelector(
+            'a[id="' + this.currentChatroom.fnum + '"] .messenger__notifications_counter'
+          );
           if (notifications_column) {
             notifications_column.remove();
           }
@@ -288,11 +290,15 @@ const _sfc_main = {
                 if (notifications_counter) {
                   notifications_counter.remove();
                 }
-                let notifications_column = document.querySelector('a[id="' + this.currentChatroom.fnum + '"] .messenger__notifications_counter');
+                let notifications_column = document.querySelector(
+                  'a[id="' + this.currentChatroom.fnum + '"] .messenger__notifications_counter'
+                );
                 if (notifications_column) {
                   notifications_column.remove();
                 }
-                let event = new CustomEvent("removeMessengerNotifications", { detail: { fnum: this.currentChatroom.fnum } });
+                let event = new CustomEvent("removeMessengerNotifications", {
+                  detail: { fnum: this.currentChatroom.fnum }
+                });
                 document.dispatchEvent(event);
               }
             });
@@ -371,14 +377,18 @@ const _sfc_main = {
       if (this.search === "") {
         return this.chatrooms.filter((chatroom) => chatroom.status === 1);
       }
-      let chatroomsByMessage = this.chatrooms.filter((chatroom) => chatroom.messages.some((message) => message.message.toLowerCase().includes(this.search.toLowerCase())));
+      let chatroomsByMessage = this.chatrooms.filter(
+        (chatroom) => chatroom.messages.some((message) => message.message.toLowerCase().includes(this.search.toLowerCase()))
+      );
       return chatroomsByMessage.filter((chatroom) => chatroom.status === 1);
     },
     closedChatrooms() {
       if (this.search === "") {
         return this.chatrooms.filter((chatroom) => chatroom.status === 0);
       }
-      let chatroomsByMessage = this.chatrooms.filter((chatroom) => chatroom.messages.some((message) => message.message.toLowerCase().includes(this.search.toLowerCase())));
+      let chatroomsByMessage = this.chatrooms.filter(
+        (chatroom) => chatroom.messages.some((message) => message.message.toLowerCase().includes(this.search.toLowerCase()))
+      );
       return chatroomsByMessage.filter((chatroom) => chatroom.status === 0);
     },
     showCloseChatroomButton() {
@@ -677,7 +687,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ])) : createCommentVNode("", true),
             createBaseVNode("div", {
-              class: normalizeClass(["tw-w-full tw-overflow-y-scroll", { "tw-relative tw-mb-4 tw-max-h-[65vh]": $props.applicant == false, "tw-absolute tw-max-h-[80%]": $props.applicant == true }]),
+              class: normalizeClass(["tw-w-full tw-overflow-y-scroll", {
+                "tw-relative tw-mb-4 tw-max-h-[65vh]": $props.applicant == false,
+                "tw-absolute tw-max-h-[80%]": $props.applicant == true
+              }]),
               id: "messages__list",
               style: normalizeStyle($data.messages_loading ? "opacity: 0" : "")
             }, [
@@ -709,7 +722,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           ])
                         ], 2),
                         createBaseVNode("span", {
-                          class: normalizeClass(["tw-mt-1 tw-p-3 tw-w-full tw-max-w-[30vw] tw-text-start", { "tw-bg-blue-500 tw-text-white": message.me === true, "tw-bg-white": message.me !== true, "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }]),
+                          class: normalizeClass(["tw-mt-1 tw-p-3 tw-w-full tw-max-w-[30vw] tw-text-start", {
+                            "tw-bg-blue-500 tw-text-white": message.me === true,
+                            "tw-bg-white": message.me !== true,
+                            "tw-rounded-applicant": $props.applicant == true,
+                            "tw-rounded-coordinator": $props.applicant == false
+                          }]),
                           innerHTML: message.message
                         }, null, 10, _hoisted_39),
                         message.progress && message.progress === true ? (openBlock(), createElementBlock("span", _hoisted_40, "Envoi en cours...")) : createCommentVNode("", true)

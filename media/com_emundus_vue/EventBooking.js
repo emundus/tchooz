@@ -77,7 +77,13 @@ const _sfc_main = {
     async getSlots() {
       this.loading = true;
       try {
-        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms((/* @__PURE__ */ new Date()).toISOString().split("T"), "", this.location, 1, this.$props.componentsProps ? [this.$props.componentsProps.event_id] : []);
+        const responseSlots = await eventsService.getAvailabilitiesByCampaignsAndPrograms(
+          (/* @__PURE__ */ new Date()).toISOString().split("T"),
+          "",
+          this.location,
+          1,
+          this.$props.componentsProps ? [this.$props.componentsProps.event_id] : []
+        );
         let slots = responseSlots.data;
         const groupedSlots = slots.reduce((accumulator, slot) => {
           const key = `${slot.start}_${slot.end}_${slot.event_id}`;
@@ -110,9 +116,7 @@ const _sfc_main = {
         this.availableDates.sort((a, b) => new Date(a) - new Date(b));
         if (this.$props.componentsProps) {
           const slotId = this.$props.componentsProps.slot_id;
-          const isSlotIdValid = this.slots.some(
-            (slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId)
-          );
+          const isSlotIdValid = this.slots.some((slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId));
           if (isSlotIdValid) {
             this.slotSelected = slotId;
           }
@@ -218,11 +222,14 @@ const _sfc_main = {
             }
           }
           text = this.translate("COM_EMUNDUS_EVENT_SLOT_RECAP");
-          text = text.replace("{{date}}", start.toLocaleDateString("fr-FR", {
-            weekday: "long",
-            day: "numeric",
-            month: "long"
-          }));
+          text = text.replace(
+            "{{date}}",
+            start.toLocaleDateString("fr-FR", {
+              weekday: "long",
+              day: "numeric",
+              month: "long"
+            })
+          );
           text = text.replace("{{time}}", start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }));
           text = text.replace("{{duration}}", minutes);
         }

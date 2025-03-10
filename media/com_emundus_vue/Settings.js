@@ -129,18 +129,18 @@ const _sfc_main$n = {
         value: 0,
         label: "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_SMTP_SECURITY",
         helptext: "COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SECURITY_HELPTEXT",
-        "options": [
+        options: [
           {
-            "value": "none",
-            "label": "COM_EMUNDUS_FILTERS_CHECK_NONE"
+            value: "none",
+            label: "COM_EMUNDUS_FILTERS_CHECK_NONE"
           },
           {
-            "value": "ssl",
-            "label": "SSL"
+            value: "ssl",
+            label: "SSL"
           },
           {
-            "value": "tls",
-            "label": "TLS"
+            value: "tls",
+            label: "TLS"
           }
         ],
         displayed: true
@@ -865,7 +865,9 @@ const _sfc_main$l = {
   created() {
     this.menus = this.$props.menusList;
     this.activeMenu = 0;
-    const sessionMenu = sessionStorage.getItem("tchooz_selected_menu/" + this.$props.id + "/" + document.location.hostname);
+    const sessionMenu = sessionStorage.getItem(
+      "tchooz_selected_menu/" + this.$props.id + "/" + document.location.hostname
+    );
     const sessionSideBarMinimized = sessionStorage.getItem("tchooz_sidebar_minimized/" + document.location.hostname);
     if (sessionSideBarMinimized) {
       this.minimized = sessionSideBarMinimized === "true";
@@ -956,10 +958,11 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
             menu.published ? (openBlock(), createElementBlock("li", _hoisted_4$l, [
               createBaseVNode("div", {
                 id: "Menu-" + indexMenu,
-                onClick: ($event) => {
-                  $data.activeMenu = indexMenu;
-                },
-                class: normalizeClass(["tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none", $data.activeMenu === indexMenu ? "tw-font-bold tw-text-profile-full tw-bg-profile-light" : "hover:tw-bg-gray-200"])
+                onClick: ($event) => $data.activeMenu = indexMenu,
+                class: normalizeClass([
+                  "tw-flex tw-items-start tw-w-full tw-p-2 tw-cursor-pointer tw-rounded-lg tw-group tw-user-select-none",
+                  $data.activeMenu === indexMenu ? "tw-font-bold tw-text-profile-full tw-bg-profile-light" : "hover:tw-bg-gray-200"
+                ])
               }, [
                 createBaseVNode("span", {
                   class: normalizeClass(["material-symbols-outlined tw-font-bold tw-mr-2.5", $data.activeMenu === indexMenu ? "tw-text-profile-full" : ""]),
@@ -1723,7 +1726,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26$1)) : createCommentVNode("", true)
   ])) : createCommentVNode("", true);
 }
-const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-967e8f01"]]);
+const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-7eed4f7f"]]);
 const _sfc_main$h = {
   name: "editStatus",
   components: {
@@ -1784,15 +1787,11 @@ const _sfc_main$h = {
         formData.append("status", status.step);
         formData.append("label", newLabel);
         formData.append("color", this.colors[index].name);
-        await client().post(
-          "index.php?option=com_emundus&controller=settings&task=updatestatus",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
+        await client().post("index.php?option=com_emundus&controller=settings&task=updatestatus", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
           }
-        ).then((response) => {
+        }).then((response) => {
           this.$emit("updateSaving", false);
           if (response.status) {
             status.label[this.actualLanguage] = newLabel;
@@ -1803,7 +1802,10 @@ const _sfc_main$h = {
         });
       } else {
         document.getElementById("status_label_" + status.step).textContent = status.label[this.actualLanguage];
-        this.displayError("COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_STATUS", "COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_STATUS");
+        this.displayError(
+          "COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_STATUS",
+          "COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_STATUS"
+        );
       }
     },
     async updateStatusOrder() {
@@ -1814,15 +1816,11 @@ const _sfc_main$h = {
       this.$emit("updateSaving", true);
       const formData = new FormData();
       formData.append("status", status_steps.join(","));
-      await client().post(
-        "index.php?option=com_emundus&controller=settings&task=updatestatusorder",
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      await client().post("index.php?option=com_emundus&controller=settings&task=updatestatusorder", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      ).then(() => {
+      }).then(() => {
         this.$emit("updateSaving", false);
         this.$emit("updateLastSaving", this.formattedDate("", "LT"));
       });
@@ -1996,7 +1994,7 @@ function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_12$4)) : createCommentVNode("", true)
   ]);
 }
-const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-78283c16"]]);
+const EditStatus = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-b40ac19c"]]);
 const _sfc_main$g = {
   name: "editTags",
   components: {
@@ -2057,15 +2055,11 @@ const _sfc_main$g = {
         formData.append("tag", tag.id);
         formData.append("label", newLabel);
         formData.append("color", this.colors[index].name);
-        await client().post(
-          "index.php?option=com_emundus&controller=settings&task=updatetags",
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data"
-            }
+        await client().post("index.php?option=com_emundus&controller=settings&task=updatetags", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data"
           }
-        ).then((response) => {
+        }).then((response) => {
           this.$emit("updateSaving", false);
           if (response.status) {
             tag.label = newLabel;
@@ -2242,7 +2236,7 @@ function _sfc_render$g(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__scopeId", "data-v-c7e84960"]]);
+const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$g, [["render", _sfc_render$g], ["__scopeId", "data-v-f8209a98"]]);
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
@@ -2451,11 +2445,14 @@ const _sfc_main$f = {
           thumbnailElement.alt = file.name;
           thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
         }
-        return setTimeout(/* @__PURE__ */ function(_this) {
-          return function() {
-            return file.previewElement.classList.add("dz-image-preview");
-          };
-        }(), 1);
+        return setTimeout(
+          /* @__PURE__ */ function(_this) {
+            return function() {
+              return file.previewElement.classList.add("dz-image-preview");
+            };
+          }(),
+          1
+        );
       }
     },
     uploadNewLogo() {
@@ -2796,7 +2793,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_35)) : createCommentVNode("", true)
   ]);
 }
-const General = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-26bb8eb2"]]);
+const General = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-a3d4886d"]]);
 const _sfc_main$e = {
   name: "Orphelins",
   components: {
@@ -2848,7 +2845,14 @@ const _sfc_main$e = {
       this.saving = true;
       const value = this.$refs["translation-" + translation.id][0].value;
       if (value) {
-        translationsService.insertTranslation(value, "override", this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table).then((response) => {
+        translationsService.insertTranslation(
+          value,
+          "override",
+          this.lang.lang_code,
+          translation.reference_id,
+          translation.tag,
+          translation.reference_table
+        ).then((response) => {
           this.last_save = this.formattedDate("", "LT");
           this.saving = false;
           this.translations = this.translations.filter(function(item) {
@@ -3044,7 +3048,21 @@ const _sfc_main$d = {
     return {
       defaultLang: null,
       availableLanguages: [],
-      editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "color", "left", "center", "right", "h1", "h2", "ul"],
+      editorPlugins: [
+        "history",
+        "link",
+        "image",
+        "bold",
+        "italic",
+        "underline",
+        "color",
+        "left",
+        "center",
+        "right",
+        "h1",
+        "h2",
+        "ul"
+      ],
       lang: null,
       loading: false,
       dynamicComponent: 0,
@@ -3102,15 +3120,11 @@ const _sfc_main$d = {
       if (this.clearNotif) {
         formData.append("note", "");
       }
-      await client().post(
-        `index.php?option=com_emundus&controller=settings&task=updatearticle`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      await client().post(`index.php?option=com_emundus&controller=settings&task=updatearticle`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      ).then(async () => {
+      }).then(async () => {
         this.updated = false;
         Swal$1.fire({
           title: this.translate("COM_EMUNDUS_ONBOARD_SUCCESS"),
@@ -3139,15 +3153,11 @@ const _sfc_main$d = {
       } else {
         formData.append("article_id", this.$props.article_id);
       }
-      await client().post(
-        `index.php?option=com_emundus&controller=settings&task=publisharticle`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      await client().post(`index.php?option=com_emundus&controller=settings&task=publisharticle`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      ).then(() => {
+      }).then(() => {
         this.$emit("updateSaving", false);
         this.$emit("updateLastSaving", this.formattedDate("", "LT"));
         this.$emit("updatePublished", this.form.published);
@@ -3158,11 +3168,14 @@ const _sfc_main$d = {
       return true;
     },
     async updateArticleNotif() {
-      const response = await axios.get("index.php?option=com_emundus&controller=settings&task=updateArticleNeedToModify", {
-        params: {
-          article_alias: this.$props.article_alias
+      const response = await axios.get(
+        "index.php?option=com_emundus&controller=settings&task=updateArticleNeedToModify",
+        {
+          params: {
+            article_alias: this.$props.article_alias
+          }
         }
-      });
+      );
       delete response.data.msg;
       return response.data;
     }
@@ -3307,7 +3320,20 @@ const _sfc_main$c = {
       updated: false,
       initcol1: "",
       initcol2: "",
-      editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "left", "center", "right", "h1", "h2", "ul"],
+      editorPlugins: [
+        "history",
+        "link",
+        "image",
+        "bold",
+        "italic",
+        "underline",
+        "left",
+        "center",
+        "right",
+        "h1",
+        "h2",
+        "ul"
+      ],
       form: {
         content: {
           col1: null,
@@ -3346,15 +3372,11 @@ const _sfc_main$c = {
       const formData = new FormData();
       formData.append("col1", this.form.content.col1);
       formData.append("col2", this.form.content.col2);
-      await client().post(
-        `index.php?option=com_emundus&controller=settings&task=updatefooter`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      await client().post(`index.php?option=com_emundus&controller=settings&task=updatefooter`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      ).then(() => {
+      }).then(() => {
         this.$emit("updateSaving", false);
         this.$emit("updateLastSaving", this.formattedDate("", "LT"));
         this.$emit("updatePublished", this.form.published);
@@ -3705,8 +3727,8 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
             class: "tw-rounded tw-flex tw-justify-center tw-items-center",
             style: normalizeStyle({
               "background-color": this.$props.color,
-              "width": "16em",
-              "height": "10em"
+              width: "16em",
+              height: "10em"
             })
           }, [
             createBaseVNode("i", _hoisted_4$a, toDisplayString(this.$props.icon), 1)
@@ -3899,7 +3921,9 @@ const _sfc_main$9 = {
           this.notificationElements = Object.values(response);
           if (this.sections[i].component === "SubSection") {
             for (let k in this.notificationElements) {
-              let foundIndex = this.sections[i].props.findIndex((subSection) => subSection.props.article_alias === this.notificationElements[k].alias);
+              let foundIndex = this.sections[i].props.findIndex(
+                (subSection) => subSection.props.article_alias === this.notificationElements[k].alias
+              );
               if (foundIndex !== -1) {
                 this.needToNotify[foundIndex] = true;
               }
@@ -4269,7 +4293,10 @@ const _sfc_main$8 = {
       });
     },
     emailsShortcuts() {
-      return this.translate("COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_NOTIFICATIONS_EMAIL_SHORTCUT").replace("{{emailLink}}", this.emailLink);
+      return this.translate("COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_NOTIFICATIONS_EMAIL_SHORTCUT").replace(
+        "{{emailLink}}",
+        this.emailLink
+      );
     }
   }
 };
@@ -4615,12 +4642,12 @@ const _sfc_main$5 = {
           displayed: true
         },
         /*{
-          id: 2,
-          name: 'COM_EMUNDUS_SETTINGS_INTEGRATION_DYNAMICS_SETUP_CONFIG',
-          icon: 'manufacturing',
-          active: false,
-          displayed: true
-        },*/
+              id: 2,
+              name: 'COM_EMUNDUS_SETTINGS_INTEGRATION_DYNAMICS_SETUP_CONFIG',
+              icon: 'manufacturing',
+              active: false,
+              displayed: true
+            },*/
         {
           id: 2,
           name: "COM_EMUNDUS_GLOBAL_HISTORY",
@@ -5350,83 +5377,83 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 const SectionComponent = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const menus = [
   {
-    "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
-    "name": "general_settings",
-    "icon": "display_settings",
-    "type": "JSON",
-    "source": "general.js",
-    "published": true
+    label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL",
+    name: "general_settings",
+    icon: "display_settings",
+    type: "JSON",
+    source: "general.js",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WEB_SECURITY",
-    "sectionTitle": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WEB_SECURITY",
-    "name": "web_security_settings",
-    "icon": "language",
-    "type": "component",
-    "component": "WebSecurity",
-    "published": true
+    label: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WEB_SECURITY",
+    sectionTitle: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WEB_SECURITY",
+    name: "web_security_settings",
+    icon: "language",
+    type: "component",
+    component: "WebSecurity",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_EMAIL",
-    "sectionTitle": "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MANAG_SERVER_MAIL",
-    "name": "email_settings",
-    "icon": "email",
-    "type": "component",
-    "component": "EditEmailJoomla",
-    "published": true,
-    "helptext": "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_EMAIL_HELPTEXT",
-    "props": {
-      "warning": "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_WARNING"
+    label: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_EMAIL",
+    sectionTitle: "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_MANAG_SERVER_MAIL",
+    name: "email_settings",
+    icon: "email",
+    type: "component",
+    component: "EditEmailJoomla",
+    published: true,
+    helptext: "COM_EMUNDUS_GLOBAL_PARAMS_SECTIONS_EMAIL_HELPTEXT",
+    props: {
+      warning: "COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_WARNING"
     }
   },
   {
-    "label": "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
-    "name": "content_settings",
-    "icon": "notes",
-    "type": "JSON",
-    "source": "content.js",
-    "published": true
+    label: "COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT",
+    name: "content_settings",
+    icon: "notes",
+    type: "JSON",
+    source: "content.js",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_MANAGE_FILES",
-    "name": "files_management",
-    "icon": "source",
-    "type": "JSON",
-    "source": "manage-files.js",
-    "published": true
+    label: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_MANAGE_FILES",
+    name: "files_management",
+    icon: "source",
+    type: "JSON",
+    source: "manage-files.js",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_SUPPL_MOD",
-    "name": "addons",
-    "icon": "dashboard_customize",
-    "type": "component",
-    "component": "Addons",
-    "published": true
+    label: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_SUPPL_MOD",
+    name: "addons",
+    icon: "dashboard_customize",
+    type: "component",
+    component: "Addons",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_INTEG",
-    "name": "integration",
-    "icon": "lan",
-    "type": "component",
-    "component": "Integration",
-    "published": true
+    label: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_INTEG",
+    name: "integration",
+    icon: "lan",
+    type: "component",
+    component: "Integration",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS",
-    "name": "translate",
-    "icon": "translate",
-    "type": "JSON",
-    "source": "translate.js",
-    "published": true
+    label: "COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS",
+    name: "translate",
+    icon: "translate",
+    type: "JSON",
+    source: "translate.js",
+    published: true
   },
   {
-    "label": "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS",
-    "name": "workflows",
-    "icon": "schema",
-    "type": "component",
-    "component": "WorkflowSettings",
-    "published": true,
-    "props": {}
+    label: "COM_EMUNDUS_GLOBAL_PARAMS_MENUS_WORKFLOWS",
+    name: "workflows",
+    icon: "schema",
+    type: "component",
+    component: "WorkflowSettings",
+    published: true,
+    props: {}
   }
 ];
 const _sfc_main = {

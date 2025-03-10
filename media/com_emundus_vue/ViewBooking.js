@@ -255,7 +255,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_24)) : createCommentVNode("", true)
   ]);
 }
-const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d02a4c47"]]);
+const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a8620524"]]);
 export {
   ViewBooking as default
 };

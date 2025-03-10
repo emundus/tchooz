@@ -91,11 +91,14 @@ const _sfc_main = {
           thumbnailElement.alt = file.name;
           thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
         }
-        return setTimeout(/* @__PURE__ */ function(_this) {
-          return function() {
-            return file.previewElement.classList.add("dz-image-preview");
-          };
-        }(), 1);
+        return setTimeout(
+          /* @__PURE__ */ function(_this) {
+            return function() {
+              return file.previewElement.classList.add("dz-image-preview");
+            };
+          }(),
+          1
+        );
       }
     },
     getTypesByCampaign() {
@@ -284,7 +287,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_19)) : createCommentVNode("", true)
   ]);
 }
-const AttachDocument = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-620e554d"]]);
+const AttachDocument = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7085ee66"]]);
 export {
   AttachDocument as A
 };

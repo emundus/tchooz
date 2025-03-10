@@ -25,7 +25,9 @@ const translationsService = {
   },
   async getDefaultLanguage() {
     try {
-      const response = await client().get("index.php?option=com_emundus&controller=translations&task=getdefaultlanguage");
+      const response = await client().get(
+        "index.php?option=com_emundus&controller=translations&task=getdefaultlanguage"
+      );
       return response.data;
     } catch (e) {
       return false;
@@ -37,15 +39,11 @@ const translationsService = {
       formData.append("published", published);
       formData.append("lang_code", lang_code);
       formData.append("default_lang", default_lang);
-      return await client().post(
-        `index.php?option=com_emundus&controller=translations&task=updatelanguage`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      return await client().post(`index.php?option=com_emundus&controller=translations&task=updatelanguage`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      );
+      });
     } catch (e) {
       return {
         status: false,
@@ -129,7 +127,9 @@ const translationsService = {
           paramsSerializer: (params2) => qs.stringify(params2)
         });
         try {
-          return await myAxios.get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, { params });
+          return await myAxios.get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, {
+            params
+          });
         } catch (e) {
           return {
             status: false,
@@ -468,12 +468,7 @@ const _sfc_main = {
     },
     async getDatas(value) {
       this.loading = true;
-      translationsService.getDatas(
-        value.table.name,
-        value.table.reference,
-        value.table.label,
-        value.table.filters
-      ).then(async (response) => {
+      translationsService.getDatas(value.table.name, value.table.reference, value.table.label, value.table.filters).then(async (response) => {
         if (response.status) {
           if (response.data.length > 0) {
             this.datas = response.data;
@@ -554,7 +549,15 @@ const _sfc_main = {
     },
     async saveTranslation({ value, translation }) {
       this.$emit("updateSaving", true);
-      translationsService.updateTranslations(value, this.object.table.type, this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table, translation.reference_field).then((response) => {
+      translationsService.updateTranslations(
+        value,
+        this.object.table.type,
+        this.lang.lang_code,
+        translation.reference_id,
+        translation.tag,
+        translation.reference_table,
+        translation.reference_field
+      ).then((response) => {
         if (response.status) {
           this.$emit("updateLastSaving", this.formattedDate("", "LT"));
           this.$emit("updateSaving", false);
@@ -564,7 +567,10 @@ const _sfc_main = {
       });
     },
     async exportToCsv() {
-      window.open("/index.php?option=com_emundus&controller=translations&task=export&profile=" + this.data.id, "_blank");
+      window.open(
+        "/index.php?option=com_emundus&controller=translations&task=export&profile=" + this.data.id,
+        "_blank"
+      );
     },
     translate(key) {
       if (typeof key != void 0 && key != null && Joomla !== null && typeof Joomla !== "undefined") {

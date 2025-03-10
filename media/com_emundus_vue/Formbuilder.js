@@ -90,9 +90,12 @@ const formBuilderService = {
   },
   async getElement(gid, element) {
     try {
-      return fetch("/index.php?option=com_emundus&controller=formbuilder&task=getElement&gid=" + gid + "&element=" + element, {
-        method: "GET"
-      }).then((response) => response.json()).then((response) => {
+      return fetch(
+        "/index.php?option=com_emundus&controller=formbuilder&task=getElement&gid=" + gid + "&element=" + element,
+        {
+          method: "GET"
+        }
+      ).then((response) => response.json()).then((response) => {
         return response;
       }).catch((error) => {
         throw error;
@@ -197,9 +200,12 @@ const formBuilderService = {
   },
   getDatabaseJoinOrderColumns(databaseName) {
     try {
-      return fetch("/index.php?option=com_emundus&controller=formbuilder&task=getDatabaseJoinOrderColumns&database_name=" + databaseName, {
-        method: "GET"
-      }).then((response) => response.json()).then((response) => {
+      return fetch(
+        "/index.php?option=com_emundus&controller=formbuilder&task=getDatabaseJoinOrderColumns&database_name=" + databaseName,
+        {
+          method: "GET"
+        }
+      ).then((response) => response.json()).then((response) => {
         return response;
       }).catch((error) => {
         throw error;
@@ -578,9 +584,12 @@ const formBuilderService = {
   },
   getElementSubOptions(element) {
     try {
-      return fetch("/index.php?option=com_emundus&controller=formbuilder&task=getelementsuboptions&element=" + element, {
-        method: "GET"
-      }).then((response) => response.json()).then((response) => {
+      return fetch(
+        "/index.php?option=com_emundus&controller=formbuilder&task=getelementsuboptions&element=" + element,
+        {
+          method: "GET"
+        }
+      ).then((response) => response.json()).then((response) => {
         return response;
       }).catch((error) => {
         throw error;
@@ -743,9 +752,12 @@ const formBuilderService = {
   async getDocumentSample(documentId, profileId) {
     if (documentId > 0 && profileId > 0) {
       try {
-        return fetch("/index.php?option=com_emundus&controller=formbuilder&task=getdocumentsample&document_id=" + documentId + "&profile_id=" + profileId, {
-          method: "GET"
-        }).then((response) => response.json()).then((response) => {
+        return fetch(
+          "/index.php?option=com_emundus&controller=formbuilder&task=getdocumentsample&document_id=" + documentId + "&profile_id=" + profileId,
+          {
+            method: "GET"
+          }
+        ).then((response) => response.json()).then((response) => {
           return response;
         }).catch((error) => {
           throw error;
@@ -785,9 +797,12 @@ const formBuilderService = {
     };
     if (table && key && value) {
       try {
-        return fetch("/index.php?option=com_emundus&controller=formbuilder&task=getsqldropdownoptions&table=" + table + "&key=" + key + "&value=" + value + "&translate=" + translate, {
-          method: "GET"
-        }).then((response2) => response2.json()).then((response2) => {
+        return fetch(
+          "/index.php?option=com_emundus&controller=formbuilder&task=getsqldropdownoptions&table=" + table + "&key=" + key + "&value=" + value + "&translate=" + translate,
+          {
+            method: "GET"
+          }
+        ).then((response2) => response2.json()).then((response2) => {
           return response2;
         }).catch((error) => {
           throw error;
@@ -958,7 +973,7 @@ const formBuilderMixin = {
         options.text = text;
       }
       Swal$1.fire({
-        "title": "test"
+        title: "test"
       });
       return Swal$1.fire(options).then((result2) => {
         if (result2.value) {
@@ -1405,14 +1420,18 @@ const _sfc_main$u = {
   computed: {
     publishedElements() {
       if (this.keywords) {
-        return this.elements.filter((element) => element.published && this.translate(element.name).toLowerCase().includes(this.keywords.toLowerCase()));
+        return this.elements.filter(
+          (element) => element.published && this.translate(element.name).toLowerCase().includes(this.keywords.toLowerCase())
+        );
       } else {
         return this.elements.filter((element) => element.published);
       }
     },
     publishedGroups() {
       if (this.keywords) {
-        return this.groups.filter((group) => group.published && this.translate(group.name).toLowerCase().includes(this.keywords.toLowerCase()));
+        return this.groups.filter(
+          (group) => group.published && this.translate(group.name).toLowerCase().includes(this.keywords.toLowerCase())
+        );
       } else {
         return this.groups.filter((group) => group.published);
       }
@@ -1627,12 +1646,15 @@ const _sfc_main$t = {
       if (param.reload_on_change) {
         let param_to_watch = this.params.find((p) => p.name === param.reload_on_change);
         if (param_to_watch) {
-          this.$watch(() => this.element.params[param_to_watch.name], (newValue, oldValue) => {
-            if (newValue !== oldValue) {
-              this.loading = true;
-              this.getSqlDropdownOptions(param);
+          this.$watch(
+            () => this.element.params[param_to_watch.name],
+            (newValue, oldValue) => {
+              if (newValue !== oldValue) {
+                this.loading = true;
+                this.getSqlDropdownOptions(param);
+              }
             }
-          });
+          );
         }
       }
     });
@@ -1661,7 +1683,7 @@ const _sfc_main$t = {
         param.options = response.data;
         if (this.element.params[param.name] && typeof this.element.params[param.name] === "string" && this.element.params[param.name].length > 0) {
           let ids_to_exclude = this.element.params[param.name].split(",");
-          const regex = /\'|"/ig;
+          const regex = /\'|"/gi;
           this.element.params[param.name] = [];
           ids_to_exclude.forEach((id) => {
             id = id.replace(regex, "");
@@ -1996,12 +2018,7 @@ const _sfc_main$s = {
     return {
       databases: [],
       params: [],
-      elementsNeedingDb: [
-        "dropdown",
-        "checkbox",
-        "radiobutton",
-        "databasejoin"
-      ],
+      elementsNeedingDb: ["dropdown", "checkbox", "radiobutton", "databasejoin"],
       tabs: [
         {
           id: 0,
@@ -2017,7 +2034,20 @@ const _sfc_main$s = {
         }
       ],
       loading: false,
-      editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "left", "center", "right", "h1", "h2", "ul"],
+      editorPlugins: [
+        "history",
+        "link",
+        "image",
+        "bold",
+        "italic",
+        "underline",
+        "left",
+        "center",
+        "right",
+        "h1",
+        "h2",
+        "ul"
+      ],
       advancedSettings: false
     };
   },
@@ -2040,10 +2070,14 @@ const _sfc_main$s = {
     },
     saveProperties() {
       this.loading = true;
-      formBuilderService.updateTranslation({
-        value: this.element.id,
-        key: "element"
-      }, this.element.label_tag, this.element.label);
+      formBuilderService.updateTranslation(
+        {
+          value: this.element.id,
+          key: "element"
+        },
+        this.element.label_tag,
+        this.element.label
+      );
       if (["radiobutton", "checkbox", "dropdown"].includes(this.element.plugin)) {
         formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then((response) => {
           if (response) {
@@ -2224,7 +2258,11 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.publishedTabs, (tab) => {
         return openBlock(), createElementBlock("li", {
           key: tab.id,
-          class: normalizeClass([{ "is-active": tab.active, "tw-w-2/4": $options.publishedTabs.length == 2, "tw-w-full": $options.publishedTabs.length == 1 }, "tw-p-4 tw-cursor-pointer"]),
+          class: normalizeClass([{
+            "is-active": tab.active,
+            "tw-w-2/4": $options.publishedTabs.length == 2,
+            "tw-w-full": $options.publishedTabs.length == 1
+          }, "tw-p-4 tw-cursor-pointer"]),
           onClick: ($event) => $options.selectTab(tab)
         }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_5$o);
       }), 128))
@@ -2274,9 +2312,7 @@ function _sfc_render$s(_ctx, _cache, $props, $setup, $data, $options) {
               type: "checkbox",
               class: "em-toggle-check",
               "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $props.element.FRequire = $event),
-              onClick: _cache[6] || (_cache[6] = ($event) => {
-                $props.element.FRequire = !$props.element.FRequire;
-              })
+              onClick: _cache[6] || (_cache[6] = ($event) => $props.element.FRequire = !$props.element.FRequire)
             }, null, 512), [
               [vModelCheckbox, $props.element.FRequire]
             ]),
@@ -2613,7 +2649,11 @@ function _sfc_render$q(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.publishedTabs, (tab) => {
         return openBlock(), createElementBlock("li", {
           key: tab.id,
-          class: normalizeClass([{ "is-active": tab.active, "tw-w-2/4": $options.publishedTabs.length == "2", "tw-w-full": $options.publishedTabs.length == 1 }, "tw-p-4 tw-cursor-pointer"]),
+          class: normalizeClass([{
+            "is-active": tab.active,
+            "tw-w-2/4": $options.publishedTabs.length == "2",
+            "tw-w-full": $options.publishedTabs.length == 1
+          }, "tw-p-4 tw-cursor-pointer"]),
           onClick: ($event) => $options.selectTab(tab)
         }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_4$o);
       }), 128))
@@ -2692,8 +2732,8 @@ const _sfc_main$p = {
           this.optionsTranslations = Object.values(response.data);
           this.arraySubValues = this.element.params.sub_options.sub_values.map((value, i) => {
             return {
-              "sub_value": value,
-              "sub_label": this.element.params.sub_options.sub_labels[i]
+              sub_value: value,
+              sub_label: this.element.params.sub_options.sub_labels[i]
             };
           });
           setTimeout(() => {
@@ -2748,7 +2788,9 @@ const _sfc_main$p = {
           sub_options_in_new_order.sub_values.push(value.sub_value);
           sub_options_in_new_order.sub_labels.push(value.sub_label);
         });
-        if (!this.element.params.sub_options.sub_values.every((value, index) => value === sub_options_in_new_order.sub_values[index])) {
+        if (!this.element.params.sub_options.sub_values.every(
+          (value, index) => value === sub_options_in_new_order.sub_values[index]
+        )) {
           this.loading = true;
           formBuilderService.updateElementSubOptionsOrder(this.element.id, this.element.params.sub_options, sub_options_in_new_order).then((response) => {
             if (response.status) {
@@ -2812,9 +2854,7 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
             return openBlock(), createElementBlock("div", {
               class: "element-option tw-flex tw-items-center tw-justify-between tw-mt-2 tw-mb-2",
               key: option,
-              onMouseover: ($event) => {
-                $data.optionHighlight = index;
-              },
+              onMouseover: ($event) => $data.optionHighlight = index,
               onMouseleave: _cache[1] || (_cache[1] = ($event) => $data.optionHighlight = null)
             }, [
               createBaseVNode("div", _hoisted_5$l, [
@@ -2843,9 +2883,7 @@ function _sfc_render$p(_ctx, _cache, $props, $setup, $data, $options) {
                   onFocusout: ($event) => $options.updateOption(index, $data.optionsTranslations[index]),
                   onKeyup: [
                     withKeys(($event) => $options.updateOption(index, $data.optionsTranslations[index], true), ["enter"]),
-                    _cache[0] || (_cache[0] = withKeys(($event) => {
-                      _ctx.document.getElementById("new-option-" + $props.element.id).focus();
-                    }, ["tab"]))
+                    _cache[0] || (_cache[0] = withKeys(($event) => _ctx.document.getElementById("new-option-" + $props.element.id).focus(), ["tab"]))
                   ],
                   placeholder: _ctx.translate("COM_EMUNDUS_FORM_BUILDER_ADD_OPTION")
                 }, null, 40, _hoisted_9$b), [
@@ -3114,10 +3152,7 @@ const _sfc_main$l = {
   },
   mounted() {
     if (typeof L !== "undefined" && L !== null) {
-      this.mapContainer = L.map("map_container_" + this.$props.element.id).setView(
-        ["48.85341", "2.3488"],
-        13
-      );
+      this.mapContainer = L.map("map_container_" + this.$props.element.id).setView(["48.85341", "2.3488"], 13);
       L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
         maxZoom: 19,
         attribution: "© OpenStreetMap"
@@ -3268,10 +3303,14 @@ const _sfc_main$j = {
   methods: {
     updateLabel() {
       this.element.label[this.shortDefaultLang] = this.$refs["element-label-" + this.element.id].value.trim().replace(/[\r\n]/gm, "");
-      formBuilderService.updateTranslation({
-        value: this.element.id,
-        key: "element"
-      }, this.element.label_tag, this.element.label).then((response) => {
+      formBuilderService.updateTranslation(
+        {
+          value: this.element.id,
+          key: "element"
+        },
+        this.element.label_tag,
+        this.element.label
+      ).then((response) => {
         if (response.data.status) {
           this.element.label_tag = response.data.data;
           this.updateLastSave();
@@ -3389,7 +3428,7 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_form_builder_element_geolocation = resolveComponent("form-builder-element-geolocation");
   const _component_form_builder_element_booking = resolveComponent("form-builder-element-booking");
   return withDirectives((openBlock(), createElementBlock("div", {
-    class: normalizeClass(["form-builder-page-section-element", { "unpublished": !$props.element.publish || $props.element.hidden, "properties-active": $options.propertiesOpened === $props.element.id }]),
+    class: normalizeClass(["form-builder-page-section-element", { unpublished: !$props.element.publish || $props.element.hidden, "properties-active": $options.propertiesOpened === $props.element.id }]),
     id: "element_" + $props.element.id
   }, [
     createBaseVNode("div", _hoisted_2$j, [
@@ -3505,7 +3544,7 @@ const _sfc_main$i = {
       elements: [],
       emptySection: [
         {
-          "text": "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION"
+          text: "COM_EMUNDUS_FORM_BUILDER_EMPTY_SECTION"
         }
       ],
       elementsDeletedPending: []
@@ -3525,10 +3564,14 @@ const _sfc_main$i = {
     },
     updateTitle() {
       this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
-      formBuilderService.updateTranslation({
-        value: this.section.group_id,
-        key: "group"
-      }, this.section.group_tag, this.section.label).then((response) => {
+      formBuilderService.updateTranslation(
+        {
+          value: this.section.group_id,
+          key: "group"
+        },
+        this.section.group_tag,
+        this.section.label
+      ).then((response) => {
         if (response.data.status) {
           this.section.group_tag = response.data.data;
           this.updateLastSave();
@@ -3548,7 +3591,7 @@ const _sfc_main$i = {
     updateIntro() {
       this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, "<br/>");
       this.section.group_intro = this.$refs.sectionIntro.innerHTML;
-      formBuilderService.updateGroupParams(this.section.group_id, { "intro": this.section.group_intro }, this.shortDefaultLang).then((response) => {
+      formBuilderService.updateGroupParams(this.section.group_id, { intro: this.section.group_intro }, this.shortDefaultLang).then((response) => {
         if (response.status) {
           this.updateLastSave();
         } else {
@@ -3663,7 +3706,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ]),
       createBaseVNode("div", {
-        class: normalizeClass(["section-content tw-w-full em-p-32", { "closed": $data.closedSection }])
+        class: normalizeClass(["section-content tw-w-full em-p-32", { closed: $data.closedSection }])
       }, [
         createBaseVNode("div", _hoisted_6$f, [
           withDirectives(createBaseVNode("input", {
@@ -3865,21 +3908,31 @@ const _sfc_main$h = {
     },
     addSection() {
       if (this.sections.length < 10) {
-        formBuilderService.createSimpleGroup(this.page.id, {
-          fr: "Nouvelle section",
-          en: "New section"
-        }, this.mode).then((response) => {
+        formBuilderService.createSimpleGroup(
+          this.page.id,
+          {
+            fr: "Nouvelle section",
+            en: "New section"
+          },
+          this.mode
+        ).then((response) => {
           if (response.status) {
             this.getSections();
             this.updateLastSave();
           } else {
-            this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR"), this.translate(response.msg));
+            this.displayError(
+              this.translate("COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR"),
+              this.translate(response.msg)
+            );
           }
         }).catch((error) => {
           this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_CREATE_SECTION_ERROR"), error);
         });
       } else {
-        this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE"), this.translate("COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT"));
+        this.displayError(
+          this.translate("COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TITLE"),
+          this.translate("COM_EMUNDUS_FORM_BUILDER_MAX_SECTION_TEXT")
+        );
       }
     },
     moveSection(sectionId, direction) {
@@ -3915,7 +3968,14 @@ const _sfc_main$h = {
       this.$refs.pageTitle.innerText = this.$refs.pageTitle.innerText.trim().replace(/[\r\n]/gm, "");
       formBuilderService.updateTranslation(null, this.fabrikPage.show_title.titleraw, this.fabrikPage.show_title.label).then((response) => {
         if (response.data.status) {
-          translationsService.updateTranslations(this.fabrikPage.show_title.label[this.shortDefaultLang], "falang", this.shortDefaultLang, this.fabrikPage.menu_id, "title", "menu");
+          translationsService.updateTranslations(
+            this.fabrikPage.show_title.label[this.shortDefaultLang],
+            "falang",
+            this.shortDefaultLang,
+            this.fabrikPage.menu_id,
+            "title",
+            "menu"
+          );
           this.$emit("update-page-title", {
             page: this.page.id,
             new_title: this.$refs.pageTitle.innerText
@@ -3935,7 +3995,9 @@ const _sfc_main$h = {
           this.fabrikPage.intro_raw = response.data.data;
         }
         if (this.$refs.pageDescription.innerText === "") {
-          document.getElementById("pageDescription").textContent = this.translate("COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD");
+          document.getElementById("pageDescription").textContent = this.translate(
+            "COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_INTRO_ADD"
+          );
           document.getElementById("pageDescription").classList.add("em-text-neutral-600");
         }
       });
@@ -3947,7 +4009,9 @@ const _sfc_main$h = {
         const fromElements = Object.values(sectionFrom.elements);
         const movedElement = fromElements[event.oldIndex];
         if (movedElement !== void 0 && movedElement !== null && movedElement.id) {
-          const foundElement = this.$refs["section-" + toGroup][0].elements.find((element) => element.id === movedElement.id);
+          const foundElement = this.$refs["section-" + toGroup][0].elements.find(
+            (element) => element.id === movedElement.id
+          );
           if (foundElement === void 0 || foundElement === null) {
             this.$refs["section-" + toGroup][0].elements.splice(event.newIndex, 0, movedElement);
           }
@@ -4227,8 +4291,8 @@ const _sfc_main$f = {
     },
     close(reload = true, newSelected = 0) {
       this.$emit("close", {
-        "reload": reload,
-        "newSelected": newSelected
+        reload,
+        newSelected
       });
     },
     isInitialStructureAlreadyUsed() {
@@ -4326,9 +4390,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("section", _hoisted_3$e, [
         createBaseVNode("div", {
           class: normalizeClass(["tw-mt-4 tw-mb-4 card-wrapper", { selected: -1 === $data.selected }]),
-          onClick: _cache[2] || (_cache[2] = ($event) => {
-            $data.selected = -1;
-          })
+          onClick: _cache[2] || (_cache[2] = ($event) => $data.selected = -1)
         }, [
           createBaseVNode("div", {
             class: "card em-shadow-cards tw-cursor-pointer tw-flex tw-items-center",
@@ -4383,7 +4445,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
               createBaseVNode("label", _hoisted_11$4, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_NEW_STRUCTURE")), 1)
             ]),
             createBaseVNode("div", {
-              class: normalizeClass(["tw-flex tw-items-center", { "disabled": !$data.canUseInitialStructure }])
+              class: normalizeClass(["tw-flex tw-items-center", { disabled: !$data.canUseInitialStructure }])
             }, [
               withDirectives(createBaseVNode("input", {
                 type: "radio",
@@ -4468,7 +4530,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const FormBuilderCreatePage = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-2c2ce8ff"]]);
+const FormBuilderCreatePage = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-4703b9d0"]]);
 const _sfc_main$e = {
   name: "FormBuilderPages",
   components: {
@@ -4901,7 +4963,7 @@ function _sfc_render$c(_ctx, _cache, $props, $setup, $data, $options) {
     createBaseVNode("div", _hoisted_1$c, [
       createBaseVNode("div", _hoisted_2$c, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_DOCUMENT")) + " " + toDisplayString($props.documentIndex) + " / " + toDisplayString($props.totalDocuments), 1),
       createBaseVNode("div", {
-        class: normalizeClass(["section-content", { "closed": $data.closedSection }])
+        class: normalizeClass(["section-content", { closed: $data.closedSection }])
       }, [
         $data.documentData.id ? (openBlock(), createElementBlock("div", _hoisted_3$c, [
           createBaseVNode("div", _hoisted_4$c, [
@@ -4953,9 +5015,11 @@ const _sfc_main$b = {
   data() {
     return {
       documents: [],
-      emptyDocuments: [{
-        text: "COM_EMUNDUS_FORM_BUILDER_EMPTY_DOCUMENTS"
-      }],
+      emptyDocuments: [
+        {
+          text: "COM_EMUNDUS_FORM_BUILDER_EMPTY_DOCUMENTS"
+        }
+      ],
       closedSection: false
     };
   },
@@ -5373,15 +5437,20 @@ const _sfc_main$a = {
         if (response.status) {
           this.models = response.data;
           if (this.current_document != null && (this.current_document.docid || this.current_document.id)) {
-            this.selectModel({
-              target: {
-                value: this.current_document.docid ? this.current_document.docid : this.current_document.id
-              }
-            }, this.current_document.mandatory !== null && this.current_document.mandatory != "undefined" ? this.current_document.mandatory : null);
+            this.selectModel(
+              {
+                target: {
+                  value: this.current_document.docid ? this.current_document.docid : this.current_document.id
+                }
+              },
+              this.current_document.mandatory !== null && this.current_document.mandatory != "undefined" ? this.current_document.mandatory : null
+            );
           }
-          formService.getDocumentModelsUsage(this.models.map((model) => {
-            return model.id;
-          })).then((response2) => {
+          formService.getDocumentModelsUsage(
+            this.models.map((model) => {
+              return model.id;
+            })
+          ).then((response2) => {
             if (response2.status) {
               this.modelsUsage = response2.data;
             }
@@ -5572,7 +5641,10 @@ const _sfc_main$a = {
     updateDocumentSelectedValue(document2) {
       if (document2.id) {
         this.document.name[this.shortDefaultLang] = document2.label;
-        this.selectModel({ target: { value: document2.id } }, this.current_document && this.current_document.id && this.current_document.id == document2.id ? this.current_document.mandatory : this.mandatory);
+        this.selectModel(
+          { target: { value: document2.id } },
+          this.current_document && this.current_document.id && this.current_document.id == document2.id ? this.current_document.mandatory : this.mandatory
+        );
       } else {
         this.document.id = null;
         this.document.name[this.shortDefaultLang] = document2.label;
@@ -5674,18 +5746,24 @@ const _sfc_main$a = {
       if (newValue && (newValue.docid || newValue.id)) {
         if (this.models.length < 1) {
           this.getDocumentModels().then(() => {
-            this.selectModel({
+            this.selectModel(
+              {
+                target: {
+                  value: newValue.docid ? newValue.docid : newValue.id
+                }
+              },
+              newValue.mandatory ? newValue.mandatory : null
+            );
+          });
+        } else {
+          this.selectModel(
+            {
               target: {
                 value: newValue.docid ? newValue.docid : newValue.id
               }
-            }, newValue.mandatory ? newValue.mandatory : null);
-          });
-        } else {
-          this.selectModel({
-            target: {
-              value: newValue.docid ? newValue.docid : newValue.id
-            }
-          }, newValue.mandatory ? newValue.mandatory : null);
+            },
+            newValue.mandatory ? newValue.mandatory : null
+          );
         }
       }
     },
@@ -6267,7 +6345,9 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
     ]),
     createBaseVNode("div", _hoisted_9$5, [
       createBaseVNode("button", {
-        class: normalizeClass(["tw-btn-primary tw-m-4", { "tw-text-white tw-bg-gray-500 tw-w-full tw-px-2 tw-py-3 tw-rounded-coordinator": $data.modelTitle.length < 1 || $data.loading }]),
+        class: normalizeClass(["tw-btn-primary tw-m-4", {
+          "tw-text-white tw-bg-gray-500 tw-w-full tw-px-2 tw-py-3 tw-rounded-coordinator": $data.modelTitle.length < 1 || $data.loading
+        }]),
         onClick: _cache[2] || (_cache[2] = ($event) => $options.addFormModel()),
         disabled: $data.modelTitle.length < 1 || $data.loading
       }, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_SECTION_PROPERTIES_SAVE")), 11, _hoisted_10$4)
@@ -6382,7 +6462,10 @@ const _sfc_main$7 = {
             let min = action_params[0].minRepeat;
             let max = action_params[0].maxRepeat;
             if (min == max) {
-              return this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_STRICT_REPEAT").replace("%min", min);
+              return this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_STRICT_REPEAT").replace(
+                "%min",
+                min
+              );
             } else if (max > 0) {
               return this.translate("COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_BETWEEN").replace("%min", min).replace("%max", max);
             } else {
@@ -6473,21 +6556,23 @@ const _sfc_main$7 = {
       }
     }
     /*cloneRule(rule)
-    {
-      this.loading = true;
-      formService.cloneRule(rule.id).then(response => {
-        if (response.status) {
-          this.getConditions();
-        } else {
-          this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
-        }
-      });
-    }*/
+      {
+        this.loading = true;
+        formService.cloneRule(rule.id).then(response => {
+          if (response.status) {
+            this.getConditions();
+          } else {
+            this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+          }
+        });
+      }*/
   },
   computed: {
     searchedRules() {
       if (this.keywords) {
-        let elements_found = this.elements.filter((element) => element.label[useGlobalStore().getShortLang].toLowerCase().includes(this.keywords.toLowerCase()));
+        let elements_found = this.elements.filter(
+          (element) => element.label[useGlobalStore().getShortLang].toLowerCase().includes(this.keywords.toLowerCase())
+        );
         return this.rules.filter((rule) => {
           let found = false;
           if (rule.label) {
@@ -6520,7 +6605,6 @@ const _sfc_main$7 = {
   },
   watch: {
     keywords: {
-      // eslint-disable-next-line vue/no-arrow-functions-in-watch
       handler: function(val) {
         this.highlight(val);
       }
@@ -6789,7 +6873,9 @@ const _sfc_main$6 = {
   computed: {
     publishedRules() {
       if (this.keywords) {
-        return this.rules.filter((rule) => rule.published && this.translate(rule.name).toLowerCase().includes(this.keywords.toLowerCase()));
+        return this.rules.filter(
+          (rule) => rule.published && this.translate(rule.name).toLowerCase().includes(this.keywords.toLowerCase())
+        );
       } else {
         return this.rules.filter((rule) => rule.published);
       }
@@ -6843,15 +6929,18 @@ var fabrik = {
   methods: {
     async getDatabasejoinOptions(table_name, column_name, value, concat_value, where_clause) {
       try {
-        const response = await client$1().get("index.php?option=com_emundus&controller=form&task=getdatabasejoinoptions", {
-          params: {
-            table_name,
-            column_name,
-            value,
-            concat_value,
-            where_clause
+        const response = await client$1().get(
+          "index.php?option=com_emundus&controller=form&task=getdatabasejoinoptions",
+          {
+            params: {
+              table_name,
+              column_name,
+              value,
+              concat_value,
+              where_clause
+            }
           }
-        });
+        );
         return response.data;
       } catch (e) {
         return {
@@ -6941,11 +7030,18 @@ const _sfc_main$5 = {
       if (this.options_plugins.includes(val.plugin)) {
         if (val.plugin == "databasejoin") {
           this.loading = true;
-          this.getDatabasejoinOptions(val.params.join_db_name, val.params.join_key_column, val.params.join_val_column, val.params.join_val_column_concat).then((response) => {
+          this.getDatabasejoinOptions(
+            val.params.join_db_name,
+            val.params.join_key_column,
+            val.params.join_val_column,
+            val.params.join_val_column_concat
+          ).then((response) => {
             if (response.status && response.data != "") {
               this.options = response.options;
               if (this.conditionData.values) {
-                this.conditionData.values = this.options.find((option) => option.primary_key == this.conditionData.values);
+                this.conditionData.values = this.options.find(
+                  (option) => option.primary_key == this.conditionData.values
+                );
               }
             } else {
               this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_ERROR"), this.translate(response.msg));
@@ -6969,7 +7065,9 @@ const _sfc_main$5 = {
               ctr++;
               if (ctr === val.params.sub_options.sub_values.length) {
                 if (this.conditionData.values) {
-                  this.conditionData.values = this.options.find((option2) => option2.primary_key == this.conditionData.values);
+                  this.conditionData.values = this.options.find(
+                    (option2) => option2.primary_key == this.conditionData.values
+                  );
                 }
               }
             });
@@ -7247,7 +7345,12 @@ const _sfc_main$3 = {
         { id: 4, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS", value: "hide_options", multiple: false },
         { id: 5, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY", value: "set_mandatory", multiple: true },
         { id: 6, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL", value: "set_optional", multiple: true },
-        { id: 7, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP", value: "define_repeat_group", multiple: false }
+        {
+          id: 7,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP",
+          value: "define_repeat_group",
+          multiple: false
+        }
       ],
       options: [],
       options_plugins: ["dropdown", "databasejoin", "radiobutton", "checkbox"],
@@ -7291,8 +7394,13 @@ const _sfc_main$3 = {
         return labelTranslated;
       } else if (group_id && elements) {
         let groupElements = Object.values(elements);
-        let element = groupElements.find((element2) => !element2.hidden && element2.label && element2.label[useGlobalStore().getShortLang] !== "");
-        return this.translate("COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT").replace("%s", element.label[useGlobalStore().getShortLang]);
+        let element = groupElements.find(
+          (element2) => !element2.hidden && element2.label && element2.label[useGlobalStore().getShortLang] !== ""
+        );
+        return this.translate("COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT").replace(
+          "%s",
+          element.label[useGlobalStore().getShortLang]
+        );
       } else {
         return name;
       }
@@ -7301,7 +7409,12 @@ const _sfc_main$3 = {
       if (["show_options", "hide_options"].includes(this.action.action)) {
         if (this.options_plugins.includes(val.plugin)) {
           if (val.plugin == "databasejoin") {
-            this.getDatabasejoinOptions(val.params.join_db_name, val.params.join_key_column, val.params.join_val_column, val.params.join_val_column_concat).then((response) => {
+            this.getDatabasejoinOptions(
+              val.params.join_db_name,
+              val.params.join_key_column,
+              val.params.join_val_column,
+              val.params.join_val_column_concat
+            ).then((response) => {
               if (response.status && response.data != "") {
                 this.options = response.options;
               } else {
@@ -7340,7 +7453,9 @@ const _sfc_main$3 = {
         if (this.action.action == "define_repeat_group") {
           return Object.values(this.page.Groups).filter((group) => group.repeat_group == true);
         } else {
-          return this.elements.filter((element) => ["databasejoin", "dropdown", "radiobutton", "checkbox"].includes(element.plugin));
+          return this.elements.filter(
+            (element) => ["databasejoin", "dropdown", "radiobutton", "checkbox"].includes(element.plugin)
+          );
         }
       } else {
         return this.elements;
@@ -7643,11 +7758,17 @@ const _sfc_main$2 = {
         }
       });
       if (conditions_post.length == 0) {
-        this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR"), this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_CONDITION_EMPTY"));
+        this.displayError(
+          this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR"),
+          this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_CONDITION_EMPTY")
+        );
         return;
       }
       if (actions_post.length == 0) {
-        this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR"), this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_ACTION_EMPTY"));
+        this.displayError(
+          this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR"),
+          this.translate("COM_EMUNDUS_FORM_BUILDER_RULE_ERROR_ACTION_EMPTY")
+        );
         return;
       }
       if (this.rule !== null) {
@@ -7917,13 +8038,7 @@ const _sfc_main = {
       optionsSelectedElement: false,
       selectedDocument: null,
       rightPanel: {
-        tabs: [
-          "hierarchy",
-          "element-properties",
-          "section-properties",
-          "create-model",
-          "create-document"
-        ]
+        tabs: ["hierarchy", "element-properties", "section-properties", "create-model", "create-document"]
       },
       showInRightPanel: "hierarchy",
       createDocumentMandatory: "1",
@@ -7991,9 +8106,12 @@ const _sfc_main = {
     };
   },
   created() {
-    watch(() => this.formBuilderStore.lastSave, (newValue) => {
-      this.lastSave = newValue;
-    });
+    watch(
+      () => this.formBuilderStore.lastSave,
+      (newValue) => {
+        this.lastSave = newValue;
+      }
+    );
     const data = this.globalStore.getDatas;
     if (parseInt(this.globalStore.hasManyLanguages) === 0) {
       this.leftPanel.tabs[2].displayed = false;
@@ -8010,7 +8128,9 @@ const _sfc_main = {
       this.mode = data.mode.value;
       if (this.mode === "eval" || this.mode === "models") {
         this.rightPanel.tabs = this.rightPanel.tabs.filter((tab) => tab !== "hierarchy" && tab !== "create-document");
-        this.leftPanel.tabs = this.leftPanel.tabs.filter((tab) => tab.code != "documents" && tab.code != "translations");
+        this.leftPanel.tabs = this.leftPanel.tabs.filter(
+          (tab) => tab.code != "documents" && tab.code != "translations"
+        );
         this.form_id = this.profile_id;
         this.profile_id = 0;
       }
@@ -8040,7 +8160,14 @@ const _sfc_main = {
           this.pages[0].label = fabrikPage.show_title.label[this.shortDefaultLang];
           formBuilderService.updateTranslation(null, tag, fabrikPage.show_title.label).then((response2) => {
             if (response2.data.status) {
-              translationsService.updateTranslations(fabrikPage.show_title.label[this.shortDefaultLang], "falang", this.shortDefaultLang, fabrikPage.menu_id, "title", "menu");
+              translationsService.updateTranslations(
+                fabrikPage.show_title.label[this.shortDefaultLang],
+                "falang",
+                this.shortDefaultLang,
+                fabrikPage.menu_id,
+                "title",
+                "menu"
+              );
               this.$refs.formBuilderPage.getSections();
             }
           });
@@ -8609,9 +8736,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           onSelectPage: _cache[16] || (_cache[16] = ($event) => $options.selectPage($event)),
                           onAddPage: _cache[17] || (_cache[17] = ($event) => $options.getPages($options.currentPage.id)),
                           onDeletePage: _cache[18] || (_cache[18] = ($event) => $options.afterDeletedPage($event)),
-                          onOpenPageCreate: _cache[19] || (_cache[19] = ($event) => {
-                            $data.principalContainer = "create-page";
-                          }),
+                          onOpenPageCreate: _cache[19] || (_cache[19] = ($event) => $data.principalContainer = "create-page"),
                           onReorderPages: $options.onReorderedPages,
                           onOpenCreateModel: $options.onOpenCreateModel
                         }, null, 8, ["pages", "selected", "profile_id", "onReorderPages", "onOpenCreateModel"]),
@@ -8638,9 +8763,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       }, null, 8, ["onClose", "section_id", "profile_id"])) : $data.showInRightPanel === "create-model" ? (openBlock(), createBlock(_component_form_builder_create_model, {
                         key: 3,
                         page: $data.selectedPage,
-                        onClose: _cache[21] || (_cache[21] = ($event) => {
-                          $data.showInRightPanel = "hierarchy";
-                        })
+                        onClose: _cache[21] || (_cache[21] = ($event) => $data.showInRightPanel = "hierarchy")
                       }, null, 8, ["page"])) : $data.showInRightPanel === "create-document" && $data.rightPanel.tabs.includes("create-document") ? (openBlock(), createBlock(_component_form_builder_create_document, {
                         ref: "formBuilderCreateDocument",
                         key: $data.formBuilderCreateDocumentKey,

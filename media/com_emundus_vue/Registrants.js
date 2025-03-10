@@ -13,7 +13,6 @@ import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
 const _sfc_main = {
-  // eslint-disable-next-line vue/multi-word-component-names
   name: "Registrants",
   components: {
     list
