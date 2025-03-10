@@ -2088,15 +2088,13 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function getUserGroupsProgramme(int $uid): array
 	{
-
-
 		$query = $this->db->getQuery(true);
 
 		$query
 			->select($this->db->quoteName('esgc.course'))
 			->from($this->db->quoteName('#__emundus_groups', 'g'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $this->db->quoteName('g.group_id') . ' = ' . $this->db->quoteName('esg.id'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgc') . ' ON ' . $this->db->quoteName('esgc.parent_id') . ' = ' . $this->db->quoteName('esg.id'))
+			->innerJoin($this->db->quoteName('#__emundus_setup_groups', 'esg') . ' ON ' . $this->db->quoteName('g.group_id') . ' = ' . $this->db->quoteName('esg.id'))
+			->innerJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'esgc') . ' ON ' . $this->db->quoteName('esgc.parent_id') . ' = ' . $this->db->quoteName('esg.id'))
 			->where($this->db->quoteName('g.user_id') . ' = ' . $uid);
 
 		$this->db->setQuery($query);

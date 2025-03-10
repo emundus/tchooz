@@ -1449,15 +1449,21 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	public function createCampaign($data)
+	public function createCampaign($data, $user_id = 0)
 	{
 		$campaign_id = 0;
 
 		if (!empty($data) && !empty($data['label'])) {
+			if(empty($user_id)) {
+				$user_id = $this->app->getIdentity()->id;
+			}
+			
 			require_once(JPATH_SITE . '/components/com_emundus/models/settings.php');
 			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+			require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 			$m_settings = new EmundusModelSettings;
 			$m_emails   = new EmundusModelEmails;
+			$m_form   = new EmundusModelForm;
 
 			if (version_compare(JVERSION, '4.0', '>')) {
 				$lang = $this->app->getLanguage();
@@ -1511,13 +1517,12 @@ class EmundusModelCampaign extends ListModel
 						$limit_status = $data['limit_status'];
 						unset($data['limit_status']);
 					}
-					if ($key == 'profile_id') {
-						$query->select('id')
-							->from($this->_db->quoteName('#__emundus_setup_profiles'))
-							->where($this->_db->quoteName('published') . ' = 1')
-							->andWhere($this->_db->quoteName('status') . ' = 1');
-						$this->_db->setQuery($query);
-						$data['profile_id'] = $this->_db->loadResult();
+					if ($key == 'profile_id' && empty($data['profile_id'])) {
+						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC);
+
+						if(!empty($forms)) {
+							$data['profile_id'] = $forms[0]->id;
+						}
 
 						if (empty($data['profile_id'])) {
 							unset($data['profile_id']);

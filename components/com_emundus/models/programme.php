@@ -2094,9 +2094,9 @@ class EmundusModelProgramme extends ListModel
 				->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->_db->quoteName('sg.id') . ' = ' . $this->_db->quoteName('sgr.parent_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->_db->quoteName('sgr.course') . ' = ' . $this->_db->quoteName('sp.code'))
 				->where($this->_db->quoteName('g.user_id') . ' = ' . $this->_db->quote($user_id));
-			$this->_db->setQuery($query);
 
 			try {
+				$this->_db->setQuery($query);
 				$programs = $this->_db->loadObjectList();
 
 				$progs = [];

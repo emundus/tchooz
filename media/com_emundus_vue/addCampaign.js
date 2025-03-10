@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, h as withDirectives, R as vModelText, a as createBaseVNode, Y as withKeys, d as normalizeClass, v as vShow, F as Fragment, b as renderList, t as toDisplayString, Q as defineStore, U as script, X as V32, u as useGlobalStore, x as campaignService, S as Swal, m as fileService, L as programmeService, s as settingsService, r as resolveComponent, e as createCommentVNode, i as withModifiers, D as createTextVNode, g as createVNode, w as withCtx, z as mergeProps, H as toHandlers, G as vModelCheckbox, B as vModelSelect, N as Transition } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, h as withDirectives, R as vModelText, a as createBaseVNode, Y as withKeys, d as normalizeClass, v as vShow, F as Fragment, b as renderList, t as toDisplayString, Q as defineStore, U as script, X as V32, u as useGlobalStore, x as campaignService, S as Swal, K as formService, L as programmeService, s as settingsService, r as resolveComponent, e as createCommentVNode, i as withModifiers, D as createTextVNode, g as createVNode, w as withCtx, z as mergeProps, H as toHandlers, G as vModelCheckbox, B as vModelSelect, N as Transition } from "./app_emundus.js";
 import { D as DatePicker } from "./index.js";
 /* empty css       */
 const _sfc_main$1 = {
@@ -301,9 +301,9 @@ const _sfc_main = {
       this.getAllPrograms();
     },
     getAllForms() {
-      fileService.getProfiles().then((response) => {
+      formService.getPublishedForms().then((response) => {
         if (response.status) {
-          this.applicantForms = response.data.filter((form) => form.published === 1 && form.menutype !== "");
+          this.applicantForms = response.data.data;
         }
       }).catch((e) => {
         console.log(e);
@@ -1199,7 +1199,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-928d1f8b"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-701997dd"]]);
 export {
   addCampaign as default
 };

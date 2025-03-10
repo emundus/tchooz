@@ -344,13 +344,13 @@ class Dataset
 				'short_description' => 'Lorem ipsum',
 				'start_date' => $start_date->format('Y-m-d H:i:s'),
 				'end_date' => $end_date->format('Y-m-d H:i:s'),
-				'profile_id' => 9,
+				'profile_id' => 1000,
 				'training' => $program['programme_code'],
 				'year' => '2022-2023',
 				'published' => 1,
 				'is_limited' => 0,
 				'user' => $user_id
-			]);
+			], $user_id);
 		}
 
 		return $campaign_id;
