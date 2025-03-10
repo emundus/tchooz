@@ -70,6 +70,10 @@ export default {
 			type: String,
 			default: '',
 		},
+		random: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ['input', 'update:modelValue'],
 	data: () => ({
@@ -80,6 +84,13 @@ export default {
 	},
 	beforeUnmount() {
 		document.removeEventListener('click', this.handleClickOutside);
+	},
+	created() {
+		// If random is true, then select a random color from the swatches
+		if (this.random && this.modelValue === '') {
+			const randomIndex = Math.floor(Math.random() * this.computedSwatches.length);
+			this.updateSwatch(this.computedSwatches[randomIndex]);
+		}
 	},
 	methods: {
 		swatchStyle(swatch) {

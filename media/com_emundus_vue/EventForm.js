@@ -23,7 +23,7 @@ const _sfc_main$5 = {
       teamsPublished: false,
       settingsLink: "",
       eventsNames: [],
-      eventColor: "#1e1e1e",
+      eventColor: "",
       fields: [
         {
           param: "name",
@@ -258,9 +258,7 @@ const _sfc_main$5 = {
           field.value = this.event[field.param];
         }
       });
-      if (!this.event.color) {
-        this.eventColor = "#1e1e1e";
-      } else {
+      if (this.event.color) {
         this.eventColor = this.event.color;
       }
     }
@@ -535,6 +533,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
             swatches: "dark",
             "row-length": 8,
             id: "status_swatches",
+            random: true,
             style: { "top": "-8px" }
           }, null, 8, ["modelValue"])) : createCommentVNode("", true),
           field.param === "conference_engine" && field.value === "teams" && !$data.teamsEnabled ? (openBlock(), createBlock(_component_Info, {

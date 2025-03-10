@@ -29,7 +29,7 @@ export default {
 			settingsLink: '',
 			eventsNames: [],
 
-			eventColor: '#1e1e1e',
+			eventColor: '',
 			fields: [
 				{
 					param: 'name',
@@ -271,9 +271,7 @@ export default {
 				}
 			});
 
-			if (!this.event.color) {
-				this.eventColor = '#1e1e1e';
-			} else {
+			if (this.event.color) {
 				this.eventColor = this.event.color;
 			}
 		}
@@ -576,6 +574,7 @@ export default {
 					:swatches="'dark'"
 					:row-length="8"
 					:id="'status_swatches'"
+					:random="true"
 					style="top: -8px"
 				/>
 

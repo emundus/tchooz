@@ -6,6 +6,12 @@ import colors from '@/mixins/colors';
 /* COMPONENTS */
 import EventModal from '@/components/Events/EventModal.vue';
 import EventDay from '@/components/Events/EventDay.vue';
+import EventInformations from '@/components/Events/EventInformations.vue';
+import Modal from '@/components/Modal.vue';
+import EditSlot from '@/views/Events/EditSlot.vue';
+
+/* Services */
+import eventsService from '@/services/events';
 
 /* Schedule X */
 import { ScheduleXCalendar } from '@schedule-x/vue';
@@ -20,8 +26,6 @@ const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const eventModal = createEventModalPlugin();
 
-// Do not use a ref here, as the calendar instance is not reactive, and doing so might cause issues
-// For updating events, use the events service plugin
 const createCalendarConfig = (vm) => ({
 	locale: 'fr-FR',
 	defaultView: vm.defaultView,
@@ -65,7 +69,10 @@ const createCalendarConfig = (vm) => ({
 			calendarControls.setDate(startString);
 
 			// If startString is between range dispatch onRangeUpdate event
-			if (new Date(startString) >= new Date(range.start) && new Date(startString) <= new Date(range.end)) {
+			if (
+				vm.normalizeDate(startString) >= vm.normalizeDate(range.start) &&
+				vm.normalizeDate(startString) <= vm.normalizeDate(range.end)
+			) {
 				if (calendarControls.getView() === 'day') {
 					vm.getEventsAvailabilities(range.start, range.end);
 				} else {
@@ -94,12 +101,6 @@ const createCalendarConfig = (vm) => ({
 		},
 	}),
 });
-
-/* Services */
-import eventsService from '@/services/events';
-import EventInformations from '@/components/Events/EventInformations.vue';
-import Modal from '@/components/Modal.vue';
-import EditSlot from '@/views/Events/EditSlot.vue';
 
 export default {
 	name: 'Calendar',
@@ -156,6 +157,7 @@ export default {
 			const vm = {
 				getEventsSlots: this.getEventsSlots,
 				getEventsAvailabilities: this.getEventsAvailabilities,
+				normalizeDate: this.normalizeDate,
 				items: this.items,
 				defaultView: view ? view : 'week',
 			};
@@ -186,7 +188,6 @@ export default {
 						let events = await this.prepareEvents(response.data);
 
 						if (events.length > 0) {
-							// Only set calendars with show = true
 							const calendarsToShow = Object.keys(this.calendars).filter((key) => this.calendars[key].show);
 							calendarControls.setCalendars(calendarsToShow);
 
@@ -268,6 +269,7 @@ export default {
 
 		buildCalendar(item, defaultShow = false) {
 			return {
+				id: 'calendar_' + item.id,
 				colorName: 'calendar_' + item.id,
 				lightColors: {
 					main: item.color,
@@ -281,6 +283,7 @@ export default {
 				booked_count: 0,
 				show: defaultShow,
 				events: [],
+				columnSize: 0,
 			};
 		},
 
@@ -288,8 +291,8 @@ export default {
 			return new Promise((resolve) => {
 				let events = [];
 				let columns = [];
+				let calendarSizes = {};
 
-				// Check if calendar of event is shown
 				if (check_show) {
 					datas = datas.filter((event) => this.calendars['calendar_' + event.event_id].show);
 				}
@@ -302,29 +305,31 @@ export default {
 					groupedEvents[event.event_id].push(event);
 				});
 
-				let groupedArray = Object.values(groupedEvents).sort((a, b) => a[0].start - b[0].start);
+				let sortedGroupedEvents = Object.values(groupedEvents).map((group) => group.sort((a, b) => a.start - b.start));
 
-				groupedArray.forEach((group) => {
-					group.forEach((event) => {
-						event.title = event.name;
-						if (event.people && typeof event.people === 'string') {
-							event.people = event.people.split(',');
-						}
-						event.calendarId = 'calendar_' + event.event_id;
-					});
+				let sortedEvents = sortedGroupedEvents.flat();
 
-					// Placement du groupe entier dans les colonnes
+				sortedEvents.forEach((event) => {
+					event.title = event.name;
+					if (event.people && typeof event.people === 'string') {
+						event.people = event.people.split(',');
+					}
+					event.calendarId = 'calendar_' + event.event_id;
+
 					let placed = false;
 					for (let column of columns) {
-						if (!column.some((e) => e.end > group[0].start)) {
-							column.push(...group);
+						if (!column.some((e) => e.end > event.start) && column.every((e) => e.slot_id === event.slot_id)) {
+							column.push(event);
 							placed = true;
 							break;
 						}
 					}
 					if (!placed) {
-						columns.push([...group]);
+						columns.push([event]);
 					}
+
+					let usedColumns = columns.length;
+					calendarSizes[event.event_id] = Math.max(calendarSizes[event.event_id] || 1, usedColumns);
 				});
 
 				let totalColumns = columns.length;
@@ -332,8 +337,16 @@ export default {
 					column.forEach((event) => {
 						event.width = `calc(100% / ${totalColumns})`;
 						event.left = `calc(${(colIndex / totalColumns) * 100}%)`;
+
 						events.push(event);
 					});
+				});
+
+				Object.keys(calendarSizes).forEach((event_id) => {
+					let calendarKey = 'calendar_' + event_id;
+					if (this.calendars[calendarKey]) {
+						this.calendars[calendarKey].columnSize = calendarSizes[event_id];
+					}
 				});
 
 				resolve(events);
@@ -353,6 +366,14 @@ export default {
 				style.backgroundColor = this.lightenColor(calendar.color, 90);
 				style.border = `2px solid ${calendar.color}`;
 				style.borderLeft = `4px solid ${calendar.color}`;
+
+				let gridColumnSize = calendar.columnSize;
+				let key = Object.keys(this.calendars).indexOf(calendar.id);
+				if (key > 0) {
+					let previousCalendar = Object.values(this.calendars)[key - 1];
+					gridColumnSize -= previousCalendar.columnSize;
+				}
+				style.gridColumn = `span ${gridColumnSize}`;
 			} else {
 				style.borderLeft = `4px solid ${calendar.color}`;
 			}
@@ -380,7 +401,6 @@ export default {
 		toggleCalendar(calendar) {
 			calendar.show = !calendar.show;
 
-			// get events of all calendars
 			let datas = [];
 			for (const key in this.calendars) {
 				datas = datas.concat(this.calendars[key].events);
@@ -389,6 +409,12 @@ export default {
 			this.prepareEvents(datas).then((events) => {
 				eventsServicePlugin.set(events);
 			});
+		},
+
+		normalizeDate(date) {
+			const d = new Date(date);
+			d.setHours(0, 0, 0, 0);
+			return d;
 		},
 	},
 	watch: {
@@ -438,7 +464,7 @@ export default {
 		<div class="tw-flex tw-flex-col tw-gap-4">
 			<div
 				v-if="view === 'day'"
-				class="tw-flex tw-gap-4"
+				class="tw-grid tw-gap-3 calendars-list"
 				style="padding-left: var(--sx-calendar-week-grid-padding-left)"
 			>
 				<div
@@ -485,7 +511,7 @@ export default {
 }
 
 .day-grid {
-	grid-template-columns: 25% 75%;
+	grid-template-columns: 15% 85%;
 }
 
 input[type='checkbox'].event-checkbox {
@@ -501,5 +527,9 @@ input[type='checkbox'].event-checkbox {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+}
+
+.calendars-list {
+	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 }
 </style>

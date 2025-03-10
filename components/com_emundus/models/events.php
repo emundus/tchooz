@@ -582,6 +582,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 			$columns = [
 				'esa.id',
 				'eses.event as event_id',
+				'eses.id as slot_id',
 				'ese.name',
 				'ese.color',
 				'ese.slot_duration',

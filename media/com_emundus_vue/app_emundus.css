@@ -2396,19 +2396,19 @@ input[type='checkbox'].event-checkbox[data-v-e5595374] {
 	border-right: 8px solid var(--event-arrow-color);
 }
 
-.placement-center[data-v-634e0732] {
+.placement-center[data-v-ed3fe7bd] {
 	position: fixed;
 	left: 50%;
 	transform: translate(-50%, -50%);
 	top: 50%;
 }
-.day-grid[data-v-634e0732] {
-	grid-template-columns: 25% 75%;
+.day-grid[data-v-ed3fe7bd] {
+	grid-template-columns: 15% 85%;
 }
-input[type='checkbox'].event-checkbox[data-v-634e0732] {
+input[type='checkbox'].event-checkbox[data-v-ed3fe7bd] {
 	margin-right: 0 !important;
 }
-.event-checkbox[data-v-634e0732]:checked:before {
+.event-checkbox[data-v-ed3fe7bd]:checked:before {
 	content: '✓';
 	color: white;
 	font-size: 16px;
@@ -2417,6 +2417,9 @@ input[type='checkbox'].event-checkbox[data-v-634e0732] {
 	top: 50%;
 	left: 50%;
 	transform: translate(-50%, -50%);
+}
+.calendars-list[data-v-ed3fe7bd] {
+	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 }
 #modalAddTriggercandidate .v--modal[data-v-7be50971],
 #modalAddTriggermanual .v--modal[data-v-7be50971],

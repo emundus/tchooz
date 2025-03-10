@@ -23,7 +23,7 @@ const basicPreset = [
   "grey-2",
   "black"
 ];
-const darkPreset = ["red-2", "pink-2", "purple-2", "blue-3", "green-2", "orange-2", "brown", "black"];
+const darkPreset = ["red-2", "pink-2", "purple-2", "blue-3", "green-2", "orange-2", "brown"];
 const extractPropertyFromPreset = (presetName) => {
   if (typeof presetName !== "string") {
     return null;
@@ -68,6 +68,10 @@ const _sfc_main = {
     modelValue: {
       type: String,
       default: ""
+    },
+    random: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ["input", "update:modelValue"],
@@ -79,6 +83,12 @@ const _sfc_main = {
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+  },
+  created() {
+    if (this.random && this.modelValue === "") {
+      const randomIndex = Math.floor(Math.random() * this.computedSwatches.length);
+      this.updateSwatch(this.computedSwatches[randomIndex]);
+    }
   },
   methods: {
     swatchStyle(swatch) {

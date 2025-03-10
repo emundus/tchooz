@@ -16,6 +16,7 @@ export default [
         },
         plugins: { prettier },
         rules: {
+            'no-console': 'off',
             'indent': ['error', 2],
             'vue/html-indent': ['error', 2],
             ...prettierConfig.rules,

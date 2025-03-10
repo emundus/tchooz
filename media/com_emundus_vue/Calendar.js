@@ -1,7 +1,7 @@
 import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, d as createBaseVNode, w as withDirectives, R as vModelCheckbox, j as normalizeStyle, t as toDisplayString, b as createCommentVNode, F as Fragment, r as resolveComponent, h as createVNode, n as normalizeClass, M as Modal, i as shallowRef, a as createBlock, f as withCtx, a8 as resolveDynamicComponent, g as withModifiers, p as Teleport, e as renderList, v as vShow } from "./app_emundus.js";
 import { e as colors, f as d, r, h, y, u, k, g as E, c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, _ as _o, b as createCalendar, d as createViewWeek, i as createViewDay, m as mergeLocales, t as translations } from "./core.js";
-import { e as eventsService } from "./events2.js";
 import EditSlot from "./EditSlot.js";
+import { e as eventsService } from "./events2.js";
 import "./index.js";
 import "./Parameter.js";
 import "./EventBooking.js";
@@ -479,7 +479,7 @@ const createCalendarConfig = (vm) => ({
         }
       }
       calendarControls.setDate(startString);
-      if (new Date(startString) >= new Date(range.start) && new Date(startString) <= new Date(range.end)) {
+      if (vm.normalizeDate(startString) >= vm.normalizeDate(range.start) && vm.normalizeDate(startString) <= vm.normalizeDate(range.end)) {
         if (calendarControls.getView() === "day") {
           vm.getEventsAvailabilities(range.start, range.end);
         } else {
@@ -556,6 +556,7 @@ const _sfc_main = {
       const vm = {
         getEventsSlots: this.getEventsSlots,
         getEventsAvailabilities: this.getEventsAvailabilities,
+        normalizeDate: this.normalizeDate,
         items: this.items,
         defaultView: view ? view : "week"
       };
@@ -640,6 +641,7 @@ const _sfc_main = {
     },
     buildCalendar(item, defaultShow = false) {
       return {
+        id: "calendar_" + item.id,
         colorName: "calendar_" + item.id,
         lightColors: {
           main: item.color,
@@ -652,13 +654,15 @@ const _sfc_main = {
         availabilities_count: 0,
         booked_count: 0,
         show: defaultShow,
-        events: []
+        events: [],
+        columnSize: 0
       };
     },
     prepareEvents(datas, check_show = true) {
       return new Promise((resolve) => {
         let events = [];
         let columns = [];
+        let calendarSizes = {};
         if (check_show) {
           datas = datas.filter((event) => this.calendars["calendar_" + event.event_id].show);
         }
@@ -669,26 +673,27 @@ const _sfc_main = {
           }
           groupedEvents[event.event_id].push(event);
         });
-        let groupedArray = Object.values(groupedEvents).sort((a, b) => a[0].start - b[0].start);
-        groupedArray.forEach((group) => {
-          group.forEach((event) => {
-            event.title = event.name;
-            if (event.people && typeof event.people === "string") {
-              event.people = event.people.split(",");
-            }
-            event.calendarId = "calendar_" + event.event_id;
-          });
+        let sortedGroupedEvents = Object.values(groupedEvents).map((group) => group.sort((a, b) => a.start - b.start));
+        let sortedEvents = sortedGroupedEvents.flat();
+        sortedEvents.forEach((event) => {
+          event.title = event.name;
+          if (event.people && typeof event.people === "string") {
+            event.people = event.people.split(",");
+          }
+          event.calendarId = "calendar_" + event.event_id;
           let placed = false;
           for (let column of columns) {
-            if (!column.some((e) => e.end > group[0].start)) {
-              column.push(...group);
+            if (!column.some((e) => e.end > event.start) && column.every((e) => e.slot_id === event.slot_id)) {
+              column.push(event);
               placed = true;
               break;
             }
           }
           if (!placed) {
-            columns.push([...group]);
+            columns.push([event]);
           }
+          let usedColumns = columns.length;
+          calendarSizes[event.event_id] = Math.max(calendarSizes[event.event_id] || 1, usedColumns);
         });
         let totalColumns = columns.length;
         columns.forEach((column, colIndex) => {
@@ -697,6 +702,12 @@ const _sfc_main = {
             event.left = `calc(${colIndex / totalColumns * 100}%)`;
             events.push(event);
           });
+        });
+        Object.keys(calendarSizes).forEach((event_id) => {
+          let calendarKey = "calendar_" + event_id;
+          if (this.calendars[calendarKey]) {
+            this.calendars[calendarKey].columnSize = calendarSizes[event_id];
+          }
         });
         resolve(events);
       });
@@ -712,6 +723,13 @@ const _sfc_main = {
         style.backgroundColor = this.lightenColor(calendar.color, 90);
         style.border = `2px solid ${calendar.color}`;
         style.borderLeft = `4px solid ${calendar.color}`;
+        let gridColumnSize = calendar.columnSize;
+        let key = Object.keys(this.calendars).indexOf(calendar.id);
+        if (key > 0) {
+          let previousCalendar = Object.values(this.calendars)[key - 1];
+          gridColumnSize -= previousCalendar.columnSize;
+        }
+        style.gridColumn = `span ${gridColumnSize}`;
       } else {
         style.borderLeft = `4px solid ${calendar.color}`;
       }
@@ -742,6 +760,11 @@ const _sfc_main = {
       this.prepareEvents(datas).then((events) => {
         eventsServicePlugin.set(events);
       });
+    },
+    normalizeDate(date) {
+      const d2 = new Date(date);
+      d2.setHours(0, 0, 0, 0);
+      return d2;
     }
   },
   watch: {
@@ -759,7 +782,7 @@ const _hoisted_3 = ["checked"];
 const _hoisted_4 = { class: "tw-flex tw-flex-col tw-gap-4" };
 const _hoisted_5 = {
   key: 0,
-  class: "tw-flex tw-gap-4",
+  class: "tw-grid tw-gap-3 calendars-list",
   style: { "padding-left": "var(--sx-calendar-week-grid-padding-left)" }
 };
 const _hoisted_6 = ["onClick"];
@@ -856,7 +879,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2)) : createCommentVNode("", true);
 }
-const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-634e0732"]]);
+const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-ed3fe7bd"]]);
 export {
   Calendar as default
 };
