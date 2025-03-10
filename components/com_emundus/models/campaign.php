@@ -1584,16 +1584,8 @@ class EmundusModelCampaign extends ListModel
 						unset($data['limit_status']);
 					}
 					if ($key == 'profile_id') {
-						$query->select('id')
-							->from($this->_db->quoteName('#__emundus_setup_profiles'))
-							->where($this->_db->quoteName('published') . ' = 1')
-							->andWhere($this->_db->quoteName('status') . ' = 1');
-						$this->_db->setQuery($query);
-						$data['profile_id'] = $this->_db->loadResult();
-
 						if (empty($data['profile_id'])) {
-							unset($data['profile_id']);
-							$data['published'] = 0;
+							$data['profile_id'] = 1000;
 						}
 					}
 					if($key == 'start_date' || $key == 'end_date'){
@@ -1790,17 +1782,7 @@ class EmundusModelCampaign extends ListModel
 						break;
 					case 'profile_id':
 						if (empty($val)) {
-							$query->clear()
-								->select('id')
-								->from($this->_db->quoteName('#__emundus_setup_profiles'))
-								->where($this->_db->quoteName('published') . ' = 1')
-								->order('id DESC');
-							$this->_db->setQuery($query);
-							$val = $this->_db->loadResult();
-
-							if (empty($val)) {
-								$val = 1000;
-							}
+							$val = 1000;
 						}
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
