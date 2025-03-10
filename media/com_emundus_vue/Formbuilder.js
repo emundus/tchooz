@@ -1681,7 +1681,7 @@ const _sfc_main$t = {
       }
       formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
         param.options = response.data;
-        if (this.element.params[param.name] && typeof this.element.params[param.name] === "string" && this.element.params[param.name].length > 0) {
+        if (param.multiple == true && this.element.params[param.name] && typeof this.element.params[param.name] === "string" && this.element.params[param.name].length > 0) {
           let ids_to_exclude = this.element.params[param.name].split(",");
           const regex = /\'|"/gi;
           this.element.params[param.name] = [];
@@ -1692,7 +1692,8 @@ const _sfc_main$t = {
               this.element.params[param.name].push(option);
             }
           });
-        } else {
+        } else if (param.multiple != true) ;
+        else {
           this.element.params[param.name] = [];
         }
         this.loading = false;
@@ -3031,6 +3032,15 @@ const _sfc_main$n = {
   created() {
   },
   methods: {},
+  computed: {
+    defaultCountryLowerCased() {
+      if (this.element.params.default_country && typeof this.element.params.default_country === "string") {
+        return this.element.params.default_country.toLowerCase();
+      } else {
+        return this.element.params.default_country[0].value.toLowerCase();
+      }
+    }
+  },
   watch: {}
 };
 const _hoisted_1$n = { id: "form-builder-phone-number" };
@@ -3053,7 +3063,7 @@ function _sfc_render$n(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("div", _hoisted_5$k, [
           $props.element.params.default_country ? (openBlock(), createElementBlock("img", {
             key: 0,
-            src: "../../../../../../images/emundus/flags/" + $props.element.params.default_country.toLowerCase() + ".png"
+            src: "../../../../../../images/emundus/flags/" + $options.defaultCountryLowerCased + ".png"
           }, null, 8, _hoisted_6$i)) : (openBlock(), createElementBlock("img", _hoisted_7$i))
         ]),
         _cache[0] || (_cache[0] = createBaseVNode("div", { class: "tw-w-full" }, [
