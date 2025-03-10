@@ -10,9 +10,9 @@
 		@before-close="updateURL()"
 		@closed="$emit('getFiles')"
 	>
-		<div class="em-modal-header tw-w-full tw-h-2/4 tw-px-3 tw-py-4 tw-bg-main-900 tw-flex tw-items-center">
-			<div class="tw-flex tw-items-center tw-cursor-pointer tw-gap-2" id="evaluation-modal-close">
-				<div class="tw-w-max tw-flex tw-items-center" @click="showModal = false">
+		<div class="em-modal-header tw-flex tw-h-2/4 tw-w-full tw-items-center tw-bg-main-900 tw-px-3 tw-py-4">
+			<div class="tw-flex tw-cursor-pointer tw-items-center tw-gap-2" id="evaluation-modal-close">
+				<div class="tw-flex tw-w-max tw-items-center" @click="showModal = false">
 					<span class="material-symbols-outlined tw-text-base" style="color: white">arrow_back</span>
 				</div>
 				<span class="tw-text-neutral-500">|</span>
@@ -28,7 +28,7 @@
 		<div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
 			<div id="modal-applicationform">
 				<div class="scrollable">
-					<div class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab">
+					<div class="sticky-tab tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300">
 						<div
 							v-for="tab in tabsICanAccessTo"
 							:key="tab.name"

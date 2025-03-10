@@ -3,7 +3,7 @@
 		<div class="wrapper" :class="{ loading: loading }">
 			<section id="filters" class="tw-flex tw-items-center tw-justify-between">
 				<div class="tw-flex tw-items-center">
-					<div class="tw-flex tw-items-center searchbar-wrapper">
+					<div class="searchbar-wrapper tw-flex tw-items-center">
 						<input
 							id="searchbar"
 							type="text"
@@ -67,7 +67,7 @@
 					</span>
 				</div>
 			</section>
-			<div v-if="exportLink" class="tw-mt-4 tw-mb-4">
+			<div v-if="exportLink" class="tw-mb-4 tw-mt-4">
 				<a :href="exportLink" target="_blank" @click="exportLink = ''">
 					{{ translate('COM_EMUNDUS_ATTACHMENTS_EXPORT_LINK') }}
 				</a>
@@ -221,7 +221,7 @@
 				<p>{{ translate('COM_EMUNDUS_ATTACHMENTS_NO_ATTACHMENTS_FOUND') }}</p>
 			</div>
 			<section id="add-document-section" class="tw-mt-4 tw-flex tw-items-center" v-if="this.canCreate">
-				<button class="tw-btn-primary em-w-auto" @click="addAttachment">
+				<button class="em-w-auto tw-btn-primary" @click="addAttachment">
 					{{ translate('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT') }}
 				</button>
 			</section>
@@ -236,7 +236,7 @@
 				@closed="closeModal"
 				:click-to-close="false"
 			>
-				<div class="modal-head tw-w-full tw-flex tw-items-center tw-justify-between">
+				<div class="modal-head tw-flex tw-w-full tw-items-center tw-justify-between">
 					<div id="actions-left" class="tw-flex tw-items-center tw-justify-start">
 						<span>{{ selectedAttachment.filename }}</span>
 					</div>
@@ -254,9 +254,9 @@
 							<span class="material-symbols-outlined"> file_download </span>
 							<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD') }}</span>
 						</a>
-						<div class="prev-next-attachments tw-flex tw-items-center tw-justify-between tw-mr-2">
+						<div class="prev-next-attachments tw-mr-2 tw-flex tw-items-center tw-justify-between">
 							<div
-								class="prev tw-flex tw-items-center tw-mr-1"
+								class="prev tw-mr-1 tw-flex tw-items-center"
 								:class="{ active: selectedAttachmentPosition > 0 }"
 								@click="changeAttachment(selectedAttachmentPosition - 1, true)"
 							>
@@ -264,7 +264,7 @@
 							</div>
 							<span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
 							<div
-								class="next tw-flex tw-items-center tw-ml-1"
+								class="next tw-ml-1 tw-flex tw-items-center"
 								:class="{ active: selectedAttachmentPosition < displayedAttachments.length - 1 }"
 								@click="changeAttachment(selectedAttachmentPosition + 1)"
 							>

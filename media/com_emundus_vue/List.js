@@ -34,7 +34,7 @@ const _sfc_main$7 = {
   }
 };
 const _hoisted_1$7 = { class: "head tw-py-6" };
-const _hoisted_2$7 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-6" };
+const _hoisted_2$7 = { class: "tw-mb-6 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_3$5 = {
   key: 0,
   class: "tw-text-neutral-700"
@@ -53,7 +53,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$5, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
   ]);
 }
-const Head = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-4d822459"]]);
+const Head = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-0c0113e1"]]);
 const _sfc_main$6 = {
   name: "Filters",
   components: {
@@ -186,7 +186,7 @@ const _hoisted_1$6 = {
   id: "tab-filters",
   class: "tw-w-full"
 };
-const _hoisted_2$6 = { class: "tw-font-medium tw-mb-2" };
+const _hoisted_2$6 = { class: "tw-mb-2 tw-font-medium" };
 const _hoisted_3$4 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
 const _hoisted_4$4 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
 const _hoisted_5$2 = { class: "tw-flex tw-items-center tw-justify-between" };
@@ -262,7 +262,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", _hoisted_9$1, [
             createBaseVNode("label", _hoisted_10$1, toDisplayString(_ctx.translate(filter.label)), 1),
             createBaseVNode("span", {
-              class: "material-icons-outlined tw-text-red-500 tw-cursor-pointer",
+              class: "material-icons-outlined tw-cursor-pointer tw-text-red-500",
               onClick: ($event) => $options.removeFilter(filter)
             }, " close ", 8, _hoisted_11$1)
           ]),
@@ -398,7 +398,7 @@ const _hoisted_1$5 = {
   class: "tw-flex tw-gap-4"
 };
 const _hoisted_2$5 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_3$3 = { class: "tw-items-center tw-p-4 tw-list-none tw-m-0" };
+const _hoisted_3$3 = { class: "tw-m-0 tw-list-none tw-items-center tw-p-4" };
 const _hoisted_4$3 = ["onClick"];
 function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_popover = resolveComponent("popover");
@@ -419,9 +419,9 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("li", {
                 key: exp.name,
                 onClick: ($event) => $options.onClickExport(exp),
-                class: normalizeClass(["tw-py-1.5 tw-px-2", {
+                class: normalizeClass(["tw-px-2 tw-py-1.5", {
                   "tw-cursor-not-allowed tw-text-neutral-500": !(typeof exp.showon === "undefined" || $options.evaluateShowOn(exp.showon)),
-                  "tw-cursor-pointer tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator": typeof exp.showon !== "undefined" && $options.evaluateShowOn(exp.showon) || typeof exp.showon === "undefined"
+                  "tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300": typeof exp.showon !== "undefined" && $options.evaluateShowOn(exp.showon) || typeof exp.showon === "undefined"
                 }])
               }, toDisplayString(_ctx.translate(exp.label)), 11, _hoisted_4$3);
             }), 128))
@@ -577,11 +577,11 @@ const _hoisted_1$4 = {
   style: { "margin-top": "1.75rem" }
 };
 const _hoisted_2$4 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_3$2 = { class: "tw-items-center tw-p-4 tw-list-none tw-m-0" };
+const _hoisted_3$2 = { class: "tw-m-0 tw-list-none tw-items-center tw-p-4" };
 const _hoisted_4$2 = ["onClick"];
 const _hoisted_5$1 = {
   key: 1,
-  class: "tw-flex tw-items-center tw-min-w-[15rem]"
+  class: "tw-flex tw-min-w-[15rem] tw-items-center"
 };
 const _hoisted_6$1 = ["placeholder", "disabled"];
 const _hoisted_7$1 = { class: "view-type tw-flex tw-items-center tw-gap-2" };
@@ -605,9 +605,9 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("li", {
                 key: action.name,
                 onClick: ($event) => $options.onClickAction(action),
-                class: normalizeClass(["tw-py-1.5 tw-px-2", {
+                class: normalizeClass(["tw-px-2 tw-py-1.5", {
                   "tw-cursor-not-allowed tw-text-neutral-500": !(typeof action.showon === "undefined" || $options.evaluateShowOn(action.showon)),
-                  "tw-cursor-pointer tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator": typeof action.showon !== "undefined" && $options.evaluateShowOn(action.showon) || typeof action.showon === "undefined"
+                  "tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300": typeof action.showon !== "undefined" && $options.evaluateShowOn(action.showon) || typeof action.showon === "undefined"
                 }])
               }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_4$2);
             }), 128))
@@ -634,7 +634,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
           type: "text",
           "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $props.searches[$props.tabKey].search = $event),
           placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_SEARCH"),
-          class: normalizeClass(["!tw-rounded-coordinator !tw-h-[38px] tw-m-0", {
+          class: normalizeClass(["tw-m-0 !tw-h-[38px] !tw-rounded-coordinator", {
             "em-disabled-events": $props.items[$props.tabKey].length < 1 && $props.searches[$props.tabKey].search === ""
           }]),
           disabled: $props.items[$props.tabKey].length < 1 && $props.searches[$props.tabKey].search === "",
@@ -644,7 +644,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
           [vModelText, $props.searches[$props.tabKey].search]
         ]),
         createBaseVNode("span", {
-          class: "material-symbols-outlined tw-mr-2 tw-cursor-pointer tw-ml-[-32px]",
+          class: "material-symbols-outlined tw-ml-[-32px] tw-mr-2 tw-cursor-pointer",
           onClick: _cache[5] || (_cache[5] = (...args) => $options.searchItems && $options.searchItems(...args))
         }, " search ")
       ])) : createCommentVNode("", true)
@@ -653,9 +653,9 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($props.views, (viewTypeOption) => {
         return openBlock(), createElementBlock("span", {
           key: viewTypeOption.value,
-          class: normalizeClass(["material-symbols-outlined tw-border tw-cursor-pointer tw-p-4 tw-rounded-coordinator !tw-flex tw-items-center tw-justify-center tw-bg-neutral-0 tw-h-[38px] tw-w-[38px]", {
-            "active tw-text-main-500 tw-border-main-500": viewTypeOption.value === $data.currentView,
-            "tw-text-neutral-600 tw-border-neutral-600": viewTypeOption.value !== $data.currentView
+          class: normalizeClass(["material-symbols-outlined !tw-flex tw-h-[38px] tw-w-[38px] tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-0 tw-p-4", {
+            "active tw-border-main-500 tw-text-main-500": viewTypeOption.value === $data.currentView,
+            "tw-border-neutral-600 tw-text-neutral-600": viewTypeOption.value !== $data.currentView
           }]),
           onClick: ($event) => $options.changeViewType(viewTypeOption)
         }, toDisplayString(viewTypeOption.icon), 11, _hoisted_8$1);
@@ -779,11 +779,11 @@ const _hoisted_1$3 = {
   key: 0,
   id: "list-nav"
 };
-const _hoisted_2$3 = { class: "tw-flex tw-ml-0 tw-pl-0 tw-list-none" };
+const _hoisted_2$3 = { class: "tw-ml-0 tw-flex tw-list-none tw-pl-0" };
 const _hoisted_3$1 = ["onClick"];
 const _hoisted_4$1 = {
   id: "actions",
-  class: "tw-flex tw-items-start tw-justify-between tw-mt-4 tw-mb-4"
+  class: "tw-mb-4 tw-mt-4 tw-flex tw-items-start tw-justify-between"
 };
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Filters = resolveComponent("Filters");
@@ -797,7 +797,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
             key: tab.key,
             class: normalizeClass(["tw-cursor-pointer tw-font-normal", {
               "em-light-tabs em-light-selected-tab": $data.currentTabKey === tab.key,
-              "em-light-tabs ": $data.currentTabKey !== tab.key
+              "em-light-tabs": $data.currentTabKey !== tab.key
             }]),
             onClick: ($event) => $options.onSelectTab(tab.key)
           }, toDisplayString(_ctx.translate(tab.title)), 11, _hoisted_3$1);
@@ -1646,7 +1646,7 @@ const _hoisted_8 = {
   key: 1,
   class: "material-symbols-outlined"
 };
-const _hoisted_9 = { class: "tw-font-medium tw-cursor-pointer" };
+const _hoisted_9 = { class: "tw-cursor-pointer tw-font-medium" };
 const _hoisted_10 = {
   key: 0,
   class: "material-symbols-outlined"
@@ -1673,7 +1673,7 @@ const _hoisted_20 = ["onClick", "innerHTML"];
 const _hoisted_21 = ["innerHTML"];
 const _hoisted_22 = {
   key: 0,
-  class: "tw-w-full tw-mt-1.5 tw-mb-3"
+  class: "tw-mb-3 tw-mt-1.5 tw-w-full"
 };
 const _hoisted_23 = ["onClick"];
 const _hoisted_24 = { class: "tw-flex tw-items-center tw-justify-end tw-gap-2" };
@@ -1734,7 +1734,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         (openBlock(), createElementBlock(Fragment, null, renderList(9, (i) => {
           return createVNode(_component_skeleton, {
             key: i,
-            class: "tw-rounded-lg skeleton-item"
+            class: "skeleton-item tw-rounded-lg"
           });
         }), 64))
       ], 2)
@@ -1764,13 +1764,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $data.loading.items ? (openBlock(), createElementBlock("div", {
         key: 1,
         id: "items-loading",
-        class: normalizeClass({ "skeleton-grid": $data.viewType === "blocs", "tw-flex tw-flex-col tw-mb-4": $data.viewType === "table" }),
+        class: normalizeClass({ "skeleton-grid": $data.viewType === "blocs", "tw-mb-4 tw-flex tw-flex-col": $data.viewType === "table" }),
         style: { "flex-wrap": "wrap" }
       }, [
         (openBlock(), createElementBlock(Fragment, null, renderList(9, (i) => {
           return createVNode(_component_skeleton, {
             key: i,
-            class: "tw-rounded-lg skeleton-item"
+            class: "skeleton-item tw-rounded-lg"
           });
         }), 64))
       ], 2)) : (openBlock(), createElementBlock("div", _hoisted_4, [
@@ -1825,11 +1825,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 return openBlock(), createElementBlock("tr", {
                   key: item.id,
                   id: "item-" + $options.currentTab.key + "-" + item.id,
-                  class: normalizeClass(["tw-group/item-row table-row tw-border tw-rounded-coordinator tw-cursor-pointer", {
-                    "tw-flex tw-flex-col tw-justify-between tw-min-h-[200px] tw-rounded-coordinator-cards tw-p-8 tw-shadow-card": $data.viewType === "blocs",
+                  class: normalizeClass(["tw-group/item-row table-row tw-cursor-pointer tw-rounded-coordinator tw-border", {
+                    "tw-flex tw-min-h-[200px] tw-flex-col tw-justify-between tw-rounded-coordinator-cards tw-p-8 tw-shadow-card": $data.viewType === "blocs",
                     "tw-shadow-table-border-profile": $data.checkedItems.includes(item.id) && $data.viewType === "table",
                     "tw-shadow-table-border-neutral": !$data.checkedItems.includes(item.id) && $data.viewType === "table",
-                    "tw-bg-main-50 tw-border-profile-full": $data.checkedItems.includes(item.id) && $data.viewType === "blocs",
+                    "tw-border-profile-full tw-bg-main-50": $data.checkedItems.includes(item.id) && $data.viewType === "blocs",
                     "tw-bg-white hover:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "blocs"
                   }]),
                   onClick: ($event) => $options.onCheckItem(item.id, $event)
@@ -1857,7 +1857,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     createBaseVNode("span", {
                       onClick: ($event) => $options.onClickAction($options.editAction, item.id, false, $event),
                       class: normalizeClass({
-                        "tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]": $data.viewType === "blocs",
+                        "tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold": $data.viewType === "blocs",
                         "hover:tw-underline": $options.editAction
                       }),
                       title: item.label[$data.params.shortlang]
@@ -1873,7 +1873,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     }, [
                       column.type === "tags" ? (openBlock(), createElementBlock("div", {
                         key: 0,
-                        class: normalizeClass(["tw-flex tw-items-center tw-flex-wrap tw-gap-2", column.classes])
+                        class: normalizeClass(["tw-flex tw-flex-wrap tw-items-center tw-gap-2", column.classes])
                       }, [
                         (openBlock(true), createElementBlock(Fragment, null, renderList(column.values, (tag) => {
                           return openBlock(), createElementBlock("span", {
@@ -1885,36 +1885,36 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       ], 2)) : column.hasOwnProperty("long_value") ? (openBlock(), createElementBlock("div", _hoisted_19, [
                         createBaseVNode("span", {
                           onClick: ($event) => $options.displayLongValue($event, column.long_value),
-                          class: normalizeClass(["tw-mt-2 tw-mb-2", column.classes]),
+                          class: normalizeClass(["tw-mb-2 tw-mt-2", column.classes]),
                           innerHTML: column.value
                         }, null, 10, _hoisted_20)
                       ])) : (openBlock(), createElementBlock("span", {
                         key: 2,
-                        class: normalizeClass(["tw-mt-2 tw-mb-2", column.classes]),
+                        class: normalizeClass(["tw-mb-2 tw-mt-2", column.classes]),
                         innerHTML: column.value
                       }, null, 10, _hoisted_21))
                     ], 2);
                   }), 128)),
                   createBaseVNode("td", {
-                    class: normalizeClass(["tw-rounded-e-coordinator actions tw-p-4", {
+                    class: normalizeClass(["actions tw-rounded-e-coordinator tw-p-4", {
                       "tw-bg-main-50": $data.checkedItems.includes(item.id) && $data.viewType === "table",
                       "tw-bg-white group-hover/item-row:tw-bg-neutral-100": !$data.checkedItems.includes(item.id) && $data.viewType === "table"
                     }])
                   }, [
                     $data.viewType === "blocs" ? (openBlock(), createElementBlock("hr", _hoisted_22)) : createCommentVNode("", true),
                     createBaseVNode("div", {
-                      class: normalizeClass({ "tw-flex tw-justify-between tw-w-full": $data.viewType === "blocs" })
+                      class: normalizeClass({ "tw-flex tw-w-full tw-justify-between": $data.viewType === "blocs" })
                     }, [
                       $data.viewType === "blocs" && $options.editAction ? (openBlock(), createElementBlock("a", {
                         key: 0,
                         onClick: ($event) => $options.onClickAction($options.editAction, item.id, false, $event),
-                        class: "tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto"
+                        class: "tw-btn-primary tw-w-auto tw-cursor-pointer tw-text-sm"
                       }, toDisplayString(_ctx.translate($options.editAction.label)), 9, _hoisted_23)) : createCommentVNode("", true),
                       createBaseVNode("div", _hoisted_24, [
                         $options.editAction && $data.viewType === "table" ? (openBlock(), createElementBlock("button", {
                           key: 0,
                           onClick: ($event) => $options.onClickAction($options.editAction, item.id),
-                          class: "tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1",
+                          class: "tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1",
                           style: { "padding": "0.5rem" },
                           title: _ctx.translate($options.editAction.label)
                         }, _cache[14] || (_cache[14] = [
@@ -1923,7 +1923,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
                           return withDirectives((openBlock(), createElementBlock("button", {
                             key: action.name,
-                            class: normalizeClass(["tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1", [
+                            class: normalizeClass(["tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1", [
                               action.buttonClasses,
                               {
                                 "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon))
@@ -1949,7 +1949,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                             createVNode(_component_modal, {
                               name: "modal-component",
                               transition: "nice-modal-fade",
-                              class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto"),
+                              class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
                               width: "600px",
                               delay: 100,
                               adaptive: true,
@@ -1982,7 +1982,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                                   key: action.name,
                                   class: normalizeClass([{
                                     "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon))
-                                  }, "tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"]),
+                                  }, "tw-cursor-pointer tw-px-2 tw-py-1.5 tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300"]),
                                   onClick: ($event) => $options.onClickAction(action, item.id, false, $event)
                                 }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_29);
                               }), 128))
@@ -2008,7 +2008,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createVNode(_component_modal, {
               name: "modal-component",
               transition: "nice-modal-fade",
-              class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto"),
+              class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
               width: "600px",
               delay: 100,
               adaptive: true,
@@ -2037,7 +2037,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d2205815"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f1450eec"]]);
 export {
   list as default
 };

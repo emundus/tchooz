@@ -24,7 +24,7 @@
 					>question_answer</span
 				>
 				<div
-					class="tw-absolute tw-bg-red-500 tw-rounded-full"
+					class="tw-absolute tw-rounded-full tw-bg-red-500"
 					style="top: -2px; right: 4px; width: 8px; height: 8px"
 					v-if="notifications.length > 0"
 				></div>

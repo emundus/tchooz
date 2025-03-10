@@ -77,21 +77,21 @@ export default {
 </script>
 
 <template>
-	<div class="tw-flex tw-gap-2 tw-items-start">
+	<div class="tw-flex tw-items-start tw-gap-2">
 		<input
 			v-if="canBeSelected"
 			v-model="calendarEvent.show"
 			type="checkbox"
-			class="tw-cursor-pointer event-checkbox tw-appearance-none tw-w-[20px] !tw-h-[20px] tw-rounded-md tw-relative"
+			class="event-checkbox tw-relative !tw-h-[20px] tw-w-[20px] tw-cursor-pointer tw-appearance-none tw-rounded-md"
 			:style="calendarStyle"
 		/>
 		<div
 			v-else
-			class="tw-min-w-[20px] tw-min-h-[20px] tw-rounded-md"
+			class="tw-min-h-[20px] tw-min-w-[20px] tw-rounded-md"
 			:style="{ backgroundColor: this.lightenColor(calendarEvent.color, 90) }"
 		></div>
 
-		<p class="tw-font-semibold tw-text-ellipsis tw-overflow-hidden">
+		<p class="tw-overflow-hidden tw-text-ellipsis tw-font-semibold">
 			{{ calendarEvent.title ? calendarEvent.title : calendarEvent.name }}
 		</p>
 	</div>

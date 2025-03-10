@@ -11,16 +11,16 @@
 		>
 			<div class="em-modal-header">
 				<div
-					class="tw-justify-between tw-flex tw-items-center tw-cursor-pointer"
+					class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between"
 					@click.prevent="$modal.hide('attachmentStorage')"
 				>
-					<div class="tw-w-max tw-flex tw-items-center">
+					<div class="tw-flex tw-w-max tw-items-center">
 						<span class="material-symbols-outlined">arrow_back</span>
 						<span class="tw-ml-2">{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
 					</div>
 					<div v-if="saving" class="tw-flex tw-items-center tw-justify-start">
 						<div class="em-loader tw-mr-2"></div>
-						<p class="tw-text-sm tw-flex tw-items-center">
+						<p class="tw-flex tw-items-center tw-text-sm">
 							{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE_PROGRESS') }}
 						</p>
 					</div>
@@ -36,7 +36,7 @@
 						v-for="menu in menus"
 						:key="'menu_' + menu.index"
 						@click="currentMenu = menu.index"
-						class="translation-menu-item tw-p-4 tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
+						class="translation-menu-item tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-p-4"
 						:class="currentMenu === menu.index ? 'em-modal-menu__current' : ''"
 					>
 						<p class="tw-text-base">{{ translate(menu.title) }}</p>

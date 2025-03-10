@@ -1,7 +1,7 @@
 <template>
 	<div
 		id="email-edition"
-		class="tw-flex-col tw-border tw-border-neutral-300 tw-shadow-card tw-rounded-coordinator tw-bg-white tw-p-6"
+		class="tw-flex-col tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
 	>
 		<Back class="tw-mb-4" :link="'index.php?option=com_emundus&view=' + parentView" />
 
@@ -59,7 +59,7 @@
 				</div>
 			</div>
 
-			<hr class="tw-mt-1.5 tw-mb-4" />
+			<hr class="tw-mb-4 tw-mt-1.5" />
 
 			<div id="actions" class="tw-flex tw-justify-end">
 				<button class="tw-btn-primary" @click="save">

@@ -1,11 +1,11 @@
 <template>
-	<div id="form-builder-rules" class="tw-self-start tw-w-full">
+	<div id="form-builder-rules" class="tw-w-full tw-self-start">
 		<div class="tw-p-8">
 			<h2 class="tw-mb-3" v-if="rules.length > 0">
 				{{ translate('COM_EMUNDUS_FORMBUILDER_RULES') + this.$props.page.label }}
 			</h2>
 
-			<button id="add-section" class="tw-btn-primary tw-px-6 tw-py-3 tw-mb-4" @click="$emit('add-rule', 'js')">
+			<button id="add-section" class="tw-btn-primary tw-mb-4 tw-px-6 tw-py-3" @click="$emit('add-rule', 'js')">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_CONDITION') }}
 			</button>
 
@@ -20,21 +20,21 @@
 					v-if="keywords !== ''"
 					type="button"
 					@click="keywords = ''"
-					class="tw-w-auto tw-absolute tw-right-3 tw-h-[16px]"
+					class="tw-absolute tw-right-3 tw-h-[16px] tw-w-auto"
 				>
 					<span class="material-symbols-outlined">close</span>
 				</button>
 			</div>
 
-			<div class="tw-flex tw-flex-col tw-gap-3 tw-mt-3" v-if="!loading">
+			<div class="tw-mt-3 tw-flex tw-flex-col tw-gap-3" v-if="!loading">
 				<h5 v-if="searchedRules.length == 0">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULES_NOT_FOUND') }}</h5>
 
 				<div v-for="(rule, index) in searchedRules" :key="rule.id">
 					<div
-						class="tw-rounded-lg tw-px-3 tw-py-4 tw-flex tw-flex-col tw-gap-6 tw-border tw-border-neutral-600"
+						class="tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-border tw-border-neutral-600 tw-px-3 tw-py-4"
 						:class="{ 'tw-bg-neutral-400': rule.published == 0, 'tw-bg-white': rule.published == 1 }"
 					>
-						<div class="tw-flex tw-justify-between tw-items-start">
+						<div class="tw-flex tw-items-start tw-justify-between">
 							<h3>{{ ruleLabel(rule, index) }}</h3>
 
 							<div class="tw-cursor-pointer">
@@ -42,20 +42,20 @@
 									<ul style="list-style-type: none; margin: 0" class="tw-items-center tw-p-4">
 										<li
 											@click="$emit('add-rule', 'js', rule)"
-											class="tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
+											class="tw-w-full tw-px-2 tw-py-1.5 hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
 										>
 											{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_EDIT') }}
 										</li>
 										<li
 											@click="publishRule(rule, 1)"
-											class="tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
+											class="tw-w-full tw-px-2 tw-py-1.5 hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
 											v-if="rule.published == 0"
 										>
 											{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_PUBLISH') }}
 										</li>
 										<li
 											@click="publishRule(rule, 0)"
-											class="tw-py-1.5 tw-px-2 tw-w-full hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
+											class="tw-w-full tw-px-2 tw-py-1.5 hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
 											v-if="rule.published == 1"
 										>
 											{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_UNPUBLISH') }}
@@ -65,7 +65,7 @@
                                               </li>-->
 										<li
 											@click="deleteRule(rule)"
-											class="tw-py-1.5 tw-px-2 tw-w-full tw-text-red-600 hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
+											class="tw-w-full tw-px-2 tw-py-1.5 tw-text-red-600 hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
 										>
 											{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_DELETE') }}
 										</li>
@@ -76,13 +76,13 @@
 
 						<div :id="'condition_' + rule.id" class="tw-flex tw-flex-col tw-gap-2">
 							<div v-for="(grouped_condition, key) in Object.values(rule.conditions)">
-								<p v-if="key != 0 && grouped_condition.length > 1" class="tw-font-medium tw-ml-1 tw-mr-2 tw-mb-2">
+								<p v-if="key != 0 && grouped_condition.length > 1" class="tw-mb-2 tw-ml-1 tw-mr-2 tw-font-medium">
 									{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_' + rule.group) }}
 								</p>
 
 								<div
 									class="tw-flex tw-flex-col tw-gap-4"
-									:class="{ 'tw-bg-neutral-300 tw-rounded tw-p-2': grouped_condition.length > 1 }"
+									:class="{ 'tw-rounded tw-bg-neutral-300 tw-p-2': grouped_condition.length > 1 }"
 								>
 									<div v-for="(condition, condition_index) in grouped_condition" class="tw-flex tw-items-center">
 										<span
@@ -90,21 +90,21 @@
 												(condition_index == 0 && grouped_condition.length > 1) ||
 												(key == 0 && grouped_condition.length == 1)
 											"
-											class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-1 tw-text-black"
+											class="material-symbols-outlined tw-mr-1 !tw-text-2xl !tw-font-medium tw-text-black"
 											>alt_route</span
 										>
 										<span
 											v-if="condition_index != 0 && grouped_condition.length > 1"
-											class="tw-font-medium tw-ml-1 tw-mr-2"
+											class="tw-ml-1 tw-mr-2 tw-font-medium"
 											>{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_' + condition.group_type) }}</span
 										>
-										<span v-if="key != 0 && grouped_condition.length == 1" class="tw-font-medium tw-ml-1 tw-mr-2">{{
+										<span v-if="key != 0 && grouped_condition.length == 1" class="tw-ml-1 tw-mr-2 tw-font-medium">{{
 											translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_' + rule.group)
 										}}</span>
 
 										<div class="tw-leading-8">
 											<span
-												class="tw-font-medium tw-mr-1"
+												class="tw-mr-1 tw-font-medium"
 												v-if="
 													(condition_index == 0 && grouped_condition.length > 1) ||
 													(key == 0 && grouped_condition.length == 1)
@@ -114,7 +114,7 @@
 
 											<span class="conditions-label">{{ condition.elt_label }}</span>
 
-											<span class="tw-p-1 tw-rounded-md label-darkblue tw-ml-1 tw-mr-2">{{
+											<span class="label-darkblue tw-ml-1 tw-mr-2 tw-rounded-md tw-p-1">{{
 												operator(condition.state)
 											}}</span>
 											<span>{{ getvalues(condition) }}</span>
@@ -128,27 +128,27 @@
 						<div :id="'action_' + rule.id" class="tw-flex tw-flex-col tw-gap-2">
 							<div v-for="action in rule.actions" :key="action.id" class="tw-flex tw-items-center">
 								<span
-									class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-3 tw-text-black"
+									class="material-symbols-outlined tw-mr-3 !tw-text-2xl !tw-font-medium tw-text-black"
 									v-if="['show', 'show_options'].includes(action.action)"
 									>visibility</span
 								>
 								<span
-									class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-3 tw-text-black"
+									class="material-symbols-outlined tw-mr-3 !tw-text-2xl !tw-font-medium tw-text-black"
 									v-if="['hide', 'hide_options'].includes(action.action)"
 									>visibility_off</span
 								>
 								<span
-									class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-3 tw-text-black"
+									class="material-symbols-outlined tw-mr-3 !tw-text-2xl !tw-font-medium tw-text-black"
 									v-if="['set_optional', 'set_mandatory'].includes(action.action)"
 									>indeterminate_check_box</span
 								>
 								<span
-									class="material-symbols-outlined !tw-text-2xl !tw-font-medium tw-mr-3 tw-text-black"
+									class="material-symbols-outlined tw-mr-3 !tw-text-2xl !tw-font-medium tw-text-black"
 									v-if="['define_repeat_group'].includes(action.action)"
 									>repeat</span
 								>
 								<div>
-									<span class="tw-font-medium tw-mr-1">{{
+									<span class="tw-mr-1 tw-font-medium">{{
 										translate('COM_EMUNDUS_FORMBUILDER_RULE_ACTION_' + action.action.toUpperCase())
 									}}</span>
 
@@ -176,7 +176,7 @@
 			<button
 				v-if="searchedRules.length > 5"
 				id="add-section"
-				class="tw-btn-primary tw-px-6 tw-py-3 tw-mt-4"
+				class="tw-btn-primary tw-mt-4 tw-px-6 tw-py-3"
 				@click="$emit('add-rule', 'js')"
 			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_CONDITION') }}

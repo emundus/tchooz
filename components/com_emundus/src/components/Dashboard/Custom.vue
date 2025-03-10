@@ -5,22 +5,22 @@
 			style="margin-bottom: 10px"
 			:class="selectedWidget.type === 'article' ? 'tw-overflow-y-auto tw-overflow-x-hidden' : ''"
 		>
-			<div id="chart-container" class="tw-bg-white tw-relative" v-if="selectedWidget.type === 'chart'">
+			<div id="chart-container" class="tw-relative tw-bg-white" v-if="selectedWidget.type === 'chart'">
 				<div
 					v-if="loading"
-					class="tw-absolute tw-h-full tw-w-full tw-flex tw-items-center tw-justify-center tw-z-10 tw-rounded-coordinator-cards"
+					class="tw-absolute tw-z-10 tw-flex tw-h-full tw-w-full tw-items-center tw-justify-center tw-rounded-coordinator-cards"
 				>
 					<div class="em-loader"></div>
 				</div>
 
-				<div class="tw-flex tw-items-center tw-float-right tw-justify-end tw-w-full tw-gap-3 tw-mb-3" v-if="!loading">
+				<div class="tw-float-right tw-mb-3 tw-flex tw-w-full tw-items-center tw-justify-end tw-gap-3" v-if="!loading">
 					<div id="multi-filters" class="tw-flex tw-items-center">
 						<div v-for="filter in notEmptyFilters" :key="filter.key">
 							<multiselect
 								v-if="selectedFilters[filter.key] !== undefined"
 								:id="filter.key"
 								v-model="selectedFilters[filter.key]"
-								class="tw-relative tw-cursor-pointer tw-right-0 tw-top-0 !tw-w-[220px]"
+								class="tw-relative tw-right-0 tw-top-0 !tw-w-[220px] tw-cursor-pointer"
 								label="label"
 								track-by="value"
 								:options="filter.options"

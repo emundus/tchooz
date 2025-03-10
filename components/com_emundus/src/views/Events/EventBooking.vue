@@ -302,17 +302,17 @@ export default {
 
 <template>
 	<div
-		class="tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4 tw-flex tw-flex-col tw-gap-4 tw-items-center tw-relative"
+		class="tw-relative tw-flex tw-w-full tw-flex-col tw-items-center tw-gap-4 tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4"
 	>
 		<div v-if="visibleDates.length > 0 && myBookings.length === 0 && !loading" class="tw-w-full">
-			<div class="tw-flex tw-items-center tw-gap-1 tw-mb-3">
+			<div class="tw-mb-3 tw-flex tw-items-center tw-gap-1">
 				<span class="material-symbols-outlined !tw-text-base">language</span>
 				<span class="tw-text-base">{{ displayedTimezone }}</span>
 			</div>
 
-			<div class="tw-flex tw-items-start tw-gap-1 tw-w-full">
+			<div class="tw-flex tw-w-full tw-items-start tw-gap-1">
 				<button
-					class="tw-p-2 tw-border-0 tw-bg-transparent tw-rounded-coordinator hover:tw-bg-neutral-100"
+					class="tw-rounded-coordinator tw-border-0 tw-bg-transparent tw-p-2 hover:tw-bg-neutral-100"
 					type="button"
 					:disabled="currentStartIndex === 0"
 					:style="{
@@ -324,7 +324,7 @@ export default {
 					<span class="material-symbols-outlined">chevron_left</span>
 				</button>
 
-				<div v-if="slots" class="tw-flex tw-flex-row tw-items-stretch tw-gap-4 tw-flex-1 tw-w-auto tw-justify-center">
+				<div v-if="slots" class="tw-flex tw-w-auto tw-flex-1 tw-flex-row tw-items-stretch tw-justify-center tw-gap-4">
 					<div
 						v-for="(date, index) in visibleDates"
 						:key="index"
@@ -336,18 +336,18 @@ export default {
 							flexGrow: '1',
 						}"
 					>
-						<p class="tw-text-lg tw-text-center">{{ formatDay(date) }}</p>
-						<p class="tw-text-sm tw-text-neutral-500 tw-text-center">{{ formatShortDate(date) }}</p>
+						<p class="tw-text-center tw-text-lg">{{ formatDay(date) }}</p>
+						<p class="tw-text-center tw-text-sm tw-text-neutral-500">{{ formatShortDate(date) }}</p>
 
-						<div class="tw-mt-4 tw-grid tw-grid-cols-2 tw-gap-2 tw-w-full">
+						<div class="tw-mt-4 tw-grid tw-w-full tw-grid-cols-2 tw-gap-2">
 							<button
 								v-for="slot in getAvailableSlotsForDate(date)"
 								type="button"
-								class="tw-flex tw-items-center tw-justify-center tw-px-4 tw-w-full tw-py-2 tw-bg-neutral-300 tw-rounded-coordinator tw-border"
+								class="tw-flex tw-w-full tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-300 tw-px-4 tw-py-2"
 								:class="{
 									'tw-border-profile-full tw-bg-profile-light': slotSelected === slot.id,
 									'hover:tw-bg-neutral-400': slotSelected !== slot.id,
-									'tw-opacity-50 tw-line-through tw-cursor-not-allowed': disabledSlot(slot),
+									'tw-cursor-not-allowed tw-line-through tw-opacity-50': disabledSlot(slot),
 								}"
 								:key="slot.id"
 								:disabled="disabledSlot(slot)"
@@ -360,7 +360,7 @@ export default {
 				</div>
 
 				<button
-					class="tw-p-2 tw-border-0 tw-bg-transparent tw-rounded-coordinator hover:tw-bg-neutral-100"
+					class="tw-rounded-coordinator tw-border-0 tw-bg-transparent tw-p-2 hover:tw-bg-neutral-100"
 					type="button"
 					:disabled="currentStartIndex + 3 >= availableDates.length"
 					:style="{

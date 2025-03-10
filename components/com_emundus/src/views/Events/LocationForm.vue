@@ -288,11 +288,11 @@ export default {
 		<div
 			v-if="!loading"
 			:class="{
-				'tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0 tw-border tw-border-neutral-300 tw-p-6': !isModal,
+				'tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-neutral-0 tw-p-6 tw-shadow-card': !isModal,
 			}"
 		>
-			<div v-if="isModal" class="tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
-				<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+			<div v-if="isModal" class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
+				<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 					<h2>
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_LOCATION') }}
 					</h2>
@@ -304,7 +304,7 @@ export default {
 
 			<div v-else>
 				<div
-					class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+					class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 					@click="redirectJRoute('index.php?option=com_emundus&view=events')"
 				>
 					<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
@@ -319,7 +319,7 @@ export default {
 					}}
 				</h1>
 
-				<hr class="tw-mt-1.5 tw-mb-8" />
+				<hr class="tw-mb-8 tw-mt-1.5" />
 			</div>
 
 			<div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6">
@@ -334,9 +334,9 @@ export default {
 					<div
 						v-for="room in rooms"
 						:key="room.id"
-						class="tw-flex tw-flex-col tw-gap-2 tw-bg-white tw-rounded-coordinator tw-border tw-border-neutral-400 tw-px-3 tw-py-4"
+						class="tw-flex tw-flex-col tw-gap-2 tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-px-3 tw-py-4"
 					>
-						<div class="tw-flex tw-justify-end tw-items-center tw-gap-2">
+						<div class="tw-flex tw-items-center tw-justify-end tw-gap-2">
 							<button type="button" @click="duplicateRepeatBlock(room.id)" class="w-auto">
 								<span class="material-symbols-outlined !tw-text-neutral-900">content_copy</span>
 							</button>
@@ -357,7 +357,7 @@ export default {
 					</div>
 
 					<div class="tw-flex tw-justify-end">
-						<button type="button" @click="addRepeatBlock()" class="tw-mt-2 tw-w-auto tw-flex tw-items-center tw-gap-1">
+						<button type="button" @click="addRepeatBlock()" class="tw-mt-2 tw-flex tw-w-auto tw-items-center tw-gap-1">
 							<span class="material-symbols-outlined !tw-text-neutral-900">add</span>
 							<span>{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ROOM') }}</span>
 						</button>
@@ -365,7 +365,7 @@ export default {
 				</div>
 			</div>
 
-			<div class="tw-flex tw-justify-end tw-mt-7 tw-mb-2">
+			<div class="tw-mb-2 tw-mt-7 tw-flex tw-justify-end">
 				<button
 					type="button"
 					class="tw-btn-primary !tw-w-auto"

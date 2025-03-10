@@ -74,8 +74,8 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$2 = { class: "tw-flex tw-gap-2 tw-items-start" };
-const _hoisted_2$1 = { class: "tw-font-semibold tw-text-ellipsis tw-overflow-hidden" };
+const _hoisted_1$2 = { class: "tw-flex tw-items-start tw-gap-2" };
+const _hoisted_2$1 = { class: "tw-overflow-hidden tw-text-ellipsis tw-font-semibold" };
 const _hoisted_3$1 = {
   key: 0,
   class: "tw-flex tw-items-center tw-gap-2"
@@ -98,13 +98,13 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
         key: 0,
         "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $props.calendarEvent.show = $event),
         type: "checkbox",
-        class: "tw-cursor-pointer event-checkbox tw-appearance-none tw-w-[20px] !tw-h-[20px] tw-rounded-md tw-relative",
+        class: "event-checkbox tw-relative !tw-h-[20px] tw-w-[20px] tw-cursor-pointer tw-appearance-none tw-rounded-md",
         style: normalizeStyle($options.calendarStyle)
       }, null, 4)), [
         [vModelCheckbox, $props.calendarEvent.show]
       ]) : (openBlock(), createElementBlock("div", {
         key: 1,
-        class: "tw-min-w-[20px] tw-min-h-[20px] tw-rounded-md",
+        class: "tw-min-h-[20px] tw-min-w-[20px] tw-rounded-md",
         style: normalizeStyle({ backgroundColor: this.lightenColor($props.calendarEvent.color, 90) })
       }, null, 4)),
       createBaseVNode("p", _hoisted_2$1, toDisplayString($props.calendarEvent.title ? $props.calendarEvent.title : $props.calendarEvent.name), 1)
@@ -128,7 +128,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-const EventInformations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-e5595374"]]);
+const EventInformations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-0a0a5b69"]]);
 const _sfc_main$1 = {
   name: "EventModal",
   components: { EventInformations },
@@ -180,7 +180,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_EventInformations = resolveComponent("EventInformations");
   return $props.view == "week" ? (openBlock(), createElementBlock("div", {
     key: 0,
-    class: normalizeClass(["card-event tw-rounded-lg tw-px-6 tw-py-4 tw-shadow tw-border-neutral-400 tw-flex tw-flex-col tw-gap-2", { "card-event-left": $data.popupPosition === "left", "card-event-right": $data.popupPosition === "right" }]),
+    class: normalizeClass(["card-event tw-flex tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-px-6 tw-py-4 tw-shadow", { "card-event-left": $data.popupPosition === "left", "card-event-right": $data.popupPosition === "right" }]),
     style: normalizeStyle({ borderColor: $props.calendarEvent.color, "--event-arrow-color": $props.calendarEvent.color })
   }, [
     createVNode(_component_EventInformations, { "calendar-event": $props.calendarEvent }, null, 8, ["calendar-event"]),
@@ -192,7 +192,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 6)) : createCommentVNode("", true);
 }
-const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-1010032d"]]);
+const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-902b9063"]]);
 var PluginName;
 (function(PluginName2) {
   PluginName2["DragAndDrop"] = "dragAndDrop";
@@ -782,7 +782,7 @@ const _hoisted_3 = ["checked"];
 const _hoisted_4 = { class: "tw-flex tw-flex-col tw-gap-4" };
 const _hoisted_5 = {
   key: 0,
-  class: "tw-grid tw-gap-3 calendars-list",
+  class: "calendars-list tw-grid tw-gap-3",
   style: { "padding-left": "var(--sx-calendar-week-grid-padding-left)" }
 };
 const _hoisted_6 = ["onClick"];
@@ -795,7 +795,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return $data.calendarApp ? (openBlock(), createElementBlock("div", {
     key: 0,
     class: normalizeClass({
-      "tw-grid tw-gap-4 day-grid": $data.view === "day"
+      "day-grid tw-grid tw-gap-4": $data.view === "day"
     })
   }, [
     $data.showModal ? (openBlock(), createBlock(Teleport, {
@@ -805,7 +805,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       createVNode(_component_modal, {
         name: "modal-component",
         transition: "nice-modal-fade",
-        class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto"),
+        class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
         width: "600px",
         delay: 100,
         adaptive: true,
@@ -826,14 +826,14 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     $data.view === "day" ? (openBlock(), createElementBlock("div", _hoisted_1, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.calendars, (calendar) => {
         return openBlock(), createElementBlock("div", {
-          class: "tw-flex tw-gap-2 tw-cursor-pointer",
+          class: "tw-flex tw-cursor-pointer tw-gap-2",
           onClick: ($event) => $options.toggleCalendar(calendar)
         }, [
           createBaseVNode("input", {
             checked: calendar.show,
             type: "checkbox",
             style: normalizeStyle($options.checkboxCalendarStyle(calendar)),
-            class: "tw-cursor-pointer event-checkbox tw-appearance-none tw-w-[20px] !tw-h-[20px] tw-rounded-md tw-relative"
+            class: "event-checkbox tw-relative !tw-h-[20px] tw-w-[20px] tw-cursor-pointer tw-appearance-none tw-rounded-md"
           }, null, 12, _hoisted_3),
           createBaseVNode("p", null, toDisplayString(calendar.title ? calendar.title : calendar.name), 1)
         ], 8, _hoisted_2);
@@ -843,7 +843,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $data.view === "day" ? (openBlock(), createElementBlock("div", _hoisted_5, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.calendars, (calendar) => {
           return withDirectives((openBlock(), createElementBlock("div", {
-            class: "tw-bg-white tw-w-full tw-rounded-lg tw-px-6 tw-py-4 tw-shadow tw-border-neutral-400 tw-flex tw-flex-col tw-gap-2 tw-cursor-pointer",
+            class: "tw-flex tw-w-full tw-cursor-pointer tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-bg-white tw-px-6 tw-py-4 tw-shadow",
             style: normalizeStyle($options.calendarStyle(calendar)),
             onClick: ($event) => $options.toggleCalendar(calendar)
           }, [
@@ -879,7 +879,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2)) : createCommentVNode("", true);
 }
-const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-ed3fe7bd"]]);
+const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7d4a2ed4"]]);
 export {
   Calendar as default
 };

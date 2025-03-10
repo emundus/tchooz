@@ -43,7 +43,7 @@ export default {
 		<div class="em-grid-3-2-1" v-if="!currentApp && apps.length > 0">
 			<div
 				v-for="app in apps"
-				class="tw-flex tw-flex-col tw-justify-between tw-w-full tw-font-medium rtl:tw-text-right tw-text-black tw-border tw-border-neutral-300 tw-rounded-[15px] tw-bg-white tw-mb-6 tw-gap-3 tw-p-4"
+				class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-3 tw-rounded-[15px] tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
 			>
 				<div class="tw-flex tw-items-center tw-justify-between">
 					<img class="tw-w-[45px]" :src="'/images/emundus/icons/' + app.icon" :alt="app.type" />
@@ -85,7 +85,7 @@ export default {
 		</div>
 
 		<div v-if="currentApp">
-			<div class="tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-mb-2" @click="currentApp = null">
+			<div class="tw-mb-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1" @click="currentApp = null">
 				<span class="material-symbols-outlined tw-text-neutral-900">arrow_back</span>
 				<span>{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
 			</div>

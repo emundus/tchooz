@@ -17,11 +17,11 @@ export default {
 	<div>
 		<h1>{{ translate(title) }}</h1>
 		<div class="tw-mt-2" v-if="intro">
-			<p class="tw-text-red-600 tw-mt-1">
+			<p class="tw-mt-1 tw-text-red-600">
 				{{ translate(intro) }}
 			</p>
 		</div>
 
-		<hr class="tw-mt-1.5 tw-mb-4" />
+		<hr class="tw-mb-4 tw-mt-1.5" />
 	</div>
 </template>

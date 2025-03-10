@@ -11,7 +11,7 @@
 		@closed="beforeClose"
 		@before-open="beforeOpen"
 	>
-		<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+		<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 			<h4>
 				{{ translate('COM_EMUNDUS_ONBOARD_EMAIL_ADDTRIGGER') }}
 			</h4>
@@ -36,7 +36,7 @@
 					</select>
 					<p v-else class="tw-text-red-600">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
 				</div>
-				<span v-if="errors.model" class="tw-text-red-600 tw-mb-2">
+				<span v-if="errors.model" class="tw-mb-2 tw-text-red-600">
 					<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED') }}</span>
 				</span>
 			</div>
@@ -52,7 +52,7 @@
 					<option value="-1">{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}</option>
 					<option v-for="(statu, index) in status" :key="index" :value="statu.step">{{ statu.value }}</option>
 				</select>
-				<span v-if="errors.status" class="tw-text-red-600 tw-mb-2">
+				<span v-if="errors.status" class="tw-mb-2 tw-text-red-600">
 					<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED') }}</span>
 				</span>
 			</div>
@@ -70,13 +70,13 @@
 					<option value="6">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS') }}</option>
 					<option value="1000">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES') }}</option>
 				</select>
-				<span v-if="errors.target" class="tw-text-red-600 tw-mb-2">
+				<span v-if="errors.target" class="tw-mb-2 tw-text-red-600">
 					<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED') }}</span>
 				</span>
 			</div>
 		</div>
 
-		<div class="tw-flex tw-items-center tw-justify-between tw-mb-2">
+		<div class="tw-mb-2 tw-flex tw-items-center tw-justify-between">
 			<button type="button" class="tw-btn-cancel !tw-w-auto" @click.prevent="$emit('close')">
 				{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}
 			</button>

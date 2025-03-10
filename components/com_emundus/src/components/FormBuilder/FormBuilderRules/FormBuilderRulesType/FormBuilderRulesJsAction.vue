@@ -1,16 +1,16 @@
 <template>
-	<div id="form-builder-rules-js-action" class="tw-self-start tw-w-full">
-		<div class="tw-flex tw-justify-between tw-items-center">
+	<div id="form-builder-rules-js-action" class="tw-w-full tw-self-start">
+		<div class="tw-flex tw-items-center tw-justify-between">
 			<h2>{{ actionLabel }}</h2>
 			<button v-if="index !== 0" type="button" @click="$emit('remove-action', index)" class="tw-w-auto">
 				<span class="material-symbols-outlined tw-text-red-600">close</span>
 			</button>
 		</div>
 
-		<div class="tw-mt-4 tw-flex tw-ml-4" v-if="!loading">
+		<div class="tw-ml-4 tw-mt-4 tw-flex" v-if="!loading">
 			<p class="tw-mr-4 tw-mt-3 tw-font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_THEN') }}</p>
 
-			<div class="tw-flex tw-flex-col tw-w-full tw-ml-2">
+			<div class="tw-ml-2 tw-flex tw-w-full tw-flex-col">
 				<div class="tw-flex tw-items-center">
 					<div class="form-group tw-w-full">
 						<select class="tw-w-full" v-model="action.action">

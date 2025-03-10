@@ -1,11 +1,11 @@
 <template>
-	<div class="tw-border tw-border-neutral-300 tw-shadow-card tw-rounded-coordinator tw-bg-white tw-p-6">
+	<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card">
 		<div>
 			<form @submit.prevent="submit" class="fabrikForm emundus-form">
 				<div>
 					<div>
 						<div
-							class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+							class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 							@click="redirectJRoute('index.php?option=com_emundus&view=emails')"
 						>
 							<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
@@ -15,12 +15,12 @@
 						<div class="tw-mt-4">
 							<h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
 							<div class="tw-mt-2">
-								<p class="tw-text-red-600 tw-mt-1">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
+								<p class="tw-mt-1 tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
 							</div>
 						</div>
 					</div>
 
-					<hr class="tw-mt-1.5 tw-mb-4" />
+					<hr class="tw-mb-4 tw-mt-1.5" />
 
 					<div class="tw-flex tw-flex-col tw-gap-4">
 						<div>
@@ -30,11 +30,11 @@
 							</label>
 							<input
 								type="text"
-								class="tw-w-full tw-mt-1"
+								class="tw-mt-1 tw-w-full"
 								v-model="form.subject"
 								:class="{ 'is-invalid': errors.subject }"
 							/>
-							<div v-if="errors.subject" class="tw-text-red-600 tw-mb-1 tw-mt-1">
+							<div v-if="errors.subject" class="tw-mb-1 tw-mt-1 tw-text-red-600">
 								<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED') }}</span>
 							</div>
 						</div>
@@ -64,23 +64,23 @@
 									translate('COM_EMUNDUS_EMAIL_SHOW_TAGS')
 								}}</a>
 							</div>
-							<div v-if="errors.message" class="tw-text-red-600 tw-mb-1">
+							<div v-if="errors.message" class="tw-mb-1 tw-text-red-600">
 								<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
 							</div>
 						</div>
 
 						<div class="tw-mb-4" v-if="displayButtonField">
 							<label>{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT') }}</label>
-							<p class="tw-mt-1 tw-mb-1 tw-text-xs tw-text-neutral-700">
+							<p class="tw-mb-1 tw-mt-1 tw-text-xs tw-text-neutral-700">
 								{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP') }}
 							</p>
 							<input
 								type="text"
-								class="tw-w-full tw-mt-2"
+								class="tw-mt-2 tw-w-full"
 								:class="{ 'is-invalid !tw-border-red-600': errors.button }"
 								v-model="form.button"
 							/>
-							<div v-if="errors.button" class="tw-text-red-600 tw-mt-1">
+							<div v-if="errors.button" class="tw-mt-1 tw-text-red-600">
 								<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED') }}</span>
 							</div>
 						</div>
@@ -99,18 +99,18 @@
 					</div>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="em-container-accordeon tw-shadow">
 					<div class="tw-flex tw-items-center tw-gap-1">
-						<h2 class="tw-cursor-pointer tw-w-full" @click="displayAdvanced">
+						<h2 class="tw-w-full tw-cursor-pointer" @click="displayAdvanced">
 							{{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}
 						</h2>
 
 						<button
 							:title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')"
 							type="button"
-							class="tw-bg-transparent tw-flex tw-flex-col"
+							class="tw-flex tw-flex-col tw-bg-transparent"
 							@click="displayAdvanced"
 							v-show="!displayAdvancedParameters"
 						>
@@ -120,7 +120,7 @@
 							:title="translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING')"
 							type="button"
 							@click="displayAdvanced"
-							class="tw-bg-transparent tw-flex tw-flex-col"
+							class="tw-flex tw-flex-col tw-bg-transparent"
 							v-show="displayAdvancedParameters"
 						>
 							<span class="material-symbols-outlined em-main-500-color">remove_circle_outline</span>
@@ -129,7 +129,7 @@
 
 					<div
 						id="email-advanced-parameters"
-						class="tw-mt-4 tw-pl-4 em-border-left-main-500 tw-flex tw-flex-col tw-gap-4"
+						class="em-border-left-main-500 tw-mt-4 tw-flex tw-flex-col tw-gap-4 tw-pl-4"
 						v-if="displayAdvancedParameters"
 					>
 						<div>
@@ -139,18 +139,18 @@
 
 						<div>
 							<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER') }}</label>
-							<input type="text" class="tw-w-full fabrikinput tw-mt-1" v-model="form.name" />
+							<input type="text" class="fabrikinput tw-mt-1 tw-w-full" v-model="form.name" />
 						</div>
 
 						<div>
 							<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS') }}</label>
 							<input
 								type="text"
-								class="tw-w-full fabrikinput tw-mt-1"
+								class="fabrikinput tw-mt-1 tw-w-full"
 								v-model="form.emailfrom"
 								placeholder="reply-to@tchooz.io"
 							/>
-							<p class="tw-text-xs tw-text-neutral-700 tw-mt-1">
+							<p class="tw-mt-1 tw-text-xs tw-text-neutral-700">
 								{{ translate('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP') }}
 							</p>
 						</div>
@@ -261,7 +261,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-justify-end">
 					<button type="submit" class="tw-btn-primary !tw-w-auto">

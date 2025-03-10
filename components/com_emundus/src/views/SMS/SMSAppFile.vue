@@ -6,7 +6,7 @@
 			@changeTabActive="onChangeTabActive"
 		></Tabs>
 
-		<div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6">
+		<div class="em-card-shadow tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
 			<SMSHistory v-if="selectedTab === 'history'" :fnum="fnum"></SMSHistory>
 			<SMSSend v-else :fnums="[fnum]"></SMSSend>
 		</div>

@@ -20,7 +20,7 @@ export default {
 
 <template>
 	<div
-		class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+		class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 		@click="redirectJRoute"
 	>
 		<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>

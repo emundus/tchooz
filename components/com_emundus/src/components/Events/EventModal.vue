@@ -55,7 +55,7 @@ export default {
 
 <template>
 	<div
-		class="card-event tw-rounded-lg tw-px-6 tw-py-4 tw-shadow tw-border-neutral-400 tw-flex tw-flex-col tw-gap-2"
+		class="card-event tw-flex tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-px-6 tw-py-4 tw-shadow"
 		:class="{ 'card-event-left': popupPosition === 'left', 'card-event-right': popupPosition === 'right' }"
 		v-if="view == 'week'"
 		:style="{ borderColor: calendarEvent.color, '--event-arrow-color': calendarEvent.color }"

@@ -34,14 +34,14 @@
 						:key="element.value"
 						@mouseover="elementHovered = element.value"
 						@mouseleave="elementHovered = 0"
-						class="form-builder-element tw-flex tw-justify-between tw-items-start tw-gap-3 tw-p-3 tw-cursor-move"
+						class="form-builder-element tw-flex tw-cursor-move tw-items-start tw-justify-between tw-gap-3 tw-p-3"
 					>
 						<span class="material-symbols-outlined" style="font-size: 18px">{{ element.icon }}</span>
-						<p class="tw-w-full tw-flex tw-flex-col">
+						<p class="tw-flex tw-w-full tw-flex-col">
 							{{ translate(element.name) }}
-							<span class="tw-text-neutral-600 tw-text-xs">{{ translate(element.description) }}</span>
+							<span class="tw-text-xs tw-text-neutral-600">{{ translate(element.description) }}</span>
 						</p>
-						<div class="tw-flex tw-items-center tw-h-[18px] tw-w-[18px]">
+						<div class="tw-flex tw-h-[18px] tw-w-[18px] tw-items-center">
 							<!--              <span class="material-symbols-outlined" style="font-size: 18px">drag_indicator</span>-->
 							<span
 								v-show="elementHovered == element.value"
@@ -64,9 +64,9 @@
 				:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_SECTION')"
 			/>
 			<div v-for="group in publishedGroups" :key="group.id" class="draggables-list" @click="addGroup(group)">
-				<div class="form-builder-element tw-flex tw-items-center tw-justify-between tw-cursor-pointer tw-gap-3 tw-p-3">
+				<div class="form-builder-element tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-gap-3 tw-p-3">
 					<span class="material-symbols-outlined">{{ group.icon }}</span>
-					<p class="tw-w-full tw-flex tw-flex-col">{{ translate(group.name) }}</p>
+					<p class="tw-flex tw-w-full tw-flex-col">{{ translate(group.name) }}</p>
 					<span class="material-symbols-outlined">add_circle_outline</span>
 				</div>
 			</div>

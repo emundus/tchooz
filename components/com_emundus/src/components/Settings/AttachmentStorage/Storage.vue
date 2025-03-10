@@ -15,7 +15,7 @@
 					<td></td>
 					<td>
 						<select
-							class="tw-mr-2 em-clear-dropdown"
+							class="em-clear-dropdown tw-mr-2"
 							v-model="document.sync"
 							@change="updateSync(document.id, document.sync)"
 						>
@@ -24,7 +24,7 @@
 					</td>
 					<td>
 						<select
-							class="tw-mr-2 em-clear-dropdown"
+							class="em-clear-dropdown tw-mr-2"
 							v-if="document.sync != 0"
 							v-model="document.sync_method"
 							@change="updateSyncMethod(document.id, document.sync_method)"
@@ -45,7 +45,7 @@
 			:delay="100"
 			:adaptive="true"
 			id="modal-attachment-parameters"
-			class="tw-h-full em-w-25"
+			class="em-w-25 tw-h-full"
 		>
 			<AttachmentParameters :attachment="selectedDocument"></AttachmentParameters>
 		</modal>

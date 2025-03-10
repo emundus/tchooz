@@ -3,7 +3,7 @@
 		<button
 			v-if="button"
 			@click="onClickToggle"
-			class="!tw-w-auto tw-flex tw-items-center tw-gap-1"
+			class="tw-flex !tw-w-auto tw-items-center tw-gap-1"
 			:class="buttonClass"
 			style="padding: 0.5rem"
 			:title="button"
@@ -23,7 +23,7 @@
 		<transition name="fade">
 			<div
 				v-show="isOpen"
-				class="popover-content tw-shadow tw-rounded-coordinator"
+				class="popover-content tw-rounded-coordinator tw-shadow"
 				ref="popoverContent"
 				:id="'popover-content-' + id"
 				:style="popoverContentStyle"

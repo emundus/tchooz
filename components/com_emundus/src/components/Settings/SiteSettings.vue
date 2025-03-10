@@ -1,8 +1,8 @@
 <template>
 	<div class="em-settings-menu">
 		<div class="tw-w-full">
-			<div class="tw-w-4/5 tw-flex tw-flex-col" v-if="!loading">
-				<div v-for="parameter in displayedParams" class="form-group tw-w-full tw-mb-7" :key="parameter.param">
+			<div class="tw-flex tw-w-4/5 tw-flex-col" v-if="!loading">
+				<div v-for="parameter in displayedParams" class="form-group tw-mb-7 tw-w-full" :key="parameter.param">
 					<Parameter
 						v-if="
 							(parameter.type === 'multiselect' && parameter.multiselectOptions) || parameter.type !== 'multiselect'

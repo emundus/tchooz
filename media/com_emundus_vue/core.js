@@ -162,7 +162,7 @@ const _sfc_main = {
 };
 const _hoisted_1 = { key: 0 };
 const _hoisted_2 = { key: 0 };
-const _hoisted_3 = { class: "tw-text-xs tw-flex tw-text-ellipsis tw-overflow-hidden tw-font-semibold" };
+const _hoisted_3 = { class: "tw-flex tw-overflow-hidden tw-text-ellipsis tw-text-xs tw-font-semibold" };
 const _hoisted_4 = { class: "tw-flex tw-items-center tw-gap-2" };
 const _hoisted_5 = {
   key: 1,
@@ -175,12 +175,12 @@ const _hoisted_6 = {
 const _hoisted_7 = ["onClick"];
 const _hoisted_8 = {
   key: 1,
-  class: "tw-flex tw-flex-col tw-gap-1 tw-h-full"
+  class: "tw-flex tw-h-full tw-flex-col tw-gap-1"
 };
 const _hoisted_9 = ["onMouseover"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
-    class: "tw-flex tw-h-full tw-gap-2 tw-p-1 tw-flex-col tw-pl-2 tw-border tw-border-s-4 tw-overflow-auto",
+    class: "tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2",
     style: normalizeStyle({
       backgroundColor: $options.brightnessColor,
       color: $props.calendarEvent.color,
@@ -193,7 +193,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ])) : createCommentVNode("", true),
       createBaseVNode("div", _hoisted_4, [
         createBaseVNode("span", {
-          class: "material-symbols-outlined tw-text-neutral-900 !tw-text-sm",
+          class: "material-symbols-outlined !tw-text-sm tw-text-neutral-900",
           style: normalizeStyle({ color: $props.calendarEvent.color })
         }, "schedule", 4),
         createBaseVNode("p", {
@@ -203,15 +203,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       $props.calendarEvent.availabilities_count ? (openBlock(), createElementBlock("div", _hoisted_5, [
         createBaseVNode("span", {
-          class: "material-symbols-outlined tw-text-neutral-900 !tw-text-sm",
+          class: "material-symbols-outlined !tw-text-sm tw-text-neutral-900",
           style: normalizeStyle({ color: $props.calendarEvent.color })
         }, "groups", 4),
         createBaseVNode("p", {
-          class: "tw-text-xs tw-whitespace-nowrap",
+          class: "tw-whitespace-nowrap tw-text-xs",
           style: normalizeStyle({ color: $props.calendarEvent.color })
         }, toDisplayString($props.calendarEvent.booked_count) + " / " + toDisplayString($props.calendarEvent.availabilities_count), 5),
         createBaseVNode("p", {
-          class: "tw-text-xs tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap",
+          class: "tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap tw-text-xs",
           style: normalizeStyle({ color: $props.calendarEvent.color })
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER")), 5)
       ])) : createCommentVNode("", true)
@@ -219,7 +219,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $props.calendarEvent.registrants ? (openBlock(), createElementBlock("div", _hoisted_6, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($props.calendarEvent.registrants.datas, (registrant) => {
           return openBlock(), createElementBlock("div", {
-            class: "tw-flex tw-items-center tw-gap-2 tw-py-1 tw-px-3 tw-rounded-md tw-border-2 tw-min-h-[30px]",
+            class: "tw-flex tw-min-h-[30px] tw-items-center tw-gap-2 tw-rounded-md tw-border-2 tw-px-3 tw-py-1",
             onClick: ($event) => $options.openModal(this.calendarEvent, registrant),
             style: normalizeStyle({
               backgroundColor: _ctx.lightenColor($props.calendarEvent.color, 90),
@@ -243,7 +243,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         (openBlock(true), createElementBlock(Fragment, null, renderList($options.generateNumbers, (n2) => {
           return openBlock(), createElementBlock("div", {
             key: n2,
-            class: "tw-flex tw-items-center tw-justify-center tw-gap-2 tw-py-1 tw-px-3 tw-rounded-md tw-border-2 tw-border-dashed tw-bg-white tw-min-h-[30px]",
+            class: "tw-flex tw-min-h-[30px] tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-border-2 tw-border-dashed tw-bg-white tw-px-3 tw-py-1",
             onClick: _cache[0] || (_cache[0] = ($event) => $options.openModal(this.calendarEvent)),
             onMouseover: ($event) => $data.availableSlotHovered = n2,
             onMouseleave: _cache[1] || (_cache[1] = ($event) => $data.availableSlotHovered = -1),

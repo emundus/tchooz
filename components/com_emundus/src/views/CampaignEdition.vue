@@ -1,22 +1,22 @@
 <template>
 	<div id="edit-campaign">
 		<div class="em-w-custom"></div>
-		<div class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded-2xl tw-bg-white tw-p-6">
+		<div class="em-card-shadow tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
 			<div>
 				<div
-					class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+					class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 					@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
 				>
 					<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
 					<span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
 				</div>
-				<div class="tw-flex tw-items-center tw-mt-4">
+				<div class="tw-mt-4 tw-flex tw-items-center">
 					<h1>{{ translate(selectedMenuItem.name) }}</h1>
 				</div>
 				<p v-html="translate(selectedMenuItem.description)"></p>
 				<hr />
 
-				<div id="campaign-info-line" class="tw-flex tw-items-center tw-mb-8">
+				<div id="campaign-info-line" class="tw-mb-8 tw-flex tw-items-center">
 					<p>
 						<b style="color: var(--em-profile-color); font-weight: 700 !important"> {{ form.label }}</b>
 						{{ translate('COM_EMUNDUS_ONBOARD_FROM') }}
@@ -32,13 +32,13 @@
 					:classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"
 				></Tabs>
 
-				<div class="tw-w-full tw-rounded-2xl tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative">
+				<div class="tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
 					<div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
-						<p class="tw-text-red-600 flex flex-row">
+						<p class="flex flex-row tw-text-red-600">
 							<span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span
 							>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
 						</p>
-						<ul v-if="campaignsByProgram.length > 0" class="tw-mt-2 tw-mb-8 em-pl-16">
+						<ul v-if="campaignsByProgram.length > 0" class="em-pl-16 tw-mb-8 tw-mt-2">
 							<li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
 						</ul>
 					</div>
@@ -82,10 +82,10 @@
 			</div>
 
 			<div
-				class="tw-flex tw-items-center tw-justify-end tw-mt-4"
+				class="tw-mt-4 tw-flex tw-items-center tw-justify-end"
 				v-if="['addDocumentsDropfiles'].includes(selectedMenu)"
 			>
-				<button type="button" class="tw-btn-primary tw-w-auto mb-4" @click="next">
+				<button type="button" class="mb-4 tw-btn-primary tw-w-auto" @click="next">
 					{{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
 				</button>
 			</div>

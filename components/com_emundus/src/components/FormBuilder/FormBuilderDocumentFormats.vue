@@ -1,6 +1,6 @@
 <template>
 	<div id="form-builder-document-formats" class="!tw-pr-4">
-		<p id="form-builder-document-title" class="tw-text-center tw-full tw-p-4">
+		<p id="form-builder-document-title" class="tw-full tw-p-4 tw-text-center">
 			{{ translate('COM_EMUNDUS_FORM_BUILDER_FORMATS') }}
 		</p>
 		<input
@@ -8,7 +8,7 @@
 			id="search"
 			v-model="search"
 			type="text"
-			class="tw-mt-4 tw-full"
+			class="tw-full tw-mt-4"
 			:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_SEARCH_FORMAT')"
 		/>
 		<draggable
@@ -24,7 +24,7 @@
 				<div
 					v-for="format in displayedFormats"
 					:key="format.id"
-					class="tw-flex tw-justify-between tw-items-center draggable-element tw-mt-2 tw-mb-2 tw-p-4"
+					class="draggable-element tw-mb-2 tw-mt-2 tw-flex tw-items-center tw-justify-between tw-p-4"
 				>
 					<span id="format-name" class="tw-full tw-p-4" :title="format.name[shortDefaultLang]">{{
 						format.name[shortDefaultLang]

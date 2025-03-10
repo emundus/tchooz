@@ -47,7 +47,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createBlock(Teleport, { to: "body" }, [
     createVNode(_component_modal, {
       name: "messenger-modal",
-      class: normalizeClass("placement-center tw-bg-white tw-rounded tw-shadow-modal tw-max-h-[80vh] tw-overflow-y-auto"),
+      class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal"),
       transition: "nice-modal-fade",
       width: "95%",
       height: "95%",
@@ -71,7 +71,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["onClosed", "onBeforeOpen"])
   ]);
 }
-const MessengerPopup = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-4d27cfea"]]);
+const MessengerPopup = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-265839f0"]]);
 const _sfc_main$1 = {
   name: "NotificationsPopup",
   props: {
@@ -141,26 +141,26 @@ const _sfc_main$1 = {
   }
 };
 const _hoisted_1$1 = { class: "tw-relative" };
-const _hoisted_2$1 = { class: "tw-absolute tw-bg-white tw-rounded-coordinator tw-p-3 tw-right-0 tw-top-6 tw-w-[25em] tw-shadow-standard tw-border tw-border-neutral-300" };
+const _hoisted_2$1 = { class: "tw-absolute tw-right-0 tw-top-6 tw-w-[25em] tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-3 tw-shadow-standard" };
 const _hoisted_3$1 = { class: "tw-flex tw-items-center tw-justify-between" };
 const _hoisted_4 = {
   key: 0,
-  class: "tw-overflow-auto tw-max-h-[20em] tw-flex tw-flex-col tw-gap-3"
+  class: "tw-flex tw-max-h-[20em] tw-flex-col tw-gap-3 tw-overflow-auto"
 };
 const _hoisted_5 = { class: "tw-flex tw-flex-col" };
-const _hoisted_6 = { class: "tw-flex tw-items-center tw-gap-1 tw-flex-wrap tw-overflow-x-hidden" };
-const _hoisted_7 = { class: "tw-flex tw-gap-1 tw-items-center tw-text-base tw-cursor-pointer tw-mb-0" };
+const _hoisted_6 = { class: "tw-flex tw-flex-wrap tw-items-center tw-gap-1 tw-overflow-x-hidden" };
+const _hoisted_7 = { class: "tw-mb-0 tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-base" };
 const _hoisted_8 = ["onClick"];
 const _hoisted_9 = ["onClick"];
 const _hoisted_10 = ["onClick"];
 const _hoisted_11 = {
   key: 0,
-  class: "tw-mt-1 tw-pl-1 tw-border-s-2 tw-border-main-500"
+  class: "tw-mt-1 tw-border-s-2 tw-border-main-500 tw-pl-1"
 };
-const _hoisted_12 = { class: "tw-flex tw-flex-col tw-gap-1 tw-mb-2" };
+const _hoisted_12 = { class: "tw-mb-2 tw-flex tw-flex-col tw-gap-1" };
 const _hoisted_13 = { class: "tw-text-sm" };
-const _hoisted_14 = { class: "tw-p-2 tw-border tw-border-neutral-300 tw-rounded-coordinator" };
-const _hoisted_15 = { class: "tw-mt-1 tw-mx-1 tw-flex tw-justify-between tw-items-center" };
+const _hoisted_14 = { class: "tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-2" };
+const _hoisted_15 = { class: "tw-mx-1 tw-mt-1 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_16 = ["onClick"];
 const _hoisted_17 = ["onClick"];
 const _hoisted_18 = { key: 1 };
@@ -210,7 +210,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
                   onClick: ($event) => $options.closeChatroom(unread.fnum)
                 }, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CLOSE_CHATROOM")), 9, _hoisted_16),
                 createBaseVNode("span", {
-                  class: "tw-cursor-pointer material-symbols-outlined",
+                  class: "material-symbols-outlined tw-cursor-pointer",
                   onClick: ($event) => $options.goToFile(unread.fnum)
                 }, "reply", 8, _hoisted_17)
               ])
@@ -280,7 +280,7 @@ const _hoisted_2 = {
 };
 const _hoisted_3 = {
   key: 0,
-  class: "tw-absolute tw-bg-red-500 tw-rounded-full",
+  class: "tw-absolute tw-rounded-full tw-bg-red-500",
   style: { "top": "-2px", "right": "4px", "width": "8px", "height": "8px" }
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {

@@ -40,7 +40,7 @@ export default {
 	<Teleport to="body">
 		<modal
 			:name="'messenger-modal'"
-			:class="'placement-center tw-bg-white tw-rounded tw-shadow-modal tw-max-h-[80vh] tw-overflow-y-auto'"
+			:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal'"
 			transition="nice-modal-fade"
 			:width="'95%'"
 			:height="'95%'"

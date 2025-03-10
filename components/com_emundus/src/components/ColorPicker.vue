@@ -1,7 +1,7 @@
 <template>
 	<div :id="id" class="color-picker-container tw-relative">
 		<div
-			class="tw-rounded-full tw-h-[24px] tw-w-[24px] tw-cursor-pointer"
+			class="tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full"
 			:style="selectedSwatchStyle"
 			@click="togglePopover"
 		></div>
@@ -9,7 +9,7 @@
 			<div
 				v-for="(swatchRow, index) in computedSwatches"
 				:key="index"
-				class="vue-swatches__row tw-rounded-full tw-h-[24px] tw-w-[24px] tw-cursor-pointer hover:tw-scale-110"
+				class="vue-swatches__row tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full hover:tw-scale-110"
 				:style="swatchStyle(swatchRow)"
 				@click="updateSwatch(swatchRow)"
 			></div>

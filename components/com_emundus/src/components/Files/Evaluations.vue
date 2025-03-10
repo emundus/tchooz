@@ -2,11 +2,11 @@
 	<div id="evaluations-container">
 		<div v-if="evaluations.length > 0" class="tw-h-full">
 			<nav class="tw-mt-1">
-				<ul class="tw-list-none tw-flex tw-flex-row">
+				<ul class="tw-flex tw-list-none tw-flex-row">
 					<li
 						v-for="evaluation in evaluations"
 						:key="evaluation.id"
-						class="tw-cursor-pointer tw-shadow tw-rounded-t-lg tw-px-2.5 tw-py-3"
+						class="tw-cursor-pointer tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow"
 						:class="{ 'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id }"
 						@click="selectedTab = evaluation.id"
 					>
@@ -18,7 +18,7 @@
 				v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
 				v-show="!loading"
 				:src="selectedEvaluation.url"
-				class="tw-w-full iframe-evaluation-list"
+				class="iframe-evaluation-list tw-w-full"
 				:key="selectedTab"
 				@load="iframeLoaded($event)"
 			>
@@ -29,7 +29,7 @@
 		</div>
 		<p
 			v-else
-			class="tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
+			class="tw-m-2 tw-rounded tw-border tw-border-blue-500 tw-bg-blue-50 tw-p-2 tw-text-center tw-text-neutral-900"
 		>
 			{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS') }}
 		</p>

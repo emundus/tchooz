@@ -315,9 +315,9 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { class: "tw-mb-8 em-neutral-100-box em-p-24" };
+const _hoisted_1$1 = { class: "em-neutral-100-box em-p-24 tw-mb-8" };
 const _hoisted_2$1 = { class: "tw-mb-6" };
-const _hoisted_3$1 = { class: "tw-justify-between tw-items-start tw-mt-4 em-grid-50 em-ml-24" };
+const _hoisted_3$1 = { class: "em-grid-50 em-ml-24 tw-mt-4 tw-items-start tw-justify-between" };
 const _hoisted_4$1 = ["innerHTML"];
 const _hoisted_5$1 = ["value", "onFocusout"];
 const _hoisted_6$1 = ["value", "onFocusout"];
@@ -332,7 +332,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("div", _hoisted_3$1, [
               createBaseVNode("div", {
                 innerHTML: field.default_lang,
-                class: "tw-text-neutral-700 tw-max-h-80 tw-overflow-auto"
+                class: "tw-max-h-80 tw-overflow-auto tw-text-neutral-700"
               }, null, 8, _hoisted_4$1),
               field.field_type === "field" ? (openBlock(), createElementBlock("input", {
                 key: 0,
@@ -677,10 +677,10 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { class: "tw-mb-2" };
-const _hoisted_2 = { class: "tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25" };
+const _hoisted_2 = { class: "em-h-25 tw-mb-6 tw-text-base tw-text-neutral-700" };
 const _hoisted_3 = {
   key: 0,
-  class: "tw-text-base tw-mb-6 em-h-25"
+  class: "em-h-25 tw-mb-6 tw-text-base"
 };
 const _hoisted_4 = {
   key: 1,
@@ -695,7 +695,7 @@ const _hoisted_9 = {
   class: "text-center tw-mt-4"
 };
 const _hoisted_10 = { class: "tw-mb-2" };
-const _hoisted_11 = { class: "tw-text-base em-text-neutral-600" };
+const _hoisted_11 = { class: "em-text-neutral-600 tw-text-base" };
 const _hoisted_12 = { key: 1 };
 const _hoisted_13 = { class: "mb-2" };
 const _hoisted_14 = {

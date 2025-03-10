@@ -125,14 +125,14 @@ export default {
 <template>
 	<div>
 		<nav v-if="tabs.length > 1" id="list-nav">
-			<ul class="tw-flex tw-ml-0 tw-pl-0 tw-list-none">
+			<ul class="tw-ml-0 tw-flex tw-list-none tw-pl-0">
 				<li
 					v-for="tab in tabs"
 					:key="tab.key"
 					class="tw-cursor-pointer tw-font-normal"
 					:class="{
 						'em-light-tabs em-light-selected-tab': currentTabKey === tab.key,
-						'em-light-tabs ': currentTabKey !== tab.key,
+						'em-light-tabs': currentTabKey !== tab.key,
 					}"
 					@click="onSelectTab(tab.key)"
 				>
@@ -141,7 +141,7 @@ export default {
 			</ul>
 		</nav>
 
-		<section id="actions" class="tw-flex tw-items-start tw-justify-between tw-mt-4 tw-mb-4">
+		<section id="actions" class="tw-mb-4 tw-mt-4 tw-flex tw-items-start tw-justify-between">
 			<Filters :filters="filters" :currentTabKey="currentTabKey" @update-filter="onChangeFilter" />
 
 			<Actions

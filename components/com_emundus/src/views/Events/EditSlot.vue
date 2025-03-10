@@ -313,7 +313,7 @@ export default {
 <template>
 	<div>
 		<div class="tw-pt-4">
-			<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+			<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 				<h2 v-if="slot">
 					{{ translate('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT') }}
 				</h2>
@@ -332,7 +332,7 @@ export default {
 				v-for="field in fields"
 				v-show="field.displayed"
 				:key="field.param"
-				:class="'tw-flex tw-flex-col tw-justify-between tw-gap-2 tw-w-full'"
+				:class="'tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-2'"
 			>
 				<Parameter
 					v-if="field.displayed && field.param === 'booking'"
@@ -374,7 +374,7 @@ export default {
 			</div>
 		</div>
 
-		<div class="tw-flex tw-justify-between tw-mt-5 tw-mb-8">
+		<div class="tw-mb-8 tw-mt-5 tw-flex tw-justify-between">
 			<button class="tw-btn-cancel" @click="onClosePopup">
 				{{ translate('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_CANCEL') }}
 			</button>

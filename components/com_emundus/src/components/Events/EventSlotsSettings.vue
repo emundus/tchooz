@@ -417,7 +417,7 @@ export default {
 				</div>
 			</div>
 
-			<div class="tw-flex tw-justify-end tw-mt-7">
+			<div class="tw-mt-7 tw-flex tw-justify-end">
 				<button type="button" class="tw-btn-primary tw-cursor-pointer" :disabled="disabledSubmit" @click="setupSlots">
 					{{ translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CREATE') }}
 				</button>

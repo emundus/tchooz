@@ -1,5 +1,5 @@
 <template>
-	<div id="form-builder-create-model" class="tw-flex tw-flex-col tw-justify-between tw-w-full">
+	<div id="form-builder-create-model" class="tw-flex tw-w-full tw-flex-col tw-justify-between">
 		<div class="tw-w-full">
 			<div class="tw-flex tw-items-center tw-justify-between tw-p-4">
 				<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES') }}</p>
@@ -8,25 +8,25 @@
 
 			<div v-if="!loading" id="model-properties" class="tw-flex tw-flex-col tw-justify-start tw-p-4 tw-text-end">
 				<p class="em-main-500-color">{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES_INTRO') }}</p>
-				<label for="page-model-title" class="tw-mt-4 tw-text-end tw-w-full">{{
+				<label for="page-model-title" class="tw-mt-4 tw-w-full tw-text-end">{{
 					translate('COM_EMUNDUS_FORM_BUILDER_MODEL_INPUT_LABEL')
 				}}</label>
-				<input id="page-model-title" class="tw-w-full tw-mb-4" type="text" v-model="modelTitle" />
+				<input id="page-model-title" class="tw-mb-4 tw-w-full" type="text" v-model="modelTitle" />
 				<p v-if="alreadyExists" class="tw-text-red-600">
 					{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_WITH_SAME_TITLE_EXISTS') }}
 				</p>
 			</div>
-			<div v-else class="tw-w-full tw-flex tw-items-center tw-justify-center">
+			<div v-else class="tw-flex tw-w-full tw-items-center tw-justify-center">
 				<div class="em-loader"></div>
 			</div>
 		</div>
-		<div class="tw-flex tw-items-center tw-justify-between actions tw-w-full">
+		<div class="actions tw-flex tw-w-full tw-items-center tw-justify-between">
 			<button
 				class="tw-btn-primary tw-m-4"
 				@click="addFormModel()"
 				:disabled="modelTitle.length < 1 || loading"
 				:class="{
-					'tw-text-white tw-bg-gray-500 tw-w-full tw-px-2 tw-py-3 tw-rounded-coordinator':
+					'tw-w-full tw-rounded-coordinator tw-bg-gray-500 tw-px-2 tw-py-3 tw-text-white':
 						modelTitle.length < 1 || loading,
 				}"
 			>

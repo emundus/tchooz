@@ -102,7 +102,7 @@
 					</template>
 				</vue-csv-import>
 			</div>
-			<div class="tw-flex tw-items-center tw-justify-between mb-1">
+			<div class="mb-1 tw-flex tw-items-center tw-justify-between">
 				<button type="button" class="bouton-sauvergarder-et-continuer w-retour" @click.prevent="goBack">
 					{{ translations.Retour }}
 				</button>

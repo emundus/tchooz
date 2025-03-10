@@ -2,7 +2,7 @@
 	<div id="form-builder-page">
 		<div class="tw-flex tw-items-center tw-justify-between">
 			<span
-				class="tw-text-2xl tw-font-semibold editable-data"
+				class="editable-data tw-text-2xl tw-font-semibold"
 				id="page-title"
 				ref="pageTitle"
 				@focusout="updateTitle"

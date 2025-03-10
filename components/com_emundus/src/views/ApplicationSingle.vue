@@ -9,12 +9,12 @@
 		v-if="selectedFile !== null && selectedFile !== undefined"
 		:class="{ 'context-files': context === 'files', hidden: hidden }"
 	>
-		<div class="em-modal-header tw-w-full tw-px-3 tw-py-4 tw-bg-profile-full tw-flex tw-items-center">
-			<div class="tw-flex tw-items-center tw-justify-between tw-w-full" id="evaluation-modal-close">
+		<div class="em-modal-header tw-flex tw-w-full tw-items-center tw-bg-profile-full tw-px-3 tw-py-4">
+			<div class="tw-flex tw-w-full tw-items-center tw-justify-between" id="evaluation-modal-close">
 				<div class="tw-flex tw-items-center tw-gap-2">
-					<div @click="onClose" class="tw-w-max tw-flex tw-items-center tw-cursor-pointer">
+					<div @click="onClose" class="tw-flex tw-w-max tw-cursor-pointer tw-items-center">
 						<span class="material-symbols-outlined tw-text-base" style="color: white">navigate_before</span>
-						<span class="tw-ml-2 tw-text-neutral-900 tw-text-white tw-text-sm">{{ translate('BACK') }}</span>
+						<span class="tw-ml-2 tw-text-sm tw-text-neutral-900 tw-text-white">{{ translate('BACK') }}</span>
 					</div>
 					<span class="tw-text-white">|</span>
 					<p class="tw-text-sm" style="color: white" v-if="selectedFile.applicant_name != ''">
@@ -26,13 +26,13 @@
 				</div>
 				<div v-if="fnums.length > 1" class="tw-flex tw-items-center">
 					<span
-						class="material-symbols-outlined tw-text-base tw-cursor-pointer"
+						class="material-symbols-outlined tw-cursor-pointer tw-text-base"
 						style="color: white"
 						@click="openPreviousFnum"
 						>navigate_before</span
 					>
 					<span
-						class="material-symbols-outlined tw-text-base tw-cursor-pointer"
+						class="material-symbols-outlined tw-cursor-pointer tw-text-base"
 						style="color: white"
 						@click="openNextFnum"
 						>navigate_next</span
@@ -45,7 +45,7 @@
 			<div id="modal-applicationform">
 				<div class="scrollable">
 					<div
-						class="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300 sticky-tab em-bg-neutral-100"
+						class="sticky-tab em-bg-neutral-100 tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300"
 						style="z-index: 2"
 					>
 						<div
@@ -85,7 +85,7 @@
 							/>
 
 							<div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
-								<iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-w-full tw-h-screen"></iframe>
+								<iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-h-screen tw-w-full"></iframe>
 							</div>
 
 							<evaluation-list

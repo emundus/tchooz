@@ -1,6 +1,6 @@
 <template>
 	<div id="form-builder-pages">
-		<p class="form-builder-title tw-flex tw-items-center md:tw-justify-center lg:tw-justify-between tw-p-4">
+		<p class="form-builder-title tw-flex tw-items-center tw-p-4 md:tw-justify-center lg:tw-justify-between">
 			<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
 			<span id="add-page" class="material-symbols-outlined tw-cursor-pointer" @click="$emit('open-page-create')">
 				add
@@ -16,7 +16,7 @@
 		>
 			<transition-group>
 				<div
-					class="tw-font-medium tw-cursor-pointer"
+					class="tw-cursor-pointer tw-font-medium"
 					v-for="(page, index) in formPages"
 					:key="page.id"
 					:class="{ selected: page.id == selected }"
@@ -26,7 +26,7 @@
 						@mouseover="pageOptionsShown = page.id"
 						@mouseleave="pageOptionsShown = 0"
 					>
-						<p @click="selectPage(page.id)" class="tw-w-full tw-p-4 form-builder-page-label">
+						<p @click="selectPage(page.id)" class="form-builder-page-label tw-w-full tw-p-4">
 							{{ page.label !== '' ? translate(page.label) : translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index + 1) }}
 						</p>
 						<div
@@ -59,7 +59,7 @@
 
 		<transition-group>
 			<div
-				class="tw-font-medium tw-cursor-pointer"
+				class="tw-cursor-pointer tw-font-medium"
 				v-for="page in submissionPages"
 				:key="page.id"
 				:class="{ selected: page.id == selected }"

@@ -640,7 +640,7 @@ const _hoisted_15 = ["name", "id", "checked"];
 const _hoisted_16 = { key: 5 };
 const _hoisted_17 = {
   "data-toggle": "radio_buttons",
-  class: "tw-grid tw-grid-cols-1 md:tw-grid-cols-2 lg:tw-grid-cols-2 tw-gap-4"
+  class: "tw-grid tw-grid-cols-1 tw-gap-4 md:tw-grid-cols-2 lg:tw-grid-cols-2"
 };
 const _hoisted_18 = ["name", "id", "value", "checked"];
 const _hoisted_19 = ["for"];
@@ -673,7 +673,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     $data.parameter.hideLabel !== true ? (openBlock(), createElementBlock("label", {
       key: 0,
       for: $options.paramId,
-      class: normalizeClass(["tw-flex tw-font-semibold tw-items-end", $data.parameter.helptext && $props.helpTextType === "above" ? "tw-mb-0" : ""])
+      class: normalizeClass(["tw-flex tw-items-end tw-font-semibold", $data.parameter.helptext && $props.helpTextType === "above" ? "tw-mb-0" : ""])
     }, [
       createTextVNode(toDisplayString(_ctx.translate($data.parameter.label)) + " ", 1),
       $data.parameter.optional !== true ? (openBlock(), createElementBlock("span", _hoisted_2, "*")) : createCommentVNode("", true),
@@ -773,7 +773,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("fieldset", _hoisted_11, [
           createBaseVNode("label", {
             for: $options.paramId + "_input_0",
-            class: normalizeClass([[$data.value == 0 ? "tw-bg-red-700" : "tw-bg-white tw-border-neutral-500 hover:tw-border-red-700"], "tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex"])
+            class: normalizeClass([[$data.value == 0 ? "tw-bg-red-700" : "tw-border-neutral-500 tw-bg-white hover:tw-border-red-700"], "tw-inline-flex tw-h-10 tw-w-60 tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"])
           }, [
             withDirectives(createBaseVNode("input", {
               "onUpdate:modelValue": _cache[6] || (_cache[6] = ($event) => $data.value = $event),
@@ -792,7 +792,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ], 10, _hoisted_12),
           createBaseVNode("label", {
             for: $options.paramId + "_input_1",
-            class: normalizeClass([[$data.value == 1 ? "tw-bg-green-700" : "tw-bg-white tw-border-neutral-500 hover:tw-border-green-700"], "tw-w-60 tw-h-10 tw-p-2.5 tw-rounded-lg tw-border tw-justify-center tw-items-center tw-gap-2.5 tw-inline-flex"])
+            class: normalizeClass([[$data.value == 1 ? "tw-bg-green-700" : "tw-border-neutral-500 tw-bg-white hover:tw-border-green-700"], "tw-inline-flex tw-h-10 tw-w-60 tw-items-center tw-justify-center tw-gap-2.5 tw-rounded-lg tw-border tw-p-2.5"])
           }, [
             withDirectives(createBaseVNode("input", {
               "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $data.value = $event),
@@ -861,7 +861,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ]),
         createBaseVNode("label", {
           for: $options.paramId + "_input",
-          class: "tw-ml-2 !tw-mb-0 tw-font-bold tw-cursor-pointer tw-flex tw-items-center"
+          class: "!tw-mb-0 tw-ml-2 tw-flex tw-cursor-pointer tw-items-center tw-font-bold"
         }, [
           $data.parameter.iconLabel ? (openBlock(), createElementBlock("span", _hoisted_26, toDisplayString($data.parameter.iconLabel), 1)) : createCommentVNode("", true),
           createTextVNode(" " + toDisplayString(_ctx.translate($data.parameter.label)), 1)
@@ -925,7 +925,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ], 2),
     $data.errors[$data.parameter.param] && !["yesno", "toggle"].includes($data.parameter.type) && $data.parameter.displayed ? (openBlock(), createElementBlock("div", {
       key: 2,
-      class: normalizeClass(["tw-absolute tw-mt-1 tw-text-red-600 tw-min-h-[24px]", $data.errors[$data.parameter.param] ? "tw-opacity-100 " : "tw-opacity-0"]),
+      class: normalizeClass(["tw-absolute tw-mt-1 tw-min-h-[24px] tw-text-red-600", $data.errors[$data.parameter.param] ? "tw-opacity-100" : "tw-opacity-0"]),
       id: "error-message-" + $data.parameter.param
     }, toDisplayString(_ctx.translate($data.errors[$data.parameter.param])), 11, _hoisted_31)) : createCommentVNode("", true)
   ]);

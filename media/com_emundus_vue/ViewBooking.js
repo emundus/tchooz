@@ -141,26 +141,26 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "tw-mt-4 tw-mb-8" };
+const _hoisted_1 = { class: "tw-mb-8 tw-mt-4" };
 const _hoisted_2 = { key: 0 };
 const _hoisted_3 = { key: 0 };
-const _hoisted_4 = { class: "tw-text-center tw-mb-4 tw-mt-8" };
-const _hoisted_5 = { class: "tw-flex tw-flex-col tw-text-center tw-mb-5" };
+const _hoisted_4 = { class: "tw-mb-4 tw-mt-8 tw-text-center" };
+const _hoisted_5 = { class: "tw-mb-5 tw-flex tw-flex-col tw-text-center" };
 const _hoisted_6 = { class: "tw-mb-1 tw-font-bold tw-leading-6" };
 const _hoisted_7 = { class: "tw-mb-1 tw-font-bold tw-leading-6" };
-const _hoisted_8 = { class: "tw-flex tw-justify-between tw-mt-5 tw-mb-8" };
+const _hoisted_8 = { class: "tw-mb-8 tw-mt-5 tw-flex tw-justify-between" };
 const _hoisted_9 = ["onClick"];
 const _hoisted_10 = ["onClick"];
 const _hoisted_11 = { class: "tw-flex-1" };
 const _hoisted_12 = { class: "tw-text-green-700" };
 const _hoisted_13 = { class: "tw-font-bold" };
-const _hoisted_14 = { class: "tw-flex-1 tw-ml-12 tw-text-left" };
+const _hoisted_14 = { class: "tw-ml-12 tw-flex-1 tw-text-left" };
 const _hoisted_15 = { class: "tw-text-base tw-text-neutral-600" };
 const _hoisted_16 = { key: 0 };
 const _hoisted_17 = { key: 0 };
 const _hoisted_18 = ["href"];
 const _hoisted_19 = { class: "tw-underline" };
-const _hoisted_20 = { class: "tw-flex-1 tw-flex tw-gap-2 tw-justify-end" };
+const _hoisted_20 = { class: "tw-flex tw-flex-1 tw-justify-end tw-gap-2" };
 const _hoisted_21 = ["onClick"];
 const _hoisted_22 = { key: 1 };
 const _hoisted_23 = { class: "tw-text-center tw-text-neutral-500" };
@@ -177,12 +177,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.myBookings, (booking) => {
         return openBlock(), createElementBlock("div", {
           key: booking.id,
-          class: "tw-flex tw-items-center tw-p-6 tw-border tw-border-neutral-300 tw-rounded-coordinator-cards tw-bg-white tw-shadow-sm tw-mb-4 tw-mr-36"
+          class: "tw-mb-4 tw-mr-36 tw-flex tw-items-center tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-sm"
         }, [
           _ctx.cancelPopupOpenForBookingId === booking.id ? (openBlock(), createElementBlock("div", _hoisted_3, [
             createVNode(_component_modal, {
               name: "add-location-modal",
-              class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-6"),
+              class: normalizeClass("placement-center tw-rounded tw-px-6 tw-shadow-modal"),
               transition: "nice-modal-fade",
               width: "600px",
               delay: 100,
@@ -199,7 +199,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 $options.applicantTextBeforeCancel(booking) ? (openBlock(), createBlock(_component_Info, {
                   key: 0,
                   text: $options.applicantTextBeforeCancel(booking),
-                  class: "tw-text-left tw-w-full tw-mt-4",
+                  class: "tw-mt-4 tw-w-full tw-text-left",
                   icon: "warning",
                   "bg-color": "tw-bg-orange-100",
                   "icon-type": "material-icons",
@@ -255,7 +255,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_24)) : createCommentVNode("", true)
   ]);
 }
-const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a8620524"]]);
+const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2e331c4d"]]);
 export {
   ViewBooking as default
 };

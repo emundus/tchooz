@@ -250,22 +250,22 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4 tw-flex tw-flex-col tw-gap-4 tw-items-center tw-relative" };
+const _hoisted_1 = { class: "tw-relative tw-flex tw-w-full tw-flex-col tw-items-center tw-gap-4 tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4" };
 const _hoisted_2 = {
   key: 0,
   class: "tw-w-full"
 };
-const _hoisted_3 = { class: "tw-flex tw-items-center tw-gap-1 tw-mb-3" };
+const _hoisted_3 = { class: "tw-mb-3 tw-flex tw-items-center tw-gap-1" };
 const _hoisted_4 = { class: "tw-text-base" };
-const _hoisted_5 = { class: "tw-flex tw-items-start tw-gap-1 tw-w-full" };
+const _hoisted_5 = { class: "tw-flex tw-w-full tw-items-start tw-gap-1" };
 const _hoisted_6 = ["disabled"];
 const _hoisted_7 = {
   key: 0,
-  class: "tw-flex tw-flex-row tw-items-stretch tw-gap-4 tw-flex-1 tw-w-auto tw-justify-center"
+  class: "tw-flex tw-w-auto tw-flex-1 tw-flex-row tw-items-stretch tw-justify-center tw-gap-4"
 };
-const _hoisted_8 = { class: "tw-text-lg tw-text-center" };
-const _hoisted_9 = { class: "tw-text-sm tw-text-neutral-500 tw-text-center" };
-const _hoisted_10 = { class: "tw-mt-4 tw-grid tw-grid-cols-2 tw-gap-2 tw-w-full" };
+const _hoisted_8 = { class: "tw-text-center tw-text-lg" };
+const _hoisted_9 = { class: "tw-text-center tw-text-sm tw-text-neutral-500" };
+const _hoisted_10 = { class: "tw-mt-4 tw-grid tw-w-full tw-grid-cols-2 tw-gap-2" };
 const _hoisted_11 = ["disabled", "onClick"];
 const _hoisted_12 = ["disabled"];
 const _hoisted_13 = { key: 1 };
@@ -284,7 +284,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       createBaseVNode("div", _hoisted_5, [
         createBaseVNode("button", {
-          class: "tw-p-2 tw-border-0 tw-bg-transparent tw-rounded-coordinator hover:tw-bg-neutral-100",
+          class: "tw-rounded-coordinator tw-border-0 tw-bg-transparent tw-p-2 hover:tw-bg-neutral-100",
           type: "button",
           disabled: $data.currentStartIndex === 0,
           style: normalizeStyle({
@@ -313,10 +313,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 (openBlock(true), createElementBlock(Fragment, null, renderList($options.getAvailableSlotsForDate(date), (slot) => {
                   return openBlock(), createElementBlock("button", {
                     type: "button",
-                    class: normalizeClass(["tw-flex tw-items-center tw-justify-center tw-px-4 tw-w-full tw-py-2 tw-bg-neutral-300 tw-rounded-coordinator tw-border", {
+                    class: normalizeClass(["tw-flex tw-w-full tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-300 tw-px-4 tw-py-2", {
                       "tw-border-profile-full tw-bg-profile-light": $data.slotSelected === slot.id,
                       "hover:tw-bg-neutral-400": $data.slotSelected !== slot.id,
-                      "tw-opacity-50 tw-line-through tw-cursor-not-allowed": $options.disabledSlot(slot)
+                      "tw-cursor-not-allowed tw-line-through tw-opacity-50": $options.disabledSlot(slot)
                     }]),
                     key: slot.id,
                     disabled: $options.disabledSlot(slot),
@@ -328,7 +328,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           }), 128))
         ])) : createCommentVNode("", true),
         createBaseVNode("button", {
-          class: "tw-p-2 tw-border-0 tw-bg-transparent tw-rounded-coordinator hover:tw-bg-neutral-100",
+          class: "tw-rounded-coordinator tw-border-0 tw-bg-transparent tw-p-2 hover:tw-bg-neutral-100",
           type: "button",
           disabled: $data.currentStartIndex + 3 >= $data.availableDates.length,
           style: normalizeStyle({

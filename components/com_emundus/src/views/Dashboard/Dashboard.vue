@@ -1,20 +1,20 @@
 <template>
 	<div id="app">
 		<div
-			class="tw-flex tw-flex-wrap tw-shadow-standard tw-w-full tw-mb-6 tw-relative tw-rounded-coordinator-cards tw-min-h-[140px]"
+			class="tw-relative tw-mb-6 tw-flex tw-min-h-[140px] tw-w-full tw-flex-wrap tw-rounded-coordinator-cards tw-shadow-standard"
 		>
 			<div v-if="displayShapes == 1" id="background-shapes"></div>
-			<div class="tw-w-full tw-mb-0" style="z-index: 3">
-				<div class="tw-relative tw-gap-2 tw-p-8 tw-flex tw-flex-col tw-rounded-coordinator-cards">
+			<div class="tw-mb-0 tw-w-full" style="z-index: 3">
+				<div class="tw-relative tw-flex tw-flex-col tw-gap-2 tw-rounded-coordinator-cards tw-p-8">
 					<h1 class="tw-text-white">
 						{{ displayProfileName }}
 					</h1>
 
-					<p v-if="displayName == 1" class="tw-text-white tw-text-sm">
+					<p v-if="displayName == 1" class="tw-text-sm tw-text-white">
 						{{ translate('COM_EMUNDUS_DASHBOARD_HELLO') }} {{ name }}
 						{{ translate('COM_EMUNDUS_DASHBOARD_WELCOME') }}
 					</p>
-					<p v-if="displayDescription == 1" class="tw-break-all tw-text-white tw-text-sm">
+					<p v-if="displayDescription == 1" class="tw-break-all tw-text-sm tw-text-white">
 						{{ profile_description }}
 					</p>
 				</div>
@@ -22,12 +22,12 @@
 				<div v-if="displayTchoozy == 1" id="background-tchoozy"></div>
 			</div>
 			<div
-				class="tw-z-0 tw-w-full tw-bg-profile-full tw-p-8 tw-m-0 tw-rounded-coordinator-cards tw-absolute tw-h-full"
+				class="tw-absolute tw-z-0 tw-m-0 tw-h-full tw-w-full tw-rounded-coordinator-cards tw-bg-profile-full tw-p-8"
 			></div>
 		</div>
 
 		<div>
-			<div v-if="programmeFilter == 1" class="tw-flex tw-flex-col tw-mb-3">
+			<div v-if="programmeFilter == 1" class="tw-mb-3 tw-flex tw-flex-col">
 				<label>{{ translate('COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES') }}</label>
 				<select v-model="selectedProgramme" class="form-control fabrikinput tw-w-full">
 					<option value="" selected>{{ translate('COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES') }}</option>
@@ -37,7 +37,7 @@
 				</select>
 			</div>
 
-			<div v-if="widgets.length > 0" :class="'tw-gap-3 tw-grid tw-grid-cols-' + this.grid_size">
+			<div v-if="widgets.length > 0" :class="'tw-grid-cols- tw-grid tw-gap-3' + this.grid_size">
 				<div
 					v-for="(widget, index) in widgets"
 					:id="widget.name + '_' + index"

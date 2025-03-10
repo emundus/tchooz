@@ -34,19 +34,19 @@
 				<transition-group
 					type="transition"
 					:value="!drag ? 'flip-list' : null"
-					class="tw-grid tw-grid-cols-3 tw-gap-6 tw-w-full handle"
+					class="handle tw-grid tw-w-full tw-grid-cols-3 tw-gap-6"
 				>
 					<div
 						:id="'itemDoc' + document.id"
 						v-for="(document, indexDoc) in documents"
 						:key="document.id"
-						class="em-document-dropzone-card tw-cursor-grab handle tw-mr-2"
+						class="em-document-dropzone-card handle tw-mr-2 tw-cursor-grab"
 					>
 						<button type="button" class="tw-float-right tw-bg-transparent" @click="deleteDoc(indexDoc, document.id)">
 							<span class="material-symbols-outlined">close</span>
 						</button>
-						<div class="tw-flex tw-items-center tw-w-full tw-justify-center">
-							<div class="tw-flex tw-flex-col tw-items-center em-edit-cursor" @click="editName(document)">
+						<div class="tw-flex tw-w-full tw-items-center tw-justify-center">
+							<div class="em-edit-cursor tw-flex tw-flex-col tw-items-center" @click="editName(document)">
 								<img
 									v-if="document.ext === 'pdf'"
 									src="@/assets/images/filetype/pdf.png"

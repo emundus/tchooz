@@ -1,10 +1,10 @@
 <template>
 	<div
 		id="form-builder-rules-js-condition"
-		class="tw-self-start tw-w-full"
-		:class="{ 'tw-bg-neutral-300 tw-rounded tw-p-2': multiple }"
+		class="tw-w-full tw-self-start"
+		:class="{ 'tw-rounded tw-bg-neutral-300 tw-p-2': multiple }"
 	>
-		<div class="tw-flex tw-justify-end tw-items-center">
+		<div class="tw-flex tw-items-center tw-justify-end">
 			<button v-if="index !== 0" type="button" @click="$emit('remove-condition', index)" class="tw-w-auto">
 				<span class="material-symbols-outlined tw-text-red-600">close</span>
 			</button>
@@ -13,7 +13,7 @@
 		<div class="tw-flex">
 			<p class="tw-mr-2 tw-mt-3 tw-font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</p>
 
-			<div class="tw-flex tw-flex-col tw-ml-2 tw-w-full">
+			<div class="tw-ml-2 tw-flex tw-w-full tw-flex-col">
 				<div class="tw-flex tw-items-center">
 					<multiselect
 						v-model="conditionData.field"
@@ -39,7 +39,7 @@
 						<span
 							v-for="operator in operators"
 							:key="operator.id"
-							class="tw-cursor-pointer tw-p-2 tw-rounded-lg tw-ml-1 tw-border tw-border-neutral-500"
+							class="tw-ml-1 tw-cursor-pointer tw-rounded-lg tw-border tw-border-neutral-500 tw-p-2"
 							@click="conditionData.state = operator.value"
 							:class="{ 'label-darkblue': conditionData.state == operator.value }"
 						>

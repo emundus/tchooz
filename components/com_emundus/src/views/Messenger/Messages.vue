@@ -387,10 +387,10 @@ export default {
 
 <template>
 	<div class="tw-h-full tw-overflow-hidden">
-		<div v-if="!loading" class="tw-h-full tw-flex tw-flex-col">
+		<div v-if="!loading" class="tw-flex tw-h-full tw-flex-col">
 			<modal
 				:name="'messenger-files-modal'"
-				:class="'placement-center tw-bg-white tw-rounded tw-shadow-modal tw-max-h-[80vh] tw-overflow-y-auto'"
+				:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal'"
 				transition="nice-modal-fade"
 				:width="'40%'"
 				:height="'30%'"
@@ -401,9 +401,9 @@ export default {
 			>
 				<div
 					v-if="isModal"
-					class="tw-pt-4 tw-px-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10"
+					class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-px-4 tw-pt-4"
 				>
-					<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+					<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 						<h2>
 							{{ translate('COM_EMUNDUS_MESSENGER_SELECT_FILE') }}
 						</h2>
@@ -428,15 +428,15 @@ export default {
 						<template #noResult>{{ translate('COM_EMUNDUS_MULTISELECT_NORESULTS') }}</template>
 					</Multiselect>
 
-					<button type="button" class="tw-btn-primary !tw-w-auto tw-float-right tw-mt-3" @click="createChatroom">
+					<button type="button" class="tw-btn-primary tw-float-right tw-mt-3 !tw-w-auto" @click="createChatroom">
 						{{ translate('COM_EMUNDUS_MESSENGER_CREATE_CHATROOM') }}
 					</button>
 				</div>
 			</modal>
 
 			<!-- HEADER -->
-			<div v-if="isModal" class="tw-pt-4 tw-px-4 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10">
-				<div class="tw-flex tw-items-center tw-justify-between tw-mb-4">
+			<div v-if="isModal" class="tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-px-4 tw-pt-4">
+				<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 					<h2>
 						{{ translate('COM_EMUNDUS_MESSENGER_TITLE') }}
 					</h2>
@@ -454,9 +454,9 @@ export default {
 				:style="applicant == true ? 'grid-template-columns: 33% 66%;' : ''"
 			>
 				<!-- ASIDE -->
-				<div class="tw-h-[95%] tw-flex tw-flex-col tw-justify-between tw-items-center" v-if="applicant">
+				<div class="tw-flex tw-h-[95%] tw-flex-col tw-items-center tw-justify-between" v-if="applicant">
 					<div class="tw-w-full">
-						<div class="tw-px-4 tw-mb-4">
+						<div class="tw-mb-4 tw-px-4">
 							<input
 								name="search"
 								v-model="search"
@@ -474,16 +474,16 @@ export default {
 								class="tw-mt-3"
 							>
 								<div
-									class="tw-px-4 tw-py-3 tw-w-full tw-cursor-pointer hover:tw-bg-neutral-200"
+									class="tw-w-full tw-cursor-pointer tw-px-4 tw-py-3 hover:tw-bg-neutral-200"
 									@click="currentChatroom = chatroom"
 								>
 									<div class="tw-w-full">
 										<div class="tw-flex tw-items-start tw-gap-2">
-											<label class="tw-font-semibold !tw-mb-0 tw-line-clamp-2">
+											<label class="!tw-mb-0 tw-line-clamp-2 tw-font-semibold">
 												{{ chatroom.campaign }}
 											</label>
 											<div
-												class="tw-flex tw-items-center tw-justify-center tw-bg-red-500 tw-rounded-full tw-text-sm tw-text-white"
+												class="tw-flex tw-items-center tw-justify-center tw-rounded-full tw-bg-red-500 tw-text-sm tw-text-white"
 												style="min-width: 16px; width: 16px; height: 16px"
 												v-if="chatroom.unread && chatroom.unread > 0"
 											>
@@ -491,7 +491,7 @@ export default {
 											</div>
 										</div>
 
-										<p class="tw-italic tw-text-sm">{{ chatroom.year }}</p>
+										<p class="tw-text-sm tw-italic">{{ chatroom.year }}</p>
 									</div>
 								</div>
 							</div>
@@ -502,9 +502,9 @@ export default {
 							<hr />
 							<div
 								@click="showClosedChatroom = !showClosedChatroom"
-								class="tw-cursor-pointer tw-flex tw-items-center tw-justify-between tw-gap-2 tw-px-4"
+								class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-gap-2 tw-px-4"
 							>
-								<label class="tw-cursor-pointer tw-font-semibold !tw-mb-0">{{
+								<label class="!tw-mb-0 tw-cursor-pointer tw-font-semibold">{{
 									translate('COM_EMUNDUS_MESSENGER_CLOSED_CHATROOMS')
 								}}</label>
 								<span
@@ -522,12 +522,12 @@ export default {
 									class="tw-mt-3"
 								>
 									<div
-										class="tw-px-4 tw-py-3 tw-w-full tw-cursor-pointer hover:tw-bg-neutral-200"
+										class="tw-w-full tw-cursor-pointer tw-px-4 tw-py-3 hover:tw-bg-neutral-200"
 										@click="currentChatroom = chatroom"
 									>
 										<div class="tw-w-full">
 											<label class="tw-font-semibold">{{ chatroom.campaign }}</label>
-											<p class="tw-italic tw-text-sm">{{ chatroom.year }}</p>
+											<p class="tw-text-sm tw-italic">{{ chatroom.year }}</p>
 										</div>
 									</div>
 								</div>
@@ -535,7 +535,7 @@ export default {
 						</div>
 					</div>
 
-					<div class="tw-px-4 tw-w-full" v-if="currentChatroom">
+					<div class="tw-w-full tw-px-4" v-if="currentChatroom">
 						<button type="button" class="tw-btn-primary tw-w-full" @click="createNewChatroom = true">
 							{{ translate('COM_EMUNDUS_MESSENGER_CREATE_CHATROOM') }}
 						</button>
@@ -543,15 +543,15 @@ export default {
 				</div>
 
 				<!-- MESSAGES -->
-				<div v-if="currentChatroom" class="tw-flex tw-flex-col tw-h-[95%]">
+				<div v-if="currentChatroom" class="tw-flex tw-h-[95%] tw-flex-col">
 					<div class="tw-px-2">
 						<label class="tw-font-semibold">{{ currentChatroom.campaign }}</label>
-						<p class="tw-italic tw-text-sm">{{ currentChatroom.year }}</p>
-						<p class="tw-italic tw-text-sm">N° {{ currentChatroom.fnum }}</p>
+						<p class="tw-text-sm tw-italic">{{ currentChatroom.year }}</p>
+						<p class="tw-text-sm tw-italic">N° {{ currentChatroom.fnum }}</p>
 					</div>
 
-					<div class="tw-mt-2 tw-bg-neutral-300 tw-h-full tw-relative" :class="{ 'tw-rounded': applicant == true }">
-						<div class="tw-mt-2 tw-mx-3" v-if="messages_loading">
+					<div class="tw-relative tw-mt-2 tw-h-full tw-bg-neutral-300" :class="{ 'tw-rounded': applicant == true }">
+						<div class="tw-mx-3 tw-mt-2" v-if="messages_loading">
 							<div class="tw-flex tw-justify-end">
 								<skeleton
 									width="150px"
@@ -578,7 +578,7 @@ export default {
 							:style="messages_loading ? 'opacity: 0' : ''"
 						>
 							<div v-for="date in messageByDates" :key="date.date">
-								<div class="tw-flex tw-items-center tw-ml-4">
+								<div class="tw-ml-4 tw-flex tw-items-center">
 									<hr class="tw-w-full" />
 									<p class="tw-px-5">{{ new Date(date.date).toISOString().slice(0, 10) }}</p>
 									<hr class="tw-w-full" />
@@ -587,11 +587,11 @@ export default {
 								<div
 									v-for="message in date.messages"
 									:key="message.message_id"
-									class="tw-w-full tw-flex"
+									class="tw-flex tw-w-full"
 									:class="message.me === true ? 'tw-justify-end' : 'tw-justify-start'"
 								>
 									<div
-										class="tw-w-max-content tw-flex tw-flex-col tw-mx-3 tw-my-2"
+										class="tw-w-max-content tw-mx-3 tw-my-2 tw-flex tw-flex-col"
 										style="word-wrap: break-word"
 										:class="message.me === true ? 'tw-text-right' : 'tw-text-left'"
 									>
@@ -603,7 +603,7 @@ export default {
 											</span>
 										</p>
 										<span
-											class="tw-mt-1 tw-p-3 tw-w-full tw-max-w-[30vw] tw-text-start"
+											class="tw-mt-1 tw-w-full tw-max-w-[30vw] tw-p-3 tw-text-start"
 											:class="{
 												'tw-bg-blue-500 tw-text-white': message.me === true,
 												'tw-bg-white': message.me !== true,
@@ -612,7 +612,7 @@ export default {
 											}"
 											v-html="message.message"
 										></span>
-										<span v-if="message.progress && message.progress === true" class="tw-text-sm tw-text-italic"
+										<span v-if="message.progress && message.progress === true" class="tw-text-italic tw-text-sm"
 											>Envoi en cours...</span
 										>
 									</div>
@@ -621,7 +621,7 @@ export default {
 						</div>
 
 						<div
-							class="tw-bottom-3 tw-px-3 tw-mr-3 tw-w-full"
+							class="tw-bottom-3 tw-mr-3 tw-w-full tw-px-3"
 							:class="{ 'tw-sticky': applicant == false, 'tw-absolute': applicant == true }"
 						>
 							<div class="tw-flex tw-items-center tw-gap-2" v-if="currentChatroom.status == 1">
@@ -629,7 +629,7 @@ export default {
 									<textarea
 										type="text"
 										id="messenger_message"
-										class="tw-p-2 tw-resize-none !tw-h-auto"
+										class="!tw-h-auto tw-resize-none tw-p-2"
 										:class="{ 'tw-rounded-applicant': applicant == true, 'tw-rounded-coordinator': applicant == false }"
 										rows="2"
 										:disabled="send_progress"
@@ -657,13 +657,13 @@ export default {
 
 							<div
 								v-if="currentChatroom.status == 0"
-								class="tw-p-2 tw-bg-white tw-flex tw-items-center tw-gap-1"
+								class="tw-flex tw-items-center tw-gap-1 tw-bg-white tw-p-2"
 								:class="{ 'tw-rounded-applicant': applicant == true, 'tw-rounded-coordinator': applicant == false }"
 							>
 								<p>{{ translate('COM_EMUNDUS_MESSENGER_CHATROOM_CLOSED') }}</p>
 								<button
 									type="button"
-									class="tw-cursor-pointer tw-text-blue-500 tw-text-underline"
+									class="tw-text-underline tw-cursor-pointer tw-text-blue-500"
 									@click="openChatroom"
 								>
 									{{ translate('COM_EMUNDUS_MESSENGER_OPEN_CHATROOM') }}
@@ -673,7 +673,7 @@ export default {
 					</div>
 				</div>
 				<div v-else>
-					<div class="tw-flex tw-flex-col tw-gap-2 tw-items-center tw-justify-center tw-h-full tw-mt-6">
+					<div class="tw-mt-6 tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-2">
 						<img
 							src="../../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"
 							style="width: 250px; object-fit: cover; height: 65px"
@@ -687,7 +687,7 @@ export default {
 			</div>
 
 			<div v-else>
-				<div class="tw-flex tw-flex-col tw-gap-2 tw-items-center tw-justify-center tw-h-full tw-mt-6">
+				<div class="tw-mt-6 tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-2">
 					<img
 						src="../../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"
 						style="width: 250px; object-fit: cover; height: 65px"

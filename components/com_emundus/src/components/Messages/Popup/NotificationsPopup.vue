@@ -81,7 +81,7 @@ export default {
 <template>
 	<div class="tw-relative">
 		<div
-			class="tw-absolute tw-bg-white tw-rounded-coordinator tw-p-3 tw-right-0 tw-top-6 tw-w-[25em] tw-shadow-standard tw-border tw-border-neutral-300"
+			class="tw-absolute tw-right-0 tw-top-6 tw-w-[25em] tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-3 tw-shadow-standard"
 		>
 			<div class="tw-flex tw-items-center tw-justify-between">
 				<h4>{{ translate('COM_EMUNDUS_MESSENGER_NOTIFICATIONS') }}</h4>
@@ -92,10 +92,10 @@ export default {
 
 			<hr />
 
-			<div class="tw-overflow-auto tw-max-h-[20em] tw-flex tw-flex-col tw-gap-3" v-if="unreadMessages.length > 0">
+			<div class="tw-flex tw-max-h-[20em] tw-flex-col tw-gap-3 tw-overflow-auto" v-if="unreadMessages.length > 0">
 				<div v-for="unread in unreadMessages" class="tw-flex tw-flex-col">
-					<div class="tw-flex tw-items-center tw-gap-1 tw-flex-wrap tw-overflow-x-hidden">
-						<label class="tw-flex tw-gap-1 tw-items-center tw-text-base tw-cursor-pointer tw-mb-0">
+					<div class="tw-flex tw-flex-wrap tw-items-center tw-gap-1 tw-overflow-x-hidden">
+						<label class="tw-mb-0 tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-base">
 							<a type="button" class="tw-cursor-pointer tw-text-blue-500" @click="goToFile(unread.fnum)">{{
 								unread.fullname
 							}}</a>
@@ -109,19 +109,19 @@ export default {
 						>
 					</div>
 
-					<div class="tw-mt-1 tw-pl-1 tw-border-s-2 tw-border-main-500" v-if="conversionOpened === unread.page">
-						<div v-for="message in unread.messages" class="tw-flex tw-flex-col tw-gap-1 tw-mb-2">
+					<div class="tw-mt-1 tw-border-s-2 tw-border-main-500 tw-pl-1" v-if="conversionOpened === unread.page">
+						<div v-for="message in unread.messages" class="tw-mb-2 tw-flex tw-flex-col tw-gap-1">
 							<span class="tw-text-sm">{{ message.date_time }}</span>
-							<div class="tw-p-2 tw-border tw-border-neutral-300 tw-rounded-coordinator">
+							<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-2">
 								{{ message.message }}
 							</div>
 						</div>
 
-						<div class="tw-mt-1 tw-mx-1 tw-flex tw-justify-between tw-items-center">
+						<div class="tw-mx-1 tw-mt-1 tw-flex tw-items-center tw-justify-between">
 							<button type="button" class="tw-cursor-pointer tw-text-blue-500" @click="closeChatroom(unread.fnum)">
 								{{ translate('COM_EMUNDUS_MESSENGER_CLOSE_CHATROOM') }}
 							</button>
-							<span class="tw-cursor-pointer material-symbols-outlined" @click="goToFile(unread.fnum)">reply</span>
+							<span class="material-symbols-outlined tw-cursor-pointer" @click="goToFile(unread.fnum)">reply</span>
 						</div>
 					</div>
 				</div>

@@ -30,7 +30,7 @@
 			<p>{{ translate('COM_EMUNDUS_ONBOARD_THE_CANDIDATE_DESCRIPTION') }}</p>
 
 			<button
-				class="tw-btn-primary tw-w-auto tw-mt-2"
+				class="tw-btn-primary tw-mt-2 tw-w-auto"
 				@click="
 					showModalAddTriggerApplicant = true;
 					triggerSelected = null;
@@ -41,10 +41,10 @@
 
 			<transition-group :name="'slide-down'" type="transition" class="em-grid-2 tw-m-4" style="margin-left: 0">
 				<div v-for="trigger in applicantTriggers" :key="trigger.trigger_id" class="em-email-card mt-4">
-					<div class="tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full">
+					<div class="tw-flex tw-w-full tw-items-start tw-items-center tw-justify-between">
 						<div>
 							<span class="tw-mb-2">{{ trigger.subject }}</span>
-							<div class="tw-mt-2 tw-mb-2">
+							<div class="tw-mb-2 tw-mt-2">
 								<span style="font-weight: bold">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERTARGET') }} : </span>
 								<span v-for="(user, index) in triggerUsersWithProfile(trigger)" :key="'user_' + index">
 									{{ user.firstname }} {{ user.lastname }}
@@ -59,7 +59,7 @@
 							<span>{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS') }} {{ trigger.status }}</span>
 						</div>
 
-						<div class="tw-flex tw-items-center em-flex-end">
+						<div class="em-flex-end tw-flex tw-items-center">
 							<a class="tw-mr-2 tw-cursor-pointer" @click="editTrigger(trigger)">
 								<span class="material-symbols-outlined">edit</span>
 							</a>
@@ -79,7 +79,7 @@
 			<p>{{ translate('COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION') }}</p>
 
 			<button
-				class="tw-btn-primary tw-w-auto tw-mt-2"
+				class="tw-btn-primary tw-mt-2 tw-w-auto"
 				@click="
 					showModalAddTriggerManual = true;
 					triggerSelected = null;
@@ -90,10 +90,10 @@
 
 			<transition-group :name="'slide-down'" type="transition" class="em-grid-2 tw-m-4" style="margin-left: 0">
 				<div v-for="trigger in manualTriggers" :key="trigger.trigger_id" class="em-email-card mt-4">
-					<div class="tw-flex tw-items-center tw-items-start tw-justify-between tw-w-full">
+					<div class="tw-flex tw-w-full tw-items-start tw-items-center tw-justify-between">
 						<div>
 							<span class="tw-mb-2">{{ trigger.subject }}</span>
-							<div class="tw-mt-2 tw-mb-2">
+							<div class="tw-mb-2 tw-mt-2">
 								<span style="font-weight: bold">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERTARGET') }} : </span>
 								<span v-for="(user, index) in triggerUsersNoProfile(trigger)" :key="'user_manual_' + index">
 									{{ user.firstname }} {{ user.lastname }}
@@ -108,8 +108,8 @@
 							<span>{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS') }} {{ trigger.status }}</span>
 						</div>
 
-						<div class="tw-flex tw-items-center em-flex-end">
-							<a class="tw-cursor-pointer tw-mr-2" @click="editTrigger(trigger)">
+						<div class="em-flex-end tw-flex tw-items-center">
+							<a class="tw-mr-2 tw-cursor-pointer" @click="editTrigger(trigger)">
 								<span class="material-symbols-outlined">edit</span>
 							</a>
 							<a class="tw-cursor-pointer" @click="removeTrigger(trigger.trigger_id)">

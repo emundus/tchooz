@@ -23,7 +23,7 @@
 					'tw-flex tw-flex-col': viewType === 'table',
 				}"
 			>
-				<skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
+				<skeleton v-for="i in 9" :key="i" class="skeleton-item tw-rounded-lg"></skeleton>
 			</div>
 		</div>
 
@@ -49,10 +49,10 @@
 			<div
 				v-if="loading.items"
 				id="items-loading"
-				:class="{ 'skeleton-grid': viewType === 'blocs', 'tw-flex tw-flex-col tw-mb-4': viewType === 'table' }"
+				:class="{ 'skeleton-grid': viewType === 'blocs', 'tw-mb-4 tw-flex tw-flex-col': viewType === 'table' }"
 				style="flex-wrap: wrap"
 			>
-				<skeleton v-for="i in 9" :key="i" class="tw-rounded-lg skeleton-item"></skeleton>
+				<skeleton v-for="i in 9" :key="i" class="skeleton-item tw-rounded-lg"></skeleton>
 			</div>
 
 			<div v-else>
@@ -76,7 +76,7 @@
 										<span v-else-if="'label' === orderBy && order === 'DESC'" class="material-symbols-outlined"
 											>arrow_downward</span
 										>
-										<label class="tw-font-medium tw-cursor-pointer">{{
+										<label class="tw-cursor-pointer tw-font-medium">{{
 											translate('COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()) ==
 											'COM_EMUNDUS_ONBOARD_LABEL_' + currentTab.key.toUpperCase()
 												? translate('COM_EMUNDUS_ONBOARD_LABEL')
@@ -108,14 +108,14 @@
 								v-for="item in displayedItems"
 								:key="item.id"
 								:id="'item-' + currentTab.key + '-' + item.id"
-								class="tw-group/item-row table-row tw-border tw-rounded-coordinator tw-cursor-pointer"
+								class="tw-group/item-row table-row tw-cursor-pointer tw-rounded-coordinator tw-border"
 								@click="onCheckItem(item.id, $event)"
 								:class="{
-									'tw-flex tw-flex-col tw-justify-between tw-min-h-[200px] tw-rounded-coordinator-cards tw-p-8 tw-shadow-card':
+									'tw-flex tw-min-h-[200px] tw-flex-col tw-justify-between tw-rounded-coordinator-cards tw-p-8 tw-shadow-card':
 										viewType === 'blocs',
 									'tw-shadow-table-border-profile': checkedItems.includes(item.id) && viewType === 'table',
 									'tw-shadow-table-border-neutral': !checkedItems.includes(item.id) && viewType === 'table',
-									'tw-bg-main-50 tw-border-profile-full': checkedItems.includes(item.id) && viewType === 'blocs',
+									'tw-border-profile-full tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'blocs',
 									'tw-bg-white hover:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'blocs',
 								}"
 							>
@@ -145,7 +145,7 @@
 									<span
 										@click="onClickAction(editAction, item.id, false, $event)"
 										:class="{
-											'tw-font-semibold tw-line-clamp-2 tw-min-h-[48px]': viewType === 'blocs',
+											'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
 											'hover:tw-underline': editAction,
 										}"
 										:title="item.label[params.shortlang]"
@@ -164,7 +164,7 @@
 								>
 									<div
 										v-if="column.type === 'tags'"
-										class="tw-flex tw-items-center tw-flex-wrap tw-gap-2"
+										class="tw-flex tw-flex-wrap tw-items-center tw-gap-2"
 										:class="column.classes"
 									>
 										<span
@@ -178,27 +178,27 @@
 									<div v-else-if="column.hasOwnProperty('long_value')">
 										<span
 											@click="displayLongValue($event, column.long_value)"
-											class="tw-mt-2 tw-mb-2"
+											class="tw-mb-2 tw-mt-2"
 											:class="column.classes"
 											v-html="column.value"
 										></span>
 									</div>
-									<span v-else class="tw-mt-2 tw-mb-2" :class="column.classes" v-html="column.value"></span>
+									<span v-else class="tw-mb-2 tw-mt-2" :class="column.classes" v-html="column.value"></span>
 								</td>
 								<td
-									class="tw-rounded-e-coordinator actions tw-p-4"
+									class="actions tw-rounded-e-coordinator tw-p-4"
 									:class="{
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
 										'tw-bg-white group-hover/item-row:tw-bg-neutral-100':
 											!checkedItems.includes(item.id) && viewType === 'table',
 									}"
 								>
-									<hr v-if="viewType === 'blocs'" class="tw-w-full tw-mt-1.5 tw-mb-3" />
-									<div :class="{ 'tw-flex tw-justify-between tw-w-full': viewType === 'blocs' }">
+									<hr v-if="viewType === 'blocs'" class="tw-mb-3 tw-mt-1.5 tw-w-full" />
+									<div :class="{ 'tw-flex tw-w-full tw-justify-between': viewType === 'blocs' }">
 										<a
 											v-if="viewType === 'blocs' && editAction"
 											@click="onClickAction(editAction, item.id, false, $event)"
-											class="tw-btn-primary tw-text-sm tw-cursor-pointer tw-w-auto"
+											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-text-sm"
 										>
 											{{ translate(editAction.label) }}
 										</a>
@@ -206,7 +206,7 @@
 											<button
 												v-if="editAction && viewType === 'table'"
 												@click="onClickAction(editAction, item.id)"
-												class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1"
 												style="padding: 0.5rem"
 												:title="translate(editAction.label)"
 											>
@@ -217,7 +217,7 @@
 												v-for="action in iconActions"
 												:key="action.name"
 												v-show="action.display"
-												class="tw-btn-primary !tw-w-auto tw-flex tw-items-center tw-gap-1"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1"
 												:class="[
 													action.buttonClasses,
 													{
@@ -245,7 +245,7 @@
 													<modal
 														:name="'modal-component'"
 														transition="nice-modal-fade"
-														:class="'placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto'"
+														:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
 														:width="'600px'"
 														:delay="100"
 														:adaptive="true"
@@ -282,7 +282,7 @@
 															),
 														}"
 														@click="onClickAction(action, item.id, false, $event)"
-														class="tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"
+														class="tw-cursor-pointer tw-px-2 tw-py-1.5 tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
 													>
 														{{ translate(action.label) }}
 													</li>
@@ -308,7 +308,7 @@
 						<modal
 							:name="'modal-component'"
 							transition="nice-modal-fade"
-							:class="'placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto'"
+							:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
 							:width="'600px'"
 							:delay="100"
 							:adaptive="true"

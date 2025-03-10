@@ -10,15 +10,15 @@
 				</select>
 			</div>
 
-			<div class="tw-flex tw-items-center tw-min-w-[15rem]">
+			<div class="tw-flex tw-min-w-[15rem] tw-items-center">
 				<input
 					type="text"
-					class="!tw-rounded-coordinator !tw-h-[38px] tw-m-0"
+					class="tw-m-0 !tw-h-[38px] !tw-rounded-coordinator"
 					v-model="search"
 					:placeholder="translate('COM_EMUNDUS_ACTIONS_SEARCH')"
 					@keyup="onSearch"
 				/>
-				<span class="material-symbols-outlined tw-mr-2 tw-cursor-pointer tw-ml-[-32px]"> search </span>
+				<span class="material-symbols-outlined tw-ml-[-32px] tw-mr-2 tw-cursor-pointer"> search </span>
 			</div>
 		</div>
 
@@ -34,11 +34,11 @@
 			<div
 				v-for="sms in smsHistory"
 				:key="sms.id"
-				class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded-lg tw-bg-white tw-p-6 tw-mb-4"
+				class="em-card-shadow tw-mb-4 tw-rounded-lg tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
 			>
 				<div class="from tw-mb-2 tw-flex tw-justify-between">
 					<div class="tw-flex tw-flex-col">
-						<span class="tw-text-neutral-500 tw-text-xs">{{ sms.params.date }}</span>
+						<span class="tw-text-xs tw-text-neutral-500">{{ sms.params.date }}</span>
 						<span class="tw-text-xs">
 							{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_FROM') }} {{ sms.user_name_from }}
 							{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_TO') + ' ' }} <strong>{{ sms.fnum }}</strong>

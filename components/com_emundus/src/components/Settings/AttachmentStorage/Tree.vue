@@ -1,12 +1,12 @@
 <template>
 	<div>
-		<div class="tw-flex tw-items-center tw-mb-4" :class="'em-level-' + node.level">
+		<div class="tw-mb-4 tw-flex tw-items-center" :class="'em-level-' + node.level">
 			<span class="material-symbols-outlined" v-if="node.type !== 0">folder</span>
 			<span class="material-symbols-outlined" v-else>folder</span>
 
 			<select
 				v-if="(other_tags.includes(node.type) || node.type === 0) && node.type !== ''"
-				class="tw-ml-2 tw-mr-2 em-clear-dropdown tree-branch"
+				class="em-clear-dropdown tree-branch tw-ml-2 tw-mr-2"
 				v-model="node.type"
 			>
 				<option value="0" selected>
@@ -17,7 +17,7 @@
 			<input
 				v-else
 				type="text"
-				class="tw-ml-2 tw-mr-2 em-xs-input tw-w-auto tree-branch"
+				class="em-xs-input tree-branch tw-ml-2 tw-mr-2 tw-w-auto"
 				:value="node.type"
 				@focusout="updateNodeType($event)"
 			/>
@@ -27,20 +27,20 @@
 				<template slot="popover">
 					<div
 						v-if="(!other_tags.includes(node.type) && node.type !== 0) || node.type === ''"
-						class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300"
+						class="em-hover-background-neutral-300 tw-cursor-pointer tw-px-2 tw-py-3 tw-text-sm"
 						@click="node.type = 0"
 					>
 						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GO_BACK_TO_SELECT') }}
 					</div>
 					<div
-						class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300"
+						class="em-hover-background-neutral-300 tw-cursor-pointer tw-px-2 tw-py-3 tw-text-sm"
 						v-if="node.level < level_max"
 						@click="$emit('addNode', node)"
 					>
 						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_ADD_MENU') }}
 					</div>
 					<div
-						class="tw-text-sm tw-cursor-pointer tw-px-2 tw-py-3 em-hover-background-neutral-300 tw-text-red-600"
+						class="em-hover-background-neutral-300 tw-cursor-pointer tw-px-2 tw-py-3 tw-text-sm tw-text-red-600"
 						@click="$emit('deleteNode', node)"
 					>
 						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_DELETE') }}

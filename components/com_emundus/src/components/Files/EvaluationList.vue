@@ -1,19 +1,19 @@
 <template>
 	<div :id="'evaluation-step-' + step.id + '-list'">
 		<h2 class="tw-mb-4">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST') }}</h2>
-		<div v-if="evaluations.length > 0" class="tw-p-4 tw-h-full">
+		<div v-if="evaluations.length > 0" class="tw-h-full tw-p-4">
 			<Tabs
 				:tabs="evaluationsTabs"
 				:classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2'"
 				@changeTabActive="onChangeTab"
 			></Tabs>
 
-			<iframe :src="selectedEvaluation.url" :key="selectedEvaluation.id" class="tw-w-full iframe-selected-evaluation">
+			<iframe :src="selectedEvaluation.url" :key="selectedEvaluation.id" class="iframe-selected-evaluation tw-w-full">
 			</iframe>
 		</div>
 		<p
 			v-else
-			class="tw-text-center tw-p-2 tw-m-2 tw-bg-blue-50 tw-border tw-border-blue-500 tw-rounded tw-text-neutral-900"
+			class="tw-m-2 tw-rounded tw-border tw-border-blue-500 tw-bg-blue-50 tw-p-2 tw-text-center tw-text-neutral-900"
 		>
 			{{ translate('COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS') }}
 		</p>

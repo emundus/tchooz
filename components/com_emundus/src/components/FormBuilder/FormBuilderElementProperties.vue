@@ -1,13 +1,13 @@
 <template>
 	<div id="form-builder-element-properties">
-		<div class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-items-start">
+		<div class="tw-flex tw-items-start tw-items-center tw-justify-between tw-p-4">
 			<div>
 				<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES') }}</p>
 				<span class="tw-text-sm tw-text-neutral-700">{{ element.label[shortDefaultLang] }}</span>
 			</div>
 			<span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
 		</div>
-		<ul id="properties-tabs" class="tw-flex tw-items-center tw-justify-between tw-p-4 tw-w-11/12">
+		<ul id="properties-tabs" class="tw-flex tw-w-11/12 tw-items-center tw-justify-between tw-p-4">
 			<li
 				v-for="tab in publishedTabs"
 				:key="tab.id"
@@ -16,7 +16,7 @@
 					'tw-w-2/4': publishedTabs.length == 2,
 					'tw-w-full': publishedTabs.length == 1,
 				}"
-				class="tw-p-4 tw-cursor-pointer"
+				class="tw-cursor-pointer tw-p-4"
 				@click="selectTab(tab)"
 			>
 				{{ translate(tab.label) }}
@@ -42,7 +42,7 @@
 				</div>
 
 				<!-- Publish/Unpublish -->
-				<div class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4">
+				<div class="tw-flex tw-w-full tw-items-center tw-justify-between tw-pb-4 tw-pt-4">
 					<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_UNPUBLISH') }}</span>
 					<div class="em-toggle">
 						<input type="checkbox" class="em-toggle-check" v-model="isPublished" @click="togglePublish" />
@@ -53,7 +53,7 @@
 
 				<!-- Mandatory/Optional -->
 				<div
-					class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4"
+					class="tw-flex tw-w-full tw-items-center tw-justify-between tw-pb-4 tw-pt-4"
 					v-show="!['display', 'panel'].includes(this.element.plugin)"
 				>
 					<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_REQUIRED') }}</span>
@@ -71,7 +71,7 @@
 
 				<!-- Advanced formatting for panel only -->
 				<div
-					class="tw-flex tw-items-center tw-justify-between tw-w-full tw-pt-4 tw-pb-4"
+					class="tw-flex tw-w-full tw-items-center tw-justify-between tw-pb-4 tw-pt-4"
 					v-show="this.element.plugin == 'panel'"
 				>
 					<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_ADVANCED_FORMAT') }}</span>
@@ -90,7 +90,7 @@
 				</div>
 
 				<!-- Content for panel only -->
-				<div class="tw-w-full tw-pt-4 tw-pb-4" v-show="this.element.plugin == 'panel'">
+				<div class="tw-w-full tw-pb-4 tw-pt-4" v-show="this.element.plugin == 'panel'">
 					<label for="element-default">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_CONTENT') }}</label>
 
 					<textarea
@@ -117,7 +117,7 @@
 			</div>
 
 			<!-- Advanced settings -->
-			<div v-if="tabs[1].active" class="tw-p-4 tw-flex tw-flex-col tw-gap-3">
+			<div v-if="tabs[1].active" class="tw-flex tw-flex-col tw-gap-3 tw-p-4">
 				<div v-if="element.params">
 					<label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
 					<input
@@ -130,7 +130,7 @@
 					<!--            <span class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</span>-->
 				</div>
 
-				<div class="tw-flex tw-justify-between tw-w-full" v-if="sysadmin">
+				<div class="tw-flex tw-w-full tw-justify-between" v-if="sysadmin">
 					<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_HIDDEN') }}</span>
 					<div class="em-toggle">
 						<input type="checkbox" class="em-toggle-check" v-model="isHidden" @click="toggleHidden" />
@@ -139,7 +139,7 @@
 					</div>
 				</div>
 
-				<div class="tw-flex tw-justify-between tw-w-full">
+				<div class="tw-flex tw-w-full tw-justify-between">
 					<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SHOW_IN_LIST_SUMMARY') }}</span>
 					<div class="em-toggle">
 						<input
@@ -161,7 +161,7 @@
 			</div>
 		</div>
 
-		<div class="tw-flex tw-items-center tw-justify-between actions tw-m-4">
+		<div class="actions tw-m-4 tw-flex tw-items-center tw-justify-between">
 			<button class="tw-btn-primary" @click="saveProperties()">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}
 			</button>

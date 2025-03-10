@@ -1,17 +1,17 @@
 <template>
 	<div
 		id="program-edition-container"
-		class="tw-border tw-border-neutral-300 em-card-shadow tw-rounded tw-p-6 tw-m-4 tw-bg-white"
+		class="em-card-shadow tw-m-4 tw-rounded tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
 	>
 		<div
-			class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+			class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 			@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
 		>
 			<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-			<span class="tw-ml-2 tw-text-neutral-900 em-profile-font">{{ translate('BACK') }}</span>
+			<span class="em-profile-font tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
 		</div>
 
-		<div class="tw-flex tw-items-center tw-mt-4">
+		<div class="tw-mt-4 tw-flex tw-items-center">
 			<h1 class="tw-mb-4">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
 		</div>
 		<h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}</h2>
@@ -22,12 +22,12 @@
 			<Tabs :tabs="tabs" :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
 			<div
-				class="tw-w-full tw-rounded-2xl tw-p-6 tw-border tw-border-neutral-300 tw-relative"
+				class="tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-p-6"
 				:style="{ backgroundColor: activeBackground }"
 			>
 				<div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
 					<iframe
-						class="tw-w-full hide-titles"
+						class="hide-titles tw-w-full"
 						style="height: 150vh"
 						:src="
 							'/index.php?option=com_fabrik&view=form&formid=108&rowid=' + this.programId + '&tmpl=component&iframe=1'
@@ -36,14 +36,14 @@
 					</iframe>
 				</div>
 
-				<div class="tw-w-full tw-flex tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
-					<label class="tw-font-medium em-profile-font">{{
+				<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'campaigns'">
+					<label class="em-profile-font tw-font-medium">{{
 						translate('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE')
 					}}</label>
 					<ul>
 						<li v-for="campaign in campaigns" :key="campaign.id">
 							<a
-								class="tw-cursor-pointer em-profile-font"
+								class="em-profile-font tw-cursor-pointer"
 								@click="
 									redirectJRoute(
 										'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + campaign.id,
@@ -56,14 +56,14 @@
 					</ul>
 					<a
 						@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
-						class="tw-cursor-pointer tw-underline em-profile-font"
+						class="em-profile-font tw-cursor-pointer tw-underline"
 						target="_blank"
 					>
 						{{ translate('COM_EMUNDUS_PROGRAMS_ACCESS_TO_CAMPAIGNS') }}
 					</a>
 				</div>
 
-				<div class="tw-w-full tw-flex tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'workflows'">
+				<div class="tw-flex tw-w-full tw-flex-col tw-gap-2" v-show="selectedMenuItem.code === 'workflows'">
 					<div class="tw-flex tw-flex-col">
 						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_WORKFLOWS_ASSOCIATED_TITLE') }}</label>
 						<select v-model="workflowId">
@@ -83,7 +83,7 @@
 						</a>
 					</div>
 
-					<div class="tw-flex tw-justify-end tw-mt-2">
+					<div class="tw-mt-2 tw-flex tw-justify-end">
 						<button class="tw-btn-primary" @click="updateProgramWorkflows">
 							{{ translate('SAVE') }}
 						</button>

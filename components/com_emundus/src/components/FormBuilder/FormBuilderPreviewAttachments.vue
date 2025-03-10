@@ -2,7 +2,7 @@
 	<div id="form-builder-preview-attachment" class="tw-h-full tw-w-full" :class="{ loading: loading }">
 		<div v-if="!loading" class="tw-text-center">
 			<img src="@/assets/images/filetype/doc.png" class="em-m-center" style="width: 50px" alt="filetype" />
-			<p class="tw-text-xs tw-w-full tw-mt-4">{{ document_label }}</p>
+			<p class="tw-mt-4 tw-w-full tw-text-xs">{{ document_label }}</p>
 		</div>
 		<skeleton v-else height="100%" width="100%"></skeleton>
 	</div>

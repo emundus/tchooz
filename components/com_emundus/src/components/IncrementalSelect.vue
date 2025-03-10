@@ -1,10 +1,10 @@
 <template>
 	<div id="incremental-selector" class="tw-mt-2">
-		<div class="tw-w-full tw-flex tw-items-center tw-mb-4">
+		<div class="tw-mb-4 tw-flex tw-w-full tw-items-center">
 			<div v-if="isNewVal" id="new-value" class="tw-w-full">
 				<input
 					type="text"
-					class="tw-w-full !tw-mb-0"
+					class="!tw-mb-0 tw-w-full"
 					v-model="newValue.label"
 					@focusin="showOptions = true"
 					@focusout="emitValueChanges"
@@ -12,10 +12,10 @@
 				<i class="em-main-500-color">({{ translate('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE') }})</i>
 			</div>
 			<div v-if="!isNewVal" id="existing-value" class="tw-w-full">
-				<div class="tw-w-full tw-flex tw-items-center tw-justify-between">
+				<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
 					<input
 						type="text"
-						class="tw-w-full !tw-mb-0 em-border-main-500 important"
+						class="em-border-main-500 important !tw-mb-0 tw-w-full"
 						v-model="newExistingLabel"
 						@focusout="emitValueChanges"
 					/>
@@ -42,7 +42,7 @@
 				:key="option.id"
 				:value="option.id"
 				:selected="selectedExistingValue == option.id"
-				class="em-custom-selector-option tw-cursor-pointer em-p-8"
+				class="em-custom-selector-option em-p-8 tw-cursor-pointer"
 				@click="onSelectValue(option.id)"
 			>
 				{{ option.label }}

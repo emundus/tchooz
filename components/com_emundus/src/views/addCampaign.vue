@@ -2,7 +2,7 @@
 	<div class="campaigns__add-campaign">
 		<div v-if="typeof campaignId == 'undefined' || campaignId == 0">
 			<div
-				class="tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300"
+				class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
 				@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
 			>
 				<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
@@ -13,11 +13,11 @@
 				<h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
 				<div class="tw-mt-2">
 					<p>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
-					<p class="tw-text-red-600 tw-mt-1">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
+					<p class="tw-mt-1 tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
 				</div>
 			</div>
 
-			<hr class="tw-mt-1.5 tw-mb-4" />
+			<hr class="tw-mb-4 tw-mt-1.5" />
 		</div>
 
 		<div>
@@ -33,11 +33,11 @@
 							v-model="form.label[actualLanguage]"
 							required
 							:class="{ 'is-invalid !tw-border-red-600': errors.label }"
-							class="tw-mt-1 form-control fabrikinput tw-w-full"
+							class="form-control fabrikinput tw-mt-1 tw-w-full"
 							@focusout="onFormChange()"
 							@keyup="updateAlias()"
 						/>
-						<div v-if="errors.label" id="error-campaign-name" class="tw-text-red-600 tw-mt-1 tw-mb-1">
+						<div v-if="errors.label" id="error-campaign-name" class="tw-mb-1 tw-mt-1 tw-text-red-600">
 							<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_NAME') }}</span>
 						</div>
 					</div>
@@ -64,7 +64,7 @@
 										@focusout="onFormChange()"
 										@keyup="form.alias !== '' ? (aliasUpdated = true) : (aliasUpdated = false)"
 									/>
-									<div v-if="errors.alias" class="tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute">
+									<div v-if="errors.alias" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
 										<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_LINK') }}</span>
 									</div>
 								</div>
@@ -97,11 +97,11 @@
 									<input
 										:value="inputValue"
 										v-on="inputEvents"
-										class="tw-mt-1 form-control fabrikinput tw-w-full"
+										class="form-control fabrikinput tw-mt-1 tw-w-full"
 										:class="{ 'is-invalid !tw-border-red-600': errors.start_date }"
 										id="start_date_input"
 									/>
-									<div v-if="errors.start_date" class="tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute">
+									<div v-if="errors.start_date" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
 										<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_START_DATE') }}</span>
 									</div>
 								</template>
@@ -130,11 +130,11 @@
 										<input
 											:value="inputValue"
 											v-on="inputEvents"
-											class="tw-mt-1 form-control fabrikinput tw-w-full"
+											class="form-control fabrikinput tw-mt-1 tw-w-full"
 											:class="{ 'is-invalid !tw-border-red-600': errors.end_date }"
 											id="end_date_input"
 										/>
-										<div v-if="errors.end_date" class="tw-text-red-600 tw-mb-1 tw-mt-1 tw-absolute">
+										<div v-if="errors.end_date" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
 											<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_END_DATE') }}</span>
 										</div>
 									</template>
@@ -158,7 +158,7 @@
 								:year="form.year"
 								:name="sessionPlaceholder"
 							/>
-							<div v-if="errors.year" class="tw-text-red-600 tw-mb-1 tw-mt-1">
+							<div v-if="errors.year" class="tw-mb-1 tw-mt-1 tw-text-red-600">
 								<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_YEAR') }}</span>
 							</div>
 						</div>
@@ -170,7 +170,7 @@
 								type="checkbox"
 								true-value="1"
 								false-value="0"
-								class="tw-mt-2 em-toggle-check"
+								class="em-toggle-check tw-mt-2"
 								id="published"
 								name="published"
 								v-model="form.published"
@@ -188,7 +188,7 @@
 								type="checkbox"
 								true-value="0"
 								false-value="1"
-								class="tw-mt-2 em-toggle-check"
+								class="em-toggle-check tw-mt-2"
 								id="visible"
 								name="visible"
 								v-model="form.visible"
@@ -208,7 +208,7 @@
 								type="checkbox"
 								true-value="1"
 								false-value="0"
-								class="tw-mt-2 em-toggle-check"
+								class="em-toggle-check tw-mt-2"
 								id="pinned"
 								name="pinned"
 								v-model="form.pinned"
@@ -220,7 +220,7 @@
 						<span for="pinned" class="tw-ml-2 tw-flex tw-items-center"
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
 							<span
-								class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
 								@click="displayPinnedCampaignTip"
 								>help_outline</span
 							>
@@ -228,16 +228,16 @@
 					</div>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-flex-col tw-gap-4">
 					<h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION') }}</h2>
 
 					<div id="campResume">
 						<div class="tw-flex tw-items-center">
-							<label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
+							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
 							<span
-								class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
 								@click="displayCampaignResumeTip"
 								>help_outline</span
 							>
@@ -256,9 +256,9 @@
 
 					<div>
 						<div class="tw-flex tw-items-center">
-							<label class="tw-font-medium tw-mb-0">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
+							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
 							<span
-								class="material-symbols-outlined tw-ml-1 tw-text-base tw-cursor-pointer tw-text-neutral-600"
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
 								@click="displayCampaignDescriptionTip"
 								>help_outline</span
 							>
@@ -280,7 +280,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-flex-col tw-gap-4">
 					<div>
@@ -330,7 +330,7 @@
 								<span class="material-symbols-outlined em-main-500-color">add_circle_outline</span>
 							</button>
 						</div>
-						<div v-if="errors.progCode" class="tw-text-red-600 tw-mb-1 tw-mt-1">
+						<div v-if="errors.progCode" class="tw-mb-1 tw-mt-1 tw-text-red-600">
 							<span>{{ translate('COM_EMUNDUS_ONBOARD_FORM_REQUIRED_PROGRAM') }}</span>
 						</div>
 					</div>
@@ -345,13 +345,13 @@
 									<input
 										type="text"
 										id="prog_label"
-										class="tw-mt-1 form-control fabrikinput tw-w-full"
+										class="form-control fabrikinput tw-mt-1 tw-w-full"
 										placeholder=" "
 										v-model="programForm.label"
 										:class="{ 'is-invalid !tw-border-red-600': errors.progLabel }"
 									/>
 								</div>
-								<div v-if="errors.progLabel" class="tw-text-red-600 tw-mb-1 tw-mt-1">
+								<div v-if="errors.progLabel" class="tw-mb-1 tw-mt-1 tw-text-red-600">
 									<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_PROG_REQUIRED_LABEL') }}</span>
 								</div>
 							</div>
@@ -359,7 +359,7 @@
 					</transition>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-flex-col tw-gap-4" id="campaign-form-container">
 					<h2>
@@ -370,14 +370,14 @@
 					<div>
 						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }}</label>
 
-						<div class="tw-flex tw-items-center tw-mt-1 tw-mb-1">
+						<div class="tw-mb-1 tw-mt-1 tw-flex tw-items-center">
 							<select class="tw-w-full" v-model="form.profile_id">
 								<option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
 								<option v-for="applicantForm in applicantForms" :key="applicantForm.id" :value="applicantForm.id">
 									{{ applicantForm.label }}
 								</option>
 							</select>
-							<span class="material-symbols-outlined tw-cursor-pointer tw-ml-2" @click="getAllForms">refresh</span>
+							<span class="material-symbols-outlined tw-ml-2 tw-cursor-pointer" @click="getAllForms">refresh</span>
 						</div>
 						<a href="/forms" target="_blank" class="tw-underline">
 							{{ translate('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST') }}
@@ -385,7 +385,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-flex-col tw-gap-4" id="select-campaign-languages" v-if="languageOptions.length > 1">
 					<h2>
@@ -397,10 +397,10 @@
 						<div
 							v-if="programLanguages.length > 0"
 							id="program-languages"
-							class="tw-mb-1 tw-p-4 alert alert-info tw-flex"
+							class="alert alert-info tw-mb-1 tw-flex tw-p-4"
 						>
 							<span class="material-symbols-outlined tw-mr-2">info</span>
-							<p class="tw-font-light tw-text-sm">
+							<p class="tw-text-sm tw-font-light">
 								{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM_LANGUAGES') }}
 								<strong v-for="(language, index) in programLanguages" :key="language.lang_id">
 									{{ language.title }}{{ index < programLanguages.length - 1 ? ', ' : '' }}
@@ -423,7 +423,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mt-1.5 tw-mb-4" />
+				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-justify-end">
 					<button

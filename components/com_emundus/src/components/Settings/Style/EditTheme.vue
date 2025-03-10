@@ -6,7 +6,7 @@
 					<div>
 						<input type="color" class="custom-color-picker !tw-rounded-full" v-model="primary" id="primary_color" />
 					</div>
-					<label class="tw-font-medium tw-mb-0" style="max-width: 100px">{{
+					<label class="tw-mb-0 tw-font-medium" style="max-width: 100px">{{
 						translate('COM_EMUNDUS_ONBOARD_PRIMARY_COLOR')
 					}}</label>
 				</div>
@@ -15,7 +15,7 @@
 					<div>
 						<input type="color" v-model="secondary" class="custom-color-picker !tw-rounded-full" id="secondary_color" />
 					</div>
-					<label class="tw-font-medium tw-mb-0" style="max-width: 100px">{{
+					<label class="tw-mb-0 tw-font-medium" style="max-width: 100px">{{
 						translate('COM_EMUNDUS_ONBOARD_SECONDARY_COLOR')
 					}}</label>
 				</div>
@@ -61,7 +61,7 @@
 					:class="'tw-mt-2'"
 				></Info>
 				<div class="tw-mt-4">
-					<h4 @click="showDetails = !showDetails" class="tw-flex tw-items-center tw-font-semibold tw-cursor-pointer">
+					<h4 @click="showDetails = !showDetails" class="tw-flex tw-cursor-pointer tw-items-center tw-font-semibold">
 						{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS') }}
 						<span class="material-symbols-outlined tw-font-sm" :class="showDetails ? 'tw-rotate-90' : ''"
 							>navigate_next</span
@@ -70,7 +70,7 @@
 					<div v-if="showDetails" class="tw-mt-2 tw-border-s-4 tw-border-neutral-400 tw-pl-2">
 						<div>
 							<h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT') }}</h5>
-							<div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+							<div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
 								<span class="material-symbols-outlined tw-text-green-500" v-if="contrastPrimary.AA === 'pass'"
 									>check_circle</span
 								>
@@ -85,7 +85,7 @@
 									{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
 								</button>
 							</div>
-							<div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+							<div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
 								<span class="material-symbols-outlined tw-text-green-500" v-if="contrastSecondary.AA === 'pass'"
 									>check_circle</span
 								>
@@ -103,7 +103,7 @@
 						</div>
 						<div class="tw-mt-3">
 							<h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT') }}</h5>
-							<div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+							<div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
 								<span class="material-symbols-outlined tw-text-green-500" v-if="contrastPrimary.AALarge === 'pass'"
 									>check_circle</span
 								>
@@ -111,14 +111,14 @@
 									>highlight_off</span
 								>
 								<button
-									class="tw-rounded-coordinator tw-px-3 tw-py-2 tw-text-white tw-font-bold"
+									class="tw-rounded-coordinator tw-px-3 tw-py-2 tw-font-bold tw-text-white"
 									:style="{ backgroundColor: primary, borderColor: primary }"
 									type="button"
 								>
 									{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
 								</button>
 							</div>
-							<div class="tw-flex tw-gap-2 tw-items-center tw-mt-1">
+							<div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
 								<span class="material-symbols-outlined tw-text-green-500" v-if="contrastSecondary.AALarge === 'pass'"
 									>check_circle</span
 								>
@@ -139,7 +139,7 @@
 			</div>
 		</div>
 
-		<button class="tw-mt-3 btn btn-primary tw-float-right" v-if="changes" @click="saveColors">
+		<button class="btn btn-primary tw-float-right tw-mt-3" v-if="changes" @click="saveColors">
 			{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE') }}
 		</button>
 
