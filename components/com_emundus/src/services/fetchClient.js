@@ -1,125 +1,136 @@
 export class FetchClient {
-  constructor(controller) {
-    this.baseUrl = '/index.php?option=com_emundus&controller=' + controller;
-  }
+	constructor(controller) {
+		this.baseUrl = '/index.php?option=com_emundus&controller=' + controller;
+	}
 
-  async get(task, params, signal = null) {
-    let url = this.baseUrl + '&task=' + task;
+	async get(task, params, signal = null) {
+		let url = this.baseUrl + '&task=' + task;
 
-    if (params) {
-      for (let key in params) {
-        url += '&' + key + '=' + params[key];
-      }
-    }
+		if (params) {
+			for (let key in params) {
+				url += '&' + key + '=' + params[key];
+			}
+		}
 
-    let headers = {};
-    if(typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
-      var csrf = Joomla.getOptions("csrf.token", "");
-      if(csrf) {
-        headers = {
-            "X-CSRF-Token": csrf
-        };
-      }
-    }
+		let headers = {};
+		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions('csrf.token', '');
+			if (csrf) {
+				headers = {
+					'X-CSRF-Token': csrf,
+				};
+			}
+		}
 
-    let options = {
-        method: 'GET',
-        headers: headers
-    };
-    if(signal) {
-        options.signal = signal;
-    }
+		let options = {
+			method: 'GET',
+			headers: headers,
+		};
+		if (signal) {
+			options.signal = signal;
+		}
 
-    return fetch(url, options)
-        .then(response => {
-          if (response.ok) {
-            return response.json();
-          } else {
-            throw new Error('An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.');
-          }
-        }).then(data => {
-          return data;
-        }).catch(error => {
-          throw new Error('An error occurred while fetching the data. ' + error.message + '.');
-        });
+		return fetch(url, options)
+			.then((response) => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					throw new Error(
+						'An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.',
+					);
+				}
+			})
+			.then((data) => {
+				return data;
+			})
+			.catch((error) => {
+				throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+			});
+	}
 
+	async post(task, data, headers = null, timeout = 10000) {
+		let url = this.baseUrl + '&task=' + task;
 
+		let formData = new FormData();
+		for (let key in data) {
+			formData.append(key, data[key]);
+		}
 
-  }
+		let parameters = {
+			method: 'POST',
+			body: formData,
+		};
 
-  async post(task, data, headers = null, timeout = 10000) {
-    let url = this.baseUrl + '&task=' + task;
+		let baseHeaders = {};
+		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions('csrf.token', '');
+			if (csrf) {
+				baseHeaders = {
+					'X-CSRF-Token': csrf,
+				};
+			}
+		}
 
-    let formData = new FormData();
-    for (let key in data) {
-      formData.append(key, data[key]);
-    }
+		if (headers) {
+			headers = Object.assign(baseHeaders, headers);
+		} else {
+			headers = baseHeaders;
+		}
 
-    let parameters = {
-      method: 'POST',
-      body: formData
-    };
+		parameters.headers = headers;
 
-    let baseHeaders = {};
-    if(typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
-      var csrf = Joomla.getOptions("csrf.token", "");
-      if(csrf) {
-        baseHeaders = {
-          "X-CSRF-Token": csrf
-        };
-      }
-    }
+		if (timeout) {
+			parameters.signal = AbortSignal.timeout(timeout);
+		}
 
-    if (headers) {
-        headers = Object.assign(baseHeaders, headers);
-    } else {
-        headers = baseHeaders;
-    }
+		return fetch(url, parameters)
+			.then((response) => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					throw new Error(
+						'An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.',
+					);
+				}
+			})
+			.then((data) => {
+				return data;
+			})
+			.catch((error) => {
+				if (err.name === 'TimeoutError') {
+					throw new Error('The request timed out. ' + error.message + '.');
+				} else {
+					throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+				}
+			});
+	}
 
-    parameters.headers = headers;
+	async delete(task, params) {
+		let url = this.baseUrl + '&task=' + task;
 
-    if(timeout) {
-      parameters.signal = AbortSignal.timeout(timeout);
-    }
+		if (params) {
+			for (let key in params) {
+				url += '&' + key + '=' + params[key];
+			}
+		}
 
-    return fetch(url, parameters).then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.');
-      }
-    }).then(data => {
-      return data;
-    }).catch(error => {
-      if (err.name === "TimeoutError") {
-        throw new Error('The request timed out. ' + error.message + '.');
-      } else {
-        throw new Error('An error occurred while fetching the data. ' + error.message + '.');
-      }
-    });
-  }
-
-  async delete(task, params) {
-    let url = this.baseUrl + '&task=' + task;
-
-    if (params) {
-      for (let key in params) {
-        url += '&' + key + '=' + params[key];
-      }
-    }
-
-    return fetch(url, {
-      method: 'DELETE'
-    }).then(response => {
-      if (response.ok) {
-        return response.json();
-      } else {
-        throw new Error('An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.');
-      }
-    }).then(data => {
-      return data;
-    }).catch(error => {
-      throw new Error('An error occurred while fetching the data. ' + error.message + '.');
-    });
-  }
+		return fetch(url, {
+			method: 'DELETE',
+		})
+			.then((response) => {
+				if (response.ok) {
+					return response.json();
+				} else {
+					throw new Error(
+						'An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.',
+					);
+				}
+			})
+			.then((data) => {
+				return data;
+			})
+			.catch((error) => {
+				throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+			});
+	}
 }

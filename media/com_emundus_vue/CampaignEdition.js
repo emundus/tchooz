@@ -300,7 +300,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_17$2)) : createCommentVNode("", true)
   ]);
 }
-const AddDocumentsDropfiles = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-6272a5a1"]]);
+const AddDocumentsDropfiles = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5], ["__scopeId", "data-v-2c4c84b9"]]);
 const _sfc_main$4 = {
   name: "modalAddTrigger",
   components: {
@@ -569,7 +569,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["name", "class", "onClosed", "onBeforeOpen"]);
 }
-const ModalAddTrigger = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-5f2a6404"]]);
+const ModalAddTrigger = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4], ["__scopeId", "data-v-c11d7264"]]);
 const _sfc_main$3 = {
   name: "addEmail",
   components: { ModalAddTrigger },
@@ -689,9 +689,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
       classes: "tw-rounded tw-shadow-modal tw-p-4",
       placement: "center",
       onUpdateTriggers: $options.getTriggers,
-      onClose: _cache[0] || (_cache[0] = ($event) => {
-        $data.showModalAddTriggerApplicant = false;
-      })
+      onClose: _cache[0] || (_cache[0] = ($event) => $data.showModalAddTriggerApplicant = false)
     }, null, 8, ["prog", "trigger", "onUpdateTriggers"])) : $data.showModalAddTriggerManual ? (openBlock(), createBlock(_component_ModalAddTrigger, {
       prog: this.prog,
       trigger: this.triggerSelected,
@@ -700,9 +698,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
       classes: "tw-rounded tw-shadow-modal tw-p-4",
       placement: "center",
       onUpdateTriggers: $options.getTriggers,
-      onClose: _cache[1] || (_cache[1] = ($event) => {
-        $data.showModalAddTriggerManual = false;
-      })
+      onClose: _cache[1] || (_cache[1] = ($event) => $data.showModalAddTriggerManual = false)
     }, null, 8, ["prog", "trigger", "onUpdateTriggers"])) : createCommentVNode("", true),
     createBaseVNode("div", _hoisted_1$3, [
       createBaseVNode("div", _hoisted_2$2, [
@@ -836,7 +832,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_28)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-2cb2c72d"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-99def3f1"]]);
 const _sfc_main$2 = {
   name: "CampaignMore",
   props: {
@@ -885,7 +881,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 8, _hoisted_1$2)) : createCommentVNode("", true)
   ]);
 }
-const campaignMore = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-a04b9d4b"]]);
+const campaignMore = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-6abd6b51"]]);
 const _sfc_main$1 = {
   name: "CampaignSteps",
   components: {
@@ -1458,7 +1454,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-ae20bbab"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e18247dd"]]);
 export {
   CampaignEdition as default
 };

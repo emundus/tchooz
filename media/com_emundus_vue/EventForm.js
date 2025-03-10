@@ -269,10 +269,12 @@ const _sfc_main$5 = {
     // Services
     getLocations(location_id = 0) {
       eventsService.getLocations().then((response) => {
-        let options = [{
-          value: 0,
-          label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_LOCATION_SELECT")
-        }];
+        let options = [
+          {
+            value: 0,
+            label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_LOCATION_SELECT")
+          }
+        ];
         if (response.status) {
           Array.prototype.push.apply(options, response.data);
         }
@@ -511,7 +513,10 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
         return withDirectives((openBlock(), createElementBlock("div", {
           key: field.param,
-          class: normalizeClass({ "tw-flex tw-items-end tw-justify-between tw-gap-2 tw-w-1/2": field.param === "name", "tw-w-full": field.param !== "name" })
+          class: normalizeClass({
+            "tw-flex tw-items-end tw-justify-between tw-gap-2 tw-w-1/2": field.param === "name",
+            "tw-w-full": field.param !== "name"
+          })
         }, [
           field.displayed ? (openBlock(), createBlock(_component_Parameter, {
             class: normalizeClass({ "tw-w-full": field.param === "name" }),
@@ -902,7 +907,7 @@ const _hoisted_1$4 = {
 };
 const _hoisted_2$4 = {
   class: "tw-grid tw-justify-between",
-  style: { "grid-template-columns": "repeat(2,47%)" }
+  style: { "grid-template-columns": "repeat(2, 47%)" }
 };
 const _hoisted_3$4 = { class: "tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_4$4 = { class: "tw-flex tw-justify-end tw-mt-7" };
@@ -957,7 +962,9 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
           }, [
             field.displayed ? (openBlock(), createBlock(_component_Parameter, {
               key: 0,
-              class: normalizeClass([field.param === "slot_can_book_until" || field.param === "slot_can_cancel_until" ? "tw-w-1/2" : "tw-w-full"]),
+              class: normalizeClass([
+                field.param === "slot_can_book_until" || field.param === "slot_can_cancel_until" ? "tw-w-1/2" : "tw-w-full"
+              ]),
               ref_for: true,
               ref: "event_slot_settings_" + field.param,
               "parameter-object": field,
@@ -1163,10 +1170,12 @@ const _sfc_main$3 = {
     },
     getRooms() {
       eventsService.getRooms(this.locationId).then((response) => {
-        let options = [{
-          value: 0,
-          label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ROOM_SELECT")
-        }];
+        let options = [
+          {
+            value: 0,
+            label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ROOM_SELECT")
+          }
+        ];
         if (response.status) {
           Array.prototype.push.apply(options, response.data);
         }
@@ -1561,7 +1570,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-c8c0a9a0"]]);
+const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-7be50971"]]);
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const createCalendarConfig = (vm) => ({
@@ -1575,14 +1584,9 @@ const createCalendarConfig = (vm) => ({
     gridHeight: 900,
     eventWidth: 100
   },
-  views: [
-    createViewWeek()
-  ],
+  views: [createViewWeek()],
   events: [],
-  plugins: [
-    eventsServicePlugin,
-    calendarControls
-  ],
+  plugins: [eventsServicePlugin, calendarControls],
   callbacks: {
     onClickDateTime: (dateTime) => {
       vm.openSlotPopup(dateTime);
@@ -1602,21 +1606,18 @@ const createCalendarConfig = (vm) => ({
       });
     }
   },
-  translations: mergeLocales(
-    translations,
-    {
-      frFR: {
-        "Week": "Vue semaine",
-        "Day": "Vue jour",
-        "Today": "Revenir à aujourd'hui"
-      },
-      enGB: {
-        "Week": "Week View",
-        "Day": "Day View",
-        "Today": "Back to today"
-      }
+  translations: mergeLocales(translations, {
+    frFR: {
+      Week: "Vue semaine",
+      Day: "Vue jour",
+      Today: "Revenir à aujourd'hui"
+    },
+    enGB: {
+      Week: "Week View",
+      Day: "Day View",
+      Today: "Back to today"
     }
-  )
+  })
 });
 const _sfc_main$2 = {
   name: "EventCalendarSettings",
@@ -1715,7 +1716,9 @@ const _sfc_main$2 = {
         if (parent_slot) {
           parent_slot_id = parent_slot.id;
         }
-        let child_slots = this.$props.event.slots.filter((s) => s.parent_slot_id !== 0 && s.parent_slot_id === parent_slot_id);
+        let child_slots = this.$props.event.slots.filter(
+          (s) => s.parent_slot_id !== 0 && s.parent_slot_id === parent_slot_id
+        );
         if (child_slots.length > 0) {
           for (const child_slot of child_slots) {
             let repeat_date = {};
@@ -1818,9 +1821,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       break_every: $props.event.slot_break_every,
       break_time: $props.event.slot_break_time,
       break_time_type: $props.event.slot_break_time_type,
-      onClose: _cache[0] || (_cache[0] = ($event) => {
-        $data.openedSlotPopup = false;
-      }),
+      onClose: _cache[0] || (_cache[0] = ($event) => $data.openedSlotPopup = false),
       onSlotSaved: $options.updateSlots,
       onSlotDeleted: $options.deleteSlot
     }, null, 8, ["date", "slot", "event-id", "location-id", "duration", "duration_type", "break_every", "break_time", "break_time_type", "onSlotSaved", "onSlotDeleted"])) : createCommentVNode("", true),
@@ -2029,10 +2030,12 @@ const _sfc_main$1 = {
                 label: email.subject
               });
             }
-            let options = [{
-              value: 0,
-              label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_EMAIL_SELECT")
-            }];
+            let options = [
+              {
+                value: 0,
+                label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_EMAIL_SELECT")
+              }
+            ];
             if (response.status) {
               Array.prototype.push.apply(options, emails);
             }
@@ -2138,7 +2141,9 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
         return withDirectives((openBlock(), createElementBlock("div", {
           key: field.param,
-          class: normalizeClass([field.param === "applicant_recall_frequency" || field.param === "manager_recall_frequency" || field.param === "users_recall_frequency" ? "tw-w-1/2" : "tw-w-full"])
+          class: normalizeClass([
+            field.param === "applicant_recall_frequency" || field.param === "manager_recall_frequency" || field.param === "users_recall_frequency" ? "tw-w-1/2" : "tw-w-full"
+          ])
         }, [
           field.displayed ? (openBlock(), createBlock(_component_Parameter, {
             ref_for: true,

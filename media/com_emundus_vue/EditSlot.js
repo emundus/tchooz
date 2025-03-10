@@ -140,7 +140,9 @@ const _sfc_main = {
           field.value = this.slot["availability"] ?? this.slot["id"];
         } else if (field.param === "juror") {
           if (this.slot["additional_columns"]) {
-            const jurors = this.slot["additional_columns"].find((col) => col.key === Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS"));
+            const jurors = this.slot["additional_columns"].find(
+              (col) => col.key === Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS")
+            );
             field.value = jurors.id ? jurors.id.split(",").map((id) => Number(id.trim())) : [];
           } else if (this.slot["assoc_user_id"]) {
             field.value = this.slot["assoc_user_id"] ? this.slot["assoc_user_id"].split(",").map((id) => Number(id.trim())) : [];
@@ -322,8 +324,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             "parameter-object": field,
             "help-text-type": "above",
             "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
-            asyncAttributes: [(_a = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _a.value, (_b = _ctx.fields.find((f) => f.param === "user")) == null ? void 0 : _b.value, field.param],
-            componentsProps: { "event_id": (_c = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _c.value, "slot_id": $options.bookingSlot },
+            asyncAttributes: [
+              (_a = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _a.value,
+              (_b = _ctx.fields.find((f) => f.param === "user")) == null ? void 0 : _b.value,
+              field.param
+            ],
+            componentsProps: { event_id: (_c = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _c.value, slot_id: $options.bookingSlot },
             onValueUpdated: $options.updateBookingElement
           }, null, 8, ["parameter-object", "multiselect-options", "asyncAttributes", "componentsProps", "onValueUpdated"])) : field.displayed ? (openBlock(), createBlock(_component_Parameter, {
             ref_for: true,
@@ -332,7 +338,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             "parameter-object": field,
             "help-text-type": "below",
             "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
-            asyncAttributes: [(_d = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _d.value, (_e = _ctx.fields.find((f) => f.param === "user")) == null ? void 0 : _e.value, field.param],
+            asyncAttributes: [
+              (_d = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _d.value,
+              (_e = _ctx.fields.find((f) => f.param === "user")) == null ? void 0 : _e.value,
+              field.param
+            ],
             onValueUpdated: $options.updateForm
           }, null, 8, ["parameter-object", "multiselect-options", "asyncAttributes", "onValueUpdated"])) : createCommentVNode("", true),
           field.param === "juror" && (!field.value || field.value.length === 0) ? (openBlock(), createBlock(_component_Info, {

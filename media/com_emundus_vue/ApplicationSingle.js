@@ -144,10 +144,9 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-86008c68"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-a6ce5238"]]);
 const client = new FetchClient("file");
 const filesService = {
-  // eslint-disable-next-line no-unused-vars
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {
     try {
       return await client.get("getfiles", {
@@ -364,7 +363,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_5$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS")), 1))
   ], 8, _hoisted_1$1);
 }
-const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-78b155a0"]]);
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-7751a4ea"]]);
 const _sfc_main = {
   name: "ApplicationSingle",
   components: { Messages, EvaluationList, Comments, Attachments, Modal, Evaluations },
@@ -530,12 +529,14 @@ const _sfc_main = {
             this.showModal = true;
             this.hidden = false;
           } else {
-            this.displayError("COM_EMUNDUS_FILES_CANNOT_ACCESS", "COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC").then((confirm) => {
-              if (confirm === true) {
-                this.showModal = false;
-                this.hidden = true;
+            this.displayError("COM_EMUNDUS_FILES_CANNOT_ACCESS", "COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC").then(
+              (confirm) => {
+                if (confirm === true) {
+                  this.showModal = false;
+                  this.hidden = true;
+                }
               }
-            });
+            );
           }
         }).catch((error) => {
           this.displayError("COM_EMUNDUS_FILES_CANNOT_ACCESS", "COM_EMUNDUS_FILES_CANNOT_ACCESS_DESC");
@@ -693,7 +694,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     name: "application-modal",
     height: "100vh",
     ref: "modal",
-    class: normalizeClass({ "context-files": $props.context === "files", "hidden": _ctx.hidden })
+    class: normalizeClass({ "context-files": $props.context === "files", hidden: _ctx.hidden })
   }, {
     default: withCtx(() => [
       createBaseVNode("div", _hoisted_1, [

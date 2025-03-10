@@ -46,7 +46,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const LocationPopup = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f71313e0"]]);
+const LocationPopup = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3ef48c2d"]]);
 export {
   LocationPopup as L
 };

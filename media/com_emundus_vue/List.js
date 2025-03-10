@@ -53,7 +53,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$5, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
   ]);
 }
-const Head = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-3eaa1be6"]]);
+const Head = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7], ["__scopeId", "data-v-4d822459"]]);
 const _sfc_main$6 = {
   name: "Filters",
   components: {
@@ -78,7 +78,9 @@ const _sfc_main$6 = {
     };
   },
   created() {
-    const storedFilters = Object.keys(sessionStorage).filter((key) => key.includes("tchooz_filter_" + this.currentTabKey));
+    const storedFilters = Object.keys(sessionStorage).filter(
+      (key) => key.includes("tchooz_filter_" + this.currentTabKey)
+    );
     if (storedFilters.length > 0) {
       this.displayedFilters = storedFilters.map((key) => {
         let filter = key.split("_").pop();
@@ -109,7 +111,10 @@ const _sfc_main$6 = {
               return f;
             });
           }
-          sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname, filter.value);
+          sessionStorage.setItem(
+            "tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname,
+            filter.value
+          );
         }
       }
     });
@@ -119,7 +124,10 @@ const _sfc_main$6 = {
   },
   methods: {
     onChangeFilter(filter) {
-      sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname, filter.value);
+      sessionStorage.setItem(
+        "tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname,
+        filter.value
+      );
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has(filter.key)) {
         urlParams.set(filter.key, filter.value);
@@ -133,7 +141,9 @@ const _sfc_main$6 = {
     removeFilter(filter) {
       this.displayedFilters = this.displayedFilters.filter((f) => f.key !== filter.key);
       filter.value = filter.default ? filter.default : "all";
-      sessionStorage.removeItem("tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname);
+      sessionStorage.removeItem(
+        "tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname
+      );
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has(filter.key)) {
         urlParams.delete(filter.key);
@@ -163,7 +173,10 @@ const _sfc_main$6 = {
       if (value && !this.displayedFilters.find((filter) => filter.key === value.key)) {
         this.displayedFilters.push(value);
         this.displayedFilters.sort((a, b) => a.key.localeCompare(b.key));
-        sessionStorage.setItem("tchooz_filter_" + this.currentTabKey + "_" + value.key + "/" + document.location.hostname, value.value);
+        sessionStorage.setItem(
+          "tchooz_filter_" + this.currentTabKey + "_" + value.key + "/" + document.location.hostname,
+          value.value
+        );
         this.currentFilter = null;
       }
     }
@@ -512,7 +525,10 @@ const _sfc_main$4 = {
       if (this.currentSearches[this.tabKey].search === "") {
         sessionStorage.removeItem("tchooz_filter_" + this.tabKey + "_search/" + document.location.hostname);
       } else {
-        sessionStorage.setItem("tchooz_filter_" + this.tabKey + "_search/" + document.location.hostname, this.currentSearches[this.tabKey].search);
+        sessionStorage.setItem(
+          "tchooz_filter_" + this.tabKey + "_search/" + document.location.hostname,
+          this.currentSearches[this.tabKey].search
+        );
       }
       this.currentSearches[this.tabKey].searchDebounce = setTimeout(() => {
         if (this.currentSearches[this.tabKey].search !== this.currentSearches[this.tabKey].lastSearch) {
@@ -870,7 +886,10 @@ const _sfc_main$2 = {
             let date = new Date(start);
             this.dateRange = [];
             while (date <= end) {
-              const formattedString = new Intl.DateTimeFormat(this.language, { month: "short", year: "numeric" }).format(date);
+              const formattedString = new Intl.DateTimeFormat(this.language, {
+                month: "short",
+                year: "numeric"
+              }).format(date);
               this.dateRange.push(formattedString);
               date.setMonth(date.getMonth() + 1);
             }
@@ -923,7 +942,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 8, _hoisted_2$1)
   ]);
 }
-const NoResults = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-b00bf921"]]);
+const NoResults = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-cd8390c8"]]);
 const _sfc_main = {
   name: "List",
   components: {
@@ -950,10 +969,10 @@ const _sfc_main = {
   data() {
     return {
       loading: {
-        "lists": false,
-        "tabs": false,
-        "items": false,
-        "filters": true
+        lists: false,
+        tabs: false,
+        items: false,
+        filters: true
       },
       components: {
         EditSlot
@@ -961,7 +980,7 @@ const _sfc_main = {
       lists: {},
       type: "forms",
       params: {},
-      currentList: { "title": "", "tabs": [] },
+      currentList: { title: "", tabs: [] },
       selectedListTab: 0,
       items: {},
       title: "",
@@ -995,15 +1014,17 @@ const _sfc_main = {
     const globalStore = useGlobalStore();
     if (this.defaultType !== null) {
       this.params = {
-        "type": this.defaultType,
-        "shortlang": globalStore.getShortLang
+        type: this.defaultType,
+        shortlang: globalStore.getShortLang
       };
     } else {
       const data = globalStore.getDatas;
       this.params = Object.assign({}, ...Array.from(data).map(({ name, value }) => ({ [name]: value })));
     }
     this.type = this.params.type;
-    const storageNbItemsDisplay = localStorage.getItem("tchooz_number_of_items_to_display/" + document.location.hostname);
+    const storageNbItemsDisplay = localStorage.getItem(
+      "tchooz_number_of_items_to_display/" + document.location.hostname
+    );
     if (storageNbItemsDisplay !== null) {
       this.numberOfItemsToDisplay = storageNbItemsDisplay !== "all" ? parseInt(storageNbItemsDisplay) : storageNbItemsDisplay;
     }
@@ -1079,7 +1100,9 @@ const _sfc_main = {
               }
             }
           }
-          const searchValue = sessionStorage.getItem("tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname);
+          const searchValue = sessionStorage.getItem(
+            "tchooz_filter_" + this.selectedListTab + "_search/" + document.location.hostname
+          );
           if (searchValue !== null && this.searches[this.selectedListTab]) {
             this.searches[this.selectedListTab].search = searchValue;
             this.searches[this.selectedListTab].lastSearch = searchValue;
@@ -1145,7 +1168,9 @@ const _sfc_main = {
           this.loading.filters = true;
           this.filters[tab.key] = [];
           for (const filter of tab.filters) {
-            let filterValue = sessionStorage.getItem("tchooz_filter_" + this.selectedListTab + "_" + filter.key + "/" + document.location.hostname);
+            let filterValue = sessionStorage.getItem(
+              "tchooz_filter_" + this.selectedListTab + "_" + filter.key + "/" + document.location.hostname
+            );
             if (filterValue == null) {
               filterValue = filter.default ? filter.default : "all";
             }
@@ -1158,7 +1183,11 @@ const _sfc_main = {
                   alwaysDisplay: filter.alwaysDisplay,
                   options: []
                 });
-                await this.setFilterOptions(typeof filter.controller !== "undefined" ? filter.controller : tab.controller, filter, tab.key);
+                await this.setFilterOptions(
+                  typeof filter.controller !== "undefined" ? filter.controller : tab.controller,
+                  filter,
+                  tab.key
+                );
               }
             } else {
               this.filters[tab.key].push({
@@ -1453,10 +1482,14 @@ const _sfc_main = {
     },
     onCheckAllitems(e) {
       if (typeof e !== "undefined" && e.target.checked) {
-        this.displayedItems.map((item) => document.querySelector("#item-" + this.currentTab.key + "-" + item.id + " .item-check").checked = true);
+        this.displayedItems.map(
+          (item) => document.querySelector("#item-" + this.currentTab.key + "-" + item.id + " .item-check").checked = true
+        );
         this.checkedItems = this.displayedItems.map((item) => item.id);
       } else {
-        this.displayedItems.map((item) => document.querySelector("#item-" + this.currentTab.key + "-" + item.id + " .item-check").checked = false);
+        this.displayedItems.map(
+          (item) => document.querySelector("#item-" + this.currentTab.key + "-" + item.id + " .item-check").checked = false
+        );
         this.checkedItems = [];
         if (document.querySelector("#check-th input")) {
           document.querySelector("#check-th input").checked = false;
@@ -1575,7 +1608,10 @@ const _sfc_main = {
     },
     numberOfItemsToDisplay() {
       this.getListItems();
-      localStorage.setItem("tchooz_number_of_items_to_display/" + document.location.hostname, this.numberOfItemsToDisplay);
+      localStorage.setItem(
+        "tchooz_number_of_items_to_display/" + document.location.hostname,
+        this.numberOfItemsToDisplay
+      );
     },
     viewType(value, oldValue) {
       if (oldValue != null && oldValue !== value && (value === "calendar" || oldValue === "calendar")) {
@@ -1742,7 +1778,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           $data.viewType !== "calendar" && $data.viewType !== "gantt" ? (openBlock(), createElementBlock("table", {
             key: 0,
             id: "list-table",
-            class: normalizeClass(["tw-border-separate", { "blocs": $data.viewType === "blocs" }])
+            class: normalizeClass(["tw-border-separate", { blocs: $data.viewType === "blocs" }])
           }, [
             createBaseVNode("thead", null, [
               createBaseVNode("tr", null, [
@@ -1944,7 +1980,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                               (openBlock(true), createElementBlock(Fragment, null, renderList($options.tabActionsPopover, (action) => {
                                 return openBlock(), createElementBlock("li", {
                                   key: action.name,
-                                  class: normalizeClass([{ "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon)) }, "tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"]),
+                                  class: normalizeClass([{
+                                    "tw-hidden": !(typeof action.showon === "undefined" || $options.evaluateShowOn(item, action.showon))
+                                  }, "tw-cursor-pointer tw-py-1.5 tw-px-2 tw-text-base hover:tw-bg-neutral-300 hover:tw-rounded-coordinator"]),
                                   onClick: ($event) => $options.onClickAction(action, item.id, false, $event)
                                 }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_29);
                               }), 128))
@@ -1999,7 +2037,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-b7de5bb3"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d2205815"]]);
 export {
   list as default
 };

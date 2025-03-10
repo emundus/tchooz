@@ -272,7 +272,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     createBaseVNode("span", _hoisted_7, toDisplayString(message.name) + " - " + toDisplayString(message.date_hour), 1)
                   ]),
                   createBaseVNode("span", {
-                    class: normalizeClass(["messages__message-item-span", $data.user == message.user_id_from ? "messages__message-item-span_current-user" : "messages__message-item-span_other-user"]),
+                    class: normalizeClass([
+                      "messages__message-item-span",
+                      $data.user == message.user_id_from ? "messages__message-item-span_current-user" : "messages__message-item-span_other-user"
+                    ]),
                     innerHTML: message.message
                   }, null, 10, _hoisted_8),
                   createBaseVNode("p", null, [

@@ -300,7 +300,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", null, [
     !$data.loading ? (openBlock(), createElementBlock("div", {
       key: 0,
-      class: normalizeClass({ "tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0 tw-border tw-border-neutral-300 tw-p-6": !$props.isModal })
+      class: normalizeClass({
+        "tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0 tw-border tw-border-neutral-300 tw-p-6": !$props.isModal
+      })
     }, [
       $props.isModal ? (openBlock(), createElementBlock("div", _hoisted_1, [
         createBaseVNode("div", _hoisted_2, [

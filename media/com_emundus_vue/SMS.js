@@ -20,44 +20,44 @@ const _sfc_main = {
   data() {
     return {
       config: {
-        "sms": {
-          "title": "COM_EMUNDUS_ONBOARD_SMS",
-          "tabs": [
+        sms: {
+          title: "COM_EMUNDUS_ONBOARD_SMS",
+          tabs: [
             {
-              "controller": "sms",
-              "getter": "getSMSTemplates",
-              "title": "COM_EMUNDUS_ONBOARD_SMS",
-              "key": "sms",
-              "actions": [
+              controller: "sms",
+              getter: "getSMSTemplates",
+              title: "COM_EMUNDUS_ONBOARD_SMS",
+              key: "sms",
+              actions: [
                 {
-                  "action": "index.php?option=com_emundus&view=sms&layout=add",
-                  "controller": "sms",
-                  "label": "COM_EMUNDUS_ONBOARD_ADD_SMS",
-                  "name": "add",
-                  "type": "redirect"
+                  action: "index.php?option=com_emundus&view=sms&layout=add",
+                  controller: "sms",
+                  label: "COM_EMUNDUS_ONBOARD_ADD_SMS",
+                  name: "add",
+                  type: "redirect"
                 },
                 {
-                  "action": "index.php?option=com_emundus&view=sms&layout=edit&sms_id=%id%",
-                  "label": "COM_EMUNDUS_ONBOARD_MODIFY",
-                  "controller": "sms",
-                  "type": "redirect",
-                  "name": "edit"
+                  action: "index.php?option=com_emundus&view=sms&layout=edit&sms_id=%id%",
+                  label: "COM_EMUNDUS_ONBOARD_MODIFY",
+                  controller: "sms",
+                  type: "redirect",
+                  name: "edit"
                 },
                 {
-                  "action": "preview",
-                  "label": "COM_EMUNDUS_ONBOARD_VISUALIZE",
-                  "controller": "sms",
-                  "name": "preview",
-                  "icon": "preview",
-                  "iconOutlined": true,
-                  "title": "label",
-                  "content": "message"
+                  action: "preview",
+                  label: "COM_EMUNDUS_ONBOARD_VISUALIZE",
+                  controller: "sms",
+                  name: "preview",
+                  icon: "preview",
+                  iconOutlined: true,
+                  title: "label",
+                  content: "message"
                 },
                 {
-                  "action": "deleteTemplate",
-                  "label": "COM_EMUNDUS_ACTIONS_DELETE",
-                  "controller": "sms",
-                  "name": "delete"
+                  action: "deleteTemplate",
+                  label: "COM_EMUNDUS_ACTIONS_DELETE",
+                  controller: "sms",
+                  name: "delete"
                 }
               ],
               filters: [

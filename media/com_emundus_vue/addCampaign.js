@@ -35,9 +35,7 @@ const _sfc_main$1 = {
       this.onSearching();
     },
     filterResults() {
-      this.results = this.items.filter(
-        (item) => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1
-      );
+      this.results = this.items.filter((item) => item.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
     },
     setResult(result) {
       this.search = result;
@@ -108,7 +106,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Autocomplete = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-9c3002aa"]]);
+const Autocomplete = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-54f23536"]]);
 const useCampaignStore = defineStore("campaign", {
   state: () => ({
     unsavedChanges: false,
@@ -160,7 +158,20 @@ const _sfc_main = {
     years: [],
     languages: [],
     aliases: [],
-    editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "left", "center", "right", "h1", "h2", "ul"],
+    editorPlugins: [
+      "history",
+      "link",
+      "image",
+      "bold",
+      "italic",
+      "underline",
+      "left",
+      "center",
+      "right",
+      "h1",
+      "h2",
+      "ul"
+    ],
     session: [],
     old_training: "",
     old_program_form: "",
@@ -839,9 +850,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 ]),
                 createBaseVNode("span", {
                   class: "material-symbols-outlined tw-cursor-pointer",
-                  onClick: _cache[7] || (_cache[7] = ($event) => {
-                    $options.copyAliasToClipboard();
-                  })
+                  onClick: _cache[7] || (_cache[7] = ($event) => $options.copyAliasToClipboard())
                 }, "content_copy")
               ])
             ])
@@ -1199,7 +1208,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-928d1f8b"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-f54f0e39"]]);
 export {
   addCampaign as default
 };

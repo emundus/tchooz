@@ -362,10 +362,14 @@ const _sfc_main = {
         this.multiOptions = this.$props.multiselectOptions.options;
       }
       if (!this.multiselectOptions.multiple) {
-        this.value = this.multiOptions.find((option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value);
+        this.value = this.multiOptions.find(
+          (option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value
+        );
       } else {
         if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== "object") {
-          this.value = this.multiOptions.filter((option) => this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy]));
+          this.value = this.multiOptions.filter(
+            (option) => this.parameter.value.includes(option[this.$props.multiselectOptions.trackBy])
+          );
         } else {
           this.value = this.parameter.value;
         }
@@ -686,7 +690,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : createCommentVNode("", true),
     createBaseVNode("div", {
       name: "input-field",
-      class: normalizeClass(["tw-flex tw-items-center", { "input-split-field": $data.parameter.splitField, "input-split-field-select": $data.parameter.splitField && $data.parameter.secondParameterType === "select", "tw-gap-2": $data.parameter.splitField && $data.parameter.secondParameterType !== "select" }])
+      class: normalizeClass(["tw-flex tw-items-center", {
+        "input-split-field": $data.parameter.splitField,
+        "input-split-field-select": $data.parameter.splitField && $data.parameter.secondParameterType === "select",
+        "tw-gap-2": $data.parameter.splitField && $data.parameter.secondParameterType !== "select"
+      }])
     }, [
       $data.parameter.icon ? (openBlock(), createElementBlock("div", _hoisted_5, [
         createBaseVNode("span", {
@@ -759,7 +767,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         placeholder: _ctx.translate($data.parameter.placeholder),
         maxlength: $data.parameter.maxlength,
         readonly: $data.parameter.editable === false
-      }, "      ", 14, _hoisted_9)), [
+      }, "			", 14, _hoisted_9)), [
         [vModelText, $data.value]
       ]) : $data.parameter.type === "yesno" ? (openBlock(), createElementBlock("div", _hoisted_10, [
         createBaseVNode("fieldset", _hoisted_11, [

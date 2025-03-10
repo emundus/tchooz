@@ -80,7 +80,20 @@ const _sfc_main = {
     candidate_attachments: [],
     email_sender: "",
     editor_ready: false,
-    editorPlugins: ["history", "link", "image", "bold", "italic", "underline", "left", "center", "right", "h1", "h2", "ul"],
+    editorPlugins: [
+      "history",
+      "link",
+      "image",
+      "bold",
+      "italic",
+      "underline",
+      "left",
+      "center",
+      "right",
+      "h1",
+      "h2",
+      "ul"
+    ],
     suggestions: [],
     medias: []
   }),
@@ -647,7 +660,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_41)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-31d3356a"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-befdbb06"]]);
 export {
   addEmail as default
 };

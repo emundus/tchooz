@@ -71,7 +71,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     }, 8, ["onClosed", "onBeforeOpen"])
   ]);
 }
-const MessengerPopup = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-87ef8c7b"]]);
+const MessengerPopup = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-4d27cfea"]]);
 const _sfc_main$1 = {
   name: "NotificationsPopup",
   props: {
@@ -124,7 +124,10 @@ const _sfc_main$1 = {
     },
     sentTranslation(unread) {
       if (unread.messages.length > 1) {
-        return this.translate("COM_EMUNDUS_MESSENGER_NOTIFICATIONS_HAS_SENT_MESSAGES").replace("%count", unread.messages.length);
+        return this.translate("COM_EMUNDUS_MESSENGER_NOTIFICATIONS_HAS_SENT_MESSAGES").replace(
+          "%count",
+          unread.messages.length
+        );
       } else {
         return this.translate("COM_EMUNDUS_MESSENGER_NOTIFICATIONS_HAS_SENT_ONE_MESSAGE");
       }

@@ -46,7 +46,12 @@ const _sfc_main$2 = {
   },
   computed: {
     eventDay() {
-      return this.eventStartDate.toLocaleDateString(this.actualLanguage, { weekday: "long", year: "numeric", month: "long", day: "numeric" });
+      return this.eventStartDate.toLocaleDateString(this.actualLanguage, {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
     },
     eventHours() {
       return this.eventStartDate.toLocaleTimeString(this.actualLanguage, { hour: "2-digit", minute: "2-digit" }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, { hour: "2-digit", minute: "2-digit" });
@@ -123,7 +128,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-const EventInformations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-ed7e93ac"]]);
+const EventInformations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-e5595374"]]);
 const _sfc_main$1 = {
   name: "EventModal",
   components: { EventInformations },
@@ -187,7 +192,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 6)) : createCommentVNode("", true);
 }
-const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-da5b9713"]]);
+const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-1010032d"]]);
 var PluginName;
 (function(PluginName2) {
   PluginName2["DragAndDrop"] = "dragAndDrop";
@@ -450,16 +455,9 @@ const createCalendarConfig = (vm) => ({
     eventWidth: 95,
     eventOverlap: false
   },
-  views: [
-    createViewWeek(),
-    createViewDay()
-  ],
+  views: [createViewWeek(), createViewDay()],
   events: [],
-  plugins: [
-    eventModal,
-    eventsServicePlugin,
-    calendarControls
-  ],
+  plugins: [eventModal, eventsServicePlugin, calendarControls],
   callbacks: {
     onRender($app) {
       const range = $app.calendarState.range.value;
@@ -497,21 +495,18 @@ const createCalendarConfig = (vm) => ({
       }
     }
   },
-  translations: mergeLocales(
-    translations,
-    {
-      frFR: {
-        "Week": "Vue semaine",
-        "Day": "Vue jour",
-        "Today": "Revenir à aujourd'hui"
-      },
-      enGB: {
-        "Week": "Week View",
-        "Day": "Day View",
-        "Today": "Back to today"
-      }
+  translations: mergeLocales(translations, {
+    frFR: {
+      Week: "Vue semaine",
+      Day: "Vue jour",
+      Today: "Revenir à aujourd'hui"
+    },
+    enGB: {
+      Week: "Week View",
+      Day: "Day View",
+      Today: "Back to today"
     }
-  )
+  })
 });
 const _sfc_main = {
   name: "Calendar",
@@ -674,9 +669,7 @@ const _sfc_main = {
           }
           groupedEvents[event.event_id].push(event);
         });
-        let groupedArray = Object.values(groupedEvents).sort(
-          (a, b) => a[0].start - b[0].start
-        );
+        let groupedArray = Object.values(groupedEvents).sort((a, b) => a[0].start - b[0].start);
         groupedArray.forEach((group) => {
           group.forEach((event) => {
             event.title = event.name;
@@ -863,7 +856,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2)) : createCommentVNode("", true);
 }
-const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-bcbfb7b5"]]);
+const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-634e0732"]]);
 export {
   Calendar as default
 };
