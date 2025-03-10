@@ -274,8 +274,9 @@ export default {
 			formBuilderService.getSqlDropdownOptions(table, key, value, param.translate).then((response) => {
 				param.options = response.data;
 
-				if (param.multiple == true &&
-                    this.element.params[param.name] &&
+				if (
+					param.multiple == true &&
+					this.element.params[param.name] &&
 					typeof this.element.params[param.name] === 'string' &&
 					this.element.params[param.name].length > 0
 				) {
@@ -293,8 +294,8 @@ export default {
 						}
 					});
 				} else if (param.multiple != true) {
-                    // let the value as it is
-                } else {
+					// let the value as it is
+				} else {
 					this.element.params[param.name] = [];
 				}
 

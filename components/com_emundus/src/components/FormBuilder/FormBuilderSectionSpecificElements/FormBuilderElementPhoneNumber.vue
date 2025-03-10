@@ -40,15 +40,15 @@ export default {
 	},
 	created() {},
 	methods: {},
-    computed: {
-        defaultCountryLowerCased() {
-            if (this.element.params.default_country && typeof this.element.params.default_country === 'string') {
-                return this.element.params.default_country.toLowerCase();
-            } else {
-                return this.element.params.default_country[0].value.toLowerCase();
-            }
-        }
-    },
+	computed: {
+		defaultCountryLowerCased() {
+			if (this.element.params.default_country && typeof this.element.params.default_country === 'string') {
+				return this.element.params.default_country.toLowerCase();
+			} else {
+				return this.element.params.default_country[0].value.toLowerCase();
+			}
+		},
+	},
 	watch: {},
 };
 </script>
