@@ -273,6 +273,8 @@
 	RewriteRule ^logs / [R=301,L]
 	RewriteRule ^tests / [R=301,L]
 	RewriteRule ^web.config.txt / [R=301,L]
+	RewriteRule ^htaccess.txt / [R=301,L]
+	RewriteRule ^docker / [R=301,L]
 
 	# Redirect specific file types to home page
 	RewriteRule ^.*\.sql / [R=301,L]
