@@ -20,7 +20,9 @@
 		>
 			<div v-for="(tag, index) in selectedTags" class="tw-flex tw-items-center">
 				<span>{{ tag.value }}</span>
-				<div v-if="index + 1 !== selectedTags.length">{{ selectedSeparator }}</div>
+				<div v-if="index + 1 !== selectedTags.length">
+					{{ selectedSeparator }}
+				</div>
 			</div>
 		</div>
 		<div class="tw-mb-4 tw-text-red-600" v-if="selectedTags.length === 0">
@@ -50,7 +52,10 @@
 		</div>
 
 		<div class="tw-mt-4 tw-flex tw-items-center">
-			<span>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SEPARATOR') }} : </span>
+			<span
+				>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SEPARATOR') }}
+				:
+			</span>
 			<div
 				class="em-ml-16 em-separator tw-cursor-pointer"
 				:class="selectedSeparator === separator ? 'em-selected-separator' : ''"

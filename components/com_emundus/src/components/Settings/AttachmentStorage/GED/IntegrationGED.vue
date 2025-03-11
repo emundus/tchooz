@@ -1,6 +1,8 @@
 <template>
 	<div class="tw-mt-8">
-		<div class="em-h4 tw-mb-4">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CONF_WRITING') }}</div>
+		<div class="em-h4 tw-mb-4">
+			{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_CONF_WRITING') }}
+		</div>
 
 		<div class="tw-mb-4 tw-flex tw-items-center">
 			<span class="material-symbols-outlined">folder</span>

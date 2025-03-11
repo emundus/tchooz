@@ -85,7 +85,10 @@ export default {
 					minute: '2-digit',
 				}) +
 				' - ' +
-				this.eventEndDate.toLocaleTimeString(this.actualLanguage, { hour: '2-digit', minute: '2-digit' })
+				this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+					hour: '2-digit',
+					minute: '2-digit',
+				})
 			);
 		},
 		brightnessColor() {
@@ -137,7 +140,8 @@ export default {
 					>groups</span
 				>
 				<p class="tw-whitespace-nowrap tw-text-xs" :style="{ color: calendarEvent.color }">
-					{{ calendarEvent.booked_count }} / {{ calendarEvent.availabilities_count }}
+					{{ calendarEvent.booked_count }} /
+					{{ calendarEvent.availabilities_count }}
 				</p>
 				<p
 					class="tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap tw-text-xs"
@@ -161,7 +165,8 @@ export default {
 				>
 					<span class="material-symbols-outlined" :style="{ color: calendarEvent.color }">group</span>
 					<p :style="{ color: calendarEvent.color }">
-						<strong>{{ translate('COM_EMUNDUS_REGISTRANTS_BOOKED') }}</strong> - {{ registrant.user_fullname }}
+						<strong>{{ translate('COM_EMUNDUS_REGISTRANTS_BOOKED') }}</strong> -
+						{{ registrant.user_fullname }}
 					</p>
 				</div>
 			</div>

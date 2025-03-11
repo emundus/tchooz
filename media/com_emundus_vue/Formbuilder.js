@@ -1497,7 +1497,11 @@ function _sfc_render$u(_ctx, _cache, $props, $setup, $data, $options) {
         modelValue: $options.publishedElements,
         "onUpdate:modelValue": _cache[2] || (_cache[2] = ($event) => $options.publishedElements = $event),
         class: "draggables-list",
-        group: { name: "form-builder-section-elements", pull: "clone", put: false },
+        group: {
+          name: "form-builder-section-elements",
+          pull: "clone",
+          put: false
+        },
         sort: false,
         clone: $options.setCloneElement,
         onEnd: $options.onDragEnd
@@ -3227,7 +3231,10 @@ const _sfc_main$k = {
       return this.date.toLocaleDateString(this.locale, { weekday: "long" }).charAt(0).toUpperCase() + this.date.toLocaleDateString(this.locale, { weekday: "long" }).slice(1);
     },
     currentDateMonth() {
-      return this.date.toLocaleDateString(this.locale, { day: "numeric", month: "short" });
+      return this.date.toLocaleDateString(this.locale, {
+        day: "numeric",
+        month: "short"
+      });
     }
   }
 };
@@ -3438,7 +3445,10 @@ function _sfc_render$j(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_form_builder_element_geolocation = resolveComponent("form-builder-element-geolocation");
   const _component_form_builder_element_booking = resolveComponent("form-builder-element-booking");
   return withDirectives((openBlock(), createElementBlock("div", {
-    class: normalizeClass(["form-builder-page-section-element", { unpublished: !$props.element.publish || $props.element.hidden, "properties-active": $options.propertiesOpened === $props.element.id }]),
+    class: normalizeClass(["form-builder-page-section-element", {
+      unpublished: !$props.element.publish || $props.element.hidden,
+      "properties-active": $options.propertiesOpened === $props.element.id
+    }]),
     id: "element_" + $props.element.id
   }, [
     createBaseVNode("div", _hoisted_2$j, [
@@ -4280,7 +4290,11 @@ const _sfc_main$f = {
           this.structure = "new";
         }
       }
-      const data = { ...this.page, modelid: model_form_id, keep_structure: this.structure === "initial" };
+      const data = {
+        ...this.page,
+        modelid: model_form_id,
+        keep_structure: this.structure === "initial"
+      };
       formBuilderService.addPage(data).then((response) => {
         if (!response.status) {
           Swal.fire({
@@ -4473,7 +4487,10 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
             (openBlock(true), createElementBlock(Fragment, null, renderList($data.models, (model) => {
               return openBlock(), createElementBlock("div", {
                 key: model.id,
-                class: normalizeClass(["card-wrapper em-mr-32", { selected: model.id === $data.selected, hidden: !model.displayed }]),
+                class: normalizeClass(["card-wrapper em-mr-32", {
+                  selected: model.id === $data.selected,
+                  hidden: !model.displayed
+                }]),
                 title: model.label[_ctx.shortDefaultLang],
                 onClick: ($event) => $data.selected = model.id,
                 onDblclick: _cache[7] || (_cache[7] = (...args) => $options.createPage && $options.createPage(...args))
@@ -4540,7 +4557,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const FormBuilderCreatePage = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-061e0807"]]);
+const FormBuilderCreatePage = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-50940eb9"]]);
 const _sfc_main$e = {
   name: "FormBuilderPages",
   components: {
@@ -5893,7 +5910,11 @@ function _sfc_render$a(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.activeTabs, (tab) => {
         return openBlock(), createElementBlock("li", {
           key: tab.id,
-          class: normalizeClass([{ "is-active": tab.active, "tw-w-2/4": $options.activeTabs.length == 2, "tw-w-full": $options.activeTabs.length == 1 }, "tw-cursor-pointer tw-p-4"]),
+          class: normalizeClass([{
+            "is-active": tab.active,
+            "tw-w-2/4": $options.activeTabs.length == 2,
+            "tw-w-full": $options.activeTabs.length == 1
+          }, "tw-cursor-pointer tw-p-4"]),
           onClick: ($event) => $options.selectTab(tab)
         }, toDisplayString(_ctx.translate(tab.label)), 11, _hoisted_5$9);
       }), 128))
@@ -6740,7 +6761,10 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
             key: rule.id
           }, [
             createBaseVNode("div", {
-              class: normalizeClass(["tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-border tw-border-neutral-600 tw-px-3 tw-py-4", { "tw-bg-neutral-400": rule.published == 0, "tw-bg-white": rule.published == 1 }])
+              class: normalizeClass(["tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-border tw-border-neutral-600 tw-px-3 tw-py-4", {
+                "tw-bg-neutral-400": rule.published == 0,
+                "tw-bg-white": rule.published == 1
+              }])
             }, [
               createBaseVNode("div", _hoisted_8$5, [
                 createBaseVNode("h3", null, toDisplayString($options.ruleLabel(rule, index)), 1),
@@ -6783,7 +6807,9 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
                   return openBlock(), createElementBlock("div", null, [
                     key != 0 && grouped_condition.length > 1 ? (openBlock(), createElementBlock("p", _hoisted_16$1, toDisplayString(_ctx.translate("COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_" + rule.group)), 1)) : createCommentVNode("", true),
                     createBaseVNode("div", {
-                      class: normalizeClass(["tw-flex tw-flex-col tw-gap-4", { "tw-rounded tw-bg-neutral-300 tw-p-2": grouped_condition.length > 1 }])
+                      class: normalizeClass(["tw-flex tw-flex-col tw-gap-4", {
+                        "tw-rounded tw-bg-neutral-300 tw-p-2": grouped_condition.length > 1
+                      }])
                     }, [
                       (openBlock(true), createElementBlock(Fragment, null, renderList(grouped_condition, (condition, condition_index) => {
                         return openBlock(), createElementBlock("div", _hoisted_17$1, [
@@ -6992,8 +7018,16 @@ const _sfc_main$5 = {
     return {
       loading: false,
       operators: [
-        { id: 1, label: "COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS", value: "=" },
-        { id: 2, label: "COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS", value: "!=" }
+        {
+          id: 1,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS",
+          value: "="
+        },
+        {
+          id: 2,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS",
+          value: "!="
+        }
       ],
       options: [],
       options_plugins: ["dropdown", "databasejoin", "radiobutton", "checkbox"],
@@ -7087,8 +7121,14 @@ const _sfc_main$5 = {
       }
       if (val.plugin == "yesno") {
         this.options = [
-          { primary_key: 0, value: this.translate("COM_EMUNDUS_FORMBUILDER_NO") },
-          { primary_key: 1, value: this.translate("COM_EMUNDUS_FORMBUILDER_YES") }
+          {
+            primary_key: 0,
+            value: this.translate("COM_EMUNDUS_FORMBUILDER_NO")
+          },
+          {
+            primary_key: 1,
+            value: this.translate("COM_EMUNDUS_FORMBUILDER_YES")
+          }
         ];
         if (this.conditionData.values) {
           this.conditionData.values = this.options.find((option) => option.primary_key == this.conditionData.values);
@@ -7155,7 +7195,9 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
             (openBlock(true), createElementBlock(Fragment, null, renderList($data.operators, (operator) => {
               return openBlock(), createElementBlock("span", {
                 key: operator.id,
-                class: normalizeClass(["tw-ml-1 tw-cursor-pointer tw-rounded-lg tw-border tw-border-neutral-500 tw-p-2", { "label-darkblue": $data.conditionData.state == operator.value }]),
+                class: normalizeClass(["tw-ml-1 tw-cursor-pointer tw-rounded-lg tw-border tw-border-neutral-500 tw-p-2", {
+                  "label-darkblue": $data.conditionData.state == operator.value
+                }]),
                 onClick: ($event) => $data.conditionData.state = operator.value
               }, toDisplayString(_ctx.translate(operator.label)), 11, _hoisted_8$3);
             }), 128))
@@ -7218,8 +7260,16 @@ const _sfc_main$4 = {
     return {
       loading: false,
       group_types: [
-        { id: 1, label: "COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_OR", value: "OR" },
-        { id: 2, label: "COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_AND", value: "AND" }
+        {
+          id: 1,
+          label: "COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_OR",
+          value: "OR"
+        },
+        {
+          id: 2,
+          label: "COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_AND",
+          value: "AND"
+        }
       ],
       conditions_group: "OR"
     };
@@ -7349,12 +7399,42 @@ const _sfc_main$3 = {
     return {
       loading: false,
       actions: [
-        { id: 1, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW", value: "show", multiple: true },
-        { id: 2, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE", value: "hide", multiple: true },
-        { id: 3, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_OPTIONS", value: "show_options", multiple: false },
-        { id: 4, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS", value: "hide_options", multiple: false },
-        { id: 5, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY", value: "set_mandatory", multiple: true },
-        { id: 6, label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL", value: "set_optional", multiple: true },
+        {
+          id: 1,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW",
+          value: "show",
+          multiple: true
+        },
+        {
+          id: 2,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE",
+          value: "hide",
+          multiple: true
+        },
+        {
+          id: 3,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_OPTIONS",
+          value: "show_options",
+          multiple: false
+        },
+        {
+          id: 4,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS",
+          value: "hide_options",
+          multiple: false
+        },
+        {
+          id: 5,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY",
+          value: "set_mandatory",
+          multiple: true
+        },
+        {
+          id: 6,
+          label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL",
+          value: "set_optional",
+          multiple: true
+        },
         {
           id: 7,
           label: "COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP",
@@ -8185,7 +8265,11 @@ const _sfc_main = {
       } else {
         this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
         this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, " ");
-        formService.updateFormLabel({ label: this.title, prid: this.profile_id, form_id: this.form_id });
+        formService.updateFormLabel({
+          label: this.title,
+          prid: this.profile_id,
+          form_id: this.form_id
+        });
       }
     },
     updateFormTitleKeyup() {

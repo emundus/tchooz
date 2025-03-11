@@ -12,10 +12,16 @@
 		</div>
 
 		<div class="tw-mt-4 tw-flex tw-items-center">
-			<h1 class="tw-mb-4">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}</h1>
+			<h1 class="tw-mb-4">
+				{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_TITLE') }}
+			</h1>
 		</div>
-		<h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}</h2>
-		<p class="em-profile-font">{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}</p>
+		<h2 class="tw-mb-2">
+			{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_SUBTITLE') }}
+		</h2>
+		<p class="em-profile-font">
+			{{ translate('COM_EMUNDUS_PROGRAMS_EDITION_INTRO') }}
+		</p>
 		<hr />
 
 		<div class="tw-mt-4">

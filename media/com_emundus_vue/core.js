@@ -141,7 +141,10 @@ const _sfc_main = {
       return this.eventStartDate.toLocaleTimeString(this.actualLanguage, {
         hour: "2-digit",
         minute: "2-digit"
-      }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, { hour: "2-digit", minute: "2-digit" });
+      }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     },
     brightnessColor() {
       return this.lightenColor(this.calendarEvent.color, 90);

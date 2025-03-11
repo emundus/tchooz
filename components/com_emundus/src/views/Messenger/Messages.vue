@@ -200,7 +200,10 @@ export default {
 					user_id_to: null,
 					folder_id: 2,
 					date_time: this.formatedTimestamp(),
-					date_hour: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+					date_hour: new Date().toLocaleTimeString([], {
+						hour: '2-digit',
+						minute: '2-digit',
+					}),
 					state: 0,
 					priority: 0,
 					subject: 0,
@@ -580,7 +583,9 @@ export default {
 							<div v-for="date in messageByDates" :key="date.date">
 								<div class="tw-ml-4 tw-flex tw-items-center">
 									<hr class="tw-w-full" />
-									<p class="tw-px-5">{{ new Date(date.date).toISOString().slice(0, 10) }}</p>
+									<p class="tw-px-5">
+										{{ new Date(date.date).toISOString().slice(0, 10) }}
+									</p>
 									<hr class="tw-w-full" />
 								</div>
 
@@ -622,7 +627,10 @@ export default {
 
 						<div
 							class="tw-bottom-3 tw-mr-3 tw-w-full tw-px-3"
-							:class="{ 'tw-sticky': applicant == false, 'tw-absolute': applicant == true }"
+							:class="{
+								'tw-sticky': applicant == false,
+								'tw-absolute': applicant == true,
+							}"
 						>
 							<div class="tw-flex tw-items-center tw-gap-2" v-if="currentChatroom.status == 1">
 								<div class="tw-w-full">
@@ -630,7 +638,10 @@ export default {
 										type="text"
 										id="messenger_message"
 										class="!tw-h-auto tw-resize-none tw-p-2"
-										:class="{ 'tw-rounded-applicant': applicant == true, 'tw-rounded-coordinator': applicant == false }"
+										:class="{
+											'tw-rounded-applicant': applicant == true,
+											'tw-rounded-coordinator': applicant == false,
+										}"
 										rows="2"
 										:disabled="send_progress"
 										spellcheck="true"
@@ -658,7 +669,10 @@ export default {
 							<div
 								v-if="currentChatroom.status == 0"
 								class="tw-flex tw-items-center tw-gap-1 tw-bg-white tw-p-2"
-								:class="{ 'tw-rounded-applicant': applicant == true, 'tw-rounded-coordinator': applicant == false }"
+								:class="{
+									'tw-rounded-applicant': applicant == true,
+									'tw-rounded-coordinator': applicant == false,
+								}"
 							>
 								<p>{{ translate('COM_EMUNDUS_MESSENGER_CHATROOM_CLOSED') }}</p>
 								<button
@@ -678,7 +692,9 @@ export default {
 							src="../../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"
 							style="width: 250px; object-fit: cover; height: 65px"
 						/>
-						<p class="tw-text-neutral-500">{{ translate('COM_EMUNDUS_MESSENGER_SELECT_CHATROOM') }}</p>
+						<p class="tw-text-neutral-500">
+							{{ translate('COM_EMUNDUS_MESSENGER_SELECT_CHATROOM') }}
+						</p>
 						<button v-if="applicant" type="button" class="tw-btn-primary !tw-w-auto" @click="createNewChatroom = true">
 							{{ translate('COM_EMUNDUS_MESSENGER_CREATE_CHATROOM') }}
 						</button>

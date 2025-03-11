@@ -1,6 +1,8 @@
 <template>
 	<section>
-		<div class="em-h4 tw-mb-4">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}</div>
+		<div class="em-h4 tw-mb-4">
+			{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS') }}
+		</div>
 		<div id="no-aspects" class="tw-flex tw-items-center" v-if="aspects.length < 1 && upload">
 			<input type="file" id="aspect-file" class="em-m-0" accept=".xml" />
 			<div class="em-w-33 em-ml-16 tw-btn-primary tw-cursor-pointer" @click="uploadAspectFile">
@@ -8,13 +10,17 @@
 			</div>
 		</div>
 		<div id="aspects" v-else>
-			<div class="em-h5 tw-mb-4">{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MAPPING') }}</div>
+			<div class="em-h5 tw-mb-4">
+				{{ translate('COM_EMUNDUS_ATTACHMENT_STORAGE_GED_ALFRESCO_ASPECTS_MAPPING') }}
+			</div>
 			<div v-for="aspect in aspects" :key="aspect.name" class="tw-mb-4">
 				<div class="tw-flex tw-items-center tw-justify-between">
 					<input type="text" v-model="aspect.label" disabled />
 					<span class="material-symbols-outlined">sync_alt</span>
 					<select v-model="aspect.mapping" @change="updateAspectMapping">
-						<option v-for="tag in tags" :key="tag.id" :value="tag.id">{{ tag.tag }}</option>
+						<option v-for="tag in tags" :key="tag.id" :value="tag.id">
+							{{ tag.tag }}
+						</option>
 					</select>
 				</div>
 			</div>

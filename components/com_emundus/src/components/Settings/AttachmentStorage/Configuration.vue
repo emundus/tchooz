@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<h2>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_CONFIGURATION') }}</h2>
+		<h2>
+			{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_CONFIGURATION') }}
+		</h2>
 
 		<div class="tw-flex tw-items-center">
 			<ul class="nav nav-tabs topnav">

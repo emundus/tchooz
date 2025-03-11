@@ -5,8 +5,12 @@
 		<div class="tw-flex tw-flex-row tw-justify-between">
 			<div>
 				<select v-model="selectedStatus" @change="onSelectStatus">
-					<option value="" selected>{{ translate('COM_EMUNDUS_SMS_ALL_STATUS') }}</option>
-					<option v-for="status in status" :key="status.value" :value="status.value">{{ status.label }}</option>
+					<option value="" selected>
+						{{ translate('COM_EMUNDUS_SMS_ALL_STATUS') }}
+					</option>
+					<option v-for="status in status" :key="status.value" :value="status.value">
+						{{ status.label }}
+					</option>
 				</select>
 			</div>
 
@@ -40,8 +44,10 @@
 					<div class="tw-flex tw-flex-col">
 						<span class="tw-text-xs tw-text-neutral-500">{{ sms.params.date }}</span>
 						<span class="tw-text-xs">
-							{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_FROM') }} {{ sms.user_name_from }}
-							{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_TO') + ' ' }} <strong>{{ sms.fnum }}</strong>
+							{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_FROM') }}
+							{{ sms.user_name_from }}
+							{{ translate('COM_EMUNDUS_EMAILS_MESSAGE_TO') + ' ' }}
+							<strong>{{ sms.fnum }}</strong>
 						</span>
 					</div>
 					<div>

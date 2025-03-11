@@ -27,10 +27,16 @@
 		</div>
 
 		<div v-if="conditions.length > 1" class="tw-flex tw-items-center tw-gap-2">
-			<p class="tw-font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</p>
+			<p class="tw-font-bold">
+				{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}
+			</p>
 			<select class="tw-w-full" v-model="group">
-				<option value="OR">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_OR') }}</option>
-				<option value="AND">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_AND') }}</option>
+				<option value="OR">
+					{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_OR') }}
+				</option>
+				<option value="AND">
+					{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_GROUP_AND') }}
+				</option>
 			</select>
 		</div>
 

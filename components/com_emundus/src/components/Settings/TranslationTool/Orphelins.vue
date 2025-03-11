@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<h3 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}</h3>
+		<h3 class="tw-mb-2">
+			{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_ORPHELINS') }}
+		</h3>
 		<p class="em-h-25 tw-mb-6 tw-text-base tw-text-neutral-700" v-if="!saving && last_save == null">
 			{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}
 		</p>
@@ -48,7 +50,9 @@
 
 		<div class="col-md-12">
 			<div v-if="lang === '' || lang == null || translations.length === 0" class="text-center tw-mt-20">
-				<h5 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TITLE') }}</h5>
+				<h5 class="tw-mb-2">
+					{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TITLE') }}
+				</h5>
 				<p class="em-text-neutral-600 tw-text-base" v-if="lang === '' || lang == null">
 					{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_ORPHELINS_TEXT') }}
 				</p>

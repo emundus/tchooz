@@ -109,7 +109,10 @@ export default {
 
 	async getSEFLink(link, language = 'fr-FR') {
 		try {
-			return await fetchClient.post('redirectjroute', { link: link, redirect_language: language });
+			return await fetchClient.post('redirectjroute', {
+				link: link,
+				redirect_language: language,
+			});
 		} catch (e) {
 			return false;
 		}
@@ -327,7 +330,10 @@ export default {
 
 	async updateHistoryStatus(id, status) {
 		try {
-			return await fetchClient.post('updatehistorystatus', { id: id, status: status });
+			return await fetchClient.post('updatehistorystatus', {
+				id: id,
+				status: status,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -363,7 +369,10 @@ export default {
 
 	async getApp(app_id = 0, app_type = '') {
 		try {
-			return await fetchClient.get('getapp', { app_id: app_id, app_type: app_type });
+			return await fetchClient.get('getapp', {
+				app_id: app_id,
+				app_type: app_type,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -374,7 +383,10 @@ export default {
 
 	async setupApp(app_id, setup) {
 		try {
-			return await fetchClient.post('setupapp', { app_id: app_id, setup: JSON.stringify(setup) });
+			return await fetchClient.post('setupapp', {
+				app_id: app_id,
+				setup: JSON.stringify(setup),
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -385,7 +397,10 @@ export default {
 
 	async toggleAppEnabled(app_id, enabled) {
 		try {
-			return await fetchClient.post('disableapp', { app_id: app_id, enabled: enabled });
+			return await fetchClient.post('disableapp', {
+				app_id: app_id,
+				enabled: enabled,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -407,7 +422,10 @@ export default {
 
 	async toggleAddonEnabled(addon_type, enabled) {
 		try {
-			return await fetchClient.post('toggleaddon', { addon_type: addon_type, enabled: enabled });
+			return await fetchClient.post('toggleaddon', {
+				addon_type: addon_type,
+				enabled: enabled,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -418,7 +436,9 @@ export default {
 
 	async setupMessenger(setup) {
 		try {
-			return await fetchClient.post('setupmessenger', { setup: JSON.stringify(setup) });
+			return await fetchClient.post('setupmessenger', {
+				setup: JSON.stringify(setup),
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -429,7 +449,9 @@ export default {
 
 	async historyRetryEvent(actionLogId) {
 		try {
-			return await fetchClient.post('historyretryevent', { action_log_row_id: actionLogId });
+			return await fetchClient.post('historyretryevent', {
+				action_log_row_id: actionLogId,
+			});
 		} catch (e) {
 			return {
 				status: false,

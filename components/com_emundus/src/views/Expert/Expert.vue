@@ -191,8 +191,12 @@ export default {
 				<label>{{ translate('COM_EMUNDUS_EXPERT_MAIL_TEMPLATES') }}</label>
 				<div class="tw-flex tw-items-center">
 					<select v-model="form.emailId" class="tw-w-full" ref="expert_emailId">
-						<option value="-1">{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}</option>
-						<option v-for="(email, index) in emails" :key="index" :value="email.id">{{ email.subject }}</option>
+						<option value="-1">
+							{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}
+						</option>
+						<option v-for="(email, index) in emails" :key="index" :value="email.id">
+							{{ email.subject }}
+						</option>
 					</select>
 				</div>
 			</div>

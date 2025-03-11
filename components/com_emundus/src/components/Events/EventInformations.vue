@@ -51,9 +51,15 @@ export default {
 		},
 		eventHours() {
 			return (
-				this.eventStartDate.toLocaleTimeString(this.actualLanguage, { hour: '2-digit', minute: '2-digit' }) +
+				this.eventStartDate.toLocaleTimeString(this.actualLanguage, {
+					hour: '2-digit',
+					minute: '2-digit',
+				}) +
 				' - ' +
-				this.eventEndDate.toLocaleTimeString(this.actualLanguage, { hour: '2-digit', minute: '2-digit' })
+				this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+					hour: '2-digit',
+					minute: '2-digit',
+				})
 			);
 		},
 		brightnessColor() {
@@ -110,7 +116,10 @@ export default {
 	</div>
 	<div class="tw-flex tw-items-center tw-gap-2">
 		<span class="material-symbols-outlined tw-text-neutral-900">groups</span>
-		<p class="">{{ calendarEvent.booked_count }} / {{ calendarEvent.availabilities_count }}</p>
+		<p class="">
+			{{ calendarEvent.booked_count }} /
+			{{ calendarEvent.availabilities_count }}
+		</p>
 		<p class="tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap">
 			{{ translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER') }}
 		</p>

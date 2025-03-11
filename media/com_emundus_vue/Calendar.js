@@ -54,7 +54,13 @@ const _sfc_main$2 = {
       });
     },
     eventHours() {
-      return this.eventStartDate.toLocaleTimeString(this.actualLanguage, { hour: "2-digit", minute: "2-digit" }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, { hour: "2-digit", minute: "2-digit" });
+      return this.eventStartDate.toLocaleTimeString(this.actualLanguage, {
+        hour: "2-digit",
+        minute: "2-digit"
+      }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     },
     brightnessColor() {
       return this.lightenColor(this.calendarEvent.color, 90);
@@ -128,7 +134,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 64);
 }
-const EventInformations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-0a0a5b69"]]);
+const EventInformations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-8e53e84d"]]);
 const _sfc_main$1 = {
   name: "EventModal",
   components: { EventInformations },
@@ -180,8 +186,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_EventInformations = resolveComponent("EventInformations");
   return $props.view == "week" ? (openBlock(), createElementBlock("div", {
     key: 0,
-    class: normalizeClass(["card-event tw-flex tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-px-6 tw-py-4 tw-shadow", { "card-event-left": $data.popupPosition === "left", "card-event-right": $data.popupPosition === "right" }]),
-    style: normalizeStyle({ borderColor: $props.calendarEvent.color, "--event-arrow-color": $props.calendarEvent.color })
+    class: normalizeClass(["card-event tw-flex tw-flex-col tw-gap-2 tw-rounded-lg tw-border-neutral-400 tw-px-6 tw-py-4 tw-shadow", {
+      "card-event-left": $data.popupPosition === "left",
+      "card-event-right": $data.popupPosition === "right"
+    }]),
+    style: normalizeStyle({
+      borderColor: $props.calendarEvent.color,
+      "--event-arrow-color": $props.calendarEvent.color
+    })
   }, [
     createVNode(_component_EventInformations, { "calendar-event": $props.calendarEvent }, null, 8, ["calendar-event"]),
     createBaseVNode("div", _hoisted_1$1, [
@@ -192,7 +204,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 6)) : createCommentVNode("", true);
 }
-const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-902b9063"]]);
+const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-df7e6317"]]);
 var PluginName;
 (function(PluginName2) {
   PluginName2["DragAndDrop"] = "dragAndDrop";
@@ -510,7 +522,14 @@ const createCalendarConfig = (vm) => ({
 });
 const _sfc_main = {
   name: "Calendar",
-  components: { Modal, EventInformations, EventDay, EventModal: EventModal$1, ScheduleXCalendar: _o, EditSlot },
+  components: {
+    Modal,
+    EventInformations,
+    EventDay,
+    EventModal: EventModal$1,
+    ScheduleXCalendar: _o,
+    EditSlot
+  },
   props: {
     items: {
       type: Object,
@@ -880,7 +899,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ], 2)) : createCommentVNode("", true);
 }
-const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2156cce0"]]);
+const Calendar = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-ac25df4a"]]);
 export {
   Calendar as default
 };

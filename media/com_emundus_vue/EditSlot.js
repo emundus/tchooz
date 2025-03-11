@@ -9,7 +9,14 @@ import "./index.js";
 import "./LocationForm.js";
 const _sfc_main = {
   name: "EditSlot",
-  components: { EventBooking, LocationPopup, ColorPicker, Parameter, Info, Modal },
+  components: {
+    EventBooking,
+    LocationPopup,
+    ColorPicker,
+    Parameter,
+    Info,
+    Modal
+  },
   props: {
     slot: Object
   },
@@ -329,7 +336,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               (_b = _ctx.fields.find((f) => f.param === "user")) == null ? void 0 : _b.value,
               field.param
             ],
-            componentsProps: { event_id: (_c = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _c.value, slot_id: $options.bookingSlot },
+            componentsProps: {
+              event_id: (_c = _ctx.fields.find((f) => f.param === "event_id")) == null ? void 0 : _c.value,
+              slot_id: $options.bookingSlot
+            },
             onValueUpdated: $options.updateBookingElement
           }, null, 8, ["parameter-object", "multiselect-options", "asyncAttributes", "componentsProps", "onValueUpdated"])) : field.displayed ? (openBlock(), createBlock(_component_Parameter, {
             ref_for: true,

@@ -23,7 +23,11 @@
 			<draggable
 				v-model="publishedElements"
 				class="draggables-list"
-				:group="{ name: 'form-builder-section-elements', pull: 'clone', put: false }"
+				:group="{
+					name: 'form-builder-section-elements',
+					pull: 'clone',
+					put: false,
+				}"
 				:sort="false"
 				:clone="setCloneElement"
 				@end="onDragEnd"
@@ -66,7 +70,9 @@
 			<div v-for="group in publishedGroups" :key="group.id" class="draggables-list" @click="addGroup(group)">
 				<div class="form-builder-element tw-flex tw-cursor-pointer tw-items-center tw-justify-between tw-gap-3 tw-p-3">
 					<span class="material-symbols-outlined">{{ group.icon }}</span>
-					<p class="tw-flex tw-w-full tw-flex-col">{{ translate(group.name) }}</p>
+					<p class="tw-flex tw-w-full tw-flex-col">
+						{{ translate(group.name) }}
+					</p>
 					<span class="material-symbols-outlined">add_circle_outline</span>
 				</div>
 			</div>

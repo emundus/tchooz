@@ -20,7 +20,9 @@
 					v-model="element.params[param.name]"
 					class="tw-w-full"
 				>
-					<option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
+					<option v-for="option in param.options" :value="option.value">
+						{{ translate(option.label) }}
+					</option>
 				</select>
 
 				<multiselect

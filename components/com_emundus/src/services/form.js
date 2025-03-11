@@ -67,7 +67,9 @@ export default {
 	},
 	async getFormByFabrikId(id) {
 		try {
-			const response = await client().get(baseUrl + '&task=getFormByFabrikId', { params: { form_id: id } });
+			const response = await client().get(baseUrl + '&task=getFormByFabrikId', {
+				params: { form_id: id },
+			});
 			return response;
 		} catch (error) {
 			return {
@@ -110,7 +112,9 @@ export default {
 	async getDocuments(id) {
 		if (id > 0) {
 			try {
-				const response = await client().get(baseUrl + '&task=getDocuments', { params: { pid: id } });
+				const response = await client().get(baseUrl + '&task=getDocuments', {
+					params: { pid: id },
+				});
 
 				return response.data;
 			} catch (error) {

@@ -263,7 +263,10 @@ const _sfc_main = {
           user_id_to: null,
           folder_id: 2,
           date_time: this.formatedTimestamp(),
-          date_hour: (/* @__PURE__ */ new Date()).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          date_hour: (/* @__PURE__ */ new Date()).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          }),
           state: 0,
           priority: 0,
           subject: 0,
@@ -738,14 +741,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }), 128))
             ], 6),
             createBaseVNode("div", {
-              class: normalizeClass(["tw-bottom-3 tw-mr-3 tw-w-full tw-px-3", { "tw-sticky": $props.applicant == false, "tw-absolute": $props.applicant == true }])
+              class: normalizeClass(["tw-bottom-3 tw-mr-3 tw-w-full tw-px-3", {
+                "tw-sticky": $props.applicant == false,
+                "tw-absolute": $props.applicant == true
+              }])
             }, [
               $data.currentChatroom.status == 1 ? (openBlock(), createElementBlock("div", _hoisted_41, [
                 createBaseVNode("div", _hoisted_42, [
                   withDirectives(createBaseVNode("textarea", {
                     type: "text",
                     id: "messenger_message",
-                    class: normalizeClass(["!tw-h-auto tw-resize-none tw-p-2", { "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }]),
+                    class: normalizeClass(["!tw-h-auto tw-resize-none tw-p-2", {
+                      "tw-rounded-applicant": $props.applicant == true,
+                      "tw-rounded-coordinator": $props.applicant == false
+                    }]),
                     rows: "2",
                     disabled: $data.send_progress,
                     spellcheck: "true",
@@ -769,7 +778,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CLOSE_CHATROOM")), 1)) : createCommentVNode("", true),
               $data.currentChatroom.status == 0 ? (openBlock(), createElementBlock("div", {
                 key: 2,
-                class: normalizeClass(["tw-flex tw-items-center tw-gap-1 tw-bg-white tw-p-2", { "tw-rounded-applicant": $props.applicant == true, "tw-rounded-coordinator": $props.applicant == false }])
+                class: normalizeClass(["tw-flex tw-items-center tw-gap-1 tw-bg-white tw-p-2", {
+                  "tw-rounded-applicant": $props.applicant == true,
+                  "tw-rounded-coordinator": $props.applicant == false
+                }])
               }, [
                 createBaseVNode("p", null, toDisplayString(_ctx.translate("COM_EMUNDUS_MESSENGER_CHATROOM_CLOSED")), 1),
                 createBaseVNode("button", {

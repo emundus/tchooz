@@ -35,8 +35,12 @@
 					>
 						<option value="1">{{ translate('VALID') }}</option>
 						<option value="0">{{ translate('INVALID') }}</option>
-						<option value="2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}</option>
-						<option value="-2">{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}</option>
+						<option value="2">
+							{{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}
+						</option>
+						<option value="-2">
+							{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}
+						</option>
 					</select>
 				</div>
 				<div class="input-group" v-if="canUpdate || (is_applicant == 1 && attachmentIsValidated == 0)">

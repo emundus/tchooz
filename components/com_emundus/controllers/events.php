@@ -105,7 +105,7 @@ class EmundusControllerEvents extends BaseController
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_EVENTS_COUNT_REGISTRANTS'),
-							'value'   => '<a target="_blank" class="em-profile-color hover:tw-font-semibold hover:tw-underline tw-font-semibold" href="/' . $registrants_menu->route . '?event=' . $event->id . '" style="line-height: unset;font-size: unset;">' . $event->registrant_count . ' ' . Text::_('COM_EMUNDUS_EVENTS_BOOKING') . '</a>',
+							'value'   => '<a class="em-profile-color hover:tw-font-semibold hover:tw-underline tw-font-semibold" href="/' . $registrants_menu->route . '?event=' . $event->id . '" style="line-height: unset;font-size: unset;">' . $event->registrant_count . ' ' . Text::_('COM_EMUNDUS_EVENTS_BOOKING') . '</a>',
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table'
 						],
@@ -1107,13 +1107,14 @@ class EmundusControllerEvents extends BaseController
 			$location    = $this->input->getInt('location', 0);
 			$applicant   = $this->input->getInt('applicant', 0);
 			$assoc_users = $this->input->getInt('assoc_users', 0);
+			$day         = $this->input->getString('day', '');
 
 			if ($view !== 'calendar')
 			{
 				require_once JPATH_SITE . '/components/com_emundus/models/users.php';
 				$m_users = new EmundusModelUsers();
 
-				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_users);
+				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_users,0,[],$this->user->id,$day);
 				if (!empty($registrants) && $registrants['count'] > 0)
 				{
 					foreach ($registrants['datas'] as $registrant)

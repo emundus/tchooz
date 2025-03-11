@@ -1,6 +1,8 @@
 <template>
 	<div class="tw-relative">
-		<h2 v-if="displayTitle" class="tw-mb-6">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY') }}</h2>
+		<h2 v-if="displayTitle" class="tw-mb-6">
+			{{ translate('COM_EMUNDUS_GLOBAL_HISTORY') }}
+		</h2>
 
 		<Pagination
 			v-if="history.length > 0"
@@ -14,14 +16,30 @@
 			<table v-if="history.length > 0">
 				<thead>
 					<tr>
-						<th v-if="columns.includes('itemId')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID') }}</th>
-						<th v-if="columns.includes('title')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES') }}</th>
-						<th v-if="columns.includes('message_language_key')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_TYPE') }}</th>
-						<th v-if="columns.includes('log_date')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}</th>
-						<th v-if="columns.includes('user_id')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}</th>
-						<th v-if="columns.includes('status')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}</th>
-						<th v-if="columns.includes('diff')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}</th>
-						<th v-if="columns.includes('retry')">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_RETRY') }}</th>
+						<th v-if="columns.includes('itemId')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_ITEM_ID') }}
+						</th>
+						<th v-if="columns.includes('title')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_UPDATES') }}
+						</th>
+						<th v-if="columns.includes('message_language_key')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_TYPE') }}
+						</th>
+						<th v-if="columns.includes('log_date')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_LOG_DATE') }}
+						</th>
+						<th v-if="columns.includes('user_id')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}
+						</th>
+						<th v-if="columns.includes('status')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}
+						</th>
+						<th v-if="columns.includes('diff')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF') }}
+						</th>
+						<th v-if="columns.includes('retry')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_RETRY') }}
+						</th>
 						<th v-for="column in moreData" :key="column">{{ column }}</th>
 					</tr>
 				</thead>
@@ -134,7 +152,9 @@
 							<span v-else class="tw-block tw-w-full tw-text-center"> - </span>
 						</td>
 
-						<td v-for="column in moreData" :key="column">{{ data.message[column] }}</td>
+						<td v-for="column in moreData" :key="column">
+							{{ data.message[column] }}
+						</td>
 
 						<modal
 							v-if="errorModalToOpen === data.id"
@@ -196,7 +216,9 @@
 							>
 								<thead>
 									<tr>
-										<th>{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }}</th>
+										<th>
+											{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_COLUMN') }}
+										</th>
 										<th
 											v-if="
 												(!Array.isArray(data.message.old_data) && data.message.old_data) ||
@@ -205,7 +227,9 @@
 										>
 											{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_OLD_DATA') }}
 										</th>
-										<th v-if="data.message.new_data">{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA') }}</th>
+										<th v-if="data.message.new_data">
+											{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_DIFF_NEW_DATA') }}
+										</th>
 									</tr>
 								</thead>
 								<tbody>

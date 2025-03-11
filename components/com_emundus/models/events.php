@@ -2687,7 +2687,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 		int        $assoc_user = 0,
 		int        $slot = 0,
 		array      $ids = [],
-		int        $user_id = 0
+		int        $user_id = 0,
+		?string     $day = '',
 	): array
 	{
 		$registrants = ['datas' => [], 'count' => 0];
@@ -2782,9 +2783,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 				{
 					$query->where('er.id IN (' . implode(',', $ids) . ')');
 				}
+				if (!empty($day))
+				{
+					$query->where('DATE(esa.start_date) = ' . $this->db->quote($day));
+				}
 
 				$query->group('er.id');
-
+				
 				$this->_db->setQuery($query);
 				$registrants['count'] = $this->_db->loadResult();
 

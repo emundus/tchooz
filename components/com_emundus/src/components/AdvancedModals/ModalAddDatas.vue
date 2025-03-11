@@ -55,7 +55,9 @@
 							/>
 							<button
 								class="translate-icon"
-								:class="{ 'translate-icon-selected': form.db_values[i].translate }"
+								:class="{
+									'translate-icon-selected': form.db_values[i].translate,
+								}"
 								v-if="manyLanguages !== '0'"
 								type="button"
 								:title="translate('COM_EMUNDUS_ONBOARD_TRANSLATE_ENGLISH')"
@@ -119,7 +121,11 @@ export default {
 		// Triggers to add and delete values
 		add: _.debounce(function () {
 			let size = Object.keys(this.form.db_values).length;
-			this.$set(this.form.db_values, size, { fr: '', en: '', translate: false });
+			this.$set(this.form.db_values, size, {
+				fr: '',
+				en: '',
+				translate: false,
+			});
 			let id = 'values_fr_' + size.toString();
 			setTimeout(() => {
 				document.getElementById(id).focus();

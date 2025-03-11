@@ -11,7 +11,9 @@
 		</div>
 
 		<div class="tw-flex">
-			<p class="tw-mr-2 tw-mt-3 tw-font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}</p>
+			<p class="tw-mr-2 tw-mt-3 tw-font-bold">
+				{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_IF') }}
+			</p>
 
 			<div class="tw-ml-2 tw-flex tw-w-full tw-flex-col">
 				<div class="tw-flex tw-items-center">
@@ -41,7 +43,9 @@
 							:key="operator.id"
 							class="tw-ml-1 tw-cursor-pointer tw-rounded-lg tw-border tw-border-neutral-500 tw-p-2"
 							@click="conditionData.state = operator.value"
-							:class="{ 'label-darkblue': conditionData.state == operator.value }"
+							:class="{
+								'label-darkblue': conditionData.state == operator.value,
+							}"
 						>
 							{{ translate(operator.label) }}
 						</span>
@@ -119,8 +123,16 @@ export default {
 		return {
 			loading: false,
 			operators: [
-				{ id: 1, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS', value: '=' },
-				{ id: 2, label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS', value: '!=' },
+				{
+					id: 1,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS',
+					value: '=',
+				},
+				{
+					id: 2,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS',
+					value: '!=',
+				},
 			],
 			options: [],
 			options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
@@ -226,8 +238,14 @@ export default {
 
 			if (val.plugin == 'yesno') {
 				this.options = [
-					{ primary_key: 0, value: this.translate('COM_EMUNDUS_FORMBUILDER_NO') },
-					{ primary_key: 1, value: this.translate('COM_EMUNDUS_FORMBUILDER_YES') },
+					{
+						primary_key: 0,
+						value: this.translate('COM_EMUNDUS_FORMBUILDER_NO'),
+					},
+					{
+						primary_key: 1,
+						value: this.translate('COM_EMUNDUS_FORMBUILDER_YES'),
+					},
 				];
 
 				if (this.conditionData.values) {

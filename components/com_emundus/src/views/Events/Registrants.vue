@@ -104,6 +104,11 @@ export default {
 									key: 'assoc_user',
 									values: null,
 								},
+								{
+									label: 'COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_DAY_LABEL',
+									type: 'date',
+									key: 'day',
+								},
 							],
 							exports: [
 								{

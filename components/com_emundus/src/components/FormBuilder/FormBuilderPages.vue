@@ -65,7 +65,9 @@
 				:class="{ selected: page.id == selected }"
 			>
 				<div class="tw-flex tw-items-center tw-justify-between">
-					<p @click="selectPage(page.id)" class="tw-w-full tw-p-4">{{ page.label }}</p>
+					<p @click="selectPage(page.id)" class="tw-w-full tw-p-4">
+						{{ page.label }}
+					</p>
 				</div>
 			</div>
 		</transition-group>

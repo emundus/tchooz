@@ -12,7 +12,9 @@
 							>
 						</div>
 						<div class="section-content tw-w-full">
-							<p class="tw-w-full tw-text-end tw-text-xxs">{{ group.label.replace('Model - ', '') }}</p>
+							<p class="tw-w-full tw-text-end tw-text-xxs">
+								{{ group.label.replace('Model - ', '') }}
+							</p>
 						</div>
 					</div>
 				</section>

@@ -45,7 +45,9 @@
 					<div id="web_security_resume">
 						<Info :text="resume" />
 						<br />
-						<p>{{ translate('COM_EMUNDUS_GLOBAL_WEB_SECURITY_CONFIRMATION_TEXT') }}</p>
+						<p>
+							{{ translate('COM_EMUNDUS_GLOBAL_WEB_SECURITY_CONFIRMATION_TEXT') }}
+						</p>
 					</div>
 				</template>
 

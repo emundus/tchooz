@@ -198,7 +198,10 @@ export default {
 	},
 	async updateProfile(profileId, campaignId) {
 		try {
-			return await client.post('updateprofile', { profile: profileId, campaign: campaignId });
+			return await client.post('updateprofile', {
+				profile: profileId,
+				campaign: campaignId,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -208,7 +211,10 @@ export default {
 	},
 	async editDropfileDocument(documentId, newName) {
 		try {
-			return await client.post('editdocumentdropfile', { did: documentId, name: newName });
+			return await client.post('editdocumentdropfile', {
+				did: documentId,
+				name: newName,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -218,7 +224,9 @@ export default {
 	},
 	async reorderDropfileDocuments(orderedDocuments) {
 		try {
-			return await client.post('updateorderdropfiledocuments', { documents: JSON.stringify(orderedDocuments) });
+			return await client.post('updateorderdropfiledocuments', {
+				documents: JSON.stringify(orderedDocuments),
+			});
 		} catch (e) {
 			return {
 				status: false,

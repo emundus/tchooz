@@ -125,7 +125,14 @@ import Messages from './Messenger/Messages.vue';
 
 export default {
 	name: 'ApplicationSingle',
-	components: { Messages, EvaluationList, Comments, Attachments, Modal, Evaluations },
+	components: {
+		Messages,
+		EvaluationList,
+		Comments,
+		Attachments,
+		Modal,
+		Evaluations,
+	},
 	props: {
 		file: Object | String,
 		type: String,

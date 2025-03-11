@@ -39,7 +39,9 @@
 							>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
 						</p>
 						<ul v-if="campaignsByProgram.length > 0" class="em-pl-16 tw-mb-8 tw-mt-2">
-							<li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
+							<li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">
+								{{ campaign.label }}
+							</li>
 						</ul>
 					</div>
 

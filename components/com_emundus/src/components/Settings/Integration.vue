@@ -64,7 +64,9 @@ export default {
 					</div>
 				</div>
 				<h4 class="tw-mt-2">{{ app.name }}</h4>
-				<p class="tw-text-medium tw-text-sm tw-text-neutral-800">{{ app.description }}</p>
+				<p class="tw-text-medium tw-text-sm tw-text-neutral-800">
+					{{ app.description }}
+				</p>
 
 				<div v-if="app.enabled === 0 && app.config === '{}'">
 					<button class="tw-btn-tertiary tw-w-full" @click="currentApp = app">

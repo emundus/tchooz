@@ -1,14 +1,20 @@
 <template>
 	<div id="form-builder-create-document">
 		<div class="tw-flex tw-items-center tw-justify-between tw-p-4">
-			<p class="tw-font-medium">{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES') }}</p>
+			<p class="tw-font-medium">
+				{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PROPERTIES') }}
+			</p>
 			<span class="material-symbols-outlined tw-cursor-pointer" @click="$emit('close')">close</span>
 		</div>
 		<ul id="properties-tabs" class="tw-flex tw-w-11/12 tw-items-center tw-justify-between tw-p-4">
 			<li
 				v-for="tab in activeTabs"
 				:key="tab.id"
-				:class="{ 'is-active': tab.active, 'tw-w-2/4': activeTabs.length == 2, 'tw-w-full': activeTabs.length == 1 }"
+				:class="{
+					'is-active': tab.active,
+					'tw-w-2/4': activeTabs.length == 2,
+					'tw-w-full': activeTabs.length == 1,
+				}"
 				class="tw-cursor-pointer tw-p-4"
 				@click="selectTab(tab)"
 			>
@@ -153,7 +159,9 @@
 						</div>
 					</div>
 					<div v-if="hasSample && currentSample" id="current-sample" class="tw-mb-4">
-						<p>{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}</p>
+						<p>
+							{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_CURRENT_MODEL') }}
+						</p>
 						<a :href="currentSample" target="_blank">{{
 							translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_DOWNLOAD_SAMPLE')
 						}}</a>
@@ -176,7 +184,8 @@
 					</div>
 					<div v-if="newSample !== ''">
 						<p class="tw-text-neutral-700">
-							{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED') }} : {{ this.newSample.name }}
+							{{ translate('COM_EMUNDUS_FORMBUILDER_DOCUMENTS_MODEL_FILE_UPLOADED') }}
+							: {{ this.newSample.name }}
 						</p>
 					</div>
 				</div>

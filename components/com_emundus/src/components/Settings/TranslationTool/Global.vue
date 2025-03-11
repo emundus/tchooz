@@ -1,9 +1,13 @@
 <template>
 	<div v-if="defaultLang">
-		<h2 class="tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}</h2>
+		<h2 class="tw-mb-2">
+			{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_GLOBAL') }}
+		</h2>
 		<div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
 			<div>
-				<p class="em-body-16-semibold tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}</p>
+				<p class="em-body-16-semibold tw-mb-2">
+					{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT') }}
+				</p>
 				<p class="tw-text-base tw-text-neutral-700">
 					{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_DEFAULT_DESC') }}
 				</p>
@@ -30,7 +34,9 @@
 
 		<div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
 			<div>
-				<p class="em-body-16-semibold tw-mb-2">{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}</p>
+				<p class="em-body-16-semibold tw-mb-2">
+					{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY') }}
+				</p>
 				<p class="tw-text-base tw-text-neutral-700">
 					{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_SECONDARY_DESC') }}
 				</p>

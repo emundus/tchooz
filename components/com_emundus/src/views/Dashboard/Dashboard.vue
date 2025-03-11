@@ -30,7 +30,9 @@
 			<div v-if="programmeFilter == 1" class="tw-mb-3 tw-flex tw-flex-col">
 				<label>{{ translate('COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES') }}</label>
 				<select v-model="selectedProgramme" class="form-control fabrikinput tw-w-full">
-					<option value="" selected>{{ translate('COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES') }}</option>
+					<option value="" selected>
+						{{ translate('COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES') }}
+					</option>
 					<option v-for="programme in programmes" v-bind:key="programme.id" :value="programme.code">
 						{{ programme.label['fr'] }}
 					</option>

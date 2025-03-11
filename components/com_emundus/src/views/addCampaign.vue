@@ -13,7 +13,9 @@
 				<h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_CAMPAIGN') }}</h1>
 				<div class="tw-mt-2">
 					<p>{{ translate('COM_EMUNDUS_GLOBAL_INFORMATIONS_DESC') }}</p>
-					<p class="tw-mt-1 tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
+					<p class="tw-mt-1 tw-text-red-600">
+						{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}
+					</p>
 				</div>
 			</div>
 
@@ -44,7 +46,8 @@
 
 					<div>
 						<label for="alias" class="tw-font-medium">
-							{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }} <span class="tw-text-red-600">*</span>
+							{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_ALIAS') }}
+							<span class="tw-text-red-600">*</span>
 						</label>
 						<div>
 							<span class="tw-text-base tw-text-neutral-600">
@@ -98,7 +101,9 @@
 										:value="inputValue"
 										v-on="inputEvents"
 										class="form-control fabrikinput tw-mt-1 tw-w-full"
-										:class="{ 'is-invalid !tw-border-red-600': errors.start_date }"
+										:class="{
+											'is-invalid !tw-border-red-600': errors.start_date,
+										}"
 										id="start_date_input"
 									/>
 									<div v-if="errors.start_date" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
@@ -131,7 +136,9 @@
 											:value="inputValue"
 											v-on="inputEvents"
 											class="form-control fabrikinput tw-mt-1 tw-w-full"
-											:class="{ 'is-invalid !tw-border-red-600': errors.end_date }"
+											:class="{
+												'is-invalid !tw-border-red-600': errors.end_date,
+											}"
 											id="end_date_input"
 										/>
 										<div v-if="errors.end_date" class="tw-absolute tw-mb-1 tw-mt-1 tw-text-red-600">
@@ -303,7 +310,9 @@
 								v-on:change="setCategory"
 								:disabled="this.programs.length <= 0"
 							>
-								<option value="">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}</option>
+								<option value="">
+									{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_CHOOSEPROG') }}
+								</option>
 								<option
 									v-for="(item, index) in programs"
 									v-bind:value="item.code"
@@ -348,7 +357,9 @@
 										class="form-control fabrikinput tw-mt-1 tw-w-full"
 										placeholder=" "
 										v-model="programForm.label"
-										:class="{ 'is-invalid !tw-border-red-600': errors.progLabel }"
+										:class="{
+											'is-invalid !tw-border-red-600': errors.progLabel,
+										}"
 									/>
 								</div>
 								<div v-if="errors.progLabel" class="tw-mb-1 tw-mt-1 tw-text-red-600">
@@ -372,7 +383,9 @@
 
 						<div class="tw-mb-1 tw-mt-1 tw-flex tw-items-center">
 							<select class="tw-w-full" v-model="form.profile_id">
-								<option value="0">{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}</option>
+								<option value="0">
+									{{ translate('COM_EMUNDUS_ONBOARD_CHOOSE_FORM') }}
+								</option>
 								<option v-for="applicantForm in applicantForms" :key="applicantForm.id" :value="applicantForm.id">
 									{{ applicantForm.label }}
 								</option>

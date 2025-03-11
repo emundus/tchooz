@@ -15,7 +15,13 @@ import EventEmailSettings from '@/components/Events/EventEmailSettings.vue';
 
 export default {
 	name: 'EventForm',
-	components: { EventEmailSettings, EventCalendarSettings, EventSlotsSettings, EventGlobalSettings, Tabs },
+	components: {
+		EventEmailSettings,
+		EventCalendarSettings,
+		EventSlotsSettings,
+		EventGlobalSettings,
+		Tabs,
+	},
 	props: {},
 	data: () => ({
 		loading: true,

@@ -88,8 +88,16 @@ export default {
 			loading: false,
 
 			group_types: [
-				{ id: 1, label: 'COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_OR', value: 'OR' },
-				{ id: 2, label: 'COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_AND', value: 'AND' },
+				{
+					id: 1,
+					label: 'COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_OR',
+					value: 'OR',
+				},
+				{
+					id: 2,
+					label: 'COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_AND',
+					value: 'AND',
+				},
 			],
 
 			conditions_group: 'OR',

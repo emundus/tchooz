@@ -117,7 +117,9 @@ const _sfc_main$1 = {
       messengerServices.goToFile(fnum).then((response) => {
         if (response.status) {
           window.location.href = response.route;
-          let event = new CustomEvent("messengerOpenFile", { detail: { fnum } });
+          let event = new CustomEvent("messengerOpenFile", {
+            detail: { fnum }
+          });
           document.dispatchEvent(event);
         }
       });

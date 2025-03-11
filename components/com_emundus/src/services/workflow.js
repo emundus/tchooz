@@ -64,7 +64,10 @@ export default {
 	},
 	async updateStepState(stepId, state) {
 		if (stepId > 0) {
-			return await client.post('updatestepstate', { step_id: stepId, state: state });
+			return await client.post('updatestepstate', {
+				step_id: stepId,
+				state: state,
+			});
 		} else {
 			return {
 				status: false,
@@ -84,7 +87,9 @@ export default {
 	},
 	async saveTypes(types) {
 		try {
-			return await client.post('savesteptypes', { types: JSON.stringify(types) });
+			return await client.post('savesteptypes', {
+				types: JSON.stringify(types),
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -104,7 +109,10 @@ export default {
 	},
 	async saveCampaignSteps(campaignId, steps) {
 		try {
-			return await client.post('savecampaignstepsdates', { campaign_id: campaignId, steps: JSON.stringify(steps) });
+			return await client.post('savecampaignstepsdates', {
+				campaign_id: campaignId,
+				steps: JSON.stringify(steps),
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -114,7 +122,9 @@ export default {
 	},
 	async getWorkflowsByProgramId(programId) {
 		try {
-			return await client.get('getworkflowsbyprogramid', { program_id: programId });
+			return await client.get('getworkflowsbyprogramid', {
+				program_id: programId,
+			});
 		} catch (e) {
 			return {
 				status: false,

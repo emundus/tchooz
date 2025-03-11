@@ -5,15 +5,21 @@
 		<div class="tw-flex tw-flex-col tw-gap-1" v-if="categories.length > 0">
 			<label class="tw-font-medium">{{ translate('COM_EMUNDUS_SMS_TEMPLATE_CATEGORY') }}</label>
 			<select v-model="selectedCategory">
-				<option value="0">{{ translate('COM_EMUNDUS_SMS_TEMPLATE_CATEGORY_PLACEHOLDER') }}</option>
-				<option v-for="category in categories" :key="category.id" :value="category.id">{{ category.label }}</option>
+				<option value="0">
+					{{ translate('COM_EMUNDUS_SMS_TEMPLATE_CATEGORY_PLACEHOLDER') }}
+				</option>
+				<option v-for="category in categories" :key="category.id" :value="category.id">
+					{{ category.label }}
+				</option>
 			</select>
 		</div>
 
 		<div class="tw-flex tw-flex-col tw-gap-1" v-if="templates.length > 0">
 			<label class="tw-font-medium">{{ translate('COM_EMUNDUS_SMS_TEMPLATE') }}</label>
 			<select v-model="selectedTemplate">
-				<option value="0">{{ translate('COM_EMUNDUS_SMS_TEMPLATE_PLACEHOLDER') }}</option>
+				<option value="0">
+					{{ translate('COM_EMUNDUS_SMS_TEMPLATE_PLACEHOLDER') }}
+				</option>
 				<option v-for="template in displayedTemplates" :key="template.id" :value="template.id">
 					{{ template.label[useGlobalStore().getShortLang] }}
 				</option>

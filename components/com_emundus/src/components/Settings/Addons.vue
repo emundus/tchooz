@@ -62,7 +62,9 @@ export default {
 					</div>
 				</div>
 				<h4 class="tw-mt-2">{{ translate(addon.name) }}</h4>
-				<p class="tw-text-medium tw-text-sm tw-text-neutral-800">{{ translate(addon.description) }}</p>
+				<p class="tw-text-medium tw-text-sm tw-text-neutral-800">
+					{{ translate(addon.description) }}
+				</p>
 
 				<div>
 					<button class="tw-btn-tertiary tw-w-full" @click="currentAddon = addon">

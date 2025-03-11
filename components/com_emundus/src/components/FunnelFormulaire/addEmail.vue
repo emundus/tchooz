@@ -74,7 +74,9 @@
 
 		<div id="manager-action">
 			<div class="tw-flex tw-items-center">
-				<h4 class="tw-mt-4">{{ translate('COM_EMUNDUS_ONBOARD_MANAGER_ACTION') }}</h4>
+				<h4 class="tw-mt-4">
+					{{ translate('COM_EMUNDUS_ONBOARD_MANAGER_ACTION') }}
+				</h4>
 			</div>
 			<p>{{ translate('COM_EMUNDUS_ONBOARD_MANUAL_DESCRIPTION') }}</p>
 

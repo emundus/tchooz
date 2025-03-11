@@ -143,7 +143,10 @@ const _sfc_main = {
       return date.toLocaleDateString("fr-FR", { weekday: "long" }).charAt(0).toUpperCase() + date.toLocaleDateString("fr-FR", { weekday: "long" }).slice(1);
     },
     formatShortDate(date) {
-      return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+      return date.toLocaleDateString("fr-FR", {
+        day: "numeric",
+        month: "short"
+      });
     },
     nextDates() {
       if (this.currentStartIndex + 3 < this.availableDates.length) {
@@ -181,7 +184,10 @@ const _sfc_main = {
         return {
           ...slot,
           id,
-          displayTime: new Date(slot.start).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+          displayTime: new Date(slot.start).toLocaleTimeString("fr-FR", {
+            hour: "2-digit",
+            minute: "2-digit"
+          })
         };
       });
     },
@@ -230,7 +236,13 @@ const _sfc_main = {
               month: "long"
             })
           );
-          text = text.replace("{{time}}", start.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" }));
+          text = text.replace(
+            "{{time}}",
+            start.toLocaleTimeString("fr-FR", {
+              hour: "2-digit",
+              minute: "2-digit"
+            })
+          );
           text = text.replace("{{duration}}", minutes);
         }
       }

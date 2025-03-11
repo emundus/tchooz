@@ -49,7 +49,9 @@ export default {
 			messengerServices.goToFile(fnum).then((response) => {
 				if (response.status) {
 					window.location.href = response.route;
-					let event = new CustomEvent('messengerOpenFile', { detail: { fnum: fnum } });
+					let event = new CustomEvent('messengerOpenFile', {
+						detail: { fnum: fnum },
+					});
 					document.dispatchEvent(event);
 				}
 			});

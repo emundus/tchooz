@@ -15,7 +15,9 @@
 						<div class="tw-mt-4">
 							<h1>{{ translate('COM_EMUNDUS_ONBOARD_ADD_EMAIL') }}</h1>
 							<div class="tw-mt-2">
-								<p class="tw-mt-1 tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}</p>
+								<p class="tw-mt-1 tw-text-red-600">
+									{{ translate('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE') }}
+								</p>
 							</div>
 						</div>
 					</div>

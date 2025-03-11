@@ -2,7 +2,8 @@
 	<div id="form-builder-document-list-element" @click="editDocument">
 		<div class="section-card tw-mb-8 tw-mt-8 tw-flex tw-w-full tw-flex-col">
 			<div class="section-identifier tw-cursor-pointer tw-bg-profile-full">
-				{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }} {{ documentIndex }} / {{ totalDocuments }}
+				{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }}
+				{{ documentIndex }} / {{ totalDocuments }}
 			</div>
 			<div class="section-content" :class="{ closed: closedSection }">
 				<div v-if="documentData.id">
@@ -30,8 +31,14 @@
 						</div>
 					</div>
 					<p>{{ documentData.description[shortDefaultLang] }}</p>
-					<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_TYPES') }} : {{ documentData.allowed_types }}</p>
-					<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_MAX_DOCUMENTS') }} : {{ documentData.nbmax }}</p>
+					<p>
+						{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_TYPES') }} :
+						{{ documentData.allowed_types }}
+					</p>
+					<p>
+						{{ translate('COM_EMUNDUS_FORM_BUILDER_MAX_DOCUMENTS') }} :
+						{{ documentData.nbmax }}
+					</p>
 				</div>
 				<div v-else>
 					<span class="section-title">{{ document.label }}</span>

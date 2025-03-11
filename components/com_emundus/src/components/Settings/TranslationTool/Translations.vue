@@ -1,6 +1,8 @@
 <template>
 	<div>
-		<h3 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}</h3>
+		<h3 class="tw-mb-2">
+			{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS') }}
+		</h3>
 		<p class="em-h-25 tw-mb-6 tw-text-base tw-text-neutral-700">
 			{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_TRANSLATIONS_AUTOSAVE') }}
 		</p>
@@ -104,7 +106,9 @@
 					alt="empty-list"
 					style="width: 10vw; height: 10vw; margin: 0 auto"
 				/>
-				<h5 class="tw-mb-2">{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}</h5>
+				<h5 class="tw-mb-2">
+					{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TITLE') }}
+				</h5>
 				<p class="em-text-neutral-600 tw-text-base">
 					{{ this.translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_NO_TRANSLATION_TEXT') }}
 				</p>

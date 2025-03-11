@@ -505,7 +505,9 @@ export default {
 				v-for="field in fields"
 				v-show="field.displayed"
 				:key="field.param"
-				:class="{ 'tw-w-fit': field.param === 'start_date' || field.param === 'end_date' }"
+				:class="{
+					'tw-w-fit': field.param === 'start_date' || field.param === 'end_date',
+				}"
 			>
 				<Parameter
 					:ref="'slot_' + field.param"
@@ -528,7 +530,8 @@ export default {
 								v-if="repeat_dates.length > 0"
 								class="tw-rounded-full tw-bg-profile-full tw-px-2 tw-py-1 tw-text-white"
 							>
-								{{ repeat_dates.length }} {{ translate('COM_EMUNDUS_ONBOARD_ADD_SLOT_REPEAT_SELECTED') }}
+								{{ repeat_dates.length }}
+								{{ translate('COM_EMUNDUS_ONBOARD_ADD_SLOT_REPEAT_SELECTED') }}
 							</span>
 						</button>
 					</div>

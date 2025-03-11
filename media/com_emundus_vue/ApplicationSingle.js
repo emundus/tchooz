@@ -124,7 +124,9 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
             return openBlock(), createElementBlock("li", {
               key: evaluation.id,
-              class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow", { "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id }]),
+              class: normalizeClass(["tw-cursor-pointer tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow", {
+                "em-bg-main-500 em-text-neutral-300": $data.selectedTab === evaluation.id
+              }]),
               onClick: ($event) => $data.selectedTab = evaluation.id
             }, toDisplayString(evaluation.label), 11, _hoisted_5$2);
           }), 128))
@@ -144,7 +146,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-f30c4159"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-1294980b"]]);
 const client = new FetchClient("file");
 const filesService = {
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {
@@ -366,7 +368,14 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-754fc6df"]]);
 const _sfc_main = {
   name: "ApplicationSingle",
-  components: { Messages, EvaluationList, Comments, Attachments, Modal, Evaluations },
+  components: {
+    Messages,
+    EvaluationList,
+    Comments,
+    Attachments,
+    Modal,
+    Evaluations
+  },
   props: {
     file: Object | String,
     type: String,

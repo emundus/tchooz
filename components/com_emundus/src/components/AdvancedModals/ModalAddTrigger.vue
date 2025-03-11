@@ -31,10 +31,16 @@
 						class="tw-w-full"
 						:class="{ 'is-invalid': errors.model }"
 					>
-						<option value="-1">{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}</option>
-						<option v-for="(model, index) in models" :key="index" :value="model.id">{{ model.subject }}</option>
+						<option value="-1">
+							{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}
+						</option>
+						<option v-for="(model, index) in models" :key="index" :value="model.id">
+							{{ model.subject }}
+						</option>
 					</select>
-					<p v-else class="tw-text-red-600">{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}</p>
+					<p v-else class="tw-text-red-600">
+						{{ translate('COM_EMUNDUS_ADD_TRIGGER_MISSING_EMAIL_MODELS') }}
+					</p>
 				</div>
 				<span v-if="errors.model" class="tw-mb-2 tw-text-red-600">
 					<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED') }}</span>
@@ -49,8 +55,12 @@
 					class="tw-w-full"
 					:class="{ 'is-invalid': errors.status }"
 				>
-					<option value="-1">{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}</option>
-					<option v-for="(statu, index) in status" :key="index" :value="statu.step">{{ statu.value }}</option>
+					<option value="-1">
+						{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}
+					</option>
+					<option v-for="(statu, index) in status" :key="index" :value="statu.step">
+						{{ statu.value }}
+					</option>
 				</select>
 				<span v-if="errors.status" class="tw-mb-2 tw-text-red-600">
 					<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED') }}</span>
@@ -65,10 +75,18 @@
 					class="tw-w-full"
 					:class="{ 'is-invalid': errors.target }"
 				>
-					<option value="-1">{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}</option>
-					<option value="5">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS') }}</option>
-					<option value="6">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS') }}</option>
-					<option value="1000">{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES') }}</option>
+					<option value="-1">
+						{{ translate('COM_EMUNDUS_PLEASE_SELECT') }}
+					</option>
+					<option value="5">
+						{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS') }}
+					</option>
+					<option value="6">
+						{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS') }}
+					</option>
+					<option value="1000">
+						{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES') }}
+					</option>
 				</select>
 				<span v-if="errors.target" class="tw-mb-2 tw-text-red-600">
 					<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED') }}</span>

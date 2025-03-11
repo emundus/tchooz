@@ -3,7 +3,10 @@
 		class="form-builder-page-section-element"
 		:id="'element_' + element.id"
 		v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
-		:class="{ unpublished: !element.publish || element.hidden, 'properties-active': propertiesOpened === element.id }"
+		:class="{
+			unpublished: !element.publish || element.hidden,
+			'properties-active': propertiesOpened === element.id,
+		}"
 	>
 		<div class="tw-mb-2 tw-flex tw-w-full tw-items-start tw-justify-between">
 			<div class="tw-w-11/12">

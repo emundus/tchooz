@@ -193,7 +193,9 @@
 				</section>
 
 				<div v-if="previewForm" class="tw-h-full tw-w-full" style="background: #fafafb">
-					<h2 style="padding: 1.5rem">{{ translate('COM_EMUNDUS_ONBOARD_PREVIEW') }}</h2>
+					<h2 style="padding: 1.5rem">
+						{{ translate('COM_EMUNDUS_ONBOARD_PREVIEW') }}
+					</h2>
 					<iframe
 						width="100%"
 						height="100%"
@@ -524,7 +526,11 @@ export default {
 			} else {
 				this.title = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, ' ');
 				this.$refs.formTitle.innerText = this.$refs.formTitle.innerText.trim().replace(/[\r\n]/gm, ' ');
-				formService.updateFormLabel({ label: this.title, prid: this.profile_id, form_id: this.form_id });
+				formService.updateFormLabel({
+					label: this.title,
+					prid: this.profile_id,
+					form_id: this.form_id,
+				});
 			}
 		},
 		updateFormTitleKeyup() {

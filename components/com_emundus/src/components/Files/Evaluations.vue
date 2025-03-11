@@ -7,7 +7,9 @@
 						v-for="evaluation in evaluations"
 						:key="evaluation.id"
 						class="tw-cursor-pointer tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow"
-						:class="{ 'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id }"
+						:class="{
+							'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id,
+						}"
 						@click="selectedTab = evaluation.id"
 					>
 						{{ evaluation.label }}

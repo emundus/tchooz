@@ -83,8 +83,14 @@ export default {
 					secondParameterType: 'select',
 					secondParameterDefault: 'daily',
 					secondParameterOptions: [
-						{ value: 'daily', label: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_DAYS' },
-						{ value: 'weekly', label: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_WEEKS' },
+						{
+							value: 'daily',
+							label: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_DAYS',
+						},
+						{
+							value: 'weekly',
+							label: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_WEEKS',
+						},
 					],
 					splitChar: ' ',
 				},

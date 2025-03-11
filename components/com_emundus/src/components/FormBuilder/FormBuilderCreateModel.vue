@@ -7,7 +7,9 @@
 			</div>
 
 			<div v-if="!loading" id="model-properties" class="tw-flex tw-flex-col tw-justify-start tw-p-4 tw-text-end">
-				<p class="em-main-500-color">{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES_INTRO') }}</p>
+				<p class="em-main-500-color">
+					{{ translate('COM_EMUNDUS_FORM_BUILDER_MODEL_PROPERTIES_INTRO') }}
+				</p>
 				<label for="page-model-title" class="tw-mt-4 tw-w-full tw-text-end">{{
 					translate('COM_EMUNDUS_FORM_BUILDER_MODEL_INPUT_LABEL')
 				}}</label>

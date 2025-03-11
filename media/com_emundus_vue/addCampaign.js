@@ -877,7 +877,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               }, {
                 default: withCtx(({ inputValue, inputEvents }) => [
                   createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                    class: ["form-control fabrikinput tw-mt-1 tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.start_date }],
+                    class: ["form-control fabrikinput tw-mt-1 tw-w-full", {
+                      "is-invalid !tw-border-red-600": _ctx.errors.start_date
+                    }],
                     id: "start_date_input"
                   }), null, 16, _hoisted_19),
                   _ctx.errors.start_date ? (openBlock(), createElementBlock("div", _hoisted_20, [
@@ -910,7 +912,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 }, {
                   default: withCtx(({ inputValue, inputEvents }) => [
                     createBaseVNode("input", mergeProps({ value: inputValue }, toHandlers(inputEvents, true), {
-                      class: ["form-control fabrikinput tw-mt-1 tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.end_date }],
+                      class: ["form-control fabrikinput tw-mt-1 tw-w-full", {
+                        "is-invalid !tw-border-red-600": _ctx.errors.end_date
+                      }],
                       id: "end_date_input"
                     }), null, 16, _hoisted_22),
                     _ctx.errors.end_date ? (openBlock(), createElementBlock("div", _hoisted_23, [
@@ -1111,7 +1115,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     withDirectives(createBaseVNode("input", {
                       type: "text",
                       id: "prog_label",
-                      class: normalizeClass(["form-control fabrikinput tw-mt-1 tw-w-full", { "is-invalid !tw-border-red-600": _ctx.errors.progLabel }]),
+                      class: normalizeClass(["form-control fabrikinput tw-mt-1 tw-w-full", {
+                        "is-invalid !tw-border-red-600": _ctx.errors.progLabel
+                      }]),
                       placeholder: " ",
                       "onUpdate:modelValue": _cache[24] || (_cache[24] = ($event) => _ctx.programForm.label = $event)
                     }, null, 2), [
@@ -1208,7 +1214,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-3df26950"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-984fec06"]]);
 export {
   addCampaign as default
 };

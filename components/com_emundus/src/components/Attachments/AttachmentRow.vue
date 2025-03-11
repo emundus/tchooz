@@ -17,8 +17,12 @@
 			>
 			<span :title="attachment.value">{{ attachment.value }}</span>
 		</td>
-		<td v-if="columns.includes('date')" class="date">{{ formattedDate(attachment.timedate) }}</td>
-		<td v-if="columns.includes('desc')" class="desc">{{ strippedHtml(attachment.upload_description) }}</td>
+		<td v-if="columns.includes('date')" class="date">
+			{{ formattedDate(attachment.timedate) }}
+		</td>
+		<td v-if="columns.includes('desc')" class="desc">
+			{{ strippedHtml(attachment.upload_description) }}
+		</td>
 		<td v-if="columns.includes('category')" class="category">
 			{{ category }}
 		</td>
@@ -32,16 +36,26 @@
 			}"
 		>
 			<select @change="(e) => updateStatus(e)" :disabled="canUpdate === false || is_applicant == 1 ? true : false">
-				<option value="1" :selected="attachment.is_validated == 1">{{ translate('VALID') }}</option>
-				<option value="0" :selected="attachment.is_validated == 0">{{ translate('INVALID') }}</option>
+				<option value="1" :selected="attachment.is_validated == 1">
+					{{ translate('VALID') }}
+				</option>
+				<option value="0" :selected="attachment.is_validated == 0">
+					{{ translate('INVALID') }}
+				</option>
 				<option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">
 					{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}
 				</option>
 			</select>
 		</td>
-		<td v-if="canSee && columns.includes('user')">{{ getUserNameById(attachment.user_id) }}</td>
-		<td v-if="canSee && columns.includes('modified_by')">{{ getUserNameById(attachment.modified_by) }}</td>
-		<td class="date" v-if="columns.includes('modified')">{{ formattedDate(attachment.modified) }}</td>
+		<td v-if="canSee && columns.includes('user')">
+			{{ getUserNameById(attachment.user_id) }}
+		</td>
+		<td v-if="canSee && columns.includes('modified_by')">
+			{{ getUserNameById(attachment.modified_by) }}
+		</td>
+		<td class="date" v-if="columns.includes('modified')">
+			{{ formattedDate(attachment.modified) }}
+		</td>
 		<td v-if="columns.includes('permissions')" class="permissions">
 			<span
 				v-if="attachment.profiles.length > 0"
@@ -65,7 +79,10 @@
 				<span
 					v-if="attachment.sync_method == 'write' && !syncLoading"
 					class="material-symbols-outlined sync tw-cursor-pointer"
-					:class="{ success: synchronizeState == 1, error: synchronizeState != 1 }"
+					:class="{
+						success: synchronizeState == 1,
+						error: synchronizeState != 1,
+					}"
 					:title="translate('COM_EMUNDUS_ATTACHMENTS_SYNC_WRITE')"
 					@click="synchronizeAttachments(attachment.aid)"
 				>

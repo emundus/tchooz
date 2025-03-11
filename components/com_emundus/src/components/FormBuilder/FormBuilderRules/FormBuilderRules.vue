@@ -27,12 +27,17 @@
 			</div>
 
 			<div class="tw-mt-3 tw-flex tw-flex-col tw-gap-3" v-if="!loading">
-				<h5 v-if="searchedRules.length == 0">{{ translate('COM_EMUNDUS_FORM_BUILDER_RULES_NOT_FOUND') }}</h5>
+				<h5 v-if="searchedRules.length == 0">
+					{{ translate('COM_EMUNDUS_FORM_BUILDER_RULES_NOT_FOUND') }}
+				</h5>
 
 				<div v-for="(rule, index) in searchedRules" :key="rule.id">
 					<div
 						class="tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-border tw-border-neutral-600 tw-px-3 tw-py-4"
-						:class="{ 'tw-bg-neutral-400': rule.published == 0, 'tw-bg-white': rule.published == 1 }"
+						:class="{
+							'tw-bg-neutral-400': rule.published == 0,
+							'tw-bg-white': rule.published == 1,
+						}"
 					>
 						<div class="tw-flex tw-items-start tw-justify-between">
 							<h3>{{ ruleLabel(rule, index) }}</h3>
@@ -82,7 +87,9 @@
 
 								<div
 									class="tw-flex tw-flex-col tw-gap-4"
-									:class="{ 'tw-rounded tw-bg-neutral-300 tw-p-2': grouped_condition.length > 1 }"
+									:class="{
+										'tw-rounded tw-bg-neutral-300 tw-p-2': grouped_condition.length > 1,
+									}"
 								>
 									<div v-for="(condition, condition_index) in grouped_condition" class="tw-flex tw-items-center">
 										<span

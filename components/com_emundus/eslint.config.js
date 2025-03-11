@@ -20,7 +20,7 @@ export default [
             'indent': ['error', 2],
             'vue/html-indent': ['error', 2],
             ...prettierConfig.rules,
-            'prettier/prettier': 'error',
+            'prettier/prettier': process.env.VITE_ENV === 'production' ? 'error' : 'off',
             'vue/multi-word-component-names': 'off'
         }
     }

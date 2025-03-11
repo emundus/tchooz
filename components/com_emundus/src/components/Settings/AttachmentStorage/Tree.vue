@@ -12,7 +12,9 @@
 				<option value="0" selected>
 					/{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_GED_ALFRESCO_SELECT_TYPE') }}
 				</option>
-				<option :value="field.value" v-for="field in fieldsData">{{ translate(field.label) }}</option>
+				<option :value="field.value" v-for="field in fieldsData">
+					{{ translate(field.label) }}
+				</option>
 			</select>
 			<input
 				v-else

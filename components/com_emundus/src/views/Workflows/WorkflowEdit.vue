@@ -59,7 +59,9 @@
 								<div class="workflow-step-head tw-flex tw-flex-row tw-justify-between tw-gap-2">
 									<div class="tw-mb-4 tw-flex tw-flex-row tw-items-start">
 										<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
-										<h4 class="tw-line-clamp-2 tw-break-all">{{ step.label }}</h4>
+										<h4 class="tw-line-clamp-2 tw-break-all">
+											{{ step.label }}
+										</h4>
 									</div>
 									<popover>
 										<ul class="tw-list-none !tw-p-0">
@@ -134,7 +136,9 @@
 									<div v-else class="tw-mb-4 tw-flex tw-flex-col">
 										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
 										<select v-model="step.form_id">
-											<option v-for="form in evaluationForms" :key="form.id" :value="form.id">{{ form.label }}</option>
+											<option v-for="form in evaluationForms" :key="form.id" :value="form.id">
+												{{ form.label }}
+											</option>
 										</select>
 
 										<span
@@ -169,8 +173,12 @@
 									<div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
 										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
 										<select v-model="step.output_status">
-											<option value="-1">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}</option>
-											<option v-for="status in statuses" :key="status.id" :value="status.id">{{ status.label }}</option>
+											<option value="-1">
+												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}
+											</option>
+											<option v-for="status in statuses" :key="status.id" :value="status.id">
+												{{ status.label }}
+											</option>
 										</select>
 									</div>
 
@@ -248,7 +256,9 @@
 								<label
 									:for="'program-' + program.id"
 									class="tw-m-0 tw-cursor-pointer"
-									:class="{ 'tw-text-gray-300': isProgramAssociatedToAnotherWorkflow(program) }"
+									:class="{
+										'tw-text-gray-300': isProgramAssociatedToAnotherWorkflow(program),
+									}"
 								>
 									{{ program.label }}
 								</label>
@@ -459,7 +469,10 @@ export default {
 			formService.getEvaluationForms().then((response) => {
 				if (response.status) {
 					this.evaluationForms = response.data.datas.map((form) => {
-						return { id: form.id, label: form.label[useGlobalStore().shortLang] };
+						return {
+							id: form.id,
+							label: form.label[useGlobalStore().shortLang],
+						};
 					});
 				}
 			});

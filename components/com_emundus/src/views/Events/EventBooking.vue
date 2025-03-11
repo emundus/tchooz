@@ -174,7 +174,10 @@ export default {
 			);
 		},
 		formatShortDate(date) {
-			return date.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
+			return date.toLocaleDateString('fr-FR', {
+				day: 'numeric',
+				month: 'short',
+			});
 		},
 		nextDates() {
 			if (this.currentStartIndex + 3 < this.availableDates.length) {
@@ -217,7 +220,10 @@ export default {
 					return {
 						...slot,
 						id,
-						displayTime: new Date(slot.start).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+						displayTime: new Date(slot.start).toLocaleTimeString('fr-FR', {
+							hour: '2-digit',
+							minute: '2-digit',
+						}),
 					};
 				});
 		},
@@ -272,7 +278,13 @@ export default {
 							month: 'long',
 						}),
 					);
-					text = text.replace('{{time}}', start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }));
+					text = text.replace(
+						'{{time}}',
+						start.toLocaleTimeString('fr-FR', {
+							hour: '2-digit',
+							minute: '2-digit',
+						}),
+					);
 					text = text.replace('{{duration}}', minutes);
 				}
 			}
@@ -337,7 +349,9 @@ export default {
 						}"
 					>
 						<p class="tw-text-center tw-text-lg">{{ formatDay(date) }}</p>
-						<p class="tw-text-center tw-text-sm tw-text-neutral-500">{{ formatShortDate(date) }}</p>
+						<p class="tw-text-center tw-text-sm tw-text-neutral-500">
+							{{ formatShortDate(date) }}
+						</p>
 
 						<div class="tw-mt-4 tw-grid tw-w-full tw-grid-cols-2 tw-gap-2">
 							<button

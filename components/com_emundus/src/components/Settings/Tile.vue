@@ -17,7 +17,9 @@
 					>
 						<i class="material-symbols-outlined em-color-white tw-scale-[4]">{{ this.$props.icon }}</i>
 					</div>
-					<div class="tw-flex tw-items-center tw-justify-center tw-font-bold">{{ translate(this.$props.title) }}</div>
+					<div class="tw-flex tw-items-center tw-justify-center tw-font-bold">
+						{{ translate(this.$props.title) }}
+					</div>
 				</button>
 			</div>
 		</div>

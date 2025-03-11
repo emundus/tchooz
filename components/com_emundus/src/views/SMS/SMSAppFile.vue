@@ -30,8 +30,18 @@ export default {
 	data() {
 		return {
 			tabs: [
-				{ id: 'history', name: 'COM_EMUNDUS_SMS_HISTORY', active: true, displayed: true },
-				{ id: 'send', name: 'COM_EMUNDUS_SEND_SMS', active: false, displayed: true },
+				{
+					id: 'history',
+					name: 'COM_EMUNDUS_SMS_HISTORY',
+					active: true,
+					displayed: true,
+				},
+				{
+					id: 'send',
+					name: 'COM_EMUNDUS_SEND_SMS',
+					active: false,
+					displayed: true,
+				},
 			],
 			selectedTab: 'history',
 		};

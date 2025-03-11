@@ -269,7 +269,11 @@ export default {
 		updateSelectionOnScroll() {
 			if (this.selection.visible) {
 				// Force une mise à jour quand on scroll
-				this.handleMouseMove({ clientX: this.lastMouseX, clientY: this.lastMouseY, target: this.lastMouseTarget });
+				this.handleMouseMove({
+					clientX: this.lastMouseX,
+					clientY: this.lastMouseY,
+					target: this.lastMouseTarget,
+				});
 			}
 		},
 		hideSelection() {

@@ -41,7 +41,9 @@
 								<label for="applicant_attachment_input">{{ translations.typeAttachment }}</label>
 								<select v-model="attachment_input" id="applicant_attachment_input">
 									<option :value="0">{{ translations.pleaseSelect }}</option>
-									<option v-for="type in types" :value="type.id">{{ type.value }}</option>
+									<option v-for="type in types" :value="type.id">
+										{{ type.value }}
+									</option>
 								</select>
 							</div>
 							<vue-dropzone
@@ -70,7 +72,9 @@
 							<label for="attachment_input">{{ translations.typeAttachment }}</label>
 							<select v-model="attachment_input" id="attachment_input">
 								<option :value="0">{{ translations.pleaseSelect }}</option>
-								<option v-for="type in types" :key="type.id" :value="type.id">{{ type.value }}</option>
+								<option v-for="type in types" :key="type.id" :value="type.id">
+									{{ type.value }}
+								</option>
 							</select>
 						</div>
 					</div>

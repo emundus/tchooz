@@ -38,8 +38,14 @@ export default {
 					secondParameterType: 'select',
 					secondParameterDefault: 'minutes',
 					secondParameterOptions: [
-						{ value: 'minutes', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES' },
-						{ value: 'hours', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS' },
+						{
+							value: 'minutes',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES',
+						},
+						{
+							value: 'hours',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS',
+						},
 					],
 					splitChar: ' ',
 				},
@@ -72,8 +78,14 @@ export default {
 					secondParameterType: 'select',
 					secondParameterDefault: 'minutes',
 					secondParameterOptions: [
-						{ value: 'minutes', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES' },
-						{ value: 'hours', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS' },
+						{
+							value: 'minutes',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES',
+						},
+						{
+							value: 'hours',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS',
+						},
 					],
 					splitChar: ' ',
 				},
@@ -111,8 +123,14 @@ export default {
 					secondParameterType: 'select',
 					secondParameterDefault: 'days',
 					secondParameterOptions: [
-						{ value: 'days', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS' },
-						{ value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE' },
+						{
+							value: 'days',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS',
+						},
+						{
+							value: 'date',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE',
+						},
 					],
 					splitChar: ' ',
 					optional: true,
@@ -140,8 +158,14 @@ export default {
 					secondParameterType: 'select',
 					secondParameterDefault: 'days',
 					secondParameterOptions: [
-						{ value: 'days', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS' },
-						{ value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE' },
+						{
+							value: 'days',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS',
+						},
+						{
+							value: 'date',
+							label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE',
+						},
 					],
 					splitChar: ' ',
 				},

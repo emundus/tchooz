@@ -95,7 +95,11 @@ export default {
 
 	async getEventsSlots(start, end, eventsIds = '') {
 		try {
-			return await fetchClient.get('geteventsslots', { start: start, end: end, events_ids: eventsIds });
+			return await fetchClient.get('geteventsslots', {
+				start: start,
+				end: end,
+				events_ids: eventsIds,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -106,7 +110,11 @@ export default {
 
 	async getEventsAvailabilities(start, end, eventsIds = '') {
 		try {
-			return await fetchClient.get('geteventsavailabilities', { start: start, end: end, events_ids: eventsIds });
+			return await fetchClient.get('geteventsavailabilities', {
+				start: start,
+				end: end,
+				events_ids: eventsIds,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -282,7 +290,9 @@ export default {
 
 	async getAvailabilityRegistrants(availability = 0) {
 		try {
-			return await fetchClient.get('getavailabilityregistrants', { availability: availability });
+			return await fetchClient.get('getavailabilityregistrants', {
+				availability: availability,
+			});
 		} catch (e) {
 			return {
 				status: false,

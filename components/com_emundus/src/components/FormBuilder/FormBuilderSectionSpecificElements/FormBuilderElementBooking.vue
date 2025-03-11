@@ -16,7 +16,9 @@
 				<div class="tw-flex tw-w-auto tw-flex-1 tw-flex-row tw-items-stretch tw-justify-center tw-gap-4">
 					<div class="tw-flex tw-flex-col tw-items-center tw-gap-2">
 						<p class="tw-text-center tw-text-lg">{{ currentDay }}</p>
-						<p class="tw-text-center tw-text-sm tw-text-neutral-500">{{ currentDateMonth }}</p>
+						<p class="tw-text-center tw-text-sm tw-text-neutral-500">
+							{{ currentDateMonth }}
+						</p>
 
 						<div class="tw-mt-4 tw-grid tw-w-full tw-grid-cols-3 tw-gap-2">
 							<button
@@ -87,7 +89,10 @@ export default {
 			);
 		},
 		currentDateMonth() {
-			return this.date.toLocaleDateString(this.locale, { day: 'numeric', month: 'short' });
+			return this.date.toLocaleDateString(this.locale, {
+				day: 'numeric',
+				month: 'short',
+			});
 		},
 	},
 };

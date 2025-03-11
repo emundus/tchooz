@@ -128,7 +128,9 @@
 			<!-- image resolution -->
 			<div id="imageResolutionZone" v-if="show == true">
 				<hr />
-				<h4 class="image-resolution-header">{{ translations.ImageDimensionsTitle }}</h4>
+				<h4 class="image-resolution-header">
+					{{ translations.ImageDimensionsTitle }}
+				</h4>
 				<div class="image-resolution-tooltips">
 					<i>{{ translations.ImageResolutionTooltips }}</i>
 				</div>
@@ -162,7 +164,9 @@
 						/>
 					</div>
 					<transition name="fade">
-						<span style="font-size: smaller; color: red" v-if="errorWidth.error"> {{ errorWidth.message }} </span>
+						<span style="font-size: smaller; color: red" v-if="errorWidth.error">
+							{{ errorWidth.message }}
+						</span>
 					</transition>
 				</div>
 
@@ -195,7 +199,9 @@
 						/>
 					</div>
 					<transition name="fade">
-						<span style="font-size: smaller; color: red" v-if="errorHeight.error"> {{ errorHeight.message }} </span>
+						<span style="font-size: smaller; color: red" v-if="errorHeight.error">
+							{{ errorHeight.message }}
+						</span>
 					</transition>
 				</div>
 			</div>

@@ -84,7 +84,11 @@ const eventsService = {
   },
   async getEventsSlots(start, end, eventsIds = "") {
     try {
-      return await fetchClient.get("geteventsslots", { start, end, events_ids: eventsIds });
+      return await fetchClient.get("geteventsslots", {
+        start,
+        end,
+        events_ids: eventsIds
+      });
     } catch (e) {
       return {
         status: false,
@@ -94,7 +98,11 @@ const eventsService = {
   },
   async getEventsAvailabilities(start, end, eventsIds = "") {
     try {
-      return await fetchClient.get("geteventsavailabilities", { start, end, events_ids: eventsIds });
+      return await fetchClient.get("geteventsavailabilities", {
+        start,
+        end,
+        events_ids: eventsIds
+      });
     } catch (e) {
       return {
         status: false,
@@ -246,7 +254,9 @@ const eventsService = {
   },
   async getAvailabilityRegistrants(availability = 0) {
     try {
-      return await fetchClient.get("getavailabilityregistrants", { availability });
+      return await fetchClient.get("getavailabilityregistrants", {
+        availability
+      });
     } catch (e) {
       return {
         status: false,

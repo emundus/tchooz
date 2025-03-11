@@ -13,14 +13,26 @@
 				@keyup="onSearchChange"
 			/>
 			<select v-model="filterOpenedState" class="tw-mr-2 tw-rounded-applicant">
-				<option value="all">{{ translate('COM_EMUNDUS_COMMENTS_ALL_THREAD') }}</option>
-				<option value="1">{{ translate('COM_EMUNDUS_COMMENTS_OPENED_THREAD') }}</option>
-				<option value="0">{{ translate('COM_EMUNDUS_COMMENTS_CLOSED_THREAD') }}</option>
+				<option value="all">
+					{{ translate('COM_EMUNDUS_COMMENTS_ALL_THREAD') }}
+				</option>
+				<option value="1">
+					{{ translate('COM_EMUNDUS_COMMENTS_OPENED_THREAD') }}
+				</option>
+				<option value="0">
+					{{ translate('COM_EMUNDUS_COMMENTS_CLOSED_THREAD') }}
+				</option>
 			</select>
 			<select v-model="filterVisibleToApplicant" v-if="!isApplicant" class="tw-rounded-applicant">
-				<option value="all">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT') }}</option>
-				<option value="0">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}</option>
-				<option value="1">{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}</option>
+				<option value="all">
+					{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL_OPT') }}
+				</option>
+				<option value="0">
+					{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_PARTNERS') }}
+				</option>
+				<option value="1">
+					{{ translate('COM_EMUNDUS_COMMENTS_VISIBLE_ALL') }}
+				</option>
 			</select>
 		</div>
 
@@ -131,7 +143,10 @@
 
 				<div
 					class="comment-children"
-					:class="{ opened: openedCommentId == comment.id, hidden: openedCommentId !== comment.id }"
+					:class="{
+						opened: openedCommentId == comment.id,
+						hidden: openedCommentId !== comment.id,
+					}"
 				>
 					<hr />
 					<div :id="'file-comment-' + child.id" v-for="child in childrenComments[comment.id]" :key="child.id" dir="ltr">
@@ -215,7 +230,9 @@
 							<button
 								id="add-comment-btn"
 								class="tw-btn-primary tw-w-fit tw-bg-profile-full tw-text-neutral-300"
-								:class="{ 'tw-cursor-not-allowed tw-opacity-50': newChildCommentText.length === 0 }"
+								:class="{
+									'tw-cursor-not-allowed tw-opacity-50': newChildCommentText.length === 0,
+								}"
 								:disabled="newChildCommentText.length === 0"
 								@click="addComment(comment.id)"
 							>
@@ -254,7 +271,9 @@
 				</p>
 			</div>
 		</div>
-		<p v-else id="empty-comments" class="tw-my-4 tw-text-center">{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}</p>
+		<p v-else id="empty-comments" class="tw-my-4 tw-text-center">
+			{{ translate('COM_EMUNDUS_COMMENTS_NO_COMMENTS') }}
+		</p>
 
 		<hr />
 
@@ -293,7 +312,9 @@
 				<button
 					id="add-comment-btn"
 					class="tw-btn-primary tw-w-fit tw-bg-profile-full tw-text-neutral-300"
-					:class="{ '!tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0 }"
+					:class="{
+						'!tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0,
+					}"
 					:disabled="newCommentText.length === 0"
 					@click="addComment(0)"
 				>
@@ -316,7 +337,10 @@
 			>
 				<div class="tw-flex tw-h-full tw-w-full tw-flex-col tw-justify-between tw-p-4">
 					<div>
-						<h2 class="tw-mb-3">{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }} {{ targetLabel }}</h2>
+						<h2 class="tw-mb-3">
+							{{ translate('COM_EMUNDUS_COMMENTS_ADD_COMMENT_ON') }}
+							{{ targetLabel }}
+						</h2>
 						<textarea
 							v-model="newCommentText"
 							class="tw-h-full tw-p-2"
@@ -351,11 +375,15 @@
 					</div>
 
 					<div class="tw-flex tw-flex-row tw-justify-between">
-						<button @click="hideModal()" class="tw-btn-cancel">{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}</button>
+						<button @click="hideModal()" class="tw-btn-cancel">
+							{{ translate('COM_EMUNDUS_COMMENTS_CANCEL') }}
+						</button>
 						<button
 							id="add-comment-btn"
 							class="tw-btn-primary tw-w-fit tw-bg-profile-full tw-text-neutral-300"
-							:class="{ 'tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0 }"
+							:class="{
+								'tw-cursor-not-allowed tw-opacity-50': newCommentText.length === 0,
+							}"
 							:disabled="newCommentText.length === 0"
 							@click="addComment(0)"
 						>

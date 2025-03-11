@@ -127,7 +127,12 @@ export default {
 		},
 		applicantTextBeforeCancel(booking) {
 			const formatDate = (date) => {
-				const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+				const options = {
+					weekday: 'long',
+					day: 'numeric',
+					month: 'long',
+					year: 'numeric',
+				};
 
 				if (this.actualLanguage === 'fr-FR') {
 					return date.toLocaleDateString('fr-FR', options);
@@ -173,7 +178,9 @@ export default {
 
 <template>
 	<div>
-		<h1 class="tw-mb-8 tw-mt-4">{{ translate('COM_EMUNDUS_EVENTS_MY_RESERVATIONS') }}</h1>
+		<h1 class="tw-mb-8 tw-mt-4">
+			{{ translate('COM_EMUNDUS_EVENTS_MY_RESERVATIONS') }}
+		</h1>
 
 		<div v-if="myBookings.length > 0">
 			<div
@@ -191,12 +198,20 @@ export default {
 						:adaptive="true"
 						:clickToClose="false"
 					>
-						<h1 class="tw-mb-4 tw-mt-8 tw-text-center">{{ translate('COM_EMUNDUS_EVENTS_CANCEL_RESERVATION') }}</h1>
+						<h1 class="tw-mb-4 tw-mt-8 tw-text-center">
+							{{ translate('COM_EMUNDUS_EVENTS_CANCEL_RESERVATION') }}
+						</h1>
 
 						<div class="tw-mb-5 tw-flex tw-flex-col tw-text-center">
-							<p>{{ translate('COM_EMUNDUS_EVENTS_ARE_YOU_SURE_CANCEL_RESERVATION') }}</p>
-							<p class="tw-mb-1 tw-font-bold tw-leading-6">{{ booking.event_name }}</p>
-							<p class="tw-mb-1 tw-font-bold tw-leading-6">{{ booking.booking_date }}</p>
+							<p>
+								{{ translate('COM_EMUNDUS_EVENTS_ARE_YOU_SURE_CANCEL_RESERVATION') }}
+							</p>
+							<p class="tw-mb-1 tw-font-bold tw-leading-6">
+								{{ booking.event_name }}
+							</p>
+							<p class="tw-mb-1 tw-font-bold tw-leading-6">
+								{{ booking.booking_date }}
+							</p>
 						</div>
 
 						<Info
@@ -255,7 +270,9 @@ export default {
 		</div>
 
 		<div v-else>
-			<p class="tw-text-center tw-text-neutral-500">{{ translate('COM_EMUNDUS_EVENTS_NO_RESERVATION_FOUND') }}</p>
+			<p class="tw-text-center tw-text-neutral-500">
+				{{ translate('COM_EMUNDUS_EVENTS_NO_RESERVATION_FOUND') }}
+			</p>
 		</div>
 
 		<div v-if="loading" class="em-page-loader"></div>

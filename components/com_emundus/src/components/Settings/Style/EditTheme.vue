@@ -22,7 +22,9 @@
 			</div>
 		</div>
 		<div class="tw-mt-5 tw-w-full">
-			<h3 class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}</h3>
+			<h3 class="tw-font-medium">
+				{{ translate('COM_EMUNDUS_ONBOARD_THEME_ACCESSIBILITY') }}
+			</h3>
 			<div class="tw-w-full" v-if="contrastPrimary && contrastSecondary">
 				<Info
 					v-if="contrastPrimary.ratio > 4.5 && contrastSecondary.ratio > 4.5"
@@ -69,7 +71,9 @@
 					</h4>
 					<div v-if="showDetails" class="tw-mt-2 tw-border-s-4 tw-border-neutral-400 tw-pl-2">
 						<div>
-							<h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT') }}</h5>
+							<h5>
+								{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_NORMAL_TEXT') }}
+							</h5>
 							<div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
 								<span class="material-symbols-outlined tw-text-green-500" v-if="contrastPrimary.AA === 'pass'"
 									>check_circle</span
@@ -95,14 +99,19 @@
 								<button
 									class="tw-btn-secondary tw-text-white"
 									type="button"
-									:style="{ backgroundColor: secondary, borderColor: secondary }"
+									:style="{
+										backgroundColor: secondary,
+										borderColor: secondary,
+									}"
 								>
 									{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}
 								</button>
 							</div>
 						</div>
 						<div class="tw-mt-3">
-							<h5>{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT') }}</h5>
+							<h5>
+								{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LARGE_TEXT') }}
+							</h5>
 							<div class="tw-mt-1 tw-flex tw-items-center tw-gap-2">
 								<span class="material-symbols-outlined tw-text-green-500" v-if="contrastPrimary.AALarge === 'pass'"
 									>check_circle</span
@@ -127,7 +136,10 @@
 								>
 								<button
 									class="tw-btn-secondary tw-font-bold tw-text-white"
-									:style="{ backgroundColor: secondary, borderColor: secondary }"
+									:style="{
+										backgroundColor: secondary,
+										borderColor: secondary,
+									}"
 									type="button"
 								>
 									{{ translate('COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT') }}

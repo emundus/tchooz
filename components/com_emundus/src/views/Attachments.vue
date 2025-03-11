@@ -22,7 +22,9 @@
 						class="category-select em-ml-16"
 						v-model="category"
 					>
-						<option value="all">{{ translate('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY') }}</option>
+						<option value="all">
+							{{ translate('COM_EMUNDUS_ATTACHMENTS_SELECT_CATEGORY') }}
+						</option>
 						<option v-for="(category, key) in displayedAttachmentCategories" :key="key" :value="key">
 							{{ category }}
 						</option>
@@ -265,7 +267,9 @@
 							<span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
 							<div
 								class="next tw-ml-1 tw-flex tw-items-center"
-								:class="{ active: selectedAttachmentPosition < displayedAttachments.length - 1 }"
+								:class="{
+									active: selectedAttachmentPosition < displayedAttachments.length - 1,
+								}"
 								@click="changeAttachment(selectedAttachmentPosition + 1)"
 							>
 								<span class="material-symbols-outlined"> navigate_next </span>
@@ -605,7 +609,10 @@ export default {
 				const response = await userService.getAccessRights(useUserStore().currentUser, this.displayedFnum);
 
 				if (response.status === true) {
-					useUserStore().setAccessRights({ fnum: this.displayedFnum, rights: response.rights });
+					useUserStore().setAccessRights({
+						fnum: this.displayedFnum,
+						rights: response.rights,
+					});
 				}
 			}
 			this.canCreate = useUserStore().rights[this.displayedFnum]

@@ -6,7 +6,8 @@
 				@click="closedSection = !closedSection"
 			>
 				<span class="material-symbols-outlined tw-mr-2 tw-text-white" v-show="section.repeat_group">library_add</span>
-				{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} / {{ totalSections }}
+				{{ translate('COM_EMUNDUS_FORM_BUILDER_SECTION') }} {{ index }} /
+				{{ totalSections }}
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="!closedSection">unfold_less</span>
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
 			</div>

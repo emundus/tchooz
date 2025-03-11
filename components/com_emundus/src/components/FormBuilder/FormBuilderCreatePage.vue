@@ -1,7 +1,9 @@
 <template>
 	<div id="form-builder-create-page" class="em-p-32 tw-w-full tw-pt-4">
 		<div>
-			<h3 class="em-text-neutral-800 tw-mb-1">{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}</h3>
+			<h3 class="em-text-neutral-800 tw-mb-1">
+				{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE') }}
+			</h3>
 			<p>{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_NEW_PAGE_INTRO') }}</p>
 			<section id="new-page">
 				<div class="card-wrapper tw-mb-4 tw-mt-4" :class="{ selected: -1 === selected }" @click="selected = -1">
@@ -46,7 +48,10 @@
 							v-for="model in models"
 							:key="model.id"
 							class="card-wrapper em-mr-32"
-							:class="{ selected: model.id === selected, hidden: !model.displayed }"
+							:class="{
+								selected: model.id === selected,
+								hidden: !model.displayed,
+							}"
 							:title="model.label[shortDefaultLang]"
 							@click="selected = model.id"
 							@dblclick="createPage"
@@ -74,7 +79,9 @@
 
 						<div v-if="displayedModels.length < 1" class="empty-model-message tw-w-full tw-text-center">
 							<span class="material-symbols-outlined">manage_search</span>
-							<p class="tw-w-full">{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}</p>
+							<p class="tw-w-full">
+								{{ translate('COM_EMUNDUS_FORM_BUILDER_EMPTY_PAGE_MODELS') }}
+							</p>
 						</div>
 					</div>
 				</div>
@@ -186,7 +193,11 @@ export default {
 				}
 			}
 
-			const data = { ...this.page, modelid: model_form_id, keep_structure: this.structure === 'initial' };
+			const data = {
+				...this.page,
+				modelid: model_form_id,
+				keep_structure: this.structure === 'initial',
+			};
 			formBuilderService.addPage(data).then((response) => {
 				if (!response.status) {
 					Swal.fire({

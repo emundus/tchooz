@@ -8,13 +8,17 @@
 		</div>
 
 		<div class="tw-ml-4 tw-mt-4 tw-flex" v-if="!loading">
-			<p class="tw-mr-4 tw-mt-3 tw-font-bold">{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_THEN') }}</p>
+			<p class="tw-mr-4 tw-mt-3 tw-font-bold">
+				{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_THEN') }}
+			</p>
 
 			<div class="tw-ml-2 tw-flex tw-w-full tw-flex-col">
 				<div class="tw-flex tw-items-center">
 					<div class="form-group tw-w-full">
 						<select class="tw-w-full" v-model="action.action">
-							<option v-for="actionOpt in actions" :value="actionOpt.value">{{ translate(actionOpt.label) }}</option>
+							<option v-for="actionOpt in actions" :value="actionOpt.value">
+								{{ translate(actionOpt.label) }}
+							</option>
 						</select>
 					</div>
 				</div>
@@ -119,12 +123,42 @@ export default {
 			loading: false,
 
 			actions: [
-				{ id: 1, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW', value: 'show', multiple: true },
-				{ id: 2, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE', value: 'hide', multiple: true },
-				{ id: 3, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_OPTIONS', value: 'show_options', multiple: false },
-				{ id: 4, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS', value: 'hide_options', multiple: false },
-				{ id: 5, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY', value: 'set_mandatory', multiple: true },
-				{ id: 6, label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL', value: 'set_optional', multiple: true },
+				{
+					id: 1,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW',
+					value: 'show',
+					multiple: true,
+				},
+				{
+					id: 2,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE',
+					value: 'hide',
+					multiple: true,
+				},
+				{
+					id: 3,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_SHOW_OPTIONS',
+					value: 'show_options',
+					multiple: false,
+				},
+				{
+					id: 4,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_HIDE_OPTIONS',
+					value: 'hide_options',
+					multiple: false,
+				},
+				{
+					id: 5,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_MANDATORY',
+					value: 'set_mandatory',
+					multiple: true,
+				},
+				{
+					id: 6,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_OPTIONAL',
+					value: 'set_optional',
+					multiple: true,
+				},
 				{
 					id: 7,
 					label: 'COM_EMUNDUS_FORMBUILDER_RULE_ACTION_DEFINE_REPEAT_GROUP',

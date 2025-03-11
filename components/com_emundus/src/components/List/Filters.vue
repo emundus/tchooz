@@ -1,9 +1,11 @@
 <script>
 import Multiselect from 'vue-multiselect';
+import Filter from '@/components/List/Filter.vue';
 
 export default {
 	name: 'Filters',
 	components: {
+		Filter,
 		Multiselect,
 	},
 	props: {
@@ -52,32 +54,38 @@ export default {
 		}
 
 		// Check if we have a filter in the URL
-		const urlParams = new URLSearchParams(window.location.search);
-		this.filters[this.currentTabKey].forEach((filter) => {
-			if (urlParams.has(filter.key)) {
-				const value = urlParams.get(filter.key);
-				if (filter.options.find((option) => option.value == value)) {
-					filter.value = value;
-					// Check if filter is already displayed
-					if (!this.displayedFilters.find((f) => f.key === filter.key)) {
-						this.displayedFilters.push(filter);
-					} else {
-						// Update filter
-						this.displayedFilters = this.displayedFilters.map((f) => {
-							if (f.key === filter.key) {
-								f.value = value;
-							}
-							return f;
-						});
-					}
-
-					sessionStorage.setItem(
-						'tchooz_filter_' + this.currentTabKey + '_' + filter.key + '/' + document.location.hostname,
-						filter.value,
-					);
+		if (this.filters[this.currentTabKey] && this.filters[this.currentTabKey].length > 0) {
+			const urlParams = new URLSearchParams(window.location.search);
+			this.filters[this.currentTabKey].forEach((filter) => {
+				if (filter.alwaysDisplay) {
+					return;
 				}
-			}
-		});
+
+				if (urlParams.has(filter.key)) {
+					const value = urlParams.get(filter.key);
+					if (filter.options.find((option) => option.value == value)) {
+						filter.value = value;
+						// Check if filter is already displayed
+						if (!this.displayedFilters.find((f) => f.key === filter.key)) {
+							this.displayedFilters.push(filter);
+						} else {
+							// Update filter
+							this.displayedFilters = this.displayedFilters.map((f) => {
+								if (f.key === filter.key) {
+									f.value = value;
+								}
+								return f;
+							});
+						}
+
+						sessionStorage.setItem(
+							'tchooz_filter_' + this.currentTabKey + '_' + filter.key + '/' + document.location.hostname,
+							filter.value,
+						);
+					}
+				}
+			});
+		}
 
 		if (this.displayedFilters.length > 0) {
 			this.displayedFilters.sort((a, b) => a.key.localeCompare(b.key));
@@ -142,14 +150,20 @@ export default {
 		availableFilters() {
 			return this.filters && this.filters[this.currentTabKey]
 				? this.filters[this.currentTabKey].filter((filter) => {
-						return filter.options.length > 0 && !filter.alwaysDisplay;
+						return (
+							((filter.type === 'select' && filter.options.length > 0) || filter.type === 'date') &&
+							!filter.alwaysDisplay
+						);
 					})
 				: [];
 		},
 		defaultFilters() {
 			return this.filters && this.filters[this.currentTabKey]
 				? this.filters[this.currentTabKey].filter((filter) => {
-						return filter.options.length > 0 && filter.alwaysDisplay;
+						return (
+							((filter.type === 'select' && filter.options.length > 0) || filter.type === 'date') &&
+							filter.alwaysDisplay
+						);
 					})
 				: [];
 		},
@@ -206,16 +220,7 @@ export default {
 				:key="currentTabKey + '-' + filter.key"
 				class="tw-flex tw-flex-col tw-gap-1"
 			>
-				<div class="tw-flex tw-items-center tw-justify-between">
-					<label class="!tw-mb-0 tw-font-medium">
-						{{ translate(filter.label) }}
-					</label>
-				</div>
-				<select v-model="filter.value" @change="onChangeFilter(filter)">
-					<option v-for="option in filter.options" :key="option.value" :value="option.value">
-						{{ translate(option.label) }}
-					</option>
-				</select>
+				<Filter :filter="filter" @change-filter="onChangeFilter" />
 			</div>
 
 			<div
@@ -223,19 +228,7 @@ export default {
 				:key="currentTabKey + '-' + filter.key"
 				class="tw-flex tw-flex-col tw-gap-1"
 			>
-				<div class="tw-flex tw-items-center tw-justify-between">
-					<label class="!tw-mb-0 tw-font-medium">
-						{{ translate(filter.label) }}
-					</label>
-					<span class="material-icons-outlined tw-cursor-pointer tw-text-red-500" @click="removeFilter(filter)">
-						close
-					</span>
-				</div>
-				<select v-model="filter.value" @change="onChangeFilter(filter)">
-					<option v-for="option in filter.options" :key="option.value" :value="option.value">
-						{{ translate(option.label) }}
-					</option>
-				</select>
+				<Filter :filter="filter" @change-filter="onChangeFilter" @remove-filter="removeFilter" />
 			</div>
 		</div>
 	</section>

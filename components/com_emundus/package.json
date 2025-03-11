@@ -8,7 +8,7 @@
     "build": "npm run lint && vite build",
     "watch": "vite build --watch --mode development",
     "preview": "vite preview",
-    "lint": "eslint --ext .vue,.js src --fix",
+    "lint": "eslint --ext .vue,.js src --fix && prettier --write 'src/**/*.{js,vue,ts,css,scss,json,md}'",
     "docs:dev": "vitepress dev docs --port 5555",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"

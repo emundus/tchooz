@@ -1689,7 +1689,10 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
                 createBaseVNode("button", {
                   class: "tw-btn-secondary tw-text-white",
                   type: "button",
-                  style: normalizeStyle({ backgroundColor: $data.secondary, borderColor: $data.secondary })
+                  style: normalizeStyle({
+                    backgroundColor: $data.secondary,
+                    borderColor: $data.secondary
+                  })
                 }, toDisplayString(_ctx.translate("COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT")), 5)
               ])
             ]),
@@ -1709,7 +1712,10 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
                 $data.contrastSecondary.AALarge === "fail" ? (openBlock(), createElementBlock("span", _hoisted_25$1, "highlight_off")) : createCommentVNode("", true),
                 createBaseVNode("button", {
                   class: "tw-btn-secondary tw-font-bold tw-text-white",
-                  style: normalizeStyle({ backgroundColor: $data.secondary, borderColor: $data.secondary }),
+                  style: normalizeStyle({
+                    backgroundColor: $data.secondary,
+                    borderColor: $data.secondary
+                  }),
                   type: "button"
                 }, toDisplayString(_ctx.translate("COM_EMUNDUS_SETTINGS_ACCESSIBILITY_DETAILS_LOGIN_TEXT")), 5)
               ])
@@ -1726,7 +1732,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26$1)) : createCommentVNode("", true)
   ])) : createCommentVNode("", true);
 }
-const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-94f5d1a3"]]);
+const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-80ae39fa"]]);
 const _sfc_main$h = {
   name: "editStatus",
   components: {
@@ -2793,7 +2799,7 @@ function _sfc_render$f(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_35)) : createCommentVNode("", true)
   ]);
 }
-const General = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-4c454e3c"]]);
+const General = /* @__PURE__ */ _export_sfc(_sfc_main$f, [["render", _sfc_render$f], ["__scopeId", "data-v-d7232ce6"]]);
 const _sfc_main$e = {
   name: "Orphelins",
   components: {
@@ -4125,8 +4131,14 @@ const _sfc_main$8 = {
           secondParameterType: "select",
           secondParameterDefault: "daily",
           secondParameterOptions: [
-            { value: "daily", label: "COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_DAYS" },
-            { value: "weekly", label: "COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_WEEKS" }
+            {
+              value: "daily",
+              label: "COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_DAYS"
+            },
+            {
+              value: "weekly",
+              label: "COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_FREQUENCY_CUSTOM_FIELD_WEEKS"
+            }
           ],
           splitChar: " "
         },

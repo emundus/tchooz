@@ -110,7 +110,12 @@ const _sfc_main = {
     },
     applicantTextBeforeCancel(booking) {
       const formatDate = (date) => {
-        const options = { weekday: "long", day: "numeric", month: "long", year: "numeric" };
+        const options = {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          year: "numeric"
+        };
         if (this.actualLanguage === "fr-FR") {
           return date.toLocaleDateString("fr-FR", options);
         } else if (this.actualLanguage === "en-GB") {
@@ -255,7 +260,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_24)) : createCommentVNode("", true)
   ]);
 }
-const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2e331c4d"]]);
+const ViewBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-eebb88e8"]]);
 export {
   ViewBooking as default
 };

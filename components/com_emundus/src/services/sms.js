@@ -42,7 +42,12 @@ export default {
 	},
 	async getGlobalHistory(page = 1, limit = 20, search = '', status = '') {
 		try {
-			return await client.get('getGlobalSMSHistory', { page: page, limit: limit, search: search, status: status });
+			return await client.get('getGlobalSMSHistory', {
+				page: page,
+				limit: limit,
+				search: search,
+				status: status,
+			});
 		} catch (e) {
 			return {
 				status: false,

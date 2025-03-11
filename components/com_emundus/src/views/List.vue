@@ -49,7 +49,10 @@
 			<div
 				v-if="loading.items"
 				id="items-loading"
-				:class="{ 'skeleton-grid': viewType === 'blocs', 'tw-mb-4 tw-flex tw-flex-col': viewType === 'table' }"
+				:class="{
+					'skeleton-grid': viewType === 'blocs',
+					'tw-mb-4 tw-flex tw-flex-col': viewType === 'table',
+				}"
 				style="flex-wrap: wrap"
 			>
 				<skeleton v-for="i in 9" :key="i" class="skeleton-item tw-rounded-lg"></skeleton>
@@ -86,7 +89,12 @@
 								</th>
 
 								<th v-for="column in additionalColumns" :key="column.key" class="tw-p-4">
-									<div v-if="column.order_by" :class="{ 'tw-flex tw-flex-row': column.order_by === orderBy }">
+									<div
+										v-if="column.order_by"
+										:class="{
+											'tw-flex tw-flex-row': column.order_by === orderBy,
+										}"
+									>
 										<span v-if="column.order_by === orderBy && order === 'ASC'" class="material-symbols-outlined"
 											>arrow_upward</span
 										>
@@ -194,7 +202,11 @@
 									}"
 								>
 									<hr v-if="viewType === 'blocs'" class="tw-mb-3 tw-mt-1.5 tw-w-full" />
-									<div :class="{ 'tw-flex tw-w-full tw-justify-between': viewType === 'blocs' }">
+									<div
+										:class="{
+											'tw-flex tw-w-full tw-justify-between': viewType === 'blocs',
+										}"
+									>
 										<a
 											v-if="viewType === 'blocs' && editAction"
 											@click="onClickAction(editAction, item.id, false, $event)"
@@ -547,73 +559,71 @@ export default {
 						this.searches[this.selectedListTab].lastSearch = searchValue;
 					}
 
-					this.setTabFilters(tab);
-					if (typeof tab.getter !== 'undefined') {
-						let url =
-							'index.php?option=com_emundus&controller=' +
-							tab.controller +
-							'&task=' +
-							tab.getter +
-							'&lim=' +
-							this.numberOfItemsToDisplay +
-							'&page=' +
-							page;
-						if (this.searches[tab.key].search !== '') {
-							url += '&recherche=' + this.searches[tab.key].search;
-						}
+					this.setTabFilters(tab).then(() => {
+						if (typeof tab.getter !== 'undefined') {
+							let url =
+								'index.php?option=com_emundus&controller=' +
+								tab.controller +
+								'&task=' +
+								tab.getter +
+								'&lim=' +
+								this.numberOfItemsToDisplay +
+								'&page=' +
+								page;
+							if (this.searches[tab.key].search !== '') {
+								url += '&recherche=' + this.searches[tab.key].search;
+							}
 
-						if (this.orderBy !== null && this.orderBy !== '') {
-							url += '&order_by=' + this.orderBy;
-							url += '&sort=' + this.order;
-						}
+							if (this.orderBy !== null && this.orderBy !== '') {
+								url += '&order_by=' + this.orderBy;
+								url += '&sort=' + this.order;
+							}
 
-						if (typeof this.filters[tab.key] !== 'undefined') {
-							this.filters[tab.key].forEach((filter) => {
-								if (filter.value !== '' && filter.value !== 'all') {
-									url += '&' + filter.key + '=' + filter.value;
-								}
-							});
-						}
-
-						url += '&view=' + this.viewType;
-						if (this.viewType == 'calendar') {
-							// Add range of dates to the URL
-						}
-
-						try {
-							fetch(url)
-								.then((response) => response.json())
-								.then((response) => {
-									if (response.status === true) {
-										if (typeof response.data.datas !== 'undefined') {
-											this.items[tab.key] = response.data.datas;
-
-											tab.pagination = {
-												current: page,
-												count: response.data.count,
-												total: Math.ceil(response.data.count / this.numberOfItemsToDisplay),
-											};
-										}
-									} else {
-										console.error('Failed to get data : ' + response.msg);
+							if (typeof this.filters[tab.key] !== 'undefined') {
+								this.filters[tab.key].forEach((filter) => {
+									if (filter.value !== '' && filter.value !== 'all') {
+										url += '&' + filter.key + '=' + filter.value;
 									}
-									this.loading.tabs = false;
-									this.loading.items = false;
-								})
-								.catch((error) => {
-									console.error(error);
-									this.loading.tabs = false;
-									this.loading.items = false;
 								});
-						} catch (e) {
-							console.error(e);
+							}
+
+							url += '&view=' + this.viewType;
+
+							try {
+								fetch(url)
+									.then((response) => response.json())
+									.then((response) => {
+										if (response.status === true) {
+											if (typeof response.data.datas !== 'undefined') {
+												this.items[tab.key] = response.data.datas;
+
+												tab.pagination = {
+													current: page,
+													count: response.data.count,
+													total: Math.ceil(response.data.count / this.numberOfItemsToDisplay),
+												};
+											}
+										} else {
+											console.error('Failed to get data : ' + response.msg);
+										}
+										this.loading.tabs = false;
+										this.loading.items = false;
+									})
+									.catch((error) => {
+										console.error(error);
+										this.loading.tabs = false;
+										this.loading.items = false;
+									});
+							} catch (e) {
+								console.error(e);
+								this.loading.tabs = false;
+								this.loading.items = false;
+							}
+						} else {
 							this.loading.tabs = false;
 							this.loading.items = false;
 						}
-					} else {
-						this.loading.tabs = false;
-						this.loading.items = false;
-					}
+					});
 				});
 			} else {
 				this.loading.tabs = false;
@@ -622,53 +632,72 @@ export default {
 		},
 
 		async setTabFilters(tab) {
-			if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
-				if (typeof this.filters[tab.key] === 'undefined') {
-					this.loading.filters = true;
+			return new Promise(async (resolve) => {
+				const urlParams = new URLSearchParams(window.location.search);
 
-					this.filters[tab.key] = [];
+				if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
+					if (typeof this.filters[tab.key] === 'undefined') {
+						this.loading.filters = true;
 
-					for (const filter of tab.filters) {
-						//get the filter value from sessionStorage
-						let filterValue = sessionStorage.getItem(
-							'tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname,
-						);
-						if (filterValue == null) {
-							filterValue = filter.default ? filter.default : 'all';
-						}
+						this.filters[tab.key] = [];
 
-						if (filter.values === null) {
-							if (filter.getter) {
+						for (const filter of tab.filters) {
+							let filterValue = filter.default ? filter.default : 'all';
+							let filterValueSession = sessionStorage.getItem(
+								'tchooz_filter_' + this.selectedListTab + '_' + filter.key + '/' + document.location.hostname,
+							);
+
+							if (urlParams.has(filter.key)) {
+								filterValue = urlParams.get(filter.key);
+							} else if (filterValueSession) {
+								filterValue = filterValueSession;
+							}
+
+							if (!filter.values) {
+								if (filter.getter) {
+									this.filters[tab.key].push({
+										key: filter.key,
+										label: filter.label,
+										value: filterValue,
+										alwaysDisplay: filter.alwaysDisplay || false,
+										options: [],
+										type: filter.type || 'select',
+									});
+
+									await this.setFilterOptions(
+										typeof filter.controller !== 'undefined' ? filter.controller : tab.controller,
+										filter,
+										tab.key,
+									);
+								} else {
+									this.filters[tab.key].push({
+										key: filter.key,
+										label: filter.label,
+										value: filterValue,
+										alwaysDisplay: filter.alwaysDisplay || false,
+										options: filter.values || [],
+										type: filter.type || 'select',
+									});
+								}
+							} else {
 								this.filters[tab.key].push({
 									key: filter.key,
 									label: filter.label,
 									value: filterValue,
-									alwaysDisplay: filter.alwaysDisplay,
-									options: [],
+									alwaysDisplay: filter.alwaysDisplay || false,
+									options: filter.values || [],
+									type: filter.type || 'select',
 								});
-
-								await this.setFilterOptions(
-									typeof filter.controller !== 'undefined' ? filter.controller : tab.controller,
-									filter,
-									tab.key,
-								);
 							}
-						} else {
-							this.filters[tab.key].push({
-								key: filter.key,
-								label: filter.label,
-								value: filterValue,
-								alwaysDisplay: filter.alwaysDisplay,
-								options: filter.values,
-							});
 						}
-					}
 
+						this.loading.filters = false;
+					}
+				} else {
 					this.loading.filters = false;
 				}
-			} else {
-				this.loading.filters = false;
-			}
+				resolve();
+			});
 		},
 
 		async setFilterOptions(controller, filter, tab) {
@@ -680,10 +709,16 @@ export default {
 
 						// if options is an array of strings, convert it to an array of objects
 						if (typeof options[0] === 'string') {
-							options = options.map((option) => ({ value: option, label: option }));
+							options = options.map((option) => ({
+								value: option,
+								label: option,
+							}));
 						}
 
-						options.unshift({ value: 'all', label: this.translate(filter.allLabel) });
+						options.unshift({
+							value: 'all',
+							label: this.translate(filter.allLabel),
+						});
 
 						this.filters[tab].find((f) => f.key === filter.key).options = options;
 					} else {

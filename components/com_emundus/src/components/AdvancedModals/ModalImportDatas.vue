@@ -75,7 +75,8 @@
 				>
 					<template slot="hasHeaders" slot-scope="{ headers, toggle }">
 						<label style="display: none">
-							<input type="checkbox" id="hasHeaders" :value="headers" @change="toggle" /> Headers?
+							<input type="checkbox" id="hasHeaders" :value="headers" @change="toggle" />
+							Headers?
 						</label>
 					</template>
 
@@ -84,7 +85,9 @@
 					</template>
 
 					<template slot="thead">
-						<p style="margin-top: 2em; width: max-content">{{ translations.CSVAssociate }}</p>
+						<p style="margin-top: 2em; width: max-content">
+							{{ translations.CSVAssociate }}
+						</p>
 						<tr>
 							<th id="my-columns">{{ translations.MyColumns }}</th>
 							<th id="csv-columns">{{ translations.CSVColumns }}</th>

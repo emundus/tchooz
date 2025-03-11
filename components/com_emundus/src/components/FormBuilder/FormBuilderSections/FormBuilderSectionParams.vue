@@ -6,7 +6,9 @@
 			<!-- DROPDOWN -->
 			<div v-if="param.type === 'dropdown'">
 				<select v-model="section.params[param.name]" class="tw-w-full">
-					<option v-for="option in param.options" :value="option.value">{{ translate(option.label) }}</option>
+					<option v-for="option in param.options" :value="option.value">
+						{{ translate(option.label) }}
+					</option>
 				</select>
 			</div>
 

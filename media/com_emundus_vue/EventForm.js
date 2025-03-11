@@ -604,8 +604,14 @@ const _sfc_main$4 = {
           secondParameterType: "select",
           secondParameterDefault: "minutes",
           secondParameterOptions: [
-            { value: "minutes", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES" },
-            { value: "hours", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS" }
+            {
+              value: "minutes",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES"
+            },
+            {
+              value: "hours",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS"
+            }
           ],
           splitChar: " "
         }
@@ -637,8 +643,14 @@ const _sfc_main$4 = {
           secondParameterType: "select",
           secondParameterDefault: "minutes",
           secondParameterOptions: [
-            { value: "minutes", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES" },
-            { value: "hours", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS" }
+            {
+              value: "minutes",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES"
+            },
+            {
+              value: "hours",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS"
+            }
           ],
           splitChar: " "
         }
@@ -675,8 +687,14 @@ const _sfc_main$4 = {
           secondParameterType: "select",
           secondParameterDefault: "days",
           secondParameterOptions: [
-            { value: "days", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS" },
-            { value: "date", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE" }
+            {
+              value: "days",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS"
+            },
+            {
+              value: "date",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE"
+            }
           ],
           splitChar: " ",
           optional: true
@@ -704,8 +722,14 @@ const _sfc_main$4 = {
           secondParameterType: "select",
           secondParameterDefault: "days",
           secondParameterOptions: [
-            { value: "days", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS" },
-            { value: "date", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE" }
+            {
+              value: "days",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS"
+            },
+            {
+              value: "date",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE"
+            }
           ],
           splitChar: " "
         }
@@ -1459,7 +1483,9 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
           return withDirectives((openBlock(), createElementBlock("div", {
             key: field.param,
-            class: normalizeClass({ "tw-w-fit": field.param === "start_date" || field.param === "end_date" })
+            class: normalizeClass({
+              "tw-w-fit": field.param === "start_date" || field.param === "end_date"
+            })
           }, [
             createVNode(_component_Parameter, {
               ref_for: true,
@@ -1569,7 +1595,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-1d0b6d72"]]);
+const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-0c00bb63"]]);
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const createCalendarConfig = (vm) => ({
@@ -1784,7 +1810,11 @@ const _sfc_main$2 = {
     },
     updateSelectionOnScroll() {
       if (this.selection.visible) {
-        this.handleMouseMove({ clientX: this.lastMouseX, clientY: this.lastMouseY, target: this.lastMouseTarget });
+        this.handleMouseMove({
+          clientX: this.lastMouseX,
+          clientY: this.lastMouseY,
+          target: this.lastMouseTarget
+        });
       }
     },
     hideSelection() {
@@ -2181,7 +2211,13 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 const EventEmailSettings = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const _sfc_main = {
   name: "EventForm",
-  components: { EventEmailSettings, EventCalendarSettings, EventSlotsSettings, EventGlobalSettings, Tabs },
+  components: {
+    EventEmailSettings,
+    EventCalendarSettings,
+    EventSlotsSettings,
+    EventGlobalSettings,
+    Tabs
+  },
   props: {},
   data: () => ({
     loading: true,

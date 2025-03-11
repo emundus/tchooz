@@ -43,8 +43,12 @@
 						{{ translate('COM_EMUNDUS_SMS_ASSOC_TAG_ON_SUCCESS') }}
 					</label>
 					<select id="success_tag" v-model="smsTemplate.success_tag">
-						<option value="">{{ translate('COM_EMUNDUS_SMS_NO_ASSOC_TAG') }}</option>
-						<option v-for="tag in tags" :key="tag.id" :value="tag.id">{{ tag.label }}</option>
+						<option value="">
+							{{ translate('COM_EMUNDUS_SMS_NO_ASSOC_TAG') }}
+						</option>
+						<option v-for="tag in tags" :key="tag.id" :value="tag.id">
+							{{ tag.label }}
+						</option>
 					</select>
 				</div>
 
@@ -53,8 +57,12 @@
 						{{ translate('COM_EMUNDUS_SMS_ASSOC_TAG_ON_FAILURE') }}
 					</label>
 					<select id="failure_tag" v-model="smsTemplate.failure_tag">
-						<option value="">{{ translate('COM_EMUNDUS_SMS_NO_ASSOC_TAG') }}</option>
-						<option v-for="tag in tags" :key="tag.id" :value="tag.id">{{ tag.label }}</option>
+						<option value="">
+							{{ translate('COM_EMUNDUS_SMS_NO_ASSOC_TAG') }}
+						</option>
+						<option v-for="tag in tags" :key="tag.id" :value="tag.id">
+							{{ tag.label }}
+						</option>
 					</select>
 				</div>
 			</div>

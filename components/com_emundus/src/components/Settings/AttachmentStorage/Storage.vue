@@ -5,13 +5,23 @@
 		<table>
 			<thead>
 				<tr>
-					<th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_DOCTYPE') }}</th>
-					<th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STATUS') }}</th>
-					<th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STORAGE_TYPE') }}</th>
-					<th>{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNCHRO') }}</th>
+					<th>
+						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_DOCTYPE') }}
+					</th>
+					<th>
+						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STATUS') }}
+					</th>
+					<th>
+						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_STORAGE_TYPE') }}
+					</th>
+					<th>
+						{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNCHRO') }}
+					</th>
 				</tr>
 				<tr v-for="document in documents">
-					<td @click="openAttachmentParameters(document)">{{ document.value }}</td>
+					<td @click="openAttachmentParameters(document)">
+						{{ document.value }}
+					</td>
 					<td></td>
 					<td>
 						<select
@@ -19,7 +29,9 @@
 							v-model="document.sync"
 							@change="updateSync(document.id, document.sync)"
 						>
-							<option :value="type.value" v-for="type in syncTypes">{{ translate(type.label) }}</option>
+							<option :value="type.value" v-for="type in syncTypes">
+								{{ translate(type.label) }}
+							</option>
 						</select>
 					</td>
 					<td>
@@ -32,7 +44,9 @@
 							<option :value="'write'" selected>
 								{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_WRITE') }}
 							</option>
-							<option :value="'read'">{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_READ') }}</option>
+							<option :value="'read'">
+								{{ translate('COM_EMUNDUS_ONBOARD_ATTACHMENT_STORAGE_SYNC_READ') }}
+							</option>
 						</select>
 					</td>
 				</tr>

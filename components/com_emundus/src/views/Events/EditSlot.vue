@@ -9,7 +9,14 @@ import EventBooking from '@/views/Events/EventBooking.vue';
 
 export default {
 	name: 'EditSlot',
-	components: { EventBooking, LocationPopup, ColorPicker, Parameter, Info, Modal },
+	components: {
+		EventBooking,
+		LocationPopup,
+		ColorPicker,
+		Parameter,
+		Info,
+		Modal,
+	},
 	props: {
 		slot: Object,
 	},
@@ -346,7 +353,10 @@ export default {
 						fields.find((f) => f.param === 'user')?.value,
 						field.param,
 					]"
-					:componentsProps="{ event_id: fields.find((f) => f.param === 'event_id')?.value, slot_id: bookingSlot }"
+					:componentsProps="{
+						event_id: fields.find((f) => f.param === 'event_id')?.value,
+						slot_id: bookingSlot,
+					}"
 					@valueUpdated="updateBookingElement"
 				/>
 
