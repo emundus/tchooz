@@ -391,7 +391,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'access' => 6,
 					'menu_show' => 0,
 					'note' => $sms_acl . '|r'
-				]);
+				], 1, 0);
 				$tasks[] = $result['status'];
 
 				// found menu heading for SMS
@@ -416,7 +416,7 @@ class Release2_3_0Installer extends ReleaseInstaller
 					'access'       => 6,
 					'menu_show'    => 0,
 					'note'         => 'sms|c|1'
-				], $parent_id);
+				], $parent_id, 0);
 				$tasks[] = $result['status'];
 			}
 

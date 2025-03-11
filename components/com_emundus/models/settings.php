@@ -3116,6 +3116,23 @@ class EmundusModelSettings extends ListModel
 					->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_sms_task_get'));
 				$this->db->setQuery($query);
 				$this->db->execute();
+
+				// publish application menu link
+				$query->clear()
+					->update($this->db->quoteName('#__menu'))
+					->set($this->db->quoteName('published') . ' = 1')
+					->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=application&layout=sms&format=raw'));
+
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				// publish send sms action menu link
+				$query->clear()
+					->update($this->db->quoteName('#__menu'))
+					->set($this->db->quoteName('published') . ' = 1')
+					->where($this->db->quoteName('link') . ' = ' . $this->db->quote('%index.php?option=com_emundus&view=sms&layout=send&format=raw%'));
+				$this->db->setQuery($query);
+				$this->db->execute();
 			}
 		}
 		catch (Exception $e)
