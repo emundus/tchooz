@@ -2596,9 +2596,6 @@ class EmundusModelSettings extends ListModel
 						usort($applicants, function ($a, $b) {
 							return strcmp($a->name, $b->name);
 						});
-
-						// Limit the number of results
-						$applicants = array_slice($applicants, 0, $limit);
 					}
 				}
 			}

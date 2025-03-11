@@ -37,8 +37,15 @@ class Dispatcher extends AbstractModuleDispatcher
 		$data = parent::getLayoutData();
 
 		$user = Factory::getApplication()->getIdentity();
+		$euser = Factory::getApplication()->getSession()->get('emundusUser');
 
 		$params = $data['params'];
+
+		$data['profiles'] = (array) $params->get('mod_emundus_count_applications_profiles');
+		if(!empty($data['profiles']) && !in_array($euser->profile, $data['profiles']))
+		{
+			return $data;
+		}
 
 		$data['columns'] = (array) $params->get('mod_emundus_count_applications_columns');
 		$data['rows']    = (array) $params->get('mod_emundus_count_applications_rows');

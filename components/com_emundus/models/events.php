@@ -54,7 +54,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		);
 	}
 
-	public function getEvents(string $filter = '', string $sort = 'DESC', string $recherche = '', int|string $lim = 25, int|string $page = 0, int $location = 0, int $id = 0)
+	public function getEvents(string $order_by = '', string $sort = 'DESC', string $recherche = '', int|string $lim = 25, int|string $page = 0, int $location = 0, int $id = 0): array
 	{
 		$events = ['datas' => [], 'count' => 0];
 
@@ -108,6 +108,10 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 			$query->clear('select')
 				->select($columns);
+			if(!empty($order_by) && !empty($sort))
+			{
+				$query->order($order_by . ' ' . $sort);
+			}
 
 			$this->_db->setQuery($query, $offset, $limit);
 			$events['datas'] = $this->_db->loadObjectList();
@@ -400,8 +404,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 */
 	public function getEvent($event_id)
 	{
-		$timezone = $this->app->get('offset', 'Europe/Paris');
-
 		$event = null;
 
 		try
@@ -503,8 +505,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 */
 	public function getEventsSlots($start = '', $end = '', $events_ids = '')
 	{
-		$timezone = $this->app->get('offset', 'Europe/Paris');
-
 		$events_slots = [];
 
 		try
@@ -571,8 +571,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 	public function getAllEventsAvailabilities($start = '', $end = '', $events_ids = '')
 	{
-		$timezone = $this->app->get('offset', 'Europe/Paris');
-
 		$events_slots = [];
 
 		try
@@ -1695,6 +1693,9 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 	public function editSlot($registrant_id, $availability, $event_id, $users_id, $ccid)
 	{
+		require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
+		$m_files   = new EmundusModelFiles();
+
 		$id = 0;
 		try
 		{
@@ -1740,29 +1741,56 @@ class EmundusModelEvents extends BaseDatabaseModel
 							->set($this->db->quoteName('er.ccid') . ' = ' . $this->db->quote($ccid))
 							->set($this->db->quoteName('er.fnum') . ' = ' . $this->db->quote($candidature->fnum))
 							->where($this->db->quoteName('er.id') . ' = ' . $this->db->quote($registrant_id));
-
 						$this->db->setQuery($query);
 						$this->db->execute();
 
-						$query = $this->db->getQuery(true);
+						// Assoc users
+						$query->clear()
+							->select('user')
+							->from($this->db->quoteName('#__emundus_registrants_users'))
+							->where($this->db->quoteName('registrant') . ' = ' . (int) $registrant_id);
+						$this->db->setQuery($query);
+						$users_assoc = $this->db->loadColumn();
+
+						if(!empty($users_assoc))
+						{
+							$query->clear()
+								->delete($this->db->quoteName('#__emundus_users_assoc'))
+								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')');
+							$this->db->setQuery($query);
+							$this->db->execute();
+						}
 
 						$query->clear()
 							->delete($this->db->quoteName('#__emundus_registrants_users'))
 							->where($this->db->quoteName('registrant') . ' = ' . (int) $registrant_id);
-
 						$this->db->setQuery($query);
 						$this->db->execute();
 
-						foreach ($users_id as $user)
+						if(!empty($users_id))
 						{
-							$query->clear()
-								->insert($this->db->quoteName('#__emundus_registrants_users'))
-								->columns([$this->db->quoteName('registrant'), $this->db->quoteName('user')])
-								->values((int) $registrant_id . ', ' . (int) $user);
+							foreach ($users_id as $user)
+							{
+								$query->clear()
+									->insert($this->db->quoteName('#__emundus_registrants_users'))
+									->columns([$this->db->quoteName('registrant'), $this->db->quoteName('user')])
+									->values((int) $registrant_id . ', ' . (int) $user);
 
-							$this->db->setQuery($query);
-							$this->db->execute();
+								$this->db->setQuery($query);
+								$this->db->execute();
+							}
+
+							$read_access = new \stdClass();
+							$read_access->id = 1;
+							$read_access->c = 0;
+							$read_access->r = 1;
+							$read_access->u = 0;
+							$read_access->d = 0;
+							$actions = [$read_access];
+
+							$m_files->shareUsers($users_id, $actions, [$candidature->fnum]);
 						}
+						//
 
 						$id = $ccid;
 					}
@@ -2146,6 +2174,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		if (!empty($availability_id))
 		{
+
 			try
 			{
 				$availability   = $this->getEventsAvailabilities('', '', [], $availability_id, false)[0];
@@ -2202,6 +2231,15 @@ class EmundusModelEvents extends BaseDatabaseModel
 								$insert_user = (object) $insert_user;
 								$this->db->insertObject('jos_emundus_registrants_users', $insert_user);
 							}
+
+							$read_access = new \stdClass();
+							$read_access->id = 1;
+							$read_access->c = 0;
+							$read_access->r = 1;
+							$read_access->u = 0;
+							$read_access->d = 0;
+							$actions = [$read_access];
+							$m_files->shareUsers($registrants_users_id, $actions, [$fnum]);
 						}
 
 						// Declare the event
@@ -2687,19 +2725,21 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 				$query = $this->db->getQuery(true);
 
-				//TODO:  Get user object, get event name, get day, get hours, get location, get room, get link, get users associated to the registrant
 				$columns = [
 					$this->db->quoteName('er.id'),
 					$this->db->quoteName('er.ccid'),
 					$this->db->quoteName('ese.id', 'event_id'),
+					$this->db->quoteName('ese.is_conference_link'),
 					$this->db->quoteName('ese.name', 'label'),
 					$this->db->quoteName('ese.manager'),
 					$this->db->quoteName('ecc.applicant_id', 'user'),
 					'CONCAT(eu.lastname," ",eu.firstname) as user_fullname',
 					$this->db->quoteName('esa.start_date'),
 					$this->db->quoteName('esa.end_date'),
+					$this->db->quoteName('del.id', 'location_id'),
 					$this->db->quoteName('del.name', 'location'),
 					$this->db->quoteName('dlr.name', 'room'),
+					$this->db->quoteName('er.link', 'conference_link'),
 					'GROUP_CONCAT(DISTINCT COALESCE(esru.user, essu.user)) as assoc_user_id',
 					$this->db->quoteName('er.availability'),
 				];

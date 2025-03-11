@@ -56,14 +56,14 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$filter    = $this->input->getString('filter', '');
+			$order_by  = $this->input->getString('order_by', '');
 			$sort      = $this->input->getString('sort', '');
 			$recherche = $this->input->getString('recherche', '');
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
 			$location  = $this->input->getInt('location', 0);
 
-			$events = $this->m_events->getEvents($filter, $sort, $recherche, $lim, $page, $location);
+			$events = $this->m_events->getEvents($order_by, $sort, $recherche, $lim, $page, $location);
 			if (count($events) > 0)
 			{
 				// Search menu by link index.php?option=com_emundus&view=events&layout=registrants
@@ -1137,6 +1137,16 @@ class EmundusControllerEvents extends BaseController
 							}
 						}
 
+						if ($registrant->is_conference_link == 0)
+						{
+							// Get google maps link of adresse
+							$location = $this->m_events->getLocation($registrant->location_id);
+							if (!empty($location->address))
+							{
+								$registrant->conference_link = 'https://www.google.com/maps?q=' . urlencode($location->address);
+							}
+						}
+
 						$registrant->additional_columns = [
 							[
 								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
@@ -1160,7 +1170,7 @@ class EmundusControllerEvents extends BaseController
 							],
 							[
 								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION'),
-								'value'    => $registrant->location,
+								'value'    => '<a class="tw-cursor-pointer hover:tw-underline" target="_blank" href="' . $registrant->conference_link . '">' . $registrant->location . '</a>',
 								'classes'  => '',
 								'display'  => 'table',
 								'order_by' => 'location'
