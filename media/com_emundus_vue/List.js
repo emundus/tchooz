@@ -401,13 +401,9 @@ const _sfc_main$5 = {
   },
   computed: {
     multipleExportsPopover() {
-      let exports = [];
-      if (this.checkedItems.length > 0) {
-        exports = this.tab.exports.filter((exp) => {
-          return exp.multiple;
-        });
-      }
-      return exports;
+      return this.tab.exports.filter((exp) => {
+        return exp.multiple;
+      });
     }
   },
   watch: {
@@ -430,7 +426,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_popover = resolveComponent("popover");
   return openBlock(), createElementBlock("section", _hoisted_1$5, [
     createBaseVNode("div", _hoisted_2$5, [
-      $props.checkedItems.length > 0 && $options.multipleExportsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
+      $options.multipleExportsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
         key: 0,
         button: _ctx.translate("EXPORT"),
         "button-class": "tw-bg-white tw-border tw-h-[38px] hover:tw-border-form-border-hover tw-rounded-form",
@@ -1358,9 +1354,6 @@ const _sfc_main = {
       if (exp === null || typeof exp !== "object" || typeof exp.showon !== "undefined" && !this.evaluateShowOn(null, exp.showon)) {
         return false;
       }
-      if (this.checkedItems.length === 0) {
-        return;
-      }
       let url = "index.php?option=com_emundus&controller=" + exp.controller + "&task=" + exp.action;
       let parameters = { ids: this.checkedItems };
       if (Object.prototype.hasOwnProperty.call(exp, "confirm")) {
@@ -2094,7 +2087,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d7cd91fa"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7bb293f7"]]);
 export {
   list as default
 };

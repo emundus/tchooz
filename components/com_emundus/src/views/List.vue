@@ -836,10 +836,6 @@ export default {
 				return false;
 			}
 
-			if (this.checkedItems.length === 0) {
-				return;
-			}
-
 			let url = 'index.php?option=com_emundus&controller=' + exp.controller + '&task=' + exp.action;
 			let parameters = { ids: this.checkedItems };
 

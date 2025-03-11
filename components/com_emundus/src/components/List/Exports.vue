@@ -97,13 +97,9 @@ export default {
 		multipleExportsPopover() {
 			let exports = [];
 
-			if (this.checkedItems.length > 0) {
-				exports = this.tab.exports.filter((exp) => {
-					return exp.multiple;
-				});
-			}
-
-			return exports;
+			return this.tab.exports.filter((exp) => {
+				return exp.multiple;
+			});
 		},
 	},
 	watch: {
@@ -121,7 +117,7 @@ export default {
 	<section id="default-exports" class="tw-flex tw-gap-4">
 		<div class="tw-flex tw-items-center tw-gap-2">
 			<popover
-				v-if="checkedItems.length > 0 && multipleExportsPopover.length > 0"
+				v-if="multipleExportsPopover.length > 0"
 				:button="translate('EXPORT')"
 				:button-class="'tw-bg-white tw-border tw-h-[38px] hover:tw-border-form-border-hover tw-rounded-form'"
 				:icon="'keyboard_arrow_down'"

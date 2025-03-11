@@ -1114,7 +1114,7 @@ class EmundusControllerEvents extends BaseController
 				require_once JPATH_SITE . '/components/com_emundus/models/users.php';
 				$m_users = new EmundusModelUsers();
 
-				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_users,0,[],$this->user->id,$day);
+				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_users, 0, [], $this->user->id, $day);
 				if (!empty($registrants) && $registrants['count'] > 0)
 				{
 					foreach ($registrants['datas'] as $registrant)
@@ -1307,50 +1307,54 @@ class EmundusControllerEvents extends BaseController
 		else
 		{
 			$ids = $this->input->getString('ids', '');
-
 			if (!empty($ids))
 			{
-				$ids   = explode(',', $ids);
-				$items = $this->m_events->getRegistrants('', 'DESC', '', 0, 0, '', 0, 0, 0, 0, 0, $ids);
+				$ids = explode(',', $ids);
+			}
+			else
+			{
+				$ids = [];
+			}
 
-				if (!empty($items) && !empty($items['datas']))
+			$items = $this->m_events->getRegistrants('', 'DESC', '', 0, 0, '', 0, 0, 0, 0, 0, $ids);
+
+			if (!empty($items) && !empty($items['datas']))
+			{
+				$columns        = [
+					Text::_('COM_EMUNDUS_APPLICATION_APPLICANT'),
+					Text::_('COM_EMUNDUS_ONBOARD_LABEL_REGISTRANTS'),
+					Text::_('COM_EMUNDUS_REGISTRANTS_DAY'),
+					Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
+					Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION'),
+					Text::_('COM_EMUNDUS_REGISTRANTS_ROOM'),
+					Text::_('COM_EMUNDUS_REGISTRANTS_ASSOC_USER')
+				];
+				$excel_filepath = $this->m_events->exportBookingsExcel($items['datas'], $columns);
+
+				if ($excel_filepath && file_exists($excel_filepath))
 				{
-					$columns        = [
-						Text::_('COM_EMUNDUS_APPLICATION_APPLICANT'),
-						Text::_('COM_EMUNDUS_ONBOARD_LABEL_REGISTRANTS'),
-						Text::_('COM_EMUNDUS_REGISTRANTS_DAY'),
-						Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
-						Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION'),
-						Text::_('COM_EMUNDUS_REGISTRANTS_ROOM'),
-						Text::_('COM_EMUNDUS_REGISTRANTS_ASSOC_USER')
-					];
-					$excel_filepath = $this->m_events->exportBookingsExcel($items['datas'], $columns);
+					$response['status'] = true;
+					$extension          = pathinfo($excel_filepath, PATHINFO_EXTENSION);
 
-					if ($excel_filepath && file_exists($excel_filepath))
+					if ($extension === 'xls' || $extension === 'xlsx')
 					{
-						$response['status'] = true;
-						$extension          = pathinfo($excel_filepath, PATHINFO_EXTENSION);
-
-						if ($extension === 'xls' || $extension === 'xlsx')
-						{
-							header('Content-Type: application/vnd.ms-excel');
-						}
-						else
-						{
-							header('Content-Type: text/csv');
-						}
-
-						header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
-						header('Content-Length: ' . filesize($excel_filepath));
-
-
-						$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
-
+						header('Content-Type: application/vnd.ms-excel');
 					}
 					else
 					{
-						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+						header('Content-Type: text/csv');
 					}
+
+					header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
+					header('Content-Length: ' . filesize($excel_filepath));
+
+
+					$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 				}
 			}
 		}
@@ -1374,30 +1378,34 @@ class EmundusControllerEvents extends BaseController
 		else
 		{
 			$ids = $this->input->getString('ids', '');
-
 			if (!empty($ids))
 			{
-				$ids   = explode(',', $ids);
-				$items = $this->m_events->getRegistrants('', 'DESC', '', 0, 0, '', 0, 0, 0, 0, 0, $ids);
+				$ids = explode(',', $ids);
+			}
+			else
+			{
+				$ids = [];
+			}
 
-				if (!empty($items) && !empty($items['datas']))
+			$items = $this->m_events->getRegistrants('', 'DESC', '', 0, 0, '', 0, 0, 0, 0, 0, $ids);
+
+			if (!empty($items) && !empty($items['datas']))
+			{
+				$pdf_filepath = $this->m_events->exportBookingsPDF($items['datas']);
+
+				if ($pdf_filepath && file_exists($pdf_filepath))
 				{
-					$pdf_filepath = $this->m_events->exportBookingsPDF($items['datas']);
+					$response['status'] = true;
+					header('Content-Type: application/pdf');
+					header('Content-Disposition: attachment; filename="' . basename($pdf_filepath) . '"');
+					header('Content-Length: ' . filesize($pdf_filepath));
 
-					if ($pdf_filepath && file_exists($pdf_filepath))
-					{
-						$response['status'] = true;
-						header('Content-Type: application/pdf');
-						header('Content-Disposition: attachment; filename="' . basename($pdf_filepath) . '"');
-						header('Content-Length: ' . filesize($pdf_filepath));
+					$response['download_file'] = Uri::root() . 'tmp/' . basename($pdf_filepath);
 
-						$response['download_file'] = Uri::root() . 'tmp/' . basename($pdf_filepath);
-
-					}
-					else
-					{
-						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
-					}
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 				}
 			}
 		}
@@ -1413,7 +1421,8 @@ class EmundusControllerEvents extends BaseController
 			'data'    => []
 		];
 
-		if(!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'r', $this->user->id)) {
+		if (!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'r', $this->user->id))
+		{
 			header('HTTP/1.1 403 Forbidden');
 		}
 		else
