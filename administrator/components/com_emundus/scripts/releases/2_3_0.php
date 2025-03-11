@@ -520,6 +520,22 @@ class Release2_3_0Installer extends ReleaseInstaller
 			];
 			EmundusHelperUpdate::createTable('jos_emundus_registrants_users', $columns, $foreign_keys, 'Users associated to registrants');
 
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__viewlevels'))
+				->where($this->db->quoteName('title') . ' LIKE ' . $this->db->quote('Coordinator'));
+			$this->db->setQuery($query);
+			$coordinator_viewlevel = $this->db->loadResult();
+
+			if(!empty($coordinator_viewlevel)) {
+				$query->clear()
+					->update($this->db->quoteName('#__content'))
+					->set($this->db->quoteName('access') . ' = ' . $this->db->quote($coordinator_viewlevel))
+					->where($this->db->quoteName('alias') . ' LIKE ' . $this->db->quote('ressources'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
 			$result['status'] = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
