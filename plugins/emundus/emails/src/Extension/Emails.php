@@ -53,8 +53,10 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 		];
 	}
 
-	public function checkNotifications(GenericEvent $event): void
+	public function checkNotifications(GenericEvent $event): bool
 	{
+		$sent = false;
+
 		$data = $event->getArguments();
 		$db = $this->getDatabase();
 
@@ -136,6 +138,8 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					file_put_contents($ics_file, $ics);
 
 					$sent = $m_emails->sendEmail($data['fnum'], $email_to_send['applicant_notify_email'], $post, [$ics_file]);
+				} else {
+					$sent = true;
 				}
 			}
 			catch (\Exception $e)
@@ -143,5 +147,9 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 				Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'emundus');
 			}
 		}
+
+		$event->setArgument('sent', $sent);
+
+		return $sent;
 	}
 }

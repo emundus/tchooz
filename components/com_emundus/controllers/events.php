@@ -1404,4 +1404,49 @@ class EmundusControllerEvents extends BaseController
 		echo json_encode($response);
 		exit();
 	}
+
+	public function resend()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if(!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'r', $this->user->id)) {
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$booking_id = $this->input->getInt('booking_id', 0);
+			if (empty($booking_id))
+			{
+				$booking_id = $this->input->getInt('id', 0);
+			}
+			if (empty($booking_id))
+			{
+				$ids        = $this->input->getString('ids');
+				$booking_id = explode(',', $ids);
+			}
+
+			if (empty($booking_id))
+			{
+				header('HTTP/1.1 403 Forbidden');
+			}
+			else
+			{
+				$response['status'] = $this->m_events->resendBooking($booking_id);
+				if ($response['status'])
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+				}
+			}
+		}
+		echo json_encode($response);
+		exit();
+	}
 }

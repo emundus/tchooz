@@ -73,6 +73,15 @@ const _sfc_main = {
                   buttonClasses: "tw-group tw-bg-red-500 tw-border-red-500 tw-text-white hover:tw-bg-white hover:tw-border-red-500",
                   spanClasses: "group-hover:tw-text-red-500",
                   acl: "booking|d"
+                },
+                {
+                  action: "resend",
+                  label: "COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_RESEND",
+                  controller: "events",
+                  name: "resend",
+                  method: "post",
+                  multiple: true,
+                  confirm: "COM_EMUNDUS_ONBOARD_REGISTRANT_RESEND_CONFIRM"
                 }
               ],
               filters: [

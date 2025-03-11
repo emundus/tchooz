@@ -70,6 +70,15 @@ export default {
 									spanClasses: 'group-hover:tw-text-red-500',
 									acl: 'booking|d',
 								},
+								{
+									action: 'resend',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_RESEND',
+									controller: 'events',
+									name: 'resend',
+									method: 'post',
+									multiple: true,
+									confirm: 'COM_EMUNDUS_ONBOARD_REGISTRANT_RESEND_CONFIRM',
+								},
 							],
 							filters: [
 								{

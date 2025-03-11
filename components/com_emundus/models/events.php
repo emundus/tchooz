@@ -3140,4 +3140,61 @@ class EmundusModelEvents extends BaseDatabaseModel
 		return $pdf_filepath;
 	}
 
+	public function resendBooking(int|array $ids): bool
+	{
+		$sends = [];
+		
+		if(!class_exists(EmundusHelperDate::class)) {
+			require_once JPATH_SITE . '/components/com_emundus/helpers/date.php';
+		}
+
+		if(!is_array($ids)) {
+			$ids = [$ids];
+		}
+
+		$dispatcher = Factory::getApplication()->getDispatcher();
+		PluginHelper::importPlugin('emundus', 'emails');
+
+		foreach ($ids as $id) {
+			$query = $this->db->getQuery(true);
+
+			$columns = [
+				$this->db->quoteName('er.id'),
+				$this->db->quoteName('er.fnum'),
+				$this->db->quoteName('er.ccid'),
+				$this->db->quoteName('esa.id','availability'),
+				$this->db->quoteName('er.event','event_id'),
+				$this->db->quoteName('er.slot'),
+				$this->db->quoteName('esa.start_date','start'),
+				$this->db->quoteName('esa.end_date','end'),
+				$this->db->quoteName('esa.capacity'),
+			];
+
+			$query->select($columns)
+				->from($this->db->quoteName('#__emundus_registrants', 'er'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_availabilities','esa').' ON '.$this->db->quoteName('esa.id').' = '.$this->db->quoteName('er.availability'))
+				->where('er.id = ' . $id);
+			$this->db->setQuery($query);
+			$registrantInfos = $this->db->loadAssoc();
+
+			$availability = new stdClass();
+			$availability->id = $registrantInfos['availability'];
+			$availability->event_id = $registrantInfos['event_id'];
+			$availability->slot = $registrantInfos['slot'];
+			$availability->start = EmundusHelperDate::displayDate($registrantInfos['start'], 'Y-m-d H:i', 0);
+			$availability->end = EmundusHelperDate::displayDate($registrantInfos['end'], 'Y-m-d H:i', 0);
+			$availability->capacity = $registrantInfos['capacity'];
+
+			$onAfterBookingRegistrant             = new GenericEvent(
+				'onAfterBookingRegistrant',
+				// Datas to pass to the event
+				['fnum' => $registrantInfos['fnum'], 'ccid' => (int) $registrantInfos['ccid'], 'availability' => $availability, 'registrant_id' => $id]
+			);
+			$event_results = $dispatcher->dispatch('onAfterBookingRegistrant', $onAfterBookingRegistrant);
+			
+			$sends[] = $event_results->getArgument('sent');
+		}
+
+		return !empty($sends) && !in_array(false, $sends);
+	}
 }
