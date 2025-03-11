@@ -30,6 +30,19 @@
     <config>
         <fields name="params">
             <fieldset name="basic" label="Options">
+
+                <field name="mod_emundus_count_applications_profiles"
+                       type="sql"
+                       multiple="true"
+                       label="MOD_EMUNDUS_COUNT_APPLICATIONS_PROFILES"
+                       description="MOD_EMUNDUS_COUNT_APPLICATIONS_PROFILES_DESC"
+                       query="select id,label from #__emundus_setup_profiles"
+                       layout="joomla.form.field.list-fancy-select"
+                       key_field="id"
+                       value_field="label"
+                       default=""
+                />
+
                 <field name="mod_emundus_count_applications_title"
                        type="text"
                        label="MOD_EMUNDUS_COUNT_APPLICATIONS_TITLE"

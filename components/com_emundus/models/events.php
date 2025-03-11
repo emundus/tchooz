@@ -1741,16 +1741,29 @@ class EmundusModelEvents extends BaseDatabaseModel
 							->set($this->db->quoteName('er.ccid') . ' = ' . $this->db->quote($ccid))
 							->set($this->db->quoteName('er.fnum') . ' = ' . $this->db->quote($candidature->fnum))
 							->where($this->db->quoteName('er.id') . ' = ' . $this->db->quote($registrant_id));
-
 						$this->db->setQuery($query);
 						$this->db->execute();
 
-						$query = $this->db->getQuery(true);
+						// Assoc users
+						$query->clear()
+							->select('user')
+							->from($this->db->quoteName('#__emundus_registrants_users'))
+							->where($this->db->quoteName('registrant') . ' = ' . (int) $registrant_id);
+						$this->db->setQuery($query);
+						$users_assoc = $this->db->loadColumn();
+
+						if(!empty($users_assoc))
+						{
+							$query->clear()
+								->delete($this->db->quoteName('#__emundus_users_assoc'))
+								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')');
+							$this->db->setQuery($query);
+							$this->db->execute();
+						}
 
 						$query->clear()
 							->delete($this->db->quoteName('#__emundus_registrants_users'))
 							->where($this->db->quoteName('registrant') . ' = ' . (int) $registrant_id);
-
 						$this->db->setQuery($query);
 						$this->db->execute();
 
@@ -1777,6 +1790,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 							$m_files->shareUsers($users_id, $actions, [$candidature->fnum]);
 						}
+						//
 
 						$id = $ccid;
 					}
