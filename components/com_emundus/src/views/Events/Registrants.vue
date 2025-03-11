@@ -54,6 +54,7 @@ export default {
 									name: 'editslot',
 									multiple: false,
 									icon: 'edit',
+									acl: 'booking|u',
 								},
 								{
 									action: 'deletebooking',

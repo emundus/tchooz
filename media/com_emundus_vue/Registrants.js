@@ -58,7 +58,8 @@ const _sfc_main = {
                   component: "EditSlot",
                   name: "editslot",
                   multiple: false,
-                  icon: "edit"
+                  icon: "edit",
+                  acl: "booking|u"
                 },
                 {
                   action: "deletebooking",
