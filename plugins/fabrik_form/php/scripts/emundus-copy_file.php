@@ -90,7 +90,7 @@ foreach ($fnums_from as $fnum_from) {
 
             //$pid = (isset($fnumInfos['profile_id_form']) && !empty($fnumInfos['profile_id_form']))?$fnumInfos['profile_id_form']:$fnumInfos['profile_id'];
 
-            $result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file,array(),$copyUsersAssoc,$copyGroupsAssoc);
+            $result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file,$data,$copyUsersAssoc,$copyGroupsAssoc);
 
             // 4. Duplicate attachments for new fnum
             /*if ($result) {
@@ -110,7 +110,7 @@ foreach ($fnums_from as $fnum_from) {
         include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
         $m_application = new EmundusModelApplication;
 
-        $m_application->moveApplication($fnum_from, $fnum_to, $campaign_id, $status);
+        $m_application->moveApplication($fnum_from, $fnum_to, $campaign_id, $status,$data);
 
     } else {
         // new empty file
