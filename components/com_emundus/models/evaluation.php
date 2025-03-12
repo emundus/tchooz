@@ -2699,10 +2699,15 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document = false)
+	public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document = false, $user_id = null)
 	{
 		$query = $this->db->getQuery(true);
-		$user  = $this->app->getIdentity();
+
+        if (empty($user_id)) {
+            $user = $this->app->getIdentity();
+        } else {
+            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+        }
 
 		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$replace_document     = $eMConfig->get('export_replace_doc', 0);
