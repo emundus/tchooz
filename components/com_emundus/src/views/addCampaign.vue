@@ -476,7 +476,7 @@ import '../../../../templates/g5_helium/css/editor.css';
 import campaignService from '@/services/campaign.js';
 import settingsService from '@/services/settings.js';
 import programmeService from '@/services/programme.js';
-import formService from '@/services/form.js'
+import formService from '@/services/form.js';
 
 import { useGlobalStore } from '@/stores/global.js';
 import { useCampaignStore } from '@/stores/campaign.js';
@@ -699,15 +699,18 @@ export default {
 			this.getAllPrograms();
 		},
 
-    getAllForms() {
-      formService.getPublishedForms().then(response => {
-        if (response.status) {
-          this.applicantForms = response.data.data;
-        }
-      }).catch(e => {
-        console.log(e);
-      });
-    },
+		getAllForms() {
+			formService
+				.getPublishedForms()
+				.then((response) => {
+					if (response.status) {
+						this.applicantForms = response.data.data;
+					}
+				})
+				.catch((e) => {
+					console.log(e);
+				});
+		},
 
 		getCampaignLanguages() {
 			if (this.campaignId) {
