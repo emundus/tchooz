@@ -200,7 +200,13 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	<?php endif; ?>
 
 	<?php if (sizeof($applications) > 0) : ?>
-        <span class="em-text-neutral-500"><?php echo $description; ?></span>
+        <span class="em-text-neutral-500">
+            <?php
+            $tags              = $m_email->setTags($user->id, [], '', '', $description, false, true);
+            $description = preg_replace($tags['patterns'], $tags['replacements'], $description);
+            echo $description;
+            ?>
+        </span>
 
 		<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
             <a id="add-application" class="btn btn-success em-mt-24" style="width: auto" href="<?= $cc_list_url; ?>">
