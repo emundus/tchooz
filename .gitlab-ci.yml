@@ -23,7 +23,7 @@ include:
   file: '.deployer_tchooz_v2.yml'
 - project: 'emundus/devops/ci-cd-templates'
   ref: main
-  file: '.release.yml'
+  file: '.release-template.yml'
 - template: Security/Secret-Detection.gitlab-ci.yml
 - template: Security/SAST.gitlab-ci.yml
 
@@ -37,15 +37,15 @@ check-tchooz-version-job:
   script:
     - .docker/scripts/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
-check-commit-prefixes-job:
-  stage: prepare
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-      when: always
-    - when: never
-  image: enix/ci-toolbox:1.23
-  script:
-    - .docker/scripts/commit-prefix-compliance-check.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID"
+#check-commit-prefixes-job:
+#  stage: prepare
+#  rules:
+#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+#      when: always
+#    - when: never
+#  image: enix/ci-toolbox:1.23
+#  script:
+#    - .docker/scripts/commit-prefix-compliance-check.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID"
 
 php_security_checker:
   variables:
@@ -112,58 +112,46 @@ phpunit-job:
   only:
     - merge_request
 
-release-job:
+release-patch:
+  extends: .release-template
   variables:
-    IMAGE_TAG: "latest"
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - administrator/components/com_emundus/emundus.xml
-      when: on_success
-    - when: never
+    MERGE_MESSAGE: "Merge branch 'hotfix' into 'master'"
+    RELEASE_TYPE: "patch"
 
-sync-documentation-job:
-  stage: release
-  rules:
-    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
-      changes:
-        - administrator/components/com_emundus/emundus.xml
-      when: on_success
-    - when: never
-  image: emundus/sync-documentation:latest
-  script:
-    - /go/generate-release-note.sh "$CI_SERVER_URL" "$CI_PROJECT_ID" "$GITLAB_TOKEN" "$ATLASSIAN_URL" "$ATLASSIAN_USER" "$ATLASSIAN_TOKEN" "$ATLASSIAN_SPACE" "$ATLASSIAN_PARENT_PAGE" "$ATLASSIAN_PAGE_TITLE"
-  needs:
-    - release-job
-
-test_playwright:
-  image: mcr.microsoft.com/playwright:v1.43.0-jammy
-  script:
-    - git clone $PLAYWRIGHT_ACCESS
-    - cd playwright
-    - npm ci
-    - npx playwright install
-    - npx playwright test
+release-minor:
+  extends: .release-template
   variables:
-    PLAYWRIGHT_ACCESS: $PLAYWRIGHT_ACCESS
-    BASE_URL: $PLAYWRIGHT_RELEASE_BASE_URL
-    COORD_USERNAME: $PLAYWRIGHT_RELEASE_COORD_USERNAME
-    COORD_PASSWORD: $PLAYWRIGHT_RELEASE_COORD_PASSWORD
-    SYSADMIN_USERNAME: $PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME
-    SYSADMIN_PASSWORD: $PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: manual
-    - if: $CI_PIPELINE_SOURCE == "schedule"
-  allow_failure: true
-  artifacts:
-    when: always
-    expose_as: 'Playwright Report'
-    paths:
-      - playwright/playwright-report
-    expire_in: 4 days
-  needs:
-    - job: deployer
-      optional: true
-    - job: deployer_test_playwright_in_schedule
-      optional: true
+    MERGE_MESSAGE: "Merge branch 'dev' into 'master'"
+    RELEASE_TYPE: "minor"
+
+#test_playwright:
+#  image: mcr.microsoft.com/playwright:v1.43.0-jammy
+#  script:
+#    - git clone $PLAYWRIGHT_ACCESS
+#    - cd playwright
+#    - npm ci
+#    - npx playwright install
+#    - npx playwright test
+#  variables:
+#    PLAYWRIGHT_ACCESS: $PLAYWRIGHT_ACCESS
+#    BASE_URL: $PLAYWRIGHT_RELEASE_BASE_URL
+#    COORD_USERNAME: $PLAYWRIGHT_RELEASE_COORD_USERNAME
+#    COORD_PASSWORD: $PLAYWRIGHT_RELEASE_COORD_PASSWORD
+#    SYSADMIN_USERNAME: $PLAYWRIGHT_RELEASE_SYSADMIN_USERNAME
+#    SYSADMIN_PASSWORD: $PLAYWRIGHT_RELEASE_SYSADMIN_PASSWORD
+#  rules:
+#    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#      when: manual
+#    - if: $CI_PIPELINE_SOURCE == "schedule"
+#  allow_failure: true
+#  artifacts:
+#    when: always
+#    expose_as: 'Playwright Report'
+#    paths:
+#      - playwright/playwright-report
+#    expire_in: 4 days
+#  needs:
+#    - job: deployer
+#      optional: true
+#    - job: deployer_test_playwright_in_schedule
+#      optional: true

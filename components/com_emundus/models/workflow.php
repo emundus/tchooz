@@ -65,34 +65,38 @@ class EmundusModelWorkflow extends JModelList
 		$deleted = false;
 
 		if (!empty($wid)) {
+			if(!is_array($wid)) {
+				$wid = [$wid];
+			}
+
 			$query = $this->db->createQuery();
 
 			if ($force) {
 				$query->delete('#__emundus_setup_workflows')
-					->where('id = ' . $wid);
+					->where('id IN (' . implode(',',$this->db->quote($wid)) . ')');
 
 				try {
 					$this->db->setQuery($query);
 					$deleted = $this->db->execute();
 				} catch (Exception $e) {
-					Log::add('Error while deleting workflow [' . $wid . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					Log::add('Error while deleting workflow(s) [' . implode(',',$wid) . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 			} else {
 				$query->update('#__emundus_setup_workflows')
 					->set('published = 0')
-					->where('id = ' . $wid);
+					->where('id IN (' . implode(',',$this->db->quote($wid)) . ')');
 
 				try {
 					$this->db->setQuery($query);
 					$deleted = $this->db->execute();
 				} catch (Exception $e) {
-					Log::add('Error while unpublishing workflow [' . $wid . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					Log::add('Error while unpublishing workflow [' . implode(',',$wid) . '] : ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 			}
 
 			if ($deleted) {
 				$action = $force ? 'deleted' : 'unpublished';
-				Log::add('Workflow [' . $wid . '] ' . $action . ' by user [' . $user_id . ']', Log::INFO, 'com_emundus.workflow');
+				Log::add('Workflow [' . implode(',',$wid) . '] ' . $action . ' by user [' . $user_id . ']', Log::INFO, 'com_emundus.workflow');
 			}
 		}
 
@@ -356,7 +360,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array
 	 */
-	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by =  'esw.id', $order = 'DESC'): array
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by =  'esw.id', $order = 'DESC', $search = ''): array
 	{
 		$workflows = [];
 
@@ -373,6 +377,10 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($programs) && !in_array('all', $programs)) {
 			$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
+		}
+
+		if(!empty($search)) {
+			$query->where($this->db->quoteName('esw.label') . ' LIKE ' . $this->db->quote('%' . $search . '%'));
 		}
 
 		$query->group('esw.id');

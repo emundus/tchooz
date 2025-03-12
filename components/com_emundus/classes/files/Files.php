@@ -364,6 +364,12 @@ class Files
 				'c' => \EmundusHelperAccess::asAccessAction(10, 'c', $this->current_user->id, $fnum),
 				'u' => \EmundusHelperAccess::asAccessAction(10, 'u', $this->current_user->id, $fnum),
 				'd' => \EmundusHelperAccess::asAccessAction(10, 'd', $this->current_user->id, $fnum),
+			],
+			36 => [
+				'r' => \EmundusHelperAccess::asAccessAction(36, 'r', $this->current_user->id, $fnum),
+				'c' => \EmundusHelperAccess::asAccessAction(36, 'c', $this->current_user->id, $fnum),
+				'u' => \EmundusHelperAccess::asAccessAction(36, 'u', $this->current_user->id, $fnum),
+				'd' => \EmundusHelperAccess::asAccessAction(36, 'd', $this->current_user->id, $fnum),
 			]
 		];
 

@@ -1,51 +1,13 @@
-import { _ as _export_sfc, M as Modal, r as resolveComponent, o as openBlock, f as createBlock, w as withCtx, g as createVNode, d as normalizeClass, s as settingsService, u as useGlobalStore, c as createElementBlock, e as createCommentVNode, a as createBaseVNode, F as Fragment, b as renderList, h as withDirectives, v as vShow, t as toDisplayString, S as Swal$1, P as Popover, i as withModifiers, j as shallowRef, k as emailService, T as Tabs } from "./app_emundus.js";
-import { P as Parameter } from "./Parameter.js";
-import LocationForm from "./LocationForm.js";
+import { _ as _export_sfc, s as settingsService, u as useGlobalStore, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock, b as createCommentVNode, d as createBaseVNode, F as Fragment, e as renderList, w as withDirectives, v as vShow, n as normalizeClass, t as toDisplayString, S as Swal$1, P as Popover, M as Modal, f as withCtx, g as withModifiers, h as createVNode, i as shallowRef, j as normalizeStyle, k as nextTick, l as emailService, T as Tabs } from "./app_emundus.js";
+import { P as Parameter, d as dayjs } from "./Parameter.js";
+import { L as LocationPopup } from "./LocationPopup.js";
 import { C as ColorPicker } from "./ColorPicker.js";
 import { I as Info } from "./Info.js";
-import { e as eventsService } from "./events.js";
+import { e as eventsService } from "./events2.js";
 import { D as DatePicker } from "./index.js";
-import { c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, _ as _o, b as createCalendar, v as viewWeek, d as createViewDay, e as createViewWeek } from "./core.js";
-const _sfc_main$6 = {
-  name: "LocationPopup",
-  components: { LocationForm, Modal },
-  emits: ["close", "open"],
-  methods: {
-    beforeClose() {
-      this.$emit("close");
-    },
-    beforeOpen() {
-      this.$emit("open");
-    },
-    closeModal(location_id) {
-      this.$emit("close", location_id);
-    }
-  }
-};
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
-  const _component_LocationForm = resolveComponent("LocationForm");
-  const _component_modal = resolveComponent("modal");
-  return openBlock(), createBlock(_component_modal, {
-    name: "add-location-modal",
-    class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto"),
-    transition: "nice-modal-fade",
-    width: "600px",
-    delay: 100,
-    adaptive: true,
-    clickToClose: false,
-    onClosed: $options.beforeClose,
-    onBeforeOpen: $options.beforeOpen
-  }, {
-    default: withCtx(() => [
-      createVNode(_component_LocationForm, {
-        "is-modal": true,
-        onClose: $options.closeModal
-      }, null, 8, ["onClose"])
-    ]),
-    _: 1
-  }, 8, ["onClosed", "onBeforeOpen"]);
-}
-const LocationPopup = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6], ["__scopeId", "data-v-38369e81"]]);
+import { c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, _ as _o, b as createCalendar, v as viewWeek, d as createViewWeek, m as mergeLocales, t as translations } from "./core.js";
+import "./EventBooking.js";
+import "./LocationForm.js";
 const _sfc_main$5 = {
   name: "EventGlobalSettings",
   components: { ColorPicker, Info, LocationPopup, Parameter },
@@ -60,11 +22,13 @@ const _sfc_main$5 = {
       teamsEnabled: false,
       teamsPublished: false,
       settingsLink: "",
-      eventColor: "#1e1e1e",
+      eventsNames: [],
+      eventColor: "",
       fields: [
         {
           param: "name",
           type: "text",
+          maxlength: 150,
           placeholder: "",
           value: "",
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_NAME",
@@ -148,6 +112,19 @@ const _sfc_main$5 = {
               label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_GENERATE_LINK_BY_SLOT"
             }
           ]
+        },
+        {
+          param: "teams_subject",
+          type: "text",
+          placeholder: "",
+          default: "Entretien de [APPLICANT_NAME]",
+          value: "",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_TEAMS_SUBJECT",
+          helptext: "COM_EMUNDUS_ONBOARD_ADD_EVENT_TEAMS_SUBJECT_HELPTEXT",
+          helpTextType: "icon",
+          displayed: false,
+          displayedOn: "conference_engine",
+          displayedOnValue: "teams"
         },
         {
           param: "manager",
@@ -265,6 +242,11 @@ const _sfc_main$5 = {
   },
   created: function() {
     this.getLocations();
+    eventsService.getEventsNames().then((response) => {
+      if (response.status) {
+        this.eventsNames = response.data;
+      }
+    });
     this.checkTeamsIntegration();
     setInterval(() => {
       this.checkTeamsIntegration();
@@ -276,9 +258,7 @@ const _sfc_main$5 = {
           field.value = this.event[field.param];
         }
       });
-      if (!this.event.color) {
-        this.eventColor = "#1e1e1e";
-      } else {
+      if (this.event.color) {
         this.eventColor = this.event.color;
       }
     }
@@ -287,10 +267,12 @@ const _sfc_main$5 = {
     // Services
     getLocations(location_id = 0) {
       eventsService.getLocations().then((response) => {
-        let options = [{
-          value: 0,
-          label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_LOCATION_SELECT")
-        }];
+        let options = [
+          {
+            value: 0,
+            label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_LOCATION_SELECT")
+          }
+        ];
         if (response.status) {
           Array.prototype.push.apply(options, response.data);
         }
@@ -348,6 +330,21 @@ const _sfc_main$5 = {
       const eventValidationFailed = this.fields.some((field) => {
         if (field.displayed) {
           let ref_name = "event_" + field.param;
+          if (field.param === "name") {
+            if (this.eventsNames.includes(field.value)) {
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: Joomla.Text._("COM_EMUNDUS_ONBOARD_ADD_EVENT_NAME_EXISTS"),
+                customClass: {
+                  title: "em-swal-title",
+                  confirmButton: "em-swal-confirm-button",
+                  actions: "em-swal-single-action"
+                }
+              });
+              return true;
+            }
+          }
           if (!this.$refs[ref_name][0].validate()) {
             return true;
           }
@@ -385,6 +382,9 @@ const _sfc_main$5 = {
             timer: 1500
           }).then(() => {
             this.$emit("reload-event", response.data, 2);
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set("event", response.data);
+            window.history.replaceState({}, "", `${window.location.pathname}?${urlParams}`);
           });
         } else {
           Swal.fire({
@@ -401,7 +401,7 @@ const _sfc_main$5 = {
       const eventValidationFailed = this.fields.some((field) => {
         if (field.displayed) {
           let ref_name = "event_" + field.param;
-          if (!this.$refs[ref_name][0].validate()) {
+          if (this.$refs[ref_name] && !this.$refs[ref_name][0].validate()) {
             return true;
           }
           if (field.type === "multiselect") {
@@ -484,13 +484,15 @@ const _sfc_main$5 = {
       text = text.replace("{{settingsLink}}", this.settingsLink + "#integration");
       return text;
     }
-  }
+  },
+  watch: {}
 };
 const _hoisted_1$5 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_2$5 = { class: "tw-underline" };
-const _hoisted_3$5 = { class: "tw-flex tw-justify-end tw-mt-7" };
-const _hoisted_4$5 = ["disabled"];
-const _hoisted_5$3 = {
+const _hoisted_3$5 = { class: "tw-underline" };
+const _hoisted_4$5 = { class: "tw-mt-7 tw-flex tw-justify-end" };
+const _hoisted_5$3 = ["disabled"];
+const _hoisted_6$1 = {
   key: 1,
   class: "em-page-loader"
 };
@@ -502,36 +504,40 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", null, [
     $data.openedLocationPopup ? (openBlock(), createBlock(_component_LocationPopup, {
       key: 0,
+      location_id: $data.fields[1].value,
       onClose: $options.locationPopupClosed
-    }, null, 8, ["onClose"])) : createCommentVNode("", true),
+    }, null, 8, ["location_id", "onClose"])) : createCommentVNode("", true),
     createBaseVNode("div", _hoisted_1$5, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
         return withDirectives((openBlock(), createElementBlock("div", {
           key: field.param,
-          class: normalizeClass({ "tw-flex tw-items-end tw-justify-between tw-gap-2 tw-w-fit": field.param === "name", "tw-w-full": field.param !== "name" })
+          class: normalizeClass({
+            "tw-flex tw-w-1/2 tw-items-end tw-justify-between tw-gap-2": field.param === "name",
+            "tw-w-full": field.param !== "name"
+          })
         }, [
           field.displayed ? (openBlock(), createBlock(_component_Parameter, {
-            class: normalizeClass({ "tw-w-[35vw]": field.param === "name" }),
+            class: normalizeClass({ "tw-w-full": field.param === "name" }),
             ref_for: true,
             ref: "event_" + field.param,
             key: field.reload ? field.reload : field.param,
             "parameter-object": field,
-            "help-text-type": "above",
+            "help-text-type": field.helpTextType ? field.helpTextType : "above",
             "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
             onValueUpdated: $options.checkConditional
-          }, null, 8, ["class", "parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true),
+          }, null, 8, ["class", "parameter-object", "help-text-type", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true),
           field.param === "name" ? (openBlock(), createBlock(_component_color_picker, {
             key: 1,
             modelValue: $data.eventColor,
             "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.eventColor = $event),
+            swatches: "dark",
             "row-length": 8,
             id: "status_swatches",
+            random: true,
             style: { "top": "-8px" }
           }, null, 8, ["modelValue"])) : createCommentVNode("", true),
           field.param === "conference_engine" && field.value === "teams" && !$data.teamsEnabled ? (openBlock(), createBlock(_component_Info, {
             key: 2,
-            ref_for: true,
-            ref: "event_" + field.param,
             "parameter-object": field,
             text: $options.teamsDisabledText,
             icon: "warning",
@@ -540,29 +546,36 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
             "icon-color": "tw-text-orange-600",
             class: normalizeClass("tw-mt-2")
           }, null, 8, ["parameter-object", "text"])) : createCommentVNode("", true),
-          field.param === "location" ? (openBlock(), createElementBlock("button", {
+          field.param === "location" && field.value === 0 ? (openBlock(), createElementBlock("button", {
             key: 3,
             type: "button",
-            class: "tw-mt-2 tw-flex tw-items-center tw-gap-1 tw-cursor-pointer tw-text-blue-500",
+            class: "tw-mt-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500",
             onClick: _cache[1] || (_cache[1] = ($event) => $data.openedLocationPopup = true)
           }, [
-            _cache[3] || (_cache[3] = createBaseVNode("span", { class: "material-symbols-outlined !tw-text-blue-500" }, "add", -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined !tw-text-blue-500" }, "add", -1)),
             createBaseVNode("span", _hoisted_2$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ADD_LOCATION")), 1)
+          ])) : field.param === "location" ? (openBlock(), createElementBlock("button", {
+            key: 4,
+            type: "button",
+            class: "tw-mt-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1 tw-text-blue-500",
+            onClick: _cache[2] || (_cache[2] = ($event) => $data.openedLocationPopup = true)
+          }, [
+            createBaseVNode("span", _hoisted_3$5, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION")), 1)
           ])) : createCommentVNode("", true)
         ], 2)), [
           [vShow, field.displayed]
         ]);
       }), 128))
     ]),
-    createBaseVNode("div", _hoisted_3$5, [
+    createBaseVNode("div", _hoisted_4$5, [
       createBaseVNode("button", {
         type: "button",
         disabled: $options.disabledSubmit,
         class: "tw-btn-primary tw-cursor-pointer",
-        onClick: _cache[2] || (_cache[2] = ($event) => this.$props.event && Object.keys(this.$props.event).length > 0 ? $options.editEvent(this.$props.event["id"]) : $options.createEvent())
-      }, toDisplayString(this.$props.event && Object.keys(this.$props.event).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_EVENT_GLOBAL_CREATE") : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CREATE")), 9, _hoisted_4$5)
+        onClick: _cache[3] || (_cache[3] = ($event) => this.$props.event && Object.keys(this.$props.event).length > 0 ? $options.editEvent(this.$props.event["id"]) : $options.createEvent())
+      }, toDisplayString(this.$props.event && Object.keys(this.$props.event).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_EVENT_GLOBAL_CREATE") : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CREATE")), 9, _hoisted_5$3)
     ]),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_5$3)) : createCommentVNode("", true)
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_6$1)) : createCommentVNode("", true)
   ]);
 }
 const EventGlobalSettings = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
@@ -591,8 +604,14 @@ const _sfc_main$4 = {
           secondParameterType: "select",
           secondParameterDefault: "minutes",
           secondParameterOptions: [
-            { value: "minutes", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES" },
-            { value: "hours", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS" }
+            {
+              value: "minutes",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES"
+            },
+            {
+              value: "hours",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS"
+            }
           ],
           splitChar: " "
         }
@@ -624,8 +643,14 @@ const _sfc_main$4 = {
           secondParameterType: "select",
           secondParameterDefault: "minutes",
           secondParameterOptions: [
-            { value: "minutes", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES" },
-            { value: "hours", label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS" }
+            {
+              value: "minutes",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES"
+            },
+            {
+              value: "hours",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS"
+            }
           ],
           splitChar: " "
         }
@@ -633,61 +658,81 @@ const _sfc_main$4 = {
       more_fields: [
         {
           param: "slots_availables_to_show",
+          type: "select",
+          placeholder: "",
+          value: 0,
+          concatValue: "",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW",
+          helptext: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW_HELP",
+          helpTextType: "icon",
+          displayed: true,
+          optional: true,
+          options: [
+            { value: 0, label: "COM_EMUNDUS_ONBOARD_EVENTS_SLOTS_ALL" },
+            { value: 10, label: "10" },
+            { value: 20, label: "20" },
+            { value: 50, label: "50" },
+            { value: 100, label: "100" }
+          ]
+        },
+        {
+          param: "slot_can_book_until",
           type: "text",
           placeholder: "",
           value: "",
           concatValue: "",
-          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW",
-          helptext: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_AVAILABLE_TO_SHOW_HELP",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL",
           displayed: true,
-          optional: true
-        }
-        /*{
-          param: 'slot_can_book_until',
-          type: 'text',
-          placeholder: '',
-          value: '',
-          concatValue: '',
-          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL',
-          displayed: true,
-          optional: true,
           splitField: true,
-          secondParameterType: 'select',
-          secondParameterDefault: 'days',
+          secondParameterType: "select",
+          secondParameterDefault: "days",
           secondParameterOptions: [
-            {value: 'days', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS'},
-            {value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE'},
+            {
+              value: "days",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DAYS"
+            },
+            {
+              value: "date",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE"
+            }
           ],
-          splitChar: ' ',
+          splitChar: " ",
+          optional: true
         },
         {
-          param: 'slot_can_cancel',
-          type: 'toggle',
+          param: "slot_can_cancel",
+          type: "toggle",
           value: 0,
-          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL',
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL",
           hideLabel: true,
           displayed: true,
-          optional: true,
+          optional: true
         },
         {
-          param: 'slot_can_cancel_until',
-          type: 'text',
-          placeholder: '',
-          value: '',
-          concatValue: '',
-          label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL',
+          param: "slot_can_cancel_until",
+          type: "text",
+          placeholder: "",
+          value: "",
+          concatValue: "",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL",
           displayed: false,
-          displayedOn: 'slot_can_cancel',
+          displayedOn: "slot_can_cancel",
           displayedOnValue: 1,
           splitField: true,
-          secondParameterType: 'select',
-          secondParameterDefault: 'days',
+          secondParameterType: "select",
+          secondParameterDefault: "days",
           secondParameterOptions: [
-            {value: 'days', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS'},
-            {value: 'date', label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE'},
+            {
+              value: "days",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_CANCEL_UNTIL_DAYS"
+            },
+            {
+              value: "date",
+              label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAN_BOOK_UNTIL_DATE"
+            }
           ],
-          splitChar: ' ',
-        },*/
+          splitChar: " "
+        }
       ]
     };
   },
@@ -711,7 +756,23 @@ const _sfc_main$4 = {
       }
     }
     for (let field of this.more_fields) {
-      if (this.event[field.param]) {
+      if (field.param === "slot_can_book_until") {
+        if (this.event["slot_can_book_until_days"]) {
+          field.value = this.event["slot_can_book_until_days"] + field.splitChar + "days";
+          field.concatValue = "days";
+        } else if (this.event["slot_can_book_until_date"]) {
+          field.value = dayjs(this.event["slot_can_book_until_date"]).format("YYYY-MM-DD") + field.splitChar + "date";
+          field.concatValue = "date";
+        }
+      } else if (field.param === "slot_can_cancel_until") {
+        if (this.event["slot_can_cancel_until_days"]) {
+          field.value = this.event["slot_can_cancel_until_days"] + field.splitChar + "days";
+          field.concatValue = "days";
+        } else if (this.event["slot_can_cancel_until_date"]) {
+          field.value = dayjs(this.event["slot_can_cancel_until_date"]).format("YYYY-MM-DD") + field.splitChar + "date";
+          field.concatValue = "date";
+        }
+      } else {
         field.value = this.event[field.param];
       }
     }
@@ -749,6 +810,8 @@ const _sfc_main$4 = {
             } else {
               slot[field.param] = field.value.value;
             }
+          } else if ((field.param === "slot_can_book_until" || field.param === "slot_can_cancel_until") && field.concatValue.split(" ").slice(-1)[0] === "date") {
+            slot[field.param] = dayjs(field.value).format("YYYY-MM-DD") + field.splitChar + "date";
           } else {
             if (field.concatValue) {
               slot[field.param] = field.concatValue;
@@ -792,6 +855,10 @@ const _sfc_main$4 = {
       if (oldValue !== null && oldValue !== value && !this.formChanged) {
         this.formChanged = true;
       }
+    },
+    handleMoreFieldsValueUpdated(parameter, oldValue, value) {
+      this.checkConditional(parameter, oldValue, value);
+      this.onFormChange(parameter, oldValue, value);
     },
     handleBeforeUnload() {
       var links = [];
@@ -863,10 +930,10 @@ const _hoisted_1$4 = {
 };
 const _hoisted_2$4 = {
   class: "tw-grid tw-justify-between",
-  style: { "grid-template-columns": "repeat(2,40%)" }
+  style: { "grid-template-columns": "repeat(2, 47%)" }
 };
-const _hoisted_3$4 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
-const _hoisted_4$4 = { class: "tw-flex tw-justify-end tw-mt-7" };
+const _hoisted_3$4 = { class: "tw-flex tw-flex-col tw-gap-6" };
+const _hoisted_4$4 = { class: "tw-mt-7 tw-flex tw-justify-end" };
 const _hoisted_5$2 = ["disabled"];
 function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Parameter = resolveComponent("Parameter");
@@ -901,10 +968,10 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
               ref_for: true,
               ref: "event_slot_settings_" + field.param,
               "parameter-object": field,
-              "help-text-type": "above",
+              "help-text-type": field.helpTextType ? field.helpTextType : "above",
               "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
               onValueUpdated: $options.onFormChange
-            }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true)
+            }, null, 8, ["parameter-object", "help-text-type", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true)
           ])), [
             [vShow, field.displayed]
           ]);
@@ -914,20 +981,20 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.more_fields, (field) => {
           return withDirectives((openBlock(), createElementBlock("div", {
             key: field.param,
-            class: "tw-w-[51%]"
+            class: "tw-w-full"
           }, [
             field.displayed ? (openBlock(), createBlock(_component_Parameter, {
               key: 0,
+              class: normalizeClass([
+                field.param === "slot_can_book_until" || field.param === "slot_can_cancel_until" ? "tw-w-1/2" : "tw-w-full"
+              ]),
               ref_for: true,
               ref: "event_slot_settings_" + field.param,
               "parameter-object": field,
-              "help-text-type": "above",
+              "help-text-type": field.helpTextType ? field.helpTextType : "above",
               "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
-              onValueUpdated: _cache[0] || (_cache[0] = ($event) => {
-                $options.checkConditional;
-                $options.onFormChange;
-              })
-            }, null, 8, ["parameter-object", "multiselect-options"])) : createCommentVNode("", true)
+              onValueUpdated: $options.handleMoreFieldsValueUpdated
+            }, null, 8, ["class", "parameter-object", "help-text-type", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true)
           ])), [
             [vShow, field.displayed]
           ]);
@@ -938,7 +1005,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
           type: "button",
           class: "tw-btn-primary tw-cursor-pointer",
           disabled: $options.disabledSubmit,
-          onClick: _cache[1] || (_cache[1] = (...args) => $options.setupSlots && $options.setupSlots(...args))
+          onClick: _cache[0] || (_cache[0] = (...args) => $options.setupSlots && $options.setupSlots(...args))
         }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CREATE")), 9, _hoisted_5$2)
       ])
     ])) : createCommentVNode("", true)
@@ -1020,30 +1087,28 @@ const _sfc_main$3 = {
             trackBy: "value"
           },
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_MANAGER",
-          placeholder: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_USERS_PLACEHOLDER",
-          icon: "group",
+          placeholder: "",
           displayed: true,
           optional: true
         },
         {
           param: "start_date",
-          type: "datetime",
+          type: "time",
           placeholder: "",
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_START_DATE",
-          icon: "schedule",
           helptext: "",
           displayed: true
         },
         {
           param: "end_date",
-          type: "datetime",
+          type: "time",
           placeholder: "",
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_END_DATE",
           helptext: "",
           displayed: true
@@ -1053,9 +1118,8 @@ const _sfc_main$3 = {
           type: "select",
           placeholder: "",
           value: 0,
-          hideLabel: true,
+          hideLabel: false,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_ROOM",
-          icon: "location_on",
           helptext: "",
           displayed: true,
           optional: true,
@@ -1064,12 +1128,11 @@ const _sfc_main$3 = {
         {
           param: "slot_capacity",
           type: "text",
-          value: "",
-          hideLabel: true,
+          value: 1,
+          hideLabel: false,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAPACITY",
-          placeholder: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAPACITY_PLACEHOLDER",
-          icon: "pin",
-          helptext: "",
+          placeholder: "",
+          helptext: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CAPACITY_PLACEHOLDER",
           displayed: true,
           optional: true,
           options: []
@@ -1078,10 +1141,9 @@ const _sfc_main$3 = {
           param: "more_infos",
           type: "textarea",
           value: "",
-          hideLabel: true,
+          hideLabel: false,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_MORE_INFOS",
           placeholder: "COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_MORE_INFOS_PLACEHOLDER",
-          icon: "notes",
           helptext: "",
           displayed: true,
           optional: true,
@@ -1098,8 +1160,14 @@ const _sfc_main$3 = {
     if (!this.$props.slot) {
       this.fields.find((field) => field.param === "start_date").value = this.roundToQuarter(this.date);
       const date = new Date(this.date);
-      date.setMinutes(date.getMinutes() + 30);
+      if (this.$props.duration_type === "minutes") {
+        date.setMinutes(date.getMinutes() + this.$props.duration);
+      } else {
+        date.setHours(date.getHours() + this.$props.duration);
+      }
       this.fields.find((field) => field.param === "end_date").value = this.roundToQuarter(null, date);
+      this.minDate = new Date(date);
+      this.minDate.setDate(this.minDate.getDate() + 1);
     } else {
       this.fields.find((field) => field.param === "start_date").value = this.$props.slot.start;
       this.fields.find((field) => field.param === "end_date").value = this.$props.slot.end;
@@ -1125,10 +1193,12 @@ const _sfc_main$3 = {
     },
     getRooms() {
       eventsService.getRooms(this.locationId).then((response) => {
-        let options = [{
-          value: 0,
-          label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ROOM_SELECT")
-        }];
+        let options = [
+          {
+            value: 0,
+            label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ROOM_SELECT")
+          }
+        ];
         if (response.status) {
           Array.prototype.push.apply(options, response.data);
         }
@@ -1144,7 +1214,7 @@ const _sfc_main$3 = {
           if (!this.$refs[ref_name][0].validate()) {
             return true;
           }
-          if (field.type === "datetime") {
+          if (field.type === "time") {
             slot[field.param] = this.formatDate(new Date(field.value));
           } else if (field.type === "multiselect") {
             if (field.multiselectOptions.multiple) {
@@ -1332,11 +1402,6 @@ const _sfc_main$3 = {
       if (idx >= 0) {
         this.repeat_dates.splice(idx, 1);
       }
-    },
-    onFormChange(parameter, oldValue, value) {
-      if (parameter.param == "end_date") {
-        this.minDate = new Date(value);
-      }
     }
   },
   computed: {
@@ -1360,8 +1425,8 @@ const _sfc_main$3 = {
     }
   }
 };
-const _hoisted_1$3 = { class: "tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10" };
-const _hoisted_2$3 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
+const _hoisted_1$3 = { class: "tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4" };
+const _hoisted_2$3 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_3$3 = { key: 0 };
 const _hoisted_4$3 = { key: 1 };
 const _hoisted_5$1 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
@@ -1372,13 +1437,16 @@ const _hoisted_8 = {
   class: "tw-rounded-full tw-bg-profile-full tw-px-2 tw-py-1 tw-text-white"
 };
 const _hoisted_9 = { class: "tw-flex tw-flex-col tw-gap-2" };
-const _hoisted_10 = { class: "tw-flex tw-items-center tw-gap-2 tw-flex-wrap" };
-const _hoisted_11 = { class: "tw-flex tw-items-center tw-gap-1 tw-px-2 tw-py-1 tw-bg-profile-full tw-text-white tw-rounded-full" };
+const _hoisted_10 = {
+  class: "tw-flex tw-flex-wrap tw-items-center tw-gap-2 tw-overflow-y-auto",
+  style: { "max-height": "135px" }
+};
+const _hoisted_11 = { class: "tw-flex tw-items-center tw-gap-1 tw-rounded-full tw-bg-profile-full tw-px-2 tw-py-1 tw-text-white" };
 const _hoisted_12 = ["onClick"];
 const _hoisted_13 = { class: "tw-flex tw-items-center tw-gap-4" };
 const _hoisted_14 = {
   style: { "list-style-type": "none", "margin": "0", "padding-left": "0px", "white-space": "nowrap" },
-  class: "tw-flex tw-flex-col tw-justify-center tw-h-full"
+  class: "tw-flex tw-h-full tw-flex-col tw-justify-center"
 };
 const _hoisted_15 = ["disabled"];
 const _hoisted_16 = { key: 0 };
@@ -1390,7 +1458,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   return openBlock(), createBlock(_component_modal, {
     name: "calendar-slot-modal",
-    class: normalizeClass("placement-center tw-rounded tw-shadow-modal tw-px-4 tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden"),
+    class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-px-4 tw-shadow-modal"),
     transition: "nice-modal-fade",
     width: "60%",
     delay: 100,
@@ -1415,15 +1483,17 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
           return withDirectives((openBlock(), createElementBlock("div", {
             key: field.param,
-            class: normalizeClass({ "-tw-mt-3 tw-ml-7": field.param === "end_date", "tw-w-fit": field.param === "start_date" || field.param === "end_date" })
+            class: normalizeClass({
+              "tw-w-fit": field.param === "start_date" || field.param === "end_date"
+            })
           }, [
             createVNode(_component_Parameter, {
               ref_for: true,
               ref: "slot_" + field.param,
               "parameter-object": field,
               "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
-              onValueUpdated: $options.onFormChange
-            }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])
+              "help-text-type": "above"
+            }, null, 8, ["parameter-object", "multiselect-options"])
           ], 2)), [
             [vShow, field.displayed]
           ]);
@@ -1477,13 +1547,13 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ]),
       createBaseVNode("div", {
-        class: normalizeClass(["tw-flex tw-mt-7 tw-mb-2", { "tw-justify-end": !$props.slot, "tw-justify-between": $props.slot }])
+        class: normalizeClass(["tw-mb-2 tw-mt-7 tw-flex", { "tw-justify-end": !$props.slot, "tw-justify-between": $props.slot }])
       }, [
         createBaseVNode("div", _hoisted_13, [
           $props.slot ? (openBlock(), createElementBlock("button", {
             key: 0,
             type: "button",
-            class: "tw-text-red-500 !tw-w-auto",
+            class: "!tw-w-auto tw-text-red-500",
             onClick: _cache[3] || (_cache[3] = withModifiers(($event) => $options.deleteSlot(), ["prevent"]))
           }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_SLOT_DELETE")), 1)) : createCommentVNode("", true)
         ]),
@@ -1497,15 +1567,15 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           default: withCtx(() => [
             createBaseVNode("ul", _hoisted_14, [
               createBaseVNode("li", {
-                class: "tw-p-2 tw-cursor-pointer hover:tw-bg-neutral-300",
+                class: "tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300",
                 onClick: _cache[4] || (_cache[4] = ($event) => $options.saveSlot(1))
               }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_SLOT_EDIT_ONLY_ONE")), 1),
               createBaseVNode("li", {
-                class: "tw-p-2 tw-cursor-pointer hover:tw-bg-neutral-300",
+                class: "tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300",
                 onClick: _cache[5] || (_cache[5] = ($event) => $options.saveSlot(2))
               }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_SLOT_EDIT_ALL_FUTURES")), 1),
               createBaseVNode("li", {
-                class: "tw-p-2 tw-cursor-pointer hover:tw-bg-neutral-300",
+                class: "tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300",
                 onClick: _cache[6] || (_cache[6] = ($event) => $options.saveSlot(3))
               }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_SLOT_EDIT_ALL")), 1)
             ])
@@ -1525,7 +1595,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-9f611f8f"]]);
+const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-0c00bb63"]]);
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const createCalendarConfig = (vm) => ({
@@ -1537,40 +1607,42 @@ const createCalendarConfig = (vm) => ({
   },
   weekOptions: {
     gridHeight: 900,
-    eventWidth: 95
+    eventWidth: 100
   },
-  views: [
-    createViewDay(),
-    createViewWeek()
-  ],
+  views: [createViewWeek()],
   events: [],
-  plugins: [
-    eventsServicePlugin,
-    calendarControls
-  ],
+  plugins: [eventsServicePlugin, calendarControls],
   callbacks: {
-    /**
-     * Runs before the calendar is rendered
-     * */
-    beforeRender: ($app) => {
-      $app.calendarState.range.value;
-    },
     onClickDateTime: (dateTime) => {
       vm.openSlotPopup(dateTime);
     },
     onEventClick: (event) => {
       vm.openSlotPopup(null, event);
     },
+    onRender($app) {
+      nextTick(() => {
+        vm.addEventListeners();
+        vm.updateCellSize();
+      });
+    },
     onRangeUpdate(range) {
-      let start = new Date(range.start);
-      let end = new Date(range.end);
-      if (start.getDate() === end.getDate()) {
-        vm.setView("day");
-      } else {
-        vm.setView("week");
-      }
+      nextTick(() => {
+        vm.addEventListeners();
+      });
     }
-  }
+  },
+  translations: mergeLocales(translations, {
+    frFR: {
+      Week: "Vue semaine",
+      Day: "Vue jour",
+      Today: "Revenir à aujourd'hui"
+    },
+    enGB: {
+      Week: "Week View",
+      Day: "Day View",
+      Today: "Back to today"
+    }
+  })
 });
 const _sfc_main$2 = {
   name: "EventCalendarSettings",
@@ -1586,30 +1658,67 @@ const _sfc_main$2 = {
       openedSlotPopup: false,
       dateClicked: null,
       currentSlot: null,
-      view: "week"
+      view: "week",
+      selection: {
+        visible: false,
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0
+      },
+      cellHeight: 50,
+      cellWidth: 100,
+      lastMouseX: 0,
+      lastMouseY: 0,
+      lastMouseTarget: null,
+      animationFrame: null
     };
   },
   mounted() {
     const vm = {
       openSlotPopup: this.openSlotPopup,
       dateClicked: this.dateClicked,
-      setView: this.setView
+      addEventListeners: this.addEventListeners,
+      updateCellSize: this.updateCellSize
     };
     this.calendarApp = createCalendar(createCalendarConfig(vm));
     for (const slot of this.$props.event.slots) {
       slot.color = this.event.color;
     }
     if (this.$props.event.slots.length > 0) {
-      let selectedDate = new Date(this.$props.event.slots[this.$props.event.slots.length - 1].start);
+      let key = 0;
+      while (this.$props.event.slots[key] && this.$props.event.slots[key].start < (/* @__PURE__ */ new Date()).toISOString()) {
+        key++;
+      }
+      let selectedDate = new Date(this.$props.event.slots[key].start);
       selectedDate = selectedDate.toISOString().split("T")[0];
       calendarControls.setDate(selectedDate);
     }
     eventsServicePlugin.set(this.$props.event.slots);
   },
+  beforeUnmount() {
+    this.removeEventListeners();
+  },
   created() {
     this.loading = false;
   },
   methods: {
+    addEventListeners() {
+      document.querySelectorAll(".sx__time-grid-day").forEach((el) => {
+        el.addEventListener("mousemove", this.handleMouseMove);
+        el.addEventListener("mouseleave", this.hideSelection);
+      });
+      window.addEventListener("scroll", this.updateSelectionOnScroll);
+      window.addEventListener("resize", this.updateCellSize);
+    },
+    removeEventListeners() {
+      document.querySelectorAll(".sx__time-grid-day").forEach((el) => {
+        el.removeEventListener("mousemove", this.handleMouseMove);
+        el.removeEventListener("mouseleave", this.hideSelection);
+      });
+      window.removeEventListener("scroll", this.updateSelectionOnScroll);
+      window.removeEventListener("resize", this.updateCellSize);
+    },
     openSlotPopup(date, slot = null) {
       if (!this.event.slot_duration) {
         Swal$1.fire({
@@ -1632,7 +1741,9 @@ const _sfc_main$2 = {
         if (parent_slot) {
           parent_slot_id = parent_slot.id;
         }
-        let child_slots = this.$props.event.slots.filter((s) => s.parent_slot_id !== 0 && s.parent_slot_id === parent_slot_id);
+        let child_slots = this.$props.event.slots.filter(
+          (s) => s.parent_slot_id !== 0 && s.parent_slot_id === parent_slot_id
+        );
         if (child_slots.length > 0) {
           for (const child_slot of child_slots) {
             let repeat_date = {};
@@ -1659,8 +1770,55 @@ const _sfc_main$2 = {
     deleteSlot(slot_id) {
       eventsServicePlugin.remove(slot_id);
     },
-    setView(view) {
-      this.view = view;
+    updateCellSize() {
+      this.cellWidth = document.querySelector(".sx__time-grid-day").offsetWidth;
+      this.cellHeight = document.querySelector(".sx__week-grid__hour").offsetHeight;
+      if (this.$props.event.slot_duration_type === "minutes") {
+        this.cellHeight = this.cellHeight / 60 * this.$props.event.slot_duration;
+      } else {
+        this.cellHeight = this.cellHeight * this.$props.event.slot_duration;
+      }
+    },
+    handleMouseMove(event) {
+      if (!this.$refs.calendar) return;
+      this.lastMouseX = event.clientX;
+      this.lastMouseY = event.clientY;
+      this.lastMouseTarget = event.target;
+      if (!event.target.classList.contains("sx__time-grid-day")) {
+        this.hideSelection();
+        return;
+      }
+      if (this.animationFrame) {
+        cancelAnimationFrame(this.animationFrame);
+      }
+      this.animationFrame = requestAnimationFrame(() => {
+        const rect = event.target;
+        let calendarGrid = document.querySelector(".sx__view-container ");
+        const rectCalendar = calendarGrid.getBoundingClientRect();
+        const header = document.querySelector(".sx__calendar-header").offsetHeight + document.querySelector(".sx__week-header").offsetHeight;
+        const relativeX = rect.offsetLeft + 23;
+        const relativeY = event.clientY - rectCalendar.top + header + 20;
+        this.selection = {
+          visible: true,
+          top: relativeY,
+          left: relativeX,
+          width: this.cellWidth,
+          height: this.cellHeight
+        };
+        this.animationFrame = null;
+      });
+    },
+    updateSelectionOnScroll() {
+      if (this.selection.visible) {
+        this.handleMouseMove({
+          clientX: this.lastMouseX,
+          clientY: this.lastMouseY,
+          target: this.lastMouseTarget
+        });
+      }
+    },
+    hideSelection() {
+      this.selection.visible = false;
     }
   },
   computed: {}
@@ -1669,11 +1827,12 @@ const _hoisted_1$2 = {
   key: 1,
   class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6"
 };
-const _hoisted_2$2 = { class: "tw-flex tw-font-semibold tw-items-end tw-mb-0" };
+const _hoisted_2$2 = { class: "tw-mb-0 tw-flex tw-items-end tw-font-semibold" };
 const _hoisted_3$2 = { class: "tw-text-base tw-text-neutral-600" };
 const _hoisted_4$2 = {
   key: 0,
-  class: "tw-mt-4"
+  class: "calendar-container tw-mt-4",
+  ref: "calendar"
 };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_CalendarSlotPopup = resolveComponent("CalendarSlotPopup");
@@ -1691,9 +1850,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       break_every: $props.event.slot_break_every,
       break_time: $props.event.slot_break_time,
       break_time_type: $props.event.slot_break_time_type,
-      onClose: _cache[0] || (_cache[0] = ($event) => {
-        $data.openedSlotPopup = false;
-      }),
+      onClose: _cache[0] || (_cache[0] = ($event) => $data.openedSlotPopup = false),
       onSlotSaved: $options.updateSlots,
       onSlotDeleted: $options.deleteSlot
     }, null, 8, ["date", "slot", "event-id", "location-id", "duration", "duration_type", "break_every", "break_time", "break_time_type", "onSlotSaved", "onSlotDeleted"])) : createCommentVNode("", true),
@@ -1704,7 +1861,10 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("span", _hoisted_3$2, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CALENDAR_HELP")), 1)
         ]),
         $data.calendarApp ? (openBlock(), createElementBlock("div", _hoisted_4$2, [
-          createVNode(_component_ScheduleXCalendar, { "calendar-app": $data.calendarApp }, {
+          createVNode(_component_ScheduleXCalendar, {
+            "calendar-app": $data.calendarApp,
+            class: "tw-relative"
+          }, {
             timeGridEvent: withCtx(({ calendarEvent }) => [
               createVNode(_component_EventDay, {
                 "calendar-event": calendarEvent,
@@ -1713,8 +1873,18 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
               }, null, 8, ["calendar-event", "view"])
             ]),
             _: 1
-          }, 8, ["calendar-app"])
-        ])) : createCommentVNode("", true)
+          }, 8, ["calendar-app"]),
+          $data.selection.visible ? (openBlock(), createElementBlock("div", {
+            key: 0,
+            class: "selection-box",
+            style: normalizeStyle({
+              top: $data.selection.top + "px",
+              left: $data.selection.left + "px",
+              width: $data.selection.width + "px",
+              height: $data.selection.height + "px"
+            })
+          }, null, 4)) : createCommentVNode("", true)
+        ], 512)) : createCommentVNode("", true)
       ])
     ])) : createCommentVNode("", true)
   ]);
@@ -1734,7 +1904,7 @@ const _sfc_main$1 = {
         {
           param: "applicant_notify",
           type: "toggle",
-          value: 1,
+          value: 0,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_NOTIFY",
           displayed: true,
           hideLabel: true,
@@ -1765,104 +1935,104 @@ const _sfc_main$1 = {
           displayedOn: "applicant_notify",
           displayedOnValue: 1,
           optional: false
+        },
+        {
+          param: "applicant_recall",
+          type: "toggle",
+          value: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL",
+          displayed: true,
+          hideLabel: true,
+          optional: true
+        },
+        {
+          param: "applicant_recall_frequency",
+          type: "text",
+          value: 1,
+          default: 7,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY",
+          displayed: false,
+          displayedOn: "applicant_recall",
+          displayedOnValue: 1,
+          endText: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT",
+          optional: true
+        },
+        {
+          param: "applicant_recall_email",
+          type: "select",
+          value: 0,
+          default: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_EMAIL",
+          displayed: false,
+          displayedOn: "applicant_recall",
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
+        {
+          param: "manager_recall",
+          type: "toggle",
+          value: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL",
+          displayed: true,
+          hideLabel: true,
+          optional: true
+        },
+        {
+          param: "manager_recall_frequency",
+          type: "text",
+          value: 1,
+          default: 7,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY",
+          displayed: false,
+          displayedOn: "manager_recall",
+          displayedOnValue: 1,
+          endText: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_FREQUENCY_END_TEXT"
+        },
+        {
+          param: "manager_recall_email",
+          type: "select",
+          value: 0,
+          default: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL",
+          displayed: false,
+          displayedOn: "manager_recall",
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
+        },
+        {
+          param: "users_recall",
+          type: "toggle",
+          value: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL",
+          displayed: true,
+          hideLabel: true,
+          optional: true
+        },
+        {
+          param: "users_recall_frequency",
+          type: "text",
+          value: 1,
+          default: 7,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY",
+          displayed: false,
+          displayedOn: "users_recall",
+          displayedOnValue: 1,
+          endText: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT"
+        },
+        {
+          param: "users_recall_email",
+          type: "select",
+          value: 0,
+          default: 0,
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL",
+          displayed: false,
+          displayedOn: "users_recall",
+          displayedOnValue: 1,
+          options: [],
+          reload: 0
         }
-        // {
-        //   param: 'applicant_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'applicant_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'applicant_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
-        //   optional: true,
-        // },
-        // {
-        //   param: 'applicant_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'applicant_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
-        // {
-        //   param: 'manager_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'manager_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'manager_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_FREQUENCY_END_TEXT'
-        // },
-        // {
-        //   param: 'manager_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'manager_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
-        // {
-        //   param: 'users_recall',
-        //   type: 'toggle',
-        //   value: 1,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_USERS_RECALL',
-        //   displayed: true,
-        //   hideLabel: true,
-        //   optional: true,
-        // },
-        // {
-        //   param: 'users_recall_frequency',
-        //   type: 'text',
-        //   value: 1,
-        //   default: 7,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY',
-        //   displayed: false,
-        //   displayedOn: 'users_recall',
-        //   displayedOnValue: 1,
-        //   endText: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_RECALL_FREQUENCY_END_TEXT',
-        // },
-        // {
-        //   param: 'users_recall_email',
-        //   type: 'select',
-        //   value: 0,
-        //   default: 0,
-        //   label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_MANAGER_RECALL_EMAIL',
-        //   displayed: false,
-        //   displayedOn: 'users_recall',
-        //   displayedOnValue: 1,
-        //   options: [],
-        //   reload: 0
-        // },
       ]
     };
   },
@@ -1873,7 +2043,6 @@ const _sfc_main$1 = {
           field.value = this.event["notifications"][field.param];
         }
       }
-      console.log(this.fields);
       this.loading = false;
     });
   },
@@ -1890,14 +2059,19 @@ const _sfc_main$1 = {
                 label: email.subject
               });
             }
-            let options = [{
-              value: 0,
-              label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_EMAIL_SELECT")
-            }];
+            let options = [
+              {
+                value: 0,
+                label: this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_EMAIL_SELECT")
+              }
+            ];
             if (response.status) {
               Array.prototype.push.apply(options, emails);
             }
             this.fields.find((field) => field.param === "applicant_notify_email").options = options;
+            this.fields.find((field) => field.param === "applicant_recall_email").options = options;
+            this.fields.find((field) => field.param === "manager_recall_email").options = options;
+            this.fields.find((field) => field.param === "users_recall_email").options = options;
             resolve({ status: true, options });
           } else {
             reject({ status: false });
@@ -1982,7 +2156,7 @@ const _hoisted_1$1 = {
   key: 0,
   class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6"
 };
-const _hoisted_2$1 = { class: "tw-flex tw-justify-end tw-mt-7" };
+const _hoisted_2$1 = { class: "tw-mt-7 tw-flex tw-justify-end" };
 const _hoisted_3$1 = ["disabled"];
 const _hoisted_4$1 = {
   key: 1,
@@ -1990,11 +2164,15 @@ const _hoisted_4$1 = {
 };
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Parameter = resolveComponent("Parameter");
+  const _component_Info = resolveComponent("Info");
   return openBlock(), createElementBlock("div", null, [
     !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_1$1, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
         return withDirectives((openBlock(), createElementBlock("div", {
-          key: field.param
+          key: field.param,
+          class: normalizeClass([
+            field.param === "applicant_recall_frequency" || field.param === "manager_recall_frequency" || field.param === "users_recall_frequency" ? "tw-w-1/2" : "tw-w-full"
+          ])
         }, [
           field.displayed ? (openBlock(), createBlock(_component_Parameter, {
             ref_for: true,
@@ -2004,8 +2182,17 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             "help-text-type": "above",
             "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null,
             onValueUpdated: $options.checkConditional
-          }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true)
-        ])), [
+          }, null, 8, ["parameter-object", "multiselect-options", "onValueUpdated"])) : createCommentVNode("", true),
+          !$props.event.manager && field.param === "manager_recall" && field.value === "1" ? (openBlock(), createBlock(_component_Info, {
+            key: field.value,
+            text: _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_INFO_BEFORE_NOTIFICATIONS_MANAGER_RECALL"),
+            icon: "warning",
+            "bg-color": "tw-bg-orange-100",
+            "icon-type": "material-icons",
+            "icon-color": "tw-text-orange-600",
+            class: normalizeClass("tw-mt-4")
+          }, null, 8, ["text"])) : createCommentVNode("", true)
+        ], 2)), [
           [vShow, field.displayed]
         ]);
       }), 128))
@@ -2024,12 +2211,18 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
 const EventEmailSettings = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const _sfc_main = {
   name: "EventForm",
-  components: { EventEmailSettings, EventCalendarSettings, EventSlotsSettings, EventGlobalSettings, Tabs },
+  components: {
+    EventEmailSettings,
+    EventCalendarSettings,
+    EventSlotsSettings,
+    EventGlobalSettings,
+    Tabs
+  },
   props: {},
   data: () => ({
     loading: true,
     event_id: 0,
-    event: {},
+    event: null,
     tabs: [
       {
         id: 1,
@@ -2077,11 +2270,27 @@ const _sfc_main = {
     }
   },
   methods: {
+    goBack() {
+      if (typeof window.history !== "undefined") {
+        window.history.back();
+      } else {
+        this.redirectJRoute("index.php?option=com_emundus&view=events");
+      }
+    },
     redirectJRoute(link) {
       settingsService.redirectJRoute(link, useGlobalStore().getCurrentLang);
     },
     handleChangeTab(tab_id) {
       this.$refs.tabsComponent.changeTab(tab_id);
+    },
+    reloadEvent(tab_id) {
+      if (tab_id === 3) {
+        if (isNaN(this.event_id)) {
+          this.event_id = this.event.id;
+        }
+        this.event = null;
+        this.getEvent(this.event_id);
+      }
     },
     // Display a message when the user clicks on a disabled tab
     displayDisabledMessage(tab) {
@@ -2127,7 +2336,7 @@ const _sfc_main = {
 const _hoisted_1 = { class: "events__add-event" };
 const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
 const _hoisted_3 = { class: "tw-mt-4" };
-const _hoisted_4 = { class: "tw-w-full tw-rounded-coordinator tw-p-6 tw-bg-white tw-border tw-border-neutral-300 tw-relative" };
+const _hoisted_4 = { class: "tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6" };
 const _hoisted_5 = {
   key: 0,
   class: "em-page-loader"
@@ -2141,22 +2350,23 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createBaseVNode("div", null, [
       createBaseVNode("div", {
-        class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300 goback-btn",
-        onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=events"))
+        class: "goback-btn tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
+        onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
       }, [
         _cache[3] || (_cache[3] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
         createBaseVNode("span", _hoisted_2, toDisplayString(_ctx.translate("BACK")), 1)
       ]),
       createBaseVNode("h1", _hoisted_3, toDisplayString(this.event && Object.keys(this.event).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_EVENT_GLOBAL_CREATE") + " " + this.event["name"] : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT")), 1),
-      _cache[4] || (_cache[4] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-8" }, null, -1)),
+      _cache[4] || (_cache[4] = createBaseVNode("hr", { class: "tw-mb-8 tw-mt-1.5" }, null, -1)),
       !_ctx.loading ? (openBlock(), createElementBlock(Fragment, { key: 0 }, [
         createVNode(_component_Tabs, {
           ref: "tabsComponent",
           classes: "tw-flex tw-items-center tw-gap-2 tw-ml-7",
           tabs: _ctx.tabs,
           context: _ctx.event_id ? "event_form_" + _ctx.event_id : "",
-          onClickDisabledTab: $options.displayDisabledMessage
-        }, null, 8, ["tabs", "context", "onClickDisabledTab"]),
+          onClickDisabledTab: $options.displayDisabledMessage,
+          onChangeTabActive: $options.reloadEvent
+        }, null, 8, ["tabs", "context", "onClickDisabledTab", "onChangeTabActive"]),
         createBaseVNode("div", _hoisted_4, [
           _ctx.tabs[0].active ? (openBlock(), createBlock(_component_EventGlobalSettings, {
             key: 0,
@@ -2168,7 +2378,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             event: _ctx.event,
             onReloadEvent: $options.getEvent
           }, null, 8, ["event", "onReloadEvent"])) : createCommentVNode("", true),
-          _ctx.tabs[2].active ? (openBlock(), createBlock(_component_EventCalendarSettings, {
+          _ctx.tabs[2].active && _ctx.event ? (openBlock(), createBlock(_component_EventCalendarSettings, {
             key: 2,
             event: _ctx.event,
             onGoBack: _cache[1] || (_cache[1] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=events"))

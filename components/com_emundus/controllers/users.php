@@ -1777,4 +1777,20 @@ class EmundusControllerUsers extends BaseController
 		echo json_encode(['csvFilePath' => $path, 'fileName' => $export_filename]);
 		exit;
 	}
+
+	public function getacl()
+	{
+		$action = $this->input->get('action');
+		$crud = $this->input->getString('crud', 'r');
+		$fnum = $this->input->getString('fnum', '');
+
+		if(is_string($action)) {
+			$action = EmundusHelperAccess::getActionIdFromActionName($action);
+		}
+
+		$right = EmundusHelperAccess::asAccessAction($action, $crud, $this->user->id, $fnum);
+
+		echo json_encode(array('status' => true, 'right' => $right));
+		exit;
+	}
 }

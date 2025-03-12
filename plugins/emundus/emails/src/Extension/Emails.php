@@ -53,8 +53,10 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 		];
 	}
 
-	public function checkNotifications(GenericEvent $event): void
+	public function checkNotifications(GenericEvent $event): bool
 	{
+		$sent = false;
+
 		$data = $event->getArguments();
 		$db = $this->getDatabase();
 
@@ -121,7 +123,7 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					];
 
 					// Generate ICS file to tmp folder and attach it to the email
-					$ics_file = JPATH_BASE . '/tmp/' . $data['fnum'] . '.ics';
+					$ics_file = JPATH_BASE . '/tmp/' . str_replace(' ', '_', $email_to_send['ics_event_name']) . '.ics';
 					$ics = "BEGIN:VCALENDAR\n";
 					$ics .= "VERSION:2.0\n";
 					$ics .= "PRODID:-//hacksw/handcal//NONSGML v1.0//EN\n";
@@ -136,6 +138,8 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					file_put_contents($ics_file, $ics);
 
 					$sent = $m_emails->sendEmail($data['fnum'], $email_to_send['applicant_notify_email'], $post, [$ics_file]);
+				} else {
+					$sent = true;
 				}
 			}
 			catch (\Exception $e)
@@ -143,5 +147,9 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 				Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'emundus');
 			}
 		}
+
+		$event->setArgument('sent', $sent);
+
+		return $sent;
 	}
 }

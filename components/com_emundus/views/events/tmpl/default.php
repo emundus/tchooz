@@ -13,16 +13,25 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 
 Text::script('COM_EMUNDUS_ONBOARD_EVENTS');
+Text::script('COM_EMUNDUS_ONBOARD_EVENTS_INTRO');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_EVENT');
 Text::script('COM_EMUNDUS_ONBOARD_NOEVENTS');
 Text::script('COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS');
 Text::script('COM_EMUNDUS_ONBOARD_EVENT_DELETE_CONFIRM');
 Text::script('COM_EMUNDUS_EDIT_ITEM');
+Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_DELETE');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_LOCATION');
+Text::script('COM_EMUNDUS_ONBOARD_LOCATION_DELETE_CONFIRM');
 
 Text::script('COM_EMUNDUS_ONBOARD_SEARCH');
 Text::script('COM_EMUNDUS_ONBOARD_RESULTS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 Text::script('COM_EMUNDUS_ONBOARD_LABEL');
+Text::script('COM_EMUNDUS_PAGINATION_DISPLAY');
+Text::script('COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS_ALL');
+Text::script('COM_EMUNDUS_ONBOARD_NO_EVENTS');
 
 defined('_JEXEC') or die('Restricted Access');
 
@@ -54,8 +63,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 <style link="media/com_emundus_vue/app_emundus.css?<?php echo $hash ?>"></style>
 
 <div id="em-component-vue"
-     component="List"
-     type="events"
+     component="Events/Events"
      shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
      defaultLang="<?= $default_lang ?>"
      coordinatorAccess="<?= $coordinator_access ?>"

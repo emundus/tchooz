@@ -54,15 +54,16 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'onAfterCampaignUpdate' => 'onAfterCampaignUpdate',
-			'onAfterCampaignCreate' => 'onAfterCampaignCreate',
-			'onAfterUpdateConfiguration' => 'onAfterUpdateConfiguration',
+			'onAfterCampaignUpdate'          => 'onAfterCampaignUpdate',
+			'onAfterCampaignCreate'          => 'onAfterCampaignCreate',
+			'onAfterUpdateConfiguration'     => 'onAfterUpdateConfiguration',
 			'onAfterMicrosoftDynamicsCreate' => 'onAfterMicrosoftDynamicsCreate',
 			'onAfterMicrosoftDynamicsUpdate' => 'onAfterMicrosoftDynamicsUpdate',
 			'onAfterAmmonApplicantCreate' => 'onAfterAmmonApplicantCreate',
 			'onAfterAmmonRegistration' => 'onAfterAmmonRegistration',
 			'onAmmonFoundSimilarName' => 'onAmmonFoundSimilarName',
 			'onAmmonSync' => 'onAmmonSync',
+			'onWebhookCallbackFailed'        => 'onWebhookCallbackFailed',
 		];
 	}
 
@@ -70,7 +71,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$data = $arguments['data'];
+		$data     = $arguments['data'];
 		$old_data = $arguments['old_data'];
 
 		$jUser = $this->getApplication()->getIdentity();
@@ -78,7 +79,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CAMPAIGN';
 		$context            = 'com_emundus.campaign';
 
-		$cid            = $data['id'];
+		$cid                         = $data['id'];
 		$more_data['campaign_label'] = $data['label'];
 
 		$this->setDiffData($data, $old_data);
@@ -94,7 +95,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_CREATE_CAMPAIGN';
 		$context            = 'com_emundus.campaign';
 
-		$cid            = $data['id'];
+		$cid                         = $data['id'];
 		$more_data['campaign_label'] = $data['label'];
 
 		$message = $this->setMessage($cid, 'update', 'PLG_ACTIONLOG_EMUNDUS_CAMPAIGN_CREATE', 'done', [], $data, $more_data);
@@ -106,10 +107,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	{
 		$arguments = $event->getArguments();
 
-		$data = $arguments['data'];
+		$data     = $arguments['data'];
 		$old_data = $arguments['old_data'];
-		$status = $arguments['status'];
-		$context = $arguments['context'] ?: 'com_emundus.configuration';
+		$status   = $arguments['status'];
+		$context  = $arguments['context'] ?: 'com_emundus.configuration';
 
 		$jUser = $this->getApplication()->getIdentity();
 
@@ -117,9 +118,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 		$this->setDiffData($data, $old_data);
 
-		$id = ComponentHelper::getComponent('com_emundus')->id;
+		$id    = ComponentHelper::getComponent('com_emundus')->id;
 		$title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE';
-		if(!empty($type)) {
+		if (!empty($type))
+		{
 			$title .= '_' . strtoupper($type);
 		}
 		$message = $this->setMessage($id, 'update', $title, $status, $old_data, $data);
@@ -152,7 +154,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE';
 		$context            = 'com_emundus.microsoftdynamics';
 
-		$more_data['entity'] = $arguments['config']['name'];
+		$more_data['entity']  = $arguments['config']['name'];
 		$more_data['message'] = $arguments['message'];
 
 		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
@@ -226,12 +228,26 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}
 
+	public function onWebhookCallbackFailed(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_EMUNDUS_WEBHOOK_CALLBACK_FAILED';
+		$context            = 'com_emundus.webhook.'.$arguments['type'];
+
+		$message = $this->setMessage(0, 'create', 'PLG_EMUNDUS_WEBHOOK_CALLBACK_FAILED', 'error', [], [], $arguments['datas']);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
 	private function setMessage($id = 0, $action = 'update', $title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE', $status = 'done', $old_data = [], $new_data = [], $more_data = [])
 	{
 		$jUser = $this->getApplication()->getIdentity();
 
 		$message = [
-			'id' => $id,
+			'id'          => $id,
 			'action'      => $action,
 			'title'       => $title,
 			'userid'      => $jUser->id,
@@ -242,7 +258,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'new_data'    => json_encode($new_data),
 		];
 
-		if(!empty($more_data)) {
+		if (!empty($more_data))
+		{
 			$message = array_merge($message, $more_data);
 		}
 
@@ -251,7 +268,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	private function setDiffData(&$data, &$old_data)
 	{
-		if (!empty($data)) {
+		if (!empty($data))
+		{
 			$diff              = array_diff_assoc($data, $old_data);
 			$columns_to_remove = array_diff_key($old_data, $diff);
 			foreach ($columns_to_remove as $key => $value)

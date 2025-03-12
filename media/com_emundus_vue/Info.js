@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as normalizeClass, t as toDisplayString, e as createCommentVNode, a as createBaseVNode } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, n as normalizeClass, t as toDisplayString, b as createCommentVNode, d as createBaseVNode } from "./app_emundus.js";
 const _sfc_main = {
   name: "Info",
   components: {},
@@ -61,7 +61,7 @@ const _sfc_main = {
 const _hoisted_1 = ["innerHTML"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
-    class: normalizeClass([[$props.bgColor, $options.borderColor], "tw-rounded tw-flex tw-items-start tw-gap-2 tw-px-5 tw-py-6 tw-border"])
+    class: normalizeClass([[$props.bgColor, $options.borderColor], "tw-flex tw-items-start tw-gap-2 tw-rounded tw-border tw-px-5 tw-py-6"])
   }, [
     $props.displayIcon ? (openBlock(), createElementBlock("span", {
       key: 0,

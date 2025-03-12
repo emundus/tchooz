@@ -17,7 +17,11 @@ RUN curl -o /tmp/sed_4.9-1_$(dpkg --print-architecture).deb http://ftp.fr.debian
 	dpkg -i /tmp/sed_4.9-1_$(dpkg --print-architecture).deb; \
 	rm /tmp/sed_4.9-1_$(dpkg --print-architecture).deb
 
+RUN a2enmod ssl rewrite
+
 # Copy and set custom entrypoint script
+COPY apache/certs/localhost.pem /usr/local/apache2/conf/ssl/localhost.pem
+COPY apache/certs/localhost-key.pem /usr/local/apache2/conf/ssl/localhost-key.pem
 COPY ["./scripts/entrypoint.sh","/entrypoint.sh"]
 COPY ["./installation/templates","/templates"]
 COPY ["./installation/language","/language"]

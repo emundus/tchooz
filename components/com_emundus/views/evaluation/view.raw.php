@@ -83,10 +83,9 @@ class EmundusViewEvaluation extends JViewLegacy
 
 	public function display($tpl = null)
 	{
-		if (!EmundusHelperAccess::asEvaluatorAccessLevel($this->_user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
-
 
 		$jinput       = $this->app->getInput();
 		$this->itemId = $jinput->getInt('Itemid', null);

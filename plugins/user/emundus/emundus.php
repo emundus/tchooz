@@ -256,7 +256,7 @@ class plgUserEmundus extends CMSPlugin
 
 		// If the details are empty, we are probably signing in via LDAP for the first time.
 		if ($isnew && empty($details) && empty($fabrik)) {
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 			$m_users = new EmundusModelusers();
 
 			if (PluginHelper::getPlugin('authentication', 'ldap') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {

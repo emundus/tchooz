@@ -26,7 +26,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Response\JsonResponse;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
-
+use classes\SMS\Synchronizer\OvhSMS;
 
 /**
  * Settings Controller
@@ -2014,6 +2014,36 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
+	public function getapplicants()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+			$properties = $this->input->getString('properties', '');
+
+			if(!empty($properties))
+			{
+				$properties = explode(',', $properties);
+			}
+
+			$event_id = $properties[0] ?? null;
+			$applicantsExceptions = isset($properties[1]) ? [$properties[1]] : [];
+
+			$applicants = $this->m_settings->getApplicants($search_query, $limit, $event_id, $applicantsExceptions);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('APPLICANTS_FOUND');
+			$response['data']    = $applicants;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getavailablemanagers()
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
@@ -2029,6 +2059,29 @@ class EmundusControllersettings extends BaseController
 			$response['code']    = 200;
 			$response['message'] = Text::_('MANAGERS_FOUND');
 			$response['data']    = $managers;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getavailablegroups()
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$profiles = $this->m_settings->getAvailableGroups($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('PROFILES_FOUND');
+			$response['data']    = $profiles;
 		}
 
 		echo json_encode((object) $response);
@@ -2076,6 +2129,36 @@ class EmundusControllersettings extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function getevents()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit = $this->input->getInt('limit', 100);
+
+			$events = $this->m_settings->getEvents($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('EVENTS_FOUND');
+			$response['data']    = $events;
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
 
 	public function getapps()
 	{
@@ -2133,12 +2216,32 @@ class EmundusControllersettings extends BaseController
 			if(!empty($app_id) && !empty($setup)) {
 				$setup = json_decode($setup);
 
-				$response['status'] = $this->m_settings->setupApp($app_id,$setup,$this->user->id);
-				if($response['status']) {
+				$response['status'] = $this->m_settings->setupApp($app_id, $setup, $this->user->id);
+				if ($response['status']) {
+					$app = $this->m_settings->getApp($app_id);
+
 					// Test authentication
-					require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
-					$m_sync = new EmundusModelSync();
-					$response['status'] = $m_sync->testAuthentication($app_id);
+					switch($app->type) {
+						case 'ovh':
+							if (!class_exists('OvhSMS')) {
+								require_once JPATH_ROOT . '/components/com_emundus/classes/SMS/Synchronizer/OvhSMS.php';
+							}
+							$synchronizer = new OvhSMS();
+							$sms_services = $synchronizer->getSmsServices();
+
+							if (!empty($sms_services)) {
+								$response['status'] = true;
+							} else {
+								$response['status'] = false;
+							}
+
+							break;
+						default:
+							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
+							$m_sync = new EmundusModelSync();
+							$response['status'] = $m_sync->testAuthentication($app_id);
+							break;
+					}
 
 					if($response['status'])
 					{
@@ -2201,6 +2304,81 @@ class EmundusControllersettings extends BaseController
 				if($response['status']) {
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getaddons()
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$addons = $this->m_settings->getAddons();
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('ADDONS_FOUND');
+			$response['data']    = $addons;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function toggleaddon()
+	{
+		$this->checkToken('post');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$addon_type = $this->input->getString('addon_type', 0);
+			$enabled = $this->input->getInt('enabled', 1);
+
+			if(!empty($addon_type)) {
+				$response['status'] = $this->m_settings->toggleAddon($addon_type,$enabled);
+				if($response['status']) {
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function setupmessenger()
+	{
+		$this->checkToken('post');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$setup = $this->input->getRaw('setup', '{}');
+
+			if(!empty($setup)) {
+				$setup = json_decode($setup);
+
+				$response['status'] = $this->m_settings->setupMessenger($setup,$this->user->id);
+				if($response['status']) {
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MESSENGER_SETUP_SUCCESS');
 				}
 			}
 		}

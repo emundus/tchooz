@@ -107,18 +107,18 @@ class EmundusHelperUpdate
 	/**
 	 * Enable an emundus plugin
 	 *
-	 * @param $name
+	 * @param $element
 	 * @param $folder
 	 *
 	 * @return false|mixed
 	 *
 	 * @since version 1.33.0
 	 */
-	public static function enableEmundusPlugins($name, $folder = null)
+	public static function enableEmundusPlugins($element, $folder = null)
 	{
 		$enabled = false;
 
-		if (!empty($name))
+		if (!empty($element))
 		{
 			$db    = Factory::getDbo();
 			$query = $db->getQuery(true);
@@ -128,7 +128,7 @@ class EmundusHelperUpdate
 				$query->update($db->quoteName('#__extensions'))
 					->set($db->quoteName('enabled') . ' = 1')
 					->set($db->quoteName('state') . ' = 0')
-					->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
+					->where($db->quoteName('element') . ' LIKE ' . $db->quote($element));
 
 				if (!empty($folder))
 				{
@@ -3163,7 +3163,7 @@ class EmundusHelperUpdate
 		return $response;
 	}
 
-	public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0)
+	public static function createModule($title, $position, $module, $params, $published = 0, $page = 0, $access = 1, $showtitle = 0, $client_id = 0, $message = true)
 	{
 		$created = ['status' => false, 'module_id' => 0];
 
@@ -3235,7 +3235,10 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				EmundusHelperUpdate::displayMessage($title . ' module already exists.');
+				if($message)
+				{
+					EmundusHelperUpdate::displayMessage($title . ' module already exists.');
+				}
 				$created['module_id'] = $is_existing;
 				$created['status']    = true;
 			}
@@ -3478,7 +3481,7 @@ class EmundusHelperUpdate
 						{
 							$query_column .= '(' . $column['length'] . ')';
 						}
-						if (!empty($column['default']))
+						if (isset($column['default']) && $column['default'] !== '')
 						{
 							$query_column .= ' DEFAULT ' . $db->quote($column['default']);
 						}

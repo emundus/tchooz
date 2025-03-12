@@ -14,6 +14,7 @@
 
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 
 /**
@@ -67,30 +68,118 @@ class EmundusControllerMessenger extends BaseController
 		exit;
 	}
 
+	public function getchatroomsbyuser()
+	{
+		$chatrooms = $this->m_messenger->getChatroomsByUser($this->user->id);
+
+		$data = array('data' => $chatrooms);
+
+		echo json_encode((object) $data);
+		exit;
+	}
+	
+	public function getchatroomsbyfnum()
+	{
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
+
+		$fnum = $this->input->getString('fnum');
+		
+		if (!empty($fnum)) {
+			$response['msg'] = Text::_('ACCESS_DENIED');
+
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
+				$response['data']   = $this->m_messenger->getChatroomsByFnum($fnum);
+				$response['msg']    = Text::_('SUCCESS');
+				$response['status'] = true;
+				$response['code']   = 200;
+			}
+		}
+		
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function createchatroom()
+	{
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
+
+		$fnum = $this->input->getString('fnum');
+
+		if (!empty($fnum)) {
+			$response['msg'] = Text::_('ACCESS_DENIED');
+
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
+				$response['data']   = $this->m_messenger->createChatroom($fnum);
+				$response['msg']    = Text::_('SUCCESS');
+				$response['status'] = true;
+				$response['code']   = 200;
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function closechatroom()
+	{
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
+
+		$fnum = $this->input->getString('fnum');
+
+		if (!empty($fnum)) {
+			$response['msg'] = Text::_('ACCESS_DENIED');
+
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
+				$response['status']   = $this->m_messenger->closeChatroom($fnum);
+				$response['msg']    = Text::_('SUCCESS');
+				$response['code']   = 200;
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function openchatroom()
+	{
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
+
+		$fnum = $this->input->getString('fnum');
+
+		if (!empty($fnum)) {
+			$response['msg'] = Text::_('ACCESS_DENIED');
+
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
+				$response['status']   = $this->m_messenger->openChatroom($fnum);
+				$response['msg']    = Text::_('SUCCESS');
+				$response['code']   = 200;
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getmessagesbyfnum()
 	{
-		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
 
 		$fnum         = $this->input->getString('fnum');
-		$current_user = $this->user;
 
-		if (!empty($fnum) && !empty($current_user->id)) {
-			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile          = $this->getModel('Profile');
-			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
-			$response['msg']    = JText::_('ACCESS_DENIED');
+		if (!empty($fnum) && !empty($this->user->id)) {
+			$response['msg']    = Text::_('ACCESS_DENIED');
 
-			if (EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
 				$offset = $this->input->getString('offset', 0);
 
-				$response['data'] = $this->m_messenger->getMessagesByFnum($fnum, $offset);
+				$response['data'] = $this->m_messenger->getMessagesByFnum($fnum, $offset, $this->user->id);
 				if (!empty($response['data'])) {
 					$response['status'] = true;
-					$response['msg']  = JText::_('SUCCESS');
+					$response['msg']  = Text::_('SUCCESS');
 					$response['code'] = 200;
 				}
 				else {
-					$response['msg']  = JText::_('FAIL');
+					$response['msg']  = Text::_('FAIL');
 					$response['code'] = 500;
 				}
 			}
@@ -102,28 +191,24 @@ class EmundusControllerMessenger extends BaseController
 
 	public function sendmessage()
 	{
-		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
 
 		$message = $this->input->getString('message');
 		$fnum    = $this->input->getString('fnum');
 
 		if (!empty($fnum) && !empty($message)) {
-			$response['msg'] = JText::_('ACCESS_DENIED');
-			$current_user    = Factory::getApplication()->getIdentity();
-			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile          = $this->getModel('Profile');
-			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
+			$response['msg'] = Text::_('ACCESS_DENIED');
 
-			if (EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
 				$response['data'] = $this->m_messenger->sendMessage($message, $fnum);
 
 				if (!empty($response['data']->message_id)) {
 					$response['status'] = true;
-					$response['msg']    = JText::_('SUCCESS');
+					$response['msg']    = Text::_('SUCCESS');
 					$response['code']   = 200;
 				}
 				else {
-					$response['msg']  = JText::_('FAIL');
+					$response['msg']  = Text::_('FAIL');
 					$response['code'] = 500;
 				}
 			}
@@ -135,17 +220,16 @@ class EmundusControllerMessenger extends BaseController
 
 	public function getnotifications()
 	{
-		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
 
 		$user = $this->input->getInt('user');
 
 		if (!empty($user)) {
-			$response['msg'] = JText::_('ACCESS_DENIED');
-			$current_user    = JFactory::getUser();
+			$response['msg'] = Text::_('ACCESS_DENIED');
 
-			if ($current_user->id == $user) {
+			if ($this->user->id == $user) {
 				$response['data']   = $this->m_messenger->getNotifications($user);
-				$response['msg']    = JText::_('SUCCESS');
+				$response['msg']    = Text::_('SUCCESS');
 				$response['code']   = 200;
 				$response['status'] = true;
 			}
@@ -157,20 +241,15 @@ class EmundusControllerMessenger extends BaseController
 
 	public function getnotificationsbyfnum()
 	{
-		$response = ['data' => null, 'status' => false, 'msg' => JText::_('BAD_REQUEST'), 'code' => 403];
+		$response = ['data' => null, 'status' => false, 'msg' => Text::_('BAD_REQUEST'), 'code' => 403];
 
 		$fnum = $this->input->getString('fnum');
 
 		if (!empty($fnum)) {
-			$response['msg'] = JText::_('ACCESS_DENIED');
+			$response['msg'] = Text::_('ACCESS_DENIED');
 
-			$current_user = JFactory::getUser();
-			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile          = $this->getModel('Profile');
-			$current_user_fnums = array_keys($m_profile->getApplicantFnums($current_user->id));
-
-			if (EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum) || in_array($fnum, $current_user_fnums)) {
-				$response['data']   = $this->m_messenger->getNotificationsByFnum($fnum);
+			if (EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum)) {
+				$response['data']   = $this->m_messenger->getNotificationsByFnum($fnum, $this->user->id);
 				$response['code']   = 200;
 				$response['status'] = true;
 			}
@@ -182,19 +261,27 @@ class EmundusControllerMessenger extends BaseController
 
 	public function markasread()
 	{
-		$fnum = $this->input->getString('fnum');
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST'), 'data' => null];
 
-		$messages_readed = $this->m_messenger->markAsRead($fnum);
+		$chatroom_id = $this->input->getInt('chatroom_id', 0);
 
-		$data = array('data' => $messages_readed);
+		if(!empty($chatroom_id))
+		{
+			$response['msg'] = Text::_('ACCESS_DENIED');
 
-		echo json_encode((object) $data);
+			$messages_readed = $this->m_messenger->markAsRead($chatroom_id, $this->user->id);
+			$response['data'] = $messages_readed;
+			$response['code']   = 200;
+			$response['status'] = true;
+		}
+
+		echo json_encode((object) $response);
 		exit;
 	}
 
 	public function uploaddocument()
 	{
-		$response = ['status' => false, 'code' => 403, 'msg' => JText::_('BAD_REQUEST'), 'data' => null];
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('BAD_REQUEST'), 'data' => null];
 
 		$file = $this->input->files->get('file');
 
@@ -202,7 +289,7 @@ class EmundusControllerMessenger extends BaseController
 			$fnum = $this->input->get('fnum');
 
 			if (!empty($fnum)) {
-				$response['msg'] = JText::_('ACCESS_DENIED');
+				$response['msg'] = Text::_('ACCESS_DENIED');
 				$message_input   = $this->input->getString('message');
 				$applicant       = $this->input->getBool('applicant');
 				$attachment      = $this->input->getInt('attachment');
@@ -261,7 +348,7 @@ class EmundusControllerMessenger extends BaseController
 
 					}
 					else {
-						$response['msg']    = JText::_('ERROR_WHILE_UPLOADING_YOUR_DOCUMENT');
+						$response['msg']    = Text::_('ERROR_WHILE_UPLOADING_YOUR_DOCUMENT');
 						$response['status'] = false;
 						$response['code']   = 500;
 					}
@@ -311,8 +398,58 @@ class EmundusControllerMessenger extends BaseController
 
 		$fnum = $this->input->getString('fnum');
 
-		if(!empty($fnum) && (EmundusHelperAccess::isFnumMine($this->user->id, $fnum) || EmundusHelperAccess::asAccessAction(36, 'r', $this->user->id, $fnum))) {
+		if(!empty($fnum) && (EmundusHelperAccess::isFnumMine($this->user->id, $fnum) || EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum))) {
 			$m_message->closeMessenger($fnum);
 		}
+	}
+
+	public function gotofile() {
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'route' => '');
+
+		$fnum = $this->input->getString('fnum');
+
+		if(!empty($fnum) && EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum)) {
+			if(!class_exists('EmundusModelProfile')) {
+				require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+			}
+			$m_profile = new EmundusModelProfile();
+			$current_profile = $m_profile->getProfileById($this->app->getSession()->get('emundusUser')->profile);
+
+			$menu  = $this->app->getMenu();
+			$items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
+			if(empty($items)) {
+				$items = $menu->getItems('link', 'index.php?option=com_emundus&view=evaluation', true);
+			}
+
+			if (is_array($items))
+			{
+				$redirect_item = $items[0];
+				foreach ($items as $item)
+				{
+					if ($item->menutype == $current_profile['menutype'])
+					{
+						$redirect_item = $item;
+					}
+				}
+			}
+			else
+			{
+				$redirect_item = $items;
+			}
+
+			if (!empty($redirect_item))
+			{
+				$response['status'] = true;
+				$response['msg'] = Text::_('SUCCESS');
+				$response['route'] = '/' . $redirect_item->route.'#'.$fnum;
+			}
+			else
+			{
+				$response['msg'] = Text::_('NO_FILES_VIEW_AVAILABLE');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
 	}
 }

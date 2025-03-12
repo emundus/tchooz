@@ -1,6 +1,78 @@
-import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, n as normalizeStyle, d as normalizeClass, aa as defineComponent, ab as isReactive, ac as h$5, ad as Teleport, F as Fragment } from "./app_emundus.js";
+import { _ as _export_sfc, M as Modal, u as useGlobalStore, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, j as normalizeStyle, F as Fragment, e as renderList, m as createTextVNode, w as withDirectives, v as vShow, a9 as defineComponent, aa as isReactive, ab as h$5, p as Teleport } from "./app_emundus.js";
+import "./index.js";
+import "./Parameter.js";
+import "./LocationPopup.js";
+var colors = {
+  methods: {
+    lightenColor(color, percent) {
+      let r2 = parseInt(color.slice(1, 3), 16);
+      let g2 = parseInt(color.slice(3, 5), 16);
+      let b2 = parseInt(color.slice(5, 7), 16);
+      let hsl = this.rgbToHsl(r2, g2, b2);
+      if (hsl[2] === 0) {
+        hsl[2] = Math.min(1, percent / 100);
+      } else {
+        hsl[2] = Math.min(1, hsl[2] + (1 - hsl[2]) * (percent / 100));
+      }
+      let newRgb = this.hslToRgb(hsl[0], hsl[1], hsl[2]);
+      return this.rgbToHex(newRgb[0], newRgb[1], newRgb[2]);
+    },
+    rgbToHsl(r2, g2, b2) {
+      r2 /= 255, g2 /= 255, b2 /= 255;
+      let max = Math.max(r2, g2, b2), min = Math.min(r2, g2, b2);
+      let h2, s2, l2 = (max + min) / 2;
+      if (max === min) {
+        h2 = s2 = 0;
+      } else {
+        let d2 = max - min;
+        s2 = l2 > 0.5 ? d2 / (2 - max - min) : d2 / (max + min);
+        switch (max) {
+          case r2:
+            h2 = (g2 - b2) / d2 + (g2 < b2 ? 6 : 0);
+            break;
+          case g2:
+            h2 = (b2 - r2) / d2 + 2;
+            break;
+          case b2:
+            h2 = (r2 - g2) / d2 + 4;
+            break;
+        }
+        h2 /= 6;
+      }
+      return [h2, s2, l2];
+    },
+    // Convertir HSL en RGB
+    hslToRgb(h2, s2, l2) {
+      let r2, g2, b2;
+      if (s2 === 0) {
+        r2 = g2 = b2 = l2;
+      } else {
+        let hue2rgb = function(p3, q3, t2) {
+          if (t2 < 0) t2 += 1;
+          if (t2 > 1) t2 -= 1;
+          if (t2 < 1 / 6) return p3 + (q3 - p3) * 6 * t2;
+          if (t2 < 1 / 2) return q3;
+          if (t2 < 2 / 3) return p3 + (q3 - p3) * (2 / 3 - t2) * 6;
+          return p3;
+        };
+        let q2 = l2 < 0.5 ? l2 * (1 + s2) : l2 + s2 - l2 * s2;
+        let p2 = 2 * l2 - q2;
+        r2 = hue2rgb(p2, q2, h2 + 1 / 3);
+        g2 = hue2rgb(p2, q2, h2);
+        b2 = hue2rgb(p2, q2, h2 - 1 / 3);
+      }
+      return [Math.round(r2 * 255), Math.round(g2 * 255), Math.round(b2 * 255)];
+    },
+    // Convertir RGB en Hex
+    rgbToHex(r2, g2, b2) {
+      return "#" + (1 << 24 | r2 << 16 | g2 << 8 | b2).toString(16).slice(1);
+    }
+  }
+};
 const _sfc_main = {
   name: "EventDay",
+  components: { Modal },
+  emits: ["valueUpdated", "update-items", "edit-modal"],
   props: {
     calendarEvent: {
       type: Object,
@@ -12,19 +84,24 @@ const _sfc_main = {
     },
     editAction: {
       type: String
-    },
-    preset: {
-      type: String,
-      default: "basic"
     }
   },
+  mixins: [colors],
   data() {
     return {
       actualLanguage: "fr-FR",
       eventStartDate: null,
       eventEndDate: null,
-      eventDay: ""
+      eventDay: "",
+      availableSlotHovered: -1,
+      showModal: false,
+      currentSlotId: null
     };
+  },
+  mounted() {
+    this.$nextTick(() => {
+      this.applyEventStyles();
+    });
   },
   created() {
     const globalStore = useGlobalStore();
@@ -32,114 +109,165 @@ const _sfc_main = {
     this.eventStartDate = new Date(this.calendarEvent.start);
     this.eventEndDate = new Date(this.calendarEvent.end);
   },
-  methods: {},
+  methods: {
+    openModal(slot, registrant = null) {
+      this.$emit("edit-modal", slot, registrant);
+    },
+    updateItems() {
+      this.$emit("update-items");
+    },
+    applyEventStyles() {
+      let eventElement = document.querySelector(`[data-event-id="${this.calendarEvent.id}"]`);
+      if (eventElement) {
+        eventElement.style.width = this.calendarEvent.width;
+        eventElement.style.left = this.calendarEvent.left;
+      }
+    }
+  },
   watch: {
     calendarEvent: {
       handler() {
         this.eventStartDate = new Date(this.calendarEvent.start);
         this.eventEndDate = new Date(this.calendarEvent.end);
+        this.$nextTick(() => {
+          this.applyEventStyles();
+        });
       },
       deep: true
     }
   },
   computed: {
-    eventPeople() {
-      let people = this.calendarEvent.people;
-      if (Array.isArray(this.calendarEvent.people)) {
-        people = this.calendarEvent.people.join(", ");
-      }
-      return people;
-    },
     eventHours() {
       return this.eventStartDate.toLocaleTimeString(this.actualLanguage, {
         hour: "2-digit",
         minute: "2-digit"
-      }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, { hour: "2-digit", minute: "2-digit" });
+      }) + " - " + this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+        hour: "2-digit",
+        minute: "2-digit"
+      });
     },
-    textColor() {
-      if (this.calendarEvent.color) {
-        const color = this.calendarEvent.color;
-        const r2 = parseInt(color.substr(1, 2), 16);
-        const g2 = parseInt(color.substr(3, 2), 16);
-        const b2 = parseInt(color.substr(5, 2), 16);
-        const brightness = Math.round((r2 * 299 + g2 * 587 + b2 * 114) / 1e3);
-        return brightness > 125 ? "#000" : "#fff";
-      } else {
-        return "#000";
+    brightnessColor() {
+      return this.lightenColor(this.calendarEvent.color, 90);
+    },
+    availableSlots() {
+      return this.calendarEvent.availabilities_count - this.calendarEvent.booked_count;
+    },
+    generateNumbers() {
+      let numbers = [];
+      let i2 = 0;
+      while (i2 < this.calendarEvent.availabilities_count - this.calendarEvent.booked_count) {
+        numbers.push(i2);
+        i2++;
       }
+      return numbers;
     }
   }
 };
 const _hoisted_1 = { key: 0 };
-const _hoisted_2 = {
+const _hoisted_2 = { key: 0 };
+const _hoisted_3 = { class: "tw-flex tw-overflow-hidden tw-text-ellipsis tw-text-xs tw-font-semibold" };
+const _hoisted_4 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_5 = {
   key: 1,
   class: "tw-flex tw-items-center tw-gap-2"
 };
-const _hoisted_3 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_4 = {
-  key: 2,
-  class: "tw-flex tw-items-center tw-gap-2"
+const _hoisted_6 = {
+  key: 0,
+  class: "tw-mb-1 tw-h-full"
 };
-const _hoisted_5 = {
-  key: 3,
-  class: "tw-flex tw-items-center tw-gap-2"
+const _hoisted_7 = ["onClick"];
+const _hoisted_8 = {
+  key: 1,
+  class: "tw-flex tw-h-full tw-flex-col tw-gap-1"
 };
+const _hoisted_9 = ["onMouseover"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
-    class: normalizeClass(["tw-flex tw-h-full tw-gap-2", {
-      "tw-flex-col tw-p-2": $props.view === "week" || $props.preset === "full",
-      "tw-items-center tw-flex-row tw-px-2 tw-border-2 tw-border-neutral-300": $props.view === "day" && $props.preset !== "full",
-      "tw-border-s-neutral-300 sx__stripped_event": $props.calendarEvent.booked_count >= $props.calendarEvent.availabilities_count
-    }]),
-    style: normalizeStyle({ backgroundColor: $props.calendarEvent.color, color: $options.textColor })
+    class: "tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2",
+    style: normalizeStyle({
+      backgroundColor: $options.brightnessColor,
+      color: $props.calendarEvent.color,
+      borderColor: $props.calendarEvent.color
+    })
   }, [
-    $props.calendarEvent.title ? (openBlock(), createElementBlock("div", _hoisted_1, [
-      createBaseVNode("span", null, [
-        createBaseVNode("strong", null, toDisplayString($props.calendarEvent.title), 1)
-      ])
-    ])) : createCommentVNode("", true),
-    $props.preset === "full" && $props.calendarEvent.people ? (openBlock(), createElementBlock("div", _hoisted_2, [
-      createBaseVNode("span", {
-        class: "material-symbols-outlined tw-text-neutral-900",
-        style: normalizeStyle({ color: $options.textColor })
-      }, "group", 4),
-      createBaseVNode("p", {
-        class: "tw-text-sm",
-        style: normalizeStyle({ color: $options.textColor })
-      }, toDisplayString($options.eventPeople), 5)
-    ])) : createCommentVNode("", true),
-    createBaseVNode("div", _hoisted_3, [
-      $props.preset === "full" ? (openBlock(), createElementBlock("span", {
-        key: 0,
-        class: "material-symbols-outlined tw-text-neutral-900",
-        style: normalizeStyle({ color: $options.textColor })
-      }, "schedule", 4)) : createCommentVNode("", true),
-      createBaseVNode("p", {
-        class: "tw-text-sm",
-        style: normalizeStyle({ color: $options.textColor })
-      }, toDisplayString($options.eventHours), 5)
-    ]),
-    $props.preset === "full" && $props.calendarEvent.room && $props.calendarEvent.location ? (openBlock(), createElementBlock("div", _hoisted_4, [
-      createBaseVNode("span", {
-        class: "material-symbols-outlined tw-text-neutral-900",
-        style: normalizeStyle({ color: $options.textColor })
-      }, "room", 4),
-      createBaseVNode("p", {
-        class: "tw-text-sm",
-        style: normalizeStyle({ color: $options.textColor })
-      }, toDisplayString($props.calendarEvent.location), 5)
-    ])) : createCommentVNode("", true),
-    $props.preset === "full" && $props.calendarEvent.availabilities_count ? (openBlock(), createElementBlock("div", _hoisted_5, [
-      createBaseVNode("span", {
-        class: "material-symbols-outlined tw-text-neutral-900",
-        style: normalizeStyle({ color: $options.textColor })
-      }, "groups", 4),
-      createBaseVNode("p", {
-        class: "tw-text-sm",
-        style: normalizeStyle({ color: $options.textColor })
-      }, toDisplayString($props.calendarEvent.booked_count) + " / " + toDisplayString($props.calendarEvent.availabilities_count), 5)
-    ])) : createCommentVNode("", true)
-  ], 6);
+    $props.view === "week" ? (openBlock(), createElementBlock("div", _hoisted_1, [
+      $props.calendarEvent.title ? (openBlock(), createElementBlock("div", _hoisted_2, [
+        createBaseVNode("span", _hoisted_3, toDisplayString($props.calendarEvent.title), 1)
+      ])) : createCommentVNode("", true),
+      createBaseVNode("div", _hoisted_4, [
+        createBaseVNode("span", {
+          class: "material-symbols-outlined !tw-text-sm tw-text-neutral-900",
+          style: normalizeStyle({ color: $props.calendarEvent.color })
+        }, "schedule", 4),
+        createBaseVNode("p", {
+          class: "tw-text-xs",
+          style: normalizeStyle({ color: $props.calendarEvent.color })
+        }, toDisplayString($options.eventHours), 5)
+      ]),
+      $props.calendarEvent.availabilities_count ? (openBlock(), createElementBlock("div", _hoisted_5, [
+        createBaseVNode("span", {
+          class: "material-symbols-outlined !tw-text-sm tw-text-neutral-900",
+          style: normalizeStyle({ color: $props.calendarEvent.color })
+        }, "groups", 4),
+        createBaseVNode("p", {
+          class: "tw-whitespace-nowrap tw-text-xs",
+          style: normalizeStyle({ color: $props.calendarEvent.color })
+        }, toDisplayString($props.calendarEvent.booked_count) + " / " + toDisplayString($props.calendarEvent.availabilities_count), 5),
+        createBaseVNode("p", {
+          class: "tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap tw-text-xs",
+          style: normalizeStyle({ color: $props.calendarEvent.color })
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER")), 5)
+      ])) : createCommentVNode("", true)
+    ])) : (openBlock(), createElementBlock(Fragment, { key: 1 }, [
+      $props.calendarEvent.registrants ? (openBlock(), createElementBlock("div", _hoisted_6, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($props.calendarEvent.registrants.datas, (registrant) => {
+          return openBlock(), createElementBlock("div", {
+            class: "tw-flex tw-min-h-[30px] tw-items-center tw-gap-2 tw-rounded-md tw-border-2 tw-px-3 tw-py-1",
+            onClick: ($event) => $options.openModal(this.calendarEvent, registrant),
+            style: normalizeStyle({
+              backgroundColor: _ctx.lightenColor($props.calendarEvent.color, 90),
+              borderColor: $props.calendarEvent.color
+            })
+          }, [
+            createBaseVNode("span", {
+              class: "material-symbols-outlined",
+              style: normalizeStyle({ color: $props.calendarEvent.color })
+            }, "group", 4),
+            createBaseVNode("p", {
+              style: normalizeStyle({ color: $props.calendarEvent.color })
+            }, [
+              createBaseVNode("strong", null, toDisplayString(_ctx.translate("COM_EMUNDUS_REGISTRANTS_BOOKED")), 1),
+              createTextVNode(" - " + toDisplayString(registrant.user_fullname), 1)
+            ], 4)
+          ], 12, _hoisted_7);
+        }), 256))
+      ])) : createCommentVNode("", true),
+      $options.availableSlots > 0 ? (openBlock(), createElementBlock("div", _hoisted_8, [
+        (openBlock(true), createElementBlock(Fragment, null, renderList($options.generateNumbers, (n2) => {
+          return openBlock(), createElementBlock("div", {
+            key: n2,
+            class: "tw-flex tw-min-h-[30px] tw-items-center tw-justify-center tw-gap-2 tw-rounded-md tw-border-2 tw-border-dashed tw-bg-white tw-px-3 tw-py-1",
+            onClick: _cache[0] || (_cache[0] = ($event) => $options.openModal(this.calendarEvent)),
+            onMouseover: ($event) => $data.availableSlotHovered = n2,
+            onMouseleave: _cache[1] || (_cache[1] = ($event) => $data.availableSlotHovered = -1),
+            style: normalizeStyle({
+              borderColor: $props.calendarEvent.color,
+              color: $props.calendarEvent.color
+            })
+          }, [
+            withDirectives(createBaseVNode("span", {
+              class: "material-symbols-outlined",
+              style: normalizeStyle({
+                color: $props.calendarEvent.color
+              })
+            }, " add_circle ", 4), [
+              [vShow, $data.availableSlotHovered === n2]
+            ])
+          ], 44, _hoisted_9);
+        }), 128))
+      ])) : createCommentVNode("", true)
+    ], 64))
+  ], 4);
 }
 const EventDay = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 const Zt = (e2, t2) => (n2, r2) => {
@@ -3783,14 +3911,14 @@ const createDatePickerState = (config2, selectedDateParam) => {
     setView: (view) => datePickerView.value = view
   };
 };
-const datePickerDeDE = {
+const datePickerDeDE$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "TT.MM.JJJJ",
   "Next month": "Nächster Monat",
   "Previous month": "Vorheriger Monat",
   "Choose Date": "Datum auswählen"
 };
-const calendarDeDE = {
+const calendarDeDE$1 = {
   Today: "Heute",
   Month: "Monat",
   Week: "Woche",
@@ -3807,18 +3935,18 @@ const calendarDeDE = {
   "Link to {{n}} more events on {{date}}": "Link zu {{n}} weiteren Ereignissen am {{date}}",
   "Link to 1 more event on {{date}}": "Link zu 1 weiteren Ereignis am {{date}}"
 };
-const deDE = {
-  ...datePickerDeDE,
-  ...calendarDeDE
+const deDE$1 = {
+  ...datePickerDeDE$1,
+  ...calendarDeDE$1
 };
-const datePickerEnUS = {
+const datePickerEnUS$1 = {
   Date: "Date",
   "MM/DD/YYYY": "MM/DD/YYYY",
   "Next month": "Next month",
   "Previous month": "Previous month",
   "Choose Date": "Choose Date"
 };
-const calendarEnUS = {
+const calendarEnUS$1 = {
   Today: "Today",
   Month: "Month",
   Week: "Week",
@@ -3835,18 +3963,18 @@ const calendarEnUS = {
   "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
   "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
 };
-const enUS = {
-  ...datePickerEnUS,
-  ...calendarEnUS
+const enUS$1 = {
+  ...datePickerEnUS$1,
+  ...calendarEnUS$1
 };
-const datePickerItIT = {
+const datePickerItIT$1 = {
   Date: "Data",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Mese successivo",
   "Previous month": "Mese precedente",
   "Choose Date": "Scegli la data"
 };
-const calendarItIT = {
+const calendarItIT$1 = {
   Today: "Oggi",
   Month: "Mese",
   Week: "Settimana",
@@ -3863,18 +3991,18 @@ const calendarItIT = {
   "Link to {{n}} more events on {{date}}": "Link a {{n}} eventi in più il {{date}}",
   "Link to 1 more event on {{date}}": "Link a 1 evento in più il {{date}}"
 };
-const itIT = {
-  ...datePickerItIT,
-  ...calendarItIT
+const itIT$1 = {
+  ...datePickerItIT$1,
+  ...calendarItIT$1
 };
-const datePickerEnGB = {
+const datePickerEnGB$1 = {
   Date: "Date",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Next month",
   "Previous month": "Previous month",
   "Choose Date": "Choose Date"
 };
-const calendarEnGB = {
+const calendarEnGB$1 = {
   Today: "Today",
   Month: "Month",
   Week: "Week",
@@ -3891,18 +4019,18 @@ const calendarEnGB = {
   "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
   "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
 };
-const enGB = {
-  ...datePickerEnGB,
-  ...calendarEnGB
+const enGB$1 = {
+  ...datePickerEnGB$1,
+  ...calendarEnGB$1
 };
-const datePickerSvSE = {
+const datePickerSvSE$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
   "Next month": "Nästa månad",
   "Previous month": "Föregående månad",
   "Choose Date": "Välj datum"
 };
-const calendarSvSE = {
+const calendarSvSE$1 = {
   Today: "Idag",
   Month: "Månad",
   Week: "Vecka",
@@ -3919,18 +4047,18 @@ const calendarSvSE = {
   "Link to {{n}} more events on {{date}}": "Länk till {{n}} fler händelser den {{date}}",
   "Link to 1 more event on {{date}}": "Länk till 1 händelse till den {{date}}"
 };
-const svSE = {
-  ...datePickerSvSE,
-  ...calendarSvSE
+const svSE$1 = {
+  ...datePickerSvSE$1,
+  ...calendarSvSE$1
 };
-const datePickerZhCN = {
+const datePickerZhCN$1 = {
   Date: "日期",
   "MM/DD/YYYY": "年/月/日",
   "Next month": "下个月",
   "Previous month": "上个月",
   "Choose Date": "选择日期"
 };
-const calendarZhCN = {
+const calendarZhCN$1 = {
   Today: "今天",
   Month: "月",
   Week: "周",
@@ -3947,18 +4075,18 @@ const calendarZhCN = {
   "Link to {{n}} more events on {{date}}": "链接到{{date}}上的{{n}}个更多活动",
   "Link to 1 more event on {{date}}": "链接到{{date}}上的1个更多活动"
 };
-const zhCN = {
-  ...datePickerZhCN,
-  ...calendarZhCN
+const zhCN$1 = {
+  ...datePickerZhCN$1,
+  ...calendarZhCN$1
 };
-const datePickerZhTW = {
+const datePickerZhTW$1 = {
   Date: "日期",
   "MM/DD/YYYY": "年/月/日",
   "Next month": "下個月",
   "Previous month": "上個月",
   "Choose Date": "選擇日期"
 };
-const calendarZhTW = {
+const calendarZhTW$1 = {
   Today: "今天",
   Month: "月",
   Week: "周",
@@ -3975,18 +4103,18 @@ const calendarZhTW = {
   "Link to {{n}} more events on {{date}}": "連接到{{date}}上的{{n}}個更多活動",
   "Link to 1 more event on {{date}}": "連接到{{date}}上的1個更多活動"
 };
-const zhTW = {
-  ...datePickerZhTW,
-  ...calendarZhTW
+const zhTW$1 = {
+  ...datePickerZhTW$1,
+  ...calendarZhTW$1
 };
-const datePickerJaJP = {
+const datePickerJaJP$1 = {
   Date: "日付",
   "MM/DD/YYYY": "年/月/日",
   "Next month": "次の月",
   "Previous month": "前の月",
   "Choose Date": "日付を選択"
 };
-const calendarJaJP = {
+const calendarJaJP$1 = {
   Today: "今日",
   Month: "月",
   Week: "週",
@@ -4003,18 +4131,18 @@ const calendarJaJP = {
   "Link to {{n}} more events on {{date}}": "{{date}} に{{n}}件のイベントへのリンク",
   "Link to 1 more event on {{date}}": "{{date}} に1件のイベントへのリンク"
 };
-const jaJP = {
-  ...datePickerJaJP,
-  ...calendarJaJP
+const jaJP$1 = {
+  ...datePickerJaJP$1,
+  ...calendarJaJP$1
 };
-const datePickerRuRU = {
+const datePickerRuRU$1 = {
   Date: "Дата",
   "MM/DD/YYYY": "ММ/ДД/ГГГГ",
   "Next month": "Следующий месяц",
   "Previous month": "Прошлый месяц",
   "Choose Date": "Выберите дату"
 };
-const calendarRuRU = {
+const calendarRuRU$1 = {
   Today: "Сегодня",
   Month: "Месяц",
   Week: "Неделя",
@@ -4031,18 +4159,18 @@ const calendarRuRU = {
   "Link to {{n}} more events on {{date}}": "Ссылка на {{n}} дополнительных событий на {{date}}",
   "Link to 1 more event on {{date}}": "Ссылка на 1 дополнительное событие на {{date}}"
 };
-const ruRU = {
-  ...datePickerRuRU,
-  ...calendarRuRU
+const ruRU$1 = {
+  ...datePickerRuRU$1,
+  ...calendarRuRU$1
 };
-const datePickerKoKR = {
+const datePickerKoKR$1 = {
   Date: "일자",
   "MM/DD/YYYY": "년/월/일",
   "Next month": "다음 달",
   "Previous month": "이전 달",
   "Choose Date": "날짜 선택"
 };
-const calendarKoKR = {
+const calendarKoKR$1 = {
   Today: "오늘",
   Month: "월",
   Week: "주",
@@ -4059,18 +4187,18 @@ const calendarKoKR = {
   "Link to {{n}} more events on {{date}}": "{{date}}에 {{n}}개 이상의 이벤트로 이동",
   "Link to 1 more event on {{date}}": "{{date}}에 1개 이상의 이벤트로 이동"
 };
-const koKR = {
-  ...datePickerKoKR,
-  ...calendarKoKR
+const koKR$1 = {
+  ...datePickerKoKR$1,
+  ...calendarKoKR$1
 };
-const datePickerFrFR = {
+const datePickerFrFR$1 = {
   Date: "Date",
   "MM/DD/YYYY": "JJ/MM/AAAA",
   "Next month": "Mois suivant",
   "Previous month": "Mois précédent",
   "Choose Date": "Choisir une date"
 };
-const calendarFrFR = {
+const calendarFrFR$1 = {
   Today: "Aujourd'hui",
   Month: "Mois",
   Week: "Semaine",
@@ -4087,18 +4215,18 @@ const calendarFrFR = {
   "Link to {{n}} more events on {{date}}": "Lien vers {{n}} autres événements le {{date}}",
   "Link to 1 more event on {{date}}": "Lien vers 1 autre événement le {{date}}"
 };
-const frFR = {
-  ...datePickerFrFR,
-  ...calendarFrFR
+const frFR$1 = {
+  ...datePickerFrFR$1,
+  ...calendarFrFR$1
 };
-const datePickerDaDK = {
+const datePickerDaDK$1 = {
   Date: "Dato",
   "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
   "Next month": "Næste måned",
   "Previous month": "Foregående måned",
   "Choose Date": "Vælg dato"
 };
-const calendarDaDK = {
+const calendarDaDK$1 = {
   Today: "I dag",
   Month: "Måned",
   Week: "Uge",
@@ -4115,18 +4243,18 @@ const calendarDaDK = {
   "Link to {{n}} more events on {{date}}": "Link til {{n}} flere begivenheder den {{date}}",
   "Link to 1 more event on {{date}}": "Link til 1 mere begivenhed den {{date}}"
 };
-const daDK = {
-  ...datePickerDaDK,
-  ...calendarDaDK
+const daDK$1 = {
+  ...datePickerDaDK$1,
+  ...calendarDaDK$1
 };
-const datePickerPlPL = {
+const datePickerPlPL$1 = {
   Date: "Data",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Następny miesiąc",
   "Previous month": "Poprzedni miesiąc",
   "Choose Date": "Wybiewrz datę"
 };
-const calendarPlPL = {
+const calendarPlPL$1 = {
   Today: "Dzisiaj",
   Month: "Miesiąc",
   Week: "Tydzień",
@@ -4143,18 +4271,18 @@ const calendarPlPL = {
   "Link to {{n}} more events on {{date}}": "Link do {{n}} kolejnych wydarzeń w dniu {{date}}",
   "Link to 1 more event on {{date}}": "Link do 1 kolejnego wydarzenia w dniu {{date}}"
 };
-const plPL = {
-  ...datePickerPlPL,
-  ...calendarPlPL
+const plPL$1 = {
+  ...datePickerPlPL$1,
+  ...calendarPlPL$1
 };
-const datePickerEsES = {
+const datePickerEsES$1 = {
   Date: "Fecha",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Siguiente mes",
   "Previous month": "Mes anterior",
   "Choose Date": "Seleccione una fecha"
 };
-const calendarEsES = {
+const calendarEsES$1 = {
   Today: "Hoy",
   Month: "Mes",
   Week: "Semana",
@@ -4171,11 +4299,11 @@ const calendarEsES = {
   "Link to {{n}} more events on {{date}}": "Enlace a {{n}} eventos más el {{date}}",
   "Link to 1 more event on {{date}}": "Enlace a 1 evento más el {{date}}"
 };
-const esES = {
-  ...datePickerEsES,
-  ...calendarEsES
+const esES$1 = {
+  ...datePickerEsES$1,
+  ...calendarEsES$1
 };
-const calendarNlNL = {
+const calendarNlNL$1 = {
   Today: "Vandaag",
   Month: "Maand",
   Week: "Week",
@@ -4192,25 +4320,25 @@ const calendarNlNL = {
   "Link to {{n}} more events on {{date}}": "Link naar {{n}} meer evenementen op {{date}}",
   "Link to 1 more event on {{date}}": "Link naar 1 meer evenement op {{date}}"
 };
-const datePickerNlNL = {
+const datePickerNlNL$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "DD-MM-JJJJ",
   "Next month": "Volgende maand",
   "Previous month": "Vorige maand",
   "Choose Date": "Kies datum"
 };
-const nlNL = {
-  ...datePickerNlNL,
-  ...calendarNlNL
+const nlNL$1 = {
+  ...datePickerNlNL$1,
+  ...calendarNlNL$1
 };
-const datePickerPtBR = {
+const datePickerPtBR$1 = {
   Date: "Data",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Mês seguinte",
   "Previous month": "Mês anterior",
   "Choose Date": "Escolha uma data"
 };
-const calendarPtBR = {
+const calendarPtBR$1 = {
   Today: "Hoje",
   Month: "Mês",
   Week: "Semana",
@@ -4227,18 +4355,18 @@ const calendarPtBR = {
   "Link to {{n}} more events on {{date}}": "Link para mais {{n}} eventos em {{date}}",
   "Link to 1 more event on {{date}}": "Link para mais 1 evento em {{date}}"
 };
-const ptBR = {
-  ...datePickerPtBR,
-  ...calendarPtBR
+const ptBR$1 = {
+  ...datePickerPtBR$1,
+  ...calendarPtBR$1
 };
-const datePickerSkSK = {
+const datePickerSkSK$1 = {
   Date: "Dátum",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Ďalší mesiac",
   "Previous month": "Predchádzajúci mesiac",
   "Choose Date": "Vyberte dátum"
 };
-const calendarSkSK = {
+const calendarSkSK$1 = {
   Today: "Dnes",
   Month: "Mesiac",
   Week: "Týždeň",
@@ -4255,18 +4383,18 @@ const calendarSkSK = {
   "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} ďalších udalostí dňa {{date}}",
   "Link to 1 more event on {{date}}": "Odkaz na 1 ďalšiu udalosť dňa {{date}}"
 };
-const skSK = {
-  ...datePickerSkSK,
-  ...calendarSkSK
+const skSK$1 = {
+  ...datePickerSkSK$1,
+  ...calendarSkSK$1
 };
-const datePickerMkMK = {
+const datePickerMkMK$1 = {
   Date: "Датум",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Следен месец",
   "Previous month": "Претходен месец",
   "Choose Date": "Избери Датум"
 };
-const calendarMkMK = {
+const calendarMkMK$1 = {
   Today: "Денес",
   Month: "Месец",
   Week: "Недела",
@@ -4283,18 +4411,18 @@ const calendarMkMK = {
   "Link to {{n}} more events on {{date}}": "Линк до {{n}} повеќе настани на {{date}}",
   "Link to 1 more event on {{date}}": "Линк до 1 повеќе настан на {{date}}"
 };
-const mkMK = {
-  ...datePickerMkMK,
-  ...calendarMkMK
+const mkMK$1 = {
+  ...datePickerMkMK$1,
+  ...calendarMkMK$1
 };
-const datePickerTrTR = {
+const datePickerTrTR$1 = {
   Date: "Tarih",
   "MM/DD/YYYY": "GG/AA/YYYY",
   "Next month": "Sonraki ay",
   "Previous month": "Önceki ay",
   "Choose Date": "Tarih Seç"
 };
-const calendarTrTR = {
+const calendarTrTR$1 = {
   Today: "Bugün",
   Month: "Aylık",
   Week: "Haftalık",
@@ -4311,18 +4439,18 @@ const calendarTrTR = {
   "Link to {{n}} more events on {{date}}": "{{date}} tarihinde {{n}} etkinliğe bağlantı",
   "Link to 1 more event on {{date}}": "{{date}} tarihinde 1 etkinliğe bağlantı"
 };
-const trTR = {
-  ...datePickerTrTR,
-  ...calendarTrTR
+const trTR$1 = {
+  ...datePickerTrTR$1,
+  ...calendarTrTR$1
 };
-const datePickerKyKG = {
+const datePickerKyKG$1 = {
   Date: "Датасы",
   "MM/DD/YYYY": "АА/КК/ЖЖЖЖ",
   "Next month": "Кийинки ай",
   "Previous month": "Өткөн ай",
   "Choose Date": "Күндү тандаңыз"
 };
-const calendarKyKG = {
+const calendarKyKG$1 = {
   Today: "Бүгүн",
   Month: "Ай",
   Week: "Апта",
@@ -4339,18 +4467,18 @@ const calendarKyKG = {
   "Link to {{n}} more events on {{date}}": "{{date}} күнүндө {{n}} окуяга байланыш",
   "Link to 1 more event on {{date}}": "{{date}} күнүндө 1 окуяга байланыш"
 };
-const kyKG = {
-  ...datePickerKyKG,
-  ...calendarKyKG
+const kyKG$1 = {
+  ...datePickerKyKG$1,
+  ...calendarKyKG$1
 };
-const datePickerIdID = {
+const datePickerIdID$1 = {
   Date: "Tanggal",
   "MM/DD/YYYY": "DD.MM.YYYY",
   "Next month": "Bulan depan",
   "Previous month": "Bulan sebelumnya",
   "Choose Date": "Pilih tanggal"
 };
-const calendarIdID = {
+const calendarIdID$1 = {
   Today: "Hari Ini",
   Month: "Bulan",
   Week: "Minggu",
@@ -4367,18 +4495,18 @@ const calendarIdID = {
   "Link to {{n}} more events on {{date}}": "Tautan ke {{n}} acara lainnya pada {{date}}",
   "Link to 1 more event on {{date}}": "Tautan ke 1 acara lainnya pada {{date}}"
 };
-const idID = {
-  ...datePickerIdID,
-  ...calendarIdID
+const idID$1 = {
+  ...datePickerIdID$1,
+  ...calendarIdID$1
 };
-const datePickerCsCZ = {
+const datePickerCsCZ$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Další měsíc",
   "Previous month": "Předchozí měsíc",
   "Choose Date": "Vyberte datum"
 };
-const calendarCsCZ = {
+const calendarCsCZ$1 = {
   Today: "Dnes",
   Month: "Měsíc",
   Week: "Týden",
@@ -4395,18 +4523,18 @@ const calendarCsCZ = {
   "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} dalších událostí dne {{date}}",
   "Link to 1 more event on {{date}}": "Odkaz na 1 další událost dne {{date}}"
 };
-const csCZ = {
-  ...datePickerCsCZ,
-  ...calendarCsCZ
+const csCZ$1 = {
+  ...datePickerCsCZ$1,
+  ...calendarCsCZ$1
 };
-const datePickerEtEE = {
+const datePickerEtEE$1 = {
   Date: "Kuupäev",
   "MM/DD/YYYY": "PP.KK.AAAA",
   "Next month": "Järgmine kuu",
   "Previous month": "Eelmine kuu",
   "Choose Date": "Vali kuupäev"
 };
-const calendarEtEE = {
+const calendarEtEE$1 = {
   Today: "Täna",
   Month: "Kuu",
   Week: "Nädal",
@@ -4422,18 +4550,18 @@ const calendarEtEE = {
   "Link to {{n}} more events on {{date}}": "Link {{n}} rohkematele sündmustele kuupäeval {{date}}",
   "Link to 1 more event on {{date}}": "Link ühele lisasündmusele kuupäeval {{date}}"
 };
-const etEE = {
-  ...datePickerEtEE,
-  ...calendarEtEE
+const etEE$1 = {
+  ...datePickerEtEE$1,
+  ...calendarEtEE$1
 };
-const datePickerUkUA = {
+const datePickerUkUA$1 = {
   Date: "Дата",
   "MM/DD/YYYY": "ММ/ДД/РРРР",
   "Next month": "Наступний місяць",
   "Previous month": "Минулий місяць",
   "Choose Date": "Виберіть дату"
 };
-const calendarUkUA = {
+const calendarUkUA$1 = {
   Today: "Сьогодні",
   Month: "Місяць",
   Week: "Тиждень",
@@ -4450,18 +4578,18 @@ const calendarUkUA = {
   "Link to {{n}} more events on {{date}}": "Посилання на {{n}} додаткові події на {{date}}",
   "Link to 1 more event on {{date}}": "Посилання на 1 додаткову подію на {{date}}"
 };
-const ukUA = {
-  ...datePickerUkUA,
-  ...calendarUkUA
+const ukUA$1 = {
+  ...datePickerUkUA$1,
+  ...calendarUkUA$1
 };
-const datePickerSrLatnRS = {
+const datePickerSrLatnRS$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Sledeći mesec",
   "Previous month": "Prethodni mesec",
   "Choose Date": "Izaberite datum"
 };
-const calendarSrLatnRS = {
+const calendarSrLatnRS$1 = {
   Today: "Danas",
   Month: "Mesec",
   Week: "Nedelja",
@@ -4478,18 +4606,18 @@ const calendarSrLatnRS = {
   "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
   "Link to 1 more event on {{date}}": "Link do jednog događaja na {{date}}"
 };
-const srLatnRS = {
-  ...datePickerSrLatnRS,
-  ...calendarSrLatnRS
+const srLatnRS$1 = {
+  ...datePickerSrLatnRS$1,
+  ...calendarSrLatnRS$1
 };
-const datePickerCaES = {
+const datePickerCaES$1 = {
   Date: "Data",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Següent mes",
   "Previous month": "Mes anterior",
   "Choose Date": "Selecciona una data"
 };
-const calendarCaES = {
+const calendarCaES$1 = {
   Today: "Avui",
   Month: "Mes",
   Week: "Setmana",
@@ -4506,18 +4634,18 @@ const calendarCaES = {
   "Link to {{n}} more events on {{date}}": "Enllaç a {{n}} esdeveniments més el {{date}}",
   "Link to 1 more event on {{date}}": "Enllaç a 1 esdeveniment més el {{date}}"
 };
-const caES = {
-  ...datePickerCaES,
-  ...calendarCaES
+const caES$1 = {
+  ...datePickerCaES$1,
+  ...calendarCaES$1
 };
-const datePickerSrRS = {
+const datePickerSrRS$1 = {
   Date: "Датум",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Следећи месец",
   "Previous month": "Претходни месец",
   "Choose Date": "Изаберите Датум"
 };
-const calendarSrRS = {
+const calendarSrRS$1 = {
   Today: "Данас",
   Month: "Месец",
   Week: "Недеља",
@@ -4534,18 +4662,18 @@ const calendarSrRS = {
   "Link to {{n}} more events on {{date}}": "Линк до још {{n}} догађаја на {{date}}",
   "Link to 1 more event on {{date}}": "Линк до још 1 догађаја {{date}}"
 };
-const srRS = {
-  ...datePickerSrRS,
-  ...calendarSrRS
+const srRS$1 = {
+  ...datePickerSrRS$1,
+  ...calendarSrRS$1
 };
-const datePickerLtLT = {
+const datePickerLtLT$1 = {
   Date: "Data",
   "MM/DD/YYYY": "MMMM-MM-DD",
   "Next month": "Kitas mėnuo",
   "Previous month": "Ankstesnis mėnuo",
   "Choose Date": "Pasirinkite datą"
 };
-const calendarLtLT = {
+const calendarLtLT$1 = {
   Today: "Šiandien",
   Month: "Mėnuo",
   Week: "Savaitė",
@@ -4562,18 +4690,18 @@ const calendarLtLT = {
   "Link to {{n}} more events on {{date}}": "Nuoroda į dar {{n}} įvykius {{date}}",
   "Link to 1 more event on {{date}}": "Nuoroda į dar 1 vieną įvykį {{date}}"
 };
-const ltLT = {
-  ...datePickerLtLT,
-  ...calendarLtLT
+const ltLT$1 = {
+  ...datePickerLtLT$1,
+  ...calendarLtLT$1
 };
-const datePickerHrHR = {
+const datePickerHrHR$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "DD/MM/YYYY",
   "Next month": "Sljedeći mjesec",
   "Previous month": "Prethodni mjesec",
   "Choose Date": "Izaberite datum"
 };
-const calendarHrHR = {
+const calendarHrHR$1 = {
   Today: "Danas",
   Month: "Mjesec",
   Week: "Nedjelja",
@@ -4590,18 +4718,18 @@ const calendarHrHR = {
   "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
   "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}"
 };
-const hrHR = {
-  ...datePickerHrHR,
-  ...calendarHrHR
+const hrHR$1 = {
+  ...datePickerHrHR$1,
+  ...calendarHrHR$1
 };
-const datePickerSlSI = {
+const datePickerSlSI$1 = {
   Date: "Datum",
   "MM/DD/YYYY": "MM.DD.YYYY",
   "Next month": "Naslednji mesec",
   "Previous month": "Prejšnji mesec",
   "Choose Date": "Izberi datum"
 };
-const calendarSlSI = {
+const calendarSlSI$1 = {
   Today: "Danes",
   Month: "Mesec",
   Week: "Teden",
@@ -4618,18 +4746,18 @@ const calendarSlSI = {
   "Link to {{n}} more events on {{date}}": "Povezava do {{n}} drugih dogodkov dne {{date}}",
   "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}"
 };
-const slSI = {
-  ...datePickerSlSI,
-  ...calendarSlSI
+const slSI$1 = {
+  ...datePickerSlSI$1,
+  ...calendarSlSI$1
 };
-const datePickerFiFI = {
+const datePickerFiFI$1 = {
   Date: "Päivämäärä",
   "MM/DD/YYYY": "VVVV-KK-PP",
   "Next month": "Seuraava kuukausi",
   "Previous month": "Edellinen kuukausi",
   "Choose Date": "Valitse päivämäärä"
 };
-const calendarFiFI = {
+const calendarFiFI$1 = {
   Today: "Tänään",
   Month: "Kuukausi",
   Week: "Viikko",
@@ -4646,18 +4774,18 @@ const calendarFiFI = {
   "Link to {{n}} more events on {{date}}": "Linkki {{n}} lisätapahtumaan päivämäärällä {{date}}",
   "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}"
 };
-const fiFI = {
-  ...datePickerFiFI,
-  ...calendarFiFI
+const fiFI$1 = {
+  ...datePickerFiFI$1,
+  ...calendarFiFI$1
 };
-const datePickerRoRO = {
+const datePickerRoRO$1 = {
   Date: "Data",
   "MM/DD/YYYY": "LL/ZZ/AAAA",
   "Next month": "Luna următoare",
   "Previous month": "Luna anterioară",
   "Choose Date": "Alege data"
 };
-const calendarRoRO = {
+const calendarRoRO$1 = {
   Today: "Astăzi",
   Month: "Lună",
   Week: "Săptămână",
@@ -4674,9 +4802,9 @@ const calendarRoRO = {
   "Link to {{n}} more events on {{date}}": "Link către {{n}} evenimente suplimentare pe {{date}}",
   "Link to 1 more event on {{date}}": "Link către 1 eveniment suplimentar pe {{date}}"
 };
-const roRO = {
-  ...datePickerRoRO,
-  ...calendarRoRO
+const roRO$1 = {
+  ...datePickerRoRO$1,
+  ...calendarRoRO$1
 };
 class InvalidLocaleError extends Error {
   constructor(locale) {
@@ -4700,39 +4828,39 @@ const translate = (locale, languages) => (key, translationVariables) => {
   });
   return translation;
 };
-const translations = {
-  deDE,
-  enUS,
-  itIT,
-  enGB,
-  svSE,
-  zhCN,
-  zhTW,
-  jaJP,
-  ruRU,
-  koKR,
-  frFR,
-  daDK,
-  mkMK,
-  plPL,
-  esES,
-  nlNL,
-  ptBR,
-  skSK,
-  trTR,
-  kyKG,
-  idID,
-  csCZ,
-  etEE,
-  ukUA,
-  caES,
-  srLatnRS,
-  srRS,
-  ltLT,
-  hrHR,
-  slSI,
-  fiFI,
-  roRO
+const translations$1 = {
+  deDE: deDE$1,
+  enUS: enUS$1,
+  itIT: itIT$1,
+  enGB: enGB$1,
+  svSE: svSE$1,
+  zhCN: zhCN$1,
+  zhTW: zhTW$1,
+  jaJP: jaJP$1,
+  ruRU: ruRU$1,
+  koKR: koKR$1,
+  frFR: frFR$1,
+  daDK: daDK$1,
+  mkMK: mkMK$1,
+  plPL: plPL$1,
+  esES: esES$1,
+  nlNL: nlNL$1,
+  ptBR: ptBR$1,
+  skSK: skSK$1,
+  trTR: trTR$1,
+  kyKG: kyKG$1,
+  idID: idID$1,
+  csCZ: csCZ$1,
+  etEE: etEE$1,
+  ukUA: ukUA$1,
+  caES: caES$1,
+  srLatnRS: srLatnRS$1,
+  srRS: srRS$1,
+  ltLT: ltLT$1,
+  hrHR: hrHR$1,
+  slSI: slSI$1,
+  fiFI: fiFI$1,
+  roRO: roRO$1
 };
 class EventColors {
   constructor(config2) {
@@ -5183,7 +5311,7 @@ class CalendarConfigBuilder {
   }
 }
 const createInternalConfig = (config2, plugins) => {
-  return new CalendarConfigBuilder().withLocale(config2.locale).withFirstDayOfWeek(config2.firstDayOfWeek).withDefaultView(config2.defaultView).withViews(config2.views).withDayBoundaries(config2.dayBoundaries).withWeekOptions(config2.weekOptions).withCalendars(config2.calendars).withPlugins(plugins).withIsDark(config2.isDark).withIsResponsive(config2.isResponsive).withCallbacks(config2.callbacks).withMinDate(config2.minDate).withMaxDate(config2.maxDate).withMonthGridOptions(config2.monthGridOptions).withBackgroundEvents(config2.backgroundEvents).withTheme(config2.theme).withTranslations(config2.translations || translations).build();
+  return new CalendarConfigBuilder().withLocale(config2.locale).withFirstDayOfWeek(config2.firstDayOfWeek).withDefaultView(config2.defaultView).withViews(config2.views).withDayBoundaries(config2.dayBoundaries).withWeekOptions(config2.weekOptions).withCalendars(config2.calendars).withPlugins(plugins).withIsDark(config2.isDark).withIsResponsive(config2.isResponsive).withCallbacks(config2.callbacks).withMinDate(config2.minDate).withMaxDate(config2.maxDate).withMonthGridOptions(config2.monthGridOptions).withBackgroundEvents(config2.backgroundEvents).withTheme(config2.theme).withTranslations(config2.translations || translations$1).build();
 };
 var Month;
 (function(Month2) {
@@ -7602,19 +7730,960 @@ class CalendarControlsPluginImpl {
 const createCalendarControlsPlugin = () => {
   return definePlugin("calendarControls", new CalendarControlsPluginImpl());
 };
+const datePickerDeDE = {
+  Date: "Datum",
+  "MM/DD/YYYY": "TT.MM.JJJJ",
+  "Next month": "Nächster Monat",
+  "Previous month": "Vorheriger Monat",
+  "Choose Date": "Datum auswählen"
+};
+const calendarDeDE = {
+  Today: "Heute",
+  Month: "Monat",
+  Week: "Woche",
+  Day: "Tag",
+  "Select View": "Ansicht auswählen",
+  events: "Ereignisse",
+  event: "Ereignis",
+  "No events": "Keine Ereignisse",
+  "Next period": "Nächster Zeitraum",
+  "Previous period": "Vorheriger Zeitraum",
+  to: "bis",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Ganztägige und mehrtägige Ereignisse",
+  "Link to {{n}} more events on {{date}}": "Link zu {{n}} weiteren Ereignissen am {{date}}",
+  "Link to 1 more event on {{date}}": "Link zu 1 weiteren Ereignis am {{date}}"
+};
+const deDE = {
+  ...datePickerDeDE,
+  ...calendarDeDE
+};
+const datePickerEnUS = {
+  Date: "Date",
+  "MM/DD/YYYY": "MM/DD/YYYY",
+  "Next month": "Next month",
+  "Previous month": "Previous month",
+  "Choose Date": "Choose Date"
+};
+const calendarEnUS = {
+  Today: "Today",
+  Month: "Month",
+  Week: "Week",
+  Day: "Day",
+  "Select View": "Select View",
+  events: "events",
+  event: "event",
+  "No events": "No events",
+  "Next period": "Next period",
+  "Previous period": "Previous period",
+  to: "to",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Full day- and multiple day events",
+  "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
+  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
+};
+const enUS = {
+  ...datePickerEnUS,
+  ...calendarEnUS
+};
+const datePickerItIT = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Mese successivo",
+  "Previous month": "Mese precedente",
+  "Choose Date": "Scegli la data"
+};
+const calendarItIT = {
+  Today: "Oggi",
+  Month: "Mese",
+  Week: "Settimana",
+  Day: "Giorno",
+  "Select View": "Seleziona la vista",
+  events: "eventi",
+  event: "evento",
+  "No events": "Nessun evento",
+  "Next period": "Periodo successivo",
+  "Previous period": "Periodo precedente",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Eventi della giornata e plurigiornalieri",
+  "Link to {{n}} more events on {{date}}": "Link a {{n}} eventi in più il {{date}}",
+  "Link to 1 more event on {{date}}": "Link a 1 evento in più il {{date}}"
+};
+const itIT = {
+  ...datePickerItIT,
+  ...calendarItIT
+};
+const datePickerEnGB = {
+  Date: "Date",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Next month",
+  "Previous month": "Previous month",
+  "Choose Date": "Choose Date"
+};
+const calendarEnGB = {
+  Today: "Today",
+  Month: "Month",
+  Week: "Week",
+  Day: "Day",
+  "Select View": "Select View",
+  events: "events",
+  event: "event",
+  "No events": "No events",
+  "Next period": "Next period",
+  "Previous period": "Previous period",
+  to: "to",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Full day- and multiple day events",
+  "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
+  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
+};
+const enGB = {
+  ...datePickerEnGB,
+  ...calendarEnGB
+};
+const datePickerSvSE = {
+  Date: "Datum",
+  "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
+  "Next month": "Nästa månad",
+  "Previous month": "Föregående månad",
+  "Choose Date": "Välj datum"
+};
+const calendarSvSE = {
+  Today: "Idag",
+  Month: "Månad",
+  Week: "Vecka",
+  Day: "Dag",
+  "Select View": "Välj vy",
+  events: "händelser",
+  event: "händelse",
+  "No events": "Inga händelser",
+  "Next period": "Nästa period",
+  "Previous period": "Föregående period",
+  to: "till",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Heldags- och flerdagshändelser",
+  "Link to {{n}} more events on {{date}}": "Länk till {{n}} fler händelser den {{date}}",
+  "Link to 1 more event on {{date}}": "Länk till 1 händelse till den {{date}}"
+};
+const svSE = {
+  ...datePickerSvSE,
+  ...calendarSvSE
+};
+const datePickerZhCN = {
+  Date: "日期",
+  "MM/DD/YYYY": "年/月/日",
+  "Next month": "下个月",
+  "Previous month": "上个月",
+  "Choose Date": "选择日期"
+};
+const calendarZhCN = {
+  Today: "今天",
+  Month: "月",
+  Week: "周",
+  Day: "日",
+  "Select View": "选择视图",
+  events: "场活动",
+  event: "活动",
+  "No events": "没有活动",
+  "Next period": "下一段时间",
+  "Previous period": "上一段时间",
+  to: "至",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "全天和多天活动",
+  "Link to {{n}} more events on {{date}}": "链接到{{date}}上的{{n}}个更多活动",
+  "Link to 1 more event on {{date}}": "链接到{{date}}上的1个更多活动"
+};
+const zhCN = {
+  ...datePickerZhCN,
+  ...calendarZhCN
+};
+const datePickerZhTW = {
+  Date: "日期",
+  "MM/DD/YYYY": "年/月/日",
+  "Next month": "下個月",
+  "Previous month": "上個月",
+  "Choose Date": "選擇日期"
+};
+const calendarZhTW = {
+  Today: "今天",
+  Month: "月",
+  Week: "周",
+  Day: "日",
+  "Select View": "選擇檢視模式",
+  events: "場活動",
+  event: "活動",
+  "No events": "沒有活動",
+  "Next period": "下一段時間",
+  "Previous period": "上一段時間",
+  to: "到",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "全天和多天活動",
+  "Link to {{n}} more events on {{date}}": "連接到{{date}}上的{{n}}個更多活動",
+  "Link to 1 more event on {{date}}": "連接到{{date}}上的1個更多活動"
+};
+const zhTW = {
+  ...datePickerZhTW,
+  ...calendarZhTW
+};
+const datePickerJaJP = {
+  Date: "日付",
+  "MM/DD/YYYY": "年/月/日",
+  "Next month": "次の月",
+  "Previous month": "前の月",
+  "Choose Date": "日付を選択"
+};
+const calendarJaJP = {
+  Today: "今日",
+  Month: "月",
+  Week: "週",
+  Day: "日",
+  "Select View": "ビューを選択",
+  events: "イベント",
+  event: "イベント",
+  "No events": "イベントなし",
+  "Next period": "次の期間",
+  "Previous period": "前の期間",
+  to: "から",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "終日および複数日イベント",
+  "Link to {{n}} more events on {{date}}": "{{date}} に{{n}}件のイベントへのリンク",
+  "Link to 1 more event on {{date}}": "{{date}} に1件のイベントへのリンク"
+};
+const jaJP = {
+  ...datePickerJaJP,
+  ...calendarJaJP
+};
+const datePickerRuRU = {
+  Date: "Дата",
+  "MM/DD/YYYY": "ММ/ДД/ГГГГ",
+  "Next month": "Следующий месяц",
+  "Previous month": "Прошлый месяц",
+  "Choose Date": "Выберите дату"
+};
+const calendarRuRU = {
+  Today: "Сегодня",
+  Month: "Месяц",
+  Week: "Неделя",
+  Day: "День",
+  "Select View": "Выберите вид",
+  events: "события",
+  event: "событие",
+  "No events": "Нет событий",
+  "Next period": "Следующий период",
+  "Previous period": "Прошлый период",
+  to: "по",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "События на целый день и несколько дней подряд",
+  "Link to {{n}} more events on {{date}}": "Ссылка на {{n}} дополнительных событий на {{date}}",
+  "Link to 1 more event on {{date}}": "Ссылка на 1 дополнительное событие на {{date}}"
+};
+const ruRU = {
+  ...datePickerRuRU,
+  ...calendarRuRU
+};
+const datePickerKoKR = {
+  Date: "일자",
+  "MM/DD/YYYY": "년/월/일",
+  "Next month": "다음 달",
+  "Previous month": "이전 달",
+  "Choose Date": "날짜 선택"
+};
+const calendarKoKR = {
+  Today: "오늘",
+  Month: "월",
+  Week: "주",
+  Day: "일",
+  "Select View": "보기 선택",
+  events: "일정들",
+  event: "일정",
+  "No events": "일정 없음",
+  "Next period": "다음",
+  "Previous period": "이전",
+  to: "부터",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "종일 및 복수일 일정",
+  "Link to {{n}} more events on {{date}}": "{{date}}에 {{n}}개 이상의 이벤트로 이동",
+  "Link to 1 more event on {{date}}": "{{date}}에 1개 이상의 이벤트로 이동"
+};
+const koKR = {
+  ...datePickerKoKR,
+  ...calendarKoKR
+};
+const datePickerFrFR = {
+  Date: "Date",
+  "MM/DD/YYYY": "JJ/MM/AAAA",
+  "Next month": "Mois suivant",
+  "Previous month": "Mois précédent",
+  "Choose Date": "Choisir une date"
+};
+const calendarFrFR = {
+  Today: "Aujourd'hui",
+  Month: "Mois",
+  Week: "Semaine",
+  Day: "Jour",
+  "Select View": "Choisir la vue",
+  events: "événements",
+  event: "événement",
+  "No events": "Aucun événement",
+  "Next period": "Période suivante",
+  "Previous period": "Période précédente",
+  to: "à",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Événements d'une ou plusieurs journées",
+  "Link to {{n}} more events on {{date}}": "Lien vers {{n}} autres événements le {{date}}",
+  "Link to 1 more event on {{date}}": "Lien vers 1 autre événement le {{date}}"
+};
+const frFR = {
+  ...datePickerFrFR,
+  ...calendarFrFR
+};
+const datePickerDaDK = {
+  Date: "Dato",
+  "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
+  "Next month": "Næste måned",
+  "Previous month": "Foregående måned",
+  "Choose Date": "Vælg dato"
+};
+const calendarDaDK = {
+  Today: "I dag",
+  Month: "Måned",
+  Week: "Uge",
+  Day: "Dag",
+  "Select View": "Vælg visning",
+  events: "begivenheder",
+  event: "begivenhed",
+  "No events": "Ingen begivenheder",
+  "Next period": "Næste periode",
+  "Previous period": "Forgående periode",
+  to: "til",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Heldagsbegivenheder og flerdagsbegivenheder",
+  "Link to {{n}} more events on {{date}}": "Link til {{n}} flere begivenheder den {{date}}",
+  "Link to 1 more event on {{date}}": "Link til 1 mere begivenhed den {{date}}"
+};
+const daDK = {
+  ...datePickerDaDK,
+  ...calendarDaDK
+};
+const datePickerPlPL = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Następny miesiąc",
+  "Previous month": "Poprzedni miesiąc",
+  "Choose Date": "Wybiewrz datę"
+};
+const calendarPlPL = {
+  Today: "Dzisiaj",
+  Month: "Miesiąc",
+  Week: "Tydzień",
+  Day: "Dzień",
+  "Select View": "Wybierz widok",
+  events: "wydarzenia",
+  event: "wydarzenie",
+  "No events": "Brak wydarzeń",
+  "Next period": "Następny okres",
+  "Previous period": "Poprzedni okres",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Wydarzenia całodniowe i wielodniowe",
+  "Link to {{n}} more events on {{date}}": "Link do {{n}} kolejnych wydarzeń w dniu {{date}}",
+  "Link to 1 more event on {{date}}": "Link do 1 kolejnego wydarzenia w dniu {{date}}"
+};
+const plPL = {
+  ...datePickerPlPL,
+  ...calendarPlPL
+};
+const datePickerEsES = {
+  Date: "Fecha",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Siguiente mes",
+  "Previous month": "Mes anterior",
+  "Choose Date": "Seleccione una fecha"
+};
+const calendarEsES = {
+  Today: "Hoy",
+  Month: "Mes",
+  Week: "Semana",
+  Day: "Día",
+  "Select View": "Seleccione una vista",
+  events: "eventos",
+  event: "evento",
+  "No events": "Sin eventos",
+  "Next period": "Siguiente período",
+  "Previous period": "Período anterior",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Día completo y eventos de múltiples días",
+  "Link to {{n}} more events on {{date}}": "Enlace a {{n}} eventos más el {{date}}",
+  "Link to 1 more event on {{date}}": "Enlace a 1 evento más el {{date}}"
+};
+const esES = {
+  ...datePickerEsES,
+  ...calendarEsES
+};
+const calendarNlNL = {
+  Today: "Vandaag",
+  Month: "Maand",
+  Week: "Week",
+  Day: "Dag",
+  "Select View": "Kies weergave",
+  events: "gebeurtenissen",
+  event: "gebeurtenis",
+  "No events": "Geen gebeurtenissen",
+  "Next period": "Volgende periode",
+  "Previous period": "Vorige periode",
+  to: "tot",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Evenementen van een hele dag en meerdere dagen",
+  "Link to {{n}} more events on {{date}}": "Link naar {{n}} meer evenementen op {{date}}",
+  "Link to 1 more event on {{date}}": "Link naar 1 meer evenement op {{date}}"
+};
+const datePickerNlNL = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD-MM-JJJJ",
+  "Next month": "Volgende maand",
+  "Previous month": "Vorige maand",
+  "Choose Date": "Kies datum"
+};
+const nlNL = {
+  ...datePickerNlNL,
+  ...calendarNlNL
+};
+const datePickerPtBR = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Mês seguinte",
+  "Previous month": "Mês anterior",
+  "Choose Date": "Escolha uma data"
+};
+const calendarPtBR = {
+  Today: "Hoje",
+  Month: "Mês",
+  Week: "Semana",
+  Day: "Dia",
+  "Select View": "Selecione uma visualização",
+  events: "eventos",
+  event: "evento",
+  "No events": "Sem eventos",
+  "Next period": "Período seguinte",
+  "Previous period": "Período anterior",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Dia inteiro e eventos de vários dias",
+  "Link to {{n}} more events on {{date}}": "Link para mais {{n}} eventos em {{date}}",
+  "Link to 1 more event on {{date}}": "Link para mais 1 evento em {{date}}"
+};
+const ptBR = {
+  ...datePickerPtBR,
+  ...calendarPtBR
+};
+const datePickerSkSK = {
+  Date: "Dátum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Ďalší mesiac",
+  "Previous month": "Predchádzajúci mesiac",
+  "Choose Date": "Vyberte dátum"
+};
+const calendarSkSK = {
+  Today: "Dnes",
+  Month: "Mesiac",
+  Week: "Týždeň",
+  Day: "Deň",
+  "Select View": "Vyberte zobrazenie",
+  events: "udalosti",
+  event: "udalosť",
+  "No events": "Žiadne udalosti",
+  "Next period": "Ďalšie obdobie",
+  "Previous period": "Predchádzajúce obdobie",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodenné a viacdňové udalosti",
+  "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} ďalších udalostí dňa {{date}}",
+  "Link to 1 more event on {{date}}": "Odkaz na 1 ďalšiu udalosť dňa {{date}}"
+};
+const skSK = {
+  ...datePickerSkSK,
+  ...calendarSkSK
+};
+const datePickerMkMK = {
+  Date: "Датум",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Следен месец",
+  "Previous month": "Претходен месец",
+  "Choose Date": "Избери Датум"
+};
+const calendarMkMK = {
+  Today: "Денес",
+  Month: "Месец",
+  Week: "Недела",
+  Day: "Ден",
+  "Select View": "Избери Преглед",
+  events: "настани",
+  event: "настан",
+  "No events": "Нема настани",
+  "Next period": "Следен период",
+  "Previous period": "Претходен период",
+  to: "до",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Целодневни и повеќедневни настани",
+  "Link to {{n}} more events on {{date}}": "Линк до {{n}} повеќе настани на {{date}}",
+  "Link to 1 more event on {{date}}": "Линк до 1 повеќе настан на {{date}}"
+};
+const mkMK = {
+  ...datePickerMkMK,
+  ...calendarMkMK
+};
+const datePickerTrTR = {
+  Date: "Tarih",
+  "MM/DD/YYYY": "GG/AA/YYYY",
+  "Next month": "Sonraki ay",
+  "Previous month": "Önceki ay",
+  "Choose Date": "Tarih Seç"
+};
+const calendarTrTR = {
+  Today: "Bugün",
+  Month: "Aylık",
+  Week: "Haftalık",
+  Day: "Günlük",
+  "Select View": "Görünüm Seç",
+  events: "etkinlikler",
+  event: "etkinlik",
+  "No events": "Etkinlik yok",
+  "Next period": "Sonraki dönem",
+  "Previous period": "Önceki dönem",
+  to: "dan",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Tüm gün ve çoklu gün etkinlikleri",
+  "Link to {{n}} more events on {{date}}": "{{date}} tarihinde {{n}} etkinliğe bağlantı",
+  "Link to 1 more event on {{date}}": "{{date}} tarihinde 1 etkinliğe bağlantı"
+};
+const trTR = {
+  ...datePickerTrTR,
+  ...calendarTrTR
+};
+const datePickerKyKG = {
+  Date: "Датасы",
+  "MM/DD/YYYY": "АА/КК/ЖЖЖЖ",
+  "Next month": "Кийинки ай",
+  "Previous month": "Өткөн ай",
+  "Choose Date": "Күндү тандаңыз"
+};
+const calendarKyKG = {
+  Today: "Бүгүн",
+  Month: "Ай",
+  Week: "Апта",
+  Day: "Күн",
+  "Select View": "Көрүнүштү тандаңыз",
+  events: "Окуялар",
+  event: "Окуя",
+  "No events": "Окуя жок",
+  "Next period": "Кийинки мезгил",
+  "Previous period": "Өткөн мезгил",
+  to: "чейин",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Күн бою жана бир нече күн катары менен болгон окуялар",
+  "Link to {{n}} more events on {{date}}": "{{date}} күнүндө {{n}} окуяга байланыш",
+  "Link to 1 more event on {{date}}": "{{date}} күнүндө 1 окуяга байланыш"
+};
+const kyKG = {
+  ...datePickerKyKG,
+  ...calendarKyKG
+};
+const datePickerIdID = {
+  Date: "Tanggal",
+  "MM/DD/YYYY": "DD.MM.YYYY",
+  "Next month": "Bulan depan",
+  "Previous month": "Bulan sebelumnya",
+  "Choose Date": "Pilih tanggal"
+};
+const calendarIdID = {
+  Today: "Hari Ini",
+  Month: "Bulan",
+  Week: "Minggu",
+  Day: "Hari",
+  "Select View": "Pilih tampilan",
+  events: "Acara",
+  event: "Acara",
+  "No events": "Tidak ada acara",
+  "Next period": "Periode selanjutnya",
+  "Previous period": "Periode sebelumnya",
+  to: "sampai",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Sepanjang hari dan acara beberapa hari ",
+  "Link to {{n}} more events on {{date}}": "Tautan ke {{n}} acara lainnya pada {{date}}",
+  "Link to 1 more event on {{date}}": "Tautan ke 1 acara lainnya pada {{date}}"
+};
+const idID = {
+  ...datePickerIdID,
+  ...calendarIdID
+};
+const datePickerCsCZ = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Další měsíc",
+  "Previous month": "Předchozí měsíc",
+  "Choose Date": "Vyberte datum"
+};
+const calendarCsCZ = {
+  Today: "Dnes",
+  Month: "Měsíc",
+  Week: "Týden",
+  Day: "Den",
+  "Select View": "Vyberte zobrazení",
+  events: "události",
+  event: "událost",
+  "No events": "Žádné události",
+  "Next period": "Příští období",
+  "Previous period": "Předchozí období",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodenní a vícedenní události",
+  "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} dalších událostí dne {{date}}",
+  "Link to 1 more event on {{date}}": "Odkaz na 1 další událost dne {{date}}"
+};
+const csCZ = {
+  ...datePickerCsCZ,
+  ...calendarCsCZ
+};
+const datePickerEtEE = {
+  Date: "Kuupäev",
+  "MM/DD/YYYY": "PP.KK.AAAA",
+  "Next month": "Järgmine kuu",
+  "Previous month": "Eelmine kuu",
+  "Choose Date": "Vali kuupäev"
+};
+const calendarEtEE = {
+  Today: "Täna",
+  Month: "Kuu",
+  Week: "Nädal",
+  Day: "Päev",
+  "Select View": "Vali vaade",
+  events: "sündmused",
+  event: "sündmus",
+  "No events": "Pole sündmusi",
+  "Next period": "Järgmine periood",
+  "Previous period": "Eelmine periood",
+  to: "kuni",
+  "Full day- and multiple day events": "Täispäeva- ja mitmepäevasündmused",
+  "Link to {{n}} more events on {{date}}": "Link {{n}} rohkematele sündmustele kuupäeval {{date}}",
+  "Link to 1 more event on {{date}}": "Link ühele lisasündmusele kuupäeval {{date}}"
+};
+const etEE = {
+  ...datePickerEtEE,
+  ...calendarEtEE
+};
+const datePickerUkUA = {
+  Date: "Дата",
+  "MM/DD/YYYY": "ММ/ДД/РРРР",
+  "Next month": "Наступний місяць",
+  "Previous month": "Минулий місяць",
+  "Choose Date": "Виберіть дату"
+};
+const calendarUkUA = {
+  Today: "Сьогодні",
+  Month: "Місяць",
+  Week: "Тиждень",
+  Day: "День",
+  "Select View": "Виберіть вигляд",
+  events: "події",
+  event: "подія",
+  "No events": "Немає подій",
+  "Next period": "Наступний період",
+  "Previous period": "Минулий період",
+  to: "по",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Події на цілий день і кілька днів поспіль",
+  "Link to {{n}} more events on {{date}}": "Посилання на {{n}} додаткові події на {{date}}",
+  "Link to 1 more event on {{date}}": "Посилання на 1 додаткову подію на {{date}}"
+};
+const ukUA = {
+  ...datePickerUkUA,
+  ...calendarUkUA
+};
+const datePickerSrLatnRS = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Sledeći mesec",
+  "Previous month": "Prethodni mesec",
+  "Choose Date": "Izaberite datum"
+};
+const calendarSrLatnRS = {
+  Today: "Danas",
+  Month: "Mesec",
+  Week: "Nedelja",
+  Day: "Dan",
+  "Select View": "Odaberite pregled",
+  events: "Događaji",
+  event: "Događaj",
+  "No events": "Nema događaja",
+  "Next period": "Naredni period",
+  "Previous period": "Prethodni period",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodnevni i višednevni događaji",
+  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
+  "Link to 1 more event on {{date}}": "Link do jednog događaja na {{date}}"
+};
+const srLatnRS = {
+  ...datePickerSrLatnRS,
+  ...calendarSrLatnRS
+};
+const datePickerCaES = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Següent mes",
+  "Previous month": "Mes anterior",
+  "Choose Date": "Selecciona una data"
+};
+const calendarCaES = {
+  Today: "Avui",
+  Month: "Mes",
+  Week: "Setmana",
+  Day: "Dia",
+  "Select View": "Selecciona una vista",
+  events: "Esdeveniments",
+  event: "Esdeveniment",
+  "No events": "Sense esdeveniments",
+  "Next period": "Següent període",
+  "Previous period": "Període anterior",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Esdeveniments de dia complet i de múltiples dies",
+  "Link to {{n}} more events on {{date}}": "Enllaç a {{n}} esdeveniments més el {{date}}",
+  "Link to 1 more event on {{date}}": "Enllaç a 1 esdeveniment més el {{date}}"
+};
+const caES = {
+  ...datePickerCaES,
+  ...calendarCaES
+};
+const datePickerSrRS = {
+  Date: "Датум",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Следећи месец",
+  "Previous month": "Претходни месец",
+  "Choose Date": "Изаберите Датум"
+};
+const calendarSrRS = {
+  Today: "Данас",
+  Month: "Месец",
+  Week: "Недеља",
+  Day: "Дан",
+  "Select View": "Изаберите преглед",
+  events: "Догађаји",
+  event: "Догађај",
+  "No events": "Нема догађаја",
+  "Next period": "Следећи период",
+  "Previous period": "Претходни период",
+  to: "да",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Целодневни и вишедневни догађаји",
+  "Link to {{n}} more events on {{date}}": "Линк до још {{n}} догађаја на {{date}}",
+  "Link to 1 more event on {{date}}": "Линк до још 1 догађаја {{date}}"
+};
+const srRS = {
+  ...datePickerSrRS,
+  ...calendarSrRS
+};
+const datePickerLtLT = {
+  Date: "Data",
+  "MM/DD/YYYY": "MMMM-MM-DD",
+  "Next month": "Kitas mėnuo",
+  "Previous month": "Ankstesnis mėnuo",
+  "Choose Date": "Pasirinkite datą"
+};
+const calendarLtLT = {
+  Today: "Šiandien",
+  Month: "Mėnuo",
+  Week: "Savaitė",
+  Day: "Diena",
+  "Select View": "Pasirinkite vaizdą",
+  events: "įvykiai",
+  event: "įvykis",
+  "No events": "Įvykių nėra",
+  "Next period": "Kitas laikotarpis",
+  "Previous period": "Ankstesnis laikotarpis",
+  to: "iki",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Visos dienos ir kelių dienų įvykiai",
+  "Link to {{n}} more events on {{date}}": "Nuoroda į dar {{n}} įvykius {{date}}",
+  "Link to 1 more event on {{date}}": "Nuoroda į dar 1 vieną įvykį {{date}}"
+};
+const ltLT = {
+  ...datePickerLtLT,
+  ...calendarLtLT
+};
+const datePickerHrHR = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Sljedeći mjesec",
+  "Previous month": "Prethodni mjesec",
+  "Choose Date": "Izaberite datum"
+};
+const calendarHrHR = {
+  Today: "Danas",
+  Month: "Mjesec",
+  Week: "Nedjelja",
+  Day: "Dan",
+  "Select View": "Odaberite pregled",
+  events: "Događaji",
+  event: "Događaj",
+  "No events": "Nema događaja",
+  "Next period": "Sljedeći period",
+  "Previous period": "Prethodni period",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Cjelodnevni i višednevni događaji",
+  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
+  "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}"
+};
+const hrHR = {
+  ...datePickerHrHR,
+  ...calendarHrHR
+};
+const datePickerSlSI = {
+  Date: "Datum",
+  "MM/DD/YYYY": "MM.DD.YYYY",
+  "Next month": "Naslednji mesec",
+  "Previous month": "Prejšnji mesec",
+  "Choose Date": "Izberi datum"
+};
+const calendarSlSI = {
+  Today: "Danes",
+  Month: "Mesec",
+  Week: "Teden",
+  Day: "Dan",
+  "Select View": "Izberi pogled",
+  events: "dogodki",
+  event: "dogodek",
+  "No events": "Ni dogodkov",
+  "Next period": "Naslednji dogodek",
+  "Previous period": "Prejšnji dogodek",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodnevni in večdnevni dogodki",
+  "Link to {{n}} more events on {{date}}": "Povezava do {{n}} drugih dogodkov dne {{date}}",
+  "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}"
+};
+const slSI = {
+  ...datePickerSlSI,
+  ...calendarSlSI
+};
+const datePickerFiFI = {
+  Date: "Päivämäärä",
+  "MM/DD/YYYY": "VVVV-KK-PP",
+  "Next month": "Seuraava kuukausi",
+  "Previous month": "Edellinen kuukausi",
+  "Choose Date": "Valitse päivämäärä"
+};
+const calendarFiFI = {
+  Today: "Tänään",
+  Month: "Kuukausi",
+  Week: "Viikko",
+  Day: "Päivä",
+  "Select View": "Valitse näkymä",
+  events: "tapahtumaa",
+  event: "tapahtuma",
+  "No events": "Ei tapahtumia",
+  "Next period": "Seuraava ajanjakso",
+  "Previous period": "Edellinen ajanjakso",
+  to: "-",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Koko ja usean päivän tapahtumat",
+  "Link to {{n}} more events on {{date}}": "Linkki {{n}} lisätapahtumaan päivämäärällä {{date}}",
+  "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}"
+};
+const fiFI = {
+  ...datePickerFiFI,
+  ...calendarFiFI
+};
+const datePickerRoRO = {
+  Date: "Data",
+  "MM/DD/YYYY": "LL/ZZ/AAAA",
+  "Next month": "Luna următoare",
+  "Previous month": "Luna anterioară",
+  "Choose Date": "Alege data"
+};
+const calendarRoRO = {
+  Today: "Astăzi",
+  Month: "Lună",
+  Week: "Săptămână",
+  Day: "Zi",
+  "Select View": "Selectează vizualizarea",
+  events: "evenimente",
+  event: "eveniment",
+  "No events": "Fără evenimente",
+  "Next period": "Perioada următoare",
+  "Previous period": "Perioada anterioară",
+  to: "până la",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Evenimente pe durata întregii zile și pe durata mai multor zile",
+  "Link to {{n}} more events on {{date}}": "Link către {{n}} evenimente suplimentare pe {{date}}",
+  "Link to 1 more event on {{date}}": "Link către 1 eveniment suplimentar pe {{date}}"
+};
+const roRO = {
+  ...datePickerRoRO,
+  ...calendarRoRO
+};
+const mergeLocales = (...locales) => {
+  const mergedLocales = {};
+  locales.forEach((locale) => {
+    Object.keys(locale).forEach((key) => {
+      mergedLocales[key] = { ...mergedLocales[key], ...locale[key] };
+    });
+  });
+  return mergedLocales;
+};
+const translations = {
+  deDE,
+  enUS,
+  itIT,
+  enGB,
+  svSE,
+  zhCN,
+  zhTW,
+  jaJP,
+  ruRU,
+  koKR,
+  frFR,
+  daDK,
+  mkMK,
+  plPL,
+  esES,
+  nlNL,
+  ptBR,
+  skSK,
+  trTR,
+  kyKG,
+  idID,
+  csCZ,
+  etEE,
+  ukUA,
+  caES,
+  srLatnRS,
+  srRS,
+  ltLT,
+  hrHR,
+  slSI,
+  fiFI,
+  roRO
+};
 export {
   EventDay as E,
   _o as _,
   createCalendarControlsPlugin as a,
   createCalendar as b,
   createEventsServicePlugin as c,
-  createViewDay as d,
-  createViewWeek as e,
+  createViewWeek as d,
+  colors as e,
   d$1 as f,
   E as g,
   h$2 as h,
+  createViewDay as i,
   k$1 as k,
+  mergeLocales as m,
   r,
+  translations as t,
   u$2 as u,
   viewWeek as v,
   y$1 as y
