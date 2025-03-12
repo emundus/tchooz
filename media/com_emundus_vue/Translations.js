@@ -1,4 +1,4 @@
-import { $ as client, q as axios, _ as _export_sfc, X as V32, U as script, J as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, t as toDisplayString, e as createCommentVNode, f as createBlock, d as normalizeClass, p as errors, g as createVNode, h as withDirectives, v as vShow, a3 as _imports_0 } from "./app_emundus.js";
+import { a6 as client, I as axios, _ as _export_sfc, a3 as V32, J as script, X as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, e as renderList, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, a as createBlock, n as normalizeClass, H as errors, h as createVNode, w as withDirectives, v as vShow, B as _imports_0 } from "./app_emundus.js";
 import { q as qs } from "./index2.js";
 const translationsService = {
   async checkSetup() {
@@ -25,7 +25,9 @@ const translationsService = {
   },
   async getDefaultLanguage() {
     try {
-      const response = await client().get("index.php?option=com_emundus&controller=translations&task=getdefaultlanguage");
+      const response = await client().get(
+        "index.php?option=com_emundus&controller=translations&task=getdefaultlanguage"
+      );
       return response.data;
     } catch (e) {
       return false;
@@ -37,15 +39,11 @@ const translationsService = {
       formData.append("published", published);
       formData.append("lang_code", lang_code);
       formData.append("default_lang", default_lang);
-      return await client().post(
-        `index.php?option=com_emundus&controller=translations&task=updatelanguage`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
+      return await client().post(`index.php?option=com_emundus&controller=translations&task=updatelanguage`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
         }
-      );
+      });
     } catch (e) {
       return {
         status: false,
@@ -129,7 +127,9 @@ const translationsService = {
           paramsSerializer: (params2) => qs.stringify(params2)
         });
         try {
-          return await myAxios.get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, { params });
+          return await myAxios.get(`index.php?option=com_emundus&controller=translations&task=gettranslations`, {
+            params
+          });
         } catch (e) {
           return {
             status: false,
@@ -315,9 +315,9 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { class: "tw-mb-8 em-neutral-100-box em-p-24" };
+const _hoisted_1$1 = { class: "em-neutral-100-box em-p-24 tw-mb-8" };
 const _hoisted_2$1 = { class: "tw-mb-6" };
-const _hoisted_3$1 = { class: "tw-justify-between tw-items-start tw-mt-4 em-grid-50 em-ml-24" };
+const _hoisted_3$1 = { class: "em-grid-50 em-ml-24 tw-mt-4 tw-items-start tw-justify-between" };
 const _hoisted_4$1 = ["innerHTML"];
 const _hoisted_5$1 = ["value", "onFocusout"];
 const _hoisted_6$1 = ["value", "onFocusout"];
@@ -332,7 +332,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("div", _hoisted_3$1, [
               createBaseVNode("div", {
                 innerHTML: field.default_lang,
-                class: "tw-text-neutral-700 tw-max-h-80 tw-overflow-auto"
+                class: "tw-max-h-80 tw-overflow-auto tw-text-neutral-700"
               }, null, 8, _hoisted_4$1),
               field.field_type === "field" ? (openBlock(), createElementBlock("input", {
                 key: 0,
@@ -468,12 +468,7 @@ const _sfc_main = {
     },
     async getDatas(value) {
       this.loading = true;
-      translationsService.getDatas(
-        value.table.name,
-        value.table.reference,
-        value.table.label,
-        value.table.filters
-      ).then(async (response) => {
+      translationsService.getDatas(value.table.name, value.table.reference, value.table.label, value.table.filters).then(async (response) => {
         if (response.status) {
           if (response.data.length > 0) {
             this.datas = response.data;
@@ -493,7 +488,6 @@ const _sfc_main = {
                     fields,
                     this.object.table.name
                   ).then(async (rep) => {
-                    console.log(rep);
                     if (rep.status) {
                       for (const translation of Object.values(rep.data)) {
                         this.translations[data.id] = {};
@@ -555,7 +549,15 @@ const _sfc_main = {
     },
     async saveTranslation({ value, translation }) {
       this.$emit("updateSaving", true);
-      translationsService.updateTranslations(value, this.object.table.type, this.lang.lang_code, translation.reference_id, translation.tag, translation.reference_table, translation.reference_field).then((response) => {
+      translationsService.updateTranslations(
+        value,
+        this.object.table.type,
+        this.lang.lang_code,
+        translation.reference_id,
+        translation.tag,
+        translation.reference_table,
+        translation.reference_field
+      ).then((response) => {
         if (response.status) {
           this.$emit("updateLastSaving", this.formattedDate("", "LT"));
           this.$emit("updateSaving", false);
@@ -565,7 +567,10 @@ const _sfc_main = {
       });
     },
     async exportToCsv() {
-      window.open("/index.php?option=com_emundus&controller=translations&task=export&profile=" + this.data.id, "_blank");
+      window.open(
+        "/index.php?option=com_emundus&controller=translations&task=export&profile=" + this.data.id,
+        "_blank"
+      );
     },
     translate(key) {
       if (typeof key != void 0 && key != null && Joomla !== null && typeof Joomla !== "undefined") {
@@ -672,10 +677,10 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { class: "tw-mb-2" };
-const _hoisted_2 = { class: "tw-text-base tw-text-neutral-700 tw-mb-6 em-h-25" };
+const _hoisted_2 = { class: "em-h-25 tw-mb-6 tw-text-base tw-text-neutral-700" };
 const _hoisted_3 = {
   key: 0,
-  class: "tw-text-base tw-mb-6 em-h-25"
+  class: "em-h-25 tw-mb-6 tw-text-base"
 };
 const _hoisted_4 = {
   key: 1,
@@ -690,7 +695,7 @@ const _hoisted_9 = {
   class: "text-center tw-mt-4"
 };
 const _hoisted_10 = { class: "tw-mb-2" };
-const _hoisted_11 = { class: "tw-text-base em-text-neutral-600" };
+const _hoisted_11 = { class: "em-text-neutral-600 tw-text-base" };
 const _hoisted_12 = { key: 1 };
 const _hoisted_13 = { class: "mb-2" };
 const _hoisted_14 = {

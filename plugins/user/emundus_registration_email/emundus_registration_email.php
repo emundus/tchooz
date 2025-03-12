@@ -159,7 +159,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
 
 		// If user is found in the LDAP system.
 		if (PluginHelper::getPlugin('authentication', 'ldap')) {
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 			$m_users = new EmundusModelusers();
 			$return  = $m_users->searchLDAP($user->username);
 

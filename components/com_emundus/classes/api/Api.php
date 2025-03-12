@@ -190,6 +190,10 @@ class Api
 			} else {
 				$params['headers']['Content-Type'] = 'application/json';
 				$params['headers']['Accept']       = 'application/json';
+				if (is_array($body))
+				{
+					$params['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
+				}
 			}
 
 			if(strpos($url, 'https') !== false)

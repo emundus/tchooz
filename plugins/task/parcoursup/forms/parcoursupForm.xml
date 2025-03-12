@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+	<fields name="params">
+		<fieldset name="task_params">
+			<field name="debug_mode" label="Debug mode" type="list" default="0">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="skip_activation" label="PLG_EMUNDUS_PARCOURSUP_SKIP_ACTIVATION" type="list" default="1">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="delete_files_not_updated" label="PLG_EMUNDUS_PARCOURSUP_DELETE_FILES_NOT_UPDATED" type="list" default="0">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field showon="delete_files_not_updated:1" name="delete_users" label="PLG_EMUNDUS_PARCOURSUP_DELETE_USERS" type="list" default="0">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field showon="delete_files_not_updated:1" name="delay_before_deletion" label="PLG_EMUNDUS_PARCOURSUP_DELAY_BEFORE_DELETION" type="text" default="3" />
+		</fieldset>
+	</fields>
+</form>

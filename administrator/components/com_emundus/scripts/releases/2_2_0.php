@@ -974,98 +974,99 @@ class Release2_2_0Installer extends ReleaseInstaller
 					}
 					//
 				}
-
-				// Teams integration
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'name', 'VARCHAR', 255, 0);
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'description', 'TEXT');
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'enabled', 'TINYINT', 3, 0, 0);
-				EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'icon', 'VARCHAR', 255);
-
-				$query->clear()
-					->select('id')
-					->from($this->db->quoteName('#__emundus_setup_sync'))
-					->where($this->db->quoteName('type') . ' = ' . $this->db->quote('teams'));
-				$this->db->setQuery($query);
-				$teams = $this->db->loadResult();
-
-				if (empty($teams))
-				{
-					$teams = [
-						'type'        => 'teams',
-						'name'        => 'Microsoft Teams',
-						'description' => 'Génerez des liens de réunion Teams pour vos évènements.',
-						'params'      => '{}',
-						'config'      => '{}',
-						'icon'        => 'teams.svg',
-						'enabled'     => 0,
-						'published'   => 0,
-					];
-					$teams = (object) $teams;
-					$this->db->insertObject('jos_emundus_setup_sync', $teams);
-				}
-				//
-
-				// Install booking element
-				EmundusHelperUpdate::installExtension('plg_fabrik_element_booking', 'booking', null, 'plugin', 1, 'fabrik_element');
-				//
-
-				// Emails
-				$query->clear()
-					->select('id')
-					->from($this->db->quoteName('#__emundus_setup_emails'))
-					->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('booking_confirmation'));
-				$this->db->setQuery($query);
-				$booking_confirmation_email = $this->db->loadResult();
-
-				if (empty($booking_confirmation_email))
-				{
-					$booking_confirmation_email = [
-						'lbl'        => 'booking_confirmation',
-						'subject'    => 'Confirmation de votre réservation / Confirmation of your booking',
-						'emailfrom'  => '',
-						'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/booking/booking_confirmation.html'),
-						'type'       => 1,
-						'published'  => 0,
-						'email_tmpl' => 1,
-						'category'   => 'Système',
-						'button'     => ''
-					];
-					$booking_confirmation_email = (object) $booking_confirmation_email;
-					$this->db->insertObject('#__emundus_setup_emails', $booking_confirmation_email);
-				}
-				//
-
-				// Install emails emundus plugin
-				EmundusHelperUpdate::installExtension('plg_emundus_emails', 'emails', null, 'plugin', 1, 'emundus');
-				//
-
-				// Microsoft Dynamics integration
-				$query->clear()
-					->select('id')
-					->from($this->db->quoteName('#__emundus_setup_sync'))
-					->where($this->db->quoteName('type') . ' = ' . $this->db->quote('microsoft_dynamics'));
-				$this->db->setQuery($query);
-				$microsoft_dynamics = $this->db->loadResult();
-
-				if (empty($microsoft_dynamics))
-				{
-					$microsoft_dynamics = [
-						'type'        => 'microsoft_dynamics',
-						'name'        => 'Microsoft Dynamics 365',
-						'description' => 'Transformez vos dossiers de candidatures en opportunités dans votre CRM.',
-						'params'      => '{}',
-						'config'      => '{}',
-						'icon'        => 'dynamics_365.svg',
-						'enabled'     => 0,
-						'published'   => 0,
-					];
-					$microsoft_dynamics = (object) $microsoft_dynamics;
-					$this->db->insertObject('jos_emundus_setup_sync', $microsoft_dynamics);
-				}
-				//
 			}
 
+			// Teams integration
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'name', 'VARCHAR', 255, 0);
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'description', 'TEXT');
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'enabled', 'TINYINT', 3, 0, 0);
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_sync', 'icon', 'VARCHAR', 255);
 
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('teams'));
+			$this->db->setQuery($query);
+			$teams = $this->db->loadResult();
+
+			if (empty($teams))
+			{
+				$teams = [
+					'type'        => 'teams',
+					'name'        => 'Microsoft Teams',
+					'description' => 'Génerez des liens de réunion Teams pour vos évènements.',
+					'params'      => '{}',
+					'config'      => '{}',
+					'icon'        => 'teams.svg',
+					'enabled'     => 0,
+					'published'   => 0,
+				];
+				$teams = (object) $teams;
+				$this->db->insertObject('jos_emundus_setup_sync', $teams);
+			}
+			//
+
+			// Install booking element
+			EmundusHelperUpdate::installExtension('plg_fabrik_element_booking', 'booking', null, 'plugin', 1, 'fabrik_element');
+			//
+
+			// Emails
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_emails'))
+				->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('booking_confirmation'));
+			$this->db->setQuery($query);
+			$booking_confirmation_email = $this->db->loadResult();
+
+			if (empty($booking_confirmation_email))
+			{
+				$booking_confirmation_email = [
+					'lbl'        => 'booking_confirmation',
+					'subject'    => 'Confirmation de votre réservation / Confirmation of your booking',
+					'emailfrom'  => '',
+					'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/booking/booking_confirmation.html'),
+					'type'       => 1,
+					'published'  => 0,
+					'email_tmpl' => 1,
+					'category'   => 'Système',
+					'button'     => ''
+				];
+				$booking_confirmation_email = (object) $booking_confirmation_email;
+				$this->db->insertObject('#__emundus_setup_emails', $booking_confirmation_email);
+			}
+			//
+
+			// Install emails emundus plugin
+			EmundusHelperUpdate::installExtension('plg_emundus_emails', 'emails', null, 'plugin', 1, 'emundus');
+			//
+
+			// Microsoft Dynamics integration
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('microsoft_dynamics'));
+			$this->db->setQuery($query);
+			$microsoft_dynamics = $this->db->loadResult();
+
+			if (empty($microsoft_dynamics))
+			{
+				$microsoft_dynamics = [
+					'type'        => 'microsoft_dynamics',
+					'name'        => 'Microsoft Dynamics 365',
+					'description' => 'Transformez vos dossiers de candidatures en opportunités dans votre CRM.',
+					'params'      => '{}',
+					'config'      => '{}',
+					'icon'        => 'dynamics_365.svg',
+					'enabled'     => 0,
+					'published'   => 1,
+				];
+				$microsoft_dynamics = (object) $microsoft_dynamics;
+				$this->db->insertObject('jos_emundus_setup_sync', $microsoft_dynamics);
+			}
+			//
+
+
+			// Create tags for booking
 			$tags_to_create = [
 				'BOOKING_START_DATE'           => [
 					1 => 'Booking start date',
@@ -1139,29 +1140,10 @@ class Release2_2_0Installer extends ReleaseInstaller
 				EmundusHelperUpdate::insertFalangTranslation(1, $training_programme_tag->id, 'emundus_setup_tags', 'description', 'Program\'s name');
 				EmundusHelperUpdate::insertFalangTranslation(2, $training_programme_tag->id, 'emundus_setup_tags', 'description', 'Nom du programme');
 			}
+			//
 
 			EmundusHelperUpdate::addColumn('jos_emundus_setup_events_notifications', 'ics_event_name', 'VARCHAR', 255, 1);
 			/* END PREPARE BOOKING */
-
-			$query->clear()
-				->select('link')
-				->from($this->db->quoteName('#__menu'))
-				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('coordinatormenu'))
-				->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('email-history'));
-			$this->db->setQuery($query);
-			$email_history_link = $this->db->loadResult();
-
-			if (!empty($email_history_link))
-			{
-				$query->clear()
-					->update($this->db->quoteName('#__menu'))
-					->set($this->db->quoteName('link') . ' = ' . $this->db->quote($email_history_link))
-					->set($this->db->quoteName('published') . ' = 1')
-					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('adminmenu'))
-					->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('email-history'));
-				$this->db->setQuery($query);
-				$this->db->execute();
-			}
 
 			$query->clear()
 				->update($this->db->quoteName('#__emundus_setup_emails'))
@@ -1259,7 +1241,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			if (!empty($setup_groups_list))
 			{
-				$params = json_decode($setup_groups_list->params, true);
+				$params                    = json_decode($setup_groups_list->params, true);
 				$params['group_by_access'] = 10;
 
 				$setup_groups_list->params = json_encode($params);
@@ -1275,7 +1257,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			if (!empty($setup_profiles_list))
 			{
-				$params = json_decode($setup_profiles_list->params, true);
+				$params                    = json_decode($setup_profiles_list->params, true);
 				$params['group_by_access'] = 10;
 
 				$setup_profiles_list->params = json_encode($params);
@@ -1284,8 +1266,8 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			$query->clear()
 				->select('ff.id,ff.params')
-				->from($this->db->quoteName('#__fabrik_forms','ff'))
-				->leftJoin($this->db->quoteName('#__fabrik_lists','fl').' ON '.$this->db->quoteName('fl.form_id').' = '.$this->db->quoteName('ff.id'))
+				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
 				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations%'))
 				->andWhere('JSON_EXTRACT(ff.params,"$.goback_button") = "1"');
 			$this->db->setQuery($query);
@@ -1303,15 +1285,15 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			$query->clear()
 				->select('fe.id,fe.params')
-				->from($this->db->quoteName('#__fabrik_forms','ff'))
-				->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.form_id').' = '.$this->db->quoteName('ff.id'))
-				->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.group_id').' = '.$this->db->quoteName('ffg.group_id'))
+				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quoteName('ff.id'))
+				->leftJoin($this->db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
 				->where($this->db->quoteName('ff.label') . ' LIKE ' . $this->db->quote('SETUP_EMAIL_DETAILS'))
 				->andWhere($this->db->quoteName('fe.name') . ' LIKE ' . $this->db->quote('date_time'));
 			$this->db->setQuery($query);
-			$setup_email_history_date_elt = $this->db->loadObject();
-			$params = json_decode($setup_email_history_date_elt->params, true);
-			$params['jdate_table_format'] = 'd/m/Y H:i:s';
+			$setup_email_history_date_elt         = $this->db->loadObject();
+			$params                               = json_decode($setup_email_history_date_elt->params, true);
+			$params['jdate_table_format']         = 'd/m/Y H:i:s';
 			$setup_email_history_date_elt->params = json_encode($params);
 			$this->db->updateObject('#__fabrik_elements', $setup_email_history_date_elt, 'id');
 
@@ -1323,23 +1305,24 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$emails = $this->db->loadObjectList();
 
-			foreach ($emails as $email) {
+			foreach ($emails as $email)
+			{
 				$email->message = str_replace('[NAME]', '[APPLICANT_NAME]', $email->message);
 				$this->db->updateObject('#__emundus_setup_emails', $email, 'id');
 			}
-			
-			EmundusHelperUpdate::enableEmundusPlugins('emundusrecall','fabrik_cron');
+
+			EmundusHelperUpdate::enableEmundusPlugins('emundusrecall', 'fabrik_cron');
 
 			$query->clear()
 				->select('fe.id,fe.plugin')
-				->from($this->db->quoteName('#__fabrik_forms','ff'))
-				->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.form_id').' = '.$this->db->quoteName('ff.id'))
-				->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.group_id').' = '.$this->db->quoteName('ffg.group_id'))
+				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quoteName('ff.id'))
+				->leftJoin($this->db->quoteName('#__fabrik_elements', 'fe') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
 				->where($this->db->quoteName('ff.label') . ' LIKE ' . $this->db->quote('SETUP_PROFILE'))
 				->andWhere($this->db->quoteName('fe.plugin') . ' LIKE ' . $this->db->quote('radiobutton'));
 			$this->db->setQuery($query);
 			$setup_profile_elt = $this->db->loadObject();
-			if(!empty($setup_profile_elt))
+			if (!empty($setup_profile_elt))
 			{
 				$setup_profile_elt->plugin = 'yesno';
 				$this->db->updateObject('#__fabrik_elements', $setup_profile_elt, 'id');
@@ -1354,7 +1337,7 @@ class Release2_2_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$emundus_component = $this->db->loadObject();
 
-			if(!empty($emundus_component))
+			if (!empty($emundus_component))
 			{
 				$params                    = json_decode($emundus_component->params, true);
 				$params['default_actions'] = '{"1":{"id":1, "c":0, "r":1, "u":0, "d":0}}';
@@ -1376,7 +1359,6 @@ class Release2_2_0Installer extends ReleaseInstaller
 
 			return $result;
 		}
-
 
 		return $result;
 	}

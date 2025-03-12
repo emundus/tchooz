@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>plg_task_parcoursup</name>
+	<author>eMundus</author>
+	<creationDate>2025-02</creationDate>
+	<copyright>(C) 2025 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>2.3.0</version>
+	<namespace path="src">Joomla\Plugin\Task\Parcoursup</namespace>
+	<files>
+		<folder plugin="parcoursup">services</folder>
+		<folder>src</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/fr-FR/plg_task_parcoursup.ini</language>
+		<language tag="en-GB">language/fr-FR/plg_task_parcoursup.sys.ini</language>
+	</languages>
+</extension>

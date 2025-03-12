@@ -2699,13 +2699,16 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode)
+	public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document = false)
 	{
 		$query = $this->db->getQuery(true);
 		$user  = $this->app->getIdentity();
 
 		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$replace_document     = $eMConfig->get('export_replace_doc', 0);
+		if ($force_replace_document) {
+			$replace_document = 1;
+		}
 		$generated_doc_name   = $eMConfig->get('generated_doc_name', "");
 		$gotenberg_activation = $eMConfig->get('gotenberg_activation', 0);
 		$escape_ampersand     = $eMConfig->get('generate_letter_escape_ampersand', 0);
@@ -2771,8 +2774,12 @@ class EmundusModelEvaluation extends JModelList
 					$refreshQuery->delete($this->db->quoteName('#__emundus_uploads'))
 						// TODO: We have to check another param if this attachment_id is used for an applicant upload
 						->where($this->db->quoteName('attachment_id') . ' = ' . $attachInfo['id'])
-						->andWhere('DATE(' . $this->db->quoteName('timedate') . ') = CURRENT_DATE() OR ' . $this->db->quoteName('user_id') . ' <> ' . $this->db->quote($fnumInfo[$fnum]['applicant_id']))
 						->andWhere($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
+
+					if (!$force_replace_document) {
+						$query->andWhere('DATE(' . $this->db->quoteName('timedate') . ') = CURRENT_DATE() OR ' . $this->db->quoteName('user_id') . ' <> ' . $this->db->quote($fnumInfo[$fnum]['applicant_id']));
+					}
+
 					$this->db->setQuery($refreshQuery);
 					$this->db->execute();
 				}

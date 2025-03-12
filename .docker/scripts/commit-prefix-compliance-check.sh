@@ -36,7 +36,8 @@ GITLAB_URL=$1
 GITLAB_TOKEN=$2
 PROJECT_ID=$3
 MERGE_REQUEST_IID=$4
-COMMIT_PREFIXES_TRIGGERING_RELEASE=("BREAKING: " "BREAKING CHANGE: " "BREAKING CHANGES: " "minor: " "feat: " "feature: " "patch: " "hotfix: " "security: " "fix: " "style: " "refactor: " "perf: ")
+COMMIT_PREFIXES_TRIGGERING_RELEASE=("cd: " "ci: " "cicd: " "doc: " "feat: " "fix: " "hotfix: " "patch: " "perf: " "ref: " "refactor: " "security: " "style: " "test: " "ui: " "uiux: " "ux: ")
+
 
 # Get commit names in merge request
 git_query=""
@@ -52,22 +53,30 @@ do
   page=$((page+1))
 done
 
-# Checks if at least one commit of the current merge request respects the naming of the commits
-i=0
+# Check that all commits in the merge request respect the naming convention
+all_valid=true
 for commit in $(echo "${git_query}" | jq -r '.[] | @base64'); do
    message=$(echo "${commit}" | base64 -d | jq -r '.message')
+
+   valid=false
    for prefix in "${COMMIT_PREFIXES_TRIGGERING_RELEASE[@]}"; do
       if [[ "$message" == "$prefix"* ]]; then
-         i=$((i+1))
+         valid=true
+         break
       fi
    done
+
+   if [ "$valid" = false ]; then
+      echo "ERROR: Commit message '$message' does not respect the naming convention."
+      all_valid=false
+   fi
 done
 
-# If no commit uses valid prefixes then the job fails and the pipeline is stopped
-if [ $i -eq 0 ]; then
-   echo "ERROR: Please use at least one commit with a prefix that allows the triggering of a release."
+# If at least one commit is invalid, fail the job
+if [ "$all_valid" = false ]; then
+   echo "ERROR: All commits must use a valid prefix."
    exit 1
 else
-   echo "Well done, you used at least one commit with a prefix that allows the triggering of a release."
+   echo "Well done! All commits respect the naming convention."
    exit 0
 fi

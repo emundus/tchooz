@@ -60,13 +60,14 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$ids         = json_decode($ids, true);
 			$lim         = $this->app->input->getInt('lim', 0);
 			$page        = $this->app->input->getInt('page', 0);
+			$search        = $this->app->input->getString('recherche', '');
 			$program_ids = $this->app->input->getString('program', '');
 			$program_ids = !empty($program_ids) ? explode(',', $program_ids) : [];
 			$sort 	     = $this->app->input->getString('sort', 'DESC');
 			$order_by    = $this->app->input->getString('order_by', 'esw.id');
 			$order_by    = $order_by == 'label' ? 'esw.label' : $order_by;
 
-			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids, $order_by, $sort);
+			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids, $order_by, $sort, $search);
 
 			if (!empty($workflows))
 			{
@@ -235,6 +236,11 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$id                  = $this->app->input->getInt('id', 0);
+			if(empty($id)) {
+				$ids = $this->app->input->getString('ids');
+				$id = explode(',', $ids);
+			}
+
 			$response['code']    = 500;
 			$response['message'] = Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP');
 

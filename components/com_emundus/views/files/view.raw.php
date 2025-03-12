@@ -402,6 +402,12 @@ class EmundusViewFiles extends JViewLegacy
 							$usObj->class = null;
 						}
 
+						$unread_messages   = array();
+						$unread_messages[] = $m_files->getUnreadMessages($this->user->id);
+						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
+						$keys = array_keys($unread_messages);
+						natsort($keys);
+
 						foreach ($user as $key => $value) {
 							$userObj = new stdClass();
 
@@ -414,6 +420,8 @@ class EmundusViewFiles extends JViewLegacy
 								}
 								$userObj->user       = JFactory::getUser((int) $user['applicant_id']);
 								$userObj->user->name = $user['name'];
+								$userObj->unread_messages = $unread_messages[$value];
+
 								$line['fnum']        = $userObj;
 							}
 							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire') {
@@ -490,7 +498,7 @@ class EmundusViewFiles extends JViewLegacy
 						$colsSup['attachment_progress'] = $h_files->createAttachmentProgressList($attachments_progress);
 					}
 
-					if (isset($colsSup['unread_messages'])) {
+					/*if (isset($colsSup['unread_messages'])) {
 						$unread_messages   = array();
 						$unread_messages[] = $m_files->getUnreadMessages($this->user->id);
 						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
@@ -501,7 +509,7 @@ class EmundusViewFiles extends JViewLegacy
 						foreach ($keys as $k) {
 							$colsSup['unread_messages'][$k] = $unread_messages[$k];
 						}
-					}
+					}*/
 
 					if (isset($colsSup['commentaire'])) {
 						foreach ($fnumArray as $fnum) {

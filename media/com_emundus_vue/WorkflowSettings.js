@@ -1,4 +1,4 @@
-import { _ as _export_sfc, E as workflowService, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, b as renderList, a as createBaseVNode, h as withDirectives, R as vModelText, e as createCommentVNode, f as createBlock, t as toDisplayString, d as normalizeClass } from "./app_emundus.js";
+import { _ as _export_sfc, Q as workflowService, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, e as renderList, d as createBaseVNode, w as withDirectives, A as vModelText, b as createCommentVNode, a as createBlock, t as toDisplayString, n as normalizeClass } from "./app_emundus.js";
 const _sfc_main$1 = {
   name: "StepTypesByLevel",
   props: {
@@ -26,8 +26,6 @@ const _sfc_main$1 = {
   },
   mounted() {
     this.types = this.defaultTypes;
-    console.log(this.level);
-    console.log(this.levelMax);
   },
   methods: {
     addStepType() {
@@ -83,12 +81,12 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { class: "tw-w-full tw-flex tw-flex-row tw-items-center tw-mb-2" };
+const _hoisted_1$1 = { class: "tw-mb-2 tw-flex tw-w-full tw-flex-row tw-items-center" };
 const _hoisted_2$1 = ["id", "name", "onUpdate:modelValue"];
 const _hoisted_3 = ["onClick"];
 const _hoisted_4 = {
   key: 0,
-  class: "tw-w-full tw-flex tw-flex-row tw-items-center"
+  class: "tw-flex tw-w-full tw-flex-row tw-items-center"
 };
 const _hoisted_5 = ["onClick"];
 const _hoisted_6 = {
@@ -136,7 +134,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         $props.level < $props.levelMax ? (openBlock(), createElementBlock("div", _hoisted_4, [
           createBaseVNode("button", {
             onClick: ($event) => $options.addChildrenStepType(type),
-            class: "tw-btn-secondary tw-mt-2 tw-mb-2"
+            class: "tw-btn-secondary tw-mb-2 tw-mt-2"
           }, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE")), 9, _hoisted_5)
         ])) : createCommentVNode("", true)
       ]);
