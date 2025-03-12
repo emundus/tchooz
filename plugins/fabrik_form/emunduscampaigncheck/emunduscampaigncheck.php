@@ -187,7 +187,8 @@ class PlgFabrik_FormEmundusCampaignCheck extends plgFabrik_Form
 				$query->select($this->_db->quoteName('sc.year'))
 					->from($this->_db->quoteName('#__emundus_campaign_candidature', 'cc'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->_db->quoteName('sc.id') . ' = ' . $this->_db->quoteName('cc.campaign_id'))
-					->where($this->_db->quoteName('applicant_id') . ' = ' . $user->id);
+					->where($this->_db->quoteName('applicant_id') . ' = ' . $user->id)
+					->andWhere($this->_db->quoteName('cc.published').' <> '.$this->_db->quote('-1'));
 
 				try {
 					$this->_db->setQuery($query);
