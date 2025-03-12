@@ -770,8 +770,10 @@ class EmundusModelForm extends JModelList
 
 					if (!empty($oldprofile)) {
 						// Create a new profile
+						$new_profile_label = 'Copy - ' . $oldprofile->label;
+
 						$insert = [
-							'label' => $oldprofile->label . ' - Copy',
+							'label' => $new_profile_label,
 							'published' => 1,
 							'menutype' => $oldprofile->menutype,
 							'acl_aro_groups' => $oldprofile->acl_aro_groups,
@@ -783,7 +785,11 @@ class EmundusModelForm extends JModelList
 
 						if (!empty($newprofile)) {
 							$newmenutype = 'menu-profile' . $newprofile;
-							$newmenutype = $this->createMenuType($newmenutype, $oldprofile->label . ' - Copy');
+							$new_title = 'Copy - ' . $oldprofile->label;
+							if (strlen($new_title) > 48) {
+								$new_title = substr($new_title, 0, 45) . '...';
+							}
+							$newmenutype = $this->createMenuType($newmenutype, $new_title);
 							if (empty($newmenutype)) {
 								Log::add('Failed to create new menu from profile ' . $newprofile, Log::WARNING, 'com_emundus.error');
 
@@ -848,7 +854,7 @@ class EmundusModelForm extends JModelList
 										$insert[$key] = $newmenutype;
 									}
 									elseif ($key == 'alias') {
-										$insert[$key] = str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile;
+										$insert[$key] = str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $newprofile;
 									}
 								}
 								$insert = (object)$insert;
