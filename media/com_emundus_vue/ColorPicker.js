@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, a as createBaseVNode, n as normalizeStyle, h as withDirectives, v as vShow, F as Fragment, b as renderList, d as normalizeClass } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, j as normalizeStyle, w as withDirectives, v as vShow, F as Fragment, e as renderList, n as normalizeClass } from "./app_emundus.js";
 const basicPreset = [
   "red-1",
   "red-2",
@@ -23,6 +23,7 @@ const basicPreset = [
   "grey-2",
   "black"
 ];
+const darkPreset = ["red-2", "pink-2", "purple-2", "blue-3", "green-2", "orange-2", "brown"];
 const extractPropertyFromPreset = (presetName) => {
   if (typeof presetName !== "string") {
     return null;
@@ -35,6 +36,17 @@ const extractPropertyFromPreset = (presetName) => {
       swatches.push(color);
     }
     return swatches;
+  } else if (presetName === "dark" && typeof darkPreset === "object") {
+    let root = document.querySelector(":root");
+    let variables = getComputedStyle(root);
+    let swatches = [];
+    for (const swatch of darkPreset) {
+      let color = variables.getPropertyValue("--em-" + swatch);
+      swatches.push(color);
+    }
+    return swatches;
+  } else {
+    return null;
   }
 };
 const _sfc_main = {
@@ -56,6 +68,10 @@ const _sfc_main = {
     modelValue: {
       type: String,
       default: ""
+    },
+    random: {
+      type: Boolean,
+      default: false
     }
   },
   emits: ["input", "update:modelValue"],
@@ -67,6 +83,12 @@ const _sfc_main = {
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
+  },
+  created() {
+    if (this.random && this.modelValue === "") {
+      const randomIndex = Math.floor(Math.random() * this.computedSwatches.length);
+      this.updateSwatch(this.computedSwatches[randomIndex]);
+    }
   },
   methods: {
     swatchStyle(swatch) {
@@ -130,7 +152,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     class: "color-picker-container tw-relative"
   }, [
     createBaseVNode("div", {
-      class: "tw-rounded-full tw-h-[24px] tw-w-[24px] tw-cursor-pointer",
+      class: "tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full",
       style: normalizeStyle($options.selectedSwatchStyle),
       onClick: _cache[0] || (_cache[0] = (...args) => $options.togglePopover && $options.togglePopover(...args))
     }, null, 4),
@@ -141,7 +163,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.computedSwatches, (swatchRow, index) => {
         return openBlock(), createElementBlock("div", {
           key: index,
-          class: "vue-swatches__row tw-rounded-full tw-h-[24px] tw-w-[24px] tw-cursor-pointer hover:tw-scale-110",
+          class: "vue-swatches__row tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full hover:tw-scale-110",
           style: normalizeStyle($options.swatchStyle(swatchRow)),
           onClick: ($event) => $options.updateSwatch(swatchRow)
         }, null, 12, _hoisted_2);

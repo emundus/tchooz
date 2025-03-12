@@ -58,6 +58,7 @@ class Dispatcher extends AbstractModuleDispatcher
 		    $data['display_shapes'] = $params->get('display_shapes', 1);
 		    $data['display_tchoozy'] = $params->get('display_dashboard_tchoozy', 1);
 		    $data['display_name']        = $params->get('display_name', 0);
+		    $data['grid_size']        = $params->get('grid_size', 1);
 		    $data['name']               = $emundusUser->name;
 
 		    $current_lang = $this->app->getLanguage()->getTag();

@@ -142,7 +142,7 @@ final class MicrosoftDynamics extends CMSPlugin implements SubscriberInterface
 					$filters[] = $filter;
 				}
 			}
-			
+
 			$attribute_id = $config['name'] . 'id';
 			if (!empty($filters))
 			{

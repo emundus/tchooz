@@ -140,7 +140,7 @@ class CampaignModelTest extends UnitTestCase
 		$new_campaign_id = $this->model->createCampaign([], $this->dataset['coordinator']);
 		$this->assertEmpty($new_campaign_id, 'Assert can not create campaign without data');
 
-		$new_campaign_id = $this->model->createCampaign(['limit_status' => 1, 'profile_id' => 9], $this->dataset['coordinator']);
+		$new_campaign_id = $this->model->createCampaign(['limit_status' => 1, 'profile_id' => 1000], $this->dataset['coordinator']);
 		$this->assertEmpty($new_campaign_id, 'Assert can not create campaign without label');
 
 		$start_date = new DateTime();

@@ -75,7 +75,7 @@ class ApiMapper
 						$fabrik_value = EmundusHelperFabrik::getValueByAlias($field->elementId, $this->fnum);
 
 						if (!empty($fabrik_value)) {
-							$this->mapping[$field->attribute] = $this->transformValue($field, $fabrik_value['raw']);
+							$this->mapping[$field->attribute] = $this->sanitizeValue($field, $fabrik_value['raw']);
 						} else {
 							$this->mapping[$field->attribute] = '';
 						}
@@ -132,12 +132,16 @@ class ApiMapper
 							try {
 								$this->db->setQuery($query);
 								$result = $this->db->loadResult();
-								$this->mapping[$field->attribute] = $this->transformValue($field, $result);
+								$this->mapping[$field->attribute] = $this->sanitizeValue($field, $result);
 							} catch (\Exception $e) {
-								Log::add('Error: ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
+								Log::add('Failed to get value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
 							}
 						}
 						break;
+				}
+
+				if (!empty($field->transformation)) {
+					$this->mapping[$field->attribute] = $this->transformValue($this->mapping[$field->attribute], $field->transformation->origin_column, $field->transformation->table, $field->transformation->targeted_column);
 				}
 			}
 		}
@@ -152,7 +156,7 @@ class ApiMapper
 	 *
 	 * @return string
 	 */
-	private function transformValue(object $field, string $value): string
+	private function sanitizeValue(object $field, string $value): string
 	{
 		$transformed_value = $value;
 
@@ -167,6 +171,35 @@ class ApiMapper
 		}
 
 		return trim(strip_tags($transformed_value));
+	}
+
+	/**
+	 * @param   string  $value
+	 * @param   string  $original_column
+	 * @param   string  $table
+	 * @param   string  $targeted_column
+	 *
+	 * @return string
+	 */
+	private function transformValue(string $value, string $original_column, string $table, string $targeted_column): string
+	{
+		$transformed_value = $value;
+
+		if (!empty($original_column) && !empty($table) && !empty($targeted_column)) {
+			$query = $this->db->createQuery();
+			$query->select($this->db->quoteName($targeted_column))
+				->from($this->db->quoteName($table))
+				->where($this->db->quoteName($original_column) . ' = ' . $this->db->quote($value));
+
+			try {
+				$this->db->setQuery($query);
+				$transformed_value = $this->db->loadResult();
+			} catch (\Exception $e) {
+				Log::add('Failed to transform value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
+			}
+		}
+
+		return $transformed_value;
 	}
 
 	public function setMappingFromJSON($json): array

@@ -1,316 +1,354 @@
 <template>
-  <div class="messages__coordinator_vue tw-w-full">
-    <div class="messages__list col-md-12">
-      <label class="text-center tw-ml-4" style="width: 100%">{{ translations.messages }}</label>
-      <div class="messages__list-block" id="messages__list">
-        <div v-for="date in messageByDates" :key="date.dates">
-          <div class="messages__date-section">
-            <hr>
-            <p>{{ moment(date.dates).format("DD/MM/YYYY") }}</p>
-            <hr>
-          </div>
-          <div v-for="message in date.messages" :key="message.message_id" class="messages__message-item" :class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'">
-            <div class="messages__message-item-block" @click="showDate != message.message_id ? showDate = message.message_id : showDate = 0" :class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'">
-              <p><span class="messages__message-item-from">{{message.name}} - {{ message.date_hour }}</span></p>
-              <span class="messages__message-item-span" :class="user == message.user_id_from ? 'messages__message-item-span_current-user' : 'messages__message-item-span_other-user'" v-html="message.message"></span>
-              <p><span class="messages__message-item-from" v-if="showDate == message.message_id">{{ moment(message.date_time).format("DD/MM/YYYY HH:mm") }}</span></p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <transition :name="'slide-up'" type="transition">
-        <AttachDocument :user="user" :fnum="fnum" :applicant="false" v-if="attachOpen" @pushAttachmentMessage="pushAttachmentMessage" @close="attachDocument" ref="attachment"/>
-      </transition>
-      <div class="messages__bottom-input">
-        <textarea type="text"
-                  class="messages__input_text"
-                  :disabled="attachOpen"
-                  rows="1"
-                  spellcheck="true"
-                  v-model="message"
-                  :placeholder="translations.writeMessage"
-                  @keydown.enter.exact.prevent="sendMessage($event)"
-        />
-      </div>
-      <div class="messages__bottom-input-actions">
-        <div class="messages__actions_bar">
-          <span class="messages__send-icon material-symbols-outlined" @click="attachDocument">attach_file</span>
-        </div>
-        <button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
-          {{ translations.send }}
-        </button>
-      </div>
-    </div>
-    <div class="loader" v-if="loading"></div>
-  </div>
+	<div class="messages__coordinator_vue tw-w-full">
+		<div class="messages__list col-md-12">
+			<label class="text-center tw-ml-4" style="width: 100%">{{ translations.messages }}</label>
+			<div class="messages__list-block" id="messages__list">
+				<div v-for="date in messageByDates" :key="date.dates">
+					<div class="messages__date-section">
+						<hr />
+						<p>{{ moment(date.dates).format('DD/MM/YYYY') }}</p>
+						<hr />
+					</div>
+					<div
+						v-for="message in date.messages"
+						:key="message.message_id"
+						class="messages__message-item"
+						:class="user == message.user_id_from ? 'messages__current_user' : 'messages__other_user'"
+					>
+						<div
+							class="messages__message-item-block"
+							@click="showDate != message.message_id ? (showDate = message.message_id) : (showDate = 0)"
+							:class="user == message.user_id_from ? 'messages__text-align-right' : 'messages__text-align-left'"
+						>
+							<p>
+								<span class="messages__message-item-from">{{ message.name }} - {{ message.date_hour }}</span>
+							</p>
+							<span
+								class="messages__message-item-span"
+								:class="
+									user == message.user_id_from
+										? 'messages__message-item-span_current-user'
+										: 'messages__message-item-span_other-user'
+								"
+								v-html="message.message"
+							></span>
+							<p>
+								<span class="messages__message-item-from" v-if="showDate == message.message_id">{{
+									moment(message.date_time).format('DD/MM/YYYY HH:mm')
+								}}</span>
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+			<transition :name="'slide-up'" type="transition">
+				<AttachDocument
+					:user="user"
+					:fnum="fnum"
+					:applicant="false"
+					v-if="attachOpen"
+					@pushAttachmentMessage="pushAttachmentMessage"
+					@close="attachDocument"
+					ref="attachment"
+				/>
+			</transition>
+			<div class="messages__bottom-input">
+				<textarea
+					type="text"
+					class="messages__input_text"
+					:disabled="attachOpen"
+					rows="1"
+					spellcheck="true"
+					v-model="message"
+					:placeholder="translations.writeMessage"
+					@keydown.enter.exact.prevent="sendMessage($event)"
+				/>
+			</div>
+			<div class="messages__bottom-input-actions">
+				<div class="messages__actions_bar">
+					<span class="messages__send-icon material-symbols-outlined" @click="attachDocument">attach_file</span>
+				</div>
+				<button type="button" class="messages__send_button btn btn-primary" @click="sendMessage">
+					{{ translations.send }}
+				</button>
+			</div>
+		</div>
+		<div class="loader" v-if="loading"></div>
+	</div>
 </template>
 
 <script>
-import axios from "axios";
+import axios from 'axios';
 import moment from 'moment';
 import { useGlobalStore } from '@/stores/global';
 
-import "../assets/css/messenger.scss";
+import '../assets/css/messenger.scss';
 
-import AttachDocument from "@/components/Messages/modals/AttachDocument.vue";
+import AttachDocument from '@/components/Messages/modals/AttachDocument.vue';
 
-import qs from "qs";
+import qs from 'qs';
 
 export default {
-  name: "MessagesCoordinator",
-  props: {},
-  components: {
-    AttachDocument
-  },
-  data() {
-    return {
-      fnum: String,
-      user: Number,
+	name: 'MessagesCoordinator',
+	props: {},
+	components: {
+		AttachDocument,
+	},
+	data() {
+		return {
+			fnum: String,
+			user: Number,
 
-      dates: [],
-      messages: [],
-      fileSelected: 0,
-      message: '',
-      loading: false,
-      showDate: 0,
-      counter: 0,
-      attachOpen: false,
-      currentUserName: '',
-      translations: {
-        messages: this.translate("COM_EMUNDUS_MESSENGER_TITLE"),
-        send: this.translate("COM_EMUNDUS_MESSENGER_SEND"),
-        writeMessage: this.translate("COM_EMUNDUS_MESSENGER_WRITE_MESSAGE"),
-      }
-    };
-  },
+			dates: [],
+			messages: [],
+			fileSelected: 0,
+			message: '',
+			loading: false,
+			showDate: 0,
+			counter: 0,
+			attachOpen: false,
+			currentUserName: '',
+			translations: {
+				messages: this.translate('COM_EMUNDUS_MESSENGER_TITLE'),
+				send: this.translate('COM_EMUNDUS_MESSENGER_SEND'),
+				writeMessage: this.translate('COM_EMUNDUS_MESSENGER_WRITE_MESSAGE'),
+			},
+		};
+	},
 
-  created() {
-    this.fnum = useGlobalStore().datas.fnum.value;
-    this.user = useGlobalStore().datas.user.value;
+	created() {
+		this.fnum = useGlobalStore().datas.fnum.value;
+		this.user = useGlobalStore().datas.user.value;
 
-    if (typeof this.fnum != 'undefined') {
-      this.fileSelected = this.fnum;
-      this.getMessagesByFnum();
-      setInterval(() => {
-        this.getMessagesByFnum(false, false);
-      }, 20000);
-    }
+		if (typeof this.fnum != 'undefined') {
+			this.fileSelected = this.fnum;
+			this.getMessagesByFnum();
+			setInterval(() => {
+				this.getMessagesByFnum(false, false);
+			}, 20000);
+		}
 
-    this.getUsername();
-  },
+		this.getUsername();
+	},
 
-  methods: {
-    moment(date) {
-      return moment(date);
-    },
+	methods: {
+		moment(date) {
+			return moment(date);
+		},
 
-    getMessagesByFnum(loader = true, scroll = true) {
-      this.loading = loader;
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=messenger&task=getmessagesbyfnum",
-        params: {
-          fnum: this.fileSelected,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        this.messages = response.data.data.messages;
-        this.dates = response.data.data.dates;
-        this.markAsRead();
-        if (document.getElementsByClassName('notifications-counter') && typeof document.getElementsByClassName('notifications-counter')[0] != 'undefined') {
-          document.getElementsByClassName('notifications-counter')[0].remove();
-        }
-        if (scroll) {
-          this.scrollToBottom();
-        }
-        this.loading = false;
-      });
-    },
+		getMessagesByFnum(loader = true, scroll = true) {
+			this.loading = loader;
+			axios({
+				method: 'get',
+				url: 'index.php?option=com_emundus&controller=messenger&task=getmessagesbyfnum',
+				params: {
+					fnum: this.fileSelected,
+				},
+				paramsSerializer: (params) => {
+					return qs.stringify(params);
+				},
+			}).then((response) => {
+				this.messages = response.data.data.messages;
+				this.dates = response.data.data.dates;
+				this.markAsRead();
+				if (
+					document.getElementsByClassName('notifications-counter') &&
+					typeof document.getElementsByClassName('notifications-counter')[0] != 'undefined'
+				) {
+					document.getElementsByClassName('notifications-counter')[0].remove();
+				}
+				if (scroll) {
+					this.scrollToBottom();
+				}
+				this.loading = false;
+			});
+		},
 
-    markAsRead() {
-      axios({
-        method: "get",
-        url: "index.php?option=com_emundus&controller=messenger&task=markasread",
-        params: {
-          fnum: this.fileSelected,
-        },
-        paramsSerializer: params => {
-          return qs.stringify(params);
-        }
-      }).then(response => {
-        this.$emit('removeNotifications', response.data.data);
-      });
-    },
+		markAsRead() {
+			axios({
+				method: 'get',
+				url: 'index.php?option=com_emundus&controller=messenger&task=markasread',
+				params: {
+					fnum: this.fileSelected,
+				},
+				paramsSerializer: (params) => {
+					return qs.stringify(params);
+				},
+			}).then((response) => {
+				this.$emit('removeNotifications', response.data.data);
+			});
+		},
 
-    getUsername() {
-      fetch('index.php?option=com_emundus&controller=users&task=getuserbyid')
-        .then((res) => {
-          if (res.ok) {
-            return res.json();
-          }
-        }).then((response) => {
-          if (response.status) {
-            this.currentUserName = response.user[0].firstname + ' ' + response.user[0].lastname;
-          }
-        });
-    },
+		getUsername() {
+			fetch('index.php?option=com_emundus&controller=users&task=getuserbyid')
+				.then((res) => {
+					if (res.ok) {
+						return res.json();
+					}
+				})
+				.then((response) => {
+					if (response.status) {
+						this.currentUserName = response.user[0].firstname + ' ' + response.user[0].lastname;
+					}
+				});
+		},
 
-    sendMessage(e){
-      if(typeof e != 'undefined') {
-        e.stopImmediatePropagation();
-      }
-      if(this.attachOpen) {
-        this.$refs.attachment.sendMessage(this.message);
-        this.message = '';
-      } else {
-        if (this.message.trim() !== '') {
-          const formData = new FormData();
-          formData.append('message', this.message);
-          formData.append('fnum', this.fileSelected);
+		sendMessage(e) {
+			if (typeof e != 'undefined') {
+				e.stopImmediatePropagation();
+			}
+			if (this.attachOpen) {
+				this.$refs.attachment.sendMessage(this.message);
+				this.message = '';
+			} else {
+				if (this.message.trim() !== '') {
+					const formData = new FormData();
+					formData.append('message', this.message);
+					formData.append('fnum', this.fileSelected);
 
-          fetch('index.php?option=com_emundus&controller=messenger&task=sendmessage', {
-            method: 'POST',
-            body: formData
-          }).then((res) => {
-            if (res.ok) {
-              return res.json();
-            }
-          }).then((response) => {
-            this.send_progress = false;
+					fetch('index.php?option=com_emundus&controller=messenger&task=sendmessage', {
+						method: 'POST',
+						body: formData,
+					})
+						.then((res) => {
+							if (res.ok) {
+								return res.json();
+							}
+						})
+						.then((response) => {
+							this.send_progress = false;
 
-            if (response.status) {
-              this.getMessagesByFnum(true, true);
-            } else {
-              Swal.fire({
-                title: Joomla.Text._("COM_EMUNDUS_ONBOARD_ERROR"),
-                text: response.msg,
-                type: "error",
-                showCancelButton: false,
-                showConfirmButton: false,
-                timer: 3000,
-              });
-            }
-          });
+							if (response.status) {
+								this.getMessagesByFnum(true, true);
+							} else {
+								Swal.fire({
+									title: Joomla.Text._('COM_EMUNDUS_ONBOARD_ERROR'),
+									text: response.msg,
+									type: 'error',
+									showCancelButton: false,
+									showConfirmButton: false,
+									timer: 3000,
+								});
+							}
+						});
 
-          this.pushToDatesArray({
-            message_id: Math.floor(Math.random() * 1000) + 9999,
-            user_id_from: this.user,
-            user_id_to: null,
-            folder_id: 2,
-            date_time: this.formatedTimestamp(),
-            state: 0,
-            priority: 0,
-            subject: 0,
-            message: this.message,
-            email_from: null,
-            email_cc: null,
-            email_to: null,
-            name: this.currentUserName
-          });
+					this.pushToDatesArray({
+						message_id: Math.floor(Math.random() * 1000) + 9999,
+						user_id_from: this.user,
+						user_id_to: null,
+						folder_id: 2,
+						date_time: this.formatedTimestamp(),
+						state: 0,
+						priority: 0,
+						subject: 0,
+						message: this.message,
+						email_from: null,
+						email_cc: null,
+						email_to: null,
+						name: this.currentUserName,
+					});
 
-          this.message = '';
-        }
-      }
-    },
+					this.message = '';
+				}
+			}
+		},
 
-    pushToDatesArray(message) {
-      let pushToDate = false;
+		pushToDatesArray(message) {
+			let pushToDate = false;
 
-      let message_date = this.moment().format("YYYY-MM-DD");
-      if (message.date_time) {
-        message_date = message.date_time.split(' ')[0];
-      }
-      this.dates.forEach((elt, index) => {
-        if (elt.dates == message_date) {
-          this.dates[index].messages.push(message.message_id);
-          pushToDate = true;
-        }
-      });
-      if (!pushToDate) {
-        var new_date = {
-          dates: this.moment().format("YYYY-MM-DD"),
-          messages: []
-        }
-        new_date.messages.push(message.message_id);
-        this.dates.push(new_date);
-      }
-      this.messages.push(message);
-    },
+			let message_date = this.moment().format('YYYY-MM-DD');
+			if (message.date_time) {
+				message_date = message.date_time.split(' ')[0];
+			}
+			this.dates.forEach((elt, index) => {
+				if (elt.dates == message_date) {
+					this.dates[index].messages.push(message.message_id);
+					pushToDate = true;
+				}
+			});
+			if (!pushToDate) {
+				var new_date = {
+					dates: this.moment().format('YYYY-MM-DD'),
+					messages: [],
+				};
+				new_date.messages.push(message.message_id);
+				this.dates.push(new_date);
+			}
+			this.messages.push(message);
+		},
 
-    scrollToBottom() {
-      setTimeout(() => {
-        const container = document.getElementsByClassName("messages__list-block")[0];
-        container.scrollTop = container.scrollHeight;
-      }, 500);
-    },
+		scrollToBottom() {
+			setTimeout(() => {
+				const container = document.getElementsByClassName('messages__list-block')[0];
+				container.scrollTop = container.scrollHeight;
+			}, 500);
+		},
 
-    attachDocument() {
-      this.attachOpen = !this.attachOpen;
-      setTimeout(() => {
-        if (this.attachOpen) {
-          this.$refs.attachment.getTypesByCampaign();
-        }
-      }, 500);
-    },
+		attachDocument() {
+			this.attachOpen = !this.attachOpen;
+			setTimeout(() => {
+				if (this.attachOpen) {
+					this.$refs.attachment.getTypesByCampaign();
+				}
+			}, 500);
+		},
 
-    pushAttachmentMessage(message) {
-      this.pushToDatesArray(message);
-      this.scrollToBottom();
-      this.attachDocument();
-    },
+		pushAttachmentMessage(message) {
+			this.pushToDatesArray(message);
+			this.scrollToBottom();
+			this.attachDocument();
+		},
 
-    formatedTimestamp()  {
-      const d = new Date()
-      const date = d.toISOString().split('T')[0];
-      const time = d.toTimeString().split(' ')[0];
-      return `${date} ${time}`
-    },
-  },
+		formatedTimestamp() {
+			const d = new Date();
+			const date = d.toISOString().split('T')[0];
+			const time = d.toTimeString().split(' ')[0];
+			return `${date} ${time}`;
+		},
+	},
 
-  computed: {
-    messageByDates() {
-      let messages = [];
+	computed: {
+		messageByDates() {
+			let messages = [];
 
-      this.dates.forEach((elt) => {
-        let date = elt.dates;
-        let messages_array = [];
-        elt.messages.forEach((message_id) => {
-          this.messages.forEach((message) => {
-            if(message.message_id == message_id){
-              messages_array.push(message);
-            }
-          });
-        });
-        messages.push({date: date, messages: messages_array});
-      });
+			this.dates.forEach((elt) => {
+				let date = elt.dates;
+				let messages_array = [];
+				elt.messages.forEach((message_id) => {
+					this.messages.forEach((message) => {
+						if (message.message_id == message_id) {
+							messages_array.push(message);
+						}
+					});
+				});
+				messages.push({ date: date, messages: messages_array });
+			});
 
-      return messages;
-    }
-  },
+			return messages;
+		},
+	},
 
-  watch: {
-    fileSelected: function () {
-      this.getMessagesByFnum(true);
-    }
-  }
-}
+	watch: {
+		fileSelected: function () {
+			this.getMessagesByFnum(true);
+		},
+	},
+};
 </script>
 
 <style>
 .messages__vue_attach_document {
-  width: 100%;
-  position: absolute;
-  background: white;
-  bottom: 120px;
+	width: 100%;
+	position: absolute;
+	background: white;
+	bottom: 120px;
 	z-index: 9999;
 }
 .messages__list-block {
-  padding: 0px 55px;
+	padding: 0px 55px;
 }
 
 .messages__attach_content {
-  padding: 0 70px;
+	padding: 0 70px;
 }
 </style>

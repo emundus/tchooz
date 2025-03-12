@@ -77,6 +77,12 @@ window.addEventListener('message', function (e) {
     }
 }.bind(this));
 
+document.addEventListener('messengerOpenFile', function (e) {
+    if(e.detail) {
+        this.openFiles(e.detail);
+    }
+}.bind(this));
+
 function search() {
     const controller = $('#view').val();
 
@@ -1783,7 +1789,14 @@ $(document).ready(function() {
         e.preventDefault();
 
         // Get action id
-        var id = parseInt($(this).attr('id'));
+        //var id = $(this).attr('id');
+        // split $(this).attr('id') by |, first is id, then crud, then, access
+        const split = $(this).attr('id').split('|')
+        let id = split[0];
+
+        if (!isNaN(id)) {
+            id = parseInt(id);
+        }
 
         // Prepare SweetAlert variables
         var title = '';
@@ -3794,6 +3807,28 @@ $(document).ready(function() {
             // Send an email
             case 9:
                 multipleSteps = true;
+                break;
+            case 'sms':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-100 em-h-100';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'SMS';
+                html = '<div id="data"></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    $('#data').append(data);
+                    $('#data').removeClass('em-loader');
+                });
+
                 break;
 
             // Add comments

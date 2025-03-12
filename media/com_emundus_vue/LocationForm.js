@@ -1,7 +1,9 @@
 import { P as Parameter } from "./Parameter.js";
-import { e as eventsService } from "./events.js";
-import { _ as _export_sfc, u as useGlobalStore, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBaseVNode, t as toDisplayString, i as withModifiers, F as Fragment, b as renderList, h as withDirectives, v as vShow, g as createVNode, e as createCommentVNode } from "./app_emundus.js";
+import { e as eventsService } from "./events2.js";
+import { _ as _export_sfc, u as useGlobalStore, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, n as normalizeClass, d as createBaseVNode, t as toDisplayString, g as withModifiers, F as Fragment, e as renderList, w as withDirectives, v as vShow, h as createVNode, b as createCommentVNode } from "./app_emundus.js";
 import "./index.js";
+import "./EventBooking.js";
+import "./Info.js";
 const byteToHex = [];
 for (let i = 0; i < 256; ++i) {
   byteToHex.push((i + 256).toString(16).slice(1));
@@ -44,6 +46,10 @@ const _sfc_main = {
     isModal: {
       type: Boolean,
       default: false
+    },
+    id: {
+      type: Number,
+      default: 0
     }
   },
   data() {
@@ -57,6 +63,7 @@ const _sfc_main = {
           param: "name",
           type: "text",
           placeholder: "",
+          maxlength: 150,
           value: "",
           label: "COM_EMUNDUS_ONBOARD_ADD_LOCATION_NAME",
           helptext: "",
@@ -89,6 +96,8 @@ const _sfc_main = {
   created() {
     if (useGlobalStore().datas.locationid) {
       this.location_id = parseInt(useGlobalStore().datas.locationid.value);
+    } else if (this.$props.id) {
+      this.location_id = this.$props.id;
     }
     this.getSpecifications().then((response) => {
       if (response) {
@@ -113,6 +122,7 @@ const _sfc_main = {
           param: "name",
           type: "text",
           placeholder: "",
+          maxlength: 150,
           value: name,
           label: "COM_EMUNDUS_ONBOARD_ADD_LOCATION_ROOM_NAME",
           helptext: "",
@@ -262,36 +272,40 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { key: 0 };
-const _hoisted_2 = {
+const _hoisted_1 = {
   key: 0,
-  class: "tw-pt-4 tw-sticky tw-top-0 tw-bg-white tw-border-b tw-border-neutral-300 tw-z-10"
+  class: "tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4"
 };
-const _hoisted_3 = { class: "tw-flex tw-items-center tw-justify-between tw-mb-4" };
-const _hoisted_4 = { key: 1 };
-const _hoisted_5 = { class: "tw-ml-2 tw-text-neutral-900" };
-const _hoisted_6 = { class: "tw-mt-4" };
-const _hoisted_7 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
-const _hoisted_8 = { class: "tw-mt-4 tw-flex tw-flex-col tw-gap-3" };
-const _hoisted_9 = { class: "tw-flex tw-justify-end tw-items-center tw-gap-2" };
+const _hoisted_2 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
+const _hoisted_3 = { key: 1 };
+const _hoisted_4 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_5 = { class: "tw-mt-4" };
+const _hoisted_6 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
+const _hoisted_7 = { class: "tw-mt-4 tw-flex tw-flex-col tw-gap-3" };
+const _hoisted_8 = { class: "tw-flex tw-items-center tw-justify-end tw-gap-2" };
+const _hoisted_9 = ["onClick"];
 const _hoisted_10 = ["onClick"];
-const _hoisted_11 = ["onClick"];
-const _hoisted_12 = { class: "tw-flex tw-flex-col tw-gap-6" };
-const _hoisted_13 = { class: "tw-flex tw-justify-end" };
-const _hoisted_14 = { class: "tw-flex tw-justify-end tw-mt-7 tw-mb-2" };
-const _hoisted_15 = ["disabled"];
-const _hoisted_16 = { key: 0 };
-const _hoisted_17 = { key: 1 };
-const _hoisted_18 = {
+const _hoisted_11 = { class: "tw-flex tw-flex-col tw-gap-6" };
+const _hoisted_12 = { class: "tw-flex tw-justify-end" };
+const _hoisted_13 = { class: "tw-mb-2 tw-mt-7 tw-flex tw-justify-end" };
+const _hoisted_14 = ["disabled"];
+const _hoisted_15 = { key: 0 };
+const _hoisted_16 = { key: 1 };
+const _hoisted_17 = {
   key: 1,
   class: "em-page-loader"
 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Parameter = resolveComponent("Parameter");
   return openBlock(), createElementBlock("div", null, [
-    !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_1, [
-      $props.isModal ? (openBlock(), createElementBlock("div", _hoisted_2, [
-        createBaseVNode("div", _hoisted_3, [
+    !$data.loading ? (openBlock(), createElementBlock("div", {
+      key: 0,
+      class: normalizeClass({
+        "tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-neutral-0 tw-p-6 tw-shadow-card": !$props.isModal
+      })
+    }, [
+      $props.isModal ? (openBlock(), createElementBlock("div", _hoisted_1, [
+        createBaseVNode("div", _hoisted_2, [
           createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION")), 1),
           createBaseVNode("button", {
             class: "tw-cursor-pointer tw-bg-transparent",
@@ -300,18 +314,18 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             createBaseVNode("span", { class: "material-symbols-outlined" }, "close", -1)
           ]))
         ])
-      ])) : (openBlock(), createElementBlock("div", _hoisted_4, [
+      ])) : (openBlock(), createElementBlock("div", _hoisted_3, [
         createBaseVNode("div", {
-          class: "tw-flex tw-items-center tw-cursor-pointer tw-w-fit tw-px-2 tw-py-1 tw-rounded-md hover:tw-bg-neutral-300",
+          class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
           onClick: _cache[1] || (_cache[1] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=events"))
         }, [
           _cache[5] || (_cache[5] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
-          createBaseVNode("span", _hoisted_5, toDisplayString(_ctx.translate("BACK")), 1)
+          createBaseVNode("span", _hoisted_4, toDisplayString(_ctx.translate("BACK")), 1)
         ]),
-        createBaseVNode("h1", _hoisted_6, toDisplayString(this.location && Object.keys(this.location).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION") + " " + this.location["name"] : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION")), 1),
-        _cache[6] || (_cache[6] = createBaseVNode("hr", { class: "tw-mt-1.5 tw-mb-8" }, null, -1))
+        createBaseVNode("h1", _hoisted_5, toDisplayString(this.location && Object.keys(this.location).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION") + " " + this.location["name"] : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION")), 1),
+        _cache[6] || (_cache[6] = createBaseVNode("hr", { class: "tw-mb-8 tw-mt-1.5" }, null, -1))
       ])),
-      createBaseVNode("div", _hoisted_7, [
+      createBaseVNode("div", _hoisted_6, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
           return withDirectives((openBlock(), createElementBlock("div", {
             key: field.param,
@@ -326,21 +340,21 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             [vShow, field.displayed]
           ]);
         }), 128)),
-        createBaseVNode("div", _hoisted_8, [
+        createBaseVNode("div", _hoisted_7, [
           createBaseVNode("h3", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION_ROOMS")), 1),
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.rooms, (room) => {
             return openBlock(), createElementBlock("div", {
               key: room.id,
-              class: "tw-flex tw-flex-col tw-gap-2 tw-bg-white tw-rounded-coordinator tw-border tw-border-neutral-400 tw-px-3 tw-py-4"
+              class: "tw-flex tw-flex-col tw-gap-2 tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-px-3 tw-py-4"
             }, [
-              createBaseVNode("div", _hoisted_9, [
+              createBaseVNode("div", _hoisted_8, [
                 createBaseVNode("button", {
                   type: "button",
                   onClick: ($event) => $options.duplicateRepeatBlock(room.id),
                   class: "w-auto"
                 }, _cache[7] || (_cache[7] = [
                   createBaseVNode("span", { class: "material-symbols-outlined !tw-text-neutral-900" }, "content_copy", -1)
-                ]), 8, _hoisted_10),
+                ]), 8, _hoisted_9),
                 $data.rooms.length > 0 ? (openBlock(), createElementBlock("button", {
                   key: 0,
                   type: "button",
@@ -348,9 +362,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                   class: "w-auto"
                 }, _cache[8] || (_cache[8] = [
                   createBaseVNode("span", { class: "material-symbols-outlined tw-text-red-600" }, "close", -1)
-                ]), 8, _hoisted_11)) : createCommentVNode("", true)
+                ]), 8, _hoisted_10)) : createCommentVNode("", true)
               ]),
-              createBaseVNode("div", _hoisted_12, [
+              createBaseVNode("div", _hoisted_11, [
                 (openBlock(true), createElementBlock(Fragment, null, renderList(room.fields, (field) => {
                   return withDirectives((openBlock(), createElementBlock("div", {
                     key: field.param,
@@ -369,11 +383,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ])
             ]);
           }), 128)),
-          createBaseVNode("div", _hoisted_13, [
+          createBaseVNode("div", _hoisted_12, [
             createBaseVNode("button", {
               type: "button",
               onClick: _cache[2] || (_cache[2] = ($event) => $options.addRepeatBlock()),
-              class: "tw-mt-2 tw-w-auto tw-flex tw-items-center tw-gap-1"
+              class: "tw-mt-2 tw-flex tw-w-auto tw-items-center tw-gap-1"
             }, [
               _cache[9] || (_cache[9] = createBaseVNode("span", { class: "material-symbols-outlined !tw-text-neutral-900" }, "add", -1)),
               createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ROOM")), 1)
@@ -381,17 +395,17 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           ])
         ])
       ]),
-      createBaseVNode("div", _hoisted_14, [
+      createBaseVNode("div", _hoisted_13, [
         createBaseVNode("button", {
           type: "button",
           class: "tw-btn-primary !tw-w-auto",
           disabled: $options.disabledSubmit,
           onClick: _cache[3] || (_cache[3] = withModifiers(($event) => $options.saveLocation(), ["prevent"]))
         }, [
-          $data.location_id ? (openBlock(), createElementBlock("span", _hoisted_16, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION")), 1)) : (openBlock(), createElementBlock("span", _hoisted_17, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION_CREATE")), 1))
-        ], 8, _hoisted_15)
+          $data.location_id ? (openBlock(), createElementBlock("span", _hoisted_15, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION")), 1)) : (openBlock(), createElementBlock("span", _hoisted_16, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION_CREATE")), 1))
+        ], 8, _hoisted_14)
       ])
-    ])) : (openBlock(), createElementBlock("div", _hoisted_18))
+    ], 2)) : (openBlock(), createElementBlock("div", _hoisted_17))
   ]);
 }
 const LocationForm = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);

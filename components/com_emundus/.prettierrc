@@ -1,6 +1,11 @@
 {
-  "semi": false,
+  "semi": true,
   "singleQuote": true,
-  "tabWidth": 4,
-  "printWidth": 120
+  "tabWidth": 2,
+  "useTabs": true,
+  "printWidth": 120,
+  "bracketSameLine": false,
+  "trailingComma": "all",
+  "plugins": ["prettier-plugin-tailwindcss"],
+  "tailwindConfig": "../../tailwind.config.js"
 }

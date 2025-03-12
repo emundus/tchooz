@@ -490,9 +490,9 @@ class EmundusControllerApplication extends BaseController
 						if ($action_id == 36) {
 							$messenger = $this->getModel('Messenger');
 
-							$notifications = $messenger->getNotificationsByFnum($fnum);
+							$notifications = $messenger->getNotificationsByFnum($fnum, $this->_user->id);
 							if ($notifications > 0) {
-								$menu['notifications'] = $messenger->getNotificationsByFnum($fnum);
+								$menu['notifications'] = $notifications;
 							}
 						}
 						if ($action_id == 10) {

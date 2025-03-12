@@ -1,25 +1,36 @@
 <?php
+use Joomla\CMS\Language\Text;
+
+
 $template_type = array(
-	1 => JText::_('FILE'),
-	2 => JText::_('PDF'),
-	3 => JText::_('DOCX'),
-	4 => JText::_('XLSX'),
+	1 => Text::_('FILE'),
+	2 => Text::_('PDF'),
+	3 => Text::_('DOCX'),
+	4 => Text::_('XLSX'),
 );
 ?>
 <input name="em-doc-fnums" type="hidden" value="<?= $this->fnums ?>"/>
 
 <div id="em-documents" style="display:none;">
     <div>
-        <label for="em-doc-tmpl-label"><?= JText::_('DOCUMENT_TYPE'); ?></label>
+        <label for="em-doc-tmpl-label"><?= Text::_('DOCUMENT_TYPE'); ?></label>
         <div id="exp-document">
             <select name="docs" id="em-doc-tmpl" class="chzn-select" multiple></select>
         </div>
     </div>
 
     <div class="em-mt-16" id="doc_can_see">
-        <label for="em-doc-cansee"><?= JText::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_CAN_BE_VIEWED'); ?></label>
+        <label for="em-doc-cansee"><?= Text::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_CAN_BE_VIEWED'); ?></label>
         <label class="em-switch">
             <input type="checkbox" name="type" id="em-doc-cansee" checked="checked">
+            <span class="em-slider em-round"></span>
+        </label>
+    </div>
+
+    <div class="em-mt-16" id="force_replace_attachment">
+        <label for="em-force-replace-attachment"><?= Text::_('COM_EMUNDUS_ATTACHMENTS_ACTIONS_REPLACE_GENERATED_ATTACHMENT_LETTER'); ?></label>
+        <label class="em-switch">
+            <input type="checkbox" name="type" id="em-force-replace-attachment">
             <span class="em-slider em-round"></span>
         </label>
     </div>
@@ -29,11 +40,11 @@ $template_type = array(
     <div id="export-div" style="display: none">
 
         <div>
-            <label for="em-export-mode"><?= JText::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
+            <label for="em-export-mode"><?= Text::_('COM_EMUNDUS_EXPORT_MODE'); ?></label>
             <select name="mode" id="em-doc-export-mode" class="form-control">
-                <option value="0"><?= JText::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
-                <option value="1"><?= JText::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
-                <option value="2" selected><?= JText::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
+                <option value="0"><?= Text::_('COM_EMUNDUS_EXPORT_BY_CANDIDAT'); ?></option>
+                <option value="1"><?= Text::_('COM_EMUNDUS_EXPORT_BY_DOCUMENT'); ?></option>
+                <option value="2" selected><?= Text::_('COM_EMUNDUS_EXPORT_BY_FILES'); ?></option>
             </select>
         </div>
 
@@ -42,7 +53,7 @@ $template_type = array(
 
     <div id="merge-div" class="em-mt-8" style="display: none">
         <div>
-            <label for="em-combine-pdf"><?= JText::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
+            <label for="em-combine-pdf"><?= Text::_('COM_EMUNDUS_PDF_MERGE'); ?></label>
             <label class="em-switch">
                 <input type="checkbox" name="type" id="em-doc-pdf-merge">
                 <span class="em-slider em-round"></span>
@@ -89,7 +100,7 @@ $template_type = array(
                 opt.value = -1;
                 opt.disabled = true;
                 opt.selected = true;
-                opt.text = Joomla.JText._('NO_LETTER_FOUND');
+                opt.text = Joomla.Text._('NO_LETTER_FOUND');
 
                 select.add(opt, select.options[1]);
                 document.getElementById('doc_can_see').remove();

@@ -13,9 +13,12 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
-if ($this->open_file_in_modal) {
+if ($this->open_file_in_modal)
+{
 	Text::script('COM_EMUNDUS_FILES_EVALUATION');
 	Text::script('COM_EMUNDUS_FILES_TO_EVALUATE');
 	Text::script('COM_EMUNDUS_FILES_EVALUATED');
@@ -24,6 +27,7 @@ if ($this->open_file_in_modal) {
 	Text::script('COM_EMUNDUS_FILES_APPLICANT_FILE');
 	Text::script('COM_EMUNDUS_FILES_ATTACHMENTS');
 	Text::script('COM_EMUNDUS_FILES_COMMENTS');
+	Text::script('COM_EMUNDUS_FILES_MESSENGER');
 	Text::script('COM_EMUNDUS_ONBOARD_NOFILES');
 	Text::script('COM_EMUNDUS_FILES_ELEMENT_SELECTED');
 	Text::script('COM_EMUNDUS_FILES_ELEMENTS_SELECTED');
@@ -66,7 +70,8 @@ if ($this->open_file_in_modal) {
                     <div class="buttons" style="float:right; margin-top:0px">
                         <div class="em-flex-row">
 							<?php
-							if ($this->use_module_for_filters) {
+							if ($this->use_module_for_filters)
+							{
 								?>
                                 <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
                                     <span class="material-symbols-outlined em-pointer em-color-white"
@@ -89,10 +94,12 @@ if ($this->open_file_in_modal) {
 
                 <div class="panel-body em-containerFilter-body">
 					<?php
-					if (!$this->use_module_for_filters) {
+					if (!$this->use_module_for_filters)
+					{
 						echo @$this->filters;
 					}
-					else {
+					else
+					{
 						echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
 					}
 					?>
@@ -141,7 +148,8 @@ if ($this->open_file_in_modal) {
         <div class="col-md-9 main-panel">
             <div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top"
                  title=<?php echo Text::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
-				<span class="glyphicon glyphicon-chevron-left"></span>
+				<span class=" glyphicon glyphicon-chevron-left
+            "></span>
         </div>
         <div class="navbar navbar-inverse em-menuaction !tw-bg-profile-full">
             <div class="navbar-header em-menuaction-header">
@@ -156,21 +164,46 @@ if ($this->open_file_in_modal) {
         </div>
         <div class="panel panel-default"></div>
 
-	    <?php
+		<?php
 
-	    if ($this->open_file_in_modal)
-	    {
-		    require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-		    $hash = EmundusHelperCache::getCurrentGitHash();
-		    ?>
+		if ($this->open_file_in_modal)
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+			$hash = EmundusHelperCache::getCurrentGitHash();
+
+			$applicant = !\EmundusHelperAccess::asPartnerAccessLevel($this->_user->id);
+			if (!$applicant)
+			{
+				$emundusUser     = Factory::getApplication()->getSession()->get('emundusUser');
+				$current_profile = $emundusUser->profile;
+
+				if (!class_exists('EmundusModelProfile'))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+				}
+				$m_profile          = new \EmundusModelProfile();
+				$applicant_profiles = $m_profile->getApplicantsProfilesArray();
+
+				if (in_array($current_profile, $applicant_profiles))
+				{
+					$applicant = true;
+				}
+			}
+
+			$datas = [
+				'context'   => 'files',
+				'user'      => $this->_user->id,
+				'fullname'  => $this->_user->name,
+				'applicant' => $applicant,
+				'ratio'     => $this->modal_ratio,
+				'tabs'      => $this->modal_tabs,
+				'type'      => 'evaluation',
+				'base'      => Uri::base()
+			];
+			?>
             <div id="em-files"
                  component="ApplicationSingle"
-                 context="files"
-                 user="<?= $this->_user->id; ?>"
-                 ratio="<?= $this->modal_ratio; ?>"
-                 type="evaluation"
-                 base="<?= JURI::base(); ?>"
-                 tabs="<?= $this->modal_tabs; ?>"
+                 data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
             >
             </div>
 
@@ -183,9 +216,9 @@ if ($this->open_file_in_modal) {
                     window.dispatchEvent(event);
                 }
             </script>
-		    <?php
-	    }
-	    ?>
+			<?php
+		}
+		?>
     </div>
 </div>
 </div>

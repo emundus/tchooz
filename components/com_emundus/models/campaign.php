@@ -1103,6 +1103,9 @@ class EmundusModelCampaign extends ListModel
 	 */
 	public function deleteCampaign($data, $force_delete = false)
 	{
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
 		$deleted = false;
 
 		if (!empty($data)) {
@@ -1111,8 +1114,20 @@ class EmundusModelCampaign extends ListModel
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
 			$falang = new EmundusModelFalang();
 
-			JFactory::getApplication()->triggerEvent('onBeforeCampaignDelete', $data);
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeCampaignDelete', ['campaign' => $data]]);
+			$onBeforeCampaignDeleteEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onBeforeCampaignDelete',
+					// Datas to pass to the event
+					['campaign' => $data]
+				]
+			);
+			$onBeforeCampaignDelete = new GenericEvent(
+				'onBeforeCampaignDelete',
+				// Datas to pass to the event
+				['campaign' => $data]
+			);
+			$dispatcher->dispatch('onCallEventHandler', $onBeforeCampaignDeleteEventHandler);
+			$dispatcher->dispatch('onBeforeCampaignDelete', $onBeforeCampaignDelete);
 
 			$query = $this->_db->getQuery(true);
 
@@ -1173,8 +1188,20 @@ class EmundusModelCampaign extends ListModel
 				}
 
 				if ($deleted) {
-					JFactory::getApplication()->triggerEvent('onAfterCampaignDelete', $data);
-					JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignDelete', ['campaign' => $data]]);
+					$onAfterCampaignDeleteEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						['onAfterCampaignDelete',
+							// Datas to pass to the event
+							['campaign' => $data]
+						]
+					);
+					$onAfterCampaignDelete = new GenericEvent(
+						'onAfterCampaignDelete',
+						// Datas to pass to the event
+						['campaign' => $data]
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignDeleteEventHandler);
+					$dispatcher->dispatch('onAfterCampaignDelete', $onAfterCampaignDelete);
 				}
 			}
 			catch (Exception $e) {
@@ -1185,16 +1212,11 @@ class EmundusModelCampaign extends ListModel
 		return $deleted;
 	}
 
-	/**
-	 *
-	 * @param $data
-	 *
-	 * @return false
-	 *
-	 * @since version 1.0
-	 */
-	public function unpublishCampaign($data)
+	public function unpublishCampaign(string|array $data): bool
 	{
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
 		$unpublished = false;
 
 		if (!empty($data)) {
@@ -1207,16 +1229,27 @@ class EmundusModelCampaign extends ListModel
 				$data[$key] = htmlspecialchars($val);
 			}
 
-
-			JFactory::getApplication()->triggerEvent('onBeforeCampaignUnpublish', $data);
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeCampaignUnpublish', ['campaign' => $data]]);
+			$onBeforeCampaignUnpublishEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onBeforeCampaignUnpublish',
+					// Datas to pass to the event
+					['campaign' => $data]
+				]
+			);
+			$onBeforeCampaignUnpublish = new GenericEvent(
+				'onBeforeCampaignUnpublish',
+				// Datas to pass to the event
+				['campaign' => $data]
+			);
+			$dispatcher->dispatch('onCallEventHandler', $onBeforeCampaignUnpublishEventHandler);
+			$dispatcher->dispatch('onBeforeCampaignUnpublish', $onBeforeCampaignUnpublish);
 
 			try {
 				$fields        = [
 					$this->_db->quoteName('published') . ' = 0'
 				];
 				$sc_conditions = [
-					$this->_db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')'
+					$this->_db->quoteName('id') . ' IN (' . implode(',', array_values($data)) . ')'
 				];
 
 				$query->update($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1240,8 +1273,20 @@ class EmundusModelCampaign extends ListModel
 						}
 					}
 
-					JFactory::getApplication()->triggerEvent('onAfterCampaignUnpublish', $data);
-					JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignUnpublish', ['campaign' => $data]]);
+					$onAfterCampaignUnpublishEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						['onAfterCampaignUnpublish',
+							// Datas to pass to the event
+							['campaign' => $data]
+						]
+					);
+					$onAfterCampaignUnpublish = new GenericEvent(
+						'onAfterCampaignUnpublish',
+						// Datas to pass to the event
+						['campaign' => $data]
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignUnpublishEventHandler);
+					$dispatcher->dispatch('onAfterCampaignUnpublish', $onAfterCampaignUnpublish);
 				}
 			}
 			catch (Exception $e) {
@@ -1262,6 +1307,9 @@ class EmundusModelCampaign extends ListModel
 	 */
 	public function publishCampaign($data)
 	{
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
 		$published = false;
 
 		if (!empty($data)) {
@@ -1274,9 +1322,21 @@ class EmundusModelCampaign extends ListModel
 				$data[$key] = htmlspecialchars($val);
 			}
 
+			$onBeforeCampaignPublishEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onBeforeCampaignPublish',
+					// Datas to pass to the event
+					['campaign' => $data]
+				]
+			);
+			$onBeforeCampaignPublish = new GenericEvent(
+				'onBeforeCampaignPublish',
+				// Datas to pass to the event
+				['campaign' => $data]
+			);
+			$dispatcher->dispatch('onCallEventHandler', $onBeforeCampaignPublishEventHandler);
+			$dispatcher->dispatch('onBeforeCampaignPublish', $onBeforeCampaignPublish);
 
-			JFactory::getApplication()->triggerEvent('onBeforeCampaignPublish', $data);
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeCampaignPublish', ['campaign' => $data]]);
 			try {
 				$fields        = [$this->_db->quoteName('published') . ' = 1'];
 				$sc_conditions = [$this->_db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')'];
@@ -1302,8 +1362,20 @@ class EmundusModelCampaign extends ListModel
 						}
 					}
 
-					JFactory::getApplication()->triggerEvent('onAfterCampaignPublish', $data);
-					JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignPublish', ['campaign' => $data]]);
+					$onAfterCampaignPublishEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						['onAfterCampaignPublish',
+							// Datas to pass to the event
+							['campaign' => $data]
+						]
+					);
+					$onAfterCampaignPublish = new GenericEvent(
+						'onAfterCampaignPublish',
+						// Datas to pass to the event
+						['campaign' => $data]
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignPublishEventHandler);
+					$dispatcher->dispatch('onAfterCampaignPublish', $onAfterCampaignPublish);
 				}
 			}
 			catch (Exception $e) {
@@ -1457,7 +1529,7 @@ class EmundusModelCampaign extends ListModel
 			if(empty($user_id)) {
 				$user_id = $this->app->getIdentity()->id;
 			}
-			
+
 			require_once(JPATH_SITE . '/components/com_emundus/models/settings.php');
 			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 			require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
@@ -1525,8 +1597,7 @@ class EmundusModelCampaign extends ListModel
 						}
 
 						if (empty($data['profile_id'])) {
-							unset($data['profile_id']);
-							$data['published'] = 0;
+							$data['profile_id'] = 1000;
 						}
 					}
 					if($key == 'start_date' || $key == 'end_date'){
@@ -1723,17 +1794,7 @@ class EmundusModelCampaign extends ListModel
 						break;
 					case 'profile_id':
 						if (empty($val)) {
-							$query->clear()
-								->select('id')
-								->from($this->_db->quoteName('#__emundus_setup_profiles'))
-								->where($this->_db->quoteName('published') . ' = 1')
-								->order('id DESC');
-							$this->_db->setQuery($query);
-							$val = $this->_db->loadResult();
-
-							if (empty($val)) {
-								$val = 1000;
-							}
+							$val = 1000;
 						}
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);

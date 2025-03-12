@@ -5,6 +5,14 @@ Docker compose will create 3 containers :
 - A container with PHP and Apache ([localhost:8383](http://localhost:8383))
 - A container with MySQL
 
+> To run local development with https
+> ```shell
+> brew install mkcert
+> mkcert -install
+> cd .docker/apache/certs
+> mkcert localhost
+> ```
+
 ```shell
 docker compose -f docker-compose-[username].yml up --build -d
 ```

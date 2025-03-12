@@ -279,7 +279,7 @@ class EmundusControllerCampaign extends BaseController
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_NB_FILES'),
-							'value'   => '<a target="_blank" class="em-profile-color hover:tw-font-semibold tw-font-semibold em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
+							'value'   => '<a target="_blank" class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-justify-center hover:tw-underline hover:tw-font-semibold" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;">' . $campaign->nb_files . '</a>',
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table',
 							'order_by' => 'nb_files'
@@ -303,7 +303,7 @@ class EmundusControllerCampaign extends BaseController
 								$state_values[1],
 								[
 									'key'     => Text::_('COM_EMUNDUS_FILES_FILES'),
-									'value'   => '<a class="go-to-campaign-link em-font-weight-600 hover:tw-font-semibold em-profile-color em-flex-row em-text-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+									'value'   => '<a class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-justify-center hover:tw-underline hover:tw-font-semibold" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
 									'classes' => 'py-1',
 								]
 							],
@@ -410,33 +410,31 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function deletecampaign()
 	{
-		$tab = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
+		$response    = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$response = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_DELETE_CAMPAIGN'), 'data' => false);
 
-			$data   = $this->input->getInt('id');
-			$result = $this->m_campaign->deleteCampaign($data, true);
-
-			if ($result)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_DELETED'), 'data' => $result);
+			$data = $this->input->getInt('id',0);
+			if(empty($data)) {
+				$data = $this->input->getString('ids');
+				$data = explode(',', $data);
 			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_DELETE_CAMPAIGN'), 'data' => $result);
+
+			if (!empty($data)) {
+				$deleted = $this->m_campaign->deleteCampaign($data, true);
+
+				if ($deleted) {
+					$response = array('status' => 1, 'msg' => Text::_('CAMPAIGN_PUBLISHED'), 'data' => $deleted);
+				}
 			}
 		}
 
-		echo json_encode((object) $tab);
+		echo json_encode((object) $response);
 		exit;
 	}
 
-	/**
-	 * Unpublish one or multiple campaigns
-	 *
-	 * @since version 1.0.0
-	 */
 	public function unpublishcampaign()
 	{
 		$response    = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
@@ -445,7 +443,11 @@ class EmundusControllerCampaign extends BaseController
 		{
 			$response = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_CAMPAIGN'), 'data' => false);
 
-			$data = $this->input->getInt('id');
+			$data = $this->input->getInt('id',0);
+			if(empty($data)) {
+				$data = $this->input->getString('ids');
+				$data = explode(',', $data);
+			}
 
 			if (!empty($data)) {
 				$unpublished = $this->m_campaign->unpublishCampaign($data);
@@ -467,29 +469,28 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function publishcampaign()
 	{
+		$response    = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$data = $this->input->getInt('id');
+			$response = array('status' => false, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_CAMPAIGN'), 'data' => false);
 
-			$result = $this->m_campaign->publishCampaign($data);
-
-			if ($result)
-			{
-				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_PUBLISHED'), 'data' => $result);
+			$data = $this->input->getInt('id',0);
+			if(empty($data)) {
+				$data = $this->input->getString('ids');
+				$data = explode(',', $data);
 			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_CAMPAIGN'), 'data' => $result);
+
+			if (!empty($data)) {
+				$published = $this->m_campaign->publishCampaign($data);
+
+				if ($published) {
+					$response = array('status' => 1, 'msg' => Text::_('CAMPAIGN_PUBLISHED'), 'data' => $published);
+				}
 			}
 		}
-		
-		echo json_encode((object) $tab);
+
+		echo json_encode((object) $response);
 		exit;
 	}
 

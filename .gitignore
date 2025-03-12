@@ -1,5 +1,6 @@
 # DOCKER AND CI
 .docker/data/*
+.docker/apache/certs/*.pem
 docker-compose-*.yml
 
 # PHPDOC

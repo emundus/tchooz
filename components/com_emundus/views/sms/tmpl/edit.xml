@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Éditer un template de SMS">
+        <message>
+            <![CDATA[Accès au formulaire d'édition de SMS]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

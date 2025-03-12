@@ -13,13 +13,11 @@
     <authorUrl>www.emundus.fr</authorUrl>
     <version>2.0.0</version>
     <description>MOD_EMUNDUS_MESSENGER_NOTIFICATIONS_XML_DESC</description>
+    <namespace path="src">Emundus\Module\Messenger</namespace>
+
     <files>
         <filename>babel.config.js</filename>
         <filename>mod_emundus_messenger_notifications.xml</filename>
-        <filename module="mod_emundus_messenger_notifications">mod_emundus_messenger_notifications.php</filename>
-        <filename>index.html</filename>
-        <filename>package.json</filename>
-        <filename>package-lock.json</filename>
         <filename>vue.config.js</filename>
         <filename>yarn.lock</filename>
         <folder>tmpl</folder>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Formulaire d'envoi de SMS">
+        <message>
+            <![CDATA[Accès au formulaire d'envoi de SMS]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

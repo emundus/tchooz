@@ -4,7 +4,7 @@
             color: var(--neutral-0);
         }
 
-        &:hover, &:focus, &:active {
+        &:hover {
             p,span {
                 color: var(--em-profile-color);
             }

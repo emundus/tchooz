@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>plg_emundus_mergeapplications</name>
+    <version>1.0.0</version>
+    <creationDate>February 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to merge n applications into one</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Mergeapplications</namespace>
+    <files>
+        <folder plugin="mergeapplications">services</folder>
+        <folder>src</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="programs_to_merge"
+                       multiple="true"
+                       type="sql"
+                       key_field="code" value_field="label"
+                       query="SELECT label,code FROM #__emundus_setup_programmes"
+                       label="PLG_EMUNDUS_MERGEAPPLICATIONS_PROGRAMS_TO_MERGE_LABEL"
+                       description="PLG_EMUNDUS_MERGEAPPLICATIONS_PROGRAMS_TO_MERGE_DESC"
+                       layout="joomla.form.field.list-fancy-select"
+                       default=""
+                />
+
+                <field name="main_program"
+                       type="sql"
+                       key_field="code" value_field="label"
+                       query="SELECT label,code FROM #__emundus_setup_programmes"
+                       label="PLG_EMUNDUS_MERGEAPPLICATIONS_MAIN_PROGRAM_LABEL"
+                       description="PLG_EMUNDUS_MERGEAPPLICATIONS_MAIN_PROGRAM_DESC"
+                       default=""
+                />
+
+                <field name="status"
+                       type="sql"
+                       key_field="step" value_field="value"
+                       query="SELECT value,step FROM #__emundus_setup_status"
+                       label="PLG_EMUNDUS_MERGEAPPLICATIONS_STATUS_LABEL"
+                       description="PLG_EMUNDUS_MERGEAPPLICATIONS_STATUS_LABEL_DESC"
+                       default=""
+                />
+
+                <field name="status_after_merge"
+                       type="sql"
+                       key_field="step" value_field="value"
+                       query="SELECT value,step FROM #__emundus_setup_status"
+                       label="PLG_EMUNDUS_MERGEAPPLICATIONS_STATUS_AFTER_MERGE_LABEL"
+                       description="PLG_EMUNDUS_MERGEAPPLICATIONS_STATUS_AFTER_MERGE_DESC"
+                       default=""
+                />
+
+                <field name="archive_files"
+                       type="list"
+                       label="PLG_EMUNDUS_MERGEAPPLICATIONS_ARCHIVE_FILES_LABEL"
+                       default="1"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>
