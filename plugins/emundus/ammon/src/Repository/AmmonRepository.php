@@ -103,14 +103,20 @@ class AmmonRepository
 
 					$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
 					if ($different_referee['raw'] == 1) {
+						Log::add('Need to create a different referee for '. $this->fnum, Log::INFO, 'plugin.emundus.ammon');
+
 						$registration_referee = $this->getRegistrationReferee($company);
 						if (empty($registration_referee)) {
 							$registration_referee = $this->createRegistrationReferee($company);
 
 							if (empty($registration_referee)) {
 								throw new \Exception('Failed to create registration different referee in ammon.');
+							} else {
+								Log::add('Registration referee created successfully for ' . $this->fnum);
 							}
 						}
+					} else {
+						Log::add('No need to create a different referee for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 					}
 				} else {
 					Log::add('Company ' . $company->establishmentName . ' is not paying for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
@@ -165,9 +171,12 @@ class AmmonRepository
 		$siret = $this->getSiret($this->fnum); // Company is required only if siret is not empty
 
 		if (!empty($siret)) {
+			Log::add('Found siret ' . $siret . ' for company for fnum ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 			$company = $this->getCompany($this->fnum, $siret);
 
 			if (empty($company)) {
+				Log::add('No company found from ammon for ' . $siret . ' for company for fnum ' . $this->fnum . '. Attempt to create one.', Log::INFO, 'plugin.emundus.ammon');
+
 				try {
 					$address = $this->factory->createCompanyAdressEntity();
 					$company = $this->factory->createCompanyEntity($address);
@@ -218,9 +227,12 @@ class AmmonRepository
 
 		if (!empty($siret))
 		{
+			Log::add('Trying to find company for siret ' . $siret . ' and fnum ' . $fnum, Log::INFO, 'plugin.emundus.ammon');
+
 			$ammon_company = $this->synchronizer->getCompany($siret);
 			if (!empty($ammon_company))
 			{
+				Log::add('Found company from ammon for siret ' . $siret . ' for fnum ' . $fnum, Log::INFO, 'plugin.emundus.ammon');
 				$company = $this->factory->createCompanyEntityFromAmmon($ammon_company);
 			}
 		}
