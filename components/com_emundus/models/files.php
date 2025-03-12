@@ -2602,6 +2602,34 @@ class EmundusModelFiles extends JModelLegacy
                                 WHERE ' . $tableAlias[$elt->tab_name] . '.fnum=jos_emundus_campaign_candidature.fnum)';
 						$query  .= ', ' . $select . ' AS ' . $elt->tab_name . '___' . $elt->element_name;
 					}
+                    elseif ($elt->element_plugin == 'checkbox') {
+                        $element_table_alias = $elt->table_join;
+
+                        $regexp_sub_query = $element_table_alias . '.' . $elt->element_name . ' '; // default value if no sub_options
+
+                        $element_attribs = json_decode($elt->element_attribs);
+                        if (!empty($element_attribs->sub_options->sub_values)) {
+                            foreach ($element_attribs->sub_options->sub_values as $sub_key => $sub_value) {
+                                $sub_label = JText::_($element_attribs->sub_options->sub_labels[$sub_key]);
+                                $sub_label = $sub_label === '' ? $element_attribs->sub_options->sub_labels[$sub_key] : $sub_label;
+                                $sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+                                $sub_value = str_replace("'", "\'", $sub_value);
+                                $sub_value = str_replace("*", "\\\*", $sub_value); // escape asterisk for SQL query, rare case but possible
+
+                                if ($sub_key === 0) {
+                                    $regexp_sub_query = 'REGEXP_REPLACE(' . $element_table_alias . '.' . $elt->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+                                } else {
+                                    $regexp_sub_query = 'REGEXP_REPLACE(' . $regexp_sub_query . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+                                }
+                            }
+
+                            // we also want to remove the brackets
+                            $regexp_sub_query = 'REPLACE(' . $regexp_sub_query . ', \'[\', \'\')';
+                            $regexp_sub_query = 'REPLACE(' . $regexp_sub_query . ', \']\', \'\')';
+                        }
+
+                        $query .= ', (SELECT GROUP_CONCAT(CONCAT(\'"\',(' . $regexp_sub_query . '),\'"\')) FROM '.$elt->table_join.' WHERE '.$elt->table_join.'.parent_id='.$tableAlias[$elt->tab_name].'.id) AS '. $elt->table_join.'___'.$elt->element_name;
+                    }
 					elseif ($elt->element_plugin == 'yesno') {
 						$select = 'REPLACE(`' . $elt->table_join . '`.`' . $elt->element_name . '`, "\t", "" )';
 						if ($raw != 1) {
