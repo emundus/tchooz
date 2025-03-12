@@ -1900,18 +1900,32 @@ class EmundusControllersettings extends BaseController
 
 			if ($update_web_address == 1 || $use_own_ssl_certificate == 1)
 			{
+				PluginHelper::importPlugin('actionlog');
+				$dispatcher = Factory::getApplication()->getDispatcher();
+
 				// Log events
 				if($update_web_address == 1)
 				{
 					$data = [
 						'new_address'      => $new_address,
 					];
-					$this->app->triggerEvent('onAfterUpdateConfiguration', [$data, [], 'update_web_address', 'pending', 'com_emundus.settings.web_security']);
+
+					$onAfterUpdateConfiguration             = new GenericEvent(
+						'onAfterUpdateConfiguration',
+						// Datas to pass to the event
+						['data' => $data, 'old_data' => [], 'type' => 'update_web_address', 'status' => 'pending', 'context' => 'com_emundus.settings.web_security']
+					);
+					$dispatcher->dispatch('onAfterUpdateConfiguration', $onAfterUpdateConfiguration);
 				}
 
 				if($use_own_ssl_certificate == 1)
 				{
-					$this->app->triggerEvent('onAfterUpdateConfiguration', [[], [], 'use_own_ssl_certificate', 'pending', 'com_emundus.settings.web_security']);
+					$onAfterUpdateConfiguration             = new GenericEvent(
+						'onAfterUpdateConfiguration',
+						// Datas to pass to the event
+						['data' => [], 'old_data' => [], 'type' => 'use_own_ssl_certificate', 'status' => 'pending', 'context' => 'com_emundus.settings.web_security']
+					);
+					$dispatcher->dispatch('onAfterUpdateConfiguration', $onAfterUpdateConfiguration);
 				}
 				//
 
