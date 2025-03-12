@@ -669,6 +669,7 @@ const _sfc_main$m = {
           this.parameters.forEach((param) => {
             data[param.param] = param.value;
           });
+          data["technical_contacts"] = data["technical_contacts"].map((contact) => contact.code);
           Swal.fire({
             position: "center",
             iconHtml: '<img class="em-sending-email-img tw-w-1/2 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg"/>',
