@@ -97,9 +97,13 @@ export default {
 		multipleExportsPopover() {
 			let exports = [];
 
-			return this.tab.exports.filter((exp) => {
-				return exp.multiple;
-			});
+			if (this.tab.exports) {
+				exports = this.tab.exports.filter((exp) => {
+					return exp.multiple;
+				});
+			}
+
+			return exports;
 		},
 	},
 	watch: {

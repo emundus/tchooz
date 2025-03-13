@@ -669,6 +669,11 @@ const _sfc_main$4 = {
           optional: true,
           options: [
             { value: 0, label: "COM_EMUNDUS_ONBOARD_EVENTS_SLOTS_ALL" },
+            { value: 1, label: "1" },
+            { value: 2, label: "2" },
+            { value: 3, label: "3" },
+            { value: 4, label: "4" },
+            { value: 5, label: "5" },
             { value: 10, label: "10" },
             { value: 20, label: "20" },
             { value: 50, label: "50" },
@@ -1088,7 +1093,7 @@ const _sfc_main$3 = {
           },
           value: 0,
           hideLabel: false,
-          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_MANAGER",
+          label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ASSOC_USER",
           placeholder: "",
           displayed: true,
           optional: true
@@ -1595,7 +1600,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-0c00bb63"]]);
+const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-3342920d"]]);
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const createCalendarConfig = (vm) => ({
@@ -1900,11 +1905,12 @@ const _sfc_main$1 = {
   data() {
     return {
       loading: true,
+      emails: [],
       fields: [
         {
           param: "applicant_notify",
           type: "toggle",
-          value: 0,
+          value: 1,
           label: "COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_NOTIFY",
           displayed: true,
           hideLabel: true,
@@ -2041,6 +2047,21 @@ const _sfc_main$1 = {
       if (response.status === true && this.event && this.event["notifications"]) {
         for (const field of this.fields) {
           field.value = this.event["notifications"][field.param];
+          if (field.param === "applicant_notify_email" && field.value == 0) {
+            let email = this.emails.find((email2) => email2.lbl === "booking_confirmation");
+            if (email) {
+              field.value = email.value;
+            }
+          }
+        }
+      } else {
+        for (const field of this.fields) {
+          if (field.param === "applicant_notify_email" && field.value == 0) {
+            let email = this.emails.find((email2) => email2.lbl === "booking_confirmation");
+            if (email) {
+              field.value = email.value;
+            }
+          }
         }
       }
       this.loading = false;
@@ -2052,11 +2073,11 @@ const _sfc_main$1 = {
         this.loading = true;
         emailService.getEmails().then((response) => {
           if (response.status) {
-            let emails = [];
             for (const email of response.data.datas) {
-              emails.push({
+              this.emails.push({
                 value: email.id,
-                label: email.subject
+                label: email.subject,
+                lbl: email.lbl
               });
             }
             let options = [
@@ -2066,7 +2087,7 @@ const _sfc_main$1 = {
               }
             ];
             if (response.status) {
-              Array.prototype.push.apply(options, emails);
+              Array.prototype.push.apply(options, this.emails);
             }
             this.fields.find((field) => field.param === "applicant_notify_email").options = options;
             this.fields.find((field) => field.param === "applicant_recall_email").options = options;

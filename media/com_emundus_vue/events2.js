@@ -72,16 +72,6 @@ const eventsService = {
       };
     }
   },
-  async getEvents() {
-    try {
-      return await fetchClient.get("getevents");
-    } catch (e) {
-      return {
-        status: false,
-        error: e
-      };
-    }
-  },
   async getEventsSlots(start, end, eventsIds = "") {
     try {
       return await fetchClient.get("geteventsslots", {
