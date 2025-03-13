@@ -90,7 +90,7 @@ export default {
 					},
 					value: 0,
 					hideLabel: false,
-					label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_MANAGER',
+					label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_ASSOC_USER',
 					placeholder: '',
 					displayed: true,
 					optional: true,

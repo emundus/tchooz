@@ -401,9 +401,13 @@ const _sfc_main$5 = {
   },
   computed: {
     multipleExportsPopover() {
-      return this.tab.exports.filter((exp) => {
-        return exp.multiple;
-      });
+      let exports = [];
+      if (this.tab.exports) {
+        exports = this.tab.exports.filter((exp) => {
+          return exp.multiple;
+        });
+      }
+      return exports;
     }
   },
   watch: {

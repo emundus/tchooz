@@ -118,7 +118,13 @@ const _sfc_main = {
           const slotId = this.$props.componentsProps.slot_id;
           const isSlotIdValid = this.slots.some((slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId));
           if (isSlotIdValid) {
-            this.slotSelected = slotId;
+            const selectedSlot = this.slots.find((slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId));
+            this.currentStartIndex = this.availableDates.findIndex(
+              (date) => date === new Date(selectedSlot.start).toISOString().split("T")[0]
+            );
+            this.$nextTick(() => {
+              this.slotSelected = slotId;
+            });
           }
         }
         this.loading = false;
@@ -127,18 +133,6 @@ const _sfc_main = {
         this.loading = false;
       }
     },
-    /*updateVisibleDates() {
-          if (this.currentStartIndex >= this.availableDates.length) {
-            this.currentStartIndex = Math.max(0, this.availableDates.length - 3);
-          }
-          if (this.currentStartIndex < 0) {
-            this.currentStartIndex = 0;
-          }
-    
-          this.visibleDates = this.availableDates
-              .slice(this.currentStartIndex, this.currentStartIndex + 3)
-              .map(dateString => new Date(dateString));
-        },*/
     formatDay(date) {
       return date.toLocaleDateString("fr-FR", { weekday: "long" }).charAt(0).toUpperCase() + date.toLocaleDateString("fr-FR", { weekday: "long" }).slice(1);
     },

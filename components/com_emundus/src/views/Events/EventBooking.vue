@@ -145,7 +145,15 @@ export default {
 					const isSlotIdValid = this.slots.some((slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId));
 
 					if (isSlotIdValid) {
-						this.slotSelected = slotId;
+						const selectedSlot = this.slots.find((slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId));
+						this.currentStartIndex = this.availableDates.findIndex(
+							(date) => date === new Date(selectedSlot.start).toISOString().split('T')[0],
+						);
+
+						// Wait for the next tick to update the slotSelected value
+						this.$nextTick(() => {
+							this.slotSelected = slotId;
+						});
 					}
 				}
 
@@ -155,18 +163,6 @@ export default {
 				this.loading = false;
 			}
 		},
-		/*updateVisibleDates() {
-      if (this.currentStartIndex >= this.availableDates.length) {
-        this.currentStartIndex = Math.max(0, this.availableDates.length - 3);
-      }
-      if (this.currentStartIndex < 0) {
-        this.currentStartIndex = 0;
-      }
-
-      this.visibleDates = this.availableDates
-          .slice(this.currentStartIndex, this.currentStartIndex + 3)
-          .map(dateString => new Date(dateString));
-    },*/
 		formatDay(date) {
 			return (
 				date.toLocaleDateString('fr-FR', { weekday: 'long' }).charAt(0).toUpperCase() +
@@ -182,13 +178,11 @@ export default {
 		nextDates() {
 			if (this.currentStartIndex + 3 < this.availableDates.length) {
 				this.currentStartIndex += 3;
-				//this.updateVisibleDates();
 			}
 		},
 		previousDates() {
 			if (this.currentStartIndex > 0) {
 				this.currentStartIndex -= 3;
-				//this.updateVisibleDates();
 			}
 		},
 		getAvailableSlotsForDate(date) {
