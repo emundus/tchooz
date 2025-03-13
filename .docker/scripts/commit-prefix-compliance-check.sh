@@ -36,7 +36,7 @@ GITLAB_URL=$1
 GITLAB_TOKEN=$2
 PROJECT_ID=$3
 MERGE_REQUEST_IID=$4
-COMMIT_PREFIXES_TRIGGERING_RELEASE=("cd: " "ci: " "cicd: " "doc: " "feat: " "fix: " "hotfix: " "patch: " "perf: " "ref: " "refactor: " "security: " "style: " "test: " "ui: " "uiux: " "ux: ")
+COMMIT_PREFIXES_TRIGGERING_RELEASE=("cd:" "ci:" "cicd:" "doc:" "feat:" "fix:" "hotfix:" "Merge:" "patch:" "perf:" "ref:" "refactor:" "security:" "style:" "test:" "ui:" "uiux:" "ux:")
 
 
 # Get commit names in merge request
