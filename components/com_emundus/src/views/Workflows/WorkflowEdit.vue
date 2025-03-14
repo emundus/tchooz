@@ -2,11 +2,11 @@
 	<div class="tw-m-2">
 		<div v-if="!loading">
 			<div
-				class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
+				class="tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
 				@click="goBack"
 			>
-				<span class="material-symbols-outlined">navigate_before</span>
-				<span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
+				<span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
+				<span class="group-hover:tw-underline">{{ translate('BACK') }}</span>
 			</div>
 
 			<div id="header" class="tw-mt-4">

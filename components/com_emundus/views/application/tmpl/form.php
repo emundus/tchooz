@@ -94,7 +94,7 @@ $user = $this->userid;
                     </div>
                 <?php endif; ?>
 
-                <div class="panel-body Marginpanel-body em-container-form-body">
+                <div class="panel-body Marginpanel-body em-container-form-body" style="background: var(--neutral-0) !important">
                     <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
                     <div id="em-switch-profiles" <?php if(sizeof($this->pids) < 1): ?>style="display: none"<?php endif; ?>>

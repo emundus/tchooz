@@ -55,7 +55,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
         </div>
     </div>
 <?php endif; ?>
-<div class="mod_emundus_checklist">
+<div class="mod_emundus_checklist tw-border tw-border-neutral-300">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
             <h3> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h3>
@@ -81,8 +81,8 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                    <?php if ($class == 'need_ok' && $form->id != $menuid) : ?>
                             <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
 	                    <?php endif; ?>
-                        <div class="mod_emundus_checklist___grid">
-                            <div class="mod_emundus_checklist___step_count">
+                        <div class="mod_emundus_checklist___grid tw-group">
+                            <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
 								<?php if ($form->id == $menuid) {
 									$color = 'var(--blue-900)';
 									$border_color = 'var(--blue-200)';
@@ -99,11 +99,11 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                                $title_color = 'var(--main-500)';
 								}
 								?>
-                                <span style="color: <?= $color ?>">
+                                <span class="group-hover:!tw-text-blue-900" style="color: <?= $color ?>">
                                     <?php echo $index + 1 ?>
                                 </span>
                             </div>
-                            <a href="<?php echo $form->link ?>" style="color: <?php echo $title_color; ?>;" <?php if ($form->id == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
+                            <a href="<?php echo $form->link ?>" class="group-hover:!tw-text-blue-900" style="color: <?php echo $title_color; ?>;" <?php if ($form->id == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
                                 <?php echo JText::_($form->label); ?>
                             </a>
                         </div>
@@ -128,8 +128,8 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
                     <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
 	            <?php endif; ?>
-                <div class="mod_emundus_checklist___grid">
-                    <div class="mod_emundus_checklist___step_count">
+                <div class="mod_emundus_checklist___grid tw-group">
+                    <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
 						<?php if ($itemid['id'] == $menuid) {
 							$color = 'var(--blue-900)';
 							$border_color = 'var(--blue-200)';
@@ -146,11 +146,11 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                        $title_color = 'var(--main-500)';
 						}
 						?>
-                        <span style="color: <?= $color ?>">
+                        <span class="group-hover:!tw-text-blue-900" style="color: <?= $color ?>">
                             <?php echo sizeof($forms) + 1 ?>
                         </span>
                     </div>
-                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
+                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>" class="group-hover:!tw-text-blue-900" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
                         <?php echo JText::_($mandatory_documents_title) ?>
                     </a>
                 </div>
@@ -184,8 +184,8 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	            <?php if ($attachment_class == 'need_ok' && $itemid['id'] != $menuid) : ?>
                     <span class="material-symbols-outlined mod_emundus_checklist___check_circle">check_circle</span>
 	            <?php endif; ?>
-                <div class="mod_emundus_checklist___grid">
-                    <div class="mod_emundus_checklist___step_count">
+                <div class="mod_emundus_checklist___grid tw-group">
+                    <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
 						<?php if ($itemid['id'] == $menuid) {
 							$color = 'var(--blue-900)';
 							$border_color = 'var(--blue-200)';
@@ -202,7 +202,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 	                        $title_color = 'var(--main-500)';
 						}
 						?>
-                        <span style="color: <?= $color ?>">
+                        <span class="group-hover:!tw-text-blue-900" style="color: <?= $color ?>">
                             <?php
                             if ($show_mandatory_documents == 1 && count($mandatory_documents) > 0) {
 	                            echo sizeof($forms) + 2;
@@ -213,7 +213,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                             ?>
                         </span>
                     </div>
-                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>#attachment_list_opt" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
+                    <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>#attachment_list_opt" class="group-hover:!tw-text-blue-900" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
                         <?php echo JText::_($optional_documents_title) ?>
                     </a>
                 </div>
@@ -233,8 +233,8 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 			}
 			?>
             <div class="mod_emundus_checklist_<?php echo $paid_class; ?> mod_emundus_checklist___form_item">
-                <div class="mod_emundus_checklist___grid">
-                    <div class="mod_emundus_checklist___step_count">
+                <div class="mod_emundus_checklist___grid tw-group">
+                    <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
 						<?php if ($paid_class == 'need_missing') : ?>
                             <span class="material-symbols-outlined">close</span>
 						<?php elseif ($paid_class == 'need_ok') : ?>

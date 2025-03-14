@@ -292,10 +292,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         <div class="em-flex-row-justify-end tw-flex-wrap" style="gap: 24px">
 			<?php if ($mod_em_applications_show_search): ?>
                 <div class="em-searchbar em-flex-row-justify-end">
-                    <input name="searchword" type="text" id="applications_searchbar" class="form-control"
-                           placeholder="">
-                    <label for="applications_searchbar"
-                           style="display: inline-block;margin-bottom: unset"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
+                    <input name="searchword" type="text" id="searchword" class="form-control"
+                           placeholder=" ">
+                    <label for="searchword"
+                           style="display: inline-block;"><?php echo JText::_('MOD_EM_APPLICATIONS_SEARCH') ?></label>
                 </div>
 			<?php endif; ?>
 			<?php if (sizeof($available_views) > 1) : ?>
@@ -356,6 +356,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     <div id="tile-hover-offset-request"></div>
 				<?php endif; ?>
                 <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                       <div id="background-shapes"
+                            alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                    <?php endif; ?>
                     <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                     <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                 </div>
@@ -736,6 +740,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                             <div id="tile-hover-offset-request"></div>
 										<?php endif; ?>
                                         <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+                                           <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                               <div id="background-shapes"
+                                                    alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                                           <?php endif; ?>
                                             <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                                             <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                                         </div>
@@ -766,6 +774,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     <div id="tile-hover-offset-request"></div>
 				<?php endif; ?>
                 <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
+                       <div id="background-shapes"
+                            alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+                    <?php endif; ?>
                     <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                     <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                 </div>

@@ -87,7 +87,7 @@ class EmundusControllerEvents extends BaseController
 							[
 								'key'     => Text::_('COM_EMUNDUS_ONBOARD_EVENTS_CAMPAIGNS'),
 								'value'   => '<span class="material-symbols-outlined tw-mr-2">warning</span>' . Text::_('COM_EMUNDUS_ONBOARD_EVENTS_NO_CAMPAIGNS'),
-								'classes' => 'tw-flex tw-rounded-coordinator tw-bg-yellow-100 tw-p-2',
+								'classes' => 'tw-flex tw-rounded-status tw-bg-yellow-100 tw-p-2',
 								'display' => 'blocs'
 							]
 						];

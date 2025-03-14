@@ -758,7 +758,7 @@ const _hoisted_61 = {
 };
 const _hoisted_62 = {
   key: 0,
-  class: "tw-flex tw-flex-col tw-gap-4",
+  class: "tw-mb-8 tw-flex tw-flex-col tw-gap-4",
   id: "select-campaign-languages"
 };
 const _hoisted_63 = { class: "tw-text-sm tw-text-neutral-500" };
@@ -1197,7 +1197,6 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             }, null, 8, ["modelValue", "options", "placeholder"])
           ])
         ])) : createCommentVNode("", true),
-        _cache[51] || (_cache[51] = createBaseVNode("hr", { class: "tw-mb-4 tw-mt-1.5" }, null, -1)),
         createBaseVNode("div", _hoisted_66, [
           createBaseVNode("button", {
             id: "save-btn",
@@ -1214,7 +1213,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.submitted || !_ctx.ready ? (openBlock(), createElementBlock("div", _hoisted_67)) : createCommentVNode("", true)
   ]);
 }
-const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-939542fe"]]);
+const addCampaign = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-52b14e2a"]]);
 export {
   addCampaign as default
 };
