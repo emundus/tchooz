@@ -400,7 +400,11 @@
 
 				<hr class="tw-mb-4 tw-mt-1.5" />
 
-				<div class="tw-flex tw-flex-col tw-gap-4" id="select-campaign-languages" v-if="languageOptions.length > 1">
+				<div
+					class="tw-mb-8 tw-flex tw-flex-col tw-gap-4"
+					id="select-campaign-languages"
+					v-if="languageOptions.length > 1"
+				>
 					<h2>
 						{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_LANGUAGES') }}
 						<i class="tw-text-sm tw-text-neutral-500">{{ translate('COM_EMUNDUS_OPTIONAL') }}</i>
@@ -435,8 +439,6 @@
 						></multiselect>
 					</div>
 				</div>
-
-				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-justify-end">
 					<button

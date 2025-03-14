@@ -2355,7 +2355,7 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { class: "events__add-event" };
-const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_2 = { class: "group-hover:tw-underline" };
 const _hoisted_3 = { class: "tw-mt-4" };
 const _hoisted_4 = { class: "tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6" };
 const _hoisted_5 = {
@@ -2371,10 +2371,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createBaseVNode("div", null, [
       createBaseVNode("div", {
-        class: "goback-btn tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
+        class: "tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular",
         onClick: _cache[0] || (_cache[0] = (...args) => $options.goBack && $options.goBack(...args))
       }, [
-        _cache[3] || (_cache[3] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
+        _cache[3] || (_cache[3] = createBaseVNode("span", { class: "material-symbols-outlined tw-mr-1 tw-text-link-regular" }, "navigate_before", -1)),
         createBaseVNode("span", _hoisted_2, toDisplayString(_ctx.translate("BACK")), 1)
       ]),
       createBaseVNode("h1", _hoisted_3, toDisplayString(this.event && Object.keys(this.event).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_EVENT_GLOBAL_CREATE") + " " + this.event["name"] : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT")), 1),

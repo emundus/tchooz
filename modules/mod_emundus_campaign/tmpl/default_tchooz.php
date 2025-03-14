@@ -181,14 +181,14 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 						<?php if ($show_registration) : ?>
                             <a href="<?php echo $links->link_register ?>">
                                 <button class="tw-btn-secondary em-w-auto em-applicant-border-radius"
-                                        type="button">
+                                        type="button" style="border: 1px solid var(--em-secondary-color);">
 									<?php echo JText::_('MOD_EM_CAMPAIGN_REGISTRATION_URL') ?>
                                 </button>
                             </a>
 						<?php endif; ?>
                         <a href="<?php echo $links->link_login ?>">
                             <button class="em-applicant-primary-button em-w-auto em-ml-8 em-applicant-border-radius"
-                                    type="button">
+                                    type="button" style="border: 1px solid var(--em-primary-color);">
 								<?php echo JText::_('MOD_EM_CAMPAIGN_LOGIN_URL') ?>
                             </button>
                         </a>
@@ -217,14 +217,14 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 
 					<?php if (strtotime($now) > strtotime($campaign_pinned->end_date)) : ?>
 
-                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+                    <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
 	                    <?php if($mod_em_campaign_click_to_details == 1) : ?>
                          onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                         <?php endif; ?>
                     >
 
 						<?php else : ?>
-                        <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+                        <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
 	                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
                              onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                             <?php endif; ?>
@@ -852,7 +852,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 					<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                         <div id="tile-hover-offset-procedure" class="tile-hover-offset-procedure--closed"></div>
 					<?php endif; ?>
-                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+                        <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
                              <?php if($mod_em_campaign_click_to_details == 1) : ?>
                              onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                              <?php endif; ?>
@@ -866,7 +866,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 							<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                 <div id="tile-hover-offset-procedure"></div>
 							<?php endif; ?>
-                            <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-pointer-cursor' : '' ?>"
+                            <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
 	                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                  onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                                 <?php endif; ?>

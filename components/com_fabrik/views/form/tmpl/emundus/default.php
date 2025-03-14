@@ -139,14 +139,14 @@ endif;
 	<?php
 	if($form->gobackButton)
 	{
-		echo '<div class="em-goback-btn !tw-pl-0 tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>';
+		echo '<div class="back-button-link tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1">navigate_before</span>';
 		echo $form->gobackButton;
 		echo '</div>';
 	}
 	?>
 </div>
 
-<div class="emundus-form tw-py-6 tw-px-8 <?php echo $pageClass; ?>">
+<div class="emundus-form !tw-p-6 tw-rounded-coordinator-cards tw-shadow-standard tw-border tw-border-neutral-300 !tw-bg-white <?php echo $pageClass; ?>">
 	<?php if ($form->id == $profile_form) : ?>
         <iframe id="background-shapes-profile" alt="<?= Text::_('MOD_EM_FORM_IFRAME') ?>"></iframe>
 	<?php endif; ?>

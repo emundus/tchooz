@@ -134,7 +134,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? withDirectives((openBlock(), createElementBlock("iframe", {
         src: $options.selectedEvaluation.url,
-        class: "iframe-evaluation-list tw-w-full",
+        class: "iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-6",
         key: $data.selectedTab,
         onLoad: _cache[0] || (_cache[0] = ($event) => $options.iframeLoaded($event))
       }, null, 40, _hoisted_6$1)), [
@@ -146,7 +146,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-1294980b"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-12951b18"]]);
 const client = new FetchClient("file");
 const filesService = {
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {

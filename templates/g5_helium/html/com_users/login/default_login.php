@@ -244,7 +244,7 @@ if ($user_module->id)
 				<?php if ($this->displayForgotten) : ?>
                     <div class="control-group tw-float-right">
                         <div class="control-label">
-                            <a class="em-text-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
+                            <a class="hover:tw-underline" href="<?php echo JRoute::_($this->forgottenLink); ?>">
 								<?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
                             </a>
                         </div>
@@ -301,7 +301,7 @@ if ($user_module->id)
 	<?php if ($usersConfig->get('allowUserRegistration') && $displayRegistration) : ?>
         <div>
 			<?php echo JText::_('COM_USERS_LOGIN_NO_ACCOUNT'); ?>
-            <a class="em-text-underline" href="<?php echo Route::_($this->registrationLink); ?>">
+            <a class="hover:tw-underline" href="<?php echo Route::_($this->registrationLink); ?>">
 				<?php echo Text::_('COM_USERS_LOGIN_REGISTER'); ?>
             </a>
         </div>

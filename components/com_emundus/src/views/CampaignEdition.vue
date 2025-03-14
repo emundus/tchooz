@@ -1,15 +1,16 @@
 <template>
 	<div id="edit-campaign">
 		<div class="em-w-custom"></div>
-		<div class="em-card-shadow tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
+		<div class="tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card">
 			<div>
-				<div
-					class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
+				<button
+					type="button"
+					class="tw-group tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
 					@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
 				>
-					<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-					<span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
-				</div>
+					<span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
+					<span class="group-hover:tw-underline">{{ translate('BACK') }}</span>
+				</button>
 				<div class="tw-mt-4 tw-flex tw-items-center">
 					<h1>{{ translate(selectedMenuItem.name) }}</h1>
 				</div>
@@ -29,19 +30,19 @@
 				<Tabs
 					v-show="profileId"
 					:tabs="tabs"
-					:classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"
+					:classes="'tw-overflow-auto tw-flex tw-items-center tw-gap-2 tw-ml-7'"
 				></Tabs>
 
-				<div class="tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6">
+				<div
+					class="tw-relative tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
+				>
 					<div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
 						<p class="flex flex-row tw-text-red-600">
 							<span class="material-symbols-outlined tw-mr-2 tw-text-red-600">warning_amber</span
 							>{{ translate('COM_EMUNDUS_ONBOARD_PROGRAM_WARNING') }}
 						</p>
 						<ul v-if="campaignsByProgram.length > 0" class="em-pl-16 tw-mb-8 tw-mt-2">
-							<li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">
-								{{ campaign.label }}
-							</li>
+							<li v-for="campaign in campaignsByProgram" :key="'camp_progs_' + campaign.id">{{ campaign.label }}</li>
 						</ul>
 					</div>
 

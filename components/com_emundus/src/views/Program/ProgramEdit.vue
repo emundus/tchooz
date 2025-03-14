@@ -1,15 +1,16 @@
 <template>
 	<div
 		id="program-edition-container"
-		class="em-card-shadow tw-m-4 tw-rounded tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
+		class="em-card-shadow tw-m-4 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6"
 	>
-		<div
-			class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
+		<button
+			type="button"
+			class="tw-group tw-flex tw-cursor-pointer tw-items-center tw-border-0 tw-font-semibold tw-text-link-regular"
 			@click="redirectJRoute('index.php?option=com_emundus&view=campaigns')"
 		>
-			<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-			<span class="em-profile-font tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
-		</div>
+			<span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
+			<span class="group-hover:tw-underline">{{ translate('BACK') }}</span>
+		</button>
 
 		<div class="tw-mt-4 tw-flex tw-items-center">
 			<h1 class="tw-mb-4">
@@ -25,16 +26,15 @@
 		<hr />
 
 		<div class="tw-mt-4">
-			<Tabs :tabs="tabs" :classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
+			<Tabs :tabs="tabs" :classes="'tw-overflow-auto tw-flex tw-items-center tw-gap-2 tw-ml-7'"></Tabs>
 
 			<div
-				class="tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-p-6"
-				:style="{ backgroundColor: activeBackground }"
+				class="tw-bg-(--neutral-0) tw-relative tw-w-full tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-p-6"
 			>
 				<div class="tw-w-full" v-show="selectedMenuItem.code === 'general'">
 					<iframe
 						class="hide-titles tw-w-full"
-						style="height: 150vh"
+						style="height: 100vh"
 						:src="
 							'/index.php?option=com_fabrik&view=form&formid=108&rowid=' + this.programId + '&tmpl=component&iframe=1'
 						"

@@ -278,7 +278,7 @@ const _hoisted_1 = {
 };
 const _hoisted_2 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_3 = { key: 1 };
-const _hoisted_4 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_4 = { class: "group-hover:tw-underline" };
 const _hoisted_5 = { class: "tw-mt-4" };
 const _hoisted_6 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_7 = { class: "tw-mt-4 tw-flex tw-flex-col tw-gap-3" };
@@ -316,10 +316,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ])
       ])) : (openBlock(), createElementBlock("div", _hoisted_3, [
         createBaseVNode("div", {
-          class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
+          class: "tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular",
           onClick: _cache[1] || (_cache[1] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=events"))
         }, [
-          _cache[5] || (_cache[5] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
+          _cache[5] || (_cache[5] = createBaseVNode("span", { class: "material-symbols-outlined tw-mr-1 tw-text-link-regular" }, "navigate_before", -1)),
           createBaseVNode("span", _hoisted_4, toDisplayString(_ctx.translate("BACK")), 1)
         ]),
         createBaseVNode("h1", _hoisted_5, toDisplayString(this.location && Object.keys(this.location).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_LOCATION") + " " + this.location["name"] : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_LOCATION")), 1),

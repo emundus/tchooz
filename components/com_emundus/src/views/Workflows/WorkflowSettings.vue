@@ -1,7 +1,10 @@
 <template>
-	<div id="workflow-settings">
+	<div
+		id="workflow-settings"
+		class="tw-mb-6 tw-w-full tw-rounded-coordinator-cards tw-border tw-border-gray-200 tw-bg-neutral-0 tw-p-5 tw-shadow"
+	>
 		<div id="step-types">
-			<h2>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPES') }}</h2>
+			<h2 class="tw-pb-5">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPES') }}</h2>
 
 			<StepTypesByLevel
 				@updateTypes="onUpdateTypes"

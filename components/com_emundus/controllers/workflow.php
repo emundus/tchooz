@@ -109,7 +109,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 								$associated_programmes_html_long .= '</div></div>';
 
 								$associated_programmes_html = '<div>';
-								$associated_programmes_html .= '<span class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-underline">' . count($associated_programmes) . ' ' . Text::_('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS') . '</span>';
+								$associated_programmes_html .= '<span class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-text-sm hover:!tw-underline">' . count($associated_programmes) . ' ' . Text::_('COM_EMUNDUS_WORKFLOW_ASSOCIATED_PROGRAMS') . '</span>';
 								$associated_programmes_html .= '</div>';
 
 							}

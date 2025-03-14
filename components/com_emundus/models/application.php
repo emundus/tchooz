@@ -1926,7 +1926,7 @@ class EmundusModelApplication extends ListModel
 								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn btn-info btn-sm em-actions-form" url="'.$url.'" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><i> ' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a id="' . $itemt->form_id . '" class="tw-target-blank-links tw-text-profile-full visited:tw-text-profile-full hover:tw-text-profile-full visited:hover:tw-text-profile-full" href="'.$url.'" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
+								$forms .= ' <a id="' . $itemt->form_id . '" class="tw-target-blank-links tw-text-profile-full visited:tw-text-profile-full hover:tw-text-profile-full visited:hover:tw-text-profile-full hover:tw-underline" href="'.$url.'" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '" target="_blank"><span> ' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '</span></a>';
 							}
 						}
 						else {
@@ -1934,7 +1934,7 @@ class EmundusModelApplication extends ListModel
 								$forms .= ' <button type="button" id="' . $itemt->form_id . '" class="btn btn-default btn-sm em-actions-form" url="'.$url.'" title="' . Text::_('COM_EMUNDUS_ADD') . '"><i> ' . Text::_('COM_EMUNDUS_ADD') . '</i></button>';
 							}
 							else {
-								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="tw-target-blank-links tw-text-profile-full visited:tw-text-profile-full hover:tw-text-profile-full visited:hover:tw-text-profile-full" href="'.$url.'" title="' . Text::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . Text::_('COM_EMUNDUS_ADD') . '</span></a>';
+								$forms .= ' <a type="button" id="' . $itemt->form_id . '" class="tw-target-blank-links tw-text-profile-full visited:tw-text-profile-full !tw-no-underline hover:!tw-underline hover:!tw-text-profile-full visited:hover:tw-text-profile-full" href="'.$url.'" title="' . Text::_('COM_EMUNDUS_ADD') . '" target="_blank"><span> ' . Text::_('COM_EMUNDUS_ADD') . '</span></a>';
 							}
 						}
 					}

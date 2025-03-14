@@ -4,7 +4,12 @@
 			<div class="tw-flex tw-flex-col tw-gap-3">
 				<div class="tw-flex tw-items-center tw-gap-3">
 					<div>
-						<input type="color" class="custom-color-picker !tw-rounded-full" v-model="primary" id="primary_color" />
+						<input
+							type="color"
+							class="custom-color-picker !tw-mb-0 !tw-rounded-full hover:!tw-shadow-none"
+							v-model="primary"
+							id="primary_color"
+						/>
 					</div>
 					<label class="tw-mb-0 tw-font-medium" style="max-width: 100px">{{
 						translate('COM_EMUNDUS_ONBOARD_PRIMARY_COLOR')
@@ -13,7 +18,12 @@
 
 				<div class="tw-flex tw-items-center tw-gap-3">
 					<div>
-						<input type="color" v-model="secondary" class="custom-color-picker !tw-rounded-full" id="secondary_color" />
+						<input
+							type="color"
+							v-model="secondary"
+							class="custom-color-picker !tw-mb-0 !tw-rounded-full hover:!tw-shadow-none"
+							id="secondary_color"
+						/>
 					</div>
 					<label class="tw-mb-0 tw-font-medium" style="max-width: 100px">{{
 						translate('COM_EMUNDUS_ONBOARD_SECONDARY_COLOR')
@@ -135,7 +145,7 @@
 									>highlight_off</span
 								>
 								<button
-									class="tw-btn-secondary tw-font-bold tw-text-white"
+									class="tw-btn-secondary tw-font-bold !tw-text-white"
 									:style="{
 										backgroundColor: secondary,
 										borderColor: secondary,
@@ -361,7 +371,7 @@ export default {
 
 <style scoped>
 .custom-color-picker {
-	width: 47px !important;
+	width: 48px !important;
 	height: 48px !important;
 	border: none !important;
 	padding: 0 !important;

@@ -326,8 +326,8 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { class: "tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card" };
-const _hoisted_2 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_1 = { class: "tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card" };
+const _hoisted_2 = { class: "group-hover:tw-underline" };
 const _hoisted_3 = { class: "tw-mt-4" };
 const _hoisted_4 = { class: "tw-mt-2" };
 const _hoisted_5 = { class: "tw-mt-1 tw-text-red-600" };
@@ -361,7 +361,7 @@ const _hoisted_17 = {
 };
 const _hoisted_18 = { class: "tw-text-red-600" };
 const _hoisted_19 = { class: "tw-font-medium" };
-const _hoisted_20 = { class: "em-container-accordeon tw-shadow" };
+const _hoisted_20 = { class: "em-container-accordeon tw-mb-8 tw-border tw-border-neutral-300 tw-shadow" };
 const _hoisted_21 = { class: "tw-flex tw-items-center tw-gap-1" };
 const _hoisted_22 = ["title"];
 const _hoisted_23 = ["title"];
@@ -409,10 +409,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         createBaseVNode("div", null, [
           createBaseVNode("div", null, [
             createBaseVNode("div", {
-              class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
+              class: "tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular",
               onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=emails"))
             }, [
-              _cache[15] || (_cache[15] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
+              _cache[15] || (_cache[15] = createBaseVNode("span", { class: "material-symbols-outlined tw-mr-1 tw-text-link-regular" }, "navigate_before", -1)),
               createBaseVNode("span", _hoisted_2, toDisplayString(_ctx.translate("BACK")), 1)
             ]),
             createBaseVNode("div", _hoisted_3, [
@@ -495,7 +495,6 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])
         ]),
-        _cache[21] || (_cache[21] = createBaseVNode("hr", { class: "tw-mb-4 tw-mt-1.5" }, null, -1)),
         createBaseVNode("div", _hoisted_20, [
           createBaseVNode("div", _hoisted_21, [
             createBaseVNode("h2", {
@@ -651,7 +650,6 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ])
           ])) : createCommentVNode("", true)
         ]),
-        _cache[22] || (_cache[22] = createBaseVNode("hr", { class: "tw-mb-4 tw-mt-1.5" }, null, -1)),
         createBaseVNode("div", _hoisted_39, [
           createBaseVNode("button", _hoisted_40, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_CONTINUER")), 1)
         ])
@@ -660,7 +658,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _ctx.loading || _ctx.submitted ? (openBlock(), createElementBlock("div", _hoisted_41)) : createCommentVNode("", true)
   ]);
 }
-const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-8dc302e7"]]);
+const addEmail = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-d4e98d8a"]]);
 export {
   addEmail as default
 };
