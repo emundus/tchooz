@@ -269,6 +269,11 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du mode light de Hikashop.', 'error');
 		}
 
+		if (!$this->checkSessionGCScheduler())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la tâche planifié Session GC', 'error');
+		}
+
 		EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;
@@ -964,22 +969,74 @@ class Com_EmundusInstallerScript
 		$this->db->setQuery($query);
 		$dark_mode = $this->db->loadResult();
 
-		if(!empty($dark_mode))
+		if (!empty($dark_mode))
 		{
 			$query->clear()
 				->update($this->db->quoteName('#__hikashop_config'))
 				->set($this->db->quoteName('config_value') . ' = 0')
 				->where($this->db->quoteName('config_namekey') . ' LIKE ' . $this->db->quote('dark_mode'));
 			$this->db->setQuery($query);
+
 			return $this->db->execute();
 		}
-		else {
+		else
+		{
 			$query->clear()
 				->insert($this->db->quoteName('#__hikashop_config'))
 				->columns($this->db->quoteName('config_namekey') . ', ' . $this->db->quoteName('config_value') . ', ' . $this->db->quoteName('config_default'))
 				->values($this->db->quote('dark_mode') . ', 0' . ', 0');
 			$this->db->setQuery($query);
+
 			return $this->db->execute();
 		}
+	}
+
+	private function checkSessionGCScheduler(): bool
+	{
+		$checked = false;
+
+		// Session GC need to be 6 hours
+		$query = $this->db->getQuery(true);
+
+		$query->select('id,execution_rules,cron_rules,params,next_execution')
+			->from($this->db->quoteName('#__scheduler_tasks'))
+			->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('session.gc'));
+		$this->db->setQuery($query);
+		$sessionGc = $this->db->loadAssoc();
+
+		if (!empty($sessionGc))
+		{
+			$params                   = json_decode($sessionGc['params'], true);
+			$params['individual_log'] = false;
+			$params['log_file']       = '';
+			$params['notifications']  = [
+				'success_mail'       => 0,
+				'failure_mail'       => 0,
+				'fatal_failure_mail' => 1,
+				'orphan_mail'        => 1
+			];
+			$sessionGc['params']      = json_encode($params);
+
+			$cronRules               = json_decode($sessionGc['cron_rules'], true);
+			$cronRules['type']       = 'interval';
+			$cronRules['exp']        = 'PT6H';
+			$sessionGc['cron_rules'] = json_encode($cronRules);
+
+			$executionRules                   = json_decode($sessionGc['execution_rules'], true);
+			$executionRules['rule-type']      = 'interval-hours';
+			$executionRules['interval-hours'] = 6;
+			$executionRules['exec-time']      = '12:00';
+			$executionRules['exec-day']       = '02';
+			$sessionGc['execution_rules']     = json_encode($executionRules);
+
+			$next_execution = new DateTime();
+			$next_execution->add(new DateInterval('PT6H'));
+			$sessionGc['next_execution'] = $next_execution->format('Y-m-d H:i:s');
+
+			$update  = (object) $sessionGc;
+			$checked = $this->db->updateObject('#__scheduler_tasks', $update, 'id');
+		}
+
+		return $checked;
 	}
 }
