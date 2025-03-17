@@ -145,9 +145,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		include_once(JPATH_BASE . '/components/com_emundus/models/files.php');
 		include_once(JPATH_BASE . '/components/com_emundus/models/emails.php');
+		include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
+		include_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
 
 		$query   = $this->_db->getQuery(true);
 		$form_id = $this->app->getInput()->getInt('formid', 0);
+		$user = $this->app->getIdentity();
 
 		$offset   = $this->app->get('offset', 'UTC');
 		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
@@ -165,8 +168,26 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 			$db_table_name = $this->_db->loadResult();
 		}
 
-		$student_id = $this->app->getInput()->get($db_table_name . '___user')[0];
-		$fnum       = $this->app->getInput()->get($db_table_name . '___fnum');
+		$emundusUser = $this->app->getSession()->get('emundusUser');
+		$m_profiles = new EmundusModelProfile;
+		$applicant_profiles   = $m_profiles->getApplicantsProfilesArray();
+
+		// Check if the user is an applicant
+		$is_applicant = true;
+		if (!empty($emundusUser) && !empty($applicant_profiles))
+		{
+			$is_applicant = in_array($emundusUser->profile, $applicant_profiles);
+		}
+
+		if($is_applicant || !EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
+			$student_id = $user->id;
+			$fnum = $emundusUser->fnum;
+		}
+		else {
+			$student_id = $this->app->getInput()->get($db_table_name . '___user')[0];
+			$fnum       = $this->app->getInput()->get($db_table_name . '___fnum');
+		}
+
 
 		$email_tmpls         = explode(',', $this->getParam('email_tmpl', 'referent_letter'));
 		$emails              = explode(',', $this->getParam('emails', 'jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
