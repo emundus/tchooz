@@ -197,6 +197,10 @@ class ApiMapper
 			} catch (\Exception $e) {
 				Log::add('Failed to transform value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
 			}
+
+			if (empty($transformed_value)) {
+				$transformed_value = '';
+			}
 		}
 
 		return $transformed_value;
