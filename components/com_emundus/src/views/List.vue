@@ -210,7 +210,7 @@
 										<a
 											v-if="viewType === 'blocs' && editAction"
 											@click="onClickAction(editAction, item.id, false, $event)"
-											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-text-sm"
+											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
 										>
 											{{ translate(editAction.label) }}
 										</a>
