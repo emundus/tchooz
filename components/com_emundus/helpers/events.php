@@ -1796,7 +1796,7 @@ class EmundusHelperEvents
 			$redirect_url = EmundusHelperMenu::getHomepageLink();
 		}
 
-		$app->redirect($redirect_url);
+		$app->redirect(Uri::base(true).$redirect_url);
 
 		return true;
 	}

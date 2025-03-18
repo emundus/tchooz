@@ -105,7 +105,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
 				}
 
 				if (!empty($redirect)) {
-					$this->app->redirect($redirect);
+					$this->app->redirect(Uri::base(true).$redirect);
 				}
 			}
 		}

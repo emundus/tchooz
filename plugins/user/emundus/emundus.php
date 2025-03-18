@@ -794,7 +794,7 @@ class plgUserEmundus extends CMSPlugin
 			$this->app->getInput()->cookie->set('joomla_user_state', '', 1, $this->app->get('cookie_path', '/'), $this->app->get('cookie_domain', ''));
 		}
 
-		$this->app->redirect($url);
+		$this->app->redirect(Uri::base(true).$url);
 
 		return true;
 	}
