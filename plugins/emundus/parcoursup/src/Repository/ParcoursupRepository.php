@@ -118,7 +118,7 @@ readonly class ParcoursupRepository
 		return $flushed;
 	}
 
-	public function deleteApplicationFile($idParcoursup, $deleteUser = false)
+	public function deleteApplicationFile($idParcoursup, $deleteUser = false): bool
 	{
 		$deleted = true;
 
@@ -141,12 +141,13 @@ readonly class ParcoursupRepository
 			if(in_array($fnumInfos['status'],[0,1]))
 			{
 				$this->query->clear()
-					->delete($this->db->quoteName('#__emundus_campaign_candidature'))
+					->update($this->db->quoteName('#__emundus_campaign_candidature'))
+					->set('published = -1')
 					->where('fnum = ' . $this->db->quote($fnum));
 				$this->db->setQuery($this->query);
 				$deleted = $this->db->execute();
 
-				if ($deleted)
+				/*if ($deleted)
 				{
 					if($deleteUser)
 					{
@@ -174,7 +175,7 @@ readonly class ParcoursupRepository
 						->where('id_parcoursup = ' . $this->db->quote($idParcoursup));
 					$this->db->setQuery($this->query);
 					$this->db->execute();
-				}
+				}*/
 			}
 		}
 
