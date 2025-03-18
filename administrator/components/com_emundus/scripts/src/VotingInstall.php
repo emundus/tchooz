@@ -258,49 +258,49 @@ class VotingInstall
 		$this->db->execute();
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'Ce projet m\'intéresse');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'This project interests me', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTING_GO_DETAILS', 'This project interests me', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'Mon coup de coeur');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'My favourite', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_HEART', 'My favourite', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'Je donne mon coup de coeur !');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'I give my favourite!', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'I give my favourite!', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>Vous vous apprêtez à voter pour ce projet.</p><p>Êtes-vous sûre de votre choix ? (une fois le coup de coeur attribué, vous ne pourrez plus le retirer)</p>');
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>You are about to vote for this project.</p><p>Are you sure of your choice? (once the "coup de coeur" has been awarded, you will not be able to withdraw it)</p>', 'override', null, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Oui, je vote !');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Yes, I vote!', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Yes, I vote!', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Retour aux projets');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Back to projects', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_GO_BACK', 'Back to projects', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/projets-selectionnes-2');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/projets-selectionnes-2', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_HOME_LINK', '/projets-selectionnes-2', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'Non, retour aux projets');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'No, back to projects', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_NO', 'No, back to projects', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Veuillez saisir une adresse email afin de soumettre votre vote');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Please enter an email address to submit your vote', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL', 'Please enter an email address to submit your vote', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'Coup de coeur attribué à ce projet !');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'You have voted for this project!', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED', 'You have voted for this project!', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'Vous avez déjà donné votre coup de coeur');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'You\'ve already given us your favourite', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_ALREADY_VOTED_FOR_OTHER', 'You\'ve already given us your favourite', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote soumis !');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote submitted!', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote submitted!', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Votre vote a bien été pris en compte ! Merci de votre participation.');
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Your vote has been taken into account! Thank you for your participation.', 'override', null, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'Une erreur est survenue');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'An error has occurred', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'An error has occurred', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Votre vote n\'as pas pu être pris en compte. Veuillez réessayer plus tard.');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Your vote could not be taken into account. Please try again later.', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TEXT', 'Your vote could not be taken into account. Please try again later.', 'override', 0, null, null, 'en-GB');
 
 		$result['status'] = true;
 
