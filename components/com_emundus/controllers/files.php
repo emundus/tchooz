@@ -1967,7 +1967,7 @@ class EmundusControllerFiles extends BaseController
 											$line .= " " . mb_strtoupper($v) . "\t";
 										}
 										else {
-											$line .= " " . $v . "\t";
+											$line .= " " . preg_replace("/\t/", "", $v) . "\t";
 										}
 									}
 									else {
@@ -1986,7 +1986,7 @@ class EmundusControllerFiles extends BaseController
 											if ($textarea_elements[$k] == 1) {
 												$v = strip_tags($v);
 											}
-											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+                                            $line .= preg_replace("/\t/", "", $v)."\t"; // limit preg_replace to keep linebreaks
 										}
 										elseif(!empty($iban_elements[$k])){
 											if($iban_elements[$k] == 1){
