@@ -1588,6 +1588,7 @@ async function countFilesBeforeAction(fnums, action, verb) {
 
 function updateState(fnums, state)
 {
+    addLoader();
     let view = document.getElementById("view").value;
 
     if (view !== 'evaluation') {
