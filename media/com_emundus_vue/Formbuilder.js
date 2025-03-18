@@ -1730,16 +1730,24 @@ const _sfc_main$t = {
         }
       } else {
         formBuilderService.getDatabaseJoinOrderColumns(this.element.params["join_db_name"]).then((response) => {
+          let database = null;
+          const indexDatabase = this.databases.map((e) => e.database_name).indexOf(this.element.params["join_db_name"]);
+          if (indexDatabase !== -1) {
+            database = this.databases[indexDatabase];
+          }
           let index = this.params.map((e) => e.name).indexOf("join_key_column");
           this.params[index].options = response.data;
-          if (this.element.params["join_key_column"] === "") {
-            this.element.params["join_key_column"] = this.params[index].options[0].COLUMN_NAME;
-          }
+          this.element.params["join_key_column"] = database ? database.join_column_id : this.params[index].options[0].COLUMN_NAME;
           index = this.params.map((e) => e.name).indexOf("join_val_column");
           this.params[index].options = response.data;
-          if (this.element.params["join_val_column"] === "") {
-            this.element.params["join_val_column"] = this.params[index].options[0].COLUMN_NAME;
+          this.element.params["join_val_column"] = database ? database.join_column_val : this.params[index].options[0].COLUMN_NAME;
+          this.element.params["join_val_column_concat"] = "";
+          this.element.params["database_join_where_sql"] = "";
+          let publishedColumn = this.params[index].options.find((option) => option.COLUMN_NAME === "published");
+          if (typeof publishedColumn !== "undefined") {
+            this.element.params["database_join_where_sql"] = "WHERE {thistable}.published = 1 ";
           }
+          this.element.params["database_join_where_sql"] += "ORDER BY {thistable}." + this.element.params["join_val_column"];
           this.reloadOptionsCascade += 1;
         });
       }
