@@ -31,7 +31,7 @@
 					@click="this.currentPage = pageAvailable"
 					class="tw-flex tw-cursor-pointer"
 				>
-					<a>{{ pageAvailable }}</a>
+					<a class="!tw-rounded-coordinator">{{ pageAvailable }}</a>
 				</li>
 				<li class="tw-flex">
 					<a

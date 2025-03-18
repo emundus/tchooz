@@ -3,7 +3,7 @@
 		<button
 			v-if="button"
 			@click="onClickToggle"
-			class="tw-flex !tw-w-auto tw-items-center tw-gap-1"
+			class="tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
 			:class="buttonClass"
 			style="padding: 0.5rem"
 			:title="button"

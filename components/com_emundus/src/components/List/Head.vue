@@ -30,7 +30,7 @@ export default {
 			<a
 				v-if="addAction"
 				id="add-action-btn"
-				class="tw-btn-primary tw-w-auto tw-cursor-pointer"
+				class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator"
 				@click="onClickAction(addAction)"
 				>{{ translate(addAction.label) }}</a
 			>
