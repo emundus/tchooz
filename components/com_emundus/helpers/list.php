@@ -277,14 +277,20 @@ class EmundusHelperList
 		$formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids);
 
 		if (empty($profile_id)) {
-			$workflow_profiles = $m_profile->getWorkflowProfilesByCampaign($infos['campaign_id'], $step_types);
+			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+			$m_campaign = new EmundusModelCampaign();
+			$steps  = $m_campaign->getAllCampaignWorkflows($infos['campaign_id'], $step_types);
 
-			foreach ($workflow_profiles as $workflow_profile) {
-				if ($workflow_profile != $profile['profile_id']) {
-					$workflow_form_list = $h_menu->buildMenuQuery($workflow_profile, $formids);
+			usort($steps, function ($a, $b) {
+				return $a->ordering - $b->ordering;
+			});
 
-					if (!empty($workflow_form_list)) {
-						$formsList = array_merge($formsList, $workflow_form_list);
+			foreach ($steps as $step) {
+				if ($step->profile != $profile['profile_id']) {
+					$step_form_list = $h_menu->buildMenuQuery($step->profile, $formids);
+
+					if (!empty($step_form_list)) {
+						$formsList = array_merge($formsList, $step_form_list);
 
 						$ids = array();
 						foreach ($formsList as $form) {
@@ -298,12 +304,6 @@ class EmundusHelperList
 					}
 				}
 			}
-		}
-
-		if (!empty($formsList)) {
-			usort($formsList, function ($a, $b) {
-				return $a->lft - $b->lft;
-			});
 		}
 
 		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id) && in_array(2, $step_types)) {
