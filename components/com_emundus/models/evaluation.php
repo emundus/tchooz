@@ -13,6 +13,7 @@
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Joomla\CMS\Language\Text;
 
@@ -2699,7 +2700,7 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document = false, $user_id = null)
+	public function generateLetters($fnums, $templates, $canSee, $showMode = null, $mergeMode = null, $force_replace_document = false, $user_id = null)
 	{
 		$query = $this->db->getQuery(true);
 
@@ -3407,7 +3408,7 @@ class EmundusModelEvaluation extends JModelList
 		 * 0: No merge
 		 * 1: Merge letters into one PDF
 		 */
-		if ($showMode == 0)
+		if ($showMode === 0)
 		{
 			foreach ($applicant_id as $uid)
 			{
@@ -3416,7 +3417,7 @@ class EmundusModelEvaluation extends JModelList
 				$applicant_tmp_path  = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 				$applicant_tmp_files = glob($applicant_tmp_path . DS . '*');
 
-				if ($mergeMode == 0)
+				if ($mergeMode === 0)
 				{
 					$_zipName = $user_info[0]->name . '_' . $user_info[0]->id . '_' . date("Y-m-d") . '_' . '.zip';
 					if (file_exists($tmp_path . $_zipName))
@@ -3467,7 +3468,7 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 
-				if ($mergeMode == 1)
+				if ($mergeMode === 1)
 				{
 					$mergeDirName = $user_info[0]->name . '_' . $user_info[0]->id . '--merge';
 					$mergeDirPath = $tmp_path . $mergeDirName;
@@ -3577,7 +3578,7 @@ class EmundusModelEvaluation extends JModelList
 				$res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
 			}
 		}
-		elseif ($showMode == 1)
+		elseif ($showMode === 1)
 		{
 			$raw = [];
 			foreach ($res->files as $rf)
@@ -3594,7 +3595,7 @@ class EmundusModelEvaluation extends JModelList
 			$zip_All_Merge_Name = date("Y-m-d_H-i") . '--merge-total-by-documents';
 			$zip_All_Merge_Path = $tmp_path . $zip_All_Merge_Name;
 
-			if ($mergeMode == 0)
+			if ($mergeMode === 0)
 			{
 				if (!file_exists($zip_All_Path))
 				{
@@ -3625,7 +3626,7 @@ class EmundusModelEvaluation extends JModelList
 				if (!file_exists($dir_Name_Path))
 				{
 					mkdir($dir_Name_Path, 0755, true);
-					if ($mergeMode == 1)
+					if ($mergeMode === 1)
 					{
 						if (!file_exists($dir_Merge_Path))
 						{
@@ -3657,7 +3658,7 @@ class EmundusModelEvaluation extends JModelList
 					$this->ZipLetter($dir_Name_Path, $tmp_path . $_zipName, 'true');
 					$zip_dir = $tmp_path . $_zipName;
 
-					if ($mergeMode == 1)
+					if ($mergeMode === 1)
 					{
 						$pdf_files = array();
 						$fileList  = glob($dir_Name_Path . DS . '*');
@@ -3701,7 +3702,7 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 
-				if ($mergeMode == 1)
+				if ($mergeMode === 1)
 				{
 					$res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
 
@@ -3733,7 +3734,7 @@ class EmundusModelEvaluation extends JModelList
 				rmdir($dir_Name_Path);
 			}
 
-			if ($mergeMode == 1)
+			if ($mergeMode === 1)
 			{
 				if (!empty($zip_All_Merge_Path))
 				{
