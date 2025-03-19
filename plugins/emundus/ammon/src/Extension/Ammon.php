@@ -34,6 +34,8 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 	use DatabaseAwareTrait;
 	private DatabaseDriver $db;
 
+	private int $registration_file_status;
+
 	/**
 	 * Constructor.
 	 *
@@ -54,7 +56,6 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			//'onAfterSubmitFile' => 'process',
 			'onAfterStatusChange' => 'process',
 		];
 	}
@@ -63,40 +64,35 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 	{
 		$name = $event->getName();
 		$data = $event->getArguments();
-
-		$force_new_user_if_not_found = $data['force_new_user_if_not_found'] ?? false;
+		$this->registration_file_status = $this->params->get('status', 0);
+		$user = Factory::getApplication()->getIdentity();
 
 		if ($name === 'onAfterStatusChange') {
 			$fnum = $data['fnum'];
 
 			if (!empty($fnum)) {
-				$valid = $this->checkStatus($fnum) && $this->notAlreadyRegistered($fnum);
+				$session_id = $this->getSessionFromFnum($fnum);
+				$valid = $this->checkStatus($fnum) && $this->notAlreadyRegistered($fnum, $session_id);
 
 				if ($valid) {
-					$session_id = $this->getSessionFromFnum($fnum);
-					Log::add('Start registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api', Log::INFO, 'plugin.emundus.ammon');
+					$force_new_user_if_not_found = $data['force_new_user_if_not_found'] ?? false;
+					if (!empty($session_id)) {
+						Log::add('Start registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api', Log::INFO, 'plugin.emundus.ammon');
 
-					$message = '';
-					try {
-						$file_status = (int)$this->params->get('status', 0);
-						$repository = new AmmonRepository($fnum, $session_id, $file_status);
-						$registered = $repository->registerFileToSession($force_new_user_if_not_found);
+						try {
+							$saved_in_queue = $this->saveInQueue($fnum, $session_id, $force_new_user_if_not_found, $user->id);
 
-						if ($registered) {
-							$repository->saveAmmonRegistration($fnum);
-							Log::add('Registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api was successful', Log::INFO, 'plugin.emundus.ammon');
-						} else {
-							Log::add('Registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api failed', Log::ERROR, 'plugin.emundus.ammon');
+							if (!$saved_in_queue) {
+								Log::add('Something went wrong when trying to save fnum ' . $fnum . ' in ammon queue', Log::ERROR, 'plugin.emundus.ammon');
+							} else {
+								Log::add('Fnum ' . $fnum . ' saved in ammon queue', Log::INFO, 'plugin.emundus.ammon');
+							}
+						} catch (\Exception $e) {
+							Log::add('Something went wrong when trying to save fnum ' . $fnum . ' in ammon queue : ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 						}
-					} catch (\Exception $e) {
-						$registered = false;
-						$message = $e->getMessage();
-						Log::add('Something went wrong when trying to register fnum ' . $fnum .  ' in ammon api ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+					} else {
+						Log::add('No session found for fnum ' . $fnum, Log::WARNING, 'plugin.emundus.ammon');
 					}
-
-					$dispatcher = Factory::getApplication()->getDispatcher();
-					$onAfterAmmonRegistration = new GenericEvent('onAfterAmmonRegistration', ['fnum' => $fnum, 'session_id' => $session_id, 'status' => ($registered ? 'success' : 'error'), 'message' => $message]);
-					$dispatcher->dispatch('onAfterAmmonRegistration', $onAfterAmmonRegistration);
 				}
 			} else {
 				Log::add('No given fnum', Log::WARNING, 'plugin.emundus.ammon');
@@ -118,7 +114,7 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 			try {
 				$this->db->setQuery($query);
 				$session = $this->db->loadResult();
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				Log::add('Error when trying to get session from fnum ' . $fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		}
@@ -140,7 +136,7 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 				$this->db->setQuery($query);
 				$status = $this->db->loadResult();
 
-				if ($status == $this->params->get('status', 0)) {
+				if ($status == $this->registration_file_status) {
 					$valid = true;
 				}
 			} catch (Exception $e) {
@@ -151,28 +147,81 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 		return $valid;
 	}
 
-	private function notAlreadyRegistered($fnum): bool
+	private function notAlreadyRegistered($fnum, $session_id): bool
 	{
 		$notRegistered = true;
 
 		if (!empty($fnum)) {
 			$query = $this->db->getQuery(true);
-			$query->select($this->db->quoteName('registered_in_ammon'))
-				->from($this->db->quoteName('#__emundus_campaign_candidature'))
-				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
+			$query->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_ammon_queue'))
+				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum))
+				->andWhere($this->db->quoteName('session_id') . ' = ' . $this->db->quote($session_id));
 
 			try {
 				$this->db->setQuery($query);
-				$registered_in_ammon = $this->db->loadResult();
+				$queue_id = $this->db->loadResult();
 
-				if ($registered_in_ammon == 1) {
+				if (!empty($queue_id)) {
 					$notRegistered = false;
 				}
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				Log::add('Error when trying to get status from fnum ' . $fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		}
 
 		return $notRegistered;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 * @param   int     $session_id
+	 * @param   bool    $force_new_user_if_not_found
+	 *
+	 * @return bool
+	 */
+	private function saveInQueue(string $fnum, int $session_id, bool $force_new_user_if_not_found, int $user_id): bool
+	{
+		$saved = false;
+
+		if (!empty($fnum) && !empty($session_id)) {
+			$query = $this->db->getQuery(true);
+			$query->select('id')
+				->from('#__emundus_ammon_queue')
+				->where('fnum = ' . $this->db->quote($fnum))
+				->where('session_id = ' . $this->db->quote($session_id));
+
+			try {
+				$this->db->setQuery($query);
+				$id = $this->db->loadResult();
+
+				$force_new = $force_new_user_if_not_found ? 1 : 0;
+
+				if (empty($id)) {
+					$query = $this->db->getQuery(true);
+					$query->insert('#__emundus_ammon_queue')
+						->columns('fnum, session_id, force_new_user_if_not_found, file_status, status, created_by, created_date')
+						->values($this->db->quote($fnum) . ', ' . $this->db->quote($session_id) . ', ' . $this->db->quote($force_new) . ', ' . $this->db->quote($this->registration_file_status) . ', ' . $this->db->quote('pending') . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
+
+					$this->db->setQuery($query);
+					$saved = $this->db->execute();
+				} else {
+					$query->update('#__emundus_ammon_queue')
+						->set('force_new_user_if_not_found = ' . $this->db->quote($force_new))
+						->set('updated_date = ' . $this->db->quote(date('Y-m-d H:i:s')))
+						->where('id = ' . $this->db->quote($id));
+
+					$this->db->setQuery($query);
+					$saved = $this->db->execute();
+
+					Log::add('Fnum ' . $fnum . ' already in queue', Log::INFO, 'plugin.emundus.ammon');
+				}
+			} catch (\Exception $e) {
+				Log::add('Error when trying to save fnum ' . $fnum . ' in ammon queue ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+			}
+
+		}
+
+		return $saved;
 	}
 }

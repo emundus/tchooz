@@ -143,6 +143,10 @@ class ApiMapper
 				if (!empty($field->transformation)) {
 					$this->mapping[$field->attribute] = $this->transformValue($this->mapping[$field->attribute], $field->transformation->origin_column, $field->transformation->table, $field->transformation->targeted_column);
 				}
+
+				if (!isset($this->mapping[$field->attribute])) {
+					$this->mapping[$field->attribute] = '';
+				}
 			}
 		}
 

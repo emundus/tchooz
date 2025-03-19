@@ -1,15 +1,14 @@
 <?php
 
-namespace Joomla\Plugin\Emundus\Ammon\Repository;
+namespace Joomla\Plugin\Task\Ammon\Repository;
 
-use Google\Exception;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
-use Joomla\Plugin\Emundus\Ammon\Factory\AmmonFactory;
-use Joomla\Plugin\Emundus\Ammon\Synchronizer\AmmonSynchronizer;
+use Joomla\Plugin\Task\Ammon\Entities\CompanyEntity;
+use Joomla\Plugin\Task\Ammon\Entities\UserEntity;
+use Joomla\Plugin\Task\Ammon\Factory\AmmonFactory;
+use Joomla\Plugin\Task\Ammon\Synchronizer\AmmonSynchronizer;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
 
@@ -188,7 +187,7 @@ class AmmonRepository
 					} else {
 						Log::add('Error when trying to create company ' . $company->establishmentName . ' for fnum ' . $this->fnum, Log::ERROR, 'plugin.emundus.ammon');
 					}
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					Log::add('Error when trying to create company ' . $e->getMessage() .  ' for fnum ' . $this->fnum , Log::ERROR, 'plugin.emundus.ammon');
 				}
 			}
@@ -259,7 +258,7 @@ class AmmonRepository
 				}
 			}
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
@@ -286,7 +285,7 @@ class AmmonRepository
 				}
 			}
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			Log::add('Failed to get company manager user entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
@@ -331,8 +330,13 @@ class AmmonRepository
 	private function getOrCreateApplicant(bool $force_new_user_if_not_found = false): ?UserEntity
 	{
 		$applicant = $this->getApplicant($this->fnum, $force_new_user_if_not_found);
+
 		if (empty($applicant)) {
-			$address = $this->factory->createUserAddressEntity();
+			if (!$this->isFileCreatedFromBtoB($this->fnum)) {
+				$address = $this->factory->createUserAddressEntity();
+			} else {
+				$address = $this->factory->createCompanyAdressEntity();
+			}
 			$company = $this->getCompany($this->fnum);
 
 			$applicantEntity = null;
@@ -427,6 +431,33 @@ class AmmonRepository
 		return $user;
 	}
 
+	private function isFileCreatedFromBtoB(string $fnum): bool
+	{
+		$is_BtoB = false;
+
+		if (!empty($fnum)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('id')
+				->from('#__emundus_btob_inscription_1244_repeat')
+				->where('fnum = ' . $this->db->quote($fnum));
+
+			try {
+				$this->db->setQuery($query);
+				$result = $this->db->loadResult();
+
+				if (!empty($result)) {
+					$is_BtoB = true;
+					Log::add('File ' . $fnum . ' is created from BtoB', Log::INFO, 'plugin.emundus.ammon');
+				}
+			} catch (\Exception $e) {
+				Log::add('Failed to check if file is created from BtoB ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+			}
+		}
+
+		return $is_BtoB;
+	}
+
 	/**
 	 * @param   string  $fnum
 	 *
@@ -447,7 +478,7 @@ class AmmonRepository
 			try {
 				$db->setQuery($query);
 				$saved = $db->execute();
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				Log::add('Failed to update registration for fnum ' . $fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		}
