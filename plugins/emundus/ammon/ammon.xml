@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" group="console" method="upgrade">
-    <name>Ammon Api integration</name>
+    <name>plugin_emundus_ammon</name>
     <version>1.0.0</version>
     <creationDate>January 2025</creationDate>
     <author>eMundus</author>
-    <description>Plugin to integrate Ammon API on some events</description>
+    <description>PLG_EMUNDUS_AMMON_XML_DESCRIPTION</description>
     <namespace path="src">Joomla\Plugin\Emundus\Ammon</namespace>
     <files>
         <folder plugin="ammon">services</folder>

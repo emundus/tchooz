@@ -1,12 +1,12 @@
 <?php
 
-namespace Joomla\Plugin\Emundus\Ammon\Synchronizer;
+namespace Joomla\Plugin\Task\Ammon\Synchronizer;
 
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\RegistrationEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
+use Joomla\Plugin\Task\Ammon\Entities\CompanyEntity;
+use Joomla\Plugin\Task\Ammon\Entities\RegistrationEntity;
+use Joomla\Plugin\Task\Ammon\Entities\UserEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Event\GenericEvent;
 
@@ -18,13 +18,10 @@ class AmmonSynchronizer {
 	private \EmundusModelSync $sync_model;
 	private $api;
 
-	private DatabaseDriver $db;
-
 	public function __construct($api)
 	{
 		$this->sync_model = new \EmundusModelSync();
 		$this->api = $api;
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 	}
 

@@ -3056,6 +3056,35 @@ class EmundusModelSettings extends ListModel
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
 			$this->db->setQuery($query);
 			$updated = $this->db->execute();
+
+			if ($updated) {
+				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+				$columns = [
+					['name' => 'created_by', 'type' => 'INT',  'null' => 0],
+					['name' => 'created_date', 'type' => 'DATETIME', 'null' => 0],
+					['name' => 'updated_by', 'type' => 'INT', 'null' => 1],
+					['name' => 'updated_date', 'type' => 'DATETIME', 'null' => 1],
+					['name' => 'fnum', 'type' => 'VARCHAR', 'length' => 28, 'null' => 0],
+					['name' => 'session_id', 'type' => 'INT', 'null' => 0],
+					['name' => 'file_status', 'type' => 'INT', 'null' => 0, 'default' => 0],
+					['name' => 'force_new_user_if_not_found', 'type' => 'TINYINT', 'null' => 0, 'default' => 0],
+					['name' => 'attempts', 'type' => 'INT', 'null' => 0, 'default' => 0],
+					['name' => 'status', 'type' => 'VARCHAR', 'length' => 16, 'null' => 0, 'default' => 'pending']
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_ammon_queue', $columns);
+
+				// Enable scheduler task
+				EmundusHelperUpdate::installExtension('plg_task_ammon', 'ammon', '', 'plugin', 1, 'task');
+				EmundusHelperUpdate::enableEmundusPlugins('ammon', 'task');
+
+				// Enable scheduler task
+				$query->clear()
+					->update($this->db->quoteName('#__scheduler_tasks'))
+					->set($this->db->quoteName('state') . ' = 1')
+					->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_ammon'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 		}
 		catch (Exception $e)
 		{

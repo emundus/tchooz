@@ -1,13 +1,13 @@
 <?php
 
-namespace Joomla\Plugin\Emundus\Ammon\Factory;
+namespace Joomla\Plugin\Task\Ammon\Factory;
 
 use Joomla\CMS\Log\Log;
-use Joomla\Plugin\Emundus\Ammon\Entities\AdressEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\EmploymentEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\RegistrationEntity;
+use Joomla\Plugin\Task\Ammon\Entities\AdressEntity;
+use Joomla\Plugin\Task\Ammon\Entities\CompanyEntity;
+use Joomla\Plugin\Task\Ammon\Entities\EmploymentEntity;
+use Joomla\Plugin\Task\Ammon\Entities\UserEntity;
+use Joomla\Plugin\Task\Ammon\Entities\RegistrationEntity;
 use Joomla\CMS\Factory;
 
 require_once(JPATH_SITE . '/components/com_emundus/mapper/ApiMapper.php');
@@ -90,11 +90,11 @@ class AmmonFactory
 				974,
 				'PR',
 				'Principale',
-				$ammon_company->cdesti,
-				$ammon_company->cville,
-				$ammon_company->cpays,
-				$ammon_company->ccp,
-				$ammon_company->cadR1
+				$ammon_company->cdesti ?? '',
+				$ammon_company->cville ?? '',
+				$ammon_company->cpays ?? '',
+				$ammon_company->ccp ?? '',
+				$ammon_company->cadR1 ?? ''
 			);
 
 			$company = new CompanyEntity(
@@ -329,7 +329,7 @@ class AmmonFactory
 				$values['BirthCountryCode'],
 				$values['BirthCity'],
 				'PAR,INT,PARTM',
-				$values['user_id'],
+				$ammon_user->centext,
 				[],
 				[]
 			);

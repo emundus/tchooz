@@ -1,5 +1,5 @@
 <?php
-namespace Joomla\Plugin\Emundus\Ammon\Entities;
+namespace Joomla\Plugin\Task\Ammon\Entities;
 
 class UserEntity
 {
