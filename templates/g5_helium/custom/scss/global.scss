@@ -3718,6 +3718,16 @@ ul.unstyled.em-linkForgot li a {
   }
 }
 
+/* Remove table lines on emails templates */
+.email-container table > tbody > tr > td {
+  border: none;
+  background: var(--neutral-0);
+}
+
+.email-container table > tbody > tr > td > table {
+  border: none;
+}
+
 /* TROMBINOSCOPE */
 
 .contentpane.modal form#job-form[name="adminForm"] .em-container-trombi {
@@ -5190,6 +5200,26 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   padding: 0 !important;
   -moz-appearance: radio !important;
   -webkit-border-radius: 50px !important;
+}
+
+.platform-content .eval-form-split-view {
+  margin-inline: 20px;
+
+  form .fabrikActions.form-actions {
+    position: fixed;
+    bottom: 10px;
+    right: 0;
+    background: var(--neutral-50);
+    width: 100%;
+    padding: 12px;
+    border-top: 1px solid var(--neutral-300);
+    box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
+    z-index: 4;
+
+    & > div > .em-submit-form-button {
+      margin: auto;
+    }
+  }
 }
 
 /* DIVERS */

@@ -107,6 +107,8 @@ export default {
 		},
 		iframeLoaded(event) {
 			this.loading = false;
+			let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
+			iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
 		},
 	},
 	computed: {
@@ -124,5 +126,6 @@ export default {
 	width: 100%;
 	min-height: 80%;
 	border: unset;
+	height: 100%;
 }
 </style>
