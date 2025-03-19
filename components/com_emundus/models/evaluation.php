@@ -204,7 +204,7 @@ class EmundusModelEvaluation extends JModelList
 					$this->db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
 					$publish_query = ($this->db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$query = '(
                                     select GROUP_CONCAT(' . $column . ' SEPARATOR ", ")
@@ -287,13 +287,19 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox')
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
-							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
+
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_($label) . '")';
 						}
 						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name, 'GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ' SEPARATOR ", ")', $select);
 
@@ -309,8 +315,14 @@ class EmundusModelEvaluation extends JModelList
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							// If the label is PLEASE_SELECT, we don't want to display it
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
 							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+								Text::_($label) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
@@ -323,7 +335,12 @@ class EmundusModelEvaluation extends JModelList
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
-							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_($label) . '")';
 						}
 						$select                    = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name, 'GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ' SEPARATOR ", ")', $select);
 						$this->_elements_default[] = '(
@@ -340,7 +357,12 @@ class EmundusModelEvaluation extends JModelList
 						$select              = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $this->db->quote($element_replacement) . ', CASE ';
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
-							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->db->quote($value) . ' THEN ' . $this->db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])));
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
+							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->db->quote($value) . ' THEN ' . $this->db->quote(Text::_($label));
 						}
 						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						$select .= ' END AS ' . $this->db->quote($element_replacement);
@@ -350,7 +372,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'yesno')
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$this->_elements_default[] = '(
                                                         SELECT REPLACE(REPLACE(GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . '  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
@@ -365,7 +387,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 				else
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . '  SEPARATOR ", ")
