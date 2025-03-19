@@ -25,5 +25,5 @@
 ## Justification for not fixing
 (If the issue will not be fixed, provide a justification here.)
 
-/label Stack→DevSecOps CVSS→critical CVSS→high CVSS→medium CVSS→low
+/label Type→DevOps
 /promote_to_incident
