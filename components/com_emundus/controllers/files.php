@@ -1765,16 +1765,16 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
 							if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
-								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 								$nbcol++;
 							}
 							elseif (count($opts) == 1) {
 								if (in_array("form-title", $opts)) {
-									$line .= Text::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 								elseif (in_array("form-group", $opts)) {
-									$line .= Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 							}
@@ -1804,7 +1804,7 @@ class EmundusControllerFiles extends BaseController
 								$iban_elements[$elt_name] = $params->encrypt_datas;
 							}
 
-							$line .= preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
 					}
