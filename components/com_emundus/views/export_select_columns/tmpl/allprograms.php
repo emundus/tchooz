@@ -162,7 +162,12 @@ Text::script('COM_EMUNDUS_TAG_APPLICANT_APPLICATION_STATUS');
             if (httpRequest.status == 200 && httpRequest.readyState == 4) {
                 document.getElementById('result').innerHTML = "";
                 document.getElementById('result').innerHTML = httpRequest.responseText;
-                document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= Text::_('COM_EMUNDUS_EMTAGS_EXPORT_EVAL_TITLE');?>";
+                //document.querySelector('#result .em-program-title h1').innerHTML = document.querySelector('#result .em-program-title h1').innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_EVAL_TITLE');?>";
+                const programTitle = document.querySelector('#result .em-program-title h1');
+
+                if (programTitle) {
+                    programTitle.innerHTML = programTitle.innerHTML + " - <?= JText::_('COM_EMUNDUS_EMTAGS_EXPORT_ADMISSION_TITLE');?>";
+                }
             }
         };
         httpRequest.open("GET", '<?= JURI::base(); ?>index.php?option=com_emundus&view=export_select_columns&format=raw&code=' + course + '&layout=programme&form=evaluation_steps&all=1', true);

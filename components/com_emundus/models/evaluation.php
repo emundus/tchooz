@@ -13,6 +13,7 @@
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Joomla\CMS\Language\Text;
 
@@ -204,7 +205,7 @@ class EmundusModelEvaluation extends JModelList
 					$this->db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
 					$publish_query = ($this->db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$query = '(
                                     select GROUP_CONCAT(' . $column . ' SEPARATOR ", ")
@@ -287,13 +288,19 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'dropdown' || $def_elmt->element_plugin == 'checkbox')
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
-							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
+
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_($label) . '")';
 						}
 						$select = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name, 'GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ' SEPARATOR ", ")', $select);
 
@@ -309,8 +316,14 @@ class EmundusModelEvaluation extends JModelList
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							// If the label is PLEASE_SELECT, we don't want to display it
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
 							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+								Text::_($label) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}
@@ -323,7 +336,12 @@ class EmundusModelEvaluation extends JModelList
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
-							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_($label) . '")';
 						}
 						$select                    = str_replace($def_elmt->tab_name . '.' . $def_elmt->element_name, 'GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . ' SEPARATOR ", ")', $select);
 						$this->_elements_default[] = '(
@@ -340,7 +358,12 @@ class EmundusModelEvaluation extends JModelList
 						$select              = $def_elmt->tab_name . '.' . $def_elmt->element_name . ' AS ' . $this->db->quote($element_replacement) . ', CASE ';
 						foreach ($element_attribs->sub_options->sub_values as $key => $value)
 						{
-							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->db->quote($value) . ' THEN ' . $this->db->quote(JText::_(addslashes($element_attribs->sub_options->sub_labels[$key])));
+							$label = addslashes($element_attribs->sub_options->sub_labels[$key]);
+							if ($label === 'PLEASE_SELECT')
+							{
+								$label = '';
+							}
+							$select .= ' WHEN ' . $def_elmt->tab_name . '.' . $def_elmt->element_name . ' = ' . $this->db->quote($value) . ' THEN ' . $this->db->quote(Text::_($label));
 						}
 						$select .= ' ELSE ' . $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						$select .= ' END AS ' . $this->db->quote($element_replacement);
@@ -350,7 +373,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 				elseif ($def_elmt->element_plugin == 'yesno')
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$this->_elements_default[] = '(
                                                         SELECT REPLACE(REPLACE(GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . '  SEPARATOR ", "), "0", "' . JText::_('JNO') . '"), "1", "' . JText::_('JYES') . '")
@@ -365,7 +388,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 				else
 				{
-					if (@$group_params->repeat_group_button == 1)
+					if ($group_params->repeat_group_button == 1)
 					{
 						$this->_elements_default[] = '(
                                                         SELECT  GROUP_CONCAT(' . $def_elmt->table_join . '.' . $def_elmt->element_name . '  SEPARATOR ", ")
@@ -2393,6 +2416,12 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
+	/**
+	 * @deprecated
+	 * @param $id
+	 *
+	 * @return bool
+	 */
 	public function delevaluation($id)
 	{
 		$deleted = false;
@@ -2410,6 +2439,50 @@ class EmundusModelEvaluation extends JModelList
 		catch (Exception $e)
 		{
 			Log::add('Error in model/evaluation at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
+		}
+
+		return $deleted;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 * @param   object  $step_data
+	 * @param   int     $row_id
+	 *
+	 * @return bool
+	 */
+	public function deleteEvaluation(string $fnum, object $step_data, int $row_id, int $user_id) : bool
+	{
+		$deleted = false;
+
+		if (!empty($fnum) && !empty($step_data->id) && !empty($row_id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('evaluator')
+				->from($this->db->quoteName($step_data->table))
+				->where($this->db->quoteName('id') . ' = ' . $row_id);
+			$this->db->setQuery($query);
+			$evaluator = $this->db->loadResult();
+
+			$query->clear()
+				->delete($this->db->quoteName($step_data->table))
+				->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+				->andWhere($this->db->quoteName('step_id') . ' = ' . $step_data->id)
+				->andWhere($this->db->quoteName('id') . ' = ' . $row_id);
+
+			try {
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+
+				if ($deleted) {
+					$m_files = new EmundusModelFiles();
+					$fnum_infos = $m_files->getFnumInfos($fnum);
+
+					EmundusModelLogs::log($user_id, $fnum_infos['applicant_id'], $fnum, $step_data->action_id, 'd', 'COM_EMUNDUS_EVALUATIONS_DELETE', json_encode(['row_id' => $row_id, 'evaluator' => $evaluator]));
+				}
+			} catch (Exception $e) {
+				Log::add('Error in model/evaluation at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
+			}
 		}
 
 		return $deleted;
@@ -2699,10 +2772,15 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
-	public function generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document = false)
+	public function generateLetters($fnums, $templates, $canSee, $showMode = null, $mergeMode = null, $force_replace_document = false, $user_id = null)
 	{
 		$query = $this->db->getQuery(true);
-		$user  = $this->app->getIdentity();
+
+        if (empty($user_id)) {
+            $user = $this->app->getIdentity();
+        } else {
+            $user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+        }
 
 		$eMConfig             = ComponentHelper::getParams('com_emundus');
 		$replace_document     = $eMConfig->get('export_replace_doc', 0);
@@ -3402,7 +3480,7 @@ class EmundusModelEvaluation extends JModelList
 		 * 0: No merge
 		 * 1: Merge letters into one PDF
 		 */
-		if ($showMode == 0)
+		if ($showMode === 0)
 		{
 			foreach ($applicant_id as $uid)
 			{
@@ -3411,7 +3489,7 @@ class EmundusModelEvaluation extends JModelList
 				$applicant_tmp_path  = EMUNDUS_PATH_ABS . 'tmp' . DS . $user_info[0]->name . '_' . $user_info[0]->id;
 				$applicant_tmp_files = glob($applicant_tmp_path . DS . '*');
 
-				if ($mergeMode == 0)
+				if ($mergeMode === 0)
 				{
 					$_zipName = $user_info[0]->name . '_' . $user_info[0]->id . '_' . date("Y-m-d") . '_' . '.zip';
 					if (file_exists($tmp_path . $_zipName))
@@ -3462,7 +3540,7 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 
-				if ($mergeMode == 1)
+				if ($mergeMode === 1)
 				{
 					$mergeDirName = $user_info[0]->name . '_' . $user_info[0]->id . '--merge';
 					$mergeDirPath = $tmp_path . $mergeDirName;
@@ -3572,7 +3650,7 @@ class EmundusModelEvaluation extends JModelList
 				$res->zip_all_data_by_candidat = DS . 'tmp/' . $mergeZipAllName . '.zip';
 			}
 		}
-		elseif ($showMode == 1)
+		elseif ($showMode === 1)
 		{
 			$raw = [];
 			foreach ($res->files as $rf)
@@ -3589,7 +3667,7 @@ class EmundusModelEvaluation extends JModelList
 			$zip_All_Merge_Name = date("Y-m-d_H-i") . '--merge-total-by-documents';
 			$zip_All_Merge_Path = $tmp_path . $zip_All_Merge_Name;
 
-			if ($mergeMode == 0)
+			if ($mergeMode === 0)
 			{
 				if (!file_exists($zip_All_Path))
 				{
@@ -3620,7 +3698,7 @@ class EmundusModelEvaluation extends JModelList
 				if (!file_exists($dir_Name_Path))
 				{
 					mkdir($dir_Name_Path, 0755, true);
-					if ($mergeMode == 1)
+					if ($mergeMode === 1)
 					{
 						if (!file_exists($dir_Merge_Path))
 						{
@@ -3652,7 +3730,7 @@ class EmundusModelEvaluation extends JModelList
 					$this->ZipLetter($dir_Name_Path, $tmp_path . $_zipName, 'true');
 					$zip_dir = $tmp_path . $_zipName;
 
-					if ($mergeMode == 1)
+					if ($mergeMode === 1)
 					{
 						$pdf_files = array();
 						$fileList  = glob($dir_Name_Path . DS . '*');
@@ -3696,7 +3774,7 @@ class EmundusModelEvaluation extends JModelList
 					}
 				}
 
-				if ($mergeMode == 1)
+				if ($mergeMode === 1)
 				{
 					$res->letter_dir[] = array('letter_name' => $attachInfos['value'], 'zip_merge_dir' => DS . 'tmp/' . $_mergeZipName);
 
@@ -3728,7 +3806,7 @@ class EmundusModelEvaluation extends JModelList
 				rmdir($dir_Name_Path);
 			}
 
-			if ($mergeMode == 1)
+			if ($mergeMode === 1)
 			{
 				if (!empty($zip_All_Merge_Path))
 				{

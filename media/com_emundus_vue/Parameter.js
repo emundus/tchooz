@@ -446,7 +446,6 @@ const _sfc_main = {
         };
         this.multiOptions.push(option);
         this.value.push(option);
-        this.parameter.value.push(option.code);
       }
     },
     checkAddOption(event) {

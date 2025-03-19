@@ -45,7 +45,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array|stdClass
 	 */
-	function getAllForms(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0): array
+	function getAllForms(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0): array
 	{
 		$data = ['datas' => [], 'count' => 0];
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
@@ -83,39 +83,22 @@ class EmundusModelForm extends JModelList
 		$fullRecherche = empty($recherche) ? 1 : $this->db->quoteName('sp.label') . ' LIKE ' . $this->db->quote('%' . $recherche . '%');
 
 		$m_user           = new EmundusModelUsers();
-		$allowed_programs = $m_user->getUserGroupsProgramme(JFactory::getUser()->id);
-
-		// GET ALL PROFILES THAT ARE NOT LINKED TO A CAMPAIGN
-		$other_profile_query          = $this->db->getQuery(true);
-		$other_profile_full_recherche = empty($recherche) ? 1 : $this->db->quoteName('esp.label') . ' LIKE ' . $this->db->quote('%' . $recherche . '%');
-
-		$other_profile_query->select(['esp.*', 'esp.label AS form_label'])
-			->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.profile_id') . ' = ' . $this->db->quoteName('esp.id'))
-			->where($this->db->quoteName('esc.profile_id') . ' IS NULL')
-			->andWhere($this->db->quoteName('esp.published') . ' = 1')
-			->andWhere($other_profile_full_recherche)
-			->andWhere($this->db->quoteName('esp.menutype') . ' IS NOT NULL');
-
-		if ($filter == 'Unpublish') {
-			$other_profile_query->andWhere($this->db->quoteName('esp.status') . ' = 0');
-		}
-		else {
-			$other_profile_query->andWhere($this->db->quoteName('esp.status') . ' = 1');
-		}
-
+		$allowed_profiles = $this->getAllFormsPublished($user_id);
+		$allowed_profile_ids = array_map(function ($profile) {
+			return $profile->id;
+		}, $allowed_profiles);
 
 		// Now we need to put the query together and get the profiles
-		$query->select(['sp.*', 'sp.label AS form_label'])
+		$query->clear()
+			->select(['sp.*', 'sp.label AS form_label'])
 			->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.profile_id') . ' = ' . $this->db->quoteName('sp.id'))
 			->where($filterDate)
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
-			->andWhere($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($allowed_programs)) . ')')
-			->group($this->db->quoteName('id'))
-			->order('id ' . $sort)
-			->union($other_profile_query);
+			->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')')
+			->group($this->db->quoteName('sp.id'))
+			->order('id ' . $sort);
 
 		try {
 			$this->db->setQuery($query);
@@ -215,31 +198,153 @@ class EmundusModelForm extends JModelList
 		return $data;
 	}
 
-	function getAllFormsPublished()
+	/**
+	 * @param   int     $user_id
+	 * @param   string  $sort
+	 * @param   int     $sort_order
+	 *
+	 * @return array
+	 */
+	function getAllFormsPublished(int $user_id = 0, string $sort = 'form_label', int $sort_order = SORT_ASC): array
 	{
+		$profiles = [];
+
+		if (empty($user_id))
+		{
+			$user_id = $this->app->getIdentity()->id;
+		}
 
 		$query = $this->db->getQuery(true);
 
-		$filterId = $this->db->quoteName('sp.published') . ' = 1';
-
-		$query->select([
-			'sp.*',
-			'sp.label AS form_label'
-		])
-			->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
-			->where($this->db->quoteName('sp.status') . ' = 1')
-			->andWhere($filterId);
+		if (!class_exists('EmundusModelUsers'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		}
+		$m_user           = new EmundusModelUsers();
+		$allowed_programs = $m_user->getUserGroupsProgramme($user_id);
 
 		try {
-			$this->db->setQuery($query);
+			$profiles_not_associated = $this->getUnassociatedProfiles();
+			$profiles_associated = $this->getAssociatedProfiles($allowed_programs);
 
-			return $this->db->loadObjectList();
+			$profiles = array_merge($profiles_not_associated, $profiles_associated);
+
+			// Sort profiles by sort argument
+			if (!empty($profiles)) {
+				$sort = array_column($profiles, $sort);
+				array_multisort($sort, $sort_order, $profiles);
+			}
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/form | Cannot getting the published forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
-			return new stdClass();
+			$profiles = [];
 		}
+
+		return $profiles;
+	}
+
+	/**
+	 * Profiles that are not associated to a campaign neither to a workflow step
+	 *
+	 * @return array
+	 */
+	private function getUnassociatedProfiles(): array
+	{
+		$profiles = [];
+
+		try {
+			$query = $this->db->createQuery();
+
+			$query->select('sp.*, sp.label AS form_label')
+				->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.profile_id') . ' = ' . $this->db->quoteName('sp.id'))
+				->where($this->db->quoteName('esc.profile_id') . ' IS NULL')
+				->andWhere($this->db->quoteName('sp.status') . ' = 1')
+				->andWhere($this->db->quoteName('sp.published') . ' = 1')
+				->group($this->db->quoteName('sp.id'));
+
+			$potentially_non_associated_profiles = $this->db->setQuery($query)->loadObjectList();
+
+			if (!empty($potentially_non_associated_profiles)) {
+				$potentially_non_associated_profile_ids = array_map(function ($profile) {
+					return $profile->id;
+				}, $potentially_non_associated_profiles);
+
+				$query->clear()
+					->select('DISTINCT jesws.profile_id')
+					->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'jesws'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'jesw') . ' ON ' . $this->db->quoteName('jesw.id') . ' = ' . $this->db->quoteName('jesws.workflow_id'))
+					->where($this->db->quoteName('jesws.profile_id') . ' IN (' . implode(',', $potentially_non_associated_profile_ids) . ')')
+					->andWhere($this->db->quoteName('jesw.published') . ' = 1');
+
+				$associated_profile_ids = $this->db->setQuery($query)->loadColumn();
+
+				$profiles = array_filter($potentially_non_associated_profiles, function ($profile) use ($associated_profile_ids) {
+					return !in_array($profile->id, $associated_profile_ids);
+				});
+			}
+		} catch (Exception $e) {
+			Log::add('Cannot get the unassociated profiles : ' . $e->getMessage(), Log::ERROR, 'com_emundus.form');
+		}
+
+
+		return $profiles;
+	}
+
+	/**
+	 * @param   array  $program_codes
+	 *
+	 * @return array
+	 */
+	private function getAssociatedProfiles(array $program_codes = []): array
+	{
+		$profiles = [];
+
+		if (!empty($program_codes)) {
+			try {
+				$query = $this->db->createQuery();
+				$query->select(['sp.*', 'sp.label AS form_label'])
+					->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.profile_id') . ' = ' . $this->db->quoteName('sp.id'))
+					->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($program_codes)) . ')')
+					->andWhere($this->db->quoteName('sp.status') . ' = 1')
+					->andWhere($this->db->quoteName('sp.published') . ' = 1')
+					->group($this->db->quoteName('sp.id'));
+				$this->db->setQuery($query);
+				$profiles_associated_through_campaign = $this->db->loadObjectList();
+
+				$profiles_associated_through_workflow = [];
+
+				$query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__emundus_setup_programmes'))
+					->where($this->db->quoteName('code') . ' IN (' . implode(',', $this->db->quote($program_codes)) . ')');
+				$program_ids = $this->db->setQuery($query)->loadColumn();
+
+				if (!class_exists('EmundusModelWorkflow')) {
+					require_once JPATH_ROOT . '/components/com_emundus/models/workflow.php';
+				}
+				$m_workflow = new EmundusModelWorkflow();
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $program_ids);
+				$workflow_ids = array_map(function ($workflow) {
+					return $workflow->id;
+				}, $workflows);
+
+				$query->clear()
+					->select(['sp.*', 'sp.label AS form_label'])
+					->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps') .  ' AS jesws ON jesws.profile_id = sp.id')
+					->where($this->db->quoteName('jesws.workflow_id') . ' IN (' . implode(',', $workflow_ids) . ')');
+				$profiles_associated_through_workflow = $this->db->setQuery($query)->loadObjectList();
+
+				$profiles = array_merge($profiles_associated_through_campaign, $profiles_associated_through_workflow);
+			} catch (Exception $e) {
+				Log::add('Cannot get associated profiles from program codes : ' . $e->getMessage(), Log::ERROR, 'com_emundus.form');
+			}
+		}
+
+		return $profiles;
 	}
 
 	public function deleteForm($data)
@@ -665,8 +770,10 @@ class EmundusModelForm extends JModelList
 
 					if (!empty($oldprofile)) {
 						// Create a new profile
+						$new_profile_label = 'Copy - ' . $oldprofile->label;
+
 						$insert = [
-							'label' => $oldprofile->label . ' - Copy',
+							'label' => $new_profile_label,
 							'published' => 1,
 							'menutype' => $oldprofile->menutype,
 							'acl_aro_groups' => $oldprofile->acl_aro_groups,
@@ -678,7 +785,11 @@ class EmundusModelForm extends JModelList
 
 						if (!empty($newprofile)) {
 							$newmenutype = 'menu-profile' . $newprofile;
-							$newmenutype = $this->createMenuType($newmenutype, $oldprofile->label . ' - Copy');
+							$new_title = 'Copy - ' . $oldprofile->label;
+							if (strlen($new_title) > 48) {
+								$new_title = substr($new_title, 0, 45) . '...';
+							}
+							$newmenutype = $this->createMenuType($newmenutype, $new_title);
 							if (empty($newmenutype)) {
 								Log::add('Failed to create new menu from profile ' . $newprofile, Log::WARNING, 'com_emundus.error');
 
@@ -743,7 +854,7 @@ class EmundusModelForm extends JModelList
 										$insert[$key] = $newmenutype;
 									}
 									elseif ($key == 'alias') {
-										$insert[$key] = str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($oldprofile->label . '-Copy')) . '-' . $newprofile;
+										$insert[$key] = str_replace($formbuilder->getSpecialCharacters(), '-', strtolower($new_title)) . '-' . $newprofile;
 									}
 								}
 								$insert = (object)$insert;

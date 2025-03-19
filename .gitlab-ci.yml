@@ -37,15 +37,15 @@ check-tchooz-version-job:
   script:
     - .docker/scripts/file-search-in-gitlab-merge-request.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID" "administrator/components/com_emundus/emundus.xml"
 
-#check-commit-prefixes-job:
-#  stage: prepare
-#  rules:
-#    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
-#      when: always
-#    - when: never
-#  image: enix/ci-toolbox:1.23
-#  script:
-#    - .docker/scripts/commit-prefix-compliance-check.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID"
+check-commit-prefixes-job:
+  stage: prepare
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+      when: always
+    - when: never
+  image: enix/ci-toolbox:1.23
+  script:
+    - .docker/scripts/commit-prefix-compliance-check.sh "$CI_SERVER_URL" "$GITLAB_TOKEN" "$CI_PROJECT_ID" "$CI_MERGE_REQUEST_IID"
 
 php_security_checker:
   variables:
@@ -96,7 +96,6 @@ build-db-to-test-job:
 phpunit-job:
   stage: test
   image: emundus/tchooz-test-app:latest
-  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
     - name: emundus/tchooz-test-db:latest
       alias: database
@@ -108,7 +107,7 @@ phpunit-job:
     - cat configuration.php
     - apache2-foreground &
   script:
-    - tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --coverage-text --colors=never
+    - tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --no-coverage
   only:
     - merge_request
 

@@ -19,6 +19,18 @@ $m_workflow = new EmundusModelWorkflow();
                 <h3 class="panel-title tw-flex tw-flex-row tw-items-center tw-justify-start">
                     <span class="material-symbols-outlined em-color-white tw-mr-2">edit_note</span>
                     <span> <?= $this->step->label ?></span>
+                    <?php
+                        if (!empty($this->evaluation_row_id) && EmundusHelperAccess::asAccessAction($this->step->action_id, 'd', $this->user->id, $this->fnum))
+                        {
+                            ?>
+                            <span id="delete_evaluation"
+                                  data-fnum="<?= $this->fnum ?>"
+                                  data-step_id="<?= $this->step->id ?>"
+                                  data-row_id="<?= $this->evaluation_row_id ?>"
+                                  class="material-symbols-outlined tw-text-white tw-mr-2 tw-cursor-pointer">delete</span>
+                            <?php
+                        }
+                    ?>
                 </h3>
 	            <?php
 	            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->user->id, $this->fnum)) {
@@ -38,7 +50,7 @@ $m_workflow = new EmundusModelWorkflow();
             </div>
         </div>
 
-        <div class="tw-p-4">
+        <div class="tw-px-4">
 			<?php if (!EmundusHelperAccess::isDataAnonymized($this->user->id)) : ?>
                 <div class="tw-flex tw-flex-row tw-items-center">
                     <div class="tw-flex tw-flex-row em-small-flex-column em-small-align-items-start">
@@ -63,6 +75,23 @@ $m_workflow = new EmundusModelWorkflow();
                     src="evaluation-step-form?view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->table ?>___ccid=<?= $this->ccid ?>&<?= $this->step->table ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
         </div>
 		<?php
+
+		/**
+         * TODO: if really needed, display the list of other evaluations here :
+		 * if (EmundusHelperAccess::asAccessAction($this->step->action_id, 'r', $this->user->id, $this->fnum) && $this->step->multiple == 1) {
+            $step_evaluations = $m_workflow->getStepEvaluationsForFile($this->step->id, $this->ccid);
+            ?>
+
+            <div class="tw-px-4">
+            </div>
+
+            <?php
+
+            foreach($step_evaluations as $evaluation) {
+
+            }
+        }*/
+
 	}
     else if (!$this->access['can_see']) {
         ?>
@@ -81,9 +110,8 @@ $m_workflow = new EmundusModelWorkflow();
 <script>
     document.getElementById('evaluation-step-iframe').onload = function() {
         let iframeElement = document.getElementById('evaluation-step-iframe');
-
-        // set the height of the iframe to the height of the content
         iframeElement.style.height = iframeElement.contentWindow.document.body.scrollHeight + 'px';
+        iframeElement.contentWindow.document.body.style.background = 'white';
     }
 
     document.getElementById('download-evaluation-step-pdf').addEventListener('click', function (e) {

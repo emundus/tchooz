@@ -9,8 +9,11 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+
+Factory::getApplication()->redirect('index.php');
 ?>
 <div class="profile<?php echo $this->pageclass_sfx; ?>">
 	<?php if ($this->params->get('show_page_heading')) : ?>

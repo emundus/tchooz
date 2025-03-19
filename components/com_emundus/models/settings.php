@@ -1928,18 +1928,17 @@ class EmundusModelSettings extends ListModel
 	{
 		$params = ['emundus' => [], 'joomla' => []];
 
+		$settings_general            = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/json/site-settings.json');
+		$settings_applicants         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/json/file-settings.json');
+		$settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/json/custom.json');
+		$settings_mail_base          = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/json/global.json');
+		$settings_mail_value         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/json/values.json');
 
-		$settings_general            = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/site-settings.js');
-		$settings_applicants         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/sections/file-settings.js');
-		$settings_mail_server_custom = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/custom.js');
-		$settings_mail_base          = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/global.js');
-		$settings_mail_value         = file_get_contents(JPATH_ROOT . '/components/com_emundus/src/assets/data/settings/emails/values.js');
-
-		$settings_applicants         = json_decode(str_replace('export default', '', $settings_applicants), true);
-		$settings_general            = json_decode(str_replace('export default', '', $settings_general), true);
-		$settings_mail_base          = json_decode(str_replace('export default', '', $settings_mail_base), true);
-		$settings_mail_server_custom = json_decode(str_replace('export default', '', $settings_mail_server_custom), true);
-		$settings_mail_value         = json_decode(str_replace('export default', '', $settings_mail_value), true);
+		$settings_applicants         = json_decode($settings_applicants, true);
+		$settings_general            = json_decode($settings_general, true);
+		$settings_mail_base          = json_decode($settings_mail_base, true);
+		$settings_mail_server_custom = json_decode($settings_mail_server_custom, true);
+		$settings_mail_value         = json_decode($settings_mail_value, true);
 
 		$emundus_parameters = ComponentHelper::getParams('com_emundus');
 
@@ -2017,6 +2016,8 @@ class EmundusModelSettings extends ListModel
 				$params['joomla'][$setting_mail_value['param']] = $this->app->getConfig()->get($setting_mail_value['param']);
 			}
 		}
+
+		$params['emundus']['attachment_storage'] = $emundus_parameters->get('attachment_storage');
 
 		return $params;
 	}
@@ -3057,6 +3058,35 @@ class EmundusModelSettings extends ListModel
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
 			$this->db->setQuery($query);
 			$updated = $this->db->execute();
+
+			if ($updated) {
+				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+				$columns = [
+					['name' => 'created_by', 'type' => 'INT',  'null' => 0],
+					['name' => 'created_date', 'type' => 'DATETIME', 'null' => 0],
+					['name' => 'updated_by', 'type' => 'INT', 'null' => 1],
+					['name' => 'updated_date', 'type' => 'DATETIME', 'null' => 1],
+					['name' => 'fnum', 'type' => 'VARCHAR', 'length' => 28, 'null' => 0],
+					['name' => 'session_id', 'type' => 'INT', 'null' => 0],
+					['name' => 'file_status', 'type' => 'INT', 'null' => 0, 'default' => 0],
+					['name' => 'force_new_user_if_not_found', 'type' => 'TINYINT', 'null' => 0, 'default' => 0],
+					['name' => 'attempts', 'type' => 'INT', 'null' => 0, 'default' => 0],
+					['name' => 'status', 'type' => 'VARCHAR', 'length' => 16, 'null' => 0, 'default' => 'pending']
+				];
+				EmundusHelperUpdate::createTable('jos_emundus_ammon_queue', $columns);
+
+				// Enable scheduler task
+				EmundusHelperUpdate::installExtension('plg_task_ammon', 'ammon', '', 'plugin', 1, 'task');
+				EmundusHelperUpdate::enableEmundusPlugins('ammon', 'task');
+
+				// Enable scheduler task
+				$query->clear()
+					->update($this->db->quoteName('#__scheduler_tasks'))
+					->set($this->db->quoteName('state') . ' = 1')
+					->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_ammon'));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 		}
 		catch (Exception $e)
 		{

@@ -26,7 +26,7 @@
 			></div>
 		</div>
 
-		<div>
+		<div v-if="widgets.length > 0">
 			<div v-if="programmeFilter == 1" class="tw-mb-3 tw-flex tw-flex-col">
 				<label>{{ translate('COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES') }}</label>
 				<select v-model="selectedProgramme" class="form-control fabrikinput tw-w-full">
@@ -39,7 +39,7 @@
 				</select>
 			</div>
 
-			<div v-if="widgets.length > 0" :class="'tw-grid-cols- tw-grid tw-gap-3' + this.grid_size">
+			<div :class="'tw-grid-cols- tw-grid tw-gap-3' + this.grid_size">
 				<div
 					v-for="(widget, index) in widgets"
 					:id="widget.name + '_' + index"
@@ -96,7 +96,7 @@ export default {
 	methods: {
 		getWidgets() {
 			dashboardService.getWidgets().then((response) => {
-				this.widgets = response.data;
+				this.widgets = response.data ? response.data : [];
 			});
 		},
 

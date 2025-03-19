@@ -276,7 +276,7 @@ class modemundusApplicationsHelper
 				SELECT ' . $db->quoteName('year') . '
 				FROM ' . $db->quoteName('#__emundus_campaign_candidature') . '
 				WHERE ' . $db->quoteName('applicant_id') . ' = ' . $uid . '
-			)');
+				AND ' . $db->quoteName('published') . ' IN (0,1))');
 
 		try {
 			$db->setQuery($query);

@@ -1,12 +1,12 @@
 <?php
 
-namespace Joomla\Plugin\Emundus\Ammon\Synchronizer;
+namespace Joomla\Plugin\Task\Ammon\Synchronizer;
 
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
-use Joomla\Plugin\Emundus\Ammon\Entities\CompanyEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\RegistrationEntity;
-use Joomla\Plugin\Emundus\Ammon\Entities\UserEntity;
+use Joomla\Plugin\Task\Ammon\Entities\CompanyEntity;
+use Joomla\Plugin\Task\Ammon\Entities\RegistrationEntity;
+use Joomla\Plugin\Task\Ammon\Entities\UserEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Event\GenericEvent;
 
@@ -18,13 +18,10 @@ class AmmonSynchronizer {
 	private \EmundusModelSync $sync_model;
 	private $api;
 
-	private DatabaseDriver $db;
-
 	public function __construct($api)
 	{
 		$this->sync_model = new \EmundusModelSync();
 		$this->api = $api;
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 	}
 
@@ -56,7 +53,7 @@ class AmmonSynchronizer {
 		$body_params = ["ignoreExistingRows" => false, "clearMissingData" => false, "rows" => [json_decode(json_encode($company), true)]];
 		$response = $this->sync_model->callApi($this->api, 'companies/bulk/import', 'post', $body_params);
 
-		if ($response['status'] && $response['data']['status'] == 'success') {
+		if (!empty($response) && $response['status'] && $response['data']->status == 'success') {
 			$created = true;
 		} else {
 			Log::add('Failed to create company ' . json_encode($body_params['rows']), Log::ERROR, 'plugin.emundus.ammon');
@@ -136,6 +133,10 @@ class AmmonSynchronizer {
 
 			if (!empty($response) && $response['status'] == 200 && !empty($response['data']->results)) {
 				$user = $response['data']->results[0];
+
+				Log::add('User found for ' . $lastname . ' ' . $firstname . '.', Log::INFO, 'plugin.emundus.ammon');
+			} else {
+				Log::add('No user found for ' . $lastname . ' ' . $firstname . ' in ammon api. Need to create a new user.', Log::INFO, 'plugin.emundus.ammon');
 			}
 		}
 
@@ -151,6 +152,7 @@ class AmmonSynchronizer {
 
 		if ($response['status'] == 200 && $response['data']->status == 'success' && !empty($response['data']->results)) {
 			$created = true;
+			Log::add('Successfully created user ' . $user->lastName . ' ' . $user->firstName, Log::INFO, 'plugin.emundus.ammon');
 		} else {
 			Log::add('Failed to create user response => ' . json_encode($response), Log::ERROR, 'plugin.emundus.ammon');
 		}

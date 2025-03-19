@@ -25,9 +25,11 @@ class EmundusViewWorkflows extends JViewLegacy
 	public $user = null;
 	private $model = null;
 
-	public $ccid = 0;
+	public int $ccid = 0;
 
-	public $fnum = '';
+	public string $fnum = '';
+
+	public int $evaluation_row_id = 0;
 
 	function display($tpl = null)
 	{
@@ -56,7 +58,7 @@ class EmundusViewWorkflows extends JViewLegacy
 				$db->setQuery($query);
 				$data = $db->loadAssoc();
 
-				$this->ccid = $data['id'];
+				$this->ccid = (int)$data['id'];
 				$this->fnum = EmundusHelperFiles::getFnumFromId($this->ccid);
 				$this->applicant  = $m_user->getUserById($data['applicant_id'])[0];
 				if (!isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
@@ -68,6 +70,18 @@ class EmundusViewWorkflows extends JViewLegacy
 
 					try {
 						$this->access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);
+						$evaluation_rows = $this->model->getStepEvaluationsForFile($this->step->id, $this->ccid);
+						if (!empty($evaluation_rows)) {
+							if ($this->step->multiple) {
+								foreach ($evaluation_rows as $evalaution_row) {
+									if ($evalaution_row['evaluator'] == $this->user->id) {
+										$this->evaluation_row_id = $evalaution_row['id'];
+									}
+								}
+							} else {
+								$this->evaluation_row_id = $evaluation_rows[0]['id'];
+							}
+						}
 					} catch (Exception $e) {
 						$app->enqueueMessage($e->getMessage(), 'error');
 					}

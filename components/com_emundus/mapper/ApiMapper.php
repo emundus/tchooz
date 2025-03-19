@@ -143,6 +143,10 @@ class ApiMapper
 				if (!empty($field->transformation)) {
 					$this->mapping[$field->attribute] = $this->transformValue($this->mapping[$field->attribute], $field->transformation->origin_column, $field->transformation->table, $field->transformation->targeted_column);
 				}
+
+				if (!isset($this->mapping[$field->attribute])) {
+					$this->mapping[$field->attribute] = '';
+				}
 			}
 		}
 
@@ -196,6 +200,10 @@ class ApiMapper
 				$transformed_value = $this->db->loadResult();
 			} catch (\Exception $e) {
 				Log::add('Failed to transform value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
+			}
+
+			if (empty($transformed_value)) {
+				$transformed_value = '';
 			}
 		}
 

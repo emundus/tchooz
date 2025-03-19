@@ -122,6 +122,16 @@ class ParcoursupMapper
 						}
 					}
 					break;
+				case 'phonenumber':
+					if (!empty($value))
+					{
+						if(!class_exists('EmundusHelperFabrik'))
+						{
+							require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/fabrik.php';
+						}
+						$value = \EmundusHelperFabrik::getFormattedPhoneNumberValue($value);
+					}
+					break;
 			}
 		}
 

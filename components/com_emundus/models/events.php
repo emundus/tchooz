@@ -1931,7 +1931,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 * @throws Exception
 	 * @since version 2.2.0
 	 */
-	public function getAvailabilitiesByCampaignsAndPrograms($cid = 0, $program_code = '', $start = '', $end = '', $location = 0, $check_booking_limit_reached = 0, $events_ids = [])
+	public function getAvailabilitiesByCampaignsAndPrograms($cid = 0, $program_code = '', $start = '', $end = '', $location = 0, $check_booking_limit_reached = 0, $events_ids = [], $check_availables_to_show = true)
 	{
 		$timezone = $this->app->get('offset', 'Europe/Paris');
 
@@ -2006,7 +2006,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 					}
 					$query->group('ea.id');
 
-					if (!empty($slots_infos->slots_availables_to_show))
+					if (!empty($slots_infos->slots_availables_to_show) && $check_availables_to_show)
 					{
 						$query->setLimit($slots_infos->slots_availables_to_show);
 					}

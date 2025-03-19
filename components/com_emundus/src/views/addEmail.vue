@@ -1,15 +1,15 @@
 <template>
-	<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card">
+	<div class="tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card">
 		<div>
 			<form @submit.prevent="submit" class="fabrikForm emundus-form">
 				<div>
 					<div>
 						<div
-							class="tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
+							class="tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
 							@click="redirectJRoute('index.php?option=com_emundus&view=emails')"
 						>
-							<span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-							<span class="tw-ml-2 tw-text-neutral-900">{{ translate('BACK') }}</span>
+							<span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
+							<span class="group-hover:tw-underline">{{ translate('BACK') }}</span>
 						</div>
 
 						<div class="tw-mt-4">
@@ -101,9 +101,7 @@
 					</div>
 				</div>
 
-				<hr class="tw-mb-4 tw-mt-1.5" />
-
-				<div class="em-container-accordeon tw-shadow">
+				<div class="em-container-accordeon tw-mb-8 tw-border tw-border-neutral-300 tw-shadow">
 					<div class="tw-flex tw-items-center tw-gap-1">
 						<h2 class="tw-w-full tw-cursor-pointer" @click="displayAdvanced">
 							{{ translate('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING') }}
@@ -262,8 +260,6 @@
 						</div>
 					</div>
 				</div>
-
-				<hr class="tw-mb-4 tw-mt-1.5" />
 
 				<div class="tw-flex tw-justify-end">
 					<button type="submit" class="tw-btn-primary !tw-w-auto">

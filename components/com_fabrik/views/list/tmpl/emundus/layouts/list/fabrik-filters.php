@@ -85,7 +85,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
                 <tr class="fabrik___heading">
                     <td>
 						<?php if ($d->showClearFilters) : ?>
-                            <a class="<?php echo $clearFiltersClass; ?> em-flex-row em-error-button" href="#">
+                            <a class="<?php echo $clearFiltersClass; ?> em-flex-row em-error-button em-border-radius" href="#">
                                 <span class="material-symbols-outlined em-mr-4" style="font-size: 18px">filter_alt_off</span>
 								<?php echo Text::_('COM_FABRIK_CLEAR'); ?>
                             </a>

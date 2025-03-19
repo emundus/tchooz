@@ -38,7 +38,7 @@ export default {
 		classes: {
 			type: String,
 			default:
-				'tw-overflow-x-scroll tw-absolute tw-right-6 tw-flex tw-items-center tw-justify-end tw-gap-2 -tw-top-[36px]',
+				'tw-overflow-x-auto tw-absolute tw-right-6 tw-flex tw-items-center tw-justify-end tw-gap-2 -tw-top-[42px]',
 		},
 		context: {
 			type: String,

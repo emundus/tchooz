@@ -15,4 +15,4 @@ Define the expected outcomes for the tests.
 ## Test Environment
 Describe the environment in which the tests should be conducted.
 
-/label Stack→Test
+/label Type→Test

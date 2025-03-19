@@ -137,10 +137,10 @@ class CampaignModelTest extends UnitTestCase
 	 */
 	public function testCreateCampaign()
 	{
-		$new_campaign_id = $this->model->createCampaign([]);
+		$new_campaign_id = $this->model->createCampaign([], $this->dataset['coordinator']);
 		$this->assertEmpty($new_campaign_id, 'Assert can not create campaign without data');
 
-		$new_campaign_id = $this->model->createCampaign(['limit_status' => 1, 'profile_id' => 1000]);
+		$new_campaign_id = $this->model->createCampaign(['limit_status' => 1, 'profile_id' => 1000], $this->dataset['coordinator']);
 		$this->assertEmpty($new_campaign_id, 'Assert can not create campaign without label');
 
 		$start_date = new DateTime();
@@ -162,7 +162,7 @@ class CampaignModelTest extends UnitTestCase
 			'is_limited'        => 0
 		];
 
-		$new_campaign_id = $this->model->createCampaign($inserting_datas);
+		$new_campaign_id = $this->model->createCampaign($inserting_datas, $this->dataset['coordinator']);
 		$this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
 
 		$program = $this->model->getProgrammeByCampaignID($new_campaign_id);

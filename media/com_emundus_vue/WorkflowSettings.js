@@ -83,7 +83,7 @@ const _sfc_main$1 = {
 };
 const _hoisted_1$1 = { class: "tw-mb-2 tw-flex tw-w-full tw-flex-row tw-items-center" };
 const _hoisted_2$1 = ["id", "name", "onUpdate:modelValue"];
-const _hoisted_3 = ["onClick"];
+const _hoisted_3$1 = ["onClick"];
 const _hoisted_4 = {
   key: 0,
   class: "tw-flex tw-w-full tw-flex-row tw-items-center"
@@ -96,7 +96,7 @@ const _hoisted_6 = {
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_StepTypesByLevel = resolveComponent("StepTypesByLevel", true);
   return openBlock(), createElementBlock("div", {
-    class: normalizeClass("step-types-level-" + $props.parentId + " tw-p-2")
+    class: normalizeClass("step-types-level-" + $props.parentId)
   }, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($options.stepTypesByParentId, (type) => {
       return openBlock(), createElementBlock("div", {
@@ -120,7 +120,7 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
             key: 0,
             class: "material-symbols-outlined tw-cursor-pointer",
             onClick: ($event) => $options.deleteType(type.id)
-          }, " delete ", 8, _hoisted_3)) : createCommentVNode("", true)
+          }, " delete ", 8, _hoisted_3$1)) : createCommentVNode("", true)
         ]),
         createBaseVNode("div", null, [
           $options.stepTypesOfParentId(type.id).length > 0 ? (openBlock(), createBlock(_component_StepTypesByLevel, {
@@ -177,13 +177,17 @@ const _sfc_main = {
     }
   }
 };
-const _hoisted_1 = { id: "workflow-settings" };
+const _hoisted_1 = {
+  id: "workflow-settings",
+  class: "tw-mb-6 tw-w-full tw-rounded-coordinator-cards tw-border tw-border-gray-200 tw-bg-neutral-0 tw-p-5 tw-shadow"
+};
 const _hoisted_2 = { id: "step-types" };
+const _hoisted_3 = { class: "tw-pb-5" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_StepTypesByLevel = resolveComponent("StepTypesByLevel");
   return openBlock(), createElementBlock("div", _hoisted_1, [
     createBaseVNode("div", _hoisted_2, [
-      createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_TYPES")), 1),
+      createBaseVNode("h2", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_WORKFLOW_STEP_TYPES")), 1),
       $data.stepTypes.length > 0 ? (openBlock(), createBlock(_component_StepTypesByLevel, {
         key: 0,
         onUpdateTypes: $options.onUpdateTypes,

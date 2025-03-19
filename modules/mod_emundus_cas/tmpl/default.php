@@ -175,7 +175,7 @@ JHtml::_('bootstrap.tooltip');
                         </div>
                         <div class="control-group em-float-right">
                             <div class="control-label">
-                                <a class="em-text-underline" href="<?php echo JRoute::_($forgottenLink); ?>">
+                                <a class="hover:tw-underline" href="<?php echo JRoute::_($forgottenLink); ?>">
 				                    <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
                                 </a>
                             </div>

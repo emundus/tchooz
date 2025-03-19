@@ -66,7 +66,7 @@ class EmundusControllerForm extends BaseController
 			$sort      = $this->input->getString('sort', '');
 			$recherche = $this->input->getString('recherche', '');
 
-			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page);
+			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page, $this->_user->id);
 
 			foreach ($data['datas'] as $key => $form)
 			{
@@ -87,11 +87,11 @@ class EmundusControllerForm extends BaseController
 						$tags       .= '<div class="tw-flex tw-flex-wrap">';
 						foreach ($campaigns as $campaign)
 						{
-							$tags .= '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaign->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>';
+							$tags .= '<a href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid='.$campaign->id).'" class="tw-cursor-pointer tw-mr-2 tw-mb-2 tw-h-max tw-px-3 tw-py-1 tw-font-semibold hover:tw-font-semibold tw-bg-main-100 tw-text-neutral-900 tw-text-sm tw-rounded-coordinator em-campaign-tag"> ' . $campaign->label . '</a>';
 						}
 						$tags .= '</div>';
 
-						$short_tags .= '<span class="tw-w-fit tw-cursor-pointer tw-text-profile-full tw-flex tw-items-center tw-justify-center hover:tw-underline">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
+						$short_tags .= '<span class="tw-w-fit tw-cursor-pointer tw-text-profile-full tw-flex tw-items-center tw-justify-center tw-text-sm hover:!tw-underline tw-font-semibold">' . count($campaigns) . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED') . '</span>';
 						$short_tags .= '</div>';
 						$tags       .= '</div>';
 					}
@@ -157,7 +157,7 @@ class EmundusControllerForm extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
 							'value'   => $form->programs_count . ' ' . Text::_('COM_EMUNDUS_FORM_ASSOCIATED_PROGRAMS'),
-							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
 							'display' => 'blocs'
 						],
 					];

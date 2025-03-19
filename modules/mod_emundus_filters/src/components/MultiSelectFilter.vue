@@ -12,7 +12,7 @@
       </div>
     </div>
     <div
-        class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 tw-shadow em-white-bg em-p-8 em-mt-4">
+        class="multi-select-filter-card em-border-radius-8 em-border-neutral-400 em-white-bg em-p-8 em-mt-4">
       <section class="recap" :class="{'hidden': opened}">
         <div v-if="filter.value && filter.value.length > 0 && !filter.value.includes('all')"
              class="em-flex-column-start">

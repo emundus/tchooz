@@ -13,13 +13,17 @@
 			<ul class="tw-items-left tw-font-large tw-flex tw-list-none tw-flex-col tw-gap-3 tw-space-y-2 tw-p-3">
 				<li class="tw-flex tw-w-10 tw-items-center tw-justify-between">
 					<span
-						class="tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
+						class="tw-group tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
 						@click="clickReturn()"
 					>
 						<!-- The back button icon -->
-						<span class="material-symbols-outlined tw-user-select-none tw-text-neutral-600">navigate_before</span>
+						<span class="material-symbols-outlined tw-user-select-none tw-mr-1 tw-text-link-regular"
+							>navigate_before</span
+						>
 						<!-- The back button label -->
-						<span class="tw-pl-1 tw-text-neutral-900" v-if="minimized === false">{{ translate('BACK') }}</span>
+						<span class="!tw-text-link-regular group-hover:tw-underline" v-if="minimized === false">{{
+							translate('BACK')
+						}}</span>
 					</span>
 					<span
 						class="material-symbols-outlined tw-absolute tw-right-[-12px] tw-cursor-pointer tw-rounded-full tw-bg-neutral-400 !tw-text-xl/5"

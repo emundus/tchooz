@@ -124,9 +124,9 @@ if (!empty($this->custom_title)) :?>
 
 <?php if (count($this->attachments) > 0) : ?>
 
-    <div class="em-goback-btn tw-flex tw-items-center"><span class="material-symbols-outlined tw-text-neutral-600">navigate_before</span>
-        <button type="button" class="btn goback-btn button" onclick="window.history.go(-1)"
-                name="Goback"><?php echo Text::_('GO_BACK') ?></button>
+    <div class="tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group tw-mb-4 tw-mt-2" onclick="window.history.go(-1)">
+        <span class="material-symbols-outlined tw-mr-1 tw-text-link-regular">navigate_before</span>
+        <span class="group-hover:tw-underline" name="Goback"><?php echo Text::_('GO_BACK') ?></span>
     </div>
     <div id="attachment_list" class="em-attachmentList em-repeat-card tw-p-6">
         <iframe id="background-shapes" src="/modules/mod_emundus_campaign/assets/fond-clair.svg"
