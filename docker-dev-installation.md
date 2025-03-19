@@ -2,12 +2,21 @@
 You can edit some variables by copying `docker-compose.yml` file
 
 Docker compose will create 3 containers :
-- A container with PHP and Apache ([localhost:8383](http://localhost:8383))
+- A container with PHP and Apache ([localhost](https://localhost:8585/)
 - A container with MySQL
 
-> To run local development with https
+To run local development with Https 
+> macOS
 > ```shell
 > brew install mkcert
+> mkcert -install
+> cd .docker/apache/certs
+> mkcert localhost
+> ```
+> Linux
+> ```shell
+> sudo apt update
+> sudo apt install mkcert libnss3-tools -y
 > mkcert -install
 > cd .docker/apache/certs
 > mkcert localhost
@@ -34,6 +43,11 @@ If you want to update a specific component, you can use the following command:
 docker exec -it [web_service_name] php cli/joomla.php tchooz:update -n --component=[component_name]
 ```
 
+To run an interactive shell in a container
+```shell
+docker exec -it [web_service_name] /bin/bash
+```
+
 ## Local development
 First you need to install **Tailwind dependencies** of the project. You can do this by running the following command in the root of the project:
 ```bash
@@ -57,6 +71,26 @@ When you are ready to build the project for production, you can run the followin
   npm run build
 ```
 > This command have to be run before any commit
+
+## Tests Back-end
+### Installation
+
+```bash
+  docker exec -it [web_service_name] libraries/emundus/composer.phar install --working-dir=tests/
+```
+> Set the arg "test_env: 1" in your docker-compose to enable Xdebug (required for unit test coverage)
+
+### Execution
+
+```bash
+  # Without coverage
+  docker exec -it [web_service_name]  tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --no-coverage
+  # With text coverage
+  docker exec -it [web_service_name]  tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --coverage-text
+  # With html coverage 
+  docker exec -it [web_service_name] tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --coverage-html /var/www/html/tmp/coverage
+```
+> Open the [Html Dashboard](https://localhost:8585/tmp/coverage/dashboard.html) in your browser
 
 ## Developers documentation
 ### Installation

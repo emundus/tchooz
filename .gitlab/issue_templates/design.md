@@ -7,4 +7,4 @@ Provide a brief summary of the issue related to the design system.
 - **Components Affected**: List any specific components involved.
 - **Design Deliverables**: Outline what design assets or changes are needed.
 
-/label Stack→Design
+/label Type→Design
