@@ -48,6 +48,17 @@ class Release2_4_0Installer extends ReleaseInstaller
 			}
 			//
 
+			// Update js of password element
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_jsactions','fj'))
+				->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.id').' = '.$this->db->quoteName('fj.element_id'))
+				->set('fj.code = ' . $this->db->quote('togglePasswordVisibility();'))
+				->where($this->db->quoteName('fe.name').' = '.$this->db->quote('password'))
+				->where($this->db->quoteName('fj.action').' = '.$this->db->quote('load'));
+			$this->db->setQuery($query);
+			$this->db->execute();
+			//
+
 			$result['status'] = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)

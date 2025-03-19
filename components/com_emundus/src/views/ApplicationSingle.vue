@@ -465,7 +465,7 @@ export default {
 	display: grid;
 	grid-gap: 16px;
 	width: 100%;
-	height: 100vh;
+	height: auto;
 }
 
 .scrollable {

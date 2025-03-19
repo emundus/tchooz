@@ -639,3 +639,34 @@ function vote(guest,listid,id,email) {
         }
     });
 }
+
+/**
+ * Toggle the visibility icon in the password field on the registration page
+ */
+
+function togglePasswordVisibility() {
+    var passwordInput = document.querySelector('#jos_emundus_users___password');
+
+    var spanShowPassword = document.createElement('span');
+    spanShowPassword.classList.add('material-icons-outlined');
+    spanShowPassword.classList.add('em-pointer');
+    spanShowPassword.innerText = "visibility";
+    spanShowPassword.style.position = "absolute";
+    spanShowPassword.style.top = "10px";
+    spanShowPassword.style.right = "10px";
+    spanShowPassword.style.opacity = "0.3";
+
+    passwordInput.parentNode.style.position = "relative";
+
+    passwordInput.parentNode.insertBefore(spanShowPassword, passwordInput.nextSibling);
+
+    spanShowPassword.addEventListener('click', function () {
+      if (spanShowPassword.innerText === "visibility_off") {
+        spanShowPassword.innerText = "visibility";
+        passwordInput.type = "password";
+      } else {
+        spanShowPassword.innerText = "visibility_off";
+        passwordInput.type = "text";
+      }
+    });
+}
