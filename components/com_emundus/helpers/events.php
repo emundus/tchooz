@@ -405,8 +405,8 @@ class EmundusHelperEvents
 			$itemid  = $jinput->get('Itemid');
 			$reload  = $jinput->get('r', 0);
 			$preview = $jinput->getInt('preview', 0);
-			$iframe = $jinput->getString('iframe', 0);
-			$tmpl = $jinput->getString('tmpl', '');
+			$iframe  = $jinput->getString('iframe', 0);
+			$tmpl    = $jinput->getString('tmpl', '');
 			$reload++;
 
 			if ($preview == 1 && EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
@@ -454,10 +454,12 @@ class EmundusHelperEvents
 				if (!empty($rowid))
 				{
 					$form_url = Route::_("index.php?option=com_fabrik&view=" . $view . "&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload) . "&fnum=" . $fnum;
-					if (!empty($iframe)) {
+					if (!empty($iframe))
+					{
 						$form_url .= '&iframe=1';
 					}
-					if (!empty($tmpl)) {
+					if (!empty($tmpl))
+					{
 						$form_url .= '&tmpl=' . $tmpl;
 					}
 
@@ -479,12 +481,13 @@ class EmundusHelperEvents
 			$infinite_step = false;
 			if (!empty($current_phase) && !empty($current_phase->id))
 			{
-				if ($current_phase->infinite) {
+				if ($current_phase->infinite)
+				{
 					$infinite_step = true;
 				}
 
-				$current_end_date = !empty($current_phase->end_date) ? $current_phase->end_date : (!empty($user->fnums[$fnum]->end_date) ? $user->fnums[$fnum]->end_date : $user->end_date);
-				$current_start_date =  !empty($current_phase->start_date) ? $current_phase->start_date : $user->fnums[$fnum]->start_date;
+				$current_end_date   = !empty($current_phase->end_date) ? $current_phase->end_date : (!empty($user->fnums[$fnum]->end_date) ? $user->fnums[$fnum]->end_date : $user->end_date);
+				$current_start_date = !empty($current_phase->start_date) ? $current_phase->start_date : $user->fnums[$fnum]->start_date;
 			}
 			else
 			{
@@ -495,7 +498,8 @@ class EmundusHelperEvents
 			$is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
 			if (!$is_campaign_started && !in_array($user->id, $applicants))
 			{
-				if (!class_exists('EmundusHelperMenu')) {
+				if (!class_exists('EmundusHelperMenu'))
+				{
 					require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
 				}
 
@@ -542,14 +546,16 @@ class EmundusHelperEvents
 			}
 
 			// once access condition is not correct, redirect page
-			$reload_url  = true;
+			$reload_url = true;
 
 			$url_parameters = '';
-			if (!empty($iframe)) {
+			if (!empty($iframe))
+			{
 				$url_parameters .= '&iframe=1';
 			}
 
-			if (!empty($tmpl)) {
+			if (!empty($tmpl))
+			{
 				$url_parameters .= '&tmpl=' . $tmpl;
 			}
 
@@ -1073,11 +1079,13 @@ class EmundusHelperEvents
 						if ($reload_url)
 						{
 							$url_parameters = '';
-							if (!empty($iframe)) {
+							if (!empty($iframe))
+							{
 								$url_parameters .= '&iframe=1';
 							}
 
-							if (!empty($tmpl)) {
+							if (!empty($tmpl))
+							{
 								$url_parameters .= '&tmpl=' . $tmpl;
 							}
 
@@ -1117,8 +1125,9 @@ class EmundusHelperEvents
 
 			// check if there is not another cart open
 			$hikashop_user = $mainframe->getSession()->get('emundusPayment');
-			if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum) {
-				$user->fnum = $hikashop_user->fnum;
+			if (!empty($hikashop_user->fnum) && $hikashop_user->fnum != $user->fnum)
+			{
+				$user->fnum    = $hikashop_user->fnum;
 				$user->profile = $hikashop_user->profile;
 				$mainframe->getSession()->set('emundusUser', $user);
 
@@ -1519,7 +1528,7 @@ class EmundusHelperEvents
 		$mFiles       = new EmundusModelFiles;
 		$mEmails      = new EmundusModelEmails;
 		$mCampaign    = new EmundusModelCampaign;
-		$m_workflow    = new EmundusModelWorkflow();
+		$m_workflow   = new EmundusModelWorkflow();
 
 		$applicant_id = ($mFiles->getFnumInfos($student->fnum))['applicant_id'];
 
@@ -1549,16 +1558,20 @@ class EmundusHelperEvents
 				$new_status = $current_phase->output_status;
 			}
 
-			if ($current_phase->infinite) {
-				$is_dead_line_passed = false;
-			}
-			else if (!empty($current_phase->end_date))
+			if ($current_phase->infinite)
 			{
-				$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+				$is_dead_line_passed = false;
 			}
 			else
 			{
-				$is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->end_date);
+				if (!empty($current_phase->end_date))
+				{
+					$is_dead_line_passed = strtotime(date($now)) > strtotime($current_phase->end_date) || strtotime(date($now)) < strtotime($current_phase->start_date);
+				}
+				else
+				{
+					$is_dead_line_passed = strtotime(date($now)) > strtotime(@$student->fnums[$student->fnum]->end_date);
+				}
 			}
 		}
 
@@ -1633,7 +1646,7 @@ class EmundusHelperEvents
 					['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
 				]
 			);
-			$onAfterStatusChange = new GenericEvent(
+			$onAfterStatusChange             = new GenericEvent(
 				'onAfterStatusChange',
 				// Datas to pass to the event
 				['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
@@ -1783,7 +1796,7 @@ class EmundusHelperEvents
 			$redirect_url = EmundusHelperMenu::getHomepageLink();
 		}
 
-		$app->redirect($redirect_url);
+		$app->redirect(Uri::base(true).$redirect_url);
 
 		return true;
 	}
@@ -1802,7 +1815,7 @@ class EmundusHelperEvents
 			{
 				$code            = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___code_raw'] : $params['formModel']->formData['code_raw'];
 				$evaluation_form = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___evaluation_form_raw'] : $params['formModel']->formData['evaluation_form_raw'];
-				$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
+				$programme_id    = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
 
 				if (is_array($evaluation_form))
 				{
@@ -1850,11 +1863,11 @@ class EmundusHelperEvents
 				$programme = $params['programme'];
 				$user_id   = Factory::getApplication()->getIdentity()->id;
 
-				$eMConfig                 = ComponentHelper::getParams('com_emundus');
-				$all_rights_group_id      = $eMConfig->get('all_rights_group', 1);
-				$evaluator_group_id       = $eMConfig->get('evaluator_group', '');
-				$program_manager_group_id = $eMConfig->get('program_manager_group', '');
-				$create_program_groups    = $eMConfig->get('create_program_groups', 1);
+				$eMConfig                       = ComponentHelper::getParams('com_emundus');
+				$all_rights_group_id            = $eMConfig->get('all_rights_group', 1);
+				$model_evaluator_group_id       = $eMConfig->get('evaluator_group', '');
+				$model_program_manager_group_id = $eMConfig->get('program_manager_group', '');
+				$create_program_groups          = $eMConfig->get('create_program_groups', 1);
 
 				$query->clear()
 					->select($db->quoteName('id'))
@@ -1890,34 +1903,17 @@ class EmundusHelperEvents
 
 					if (empty($group_program_link))
 					{
-						// Create user group
-						$columns = array('label', 'published', 'class');
-						$values  = array($db->quote($programme->label), $db->quote(1), $db->quote('label-default'));
+						if (!class_exists('EmundusModelProgramme'))
+						{
+							require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
+						}
+						$m_program = new EmundusModelProgramme();
 
-						$query->clear()
-							->insert($db->quoteName('#__emundus_setup_groups'))
-							->columns($db->quoteName($columns))
-							->values(implode(',', $values));
-						$db->setQuery($query);
-						$db->execute();
-						$group_id = $db->insertid();
-						//
-
-						// Link group with programme
-						$columns = array('parent_id', 'course');
-						$values  = array($db->quote($group_id), $db->quote($programme->code));
-
-						$query->clear()
-							->insert($db->quoteName('#__emundus_setup_groups_repeat_course'))
-							->columns($db->quoteName($columns))
-							->values(implode(',', $values));
-						$db->setQuery($query);
-						$db->execute();
-						//
+						$readonly_group_id = $m_program->addGroupToProgram($programme->label, $programme->code);
 
 						// Affect coordinator to the group of the program
 						$columns = array('user_id', 'group_id');
-						$values  = array($db->quote($user_id), $group_id);
+						$values  = array($db->quote($user_id), $readonly_group_id);
 
 						$query->clear()
 							->insert($db->quoteName('#__emundus_groups'))
@@ -1927,29 +1923,46 @@ class EmundusHelperEvents
 						$db->execute();
 						//
 
-						if (!class_exists('EmundusModelProgramme'))
+						if (!empty($model_evaluator_group_id))
 						{
-							require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
+							$evaluator_group_id = $m_program->addGroupToProgram($programme->label, $programme->code, $model_evaluator_group_id);
 						}
-						$m_program = new EmundusModelProgramme();
-
-						if (!empty($evaluator_group_id))
+						if (!empty($model_program_manager_group_id))
 						{
-							$m_program->addGroupToProgram($programme->label, $programme->code, $evaluator_group_id);
-						}
-						if (!empty($program_manager_group_id))
-						{
-							$m_program->addGroupToProgram($programme->label, $programme->code, $program_manager_group_id);
+							$program_manager_group_id = $m_program->addGroupToProgram($programme->label, $programme->code, $model_program_manager_group_id);
 						}
 					}
 				}
 
 				if ((!empty($params['data']) && !empty($params['data']['formid'])) || (!empty($params['formModel']->formData) && !empty($params['formModel']->formData['formid'])))
 				{
-					$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
-					$form_id	  = !empty($params['data']) ? $params['data']['formid'] : $params['formModel']->formData['formid'];
+					$new = false;
+					if (!empty($params['formModel']->_origData) && is_object($params['formModel']->_origData[0]))
+					{
+						$new = empty(get_object_vars($params['formModel']->_origData[0]));
+					}
 
-					Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $programme_id . '&tmpl=component&iframe=1');
+					if (!$new)
+					{
+						$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
+						$form_id      = !empty($params['data']) ? $params['data']['formid'] : $params['formModel']->formData['formid'];
+
+						Factory::getApplication()->redirect('/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $programme_id . '&tmpl=component&iframe=1');
+					}
+					else
+					{
+						$menu = Factory::getApplication()->getMenu();
+						$item = $menu->getItems('link', 'index.php?option=com_emundus&view=campaigns', true);
+
+						if (!empty($item->route))
+						{
+							Factory::getApplication()->redirect('/' . $item->route);
+						}
+						else
+						{
+							Factory::getApplication()->redirect('/index.php?option=com_emundus&view=campaigns');
+						}
+					}
 				}
 			}
 
@@ -2436,20 +2449,20 @@ class EmundusHelperEvents
 	public function onAfterSubmitEvaluation($params)
 	{
 		$form_model = $params['formModel'];
-		$data = $form_model->getData();
+		$data       = $form_model->getData();
 
-		$db_table_name = $form_model->getTableName();
-		$ccid = $data[$db_table_name . '___ccid'];
-		$fnum = $data[$db_table_name . '___fnum'];
-		$step_id = $data[$db_table_name . '___step_id'];
+		$db_table_name   = $form_model->getTableName();
+		$ccid            = $data[$db_table_name . '___ccid'];
+		$fnum            = $data[$db_table_name . '___fnum'];
+		$step_id         = $data[$db_table_name . '___step_id'];
 		$current_user_id = Factory::getApplication()->getIdentity()->id;
 
-		require_once (JPATH_SITE . '/components/com_emundus/models/workflow.php');
+		require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
 		$m_workflow = new EmundusModelWorkflow();
-		$step_data = $m_workflow->getStepData($step_id);
+		$step_data  = $m_workflow->getStepData($step_id);
 
-		$crud = 'c';
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$crud  = 'c';
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 		$query->select('id')
 			->from($db->quoteName($step_data->table))
@@ -2469,16 +2482,19 @@ class EmundusHelperEvents
 			->from($db->quoteName('#__emundus_campaign_candidature'))
 			->where($db->quoteName('id') . ' = ' . $db->quote($ccid));
 
-		try {
+		try
+		{
 			$db->setQuery($query);
 			$applicant_id = $db->loadResult();
 
-			require_once (JPATH_SITE . '/components/com_emundus/models/logs.php');
+			require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 			EmundusModelLogs::log($current_user_id, $applicant_id, $fnum, $step_data->action_id, $crud, 'COM_EMUNDUS_SUBMIT_EVALUATION', json_encode(array(
 				'step_id' => $step_id,
 				'created' => [['element' => $step_data->label]]
 			)));
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			Log::add('Error when try to get applicant_id from ccid ' . $ccid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 	}

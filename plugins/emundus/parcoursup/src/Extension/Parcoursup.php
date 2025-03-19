@@ -29,11 +29,6 @@ use Joomla\Plugin\Emundus\Parcoursup\Repository\UserRepository;
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-/**
- * Joomla! Users Actions Logging Plugin.
- *
- * @since  3.9.0
- */
 final class Parcoursup extends CMSPlugin implements SubscriberInterface
 {
 	use DatabaseAwareTrait;
@@ -41,14 +36,6 @@ final class Parcoursup extends CMSPlugin implements SubscriberInterface
 
 	private array $datas = [];
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   DispatcherInterface  $dispatcher  The dispatcher
-	 * @param   array                $config      An optional associative array of configuration settings
-	 *
-	 * @since   3.9.0
-	 */
 	public function __construct(DispatcherInterface $dispatcher, array $config)
 	{
 		parent::__construct($dispatcher, $config);

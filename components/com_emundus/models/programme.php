@@ -2094,9 +2094,9 @@ class EmundusModelProgramme extends ListModel
 				->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->_db->quoteName('sg.id') . ' = ' . $this->_db->quoteName('sgr.parent_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->_db->quoteName('sgr.course') . ' = ' . $this->_db->quoteName('sp.code'))
 				->where($this->_db->quoteName('g.user_id') . ' = ' . $this->_db->quote($user_id));
-			$this->_db->setQuery($query);
 
 			try {
+				$this->_db->setQuery($query);
 				$programs = $this->_db->loadObjectList();
 
 				$progs = [];
@@ -2172,18 +2172,25 @@ class EmundusModelProgramme extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	function addGroupToProgram($label, $code, $parent)
+	function addGroupToProgram($label, $code, $parent = null)
 	{
+        $eMConfig = JComponentHelper::getParams('com_emundus');
+        $evaluator_group_id = $eMConfig->get('evaluator_group', '');
+        $program_manager_group_id = $eMConfig->get('program_manager_group', '');
 		
 		$query = $this->_db->getQuery(true);
 
 		$date   = date('Y-m-d H:i:s');
-		$glabel = 'Evaluateurs_' . $label;
-		$class  = 'label-default';
-		if ($parent == 3) {
-			$glabel = 'Gestionnaire de programme_' . $label;
-			$class  = 'label-lightgreen';
-		}
+        $class = 'label-default';
+
+        if ($parent == $evaluator_group_id) {
+            $glabel = 'Evaluateurs_' . $label;
+        } else if ($parent == $program_manager_group_id) {
+            $glabel = 'Gestionnaire de programme_' . $label;
+            $class = 'label-lightgreen';
+        } else {
+            $glabel = $label;
+        }
 
 		try {
 			// Create user group
@@ -2191,8 +2198,10 @@ class EmundusModelProgramme extends ListModel
 				->set($this->_db->quoteName('label') . ' = ' . $this->_db->quote($glabel))
 				->set($this->_db->quoteName('published') . ' = 1')
 				->set($this->_db->quoteName('class') . ' = ' . $this->_db->quote($class))
-				->set($this->_db->quoteName('anonymize') . ' = ' . $this->_db->quote(0))
-				->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent));
+				->set($this->_db->quoteName('anonymize') . ' = ' . $this->_db->quote(0));
+            if (!empty($parent)) {
+                $query->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent));
+            }
 			$this->_db->setQuery($query);
 			$this->_db->execute();
 			$group_id = $this->_db->insertid();
@@ -2207,35 +2216,47 @@ class EmundusModelProgramme extends ListModel
 			$this->_db->execute();
 			//
 
-			// Duplicate group_rights
-			$query->clear()
-				->select('*')
-				->from('#__emundus_acl')
-				->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($parent));
-			$this->_db->setQuery($query);
-			$acl_models = $this->_db->loadObjectList();
+            if (!empty($parent)) {
+                // Duplicate group_rights
+                $query->clear()
+                    ->select('*')
+                    ->from('#__emundus_acl')
+                    ->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($parent));
+                $this->_db->setQuery($query);
+                $acl_models = $this->_db->loadObjectList();
 
-			foreach ($acl_models as $acl_model) {
-				$query->clear();
-				$query->insert($this->_db->quoteName('#__emundus_acl'));
-				foreach ($acl_model as $key => $val) {
-					if ($key != 'id' && $key != 'group_id' && $key != 'time_date') {
-						$query->set($key . ' = ' . $this->_db->quote($val));
-					}
-					elseif ($key == 'group_id') {
-						$query->set($key . ' = ' . $this->_db->quote($group_id));
-					}
-					elseif ($key == 'time_date') {
-						$query->set($key . ' = ' . $this->_db->quote($date));
-					}
-				}
-				$this->_db->setQuery($query);
-				$this->_db->execute();
-			}
+                foreach ($acl_models as $acl_model) {
+                    $query->clear();
+                    $query->insert($this->_db->quoteName('#__emundus_acl'));
+                    foreach ($acl_model as $key => $val) {
+                        if ($key != 'id' && $key != 'group_id' && $key != 'time_date') {
+                            $query->set($key . ' = ' . $this->_db->quote($val));
+                        }
+                        elseif ($key == 'group_id') {
+                            $query->set($key . ' = ' . $this->_db->quote($group_id));
+                        }
+                        elseif ($key == 'time_date') {
+                            $query->set($key . ' = ' . $this->_db->quote($date));
+                        }
+                    }
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+                }
+                //
+            } else {
+                // Add basic rights to the group
+                $columns = ['group_id', 'action_id', 'c', 'r', 'u', 'd'];
 
-			//
+                $query->clear()
+                    ->insert($this->_db->quoteName('#__emundus_acl'))
+                    ->columns($this->_db->quoteName($columns))
+                    ->values($group_id.',1,0,1,0,0');
+                $this->_db->setQuery($query);
+                $this->_db->execute();
+                //
+            }
 
-			return true;
+			return $group_id;
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/program | Cannot add the group ' . $parent . ' to the program ' . $code . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');

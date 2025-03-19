@@ -87,7 +87,7 @@ class EmundusControllerEvents extends BaseController
 							[
 								'key'     => Text::_('COM_EMUNDUS_ONBOARD_EVENTS_CAMPAIGNS'),
 								'value'   => '<span class="material-symbols-outlined tw-mr-2">warning</span>' . Text::_('COM_EMUNDUS_ONBOARD_EVENTS_NO_CAMPAIGNS'),
-								'classes' => 'tw-flex tw-rounded-coordinator tw-bg-yellow-100 tw-p-2',
+								'classes' => 'tw-flex tw-rounded-status tw-bg-yellow-100 tw-p-2',
 								'display' => 'blocs'
 							]
 						];
@@ -918,7 +918,9 @@ class EmundusControllerEvents extends BaseController
 				$cid          = $user->campaign_id;
 			}
 
-			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location, $check_booking_limit_reached, $events_ids);
+			$check_availables_to_show = !EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id);
+
+			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location, $check_booking_limit_reached, $events_ids, $check_availables_to_show);
 			$response['data']     = $event_availabilities;
 
 			$response['status']  = true;

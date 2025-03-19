@@ -19,6 +19,37 @@ RUN curl -o /tmp/sed_4.9-1_$(dpkg --print-architecture).deb http://ftp.fr.debian
 
 RUN a2enmod ssl rewrite
 
+ARG test_env=0
+
+# Install xdebug
+RUN if [ "$test_env" = "1" ];then \
+	pecl install xdebug; \
+	docker-php-ext-enable xdebug; \
+	{ \
+		echo "xdebug.start_with_request=yes";  \
+		echo "xdebug.client_host=127.0.0.1";  \
+		echo "xdebug.mode=debug,profile,trace";  \
+		echo "xdebug.mode=coverage";  \
+		echo "xdebug.idekey=docker";  \
+   		 echo 'memory_limit = 1024M'; \
+	} >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini; \
+	else \
+		echo "[BUILD INFO] : Xdebug is not required"; \
+	fi
+
+# Set PHP.ini settings for script execution and uploads
+RUN { \
+echo 'file_uploads = On'; \
+echo 'upload_max_filesize = 64M'; \
+echo 'post_max_size = 64M'; \
+echo 'memory_limit = 1024M'; \
+echo 'max_execution_time = 600'; \
+echo 'max_input_time = 600'; \
+#echo 'display_errors = On'; \
+#echo 'display_startup_errors = On'; \
+#echo 'error_reporting = E_ALL'; \
+} >> /usr/local/etc/php/php.ini
+
 # Copy and set custom entrypoint script
 COPY apache/certs/localhost.pem /usr/local/apache2/conf/ssl/localhost.pem
 COPY apache/certs/localhost-key.pem /usr/local/apache2/conf/ssl/localhost-key.pem

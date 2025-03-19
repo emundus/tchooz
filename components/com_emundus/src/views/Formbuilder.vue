@@ -19,13 +19,11 @@
 			<header class="tw-grid tw-min-h-[48px] tw-grid-cols-3 tw-items-center">
 				<div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
 					<p
-						class="tw-ml-2 tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300"
+						class="tw-group tw-ml-4 tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
 						@click="clickGoBack"
 					>
-						<span id="go-back" class="material-symbols-outlined em-pointer tw-mr-1 tw-text-neutral-600">
-							navigate_before
-						</span>
-						{{ translate('COM_EMUNDUS_ACTIONS_BACK') }}
+						<span id="go-back" class="material-symbols-outlined tw-mr-1 tw-text-link-regular"> navigate_before </span>
+						<span class="group-hover:tw-underline">{{ translate('COM_EMUNDUS_ACTIONS_BACK') }}</span>
 					</p>
 					<p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
 						{{ translate('COM_EMUNDUS_FORM_BUILDER_SAVED_AT') }} {{ lastSave }}
@@ -43,7 +41,7 @@
 				</span>
 				<div class="tw-flex tw-flex-col tw-items-end">
 					<button
-						class="em-w-auto tw-btn-primary tw-gap-3 tw-px-6 tw-py-3"
+						class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-px-3 tw-py-2"
 						v-if="
 							this.mode !== 'eval' &&
 							this.mode !== 'models' &&
@@ -53,7 +51,9 @@
 						@click="previewForm = true"
 					>
 						<span class="material-symbols-outlined tw-text-white"> remove_red_eye </span>
-						<label class="tw-mb-0" for="previewform">{{ translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW') }}</label>
+						<label class="tw-mb-0 tw-cursor-pointer" for="previewform">{{
+							translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW')
+						}}</label>
 					</button>
 					<button
 						class="em-w-auto tw-btn-primary tw-gap-3 tw-px-6 tw-py-3"

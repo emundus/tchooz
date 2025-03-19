@@ -6,6 +6,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 // no direct access
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die;
 
 if ($just_logged && !$only_applicant) {
@@ -150,7 +152,7 @@ if ($just_logged && !$only_applicant) {
                 return;
             }
 
-            const url = window.location.origin.toString() + '/' + '<?= str_starts_with($redirect, '/') ? substr($redirect, 1) : $redirect ?>';
+            const url = "<?php echo Uri::base(true); ?>" + '/' + '<?= str_starts_with($redirect, '/') ? substr($redirect, 1) : $redirect ?>';
 
             jQuery.ajax({
                 type: 'POST',

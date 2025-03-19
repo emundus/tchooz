@@ -1322,8 +1322,8 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { id: "edit-campaign" };
-const _hoisted_2 = { class: "em-card-shadow tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6" };
-const _hoisted_3 = { class: "tw-ml-2 tw-text-neutral-900" };
+const _hoisted_2 = { class: "tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card" };
+const _hoisted_3 = { class: "group-hover:tw-underline" };
 const _hoisted_4 = { class: "tw-mt-4 tw-flex tw-items-center" };
 const _hoisted_5 = ["innerHTML"];
 const _hoisted_6 = {
@@ -1331,7 +1331,7 @@ const _hoisted_6 = {
   class: "tw-mb-8 tw-flex tw-items-center"
 };
 const _hoisted_7 = { style: { "color": "var(--em-profile-color)", "font-weight": "700 !important" } };
-const _hoisted_8 = { class: "tw-relative tw-w-full tw-rounded-2xl tw-border tw-border-neutral-300 tw-bg-white tw-p-6" };
+const _hoisted_8 = { class: "tw-relative tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card" };
 const _hoisted_9 = {
   key: 0,
   class: "warning-message-program mb-1"
@@ -1361,11 +1361,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     _cache[5] || (_cache[5] = createBaseVNode("div", { class: "em-w-custom" }, null, -1)),
     createBaseVNode("div", _hoisted_2, [
       createBaseVNode("div", null, [
-        createBaseVNode("div", {
-          class: "tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
+        createBaseVNode("button", {
+          type: "button",
+          class: "tw-group tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular",
           onClick: _cache[0] || (_cache[0] = ($event) => $options.redirectJRoute("index.php?option=com_emundus&view=campaigns"))
         }, [
-          _cache[2] || (_cache[2] = createBaseVNode("span", { class: "material-symbols-outlined tw-text-neutral-600" }, "navigate_before", -1)),
+          _cache[2] || (_cache[2] = createBaseVNode("span", { class: "material-symbols-outlined tw-mr-1 tw-text-link-regular" }, "navigate_before", -1)),
           createBaseVNode("span", _hoisted_3, toDisplayString(_ctx.translate("BACK")), 1)
         ]),
         createBaseVNode("div", _hoisted_4, [
@@ -1386,7 +1387,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ]),
         withDirectives(createVNode(_component_Tabs, {
           tabs: _ctx.tabs,
-          classes: "tw-overflow-x-scroll tw-flex tw-items-center tw-gap-2 tw-ml-7"
+          classes: "tw-overflow-auto tw-flex tw-items-center tw-gap-2 tw-ml-7"
         }, null, 8, ["tabs"]), [
           [vShow, _ctx.profileId]
         ]),
@@ -1454,7 +1455,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-219557a4"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e0da353e"]]);
 export {
   CampaignEdition as default
 };

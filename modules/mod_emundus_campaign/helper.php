@@ -125,12 +125,17 @@ class modEmundusCampaignHelper
 
 		if ($mod_em_campaign_show_pinned_campaign)
 		{
-			$query->where('ca.pinned = 1 AND ca.published = 1 AND ca.visible = 1 ' . $dates_query);
-			$query->orWhere('ca.published=1 AND ca.visible = 1 ' . $dates_query . ' ' . $condition);
+			$query->where('ca.pinned = 1 AND ca.published = 1 ' . $dates_query);
+			$query->orWhere('ca.published = 1 ' . $dates_query . ' ' . $condition);
 		}
 		else
 		{
-			$query->where('ca.published=1 AND ca.visible = 1 ' . $dates_query . ' ' . $condition);
+			$query->where('ca.published = 1 ' . $dates_query . ' ' . $condition);
+		}
+
+		if(strpos($condition, 'ca.id') === false)
+		{
+			$query->andWhere($this->db->qn('ca.visible') . ' = 1');
 		}
 
 		$query->group('ca.id');

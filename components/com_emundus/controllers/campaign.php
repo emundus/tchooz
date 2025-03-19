@@ -214,7 +214,7 @@ class EmundusControllerCampaign extends BaseController
 					if ($now < $start_date)
 					{
 						$campaign_time_state_label = Text::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
-						$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
+						$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label';
 					}
 					else
 					{
@@ -226,7 +226,7 @@ class EmundusControllerCampaign extends BaseController
 						else
 						{
 							$campaign_time_state_label = Text::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
-							$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius';
+							$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label';
 						}
 					}
 
@@ -241,7 +241,7 @@ class EmundusControllerCampaign extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'value'   => $campaign->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-							'classes' => $campaign->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+							'classes' => $campaign->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 label' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
@@ -287,7 +287,7 @@ class EmundusControllerCampaign extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
 							'value'   => $campaign->program_label,
-							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
 							'display' => 'blocs'
 						],
 						[
@@ -303,7 +303,7 @@ class EmundusControllerCampaign extends BaseController
 								$state_values[1],
 								[
 									'key'     => Text::_('COM_EMUNDUS_FILES_FILES'),
-									'value'   => '<a class="tw-cursor-pointer tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-justify-center hover:tw-underline hover:tw-font-semibold" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;font-size: unset;font-size:14px;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
+									'value'   => '<a class="tw-cursor-pointer go-to-campaign-link tw-font-semibold hover:tw-font-semibold tw-text-profile-full tw-flex tw-items-center tw-justify-center tw-text-sm hover:tw-underline" href="/index.php?option=com_emundus&controller=campaign&task=gotocampaign&campaign_id=' . $campaign->id . '" style="line-height: unset;">' . $campaign->nb_files . ' ' . ($campaign->nb_files > 1 ? Text::_('COM_EMUNDUS_FILES_FILES') : Text::_('COM_EMUNDUS_FILES_FILE')) . '</a>',
 									'classes' => 'py-1',
 								]
 							],

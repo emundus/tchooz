@@ -690,58 +690,28 @@ class EmundusControllerEvaluation extends BaseController
 		exit();
 	}
 
-	function delevaluation()
-	{
-		$fnum = $this->input->getString('fnum', null);
-		$ids  = $this->input->getString('ids', null);
-		$ids  = json_decode(stripslashes($ids));
-		$res  = new stdClass();
+	function deleteEvaluation() {
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+		$fnum = $this->input->getString('fnum', '');
+		$step_id = $this->input->getInt('step_id', 0);
+		$row_id = $this->input->getInt('row_id', 0);
 
-		$m_evaluation = $this->getModel('Evaluation');
-		foreach ($ids as $id)
-		{
-			if (!empty($id))
-			{
-				$eval = $m_evaluation->getEvaluationById($id);
-				if (EmundusHelperAccess::asAccessAction(5, 'd', $this->_user->id, $fnum))
-				{
-					$res->status = $m_evaluation->delevaluation($id);
+		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+		$m_workflow = new EmundusModelWorkflow();
+		$step_data = $m_workflow->getStepData($step_id);
 
+		if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'd', $this->_user->id, $fnum)) {
+			$response = ['status' => false, 'code' => 500, 'msg' => Text::_('COM_EMUNDUS_EVALUATION_DELETE_ERROR')];
+			$m_evaluation = $this->getModel('Evaluation');
+			$deleted = $m_evaluation->deleteEvaluation($fnum, $step_data, $row_id, $this->_user->id);
 
-					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-
-					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-					$mFile        = $this->getModel('Files');
-					$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
-
-					EmundusModelLogs::log($this->_user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
-				}
-				else
-				{
-					$eval = $m_evaluation->getEvaluationById($id);
-					if ($eval->user == $this->_user->id)
-					{
-						$res->status = $m_evaluation->delevaluation($id);
-
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-
-						require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'files.php');
-						$mFile        = $this->getModel('Files');
-						$applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
-
-						EmundusModelLogs::log($this->_user->id, $applicant_id, $fnum, 5, 'd', 'COM_EMUNDUS_ACCESS_EVALUATION_DELETE');
-					}
-					else
-					{
-						$res->status = false;
-						$res->msg    = Text::_("ACCESS_DENIED");
-					}
-				}
+			if ($deleted) {
+				$response = ['status' => true, 'code' => 200, 'msg' => Text::_('COM_EMUNDUS_EVALUATION_DELETE_SUCCESS')];
 			}
 		}
 
-		echo json_encode($res);
-		exit();
+		echo json_encode((object) $response);
+		exit;
 	}
 
 	function pdf_decision()

@@ -17,6 +17,6 @@ Detail any actions already taken to mitigate the issue.
 ## Next Steps
 Outline the next steps required to resolve the incident.
 
-/label Priority→Medium
+/label TechBoard→Backlog
 /promote_to_incident
 /due <in 7 days

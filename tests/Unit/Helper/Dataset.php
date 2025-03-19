@@ -350,7 +350,7 @@ class Dataset
 				'published' => 1,
 				'is_limited' => 0,
 				'user' => $user_id
-			]);
+			], $user_id);
 		}
 
 		return $campaign_id;

@@ -5,22 +5,22 @@
  ***/
 
 function addLoader(container = 'body') {
-    if(window.document.getElementById('em-dimmer') === null) {
-        let loaderElement = window.document.createElement('div');
-        loaderElement.id = 'em-dimmer';
-        loaderElement.classList.add('em-page-loader');
+    if (window.document.getElementById('em-dimmer') === null) {
+        let loaderElement = window.document.createElement('div')
+        loaderElement.id = 'em-dimmer'
+        loaderElement.classList.add('em-page-loader')
 
-        let containerElement = window.document.querySelector(container);
-        if(containerElement) {
-            containerElement.insertAdjacentElement('afterend', loaderElement);
+        let containerElement = window.document.querySelector(container)
+        if (containerElement) {
+            containerElement.insertAdjacentElement('afterend', loaderElement)
         }
     }
 }
 
 function removeLoader() {
-    const loader = document.getElementById('em-dimmer');
-    if (loader!== null) {
-        loader.remove();
+    const loader = document.getElementById('em-dimmer')
+    if (loader !== null) {
+        loader.remove()
     }
 }
 
@@ -35,18 +35,18 @@ function removeLoader() {
  * @param clearElements
  */
 function hideFabrikElt(elements, clearElements = false) {
-    if (!Array.isArray(elements)) elements = [elements];
+    if (!Array.isArray(elements)) elements = [elements]
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
             if (clearElements && element.plugin !== '') {
-                element.clear();
+                element.clear()
             }
-            element.hide();
+            element.hide()
         } else {
-            console.log(`hideFabrikElt: Element at index ${index} is undefined`);
+            console.log(`hideFabrikElt: Element at index ${index} is undefined`)
         }
-    });
+    })
 
 }
 
@@ -60,15 +60,15 @@ function hideFabrikElt(elements, clearElements = false) {
  * @param elements
  */
 function showFabrikElt(elements) {
-    if (!Array.isArray(elements)) elements = [elements];
+    if (!Array.isArray(elements)) elements = [elements]
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
-            element.show();
+            element.show()
         } else {
-            console.log(`showFabrikElt: Element at index ${index} is undefined`);
+            console.log(`showFabrikElt: Element at index ${index} is undefined`)
         }
-    });
+    })
 
 }
 
@@ -84,32 +84,32 @@ function showFabrikElt(elements) {
  * @param clearElements
  */
 function hideFabrikGroupByElt(elements, clearElements = false) {
-    if (!Array.isArray(elements)) elements = [elements];
+    if (!Array.isArray(elements)) elements = [elements]
 
-    let form = null;
+    let form = null
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
-            document.getElementById(`group${element.groupid}`).classList.add('fabrikHide');
+            document.getElementById(`group${element.groupid}`).classList.add('fabrikHide')
 
             if (clearElements) {
 
-                if(form === null){
-                    form = Fabrik.getBlock(element.form.block);
+                if (form === null) {
+                    form = Fabrik.getBlock(element.form.block)
                 }
 
-                if(form) {
+                if (form) {
                     Object.values(form.elements).map((all_element) => {
                         if (all_element.groupid === element.groupid && all_element.plugin !== '') {
-                            all_element.clear();
+                            all_element.clear()
                         }
-                    });
+                    })
                 }
             }
         } else {
-            console.log(`hideFabrikGroupByElt: Element at index ${index} is undefined`);
+            console.log(`hideFabrikGroupByElt: Element at index ${index} is undefined`)
         }
-    });
+    })
 
 }
 
@@ -123,15 +123,15 @@ function hideFabrikGroupByElt(elements, clearElements = false) {
  * @param elements
  */
 function showFabrikGroupByElt(elements) {
-    if (!Array.isArray(elements)) elements = [elements];
+    if (!Array.isArray(elements)) elements = [elements]
 
-    elements.forEach((element,index) => {
+    elements.forEach((element, index) => {
         if (element) {
-            document.getElementById(`group${element.groupid}`).classList.remove('fabrikHide');
+            document.getElementById(`group${element.groupid}`).classList.remove('fabrikHide')
         } else {
-            console.log(`showFabrikGroupByElt: Element at index ${index} is undefined`);
+            console.log(`showFabrikGroupByElt: Element at index ${index} is undefined`)
         }
-    });
+    })
 }
 
 /**
@@ -145,25 +145,25 @@ function showFabrikGroupByElt(elements) {
  * @param clearElements
  */
 function hideFabrikGroup(groups, clearElements = false) {
-    if (!Array.isArray(groups)) groups = [groups];
+    if (!Array.isArray(groups)) groups = [groups]
 
-    groups.forEach((group,index) => {
+    groups.forEach((group, index) => {
         if (group) {
-            let selector = document.getElementById(`group${group}`);
-            if (selector) selector.classList.add('fabrikHide');
+            let selector = document.getElementById(`group${group}`)
+            if (selector) selector.classList.add('fabrikHide')
 
             if (clearElements) {
-                let formDiv = document.querySelector(`.fabrikForm`).getAttribute('name');
-                let form = Fabrik.getBlock(formDiv);
+                let formDiv = document.querySelector(`.fabrikForm`).getAttribute('name')
+                let form = Fabrik.getBlock(formDiv)
 
                 Object.values(form.elements).map((element) => {
-                    if (element.groupid == group) element.clear();
-                });
+                    if (element.groupid == group) element.clear()
+                })
             }
         } else {
-            console.log(`hideFabrikGroup: Group at index ${index} is undefined`);
+            console.log(`hideFabrikGroup: Group at index ${index} is undefined`)
         }
-    });
+    })
 }
 
 /**
@@ -176,15 +176,15 @@ function hideFabrikGroup(groups, clearElements = false) {
  * @param groups
  */
 function showFabrikGroup(groups) {
-    if (!Array.isArray(groups)) groups = [groups];
+    if (!Array.isArray(groups)) groups = [groups]
 
-    groups.forEach((group,index) => {
+    groups.forEach((group, index) => {
         if (group) {
-            document.getElementById(`group${group}`).classList.remove('fabrikHide');
-        }  else {
-            console.log(`showFabrikGroup: Group at index ${index} is undefined`);
+            document.getElementById(`group${group}`).classList.remove('fabrikHide')
+        } else {
+            console.log(`showFabrikGroup: Group at index ${index} is undefined`)
         }
-    });
+    })
 
 }
 
@@ -198,19 +198,18 @@ function showFabrikGroup(groups) {
  * @param max
  */
 function defineCheckboxLimit(element, max) {
-    var allCheck = element.subElements;
+    var allCheck = element.subElements
 
-    if(element.get('value').length >= max){
-        Object.values(allCheck).forEach((option) =>{
-            if(!element.get('value').includes(option.value)){
-                option.disabled = true;
+    if (element.get('value').length >= max) {
+        Object.values(allCheck).forEach((option) => {
+            if (!element.get('value').includes(option.value)) {
+                option.disabled = true
             }
-        });
-    }
-    else {
-        Object.values(allCheck).forEach((option) =>{
-            option.disabled = false;
-        });
+        })
+    } else {
+        Object.values(allCheck).forEach((option) => {
+            option.disabled = false
+        })
     }
 }
 
@@ -224,35 +223,32 @@ function defineCheckboxLimit(element, max) {
  */
 function firstLetterToUppercase(element) {
     if (element.get('value').length > 1) {
-        element.set(element.get('value')[0].toUpperCase() + element.get('value').substring(1));
+        element.set(element.get('value')[0].toUpperCase() + element.get('value').substring(1))
     }
 }
 
-function numberOfDaysBetweenDates(date1,date2 = null) {
-    if(date2 === null) {
-        date2 = new Date();
+function numberOfDaysBetweenDates(date1, date2 = null) {
+    if (date2 === null) {
+        date2 = new Date()
     }
 
-    const diffTime = Math.abs(date2 - date1);
-    return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffTime = Math.abs(date2 - date1)
+    return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 }
 
-function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
-    let fabrikForm = document.querySelector('form.fabrikForm');
-    if(fabrikForm)
-    {
-        fabrikForm.style.opacity = 0;
+function submit(title = 'Dossier en cours d\'envoi...', timer = 3000) {
+    let fabrikForm = document.querySelector('form.fabrikForm')
+    if (fabrikForm) {
+        fabrikForm.style.opacity = 0
     }
-    let fabrikHeader = document.querySelector('.page-header');
-    if(fabrikHeader)
-    {
-        fabrikHeader.style.opacity = 0;
+    let fabrikHeader = document.querySelector('.page-header')
+    if (fabrikHeader) {
+        fabrikHeader.style.opacity = 0
     }
 
-    let emundusForm = document.querySelector('.emundus-form');
-    if(emundusForm)
-    {
-        emundusForm.classList.add('skeleton');
+    let emundusForm = document.querySelector('.emundus-form')
+    if (emundusForm) {
+        emundusForm.classList.add('skeleton')
     }
 
     Swal.fire({
@@ -262,41 +258,41 @@ function submit(title = 'Dossier en cours d\'envoi...',timer = 3000) {
         showCancelButton: false,
         showConfirmButton: false,
         customClass: {
-            title: 'em-swal-title',
+            title: 'em-swal-title'
         },
         timer: timer
     }).then(() => {
-        if(fabrikForm)
-        {
-            fabrikForm.submit();
+        if (fabrikForm) {
+            fabrikForm.submit()
         }
-    });
+    })
 }
-function purcentage(elements){
 
-    const value = elements.get('value');
+function purcentage(elements) {
 
-    if (typeof value === "number") {
+    const value = elements.get('value')
+
+    if (typeof value === 'number') {
         if (value < 0) {
-            elements.set("");
+            elements.set('')
         } else if (value > 100) {
-            elements.set("100");
+            elements.set('100')
         } else {
-            elements.set(value.toString());
+            elements.set(value.toString())
         }
-    } else if (typeof value === "string") {
-        const numericValue = parseFloat(value);
+    } else if (typeof value === 'string') {
+        const numericValue = parseFloat(value)
 
         if (!isNaN(numericValue)) {
             if (numericValue < 0) {
-                elements.set("");
+                elements.set('')
             } else if (numericValue > 100) {
-                elements.set("100");
+                elements.set('100')
             } else {
-                elements.set(numericValue.toString());
+                elements.set(numericValue.toString())
             }
         } else {
-            elements.set("");
+            elements.set('')
         }
     }
 }
@@ -309,82 +305,76 @@ function purcentage(elements){
  * @returns {Date}
  */
 function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous devez être plus agé que %s ans', maxMessage = 'Vous devez être plus jeune que %s ans') {
-    const errorElement = document.querySelector('.fb_el_'+element.baseElementId + ' .fabrikErrorMessage');
-    if(errorElement) {
-        errorElement.innerHTML = '';
+    const errorElement = document.querySelector('.fb_el_' + element.baseElementId + ' .fabrikErrorMessage')
+    if (errorElement) {
+        errorElement.innerHTML = ''
     }
 
-    let error = '';
-    const value = element.get('value');
+    let error = ''
+    const value = element.get('value')
 
-    let regex = /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/;
-    const regexTest = regex.test(value);
-    const userBirthDate = new Date(value.replace(regex, "$3-$2-$1"));
-    let todayYear = (new Date()).getFullYear();
+    let regex = /^([0-9]{2})\/([0-9]{2})\/([0-9]{4})$/
+    const regexTest = regex.test(value)
+    const userBirthDate = new Date(value.replace(regex, '$3-$2-$1'))
+    let todayYear = (new Date()).getFullYear()
 
-    if (!regexTest || isNaN(userBirthDate))
-    {
-        error = 'Veuillez saisir une date de naissance valide';
-    }
-    else if(minAge !== 0)
-    {
-        let cutOffMin = new Date();
-        cutOffMin.setFullYear(todayYear - minAge);
+    if (!regexTest || isNaN(userBirthDate)) {
+        error = 'Veuillez saisir une date de naissance valide'
+    } else if (minAge !== 0) {
+        let cutOffMin = new Date()
+        cutOffMin.setFullYear(todayYear - minAge)
 
         if (userBirthDate > cutOffMin) {
-            error = minMessage.replace('%s', minAge.toString());
+            error = minMessage.replace('%s', minAge.toString())
         }
-    }
-    else if(maxAge !== 0)
-    {
-        let cutOffMax = new Date();
-        cutOffMax.setFullYear(todayYear - maxAge);
+    } else if (maxAge !== 0) {
+        let cutOffMax = new Date()
+        cutOffMax.setFullYear(todayYear - maxAge)
 
         if (userBirthDate < cutOffMax) {
-            error = maxMessage.replace('%s', maxAge.toString());
+            error = maxMessage.replace('%s', maxAge.toString())
         }
     }
 
-    if(error !== '')
-    {
-        if(errorElement) {
-            errorElement.innerHTML = error;
+    if (error !== '') {
+        if (errorElement) {
+            errorElement.innerHTML = error
         }
     }
 
-    return userBirthDate;
+    return userBirthDate
 }
 
 /**
  * Function to display a modal with a message in form 102
  */
 function submitNewFile() {
-    let campaign = document.getElementById('jos_emundus_campaign_candidature___campaign_id');
-    for (let i = 0; i < campaign.length; i++){
+    let campaign = document.getElementById('jos_emundus_campaign_candidature___campaign_id')
+    for (let i = 0; i < campaign.length; i++) {
         if (campaign.options[i].value == -1) {
-            campaign.options[i].disabled = true;
-            campaign.options[i].style.backgroundColor = "#efefef";
-            campaign.options[i].style.fontStyle = "italic";
+            campaign.options[i].disabled = true
+            campaign.options[i].style.backgroundColor = '#efefef'
+            campaign.options[i].style.fontStyle = 'italic'
         }
     }
 
-    var cid = document.querySelector('#jos_emundus_campaign_candidature___campaign_id option:checked').value;
-    if(cid != "" && cid != 0) {
-        document.querySelector('#form_102').style.visibility = 'hidden';
+    var cid = document.querySelector('#jos_emundus_campaign_candidature___campaign_id option:checked').value
+    if (cid != '' && cid != 0) {
+        document.querySelector('#form_102').style.visibility = 'hidden'
         Swal.fire({
                 title: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE'),
                 text: Joomla.JText._('COM_EMUNDUS_FABRIK_NEW_FILE_DESC'),
                 icon: 'success',
                 showConfirmButton: false
             }
-        );
-        document.querySelector('#form_102').submit();
+        )
+        document.querySelector('#form_102').submit()
     }
 }
 
 function checkPasswordSymbols(element) {
-    var regex = /[#$\{\};<> ]/;
-    var password_value = element.get('value');
+    var regex = /[#$\{\};<> ]/
+    var password_value = element.get('value')
 
     if (password_value.match(regex) != null) {
         Swal.fire({
@@ -395,80 +385,79 @@ function checkPasswordSymbols(element) {
             customClass: {
                 title: 'em-swal-title',
                 confirmButton: 'em-swal-confirm-button',
-                actions: 'em-swal-single-action',
+                actions: 'em-swal-single-action'
             }
-        });
+        })
 
-        element.set('');
+        element.set('')
     }
 }
 
-function cleanNumberInput(element, maxDecimals = 0,noGreaterThan = null,authorizeNegativeNumber = false) {
-    var value = element.get('value');
-    const input = document.getElementById(element.baseElementId);
-    var nonDigitExceptCommaDot = '';
+function cleanNumberInput(element, maxDecimals = 0, noGreaterThan = null, authorizeNegativeNumber = false) {
+    var value = element.get('value')
+    const input = document.getElementById(element.baseElementId)
+    var nonDigitExceptCommaDot = ''
 
-    if(authorizeNegativeNumber){
-        nonDigitExceptCommaDot = /[^-0-9.,]/;
+    if (authorizeNegativeNumber) {
+        nonDigitExceptCommaDot = /[^-0-9.,]/
+    } else {
+        nonDigitExceptCommaDot = /[^0-9.,]/
     }
-    else{
-        nonDigitExceptCommaDot = /[^0-9.,]/;
-    }
 
-    const moreThanOneCommaDot = /[.,].*[.,]/;
+    const moreThanOneCommaDot = /[.,].*[.,]/
 
-    const caretPosition = input.selectionStart;
-    const lastInsertedCharacter = value.charAt(caretPosition - 1);
+    const caretPosition = input.selectionStart
+    const lastInsertedCharacter = value.charAt(caretPosition - 1)
 
     if (nonDigitExceptCommaDot.test(value)) {
-        value = value.replace(nonDigitExceptCommaDot, '');
+        value = value.replace(nonDigitExceptCommaDot, '')
     }
 
     // If the last inserted character is a comma, replace it with a dot
     if (lastInsertedCharacter === ',') {
-        value = value.substring(0, caretPosition - 1) + '.' + value.substring(caretPosition);
+        value = value.substring(0, caretPosition - 1) + '.' + value.substring(caretPosition)
     }
 
     if (moreThanOneCommaDot.test(value)) {
-        value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
+        value = value.substring(0, caretPosition - 1) + value.substring(caretPosition)
     }
 
-    const dotOrCommaIndex = value.indexOf(".") !== -1 ? value.indexOf(".") : value.indexOf(",");
+    const dotOrCommaIndex = value.indexOf('.') !== -1 ? value.indexOf('.') : value.indexOf(',')
     if (dotOrCommaIndex !== -1) {
-        const digitsAfterDotOrComma = value.substring(dotOrCommaIndex + 1).length;
+        const digitsAfterDotOrComma = value.substring(dotOrCommaIndex + 1).length
         if (digitsAfterDotOrComma > maxDecimals) {
-            value = value.substring(0, caretPosition - 1) + value.substring(caretPosition);
+            value = value.substring(0, caretPosition - 1) + value.substring(caretPosition)
         }
     }
-    if (maxDecimals === 0 && value.indexOf(".") !== -1) {
-        value = value.replace(".", "");
+    if (maxDecimals === 0 && value.indexOf('.') !== -1) {
+        value = value.replace('.', '')
     }
 
     if (noGreaterThan !== null && value > noGreaterThan) {
-        value = '';
+        value = ''
     }
 
 
-    return value;
+    return value
 }
 
 function prefillBic(element, bic_element) {
-    let table_name = element.form.options.primaryKey.split('___')[0];
-    var fab = element.form.elements;
-    if(element.options.inRepeatGroup) {
-        var bic = fab.get(table_name+'_'+element.groupid+'_repeat___'+bic_element+'_'+element.getRepeatNum());
+    let table_name = element.form.options.primaryKey.split('___')[0]
+    var fab = element.form.elements
+    if (element.options.inRepeatGroup) {
+        var bic = fab.get(table_name + '_' + element.groupid + '_repeat___' + bic_element + '_' + element.getRepeatNum())
     } else {
-        var bic = fab.get(table_name + '___' + bic_element);
+        var bic = fab.get(table_name + '___' + bic_element)
     }
 
     var value = element.get('value')
 
     if (bic && value != '') {
-        value = value.replace(/\s/g, "");
-        var bank_code = value.substring(4, 9);
+        value = value.replace(/\s/g, '')
+        var bank_code = value.substring(4, 9)
 
-        if(element.options.bicMapping[bank_code]) {
-            bic.set(element.options.bicMapping[bank_code]);
+        if (element.options.bicMapping[bank_code]) {
+            bic.set(element.options.bicMapping[bank_code])
         }
     }
 }
@@ -480,33 +469,56 @@ function prefillBic(element, bic_element) {
  * @returns {string}
  */
 function getElementShowedValue(element) {
-    let value = '';
 
     if (element) {
-        const html = element.element;
+        const container = element.getContainer()
 
-        if (html.tagName === 'SELECT') { // only for select
-            value = html.options[html.selectedIndex].text;
-        } else {
+        switch (element.plugin) {
+            case 'fabrikyesno':
+            case 'fabrikradiobutton':
+            case 'fabrikcheckbox':
+            case 'databasejoin':
+            case 'fabrikdropdown':
+                const values = Array.isArray(element.get('value')) ? element.get('value') : [element.get('value')]
+                let inputChecked = []
+                values.forEach((value) => {
+                    if (value !== null && value !== '') {
+                        inputChecked.push(container.querySelector('[value=\"' + value + '\"]'))
+                    }
+                })
 
-            value = element.get('value');
-            const inputs = html.getElementsByTagName('input');
-
-            for (let i = 0; i < inputs.length; i++) {
-                if (inputs[i].type === 'radio' || inputs[i].type === 'checkbox') {
-                    if (inputs[i].id.includes(html.id)) { // only for databasejoin, yesno, radio, checkbox
-                        if (inputs[i].checked) {
-                            value = inputs[i].nextElementSibling.textContent; // the span value
+                let checked = []
+                inputChecked.forEach((input) => {
+                    if (input) {
+                        if (input.localName === 'option') {
+                            checked.push(input.innerText)
+                        } else {
+                            checked.push(input.nextSibling.textContent)
                         }
                     }
-                }
-            }
-        }
-    } else {
-        console.log(`getElementShowedValue: Element is undefined`)
-    }
+                })
+                return checked.join(', ')
 
-    return value;
+
+            case 'panel':
+                const div_info = container.querySelector('.fabrikElementReadOnly').cloneNode(true)
+                div_info.classList.remove('fabrikHide')
+                return div_info
+
+            case 'emundus_fileupload':
+            case 'emundus_fileupload_new':
+                const div_attachment = container.querySelector('.em-fileAttachment').cloneNode(true)
+                for (const child of div_attachment.querySelectorAll('*')) {
+                    if (child.classList.contains('em-deleteFile')) {
+                        child.remove()
+                    }
+                }
+                return div_attachment
+
+            default:
+                return element.get('value')
+        }
+    }
 }
 
 
@@ -518,155 +530,84 @@ function getElementShowedValue(element) {
  */
 function readOnlyElt(elements, flag = true) {
 
-    if (!Array.isArray(elements)) elements = [elements];
+    if (!Array.isArray(elements)) elements = [elements]
 
     elements.forEach((element, index) => {
         if (element) {
-            const elementHTML = element.element;
-            const prefix = 'span ';
-            let span = document.getElementById(prefix + elementHTML.id);
+            const elementHTML = element.element
+            const prefix = 'span '
+            let span = document.getElementById(prefix + elementHTML.id)
 
             if (flag) { // on rajoute le span s'il n'existe pas
                 if (span === null) {
-                    span = document.createElement('span');
-                    span.id = prefix + elementHTML.id;
+                    span = document.createElement('span')
+                    span.id = prefix + elementHTML.id
 
-                    let parent = document.getElementById(elementHTML.id).parentNode;
+                    let parent = document.getElementById(elementHTML.id).parentNode
 
-                    elementHTML.classList.add('fabrikHide');
-                    parent.appendChild(span);
+                    elementHTML.classList.add('fabrikHide')
+                    parent.appendChild(span)
                 }
 
-                span.textContent = getElementShowedValue(element);
+                span.textContent = getElementShowedValue(element)
 
             } else { // on retire le span s'il existe
                 if (span != null) {
-                    elementHTML.classList.remove('fabrikHide');
-                    span.remove();
+                    elementHTML.classList.remove('fabrikHide')
+                    span.remove()
                 }
             }
         } else {
-            console.log(`readOnlyElt: Element at index ${index} is undefined`);
+            console.log(`readOnlyElt: Element at index ${index} is undefined`)
         }
-    });
-}
-
-function vote(guest,listid,id,email) {
-    let html = Joomla.JText._('COM_FABRIK_VOTE_MODAL_TEXT');
-
-    if(guest != 1) {
-        html += '<div class="mt-4 hidden"><label for"email">Adresse email</label><input id="vote_email" type="email" value="' + email + '"/></div>';
-    } else {
-        html += '<div class="mt-4"><label for"email">Adresse email</label><input id="vote_email" type="email"/></div>';
-    }
-
-    //TODO: Check voting access to redirect to login page if needed
-    fetch('index.php?option=com_emundus&controller=vote&task=checkaccess&listid=' + listid + '&ccid=' + id).then(response => response.json()).then(data => {
-        if(!data.access) {
-            window.location.href = data.login_url;
-        } else {
-            Swal.fire({
-                html: html.replace('{project_name}',data.project_name),
-                focusConfirm: false,
-                preConfirm: () => {
-                    if (!document.getElementById('vote_email').value) {
-                        Swal.showValidationMessage(Joomla.JText._('COM_FABRIK_ERROR_PLEASE_COMPLETE_EMAIL'))
-                    }
-                    return [
-                        document.getElementById('vote_email').value
-                    ]
-                },
-                title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
-                showCancelButton: true,
-                confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_YES'),
-                cancelButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_NO'),
-                reverseButtons: true,
-                customClass: {
-                    cancelButton: 'em-swal-cancel-button',
-                    confirmButton: 'em-swal-confirm-button',
-                },
-            }).then(function (result) {
-                if (result.value) {
-                    let url = 'index.php?option=com_emundus&controller=vote&task=vote';
-
-                    let formData = new FormData();
-                    formData.append('listid', listid);
-                    formData.append('email', result.value[0]);
-                    formData.append('ccid', id);
-
-                    fetch(url, {
-                        method: 'POST',
-                        body: formData,
-                    })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.status) {
-                                Swal.fire({
-                                    icon: 'success',
-                                    title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE'),
-                                    html: Joomla.JText._('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT'),
-                                    showConfirmButton: true,
-                                    confirmButtonText: Joomla.JText._('COM_FABRIK_VOTE_MODAL_GO_BACK'),
-                                    customClass: {
-                                        confirmButton: 'em-swal-confirm-button',
-                                    },
-                                }).then((result) => {
-                                    if(result.value) {
-                                        window.location.href = Joomla.JText._('COM_FABRIK_VOTE_MODAL_HOME_LINK');
-                                    }
-                                });
-                            } else {
-                                Swal.fire({
-                                    icon: 'error',
-                                    title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
-                                    text: data.message,
-                                    showConfirmButton: false,
-                                    timer: 2000
-                                });
-                            }
-                        })
-                        .catch((error) => {
-                            Swal.fire({
-                                icon: 'error',
-                                title: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TITLE'),
-                                text: Joomla.JText._('COM_FABRIK_VOTE_MODAL_ERROR_TEXT'),
-                                showConfirmButton: false,
-                                timer: 2000
-                            })
-                        });
-                }
-            });
-        }
-    });
+    })
 }
 
 /**
- * Toggle the visibility icon in the password field on the registration page
- */
+ + * Toggle readonly mode for one or multiple elements
+ + * @param elements
+ + * @param toogle {boolean} - true to enable readonly mode, false to disable
+ + */
+function toggleReadOnly(elements, toogle = true) {
 
-function togglePasswordVisibility() {
-    var passwordInput = document.querySelector('#jos_emundus_users___password');
+    if (!Array.isArray(elements)) elements = [elements]
 
-    var spanShowPassword = document.createElement('span');
-    spanShowPassword.classList.add('material-icons-outlined');
-    spanShowPassword.classList.add('em-pointer');
-    spanShowPassword.innerText = "visibility";
-    spanShowPassword.style.position = "absolute";
-    spanShowPassword.style.top = "10px";
-    spanShowPassword.style.right = "10px";
-    spanShowPassword.style.opacity = "0.3";
+    elements.forEach((element) => {
+        if (element) {
 
-    passwordInput.parentNode.style.position = "relative";
+            // get all important html elements
+            const main_div_element = document.querySelector('.fb_el_' + element.element.id)
+            const main_div_fabrik_element = main_div_element.querySelector('.fabrikElement')
+            const main_div_children = main_div_fabrik_element.children
+            let span = document.getElementById('span_' + element.element.id)
 
-    passwordInput.parentNode.insertBefore(spanShowPassword, passwordInput.nextSibling);
+            if (toogle) {
 
-    spanShowPassword.addEventListener('click', function () {
-      if (spanShowPassword.innerText === "visibility_off") {
-        spanShowPassword.innerText = "visibility";
-        passwordInput.type = "password";
-      } else {
-        spanShowPassword.innerText = "visibility_off";
-        passwordInput.type = "text";
-      }
-    });
+
+                // get the value to show for span
+                const value = getElementShowedValue(element)
+                if (value instanceof HTMLElement) {
+                    if (span.children.length === 0) {
+                        span.appendChild(value)
+                    } else {
+                        span.replaceChild(value, span.children[0])
+                    }
+                } else {
+                    span.textContent = value
+                }
+
+            } else {
+
+                // remove span element
+                if (span !== null) {
+                    span.remove()
+                }
+
+                // remove fabrikHide class to each children elements
+                for (let i = 0; i < main_div_children.length; i++) {
+                    main_div_children[i].classList.remove('fabrikHide')
+                }
+            }
+        }
+    })
 }

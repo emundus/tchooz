@@ -669,6 +669,7 @@ const _sfc_main$m = {
           this.parameters.forEach((param) => {
             data[param.param] = param.value;
           });
+          data["technical_contacts"] = data["technical_contacts"].map((contact) => contact.code);
           Swal.fire({
             position: "center",
             iconHtml: '<img class="em-sending-email-img tw-w-1/2 tw-max-w-none" src="/media/com_emundus/images/tchoozy/complex-illustrations/sending-message.svg"/>',
@@ -916,7 +917,7 @@ const _hoisted_1$l = { class: "tw-items-left tw-font-large tw-flex tw-list-none 
 const _hoisted_2$l = { class: "tw-flex tw-w-10 tw-items-center tw-justify-between" };
 const _hoisted_3$l = {
   key: 0,
-  class: "tw-pl-1 tw-text-neutral-900"
+  class: "!tw-text-link-regular group-hover:tw-underline"
 };
 const _hoisted_4$l = {
   key: 0,
@@ -938,10 +939,10 @@ function _sfc_render$l(_ctx, _cache, $props, $setup, $data, $options) {
       createBaseVNode("ul", _hoisted_1$l, [
         createBaseVNode("li", _hoisted_2$l, [
           createBaseVNode("span", {
-            class: "tw-group tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-rounded-md tw-px-2 tw-py-1 hover:tw-bg-neutral-300",
+            class: "tw-group tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular",
             onClick: _cache[0] || (_cache[0] = ($event) => $options.clickReturn())
           }, [
-            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-user-select-none tw-text-neutral-600" }, "navigate_before", -1)),
+            _cache[4] || (_cache[4] = createBaseVNode("span", { class: "material-symbols-outlined tw-user-select-none tw-mr-1 tw-text-link-regular" }, "navigate_before", -1)),
             $data.minimized === false ? (openBlock(), createElementBlock("span", _hoisted_3$l, toDisplayString(_ctx.translate("BACK")), 1)) : createCommentVNode("", true)
           ]),
           withDirectives(createBaseVNode("span", {
@@ -1598,7 +1599,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
           createBaseVNode("div", null, [
             withDirectives(createBaseVNode("input", {
               type: "color",
-              class: "custom-color-picker !tw-rounded-full",
+              class: "custom-color-picker !tw-mb-0 !tw-rounded-full hover:!tw-shadow-none",
               "onUpdate:modelValue": _cache[0] || (_cache[0] = ($event) => $data.primary = $event),
               id: "primary_color"
             }, null, 512), [
@@ -1612,7 +1613,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
             withDirectives(createBaseVNode("input", {
               type: "color",
               "onUpdate:modelValue": _cache[1] || (_cache[1] = ($event) => $data.secondary = $event),
-              class: "custom-color-picker !tw-rounded-full",
+              class: "custom-color-picker !tw-mb-0 !tw-rounded-full hover:!tw-shadow-none",
               id: "secondary_color"
             }, null, 512), [
               [vModelText, $data.secondary]
@@ -1711,7 +1712,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
                 $data.contrastSecondary.AALarge === "pass" ? (openBlock(), createElementBlock("span", _hoisted_24$1, "check_circle")) : createCommentVNode("", true),
                 $data.contrastSecondary.AALarge === "fail" ? (openBlock(), createElementBlock("span", _hoisted_25$1, "highlight_off")) : createCommentVNode("", true),
                 createBaseVNode("button", {
-                  class: "tw-btn-secondary tw-font-bold tw-text-white",
+                  class: "tw-btn-secondary tw-font-bold !tw-text-white",
                   style: normalizeStyle({
                     backgroundColor: $data.secondary,
                     borderColor: $data.secondary
@@ -1732,7 +1733,7 @@ function _sfc_render$i(_ctx, _cache, $props, $setup, $data, $options) {
     $data.loading ? (openBlock(), createElementBlock("div", _hoisted_26$1)) : createCommentVNode("", true)
   ])) : createCommentVNode("", true);
 }
-const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-80ae39fa"]]);
+const EditTheme = /* @__PURE__ */ _export_sfc(_sfc_main$i, [["render", _sfc_render$i], ["__scopeId", "data-v-e84d6886"]]);
 const _sfc_main$h = {
   name: "editStatus",
   components: {

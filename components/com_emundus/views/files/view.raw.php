@@ -185,9 +185,9 @@ class EmundusViewFiles extends JViewLegacy
 					if(empty($fnum)) {
 						$this->menu_title = $current_menu->title;
 					} else {
-						$this->menu_title = '<button id="em-close-file" class="back-button-menuactions tw-flex tw-items-center em-color-white tw-cursor-pointer bg-transparent" style="border: none; height: 100%; margin: 0 4px 0 0; border-radius: 6px; padding: 4px 8px 4px 2px;">
-						<span class="material-symbols-outlined">chevron_left</span>
-						<span style="font-weight: 400 !important; margin-left: 8px;">' . JText::_('GO_BACK') . '</span>
+						$this->menu_title = '<button id="em-close-file" class="back-button-menuactions tw-flex tw-items-center tw-text-neutral-0 tw-cursor-pointer bg-transparent tw-font-semibold tw-group !tw-border-none hover:!tw-bg-transparent">
+						<span class="material-symbols-outlined tw-mr-1 -tw-ml-[15px]">chevron_left</span>
+						<span class="group-hover:tw-underline">' . JText::_('GO_BACK') . '</span>
 						</button>';
 					}
 

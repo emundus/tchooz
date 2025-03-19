@@ -75,6 +75,9 @@ module.exports = {
                     medium: 'hsl(from var(--em-profile-color) h s l / 30%)',
                     dark: 'color-mix(in srgb,var(--em-profile-color),#000 15%)',
                 },
+                link: {
+                    regular: 'var(--link-regular)',
+                } ,
 
                 coordinator: {
                     bg: 'var(--em-coordinator-bg)',
@@ -170,6 +173,7 @@ module.exports = {
                 'coordinator-cards': 'var(--em-coordinator-br-cards)',
                 'applicant': 'var(--em-applicant-br)',
                 'form': 'var(--em-form-br)',
+                'status': 'var(--em-status-br)'
             },
             boxShadow: {
                 'standard': 'var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3)',
@@ -225,10 +229,11 @@ module.exports = {
                     fontFamily: 'var(--em-profile-font)',
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
-                    transition: 'all 0.3s ease-in-out',
+                    transition: 'all 0.2s ease-out',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    cursor: 'pointer',
 
                     '&:hover': {
                         backgroundColor: 'var(--neutral-0)',
@@ -254,10 +259,11 @@ module.exports = {
                     fontFamily: 'var(--em-profile-font)',
                     lineHeight: '1.25',
                     borderRadius: 'var(--em-applicant-br)',
-                    transition: 'all 0.3s ease-in-out',
+                    transition: 'all 0.2s ease-out',
                     display: 'flex',
                     justifyContent: 'center',
                     alignItems: 'center',
+                    cursor: 'pointer',
 
                     '&:hover': {
                         backgroundColor: 'var(--em-secondary-color)',

@@ -20,7 +20,7 @@
 				v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
 				v-show="!loading"
 				:src="selectedEvaluation.url"
-				class="iframe-evaluation-list tw-w-full"
+				class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-6"
 				:key="selectedTab"
 				@load="iframeLoaded($event)"
 			>

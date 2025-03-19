@@ -46,14 +46,14 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
       $props.addAction ? (openBlock(), createElementBlock("a", {
         key: 0,
         id: "add-action-btn",
-        class: "tw-btn-primary tw-w-auto tw-cursor-pointer",
+        class: "tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator",
         onClick: _cache[0] || (_cache[0] = ($event) => $options.onClickAction($props.addAction))
       }, toDisplayString(_ctx.translate($props.addAction.label)), 1)) : createCommentVNode("", true)
     ]),
     $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$6, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
   ]);
 }
-const Head = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-0c0113e1"]]);
+const Head = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-041fbbe6"]]);
 const _sfc_main$7 = {
   name: "Filter",
   props: {
@@ -401,9 +401,13 @@ const _sfc_main$5 = {
   },
   computed: {
     multipleExportsPopover() {
-      return this.tab.exports.filter((exp) => {
-        return exp.multiple;
-      });
+      let exports = [];
+      if (this.tab.exports) {
+        exports = this.tab.exports.filter((exp) => {
+          return exp.multiple;
+        });
+      }
+      return exports;
     }
   },
   watch: {
@@ -1958,7 +1962,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                       $data.viewType === "blocs" && $options.editAction ? (openBlock(), createElementBlock("a", {
                         key: 0,
                         onClick: ($event) => $options.onClickAction($options.editAction, item.id, false, $event),
-                        class: "tw-btn-primary tw-w-auto tw-cursor-pointer tw-text-sm"
+                        class: "tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
                       }, toDisplayString(_ctx.translate($options.editAction.label)), 9, _hoisted_23)) : createCommentVNode("", true),
                       createBaseVNode("div", _hoisted_24, [
                         $options.editAction && $data.viewType === "table" ? (openBlock(), createElementBlock("button", {
@@ -2087,7 +2091,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7bb293f7"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a8f9ac0e"]]);
 export {
   list as default
 };

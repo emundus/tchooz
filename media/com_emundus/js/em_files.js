@@ -1588,6 +1588,7 @@ async function countFilesBeforeAction(fnums, action, verb) {
 
 function updateState(fnums, state)
 {
+    addLoader();
     let view = document.getElementById("view").value;
 
     if (view !== 'evaluation') {
@@ -6299,4 +6300,54 @@ function removeElementFromXlsRecap(e) {
     if (elementLi) {
         elementLi.remove();
     }
+}
+
+document.addEventListener('click', (e) => {
+    if (e.target.id === 'delete_evaluation') {
+        const fnum = e.target.getAttribute('data-fnum');
+        const stepId = e.target.getAttribute('data-step_id');
+        const rowId = e.target.getAttribute('data-row_id');
+
+        if (fnum && stepId > 0 && rowId > 0) {
+            Swal.fire({
+                title: Joomla.Text._('COM_EMUNDUS_EVALUATION_DELETE_EVALUATION'),
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE'),
+                cancelButtonText: Joomla.Text._('COM_EMUNDUS_ACTIONS_CANCEL'),
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    cancelButton: 'em-swal-cancel-button',
+                    confirmButton: 'em-swal-confirm-button',
+                }
+            }).then((result) => {
+                if (result.value) {
+                    deleteEvaluation(fnum, stepId, rowId);
+                }
+            });
+        }
+    }
+});
+
+function deleteEvaluation(fnum, stepId, rowId) {
+    fetch('/index.php?option=com_emundus&controller=evaluation&task=deleteEvaluation&fnum=' + fnum + '&step_id=' + stepId + '&row_id=' + rowId)
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then((result) => {
+            if (result.status) {
+                Swal.fire({
+                    title: Joomla.Text._('COM_EMUNDUS_EVALUATION_DELETE_SUCCESS'),
+                    icon: 'success',
+                    timer: 2000,
+                    showConfirmButton: false
+                }).then(() => {
+                    reloadData(document.getElementById('view').getAttribute('value'), false);
+                });
+            }
+        }).catch((error) => {
+            console.log(error);
+        });
 }

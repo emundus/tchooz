@@ -21,12 +21,13 @@ export default {
 	data() {
 		return {
 			loading: true,
+			emails: [],
 
 			fields: [
 				{
 					param: 'applicant_notify',
 					type: 'toggle',
-					value: 0,
+					value: 1,
 					label: 'COM_EMUNDUS_ONBOARD_ADD_EVENT_NOTIFICATIONS_APPLICANT_NOTIFY',
 					displayed: true,
 					hideLabel: true,
@@ -164,6 +165,23 @@ export default {
 			if (response.status === true && this.event && this.event['notifications']) {
 				for (const field of this.fields) {
 					field.value = this.event['notifications'][field.param];
+					if (field.param === 'applicant_notify_email' && field.value == 0) {
+						// Search email with lbl === 'booking_confirmation'
+						let email = this.emails.find((email) => email.lbl === 'booking_confirmation');
+						if (email) {
+							field.value = email.value;
+						}
+					}
+				}
+			} else {
+				for (const field of this.fields) {
+					if (field.param === 'applicant_notify_email' && field.value == 0) {
+						// Search email with lbl === 'booking_confirmation'
+						let email = this.emails.find((email) => email.lbl === 'booking_confirmation');
+						if (email) {
+							field.value = email.value;
+						}
+					}
 				}
 			}
 			this.loading = false;
@@ -175,11 +193,11 @@ export default {
 				this.loading = true;
 				emailService.getEmails().then((response) => {
 					if (response.status) {
-						let emails = [];
 						for (const email of response.data.datas) {
-							emails.push({
+							this.emails.push({
 								value: email.id,
 								label: email.subject,
+								lbl: email.lbl,
 							});
 						}
 
@@ -191,7 +209,7 @@ export default {
 						];
 
 						if (response.status) {
-							Array.prototype.push.apply(options, emails);
+							Array.prototype.push.apply(options, this.emails);
 						}
 
 						this.fields.find((field) => field.param === 'applicant_notify_email').options = options;

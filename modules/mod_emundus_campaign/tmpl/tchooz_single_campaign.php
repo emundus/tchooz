@@ -91,7 +91,7 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 
 <div class="mod_emundus_campaign__grid em-mt-24 em-mb-64" style="grid-gap: 64px">
     <div>
-        <button type="button" class="em-flex-row em-mb-12 em-pointer em-w-max-content"
+        <button type="button" class="tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group em-mb-12 em-w-max-content"
 		    <?php if($mod_em_campaign_go_back_link == 1) : ?>
                 onclick="history.go(-1)"
 		    <?php elseif($mod_em_campaign_go_back_link == 2) : ?>
@@ -100,8 +100,8 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
                 onclick="window.location.href='<?php echo $mod_em_campaign_go_back_external_url; ?>'"
 		    <?php endif; ?>
         >
-            <span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">navigate_before</span><span
-                    class="em-ml-8 em-text-neutral-900 em-profile-font"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
+            <span class="material-symbols-outlined tw-mr-1 tw-text-link-regular" aria-hidden="true">navigate_before</span>
+            <span class="group-hover:tw-underline"><?php echo JText::_('MOD_EM_CAMPAIGN_BACK'); ?></span>
         </button>
 		<?php if ($mod_em_campaign_details_show_programme == 1) : ?>
 			<?php

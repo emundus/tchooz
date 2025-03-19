@@ -1,5 +1,5 @@
 <template>
-	<div :class="'step-types-level-' + parentId + ' tw-p-2'">
+	<div :class="'step-types-level-' + parentId">
 		<div v-for="type in stepTypesByParentId" :key="type.id">
 			<div class="tw-mb-2 tw-flex tw-w-full tw-flex-row tw-items-center">
 				<span v-for="i in level" :key="i" class="material-symbols-outlined">horizontal_rule</span>

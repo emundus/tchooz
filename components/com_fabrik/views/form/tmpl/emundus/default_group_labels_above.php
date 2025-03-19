@@ -19,7 +19,7 @@ $element = $this->element;
 ?>
 <?php echo $element->label; ?>
 
-<?php if ($this->tipLocation == 'above') : ?>
+<?php if ($this->tipLocation == 'above' && !empty($element->tipAbove)) : ?>
     <span class="fabrikElementTip fabrikElementTipAbove"><?php echo $element->tipAbove ?></span>
 <?php endif ?>
 
@@ -34,10 +34,10 @@ $element = $this->element;
     <?php endif; ?>
 </div>
 
-<?php if ($this->tipLocation == 'side') : ?>
+<?php if ($this->tipLocation == 'side' && !empty($element->tipSide)) : ?>
     <span class="fabrikElementTip"><?php echo $element->tipSide ?></span>
 <?php endif ?>
 
-<?php if ($this->tipLocation == 'below') : ?>
+<?php if ($this->tipLocation == 'below' && !empty($element->tipBelow)) : ?>
     <p class="fabrikElementTip fabrikElementTipBelow"><?php echo $element->tipBelow ?></p>
 <?php endif ?>

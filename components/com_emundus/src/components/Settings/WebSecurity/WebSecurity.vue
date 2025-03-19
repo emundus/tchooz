@@ -212,6 +212,9 @@ export default {
 						data[param.param] = param.value;
 					});
 
+					// For technical contacts, we need to send an array of emails
+					data['technical_contacts'] = data['technical_contacts'].map((contact) => contact.code);
+
 					Swal.fire({
 						position: 'center',
 						iconHtml:

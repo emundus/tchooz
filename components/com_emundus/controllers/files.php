@@ -1765,16 +1765,16 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
 						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
 							if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
-								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 								$nbcol++;
 							}
 							elseif (count($opts) == 1) {
 								if (in_array("form-title", $opts)) {
-									$line .= Text::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 								elseif (in_array("form-group", $opts)) {
-									$line .= Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 							}
@@ -1804,7 +1804,7 @@ class EmundusControllerFiles extends BaseController
 								$iban_elements[$elt_name] = $params->encrypt_datas;
 							}
 
-							$line .= preg_replace('#<[^>]+>#', ' ', Text::_($fLine->element_label)) . "\t";
+							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
 					}
@@ -1967,7 +1967,7 @@ class EmundusControllerFiles extends BaseController
 											$line .= " " . mb_strtoupper($v) . "\t";
 										}
 										else {
-											$line .= " " . $v . "\t";
+											$line .= " " . preg_replace("/\t/", "", $v) . "\t";
 										}
 									}
 									else {
@@ -1986,7 +1986,7 @@ class EmundusControllerFiles extends BaseController
 											if ($textarea_elements[$k] == 1) {
 												$v = strip_tags($v);
 											}
-											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+                                            $line .= preg_replace("/\t/", "", $v)."\t"; // limit preg_replace to keep linebreaks
 										}
 										elseif(!empty($iban_elements[$k])){
 											if($iban_elements[$k] == 1){
@@ -3804,8 +3804,8 @@ class EmundusControllerFiles extends BaseController
 				$templates = $this->input->post->getRaw('ids_tmpl');
 				$canSee    = $this->input->post->getRaw('cansee', 0);
 
-				$showMode  = $this->input->post->getRaw('showMode', 0);
-				$mergeMode = $this->input->post->getRaw('mergeMode', 0);
+				$showMode  = $this->input->post->getInt('showMode', 0);
+				$mergeMode = $this->input->post->getInt('mergeMode', 0);
 				$force_replace_document = $this->input->getInt('force_replace_document', 0) == 1;
 
 				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');

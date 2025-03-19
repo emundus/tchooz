@@ -24,13 +24,13 @@ else :
 	?>
 <div class="fabrikDateListFilterRange" >
 	<div class="row">
-		<div class="col-2 text-end">
+		<div class="col-2 text-end tw-flex tw-items-center">
 		<label for="<?php echo $from->id; ?>"><?php echo Text::_('COM_FABRIK_DATE_RANGE_BETWEEN') . ' '; ?>
 		</label></div>
 		<div class="w-auto"><?php echo $d->jCalFrom; ?></div>
 	</div>
-	<div class="row">
-		<div class="col-2 text-end">
+	<div class="row tw-flex-nowrap">
+		<div class="col-2 text-end tw-flex tw-items-center">
 		<label for="<?php echo $to->id; ?>">	<?php echo Text::_('COM_FABRIK_DATE_RANGE_AND') . ' '; ?>
 		</label></div>
 		<div class="w-auto"><?php echo $d->jCalTo; ?></div>
