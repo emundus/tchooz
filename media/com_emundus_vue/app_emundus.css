@@ -3316,10 +3316,11 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-265839f0],
 	min-height: unset !important;
 }
 
-.iframe-evaluation-list[data-v-12951b18] {
+.iframe-evaluation-list[data-v-cd10b353] {
 	width: 100%;
 	min-height: 80%;
 	border: unset;
+	height: 100%;
 }
 
 .iframe-selected-evaluation[data-v-754fc6df] {
@@ -3330,7 +3331,7 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-265839f0],
 	display: grid;
 	grid-gap: 16px;
 	width: 100%;
-	height: 100vh;
+	height: auto;
 }
 .scrollable {
 	height: calc(100vh - 100px);
