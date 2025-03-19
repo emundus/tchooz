@@ -362,6 +362,7 @@ class EmundusViewEvaluation extends JViewLegacy
 
 									$link_view = '';
 									$link_edit = '';
+									$delete_button = '';
 
 									if ($evaluators_can_see_other_eval || EmundusHelperAccess::asAccessAction($action_id, 'r', $this->_user->id)) {
 										$link_view = '<a href="' . $form_url_view . $user['evaluation_id'] . '" target="_blank" data-remote="' . $form_url_view . $user['evaluation_id'] . '" id="em_form_eval_' . $i . '-' . $user['evaluation_id'] . '"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_DETAILS') . '">visibility</span></a>';
@@ -371,8 +372,18 @@ class EmundusViewEvaluation extends JViewLegacy
 										$link_edit = '<a href="' . $this->form_url_edit . $user['evaluation_id'] . '" target="_blank"><span class="material-symbols-outlined tw-cursor-pointer" title="' . Text::_('COM_EMUNDUS_ACTIONS_EDIT') . '">edit</span></a>';
 									}
 
-									$userObj->val = $link_view . ' ' . $link_edit . ' ' . $value;
+									if (EmundusHelperAccess::asAccessAction($action_id, 'd', $this->_user->id)) {
+										$delete_button = '<span 
+											title="' . Text::_("COM_EMUNDUS_EVALUATIONS_DELETE_SELECTED_EVALUATIONS") . '"
+											id="delete_evaluation" 
+											class="material-symbols-outlined tw-cursor-pointer"
+											data-fnum="' . $user['fnum'] . '"
+											data-step_id="' . $user['evaluations_step_id'] . '"
+											data-row_id="' . $user['evaluation_id'] . '"
+										>delete_outline</span>';
+									}
 
+									$userObj->val = $link_view . ' ' . $link_edit . ' ' . $delete_button . ' ' . $value;
 								}
 								else {
 									$userObj->val = $value;

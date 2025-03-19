@@ -2394,6 +2394,12 @@ class EmundusModelEvaluation extends JModelList
 		}
 	}
 
+	/**
+	 * @deprecated
+	 * @param $id
+	 *
+	 * @return bool
+	 */
 	public function delevaluation($id)
 	{
 		$deleted = false;
@@ -2411,6 +2417,50 @@ class EmundusModelEvaluation extends JModelList
 		catch (Exception $e)
 		{
 			Log::add('Error in model/evaluation at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
+		}
+
+		return $deleted;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 * @param   object  $step_data
+	 * @param   int     $row_id
+	 *
+	 * @return bool
+	 */
+	public function deleteEvaluation(string $fnum, object $step_data, int $row_id, int $user_id) : bool
+	{
+		$deleted = false;
+
+		if (!empty($fnum) && !empty($step_data->id) && !empty($row_id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('evaluator')
+				->from($this->db->quoteName($step_data->table))
+				->where($this->db->quoteName('id') . ' = ' . $row_id);
+			$this->db->setQuery($query);
+			$evaluator = $this->db->loadResult();
+
+			$query->clear()
+				->delete($this->db->quoteName($step_data->table))
+				->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum))
+				->andWhere($this->db->quoteName('step_id') . ' = ' . $step_data->id)
+				->andWhere($this->db->quoteName('id') . ' = ' . $row_id);
+
+			try {
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+
+				if ($deleted) {
+					$m_files = new EmundusModelFiles();
+					$fnum_infos = $m_files->getFnumInfos($fnum);
+
+					EmundusModelLogs::log($user_id, $fnum_infos['applicant_id'], $fnum, $step_data->action_id, 'd', 'COM_EMUNDUS_EVALUATIONS_DELETE', json_encode(['row_id' => $row_id, 'evaluator' => $evaluator]));
+				}
+			} catch (Exception $e) {
+				Log::add('Error in model/evaluation at query: ' . $query->__toString(), Log::ERROR, 'com_emundus');
+			}
 		}
 
 		return $deleted;
