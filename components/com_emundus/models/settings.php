@@ -2017,6 +2017,8 @@ class EmundusModelSettings extends ListModel
 			}
 		}
 
+		$params['emundus']['attachment_storage'] = $emundus_parameters->get('attachment_storage');
+
 		return $params;
 	}
 
