@@ -630,6 +630,12 @@ class hikashopAddressClass extends hikashopClass {
 		$data = $this->get($elements);
 		$orderClass = hikashop_get('class.order');
 		$status = true;
+
+		$current_user_id = hikashop_loadUser(false);
+		if ($elements->address_user_id != $current_user_id) {
+			return false;
+		}
+
 		if($orderClass->addressUsed($elements)){
 			if(!$order){
 				$address=new stdClass();
