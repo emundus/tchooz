@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -783,7 +783,7 @@ class hikashopUserClass extends hikashopClass {
 					foreach($new_messages as $msg) {
 						$ret['messages'][] = array(
 							$msg['message'],
-							$msg['type']
+							'error'
 						);
 					}
 				}
@@ -950,7 +950,10 @@ class hikashopUserClass extends hikashopClass {
 			$status = false;
 			$messages['register_email'] = array(JText::_('EMAIL_INVALID'), 'error');
 		}
-		if($mode != 2 && !empty($registerData->email)) {
+		$config = hikashop_config();
+		$check_email_rules_for_guest = (bool)$config->get('check_email_rules_for_guest', 1);
+		$check = $mode != 2 || $check_email_rules_for_guest;
+		if($check && !empty($registerData->email)) {
 			$domains = $params->get('domains');
 			if ($domains) {
 				$emailDomain = explode('@', $registerData->email);

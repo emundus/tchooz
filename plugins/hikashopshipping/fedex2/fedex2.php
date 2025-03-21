@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -60,7 +60,6 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 				'g' => 'G',
 				'kg' => 'Kg',
 				'mg' => 'Mg',
-				'oz' => 'Oz',
 			),
 		),
 		'transit_time' => array('FEDEX_TRANSIT_TIME', 'boolean', 0),
@@ -157,7 +156,7 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		foreach($local_usable_rates as $k => $rate) {
 
 			if(empty($rate->shipping_params->services)) {
-				$cache_messages['no_shipping_methods_configured'] = 'No shipping methods configured in the UPS shipping plugin options';
+				$cache_messages['no_shipping_methods_configured'] = 'No shipping methods configured in the Fedex shipping plugin options';
 				continue;
 			}
 			$null = null;
@@ -363,25 +362,32 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 
 				$items = array();
 				foreach($new_data->products as $product) {
-					$item = (new Item)
-					->setWeight(
-						(new Weight)
-						->setValue((float)$product->product_weight)
-						->setUnit($new_data->fedex_weight_unit)
-					)
-					->setDimensions(
-						(new Dimensions)
-						->setLength((float)$product->product_length)
-						->setWidth((float)$product->product_width)
-						->setHeight((float)$product->product_height)
-						->setUnits($new_data->fedex_dim_unit)
-					);
-					if ($method_params->shipping_params->add_insurance) {
-						$item->setDeclaredValue((new Value)
-						->setAmount((float)$product->prices[0]->price_value_with_tax)
-						->setCurrency($this->shipping_currency_code));
+					$i = 1;
+					if(isset($product->cart_product_quantity))
+						$i = $product->cart_product_quantity;
+
+					while($i > 0) {
+						$i--;
+						$item = (new Item)
+						->setWeight(
+							(new Weight)
+							->setValue((float)$product->product_weight)
+							->setUnit($new_data->fedex_weight_unit)
+						)
+						->setDimensions(
+							(new Dimensions)
+							->setLength((float)$product->product_length)
+							->setWidth((float)$product->product_width)
+							->setHeight((float)$product->product_height)
+							->setUnits($new_data->fedex_dim_unit)
+						);
+						if ($method_params->shipping_params->add_insurance) {
+							$item->setDeclaredValue((new Value)
+							->setAmount((float)$product->prices[0]->price_value_with_tax)
+							->setCurrency($this->shipping_currency_code));
+						}
+						$items[] = $item;
 					}
-					$items[] = $item;
 				}
 				$createRatesRequest->setLineItems(...$items);
 
@@ -392,14 +398,14 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 				if ($transit_time && $addr_country_code == $meth_country_code)
 					$createRatesRequest->setReturnTransitTimes(true);
 
-				if(!empty($rate->shipping_params->debug)) {
+				if(!empty($method_params->shipping_params->debug)) {
 					hikashop_writeToLog('FedEx 2 : Impossible to received rates from FedEx for request :');
 					hikashop_writeToLog($createRatesRequest->prepare());
 				}
 				$requested_rates = $createRatesRequest->request();
 			}
 		} catch(Exception $e) {
-			if(!empty($rate->shipping_params->debug)) {
+			if(!empty($method_params->shipping_params->debug)) {
 				hikashop_writeToLog($e->getMessage());
 			}
 			$this->error_messages['fedex2_error'] = $e->getMessage();
@@ -530,6 +536,7 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 			$this->error_messages['no_shipping_methods_available'] = $code .'</br>'. $message;
 
 			if(!empty($rate->shipping_params->debug)) {
+				hikashop_writeToLog($fedex_ratest);
 				hikashop_writeToLog('FedEx 2 : no FedEx rates available = '. $code .' : '. $message);
 			}
 
@@ -588,6 +595,8 @@ class plgHikashopshippingFedEx2 extends hikashopShippingPlugin
 		$weight_unit = 'g';
 		if ($shipping_params->weight_unit != '')
 			$weight_unit = $weight_unit = $shipping_params->weight_unit;
+		if ($shipping_params->weight_unit == 'oz')
+			$weight_unit = 'lb';
 
 		$weightClass = hikashop_get('helper.weight');
 		$volumeClass = hikashop_get('helper.volume');

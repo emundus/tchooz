@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -218,6 +218,7 @@ class plgSystemHikashopgeolocation extends hikashopJoomlaPlugin
 		$db->setQuery('SELECT * FROM '.hikashop_table('geolocation').' WHERE geolocation_ip ='.$db->Quote($geoloc->geolocation_ip).' AND geolocation_type=\'visit\' ORDER BY geolocation_created DESC');
 		$geolocFromDB = $db->loadObject();
 		if($geolocFromDB) {
+			$geoloc->geolocation_id = $geolocFromDB->geolocation_id;
 			if(!empty($geolocFromDB->geolocation_country_code)) {
 				$geoloc->geolocation_country_code = $geolocFromDB->geolocation_country_code;
 			}
@@ -288,7 +289,11 @@ class plgSystemHikashopgeolocation extends hikashopJoomlaPlugin
 
 		$geoClass->saveRaw($geoloc);
 
-		$db->setQuery('DELETE FROM '.hikashop_table('geolocation').' WHERE geolocation_type=\'visit\' AND geolocation_created < '.(time()-31556952));
+		$retaining_period = (int)$this->params->get('geolocation_retaining_period');
+		if(empty($retaining_period)) {
+			$retaining_period = 31556952;
+		}
+		$db->setQuery('DELETE FROM '.hikashop_table('geolocation').' WHERE geolocation_type=\'visit\' AND geolocation_created < '.(time()-$retaining_period));
 		$db->execute();
 
 		return (int)$zone;

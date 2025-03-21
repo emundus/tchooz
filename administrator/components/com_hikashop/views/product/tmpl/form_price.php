@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -46,6 +46,19 @@ if(!empty($this->editing_variant))
 		$qty = max((int)$price->price_min_quantity, 1);
 		if($qty > 1)
 			$restrictions[] = '<strong>'.JText::_('MINIMUM_QUANTITY').'</strong>: '.$qty;
+		if(!empty($price->price_zone_id)) {
+			$zones = explode(',',$price->price_zone_id);
+			$text = array();
+			foreach($zones as $zone) {
+				if($zone) {
+					$data = $this->zoneClass->get($zone);
+					if($data){
+						$text[] = $data->zone_name_english;
+					}
+				}
+			}
+			$restrictions[] = '<strong>'.JText::_('ZONE').'</strong>: '.implode(', ',$text);
+		}
 		if(!empty($price->price_users)) {
 			$users = explode(',',$price->price_users);
 			$text = array();
@@ -94,6 +107,7 @@ if(!empty($this->editing_variant))
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_end_date]'; ?>" value="<?php echo @$price->price_end_date; ?>"/>
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_start_date]'; ?>" value="<?php echo @$price->price_start_date; ?>"/>
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_users]'; ?>" value="<?php echo $price->price_users; ?>"/>
+			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_zone_id]'; ?>" value="<?php echo $price->price_zone_id; ?>"/>
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_min_quantity]'; ?>" value="<?php echo $qty; ?>"/>
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_site_id]'; ?>" value="<?php echo $price->price_site_id; ?>"/>
 			<input type="hidden" name="<?php echo $form_key.'['.$i.'][price_currency_id]'; ?>" value="<?php echo $price->price_currency_id; ?>"/>
@@ -119,6 +133,7 @@ if(!empty($this->editing_variant))
 				<input type="hidden" name="{PRICE_START_DATE_INPUT_NAME}" value="{PRICE_START_DATE_VALUE}"/>
 				<input type="hidden" name="{PRICE_END_DATE_INPUT_NAME}" value="{PRICE_END_DATE_VALUE}"/>
 				<input type="hidden" name="{PRICE_USERS_INPUT_NAME}" value="{PRICE_USERS_VALUE}"/>
+				<input type="hidden" name="{PRICE_ZONE_INPUT_NAME}" value="{PRICE_ZONE_VALUE}"/>
 				<input type="hidden" name="{PRICE_QTY_INPUT_NAME}" value="{PRICE_QTY_VALUE}"/>
 				<input type="hidden" name="{PRICE_SITE_INPUT_NAME}" value="{PRICE_SITE_VALUE}"/>
 				<input type="hidden" name="{PRICE_CURRENCY_INPUT_NAME}" value="{PRICE_CURRENCY_VALUE}"/>
@@ -209,7 +224,7 @@ window.productMgr.cancelNewPrice = function(formkey) {
 };
 window.productMgr.addPrice = function(formkey) {
 	var w = window, d = document, o = w.Oby, id = null, qty = null, site = '', i = null,
-		el = null, value = null, curr = null, row_id = false, users = null, userid = [],
+		el = null, value = null, curr = null, row_id = false, users = null, userid = [], zone = null, zoneid = [],
 		username = '', access = null, start_date = null, end_date = null, edit = '', price = '', restrictions = [];
 
 	el = d.getElementById('hikashop_' + formkey + '_site_edit');
@@ -277,13 +292,47 @@ window.productMgr.addPrice = function(formkey) {
 		userid.push('');
 	}
 
+	if(names.length)
+		restrictions.push('<strong><?php echo JText::_('USERS', true); ?></strong>: ' + names.join(', '));
+
+	zone = d.getElementsByName('hikashop_' + formkey + '_zone_edit[]');
+	names = [];
+	if(zone && zone.length) {
+		zoneid.push('');
+		for(var i = 0; i < zone.length; i++) {
+			zoneid.push(zone[i].value);
+			var zoneList = w.oNameboxes['hikashop_' + formkey + '_zone_edit'].data;
+			zoneList = Object.keys(zoneList).map(function (key) { return zoneList[key]; });
+			var zoneName = zone[i].value;
+			for(var j = 0; j < zoneList.length; j++) {
+				if(zoneList[j].zone_id == zone[i].value){
+					zoneName = zoneList[j].name;
+					break;
+				}
+				if(zoneList[j].data && zoneList[j].data.length) {
+					for(var k = 0; k < zoneList[j].data.length; k++) {
+						if(zoneList[j].data[k].value && zoneList[j].data[k].value == zone[i].value) {
+							zoneName = zoneList[j].data[k].name;
+							break;
+						}
+					}
+				}
+			}
+			names.push(zoneName);
+		}
+		zoneid.push('');
+	}
+
+	if(names.length)
+		restrictions.push('<strong><?php echo JText::_('ZONE', true); ?></strong>: ' + names.join(', '));
+
+
 	if(isNaN(qty))
 		qty = 1;
 	if(qty > 1)
 		restrictions.push('<strong><?php echo JText::_('MINIMUM_QUANTITY', true); ?></strong>: ' + qty);
 
-	if(names.length)
-		restrictions.push('<strong><?php echo JText::_('USERS', true); ?></strong>: ' + names.join(', '));
+
 	if(start_date != '')
 		restrictions.push('<strong><?php echo JText::_('START_DATE', true); ?></strong>: ' + start_date);
 	if(end_date != '')
@@ -314,9 +363,9 @@ window.productMgr.addPrice = function(formkey) {
 		}
 	}
 	max_id++;
-
 	var htmlblocks = {
 		PRICE: price, RESTRICTIONS: restrictions.join('<br/>'), DATA_ID: max_id,
+		PRICE_ZONE_INPUT_NAME: formkey + '[' + max_id + '][price_zone_id]', PRICE_ZONE_VALUE: zoneid.join(','),
 		PRICE_USERS_INPUT_NAME: formkey + '[' + max_id + '][price_users]', PRICE_USERS_VALUE: userid.join(','),
 		PRICE_ACCESS_INPUT_NAME: formkey + '[' + max_id + '][price_access]', PRICE_ACCESS_VALUE: access,
 		PRICE_START_DATE_INPUT_NAME: formkey + '[' + max_id + '][price_start_date]', PRICE_START_DATE_VALUE: start_date,

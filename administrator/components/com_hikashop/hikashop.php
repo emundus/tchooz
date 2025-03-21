@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -53,7 +53,7 @@ if($taskGroup != 'update' && !$currentuser->authorise('core.manage', 'com_hikash
 	$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
 	return;
 }
-if($taskGroup == 'config' && !$currentuser->authorise('core.admin', 'com_hikashop')) {
+if(in_array($taskGroup, array('config', 'view', 'email', 'field', 'massaction')) && !$currentuser->authorise('core.admin', 'com_hikashop')) {
 	$app = JFactory::getApplication();
 	$app->enqueueMessage(JText::_('JERROR_ALERTNOAUTHOR'), 'warning');
 	return;

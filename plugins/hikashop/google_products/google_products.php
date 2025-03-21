@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -565,26 +565,31 @@ class plgHikashopGoogle_products extends JPlugin {
 				}else{
 					$xml .= "\t".'<g:description>No description</g:description>'."\n";
 				}
-				$xml .= $this->_additionalParameter($product,$plugin,'condition','condition');
-
-				$xml .= $this->_additionalParameter($product,$plugin,'item_group_id','item_group_id');
-
-				$xml .= $this->_additionalParameter($product,$plugin,'gender','gender');
 
 				$column = @$plugin->params['identifier_exists'];
 				if(!empty($column) && ($column == 'TRUE' || (!empty($product->$column) && $product->$column == 'TRUE')))
 					$xml .= $this->_additionalParameter($product,$plugin,'gtin','gtin');
 
-				$xml .= $this->_additionalParameter($product,$plugin,'age_group','age_group');
-
-				$xml .= $this->_additionalParameter($product,$plugin,'size','size');
-
-				$xml .= $this->_additionalParameter($product,$plugin,'color','color');
-
-				$xml .= $this->_additionalParameter($product,$plugin,'identifier_exists','identifier_exists');
-
-
-				$xml .= $this->_additionalParameter($product,$plugin,'shipping_label','shipping_label');
+				$parameters = array(
+					'age_group',
+					'size',
+					'color',
+					'identifier_exists',
+					'is_bundle',
+					'multipack',
+					'unit_pricing_measure',
+					'unit_pricing_base_measure',
+					'energy_efficiency_class',
+					'min_energy_efficiency_class',
+					'max_energy_efficiency_class',
+					'shipping_label',
+					'gender',
+					'item_group_id',
+					'condition',
+				);
+				foreach($parameters as $parameter) {
+					$xml .= $this->_additionalParameter($product,$plugin,$parameter,$parameter);
+				}
 
 				$xml .= $this->_addCheckoutLink($product,$plugin);
 
@@ -635,7 +640,33 @@ class plgHikashopGoogle_products extends JPlugin {
 					$xml .= "\t".'<g:quantity_to_sell_on_facebook>'.$product->product_quantity.'</g:quantity_to_sell_on_facebook>'."\n";
 				}
 				if($product->product_quantity == 0){
-					$xml .= "\t".'<g:availability>out of stock</g:availability>'."\n";
+					$stock = 'out of stock';
+					if(!empty($product->product_sale_start) && $product->product_sale_start > time()) {
+						$stock = 'preorder';
+						$date = new DateTime("@".$product->product_sale_start);
+						$date->setTimezone(new DateTimeZone("UTC"));
+						$formattedDate = $date->format('Y-m-d\TH:i\Z');
+						$xml .= "\t".'<g:availability_date>'.$formattedDate.'</g:availability_date>'."\n";
+					}elseif(!empty($plugin->params['availability_date'])) {
+						$availability_date = $plugin->params['availability_date'];
+						if(!empty($product->$availability_date)) {
+							$formattedDate = '';
+							if(ctype_digit((string)$product->$availability_date)) {
+								$date = new DateTime("@".$product->$availability_date);
+								$date->setTimezone(new DateTimeZone("UTC"));
+								$formattedDate = $date->format('Y-m-d\TH:i\Z');
+							} elseif (preg_match('/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/', (string)$product->$availability_date)) {
+								$formattedDate = $product->$availability_date;
+							} elseif(preg_match('/^\d{4}-\d{2}-\d{2}$/', (string)$product->$availability_date)) {
+								$formattedDate = $product->$availability_date.'T00:00Z';
+							}
+							if(!empty($formattedDate)) {
+								$stock = 'backorder';
+								$xml .= "\t".'<g:availability_date>'.$formattedDate.'</g:availability_date>'."\n";
+							}
+						}
+					}
+					$xml .= "\t".'<g:availability>'.$stock.'</g:availability>'."\n";
 				}
 				else{
 					$xml .= "\t".'<g:availability>in stock</g:availability>'."\n";

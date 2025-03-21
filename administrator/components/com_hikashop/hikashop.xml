@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="2.5" method="upgrade">
 	<name>HikaShop</name>
-	<creationDate>31 octobre 2024</creationDate>
-	<version>5.1.1</version>
+	<creationDate>20 mars 2025</creationDate>
+	<version>5.1.5</version>
 	<author>hikashop.com</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<description>E-Commerce software built for simplicity and flexibility</description>
 	<license>GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html</license>
 	<variant>business</variant>
@@ -68,4 +68,4 @@
 		</files>
 		<menu img="../media/com_hikashop/images/icons/icon-16-hikashop.png" link="option=com_hikashop">HikaShop</menu>
 	</administration>
-<updateservers><server type="collection">http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-5.1.1/level-Business/li-aHR0cDovL2xvY2FsaG9zdDo4MzgzLw%3D%3D/file-extension.xml</server></updateservers></extension>
+<updateservers><server type="collection">https://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-5.1.5/level-Business/li-aHR0cHM6Ly9sb2NhbGhvc3Q6ODM4My8%3D/file-extension.xml</server></updateservers></extension>

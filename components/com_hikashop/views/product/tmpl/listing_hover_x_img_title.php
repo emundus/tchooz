@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -47,7 +47,7 @@ if ($img_nb > 1) {
 					$part_html.
 					'</picture>';
 				}
-				$hidden_html .= '<div class="hikashop_div_hidden_'.$k.'" style="top: 0;">'.
+				$hidden_html .= '<div class="hikashop_div_hidden_'.$k.' hika_hover_x_img" style="top: 0;">'.
 					$part_html.
 				'</div>';
 			}
@@ -71,13 +71,25 @@ if(!empty($this->row->extraData->top)) { echo implode("\r\n",$this->row->extraDa
 <?php
 if($this->config->get('thumbnail', 1)) {
 	$extra_class = '';
+	$container_extra_class = '';
 	if ($img_nb > 1) {
 		$extra_class = 'hikashop_hover_img';
+		$container_extra_class = 'hikashop_hover_x_container';
 	}
 ?>
 	<!-- PRODUCT IMG -->
-	<div class="hikashop_product_image">
-		<div class="hikashop_product_image_subdiv <?php echo $extra_class; ?>">
+	<div class="hikashop_product_image <?php echo $container_extra_class; ?>" data-ref="0">
+<?php 
+	if ($img_nb > 1) {
+?>
+		<a class="hika_hover_x_btn hika_hover_x_btn_previous" style="width:20px;margin-left:-5px;"  onclick="hover_x_slide('-', this); return false;" 
+			title="<?php echo JText::_('HIKA_PREVIOUS'); ?>">
+			<i class="fas fa-chevron-left"></i>
+		</a>
+<?php 
+	}
+?>
+		<div id="hikashop_product_image_subdiv_<?php echo $mainDivName.'_'.$this->row->product_id; ?>" class="hikashop_product_image_subdiv <?php echo $extra_class; ?>">
 <?php
 	$img = $this->image->getThumbnail(
 		@$this->row->file_path,
@@ -99,20 +111,15 @@ if($this->config->get('thumbnail', 1)) {
 		}
 		if ($img_nb > 1) {
 			if ($hidden_html != '') {
-				$full_html = '<div class="hikashop_div_hidden_0" style="position: relative !important;">'.
-					$html.
-				'</div>'.
-				$hidden_html;
+				$full_html = ''. $hidden_html;
 			}
 			$k = $k + 1;
-			$full_html .= '<div class="hikashop_div_hidden_'.$k.' hikashop_img_curr_final" style="top: 0;">'.
-			'<img class="hikashop_product_listing_image hikashop_img_hidden_'.$k.'"' .
-				'title="'.$this->escape((string)@$this->row->file_description).'" '.
-				'alt="'.$this->escape((string)@$this->row->file_name).'" src="'.$img->url.'"/>'.
+			$full_html .= '<div class="hikashop_div_hidden_'.$k.' hika_hover_x_img hikashop_img_curr_final" style="top: 0; position:relative !important;">'.
+				$html.
 			'</div>';
 		}
 		else {
-			$full_html = '<div class="hikashop_div_hidden_0 hikashop_img_curr_final" style="position: relative !important;">'.
+			$full_html = '<div class="hikashop_div_hidden_1 hika_hover_x_img hikashop_img_curr_final" style="position: relative !important;">'.
 				$html.
 			'</div>';
 		}
@@ -128,6 +135,16 @@ if($this->config->get('thumbnail', 1)) {
 	}
 ?>
 		</div>
+<?php 
+	if ($img_nb > 1) {
+?>
+		<a class="hika_hover_x_btn hika_hover_x_btn_next" style="width:20px;margin-right:-5px;" onclick="hover_x_slide('+', this); return false;" 
+			title="<?php echo JText::_('HIKA_NEXT'); ?>">
+			<i class="fas fa-chevron-right"></i>
+		</a>
+<?php 
+	}
+?>
 	</div>
 	<!-- EO PRODUCT IMG -->
 <?php } ?>
@@ -276,7 +293,7 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 	$contact = (int)$this->config->get('product_contact', 0);
 	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-		$attributes = 'class="'.$css_button.'"';
+		$attributes = 'class="'.$css_button.' product_contact_button"';
 		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid);
 		$content = JText::_('CONTACT_US_FOR_INFO');
 
@@ -290,7 +307,7 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 	$details_button = (int)$this->params->get('details_button', 0);
 	if($details_button) {
 		$this->link_content = JText::_('PRODUCT_DETAILS');
-		$this->css_button = $this->config->get('css_button', 'hikabtn');
+		$this->css_button = $this->config->get('css_button', 'hikabtn').' product_details_button';
 		$this->type = 'detail';
 		$this->setLayout('show_popup');
 		echo $this->loadTemplate();
@@ -307,8 +324,7 @@ if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id
 	$height_list_cont = $height + 40;
 
 	$css = ''.
-	'#'.$mainDivName.' .hikashop_product_image_subdiv.hikashop_hover_img div { position: absolute !important; width: 100%;}'. 
-	'#'.$mainDivName.' .hikashop_div_hidden_0 { top: 0 !important; }';
+	'#'.$mainDivName.' .hikashop_product_image_subdiv.hikashop_hover_img div { position: absolute !important; width: 100%;}';
 
 	if($height > 0){
 		$css .= ''.
@@ -319,7 +335,6 @@ if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id
 	$doc = JFactory::getDocument();
 	$doc->addStyleDeclaration($css);
 ?>
-
 <script type="text/javascript">
 	window.hikashop.ready(function(){
 		image_auto_height('<?php echo $mainDivName; ?>');
@@ -329,7 +344,7 @@ if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id
 	}, true);
 
 	function getElementHeight(mainDivs) {
-		var first_img = mainDivs[0].querySelector('.hikashop_div_hidden_0');
+		var first_img = mainDivs[0].querySelector('.hikashop_div_hidden_1');
 
 		if(!first_img.complete)
 			return 0;
@@ -337,6 +352,34 @@ if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id
 		var ref_height = first_img.offsetHeight;
 		return ref_height;
 	};
+	function hover_x_slide_auto(target) {
+		if(!window.hikashop.hoverInProgress || target.id != window.hikashop.hoverInProgress)
+			return;
+		btn = target.parentNode.querySelector('.hika_hover_x_btn_next');
+		hover_x_slide('+', btn);
+		setTimeout(() => {
+			hover_x_slide_auto(target);
+		}, '1000');
+
+	}
+	function hover_x_slide(action, btnElement) {
+		var container = btnElement.closest('.hikashop_product_image');
+		if (!container) return;
+
+		var allImg = container.querySelectorAll('.hika_hover_x_img');
+		var ref = parseInt(container.dataset.ref, 10);
+
+		allImg.forEach(img => img.style.opacity = "0");
+
+		if (action === "+") {
+			ref = (ref + 1) % allImg.length;
+		} else {
+			ref = (ref - 1 + allImg.length) % allImg.length;
+		}
+		allImg[ref].style.opacity = "1";
+
+		container.dataset.ref = ref;
+	}
 
 	function image_auto_height (DivName) {
 		var mainDivs = document.querySelectorAll('#' + DivName + ' .hikashop_hover_parent');
@@ -361,6 +404,39 @@ if(isset($this->rows[0]) && $this->rows[0]->product_id == $this->row->product_id
 		}
 	};
 </script>
+<?php
+}
+if ($img_nb > 1) {
+?>
+<style>
+#<?php echo $mainDivName; ?> .hikashop_product_image_subdiv {
+    width: 85%;
+}
+.hika_hover_x_btn, 
+.hikashop_product_image_subdiv {
+    vertical-align: middle;
+    display: inline-block;
+}
+#<?php echo $mainDivName; ?> .hikashop_product_image.hikashop_hover_x_container .hika_hover_x_btn {
+    cursor: pointer;
+}
+</style>
 
+<script>
+window.hikashop.ready(function(){
+	var item = document.querySelector('#div_<?php echo $mainDivName.'_'.$this->row->product_id; ?> .hikashop_product_image_subdiv');
+	item.addEventListener('mouseenter', function(event) {
+		if(window.hikashop.hoverInProgress)
+			return;
+		window.hikashop.hoverInProgress = this.id;
+		hover_x_slide_auto(this);
+	}, true);
+
+	item.addEventListener('mouseleave', function(event) {
+		window.hikashop.hoverInProgress = false;
+	}, true);
+
+});
+</script>
 <?php
 }

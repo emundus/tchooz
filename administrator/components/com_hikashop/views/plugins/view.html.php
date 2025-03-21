@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -677,7 +677,7 @@ class PluginsViewPlugins extends hikashopView{
 						break;
 					case 'boolean':
 						$html .= '<tr '.$lineAttribs.'><td class="key"><label>'.$label.'</label></td><td>';
-						if(!isset($this->element->$paramsType))
+						if(!isset($this->element->$paramsType) || !$this->element->$paramsType)
 							$this->element->$paramsType = new stdClass();
 						if(!isset($this->element->$paramsType->$key) && isset($value[2]))
 							$this->element->$paramsType->$key = $value[2];

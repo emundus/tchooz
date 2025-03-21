@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -111,6 +111,16 @@ defined('_JEXEC') or die('Restricted access');
 			</td>
 			<td><?php
 				echo JHTML::_('hikaselect.booleanlist', "data[plugin][plugin_params][shippingpoints]" , '',@$this->element->plugin_params->shippingpoints);
+			?></td>
+		</tr>
+		<tr>
+			<td class="key">
+				<label for="data[plugin][plugin_params][additionalfees]"><?php
+					echo JText::_('TAKE_INTO_ACCOUNT_EXTRA_FEES');
+				?></label>
+			</td>
+			<td><?php
+				echo JHTML::_('hikaselect.booleanlist', "data[plugin][plugin_params][additionalfees]" , '',@$this->element->plugin_params->additionalfees);
 			?></td>
 		</tr>
 	</table>

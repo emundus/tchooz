@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -509,18 +509,26 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			}
 			if(!empty($options['limit'])) {
 				$total_quantity = $qty;
-
 				while ($total_quantity > 0) {
+					$max_dimensions = 0;
 					foreach ($options['limit'] as $limit_key => $limit_value) {
 						$valid = $this->processPackageLimit($limit_key, $limit_value , $p, $total_quantity, $current, array('weight' => $weight_unit, 'volume' => $volume_unit));
 
 						if ($valid === false)
 							$total_quantity = 0;
-						else if (is_int($valid))
-							$total_quantity = min($total_quantity, $valid);
+						else if (is_int($valid)) {
+							if($valid > 0 && in_array($limit_key, array('x', 'y', 'z')))
+								$max_dimensions = max($max_dimensions, $valid);
+							else
+								$total_quantity = min($total_quantity, $valid);
+						}
 
 						if ($total_quantity === 0)
 							break;
+					}
+
+					if($max_dimensions && $total_quantity > 0) {
+						$total_quantity = min($total_quantity, $max_dimensions);
 					}
 
 					if ($total_quantity === 0) {
@@ -573,7 +581,6 @@ class hikashopShippingPlugin extends hikashopPlugin {
 	public function checkDimensions($product, $dimensions, $requirements = array()) {
 		if(empty($requirements) || !count($requirements))
 			return true;
-
 		if(empty($dimensions['w']) && empty($dimensions['x']) && empty($dimensions['y']) && empty($dimensions['z']))
 			return true;
 
@@ -597,7 +604,12 @@ class hikashopShippingPlugin extends hikashopPlugin {
 			if(empty($already[$dimension . '_' . $product->product_id])) {
 				$already[$dimension . '_' . $product->product_id] = true;
 				$app = JFactory::getApplication();
-				$app->enqueueMessage(JText::sprintf('THE_X_IS_MISSING_FOR_THE_PRODUCT_X', JText::_($dimension), $product->product_name));
+				$name = $product->product_id;
+				if(!empty($product->product_name))
+					$name = $product->product_name;
+				if(!empty($product->order_product_name))
+					$name = $product->order_product_name;
+				$app->enqueueMessage(JText::sprintf('THE_X_IS_MISSING_FOR_THE_PRODUCT_X', JText::_($dimension), $name));
 			}
 			$return = false;
 		}

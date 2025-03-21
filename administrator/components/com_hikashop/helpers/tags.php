@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -119,6 +119,22 @@ class HikaShopTagsHelper {
 			$component = $structure['component'];
 		$alias = 'com_'.$component.'.'.$structure['table'];
 
+		$restore_empty_name = false;
+		if( $type=='product' && empty($element->product_name)) {
+			if(!empty($element->product_parent_id)) {
+				$productClass = hikashop_get('class.product');
+				$parent = $productClass->get($element->product_parent_id);
+				if(!empty($parent)) {
+					$element->product_name = $parent->product_name;
+				} else {
+					$element->product_name = 'product_'.$element->product_id;
+				}
+			} else {
+				$element->product_name = 'product_'.$element->product_id;
+			}
+			$restore_empty_name = true;
+		}
+
 		if(HIKASHOP_J50 && !class_exists('JHelperTags'))
 			class_alias('Joomla\CMS\Helper\TagsHelper', 'JHelperTags');
 		$tagsHelper = new JHelperTags();
@@ -133,6 +149,10 @@ class HikaShopTagsHelper {
 			$db = JFactory::getDBO();
 			$db->setQuery($query);
 			$db->execute();
+		}
+
+		if($restore_empty_name) {
+			$element->product_name = '';
 		}
 	}
 

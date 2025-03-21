@@ -30,7 +30,7 @@ if(!function_exists('com_install')) {
 
 class hikashopInstall {
 	var $level = 'Business';
-	var $version = '5.1.1';
+	var $version = '5.1.5';
 	var $freshinstall = true;
 	var $update = false;
 	var $fromLevel = '';
@@ -903,6 +903,13 @@ CREATE TABLE IF NOT EXISTS `#__hikashop_plugin` (
 			));
 
 		}
+
+		if(version_compare($this->fromVersion, '5.1.2', '<')) {
+			$this->databaseHelper->addColumns("price", array(
+				"`price_zone_id` text NOT NULL",
+			));
+		}
+
 
 	}
 

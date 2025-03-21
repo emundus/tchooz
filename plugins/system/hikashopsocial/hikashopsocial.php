@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -100,23 +100,43 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		$plugin->params['legacy'] = $plugin->params['display_url_btn'];
 
 		$PinterestButton = '';
-		if ($plugin->params['display_pinterest'] == 1)
+		if (!empty($plugin->params['display_pinterest']) && $plugin->params['display_pinterest'] == 1)
 			$PinterestButton = $this->_addPinterestButton($plugin, $plugin->params);
 		$TwitterButton = '';
-		if ($plugin->params['display_twitter'] == 1)
+		if (!empty($plugin->params['display_twitter']) && $plugin->params['display_twitter'] == 1)
 			$TwitterButton = $this->_addTwitterButton($plugin, $plugin->params);
 		$FacebookButton = '';
 		if (!empty($plugin->params['display_fb']))
 			$FacebookButton = $this->_addFacebookButton($plugin, $plugin->params);
 		$LinkedInButton = '';
-		if ($plugin->params['display_twitter'] == 1)
-				$LinkedInButton = $this->_addLinkedInButton($plugin, $plugin->params);
+		if (!empty($plugin->params['display_linkedin']) && $plugin->params['display_linkedin'] == 1)
+			$LinkedInButton = $this->_addLinkedInButton($plugin, $plugin->params);
+		$MastodonButton = '';
+		if (!empty($plugin->params['display_mastodon']) && $plugin->params['display_mastodon'] == 1)
+			$MastodonButton = $this->_addMastodonButton($plugin, $plugin->params);
+		$BlueskyButton = '';
+		if (!empty($plugin->params['display_bluesky']) && $plugin->params['display_bluesky'] == 1)
+			$BlueskyButton = $this->_addBlueSkyButton($plugin, $plugin->params);
+		$LineButton = '';
+		if (!empty($plugin->params['display_line']) && $plugin->params['display_line'] == 1)
+			$LineButton = $this->_addLineButton($plugin, $plugin->params);
+		$WhatsappButton = '';
+		if (!empty($plugin->params['display_whatsapp']) && $plugin->params['display_whatsapp'] == 1)
+			$WhatsappButton = $this->_addWhatsappButton($plugin, $plugin->params);
+		$TelegramButton = '';
+		if (!empty($plugin->params['display_telegram']) && $plugin->params['display_telegram'] == 1)
+			$TelegramButton = $this->_addTelegramButton($plugin, $plugin->params);
 
 		$html = array(
 			$TwitterButton,
 			$PinterestButton,
 			$FacebookButton,
-			$LinkedInButton
+			$LinkedInButton,
+			$MastodonButton,
+			$BlueskyButton,
+			$LineButton,
+			$WhatsappButton,
+			$TelegramButton
 		);
 
 		$styles = 'text-align:left;';
@@ -195,6 +215,127 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		return $btn_html;
 	}
 
+	function _addMastodonButton(&$plugin, $params) {
+		if(!empty($plugin->params['legacy']) || empty($plugin->params['display_mastodon']))
+			return '';
+
+		$jconf = JFactory::getConfig();
+		if(HIKASHOP_J30)
+			$siteName = $jconf->get('sitename');
+		else
+			$siteName = $jconf->getValue('config.sitename');
+		$siteName = htmlspecialchars($siteName, ENT_COMPAT,'UTF-8');
+
+		$current_url = urlencode(hikashop_currentURL());
+		$current_url = $this->_handleAffiliateParameter($current_url);
+		$btn_mode = $this->rs_mode($params['redirect'], 'https://mastodonshare.com/?text='. $siteName .'amp;url='. $current_url, '');
+
+		$array_elem = array(
+			'icon' => 'mastodon_icon.png',
+			'class' => 'hikasocial_mastodon',
+			'display' => $params['display'],
+			'btn_mode' => $btn_mode,
+			'name' => 'mastodon'
+		);
+
+		$btn_html = $this->btn_build($array_elem);
+
+		return $btn_html;
+	}
+	function _addBlueSkyButton(&$plugin, $params) {
+		if(!empty($plugin->params['legacy']) || empty($plugin->params['display_bluesky']))
+			return '';
+
+		$jconf = JFactory::getConfig();
+		if(HIKASHOP_J30)
+			$siteName = $jconf->get('sitename');
+		else
+			$siteName = $jconf->getValue('config.sitename');
+		$siteName = htmlspecialchars($siteName, ENT_COMPAT,'UTF-8');
+
+		$current_url = urlencode(hikashop_currentURL());
+		$current_url = $this->_handleAffiliateParameter($current_url);
+		$btn_mode = $this->rs_mode($params['redirect'], 'https://bsky.app/intent/compose?text='. $siteName .'%0A'. $current_url, '');
+
+		$array_elem = array(
+			'icon' => 'bluesky_icon.png',
+			'class' => 'hikasocial_bluesky',
+			'display' => $params['display'],
+			'btn_mode' => $btn_mode,
+			'name' => 'bluesky'
+		);
+
+		$btn_html = $this->btn_build($array_elem);
+
+		return $btn_html;
+	}
+
+	function _addLineButton(&$plugin, $params) {
+		if(!empty($plugin->params['legacy']) || empty($plugin->params['display_line']))
+			return '';
+
+		$current_url = urlencode(hikashop_currentURL());
+		$current_url = $this->_handleAffiliateParameter($current_url);
+		$btn_mode = $this->rs_mode($params['redirect'], 'https://line.me/R/msg/text/?'. $current_url, '');
+
+		if (!empty($plugin->params['line_msg']))
+			$msg = $plugin->params['line_msg'];
+
+		$array_elem = array(
+			'icon' => 'line_icon.png',
+			'class' => 'hikasocial_line',
+			'display' => $params['display'],
+			'btn_mode' => $btn_mode,
+			'name' => 'line'
+		);
+
+		$btn_html = $this->btn_build($array_elem);
+
+		return $btn_html;
+	}
+
+	function _addWhatsappButton(&$plugin, $params) {
+		if(!empty($plugin->params['legacy']) || empty($plugin->params['display_telegram']))
+			return '';
+
+		$current_url = urlencode(hikashop_currentURL());
+		$current_url = $this->_handleAffiliateParameter($current_url);
+		$btn_mode = $this->rs_mode($params['redirect'], 'https://api.whatsapp.com/send?text='. $current_url, '');
+
+		$array_elem = array(
+			'icon' => 'whatsapp_icon.png',
+			'class' => 'hikasocial_whatsapp',
+			'display' => $params['display'],
+			'btn_mode' => $btn_mode,
+			'name' => 'whatsapp'
+		);
+
+		$btn_html = $this->btn_build($array_elem);
+
+		return $btn_html;
+	}
+
+	function _addTelegramButton (&$plugin, $params) {
+		if(!empty($plugin->params['legacy']) || empty($plugin->params['display_telegram']))
+			return '';
+
+		$current_url = urlencode(hikashop_currentURL());
+		$current_url = $this->_handleAffiliateParameter($current_url);
+		$btn_mode = $this->rs_mode($params['redirect'], 'https://t.me/share/url?url='. $current_url, '');
+
+		$array_elem = array(
+			'icon' => 'telegram_icon.png',
+			'class' => 'hikasocial_telegram',
+			'display' => $params['display'],
+			'btn_mode' => $btn_mode,
+			'name' => 'telegram'
+		);
+
+		$btn_html = $this->btn_build($array_elem);
+
+		return $btn_html;
+	}
+
 	function _addPinterestButton(&$plugin, $params) {
 		if(!empty($element->url_canonical))
 			$url = hikashop_cleanURL($element->url_canonical);
@@ -202,7 +343,7 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			$url = hikashop_currentURL('',false);
 		$url = $this->_handleAffiliateParameter($url);
 		$element = $this->_getElementInfo();
-		$imageUrl = $this->_getImageURL($element);
+		$imageUrl = $this->_getImageURL($element, $plugin);
 		$description = $this->_cleanDescription($element->description, 500);
 		$layouts = array(0 => 'horizontal', 1 => 'vertical', 2 => 'none');
 		$count = $layouts[ (int)@$plugin->params['pinterest_display'] ];
@@ -496,7 +637,10 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		$this->main_uploadFolder_url = $this->uploadFolder_url;
 		$this->main_uploadFolder = $this->uploadFolder;
 
-		$imageUrl = $this->_getImageURL($element);
+		if (!isset($element->condition) && empty($element->condition))
+			$element->condition = "new";
+
+		$imageUrl = $this->_getImageURL($element, $plugin);
 		if(!empty($imageUrl))
 			$this->meta['property="og:image"']='<meta property="og:image" content="'.$imageUrl.'" /> ';
 
@@ -504,6 +648,11 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		$description = $this->_cleanDescription($element->description);
 		$this->meta['property="og:description"'] = '<meta property="og:description" content="'.$description.'"/> ';
 
+		if($element->type == 'product') {
+			$this->meta['property="product:retailer_item_id"'] = '<meta property="product:retailer_item_id" content="'.htmlspecialchars($element->retailer_item_id, ENT_COMPAT,'UTF-8').'"/> ';
+			$this->meta['property="product:availability"'] = '<meta property="product:availability" content="'.$element->availability.'"/> ';
+			$this->meta['property="product:condition"'] = '<meta property="product:condition" content="'.$element->condition.'"/> ';
+		}
 		$jconf = JFactory::getConfig();
 		if(HIKASHOP_J30)
 			$siteName = $jconf->get('sitename');
@@ -545,6 +694,14 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 			$ret->name = $element->product_name;
 			$ret->description = $element->product_description;
 			$ret->url_canonical = @$element->product_canonical;
+			$ret->availability = 'in stock';
+			if($element->product_quantity == 0) {
+				$ret->availability = 'out of stock';
+			}
+			$ret->retailer_item_id = $element->product_code;
+			if(!empty($element->product_condition)) {
+				$ret->condition =  strtolower(str_replace('Condition', '', $element->product_condition));
+			}
 		}
 
 		return $ret;
@@ -614,13 +771,13 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 		return $vendor;
 	}
 
-	function _getImageURL($element) {
+	function _getImageURL(&$element, &$plugin) {
 		$config =& hikashop_config();
 		$uploadFolder = ltrim(JPath::clean(html_entity_decode($config->get('uploadfolder','media/com_hikashop/upload/'))),DS);
 		$uploadFolder = rtrim($uploadFolder,DS).DS;
 		$this->uploadFolder_url = str_replace(DS,'/',$uploadFolder);
+		$this->uploadFolder = JPATH_ROOT . DS . $uploadFolder;
 		$this->main_uploadFolder_url = $this->uploadFolder_url;
-
 		$imageUrl = '';
 
 		if($element->type == 'vendor') {
@@ -637,9 +794,22 @@ class plgSystemHikashopsocial extends hikashopJoomlaPlugin {
 				$db->setQuery($queryImage);
 				$image = $db->loadObject();
 			}
-			if(!empty($image))
+			if(!empty($image)) {
+				if(!empty($plugin->params['thumbnail_x']) && !empty($plugin->params['thumbnail_y'])) {
+					$imageHelper = hikashop_get('helper.image');
+					$img = $imageHelper->getThumbnail(
+						$image->file_path,
+						array('width' => $plugin->params['thumbnail_x'], 'height' => $plugin->params['thumbnail_y']),
+						array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'))
+					);
+					if($img->success) {
+						return $img->url;
+					}
+				}
 				$imageUrl = JURI::base() . $this->main_uploadFolder_url . ltrim($image->file_path, '/');
+			}
 		}
+
 		return $imageUrl;
 	}
 

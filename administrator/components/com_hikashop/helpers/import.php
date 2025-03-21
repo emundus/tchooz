@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1168,12 +1168,20 @@ class hikashopImportHelper extends stdClass
 
 	function getSizeFile($url) {
 		if (substr($url,0,4) == 'http') {
-			$x = array_change_key_case(get_headers($url, 1),CASE_LOWER);
-			if(!isset($x['content-length'])) return false;
-			if ( strcasecmp($x[0], 'HTTP/1.1 200 OK') != 0 ) { $x = $x['content-length'][1]; }
-			else { $x = $x['content-length']; }
+			$headers = get_headers($url, 1);
+			if(!$headers)
+				return false;
+			$x = array_change_key_case($headers,CASE_LOWER);
+			if(!isset($x['content-length']))
+				return false;
+			if ( strcasecmp($x[0], 'HTTP/1.1 200 OK') != 0 )
+				$x = $x['content-length'][1];
+			else
+				$x = $x['content-length'];
 		}
-		else { $x = @filesize($url); }
+		else {
+			$x = @filesize($url);
+		}
 
 		return $x;
 	}
@@ -1477,6 +1485,8 @@ class hikashopImportHelper extends stdClass
 					}
 					$i++;
 				}
+			} elseif(isset($product->$type) && is_string($product->$type) && empty($product->$type)) {
+				$ids[] = (int)$product->product_id;
 			}
 		}
 		if(!empty($ids)){

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -370,19 +370,63 @@ class hikashopMailClass {
 			include $postload;
 		} else if($useTemplating || !empty($vars) || !empty($texts) || !empty($templates)) {
 
+			$body = $this->processMailTemplate($mail, $data, $texts, $vars, $templates);
 			if(!empty($mail->template) && $type == 'html') {
-				$tpl_path = $this->getTemplatePath($mail->template, $mail->mail_name, $type);
-				if(empty($tpl_path))
-					$tpl_path = $this->getTemplatePath('default', $mail->mail_name, $type);
+				$templateFromJoomla = false;
+				if($mail->template == 'joomla' && HIKASHOP_J50) {
+					$config = \Joomla\CMS\Component\ComponentHelper::getParams('com_mails');
+					$style = $config->get('mail_style', '');
+					$disable_layout = (bool)$config->get('disable_htmllayout', true);
+					if(in_array($style, array('html', 'both')) && $disable_layout) {
+						$layout = $config->get('mail_htmllayout', 'mailtemplate');
+						$layoutParts = explode(':', $layout);
+						if (count($layoutParts) === 2) {
+							$layout = $layoutParts[1];
+						}
+						$layoutFile = new \Joomla\CMS\Layout\FileLayout('joomla.mail.' . $layout, null, ['client' => 'site']);
+						if (count($layoutParts) === 2) {
+							$layoutFile->addIncludePaths([
+								JPATH_SITE . '/templates/' . $layoutParts[0] . '/html/layouts',
+								JPATH_SITE . '/templates/' . $layoutParts[0] . '/html/layouts/com_mails',
+							]);
+						}
 
-				if(!empty($tpl_path)) {
-					$vars['TPL_CONTENT'] = $this->processMailTemplate($mail, $data, $texts, $vars, $templates);
-					ob_start();
-					require($tpl_path);
+						$lang = JFactory::getLanguage();
+						$app = JFactory::getApplication();
+						$layoutTemplateData = array(
+							'siteName' => $app->get('sitename'),
+							'lang'     => substr($lang->getTag(), 0, 2)
+						);
+
+						$logo   = (string) $config->get('mail_logofile', '');
+						if ($logo) {
+							$logo = \Joomla\Filesystem\Path::check(JPATH_ROOT . '/' . \Joomla\CMS\HTML\HTMLHelper::_('cleanImageURL', $logo)->url);
+							if (is_file(urldecode($logo))) {
+								$this->mailer->AddAttachment($logo, 'site-logo', 'base64', mime_content_type($logo), 'inline');
+
+								$layoutTemplateData['logo'] = 'site-logo';
+							}
+						}
+
+						$templateFromJoomla = true;
+						$body = $layoutFile->render(['mail' => $body, 'extra' => $layoutTemplateData], null);
+					}
+				}
+				if(!$templateFromJoomla) {
+					$tpl_path = $this->getTemplatePath($mail->template, $mail->mail_name, $type);
+					if(empty($tpl_path))
+						$tpl_path = $this->getTemplatePath('default', $mail->mail_name, $type);
+
+					if(!empty($tpl_path)) {
+						$vars['TPL_CONTENT'] = $body;
+						ob_start();
+						require($tpl_path);
+						$body = $this->processMailTemplate($mail, $data, $texts, $vars, $templates);
+					}
 				}
 			}
 
-			echo $this->processMailTemplate($mail, $data, $texts, $vars, $templates);
+			echo $body;
 		}
 
 		unset($vars);

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -206,9 +206,6 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 					$items = array_merge($items,$item);
 				}
 
-				$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, $rounding);
-				$amountTheorical += round($this->plugin_data->payment_price,$rounding);
-
 				$endItem = array(
 					'PAYMENTREQUEST_0_ITEMAMT' => $amountCalculated,
 					'PAYMENTREQUEST_0_TAXAMT' => $tax,
@@ -237,6 +234,10 @@ class plgHikashoppaymentPaypalExpress extends hikashopPaymentPlugin
 				hikaInput::get()->set('order_token', $order->order_token );
 				$this->app->redirect($return_url);
 			}
+
+			$amountTheorical += round($amountTheorical * $this->plugin_params->payment_percentage / 100, $rounding);
+			$amountTheorical += round($this->plugin_data->payment_price,$rounding);
+
 
 			$this->plugin_params->landingpage = (empty($this->plugin_params->landingpage) ) ? 'Login' : 'Billing';
 

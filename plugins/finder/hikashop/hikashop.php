@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -215,6 +215,15 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 			if(isset($row->old->product_published) && isset($row->product_published) && $row->old->product_published != $row->product_published) {
 				$this->itemStateChange(array($row->product_id), $row->product_published);
 			}
+
+			if(isset($row->old->product_access) && isset($row->product_access) && $row->old->product_access != $row->product_access) {
+				$public_access = in_array($row->product_access, array('', 'all')) || strpos($row->product_access, ',9,') !== false;
+				if(!$public_access) {
+					$this->itemStateChange(array($row->product_id), 0);
+				} else if((!isset($row->product_published) && $row->old->product_published > 0 ) || $row->product_published > 0) {
+					$this->itemStateChange(array($row->product_id), 1);
+				}
+			}
 			if(!empty($row->categories) && (!isset($row->product_parent_id) || empty($row->product_parent_id))) {
 				$query = 'SELECT category_id FROM #__hikashop_category WHERE category_id IN('.implode(',', $row->categories).') AND category_published=1;';
 				$db = JFactory::getDBO();
@@ -253,7 +262,8 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 		if(!empty($this->item->product_parent_id)) {
 			$productClass = hikashop_get('class.product');
 			$parentProduct = $productClass->get($this->item->product_parent_id);
-			if(empty($parentProduct) || $parentProduct->product_published < 1) {
+			$public_access = isset($parentProduct) && (in_array($parentProduct->product_access, array('', 'all')) || strpos($parentProduct->product_access, ',9,') !== false);
+			if(empty($parentProduct) || $parentProduct->product_published < 1 || !$public_access) {
 				return 0;
 			}
 
@@ -266,6 +276,10 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 			else
 				$category = 0;
 		}elseif(!empty($this->item->id)) {
+			$public_access = in_array($this->item->product_access, array('', 'all')) || strpos($this->item->product_access, ',9,') !== false;
+			if($this->item->product_published < 1  || !$public_access) {
+				return 0;
+			}
 			$query = 'SELECT c.category_id FROM #__hikashop_category AS c LEFT JOIN #__hikashop_product_category AS pc ON pc.category_id = c.category_id WHERE c.category_published=1 AND pc.product_id ='.$this->item->id;
 			$db = JFactory::getDBO();
 			$db->setQuery($query);
@@ -542,7 +556,10 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 	}
 
 	protected function getStateColumn() {
-		$conditions = array('WHEN a.product_type = \'trash\' THEN 0');
+		$conditions = array(
+			'WHEN a.product_type = \'trash\' THEN 0',
+			'WHEN a.product_access NOT IN (\'all\', \'\') OR a.product_access NOT LIKE \'%,9,%\' THEN 0',
+		);
 		if(!function_exists('hikashop_config'))
 			$this->setup();
 		$config = hikashop_config();

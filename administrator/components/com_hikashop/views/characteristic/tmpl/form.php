@@ -1,16 +1,16 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><div class="iframedoc" id="iframedoc"></div>
 <form action="index.php?option=<?php echo HIKASHOP_COMPONENT ?>&amp;ctrl=characteristic" method="post"  name="adminForm" id="adminForm" enctype="multipart/form-data">
 <div id="page-characteristic" class="hk-row-fluid hikashop_backend_tile_edition">
-	<div class="hkc-md-4 hikashop_tile_block"><div>
+	<div class="hkc-md-6 hikashop_tile_block"><div>
 		<div class="hikashop_tile_title"><?php echo JText::_('MAIN_INFORMATION'); ?></div>
 				<?php echo $this->loadTemplate('item');?>
 				<table width="100%" class="admintable table">
@@ -51,7 +51,7 @@ defined('_JEXEC') or die('Restricted access');
 				</table>
 		</div>
 	</div>
-	<div class="hkc-md-8 hikashop_tile_block"><div>
+	<div class="hkc-md-6 hikashop_tile_block"><div>
 		<div class="hikashop_tile_title"><?php echo JText::_('VALUES'); ?></div>
 			<?php if(!empty($this->extraData->rightTop)) { echo implode("\r\n",$this->extraData->rightTop); } ?>
 			<?php

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -174,26 +174,30 @@ class plgHikashopMassaction_product extends JPlugin
 			}
 		}else{
 			$db = JFactory::getDBO();
-			if(!empty($filter['value']) || $filter['value'] == '0'){
-				$query->leftjoin['hk_price'] = hikashop_table('price').' AS hk_price ON hk_price.price_product_id = hk_product.product_id';
-				if($filter['type'] == 'price_currency_id' && !is_int($filter['value'])){
-					$nquery = 'SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_symbol = '.$db->quote($filter['value']).' OR currency_code = '.$db->quote($filter['value']).' OR currency_name = '.$db->quote($filter['value']);
-					$db->setQuery($nquery);
-					$result = $db->loadResult();
-					$query->where[] = 'hk_price.'.$filter['type'].' = '.(int)$result;
-				}else{
-					if($filter['type'] == 'price_value' && ($filter['operator'] == ('IS NULL') || $filter['value'] == '0')){
-						$nquery = 'SELECT price_product_id FROM '.hikashop_table('price').' WHERE 1';
-						$db->setQuery($nquery);
-						$result = $db->loadColumn();
+			$query->leftjoin['hk_price'] = hikashop_table('price').' AS hk_price ON hk_price.price_product_id = hk_product.product_id';
+			if($filter['type'] == 'price_currency_id' && !is_int($filter['value'])){
+				$nquery = 'SELECT currency_id FROM '.hikashop_table('currency').' WHERE currency_symbol = '.$db->quote($filter['value']).' OR currency_code = '.$db->quote($filter['value']).' OR currency_name = '.$db->quote($filter['value']);
+				$db->setQuery($nquery);
+				$result = $db->loadResult();
+				$query->where[] = 'hk_price.'.$filter['type'].' = '.(int)$result;
+			}else{
 
-						$query->where[] = 'hk_product.product_id NOT IN ('.implode(',',$result).') ';
-					}else{
-						$query->where[] = $this->massaction->getRequest($filter,'hk_price');
+				if($filter['type'] == 'price_value' && ($filter['operator'] == ('IS NULL') || $filter['value'] == '0')){
+					$nquery = 'SELECT DISTINCT price_product_id FROM '.hikashop_table('price').' WHERE 1';
+					$db->setQuery($nquery);
+					$result = $db->loadColumn();
+
+					$operator = 'NOT IN';
+					if(in_array($filter['operator'], array('IS NOT NULL', '!='))) {
+						$operator = 'IN';
 					}
-					if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
-						$query->where[] = $this->massaction->getRequest($filter,'hk_price');
-					}
+
+					$query->where[] = 'hk_product.product_id ' . $operator . ' ('.implode(',',$result).') ';
+				}else{
+					$query->where[] = $this->massaction->getRequest($filter,'hk_price');
+				}
+				if(!empty($filter['value']) || (empty($filter['value']) && in_array($filter['operator'],array('IS NULL','IS NOT NULL','=','!=')))){
+					$query->where[] = $this->massaction->getRequest($filter,'hk_price');
 				}
 			}
 		}
