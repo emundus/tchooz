@@ -115838,27 +115838,6 @@ body {
     width: 100%;
     position: absolute
 }
-/* Historique des emails */
-.view-list.email-history-indicators-page #g-container-main {
-    background-image: var(--display-email-history);
-    background-position: top 74px right -10px;
-    background-repeat: no-repeat;
-    background-size: 248px;
-}
-/* Groupes */
-.view-list.groups-setup-page #g-container-main {
-    background-image: var(--display-groups);
-    background-position: top 74px right;
-    background-repeat: no-repeat;
-    background-size: 248px;
-}
-/* Profils */
-.view-list.users-profile-setup-page #g-container-main {
-    background-image: var(--display-profiles);
-    background-position: top 74px right -10px;
-    background-repeat: no-repeat;
-    background-size: 248px;
-}
 /* TABLETTE */
 @media screen and (min-width: 768px) and (max-width: 959px) {
 
@@ -115870,21 +115849,6 @@ body {
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
     .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
         background-size: 90%;
-    }
-
-    /* Historique des emails */
-    .view-list.email-history-indicators-page #g-container-main {
-        background-size: 30%;
-    }
-
-    /* Groupes */
-    .view-list.groups-setup-page #g-container-main {
-        background-size: 35%;
-    }
-
-    /* Profils */
-    .view-list.users-profile-setup-page #g-container-main {
-        background-size: 45%;
     }
 }
 /* MOBILE */
@@ -115917,21 +115881,6 @@ body {
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
     .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
         background-size: 100%;
-    }
-
-    /* Historique des emails */
-    .view-list.email-history-indicators-page #g-container-main {
-        background-image: none;
-    }
-
-    /* Groupes */
-    .view-list.groups-setup-page #g-container-main {
-        background-image: none;
-    }
-
-    /* Profils */
-    .view-list.users-profile-setup-page #g-container-main {
-        background-image: none;
     }
 }
 /***************
