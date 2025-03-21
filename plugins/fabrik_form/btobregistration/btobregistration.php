@@ -87,7 +87,8 @@ class PlgFabrik_FormBtobRegistration extends plgFabrik_Form
 							->select('filename')
 							->from('#__emundus_uploads')
 							->where('fnum LIKE ' . $db->quote($fnum))
-							->where('attachment_id = ' . $attachment_to_download);
+							->where('attachment_id = ' . $attachment_to_download)
+							->order('id DESC');
 						$db->setQuery($query);
 						$bulletin_inscription = $db->loadResult();
 
