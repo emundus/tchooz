@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -87,6 +87,10 @@ if($display_checkout_bar > 0) {
 ?>
 <!-- EO PROGRESS BAR END -->
 <?php
+$js = '';
+if($this->emptyBlocksCount == count($this->workflow['steps'][$this->workflow_step]['content'])) {
+	$handleEnter = array('window.checkout.submitStep(document.getElementById(\'hikabtn_checkout_next\'));');
+}
 $doc = JFactory::getDocument();
 $doc->addScript(HIKASHOP_JS.'checkout.js');
 $js = '

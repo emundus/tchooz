@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,20 +27,68 @@ class userViewUser extends HikaShopView {
 		$this->user = hikashop_loadUser(true);
 	}
 
+	private function _getURL($params, $ctrl, $task, $exclude = array()) {
+		global $Itemid;
+
+		$originalCtrl = $ctrl;
+		$isCart = $ctrl == 'cart';
+		$isWishlist = false;
+		if($ctrl == 'wishlist') {
+			$isWishlist = true;
+			$ctrl = 'cart';
+		}
+		$skipParams = false;
+
+		$menusClass = hikashop_get('class.menus');
+		$itemIdForMenu = $menusClass->loadAMenuItemId($ctrl, $task, 0, $exclude);
+		if(!$itemIdForMenu) {
+			$itemIdForMenu = $Itemid;
+		}else {
+			$result = $menusClass->loadAMenuItemId($ctrl, $task, $itemIdForMenu);
+			if(!$result) {
+				$itemIdForMenu = $Itemid;
+			} elseif($isCart || $isWishlist) {
+				$app = JFactory::getApplication();
+				$menus	= $app->getMenu();
+				$menu	= $menus->getItem($itemIdForMenu);
+				if(!empty($menu)) {
+					$menuParams = $menu->getParams();
+					$cart_type = $menuParams->get('cart_type');
+					if(($isCart && $cart_type != 'cart') || ($isWishlist && $cart_type != 'wishlist')) {
+						$exclude[] = $itemIdForMenu;
+						return $this->_getURL($params, $originalCtrl, $task, $exclude);
+					}
+					if($menu && strpos($menu->link, 'index.php?option='.HIKASHOP_COMPONENT.'&view='.str_replace('&task=', '&layout=', $params)) !== false) {
+						$skipParams = true;
+					}
+				}
+			}
+		}
+		$url = 'index.php?option='.HIKASHOP_COMPONENT;
+		if(!$skipParams) {
+			$url .= '&ctrl='.$params;
+		}
+		if(!empty($itemIdForMenu)) {
+			$url .= '&Itemid=' . $itemIdForMenu;
+		}
+		return JRoute::_($url);
+	}
+
 	public function cpanel() {
 		$config =& hikashop_config();
 		$this->assignRef('config', $config);
 
 		global $Itemid;
 		$this->url_itemid = '';
-		if(!empty($Itemid))
+		if(!empty($Itemid)) {
 			$this->url_itemid = '&Itemid=' . $Itemid;
+		}
 
 		hikashop_loadJsLib('tooltip');
 
 		$buttons = array(
 			'address' => array(
-				'link' => hikashop_completeLink('address'.$this->url_itemid),
+				'link' => $this->_getURL('address', 'address', 'listing'),
 				'level' => 0,
 				'image' => 'address',
 				'text' => JText::_('ADDRESSES'),
@@ -48,7 +96,7 @@ class userViewUser extends HikaShopView {
 				'fontawesome' => '<i class="fas fa-map-marker-alt fa-stack-2x"></i>'
 			),
 			'order' => array(
-				'link' => hikashop_completeLink('order'.$this->url_itemid),
+				'link' => $this->_getURL('order', 'order', 'listing'),
 				'level' => 0,
 				'image' => 'order',
 				'text' => JText::_('ORDERS'),
@@ -62,7 +110,7 @@ class userViewUser extends HikaShopView {
 		if(hikashop_level(1)) {
 			if($config->get('enable_multicart'))
 				$buttons['cart'] = array(
-					'link' => hikashop_completeLink('cart&task=listing'.$this->url_itemid),
+					'link' => $this->_getURL('cart&task=listing', 'cart', 'listing'),
 					'level' => 0,
 					'image' => 'cart',
 					'text' => JText::_('CARTS'),
@@ -71,7 +119,7 @@ class userViewUser extends HikaShopView {
 				);
 			else
 				$buttons['cart'] = array(
-					'link' => hikashop_completeLink('cart&task=show'.$this->url_itemid),
+					'link' => $this->_getURL('cart&task=show', 'cart', 'show'),
 					'level' => 0,
 					'image' => 'cart',
 					'text' => JText::_('CARTS'),
@@ -83,7 +131,7 @@ class userViewUser extends HikaShopView {
 			if($config->get('enable_wishlist')) {
 				if($config->get('enable_multiwishlist', 1))
 					$buttons['wishlist'] = array(
-						'link' => hikashop_completeLink('cart&task=listing&cart_type=wishlist'.$this->url_itemid),
+						'link' => $this->_getURL('cart&task=listing&cart_type=wishlist', 'wishlist', 'listing'),
 						'level' => 0,
 						'image' => 'wishlist',
 						'text' => JText::_('WISHLISTS'),
@@ -94,7 +142,7 @@ class userViewUser extends HikaShopView {
 					);
 				else
 					$buttons['wishlist'] = array(
-						'link' => hikashop_completeLink('cart&task=show&cart_type=wishlist'.$this->url_itemid),
+						'link' => $this->_getURL('cart&task=show&cart_type=wishlist', 'wishlist', 'show'),
 						'level' => 0,
 						'image' => 'wishlist',
 						'text' => JText::_('WISHLISTS'),
@@ -107,7 +155,7 @@ class userViewUser extends HikaShopView {
 
 			if($config->get('enable_customer_downloadlist') && hikashop_level(1))
 				$buttons['download'] = array(
-					'link' => hikashop_completeLink('user&task=downloads'.$this->url_itemid),
+					'link' => $this->_getURL('user&task=downloads', 'user', 'downloads'),
 					'level' => 0,
 					'image' => 'downloads',
 					'text' => JText::_('DOWNLOADS'),

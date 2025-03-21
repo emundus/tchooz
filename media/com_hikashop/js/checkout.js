@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.1.1
+ * @version    5.1.5
  * @author     hikashop.com
- * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 (function() {
@@ -44,6 +44,11 @@ var hikashopCheckout = {
 		url = t.handleParams({'type': type, 'cid': step, 'pos': id }, url, params);
 
 		o.xRequest(url, params, function(x,p) {
+			if(!x.responseURL.includes(url)) {
+				// redirect happened 
+				console.log('[HikaShop Checkout Error] Something on the server side requested a redirect from "' + url + '" to "' + x.responseURL + '". It\'s probably a third party plugin which shouldn\'t do that. The page will reload to avoid any issue.');
+				window.location.reload(true);
+			}
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);
 			t.setLoading(el, false);
 			window.hikashop.updateElem(el, x.responseText);
@@ -113,8 +118,9 @@ var hikashopCheckout = {
 				window.location.reload(true);
 			}
 
-			if(x.status == 303 || x.status == 301) {
-				console.log('[HikaShop Checkout Error] Something on the server side requested a redirect to "' + x.getResponseHeader('Location') + '". It\'s probably a third party plugin which shouldn\'t do that. The page was reload to avoid any issue.');
+			if(!x.responseURL.includes(url)) {
+				// redirect happened 
+				console.log('[HikaShop Checkout Error] Something on the server side requested a redirect from "' + url + '" to "' + x.responseURL + '". It\'s probably a third party plugin which shouldn\'t do that. The page will reload to avoid any issue.');
 				window.location.reload(true);
 			}
 			el = d.getElementById("hikashop_checkout_" + type_clean + "_" + step + "_" + id);

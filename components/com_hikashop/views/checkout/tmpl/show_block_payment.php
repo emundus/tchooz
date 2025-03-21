@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 
 <?php
 
-$this->checkoutHelper->displayMessages('payment');
+$displayedMessages = $this->checkoutHelper->displayMessages('payment');
 $cart = $this->checkoutHelper->getCart();
 
 if(!empty($cart->usable_methods->payment)) {
@@ -269,6 +269,8 @@ if(!empty($cart->usable_methods->payment)) {
 ?>
 </table>
 <?php
+} elseif(empty($displayedMessages) || !count($displayedMessages)) {
+	$this->emptyBlocksCount++;
 }
 
 if(empty($this->ajax)) { ?>

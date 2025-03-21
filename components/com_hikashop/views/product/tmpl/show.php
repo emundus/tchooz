@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -442,7 +442,7 @@ if($this->config->get('comments_feature') == 'jcomments') {
 			$product_name = $this->product->product_name;
 		}
 		if(class_exists('JComments'))
-			echo JComments::showComments($product_id, 'com_hikashop', $product_name);
+			echo JComments::show($product_id, 'com_hikashop', $product_name);
 	}
 } elseif($this->config->get('comments_feature') == 'jomcomment') {
 	$comments = HIKASHOP_ROOT . 'plugins' . DS . 'content' . DS . 'jom_comment_bot.php';

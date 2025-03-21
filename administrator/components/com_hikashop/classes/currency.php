@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1806,12 +1806,12 @@ class hikashopCurrencyClass extends hikashopClass{
 	}
 
 	function removeAndAddPrices(&$element,&$prices,&$currency_ids,$currency_id,$main_currency,$zone_id) {
-		$this->removeUneededPrices($element,$prices,$currency_id,$main_currency);
+		$this->removeUneededPrices($element,$prices,$currency_id,$main_currency,$zone_id);
 		$this->addTax($prices,$element,$currency_ids,$zone_id,$element->product_tax_id);
 
 		if(!empty($element->variants)) {
 			foreach($element->variants as $k2 => $variant) {
-				$this->removeUneededPrices($element->variants[$k2], $prices, $currency_id, $main_currency);
+				$this->removeUneededPrices($element->variants[$k2], $prices, $currency_id, $main_currency,$zone_id);
 				if(empty($element->variants[$k2]->product_tax_id))
 					$element->variants[$k2]->product_tax_id = $element->product_tax_id;
 				$this->addTax($prices, $element->variants[$k2], $currency_ids, $zone_id, $element->variants[$k2]->product_tax_id);
@@ -1826,9 +1826,33 @@ class hikashopCurrencyClass extends hikashopClass{
 		}
 	}
 
-	function removeUneededPrices(&$element,&$prices,$currency_id,$main_currency){
+	function removeUneededPrices(&$element,&$prices,$currency_id,$main_currency,$zone_id){
+		static $zones = array();
+		$zoneClass = hikashop_get('class.zone');
+		if(empty($zones[$zone_id])) {
+			foreach($prices as $price) {
+				if($price->price_zone_id) {
+					$zones[$zone_id] = $zoneClass->getZoneParents($zone_id);
+					break;
+				}
+			}
+		}
+
 		$elementPrices = array();
 		foreach($prices as $k => $price){
+			if($price->price_zone_id) {
+				if(!is_array($price->price_zone_id))
+					$price->price_zone_id = explode(',',trim($price->price_zone_id,','));
+				if(empty($price->price_zone_loaded)) {
+					$price->price_zone_id = $zoneClass->getZones($price->price_zone_id, 'zone_namekey', 'zone_namekey', true);
+					$price->price_zone_loaded = true;
+				}
+				if($price->price_zone_id && !count(array_intersect($price->price_zone_id, $zones[$zone_id]))) {
+					unset($prices[$k]);
+					continue;
+				}
+			}
+
 			if($price->price_product_id == $element->product_id) {
 				$elementPrices[$price->price_currency_id][$price->price_min_quantity][]=$k;
 			}

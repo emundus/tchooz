@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1823,7 +1823,7 @@ class hikashopWidgetClass extends hikashopClass {
 		$leftjoin=str_replace('LEFT JOIN '.hikashop_table('order_product').' AS prod ON prod.order_id = a.order_id','',$leftjoin);
 		if($content=='orders'){
 			$query='SELECT *, '.$dataType.' as quantity FROM '.hikashop_table('order_product').' AS prod LEFT JOIN '.hikashop_table('order').' AS a on a.order_id=prod.order_id '
-				.$leftjoin.' '.$filters.' GROUP BY prod.product_id ORDER BY quantity '.$order.' '.$limit;
+				.$leftjoin.' '.$filters.' GROUP BY prod.product_id, prod.order_product_name ORDER BY quantity '.$order.' '.$limit;
 			$db->setQuery($query);
 			$ids = $db->loadObjectList();
 
@@ -1846,7 +1846,7 @@ class hikashopWidgetClass extends hikashopClass {
 			}
 		}else{
 			$query='SELECT *, '.$dataType.' as Total, count(a.order_id) AS quantity FROM '.hikashop_table('order_product').' AS prod LEFT JOIN '.hikashop_table('order').' AS a on a.order_id=prod.order_id '
-				.$leftjoin.' '.$filters.' GROUP BY prod.product_id ORDER BY Total '.$order.' '.$limit;
+				.$leftjoin.' '.$filters.' GROUP BY prod.product_id, prod.order_product_name ORDER BY Total '.$order.' '.$limit;
 			$db->setQuery($query);
 			$ids = $db->loadObjectList();
 		}

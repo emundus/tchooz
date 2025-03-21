@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -58,6 +58,7 @@ class hikashopOrder_productClass extends hikashopClass {
 			'order_product_tax_before_discount',
 			'order_product_discount_code',
 			'order_product_discount_info',
+			'order_product_params',
 		);
 
 		if(hikashop_level(2)) {
@@ -98,6 +99,8 @@ class hikashopOrder_productClass extends hikashopClass {
 				$product->order_product_options = serialize($product->order_product_options);
 			if(isset($product->order_product_discount_info) && !is_string($product->order_product_discount_info))
 				$product->order_product_discount_info = serialize($product->order_product_discount_info);
+			if(isset($product->order_product_params) && !is_string($product->order_product_params))
+				$product->order_product_params = json_encode($product->order_product_params);
 
 			$line = array(
 				$order_id,
@@ -127,6 +130,7 @@ class hikashopOrder_productClass extends hikashopClass {
 				(float)@$product->order_product_tax_before_discount,
 				(float)@$product->order_product_discount_code,
 				$this->database->Quote(@$product->order_product_discount_info),
+				$this->database->Quote(@$product->order_product_params),
 			);
 			if(!empty($itemFields)) {
 				foreach($itemFields as $field) {

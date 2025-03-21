@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -282,7 +282,19 @@ class hikashopFileClass extends hikashopClass {
 							if($thumbnail_folder != 'thumbnail' && substr($thumbnail_folder, 0, 9) != 'thumbnail' && substr($thumbnail_folder, 0, 11) != ('thumbnails'.DS))
 								continue;
 							if(!in_array($type,array('file','watermark')) && JFile::exists($uploadPath.$thumbnail_folder.DS.$old->file_path)) {
-								JFile::delete( $uploadPath .$thumbnail_folder.DS. $old->file_path );
+								$file_path = $uploadPath .$thumbnail_folder.DS. $old->file_path;
+								JFile::delete( $file_path );
+
+								if($config->get('add_webp_images', 1)) {
+									$extension = strtolower(substr($file_path,strrpos($file_path,'.')+1));
+									if(!in_array($extension, array('svg', 'webp'))) {
+										$webpfile = preg_replace('#\.'. $extension.'$#i','.webp', $old->file_path);
+										$webp_file_path = $uploadPath . $thumbnail_folder.DS. $webpfile;
+										if(JFile::exists($webp_file_path)) {
+											JFile::delete( $webp_file_path );
+										}
+									}
+								}
 							}
 						}
 					}
@@ -548,7 +560,10 @@ class hikashopFileClass extends hikashopClass {
 			list($size_unit, $range_orig) = explode('=', $_SERVER['HTTP_RANGE'], 2);
 
 			if ($size_unit == 'bytes') 	{
-				list($range, $extra_ranges) = explode(',', $range_orig, 2);
+				if(strpos($range_orig, ','))
+					list($range, $extra_ranges) = explode(',', $range_orig, 2);
+				else
+					$range = $range_orig;
 			}
 		}
 
@@ -728,17 +743,19 @@ class hikashopFileClass extends hikashopClass {
 				if(!$found) {
 					$escaped_field_namekey = $this->database->quoteName($field_namekey);
 
+					$token = hikaInput::get()->getVar('order_token');
+					$user_condition = '(a.order_user_id = '.(int)hikashop_loadUser().' OR (u.user_cms_id < 1 AND a.order_token = '.$this->database->Quote($token).'))';
 					switch($field_table) {
 						case 'order':
-							$query = 'SELECT order_id FROM '.hikashop_table('order').
-							' WHERE order_user_id='.(int)hikashop_loadUser().' AND '.$this->_getCondition($field, $escaped_field_namekey, $name);
+							$query = 'SELECT a.order_id FROM '.hikashop_table('order'). ' AS a LEFT JOIN ' .hikashop_table('user').' AS u ON a.order_user_id=u.user_id'.
+							' WHERE '.$user_condition.' AND '.$this->_getCondition($field, 'a.'.$escaped_field_namekey, $name);
 							break;
 						case 'item':
-							$query = 'SELECT b.order_product_id FROM '.hikashop_table('order').' AS a LEFT JOIN '.hikashop_table('order_product').' AS b ON a.order_id=b.order_id'.
-							' WHERE a.order_user_id='.(int)hikashop_loadUser(). ' AND '.$this->_getCondition($field, 'b.'.$escaped_field_namekey, $name);
+							$query = 'SELECT b.order_product_id FROM '.hikashop_table('order').' AS a LEFT JOIN ' .hikashop_table('user').' AS u ON a.order_user_id=u.user_id LEFT JOIN '.hikashop_table('order_product').' AS b ON a.order_id=b.order_id'.
+							' WHERE '.$user_condition.' AND '.$this->_getCondition($field, 'b.'.$escaped_field_namekey, $name);
 							break;
 						case 'entry':
-							$query = 'SELECT b.entry_id FROM '.hikashop_table('order').' AS a LEFT JOIN '.hikashop_table('entry').' AS b ON a.order_id=b.order_id WHERE a.order_user_id='.(int)hikashop_loadUser().' AND '.$this->_getCondition($field, 'b.'.$escaped_field_namekey, $name);
+							$query = 'SELECT b.entry_id FROM '.hikashop_table('order').' AS a LEFT JOIN '.hikashop_table('entry').' AS b ON a.order_id=b.order_id WHERE '.$user_condition.' AND '.$this->_getCondition($field, 'b.'.$escaped_field_namekey, $name);
 							break;
 						case 'user':
 							$query = 'SELECT user_id FROM '.hikashop_table('user').' WHERE user_id='.(int)hikashop_loadUser().' AND '.$this->_getCondition($field, $escaped_field_namekey, $name);

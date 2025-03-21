@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,7 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 <?php
 
 if(!empty($this->options['display_errors'])) {
-	$this->checkoutHelper->displayMessages('shipping');
+	$displayedMessages = $this->checkoutHelper->displayMessages('shipping');
 }
 $cart = $this->checkoutHelper->getCart();
 
@@ -128,7 +128,7 @@ if(!empty($cart->usable_methods->shipping)) {
 			if($several_groups && $shipping->shipping_warehouse_id != $shipping_group_key)
 				continue;
 
-			$selected = false; // (!empty($cart->shipping) && $shipping->shipping_id == $cart->shipping->shipping_id);
+			$selected = false;
 			if(!empty($cart->shipping)) {
 				$shipping_id = is_numeric($shipping->shipping_id) ? (int)$shipping->shipping_id : $shipping->shipping_id;
 				foreach($cart->shipping as $s) {
@@ -246,6 +246,8 @@ if(!empty($cart->usable_methods->shipping)) {
 </div>
 <?php
 	}
+} elseif(empty($displayedMessages) || !count($displayedMessages)) {
+	$this->emptyBlocksCount++;
 }
 
 if(empty($this->ajax)) { ?>

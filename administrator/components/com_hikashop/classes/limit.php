@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -57,7 +57,9 @@ class hikashopLimitClass extends hikashopClass {
 	}
 
 	public function save(&$element) {
-		if(empty($element->limit_type) || $element->limit_type != 'weight' ) {
+
+		$new = empty($element->limit_id);
+		if($new && (empty($element->limit_type) || $element->limit_type != 'weight' )) {
 			$element->limit_unit = '';
 		}
 		if(!empty($element->limit_status) && is_array($element->limit_status)){
@@ -66,10 +68,9 @@ class hikashopLimitClass extends hikashopClass {
 
 		if(!empty($element->limit_category_id) && is_array($element->limit_category_id)){
 			$element->limit_category_id = ','.implode(',',$element->limit_category_id).',';
-		} else {
+		} elseif($new) {
 			$element->limit_category_id = '';
 		}
-		$new = empty($element->currency_id);
 		$do = true;
 		JPluginHelper::importPlugin('hikashop');
 		$app = JFactory::getApplication();
@@ -743,7 +744,7 @@ class hikashopLimitClass extends hikashopClass {
 			'order_currency_id' => 'o.order_currency_id',
 			'order_created' => 'o.order_created',
 			'order_status' => 'o.order_status',
-			'product_main_id' => 'p.product_id as product_main_id',
+			'product_main_id' => 'p.product_parent_id as product_main_id',
 			'category_id' => 'pc.category_id'
 		);
 		$joins = array(

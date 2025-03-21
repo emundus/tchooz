@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,7 +25,7 @@ $options = array(
 		$this->popup->display(
 			'<span class="fa fa-plus"></span>',
 			JText::_('ADD_FILE'),
-			hikashop_completeLink('product&task=selectfile&pid='.@$this->product->product_id,true),
+			hikashop_completeLink('product&task=selectfile&pid='.@$this->product->product_id.'&product_type='.$product_type,true),
 			'hikashop_file_add',
 			750, 460, 'class="hikabtn hikabtn-primary" onclick="return window.productMgr.addFile(this,'.(int)@$this->product->product_id.',\''.$product_type.'\');"'.' data-toggle="hk-tooltip" data-title="'.JText::_('ADD_FILE').'"', '', 'link'
 		)

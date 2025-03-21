@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -186,6 +186,15 @@ if(!empty($this->rows)) {
 					$app->setUserState(HIKASHOP_COMPONENT.'.last_category_selected', (int)$row->category_id);
 					break;
 				}
+				if(!empty($row->childs)) {
+					foreach($row->childs as $child) {
+						if($cid == $child->category_id) {
+							$found = (int)$child->category_id;
+							$app->setUserState(HIKASHOP_COMPONENT.'.last_category_selected', (int)$child->category_id);
+							break;
+						}
+					}
+				}
 			}
 		}
 		$current_parent_category = 0;
@@ -198,7 +207,7 @@ if(!empty($this->rows)) {
 			if($only_if_products && $row->number_of_products < 1)
 				continue;
 			$class = ($found == $row->category_id) ? ' hikashop_current_category' : '';
-			$class = ($current_parent_category == $row->category_id) ? ' hikashop_current_parent_category' : '';
+			$class = ($current_parent_category == $row->category_id) ? ' hikashop_current_parent_category' : $class;
 ?>
 			<div class="hkc-md-<?php echo (int)$span; ?> hikashop_category hikashop_category_column_<?php echo $current_column; ?> hikashop_category_row_<?php echo $current_row.$class; ?>">
 				<div class="hikashop_container  <?php echo $classZoom; ?>">
