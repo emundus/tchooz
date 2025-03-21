@@ -1594,6 +1594,14 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 
   tbody tr.fabrik_row {
     margin-left: 3px;
+
+    & > td > select {
+      width: 100%;
+    }
+
+    & > td > div.chosen-container a span {
+      margin-right: 0;
+    }
   }
 
   tbody input.fabrik_filter[type="text"] {
@@ -1812,6 +1820,7 @@ input[type="color"]::-webkit-color-swatch-wrapper {
     font-style: normal;
     font-size: var(--em-coordinator-font-size) !important;
     height: auto !important;
+    color: var(--neutral-0);
 
     &:hover, &:active, &:focus {
       background: var(--neutral-0) !important;
