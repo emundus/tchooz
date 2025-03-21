@@ -58,7 +58,6 @@
 		</td>
 		<td v-if="columns.includes('permissions')" class="permissions">
 			<span
-				v-if="attachment.profiles.length > 0"
 				class="material-symbols-outlined visibility-permission tw-cursor-pointer"
 				:class="{ active: attachment.can_be_viewed == '1' }"
 				@click="changePermission('can_be_viewed', attachment)"
@@ -66,7 +65,6 @@
 				>visibility</span
 			>
 			<span
-				v-if="attachment.profiles.length > 0"
 				class="material-symbols-outlined delete-permission tw-cursor-pointer"
 				:class="{ active: attachment.can_be_deleted == '1' }"
 				@click="changePermission('can_be_deleted', attachment)"

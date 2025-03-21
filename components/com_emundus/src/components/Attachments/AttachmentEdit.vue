@@ -47,7 +47,7 @@
 					<label for="replace">{{ translate('COM_EMUNDUS_ATTACHMENTS_REPLACE') }}</label>
 					<input type="file" name="replace" @change="updateFile" :accept="allowedType" />
 				</div>
-				<div class="input-group" v-if="is_applicant != 1 && attachment.profiles && attachment.profiles.length > 0">
+				<div class="input-group" v-if="is_applicant != 1">
 					<label for="can_be_viewed">{{ translate('COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED') }}</label>
 					<input
 						type="checkbox"
@@ -57,7 +57,7 @@
 						@click="saveChanges"
 					/>
 				</div>
-				<div class="input-group" v-if="is_applicant != 1 && attachment.profiles && attachment.profiles.length > 0">
+				<div class="input-group" v-if="is_applicant != 1">
 					<label for="can_be_deleted">{{ translate('COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED') }}</label>
 					<input
 						type="checkbox"
