@@ -1,4 +1,4 @@
-import { C as FetchClient, _ as _export_sfc, X as mixin, a5 as IncrementalSelect, J as script, a3 as V32, u as useGlobalStore, l as emailService, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, g as withModifiers, t as toDisplayString, m as createTextVNode, w as withDirectives, A as vModelText, n as normalizeClass, b as createCommentVNode, a as createBlock, v as vShow, h as createVNode } from "./app_emundus.js";
+import { C as FetchClient, _ as _export_sfc, a3 as X42, J as script, a5 as IncrementalSelect, W as mixin, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, g as withModifiers, t as toDisplayString, w as withDirectives, m as createTextVNode, z as vModelText, n as normalizeClass, a as createBlock, v as vShow, h as createVNode, s as settingsService, u as useGlobalStore, l as emailService } from "./app_emundus.js";
 /* empty css       */
 const client = new FetchClient("messages");
 const messagesService = {
@@ -29,7 +29,7 @@ const _sfc_main = {
   components: {
     IncrementalSelect,
     Multiselect: script,
-    TipTapEditor: V32
+    TipTapEditor: X42
   },
   props: {
     mode: {

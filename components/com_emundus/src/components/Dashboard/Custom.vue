@@ -284,8 +284,13 @@ export default {
 </script>
 
 <style scoped>
+.tchooz-widget {
+	height: 100%;
+}
+
 .section-sub-menu {
-	display: block;
+	display: flex;
+	flex-direction: column;
 	width: 100%;
 	height: 100%;
 	justify-content: center;
