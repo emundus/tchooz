@@ -277,12 +277,9 @@ class EmundusModelEmails extends JModelList
 							}
 						}
 
-						if ($tmpl['to']['to_current_user'] == 1) {
-							$current_user = JFactory::getSession()->get('emundusUser');
-							if(empty($current_user) && !empty($student)){
-								$current_user = $student;
-							}
-							$recipients[$current_user->id] = array('id' => $current_user->id, 'name' => $current_user->name, 'email' => $current_user->email, 'university_id' => $current_user->university_id);
+						// add applicant to recipients if this parameter is active and if the action was done by the applicant (in that case, $student is not empty)
+						if ($tmpl['to']['to_current_user'] == 1 && !empty($student)) {
+							$recipients[$student->id] = array('id' => $student->id, 'name' => $student->name, 'email' => $student->email, 'university_id' => $student->university_id);
 						}
 
 						$emails_triggers[$trigger_id][$code]['to']['recipients'] = $recipients;
