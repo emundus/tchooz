@@ -1,5 +1,5 @@
 import list from "./List.js";
-import { _ as _export_sfc, y as smsService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, a as createBlock, B as smsService } from "./app_emundus.js";
 import "./Skeleton.js";
 import "./Calendar.js";
 import "./core.js";
@@ -8,10 +8,10 @@ import "./Parameter.js";
 import "./EventBooking.js";
 import "./events2.js";
 import "./Info.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main = {
   name: "Emails",
   components: {

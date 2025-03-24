@@ -53,7 +53,10 @@
   height: fit-content;
 }
 
-.com_emundus_vue div:not(.editor-toolbar) select, .tchooz-widget__selects select, .swal2-html-container div:not(.editor-toolbar) select {
+.com_emundus_vue div:not(.editor-toolbar) select,
+.tchooz-widget__selects select,
+.swal2-html-container div:not(.editor-toolbar) select,
+.em-coordinator #g-container-main #em-dashboard div select.form-control {
   height: var(--em-form-height);
   border-radius: var(--em-form-br);
   -webkit-appearance: none;
