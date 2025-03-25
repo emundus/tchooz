@@ -312,7 +312,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 
                     $.ajax({
                         type: 'get',
-                        url: 'index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                        url: '/index.php?option=com_emundus&controller=files&task=getfnuminfos',
                         async: true,
                         dataType: "json",
                         data: ({fnum: fnum.fnum}),

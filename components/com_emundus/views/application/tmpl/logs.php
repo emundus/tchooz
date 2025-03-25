@@ -204,7 +204,7 @@ else {
     $(document).ready(function () {
         $.ajax({
             method: "post",
-            url: "index.php?option=com_emundus&controller=files&task=getalllogactions",
+            url: "/index.php?option=com_emundus&controller=files&task=getalllogactions",
             dataType: 'json',
             success: function (results) {
                 if (results.status) {
@@ -239,7 +239,7 @@ else {
 
         $.ajax({
             type: 'post',
-            url: 'index.php?option=com_emundus&controller=files&task=getuserslogbyfnum',
+            url: '/index.php?option=com_emundus&controller=files&task=getuserslogbyfnum',
             data: ({
                 fnum: $('#fnum_hidden').attr('value'),
             }),

@@ -487,7 +487,7 @@ function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_
             if (result.status) {
                 $.ajax({
                     type: 'post',
-                    url: 'index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
+                    url: '/index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
                     dataType: 'JSON',
                     success: function (result) {
                         if (result.status) {
@@ -566,7 +566,7 @@ function generate_pdf(json, pdf_elements= null) {
 
             $.ajax({
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
+                url: '/index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
                 dataType: 'JSON',
                 data: {
                     file: file,
@@ -604,7 +604,7 @@ function generate_pdf(json, pdf_elements= null) {
         } else {
             $.ajax({
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
+                url: '/index.php?option=com_emundus&controller=files&task=generate_pdf&format=raw',
                 dataType: 'JSON',
                 data: {
                     file: file,
@@ -1030,7 +1030,7 @@ async function getEvaluationStepsElements(code)
     let elements = '';
 
     if (code) {
-        return await fetch('index.php?option=com_emundus&view=export_select_columns&format=raw&form=evaluation_steps&code='+code).then((response) => {
+        return await fetch('/index.php?option=com_emundus&view=export_select_columns&format=raw&form=evaluation_steps&code='+code).then((response) => {
             return response.text();
         }).then((data) => {
             return data;
