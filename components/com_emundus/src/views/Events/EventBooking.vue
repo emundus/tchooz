@@ -77,8 +77,9 @@ export default {
 					this.getSlots();
 				}
 			});
+		} else {
+			this.getSlots();
 		}
-		this.getSlots();
 	},
 	methods: {
 		async getMyBookings() {

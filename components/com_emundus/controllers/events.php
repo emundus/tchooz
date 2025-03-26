@@ -1373,6 +1373,7 @@ class EmundusControllerEvents extends BaseController
 		exit();
 	}
 
+
 	public function exportpdf()
 	{
 		$response = [
@@ -1388,6 +1389,9 @@ class EmundusControllerEvents extends BaseController
 		else
 		{
 			$ids = $this->input->getString('ids', '');
+			$checkboxesValuesFromView = $this->input->getString('checkboxesValuesFromView', '');
+			$checkboxesValuesFromProfile = $this->input->getString('checkboxesValuesFromProfile', '');
+
 			if (!empty($ids))
 			{
 				$ids = explode(',', $ids);
@@ -1396,12 +1400,30 @@ class EmundusControllerEvents extends BaseController
 			{
 				$ids = [];
 			}
+			if (!empty($checkboxesValuesFromView) && $checkboxesValuesFromView !== "[]")
+			{
+				$checkboxesValuesFromView = json_decode($checkboxesValuesFromView, true);
+			}
+			else
+			{
+				$checkboxesValuesFromView = [];
+			}
+			if (!empty($checkboxesValuesFromProfile) && $checkboxesValuesFromProfile !== "[]")
+			{
+				$checkboxesValuesFromProfile = json_decode($checkboxesValuesFromProfile, true);
+				$m_users = new EmundusModelUsers();
+				$checkboxesValuesFromProfile = $m_users->getColumnsFromProfileForm($checkboxesValuesFromProfile);
+			}
+			else
+			{
+				$checkboxesValuesFromProfile = [];
+			}
 
 			$items = $this->m_events->getRegistrants('', 'DESC', '', 0, 0, '', 0, 0, 0, 0, 0, $ids);
 
 			if (!empty($items) && !empty($items['datas']))
 			{
-				$pdf_filepath = $this->m_events->exportBookingsPDF($items['datas']);
+				$pdf_filepath = $this->m_events->exportBookingsPDF($items['datas'], $checkboxesValuesFromView, $checkboxesValuesFromProfile);
 
 				if ($pdf_filepath && file_exists($pdf_filepath))
 				{

@@ -72,4 +72,18 @@ export default {
 			};
 		}
 	},
+
+	async getColumnsFromProfileForm() {
+		try {
+			const response = await client().get(
+				'index.php?option=com_emundus&controller=users&task=getcolumnsfromprofileform',
+			);
+			return response.data;
+		} catch (e) {
+			return {
+				status: false,
+				error: e,
+			};
+		}
+	},
 };

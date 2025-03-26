@@ -253,7 +253,7 @@ export default {
 					document.querySelector('.sx__calendar-header').offsetHeight +
 					document.querySelector('.sx__week-header').offsetHeight;
 				const relativeX = rect.offsetLeft + 23;
-				const relativeY = event.clientY - rectCalendar.top + header + 20;
+				const relativeY = event.clientY - rectCalendar.top + header + 25;
 
 				this.selection = {
 					visible: true,

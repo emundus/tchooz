@@ -1,4 +1,4 @@
-import { _ as _export_sfc, s as settingsService, u as useGlobalStore, r as resolveComponent, c as createElementBlock, o as openBlock, a as createBlock, b as createCommentVNode, d as createBaseVNode, F as Fragment, e as renderList, w as withDirectives, v as vShow, n as normalizeClass, t as toDisplayString, S as Swal$1, M as Modal, P as Popover, f as withCtx, g as withModifiers, h as createVNode, i as shallowRef, j as normalizeStyle, k as nextTick, l as emailService, T as Tabs } from "./app_emundus.js";
+import { _ as _export_sfc, s as settingsService, u as useGlobalStore, r as resolveComponent, c as createElementBlock, o as openBlock, a as createBlock, b as createCommentVNode, d as createBaseVNode, F as Fragment, e as renderList, w as withDirectives, v as vShow, n as normalizeClass, t as toDisplayString, S as Swal$1, M as Modal, P as Popover, f as withCtx, g as createVNode, h as withModifiers, i as shallowRef, j as normalizeStyle, k as nextTick, l as emailService, T as Tabs } from "./app_emundus.js";
 import { P as Parameter, d as dayjs } from "./Parameter.js";
 import { L as LocationPopup } from "./LocationPopup.js";
 import { C as ColorPicker } from "./ColorPicker.js";
@@ -1020,7 +1020,7 @@ const EventSlotsSettings = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", 
 const _sfc_main$3 = {
   name: "CalendarSlotPopup",
   emits: ["close", "open", "slot-saved", "slot-deleted"],
-  components: { Popover, DatePicker, Parameter, Modal },
+  components: { Info, Popover, DatePicker, Parameter, Modal },
   props: {
     date: {
       type: String,
@@ -1064,6 +1064,7 @@ const _sfc_main$3 = {
       loading: true,
       showRepeat: false,
       displayPopover: false,
+      durationSlotInfo: "",
       actualLanguage: "fr-FR",
       rooms: [],
       fields: [
@@ -1186,6 +1187,19 @@ const _sfc_main$3 = {
         this.displayPopover = true;
         this.repeat_dates = this.$props.slot.repeat_dates;
       }
+    }
+    this.durationSlotInfo = this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_INFO");
+    this.durationSlotInfo = this.durationSlotInfo.replace("{{duration}}", this.duration);
+    if (this.duration_type === "minutes") {
+      this.durationSlotInfo = this.durationSlotInfo.replace(
+        "{{duration_type}}",
+        this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES")
+      );
+    } else if (this.duration_type === "hours") {
+      this.durationSlotInfo = this.durationSlotInfo.replace(
+        "{{duration_type}}",
+        this.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS")
+      );
     }
     this.getRooms();
   },
@@ -1380,7 +1394,7 @@ const _sfc_main$3 = {
         date = new Date(stringDate);
       }
       let minutes = date.getMinutes();
-      let roundedMinutes = Math.ceil(minutes / 10) * 10;
+      let roundedMinutes = Math.round(minutes / 15) * 15;
       date.setMinutes(roundedMinutes);
       date.setSeconds(0);
       return this.formatDate(date);
@@ -1457,6 +1471,7 @@ const _hoisted_15 = ["disabled"];
 const _hoisted_16 = { key: 0 };
 const _hoisted_17 = { key: 1 };
 function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_Info = resolveComponent("Info");
   const _component_Parameter = resolveComponent("Parameter");
   const _component_DatePicker = resolveComponent("DatePicker");
   const _component_popover = resolveComponent("popover");
@@ -1484,6 +1499,10 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           ]))
         ])
       ]),
+      createVNode(_component_Info, {
+        class: "tw-w-full",
+        text: this.durationSlotInfo
+      }, null, 8, ["text"]),
       createBaseVNode("div", _hoisted_5$1, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
           return withDirectives((openBlock(), createElementBlock("div", {
@@ -1600,7 +1619,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-3342920d"]]);
+const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-0ba8752e"]]);
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const createCalendarConfig = (vm) => ({
@@ -1802,7 +1821,7 @@ const _sfc_main$2 = {
         const rectCalendar = calendarGrid.getBoundingClientRect();
         const header = document.querySelector(".sx__calendar-header").offsetHeight + document.querySelector(".sx__week-header").offsetHeight;
         const relativeX = rect.offsetLeft + 23;
-        const relativeY = event.clientY - rectCalendar.top + header + 20;
+        const relativeY = event.clientY - rectCalendar.top + header + 25;
         this.selection = {
           visible: true,
           top: relativeY,

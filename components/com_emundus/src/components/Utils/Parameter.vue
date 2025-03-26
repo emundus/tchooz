@@ -229,7 +229,7 @@
 				v-model="formattedValue"
 				:keepVisibleOnInput="true"
 				:popover="{ visibility: 'focus', placement: 'right' }"
-				:rules="{ minutes: { interval: 10 } }"
+				:rules="{ minutes: { interval: 5 } }"
 				:mode="parameter.type ? parameter.type : 'dateTime'"
 				is24hr
 				hide-time-header

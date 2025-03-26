@@ -1,4 +1,5 @@
-import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, w as withDirectives, y as vModelSelect, F as Fragment, e as renderList, z as vModelText, J as script, r as resolveComponent, n as normalizeClass, h as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, A as _imports_0, g as withModifiers, v as vShow, M as Modal, S as Swal$1, C as FetchClient, s as settingsService, u as useGlobalStore, q as ref, as as userService, a8 as resolveDynamicComponent, p as Teleport } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, w as withDirectives, y as vModelSelect, F as Fragment, e as renderList, z as vModelText, J as script, r as resolveComponent, n as normalizeClass, g as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, A as _imports_0, h as withModifiers, v as vShow, M as Modal, S as Swal$1, C as FetchClient, s as settingsService, u as useGlobalStore, q as ref, as as userService, a8 as resolveDynamicComponent, p as Teleport } from "./app_emundus.js";
+import ExportsSlotsModal from "./ExportSlotsModal.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
 import EditSlot from "./EditSlot.js";
@@ -1134,6 +1135,7 @@ const AssociateUser = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_
 const _sfc_main = {
   name: "List",
   components: {
+    ExportsSlotsModal,
     Modal,
     NoResults,
     Navigation,
@@ -1188,7 +1190,10 @@ const _sfc_main = {
       numberOfItemsToDisplay: 25,
       currentComponent: null,
       currentComponentElementId: null,
-      showModal: false
+      showModal: false,
+      showExportModal: false,
+      exportClicked: null,
+      eventExportClicked: null
     };
   },
   created() {
@@ -1513,6 +1518,7 @@ const _sfc_main = {
     closePopup() {
       this.currentComponent = null;
       this.showModal = false;
+      this.showExportModal = false;
       this.currentComponentElementId = null;
     },
     onClickExport(exp, event = null) {
@@ -1521,6 +1527,12 @@ const _sfc_main = {
       }
       if (exp === null || typeof exp !== "object" || typeof exp.showon !== "undefined" && !this.evaluateShowOn(null, exp.showon)) {
         return false;
+      }
+      if (exp.exportModal) {
+        this.showExportModal = true;
+        this.exportClicked = exp;
+        this.eventExportClicked = null;
+        return;
       }
       let url = "index.php?option=com_emundus&controller=" + exp.controller + "&task=" + exp.action;
       let parameters = { ids: this.checkedItems };
@@ -1546,6 +1558,43 @@ const _sfc_main = {
         });
       } else {
         this.executeAction(url, parameters, exp.method);
+      }
+    },
+    onClickExportWithCheckboxes(checkboxesValues) {
+      if (this.eventExportClicked !== null) {
+        this.eventExportClicked.stopPropagation();
+      }
+      if (this.exportClicked === null || typeof this.exportClicked !== "object" || typeof this.exportClicked.showon !== "undefined" && !this.evaluateShowOn(null, this.exportClicked.showon)) {
+        return false;
+      }
+      let url = "index.php?option=com_emundus&controller=" + this.exportClicked.controller + "&task=" + this.exportClicked.action;
+      let parameters = {
+        ids: this.checkedItems,
+        checkboxesValuesFromView: JSON.stringify(checkboxesValues.viewSelection),
+        checkboxesValuesFromProfile: JSON.stringify(checkboxesValues.profileSelection)
+      };
+      if (Object.prototype.hasOwnProperty.call(this.exportClicked, "confirm")) {
+        Swal$1.fire({
+          icon: "warning",
+          title: this.translate(this.exportClicked.label),
+          text: this.translate(this.exportClicked.confirm),
+          showCancelButton: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true,
+          customClass: {
+            title: "em-swal-title",
+            confirmButton: "em-swal-confirm-button",
+            cancelButton: "em-swal-cancel-button",
+            actions: "em-swal-double-action"
+          }
+        }).then((result) => {
+          if (result.value) {
+            this.executeAction(url, parameters, this.exportClicked.method);
+          }
+        });
+      } else {
+        this.executeAction(url, parameters, this.exportClicked.method);
       }
     },
     async executeAction(url, data = null, method = "get") {
@@ -1898,6 +1947,7 @@ const _hoisted_28 = {
 const _hoisted_29 = ["onClick"];
 const _hoisted_30 = { key: 1 };
 const _hoisted_31 = { key: 2 };
+const _hoisted_32 = { key: 3 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_Head = resolveComponent("Head");
@@ -1905,6 +1955,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   const _component_popover = resolveComponent("popover");
   const _component_Calendar = resolveComponent("Calendar");
+  const _component_ExportsSlotsModal = resolveComponent("ExportsSlotsModal");
   const _component_Gantt = resolveComponent("Gantt");
   const _component_NoResults = resolveComponent("NoResults");
   return openBlock(), createElementBlock("div", {
@@ -2135,7 +2186,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           class: "tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1",
                           style: { "padding": "0.5rem" },
                           title: _ctx.translate($options.editAction.label)
-                        }, _cache[14] || (_cache[14] = [
+                        }, _cache[16] || (_cache[16] = [
                           createBaseVNode("span", { class: "material-symbols-outlined popover-toggle-btn tw-cursor-pointer" }, "edit", -1)
                         ]), 8, _hoisted_25)) : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
@@ -2222,7 +2273,28 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               onUpdateItems: _cache[10] || (_cache[10] = ($event) => $options.getListItems())
             }, null, 8, ["items", "edit-week-action", "onOnClickAction"])
           ])) : createCommentVNode("", true),
-          $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_31, [
+          $data.showExportModal ? (openBlock(), createElementBlock("div", _hoisted_31, [
+            createVNode(_component_modal, {
+              name: "modal-component-export",
+              transition: "nice-modal-fade",
+              class: normalizeClass("export-modal placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
+              width: "600px",
+              delay: 100,
+              adaptive: true,
+              clickToClose: false,
+              onClick: _cache[12] || (_cache[12] = withModifiers(() => {
+              }, ["stop"]))
+            }, {
+              default: withCtx(() => [
+                createVNode(_component_ExportsSlotsModal, {
+                  onSelectionConfirm: $options.onClickExportWithCheckboxes,
+                  onClose: _cache[11] || (_cache[11] = ($event) => $options.closePopup())
+                }, null, 8, ["onSelectionConfirm"])
+              ]),
+              _: 1
+            })
+          ])) : createCommentVNode("", true),
+          $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_32, [
             createVNode(_component_modal, {
               name: "modal-component",
               transition: "nice-modal-fade",
@@ -2231,20 +2303,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               delay: 100,
               adaptive: true,
               clickToClose: false,
-              onClick: _cache[13] || (_cache[13] = withModifiers(() => {
+              onClick: _cache[15] || (_cache[15] = withModifiers(() => {
               }, ["stop"]))
             }, {
               default: withCtx(() => [
                 (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
                   items: $data.checkedItems,
-                  onClose: _cache[11] || (_cache[11] = ($event) => $options.closePopup()),
-                  onUpdateItems: _cache[12] || (_cache[12] = ($event) => $options.getListItems())
+                  onClose: _cache[13] || (_cache[13] = ($event) => $options.closePopup()),
+                  onUpdateItems: _cache[14] || (_cache[14] = ($event) => $options.getListItems())
                 }, null, 40, ["items"]))
               ]),
               _: 1
             })
           ])) : $data.viewType === "gantt" ? (openBlock(), createBlock(_component_Gantt, {
-            key: 3,
+            key: 4,
             language: $data.params.shortlang,
             periods: $options.displayedItems
           }, null, 8, ["language", "periods"])) : createCommentVNode("", true)
@@ -2256,7 +2328,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-cb0790af"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2a76c583"]]);
 export {
   list as default
 };

@@ -1,4 +1,4 @@
-import { ar as getDefaultExportFromCjs, _ as _export_sfc, J as script, s as settingsService, S as Swal, u as useGlobalStore, ac as reactive, r as resolveComponent, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, n as normalizeClass, m as createTextVNode, t as toDisplayString, w as withDirectives, a as createBlock, y as vModelSelect, F as Fragment, e as renderList, f as withCtx, z as vModelText, j as normalizeStyle, a4 as vModelRadio, R as vModelCheckbox, a2 as vModelDynamic, g as withModifiers, O as mergeProps, U as toHandlers, a8 as resolveDynamicComponent } from "./app_emundus.js";
+import { ar as getDefaultExportFromCjs, _ as _export_sfc, J as script, s as settingsService, S as Swal, u as useGlobalStore, ac as reactive, r as resolveComponent, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, n as normalizeClass, m as createTextVNode, t as toDisplayString, w as withDirectives, a as createBlock, y as vModelSelect, F as Fragment, e as renderList, f as withCtx, z as vModelText, j as normalizeStyle, a4 as vModelRadio, R as vModelCheckbox, a2 as vModelDynamic, h as withModifiers, O as mergeProps, U as toHandlers, a8 as resolveDynamicComponent } from "./app_emundus.js";
 import { D as DatePicker } from "./index.js";
 import EventBooking from "./EventBooking.js";
 var dayjs_min$1 = { exports: {} };
@@ -888,7 +888,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         "onUpdate:modelValue": _cache[13] || (_cache[13] = ($event) => $options.formattedValue = $event),
         keepVisibleOnInput: true,
         popover: { visibility: "focus", placement: "right" },
-        rules: { minutes: { interval: 10 } },
+        rules: { minutes: { interval: 5 } },
         mode: $data.parameter.type ? $data.parameter.type : "dateTime",
         is24hr: "",
         "hide-time-header": "",
