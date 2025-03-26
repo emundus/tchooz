@@ -197,6 +197,9 @@ if (($data = fgetcsv($handle, 0, ';')) !== false) {
 
         }
 
+        if (!isset($database_elements[$column_number])) {
+            $database_elements[$column_number] = new stdClass();
+        }
         $database_elements[$column_number]->table = $table;
         $database_elements[$column_number]->column = $element;
     }
@@ -538,10 +541,9 @@ foreach ($parsed_data as $row_id => $insert_row) {
         $user = JFactory::getUser($user);
     }
 
-    if (!$create_new_fnum) {
+    if ($create_new_fnum == 1) {
         // If the user has no fnum, get the one made by the user creation code.
         if (empty($fnum)) {
-
             $query->clear()
                 ->select($db->quoteName('fnum'))
                 ->from($db->quoteName('#__emundus_campaign_candidature'))
@@ -555,7 +557,6 @@ foreach ($parsed_data as $row_id => $insert_row) {
             }
         }
     }
-
 
     // If no fnum is found, generate it.
     if (empty($fnum) && !empty($campaign)) {
@@ -660,9 +661,15 @@ foreach ($parsed_data as $row_id => $insert_row) {
                 $app->enqueueMessage('The user with email : '.$existData->email.' already exist', 'info');
             }
             elseif($element['email'] != $existData->email && (!empty($element['user_id']) && isset($element['user_id']))){
+                if(array_key_exists('username',$element)){
+                    $username = $element['username'];
+                }
+                else{
+                    $username = $element['email'];
+                }
                 $query->clear()
                     ->update($db->quoteName('#__users'))
-                    ->set($db->quoteName('username').' = ' . $db->quote($element['email']).' , '.$db->quoteName('email').' = '.$db->quote($element['email']))
+                    ->set($db->quoteName('username').' = ' . $db->quote($username).' , '.$db->quoteName('email').' = '.$db->quote($element['email']))
                     ->where($db->quoteName('id').' = '.$user->id);
 
                 try{
@@ -813,7 +820,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
                         'user_id_to' => $uid,
                         'subject' => $email->subject,
                         'message' => $body,
-'email_to' => $to
+                        'email_to' => $user->email
                     );
                     $m_emails->logEmail($message);
                 }
