@@ -57,6 +57,8 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 
 	private int $max_attempts = 3;
 
+	private int $email_id_to_sales = 0;
+
 	private DatabaseDriver $db;
 
 	/**
@@ -97,6 +99,7 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 		$params           = $event->getArgument('params');
 		$this->limit            = (int)$params->limit ?? 100;
 		$this->max_attempts = (int)$params->max_attempts ?? 3;
+		$this->email_id_to_sales = (int)$params->email_id_to_sales ?? 0;
 		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 
 		$pending_files = $this->getPendingFiles();
@@ -108,7 +111,7 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 
 				$message = '';
 				try {
-					$repository = new AmmonRepository($file->fnum, $file->session_id, $file->file_status);
+					$repository = new AmmonRepository($file->fnum, $file->session_id, $file->file_status, $this->email_id_to_sales);
 					$sent       = $repository->registerFileToSession($force_new_user_if_not_found);
 				} catch (\Exception $e) {
 					$sent   = false;
