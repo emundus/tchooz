@@ -2985,7 +2985,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		return $excel_filepath;
 	}
 
-	public function exportBookingsPDF($items): string|bool
+	public function exportBookingsPDF($items, $checkboxesValuesFromView, $checkboxesValuesFromProfile): string|bool
 	{
 		$pdf_filename = 'export_reservations' . date('Ymd_His') . '.pdf';
 		$pdf_filepath = JPATH_SITE . '/tmp/' . $pdf_filename;
@@ -3020,52 +3020,67 @@ class EmundusModelEvents extends BaseDatabaseModel
 		                height: 1px;
 		                background-color: #A4A4A4;
 		            }
-		            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
-		            th, td { padding: 10px; border: 1px solid black; text-align: left; word-wrap: break-word; white-space: normal; min-height: 40px; }
+		            table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed;}
+		            th, td { padding: 10px; border: 1px solid black; text-align: left; word-wrap: break-word; white-space: normal; min-height: 40px;  }
 		            th { background-color: #f2f2f2; }
 		        </style>";
 
-		if (!empty($items))
+		if (!empty($items) && (!empty($checkboxesValuesFromView) || !empty($checkboxesValuesFromProfile)))
 		{
 			$events       = [];
-			$app          = Factory::getApplication();
-			$language     = $app->getLanguage();
-			$current_lang = $language->getTag();
 			foreach ($items as $item)
 			{
 				$event_name = $item->label;
+				$event_location = $item->location;
+
 				if (!isset($events[$event_name]))
 				{
-					$events[$event_name] = [];
+					$events[$event_name] = [
+						'location' => $event_location,
+						'reservations' => []
+					];
 				}
-				$events[$event_name][] = $item;
+				$events[$event_name]['reservations'][] = $item;
 			}
 
 			$firstTable = true;
-			foreach ($events as $event_name => $reservations)
+			foreach ($events as $event_name => $eventData)
 			{
+				$location = $eventData['location'];
+				$reservations = $eventData['reservations'];
+
 				if (!$firstTable)
 				{
 					$html .= '<div style="page-break-before: always;"></div>';
 				}
 				$firstTable = false;
 
-				$html .= '<h3 style="text-align:left; margin-top: -6px; margin-bottom: 10px; font-size: 16px">' . $event_name . '</h3>';
+				$title = $event_name;
+				if (!empty($location)) {
+					$title .= ' - ' . $location;
+				}
+
+				$html .= '<h3 style="text-align:left; margin-top: -6px; margin-bottom: 10px; font-size: 16px">'
+					. $title . '</h3>';
+
 				$html .= '<table>
 			            <thead>
-			                <tr>
-			                    <th>' . Text::_('COM_EMUNDUS_APPLICATION_APPLICANT') . '</th>
-			                    <th>' . Text::_('COM_EMUNDUS_ONBOARD_LABEL_REGISTRANTS') . '</th>
-			                    <th>' . Text::_('COM_EMUNDUS_REGISTRANTS_DAY') . '</th>
-			                    <th>' . Text::_('COM_EMUNDUS_REGISTRANTS_HOUR') . '</th>
-			                    <th>' . Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION') . '</th>
-			                    <th>' . Text::_('COM_EMUNDUS_REGISTRANTS_ROOM') . '</th>
-			                    <th>' . Text::_('COM_EMUNDUS_EVENTS_SIGN') . '</th>
-			                </tr>
+			                <tr>';
+				foreach ($checkboxesValuesFromView as $checkboxesValueFromView) {
+						$html .= '<th>' . Text::_($checkboxesValueFromView) . '</th>';
+					}
+
+				foreach ($checkboxesValuesFromProfile as $checkboxesValueFromProfile) {
+						$html .= '<th>' . Text::_($checkboxesValueFromProfile->label) . '</th>';
+					}
+
+
+			$html .= ' <th>' . Text::_('COM_EMUNDUS_EVENTS_SIGN') . '</th>
+						</tr>
 			            </thead>
 			            <tbody>';
 
-				foreach ($reservations as $item)
+				foreach ($reservations as $reservation)
 				{
 					try
 					{
@@ -3073,7 +3088,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 						$query = $db->getQuery(true)
 							->select($db->quoteName('name'))
 							->from($db->quoteName('#__users'))
-							->where($db->quoteName('id') . ' = ' . (int) $item->user);
+							->where($db->quoteName('id') . ' = ' . (int) $reservation->user);
 						$db->setQuery($query);
 						$username = $db->loadResult();
 					}
@@ -3084,22 +3099,70 @@ class EmundusModelEvents extends BaseDatabaseModel
 						return false;
 					}
 
+					$selectColumns = [];
+					$user = null;
+
+					if(!empty($checkboxesValuesFromProfile))
+					{
+						foreach ($checkboxesValuesFromProfile as $checkboxesValueFromProfile) {
+							$selectColumns[] = 'eu.' .  $checkboxesValueFromProfile->name;
+						}
+
+						try
+						{
+							$query = $db->getQuery(true)
+								->select($selectColumns)
+								->from($db->quoteName('#__emundus_users', 'eu'))
+								->where($db->quoteName('user_id') . ' = ' . (int) $reservation->user);
+							$db->setQuery($query);
+							$user = $db->loadObject();
+						}
+						catch (Exception $e)
+						{
+							Log::add('Error while getting user in exportBookingsPDF method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+
+							return false;
+						}
+					}
+
 					$day      = EmundusHelperDate::displayDate($item->start_date, 'COM_EMUNDUS_BIRTHDAY_FORMAT', 0);
 					$hour     = EmundusHelperDate::displayDate($item->start_date, 'H:i', 0);
-					$location = $item->location;
 					$room     = $item->room;
+					$event_name = $item->label;
+					$location = $item->location;
 
-					$html .= '<tr>
-			                <td>' . $username . '</td>
-			                <td>' . $event_name . '</td>
-			                <td>' . $day . '</td>
-			                <td>' . $hour . '</td>
-			                <td>' . $location . '</td>
-			                <td>' . $room . '</td>
-			                <td style="width: 200px;">
+					$html .= '<tr>';
+
+					if (in_array('COM_EMUNDUS_ONBOARD_LABEL_REGISTRANTS', $checkboxesValuesFromView)) {
+						$html .= '<td>' . $event_name . '</td>';
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_USER', $checkboxesValuesFromView)) {
+						$html .= '<td>' . $username . '</td>';
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_DAY', $checkboxesValuesFromView)) {
+						$html .= '<td>' . $day . '</td>';
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_HOUR', $checkboxesValuesFromView)) {
+						$html .= '<td>' . $hour . '</td>';
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_LOCATION', $checkboxesValuesFromView)) {
+						$html .= '<td>' . $location . '</td>';
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_ROOM', $checkboxesValuesFromView)) {
+						$html .= '<td>' . $room . '</td>';
+					}
+
+					if(!empty($selectColumns) && $user)
+					{
+						foreach ($checkboxesValuesFromProfile as $checkboxesValueFromProfile) {
+							$html .= '<td>' . EmundusHelperFabrik::formatElementValue($checkboxesValueFromProfile->name, $user->{$checkboxesValueFromProfile->name}, $checkboxesValueFromProfile->group_id, $reservation->user) . '</td>';
+						}
+					}
+
+					$html .= '<td style="width: 200px;">
 			                   <div style="min-height: 60px;"></div>
 							</td>
-			            </tr>';
+						   </tr>';
 				}
 				$html .= '</tbody></table>';
 			}

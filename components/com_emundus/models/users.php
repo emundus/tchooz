@@ -4752,7 +4752,7 @@ class EmundusModelUsers extends ListModel
 	 * @description Return all columns of a profile form
 	 * @return array|mixed|null
 	 */
-	public function getColumnsFromProfileForm() {
+	public function getColumnsFromProfileForm($ids = []) {
 
 		$columns = [];
 
@@ -4769,6 +4769,10 @@ class EmundusModelUsers extends ListModel
 				->andWhere($this->db->quoteName('fe.hidden') . ' = ' . '0')
 				->andWhere($this->db->quoteName('fe.published') . ' = ' . '1')
 				->andWhere($this->db->quoteName('fe.name') . ' <> ' . $this->db->quote('id'));
+			if(!empty($ids))
+			{
+				$query->andWhere($this->db->quoteName('fe.id') . 'IN (' . implode(',', $ids) . ')');
+			}
 
 			try
 			{

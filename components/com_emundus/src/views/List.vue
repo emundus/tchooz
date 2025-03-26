@@ -316,6 +316,21 @@
 						/>
 					</div>
 
+					<div v-if="showExportModal">
+						<modal
+							:name="'modal-component-export'"
+							transition="nice-modal-fade"
+							:class="'export-modal placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+							:width="'600px'"
+							:delay="100"
+							:adaptive="true"
+							:clickToClose="false"
+							@click.stop
+						>
+							<ExportsSlotsModal @selectionConfirm="onClickExportWithCheckboxes" @close="closePopup()" />
+						</modal>
+					</div>
+
 					<div v-if="showModal && currentComponentElementId === null">
 						<modal
 							:name="'modal-component'"
@@ -353,6 +368,7 @@ import Swal from 'sweetalert2';
 import Head from '@/components/List/Head.vue';
 import Navigation from '@/components/List/Navigation.vue';
 import NoResults from '@/components/Utils/NoResults.vue';
+import ExportsSlotsModal from '@/views/Events/ExportSlotsModal.vue';
 
 /* Components */
 import Skeleton from '@/components/Skeleton.vue';
@@ -374,6 +390,7 @@ import { useGlobalStore } from '@/stores/global.js';
 export default {
 	name: 'List',
 	components: {
+		ExportsSlotsModal,
 		Modal,
 		NoResults,
 		Navigation,
@@ -435,6 +452,9 @@ export default {
 			currentComponent: null,
 			currentComponentElementId: null,
 			showModal: false,
+			showExportModal: false,
+			exportClicked: null,
+			eventExportClicked: null,
 		};
 	},
 	created() {
@@ -829,6 +849,7 @@ export default {
 		closePopup() {
 			this.currentComponent = null;
 			this.showModal = false;
+			this.showExportModal = false;
 			this.currentComponentElementId = null;
 		},
 		onClickExport(exp, event = null) {
@@ -842,6 +863,13 @@ export default {
 				(typeof exp.showon !== 'undefined' && !this.evaluateShowOn(null, exp.showon))
 			) {
 				return false;
+			}
+
+			if (exp.exportModal) {
+				this.showExportModal = true;
+				this.exportClicked = exp;
+				this.eventExportClicked = null;
+				return;
 			}
 
 			let url = 'index.php?option=com_emundus&controller=' + exp.controller + '&task=' + exp.action;
@@ -869,6 +897,54 @@ export default {
 				});
 			} else {
 				this.executeAction(url, parameters, exp.method);
+			}
+		},
+		onClickExportWithCheckboxes(checkboxesValues) {
+			if (this.eventExportClicked !== null) {
+				this.eventExportClicked.stopPropagation();
+			}
+
+			if (
+				this.exportClicked === null ||
+				typeof this.exportClicked !== 'object' ||
+				(typeof this.exportClicked.showon !== 'undefined' && !this.evaluateShowOn(null, this.exportClicked.showon))
+			) {
+				return false;
+			}
+
+			let url =
+				'index.php?option=com_emundus&controller=' +
+				this.exportClicked.controller +
+				'&task=' +
+				this.exportClicked.action;
+			let parameters = {
+				ids: this.checkedItems,
+				checkboxesValuesFromView: JSON.stringify(checkboxesValues.viewSelection),
+				checkboxesValuesFromProfile: JSON.stringify(checkboxesValues.profileSelection),
+			};
+
+			if (Object.prototype.hasOwnProperty.call(this.exportClicked, 'confirm')) {
+				Swal.fire({
+					icon: 'warning',
+					title: this.translate(this.exportClicked.label),
+					text: this.translate(this.exportClicked.confirm),
+					showCancelButton: true,
+					confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+					cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						cancelButton: 'em-swal-cancel-button',
+						actions: 'em-swal-double-action',
+					},
+				}).then((result) => {
+					if (result.value) {
+						this.executeAction(url, parameters, this.exportClicked.method);
+					}
+				});
+			} else {
+				this.executeAction(url, parameters, this.exportClicked.method);
 			}
 		},
 

@@ -138,6 +138,7 @@ export default {
 									name: 'exportpdf',
 									method: 'get',
 									multiple: true,
+									exportModal: true,
 								},
 								{
 									action: 'exportexcel',

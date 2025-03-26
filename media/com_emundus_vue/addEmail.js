@@ -1,4 +1,4 @@
-import { C as FetchClient, _ as _export_sfc, a3 as X42, J as script, a5 as IncrementalSelect, W as mixin, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, g as withModifiers, t as toDisplayString, w as withDirectives, m as createTextVNode, z as vModelText, n as normalizeClass, a as createBlock, v as vShow, h as createVNode, s as settingsService, u as useGlobalStore, l as emailService } from "./app_emundus.js";
+import { C as FetchClient, _ as _export_sfc, a3 as X42, J as script, a5 as IncrementalSelect, W as mixin, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, h as withModifiers, t as toDisplayString, w as withDirectives, m as createTextVNode, z as vModelText, n as normalizeClass, a as createBlock, v as vShow, g as createVNode, s as settingsService, u as useGlobalStore, l as emailService } from "./app_emundus.js";
 /* empty css       */
 const client = new FetchClient("messages");
 const messagesService = {
