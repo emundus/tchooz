@@ -22,6 +22,15 @@
                     first="1"
                     last="10"
             />
+            <field
+                type="sql"
+                name="email_id_to_sales"
+                label="PLG_TASK_AMMON_FIELD_MAIL_TO_SALES_LABEL"
+                description="PLG_TASK_AMMON_FIELD_MAIL_TO_SALES_DESC"
+                query="SELECT id, subject FROM #__emundus_setup_emails ORDER BY subject"
+                key_field="id"
+                value_field="subject"
+                />
         </fieldset>
     </fields>
 </form>

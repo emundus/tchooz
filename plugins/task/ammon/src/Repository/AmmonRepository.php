@@ -24,26 +24,22 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 class AmmonRepository
 {
 	private string $fnum;
-
 	private int $file_status = 0;
-
+	private int $email_id_to_sales = 0;
 	private int $ammon_session_id;
 	private $sync_model = null;
-
 	private $api;
-
 	private array $configurations = [];
-
 	private AmmonFactory $factory;
 	private AmmonSynchronizer $synchronizer;
-
 	private DatabaseDriver $db;
 
-	public function __construct(string $fnum, int $ammon_session_id, int $file_status = 0)
+	public function __construct(string $fnum, int $ammon_session_id, int $file_status = 0, int $email_id_to_sales = 0)
 	{
 		$this->fnum = $fnum;
 		$this->ammon_session_id = $ammon_session_id;
 		$this->file_status = $file_status;
+		$this->email_id_to_sales = $email_id_to_sales;
 		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 
 		if (empty($this->fnum)) {
@@ -421,6 +417,12 @@ class AmmonRepository
 					);
 					$this->dispatcher->dispatch('onCallEventHandler', $onAmmonFoundSimilarNameEventHandler);
 
+					$sent = $this->sendEmailToSalesReferents($fnum, $lastname . ' ' .$firstname, $found_name);
+
+					if (!$sent) {
+						Log::add('Failed to send email to sales referents for ' . $fnum . ' after similar name was found.', Log::WARNING, 'plugin.emundus.ammon');
+					}
+
 					throw new \Exception($e->getMessage());
 				}
 
@@ -456,6 +458,49 @@ class AmmonRepository
 		}
 
 		return $is_BtoB;
+	}
+
+	private function sendEmailToSalesReferents(string $fnum, string $file_name, $found_name): bool
+	{
+		$sent = false;
+
+		if (!empty($this->email_id_to_sales) && !empty($fnum) && !empty($found_name)) {
+			$query = $this->db->createQuery();
+			$query->select('u.email')
+				->from($this->db->quoteName('#__users', 'u'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes_repeat_sales_referents', 'sales'), 'sales.sales_referents = u.id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp'), 'esp.id = sales.programme_id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc'), 'esc.training = esp.code')
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'), 'ecc.campaign_id = esc.id')
+				->where('ecc.fnum = ' . $this->db->quote($fnum));
+
+			try {
+				$this->db->setQuery($query);
+				$email_addresses = $this->db->loadColumn();
+
+				if (!empty($email_addresses)) {
+					if (!class_exists('EmundusModelEmails')) {
+						require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+					}
+
+					$m_emails = new \EmundusModelEmails();
+
+					$sending_status = [];
+					foreach ($email_addresses as $email_address) {
+						$sending_status[] = $m_emails->sendEmailNoFnum($email_address, $this->email_id_to_sales, [
+							'FNUM' => $fnum,
+							'APPLICANT_NAME' => $file_name,
+							'FOUND_NAME' => $found_name
+						]);
+					}
+					$sent = !in_array(false, $sending_status);
+				}
+			} catch (\Exception $e) {
+				Log::add('Failed to get sales referents email addresses for ' . $fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
+			}
+		}
+
+		return $sent;
 	}
 
 	/**

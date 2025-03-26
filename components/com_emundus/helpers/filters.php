@@ -599,53 +599,84 @@ class EmundusHelperFilters
 
 	function getEmundusFilters()
 	{
-		$itemid = JFactory::getApplication()->input->get('Itemid', null, 'GET', 'none', 0);
-		if (isset($itemid) && !empty($itemid)) {
-			$user  = JFactory::getUser();
-			$db    = JFactory::getDBO();
-			$query = 'SELECT * FROM #__emundus_filters WHERE user=' . $user->id . ' AND item_id=' . $itemid;
+		$filters = [];
+
+		$app = Factory::getApplication();
+		$itemid = $app->input->getInt('Itemid', 0);
+
+		if (!empty($itemid)) {
+			$user  = $app->getIdentity();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+			$query->select('ef.*')
+				->from($db->quoteName('#__emundus_filters', 'ef'))
+				->where('ef.user = ' . $db->quote($user->id))
+				->where('ef.item_id = ' . $db->quote($itemid));
+
 			$db->setQuery($query);
 
-			return $db->loadObjectlist();
+			$filters = $db->loadObjectlist();
 		}
-		else return array();
+
+		return $filters;
 	}
 
+	/**
+	 * @param   string  $word_to_match
+	 * @param   array   $words
+	 *
+	 * @return array
+	 */
 	public static function searchClosestWord(string $word_to_match, array $words): array
 	{
-		$match = [
+		$result = [
 			'lev' => -1,
 			'position' => -1,
 			'word' => '',
-			'similarity' => 0
+			'similarity' => 0.0
 		];
 
-		if (!empty($word_to_match)) {
-			$shortest = -1;
-			$closest  = -1;
-			$similarity_percent = 0;
+		if (empty($word_to_match) || empty($words)) {
+			return $result;
+		}
 
-			foreach ($words as $index => $word) {
-				$lev = levenshtein($word_to_match, $word);
-				$current_similarity = similar_text($word_to_match, $word, $percent);
+		$word_to_match_lower = mb_strtolower($word_to_match);
+		$shortest_distance = PHP_INT_MAX;
+		$highest_similarity = 0;
 
-				if ($lev == 0) { // exact match, no need to search anymore
-					$closest = $index;
-					$shortest = $lev;
-					break;
-				} else if (($lev <= $shortest || $shortest < 0) && $percent > $similarity_percent) {
-					$closest  = $index;
-					$shortest = $lev;
-					$similarity_percent = $percent;
-				}
+		foreach ($words as $index => $word) {
+			$current_word_lower = mb_strtolower($word);
+
+			// 1. Check exact match
+			if ($word_to_match_lower === $current_word_lower) {
+				return [
+					'lev' => 0,
+					'position' => $index,
+					'word' => $word,
+					'similarity' => 100.0
+				];
 			}
 
-			if ($shortest > -1) {
-				$match = ['lev' => $shortest, 'position' => $closest, 'word' => $words[$closest], 'similarity' => $similarity_percent];
+			// 2. Calcul des métriques
+			$distance = levenshtein($word_to_match_lower, $current_word_lower);
+			$similarity = 0;
+			similar_text($word_to_match_lower, $current_word_lower, $similarity);
+
+			// 3. Logique de sélection
+			if ($distance < $shortest_distance ||
+				($distance == $shortest_distance && $similarity > $highest_similarity)) {
+				$shortest_distance = $distance;
+				$highest_similarity = $similarity;
+				$result = [
+					'lev' => $distance,
+					'position' => $index,
+					'word' => $word,
+					'similarity' => $similarity
+				];
 			}
 		}
 
-		return $match;
+		return $result;
 	}
 }
 

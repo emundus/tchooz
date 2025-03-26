@@ -14,11 +14,11 @@ class AdressEntity
 		public int $typeId = 0,
 		public string $typeCode = '',
 		public string $type = '',
-		public string $addressee,
-		public string $city,
-		public string $countryCode,
-		public string $postcode,
-		public string $line1,
+		public string $addressee = '',
+		public string $city = '',
+		public string $countryCode = '',
+		public string $postcode = '',
+		public string $line1 = '',
 		public string $line2 = '',
 		public string $Email = '',
 		public string $Phone = ''
@@ -35,12 +35,16 @@ class AdressEntity
 			throw new \InvalidArgumentException('The countryCode cannot be empty');
 		}
 
-		if (empty($this->postcode)) {
-			throw new \InvalidArgumentException('The postcode cannot be empty');
-		}
-
 		if (empty($this->line1)) {
 			throw new \InvalidArgumentException('The line1 cannot be empty');
+		}
+
+		if (!empty($this->postcode)) {
+			$this->postcode = preg_replace('/[^0-9]/', '', $this->postcode);
+
+			if (strlen($this->postcode) < 5) {
+				$this->postcode = str_pad($this->postcode, 5, '0', STR_PAD_LEFT);
+			}
 		}
 	}
 }

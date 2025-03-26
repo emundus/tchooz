@@ -125,7 +125,6 @@ class plgEmundusLimit_obtained_alert extends CMSPlugin
 				$this->db->setQuery($query);
 
 				return $limit->limit == $this->db->loadResult();
-
 			}
 			catch (Exception $exception) {
 				JLog::add('Error checking obtained limit at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), JLog::ERROR, 'com_emundus');
