@@ -332,4 +332,30 @@ class EmundusControllerSMS extends JControllerLegacy
 
 		$this->sendJsonResponse($response);
 	}
+
+	public function getRecipientsData()
+	{
+		$response = ['code' => 403, 'message' => Text::_('SMS_NOT_ACTIVATED'), 'status' => false];
+
+		if (EmundusHelperAccess::asAccessAction($this->sms_action_id, 'r', $this->user->id))
+		{
+			$response = ['code' => 200, 'message' => Text::_('SMS_ACTIVATED'), 'status' => true];
+			$fnums = $this->app->input->getString('fnums', '');
+			$valid_fnums = [];
+
+			if (!empty($fnums)) {
+				$fnums = explode(',', $fnums);
+
+				foreach ($fnums as $fnum) {
+					if (EmundusHelperAccess::asAccessAction($this->sms_action_id, 'r', $this->user->id, $fnum)) {
+						$valid_fnums[] = $fnum;
+					}
+				}
+			}
+
+			$response['data'] = $this->model->getRecipientsData($valid_fnums);
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }

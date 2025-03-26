@@ -124,4 +124,14 @@ export default {
 			};
 		}
 	},
+	async getRecipientsData(fnums) {
+		try {
+			return await client.get('getRecipientsData', { fnums: fnums });
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	}
 };

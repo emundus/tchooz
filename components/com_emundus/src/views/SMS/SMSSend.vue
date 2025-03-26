@@ -27,10 +27,21 @@
 		</div>
 
 		<div>
-			<label>{{ translate('COM_EMUNDUS_SMS_RECIPIENTS') }}</label>
-			<ul>
-				<li v-for="fnum in fnums" :key="fnum">{{ fnum }}</li>
-			</ul>
+      <div class="tw-w-full tw-flex tw-flex-row tw-justify-between tw-cursor-pointer" @click="displayRecipients = !displayRecipients">
+        <label>{{ translate('COM_EMUNDUS_SMS_RECIPIENTS') }}
+          <span v-if="fnums.length > 1">({{ fnums.length }})</span>
+        </label>
+        <span v-if="displayRecipients" class="material-symbols-outlined">keyboard_arrow_up</span>
+        <span v-else-if="!displayRecipients" class="material-symbols-outlined">keyboard_arrow_down</span>
+      </div>
+      <transition name="fade" mode="in-out">
+        <ul v-if="displayRecipients">
+          <li v-for="fnum in fnums" :key="fnum">
+            <span v-if="recipients[fnum]">{{ recipients[fnum].username }} - {{ fnum }}</span>
+            <span v-else>{{ fnum }}</span>
+          </li>
+        </ul>
+      </transition>
 		</div>
 
 		<div class="tw-flex tw-flex-col tw-gap-1">
@@ -40,8 +51,8 @@
 
 		<div class="tw-flex tw-justify-end">
 			<button class="tw-btn-primary tw-w-fit" :disabled="message.length < 1 || fnums.length < 1" @click="sendSMS">
-				{{ translate('COM_EMUNDUS_SEND_SMS_ACTION') }}
-			</button>
+				{{ translate('COM_EMUNDUS_SEND_SMS_ACTION') }} <span> ({{ fnums.length }})</span>
+      </button>
 		</div>
 	</div>
 </template>
@@ -66,12 +77,17 @@ export default {
 			categories: [],
 			selectedCategory: 0,
 
+      recipients: {},
+
 			message: '',
+
+      displayRecipients: false,
 		};
 	},
 	created() {
 		this.getSMSTemplates();
 		this.getSMSCategories();
+    this.getRecipients();
 	},
 	methods: {
 		useGlobalStore,
@@ -85,6 +101,13 @@ export default {
 				this.categories = response.data;
 			});
 		},
+    getRecipients() {
+      smsService.getRecipientsData(this.fnums).then((response) => {
+        console.log(response.data);
+
+        this.recipients = response.data;
+      });
+    },
 		sendSMS() {
 			if (this.fnums.length < 1 || this.message.length < 1) {
 				Swal.fire({
