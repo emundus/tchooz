@@ -1,14 +1,14 @@
-import { _ as _export_sfc, u as useGlobalStore, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, w as withDirectives, R as vModelCheckbox, j as normalizeStyle, t as toDisplayString, F as Fragment, r as resolveComponent, h as createVNode, n as normalizeClass, M as Modal, i as shallowRef, a as createBlock, f as withCtx, a8 as resolveDynamicComponent, g as withModifiers, p as Teleport, e as renderList, v as vShow } from "./app_emundus.js";
-import { e as colors, f as d, r, g as d$1, y, u, k, h as E, _ as _o, E as EventDay, c as createEventsServicePlugin, b as createCalendarControlsPlugin, a as createCalendar, m as mergeLocales, d as createViewWeek, i as createViewDay, t as translations } from "./core.js";
+import { _ as _export_sfc, u as useGlobalStore, o as openBlock, c as createElementBlock, d as createBaseVNode, w as withDirectives, R as vModelCheckbox, j as normalizeStyle, t as toDisplayString, b as createCommentVNode, F as Fragment, r as resolveComponent, h as createVNode, n as normalizeClass, M as Modal, i as shallowRef, a as createBlock, f as withCtx, a8 as resolveDynamicComponent, g as withModifiers, p as Teleport, e as renderList, v as vShow } from "./app_emundus.js";
+import { e as colors, f as d, r, h, y, u, k, g as E, c as createEventsServicePlugin, a as createCalendarControlsPlugin, E as EventDay, _ as _o, b as createCalendar, d as createViewWeek, i as createViewDay, m as mergeLocales, t as translations } from "./core.js";
 import EditSlot from "./EditSlot.js";
 import { e as eventsService } from "./events2.js";
 import "./index.js";
 import "./Parameter.js";
 import "./EventBooking.js";
 import "./Info.js";
-import "./ColorPicker.js";
 import "./LocationPopup.js";
 import "./LocationForm.js";
+import "./ColorPicker.js";
 const _sfc_main$2 = {
   name: "EventInformations",
   props: {
@@ -356,11 +356,11 @@ const nextTick = (cb) => {
   });
 };
 function EventModal({ $app }) {
-  const [modalId] = d$1(randomStringId());
+  const [modalId] = h(randomStringId());
   const { value: calendarEvent } = $app.config.plugins.eventModal.calendarEvent;
-  const [isDisplayed, setIsDisplayed] = d$1(false);
+  const [isDisplayed, setIsDisplayed] = h(false);
   const customComponent = $app.config._customComponentFns.eventModal;
-  const [eventWrapperStyle, setEventWrapperStyle] = d$1("sx__event-modal");
+  const [eventWrapperStyle, setEventWrapperStyle] = h("sx__event-modal");
   const callSetPosition = () => {
     var _a, _b, _c;
     setPosition((_a = $app.elements.calendarWrapper) === null || _a === void 0 ? void 0 : _a.getBoundingClientRect(), (_b = $app.config.plugins.eventModal) === null || _b === void 0 ? void 0 : _b.calendarEventDOMRect.value, ((_c = $app.elements.calendarWrapper) === null || _c === void 0 ? void 0 : _c.querySelector(".sx__event-modal")).clientHeight);
