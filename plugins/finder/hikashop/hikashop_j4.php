@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -83,16 +83,16 @@ abstract class plgFinderHikashopBridge extends Adapter {
 			$item->characteristics = $db->loadObjectList();
 			$parentProduct = $productClass->getProduct((int)$item->product_parent_id);
 			$productClass->checkVariant($item, $parentProduct);
-			if(empty($item->summary)) {
-				$item->summary = $item->product_name;
+			if(empty($item->title)) {
+				$item->title = $item->product_name;
 			}
-			if(empty($item->body)) {
-				$item->body = $item->product_description;
+			if(empty($item->summary)) {
+				$item->summary = $item->product_description;
 			}
 		}
 
 		$item->summary = Helper::prepareContent($item->summary, $item->params);
-		$item->body    = Helper::prepareContent($item->body, $item->params);
+		$item->title    = Helper::prepareContent($item->title, $item->params);
 
 		$menusClass = hikashop_get('class.menus');
 		$itemid = $menusClass->getPublicMenuItemId();

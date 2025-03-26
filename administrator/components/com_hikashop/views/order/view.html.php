@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -70,6 +70,9 @@ class OrderViewOrder extends hikashopView{
 		$defaultStatus = $config->get('default_order_status_on_order_listing', '');
 		if(!empty($defaultStatus)) {
 			$defaultStatus = explode(',', $defaultStatus);
+		}
+		if(!empty($_POST['clear'])) {
+			hikaInput::get()->set('filter_status', array('all'));
 		}
 		$pageInfo->filter->filter_status = $app->getUserStateFromRequest($this->paramBase.".filter_status",'filter_status',$defaultStatus,'array');
 		if(isset($_POST['search']) && !isset($_POST['filter_status'])) {
@@ -1538,7 +1541,7 @@ class OrderViewOrder extends hikashopView{
 					foreach($elemStruct as $s) {
 						if($s == 'id')
 							continue;
-						$d .= ','.$s.':\''. str_replace('"','\'',$v->$s).'\'';
+						$d .= ','.$s.':\''. str_replace('"','\'',(string)$v->$s).'\'';
 					}
 					if($set_address && $singleSelection)
 						$d .= ',updates:[\'billing\',\'shipping\',\'history\']';

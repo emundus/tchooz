@@ -21,6 +21,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
@@ -33,6 +34,9 @@ class EmundusModelMessenger extends ListModel
 		parent::__construct($config);
 
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
 	}
 
 	public function createChatroom($fnum = null, $id = null)
@@ -373,6 +377,9 @@ class EmundusModelMessenger extends ListModel
 
 		if (!empty($fnum_detail))
 		{
+			$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+			$message = $htmlSanitizer->sanitizeFor('title', $message);
+
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 

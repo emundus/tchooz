@@ -45,6 +45,7 @@ class ApplicationRepository
 			->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->db->quoteName('sc.id') . ' = ' . $this->db->quoteName('cc.campaign_id'))
 			->where($this->db->quoteName('cc.applicant_id') . ' = ' . $this->db->quote($this->applicantId))
+			->where($this->db->quoteName('cc.published') . ' = 1')
 			->where($this->db->quoteName('sc.training') . ' IN (' . implode(',', $this->db->quote($this->programsToMerge)) . ')');
 		$this->db->setQuery($query);
 		$this->applicationFiles = $this->db->loadAssocList();
@@ -83,7 +84,7 @@ class ApplicationRepository
 
 		if (!empty($newFnum))
 		{
-			$copied = $mApplication->copyFile($fnumToCopied, $newFnum);
+			$copied = $mApplication->copyApplication($fnumToCopied, $newFnum);
 			if ($copied)
 			{
 				if(empty($statusAfterMerge)) {

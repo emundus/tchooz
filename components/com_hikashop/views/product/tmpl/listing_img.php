@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -148,7 +148,7 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 	$contact = (int)$this->config->get('product_contact', 0);
 	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-		$attributes = 'class="'.$css_button.'"';
+		$attributes = 'class="'.$css_button.' product_contact_button"';
 		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid);
 		$content = JText::_('CONTACT_US_FOR_INFO');
 
@@ -163,7 +163,7 @@ if(hikaInput::get()->getVar('hikashop_front_end_main', 0) && hikaInput::get()->g
 	$details_button = (int)$this->params->get('details_button', 0);
 	if($details_button) {
 		$this->link_content = JText::_('PRODUCT_DETAILS');
-		$this->css_button = $this->config->get('css_button', 'hikabtn');
+		$this->css_button = $this->config->get('css_button', 'hikabtn').' product_details_button';
 		$this->type = 'detail';
 		$this->setLayout('show_popup');
 		echo $this->loadTemplate();

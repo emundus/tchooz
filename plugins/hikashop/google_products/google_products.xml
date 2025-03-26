@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="hikashop">
 	<name>Hikashop Google Products Plugin</name>
-	<creationDate>31 octobre 2024</creationDate>
-	<version>5.1.1</version>
+	<creationDate>20 mars 2025</creationDate>
+	<version>5.1.5</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to generate a Google Product feed in order to import it manually or automatically to Google Merchant</description>
 	<files>
@@ -190,6 +190,59 @@
 					size="50"
 					default=""
 					description="PRODUCT_CONDITION" />
+				<field
+					name="is_bundle"
+					type="text"
+					label="IS_BUNDLE"
+					size="50"
+					default=""
+					description="IS_BUNDLE_DESC" />
+				<field
+					name="multipack"
+					type="text"
+					label="MULTIPACK"
+					size="50"
+					default=""
+					description="MULTIPACK_DESC" />
+				<field
+					name="energy_efficiency_class"
+					type="text"
+					label="ENERGY_EFFICIENCY_CLASS"
+					size="50"
+					default=""
+					description="ENERGY_EFFICIENCY_CLASS_DESC" />
+				<field
+					name="min_energy_efficiency_class"
+					type="text"
+					label="MIN_ENERGY_EFFICIENCY_CLASS"
+					size="50"
+					default=""
+					showon="energy_efficiency_class!:"
+					description="MIN_ENERGY_EFFICIENCY_CLASS_DESC" />
+				<field
+					name="max_energy_efficiency_class"
+					type="text"
+					label="MAX_ENERGY_EFFICIENCY_CLASS"
+					size="50"
+					default=""
+					showon="energy_efficiency_class!:"
+					description="MAX_ENERGY_EFFICIENCY_CLASS_DESC" />
+				<field
+					name="unit_pricing_measure"
+					type="text"
+					label="UNIT_PRICING_MEASURE"
+					size="50"
+					default=""
+					description="UNIT_PRICING_MEASURE_DESC" />
+
+				<field
+					name="unit_pricing_base_measure"
+					type="text"
+					label="UNIT_PRICING_BASE_MEASURE"
+					size="50"
+					default=""
+					showon="unit_pricing_measure!:"
+					description="UNIT_PRICING_BASE_MEASURE_DESC" />
 				<field name="preview" type="radio" default="0" label="HIKA_SHORT_DESCRIPTION" description="SHORT_DESCRIPTION" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
@@ -209,6 +262,7 @@
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
+				<field name="availability_date" type="text" size="50" default="0" label="HIKA_AVAILABILITY_DATE" description="HIKA_AVAILABILITY_DATE_DESC" showon="in_stock_only:0"/>
 				<field name="checkout_link_template" type="radio" default="0" label="CHECKOUT_LINK_TEMPLATE" description="CHECKOUT_LINK_TEMPLATE_DESC">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

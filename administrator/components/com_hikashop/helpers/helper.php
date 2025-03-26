@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -27,7 +27,7 @@ define('HIKASHOP_PHP5',version_compare(PHP_VERSION,'5.0.0', '>=') ? true : false
 define('HIKASHOP_PHP7',version_compare(PHP_VERSION,'7.0.0', '>=') ? true : false);
 define('HIKASHOP_PHP8',version_compare(PHP_VERSION,'8.0.0', '>=') ? true : false);
 
-define('HIKASHOP_VERSION', '5.1.1');
+define('HIKASHOP_VERSION', '5.1.5');
 
 
 if(HIKASHOP_J50 && !Joomla\CMS\Plugin\PluginHelper::isEnabled('behaviour', 'compat')) {
@@ -39,6 +39,7 @@ if(HIKASHOP_J50 && !Joomla\CMS\Plugin\PluginHelper::isEnabled('behaviour', 'comp
 		'JTableContenttype' => 'Joomla\CMS\Table\ContentType',
 		'JFactory' => 'Joomla\CMS\Factory',
 		'JInstaller' => 'Joomla\CMS\Installer\Installer',
+		'JModelLegacy' => 'Joomla\CMS\MVC\Model\BaseDatabaseModel',
 		'JControllerLegacy' => 'Joomla\CMS\MVC\Controller\BaseController',
 		'JViewLegacy' => 'Joomla\CMS\MVC\View\HtmlView',
 		'JRoute' => 'Joomla\CMS\Router\Route',
@@ -1453,7 +1454,7 @@ if(!function_exists('hikashop_footer')) {
 			$link.='?partner_id='.$aff;
 		}
 		$text = '<!--  HikaShop Component powered by '.$link.' -->
-		<!-- version '.$config->get('level').' : '.$config->get('version').' [2410311051] -->';
+		<!-- version '.$config->get('level').' : '.$config->get('version').' [2503201415] -->';
 		if(!$config->get('show_footer',true)) return $text;
 		$text .= '<div class="hikashop_footer" style="text-align:center"><a href="'.$link.'" target="_blank" title="'.HIKASHOP_NAME.' : '.strip_tags($description).'">'.HIKASHOP_NAME.' ';
 		$app= JFactory::getApplication();
@@ -1492,8 +1493,11 @@ if(!function_exists('hikashop_get')) {
 		if(strpos($path, '/') !== false || strpos($path, '\\') !== false)
 			return null;
 		list($group, $class) = explode('.', strtolower($path));
+		$srcPath = HIKASHOP_BACK;
 		if($group == 'controller') {
 			$className = $class.ucfirst($group);
+			if(hikashop_isClient('site'))
+				$srcPath = HIKASHOP_FRONT;
 		} elseif(strpos($class, '-') === false) {
 			$className = 'hikashop'.ucfirst($class).ucfirst($group);
 		} else {
@@ -1511,7 +1515,7 @@ if(!function_exists('hikashop_get')) {
 			if(!empty($app) && method_exists($app, 'getTemplate') && (hikashop_isClient('administrator') || defined('HIKASHOP_JOOMLA_LOADED'))) {
 				try{
 					$path = JPATH_THEMES.DS.$app->getTemplate().DS.'html'.DS.'com_hikashop'.DS.'administrator'.DS;
-					$override = str_replace(HIKASHOP_BACK, $path, constant(strtoupper('HIKASHOP_'.$group))).$class.'.override.php';
+					$override = str_replace($srcPath, $path, constant(strtoupper('HIKASHOP_'.$group))).$class.'.override.php';
 				}catch (Exception $e) {
 				}
 			}
@@ -2011,7 +2015,7 @@ if(!function_exists('hikashop_writeToLog')) {
 					jimport('joomla.filesystem.folder');
 					JFolder::create(dirname($file));
 				}
-				if(filesize($file)>10000000){
+				if(file_exists($file) && filesize($file)>10000000){
 					$info = pathinfo($file);
 					$ext = $info['extension'];
 					rename($file, str_replace('.'.$ext,'_'.date('Y-m-d-h-i-s').'.'.$ext,$file));

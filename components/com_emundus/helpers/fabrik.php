@@ -1927,8 +1927,14 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$query->select('fl.db_table_name,fe.name,fe.id')
 					->from($db->quoteName('#__fabrik_elements', 'fe'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
 					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
-					->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias));
+					->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias))
+					->where($db->quoteName('fe.published') . ' = 1')
+					->where($db->quoteName('fg.published') . ' = 1')
+					->where($db->quoteName('fl.published') . ' = 1')
+					->where($db->quoteName('ff.published') . ' = 1');
 				if (!empty($form_id))
 				{
 					$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));

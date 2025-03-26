@@ -20,6 +20,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use \setasign\Fpdi\Fpdi;
 use \setasign\Fpdi\PdfReader;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 /**
  * eMundus Component Controller
@@ -993,10 +994,13 @@ class EmundusController extends JControllerLegacy
 			$url = 'index.php?option=com_emundus&view=checklist&Itemid=' . $itemid . '#a' . $attachments;
 		}
 
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
+		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
 		foreach ($fnums as $fnum) {
-
 			foreach ($files as $key => $file) {
-
+				$files[$key]['name'] = $htmlSanitizer->sanitize($file['name']);
 				$local_filename = $file['name'];
 
 				$pageCount = 0;

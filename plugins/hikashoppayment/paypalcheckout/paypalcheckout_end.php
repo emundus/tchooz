@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 <div id="paypal-button-container"></div>
 <?php if(!empty($this->payment_params->enable_credit_card)) { ?>
 <!-- Advanced credit and debit card payments form -->
+<div id="paypal-errors"></div>
 <div id="card_container" class='card_container'>
 	<form id='my-sample-form'>
 		<div class="hk-row-fluid">
@@ -28,34 +29,34 @@ defined('_JEXEC') or die('Restricted access');
 					</div>
 				</div>
 				<label for="card-holder-name"><?php echo JText::_('CREDIT_CARD_OWNER'); ?></label>
-				<input type='text' class="form-control" id='card-holder-name' name='card-holder-name' value="<?php echo htmlEntities(@$this->orderData->payer->name->given_name.' '.@$this->orderData->payer->name->surname, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('CREDIT_CARD_OWNER'); ?>'/>
+				<input type='text' class="form-control" id='card-holder-name' name='card-holder-name' value="<?php echo htmlEntities(@$this->order->cart->billing_address->address_firstname.' '.@$this->order->cart->billing_address->address_lastname, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('CREDIT_CARD_OWNER'); ?>'/>
 			</div>
 			<div class="hkc-md-6">
 				<h3 class="card_title"><?php echo JText::_('CREDIT_CARD_BILLING_ADDRESS'); ?></h3>
 				<div>
 					<label for="card-billing-address-street"><?php echo JText::_('STREET'); ?></label>
-					<input type='text' class="form-control" id='card-billing-address-street' name='card-holder-name' value="<?php echo htmlEntities((string)@$this->orderData->payer->address->address_line_1, ENT_QUOTES); ?>" name='card-billing-address-street' autocomplete='off' placeholder='<?php echo JText::_('STREET'); ?>'/>
+					<input type='text' class="form-control" id='card-billing-address-street' name='card-holder-name' value="<?php echo htmlEntities((string)@$this->order->cart->billing_address->address_street, ENT_QUOTES); ?>" name='card-billing-address-street' autocomplete='off' placeholder='<?php echo JText::_('STREET'); ?>'/>
 				</div>
 				<div>
 					<label for="card-billing-address-unit"><?php echo JText::_('STREET'); ?></label>
-					<input type='text' class="form-control" id='card-billing-address-unit' name='card-billing-address-unit' name='card-holder-name' value="<?php echo htmlEntities((string)@$this->orderData->payer->address->address_line_2, ENT_QUOTES); ?>" autocomplete='off' placeholder=''/>
+					<input type='text' class="form-control" id='card-billing-address-unit' name='card-billing-address-unit' name='card-holder-name' value="<?php echo htmlEntities((string)@$this->order->cart->billing_address->address_street2, ENT_QUOTES); ?>" autocomplete='off' placeholder=''/>
 				</div>
 				<div>
 					<label for="card-billing-address-city"><?php echo JText::_('CITY'); ?></label>
-					<input type='text' class="form-control" id='card-billing-address-city' name='card-billing-address-city' value="<?php echo htmlEntities((string)@$this->orderData->payer->address->admin_area_2, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('CITY'); ?>'/>
+					<input type='text' class="form-control" id='card-billing-address-city' name='card-billing-address-city' value="<?php echo htmlEntities((string)@$this->order->cart->billing_address->address_city, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('CITY'); ?>'/>
 				</div>
 				<div>
 					<label for="card-billing-address-state"><?php echo JText::_('STATE'); ?></label>
-					<input type='text' class="form-control" id='card-billing-address-state' name='card-billing-address-state' value="<?php echo htmlEntities((string)@$this->orderData->payer->address->admin_area_1, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('STATE'); ?>'/>
+					<input type='text' class="form-control" id='card-billing-address-state' name='card-billing-address-state' value="<?php echo htmlEntities((string)@$this->billing_state, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('STATE'); ?>'/>
 				</div>
 				<div class="hk-row-fluid">
 					<div class='hkc-md-6'>
 						<label for="card-billing-address-zip"><?php echo JText::_('POST_CODE'); ?></label>
-						<input type='text' class="form-control" id='card-billing-address-zip' name='card-billing-address-zip' value="<?php echo htmlEntities((string)@$this->orderData->payer->address->postal_code, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('POST_CODE'); ?>'/>
+						<input type='text' class="form-control" id='card-billing-address-zip' name='card-billing-address-zip' value="<?php echo htmlEntities((string)@$this->order->cart->billing_address->address_post_code, ENT_QUOTES); ?>" autocomplete='off' placeholder='<?php echo JText::_('POST_CODE'); ?>'/>
 					</div>
 					<div class='hkc-md-6'>
 						<label for="card-billing-address-country"><?php echo JText::_('COUNTRY'); ?></label>
-						<input type='text' class="form-control" id='card-billing-address-country' name='card-billing-address-country' value="<?php echo htmlEntities((string)@$this->orderData->payer->address->country_code, ENT_QUOTES); ?>" pattern="[A-Z]{2}" autocomplete='off' placeholder='<?php echo JText::_('COUNTRY'); ?>' />
+						<input type='text' class="form-control" id='card-billing-address-country' name='card-billing-address-country' value="<?php echo htmlEntities((string)@$this->billing_country_code, ENT_QUOTES); ?>" pattern="[A-Z]{2}" autocomplete='off' placeholder='<?php echo JText::_('COUNTRY'); ?>' />
 					</div>
 				</div>
 			</div>
@@ -64,6 +65,9 @@ defined('_JEXEC') or die('Restricted access');
 	</form>
 </div>
 <?php } ?>
+<div id="paypal_cancel_button_div" class="paypal_cancel_button_div">
+	<a id="paypal_cancel_button" class="paypal_cancel_button hikabtn hikabtn-error" href="<?php echo $this->cancel_url; ?>"><?php echo JText::_('CANCEL_AND_CHOOSE_ANOTHER_PAYMENT_METHOD'); ?>  <i class="fa fa-ban"></i></a>
+</div>
 <script>
 if(!window.Oby.extractJSON) {
 	window.Oby.extractJSON = function(str) {
@@ -91,6 +95,18 @@ if(!window.Oby.extractJSON) {
 		return null;
 	};
 }
+window.displayHKMessage = function(msg) {
+	var divName = 'system-message-container';
+	if(Joomla) {
+		Joomla.renderMessages({"error":[msg]});
+	} else {
+		divName = 'paypal-errors';
+		document.getElementById(divName).innerHTML = msg;
+	}
+	var errDiv = document.getElementById(divName);
+	if(errDiv)
+		errDiv.scrollIntoView();
+}
 paypal.Buttons(
 	{
 		style: {
@@ -111,10 +127,7 @@ paypal.Buttons(
 				console.log(resp);
 
 				if(resp && resp.error) {
-					Joomla.renderMessages({"error":[resp.errorMessage]});
-					var errDiv = document.getElementById('system-message-container');
-					if(errDiv)
-						errDiv.scrollIntoView();
+					window.displayHKMessage(resp.errorMessage);
 					return false;
 				} else {
 					return resp.id;
@@ -130,10 +143,7 @@ paypal.Buttons(
 				console.log(resp);
 
 				if(resp && resp.error) {
-					Joomla.renderMessages({"error":[resp.errorMessage]});
-					var errDiv = document.getElementById('system-message-container');
-					if(errDiv)
-						errDiv.scrollIntoView();
+					window.displayHKMessage(resp.errorMessage);
 					return false;
 				} else if(resp.errorMessage == 'restart') {
 					return actions.restart();
@@ -162,10 +172,7 @@ paypal.Buttons(
 			} else {
 				console.log(err);
 			}
-			Joomla.renderMessages({"error":[errormsg]});
-			var errDiv = document.getElementById('system-message-container');
-			if(errDiv)
-				errDiv.scrollIntoView();
+			window.displayHKMessage(errormsg);
 		},
 <?php
 if(!empty($this->payment_params->cancel_url)) {
@@ -191,10 +198,7 @@ if (paypal.HostedFields.isEligible()) {
 				console.log(resp);
 
 				if(resp && resp.error) {
-					Joomla.renderMessages({"error":[resp.errorMessage]});
-					var errDiv = document.getElementById('system-message-container');
-					if(errDiv)
-						errDiv.scrollIntoView();
+					window.displayHKMessage(resp.errorMessage);
 					return false;
 				} else {
 					return resp.id;
@@ -264,10 +268,7 @@ if (paypal.HostedFields.isEligible()) {
 					console.log(resp);
 
 					if(resp && resp.error) {
-						Joomla.renderMessages({"error":[resp.errorMessage]});
-						var errDiv = document.getElementById('system-message-container');
-						if(errDiv)
-							errDiv.scrollIntoView();
+						window.displayHKMessage(resp.errorMessage);
 
 						if(resp.errorCode == 'stop_and_retry') {
 							document.getElementById('paypal_pay_button').disabled = false;
@@ -282,10 +283,7 @@ if (paypal.HostedFields.isEligible()) {
 				});
 			}).catch(error => {
 				console.log(error);
-				Joomla.renderMessages({"error":['<?php echo str_replace(array("\n", "\r"), '', JText::_('PLEASE_FILL_IN_ALL_THE_FIELDS', true)); ?>']});
-				var errDiv = document.getElementById('system-message-container');
-				if(errDiv)
-					errDiv.scrollIntoView();
+				window.displayHKMessage('<?php echo str_replace(array("\n", "\r"), '', JText::_('PLEASE_FILL_IN_ALL_THE_FIELDS', true)); ?>');
 				document.getElementById('paypal_pay_button').disabled = false;
 				document.getElementById('card_container').style.opacity = "1";
 			});
@@ -331,6 +329,11 @@ div#paypal-select-message {
 	font-weight: bold;
 	font-size: 1.6em;
 }
+.paypal_cancel_button {
+	width: 100%;
+	margin: 3px;
+	font-size: 1.2em;
+}
 .card_container label{
 	display:block;
 	margin-top: 20px;
@@ -341,6 +344,11 @@ div#paypal-select-message {
 }
 .hkc-md-6.cvv_position_div{
     padding-right: 0;
+}
+#paypal-errors {
+	font-size: 1.2em;
+	color: red;
+	font-weight: bold;
 }
 </style>
 </div>

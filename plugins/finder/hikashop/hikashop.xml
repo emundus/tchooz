@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="finder" method="upgrade">
 	<name>Smart Search - HikaShop Products</name>
-	<creationDate>31 octobre 2024</creationDate>
-	<version>5.1.1</version>
+	<creationDate>20 mars 2025</creationDate>
+	<version>5.1.5</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to index HikaShop products information for the Joomla Smart Search system</description>
 	<files>

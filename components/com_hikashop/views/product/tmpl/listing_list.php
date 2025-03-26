@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -67,10 +67,10 @@ if((!empty($this->rows) || !$this->module || hikaInput::get()->getVar('hikashop_
 					<a href="<?php echo $link; ?>" class="hikashop_product_name_in_list">
 <?php
 			}
-			echo $row->product_name;
+			echo '<span class="hikashop_product_name_list">' . $row->product_name . '</span>';
 ?>					<meta itemprop="url" content="<?php echo $link; ?>">
 					<meta itemprop="name" content="<?php echo $this->escape(strip_tags($row->product_name)); ?>">
-					<span class='hikashop_product_code_list'><?php
+					<span class="hikashop_product_code_list"><?php
 						if ($this->config->get('show_code')) {
 							echo $this->row->product_code;
 						}
@@ -158,7 +158,7 @@ if((!empty($this->rows) || !$this->module || hikaInput::get()->getVar('hikashop_
 	$contact = (int)$this->config->get('product_contact', 0);
 	if(hikashop_level(1) && $this->params->get('product_contact_button', 0) && ($contact == 2 || ($contact == 1 && !empty($this->row->product_contact)))) {
 		$css_button = $this->config->get('css_button', 'hikabtn');
-		$attributes = 'class="'.$css_button.'"';
+		$attributes = 'class="'.$css_button.' product_contact_button"';
 		$fallback_url = hikashop_completeLink('product&task=contact&cid=' . (int)$this->row->product_id . $this->itemid);
 		$content = JText::_('CONTACT_US_FOR_INFO');
 
@@ -174,7 +174,7 @@ if((!empty($this->rows) || !$this->module || hikaInput::get()->getVar('hikashop_
 	if($details_button) {
 		$this->link_content = JText::_('PRODUCT_DETAILS');
 		$this->type = 'detail';
-		$this->css_button = $this->config->get('css_button', 'hikabtn');
+		$this->css_button = $this->config->get('css_button', 'hikabtn').' product_details_button';
 		$this->setLayout('show_popup');
 		echo $this->loadTemplate();
 	}

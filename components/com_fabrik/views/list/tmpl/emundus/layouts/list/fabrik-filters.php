@@ -60,9 +60,9 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 								$c++;
 								$required = $filter->required == 1 ? ' notempty' : ''; ?>
 								<tr data-filter-row="<?php echo $key; ?>"
-										class="fabrik_row oddRow<?php echo ($c % 2) . $required; ?>">
-									<td><?php echo $filter->label; ?></td>
-									<td><?php echo $filter->element; ?></td>
+										class="fabrik_row oddRow<?php echo ($c % 2) . $required; ?> tw-flex tw-flex-col tw-w-full tw-max-w-[240px]">
+									<td class="!tw-border-none !tw-border-0"><?php echo $filter->label; ?></td>
+									<td class="tw-w-full !tw-border-none"><?php echo $filter->element; ?></td>
 								</tr>
 								<?php
 							endif;
@@ -77,13 +77,13 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 			if ($d->filter_action != 'onchange') :
 				?>
 				<tr>
-					<td colspan="2">
+					<td colspan="2" class="!tw-border-none">
 						<input type="button" class="pull-right  btn-info btn fabrik_filter_submit button"
 								value="<?php echo Text::_('COM_FABRIK_GO'); ?>" name="filter">
 					</td>
 				</tr>
                 <tr class="fabrik___heading">
-                    <td>
+                    <td class="!tw-border-none">
 						<?php if ($d->showClearFilters) : ?>
                             <a class="<?php echo $clearFiltersClass; ?> em-flex-row em-error-button em-border-radius" href="#">
                                 <span class="material-symbols-outlined em-mr-4" style="font-size: 18px">filter_alt_off</span>

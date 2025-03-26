@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -290,9 +290,10 @@ class hikashopMenusClass extends hikashopClass {
 		return (int) $this->database->loadResult();
 	}
 
-	function loadAMenuItemId($view = 'category', $layout = 'listing', $id = 0) {
+	function loadAMenuItemId($view = 'category', $layout = 'listing', $id = 0, $exclude = array()) {
 		static $cache = array();
-		if(!isset($cache[$view.'.'.$layout])){
+		$key = $view.'.'.$layout.'.'.implode('-',$exclude);
+		if(!isset($cache[$key])){
 			$filters = array(
 				'a.type=\'component\'',
 				'a.published=1',
@@ -317,6 +318,11 @@ class hikashopMenusClass extends hikashopClass {
 				$filters[] = 'a.link='.$this->database->Quote('index.php?option=com_hikashop&view='.($view=='manufacturer'?'category':$view).'&layout='.$layout);
 			}
 
+			if(count($exclude)) {
+				hikashop_toInteger($exclude);
+				$filters[] = 'a.id NOT IN ('.implode(',',$exclude).')';
+			}
+
 			$lang = JFactory::getLanguage();
 			$tag = $lang->getTag();
 			$filters[] = "a.language IN ('*', '', ".$this->database->Quote($tag).")";
@@ -324,11 +330,11 @@ class hikashopMenusClass extends hikashopClass {
 
 			$query="SELECT a.id FROM ".hikashop_table('menu',false).' AS a INNER JOIN `#__menu_types` as b on a.menutype = b.menutype WHERE '.implode(' AND ',$filters);
 			$this->database->setQuery($query);
-			$cache[$view.'.'.$layout] = $this->database->loadColumn();
+			$cache[$key] = $this->database->loadColumn();
 		}
 		if($id){
-			if(is_array($cache[$view.'.'.$layout]) && count($cache[$view.'.'.$layout])){
-				foreach($cache[$view.'.'.$layout] as $current_id){
+			if(is_array($cache[$key]) && count($cache[$key])){
+				foreach($cache[$key] as $current_id){
 					if($current_id==$id){
 						return (int)$id;
 					}
@@ -339,7 +345,7 @@ class hikashopMenusClass extends hikashopClass {
 
 
 		if(in_array($view,array('product','manufacturer','category'))){
-			if(is_array($cache[$view.'.'.$layout]) && count($cache[$view.'.'.$layout])){
+			if(is_array($cache[$key]) && count($cache[$key])){
 				$app = JFactory::getApplication();
 				$config = hikashop_config();
 
@@ -348,7 +354,7 @@ class hikashopMenusClass extends hikashopClass {
 				if(empty($brandId))
 					$brandId = 0;
 
-				foreach($cache[$view.'.'.$layout] as $current_id){
+				foreach($cache[$key] as $current_id){
 
 					if(HIKASHOP_J30){
 						$menuItem = $app->getMenu()->getItem($current_id);
@@ -364,13 +370,13 @@ class hikashopMenusClass extends hikashopClass {
 						return (int)$current_id;
 					}
 				}
-				return (int)reset($cache[$view.'.'.$layout]);
+				return (int)reset($cache[$key]);
 			}
 			return 0;
 		}
 
-		if(is_array($cache[$view.'.'.$layout]) && count($cache[$view.'.'.$layout])){
-			return (int)reset($cache[$view.'.'.$layout]);
+		if(is_array($cache[$key]) && count($cache[$key])){
+			return (int)reset($cache[$key]);
 		}
 		return 0;
 	}

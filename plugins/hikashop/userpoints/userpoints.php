@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -497,7 +497,7 @@ class plgHikashopUserpoints extends hikashopPlugin {
 
 			$queryP = 'SELECT product_parent_id, product_id FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$product_ids).')';
 			$db->setQuery($queryP);
-			$pids = $db->loadObjectList('product_parent_id');
+			$pids = $db->loadObjectList();
 			if(!empty($pids)) {
 				foreach($pids as $pid) {
 					if((int)$pid->product_parent_id <= 0)
@@ -675,6 +675,24 @@ class plgHikashopUserpoints extends hikashopPlugin {
 			}
 			if($this->plugin_params->shippingpoints == 1) {
 				$calculatedPrice += (float)@$order->order_shipping_price;
+			}
+		}
+
+		if(!empty($this->plugin_params->additionalfees)) {
+			$additionals = null;
+			if(!empty($order->additional)) {
+				$additionals &= $order->additional;
+			} elseif(!empty($order->cart->additional)) {
+				$additionals &= $order->cart->additional;
+			} elseif(!empty($cart->additional)) {
+				$additionals &= $cart->additional;
+			}
+			if(!empty($additionals)) {
+				foreach($additionals as $key => $additional) {
+					if($key == 'userpoints')
+						continue;
+					$calculatedPrice += (float)$additional->price_value;
+				}
 			}
 		}
 

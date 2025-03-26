@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -687,6 +687,7 @@ window.hikashop.ready(codeMirrorFix);
 			<a href="#" class="btn btn-primary" onclick="window.formCustom.addNewBlock('product_new_view_name', window.productDragOptionsKey); return false;"><?php
 					echo JText::_('ADD_NEW_BLOCK');
 				?></a>
+				<p><?php echo JText::_('ONCE_CREATED_YOU_CAN_DRAG_FORM_ELEMENTS_TO_IT'); ?></p>
 		</div>
 
 		<div class="new_activate_button">

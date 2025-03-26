@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1187,6 +1187,10 @@ class ProductViewProduct extends hikashopView
 		$editor->content = @$element->file_description;
 		$editor->height=200;
 		$this->assignRef('editor',$editor);
+
+		$this->product_type = hikaInput::get()->getString('product_type');
+		if(empty($this->product_type))
+			$this->product_type = 'product';
 	}
 
 	public function addimage(){
@@ -1244,6 +1248,7 @@ class ProductViewProduct extends hikashopView
 				$params->file_id = $file->file_id;
 				$params->file_path = $file->file_path;
 				$params->file_name = $file->file_name;
+				$params->product_type = hikaInput::get()->getString('product_type');
 
 				$ret[] = hikashop_getLayout('product', 'form_image_entry', $params, $js);
 			}
@@ -1282,6 +1287,10 @@ class ProductViewProduct extends hikashopView
 		}
 
 		$this->delayTypeDownloads = hikashop_get('type.delay');
+
+		$this->product_type = hikaInput::get()->getString('product_type');
+		if(empty($this->product_type))
+			$this->product_type = 'product';
 	}
 
 	public function addfile(){
@@ -1541,6 +1550,7 @@ class ProductViewProduct extends hikashopView
 			'toggleClass' => 'helper.toggle',
 			'currencyClass' => 'class.currency',
 			'userClass' => 'class.user',
+			'zoneClass' => 'class.zone',
 			'popup' => 'helper.popup',
 			'quantityType' => 'type.quantity',
 			'productsType' => 'type.products',

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -201,7 +201,7 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 				foreach($new_messages as $msg) {
 					$checkoutHelper->addMessage('login', array(
 						'msg' => $msg['message'],
-						'type' => $msg['type']
+						'type' => 'error'
 					));
 				}
 			} else {
@@ -616,6 +616,14 @@ class hikashopCheckoutLoginHelper extends hikashopCheckoutHelperInterface {
 			$affiliate = '';
 		}
 		$view->affiliate_checked = $affiliate;
+
+		$tmpl = hikaInput::get()->getCmd('tmpl', '');
+		if(empty($params['register_done']) && $tmpl != 'raw' && $tmpl != 'ajax') {
+			$url = hikashop_currentURL();
+			$session = JFactory::getApplication()->getSession();
+			$session->set('com_users.return_url', $url);
+			$session->set('com_users.edit.profile.redirect', $url);
+		}
 	}
 
 	public function checkMarker($markerName, $oldMarkers, $newMarkers, &$controller, $params) {

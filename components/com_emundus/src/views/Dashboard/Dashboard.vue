@@ -27,9 +27,13 @@
 		</div>
 
 		<div v-if="widgets.length > 0">
-			<div v-if="programmeFilter == 1" class="tw-mb-3 tw-flex tw-flex-col">
-				<label>{{ translate('COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES') }}</label>
-				<select v-model="selectedProgramme" class="form-control fabrikinput tw-w-full">
+			<div
+				v-if="programmeFilter == 1"
+				class="tw-mb-6 !tw-flex tw-flex-col !tw-gap-0 tw-rounded-coordinator-cards tw-bg-neutral-0 tw-p-8 tw-shadow-standard"
+				style="width: calc(50% - 12px)"
+			>
+				<label class="tw-text-neutral-900">{{ translate('COM_EMUNDUS_DASHBOARD_FILTER_BY_PROGRAMMES') }}</label>
+				<select v-model="selectedProgramme" class="form-control fabrikinput tw-w-full tw-cursor-pointer">
 					<option value="" selected>
 						{{ translate('COM_EMUNDUS_DASHBOARD_ALL_PROGRAMMES') }}
 					</option>

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -146,6 +146,7 @@ defined('_JEXEC') or die('Restricted access');
 	<input type="hidden" name="tmpl" value="component" />
 	<input type="hidden" name="task" value="selectimage" />
 	<input type="hidden" name="ctrl" value="product" />
+	<input type="hidden" name="product_type" value="<?php echo $this->product_type; ?>" />
 	<input type="hidden" name="pathonly" value="<?php echo hikaInput::get()->getInt('pathonly', 0); ?>" />
 <?php if(hikaInput::get()->getInt('legacy', 0)) { ?>
 	<input type="hidden" name="legacy" value="1" />

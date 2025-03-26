@@ -2126,8 +2126,16 @@ class EmundusModelFormbuilder extends JModelList
 						$element['params']['database_join_where_sql'] = str_replace($order_by, '', $element['params']['database_join_where_sql']);
 
 						$ids_to_exclude = [];
-						foreach ($element['params']['database_join_exclude'] as $exclude) {
-							$ids_to_exclude[] = $exclude['value'];
+						if(is_array($element['params']['database_join_exclude'])) {
+							foreach ($element['params']['database_join_exclude'] as $exclude) {
+								$ids_to_exclude[] = $exclude['value'];
+							}
+						} else {
+							$ids_to_exclude = explode(',', $element['params']['database_join_exclude']);
+							// Remove quotes
+							foreach ($ids_to_exclude as $key => $id) {
+								$ids_to_exclude[$key] = str_replace("'", '', $id);
+							}
 						}
 
                         if(stripos($element['params']['database_join_where_sql'], 'WHERE') !== false)
@@ -2145,11 +2153,55 @@ class EmundusModelFormbuilder extends JModelList
 						$element['params']['database_join_where_sql'] = preg_replace('/\bWHERE(.*) NOT IN\b(.*)/i', '', $element['params']['database_join_where_sql']);
 					}
 
-                    $order_by_column = !empty($element['params']['join_val_column']) ? $element['params']['join_val_column'] : $element['params']['join_key_column'];
+					// If table have a published column add it to where
+					$query->clear()
+						->select('COLUMN_NAME')
+						->from('INFORMATION_SCHEMA.COLUMNS')
+						->where('TABLE_NAME = ' . $this->db->quote($element['params']['join_db_name']))
+						->where('COLUMN_NAME = ' . $this->db->quote('published'));
+					$this->db->setQuery($query);
+					$published_column = $this->db->loadResult();
 
+					if(!empty($published_column)) {
+						// Check if the column is already in the where clause
+						if(stripos($element['params']['database_join_where_sql'], 'published') !== false) {
+							$element['params']['database_join_where_sql'] = preg_replace('/\bWHERE\b(.*)\b{thistable}\.published\b(.*)/i', '', $element['params']['database_join_where_sql']);
+						}
+						else
+						{
+							// If we have a order by clause, we need to remove it and add it at the end
+							$order_by = '';
+							if (stripos($element['params']['database_join_where_sql'], 'order by') !== false)
+							{
+								preg_match_all("/\bORDER BY\b(.*)/i", $element['params']['database_join_where_sql'], $order_by, PREG_SET_ORDER, 0);
+								if (!empty($order_by))
+								{
+									$order_by = $order_by[0][0];
+								}
+								$element['params']['database_join_where_sql'] = str_replace($order_by, '', $element['params']['database_join_where_sql']);
+							}
+							// Now we can add the published column to the where clause
+							if (stripos($element['params']['database_join_where_sql'], 'WHERE') !== false)
+							{
+								$element['params']['database_join_where_sql'] .= ' AND {thistable}.published = 1';
+							}
+							else
+							{
+								$element['params']['database_join_where_sql'] .= 'WHERE {thistable}.published = 1';
+							}
+						}
+					} else {
+						// If table have a published column remove it from where
+						$element['params']['database_join_where_sql'] = preg_replace('/WHERE\s+\{thistable\}\.published\s*=\s*1\s*/i', '', $element['params']['database_join_where_sql']);
+					}
+
+					// If $element['params']['database_join_where_sql'] start by AND or OR, remove it
+					$element['params']['database_join_where_sql'] = preg_replace('/^AND\s+/i', 'WHERE ', $element['params']['database_join_where_sql']);
+
+					$order_by_column = !empty($element['params']['join_val_column']) ? $element['params']['join_val_column'] : $element['params']['join_key_column'];
 					if(stripos($element['params']['database_join_where_sql'], 'order by') !== false)
 					{
-                        preg_replace('/\bORDER BY\b(.*)/i', 'ORDER BY {thistable}.' . $order_by_column, $element['params']['database_join_where_sql']);
+						preg_replace('/\bORDER BY\b(.*)/i', 'ORDER BY {thistable}.' . $order_by_column, $element['params']['database_join_where_sql']);
 					} else {
 						if(!empty($element['params']['database_join_where_sql']))
 						{

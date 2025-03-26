@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -329,6 +329,8 @@ class hikashopOrderClass extends hikashopClass {
 					$order->cart->additional[$k]->order_product_quantity = 0;
 					$order->cart->additional[$k]->order_product_code = 'order additional';
 					$order->cart->additional[$k]->order_product_tax = 0;
+					$order->cart->additional[$k]->order_product_params = new stdClass();
+					$order->cart->additional[$k]->order_product_params->additional_key = $k;
 					if(!empty($p->name))
 						$order->cart->additional[$k]->order_product_name = $p->name;
 					if(!empty($p->value))

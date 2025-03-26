@@ -1,17 +1,18 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, w as withDirectives, z as vModelSelect, F as Fragment, e as renderList, A as vModelText, J as script, r as resolveComponent, n as normalizeClass, h as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, B as _imports_0, M as Modal, u as useGlobalStore, q as ref, as as userService, s as settingsService, S as Swal, v as vShow, a8 as resolveDynamicComponent, g as withModifiers, p as Teleport, C as FetchClient } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, w as withDirectives, y as vModelSelect, F as Fragment, e as renderList, z as vModelText, J as script, r as resolveComponent, n as normalizeClass, g as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, A as _imports_0, h as withModifiers, v as vShow, M as Modal, S as Swal$1, C as FetchClient, s as settingsService, u as useGlobalStore, q as ref, as as userService, a8 as resolveDynamicComponent, p as Teleport } from "./app_emundus.js";
+import ExportsSlotsModal from "./ExportSlotsModal.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
 import EditSlot from "./EditSlot.js";
+import { P as Parameter } from "./Parameter.js";
+import { e as eventsService } from "./events2.js";
 import "./core.js";
 import "./index.js";
-import "./Parameter.js";
 import "./EventBooking.js";
-import "./events2.js";
 import "./Info.js";
+import "./ColorPicker.js";
 import "./LocationPopup.js";
 import "./LocationForm.js";
-import "./ColorPicker.js";
-const _sfc_main$8 = {
+const _sfc_main$9 = {
   name: "Head",
   props: {
     title: {
@@ -33,15 +34,15 @@ const _sfc_main$8 = {
     }
   }
 };
-const _hoisted_1$8 = { class: "head tw-py-6" };
-const _hoisted_2$8 = { class: "tw-mb-6 tw-flex tw-items-center tw-justify-between" };
-const _hoisted_3$6 = {
+const _hoisted_1$9 = { class: "head tw-py-6" };
+const _hoisted_2$9 = { class: "tw-mb-6 tw-flex tw-items-center tw-justify-between" };
+const _hoisted_3$7 = {
   key: 0,
   class: "tw-text-neutral-700"
 };
-function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$8, [
-    createBaseVNode("div", _hoisted_2$8, [
+function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$9, [
+    createBaseVNode("div", _hoisted_2$9, [
       createBaseVNode("h1", null, toDisplayString(_ctx.translate($props.title)), 1),
       $props.addAction ? (openBlock(), createElementBlock("a", {
         key: 0,
@@ -50,11 +51,11 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
         onClick: _cache[0] || (_cache[0] = ($event) => $options.onClickAction($props.addAction))
       }, toDisplayString(_ctx.translate($props.addAction.label)), 1)) : createCommentVNode("", true)
     ]),
-    $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$6, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
+    $props.introduction ? (openBlock(), createElementBlock("p", _hoisted_3$7, toDisplayString(_ctx.translate($props.introduction)), 1)) : createCommentVNode("", true)
   ]);
 }
-const Head = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8], ["__scopeId", "data-v-041fbbe6"]]);
-const _sfc_main$7 = {
+const Head = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-041fbbe6"]]);
+const _sfc_main$8 = {
   name: "Filter",
   props: {
     filter: {
@@ -71,13 +72,13 @@ const _sfc_main$7 = {
     }
   }
 };
-const _hoisted_1$7 = { class: "tw-flex tw-items-center tw-justify-between" };
-const _hoisted_2$7 = { class: "!tw-mb-0 tw-font-medium" };
-const _hoisted_3$5 = ["value"];
-function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_1$8 = { class: "tw-flex tw-items-center tw-justify-between" };
+const _hoisted_2$8 = { class: "!tw-mb-0 tw-font-medium" };
+const _hoisted_3$6 = ["value"];
+function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", null, [
-    createBaseVNode("div", _hoisted_1$7, [
-      createBaseVNode("label", _hoisted_2$7, toDisplayString(_ctx.translate($props.filter.label)), 1),
+    createBaseVNode("div", _hoisted_1$8, [
+      createBaseVNode("label", _hoisted_2$8, toDisplayString(_ctx.translate($props.filter.label)), 1),
       !$props.filter.alwaysDisplay ? (openBlock(), createElementBlock("span", {
         key: 0,
         class: "material-icons-outlined tw-cursor-pointer tw-text-red-500",
@@ -94,7 +95,7 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
         return openBlock(), createElementBlock("option", {
           key: option.value,
           value: option.value
-        }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_3$5);
+        }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_3$6);
       }), 128))
     ], 544)), [
       [vModelSelect, $props.filter.value]
@@ -108,8 +109,8 @@ function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
     ]) : createCommentVNode("", true)
   ]);
 }
-const Filter = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
-const _sfc_main$6 = {
+const Filter = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
+const _sfc_main$7 = {
   name: "Filters",
   components: {
     Filter,
@@ -243,23 +244,23 @@ const _sfc_main$6 = {
     }
   }
 };
-const _hoisted_1$6 = {
+const _hoisted_1$7 = {
   id: "tab-filters",
   class: "tw-w-full"
 };
-const _hoisted_2$6 = { class: "tw-mb-2 tw-font-medium" };
-const _hoisted_3$4 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
-const _hoisted_4$4 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
-function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_2$7 = { class: "tw-mb-2 tw-font-medium" };
+const _hoisted_3$5 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
+const _hoisted_4$5 = { class: "tw-grid tw-grid-cols-3 tw-gap-4" };
+function _sfc_render$7(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_multiselect = resolveComponent("multiselect");
   const _component_Filter = resolveComponent("Filter");
-  return openBlock(), createElementBlock("section", _hoisted_1$6, [
+  return openBlock(), createElementBlock("section", _hoisted_1$7, [
     $options.availableFilters.length > 0 ? (openBlock(), createElementBlock("div", {
       key: 0,
       class: normalizeClass({ "tw-mb-4": $data.displayedFilters.length > 0 })
     }, [
-      createBaseVNode("label", _hoisted_2$6, toDisplayString(_ctx.translate("COM_EMUNDUS_ADD_FILTER")), 1),
-      createBaseVNode("div", _hoisted_3$4, [
+      createBaseVNode("label", _hoisted_2$7, toDisplayString(_ctx.translate("COM_EMUNDUS_ADD_FILTER")), 1),
+      createBaseVNode("div", _hoisted_3$5, [
         createVNode(_component_multiselect, {
           id: "select-filter-" + $props.currentTabKey,
           modelValue: $data.currentFilter,
@@ -283,7 +284,7 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
         }, 8, ["id", "modelValue", "custom-label", "options", "placeholder", "select-label"])
       ])
     ], 2)) : createCommentVNode("", true),
-    createBaseVNode("div", _hoisted_4$4, [
+    createBaseVNode("div", _hoisted_4$5, [
       (openBlock(true), createElementBlock(Fragment, null, renderList($options.defaultFilters, (filter) => {
         return openBlock(), createElementBlock("div", {
           key: $props.currentTabKey + "-" + filter.key,
@@ -310,8 +311,8 @@ function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Filters = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
-const _sfc_main$5 = {
+const Filters = /* @__PURE__ */ _export_sfc(_sfc_main$7, [["render", _sfc_render$7]]);
+const _sfc_main$6 = {
   name: "Exports",
   components: {
     Popover
@@ -419,17 +420,17 @@ const _sfc_main$5 = {
     }
   }
 };
-const _hoisted_1$5 = {
+const _hoisted_1$6 = {
   id: "default-exports",
   class: "tw-flex tw-gap-4"
 };
-const _hoisted_2$5 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_3$3 = { class: "tw-m-0 tw-list-none tw-items-center tw-p-4" };
-const _hoisted_4$3 = ["onClick"];
-function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
+const _hoisted_2$6 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_3$4 = { class: "tw-m-0 tw-list-none tw-items-center tw-p-4" };
+const _hoisted_4$4 = ["onClick"];
+function _sfc_render$6(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_popover = resolveComponent("popover");
-  return openBlock(), createElementBlock("section", _hoisted_1$5, [
-    createBaseVNode("div", _hoisted_2$5, [
+  return openBlock(), createElementBlock("section", _hoisted_1$6, [
+    createBaseVNode("div", _hoisted_2$6, [
       $options.multipleExportsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
         key: 0,
         button: _ctx.translate("EXPORT"),
@@ -440,7 +441,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
         class: "custom-popover-arrow"
       }, {
         default: withCtx(() => [
-          createBaseVNode("ul", _hoisted_3$3, [
+          createBaseVNode("ul", _hoisted_3$4, [
             (openBlock(true), createElementBlock(Fragment, null, renderList($options.multipleExportsPopover, (exp) => {
               return openBlock(), createElementBlock("li", {
                 key: exp.name,
@@ -449,7 +450,7 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
                   "tw-cursor-not-allowed tw-text-neutral-500": !(typeof exp.showon === "undefined" || $options.evaluateShowOn(exp.showon)),
                   "tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300": typeof exp.showon !== "undefined" && $options.evaluateShowOn(exp.showon) || typeof exp.showon === "undefined"
                 }])
-              }, toDisplayString(_ctx.translate(exp.label)), 11, _hoisted_4$3);
+              }, toDisplayString(_ctx.translate(exp.label)), 11, _hoisted_4$4);
             }), 128))
           ])
         ]),
@@ -458,8 +459,8 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Exports = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
-const _sfc_main$4 = {
+const Exports = /* @__PURE__ */ _export_sfc(_sfc_main$6, [["render", _sfc_render$6]]);
+const _sfc_main$5 = {
   name: "Actions",
   components: {
     Exports,
@@ -581,8 +582,9 @@ const _sfc_main$4 = {
     multipleActionsPopover() {
       let actions = [];
       if (this.checkedItems.length > 0) {
+        console.log(this.tab.actions);
         actions = this.tab.actions.filter((action) => {
-          return action.multiple;
+          return action.multiple && action.display;
         });
       }
       return actions;
@@ -597,26 +599,26 @@ const _sfc_main$4 = {
     }
   }
 };
-const _hoisted_1$4 = {
+const _hoisted_1$5 = {
   id: "default-actions",
   class: "tw-flex tw-gap-4",
   style: { "margin-top": "1.75rem" }
 };
-const _hoisted_2$4 = { class: "tw-flex tw-items-center tw-gap-2" };
-const _hoisted_3$2 = { class: "tw-m-0 tw-list-none tw-items-center tw-p-4" };
-const _hoisted_4$2 = ["onClick"];
-const _hoisted_5$1 = {
+const _hoisted_2$5 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_3$3 = { class: "tw-m-0 tw-list-none tw-items-center tw-p-4" };
+const _hoisted_4$3 = ["onClick"];
+const _hoisted_5$2 = {
   key: 1,
   class: "tw-flex tw-min-w-[15rem] tw-items-center"
 };
 const _hoisted_6$1 = ["placeholder", "disabled"];
 const _hoisted_7$1 = { class: "view-type tw-flex tw-items-center tw-gap-2" };
 const _hoisted_8$1 = ["onClick"];
-function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_popover = resolveComponent("popover");
   const _component_Exports = resolveComponent("Exports");
-  return openBlock(), createElementBlock("section", _hoisted_1$4, [
-    createBaseVNode("div", _hoisted_2$4, [
+  return openBlock(), createElementBlock("section", _hoisted_1$5, [
+    createBaseVNode("div", _hoisted_2$5, [
       $props.checkedItems.length > 0 && $options.multipleActionsPopover.length > 0 ? (openBlock(), createBlock(_component_popover, {
         key: 0,
         button: _ctx.translate("COM_EMUNDUS_ONBOARD_ACTIONS"),
@@ -626,7 +628,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
         class: "custom-popover-arrow"
       }, {
         default: withCtx(() => [
-          createBaseVNode("ul", _hoisted_3$2, [
+          createBaseVNode("ul", _hoisted_3$3, [
             (openBlock(true), createElementBlock(Fragment, null, renderList($options.multipleActionsPopover, (action) => {
               return openBlock(), createElementBlock("li", {
                 key: action.name,
@@ -635,7 +637,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
                   "tw-cursor-not-allowed tw-text-neutral-500": !(typeof action.showon === "undefined" || $options.evaluateShowOn(action.showon)),
                   "tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300": typeof action.showon !== "undefined" && $options.evaluateShowOn(action.showon) || typeof action.showon === "undefined"
                 }])
-              }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_4$2);
+              }, toDisplayString(_ctx.translate(action.label)), 11, _hoisted_4$3);
             }), 128))
           ])
         ]),
@@ -654,7 +656,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
         onExp: $options.onClickExport,
         onUpdateItems: $options.updateItems
       }, null, 8, ["items", "checkedItems", "views", "tab", "tab-key", "view", "searches", "onExp", "onUpdateItems"]),
-      $props.tab.displaySearch === true || typeof $props.tab.displaySearch === "undefined" ? (openBlock(), createElementBlock("div", _hoisted_5$1, [
+      $props.tab.displaySearch === true || typeof $props.tab.displaySearch === "undefined" ? (openBlock(), createElementBlock("div", _hoisted_5$2, [
         withDirectives(createBaseVNode("input", {
           name: "search",
           type: "text",
@@ -689,8 +691,8 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const Actions = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
-const _sfc_main$3 = {
+const Actions = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
+const _sfc_main$4 = {
   name: "Navigation",
   components: {
     Exports,
@@ -801,23 +803,23 @@ const _sfc_main$3 = {
     }
   }
 };
-const _hoisted_1$3 = {
+const _hoisted_1$4 = {
   key: 0,
   id: "list-nav"
 };
-const _hoisted_2$3 = { class: "tw-ml-0 tw-flex tw-list-none tw-pl-0" };
-const _hoisted_3$1 = ["onClick"];
-const _hoisted_4$1 = {
+const _hoisted_2$4 = { class: "tw-ml-0 tw-flex tw-list-none tw-pl-0" };
+const _hoisted_3$2 = ["onClick"];
+const _hoisted_4$2 = {
   id: "actions",
   class: "tw-mb-4 tw-mt-4 tw-flex tw-items-start tw-justify-between"
 };
-function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Filters = resolveComponent("Filters");
   const _component_Actions = resolveComponent("Actions");
   const _component_Pagination = resolveComponent("Pagination");
   return openBlock(), createElementBlock("div", null, [
-    $props.tabs.length > 1 ? (openBlock(), createElementBlock("nav", _hoisted_1$3, [
-      createBaseVNode("ul", _hoisted_2$3, [
+    $props.tabs.length > 1 ? (openBlock(), createElementBlock("nav", _hoisted_1$4, [
+      createBaseVNode("ul", _hoisted_2$4, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($props.tabs, (tab) => {
           return openBlock(), createElementBlock("li", {
             key: tab.key,
@@ -826,11 +828,11 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
               "em-light-tabs": $data.currentTabKey !== tab.key
             }]),
             onClick: ($event) => $options.onSelectTab(tab.key)
-          }, toDisplayString(_ctx.translate(tab.title)), 11, _hoisted_3$1);
+          }, toDisplayString(_ctx.translate(tab.title)), 11, _hoisted_3$2);
         }), 128))
       ])
     ])) : createCommentVNode("", true),
-    createBaseVNode("section", _hoisted_4$1, [
+    createBaseVNode("section", _hoisted_4$2, [
       createVNode(_component_Filters, {
         filters: $props.filters,
         currentTabKey: $data.currentTabKey,
@@ -862,7 +864,34 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     }, null, 8, ["dataLength", "page", "limit"])) : createCommentVNode("", true)
   ]);
 }
-const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3]]);
+const Navigation = /* @__PURE__ */ _export_sfc(_sfc_main$4, [["render", _sfc_render$4]]);
+const _sfc_main$3 = {
+  name: "NoResults",
+  props: {
+    message: {
+      type: String,
+      default: "COM_EMUNDUS_NO_RESULT"
+    }
+  }
+};
+const _hoisted_1$3 = {
+  id: "empty-list",
+  class: "tw-text-center"
+};
+const _hoisted_2$3 = ["innerHTML"];
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$3, [
+    _cache[0] || (_cache[0] = createBaseVNode("img", {
+      src: _imports_0,
+      class: "no-result-image",
+      alt: "empty-list"
+    }, null, -1)),
+    createBaseVNode("p", {
+      innerHTML: _ctx.translate($props.message)
+    }, null, 8, _hoisted_2$3)
+  ]);
+}
+const NoResults = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-cd8390c8"]]);
 const _sfc_main$2 = {
   name: "Gantt",
   props: {
@@ -943,35 +972,170 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
 }
 const Gantt = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2]]);
 const _sfc_main$1 = {
-  name: "NoResults",
+  name: "AssociateUser",
+  components: { Parameter },
   props: {
-    message: {
-      type: String,
-      default: "COM_EMUNDUS_NO_RESULT"
+    items: Array
+  },
+  emits: ["close", "valueUpdated"],
+  data: () => ({
+    actualLanguage: "fr-FR",
+    cancelPopupOpenForBookingId: null,
+    initialEvent: null,
+    fields: [
+      {
+        param: "juror",
+        type: "multiselect",
+        multiselectOptions: {
+          noOptions: false,
+          multiple: true,
+          taggable: false,
+          searchable: true,
+          internalSearch: false,
+          asyncRoute: "getavailablemanagers",
+          optionsPlaceholder: "",
+          selectLabel: "",
+          selectGroupLabel: "",
+          selectedLabel: "",
+          deselectedLabel: "",
+          deselectGroupLabel: "",
+          noOptionsText: "",
+          noResultsText: "COM_EMUNDUS_MULTISELECT_NORESULTS",
+          tagValidations: [],
+          options: [],
+          optionsLimit: 30,
+          label: "name",
+          trackBy: "value"
+        },
+        value: 0,
+        reload: 0,
+        label: "COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS",
+        placeholder: "COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS_PLACEHOLDER",
+        displayed: true
+      },
+      {
+        param: "replace_jurors",
+        type: "toggle",
+        value: 1,
+        label: "COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS_REPLACE",
+        displayed: true,
+        hideLabel: true,
+        optional: true
+      }
+    ]
+  }),
+  methods: {
+    onClosePopup() {
+      this.$emit("close");
+    },
+    assocUsers() {
+      let jurors = [];
+      this.fields[0].value.forEach((juror) => {
+        jurors.push(juror.value);
+      });
+      eventsService.assocUsers(this.$props.items, jurors, this.fields[1].value).then((response) => {
+        if (response.status === true) {
+          Swal.fire({
+            position: "center",
+            icon: "success",
+            title: Joomla.Text._("COM_EMUNDUS_ONBOARD_REGISTRANT_ASSOC_SAVED"),
+            showConfirmButton: true,
+            allowOutsideClick: false,
+            reverseButtons: true,
+            customClass: {
+              title: "em-swal-title",
+              confirmButton: "em-swal-confirm-button",
+              actions: "em-swal-single-action"
+            },
+            timer: 1500
+          }).then(() => {
+            this.onClosePopup();
+            this.$emit("update-items");
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: response.message
+          });
+        }
+      });
+    }
+  },
+  computed: {
+    disabledSubmit: function() {
+      return this.fields.some((field) => {
+        if (!field.optional && field.displayed) {
+          return field.value === "" || field.value === 0 || field.value === null || typeof field.value === "object" && Object.keys(field.value).length === 0;
+        } else {
+          return false;
+        }
+      });
+    },
+    confirmButton: function() {
+      return this.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_CONFIRM_ASSOCIATE").replace(
+        "{{registrantCount}}",
+        this.$props.items.length
+      );
     }
   }
 };
-const _hoisted_1$1 = {
-  id: "empty-list",
-  class: "tw-text-center"
-};
-const _hoisted_2$1 = ["innerHTML"];
+const _hoisted_1$1 = { class: "tw-pt-4" };
+const _hoisted_2$1 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
+const _hoisted_3$1 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
+const _hoisted_4$1 = { class: "tw-mb-8 tw-mt-5 tw-flex tw-justify-between" };
+const _hoisted_5$1 = ["disabled"];
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$1, [
-    _cache[0] || (_cache[0] = createBaseVNode("img", {
-      src: _imports_0,
-      class: "no-result-image",
-      alt: "empty-list"
-    }, null, -1)),
-    createBaseVNode("p", {
-      innerHTML: _ctx.translate($props.message)
-    }, null, 8, _hoisted_2$1)
+  const _component_Parameter = resolveComponent("Parameter");
+  return openBlock(), createElementBlock("div", null, [
+    createBaseVNode("div", _hoisted_1$1, [
+      createBaseVNode("div", _hoisted_2$1, [
+        createBaseVNode("h2", null, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_ASSOCIATE")), 1),
+        createBaseVNode("button", {
+          class: "tw-cursor-pointer tw-bg-transparent",
+          onClick: _cache[0] || (_cache[0] = withModifiers((...args) => $options.onClosePopup && $options.onClosePopup(...args), ["prevent"]))
+        }, _cache[3] || (_cache[3] = [
+          createBaseVNode("span", { class: "material-symbols-outlined" }, "close", -1)
+        ]))
+      ])
+    ]),
+    createBaseVNode("div", _hoisted_3$1, [
+      (openBlock(true), createElementBlock(Fragment, null, renderList(_ctx.fields, (field) => {
+        return withDirectives((openBlock(), createElementBlock("div", {
+          key: field.param,
+          class: normalizeClass("tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-2")
+        }, [
+          field.displayed ? (openBlock(), createBlock(_component_Parameter, {
+            ref_for: true,
+            ref: "assoc_user_" + field.param,
+            key: field.reload ? field.reload + field.param : field.param,
+            "parameter-object": field,
+            "help-text-type": "below",
+            "multiselect-options": field.multiselectOptions ? field.multiselectOptions : null
+          }, null, 8, ["parameter-object", "multiselect-options"])) : createCommentVNode("", true)
+        ])), [
+          [vShow, field.displayed]
+        ]);
+      }), 128))
+    ]),
+    createBaseVNode("div", _hoisted_4$1, [
+      createBaseVNode("button", {
+        class: "tw-btn-cancel",
+        onClick: _cache[1] || (_cache[1] = (...args) => $options.onClosePopup && $options.onClosePopup(...args))
+      }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_CANCEL")), 1),
+      createBaseVNode("button", {
+        class: "tw-btn-primary",
+        disabled: $options.disabledSubmit,
+        onClick: _cache[2] || (_cache[2] = ($event) => $options.assocUsers())
+      }, toDisplayString($options.confirmButton), 9, _hoisted_5$1)
+    ])
   ]);
 }
-const NoResults = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-cd8390c8"]]);
+const AssociateUser = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const _sfc_main = {
   name: "List",
   components: {
+    ExportsSlotsModal,
     Modal,
     NoResults,
     Navigation,
@@ -980,7 +1144,8 @@ const _sfc_main = {
     Skeleton,
     Popover,
     Gantt,
-    EditSlot
+    EditSlot,
+    AssociateUser
   },
   props: {
     defaultLists: {
@@ -1001,7 +1166,8 @@ const _sfc_main = {
         filters: true
       },
       components: {
-        EditSlot
+        EditSlot,
+        AssociateUser
       },
       lists: {},
       type: "forms",
@@ -1024,7 +1190,10 @@ const _sfc_main = {
       numberOfItemsToDisplay: 25,
       currentComponent: null,
       currentComponentElementId: null,
-      showModal: false
+      showModal: false,
+      showExportModal: false,
+      exportClicked: null,
+      eventExportClicked: null
     };
   },
   created() {
@@ -1322,7 +1491,7 @@ const _sfc_main = {
           parameters = { ids: this.checkedItems };
         }
         if (Object.prototype.hasOwnProperty.call(action, "confirm")) {
-          Swal.fire({
+          Swal$1.fire({
             icon: "warning",
             title: this.translate(action.label),
             text: this.translate(action.confirm),
@@ -1349,6 +1518,7 @@ const _sfc_main = {
     closePopup() {
       this.currentComponent = null;
       this.showModal = false;
+      this.showExportModal = false;
       this.currentComponentElementId = null;
     },
     onClickExport(exp, event = null) {
@@ -1358,10 +1528,16 @@ const _sfc_main = {
       if (exp === null || typeof exp !== "object" || typeof exp.showon !== "undefined" && !this.evaluateShowOn(null, exp.showon)) {
         return false;
       }
+      if (exp.exportModal) {
+        this.showExportModal = true;
+        this.exportClicked = exp;
+        this.eventExportClicked = null;
+        return;
+      }
       let url = "index.php?option=com_emundus&controller=" + exp.controller + "&task=" + exp.action;
       let parameters = { ids: this.checkedItems };
       if (Object.prototype.hasOwnProperty.call(exp, "confirm")) {
-        Swal.fire({
+        Swal$1.fire({
           icon: "warning",
           title: this.translate(exp.label),
           text: this.translate(exp.confirm),
@@ -1382,6 +1558,43 @@ const _sfc_main = {
         });
       } else {
         this.executeAction(url, parameters, exp.method);
+      }
+    },
+    onClickExportWithCheckboxes(checkboxesValues) {
+      if (this.eventExportClicked !== null) {
+        this.eventExportClicked.stopPropagation();
+      }
+      if (this.exportClicked === null || typeof this.exportClicked !== "object" || typeof this.exportClicked.showon !== "undefined" && !this.evaluateShowOn(null, this.exportClicked.showon)) {
+        return false;
+      }
+      let url = "index.php?option=com_emundus&controller=" + this.exportClicked.controller + "&task=" + this.exportClicked.action;
+      let parameters = {
+        ids: this.checkedItems,
+        checkboxesValuesFromView: JSON.stringify(checkboxesValues.viewSelection),
+        checkboxesValuesFromProfile: JSON.stringify(checkboxesValues.profileSelection)
+      };
+      if (Object.prototype.hasOwnProperty.call(this.exportClicked, "confirm")) {
+        Swal$1.fire({
+          icon: "warning",
+          title: this.translate(this.exportClicked.label),
+          text: this.translate(this.exportClicked.confirm),
+          showCancelButton: true,
+          confirmButtonText: this.translate("COM_EMUNDUS_ONBOARD_OK"),
+          cancelButtonText: this.translate("COM_EMUNDUS_ONBOARD_CANCEL"),
+          reverseButtons: true,
+          customClass: {
+            title: "em-swal-title",
+            confirmButton: "em-swal-confirm-button",
+            cancelButton: "em-swal-cancel-button",
+            actions: "em-swal-double-action"
+          }
+        }).then((result) => {
+          if (result.value) {
+            this.executeAction(url, parameters, this.exportClicked.method);
+          }
+        });
+      } else {
+        this.executeAction(url, parameters, this.exportClicked.method);
       }
     },
     async executeAction(url, data = null, method = "get") {
@@ -1406,7 +1619,7 @@ const _sfc_main = {
         if (response) {
           if (response.status === true || response.status === 1) {
             if (response.download_file) {
-              Swal.fire({
+              Swal$1.fire({
                 position: "center",
                 icon: "success",
                 title: this.translate("COM_EMUNDUS_REGISTRANTS_FILE_READY"),
@@ -1435,7 +1648,7 @@ const _sfc_main = {
             this.getListItems();
           } else {
             if (response.msg) {
-              Swal.fire({
+              Swal$1.fire({
                 icon: "error",
                 title: this.translate(response.msg),
                 reverseButtons: true,
@@ -1453,7 +1666,7 @@ const _sfc_main = {
     },
     onClickPreview(item) {
       if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
-        Swal.fire({
+        Swal$1.fire({
           title: this.previewAction.title === "label" ? item[this.previewAction.title][this.params.shortlang] : item[this.previewAction.title],
           html: '<div style="text-align: left;">' + item[this.previewAction.content] + "</div>",
           reverseButtons: true,
@@ -1574,7 +1787,7 @@ const _sfc_main = {
       if (e) {
         e.stopPropagation();
       }
-      Swal.fire({
+      Swal$1.fire({
         html: '<div style="text-align: left;">' + html + "</div>",
         reverseButtons: true,
         customClass: {
@@ -1596,7 +1809,7 @@ const _sfc_main = {
     },
     tabActionsPopover() {
       return typeof this.currentTab.actions !== "undefined" ? this.currentTab.actions.filter((action) => {
-        return !["add", "edit"].includes(action.name) && !Object.prototype.hasOwnProperty.call(action, "icon");
+        return !["add", "edit"].includes(action.name) && !Object.prototype.hasOwnProperty.call(action, "icon") && action.display;
       }) : [];
     },
     editAction() {
@@ -1734,6 +1947,7 @@ const _hoisted_28 = {
 const _hoisted_29 = ["onClick"];
 const _hoisted_30 = { key: 1 };
 const _hoisted_31 = { key: 2 };
+const _hoisted_32 = { key: 3 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_Head = resolveComponent("Head");
@@ -1741,6 +1955,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_modal = resolveComponent("modal");
   const _component_popover = resolveComponent("popover");
   const _component_Calendar = resolveComponent("Calendar");
+  const _component_ExportsSlotsModal = resolveComponent("ExportsSlotsModal");
   const _component_Gantt = resolveComponent("Gantt");
   const _component_NoResults = resolveComponent("NoResults");
   return openBlock(), createElementBlock("div", {
@@ -1971,7 +2186,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           class: "tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1",
                           style: { "padding": "0.5rem" },
                           title: _ctx.translate($options.editAction.label)
-                        }, _cache[14] || (_cache[14] = [
+                        }, _cache[16] || (_cache[16] = [
                           createBaseVNode("span", { class: "material-symbols-outlined popover-toggle-btn tw-cursor-pointer" }, "edit", -1)
                         ]), 8, _hoisted_25)) : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
@@ -2058,7 +2273,28 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               onUpdateItems: _cache[10] || (_cache[10] = ($event) => $options.getListItems())
             }, null, 8, ["items", "edit-week-action", "onOnClickAction"])
           ])) : createCommentVNode("", true),
-          $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_31, [
+          $data.showExportModal ? (openBlock(), createElementBlock("div", _hoisted_31, [
+            createVNode(_component_modal, {
+              name: "modal-component-export",
+              transition: "nice-modal-fade",
+              class: normalizeClass("export-modal placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
+              width: "600px",
+              delay: 100,
+              adaptive: true,
+              clickToClose: false,
+              onClick: _cache[12] || (_cache[12] = withModifiers(() => {
+              }, ["stop"]))
+            }, {
+              default: withCtx(() => [
+                createVNode(_component_ExportsSlotsModal, {
+                  onSelectionConfirm: $options.onClickExportWithCheckboxes,
+                  onClose: _cache[11] || (_cache[11] = ($event) => $options.closePopup())
+                }, null, 8, ["onSelectionConfirm"])
+              ]),
+              _: 1
+            })
+          ])) : createCommentVNode("", true),
+          $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_32, [
             createVNode(_component_modal, {
               name: "modal-component",
               transition: "nice-modal-fade",
@@ -2067,19 +2303,20 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               delay: 100,
               adaptive: true,
               clickToClose: false,
-              onClick: _cache[13] || (_cache[13] = withModifiers(() => {
+              onClick: _cache[15] || (_cache[15] = withModifiers(() => {
               }, ["stop"]))
             }, {
               default: withCtx(() => [
                 (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
-                  onClose: _cache[11] || (_cache[11] = ($event) => $options.closePopup()),
-                  onUpdateItems: _cache[12] || (_cache[12] = ($event) => $options.getListItems())
-                }, null, 32))
+                  items: $data.checkedItems,
+                  onClose: _cache[13] || (_cache[13] = ($event) => $options.closePopup()),
+                  onUpdateItems: _cache[14] || (_cache[14] = ($event) => $options.getListItems())
+                }, null, 40, ["items"]))
               ]),
               _: 1
             })
           ])) : $data.viewType === "gantt" ? (openBlock(), createBlock(_component_Gantt, {
-            key: 3,
+            key: 4,
             language: $data.params.shortlang,
             periods: $options.displayedItems
           }, null, 8, ["language", "periods"])) : createCommentVNode("", true)
@@ -2091,7 +2328,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a8f9ac0e"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2a76c583"]]);
 export {
   list as default
 };

@@ -1778,6 +1778,35 @@ class EmundusControllerUsers extends BaseController
 		exit;
 	}
 
+	public function getcolumnsfromprofileform()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+		$user     = $this->app->getIdentity();
+
+		if (!$user->guest)
+		{
+			$em_users = $this->app->getSession()->get('emundusUser');
+			$m_users  = $this->getModel('Users');
+
+			if (!empty($em_users->profile))
+			{
+				$response['data'] = array_map(function($column) {
+					return array_merge((array) $column, ['label' => Text::_($column->label)]);
+				}, $m_users->getColumnsFromProfileForm());
+
+				$response['status'] = true;
+				$response['msg']    = Text::_('COM_EMUNDUS_SUCCESS');
+			}
+			else
+			{
+				$response['msg'] = 'No profile found';
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getacl()
 	{
 		$action = $this->input->get('action');

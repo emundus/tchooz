@@ -1,4 +1,4 @@
-import { ac as reactive, ad as computed, a9 as defineComponent, r as resolveComponent, o as openBlock, c as createElementBlock, ae as renderSlot, af as normalizeProps, ag as guardReactiveProps, h as createVNode, F as Fragment, a as createBlock, O as mergeProps, q as ref, a7 as watch, ah as onMounted, k as nextTick, ai as toRef, aj as provide, ak as unref, e as renderList, n as normalizeClass, f as withCtx, b as createCommentVNode, a8 as resolveDynamicComponent, al as inject, d as createBaseVNode, t as toDisplayString, am as isRef, an as onUnmounted, ao as toRefs, m as createTextVNode, $ as Transition, j as normalizeStyle, g as withModifiers, ap as watchEffect, K as withKeys, w as withDirectives, aq as resolveDirective, U as toHandlers } from "./app_emundus.js";
+import { ac as reactive, ad as computed, a9 as defineComponent, r as resolveComponent, c as createElementBlock, a as createBlock, o as openBlock, ae as renderSlot, g as createVNode, af as normalizeProps, ag as guardReactiveProps, F as Fragment, O as mergeProps, f as withCtx, ah as unref, n as normalizeClass, e as renderList, b as createCommentVNode, q as ref, a7 as watch, ai as onMounted, k as nextTick, aj as toRef, ak as provide, al as inject, d as createBaseVNode, t as toDisplayString, am as isRef, a8 as resolveDynamicComponent, m as createTextVNode, Y as Transition, an as onUnmounted, ao as toRefs, j as normalizeStyle, h as withModifiers, K as withKeys, w as withDirectives, ap as watchEffect, aq as resolveDirective, U as toHandlers } from "./app_emundus.js";
 var top = "top";
 var bottom = "bottom";
 var right = "right";
@@ -736,7 +736,6 @@ function detectOverflow(state2, options) {
   var popperOffsets2 = computeOffsets({
     reference: referenceClientRect,
     element: popperRect,
-    strategy: "absolute",
     placement
   });
   var popperClientRect = rectToClientRect(Object.assign({}, popperRect, popperOffsets2));
@@ -983,7 +982,6 @@ function popperOffsets(_ref) {
   state2.modifiersData[name] = computeOffsets({
     reference: state2.rects.reference,
     element: state2.rects.popper,
-    strategy: "absolute",
     placement: state2.placement
   });
 }
@@ -3229,7 +3227,6 @@ function newDateUTC(fullYear, month, day, hour, minute, second, millisecond) {
 var MILLISECONDS_IN_HOUR$1 = 36e5;
 var MILLISECONDS_IN_MINUTE$1 = 6e4;
 var patterns$1 = {
-  timezone: /([Z+-].*)$/,
   timezoneZ: /^(Z)$/,
   timezoneHH: /^([+-]\d{2})$/,
   timezoneHHMM: /^([+-]\d{2}):?(\d{2})$/
@@ -3336,7 +3333,6 @@ var DEFAULT_ADDITIONAL_DIGITS = 2;
 var patterns = {
   dateTimePattern: /^([0-9W+-]+)(T| )(.*)/,
   datePattern: /^([0-9W+-]+)(.*)/,
-  plainTime: /:/,
   // year tokens
   YY: /^(\d{2})$/,
   YYY: [
@@ -3375,7 +3371,7 @@ function toDate$1(argument, dirtyOptions) {
   if (argument === null) {
     return /* @__PURE__ */ new Date(NaN);
   }
-  var options = dirtyOptions;
+  var options = dirtyOptions || {};
   var additionalDigits = options.additionalDigits == null ? DEFAULT_ADDITIONAL_DIGITS : toInteger$1(options.additionalDigits);
   if (additionalDigits !== 2 && additionalDigits !== 1 && additionalDigits !== 0) {
     throw new RangeError("additionalDigits must be 0, 1 or 2");

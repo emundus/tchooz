@@ -53,7 +53,10 @@
   height: fit-content;
 }
 
-.com_emundus_vue div:not(.editor-toolbar) select, .tchooz-widget__selects select, .swal2-html-container div:not(.editor-toolbar) select {
+.com_emundus_vue div:not(.editor-toolbar) select,
+.tchooz-widget__selects select,
+.swal2-html-container div:not(.editor-toolbar) select,
+.em-coordinator #g-container-main #em-dashboard div select.form-control {
   height: var(--em-form-height);
   border-radius: var(--em-form-br);
   -webkit-appearance: none;
@@ -1594,6 +1597,14 @@ input[type="color"]::-webkit-color-swatch-wrapper {
 
   tbody tr.fabrik_row {
     margin-left: 3px;
+
+    & > td > select {
+      width: 100%;
+    }
+
+    & > td > div.chosen-container a span {
+      margin-right: 0;
+    }
   }
 
   tbody input.fabrik_filter[type="text"] {
@@ -1812,6 +1823,7 @@ input[type="color"]::-webkit-color-swatch-wrapper {
     font-style: normal;
     font-size: var(--em-coordinator-font-size) !important;
     height: auto !important;
+    color: var(--neutral-0);
 
     &:hover, &:active, &:focus {
       background: var(--neutral-0) !important;

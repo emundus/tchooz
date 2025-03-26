@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -350,15 +350,21 @@ if ($products > 1) {
     $slidesPerView = $this->params->get("one_by_one") ? 1 : $products;
     $slideByFor2 = $this->params->get("one_by_one") ? 1 : 2;
     $options["breakpoints"] =
-        "{0:{slidesPerView:1},768:{slidesPerView:" .
-        $slideByFor2 .
-        ", spaceBetween:" .
-        $spaceBetween .
-        "},992:{slidesPerView:" .
-        $products .
-        ", spaceBetween:" .
-        $spaceBetween .
-        "}}";
+        "{
+            0:{
+                slidesPerView:1
+            },
+            768:{
+                slidesPerView:" . $slideByFor2 . ",
+                slidesPerGroup:" . $slideByFor2 . ",
+                spaceBetween:" . $spaceBetween ."
+            },
+            992:{
+                slidesPerView:" . $products .",
+                slidesPerGroup:" . $products . ",
+                spaceBetween:" . $spaceBetween ."
+            }
+        }";
 }
 ?>
 <div class="hikashop_carousel_parent_div <?php echo $paginationClass; ?>" id="hikashop_carousel_parent_div_<?php echo $mainDivName; ?>">

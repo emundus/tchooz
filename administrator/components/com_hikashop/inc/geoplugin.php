@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -50,11 +50,14 @@ class HikashopGeopluginInc {
 
 		$response = $this->fetch($host);
 
-		if(preg_match('#O:[0-9]+:#',$response)){
+		if(empty($response) || preg_match('#O:[0-9]+:#',$response)){
 			return false;
 		}
 
 		$data = hikashop_unserialize($response);
+		if(!is_array($data)){
+			return false;
+		}
 
 		$this->ip = $ip;
 		$this->city = $data['geoplugin_city'];

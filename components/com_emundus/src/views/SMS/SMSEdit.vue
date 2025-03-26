@@ -134,6 +134,14 @@ export default {
 						icon: 'success',
 						showConfirmButton: false,
 					});
+				} else {
+					Swal.fire({
+						title: this.translate('SMS_TEMPLATE_NOT_UPDATED'),
+						icon: 'error',
+						showCancelButton: false,
+						showConfirmButton: false,
+						timer: 5000,
+					});
 				}
 			});
 		},

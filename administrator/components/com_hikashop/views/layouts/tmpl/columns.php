@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -115,20 +115,32 @@ window.localPage.actionColumns = function (event, rank, action) {
 function cookiesCheck() {
 	var list_code = getListKey();
 
-	let name = "cookie_" + list_code + "=";
-	let decodedCookie = decodeURIComponent(document.cookie);
-	let cookiesAll = decodedCookie.split(';');
-
-	for(let i = 0; i <cookiesAll.length; i++) {
-		let cookie = cookiesAll[i];
-		while (cookie.charAt(0) == ' ') {
-		  cookie = cookie.substring(1);
-		}
-		if (cookie.indexOf(name) == 0) {
-			return cookie.substring(name.length, cookie.length);
-		}
+	let dataStorage = localStorage.getItem("cookie_" + list_code);
+	if (dataStorage !== null) {
+		let StorageCookie = decodeURIComponent(dataStorage);
+		return StorageCookie;
 	}
+	else {
+		let name = "cookie_" + list_code + "=";
+		let decodedCookie = decodeURIComponent(document.cookie);
 
+		let cookiesAll = decodedCookie.split(';');
+		let fromCookie = "";
+		for(let i = 0; i <cookiesAll.length; i++) {
+			let cookie = cookiesAll[i];
+
+			while (cookie.charAt(0) == ' ') {
+			  cookie = cookie.substring(1);
+			}
+			if (cookie.indexOf(name) == 0) {
+				fromCookie = cookie.substring(name.length, cookie.length);
+			}
+		}
+		if (fromCookie != "") {
+			fromCookie = resetCookies(fromCookie);
+		}
+		return fromCookie;
+	}
 	return "";
 }
 function order_columns_notice() {
@@ -280,7 +292,8 @@ function cookiesSave(rank) {
 		cookies = JSON.stringify(cookiesObj);
 	}
 	var list_code = getListKey();
-	window.hikashop.setCookie("cookie_" + list_code,cookies,<?php echo $delay; ?>);
+	document.cookie = "cookie_" + list_code +"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	localStorage.setItem("cookie_" + list_code, cookies);
 }
 
 function resetCookies(old_columnRanks) {
@@ -376,7 +389,8 @@ function resetCookies(old_columnRanks) {
 	let cookiesString = JSON.stringify(cookies_objet);
 
 	var list_code = getListKey();
-	window.hikashop.setCookie("cookie_" + list_code,cookiesString,<?php echo $delay; ?>);
+	document.cookie = "cookie_" + list_code +"=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+	localStorage.setItem("cookie_" + list_code, cookiesString);
 
 	return cookiesString;
 }

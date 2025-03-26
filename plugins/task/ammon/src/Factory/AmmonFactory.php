@@ -86,15 +86,16 @@ class AmmonFactory
 
 		if (!empty($ammon_company))
 		{
+			$not_filled_value = 'Not filled'; // allow ammon to have empty values
 			$address = new AdressEntity(
 				974,
 				'PR',
 				'Principale',
-				$ammon_company->cdesti ?? '',
-				$ammon_company->cville ?? '',
-				$ammon_company->cpays ?? '',
-				$ammon_company->ccp ?? '',
-				$ammon_company->cadR1 ?? ''
+				!empty($ammon_company->cdesti) ? $ammon_company->cdesti : $not_filled_value,
+				!empty($ammon_company->cville) ? $ammon_company->cville : $not_filled_value,
+				!empty($ammon_company->cpays) ? $ammon_company->cpays : $not_filled_value,
+				!empty($ammon_company->ccp) ? $ammon_company->ccp : $not_filled_value,
+				!empty($ammon_company->cadR1) ? $ammon_company->cadR1 : $not_filled_value,
 			);
 
 			$company = new CompanyEntity(

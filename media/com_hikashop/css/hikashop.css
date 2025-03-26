@@ -1,8 +1,8 @@
 /**
  * @package    HikaShop for Joomla!
- * @version    5.1.1
+ * @version    5.1.5
  * @author     hikashop.com
- * @copyright  (C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright  (C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license    GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 .hk-container {
@@ -769,47 +769,6 @@ div#hikashop_hover-transition .hikashop_product_image_subdiv.hikashop_hover_img 
 .hikashop_product_image_subdiv.hikashop_hover_img div  {
 	position:relative;
 }
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover  div {opacity:0;}
-.hikashop_product_image_subdiv.hikashop_hover_img a div:hover {opacity: 0 !important;}
-.hikashop_product_image_subdiv.hikashop_hover_img a div:hover {
-	opacity: 0 !important;
-}
-
-.hikashop_product_image_subdiv.hikashop_hover_img a div, 
-.hikashop_product_image_subdiv.hikashop_hover_img a div.hikashop_img_curr_final,
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_img_curr_final {
-	opacity:1;
-	background-color: #fff;
-}
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_div_hidden_0 {
-	transition: opacity 0.5s;
-	z-index: 999;
-}
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_div_hidden_1 {
-	transition: opacity 0.5s; 
-	transition-delay: 2s;
-	z-index: 998;
-}
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_div_hidden_2 {
-	transition: opacity 0.5s; 
-	transition-delay: 3.5s;
-	z-index: 997;
-}
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_div_hidden_3 {
-	transition: opacity 0.5s; 
-	transition-delay: 5s;
-	z-index: 996;
-}
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_div_hidden_4 {
-	transition: opacity 0.5s; 
-	transition-delay: 6.5s;
-	z-index: 995;
-}
-.hikashop_product_image_subdiv.hikashop_hover_img a:hover div.hikashop_div_hidden_5 {
-	transition: opacity 0.5s; 
-	transition-delay : 8s;
-	z-index: 994;
-}
 
 div.hikashop_hover_img div.hikashop_badge_div {
 	background: none;
@@ -1257,7 +1216,6 @@ div.hikashop_checkout_loading > div.hikashop_checkout_loading_spinner.small_spin
 	-webkit-border-radius:4px;
 	-moz-border-radius:4px;
 	border-radius:4px;
-	*zoom:1;
 	-webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
 	-moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
 	box-shadow:0 1px 4px rgba(0, 0, 0, 0.065);
@@ -1680,6 +1638,7 @@ li.hikashop_upload_imagethumb_main, .hikashop_upload_imagethumb_small, .hikashop
  .hikasocial_btn a:hover {text-decoration: none;}
  .hikasocial_btn:hover .hikasocial_icon {background-color: #383838;}
  .hikasocial_btn:hover .hikasocial_name {background-color: #222222;}
+ div#hikashop_social span.hikashopsocial_inline {display: inline-block;}
  div#hikashop_social span {vertical-align: top;}
  .hikasocial_btn {margin: 3px;}
 
@@ -1692,7 +1651,7 @@ div#hikashop_social {
  }
  span.hikasocial_name {
 	display: inline-block;
-    width: 80px;
+    width: 90px;
 	color: #fff;
 	font-weight: bold;
 	padding: 1px 6px 3px 6px;
@@ -1712,8 +1671,28 @@ div#hikashop_social {
  .hikasocial_linkedin span.hikasocial_icon {background-color: #03547e;}
 
 
+ .hikasocial_line span.hikasocial_name {background-color: #39cc00;}
+ .hikasocial_line span.hikasocial_icon {background-color: #31b100;}
+
+
+ .hikasocial_mastodon span.hikasocial_name {background-color: #6263ff;}
+ .hikasocial_mastodon span.hikasocial_icon {background-color: #563acc;}
+
+
+.hikasocial_whatsapp span.hikasocial_name {background-color: #29c824;}
+.hikasocial_whatsapp span.hikasocial_icon {background-color: #30bb2c;}
+
+
+.hikasocial_bluesky span.hikasocial_name {background-color: #57b7ff;}
+.hikasocial_bluesky span.hikasocial_icon {background-color: #1785ff;}
+
+
  .hikasocial_pintinterest span.hikasocial_name {background-color: #ea3145;}
  .hikasocial_pintinterest span.hikasocial_icon {background-color: #ce2536;}
+
+
+ .hikasocial_telegram span.hikasocial_name {background-color: #24a1de}
+ .hikasocial_telegram span.hikasocial_icon {background-color: #1e97d3;}
 
 
 
@@ -1897,3 +1876,16 @@ span.hikashopsocial_grid.hikasocial_btn.fb-share-button.hikasocial_facebook {
 	 z-index: 9999;
  }
 
+
+.hikashop_quantity_display {
+	display: block;
+}
+.hikashop_quantity_hide {
+	display: none;
+}
+.hikashop_alt_display {
+	display: block;
+}
+.hikashop_alt_hide {
+	display: none;
+}
