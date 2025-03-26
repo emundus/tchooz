@@ -253,6 +253,18 @@ const eventsService = {
         error: e
       };
     }
+  },
+  async assocUsers(slots, users, replace = true) {
+    console.log(slots);
+    console.log(users);
+    try {
+      return await fetchClient.post("assocusers", { slots, users, replace });
+    } catch (e) {
+      return {
+        status: false,
+        error: e
+      };
+    }
   }
 };
 export {

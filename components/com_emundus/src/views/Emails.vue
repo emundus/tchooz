@@ -1,6 +1,11 @@
 <template>
 	<div id="emails-list">
-		<list v-if="smsActivated !== null" :default-lists="configString" :default-type="'emails'" :key="renderingKey"></list>
+		<list
+			v-if="smsActivated !== null"
+			:default-lists="configString"
+			:default-type="'emails'"
+			:key="renderingKey"
+		></list>
 	</div>
 </template>
 
@@ -133,20 +138,20 @@ export default {
 		};
 	},
 	created() {
-    if (useSmsStore().getActivated === null) {
-      smsService.isSMSActivated().then((response) => {
-        this.smsActivated = response.data;
-        if (this.smsActivated) {
-          useSmsStore().updateActivated(true);
-          this.config.emails.tabs.push(this.smsTabConfig);
-          this.renderingKey++;
-        } else {
-          useSmsStore().updateActivated(false);
-        }
-      });
-    } else {
-      this.smsActivated = useSmsStore().getActivated;
-    }
+		if (useSmsStore().getActivated === null) {
+			smsService.isSMSActivated().then((response) => {
+				this.smsActivated = response.data;
+				if (this.smsActivated) {
+					useSmsStore().updateActivated(true);
+					this.config.emails.tabs.push(this.smsTabConfig);
+					this.renderingKey++;
+				} else {
+					useSmsStore().updateActivated(false);
+				}
+			});
+		} else {
+			this.smsActivated = useSmsStore().getActivated;
+		}
 	},
 	computed: {
 		configString() {

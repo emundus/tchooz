@@ -1,5 +1,5 @@
 import list from "./List.js";
-import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, h as createVNode } from "./app_emundus.js";
 import "./Skeleton.js";
 import "./Calendar.js";
 import "./core.js";
@@ -8,10 +8,10 @@ import "./Parameter.js";
 import "./EventBooking.js";
 import "./events2.js";
 import "./Info.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main = {
   name: "Registrants",
   components: {
@@ -82,7 +82,17 @@ const _sfc_main = {
                   name: "resend",
                   method: "post",
                   multiple: true,
-                  confirm: "COM_EMUNDUS_ONBOARD_REGISTRANT_RESEND_CONFIRM"
+                  confirm: "COM_EMUNDUS_ONBOARD_REGISTRANT_RESEND_CONFIRM",
+                  acl: "booking|u"
+                },
+                {
+                  action: "associate",
+                  label: "COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_ASSOCIATE",
+                  type: "modal",
+                  component: "AssociateUser",
+                  name: "associateuser",
+                  multiple: true,
+                  acl: "booking|u"
                 }
               ],
               filters: [

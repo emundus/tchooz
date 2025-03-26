@@ -2271,13 +2271,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 		return $registrant_id;
 	}
 
-	/**
-	 * @param $availability_id
-	 *
-	 * @return array|mixed
-	 *
-	 * @since version 2.2.0
-	 */
 	public function getAvailabilityRegistrants($availability_id = 0, $user_id = 0, $event_id = 0, $more_columns = [])
 	{
 		$registrants = [];
@@ -2465,28 +2458,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 		}
 
 		return $updated;
-	}
-
-	public function getFabrikListId()
-	{
-		$id = 0;
-
-		try
-		{
-			$query = $this->db->getQuery(true);
-
-			$query->select('id')
-				->from($this->db->quoteName('#__fabrik_lists'))
-				->where('db_table_name = ' . $this->db->quote('jos_emundus_registrants'));
-			$this->_db->setQuery($query);
-			$id = $this->_db->loadResult();
-		}
-		catch (Exception $e)
-		{
-			Log::add('Error while getting fabrik list id: ' . $e->getMessage(), Log::ERROR, 'emundus');
-		}
-
-		return $id;
 	}
 
 	public function getRegistrantCount($event_id)
@@ -2759,69 +2730,70 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'))
 				->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.id') . ' = ' . $this->db->quoteName('eses.room'));
 
-				if (!empty($programs))
-				{
-					$query->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
-				}
+			if (!empty($programs))
+			{
+				$query->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+			}
 
-				if (!empty($event))
-				{
-					$query->where('er.event = ' . $event);
-				}
-				if (!empty($location))
-				{
-					$query->where('ese.location = ' . $location);
-				}
-				if (!empty($slot))
-				{
-					$query->where('er.availability = ' . $slot);
-				}
-				if (!empty($applicant))
-				{
-					$query->where('er.user = ' . $applicant);
-				}
-				if (!empty($assoc_user))
-				{
-					$query->where('essu.user = ' . $assoc_user);
-				}
-				if (!empty($ids))
-				{
-					$query->where('er.id IN (' . implode(',', $ids) . ')');
-				}
-				if (!empty($day))
-				{
-					$query->where('DATE(esa.start_date) = ' . $this->db->quote($day));
-				}
+			if (!empty($event))
+			{
+				$query->where('er.event = ' . $event);
+			}
+			if (!empty($location))
+			{
+				$query->where('ese.location = ' . $location);
+			}
+			if (!empty($slot))
+			{
+				$query->where('er.availability = ' . $slot);
+			}
+			if (!empty($applicant))
+			{
+				$query->where('er.user = ' . $applicant);
+			}
+			if (!empty($assoc_user))
+			{
+				$query->where('essu.user = ' . $assoc_user);
+			}
+			if (!empty($ids))
+			{
+				$query->where('er.id IN (' . implode(',', $ids) . ')');
+			}
+			if (!empty($day))
+			{
+				$query->where('DATE(esa.start_date) = ' . $this->db->quote($day));
+			}
 
-				$query->group('er.id');
-				
-				$this->_db->setQuery($query);
-				$registrants['count'] = $this->_db->loadResult();
+			$query->group('er.id');
 
-				$query->clear('select')
-					->select($columns);
+			$this->_db->setQuery($query);
+			$registrants['count'] = $this->_db->loadResult();
 
-				if (!empty($order_by))
+			$query->clear('select')
+				->select($columns);
+
+			if (!empty($order_by))
+			{
+				$query->order($order_by . ' ' . $sort);
+			}
+			else
+			{
+				$query->order('er.id ' . $sort);
+			}
+
+			$this->_db->setQuery($query, $offset, $limit);
+			$registrants['datas'] = $this->_db->loadObjectList();
+
+			foreach ($registrants['datas'] as $key => $registrant)
+			{
+				// Check if we have access to fnum
+				if (!EmundusHelperAccess::isUserAllowedToAccessFnum($user_id, $registrant->fnum))
 				{
-					$query->order($order_by . ' ' . $sort);
+					unset($registrants['datas'][$key]);
 				}
-				else
-				{
-					$query->order('er.id ' . $sort);
-				}
+			}
 
-				$this->_db->setQuery($query, $offset, $limit);
-				$registrants['datas'] = $this->_db->loadObjectList();
-
-				foreach ($registrants['datas'] as $key => $registrant)
-				{
-					// Check if we have access to fnum
-					if(!EmundusHelperAccess::isUserAllowedToAccessFnum($user_id,$registrant->fnum)) {
-						unset($registrants['datas'][$key]);
-					}
-				}
-
-				$registrants['datas'] = array_values($registrants['datas']);
+			$registrants['datas'] = array_values($registrants['datas']);
 		}
 		catch (Exception $e)
 		{
@@ -3012,7 +2984,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		return $excel_filepath;
 	}
-
 
 	public function exportBookingsPDF($items): string|bool
 	{
@@ -3213,5 +3184,106 @@ class EmundusModelEvents extends BaseDatabaseModel
 		}
 
 		return !empty($sends) && !in_array(false, $sends);
+	}
+
+	public function getAssocUsers(array $slots, array $users, int $replace = 1): bool
+	{
+		$associated_slots = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$read_access     = new \stdClass();
+			$read_access->id = 1;
+			$read_access->c  = 0;
+			$read_access->r  = 1;
+			$read_access->u  = 0;
+			$read_access->d  = 0;
+			$actions         = [$read_access];
+
+			if(!class_exists('EmundusModelFiles')) {
+				require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+			}
+			$m_files = new EmundusModelFiles();
+
+			foreach ($slots as $slot)
+			{
+				$users_ids = [];
+
+				$query->clear()
+					->select('fnum')
+					->from($this->db->quoteName('#__emundus_registrants'))
+					->where('id = ' . $slot);
+				$this->db->setQuery($query);
+				$fnum = $this->db->loadResult();
+
+				if($replace === 1) {
+					$query->clear()
+						->select('user')
+						->from($this->db->quoteName('#__emundus_registrants_users'))
+						->where('registrant = ' . $slot);
+					$this->db->setQuery($query);
+					$old_users = $this->db->loadColumn();
+
+					if(!empty($old_users))
+					{
+						$query->clear()
+							->delete($this->db->quoteName('#__emundus_users_assoc'))
+							->where('fnum = ' . $this->db->quote($fnum))
+							->where('user_id IN (' . implode(',', $old_users) . ')');
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_registrants_users'))
+						->where('registrant = ' . $slot);
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+
+				foreach ($users as $user)
+				{
+					$query->clear()
+						->select('id')
+						->from($this->db->quoteName('#__emundus_registrants_users'))
+						->where('registrant = ' . $slot)
+						->where('user = ' . $user);
+					$this->db->setQuery($query);
+					$associated_slot = $this->db->loadResult();
+
+					if (!empty($associated_slot))
+					{
+						$associated_slots[] = $associated_slot;
+					}
+					else
+					{
+						$insert = [
+							'registrant' => $slot,
+							'user'       => $user
+						];
+						$insert = (object) $insert;
+
+						if ($this->db->insertObject('#__emundus_registrants_users', $insert))
+						{
+							$associated_slots[] = $this->db->insertid();
+							$users_ids[] 	  = $user;
+						}
+					}
+				}
+
+				if(!empty($users_ids))
+				{
+					$m_files->shareUsers($users_ids, $actions, [$fnum]);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error while getting associated users: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+		}
+
+		return !empty($associated_slots);
 	}
 }
