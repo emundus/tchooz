@@ -8,6 +8,9 @@
  */
 
 // No direct access to this file
+defined('_JEXEC') or die('Restricted Access');
+
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
@@ -74,8 +77,10 @@ Text::script('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOUR');
 Text::script('COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_DAY_LABEL');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_RESEND');
 Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_RESEND_CONFIRM');
-
-defined('_JEXEC') or die('Restricted Access');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_ASSOCIATE');
+Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_CONFIRM_ASSOCIATE');
+Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_ASSOC_SAVED');
+Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS_REPLACE');
 
 require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
 

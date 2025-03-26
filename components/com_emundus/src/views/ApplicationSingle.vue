@@ -410,6 +410,8 @@ export default {
 
 			// Remove the hash from the URL
 			this.updateURL();
+
+			window.postMessage('reloadData');
 		},
 		openNextFnum() {
 			let index =

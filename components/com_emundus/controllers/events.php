@@ -1150,10 +1150,18 @@ class EmundusControllerEvents extends BaseController
 							}
 						}
 
+						// Search for a files or evaluation view
+						$menu = Factory::getApplication()->getMenu();
+						$emundusUser      = $this->app->getSession()->get('emundusUser');
+						$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+						if(empty($files_menu)) {
+							$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
+						}
+						
 						$registrant->additional_columns = [
 							[
 								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
-								'value'    => $registrant->user_fullname,
+								'value'    => !empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="'.$files_menu->route.'#'.$registrant->fnum.'" target="_blank">'.$registrant->user_fullname.'</a>' : $registrant->user_fullname,
 								'classes'  => '',
 								'display'  => 'table',
 								'order_by' => 'user_fullname'
@@ -1457,6 +1465,41 @@ class EmundusControllerEvents extends BaseController
 				}
 			}
 		}
+		echo json_encode($response);
+		exit();
+	}
+
+	public function assocusers() {
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if(!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'u', $this->user->id)) {
+			header('HTTP/1.1 403 Forbidden');
+		} else {
+			$slots = $this->input->getString('slots');
+			$assoc_users = $this->input->getString('users');
+			$replace = $this->input->getInt('replace', 1);
+
+			if(!empty($slots) && !empty($assoc_users))
+			{
+				$slots = explode(',', $slots);
+				$assoc_users = explode(',', $assoc_users);
+
+				$response['status'] = $this->m_events->getAssocUsers($slots, $assoc_users, $replace);
+				if ($response['status'])
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+				else
+				{
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+				}
+			}
+		}
+
 		echo json_encode($response);
 		exit();
 	}

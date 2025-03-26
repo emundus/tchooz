@@ -327,7 +327,12 @@
 							:clickToClose="false"
 							@click.stop
 						>
-							<component :is="resolvedComponent" @close="closePopup()" @update-items="getListItems()" />
+							<component
+								:is="resolvedComponent"
+								:items="checkedItems"
+								@close="closePopup()"
+								@update-items="getListItems()"
+							/>
 						</modal>
 					</div>
 
@@ -347,6 +352,7 @@ import Swal from 'sweetalert2';
 /* List components */
 import Head from '@/components/List/Head.vue';
 import Navigation from '@/components/List/Navigation.vue';
+import NoResults from '@/components/Utils/NoResults.vue';
 
 /* Components */
 import Skeleton from '@/components/Skeleton.vue';
@@ -355,6 +361,7 @@ import Gantt from '@/components/Gantt/Gantt.vue';
 import Calendar from '@/views/Events/Calendar.vue';
 import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
+import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -363,7 +370,6 @@ import { FetchClient } from '../services/fetchClient.js';
 
 /* Stores */
 import { useGlobalStore } from '@/stores/global.js';
-import NoResults from '@/components/Utils/NoResults.vue';
 
 export default {
 	name: 'List',
@@ -377,6 +383,7 @@ export default {
 		Popover,
 		Gantt,
 		EditSlot,
+		AssociateUser,
 	},
 	props: {
 		defaultLists: {
@@ -398,6 +405,7 @@ export default {
 			},
 			components: {
 				EditSlot,
+				AssociateUser,
 			},
 
 			lists: {},
@@ -1116,7 +1124,11 @@ export default {
 		tabActionsPopover() {
 			return typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.filter((action) => {
-						return !['add', 'edit'].includes(action.name) && !Object.prototype.hasOwnProperty.call(action, 'icon');
+						return (
+							!['add', 'edit'].includes(action.name) &&
+							!Object.prototype.hasOwnProperty.call(action, 'icon') &&
+							action.display
+						);
 					})
 				: [];
 		},
