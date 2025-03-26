@@ -352,14 +352,19 @@ export default {
 						: this.params[index].options[0].COLUMN_NAME;
 
 					this.element.params['join_val_column_concat'] = '';
-					this.element.params['database_join_where_sql'] = '';
+					if (database && database.translation == 1) {
+						this.element.params['join_val_column'] = database.join_column_val + '_fr';
+						this.element.params['join_val_column_concat'] = '{thistable}.' + database.join_column_val + '_{shortlang}';
+					}
 
+					this.element.params['database_join_where_sql'] = '';
 					let publishedColumn = this.params[index].options.find((option) => option.COLUMN_NAME === 'published');
 					if (typeof publishedColumn !== 'undefined') {
 						this.element.params['database_join_where_sql'] = 'WHERE {thistable}.published = 1 ';
 					}
+
 					this.element.params['database_join_where_sql'] +=
-						'ORDER BY {thistable}.' + this.element.params['join_val_column'];
+						'ORDER BY {thistable}.' + this.element.params['join_key_column'];
 
 					this.reloadOptionsCascade += 1;
 				});
