@@ -20,6 +20,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Language\Text;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 require_once(JPATH_SITE. '/components/com_emundus/helpers/menu.php');
 
@@ -91,6 +92,10 @@ class EmundusModelCampaign extends ListModel
 		$this->setState('filter_order_Dir', $filter_order_Dir);
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
+
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
 	}
 
 	/**
@@ -1608,6 +1613,14 @@ class EmundusModelCampaign extends ListModel
 				}
 			}
 
+			$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+			if (isset($data['description'])) {
+				$data['description'] = $htmlSanitizer->sanitizeFor('section', $data['description']);
+			}
+			if (isset($data['short_description'])) {
+				$data['short_description'] = $htmlSanitizer->sanitizeFor('section', $data['short_description']);
+			}
+
 			if (!empty($data['label'])) {
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_setup_campaigns'))
@@ -1806,6 +1819,14 @@ class EmundusModelCampaign extends ListModel
 							$val = 0;
 						}
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
+						break;
+					case 'description':
+					case 'short_description':
+						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+						$val = $htmlSanitizer->sanitizeFor('section', $val);
+
+						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
+
 						break;
 					default:
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);

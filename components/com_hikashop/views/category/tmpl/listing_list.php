@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -88,7 +88,7 @@ switch($this->params->get('child_display_type')){
 ?>
 		<li class="hikashop_category_list_item<?php echo $class; ?>" <?php echo $width; ?>>
 			<a href="<?php echo $link; ?>"><?php
-				echo $row->category_name;
+				echo '<span class="hikashop_category_name_list">' . $row->category_name . '</span>';
 				if($this->params->get('number_of_products', 0)) {
 					echo $before_nb_products . $row->number_of_products . $after_nb_products;
 				}

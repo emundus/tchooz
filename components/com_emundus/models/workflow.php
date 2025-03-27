@@ -484,6 +484,41 @@ class EmundusModelWorkflow extends JModelList
 	}
 
 	/**
+	 * @param   string  $fnum
+	 *
+	 * @return array
+	 */
+	public function getWorkflowByFnum(string $fnum): array
+	{
+		$workflow = [];
+
+		if (!empty($fnum))
+		{
+			$query = $this->db->createQuery();
+			$query->select('esw.id')
+				->from($this->db->quoteName('#__emundus_setup_workflows', 'esw'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp') . ' ON eswp.workflow_id = esw.id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON esp.id = eswp.program_id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
+				->where('ecc.fnum LIKE ' . $this->db->quote($fnum));
+
+			try {
+				$this->db->setQuery($query);
+				$workflow_id = (int)$this->db->loadResult();
+
+				if (!empty($workflow_id)) {
+					$workflow = $this->getWorkflow($workflow_id);
+				}
+			} catch (Exception $e) {
+				Log::add('Failed to retrieve workflow from fnum ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $workflow;
+	}
+
+	/**
 	 * @param int $id
 	 * @param int $cid campaign id, if set, it will return the dates for the campaign and this step
 	 * @return object with step data
@@ -716,7 +751,9 @@ class EmundusModelWorkflow extends JModelList
 
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onIsEvaluated = new GenericEvent('onCallEventHandler', ['onIsEvaluated', ['step' => $step, 'user_id' => (int)$user_id, 'fnum' => $fnum, 'evaluated' => &$evaluated]]);
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+			$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+			$onIsEvaluated = new GenericEvent('onCallEventHandler', ['onIsEvaluated', ['step' => $step, 'user_id' => $user_id, 'fnum' => $fnum, 'evaluated' => &$evaluated]]);
 			$dispatcher->dispatch('onCallEventHandler', $onIsEvaluated);
 		}
 

@@ -10,11 +10,12 @@ import { DatePicker } from 'v-calendar';
 /* Store */
 import { useGlobalStore } from '@/stores/global.js';
 import Popover from '@/components/Popover.vue';
+import Info from '@/components/Utils/Info.vue';
 
 export default {
 	name: 'CalendarSlotPopup',
 	emits: ['close', 'open', 'slot-saved', 'slot-deleted'],
-	components: { Popover, DatePicker, Parameter, Modal },
+	components: { Info, Popover, DatePicker, Parameter, Modal },
 	props: {
 		date: {
 			type: String,
@@ -58,6 +59,7 @@ export default {
 			loading: true,
 			showRepeat: false,
 			displayPopover: false,
+			durationSlotInfo: '',
 
 			actualLanguage: 'fr-FR',
 
@@ -191,6 +193,20 @@ export default {
 				this.displayPopover = true;
 				this.repeat_dates = this.$props.slot.repeat_dates;
 			}
+		}
+
+		this.durationSlotInfo = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_INFO');
+		this.durationSlotInfo = this.durationSlotInfo.replace('{{duration}}', this.duration);
+		if (this.duration_type === 'minutes') {
+			this.durationSlotInfo = this.durationSlotInfo.replace(
+				'{{duration_type}}',
+				this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES'),
+			);
+		} else if (this.duration_type === 'hours') {
+			this.durationSlotInfo = this.durationSlotInfo.replace(
+				'{{duration_type}}',
+				this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS'),
+			);
 		}
 
 		// fetch rooms
@@ -419,7 +435,7 @@ export default {
 			}
 
 			let minutes = date.getMinutes();
-			let roundedMinutes = Math.ceil(minutes / 10) * 10;
+			let roundedMinutes = Math.round(minutes / 15) * 15;
 			date.setMinutes(roundedMinutes);
 			date.setSeconds(0);
 			return this.formatDate(date);
@@ -499,6 +515,8 @@ export default {
 				</button>
 			</div>
 		</div>
+
+		<Info class="tw-w-full" :text="this.durationSlotInfo" />
 
 		<div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6">
 			<div

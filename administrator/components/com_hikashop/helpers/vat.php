@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -18,7 +18,7 @@ class hikashopVatHelper{
 			$zone_code = $zone->zone_code_2;
 
 			if(empty($zone_code) || !in_array($zone_code,array('AT','BE','BG','CY','CZ','DK','EE','EL','DE','PT','GR','ES','FI','HR','HU','LU','MT','SI',
-		'FR','IE','IT','LV','LT','NL','PL','SK','RO','SE'))){
+		'FR','IE','IT','LV','LT','NL','PL','SK','RO','SE','XI','GB'))){
 				return true;
 			}
 		}
@@ -31,6 +31,13 @@ class hikashopVatHelper{
 			}
 		}
 
+		if(is_object($vat)){
+			$vat_number =& $vat->address_vat;
+		}else{
+			$vat_number =& $vat;
+		}
+
+		if($zone_code=='GB') $zone_code = 'XI';
 
 		static $vat_check = null;
 		if(!isset($vat_check)){
@@ -42,12 +49,6 @@ class hikashopVatHelper{
 		switch($vat_check){
 			case 1:
 			case 2:
-
-				if(is_object($vat)){
-					$vat_number =& $vat->address_vat;
-				}else{
-					$vat_number =& $vat;
-				}
 				$regex = $this->getRegex($vat_number);
 
 				if($regex===false){
@@ -156,6 +157,9 @@ class hikashopVatHelper{
 				break;
 			case 'GB':
 				$regex = '/^(GB){0,1}([1-9][0-9]{2}[\ ]{0,1}[0-9]{4}[\ ]{0,1}[0-9]{2})|([1-9][0-9]{2}[\ ]{0,1}[0-9]{4}[\ ]{0,1}[0-9]{2}[\ ]{0,1}[0-9]{3})|((GD|HA)[0-9]{3})$/i';
+				break;
+			case 'XI':
+				$regex = '/^(XI){0,1}([1-9][0-9]{2}[\ ]{0,1}[0-9]{4}[\ ]{0,1}[0-9]{2})|([1-9][0-9]{2}[\ ]{0,1}[0-9]{4}[\ ]{0,1}[0-9]{2}[\ ]{0,1}[0-9]{3})|((GD|HA)[0-9]{3})$/i';
 				break;
 			case 'HR':
 				$regex = '/^(HR){0,1}[0-9]{11}$/i';

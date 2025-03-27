@@ -1,16 +1,18 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
 ?><?php
 $cart = $this->checkoutHelper->getCart();
-if(!hikashop_level(2))
+if(!hikashop_level(2)) {
+	$this->emptyBlocksCount++;
 	return;
+}
 $fields = null;
 if(!empty($cart->order_fields)) {
 	$fields = hikashop_copy($cart->order_fields);
@@ -124,6 +126,8 @@ if(empty($this->ajax)) {
 	</div>
 <?php
 		}
+	} else {
+		$this->emptyBlocksCount++;
 	}
 ?>
 </fieldset>

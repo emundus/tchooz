@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -521,8 +521,7 @@ class CartViewCart extends HikaShopView {
 							'options' => array('type' => 'link', 'right' => true, 'up' => false, 'hkicon' => 'icon-32-wishlist', 'main_class' => 'hikabtn')
 						),
 						'fa' => array(
-							'size' => 1,
-							'html' => array('<i class="fas fa-list-ul fa-stack-2x" style="top:15%"></i>','<i class="fas fa-star fa-stack-1x" style="left:-36%;top:-20%;"></i>'),
+							'html' => '<i class="fas fa-list-ul" style="top:15%"></i>',
 						),
 					);
 				}

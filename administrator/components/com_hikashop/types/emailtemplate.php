@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -15,6 +15,18 @@ class hikashopEmailtemplateType extends hikashopType {
 		$this->values = array(
 			JHTML::_('select.option', '', JText::_('HIKA_NONE'))
 		);
+
+		if(HIKASHOP_J50) {
+			$jversion = preg_replace('#[^0-9\.]#i','',JVERSION);
+			if(version_compare($jversion,'5.2.0','>=')) {
+				$config = \Joomla\CMS\Component\ComponentHelper::getParams('com_mails');
+				$style = $config->get('mail_style', '');
+				$disable_layout = (bool)$config->get('disable_htmllayout', true);
+				if(in_array($style, array('html', 'both')) && $disable_layout) {
+					$this->values[] = JHTML::_('select.option', 'joomla', JText::_('USE_JOOMLA_MAIL_TEMPLATE'));
+				}
+			}
+		}
 
 		if(empty($mail_name))
 			return $this->values;
@@ -64,23 +76,24 @@ class hikashopEmailtemplateType extends hikashopType {
 
 		$html = JHTML::_('select.genericlist', $this->values, $map, 'class="custom-select" size="1"', 'value', 'text', $value, 'template');
 
-		$popupHelper = hikashop_get('helper.popup');
-		$html .= $popupHelper->display(
-			'<i class="fas fa-pen" aria-hidden="true"></i>',
-			'TEMPLATE',
-			'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=emailtemplate&amp;file=\'+document.getElementById(\'template\').value+\'&amp;email_name='.$mail_name.'\'',
-			'hikashop_edit_template',
-			760,480, 'class="btn btn-primary" title="'.JText::_('HIKA_EDIT').'"', '', 'link',true
-		);
+		if($value != 'joomla') {
+			$popupHelper = hikashop_get('helper.popup');
+			$html .= $popupHelper->display(
+				'<i class="fas fa-pen" aria-hidden="true"></i>',
+				'TEMPLATE',
+				'\''.'index.php?option=com_hikashop&amp;tmpl=component&amp;ctrl=email&amp;task=emailtemplate&amp;file=\'+document.getElementById(\'template\').value+\'&amp;email_name='.$mail_name.'\'',
+				'hikashop_edit_template',
+				760,480, 'class="btn btn-primary" title="'.JText::_('HIKA_EDIT').'"', '', 'link',true
+			);
 
-		$html .= $popupHelper->display(
-			'<i class="fa fa-plus" aria-hidden="true"></i>',
-			'TEMPLATE',
-			hikashop_completeLink('email&task=emailtemplate&email_name='.$mail_name, true),
-			'hikashop_new_template',
-			760,480, 'class="btn btn-primary" title="'.JText::_('HIKA_NEW').'"', '', 'link'
-		);
-
+			$html .= $popupHelper->display(
+				'<i class="fa fa-plus" aria-hidden="true"></i>',
+				'TEMPLATE',
+				hikashop_completeLink('email&task=emailtemplate&email_name='.$mail_name, true),
+				'hikashop_new_template',
+				760,480, 'class="btn btn-primary" title="'.JText::_('HIKA_NEW').'"', '', 'link'
+			);
+		}
 		return $html;
 	}
 }

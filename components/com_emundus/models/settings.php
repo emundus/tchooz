@@ -28,6 +28,8 @@ use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
 use \Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 class EmundusModelSettings extends ListModel
 {
@@ -715,6 +717,24 @@ class EmundusModelSettings extends ListModel
 		$updated = false;
 
 		$query = $this->db->getQuery(true);
+
+		$config = (new HtmlSanitizerConfig())
+			->allowSafeElements()
+			->allowElement('a', ['href', 'title', 'target'])
+			->allowElement('img', '*')
+			->allowElement('p', ['style', 'class'])
+			->allowElement('span', ['style', 'class'])
+			->allowAttribute('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable'])
+			->allowAttribute('*', 'style')
+			->allowRelativeLinks(true)
+			->allowRelativeMedias(true)
+			->forceHttpsUrls(true);
+
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
+		$htmlSanitizer = HtmlSanitizerSingleton::getInstance($config);
+		$content = $htmlSanitizer->sanitizeFor('body', $content);
 
 		try
 		{

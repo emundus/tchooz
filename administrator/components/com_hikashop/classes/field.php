@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -409,8 +409,12 @@ class hikashopFieldClass extends hikashopClass {
 			if(!empty($data->order_shipping_id))
 				$shipping_ids = $data->order_shipping_id;
 			if(!empty($shipping_ids)) {
-				if(!is_array($shipping_ids))
+				if(!is_array($shipping_ids) && strpos($shipping_ids, ','))
 					$shipping_ids = explode(',', $shipping_ids);
+				if(!is_array($shipping_ids) && strpos($shipping_ids, ';'))
+					$shipping_ids = explode(';', $shipping_ids);
+				if(!is_array($shipping_ids))
+					$shipping_ids = array($shipping_ids);
 				foreach($shipping_ids as $k => $id) {
 					$parts = explode('@',$id,2);
 					$shipping_ids[$k] = (int)reset($parts);
@@ -726,11 +730,15 @@ foreach($results as $i => $oneResult){
 					$ok = true;
 					if(empty($zone) || !$zone->zone_published){
 						$config =& hikashop_config();
-						$zone_id = explode(',',$config->get('main_tax_zone',$zone->zone_id));
+						$default = null;
+						if(!empty($zone->zone_id)) {
+							$default = $zone->zone_id;
+						}
+						$zone_id = explode(',',$config->get('main_tax_zone',$default));
 						if(count($zone_id))
 							$zone_id = array_shift($zone_id);
 						$ok = false;
-						if($zone->zone_id != $zone_id) {
+						if($default != $zone_id) {
 							$newZone = $zoneClass->get($zone_id);
 							if($newZone->zone_published) {
 								$allFields[$i]->field_default = $newZone->zone_namekey;
@@ -741,7 +749,7 @@ foreach($results as $i => $oneResult){
 							}
 						}
 					}
-					if(!$ok) {
+					if(!$ok && !empty($oneField->field_default)) {
 						$app = JFactory::getApplication();
 						if(empty($zone)) {
 							$app->enqueueMessage('In your custom zone field "'.$oneField->field_namekey.'", you have the zone "'.$oneField->field_default. '". However, that zone does not exist. Please change your custom field accordingly.', 'error');
@@ -1049,8 +1057,7 @@ foreach($results as $i => $oneResult){
 					}
 
 					if(!isset($formData[$parent]) || !$valid) {
-						if(isset($formData[$namekey]))
-							unset($formData[$namekey]);
+						$formData[$namekey] = '';
 						$skip = true;
 					}
 					break;
@@ -1285,11 +1292,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 					if(!empty($field->condition)) {
 						if(!$conditionAdded) {
 							$conditionAdded = true;
-						$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['condition'] = {};";
+							$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['condition'] = {};";
 						}
-					$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['condition']['".$field->field_namekey."'] = '".$field->condition."';";
+						$js .= "\nwindow.hikashopFieldsJs['".$type.$suffix_type."']['".$namekey."']['".$value."']['condition']['".$field->field_namekey."'] = '".$field->condition."';";
+					}
 				}
-			}
 			}
 
 		}
@@ -1537,8 +1544,6 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		$field->field_shipping_id = '';
 
 		$formData = hikaInput::get()->get('data', array(), 'array');
-		jimport('joomla.filter.filterinput');
-		$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
 		foreach($formData['field'] as $column => $value) {
 			hikashop_secureField($column);
 			if($column == 'field_default')
@@ -1548,7 +1553,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				$value = ','.implode(',',$value).',';
 			}elseif(is_array($value))
 				$value = implode(',',$value);
-			$field->$column = $safeHtmlFilter->clean(strip_tags($value), 'string');
+			$field->$column = JComponentHelper::filterText(strip_tags($value));
 		}
 
 
@@ -1558,6 +1563,11 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				continue;
 
 			if($column == 'mysql_query') {
+				if(strpos($value, '"') !== false || stripos($value, 'sleep(') !== false || stripos($value, 'value') === false) {
+					$app = JFactory::getApplication();
+					$app->enqueueMessage(JText::_('INVALID_MYSQL_QUERY', true), 'error');
+					$value = '';
+				}
 				$value = trim($value);
 			}
 
@@ -1567,10 +1577,17 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 						hikashop_secureField($id);
 					if($val === '')
 						continue;
-					$fieldOptions[$column][$id] = trim($safeHtmlFilter->clean($val, 'string'));
+					if(is_array($val)) {
+						$fieldOptions[$column][$id] = array();
+						foreach($val as $k => $v) {
+							$fieldOptions[$column][$id][trim(JComponentHelper::filterText($k))] = trim(JComponentHelper::filterText($v));
+						}
+					} else {
+						$fieldOptions[$column][$id] = trim(JComponentHelper::filterText($val));
+					}
 				}
 			} else {
-				$fieldOptions[$column] = trim($safeHtmlFilter->clean($value, 'string'));
+				$fieldOptions[$column] = trim(JComponentHelper::filterText($value));
 			}
 		}
 
@@ -1591,7 +1608,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		}
 
 		if($field->field_type == "customtext") {
-			$fieldOptions['customtext'] = hikaInput::get()->getRaw('fieldcustomtext','');
+			$fieldOptions['customtext'] = JComponentHelper::filterText(hikaInput::get()->getRaw('fieldcustomtext',''));
 			if(empty($field->field_id)) {
 			 	$field->field_namekey = 'customtext_'.date('z_G_i_s');
 			} else {
@@ -1628,9 +1645,7 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 			if(isset($fieldOptions['filtering']) && $fieldOptions['filtering']) {
 				$field->field_default = strip_tags((string)$defaultValue);
 			} else {
-				jimport('joomla.filter.filterinput');
-				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
-				$field->field_default = $safeHtmlFilter->clean((string)$defaultValue,'string');
+				$field->field_default = JComponentHelper::filterText((string)$defaultValue);
 			}
 		}
 		$field->field_required = $field_required;
@@ -1657,16 +1672,13 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 
 		if(!empty($fieldValues)) {
 			$field->field_value = array();
-			jimport('joomla.filter.filterinput');
-			$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
-
 			foreach($fieldValues['title'] as $i => $title) {
 				if(strlen($title) < 1 && strlen($fieldValues['value'][$i]) < 1)
 					continue;
 
 				$value = (strlen($fieldValues['value'][$i]) < 1) ? $title : $fieldValues['value'][$i];
 				$disabled = (strlen($fieldValues['disabled'][$i]) < 1) ? '0' : $fieldValues['disabled'][$i];
-				$field->field_value[] = $safeHtmlFilter->clean($title,'raw'). '::' .  $safeHtmlFilter->clean($value,'raw') . '::' .  $safeHtmlFilter->clean($disabled,'string');
+				$field->field_value[] = JComponentHelper::filterText($title). '::' .  JComponentHelper::filterText($value) . '::' .  JComponentHelper::filterText($disabled);
 			}
 			$field->field_value = implode("\n", $field->field_value);
 		}
@@ -1995,9 +2007,9 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 		return $html;
 	}
 
-	function show(&$field,$value,$className='') {
+	function show(&$field,$value,$className='',$token='') {
 		$class = $this->_getFieldTypeClass($field);
-		$html = $class->show($field,$value,$className);
+		$html = $class->show($field,$value,$className,$token);
 		return $html;
 	}
 
@@ -2021,7 +2033,10 @@ if(!window.hikashopFieldsJs["'.$type.$suffix_type.'"]) window.hikashopFieldsJs["
 				$classType = 'hikashop'.ucfirst($field_type);
 		} else if(!class_exists($classType))
 			$classType = 'hikashop'.ucfirst($field_type);
-		if(!class_exists($classType))
+		$overrideClass = $classType.'Override';
+		if(class_exists($overrideClass))
+			$obj = new $overrideClass($this);
+		elseif(!class_exists($classType))
 			$obj = new hikashopFieldItem($this);
 		else
 			$obj = new $classType($this);
@@ -2535,21 +2550,25 @@ class hikashopFieldFile extends hikashopFieldText {
 		return true;
 	}
 
-	function show(&$field,$value,$class='hikashop_custom_file_link') {
+	function show(&$field,$value,$class='hikashop_custom_file_link', $token='') {
+		$extra = '';
+		if(!empty($token)) {
+			$extra .= '&order_token='.$token;
+		}
 		switch($class){
 			case 'admin_email':
-				return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).'">'.$value.'</a>';
+				return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE.'administrator/index.php?option=com_hikashop&ctrl=order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).$extra.'">'.$value.'</a>';
 			case 'user_email':
 				if(@$field->guest_mode)
 					return $value;
 				$app = JFactory::getApplication();
 				if(!hikashop_isClient('administrator'))
-					return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).'">'.$value.'</a>';
-				return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE . 'index.php?option=com_hikashop&ctrl=order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).'">'.$value.'</a>';
+					return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).$extra.'">'.$value.'</a>';
+				return '<a target="_blank" class="'.$class.'" href="'.HIKASHOP_LIVE . 'index.php?option=com_hikashop&ctrl=order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value)).$extra.'">'.$value.'</a>';
 			default:
 				break;
 		}
-		return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).'">'.$value.'</a>';
+		return '<a target="_blank" class="'.$class.'" href="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).$extra.'">'.$value.'</a>';
 	}
 
 	function check(&$field, &$value, $oldvalue) {
@@ -2579,13 +2598,16 @@ class hikashopFieldFile extends hikashopFieldText {
 }
 
 class hikashopFieldImage extends hikashopFieldFile {
-	function show(&$field, $value, $class='hikashop_custom_image_link') {
+	function show(&$field, $value, $class='hikashop_custom_image_link', $token='') {
 		if(in_array($class,array('admin_email', 'user_email')))
 			return parent::show($field, $value, $class);
 
 		if(empty($class))
 			$class = 'hikashop_custom_image_link';
-		return '<img class="'.$class.'" src="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).'" alt="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" />';
+		$extra = '';
+		if(!empty($token))
+			$extra .= '&order_token='.$token;
+		return '<img class="'.$class.'" src="'.hikashop_completeLink('order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value))).$extra.'" alt="'.htmlspecialchars($value, ENT_COMPAT, 'UTF-8').'" />';
 	}
 
 	function allowedFiles() {
@@ -2694,7 +2716,7 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		return $content;
 	}
 
-	function show(&$field, $value, $class = 'hikashop_custom_file_link') {
+	function show(&$field, $value, $class = 'hikashop_custom_file_link', $token = '') {
 		if(!is_array($field->field_options)) {
 			$field->field_options = hikashop_unserialize($field->field_options);
 		}
@@ -2707,7 +2729,7 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		if(empty($field->field_options['multiple'])) {
 			if(empty($value))
 				return;
-			$html = $this->_showOne($field, $value, $class);
+			$html = $this->_showOne($field, $value, $class, $token);
 		} else {
 			$html = '';
 			if(!empty($value)) {
@@ -2717,7 +2739,7 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 				foreach($files as $file) {
 					if(empty($file))
 						continue;
-					$html[] = $this->_showOne($field, $file, $class);
+					$html[] = $this->_showOne($field, $file, $class, $token);
 				}
 				$html = implode('', $html);
 			}
@@ -2725,12 +2747,15 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		return str_replace('{value}', $html, $template);
 	}
 
-	function _showOne(&$field, $value, $class = 'hikashop_custom_file_link') {
+	function _showOne(&$field, $value, $class = 'hikashop_custom_file_link', $token = '') {
 		$template = '<p class="hikashop_custom_file_area"><a target="_blank" class="{class}" href="{url}">{name}</a>{description}</p>';
 		if(!empty($field->field_options['display_format_file'])) {
 			$template = $field->field_options['display_format_file'];
 		}
 		$download_link = 'order&task=download&field_table='.$field->field_table.'&field_namekey='.urlencode(base64_encode($field->field_namekey)).'&name='.urlencode(base64_encode($value));
+		if(!empty($token)) {
+			$download_link .= '&order_token='.$token;
+		}
 		$src = '';
 		$name = $value;
 		$override_name = hikashop_translate($name.'_NAME');
@@ -2859,9 +2884,11 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 					$oldfiles = explode('|',$oldvalue);
 				else
 					$oldfiles = $oldvalue;
-				foreach($oldfiles as $oldfile) {
-					if(!in_array($oldfile, $newvalue)) {
-						$this->_handleDelete($field, $oldfile);
+				if(!empty($oldfiles)) {
+					foreach($oldfiles as $oldfile) {
+						if(!in_array($oldfile, $newvalue)) {
+							$this->_handleDelete($field, $oldfile);
+						}
 					}
 				}
 
@@ -2974,9 +3001,9 @@ class hikashopFieldAjaxfile extends hikashopFieldItem {
 		}
 
 		jimport('joomla.filesystem.folder');
-		$thumbnail_folders = JFolder::folders($uploadPath);
-		if(JFolder::exists($uploadPath.'thumbnails')) {
-			$other_thumbnail_folders = JFolder::folders($uploadPath.'thumbnails');
+		$thumbnail_folders = JFolder::folders($path);
+		if(JFolder::exists($path.'thumbnails')) {
+			$other_thumbnail_folders = JFolder::folders($path.'thumbnails');
 			foreach($other_thumbnail_folders as $other_thumbnail_folder) {
 				$thumbnail_folders[] = 'thumbnails'.DS.$other_thumbnail_folder;
 			}

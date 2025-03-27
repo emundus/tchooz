@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
@@ -41,6 +41,9 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 		if(HIKASHOP_J50 && !class_exists('JFactory'))
 			class_alias('Joomla\CMS\Factory', 'JFactory');
 		$app = JFactory::getApplication();
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('cli'))
+			return true;
+
 		$this->currency = $app->getUserState('com_hikashop.currency_id');
 		$this->entries = $app->getUserState('com_hikashop.entries_fields');
 
@@ -161,7 +164,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 			return;
 
 		$app = JFactory::getApplication();
-		if($app->isClient('administrator')) {
+		if(!$app->isClient('site')) {
 			if(empty($_REQUEST['option']) || $_REQUEST['option'] != 'com_hikashop')
 				return;
 		}
@@ -293,6 +296,10 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 
 		$userClass->save($hikaUser, true);
 
+		$app = JFactory::getApplication();
+		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('cli'))
+			return true;
+
 		$session = JFactory::getSession();
 		$session_id = $session->getId();
 		if($isnew && strlen(trim($session_id)) > 0 && (int)$user['id'] > 0)
@@ -338,7 +345,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	public function restoreSession(&$user_id, $options) {
 		$app = JFactory::getApplication();
 
-		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+		if(version_compare(JVERSION,'4.0','>=') && !$app->isClient('site'))
 			return true;
 		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;
@@ -370,7 +377,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 	public function onLoginUser($user, $options) {
 		$app = JFactory::getApplication();
 
-		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+		if(version_compare(JVERSION,'4.0','>=') && !$app->isClient('site'))
 			return true;
 		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;
@@ -531,7 +538,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 			$lang->load('com_hikashop', JPATH_SITE, null, true);
 		}
 
-		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+		if(version_compare(JVERSION,'4.0','>=') && !$app->isClient('site'))
 			return true;
 		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;
@@ -609,7 +616,7 @@ class plgSystemHikashopuser extends hikashopJoomlaPlugin {
 			$layout = JRequest::getCmd('layout', '');
 		}
 
-		if(version_compare(JVERSION,'4.0','>=') && $app->isClient('administrator'))
+		if(version_compare(JVERSION,'4.0','>=') && !$app->isClient('site'))
 			return true;
 		if(version_compare(JVERSION,'4.0','<') && $app->isAdmin())
 			return true;

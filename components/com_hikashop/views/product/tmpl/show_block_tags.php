@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -33,6 +33,16 @@ if(!empty($main_prod->product_id)) {
 		class_alias('Joomla\CMS\Helper\TagsHelper', 'JHelperTags');
 	$main_prod->tags = new JHelperTags;
 	$main_prod->tags->getItemTags('com_hikashop.product', $main_prod->product_id);
+	if(
+		(
+			empty($main_prod->tags->itemTags) || 
+			!count($main_prod->tags->itemTags)
+		) &&  
+		$variant_name != '_main' && 
+		!empty($this->element->main->tags->itemTags) && 
+		count($this->element->main->tags->itemTags)) {
+		$main_prod->tags->itemTags = $this->element->main->tags->itemTags;
+	}
 }
 if(!empty($main_prod->tags) || $variant_name == '_main') {
 ?>

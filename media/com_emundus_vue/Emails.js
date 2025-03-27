@@ -1,5 +1,6 @@
 import list from "./List.js";
-import { _ as _export_sfc, y as smsService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock } from "./app_emundus.js";
+import { a0 as defineStore, _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, a as createBlock, b as createCommentVNode, B as smsService } from "./app_emundus.js";
+import "./ExportSlotsModal.js";
 import "./Skeleton.js";
 import "./Calendar.js";
 import "./core.js";
@@ -8,10 +9,23 @@ import "./Parameter.js";
 import "./EventBooking.js";
 import "./events2.js";
 import "./Info.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
+const useSmsStore = defineStore("sms", {
+  state: () => ({
+    activated: null
+  }),
+  getters: {
+    getActivated: (state) => state.activated
+  },
+  actions: {
+    updateActivated(payload) {
+      this.activated = payload;
+    }
+  }
+});
 const _sfc_main = {
   name: "Emails",
   components: {
@@ -19,7 +33,7 @@ const _sfc_main = {
   },
   data() {
     return {
-      smsActivated: false,
+      smsActivated: null,
       renderingKey: 1,
       config: {
         emails: {
@@ -136,13 +150,20 @@ const _sfc_main = {
     };
   },
   created() {
-    smsService.isSMSActivated().then((response) => {
-      this.smsActivated = response.data;
-      if (this.smsActivated) {
-        this.config.emails.tabs.push(this.smsTabConfig);
-        this.renderingKey++;
-      }
-    });
+    if (useSmsStore().getActivated === null) {
+      smsService.isSMSActivated().then((response) => {
+        this.smsActivated = response.data;
+        if (this.smsActivated) {
+          useSmsStore().updateActivated(true);
+          this.config.emails.tabs.push(this.smsTabConfig);
+          this.renderingKey++;
+        } else {
+          useSmsStore().updateActivated(false);
+        }
+      });
+    } else {
+      this.smsActivated = useSmsStore().getActivated;
+    }
   },
   computed: {
     configString() {
@@ -154,11 +175,11 @@ const _hoisted_1 = { id: "emails-list" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_list = resolveComponent("list");
   return openBlock(), createElementBlock("div", _hoisted_1, [
-    (openBlock(), createBlock(_component_list, {
+    $data.smsActivated !== null ? (openBlock(), createBlock(_component_list, {
       "default-lists": $options.configString,
       "default-type": "emails",
       key: $data.renderingKey
-    }, null, 8, ["default-lists"]))
+    }, null, 8, ["default-lists"])) : createCommentVNode("", true)
   ]);
 }
 const Emails = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);

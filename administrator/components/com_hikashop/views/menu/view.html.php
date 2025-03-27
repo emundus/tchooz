@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -107,13 +107,15 @@ class MenuViewMenu extends hikashopView{
 						'acl' => 'email',
 						'url' => hikashop_completeLink('email'),
 						'icon' => 'fa fa-envelope',
+						'display'=>(JFactory::getUser()->authorise('core.admin', 'com_hikashop'))
 					),
 					array(
 						'name' => JText::_('HIKA_MASSACTION'),
 						'check' => 'ctrl=massaction',
 						'acl' => 'massaction',
 						'url' => hikashop_completeLink('massaction'),
-						'icon' => 'fa fa-cogs'
+						'icon' => 'fa fa-cogs',
+						'display'=>(JFactory::getUser()->authorise('core.admin', 'com_hikashop'))
 					)
 				)
 			),
@@ -313,14 +315,15 @@ class MenuViewMenu extends hikashopView{
 				'check' => 'ctrl=view',
 				'acl' => 'view',
 				'icon' => 'fa fa-tv fa-television',
-				'url' => hikashop_completeLink('view'),
+				'url' => (JFactory::getUser()->authorise('core.admin', 'com_hikashop')) ? hikashop_completeLink('view') : '#',
 				'children' => array(
 					array(
 						'name' => JText::_('VIEWS'),
 						'check' => 'ctrl=view',
 						'acl' => 'view',
 						'icon' => 'fa fa-file-code',
-						'url' => hikashop_completeLink('view')
+						'url' => hikashop_completeLink('view'),
+						'display'=>(JFactory::getUser()->authorise('core.admin', 'com_hikashop'))
 					),
 					array(
 						'name' => JText::_('CONTENT_MENUS'),
@@ -343,7 +346,8 @@ class MenuViewMenu extends hikashopView{
 						'check' => 'ctrl=field',
 						'acl' => 'field',
 						'icon' => 'fa fa-check-square',
-						'url' => hikashop_completeLink('field')
+						'url' => hikashop_completeLink('field'),
+						'display'=>(JFactory::getUser()->authorise('core.admin', 'com_hikashop'))
 					),
 					array(
 						'name' => JText::_('FILTERS'),

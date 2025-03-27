@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted access');
 <form method="POST" id="hikashop_show_cart_form" name="hikashop_show_cart_form" action="<?php echo hikashop_completeLink('cart&task=show&cid='.(int)@$this->cart->cart_id.'&Itemid='.$this->Itemid); ?>">
 <!-- CART NAME -->
 <?php
-	if(!empty($this->manage) && $this->cart->cart_type != 'wishlist' && $this->config->get('enable_multicart') && !empty($this->user_carts)) {
+	if(!empty($this->manage) && $this->cart->cart_type != 'wishlist' && $this->config->get('enable_multicart')) {
 ?>
 <dl class="hika_options">
 	<dt><label for="cart_name"><?php echo JText::_('HIKASHOP_CART_NAME'); ?></label></dt>
@@ -448,7 +448,15 @@ defined('_JEXEC') or die('Restricted access');
 </form>
 <script type="text/javascript">
 if(!window.checkout) window.checkout = {};
-window.Oby.registerAjax(['checkout.cart.updated','cart.updated'], function(params){
+<?php
+if($this->cart->cart_type == 'wishlist') {
+	$events = array("'wishlist.updated'");
+} else {
+	$events = array("'checkout.cart.updated'","'cart.updated'");
+}
+$events = implode(',', $events);
+?>
+window.Oby.registerAjax([<?php echo $events; ?>], function(params){
 	window.location.reload();
 });
 

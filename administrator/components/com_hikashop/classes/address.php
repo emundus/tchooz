@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -630,6 +630,12 @@ class hikashopAddressClass extends hikashopClass {
 		$data = $this->get($elements);
 		$orderClass = hikashop_get('class.order');
 		$status = true;
+
+		$current_user_id = hikashop_loadUser(false);
+		if ($elements->address_user_id != $current_user_id) {
+			return false;
+		}
+
 		if($orderClass->addressUsed($elements)){
 			if(!$order){
 				$address=new stdClass();

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -23,13 +23,18 @@ class HikashopExpressionInc {
         'cos','cosh','arccos','acos','arccosh','acosh',
         'tan','tanh','arctan','atan','arctanh','atanh',
         'sqrt','abs','ln','log', 'ceil', 'intval', 'floor',
-        'round', 'exp', 'boolval');
+        'round', 'exp', 'boolval','strlen','mb_strlen',
+        'substr','mb_substr','trim','str_word_count',
+    );
 
     var $functions = array(); // function defined outside of Expression as closures
 
     function __construct() {
         $this->v['pi'] = pi();
         $this->v['e'] = exp(1);
+        $this->functions['decimal'] = function($expr) {
+            return hikashop_toFloat($expr);
+        };
     }
 
     function e($expr) {

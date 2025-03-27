@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -246,7 +246,7 @@ if(!empty($this->parentProduct->characteristics)) {
 					if(strpos($val, '<img ') !== false)
 						$val = str_replace('<img ', '<img onclick="return hikashopVariantSelected(\'hikashop_product_characteristic_'.$characteristic_id.$key.'\');" ', $val);
 					$clean = hikashop_translate(strip_tags($val));
-					$optionValue = ($characteristic->characteristic_display_method != 'radio' && !empty($clean) ? $clean : $val);
+					$optionValue = ($characteristic->characteristic_display_method != 'radio' && !empty($clean) ? $clean : hikashop_translate($val));
 					$this->values[] = JHTML::_('select.option', $key, $optionValue );
 				}
 
@@ -315,10 +315,12 @@ function initVariants() {
 		}
 	}
 	if(qtyArea) {
-		qtyArea.style.display = 'none';
+		Oby.removeClass(qtyArea, 'hikashop_quantity_display');
+		Oby.addClass(qtyArea, 'hikashop_quantity_hide');
 	}
 	if(altArea) {
-		altArea.style.display = '';
+		Oby.removeClass(altArea, 'hikashop_alt_hide');
+		Oby.addClass(altArea, 'hikashop_alt_display');
 	}
 }
 function hikashopVariantSelected(obj) {
@@ -420,19 +422,23 @@ function hikashopVariantSelected(obj) {
 			}
 
 			if(qtyArea) {
-				qtyArea.style.display = 'none';
+				Oby.removeClass(qtyArea, 'hikashop_quantity_display');
+				Oby.addClass(qtyArea, 'hikashop_quantity_hide');
 			}
 			if(altArea) {
-				altArea.style.display = '';
+				Oby.removeClass(altArea, 'hikashop_alt_hide');
+				Oby.addClass(altArea, 'hikashop_alt_display');
 			}
 			return;
 		}
 	}
 	if(qtyArea) {
-		qtyArea.style.display = '';
+		Oby.removeClass(qtyArea, 'hikashop_quantity_hide');
+		Oby.addClass(qtyArea, 'hikashop_quantity_display');
 	}
 	if(altArea) {
-		altArea.style.display = 'none';
+		Oby.removeClass(altArea, 'hikashop_alt_display');
+		Oby.addClass(altArea, 'hikashop_alt_hide');
 	}
 <?php } ?>
 	hikashopUpdateVariant(obj);

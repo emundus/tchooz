@@ -1,12 +1,18 @@
 <template>
 	<div id="emails-list">
-		<list :default-lists="configString" :default-type="'emails'" :key="renderingKey"></list>
+		<list
+			v-if="smsActivated !== null"
+			:default-lists="configString"
+			:default-type="'emails'"
+			:key="renderingKey"
+		></list>
 	</div>
 </template>
 
 <script>
 import list from '@/views/list.vue';
 import smsService from '@/services/sms.js';
+import { useSmsStore } from '@/stores/sms.js';
 
 export default {
 	name: 'Emails',
@@ -15,7 +21,7 @@ export default {
 	},
 	data() {
 		return {
-			smsActivated: false,
+			smsActivated: null,
 			renderingKey: 1,
 			config: {
 				emails: {
@@ -132,13 +138,20 @@ export default {
 		};
 	},
 	created() {
-		smsService.isSMSActivated().then((response) => {
-			this.smsActivated = response.data;
-			if (this.smsActivated) {
-				this.config.emails.tabs.push(this.smsTabConfig);
-				this.renderingKey++;
-			}
-		});
+		if (useSmsStore().getActivated === null) {
+			smsService.isSMSActivated().then((response) => {
+				this.smsActivated = response.data;
+				if (this.smsActivated) {
+					useSmsStore().updateActivated(true);
+					this.config.emails.tabs.push(this.smsTabConfig);
+					this.renderingKey++;
+				} else {
+					useSmsStore().updateActivated(false);
+				}
+			});
+		} else {
+			this.smsActivated = useSmsStore().getActivated;
+		}
 	},
 	computed: {
 		configString() {

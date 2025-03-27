@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.5" method="upgrade" group="system">
 	<name>System - Hikashop Social Plugin</name>
-	<creationDate>31 octobre 2024</creationDate>
-	<version>5.1.1</version>
+	<creationDate>20 mars 2025</creationDate>
+	<version>5.1.5</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to add a Facebook "like" button and a Twitter button</description>
 	<files>
@@ -162,6 +162,26 @@
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>
 				</field>
+				<field name="display_mastodon" type="radio" showon="display_url_btn:0" default="1" label="HIKA_DISPLAY_MASTODON_BUTTON" description="DISPLAY_MASTODON_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="display_bluesky" type="radio" showon="display_url_btn:0" default="1" label="HIKA_DISPLAY_BLUESKY_BUTTON" description="DISPLAY_BLUESKY_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="display_whatsapp" type="radio" showon="display_url_btn:0" default="1" label="HIKA_DISPLAY_WHATSAPP_BUTTON" description="DISPLAY_WHATSAPP_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="display_line" type="radio" showon="display_url_btn:0" default="1" label="HIKA_DISPLAY_LINE_BUTTON" description="DISPLAY_LINE_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
+				<field name="display_telegram" type="radio" showon="display_url_btn:0" default="1" label="HIKA_DISPLAY_TELEGRAM_BUTTON" description="DISPLAY_TELEGRAM_BUTTON" class="btn-group btn-group-yesno">
+					<option value="0">HIKASHOP_NO</option>
+					<option value="1">HIKASHOP_YES</option>
+				</field>
 <!--
 				<field name="display_addThis" type="radio" default="1" label="HIKA_DISPLAY_ADDTHIS_BUTTON" description="DISPLAY_ADDTHIS_BUTTON" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
@@ -224,6 +244,8 @@
 					<option value="7">SOCIAL_PRODUCT_TYPE_SONG</option>
 				</field>
 				<field name="admin" type="text" default="" showon="display_fb:1[OR]display_fb:2" label="HIKA_FACEBOOK_ADMIN" description="FACEBOOK_ADMIN" />
+				<field name="thumbnail_x" type="text" default="" showon="display_fb:1[OR]display_fb:2" label="HIKA_OPENGRAPH_IMAGE_WIDTH" description="HIKA_OPENGRAPH_IMAGE_WIDTH_DESC" />
+				<field name="thumbnail_y" type="text" default="" showon="display_fb:1[OR]display_fb:2" label="HIKA_OPENGRAPH_IMAGE_HEIGHT" description="HIKA_OPENGRAPH_IMAGE_HEIGHT_DESC" />
 				<field name="spacer2" showon="display_url_btn:1" type="spacer"	hr="true"/>
 				<field name="twitter_count" type="list" default="0" showon="display_url_btn:1" label="HIKA_TWITTER_COUNT_DISPLAY" description="TWITTER_COUNT_DISPLAY">
 					<option value="0">HORIZONTAL</option>

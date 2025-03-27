@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1054,7 +1054,7 @@ class plgSystemHikashopmassaction extends hikashopJoomlaPlugin {
 					$options=array();
 					if(!empty($value->data) && !empty($value->data['value'])){
 						hikashop_toInteger($value->data['value']);
-						$query = 'SELECT product_id,product_name FROM '.hikashop_table('product').' WHERE product_id IN ('.implode($value->data['value'],',').')';
+						$query = 'SELECT product_id,product_name FROM '.hikashop_table('product').' WHERE product_id IN ('.implode(',',$value->data['value']).')';
 						$database->setQuery($query);
 						$options = $database->loadColumn();
 					}

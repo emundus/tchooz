@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -309,7 +309,7 @@ if($this->invoice_type == 'order') {
 						$field->currentElement = $product;
 						echo '<p class="hikashop_order_item_'.$namekey.'">' .
 							$this->fieldsClass->getFieldName($field) . ': <span>' .
-							$this->fieldsClass->show($field,$product->$namekey).'</span>' .
+							$this->fieldsClass->show($field,$product->$namekey,'hikashop_custom_file_link', $this->order->order_token).'</span>' .
 							'</p>';
 					}
 				}
@@ -738,7 +738,7 @@ if($this->invoice_type == 'order') {
 								echo $this->fieldsClass->getFieldName($oneExtraField);
 							?></td>
 							<td><?php
-								echo $this->fieldsClass->show($oneExtraField,$this->order->$fieldName);
+								echo $this->fieldsClass->show($oneExtraField,$this->order->$fieldName,'hikashop_custom_file_link', $this->order->order_token);
 							?></td>
 						</tr>
 <?php
@@ -787,7 +787,7 @@ if($this->invoice_type == 'order') {
 					$namekey = $field->field_namekey;
 					$field->currentElement = $entry;
 					if(!empty($entry->$namekey))
-						echo '<td>'.$this->fieldsClass->show($field, $entry->$namekey).'</td>';
+						echo '<td>'.$this->fieldsClass->show($field, $entry->$namekey,'hikashop_custom_file_link', $this->order->order_token).'</td>';
 				}
 			}
 ?>

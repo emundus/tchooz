@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -327,6 +327,35 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			$currency = $currencyObj->currency_code;
 		}
 
+		$extra = '';
+		if($type == 'product') {
+			$extra = '
+				<script>
+					window.Oby.registerAjax(["hkContentChanged"], function(params){
+						var form  = document.querySelector(\'form[name="hikashop_product_form"]\');
+						if(!form)
+							return;
+						var formData = window.Oby.getFormData(form, false);
+
+						var price = null;
+						var priceInput = document.getElementById("hikashop_price_product_" + formData.product_id);
+						if(priceInput) {
+							price = priceInput.value;
+						}
+						var priceWithOptionsInput = document.getElementById("hikashop_price_product_with_options_" + formData.product_id);
+						if(priceWithOptionsInput) {
+							price = priceWithOptionsInput.value;
+						}
+						if(price) {
+							price = (Math.round(price * 100) / 100).toFixed(2);
+							var paypalDiv  = document.querySelector("div[data-pp-message]");
+							paypalDiv.setAttribute("data-pp-amount", price);
+						}
+					});
+				</script>
+			';
+		}
+
 		$attribs = '';
 		if(!empty($method->payment_params->paylater_messaging_color)) {
 			$attribs.=' data-pp-style-text-color="'.$method->payment_params->paylater_messaging_color.'"';
@@ -338,7 +367,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		data-pp-amount="'.$amount.'" 
 		data-pp-currency="'.$currency.'" 
 		'.$attribs.'
-		></div>
+		></div>'.$extra.'
 		<script src="'.$url.'/sdk/js?client-id='.$method->payment_params->client_id.'&components=messages" data-partner-attribution-id="'.$this->bncode.'"></script>
 ';
 	}
@@ -1434,6 +1463,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			$status = $this->payment_params->verified_status;
 			if($response->result->intent == 'AUTHORIZE' && in_array($response->result->status, array('APPROVED', 'COMPLETED'))) {
 				$status = $this->payment_params->pending_status;
+				$history->notified = 0;
 			}
 
 			if($this->payment_params->debug) {
@@ -1464,6 +1494,16 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		if(!isset($response->result->purchase_units) || !count($response->result->purchase_units))
 			return false;
 		$purchaseUnit = reset($response->result->purchase_units);
+
+		if($response->result->status == 'COMPLETED') {
+			if(!empty($response->result->purchase_units->payments)) {
+				foreach($response->result->purchase_units->payments as $payment) {
+					if(!empty($payment->status) && $payment->status == 'PENDING') {
+						$response->result->intent = 'AUTHORIZE';
+					}
+				}
+			}
+		}
 
 		if($this->currency->currency_locale['int_frac_digits'] > 2)
 			$this->currency->currency_locale['int_frac_digits'] = 2;
@@ -1533,13 +1573,19 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 		$orderData->payer = new stdClass();
 		$orderData->payer->email_address = $this->user->user_email;
 
-		$billing_country_code = null;
+		$this->billing_country_code = null;
 		if(empty($order->cart->billing_address->address_country_code_2)) {
 			if(!empty($order->cart->billing_address->address_country->zone_code_2)) {
-				$billing_country_code = $order->cart->billing_address->address_country->zone_code_2;
+				$this->billing_country_code = $order->cart->billing_address->address_country->zone_code_2;
 			}
 		} else {
-			$billing_country_code = $order->cart->billing_address->address_country_code_2;
+			$this->billing_country_code = $order->cart->billing_address->address_country_code_2;
+		}
+		$this->billing_state = null;
+		if(!empty($order->cart->billing_address->address_state_name)) {
+			$this->billing_state = $order->cart->billing_address->address_state_name;
+		}elseif(!empty($order->cart->billing_address->address_state->zone_name)) {
+			$this->billing_state = $order->cart->billing_address->address_state->zone_name;
 		}
 
 		if(
@@ -1548,7 +1594,7 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			!empty($order->cart->billing_address->address_street) && 
 			!empty($order->cart->billing_address->address_city) && 
 			!empty($order->cart->billing_address->address_post_code) && 
-			!empty($billing_country_code)
+			!empty($this->billing_country_code)
 		) {
 			$orderData->payer->name = new stdClass();
 			$orderData->payer->name->given_name = $order->cart->billing_address->address_firstname;
@@ -1560,12 +1606,8 @@ class plgHikashoppaymentPaypalcheckout extends hikashopPaymentPlugin
 			}
 			$orderData->payer->address->admin_area_2 = $order->cart->billing_address->address_city;
 			$orderData->payer->address->postal_code = $order->cart->billing_address->address_post_code;
-			if(!empty($order->cart->billing_address->address_state_name)) {
-				$orderData->payer->address->admin_area_1 = $order->cart->billing_address->address_state_name;
-			}elseif(!empty($order->cart->billing_address->address_state->zone_name)) {
-				$orderData->payer->address->admin_area_1 = $order->cart->billing_address->address_state->zone_name;
-			}
-			$orderData->payer->address->country_code = $billing_country_code;
+			$orderData->payer->address->admin_area_1 = $this->billing_state;
+			$orderData->payer->address->country_code = $this->billing_country_code;
 		}
 		$purchaseUnit = new stdClass();
 		$purchaseUnit->invoice_id = $order->order_id;

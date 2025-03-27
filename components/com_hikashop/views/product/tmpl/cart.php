@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -559,10 +559,12 @@ foreach($this->element->products as $k => $product) {
 					continue;
 				if(!empty($optionElement->variant_name)) {
 					$text = $optionElement->variant_name;
+					$text = hikashop_hktooltip($optionElement->product_name, '', $text);
 				} elseif(empty($optionElement->characteristics_text)){
 					$text = $optionElement->product_name;
 				} else {
 					$text = $optionElement->characteristics_text;
+					$text = hikashop_hktooltip($optionElement->product_name, '', $text);
 				}
 				$html .= '<p class="hikashop_cart_option_name">'. $text . '</p>';
 			}

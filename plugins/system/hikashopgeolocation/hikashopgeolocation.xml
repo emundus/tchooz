@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="2.5" method="upgrade" group="system">
 	<name>Hikashop Geolocation Plugin</name>
-	<creationDate>31 octobre 2024</creationDate>
-	<version>5.1.1</version>
+	<creationDate>20 mars 2025</creationDate>
+	<version>5.1.5</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
 	<authorUrl>http://www.hikashop.com</authorUrl>
-	<copyright>(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.</copyright>
+	<copyright>(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.</copyright>
 	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
 	<description>This plugin enables you to handle geolocation</description>
 	<files>
@@ -16,7 +16,6 @@
 	<params addpath="/components/com_hikashop/params">
 		<param name="geoloc_timeout" type="text" size="10" default="10" label="TIMEOUT" description="GEOLOCATION_TIMEOUT" />
 		<param name="geoloc_service" type="radio" default="both" label="HIKA_GEOLOCATION_SERVICE" description="GEOLOCATION_SERVICE">
-			<option value="geoplugin">GEOLOCATION_GEOPLUGIN</option>
 			<option value="ip2location">GEOLOCATION_IP2LOCATIONIO</option>
 			<option value="ipinfodb">GEOLOCATION_IPINFODB</option>
 			<option value="both">GEOLOCATION_BOTH</option>
@@ -47,7 +46,6 @@
 		<fields name="params" addfieldpath="/components/com_hikashop/fields">
 			<fieldset name="basic">
 				<field name="geoloc_service" type="radio" default="both" label="HIKA_GEOLOCATION_SERVICE" description="GEOLOCATION_SERVICE">
-					<option value="geoplugin">GEOLOCATION_GEOPLUGIN</option>
 					<option value="ip2location">GEOLOCATION_IP2LOCATIONIO</option>
 					<option value="ipinfodb">GEOLOCATION_IPINFODB</option>
 					<option value="both">GEOLOCATION_BOTH</option>
@@ -70,6 +68,7 @@
 				<field name="blocked_zones" type="text" size="52" default="" label="ZONES_BLOCKED" description="GEOLOCATION_ZONES_BLOCKED" />
 				<field name="authorized_zones" type="text" size="52" default="" label="ZONES_AUTHORIZED" description="GEOLOCATION_ZONES_AUTHORIZED" />
 				<field name="components" type="text" size="52" default="all" label="COMPONENTS_CHECKED" description="GEOLOCATION_COMPONENTS_CHECKED" />
+				<field name="geolocation_retaining_period" type="text" size="52" default="31556952" label="GEOLOCATION_RETAINING_PERIOD" description="GEOLOCATION_RETAINING_PERIOD_DESC" />
 				<field name="after_init" type="radio" label="AFTER_INITIALISATION" default="1" description="AFFILIATE_AFTER_INITIALISATION" >
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

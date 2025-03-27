@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -20,7 +20,22 @@ if(!empty($this->filters)){
 	$attributes = '';
 	$submit = "document.forms['hikashop_filter_form_" . $this->params->get('main_div_name') . "'].submit();";
 
-	if(!empty($this->params) && $this->params->get('module') == 'mod_hikashop_filter' && ($this->params->get('force_redirect',0) || (hikaInput::get()->getVar('force_using_filters', 0) !== 1 && empty($this->currentId) && (hikaInput::get()->getVar('option','')!='com_hikashop'|| !in_array(hikaInput::get()->getVar('ctrl','product'),array('product','category')) ||hikaInput::get()->getVar('task','listing')!='listing')))){
+	if(
+		!empty($this->params) && 
+		$this->params->get('module') == 'mod_hikashop_filter' && 
+		(
+			$this->params->get('force_redirect',0) || 
+			(
+				hikaInput::get()->getVar('force_using_filters', 0) !== 1 && 
+				empty($this->currentId) && 
+				(
+					hikaInput::get()->getVar('option','')!='com_hikashop' || 
+					!in_array(hikaInput::get()->getVar('ctrl','product'),array('product','category')) ||
+					hikaInput::get()->getVar('task','listing')!='listing'
+				)
+			)
+		)
+	){
 		if(empty($url)) {
 			$type = 'category';
 			$menusClass = hikashop_get('class.menus');
@@ -107,7 +122,7 @@ if(!empty($this->filters)){
 <?php
 	}
 	if($this->ajax) {
-		if($this->params->get('module') == 'mod_hikashop_filter') {
+		if($this->params->get('module') == 'mod_hikashop_filter' && !$this->params->get('force_redirect',0)) {
 			$url = hikaInput::get()->getVar('return_url', hikashop_currentURL());
 		}
 		$submit = 'window.hikashop.refreshFilters(this);';

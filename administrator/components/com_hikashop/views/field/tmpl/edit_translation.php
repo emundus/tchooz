@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -25,8 +25,8 @@ if(!empty($this->field->translations)) {
 ?>
 		<dt class="hikashop_field_errormessage"><label><?php echo JText::_('FIELD_ERROR'); ?></label></dt>
 		<dd class="hikashop_field_errormessage">
-			<input type="hidden" name="originals[field_errormessage]" value="<?php echo $this->field->field_options['errormessage']; ?>"/>
-			<input type="text" name="translations[field_errormessage]" value="<?php echo $this->translationHelper->loadOne($this->field->field_options['errormessage'], $language_id); ?>"/>
+			<input type="hidden" name="originals[field_errormessage]" value="<?php echo $this->escape($this->field->field_options['errormessage']); ?>"/>
+			<input type="text" name="translations[field_errormessage]" value="<?php echo $this->escape($this->translationHelper->loadOne($this->field->field_options['errormessage'], $language_id)); ?>"/>
 		</dd>
 <?php
 		}
@@ -34,8 +34,8 @@ if(!empty($this->field->translations)) {
 ?>
 		<dt class="hikashop_field_customtext"><label><?php echo JText::_('CUSTOM_TEXT'); ?></label></dt>
 		<dd class="hikashop_field_customtext">
-			<input type="hidden" name="originals[field_customtext]" value="<?php echo $this->field->field_options['customtext']; ?>"/>
-			<input type="text" name="translations[field_customtext]" value="<?php echo $this->translationHelper->loadOne($this->field->field_options['customtext'], $language_id); ?>"/>
+			<input type="hidden" name="originals[field_customtext]" value="<?php echo $this->escape($this->field->field_options['customtext']); ?>"/>
+			<input type="text" name="translations[field_customtext]" value="<?php echo $this->escape($this->translationHelper->loadOne($this->field->field_options['customtext'], $language_id)); ?>"/>
 		</dd>
 <?php
 		}
@@ -63,8 +63,8 @@ if($this->values && !empty($this->field->field_value) && count($this->field->fie
 						<?php echo $params->value; ?>
 					</td>
 					<td>
-						<input type="hidden" name="originals[value_<?php echo $i; ?>]" value="<?php echo $params->value; ?>"/>
-						<input type="text" name="translations[value_<?php echo $i; ?>]" value="<?php echo $this->translationHelper->loadOne($params->value, $language_id); ?>"/>
+						<input type="hidden" name="originals[value_<?php echo $i; ?>]" value="<?php echo $this->escape($params->value); ?>"/>
+						<input type="text" name="translations[value_<?php echo $i; ?>]" value="<?php echo $this->escape($this->translationHelper->loadOne($params->value, $language_id)); ?>"/>
 					</td>
 				</tr>
 <?php

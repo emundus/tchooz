@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -195,7 +195,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.1.1';
+				$extensionData->version = '5.1.5';
 				$extensionData->description = $data[0];
 				$extensionData->group = '';
 				$extensionData->filename = $element;
@@ -253,7 +253,7 @@ class hikashopUpdateHelper{
 				$extensionData->copyright = '(C) 2011-'.date('Y').' HIKARI SOFTWARE. All rights reserved.';
 				$extensionData->authorEmail = 'contact@hikashop.com';
 				$extensionData->authorUrl = 'https://www.hikashop.com';
-				$extensionData->version = '5.1.1';
+				$extensionData->version = '5.1.5';
 				$extensionData->description = $oneExt->name;
 				$extensionData->group = '';
 				$extensionData->filename = $oneExt->element;
@@ -702,9 +702,9 @@ class hikashopUpdateHelper{
 		$object->name='Hikashop';
 		$object->type='extension';
 		if(hikashop_level(1)){
-			$object->location='http://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-'.$config->get('version').'/level-'.$config->get('level').'/li-'.urlencode(base64_encode(HIKASHOP_LIVE)).'/file-extension.xml';
+			$object->location='https://www.hikashop.com/component/updateme/updatexml/component-hikashop/version-'.$config->get('version').'/level-'.$config->get('level').'/li-'.urlencode(base64_encode(HIKASHOP_LIVE)).'/file-extension.xml';
 		}else{
-			$object->location='http://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-'.$config->get('level').'/file-extension.xml';
+			$object->location='https://www.hikashop.com/component/updateme/updatexml/component-hikashop/level-'.$config->get('level').'/file-extension.xml';
 		}
 		$object->enabled=1;
 		if(empty($update_site_id)){
@@ -829,7 +829,7 @@ INSERT IGNORE INTO `#__hikashop_field` (`field_table`, `field_realname`, `field_
 ('address', 'Firstname', 'address_firstname', 'text', '', 1, 2, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 1, 1, 1, '', 0),
 ('address', 'Middle name', 'address_middle_name', 'text', '', 0, 3, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0),
 ('address', 'Lastname', 'address_lastname', 'text', '', 1, 4, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 1, 1, 1, '', 0),
-('address', 'Company', 'address_company', 'text', '', 0, 5, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0),
+('address', 'Company', 'address_company', 'text', '', 1, 5, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0),
 ('address', 'Street', 'address_street', 'text', '', 1, 6, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 1, 1, 1, '', 0),
 ('address', 'Complement', 'address_street2', 'text', '', 0, 7, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0),
 ('address', 'Post code', 'address_post_code', 'text', '', 1, 8, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0),
@@ -839,7 +839,7 @@ INSERT IGNORE INTO `#__hikashop_field` (`field_table`, `field_realname`, `field_
 ('address', 'Fax', 'address_fax', 'text', '', 0, 12, 'a:5:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0),
 ('address', 'Country', 'address_country', 'zone', '', 1, 13, 'a:6:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:9:"zone_type";s:7:"country";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 1, 1, 1, 'country_France_73', 0),
 ('address', 'State', 'address_state', 'zone', '', 1, 14, 'a:6:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:9:"zone_type";s:5:"state";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 1, 1, 1, 'state_Rh__ne_1375', 0),
-('address', 'VAT number', 'address_vat', 'text', '', 0, 15, 'a:6:{s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:9:"zone_type";s:7:"country";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0);
+('address', 'VAT number', 'address_vat', 'text', '', 1, 15, 'a:9:{s:15:"limit_to_parent";s:15:"address_company";s:25:"limit_to_parent_condition";s:6:"IS NOT";s:12:"parent_value";a:1:{i:0;s:0:"";}s:12:"errormessage";s:0:"";s:4:"cols";s:0:"";s:4:"rows";s:0:"";s:9:"zone_type";s:7:"country";s:4:"size";s:0:"";s:6:"format";s:0:"";}', 1, 0, 1, 1, '', 0);
 EOD;
 		$this->db->setQuery($query);
 		$this->db->execute();

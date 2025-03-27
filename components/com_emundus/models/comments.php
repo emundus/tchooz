@@ -13,6 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -38,6 +39,8 @@ class EmundusModelComments extends BaseDatabaseModel
 	 */
     private $logger;
 
+	private HtmlSanitizerSingleton $sanitizer;
+
 	/**
 	 * Constructor
 	 * 
@@ -51,6 +54,11 @@ class EmundusModelComments extends BaseDatabaseModel
 
         $this->db = $this->getDatabase();
         $this->logger = new EmundusModelLogs();
+
+		if (!class_exists('HtmlSanitizerSingleton')) {
+		    require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+	    }
+	    $this->sanitizer = HtmlSanitizerSingleton::getInstance();
     }
 
 	/**
@@ -75,6 +83,7 @@ class EmundusModelComments extends BaseDatabaseModel
             $user = Factory::getApplication()->getIdentity()->id;
         }
 
+	    $comment = $this->sanitizer->sanitizeFor('textarea', $comment);
         if (!empty($file_id) && !empty($comment)) {
             $allowed_targets = ['forms', 'groups', 'elements'];
 
@@ -292,7 +301,7 @@ class EmundusModelComments extends BaseDatabaseModel
             try {
                 $this->db->setQuery($query);
                 $comment = $this->db->loadAssoc();
-            } catch (Exception $e) {
+			} catch (Exception $e) {
                 Log::add('Failed to get comment ' . $e->getMessage(), Log::ERROR, 'com_emundus.comments');
             }
         }

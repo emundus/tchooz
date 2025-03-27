@@ -17,7 +17,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
-
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
 /**
  * Emundus Email Controller
@@ -43,6 +44,8 @@ class EmundusControllerEmail extends BaseController
 	 */
 	private $m_emails;
 
+	private HtmlSanitizerSingleton $sanitizer;
+
 	/**
 	 * Constructor.
 	 *
@@ -58,6 +61,23 @@ class EmundusControllerEmail extends BaseController
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'export.php');
+
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
+
+		$config = (new HtmlSanitizerConfig())
+			->allowSafeElements()
+			->allowElement('a', ['href', 'title', 'target'])
+			->allowElement('img', '*')
+			->allowElement('p', 'style')
+			->allowAttribute('img', ['src', 'style', 'alt', 'title', 'width', 'height', 'draggable'])
+			->allowAttribute('*', 'style')
+			->allowRelativeLinks(true)
+			->allowRelativeMedias(true)
+			->forceHttpsUrls(true);
+
+		$this->sanitizer = HtmlSanitizerSingleton::getInstance($config);
 
 		$this->app      = Factory::getApplication();
 		$this->_em_user = $this->app->getSession()->get('emundusUser');
@@ -303,11 +323,15 @@ class EmundusControllerEmail extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$htmlSanitizer      = HtmlSanitizerSingleton::getInstance();
+
 			$data               = [];
 			$data['lbl']        = $this->input->getString('lbl', '');
 			$data['subject']    = $this->input->getString('subject', '');
 			$data['emailfrom']  = $this->input->getString('emailfrom', '');
 			$data['message']    = $this->input->getRaw('message', '');
+			$data['message']    = $this->sanitizer->sanitize($data['message']);
+
 			$data['email_tmpl'] = $this->input->getInt('email_tmpl', 1);
 			$data['category']   = $this->input->getString('category', '');
 			$data['name']       = $this->input->getString('name', '');
@@ -439,8 +463,7 @@ class EmundusControllerEmail extends BaseController
 			$tags                  = $this->input->getRaw('selectedTags');
 			$tags                  = json_decode($tags, true);
 
-			/*require_once JPATH_SITE . '/components/com_emundus/helpers/html.php';
-			$data['message'] = $data['message'] ? EmundusHelperHtml::sanitize($data['message']) : null;*/
+			$data['message']       = $this->sanitizer->sanitize($data['message']);
 
 			$cc_list     = [];
 			$bcc_list    = [];

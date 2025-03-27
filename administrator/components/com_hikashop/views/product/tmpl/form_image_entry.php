@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -31,7 +31,7 @@ $type = (!empty($this->params->product_type) && $this->params->product_type == '
 	echo $this->popup->display(
 		$content,
 		'HIKASHOP_IMAGE',
-		hikashop_completeLink('product&task=selectimage&cid='.@$this->params->file_id.'&pid='.@$this->params->product_id,true),
+		hikashop_completeLink('product&task=selectimage&cid='.@$this->params->file_id.'&pid='.@$this->params->product_id.'&product_type='.$type,true),
 		'',
 		750, 460, 'onclick="return window.productMgr.editImage(this, '.$this->params->file_id.', \''.$type.'\');"', '', 'link'
 	);

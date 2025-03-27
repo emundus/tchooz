@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -21,6 +21,7 @@ $this->params->set('from_module', 1);
 $i = 0;
 $js_product_data = array();
 $js_product_prices = array();
+$js_product_images = array();
 
 $price_name = 'price_value';
 if($this->params->get('price_with_tax'))
@@ -136,6 +137,20 @@ foreach($this->element->options as $optionElement) {
 				$js_product_data[(int)$variant->product_id][-1] = (float)str_replace(',','.',$price);
 				$js_product_prices[(int)$variant->product_id][-1] = ($price>0?'+ ':'').$this->currencyHelper->format($price, $ok->price_currency_id);
 			}
+			if(!empty($this->options_have_images)) {
+				if(!empty($variant->images) && count($variant->images)) {
+					foreach($variant->images as $image) {
+						$img = $this->image->getThumbnail($image->file_path, array('width' => 50, 'height' => 50), $options);
+						if($img->success) {
+							$js_product_images[(int)$variant->product_id] = array();
+							$js_product_images[(int)$variant->product_id]['url'] = $img->url;
+							$js_product_images[(int)$variant->product_id]['origin_url'] = $img->origin_url;
+							$js_product_images[(int)$variant->product_id]['name'] = $image->file_name;
+						}
+						break;
+					}
+				}
+			}
 
 			if(!empty($defaultValue) && !empty($variant->characteristics) && is_array($variant->characteristics)) {
 				$default = true;
@@ -192,12 +207,41 @@ foreach($this->element->options as $optionElement) {
 	}
 ?>
 	<tr>
-		<td>
+<?php
+	if(!empty($this->options_have_images)) {
+?>
+		<td class="hikashop_option_image_td">
+<?php
+		if(!empty($optionInfo->has_image)) {
+			$src = '';
+			$name = '';
+			$origin_url = '';
+			$image_options = array('default' => true,'forcesize'=>$this->config->get('image_force_size',true),'scale'=>$this->config->get('image_scale_mode','inside'));
+			if(!empty($optionInfo->images) && count($optionInfo->images)) {
+				foreach($optionInfo->images as $image) {
+					$img = $this->image->getThumbnail($image->file_path, array('width' => 50, 'height' => 50), $options);
+					if($img->success) {
+						$src = $img->url;
+						$name = $image->file_name;
+						$origin_url = $img->origin_url;
+					}
+					break;
+				}
+			}
+			$html = '<img id="hikashop_option_image_'.$optionInfo->product_id.'" src="'.$src.'" alt="'.$this->escape($name).'" class="hikashop_options_image"/>';
+			echo $this->popup->image($html, $origin_url, null, '');
+		}
+?>
+		</td>
+<?php
+	}
+?>
+		<td class="hikashop_option_name_td">
 			<span class="hikashop_option_name"><?php
 				echo $optionInfo->product_name . $options;
 			?></span>
 		</td>
-		<td><?php
+		<td class="hikashop_option_selector_td"><?php
 			echo $html;
 		?></td>
 <?php
@@ -237,6 +281,7 @@ $js = '
 var hikaProductOptions = {
 	values: '.json_encode($js_product_data).',
 	prices: '.json_encode($js_product_prices).',
+	images: '.json_encode($js_product_images).',
 	total: '.$i.',
 	change: function() {
 		var d = document, w = window, o = w.Oby, t = this, el = null,
@@ -280,6 +325,9 @@ var hikaProductOptions = {
 						option.innerHTML = option.innerHTML.replace(/\( .+? \)/i,"( "+t.prices[el.value][min_qty_found]+" )");
 				}
 				total_opt_price += min_price * mul;
+
+
+
 				continue;
 			}
 			if(!el && !d.querySelectorAll)
@@ -313,6 +361,9 @@ var hikaProductOptions = {
 
 				}
 				total_opt_price += min_price * mul;
+
+
+
 			}
 		}
 

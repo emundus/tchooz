@@ -79,6 +79,16 @@ export default {
 									method: 'post',
 									multiple: true,
 									confirm: 'COM_EMUNDUS_ONBOARD_REGISTRANT_RESEND_CONFIRM',
+									acl: 'booking|u',
+								},
+								{
+									action: 'associate',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_REGISTRANTS_ASSOCIATE',
+									type: 'modal',
+									component: 'AssociateUser',
+									name: 'associateuser',
+									multiple: true,
+									acl: 'booking|u',
 								},
 							],
 							filters: [
@@ -128,6 +138,7 @@ export default {
 									name: 'exportpdf',
 									method: 'get',
 									multiple: true,
+									exportModal: true,
 								},
 								{
 									action: 'exportexcel',

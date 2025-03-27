@@ -1,4 +1,4 @@
-import { C as FetchClient, a0 as hooks, a1 as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, H as errors, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, A as vModelText, h as createVNode, f as withCtx, N as TransitionGroup, m as createTextVNode, v as vShow, b as createCommentVNode, J as script, z as vModelSelect, a as createBlock, a2 as vModelDynamic, a3 as V32, R as vModelCheckbox, j as normalizeStyle, K as withKeys, $ as Transition, X as mixin, Y as formService, a4 as vModelRadio, P as Popover, L as campaignService, a5 as IncrementalSelect, a6 as client$1, a7 as watch, W as History, M as Modal, s as settingsService } from "./app_emundus.js";
+import { C as FetchClient, a1 as hooks, a0 as defineStore, S as Swal$1, u as useGlobalStore, _ as _export_sfc, E as errors, V as VueDraggableNext, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, g as createVNode, z as vModelText, f as withCtx, N as TransitionGroup, m as createTextVNode, v as vShow, J as script, a as createBlock, y as vModelSelect, a2 as vModelDynamic, a3 as X42, R as vModelCheckbox, j as normalizeStyle, K as withKeys, Y as Transition, W as mixin, $ as formService, a4 as vModelRadio, P as Popover, L as campaignService, a5 as IncrementalSelect, a6 as client$1, a7 as watch, M as Modal, X as History, s as settingsService } from "./app_emundus.js";
 import { e as eventsService } from "./events2.js";
 /* empty css       */
 import { t as translationsService, T as Translations } from "./Translations.js";
@@ -1742,12 +1742,16 @@ const _sfc_main$t = {
           this.params[index].options = response.data;
           this.element.params["join_val_column"] = database ? database.join_column_val : this.params[index].options[0].COLUMN_NAME;
           this.element.params["join_val_column_concat"] = "";
+          if (database && database.translation == 1) {
+            this.element.params["join_val_column"] = database.join_column_val + "_fr";
+            this.element.params["join_val_column_concat"] = "{thistable}." + database.join_column_val + "_{shortlang}";
+          }
           this.element.params["database_join_where_sql"] = "";
           let publishedColumn = this.params[index].options.find((option) => option.COLUMN_NAME === "published");
           if (typeof publishedColumn !== "undefined") {
             this.element.params["database_join_where_sql"] = "WHERE {thistable}.published = 1 ";
           }
-          this.element.params["database_join_where_sql"] += "ORDER BY {thistable}." + this.element.params["join_val_column"];
+          this.element.params["database_join_where_sql"] += "ORDER BY {thistable}." + this.element.params["join_key_column"];
           this.reloadOptionsCascade += 1;
         });
       }
@@ -2014,7 +2018,7 @@ const _sfc_main$s = {
   name: "FormBuilderElementProperties",
   components: {
     FormBuilderElementParams,
-    TipTapEditor: V32
+    TipTapEditor: X42
   },
   props: {
     element: {
@@ -2958,7 +2962,7 @@ const _sfc_main$o = {
     }
   },
   components: {
-    TipTapEditor: V32
+    TipTapEditor: X42
   },
   data() {
     return {

@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -574,6 +574,10 @@ class hikashopProductClass extends hikashopClass{
 			if(isset($value['price_users']))
 				$product->prices[$k]->price_users = preg_replace('#[^0-9,]#i', '', $value['price_users']);
 
+			if(isset($value['price_zone_id'])) {
+				$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
+				$product->prices[$k]->price_zone_id = $safeHtmlFilter->clean($value['price_zone_id'], 'string');
+			}
 			if(isset($value['price_currency_id']))
 				$product->prices[$k]->price_currency_id = (int)$value['price_currency_id'];
 			if(empty($product->prices[$k]->price_currency_id))
@@ -993,7 +997,8 @@ class hikashopProductClass extends hikashopClass{
 				'tax' => hikashop_acl('product/variant/price/tax'),
 				'currency' => hikashop_acl('product/variant/price/currency'),
 				'quantity' => hikashop_acl('product/variant/price/quantity'),
-				'acl' => hikashop_level(2) && hikashop_acl('product/variant/price/acl')
+				'acl' => hikashop_level(2) && hikashop_acl('product/variant/price/acl'),
+				'zone' => hikashop_acl('product/variant/price/zone'),
 			);
 
 			if(!empty($oldProduct)) {
@@ -1035,6 +1040,11 @@ class hikashopProductClass extends hikashopClass{
 					$product->prices[$k]->price_end_date = '';
 				if($acls['acl'] && isset($value['price_users']))
 					$product->prices[$k]->price_users = preg_replace('#[^0-9,]#i', '', $value['price_users']);
+
+				if($acls['zone'] && isset($value['price_zone_id'])) {
+					$safeHtmlFilter = JFilterInput::getInstance(array(), array(), 1, 1);
+					$product->prices[$k]->price_zone_id = $safeHtmlFilter->clean($value['price_zone_id'], 'string');
+				}
 				if($acls['currency'] && isset($value['price_currency_id']))
 					$product->prices[$k]->price_currency_id = (int)$value['price_currency_id'];
 				if(empty($product->prices[$k]->price_currency_id))
@@ -2644,11 +2654,10 @@ class hikashopProductClass extends hikashopClass{
 				array_unique($item_cats);
 			}
 
-			$isListingField = strpos($itemField->field_display, ';front_product_listing=1;') !== false;
-
-			if(!$isListingField && empty($itemField->field_required))
+			if(empty($itemField->field_required))
 				continue;
 
+			$isListingField = strpos($itemField->field_display, ';front_product_listing=1;') !== false;
 			$product_restriction = !empty($itemField->field_products) && count($itemField->field_products);
 			$category_restriction = !empty($itemField->field_categories) && $itemField->field_categories != 'all';
 
@@ -3096,14 +3105,17 @@ class hikashopProductClass extends hikashopClass{
 					if(empty($price->price_end_date))
 						$price->price_end_date = 0;
 
-					$line.=','.$this->database->Quote($price->price_access).','.$this->database->Quote($price->price_users).','.(int)$price->price_start_date.','.(int)$price->price_end_date;
+					if(empty($price->price_zone_id))
+						$price->price_zone_id = '';
+
+					$line.=','.$this->database->Quote($price->price_access).','.$this->database->Quote($price->price_users).','.(int)$price->price_start_date.','.(int)$price->price_end_date.','.$this->database->Quote($price->price_zone_id);
 				}
 				$insert[]=$line.')';
 			}
 			if(!empty($insert)){
 				$select = 'price_currency_id,price_product_id,price_min_quantity,price_value,price_id,price_site_id';
 				if(hikashop_level(2)){
-					$select.=',price_access,price_users,price_start_date,price_end_date';
+					$select.=',price_access,price_users,price_start_date,price_end_date,price_zone_id';
 				}
 				$query = 'REPLACE '.hikashop_table('price').' ('.$select.') VALUES '.implode(',',$insert).';';
 				$this->database->setQuery($query);
@@ -4378,16 +4390,6 @@ class hikashopProductClass extends hikashopClass{
 
 			$columns = array('product_code', 'product_name');
 
-			$joins = array(
-				'INNER JOIN ' . hikashop_table('product_category') . ' AS pc ON p.product_id = pc.product_id',
-				'INNER JOIN ' . hikashop_table('category') . ' AS c ON c.category_id = pc.category_id',
-			);
-			if($load_variants) {
-				$searchMap[] = 'v.product_code';
-				$searchMap[] = 'v.product_name';
-				$joins[] = 'LEFT JOIN ' . hikashop_table('product') . ' AS v ON p.product_id = v.product_parent_id';
-			}
-
 			if(hikashop_level(1)) {
 				$cat = null;
 				$fieldsClass = hikashop_get('class.field');
@@ -4404,18 +4406,71 @@ class hikashopProductClass extends hikashopClass{
 			$searchMap = array();
 			foreach($columns as $column) {
 				$searchMap[] = 'p.'.$column;
-				if($load_variants) {
-					$searchMap[] = 'v.'.$column;
-				}
 			}
 			$search_filter = '('.implode(" LIKE $searchStr OR ",$searchMap)." LIKE $searchStr".')';
 
-			$query = 'SELECT p.*, c.category_id, c.category_right, c.category_left FROM ' . hikashop_table('product') . ' AS p '.
-				implode(' ', $joins).
+			if(!$load_variants) {
+				$search_filter .= ' AND p.product_type != \'variant\'';
+			}
+
+			$query = 'SELECT p.* FROM ' . hikashop_table('product') . ' AS p '.
 				' WHERE '.$search_filter.' AND p.product_type != \'trash\''.
 				' ORDER BY p.product_name ASC';
 			$this->db->setQuery($query, 0, $limit);
 			$product_elements = $this->db->loadObjectList();
+
+			if(!empty($product_elements) && count($product_elements)) {
+				$product_elements_ids = array();
+				$main_ids = array();
+				foreach($product_elements as $product) {
+					$product_elements_ids[(int)$product->product_id] = (int)$product->product_id;
+					if(!empty($product->product_parent_id)) {
+						$main_ids[(int)$product->product_parent_id] = (int)$product->product_parent_id;
+						$product_elements_ids[(int)$product->product_parent_id] = (int)$product->product_parent_id;
+					}
+				}
+				if(count($main_ids)) {
+					$this->db->setQuery('SELECT * FROM #__hikashop_product WHERE product_id IN ('.implode(',', $main_ids).')');
+					$main_products = $this->db->loadObjectList();
+					if(!empty($main_products) && count($main_products)) {
+						foreach($product_elements as $k => $product) {
+							foreach($main_products as $main) {
+								if($main->product_id == $product->product_id || $main->product_id == $product->product_parent_id) {
+									$product_elements[$k] = $main;
+									break;
+								}
+							}
+						}
+					}
+				}
+				$this->db->setQuery('SELECT product_id, category_id FROM #__hikashop_product_category WHERE product_id IN ('.implode(',', $product_elements_ids).')');
+				$product_categories = $this->db->loadObjectList();
+				if(!empty($product_categories) && count($product_categories)) {
+					$category_ids = array();
+					foreach($product_categories as $pc) {
+						$category_ids[(int)$pc->category_id] = (int)$pc->category_id;
+					}
+					$this->db->setQuery('SELECT category_id, category_right, category_left FROM #__hikashop_category WHERE category_id IN ('.implode(',', $category_ids).')');
+					$cat = $this->db->loadObjectList();
+					if(!empty($cat) && count($cat)) {
+						foreach($product_elements as $k => $product) {
+							foreach($product_categories as $pc) {
+								if($pc->product_id == $product->product_id || $pc->product_id == $product->product_parent_id) {
+									foreach($cat as $category) {
+										if($pc->category_id == $category->category_id) {
+											$product_elements[$k]->category_id = $category->category_id;
+											$product_elements[$k]->category_right = $category->category_right;
+											$product_elements[$k]->category_left = $category->category_left;
+											break;
+										}
+									}
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
 
 			$lookup_categories = array();
 			foreach($category_elements as $c) {
@@ -4423,6 +4478,8 @@ class hikashopProductClass extends hikashopClass{
 					$lookup_categories[ (int)$c->category_id ] = (int)$c->category_left . ' AND c.category_right >= ' . (int)$c->category_right;
 			}
 			foreach($product_elements as $p) {
+				if(empty($p->category_id))
+					continue;
 				if(empty($lookup_categories[ (int)$p->category_id ]))
 					$lookup_categories[ (int)$p->category_id ] = (int)$p->category_left . ' AND c.category_right >= ' . (int)$p->category_right;
 				if(isset($category_elements[ (int)$p->category_id ]))

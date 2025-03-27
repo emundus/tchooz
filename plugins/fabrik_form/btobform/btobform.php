@@ -174,6 +174,8 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 		require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
+		require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+		$m_workflow = new EmundusModelWorkflow();
 		$m_files      = new EmundusModelFiles();
 		$m_evaluation = new EmundusModelEvaluation();
 
@@ -189,7 +191,6 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 		$query = $db->createQuery();
 
 		$profiles = [];
-
 		$query->clear()
 			->select('profile_id')
 			->from('#__emundus_setup_campaigns')
@@ -197,7 +198,15 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 			->bind(':cid', $campaign_id, ParameterType::INTEGER);
 		$db->setQuery($query);
 		$profiles[] = $db->loadResult();
-		$profiles[] = 1011;
+
+		$steps = $m_workflow->getCampaignSteps($campaign_id);
+		foreach ($steps as $step)
+		{
+			if (!empty($step->profile_id))
+			{
+				$profiles[] = $step->profile_id;
+			}
+		}
 
 		$forms = [];
 		$forms_ids = [];

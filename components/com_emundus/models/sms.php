@@ -22,6 +22,8 @@ use classes\SMS\Synchronizer\OvhSMS;
 use classes\SMS\Entities\ReceiverEntity;
 use Joomla\CMS\Component\ComponentHelper;
 
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+
 
 class EmundusModelSMS extends JModelList
 {
@@ -33,12 +35,15 @@ class EmundusModelSMS extends JModelList
 
 	public bool $activated = false;
 
+	private EmundusHelperCache $h_cache;
+
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->h_cache = new EmundusHelperCache();
 		$this->setSmsActionId();
 		$this->activated = $this->isSMSActivated();
 
@@ -80,17 +85,23 @@ class EmundusModelSMS extends JModelList
 
 	public function isSMSActivated(): bool
 	{
-		$activated = false;
+		$activated = $this->h_cache->get('sms_activated');
 
-		try {
-			$query = $this->db->createQuery();
-			$query->select('enabled')
-				->from('#__emundus_setup_sync')
-				->where('type = ' . $this->db->quote('ovh'));
+		if (is_null($activated)) {
+			try {
+				$query = $this->db->createQuery();
+				$query->select('enabled')
+					->from('#__emundus_setup_sync')
+					->where('type = ' . $this->db->quote('ovh'));
 
-			$activated = (bool)$this->db->setQuery($query)->loadResult();
-		} catch (\Exception $e) {
-			Log::add('Error on get sms activation : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
+				$activated = (bool)$this->db->setQuery($query)->loadResult();
+
+				$this->h_cache->set('sms_activated', $activated);
+			} catch (\Exception $e) {
+				Log::add('Error on get sms activation : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
+			}
+		} else {
+			$activated = (bool)$activated;
 		}
 
 		return $activated;
@@ -846,5 +857,30 @@ class EmundusModelSMS extends JModelList
 		}
 
 		return $tagged;
+	}
+
+	public function getRecipientsData(array $fnums): array
+	{
+		$data = [];
+
+		if (!empty($fnums)) {
+			$query = $this->db->createQuery();
+
+			foreach ($fnums as $fnum) {
+				$query->clear()
+					->select('CONCAT(eu.firstname, " ", eu.lastname) as username, eu.tel')
+					->from('#__emundus_users eu')
+					->leftJoin('#__emundus_campaign_candidature ecc ON eu.user_id = ecc.applicant_id')
+					->where('ecc.fnum = ' . $this->db->quote($fnum));
+
+				try {
+					$data[$fnum] = $this->db->setQuery($query)->loadAssoc();
+				} catch (\Exception $e) {
+					Log::add('Error on get recipients data : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
+				}
+			}
+		}
+
+		return $data;
 	}
 }

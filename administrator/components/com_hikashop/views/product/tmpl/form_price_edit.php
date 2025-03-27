@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -88,6 +88,22 @@ echo $this->nameboxVariantType->display(
 		'id' => 'hikashop_' . $this->form_key . '_user_edit',
 		'add' => true,
 		'default_text' => 'PLEASE_SELECT'
+	)
+);
+?>
+	</dd>
+	<dt><label><?php echo JText::_('ZONE'); ?></label></dt>
+	<dd>
+<?php
+echo $this->nameboxVariantType->display(
+	'hikashop_' . $this->form_key . '_zone_edit',
+	explode(',',trim((string)@$this->price->price_zone_id,',')),
+	hikashopNameboxType::NAMEBOX_MULTIPLE,
+	'zone',
+	array(
+		'delete' => true,
+		'id' => 'hikashop_' . $this->form_key . '_zone_edit',
+		'default_text' => '<em>'.JText::_('HIKA_NONE').'</em>',
 	)
 );
 ?>

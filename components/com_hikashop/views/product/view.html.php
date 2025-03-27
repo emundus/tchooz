@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -16,6 +16,7 @@ class ProductViewProduct extends HikaShopView {
 	var $icon = 'product';
 	var $module = false;
 	var $triggerView = array('hikashop', 'hikashopshipping','hikashoppayment');
+	var $options_have_images = false;
 
 	public function display($tpl = null, $params = array()) {
 		$this->paramBase = HIKASHOP_COMPONENT.'.'.$this->getName();
@@ -1710,53 +1711,26 @@ class ProductViewProduct extends HikaShopView {
 			$productClass->addFiles($element,$product_files);
 		}
 
-		$currencyClass->getPrices($element, $ids, $currency_id, $main_currency, $zone_id, $discount_before_tax);
-
-		$fieldsClass = hikashop_get('class.field');
-		$fields = $fieldsClass->getFields('frontcomp', $element, 'product', 'checkout&task=state');
-		$this->assignRef('fieldsClass', $fieldsClass);
-		$this->assignRef('fields', $fields);
-		if(hikashop_level(2)) {
-			$this->itemFields = null;
-			if(!$this->params->get('catalogue')) {
-				$display_item_fields = true;
-				if(!$this->config->get('display_add_to_cart_for_free_products') || ($this->config->get('display_add_to_wishlist_for_free_products', 1) && $this->params->get('add_to_wishlist') && $this->config->get('enable_wishlist', 1))) {
-					if(empty($element->variants)) {
-						if(empty($element->prices))
-							$display_item_fields = false;
-					} else {
-						$variants_are_all_free = true;
-						foreach($element->variants as $variant) {
-							if(!empty($variant->prices)) {
-								$variants_are_all_free = false;
-							}
-						}
-
-						if($variants_are_all_free)
-							$display_item_fields = false;
-					}
-
-				}
-				if($display_item_fields) {
-					$this->itemFields = $fieldsClass->getFields('frontcomp', $element, 'item', 'checkout&task=state');
-
-					foreach ($this->itemFields as $fieldName => $oneExtraField) {
-						if(empty($element->$fieldName)) {
-							$element->$fieldName = $oneExtraField->field_default;
+		if(!empty($this->element->options)) {
+			foreach($this->element->options as $k => $optionElement) {
+				$this->element->options[$k]->has_image  = false;
+				if(!empty($optionElement->images) && count($optionElement->images)) {
+					$this->element->options[$k]->has_image = true;
+					$this->options_have_images = true;
+				} elseif(!empty($optionElement->variants)) {
+					foreach($optionElement->variants as $variant) {
+						if(!empty($variant->images) && count($variant->images)) {
+							$this->element->options[$k]->has_image = true;
+							$this->options_have_images = true;
+							break;
 						}
 					}
-					$null = array();
-					$fieldsClass->addJS($null, $null, $null);
-					$fieldsClass->jsToggle($this->itemFields, $element, 0);
-					$extraFields = array('item'=> &$this->itemFields);
-					$requiredFields = array();
-					$validMessages = array();
-					$values = array('item'=> $element);
-					$fieldsClass->checkFieldsForJS($extraFields, $requiredFields, $validMessages, $values);
-					$fieldsClass->addJS($requiredFields, $validMessages, array('item'));
 				}
 			}
 		}
+
+		$currencyClass->getPrices($element, $ids, $currency_id, $main_currency, $zone_id, $discount_before_tax);
+
 
 		$product_name = hikashop_translate($element->product_name);
 		$product_page_title = hikashop_translate($element->product_page_title);
@@ -1871,6 +1845,54 @@ class ProductViewProduct extends HikaShopView {
 				$variant->main =& $element->main;
 			}
 		}
+
+
+		$fieldsClass = hikashop_get('class.field');
+		$fields = $fieldsClass->getFields('frontcomp', $element, 'product', 'checkout&task=state');
+		$this->assignRef('fieldsClass', $fieldsClass);
+		$this->assignRef('fields', $fields);
+		if(hikashop_level(2)) {
+			$this->itemFields = null;
+			if(!$this->params->get('catalogue')) {
+				$display_item_fields = true;
+				if(!$this->config->get('display_add_to_cart_for_free_products') || (!$this->config->get('display_add_to_wishlist_for_free_products', 1) && $this->params->get('add_to_wishlist') && $this->config->get('enable_wishlist', 1))) {
+					if(empty($element->variants)) {
+						if(empty($element->prices))
+							$display_item_fields = false;
+					} else {
+						$variants_are_all_free = true;
+						foreach($element->variants as $variant) {
+							if(!empty($variant->prices)) {
+								$variants_are_all_free = false;
+							}
+						}
+
+						if($variants_are_all_free)
+							$display_item_fields = false;
+					}
+
+				}
+				if($display_item_fields) {
+					$this->itemFields = $fieldsClass->getFields('frontcomp', $element, 'item', 'checkout&task=state');
+
+					foreach ($this->itemFields as $fieldName => $oneExtraField) {
+						if(empty($element->$fieldName)) {
+							$element->$fieldName = $oneExtraField->field_default;
+						}
+					}
+					$null = array();
+					$fieldsClass->addJS($null, $null, $null);
+					$fieldsClass->jsToggle($this->itemFields, $element, 0);
+					$extraFields = array('item'=> &$this->itemFields);
+					$requiredFields = array();
+					$validMessages = array();
+					$values = array('item'=> $element);
+					$fieldsClass->checkFieldsForJS($extraFields, $requiredFields, $validMessages, $values);
+					$fieldsClass->addJS($requiredFields, $validMessages, array('item'));
+				}
+			}
+		}
+
 
 		$this->assignRef('element', $element);
 
@@ -2767,28 +2789,40 @@ class ProductViewProduct extends HikaShopView {
 			$database = JFactory::getDBO();
 			$database->setQuery($query);
 			$element = $database->loadObject();
+
+			$productClass = hikashop_get('class.product');
 			if(!empty($element)){
+				$query = 'SELECT file_id, file_name, file_description, file_path FROM ' . hikashop_table('file') . ' AS file WHERE file.file_type = \'product\' AND file_ref_id = '.(int)$product_id.' ORDER BY file_ordering ASC';
+				$database->setQuery($query);
+				$element->images = $database->loadObjectList();
+
 				if($element->product_type=='variant') {
 					$this->selected_variant_id = $product_id;
-					$filters=array('a.product_id='.$element->product_parent_id);
+					$filters=array('a.product_id='.(int)$product_id);
 					hikashop_addACLFilters($filters,'product_access','a');
 					$query = 'SELECT a.*,b.* FROM '.hikashop_table('product').' AS a LEFT JOIN '.hikashop_table('product_category').' AS b ON a.product_id = b.product_id WHERE '.implode(' AND ',$filters). ' LIMIT 1';
 					$database->setQuery($query);
-					$element = $database->loadObject();
-					if(empty($element)){
+					$parentProduct = $database->loadObject();
+					if(empty($parentProduct)){
 						return;
 					}
-					$product_id = $element->product_id;
+
+					$query = 'SELECT file_id, file_name, file_description, file_path FROM ' . hikashop_table('file') . ' AS file WHERE file.file_type = \'product\' AND file_ref_id = '.(int)$parentProduct->product_id.' ORDER BY file_ordering ASC';
+					$database->setQuery($query);
+					$parentProduct->images = $database->loadObjectList();
+
+					$db = JFactory::getDBO();
+					$query = 'SELECT * FROM '.hikashop_table('variant').' AS v '.
+						' LEFT JOIN '.hikashop_table('characteristic') .' AS c ON v.variant_characteristic_id = c.characteristic_id '.
+						' WHERE v.variant_product_id = '.(int)$product_id.' ORDER BY v.ordering';
+					$database->setQuery($query);
+					$element->characteristics = $database->loadObjectList();
+					$productClass->checkVariant($element, $parentProduct);
 				}
-				$productClass = hikashop_get('class.product');
 				$productClass->addAlias($element);
 				if(!$element->product_published) {
 					return;
 				}
-
-				$query = 'SELECT file_id, file_name, file_description, file_path FROM ' . hikashop_table('file') . ' AS file WHERE file.file_type = \'product\' AND file_ref_id = '.(int)$product_id.' ORDER BY file_ordering ASC';
-				$database->setQuery($query);
-				$element->images = $database->loadObjectList();
 
 				$product_url = hikashop_contentLink('product&task=show&cid='.(int)$element->product_id.'&name='.$element->alias.$this->url_itemid,$element);
 			}
@@ -3245,6 +3279,9 @@ window.hikashop.ready( function() {
 						$prices_array['main_'.$element->product_id] = $price_value;
 				}
 			}
+		}
+		if(empty($prices_array)) {
+			return 0;
 		}
 		foreach($prices_array as $k => $price) {
 			if ($priceDisplayed == 'expensive') {

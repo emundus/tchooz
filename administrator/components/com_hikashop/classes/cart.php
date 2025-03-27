@@ -1,9 +1,9 @@
 <?php
 /**
  * @package	HikaShop for Joomla!
- * @version	5.1.1
+ * @version	5.1.5
  * @author	hikashop.com
- * @copyright	(C) 2010-2024 HIKARI SOFTWARE. All rights reserved.
+ * @copyright	(C) 2010-2025 HIKARI SOFTWARE. All rights reserved.
  * @license	GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 defined('_JEXEC') or die('Restricted access');
@@ -1134,7 +1134,7 @@ class hikashopCartClass extends hikashopClass {
 			foreach($cart->item_fields as $field) {
 				$namekey = $field->field_namekey;
 				foreach($cart->products as $k => &$product) {
-					if(isset($product->$namekey) || !isset($cart->cart_products[$k]) || !isset($cart->cart_products[$k]->$namekey))
+					if(!empty($product->$namekey) || !isset($cart->cart_products[$k]) || !isset($cart->cart_products[$k]->$namekey))
 						continue;
 					$product->$namekey = $cart->cart_products[$k]->$namekey;
 				}
@@ -1557,7 +1557,7 @@ class hikashopCartClass extends hikashopClass {
 		$query = 'SELECT * '.
 			' FROM ' . hikashop_table('discount').
 			' WHERE (' . implode(') AND (', $filters) . ')'.
-			' ORDER BY discount_minimum_order DESC, discount_minimum_products DESC';
+			' ORDER BY discount_minimum_order DESC, discount_minimum_products DESC, discount_flat_amount DESC, discount_percent_amount DESC';
 		$this->db->setQuery($query);
 		$coupons = $this->db->loadObjectList();
 		if(empty($coupons))

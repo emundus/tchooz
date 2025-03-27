@@ -7391,13 +7391,13 @@ class EmundusModelApplication extends ListModel
      * @return array
      *
      */
-    public function getFabrikDataByFnum($fnum, $type = 'form') {
-        // TODO: adapt to also retrieve data of partners form (eval, decision...)
+    public function getFabrikDataByFnum(string $fnum, string $type = 'form'): array
+    {
         $result = [];
 
         if (!empty($fnum) && !empty($type)) {
             require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
-            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+	        require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
             $m_profile  = new EmundusModelProfile;
             $m_files    = new EmundusModelFiles;
@@ -7407,11 +7407,11 @@ class EmundusModelApplication extends ListModel
             $fnumInfos  = $m_files->getFnumInfos($fnum);
             $profiles = $m_profile->getProfilesIDByCampaign([$fnumInfos['campaign_id']]);
 
-            $forms = [102]; // Default form
 			if (!empty($profiles)) {
 				require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 				$m_form = new EmundusModelForm();
 
+				$forms = [102]; // Default form
                 foreach ($profiles as $profile) {
                     $forms_data = $m_form->getFormsByProfileId($profile);
                     if (!empty($forms_data)) {
@@ -7422,6 +7422,20 @@ class EmundusModelApplication extends ListModel
                         $forms = array_merge($forms, $forms_data_ids);
                     }
                 }
+
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$workflow_data = $m_workflow->getWorkflowByFnum($fnum);
+
+				if (!empty($workflow_data['steps'])) {
+					foreach($workflow_data['steps'] as $step) {
+						if ($m_workflow->isEvaluationStep($step->type)) {
+							if (!in_array($step->form_id, $forms)) {
+								$forms[] = $step->form_id;
+							}
+						}
+					}
+				}
 
 				if (!empty($forms)) {
 					$forms = array_unique($forms);

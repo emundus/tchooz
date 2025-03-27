@@ -40,7 +40,7 @@ check-tchooz-version-job:
 check-commit-prefixes-job:
   stage: prepare
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event" && $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == $CI_DEFAULT_BRANCH'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
     - when: never
   image: enix/ci-toolbox:1.23
