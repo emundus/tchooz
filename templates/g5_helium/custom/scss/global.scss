@@ -5373,12 +5373,16 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   -webkit-border-radius: 50px !important;
 }
 
+.platform-content .eval-form-split-view-container {
+  padding-bottom: 100px;
+}
+
 .platform-content .eval-form-split-view {
   margin-inline: 20px;
 
   form .fabrikActions.form-actions {
     position: fixed;
-    bottom: 10px;
+    bottom: 0;
     right: 0;
     background: var(--neutral-50);
     width: 100%;
@@ -5388,7 +5392,7 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
     z-index: 4;
 
     & > div > .em-submit-form-button {
-      margin: auto;
+      margin: 0;
     }
   }
 }

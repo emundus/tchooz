@@ -1,4 +1,4 @@
-import { _ as _export_sfc, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, n as normalizeClass, t as toDisplayString } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, n as normalizeClass, t as toDisplayString, b as createCommentVNode, d as createBaseVNode } from "./app_emundus.js";
 const _sfc_main = {
   name: "Info",
   components: {},
