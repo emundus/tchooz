@@ -3488,6 +3488,32 @@ class EmundusModelApplication extends ListModel
 													}
 												}
 											}
+											elseif ($element->plugin == 'emundus_fileupload') {
+												$params = json_decode($element->params);
+												$query  = $this->_db->getQuery(true);
+
+												try {
+													$query->select('esa.id,esa.value as attachment_name,eu.filename')
+														->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+														->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
+														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
+													$this->_db->setQuery($query);
+													$attachment_upload = $this->_db->loadObject();
+
+													if (!empty($attachment_upload->filename)) {
+														$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+														$elt  = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
+													}
+													else {
+														$elt = '';
+													}
+												}
+												catch (Exception $e) {
+													Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+													$elt = '';
+												}
+											}
 											else {
 												$elt = Text::_($element->content);
 											}
