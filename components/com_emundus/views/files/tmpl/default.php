@@ -16,7 +16,7 @@ defined('_JEXEC') or die('Restricted access');
 
 <div class="tw-h-full">
     <div class="tw-h-full">
-        <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
+        <div class="col-md-3 side-panel" style="height: calc(100vh - 139px);overflow-y: auto;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
                 <div class="panel-heading em-containerFilter-heading !tw-bg-profile-full">
                     <div>
@@ -105,7 +105,7 @@ defined('_JEXEC') or die('Restricted access');
             </div>
         </div>
 
-        <div class="col-md-9 main-panel">
+        <div class="col-md-9 main-panel tw-h-full">
             <div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top"
                  title=<?php echo JText::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
 				<span class="glyphicon glyphicon-chevron-left"></span>

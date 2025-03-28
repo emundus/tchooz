@@ -557,7 +557,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
             var panel = result;
             //.main-panel
-            $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" id="em-appli-block"></div>');
+            $('.main-panel').append('<div class="clearfix"></div><div class="col-md-12" style="height: calc(100% - 40px)" id="em-appli-block"></div>');
             if (result.trim() != '') {
                 let panelBody = $('#em-synthesis .panel-body');
                 panelBody.empty();

@@ -71,7 +71,7 @@ $wa->registerAndUseScript('com_emundus/jquery', 'jquery/jquery.min.js');
             </div>
         </div>
 
-        <div class="col-md-9 main-panel">
+        <div class="col-md-9 main-panel tw-h-full">
             <div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top"
                  title=<?php echo JText::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
 		<span class=" glyphicon glyphicon-chevron-left
