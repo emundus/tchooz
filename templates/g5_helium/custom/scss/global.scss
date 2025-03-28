@@ -298,29 +298,36 @@ body > .g-container {
 
 /* APPLICANT FORM BACK BUTTON */
 .view-form .em-applicant,
+.view-details .em-applicant,
 .view-form .em-coordinator {
-  #g-container-main .platform-content .back-button-link {
-    & > span {
-      margin-right: var(--em-spacing-1);
-    }
+  #g-container-main .platform-content {
+    .back-button-link {
+      & > span {
+        margin-right: var(--em-spacing-1);
+      }
 
-    & > button {
-      color: var(--link-regular);
-      padding: 0 !important;
-      text-transform: none;
-      letter-spacing: 0;
-      margin-bottom: 0;
+      & > button {
+        color: var(--link-regular);
+        padding: 0 !important;
+        text-transform: none;
+        letter-spacing: 0;
+        margin-bottom: 0;
 
-      &:active, &:focus {
+        &:active, &:focus {
+          background: none;
+          border: none;
+          box-shadow: none;
+        }
+      }
+
+      &:hover > button {
         background: none;
-        border: none;
-        box-shadow: none;
+        text-decoration: underline;
       }
     }
 
-    &:hover > button {
-      background: none;
-      text-decoration: underline;
+    .page-header {
+      margin-top: 0;
     }
   }
 }
@@ -929,6 +936,29 @@ footer#g-footer > .g-container {
     margin-bottom: var(--m-8);
   }
 }
+
+/* FORMULAIRES lecture seule côté gestionnaire */
+.view-files #g-container-main .main-panel #em-appli-block .em-container-form-body #show_profile {
+  table.em-personalDetail-table-inline tbody tr:last-child td,
+  fieldset.em-personalDetail > table tbody tr:last-child td {
+    border-bottom: none !important;
+  }
+
+  table.em-personalDetail-table-inline tbody {
+    display: flex;
+    flex-direction: column;
+
+    & > tr {
+      display: flex;
+      flex-direction: row;
+
+      & > td {
+        width: 50%;
+      }
+    }
+  }
+}
+
 
 /* CHECKLIST PAGE */
 
@@ -5294,7 +5324,6 @@ view-form:not(.applicant-form):not(.mon-profil) .emundus-form #background-shapes
   }
 
   .fabrikLabel {
-    color: var(--neutral-700);
     font-family: var(--em-profile-font), Inter, sans-serif;
   }
 
