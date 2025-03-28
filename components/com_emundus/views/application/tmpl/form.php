@@ -70,7 +70,7 @@ $user = $this->userid;
                 </div>
             </div>
 		<?php endif; ?>
-        <div id="application-form-container" class="tw-relative tw-flex tw-flex-row">
+        <div id="application-form-container" class="tw-relative tw-flex tw-flex-row tw-bg-neutral-100">
             <div id="application-form-container-content" class="tw-w-full">
 
                 <?php if (!EmundusHelperAccess::isDataAnonymized($this->_user->id) && $this->header == 1) : ?>
@@ -94,7 +94,7 @@ $user = $this->userid;
                     </div>
                 <?php endif; ?>
 
-                <div class="panel-body Marginpanel-body em-container-form-body" style="background: var(--neutral-0) !important">
+                <div class="panel-body Marginpanel-body em-container-form-body !tw-bg-neutral-100">
                     <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
                     <div id="em-switch-profiles" <?php if(sizeof($this->pids) < 1): ?>style="display: none"<?php endif; ?>>
