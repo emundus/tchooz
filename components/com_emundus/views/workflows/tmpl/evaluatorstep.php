@@ -9,12 +9,12 @@ require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 $m_workflow = new EmundusModelWorkflow();
 ?>
 
-<div class="panel panel-default widget em-container-evaluator-step">
+<div class="panel panel-default widget em-container-evaluator-step tw-h-full">
 	<?php
 	if (!empty($this->step) && $m_workflow->isEvaluationStep($this->step->type) && !empty($this->step->form_id) && $this->access['can_see'])
 	{
 		?>
-        <div class="panel-heading em-container-form-heading  !tw-bg-profile-full">
+        <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
             <div class="tw-flex tw-flex-row">
                 <h3 class="panel-title tw-flex tw-flex-row tw-items-center tw-justify-start">
                     <span class="material-symbols-outlined em-color-white tw-mr-2">edit_note</span>
@@ -50,9 +50,9 @@ $m_workflow = new EmundusModelWorkflow();
             </div>
         </div>
 
-        <div class="tw-px-4">
+        <div class="tw-px-4" style="height: calc(100% - 52px);">
 			<?php if (!EmundusHelperAccess::isDataAnonymized($this->user->id)) : ?>
-                <div class="tw-flex tw-flex-row tw-items-center">
+                <div class="tw-flex tw-flex-row tw-items-center em-mt-16">
                     <div class="tw-flex tw-flex-row em-small-flex-column em-small-align-items-start">
                         <div class="em-profile-picture-big no-hover"
 							<?php if (empty($this->applicant->profile_picture)) : ?>
@@ -71,7 +71,7 @@ $m_workflow = new EmundusModelWorkflow();
                     </div>
                 </div>
 			<?php endif; ?>
-            <iframe id="evaluation-step-iframe" class="tw-mt-4" height="600" width="100%" loading="lazy"
+            <iframe id="evaluation-step-iframe" class="tw-mt-4 !tw-h-[calc(100%-155px)]" width="100%" loading="lazy"
                     src="evaluation-step-form?view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->table ?>___ccid=<?= $this->ccid ?>&<?= $this->step->table ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
         </div>
 		<?php
@@ -110,8 +110,9 @@ $m_workflow = new EmundusModelWorkflow();
 <script>
     document.getElementById('evaluation-step-iframe').onload = function() {
         let iframeElement = document.getElementById('evaluation-step-iframe');
-        iframeElement.style.height = iframeElement.contentWindow.document.body.scrollHeight + 'px';
+        iframeElement.style.height = (iframeElement.contentWindow.document.body.scrollHeight + 32) + 'px';
         iframeElement.contentWindow.document.body.style.background = 'white';
+        iframeElement.contentWindow.document.body.style.height = '100%';
     }
 
     document.getElementById('download-evaluation-step-pdf').addEventListener('click', function (e) {

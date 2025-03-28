@@ -61,7 +61,7 @@ if ($this->open_file_in_modal)
 <input type="hidden" id="view" name="view" value="evaluation">
 <div class="tw-h-full">
     <div class="tw-h-full">
-        <div class="col-md-3 side-panel" style="height: calc(100vh - 72px);overflow-y: auto;">
+        <div class="col-md-3 side-panel" style="height: calc(100vh - 139px);overflow-y: auto;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
                 <div class="panel-heading em-containerFilter-heading !tw-bg-profile-full">
                     <div>
@@ -145,7 +145,7 @@ if ($this->open_file_in_modal)
             </div>
         </div>
 
-        <div class="col-md-9 main-panel">
+        <div class="col-md-9 main-panel tw-h-full">
             <div id="em-hide-filters" class="em-close-filter" data-toggle="tooltip" data-placement="top"
                  title=<?php echo Text::_('COM_EMUNDUS_FILTERS_HIDE_FILTER'); ?>">
 				<span class=" glyphicon glyphicon-chevron-left
