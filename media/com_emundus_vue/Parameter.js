@@ -1,4 +1,4 @@
-import { ar as getDefaultExportFromCjs, _ as _export_sfc, J as script, s as settingsService, S as Swal, u as useGlobalStore, ac as reactive, r as resolveComponent, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, n as normalizeClass, m as createTextVNode, t as toDisplayString, w as withDirectives, a as createBlock, y as vModelSelect, F as Fragment, e as renderList, f as withCtx, z as vModelText, j as normalizeStyle, a4 as vModelRadio, R as vModelCheckbox, a2 as vModelDynamic, h as withModifiers, O as mergeProps, U as toHandlers, a8 as resolveDynamicComponent } from "./app_emundus.js";
+import { ar as getDefaultExportFromCjs, _ as _export_sfc, J as script, u as useGlobalStore, ac as reactive, S as Swal, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, n as normalizeClass, m as createTextVNode, t as toDisplayString, b as createCommentVNode, d as createBaseVNode, w as withDirectives, z as vModelSelect, F as Fragment, e as renderList, a as createBlock, f as withCtx, A as vModelText, j as normalizeStyle, a4 as vModelRadio, R as vModelCheckbox, a2 as vModelDynamic, g as withModifiers, O as mergeProps, U as toHandlers, a8 as resolveDynamicComponent } from "./app_emundus.js";
 import { D as DatePicker } from "./index.js";
 import EventBooking from "./EventBooking.js";
 var dayjs_min$1 = { exports: {} };
@@ -528,7 +528,7 @@ const _sfc_main = {
       return res.test(email);
     },
     formatDateForDisplay(date) {
-      if (!date) return "";
+      if (!date) return "00:00";
       return date.split("-").reverse().join("/");
     },
     bookingSlotIdUpdated(value) {
@@ -605,6 +605,17 @@ const _sfc_main = {
         if (this.parameter.type === "date") {
           newValue = dayjs(newValue).format("YYYY-MM-DD");
           this.value = newValue.split("/").reverse().join("-");
+        } else if (this.parameter.type === "time") {
+          if (newValue !== null) {
+            const oldDate = new Date(this.value);
+            const newDate = new Date(newValue);
+            oldDate.setHours(newDate.getHours(), newDate.getMinutes());
+            this.value = oldDate;
+          } else {
+            const oldDate = new Date(this.value);
+            oldDate.setHours(0, 0, 0, 0);
+            this.value = oldDate;
+          }
         } else {
           this.value = newValue;
         }
