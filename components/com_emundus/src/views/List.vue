@@ -331,27 +331,27 @@
 						</modal>
 					</div>
 
-					<div v-if="showModal && currentComponentElementId === null">
-						<modal
-							:name="'modal-component'"
-							transition="nice-modal-fade"
-							:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
-							:width="'600px'"
-							:delay="100"
-							:adaptive="true"
-							:clickToClose="false"
-							@click.stop
-						>
-							<component
-								:is="resolvedComponent"
-								:items="checkedItems"
-								@close="closePopup()"
-								@update-items="getListItems()"
-							/>
-						</modal>
-					</div>
-
 					<Gantt v-else-if="viewType === 'gantt'" :language="params.shortlang" :periods="displayedItems"></Gantt>
+				</div>
+
+				<div v-if="showModal && currentComponentElementId === null">
+					<modal
+						:name="'modal-component'"
+						transition="nice-modal-fade"
+						:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+						:width="'600px'"
+						:delay="100"
+						:adaptive="true"
+						:clickToClose="false"
+						@click.stop
+					>
+						<component
+							:is="resolvedComponent"
+							:items="checkedItems"
+							@close="closePopup()"
+							@update-items="getListItems()"
+						/>
+					</modal>
 				</div>
 
 				<NoResults v-else :message="currentTab.noData" />

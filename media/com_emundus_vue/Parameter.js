@@ -528,7 +528,7 @@ const _sfc_main = {
       return res.test(email);
     },
     formatDateForDisplay(date) {
-      if (!date) return "";
+      if (!date) return "00:00";
       return date.split("-").reverse().join("/");
     },
     bookingSlotIdUpdated(value) {
@@ -605,6 +605,17 @@ const _sfc_main = {
         if (this.parameter.type === "date") {
           newValue = dayjs(newValue).format("YYYY-MM-DD");
           this.value = newValue.split("/").reverse().join("-");
+        } else if (this.parameter.type === "time") {
+          if (newValue !== null) {
+            const oldDate = new Date(this.value);
+            const newDate = new Date(newValue);
+            oldDate.setHours(newDate.getHours(), newDate.getMinutes());
+            this.value = oldDate;
+          } else {
+            const oldDate = new Date(this.value);
+            oldDate.setHours(0, 0, 0, 0);
+            this.value = oldDate;
+          }
         } else {
           this.value = newValue;
         }

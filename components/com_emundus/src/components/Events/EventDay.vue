@@ -63,6 +63,17 @@ export default {
 				eventElement.style.left = this.calendarEvent.left;
 			}
 		},
+		openTooltip(calendarEvent, event) {
+			const eventElement = event.target.closest('.event-day');
+
+			if (eventElement) {
+				this.$emit('open-tooltip', { calendarEvent, eventElement });
+			}
+		},
+
+		closeTooltip() {
+			this.$emit('close-tooltip');
+		},
 	},
 	watch: {
 		calendarEvent: {
@@ -112,12 +123,14 @@ export default {
 
 <template>
 	<div
-		class="tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2"
+		class="event-day tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2"
 		:style="{
 			backgroundColor: brightnessColor,
 			color: calendarEvent.color,
 			borderColor: calendarEvent.color,
 		}"
+		@mouseover="openTooltip(calendarEvent, $event)"
+		@mouseleave="closeTooltip"
 	>
 		<div v-if="view === 'week'">
 			<div v-if="calendarEvent.title">

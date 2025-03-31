@@ -491,8 +491,8 @@ const _hoisted_1$5 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_2$5 = { class: "tw-underline" };
 const _hoisted_3$5 = { class: "tw-underline" };
 const _hoisted_4$5 = { class: "tw-mt-7 tw-flex tw-justify-end" };
-const _hoisted_5$3 = ["disabled"];
-const _hoisted_6$1 = {
+const _hoisted_5$4 = ["disabled"];
+const _hoisted_6$2 = {
   key: 1,
   class: "em-page-loader"
 };
@@ -573,9 +573,9 @@ function _sfc_render$5(_ctx, _cache, $props, $setup, $data, $options) {
         disabled: $options.disabledSubmit,
         class: "tw-btn-primary tw-cursor-pointer",
         onClick: _cache[3] || (_cache[3] = ($event) => this.$props.event && Object.keys(this.$props.event).length > 0 ? $options.editEvent(this.$props.event["id"]) : $options.createEvent())
-      }, toDisplayString(this.$props.event && Object.keys(this.$props.event).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_EVENT_GLOBAL_CREATE") : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CREATE")), 9, _hoisted_5$3)
+      }, toDisplayString(this.$props.event && Object.keys(this.$props.event).length > 0 ? _ctx.translate("COM_EMUNDUS_ONBOARD_EDIT_EVENT_GLOBAL_CREATE") : _ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_GLOBAL_CREATE")), 9, _hoisted_5$4)
     ]),
-    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_6$1)) : createCommentVNode("", true)
+    $data.loading ? (openBlock(), createElementBlock("div", _hoisted_6$2)) : createCommentVNode("", true)
   ]);
 }
 const EventGlobalSettings = /* @__PURE__ */ _export_sfc(_sfc_main$5, [["render", _sfc_render$5]]);
@@ -939,7 +939,7 @@ const _hoisted_2$4 = {
 };
 const _hoisted_3$4 = { class: "tw-flex tw-flex-col tw-gap-6" };
 const _hoisted_4$4 = { class: "tw-mt-7 tw-flex tw-justify-end" };
-const _hoisted_5$2 = ["disabled"];
+const _hoisted_5$3 = ["disabled"];
 function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Parameter = resolveComponent("Parameter");
   return openBlock(), createElementBlock("div", null, [
@@ -1011,7 +1011,7 @@ function _sfc_render$4(_ctx, _cache, $props, $setup, $data, $options) {
           class: "tw-btn-primary tw-cursor-pointer",
           disabled: $options.disabledSubmit,
           onClick: _cache[0] || (_cache[0] = (...args) => $options.setupSlots && $options.setupSlots(...args))
-        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CREATE")), 9, _hoisted_5$2)
+        }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_CREATE")), 9, _hoisted_5$3)
       ])
     ])) : createCommentVNode("", true)
   ]);
@@ -1427,7 +1427,12 @@ const _sfc_main$3 = {
     disabledSubmit: function() {
       return this.fields.some((field) => {
         if (!field.optional) {
-          return field.value === "" || field.value === 0;
+          if (field.type === "time") {
+            let dateValue = new Date(field.value);
+            let now = /* @__PURE__ */ new Date();
+            return isNaN(dateValue) || dateValue < now;
+          }
+          return field.value === "" || field.value === 0 || field.value === null;
         } else {
           return false;
         }
@@ -1448,8 +1453,8 @@ const _hoisted_1$3 = { class: "tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-
 const _hoisted_2$3 = { class: "tw-mb-4 tw-flex tw-items-center tw-justify-between" };
 const _hoisted_3$3 = { key: 0 };
 const _hoisted_4$3 = { key: 1 };
-const _hoisted_5$1 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
-const _hoisted_6 = { class: "tw-flex tw-flex-col tw-gap-3" };
+const _hoisted_5$2 = { class: "tw-mt-7 tw-flex tw-flex-col tw-gap-6" };
+const _hoisted_6$1 = { class: "tw-flex tw-flex-col tw-gap-3" };
 const _hoisted_7 = { class: "tw-flex tw-items-center tw-gap-2" };
 const _hoisted_8 = {
   key: 0,
@@ -1503,7 +1508,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
         class: "tw-w-full",
         text: this.durationSlotInfo
       }, null, 8, ["text"]),
-      createBaseVNode("div", _hoisted_5$1, [
+      createBaseVNode("div", _hoisted_5$2, [
         (openBlock(true), createElementBlock(Fragment, null, renderList($data.fields, (field) => {
           return withDirectives((openBlock(), createElementBlock("div", {
             key: field.param,
@@ -1523,7 +1528,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
           ]);
         }), 128)),
         createBaseVNode("div", null, [
-          createBaseVNode("div", _hoisted_6, [
+          createBaseVNode("div", _hoisted_6$1, [
             createBaseVNode("div", _hoisted_7, [
               _cache[9] || (_cache[9] = createBaseVNode("span", { class: "material-symbols-outlined" }, "repeat", -1)),
               createBaseVNode("button", {
@@ -1619,7 +1624,7 @@ function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
     _: 1
   }, 8, ["onClosed", "onBeforeOpen"]);
 }
-const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-0ba8752e"]]);
+const CalendarSlotPopup = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-e52cc6e8"]]);
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
 const createCalendarConfig = (vm) => ({
@@ -1680,6 +1685,7 @@ const _sfc_main$2 = {
       calendarApp: shallowRef(null),
       loading: true,
       openedSlotPopup: false,
+      actualLanguage: "fr-FR",
       dateClicked: null,
       currentSlot: null,
       view: "week",
@@ -1695,7 +1701,13 @@ const _sfc_main$2 = {
       lastMouseX: 0,
       lastMouseY: 0,
       lastMouseTarget: null,
-      animationFrame: null
+      animationFrame: null,
+      tooltip: {
+        visible: false,
+        booked: 0,
+        available: 0,
+        position: { top: 0, left: 0 }
+      }
     };
   },
   mounted() {
@@ -1724,6 +1736,8 @@ const _sfc_main$2 = {
     this.removeEventListeners();
   },
   created() {
+    const globalStore = useGlobalStore();
+    this.actualLanguage = globalStore.getCurrentLang;
     this.loading = false;
   },
   methods: {
@@ -1843,6 +1857,30 @@ const _sfc_main$2 = {
     },
     hideSelection() {
       this.selection.visible = false;
+    },
+    showTooltip({ calendarEvent, eventElement }) {
+      const eventRect = eventElement.getBoundingClientRect();
+      const header = document.querySelector(".sx__calendar-header").offsetHeight + document.querySelector(".sx__week-header").offsetHeight;
+      if (!this.tooltip.visible) {
+        this.tooltip.booked = calendarEvent.booked_count;
+        this.tooltip.available = calendarEvent.availabilities_count;
+        this.tooltip.position = {
+          top: eventRect.top + window.scrollY - header * 2 - 60,
+          left: eventRect.left - 97
+        };
+        this.tooltip.hours = new Date(calendarEvent.start).toLocaleTimeString(this.actualLanguage, {
+          hour: "2-digit",
+          minute: "2-digit"
+        }) + " - " + new Date(calendarEvent.end).toLocaleTimeString(this.actualLanguage, {
+          hour: "2-digit",
+          minute: "2-digit"
+        });
+        this.tooltip.color = calendarEvent.color;
+        this.tooltip.visible = true;
+      }
+    },
+    hideTooltip() {
+      this.tooltip.visible = false;
     }
   },
   computed: {}
@@ -1858,6 +1896,8 @@ const _hoisted_4$2 = {
   class: "calendar-container tw-mt-4",
   ref: "calendar"
 };
+const _hoisted_5$1 = { class: "tw-flex tw-items-center tw-gap-2" };
+const _hoisted_6 = { class: "tw-flex tw-items-center tw-gap-2" };
 function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_CalendarSlotPopup = resolveComponent("CalendarSlotPopup");
   const _component_EventDay = resolveComponent("EventDay");
@@ -1893,11 +1933,39 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
               createVNode(_component_EventDay, {
                 "calendar-event": calendarEvent,
                 view: $data.view,
-                preset: "full"
-              }, null, 8, ["calendar-event", "view"])
+                preset: "full",
+                onOpenTooltip: $options.showTooltip,
+                onCloseTooltip: $options.hideTooltip
+              }, null, 8, ["calendar-event", "view", "onOpenTooltip", "onCloseTooltip"])
             ]),
             _: 1
           }, 8, ["calendar-app"]),
+          withDirectives(createBaseVNode("div", {
+            class: "slot-tooltip-info",
+            style: normalizeStyle({
+              top: $data.tooltip.position.top + "px",
+              left: $data.tooltip.position.left + "px",
+              backgroundColor: "var(--neutral-0)",
+              color: "var(--neutral-900)"
+            })
+          }, [
+            createBaseVNode("div", _hoisted_5$1, [
+              createBaseVNode("span", {
+                class: "material-symbols-outlined",
+                style: normalizeStyle({ color: $data.tooltip.color })
+              }, "schedule", 4),
+              createBaseVNode("p", null, toDisplayString($data.tooltip.hours), 1)
+            ]),
+            createBaseVNode("div", _hoisted_6, [
+              createBaseVNode("span", {
+                class: "material-symbols-outlined",
+                style: normalizeStyle({ color: $data.tooltip.color })
+              }, "groups", 4),
+              createBaseVNode("p", null, toDisplayString($data.tooltip.booked) + " / " + toDisplayString($data.tooltip.available) + " " + toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER")), 1)
+            ])
+          ], 4), [
+            [vShow, $data.tooltip.visible]
+          ]),
           $data.selection.visible ? (openBlock(), createElementBlock("div", {
             key: 0,
             class: "selection-box",
