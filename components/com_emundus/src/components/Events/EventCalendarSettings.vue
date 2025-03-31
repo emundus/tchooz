@@ -13,6 +13,7 @@ import '@schedule-x/theme-default/dist/index.css';
 import { createEventsServicePlugin } from '@schedule-x/events-service';
 import { createCalendarControlsPlugin } from '@schedule-x/calendar-controls';
 import { translations, mergeLocales } from '@schedule-x/translations';
+import { useGlobalStore } from '@/stores/global.js';
 
 const eventsServicePlugin = createEventsServicePlugin();
 const calendarControls = createCalendarControlsPlugin();
@@ -78,6 +79,7 @@ export default {
 			calendarApp: shallowRef(null),
 			loading: true,
 			openedSlotPopup: false,
+			actualLanguage: 'fr-FR',
 
 			dateClicked: null,
 			currentSlot: null,
@@ -97,6 +99,13 @@ export default {
 			lastMouseTarget: null,
 
 			animationFrame: null,
+
+			tooltip: {
+				visible: false,
+				booked: 0,
+				available: 0,
+				position: { top: 0, left: 0 },
+			},
 		};
 	},
 	mounted() {
@@ -135,6 +144,8 @@ export default {
 		this.removeEventListeners();
 	},
 	created() {
+		const globalStore = useGlobalStore();
+		this.actualLanguage = globalStore.getCurrentLang;
 		this.loading = false;
 	},
 	methods: {
@@ -279,6 +290,37 @@ export default {
 		hideSelection() {
 			this.selection.visible = false;
 		},
+		showTooltip({ calendarEvent, eventElement }) {
+			const eventRect = eventElement.getBoundingClientRect();
+			const header =
+				document.querySelector('.sx__calendar-header').offsetHeight +
+				document.querySelector('.sx__week-header').offsetHeight;
+
+			if (!this.tooltip.visible) {
+				this.tooltip.booked = calendarEvent.booked_count;
+				this.tooltip.available = calendarEvent.availabilities_count;
+				this.tooltip.position = {
+					top: eventRect.top + window.scrollY - header * 2 - 60,
+					left: eventRect.left - 97,
+				};
+				this.tooltip.hours =
+					new Date(calendarEvent.start).toLocaleTimeString(this.actualLanguage, {
+						hour: '2-digit',
+						minute: '2-digit',
+					}) +
+					' - ' +
+					new Date(calendarEvent.end).toLocaleTimeString(this.actualLanguage, {
+						hour: '2-digit',
+						minute: '2-digit',
+					});
+				this.tooltip.color = calendarEvent.color;
+				this.tooltip.visible = true;
+			}
+		},
+
+		hideTooltip() {
+			this.tooltip.visible = false;
+		},
 	},
 	computed: {},
 };
@@ -316,9 +358,40 @@ export default {
 				<div class="calendar-container tw-mt-4" v-if="calendarApp" ref="calendar">
 					<ScheduleXCalendar :calendar-app="calendarApp" class="tw-relative">
 						<template #timeGridEvent="{ calendarEvent }">
-							<EventDay :calendar-event="calendarEvent" :view="view" :preset="'full'" />
+							<EventDay
+								:calendar-event="calendarEvent"
+								:view="view"
+								:preset="'full'"
+								@open-tooltip="showTooltip"
+								@close-tooltip="hideTooltip"
+							/>
 						</template>
 					</ScheduleXCalendar>
+
+					<div
+						v-show="tooltip.visible"
+						class="slot-tooltip-info"
+						:style="{
+							top: tooltip.position.top + 'px',
+							left: tooltip.position.left + 'px',
+							backgroundColor: 'var(--neutral-0)',
+							color: 'var(--neutral-900)',
+						}"
+					>
+						<div class="tw-flex tw-items-center tw-gap-2">
+							<span class="material-symbols-outlined" :style="{ color: tooltip.color }">schedule</span>
+							<p>{{ tooltip.hours }}</p>
+						</div>
+
+						<div class="tw-flex tw-items-center tw-gap-2">
+							<span class="material-symbols-outlined" :style="{ color: tooltip.color }">groups</span>
+							<p>
+								{{ tooltip.booked }} / {{ tooltip.available }}
+								{{ translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER') }}
+							</p>
+						</div>
+					</div>
+
 					<div
 						v-if="selection.visible"
 						class="selection-box"
@@ -350,5 +423,20 @@ export default {
 .sx-vue-calendar-wrapper {
 	height: 100% !important;
 	max-height: unset !important;
+}
+
+.slot-tooltip-info {
+	position: absolute;
+	border-radius: 8px;
+	font-size: 12px;
+	white-space: nowrap;
+	z-index: 1000;
+	padding: 8px 12px;
+	box-shadow: 0 5px 10px rgb(0 0 0 / 10%);
+	border: 1px solid var(--neutral-300);
+}
+
+.slot-tooltip-info p {
+	color: inherit;
 }
 </style>

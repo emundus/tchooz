@@ -1947,7 +1947,7 @@ const _hoisted_28 = {
 const _hoisted_29 = ["onClick"];
 const _hoisted_30 = { key: 1 };
 const _hoisted_31 = { key: 2 };
-const _hoisted_32 = { key: 3 };
+const _hoisted_32 = { key: 1 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_Head = resolveComponent("Head");
@@ -2293,42 +2293,42 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
               ]),
               _: 1
             })
-          ])) : createCommentVNode("", true),
-          $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_32, [
-            createVNode(_component_modal, {
-              name: "modal-component",
-              transition: "nice-modal-fade",
-              class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
-              width: "600px",
-              delay: 100,
-              adaptive: true,
-              clickToClose: false,
-              onClick: _cache[15] || (_cache[15] = withModifiers(() => {
-              }, ["stop"]))
-            }, {
-              default: withCtx(() => [
-                (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
-                  items: $data.checkedItems,
-                  onClose: _cache[13] || (_cache[13] = ($event) => $options.closePopup()),
-                  onUpdateItems: _cache[14] || (_cache[14] = ($event) => $options.getListItems())
-                }, null, 40, ["items"]))
-              ]),
-              _: 1
-            })
           ])) : $data.viewType === "gantt" ? (openBlock(), createBlock(_component_Gantt, {
-            key: 4,
+            key: 3,
             language: $data.params.shortlang,
             periods: $options.displayedItems
           }, null, 8, ["language", "periods"])) : createCommentVNode("", true)
+        ])) : createCommentVNode("", true),
+        $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_32, [
+          createVNode(_component_modal, {
+            name: "modal-component",
+            transition: "nice-modal-fade",
+            class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal"),
+            width: "600px",
+            delay: 100,
+            adaptive: true,
+            clickToClose: false,
+            onClick: _cache[15] || (_cache[15] = withModifiers(() => {
+            }, ["stop"]))
+          }, {
+            default: withCtx(() => [
+              (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
+                items: $data.checkedItems,
+                onClose: _cache[13] || (_cache[13] = ($event) => $options.closePopup()),
+                onUpdateItems: _cache[14] || (_cache[14] = ($event) => $options.getListItems())
+              }, null, 40, ["items"]))
+            ]),
+            _: 1
+          })
         ])) : (openBlock(), createBlock(_component_NoResults, {
-          key: 1,
+          key: 2,
           message: $options.currentTab.noData
         }, null, 8, ["message"]))
       ]))
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-2a76c583"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6ff05cb4"]]);
 export {
   list as default
 };
