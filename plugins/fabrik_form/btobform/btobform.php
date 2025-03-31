@@ -343,7 +343,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'manager_first_name' => $profile->prenom_manager,
 					'manager_function' => $profile->fonction_responsable,
 					'manager_email' => $profile->adresse_e_mail_responsable,
-					'phone' => $profile->telephone_responsable,
+					'manager_phone' => $profile->telephone_responsable,
 					'same_company_address' => !empty($profile->meme_adresse_entreprise) ? 1 : 0,
 					'manager_country' => $profile->pays_responsable,
 					'manager_address' => $profile->adresse_postale_responsable,
@@ -356,7 +356,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'admin_first_name' => $profile->prenom_admin,
 					'admin_function' => $profile->fonction_admin,
 					'admin_email' => $profile->adresse_e_mail,
-					'phone_number' => $profile->telephone_admin,
+					'admin_phone_number' => $profile->telephone_admin,
 				];
 
 				$datas_to_fills = [];
