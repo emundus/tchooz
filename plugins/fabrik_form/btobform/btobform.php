@@ -319,9 +319,11 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'registration_first_name' => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
 					'accomodation_yesno' => !empty($data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key]) ? 1 : 0,
 					'accomodation_specify' => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
-					'registration_email' => $user->email,
-					'correspondence_different_contact' => 1,
-					'correspondence_different_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'registration_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'correspondence_different_contact' => 0,
+					'correspondence_different_email' => '',
+					'correspondence_phone' => $profile->telephone_responsable,
+					'correspondence_different_phone' => '',
 					'registration_company_price' => $financement_entreprise . '€',
 					'registration_organism_price' => $financement_organisme . '€',
 					'registration_candidate_price' => '0€',
@@ -364,13 +366,11 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				{
 					foreach ($forms as $form) {
 						$element = EmundusHelperFabrik::getElementsByAlias($alias, $form->form_id);
-						if(!empty($element)) {
+						if (!empty($element)) {
 							if(empty($datas_to_fills[$element[0]->db_table_name])) {
 								$datas_to_fills[$element[0]->db_table_name] = [];
 							}
 							$datas_to_fills[$element[0]->db_table_name][$element[0]->name] = $value;
-
-							break;
 						}
 					}
 				}
