@@ -1947,7 +1947,7 @@ const _hoisted_28 = {
 const _hoisted_29 = ["onClick"];
 const _hoisted_30 = { key: 1 };
 const _hoisted_31 = { key: 2 };
-const _hoisted_32 = { key: 1 };
+const _hoisted_32 = { key: 2 };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_skeleton = resolveComponent("skeleton");
   const _component_Head = resolveComponent("Head");
@@ -2298,7 +2298,10 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             language: $data.params.shortlang,
             periods: $options.displayedItems
           }, null, 8, ["language", "periods"])) : createCommentVNode("", true)
-        ])) : createCommentVNode("", true),
+        ])) : (openBlock(), createBlock(_component_NoResults, {
+          key: 1,
+          message: $options.currentTab.noData
+        }, null, 8, ["message"])),
         $data.showModal && $data.currentComponentElementId === null ? (openBlock(), createElementBlock("div", _hoisted_32, [
           createVNode(_component_modal, {
             name: "modal-component",
@@ -2320,15 +2323,12 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             ]),
             _: 1
           })
-        ])) : (openBlock(), createBlock(_component_NoResults, {
-          key: 2,
-          message: $options.currentTab.noData
-        }, null, 8, ["message"]))
+        ])) : createCommentVNode("", true)
       ]))
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-6ff05cb4"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-0eb9d72c"]]);
 export {
   list as default
 };

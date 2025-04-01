@@ -334,6 +334,8 @@
 					<Gantt v-else-if="viewType === 'gantt'" :language="params.shortlang" :periods="displayedItems"></Gantt>
 				</div>
 
+				<NoResults v-else :message="currentTab.noData" />
+
 				<div v-if="showModal && currentComponentElementId === null">
 					<modal
 						:name="'modal-component'"
@@ -353,8 +355,6 @@
 						/>
 					</modal>
 				</div>
-
-				<NoResults v-else :message="currentTab.noData" />
 			</div>
 		</div>
 	</div>
