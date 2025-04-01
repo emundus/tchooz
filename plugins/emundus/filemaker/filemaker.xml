@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>plg_emundus_filemaker</name>
+    <version>1.0.0</version>
+    <creationDate>April 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to manager Filemaker webhook</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Filemaker</namespace>
+    <files>
+        <folder plugin="filemaker">services</folder>
+        <folder>src</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field name="debug_mode"
+                       type="list"
+                       label="PLG_EMUNDUS_FILEMAKER_DEBUG_MODE_LABEL"
+                       default="0"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+
+                <field name="import_tag"
+                       type="sql"
+                       query="SELECT id, label FROM #__emundus_setup_action_tag"
+                       key_field="id"
+                       value_field="label"
+                       label="PLG_EMUNDUS_FILEMAKER_IMPORT_TAG_LABEL"
+                       default="6"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
