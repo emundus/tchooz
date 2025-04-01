@@ -1212,7 +1212,7 @@ class EmundusModelPayment extends JModelList
 	 * $hikashop_product_category category on which discount can be applied
 	 * $discount_duration
 	 */
-	public function generateCoupon($fnum, $discount_amount, $discount_amount_type = 'flat', $hikashop_product_category, $discount_duration = 1800)
+	public function generateCoupon($fnum, $discount_amount, $discount_amount_type = 'flat', $hikashop_product_category = 0, $discount_duration = 1800)
 	{
 		$discount_code = '';
 
@@ -1364,9 +1364,55 @@ class EmundusModelPayment extends JModelList
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
+			$columns = [
+				'product_parent_id',
+				'product_name',
+				'product_description',
+				'product_url',
+				'product_keywords',
+				'product_meta_description',
+				'product_description_raw',
+				'product_average_score',
+				'product_quantity',
+				'product_code',
+				'product_published',
+				'product_type',
+				'product_sort_price'
+			];
+
+			$values = [
+				$parent_id,
+				$db->quote($label),
+				$db->quote(''),
+				$db->quote(''),
+				$db->quote(''),
+				$db->quote(''),
+				$db->quote(''),
+				0,
+				-1,
+				$db->quote($code),
+				$db->quote('1'),
+				$db->quote($type),
+				$db->quote($price)
+			];
+
+			// Check if product_vendor_id and product_vendor_params exist
+			$table_query = 'SHOW COLUMNS FROM #__hikashop_product';
+			$db->setQuery($table_query);
+			$columns_info = $db->loadColumn();
+
+			if (in_array('product_vendor_id', $columns_info)) {
+				$columns[] = 'product_vendor_id';
+				$values[] = $vendor_id;
+			}
+			if (in_array('product_vendor_params', $columns_info)) {
+				$columns[] = 'product_vendor_params';
+				$values[] = '';
+			}
+
 			$query->insert('#__hikashop_product')
-				->columns(['product_parent_id', 'product_name', 'product_description', 'product_url', 'product_keywords', 'product_meta_description', 'product_description_raw', 'product_average_score', 'product_quantity', 'product_code', 'product_published', 'product_type', 'product_sort_price', 'product_vendor_id'])
-				->values($parent_id . ', ' . $db->quote($label)  . ', "", "", "", "", "", 0, -1, ' . $db->quote($code) . ', 1, ' . $db->quote($type). ', ' . $db->quote($price) . ', ' .  $db->quote($vendor_id));
+				->columns($columns)
+				->values(implode(',', $values));
 
 			try {
 				$db->setQuery($query);
