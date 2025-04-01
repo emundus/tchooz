@@ -14,18 +14,18 @@ stages:
   - release
   - deploy
 
-include:
-- project: 'emundus/devops/ci-cd-templates'
-  ref: main
-  file: '.php_security_checker.yml'
-- project: 'emundus/devops/ci-cd-templates'
-  ref: main
-  file: '.deployer_tchooz_v2.yml'
-- project: 'emundus/devops/ci-cd-templates'
-  ref: main
-  file: '.release-template.yml'
-- template: Security/Secret-Detection.gitlab-ci.yml
-- template: Security/SAST.gitlab-ci.yml
+#include:
+#- project: 'emundus/devops/ci-cd-templates'
+#  ref: main
+#  file: '.php_security_checker.yml'
+#- project: 'emundus/devops/ci-cd-templates'
+#  ref: main
+#  file: '.deployer_tchooz_v2.yml'
+#- project: 'emundus/devops/ci-cd-templates'
+#  ref: main
+#  file: '.release-template.yml'
+#- template: Security/Secret-Detection.gitlab-ci.yml
+#- template: Security/SAST.gitlab-ci.yml
 
 check-commit-prefixes-job:
   stage: prepare
@@ -63,6 +63,13 @@ build-app-to-test-job:
       changes:
         - Dockerfile
         - .docker/scripts/entrypoint-build-ci-env.sh
+
+test-commit-tag:
+  stage: build
+  rules:
+    - if: $CI_COMMIT_TAG
+  script:
+    - echo toto
 
 build-db-to-test-job:
   stage: build
@@ -112,6 +119,8 @@ release-minor:
   variables:
     MERGE_MESSAGE: "Merge branch 'dev' into 'master'"
     RELEASE_TYPE: "minor"
+
+
 
 #test_playwright:
 #  image: mcr.microsoft.com/playwright:v1.43.0-jammy
