@@ -352,14 +352,17 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'manager_additional_address' => $profile->complement_adresse_responsable,
 					'manager_postal_code' => $profile->code_postal_manager,
 					'manager_city' => $profile->ville_responsable,
-					'different_admin' => !empty($profile->charge_gestion_admin) ? 0 : 1,
-					'admin_civility' => $profile->civilite_admin,
-					'admin_last_name' => $profile->nom_admin,
-					'admin_first_name' => $profile->prenom_admin,
-					'admin_function' => $profile->fonction_admin,
-					'admin_email' => $profile->adresse_e_mail,
-					'admin_phone_number' => $profile->telephone_admin,
+					'different_admin' => !empty($profile->charge_gestion_admin) ? 1 : 0
 				];
+
+				if ($alias_to_fills['different_admin'] != 0) {
+					$alias_to_fills['admin_civility'] = $profile->civilite_admin;
+					$alias_to_fills['admin_last_name'] = $profile->nom_admin;
+					$alias_to_fills['admin_first_name'] = $profile->prenom_admin;
+					$alias_to_fills['admin_function'] = $profile->fonction_admin;
+					$alias_to_fills['admin_email'] = $profile->adresse_e_mail;
+					$alias_to_fills['admin_phone_number'] = $profile->telephone_admin;
+				}
 
 				$datas_to_fills = [];
 				foreach ($alias_to_fills as $alias => $value)
