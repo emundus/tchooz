@@ -64,14 +64,19 @@ build-app-to-test-job:
         - Dockerfile
         - .docker/scripts/entrypoint-build-ci-env.sh
 
-test-commit-tag:
-  stage: build
-  rules:
-    - if: $CI_COMMIT_TAG
-      when: always
-    - when: never
+deploy-A:
+  stage: deploy
   script:
-    - echo toto
+    - echo "deploy-A pour le tag $CI_COMMIT_TAG"
+  only:
+    - tags
+
+deploy-B:
+  stage: deploy
+  script:
+    - echo "deploy-B pour le tag $CI_COMMIT_TAG"
+  rules:
+    - if: '$CI_COMMIT_TAG'
 
 build-db-to-test-job:
   stage: build
