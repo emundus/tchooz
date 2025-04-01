@@ -14,18 +14,18 @@ stages:
   - release
   - deploy
 
-#include:
-#- project: 'emundus/devops/ci-cd-templates'
-#  ref: main
-#  file: '.php_security_checker.yml'
-#- project: 'emundus/devops/ci-cd-templates'
-#  ref: main
-#  file: '.deployer_tchooz_v2.yml'
-#- project: 'emundus/devops/ci-cd-templates'
-#  ref: main
-#  file: '.release-template.yml'
-#- template: Security/Secret-Detection.gitlab-ci.yml
-#- template: Security/SAST.gitlab-ci.yml
+include:
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.php_security_checker.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.deployer_tchooz_v2.yml'
+- project: 'emundus/devops/ci-cd-templates'
+  ref: main
+  file: '.release-template.yml'
+- template: Security/Secret-Detection.gitlab-ci.yml
+- template: Security/SAST.gitlab-ci.yml
 
 check-commit-prefixes-job:
   stage: prepare
