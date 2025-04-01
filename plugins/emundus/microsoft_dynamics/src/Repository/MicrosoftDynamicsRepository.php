@@ -102,13 +102,19 @@ class MicrosoftDynamicsRepository
 		return $this->db->execute();
 	}
 
-	public function getDatas(): array
+	public function getDatas(?string $order = null): array
 	{
 		$this->query->clear()
 			->select('*')
 			->from($this->db->quoteName('#__emundus_microsoft_dynamics_queue'))
 			->where('json IS NOT NULL')
 			->where('status = ' . $this->db->quote('pending'));
+		if(!empty($order)) {
+			$this->query->order($order);
+		}
+		else {
+			$this->query->order('created_at');
+		}
 		$this->db->setQuery($this->query);
 
 		return $this->db->loadAssocList();
