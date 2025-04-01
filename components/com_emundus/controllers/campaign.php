@@ -188,11 +188,10 @@ class EmundusControllerCampaign extends BaseController
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
 			$program   = $this->input->getString('program', 'all');
-			$session   = $this->input->getString('session', 'all');
 			$order_by  = $this->input->getString('order_by', 'sc.id');
 			$order_by  = $order_by == 'label' ? 'sc.label' : $order_by;
 
-			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, $session, $order_by);
+			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, 'all', $order_by);
 
 			$eMConfig              = ComponentHelper::getParams('com_emundus');
 			$allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
