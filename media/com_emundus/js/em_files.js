@@ -1948,7 +1948,7 @@ $(document).ready(function() {
                 addLoader();
 
                 title = 'COM_EMUNDUS_EXCEL_GENERATION';
-                html = '<div id="data" class="em-mt-32"></div>';
+                html = '<div id="data" class="tw-mt-4"></div>';
                 swal_container_class = 'em-export'
                 swal_popup_class = 'em-w-100 em-h-100'
                 swal_actions_class = 'em-actions-fixed'
@@ -1974,13 +1974,13 @@ $(document).ready(function() {
 
                             $('#data').append(
                                 '<div>' +
-                                '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8">' +
+                                '<div class="tw-px-4 tw-py-2 tw-bg-neutral-200 tw-rounded-lg">' +
                                 '<select class="modal-chzn-select" id="filt_save" name="filt_save" >'+
                                 '<option value="0">'+Joomla.Text._('COM_EMUNDUS_FILTERS_PLEASE_SELECT_FILTER')+'</option>' +
                                 '</select>'+
-                                '<div class="em-flex-row em-flex-row-justify-end em-mt-8">' +
-                                '<button class="tw-btn-tertiary em-w-auto" id="delfilter" style="margin-right: 8px;" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
-                                '<button class="tw-btn-primary em-w-auto" id="savefilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
+                                '<div class="tw-flex tw-justify-end tw-mt-2">' +
+                                '<button class="tw-btn-tertiary tw-w-auto tw-mr-2" id="delfilter" title="'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'">'+Joomla.Text._('COM_EMUNDUS_ACTIONS_DELETE')+'</button>' +
+                                '<button class="tw-btn-primary tw-w-auto" id="savefilter" title="'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'">'+Joomla.Text._('COM_EMUNDUS_FILES_SAVE_FILTER')+'</button>'+
                                 '</div>' +
                                 '</div>' +
                                 '</div>'+
@@ -2001,23 +2001,23 @@ $(document).ready(function() {
                                 '</div>');
 
                             $('#data').append('' +
-                                '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
+                                '<div class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-4">' +
 
                                 '<div>' +
-                                '<h5>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_PRG')+'<span class="material-symbols-outlined text-xxs text-red-500 mr-0" style="top: -5px;position: relative">emergency</span></h5>' +
+                                '<h5>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_PRG')+'<span class="material-symbols-outlined text-xxs tw-text-red-500 tw-mr-0 tw-relative" style="top: -5px">emergency</span></h5>' +
                                 '</div>' +
 
-                                '<div class="em-mt-8">' +
+                                '<div class="tw-mt-2">' +
                                 '<select class="chzn-select" name="em-export-prg" id="em-export-prg">' +
                                 '<option value="0" >-- '+Joomla.Text._('COM_EMUNDUS_CHOOSE_PRG')+' --</option>' +
                                 '</select>' +
 
-                                '<div id="camp" class="em-mt-4" style="display:none;">' +
+                                '<div id="camp" class="tw-mt-1" style="display:none;">' +
                                 '<select name="em-export-camp" id="em-export-camp" style="display: none;" class="chzn-select">' +
                                 '<option value="0" data-value="0">-- '+Joomla.Text._('COM_EMUNDUS_CHOOSE_CAMP')+' --</option>' +
                                 '</select>' +
                                 '</div>' +
-                                '<div id="letter" class="em-mt-4" style="display:none;">' +
+                                '<div id="letter" class="tw-mt-1" style="display:none;">' +
                                 '<select name="em-export-letter" id="em-export-letter" style="display:none;" class="chzn-select">' +
                                 '<option value="0" data-value="0">-- '+Joomla.Text._('COM_EMUNDUS_CHOOSE_LETTER')+' --</option>' +
                                 '</select>' +
@@ -2025,23 +2025,23 @@ $(document).ready(function() {
                                 '</div>');
 
                             $('#data').append('<div id="elements_detail" style="display: none">' +
-                                '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">' +
+                                '<div class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-4">' +
                                 '<div>'+
                                 '<table style="width:100%;"><tr>'+
-                                '<th class="em-bg-transparent"><div class="em-flex-row em-pointer" id="showelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_icon" class="material-symbols-outlined em-mr-4" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<th class="em-bg-transparent"><div class="tw-flex tw-cursor-pointer" id="showelements">' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_icon" class="material-symbols-outlined tw-mr-1" style="transform: rotate(-90deg)">expand_more</span>' +
                                 '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
-                                '<th class="em-bg-transparent" id="th-eval"><div class="em-flex-row em-pointer" id="showevalelements">' +
-                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showevalelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<th class="em-bg-transparent" id="th-eval"><div class="tw-flex tw-cursor-pointer" id="showevalelements">' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined tw-mr-1" id="showevalelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
                                 '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+'</p>'+
                                 '</div></th>' +
 
                                 '</tr></table>' +
 
                                 '</div>' +
-                                '<div class="em-p-16">' +
+                                '<div class="tw-p-4">' +
                                 // '<select name="em-export-form" id="em-export-form" class="chzn-select"></select><br/>' +
                                 '<div id="appelement">'+
                                 '<div id="elements-popup" style="display: none; ">' +
@@ -2182,11 +2182,12 @@ $(document).ready(function() {
                                 }
                             });
 
-                            $('#data').append('<div id="main" class="em-grid-2 em-mt-16"><div id="list-element-export" style="display: none"></div><div id="oelts" style="display:none;"></div></div>');
+                            $('#data').append('<div id="main" class="em-grid-2 tw-mt-3"><div id="list-element-export" style="display: none"></div><div id="oelts" style="display:none;"></div></div>');
 
-                            var defaults = '<div class="tw-flex tw-flex-row tw-cursor-pointer" id="list-element-export-button"><label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</strong></label></div>' +
-                                '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1" id="em-export-elts">' +
-                                '<ul id="em-export" class="em-m-8"></ul>' +
+                            var defaults = '<div class="tw-cursor-pointer" id="list-element-export-button"></div>' +
+                                '<div class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-3" id="em-export-elts">' +
+                                '<label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</strong></label>' +
+                                '<ul id="em-export" class="tw-m-2"></ul>' +
                                 '</div>';
 
                             $('#list-element-export').append(defaults);
@@ -2195,24 +2196,24 @@ $(document).ready(function() {
                             var menu = null;
 
                             $('#oelts').append('<div>' +
-                                '<p>  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL')+'</p>'+
-                                '<p class="tw-text-neutral-500 tw-text-xs !tw-mt-0">  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL_HELP')+'</p>'+
-                                '<div class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 em-mt-16">'+
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
+                                '<div class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-3">'+
+                                '<label><strong>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL')+'</strong></label>'+
+                                '<p class="tw-text-neutral-500 tw-text-xs !tw-mt-0 tw-h-[30px]">  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL_HELP')+'</p>'+
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="photo" name="em-ex-photo" id="em-ex-photo"/>' +
                                 '<label for="em-ex-photo" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_PHOTO')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="forms" name="em-ex-forms" id="em-ex-forms"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="forms" name="em-ex-forms" id="em-ex-forms"/>' +
                                 '<label for="em-ex-forms" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORMS')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="attachment" name="em-ex-attachment" id="em-ex-attachment"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="attachment" name="em-ex-attachment" id="em-ex-attachment"/>' +
                                 '<label for="em-ex-attachment" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_ATTACHMENT')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="comment" name="em-ex-comment" id="em-ex-comment"/>' +
                                 '<label for="em-ex-comment" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_COMMENT')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="tags" name="em-ex-tags" id="em-ex-tags"/>' +
                                 '<label for="em-ex-tags" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_TAGS')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="group-assoc" name="em-ex-group" id="em-ex-group"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="group-assoc" name="em-ex-group" id="em-ex-group"/>' +
                                 '<label for="em-ex-group" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_ASSOCIATED_GROUPS')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user"/>' +
                                 '<label for="em-ex-user" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_ASSOCIATED_USERS')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="overall" name="em-ex-overall" id="em-ex-overall"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="overall" name="em-ex-overall" id="em-ex-overall"/>' +
                                 '<label for="em-ex-overall" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label></div>' +
                                 '</div></div></div>')
 
@@ -2226,20 +2227,22 @@ $(document).ready(function() {
                                 defaultMethod = 1;
                             }
 
-                            $('#data').append( '<div id="methode" style="display: none" class="em-grid-2 em-mt-16">'+
-                                '<div><label><strong>' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION') + '</strong></label>' +
-                                '<div id="exp" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1 mb-4">' +
-                                '<div id="exp1"><form class="flex flex-col gap-2">' +
-                                '<div class="flex items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_group_concat_distinct" value="0"' + (defaultMethod === 0 ? ' checked' : '') + '><label for="em-export-methode_group_concat_distinct">' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT') +'</label></div>'+
-                                '<div class="flex items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_group_concat" value="2"' + (defaultMethod === 2 ? ' checked' : '') + '><label for="em-export-methode_group_concat">' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE') + '</label></div>' +
-                                '<div class="flex items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_left_join" value="1"' + (defaultMethod === 1 ? ' checked' : '') + '><label for="em-export-methode_left_join">' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN') + '</label></div>' +
+                            $('#data').append( '<div id="methode" style="display: none" class="em-grid-2 tw-mt-4">'+
+                                '<div>' +
+                                '<div id="exp" class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-1 tw-mb-4">' +
+                                '<label><strong>' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION') + '</strong></label>' +
+                                '<div id="exp1"><form class="tw-flex tw-flex-col tw-gap-2">' +
+                                '<div class="tw-flex tw-items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_group_concat_distinct" value="0"' + (defaultMethod === 0 ? ' checked' : '') + '><label for="em-export-methode_group_concat_distinct">' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE_DISTINCT') +'</label></div>'+
+                                '<div class="tw-flex tw-items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_group_concat" value="2"' + (defaultMethod === 2 ? ' checked' : '') + '><label for="em-export-methode_group_concat">' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_AGGREGATE') + '</label></div>' +
+                                '<div class="tw-flex tw-items-baseline"><input type="radio" name="em-export-methode" id="em-export-methode_left_join" value="1"' + (defaultMethod === 1 ? ' checked' : '') + '><label for="em-export-methode_left_join">' + Joomla.Text._('COM_EMUNDUS_CHOOSE_EXTRACTION_METHODE_LEFTJOIN') + '</label></div>' +
                                 '</form></div></div></div>'+
-                                '<div><label><strong>' + Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_OPTION') + '</strong></label>' +
-                                '<div id="forms" class="em-p-12-16 em-bg-neutral-200 em-border-radius-8 mt-1">' +
+                                '<div class="tw-mb-9">' +
+                                '<div id="forms" class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-1">' +
+                                '<label><strong>' + Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_OPTION') + '</strong></label>' +
                                 '<div id="forms1">'+
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="form-title" name="form-title" id="form-title" style="max-height: 20px;"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check0" type="checkbox" value="form-title" name="form-title" id="form-title" style="max-height: 20px;"/>' +
                                 '<label for="form-title" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_TITLE')+'</label></div>' +
-                                '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
                                 '<label for="form-group" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_GROUP')+'</label></div>' +
                                 '</div>'+
                                 '</div>'+
