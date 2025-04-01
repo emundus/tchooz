@@ -207,6 +207,30 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             echo $description;
             ?>
         </span>
+        <?php if(!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
+            <p>
+                <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
+                <?php if(!empty($actions)) : ?>
+                    <?php echo '(';
+                    foreach ($actions as $key => $action) {
+                        if ($key == 0)
+                        {
+                            echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_'.strtoupper($action));
+                        }
+                        else
+                        {
+                            echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_'.strtoupper($action));
+                        }
+                    }
+                    if($show_tabs == 1) {
+                        echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_TABS');
+                    }
+                    echo ').'; ?>
+                <?php else : ?>
+                    <?php echo '. '; ?>
+                <?php endif; ?>
+            </p>
+        <?php endif; ?>
 
 		<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
             <a id="add-application" class="btn btn-success em-mt-24" style="width: auto" href="<?= $cc_list_url; ?>">
@@ -707,6 +731,15 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         </a>
 													<?php endif; ?>
 
+                                                    <?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
+                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
+                                                           href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum . '&tab=attachments'); ?>"
+                                                           id="actions_button_documents_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
+                                                            <span class="material-symbols-outlined tw-mr-2">description</span>
+															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
+                                                        </a>
+													<?php endif; ?>
+
 													<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
                                                         <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                            href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum); ?>"
@@ -997,6 +1030,15 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
                                                                 </a>
 															<?php endif; ?>
+
+                                                            <?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
+                                                                <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
+                                                                   href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum . '&tab=attachments'); ?>"
+                                                                   id="actions_button_documents_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
+                                                                    <span class="material-symbols-outlined tw-mr-2">description</span>
+                                                                    <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
+                                                                </a>
+                                                            <?php endif; ?>
 
 															<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
