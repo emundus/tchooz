@@ -4,6 +4,7 @@ import { useGlobalStore } from '@/stores/global.js';
 import colors from '@/mixins/colors';
 import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
+import userService from '@/services/user.js';
 
 export default {
 	name: 'EventDay',
@@ -51,7 +52,24 @@ export default {
 	},
 	methods: {
 		openModal(slot, registrant = null) {
-			this.$emit('edit-modal', slot, registrant);
+			userService.getAcl('booking', 'u').then((response) => {
+				if (response.status && response.right) {
+					this.$emit('edit-modal', slot, registrant);
+				} else {
+					Swal.fire({
+						type: 'error',
+						title: this.translate('COM_EMUNDUS_ONBOARD_ERROR'),
+						text: this.translate('COM_EMUNDUS_REGISTRANT_NO_PERMISSION'),
+						showConfirmButton: true,
+						timer: 3000,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+				}
+			});
 		},
 		updateItems() {
 			this.$emit('update-items');

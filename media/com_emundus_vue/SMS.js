@@ -1,5 +1,5 @@
 import list from "./List.js";
-import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, g as createVNode } from "./app_emundus.js";
 import "./ExportSlotsModal.js";
 import "./Skeleton.js";
 import "./Calendar.js";
@@ -9,10 +9,10 @@ import "./Parameter.js";
 import "./EventBooking.js";
 import "./events2.js";
 import "./Info.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main = {
   name: "SMS",
   components: {

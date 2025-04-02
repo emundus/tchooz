@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, w as withDirectives, z as vModelSelect, F as Fragment, e as renderList, A as vModelText, J as script, r as resolveComponent, n as normalizeClass, h as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, B as _imports_0, g as withModifiers, v as vShow, M as Modal, u as useGlobalStore, q as ref, as as userService, s as settingsService, S as Swal$1, a8 as resolveDynamicComponent, p as Teleport, C as FetchClient } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, w as withDirectives, y as vModelSelect, F as Fragment, e as renderList, z as vModelText, J as script, r as resolveComponent, n as normalizeClass, g as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, A as _imports_0, h as withModifiers, v as vShow, M as Modal, S as Swal$1, C as FetchClient, s as settingsService, u as useGlobalStore, q as ref, a9 as userService, a8 as resolveDynamicComponent, p as Teleport } from "./app_emundus.js";
 import ExportsSlotsModal from "./ExportSlotsModal.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
@@ -7,11 +7,11 @@ import { P as Parameter } from "./Parameter.js";
 import { e as eventsService } from "./events2.js";
 import "./core.js";
 import "./index.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EventBooking.js";
 import "./Info.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main$9 = {
   name: "Head",
   props: {
@@ -582,7 +582,6 @@ const _sfc_main$5 = {
     multipleActionsPopover() {
       let actions = [];
       if (this.checkedItems.length > 0) {
-        console.log(this.tab.actions);
         actions = this.tab.actions.filter((action) => {
           return action.multiple && action.display;
         });
@@ -1824,7 +1823,7 @@ const _sfc_main = {
     },
     addAction() {
       return typeof this.currentTab !== "undefined" && typeof this.currentTab.actions !== "undefined" ? this.currentTab.actions.find((action) => {
-        return action.name === "add";
+        return action.name === "add" && action.display;
       }) : false;
     },
     previewAction() {
@@ -2328,7 +2327,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-0eb9d72c"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-738d7bc0"]]);
 export {
   list as default
 };
