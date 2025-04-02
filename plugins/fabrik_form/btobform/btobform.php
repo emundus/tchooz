@@ -319,9 +319,11 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'registration_first_name' => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
 					'accomodation_yesno' => !empty($data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key]) ? 1 : 0,
 					'accomodation_specify' => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
-					'registration_email' => $user->email,
-					'correspondence_different_contact' => 1,
-					'correspondence_different_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'registration_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'correspondence_different_contact' => 0,
+					'correspondence_different_email' => '',
+					'correspondence_phone' => $profile->telephone_responsable,
+					'correspondence_different_phone' => '',
 					'registration_company_price' => $financement_entreprise . '€',
 					'registration_organism_price' => $financement_organisme . '€',
 					'registration_candidate_price' => '0€',
@@ -343,34 +345,35 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'manager_first_name' => $profile->prenom_manager,
 					'manager_function' => $profile->fonction_responsable,
 					'manager_email' => $profile->adresse_e_mail_responsable,
-					'phone' => $profile->telephone_responsable,
+					'manager_phone' => $profile->telephone_responsable,
 					'same_company_address' => !empty($profile->meme_adresse_entreprise) ? 1 : 0,
 					'manager_country' => $profile->pays_responsable,
 					'manager_address' => $profile->adresse_postale_responsable,
 					'manager_additional_address' => $profile->complement_adresse_responsable,
 					'manager_postal_code' => $profile->code_postal_manager,
 					'manager_city' => $profile->ville_responsable,
-					'different_admin' => !empty($profile->charge_gestion_admin) ? 0 : 1,
-					'admin_civility' => $profile->civilite_admin,
-					'admin_last_name' => $profile->nom_admin,
-					'admin_first_name' => $profile->prenom_admin,
-					'admin_function' => $profile->fonction_admin,
-					'admin_email' => $profile->adresse_e_mail,
-					'phone_number' => $profile->telephone_admin,
+					'different_admin' => !empty($profile->charge_gestion_admin) ? 1 : 0
 				];
+
+				if ($alias_to_fills['different_admin'] != 0) {
+					$alias_to_fills['admin_civility'] = $profile->civilite_admin;
+					$alias_to_fills['admin_last_name'] = $profile->nom_admin;
+					$alias_to_fills['admin_first_name'] = $profile->prenom_admin;
+					$alias_to_fills['admin_function'] = $profile->fonction_admin;
+					$alias_to_fills['admin_email'] = $profile->adresse_e_mail;
+					$alias_to_fills['admin_phone_number'] = $profile->telephone_admin;
+				}
 
 				$datas_to_fills = [];
 				foreach ($alias_to_fills as $alias => $value)
 				{
 					foreach ($forms as $form) {
 						$element = EmundusHelperFabrik::getElementsByAlias($alias, $form->form_id);
-						if(!empty($element)) {
+						if (!empty($element)) {
 							if(empty($datas_to_fills[$element[0]->db_table_name])) {
 								$datas_to_fills[$element[0]->db_table_name] = [];
 							}
 							$datas_to_fills[$element[0]->db_table_name][$element[0]->name] = $value;
-
-							break;
 						}
 					}
 				}

@@ -331,6 +331,10 @@ class MicrosoftDynamicsFactory
 			}
 		}
 
+		if(!empty($field['length'])) {
+			$value = substr($value, 0, $field['length']);
+		}
+
 		return $value;
 	}
 

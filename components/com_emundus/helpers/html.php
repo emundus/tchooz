@@ -46,5 +46,5 @@ class HtmlSanitizerSingleton
 	 * Les méthodes __clone() et __wakeup() sont utilisées pour empêcher la duplication d'une instance du singleton
 	 */
 	private function __clone() {}
-	private function __wakeup() {}
+	public function __wakeup() {}
 }

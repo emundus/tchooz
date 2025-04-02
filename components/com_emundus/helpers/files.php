@@ -3912,9 +3912,18 @@ class EmundusHelperFiles
 			$_string      = implode(',', $selectedElts);
 			$_find_in_set = "'" . $_string . "'";
 
-			$query = "SELECT jfe.* FROM #__fabrik_elements AS jfe WHERE jfe.id IN ($_string) ORDER BY find_in_set(jfe.id, $_find_in_set)";
+			$query->clear()
+				->select('fe.*')
+				->from($db->quoteName('#__fabrik_elements', 'fe'))
+				->innerJoin($db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $db->quoteName('fe.group_id') . '=' . $db->quoteName('ff.group_id'))
+				->where($db->quoteName('fe.id') . ' IN (' . $_string . ')')
+				->order('find_in_set(fe.id, ' . $_find_in_set . ')');
 			$db->setQuery($query);
 			$selected_elts = $db->loadObjectList();
+
+			foreach ($selected_elts as $elt){
+				$elt->element_label = Text::_($elt->label);
+			}
 
 			return array('selected_elements' => $selected_elts);
 		}
@@ -4738,7 +4747,7 @@ class EmundusHelperFiles
 											$parent_table_alias = '';
 											$parent_table       = $join_informations['join_from_table'];
 
-											if (in_array($parent_table, $already_joined) || !$this->isTableLinkedToCampaignCandidature($parent_table))
+											if (in_array($parent_table, $already_joined) || (!empty($parent_table) && !$this->isTableLinkedToCampaignCandidature($parent_table)))
 											{
 												if (!in_array($parent_table, $already_joined))
 												{

@@ -42,7 +42,8 @@ const _sfc_main = {
                   label: "COM_EMUNDUS_ONBOARD_REGISTRANT_ADD",
                   component: "EditSlot",
                   name: "add",
-                  type: "modal"
+                  type: "modal",
+                  acl: "booking|c"
                 },
                 {
                   action: "index.php?option=com_emundus&view=events&layout=add&event=%id%",

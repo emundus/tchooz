@@ -154,10 +154,16 @@ const _sfc_main$1 = {
   mixins: [colors],
   data() {
     return {
+      access: {
+        canEdit: false,
+        canDelete: false
+      },
       popupPosition: ""
     };
   },
   created() {
+    const globalStore = useGlobalStore();
+    this.access.canEdit = globalStore.hasCoordinatorAccess || globalStore.hasSysadminAccess;
     setTimeout(() => {
       this.setPopupPosition();
     }, 150);
@@ -181,7 +187,10 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = { class: "tw-flex tw-justify-end" };
+const _hoisted_1$1 = {
+  key: 0,
+  class: "tw-flex tw-justify-end"
+};
 function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_EventInformations = resolveComponent("EventInformations");
   return $props.view == "week" ? (openBlock(), createElementBlock("div", {
@@ -196,15 +205,15 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
     })
   }, [
     createVNode(_component_EventInformations, { "calendar-event": $props.calendarEvent }, null, 8, ["calendar-event"]),
-    createBaseVNode("div", _hoisted_1$1, [
+    $data.access.canEdit ? (openBlock(), createElementBlock("div", _hoisted_1$1, [
       createBaseVNode("button", {
         type: "button",
         onClick: _cache[0] || (_cache[0] = (...args) => $options.editEvent && $options.editEvent(...args))
       }, toDisplayString(_ctx.translate("COM_EMUNDUS_EDIT_ITEM")), 1)
-    ])
+    ])) : createCommentVNode("", true)
   ], 6)) : createCommentVNode("", true);
 }
-const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-df7e6317"]]);
+const EventModal$1 = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-2494fba5"]]);
 var PluginName;
 (function(PluginName2) {
   PluginName2["DragAndDrop"] = "dragAndDrop";

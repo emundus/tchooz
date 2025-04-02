@@ -23,10 +23,17 @@ export default {
 	mixins: [colors],
 	data() {
 		return {
+			access: {
+				canEdit: false,
+				canDelete: false,
+			},
 			popupPosition: '',
 		};
 	},
 	created() {
+		const globalStore = useGlobalStore();
+		this.access.canEdit = globalStore.hasCoordinatorAccess || globalStore.hasSysadminAccess;
+
 		setTimeout(() => {
 			this.setPopupPosition();
 		}, 150);
@@ -68,7 +75,7 @@ export default {
 	>
 		<EventInformations :calendar-event="calendarEvent" />
 
-		<div class="tw-flex tw-justify-end">
+		<div class="tw-flex tw-justify-end" v-if="access.canEdit">
 			<button type="button" @click="editEvent">
 				{{ translate('COM_EMUNDUS_EDIT_ITEM') }}
 			</button>

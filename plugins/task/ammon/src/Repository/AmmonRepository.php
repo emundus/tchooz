@@ -124,6 +124,8 @@ class AmmonRepository
 			}
 
 			$registration = $this->factory->createRegistrationEntity($applicant, $this->ammon_session_id, $company);
+			Log::add('Registration for fnum  ' . $this->fnum . ' ' . json_encode($registration), Log::INFO, 'plugin.emundus.ammon');
+
 			$registered = $this->synchronizer->createRegistration($registration);
 			if ($registered)
 			{

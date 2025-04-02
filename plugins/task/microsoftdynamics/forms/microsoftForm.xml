@@ -6,6 +6,8 @@
 				<option value="0">JNO</option>
 				<option value="1">JYES</option>
 			</field>
+
+			<field name="order" label="Fields order" type="text" default="" />
 		</fieldset>
 	</fields>
 </form>

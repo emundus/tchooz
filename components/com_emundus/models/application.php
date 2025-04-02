@@ -24,6 +24,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 /**
  * Emundus Component Application Model
@@ -1859,6 +1860,10 @@ class EmundusModelApplication extends ListModel
 		try {
 
 			if (isset($tableuser)) {
+				if (!class_exists('HtmlSanitizerSingleton')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+				}
+				$html_sanitizer = HtmlSanitizerSingleton::getInstance();
 
 				$allowed_groups      = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
 				$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
@@ -2306,6 +2311,8 @@ class EmundusModelApplication extends ListModel
 														$elt = $r_elt;
 													}
 
+													$elt = $html_sanitizer->sanitize($elt);
+
 													$forms .= '<td><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '"> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</div></td>';
 												}
 												$j++;
@@ -2621,6 +2628,8 @@ class EmundusModelApplication extends ListModel
 											else {
 												$elt = $element->content;
 											}
+
+											$elt = $html_sanitizer->sanitize($elt);
 
 											if ($modulo % 2) {
 												$class = "table-strip-1";
@@ -3486,6 +3495,32 @@ class EmundusModelApplication extends ListModel
 													{
 														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
 													}
+												}
+											}
+											elseif ($element->plugin == 'emundus_fileupload') {
+												$params = json_decode($element->params);
+												$query  = $this->_db->getQuery(true);
+
+												try {
+													$query->select('esa.id,esa.value as attachment_name,eu.filename')
+														->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+														->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eu.attachment_id'))
+														->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+														->andWhere($this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quote($params->attachmentId));
+													$this->_db->setQuery($query);
+													$attachment_upload = $this->_db->loadObject();
+
+													if (!empty($attachment_upload->filename)) {
+														$path = DS . 'images' . DS . 'emundus' . DS . 'files' . DS . $aid . DS . $attachment_upload->filename;
+														$elt  = '<a href="' . $path . '" target="_blank" style="text-decoration: underline;">' . $attachment_upload->attachment_name . '</a>';
+													}
+													else {
+														$elt = '';
+													}
+												}
+												catch (Exception $e) {
+													Log::add('component/com_emundus/models/application | Error at getting emundus_fileupload for applicant ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+													$elt = '';
 												}
 											}
 											else {

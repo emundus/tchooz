@@ -1,4 +1,4 @@
-import { _ as _export_sfc, M as Modal, u as useGlobalStore, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, t as toDisplayString, j as normalizeStyle, F as Fragment, e as renderList, m as createTextVNode, w as withDirectives, v as vShow, a9 as defineComponent, aa as h$5, p as Teleport, ab as isReactive } from "./app_emundus.js";
+import { _ as _export_sfc, M as Modal, a9 as userService, u as useGlobalStore, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, t as toDisplayString, j as normalizeStyle, F as Fragment, e as renderList, m as createTextVNode, w as withDirectives, v as vShow, aa as defineComponent, ab as h$5, p as Teleport, ac as isReactive } from "./app_emundus.js";
 import "./index.js";
 import "./Parameter.js";
 var colors = {
@@ -110,7 +110,24 @@ const _sfc_main = {
   },
   methods: {
     openModal(slot, registrant = null) {
-      this.$emit("edit-modal", slot, registrant);
+      userService.getAcl("booking", "u").then((response) => {
+        if (response.status && response.right) {
+          this.$emit("edit-modal", slot, registrant);
+        } else {
+          Swal.fire({
+            type: "error",
+            title: this.translate("COM_EMUNDUS_ONBOARD_ERROR"),
+            text: this.translate("COM_EMUNDUS_REGISTRANT_NO_PERMISSION"),
+            showConfirmButton: true,
+            timer: 3e3,
+            customClass: {
+              title: "em-swal-title",
+              confirmButton: "em-swal-confirm-button",
+              actions: "em-swal-single-action"
+            }
+          });
+        }
+      });
     },
     updateItems() {
       this.$emit("update-items");
@@ -121,6 +138,15 @@ const _sfc_main = {
         eventElement.style.width = this.calendarEvent.width;
         eventElement.style.left = this.calendarEvent.left;
       }
+    },
+    openTooltip(calendarEvent, event) {
+      const eventElement = event.target.closest(".event-day");
+      if (eventElement) {
+        this.$emit("open-tooltip", { calendarEvent, eventElement });
+      }
+    },
+    closeTooltip() {
+      this.$emit("close-tooltip");
     }
   },
   watch: {
@@ -182,12 +208,14 @@ const _hoisted_8 = {
 const _hoisted_9 = ["onMouseover"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", {
-    class: "tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2",
+    class: "event-day tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2",
     style: normalizeStyle({
       backgroundColor: $options.brightnessColor,
       color: $props.calendarEvent.color,
       borderColor: $props.calendarEvent.color
-    })
+    }),
+    onMouseover: _cache[2] || (_cache[2] = ($event) => $options.openTooltip($props.calendarEvent, $event)),
+    onMouseleave: _cache[3] || (_cache[3] = (...args) => $options.closeTooltip && $options.closeTooltip(...args))
   }, [
     $props.view === "week" ? (openBlock(), createElementBlock("div", _hoisted_1, [
       $props.calendarEvent.title ? (openBlock(), createElementBlock("div", _hoisted_2, [
@@ -266,7 +294,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         }), 128))
       ])) : createCommentVNode("", true)
     ], 64))
-  ], 4);
+  ], 36);
 }
 const EventDay = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
 const Zt = (e2, t2) => (n2, r2) => {

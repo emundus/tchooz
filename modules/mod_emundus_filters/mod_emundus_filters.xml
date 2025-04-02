@@ -158,28 +158,6 @@
                             description="FILTER_ORDER_DESC"
                             default="0"
                     />
-                    <field type="list" name="filter_users" label="FILTER_ON_USERS" default="0">
-                        <option value="0">JNO</option>
-                        <option value="1">JYES</option>
-                    </field>
-                    <field
-                            type="text"
-                            name="filter_users_order"
-                            label="FILTER_ORDER"
-                            description="FILTER_ORDER_DESC"
-                            default="0"
-                    />
-                    <field type="list" name="filter_attachments" label="FILTER_ON_ATTACHMENTS" default="0">
-                        <option value="0">JNO</option>
-                        <option value="1">JYES</option>
-                    </field>
-                    <field
-                            type="text"
-                            name="filter_attachments_order"
-                            label="FILTER_ORDER"
-                            description="FILTER_ORDER_DESC"
-                            default="0"
-                    />
 
                     <field type="list" name="filter_steps" label="FILTER_ON_STEPS" default="=0">
                         <option value="0">JNO</option>

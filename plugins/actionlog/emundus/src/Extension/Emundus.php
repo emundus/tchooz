@@ -59,10 +59,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onAfterUpdateConfiguration'     => 'onAfterUpdateConfiguration',
 			'onAfterMicrosoftDynamicsCreate' => 'onAfterMicrosoftDynamicsCreate',
 			'onAfterMicrosoftDynamicsUpdate' => 'onAfterMicrosoftDynamicsUpdate',
-			'onAfterAmmonApplicantCreate' => 'onAfterAmmonApplicantCreate',
-			'onAfterAmmonRegistration' => 'onAfterAmmonRegistration',
-			'onAmmonFoundSimilarName' => 'onAmmonFoundSimilarName',
-			'onAmmonSync' => 'onAmmonSync',
+			'onAfterAmmonApplicantCreate'    => 'onAfterAmmonApplicantCreate',
+			'onAfterAmmonRegistration'       => 'onAfterAmmonRegistration',
+			'onAmmonFoundSimilarName'        => 'onAmmonFoundSimilarName',
+			'onAmmonSync'                    => 'onAmmonSync',
 			'onWebhookCallbackFailed'        => 'onWebhookCallbackFailed',
 		];
 	}
@@ -138,7 +138,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_CREATE';
 		$context            = 'com_emundus.microsoftdynamics';
 
-		$more_data['entity'] = $arguments['config']['name'];
+		$more_data['entity']  = $arguments['config']['name'];
+		$more_data['message'] = $arguments['message'];
 
 		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_CREATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
 
@@ -157,7 +158,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$more_data['entity']  = $arguments['config']['name'];
 		$more_data['message'] = $arguments['message'];
 
-		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
+		$message = $this->setMessage($arguments['id'], 'update', 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
 
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}
@@ -165,17 +166,18 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 	public function onAfterAmmonRegistration(GenericEvent $event): void
 	{
 		$arguments = $event->getArguments();
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser     = $this->getApplication()->getIdentity();
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION';
 		$context            = 'com_emundus.ammon';
 
-		$more_data['fnum'] = $arguments['fnum'];
+		$more_data['fnum']       = $arguments['fnum'];
 		$more_data['session_id'] = $arguments['session_id'];
-		$more_data['message'] = $arguments['message'];
-		$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_SUCCESS';
+		$more_data['message']    = $arguments['message'];
+		$title                   = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_SUCCESS';
 
-		if ($arguments['status'] == 'error') {
+		if ($arguments['status'] == 'error')
+		{
 			$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_ERROR';
 		}
 
@@ -185,12 +187,12 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAfterAmmonApplicantCreate(GenericEvent $event): void
 	{
-		$arguments = $event->getArguments();
-		$jUser = $this->getApplication()->getIdentity();
+		$arguments          = $event->getArguments();
+		$jUser              = $this->getApplication()->getIdentity();
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT';
 		$context            = 'com_emundus.ammon';
 
-		$more_data['fnum'] = $arguments['fnum'];
+		$more_data['fnum']       = $arguments['fnum'];
 		$more_data['session_id'] = $arguments['session_id'];
 
 		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
@@ -199,13 +201,13 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAmmonFoundSimilarName(GenericEvent $event): void
 	{
-		$arguments = $event->getArguments();
-		$jUser = $this->getApplication()->getIdentity();
+		$arguments          = $event->getArguments();
+		$jUser              = $this->getApplication()->getIdentity();
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME';
 		$context            = 'com_emundus.ammon';
 
-		$more_data['fnum'] = $arguments['fnum'];
-		$more_data['name'] = $arguments['name'];
+		$more_data['fnum']    = $arguments['fnum'];
+		$more_data['name']    = $arguments['name'];
 		$more_data['message'] = $arguments['message'];
 
 		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME_ACTION', 'error', [], [], $more_data);
@@ -214,15 +216,15 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 	public function onAmmonSync(GenericEvent $event): void
 	{
-		$arguments = $event->getArguments();
-		$jUser = $this->getApplication()->getIdentity();
+		$arguments          = $event->getArguments();
+		$jUser              = $this->getApplication()->getIdentity();
 		$messageLanguageKey = $arguments['message_key'];
 		$context            = 'com_emundus.ammon';
 
-		$old_data = $arguments['old_data'] ?? [];
-		$new_data = $arguments['new_data'] ?? [];
+		$old_data  = $arguments['old_data'] ?? [];
+		$new_data  = $arguments['new_data'] ?? [];
 		$more_data = $arguments['more_data'] ?? [];
-		$status = $arguments['status'] ?? 'done';
+		$status    = $arguments['status'] ?? 'done';
 
 		$message = $this->setMessage('ammon', 'create', $arguments['title'], $status, $old_data, $new_data, $more_data);
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
@@ -235,7 +237,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$jUser = $this->getApplication()->getIdentity();
 
 		$messageLanguageKey = 'PLG_EMUNDUS_WEBHOOK_CALLBACK_FAILED';
-		$context            = 'com_emundus.webhook.'.$arguments['type'];
+		$context            = 'com_emundus.webhook.' . $arguments['type'];
 
 		$message = $this->setMessage(0, 'create', 'PLG_EMUNDUS_WEBHOOK_CALLBACK_FAILED', 'error', [], [], $arguments['datas']);
 

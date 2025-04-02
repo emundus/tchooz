@@ -197,10 +197,10 @@ class AmmonSynchronizer {
 			if (!empty($response) && $response['status'] == 200 && $response['data']->status == 'success') {
 				$created = true;
 			} else {
-				Log::add('Failed to create registration ' . $body_params['rows'], Log::ERROR, 'com_emundus.error');
+				Log::add('Failed to create registration ' . json_encode($body_params['rows']), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		} else {
-			Log::add('Registration for fnum ' . $registration->ExternalReference . ' and session ' . $registration->CourseId . ' already exists', Log::INFO, 'com_emundus.error');
+			Log::add('Registration for fnum ' . $registration->ExternalReference . ' and session ' . $registration->CourseId . ' already exists', Log::INFO, 'plugin.emundus.ammon');
 			$created = true;
 		}
 
