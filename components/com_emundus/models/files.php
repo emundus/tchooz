@@ -2889,7 +2889,7 @@ class EmundusModelFiles extends JModelLegacy
 				if (in_array($element->tab_name, $already_joined)) {
 					$element_table_alias = array_search($element->tab_name, $already_joined);
 				}
-				else {
+				else if(!empty($element->tab_name)) {
 					if ($h_files->isTableLinkedToCampaignCandidature($element->tab_name)) {
 						$element_table_alias                  = 'table_join_' . sizeof($already_joined);
 						$already_joined[$element_table_alias] = $element->tab_name;

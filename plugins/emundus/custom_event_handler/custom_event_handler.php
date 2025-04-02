@@ -675,7 +675,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 						$h_files = new EmundusHelperFiles();
 						$table_name = str_replace('#_', 'jos', $table);
-						$linked = $h_files->isTableLinkedToCampaignCandidature($table_name);
+						$linked = false;
+						if(!empty($table_name)) {
+							$linked = $h_files->isTableLinkedToCampaignCandidature($table_name);
+						}
 
 						if ($linked)
 						{
