@@ -2187,7 +2187,7 @@ $(document).ready(function() {
                             var defaults = '<div class="tw-cursor-pointer" id="list-element-export-button"></div>' +
                                 '<div class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-3" id="em-export-elts">' +
                                 '<label><strong>' + Joomla.JText._('COM_EMUNDUS_CHOOSEN_FORM_ELEM') + '</strong></label>' +
-                                '<ul id="em-export" class="tw-m-2"></ul>' +
+                                '<ul id="em-export" class="tw-pt-1 tw-pl-0"></ul>' +
                                 '</div>';
 
                             $('#list-element-export').append(defaults);
@@ -2293,10 +2293,17 @@ $(document).ready(function() {
                                                                     data: {elts: baseElements.split(',')},
                                                                     success: function (selectedElements) {
                                                                         var selectedElts = selectedElements.elements.selected_elements;
-
                                                                         selectedElts.forEach(elts => {
-                                                                            $('#em-export').append('<li class="em-export-item" id="' + elts.id + '-item"><span class="em-excel_elts em-flex-row"><span id="' + elts.id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span><p>' + elts.label + '</p></span></li>');
+                                                                            $('#em-export').append(
+                                                                                '<li class="em-export-item" id="' + elts.id + '-item">' +
+                                                                                '<span class="em-excel_elts em-flex-row" style="display: flex; align-items: center;">' +
+                                                                                '<span id="' + elts.id + '-itembtn" class="em-pointer fabrik-elt-delete material-symbols-outlined em-red-600-color em-mr-4">delete_outline</span>' +
+                                                                                '<p style="margin: 0;">' + elts.element_label + '</p>' +
+                                                                                '</span>' +
+                                                                                '</li>'
+                                                                            );
                                                                         });
+
                                                                         $('#em-export').trigger("chosen:updated");
                                                                     }
                                                                 })

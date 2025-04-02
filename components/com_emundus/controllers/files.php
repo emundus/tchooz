@@ -1566,19 +1566,19 @@ class EmundusControllerFiles extends BaseController
 			$fnums = array($session->get('application_fnum'));
 		}
 
-		$file            = $this->input->get('file', null, 'STRING');
-		$totalfile       = $this->input->get('totalfile', null);
-		$start           = $this->input->getInt('start', 0);
-		$limit           = $this->input->getInt('limit', 0);
-		$nbcol           = $this->input->get('nbcol', 0);
-		$elts            = $this->input->getString('elts', null);
-		$step_elts 	     = $this->input->getString('step_elts', []);
-		$objs            = $this->input->getString('objs', null);
-		$opts            = $this->input->getString('opts', null);
-		$methode         = $this->input->getString('methode', null);
-		$objclass        = $this->input->get('objclass', null);
-		$excel_file_name = $this->input->get('excelfilename', null);
-		$opts            = $this->getcolumn($opts);
+		$file                               = $this->input->get('file', null, 'STRING');
+		$totalfile                          = $this->input->get('totalfile', null);
+		$start                              = $this->input->getInt('start', 0);
+		$limit                              = $this->input->getInt('limit', 0);
+		$nbcol                              = $this->input->get('nbcol', 0);
+		$elts                               = $this->input->getString('elts', null);
+		$step_elts                          = $this->input->getString('step_elts', []);
+		$objs                               = $this->input->getString('objs', null);
+		$opts                               = $this->input->getString('opts', null);
+		$methode                            = $this->input->getString('methode', null);
+		$objclass                           = $this->input->get('objclass', null);
+		$excel_file_name                    = $this->input->get('excelfilename', null);
+		$opts                               = $this->getcolumn($opts);
 
 		// TODO: upper-case is mishandled, remove temporarily until fixed
 		$opts = array_diff($opts, ['upper-case']);
@@ -3780,13 +3780,12 @@ class EmundusControllerFiles extends BaseController
 
 	public function getselectedelements()
 	{
-
 		$h_files   = new EmundusHelperFiles;
 		$_elements = $this->input->getVar('elts', null);
 
 		$_getElements = $h_files->getSelectedElements($_elements);
 
-		echo json_encode((object) (array('status' => true, 'elements' => $_getElements,)));
+		echo json_encode((object) (array('status' => true, 'elements' => $_getElements)));
 		exit;
 	}
 
