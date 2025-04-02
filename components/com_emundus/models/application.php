@@ -2311,7 +2311,9 @@ class EmundusModelApplication extends ListModel
 														$elt = $r_elt;
 													}
 
-													$elt = $html_sanitizer->sanitize($elt);
+													if (!empty($elt) && is_string($elt)) {
+														$elt = $html_sanitizer->sanitize($elt);
+													}
 
 													$forms .= '<td><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '"> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</div></td>';
 												}
@@ -2629,7 +2631,9 @@ class EmundusModelApplication extends ListModel
 												$elt = $element->content;
 											}
 
-											$elt = $html_sanitizer->sanitize($elt);
+											if (!empty($elt) && is_string($elt)) {
+												$elt = $html_sanitizer->sanitize($elt);
+											}
 
 											if ($modulo % 2) {
 												$class = "table-strip-1";
