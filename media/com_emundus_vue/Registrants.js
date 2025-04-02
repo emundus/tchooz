@@ -1,5 +1,5 @@
 import list from "./List.js";
-import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, g as createVNode } from "./app_emundus.js";
 import "./ExportSlotsModal.js";
 import "./Skeleton.js";
 import "./Calendar.js";
@@ -9,10 +9,10 @@ import "./Parameter.js";
 import "./EventBooking.js";
 import "./events2.js";
 import "./Info.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main = {
   name: "Registrants",
   components: {
@@ -42,7 +42,8 @@ const _sfc_main = {
                   label: "COM_EMUNDUS_ONBOARD_REGISTRANT_ADD",
                   component: "EditSlot",
                   name: "add",
-                  type: "modal"
+                  type: "modal",
+                  acl: "booking|c"
                 },
                 {
                   action: "index.php?option=com_emundus&view=events&layout=add&event=%id%",

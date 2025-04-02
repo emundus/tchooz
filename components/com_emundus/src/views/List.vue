@@ -1228,7 +1228,7 @@ export default {
 		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {
-						return action.name === 'add';
+						return action.name === 'add' && action.display;
 					})
 				: false;
 		},

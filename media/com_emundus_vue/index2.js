@@ -1,4 +1,4 @@
-import { au as getAugmentedNamespace, av as commonjsGlobal, ar as getDefaultExportFromCjs } from "./app_emundus.js";
+import { au as getAugmentedNamespace, av as commonjsGlobal, as as getDefaultExportFromCjs } from "./app_emundus.js";
 var type;
 var hasRequiredType;
 function requireType() {
@@ -1182,6 +1182,7 @@ function requireGetIntrinsic() {
     "%eval%": eval,
     // eslint-disable-line no-eval
     "%EvalError%": $EvalError,
+    "%Float16Array%": typeof Float16Array === "undefined" ? undefined$1 : Float16Array,
     "%Float32Array%": typeof Float32Array === "undefined" ? undefined$1 : Float32Array,
     "%Float64Array%": typeof Float64Array === "undefined" ? undefined$1 : Float64Array,
     "%FinalizationRegistry%": typeof FinalizationRegistry === "undefined" ? undefined$1 : FinalizationRegistry,
@@ -1442,11 +1443,14 @@ function requireCallBound() {
   var $indexOf = callBindBasic([GetIntrinsic("%String.prototype.indexOf%")]);
   callBound = function callBoundIntrinsic(name, allowMissing) {
     var intrinsic = (
-      /** @type {Parameters<typeof callBindBasic>[0][0]} */
+      /** @type {(this: unknown, ...args: unknown[]) => unknown} */
       GetIntrinsic(name, !!allowMissing)
     );
     if (typeof intrinsic === "function" && $indexOf(name, ".prototype.") > -1) {
-      return callBindBasic([intrinsic]);
+      return callBindBasic(
+        /** @type {const} */
+        [intrinsic]
+      );
     }
     return intrinsic;
   };

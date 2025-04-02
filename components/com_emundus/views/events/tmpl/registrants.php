@@ -86,6 +86,8 @@ Text::script('COM_EMUNDUS_EXPORTS_SELECT_INFORMATIONS');
 Text::script('ALL_FEMININE');
 Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_CONFIRM_EXPORT');
 Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_CANCEL_EXPORT');
+Text::script('COM_EMUNDUS_REGISTRANT_NO_PERMISSION');
+Text::script('COM_EMUNDUS_ONBOARD_ERROR');
 
 require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
 
@@ -106,7 +108,7 @@ else {
 
 $user               = Factory::getApplication()->getIdentity();
 $coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
+$sysadmin_access    = EmundusHelperAccess::asAdministratorAccessLevel($user->id);
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();

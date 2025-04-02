@@ -137,7 +137,6 @@ export default {
 			let actions = [];
 
 			if (this.checkedItems.length > 0) {
-				console.log(this.tab.actions);
 				actions = this.tab.actions.filter((action) => {
 					return action.multiple && action.display;
 				});
