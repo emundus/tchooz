@@ -62,6 +62,10 @@ class HtmlSanitizerSingletonTest extends UnitTestCase
 		$input = '<img src="http://www.example.com/image.jpg" />';
 		$result = $this->helper->sanitize($input);
 		$this->assertSame('<img src="https://www.example.com/image.jpg" />', $result, 'Force HTTPS URLs');
+
+		$input = null;
+		$result = $this->helper->sanitize($input);
+		$this->assertSame('', $result, 'if input is null, return empty');
 	}
 
 	public function testSpanAndAttributesArePreserved()
