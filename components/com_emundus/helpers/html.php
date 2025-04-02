@@ -32,13 +32,21 @@ class HtmlSanitizerSingleton
 		return self::$instance;
 	}
 
-	public function sanitize(string $input): string
+	public function sanitize(?string $input): string
 	{
+		if (empty($input)) {
+			return $input;
+		}
+
 		return $this->sanitizer->sanitize($input);
 	}
 
-	public function sanitizeFor(string $section, string $input): string
+	public function sanitizeFor(?string $section, string $input): string
 	{
+		if (empty($input)) {
+			return $input;
+		}
+
 		return $this->sanitizer->sanitizeFor($section, $input);
 	}
 
