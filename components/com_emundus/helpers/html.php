@@ -35,7 +35,7 @@ class HtmlSanitizerSingleton
 	public function sanitize(?string $input): string
 	{
 		if (empty($input)) {
-			return $input;
+			return '';
 		}
 
 		return $this->sanitizer->sanitize($input);
@@ -44,7 +44,7 @@ class HtmlSanitizerSingleton
 	public function sanitizeFor(?string $section, string $input): string
 	{
 		if (empty($input)) {
-			return $input;
+			return '';
 		}
 
 		return $this->sanitizer->sanitizeFor($section, $input);

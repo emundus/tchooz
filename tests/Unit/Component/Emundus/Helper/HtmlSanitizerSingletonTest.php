@@ -65,7 +65,7 @@ class HtmlSanitizerSingletonTest extends UnitTestCase
 
 		$input = null;
 		$result = $this->helper->sanitize($input);
-		$this->assertSame(null, $result, 'if input is null, return null');
+		$this->assertSame('', $result, 'if input is null, return empty');
 	}
 
 	public function testSpanAndAttributesArePreserved()
