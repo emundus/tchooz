@@ -169,7 +169,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
                 objs: objJson,
                 opts: options,
                 objclass: objclass,
-                excelfilename:json.excelfilename,
+                excelfilename:json.excelfilename
             },
             success: function(result) {
                 var json = result.json;

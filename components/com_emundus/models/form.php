@@ -331,12 +331,15 @@ class EmundusModelForm extends JModelList
 					return $workflow->id;
 				}, $workflows);
 
-				$query->clear()
-					->select(['sp.*', 'sp.label AS form_label'])
-					->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
-					->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps') .  ' AS jesws ON jesws.profile_id = sp.id')
-					->where($this->db->quoteName('jesws.workflow_id') . ' IN (' . implode(',', $workflow_ids) . ')');
-				$profiles_associated_through_workflow = $this->db->setQuery($query)->loadObjectList();
+				if(!empty($workflow_ids))
+				{
+					$query->clear()
+						->select(['sp.*', 'sp.label AS form_label'])
+						->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps') . ' AS jesws ON jesws.profile_id = sp.id')
+						->where($this->db->quoteName('jesws.workflow_id') . ' IN (' . implode(',', $workflow_ids) . ')');
+					$profiles_associated_through_workflow = $this->db->setQuery($query)->loadObjectList();
+				}
 
 				$profiles = array_merge($profiles_associated_through_campaign, $profiles_associated_through_workflow);
 			} catch (Exception $e) {

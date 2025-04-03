@@ -175,7 +175,7 @@ requirejs(['fab/fabrik'], function () {
       form.elements.forEach(function (element) {
         if (element.plugin === 'fabrikdate') {
           var elementOffset = element.element.parentElement.parentElement.offsetTop;
-          if (formHeight - elementOffset < 400) {
+          if (formHeight >= 500 && (formHeight - elementOffset < 400)) {
             element.element.getElementsByClassName('js-calendar')[0].style.bottom = 'var(--em-form-height)';
           }
         }

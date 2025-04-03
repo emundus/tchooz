@@ -37,6 +37,7 @@ export default {
 									component: 'EditSlot',
 									name: 'add',
 									type: 'modal',
+									acl: 'booking|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=events&layout=add&event=%id%',

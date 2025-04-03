@@ -32,13 +32,21 @@ class HtmlSanitizerSingleton
 		return self::$instance;
 	}
 
-	public function sanitize(string $input): string
+	public function sanitize(?string $input): string
 	{
+		if (empty($input)) {
+			return '';
+		}
+
 		return $this->sanitizer->sanitize($input);
 	}
 
-	public function sanitizeFor(string $section, string $input): string
+	public function sanitizeFor(?string $section, string $input): string
 	{
+		if (empty($input)) {
+			return '';
+		}
+
 		return $this->sanitizer->sanitizeFor($section, $input);
 	}
 
@@ -46,5 +54,5 @@ class HtmlSanitizerSingleton
 	 * Les méthodes __clone() et __wakeup() sont utilisées pour empêcher la duplication d'une instance du singleton
 	 */
 	private function __clone() {}
-	private function __wakeup() {}
+	public function __wakeup() {}
 }

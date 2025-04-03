@@ -269,7 +269,6 @@ export default {
 			});
 
 			if (slotValidationFailed) return;
-
 			// Check if the start date is before the end date
 			if (new Date(slot.start_date) >= new Date(slot.end_date)) {
 				Swal.fire({
@@ -471,7 +470,13 @@ export default {
 		disabledSubmit: function () {
 			return this.fields.some((field) => {
 				if (!field.optional) {
-					return field.value === '' || field.value === 0;
+					if (field.type === 'time') {
+						let dateValue = new Date(field.value);
+						let now = new Date();
+
+						return isNaN(dateValue) || dateValue < now;
+					}
+					return field.value === '' || field.value === 0 || field.value === null;
 				} else {
 					return false;
 				}

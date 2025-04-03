@@ -1696,6 +1696,9 @@ class EmundusModelEvents extends BaseDatabaseModel
 		require_once JPATH_ROOT . '/components/com_emundus/models/files.php';
 		$m_files = new EmundusModelFiles();
 
+		$dispatcher = Factory::getApplication()->getDispatcher();
+		PluginHelper::importPlugin('emundus');
+
 		$id = 0;
 		try
 		{
@@ -1790,6 +1793,24 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 							$m_files->shareUsers($users_id, $actions, [$candidature->fnum]);
 						}
+
+						// Declare the event
+						$onAfterBookingRegistrantEventHandler = new GenericEvent(
+							'onCallEventHandler',
+							['onAfterBookingRegistrant',
+								// Datas to pass to the event
+								['fnum' => $candidature->fnum, 'ccid' => $ccid, 'availability' => $availability, 'registrant_id' => $registrant_id]
+							]
+						);
+						$onAfterBookingRegistrant             = new GenericEvent(
+							'onAfterBookingRegistrant',
+							// Datas to pass to the event
+							['fnum' => $candidature->fnum, 'ccid' => $ccid, 'availability' => $availability, 'registrant_id' => $registrant_id]
+						);
+
+						// Dispatch the event
+						$dispatcher->dispatch('onCallEventHandler', $onAfterBookingRegistrantEventHandler);
+						$dispatcher->dispatch('onAfterBookingRegistrant', $onAfterBookingRegistrant);
 						//
 
 						$id = $ccid;
@@ -3203,7 +3224,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		}
 
 		$dispatcher = Factory::getApplication()->getDispatcher();
-		PluginHelper::importPlugin('emundus', 'emails');
+		PluginHelper::importPlugin('emundus');
 
 		foreach ($ids as $id)
 		{

@@ -4,6 +4,7 @@ import { useGlobalStore } from '@/stores/global.js';
 import colors from '@/mixins/colors';
 import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
+import userService from '@/services/user.js';
 
 export default {
 	name: 'EventDay',
@@ -51,7 +52,24 @@ export default {
 	},
 	methods: {
 		openModal(slot, registrant = null) {
-			this.$emit('edit-modal', slot, registrant);
+			userService.getAcl('booking', 'u').then((response) => {
+				if (response.status && response.right) {
+					this.$emit('edit-modal', slot, registrant);
+				} else {
+					Swal.fire({
+						type: 'error',
+						title: this.translate('COM_EMUNDUS_ONBOARD_ERROR'),
+						text: this.translate('COM_EMUNDUS_REGISTRANT_NO_PERMISSION'),
+						showConfirmButton: true,
+						timer: 3000,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+				}
+			});
 		},
 		updateItems() {
 			this.$emit('update-items');
@@ -62,6 +80,17 @@ export default {
 				eventElement.style.width = this.calendarEvent.width;
 				eventElement.style.left = this.calendarEvent.left;
 			}
+		},
+		openTooltip(calendarEvent, event) {
+			const eventElement = event.target.closest('.event-day');
+
+			if (eventElement) {
+				this.$emit('open-tooltip', { calendarEvent, eventElement });
+			}
+		},
+
+		closeTooltip() {
+			this.$emit('close-tooltip');
 		},
 	},
 	watch: {
@@ -112,12 +141,14 @@ export default {
 
 <template>
 	<div
-		class="tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2"
+		class="event-day tw-flex tw-h-full tw-flex-col tw-gap-2 tw-overflow-auto tw-border tw-border-s-4 tw-p-1 tw-pl-2"
 		:style="{
 			backgroundColor: brightnessColor,
 			color: calendarEvent.color,
 			borderColor: calendarEvent.color,
 		}"
+		@mouseover="openTooltip(calendarEvent, $event)"
+		@mouseleave="closeTooltip"
 	>
 		<div v-if="view === 'week'">
 			<div v-if="calendarEvent.title">

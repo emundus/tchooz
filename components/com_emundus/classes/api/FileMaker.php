@@ -1134,7 +1134,17 @@ class FileMaker
 				}
 			}
 
-			$this->updateFile($emundus_file, $single_field_data, $m_files, $m_message, $admin_step, $mapped_columns, $user_id);
+            // Insert PRE data if it is missing but the file exists
+            if(empty($this->getRowInTable($fnum, '#__emundus_1001_00')))
+            {
+                $this->insertFileDataToEmundusTables($fnum, $single_field_data, $mapped_columns, $user_id);
+
+                $m_files->updateState($fnum, $step_properties->status);
+                $m_message->sendEmail($fnum, $step_properties->email);
+                $this->logActionIntoEmundusFileMakerlog(0, $fnum, $single_field_data->fieldData->uuid, $single_field_data->fieldData->uuidConnect, $step_properties->status, null, 1, "layouts/zWEB_FORMULAIRES/_find", $single_field_data);
+            }
+
+            $this->updateFile($emundus_file, $single_field_data, $m_files, $m_message, $admin_step, $mapped_columns, $user_id);
 		}
 
 		return $fnum;
@@ -1290,7 +1300,7 @@ class FileMaker
 	public function insertPortalsDatasElements($single_field_data, $mapped_columns, $fnum, $user_id)
 	{
 		$query = $this->db->getQuery(true);
-		$portal_data_without_est_contribIf_recette = array_filter(($single_field_data->portalData)->{'zWEB_FORMULAIRES_RECETTES'}, function ($item) {
+		$portal_data_without_est_contribIf_recette = array_filter((array)($single_field_data->portalData)->{'zWEB_FORMULAIRES_RECETTES'}, function ($item) {
 			return empty($item->{'zWEB_FORMULAIRES_RECETTES::EstContributionIF'});
 		});
 		($single_field_data->portalData)->{'zWEB_FORMULAIRES_RECETTES'} = $portal_data_without_est_contribIf_recette;
@@ -1413,7 +1423,7 @@ class FileMaker
 
 	public function retrieveRecetteContributionIf($data): array
 	{
-		$dataContributionInstituFrancais = array_filter(($data)->{'zWEB_FORMULAIRES_RECETTES'}, function ($item) {
+		$dataContributionInstituFrancais = array_filter((array)($data)->{'zWEB_FORMULAIRES_RECETTES'}, function ($item) {
 			return !empty($item->{'zWEB_FORMULAIRES_RECETTES::EstContributionIF'});
 		});
 

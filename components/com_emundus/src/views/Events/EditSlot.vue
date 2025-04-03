@@ -26,6 +26,8 @@ export default {
 		cancelPopupOpenForBookingId: null,
 		initialEvent: null,
 
+		submitted: false,
+
 		fields: [
 			{
 				param: 'event_id',
@@ -177,6 +179,7 @@ export default {
 	},
 	methods: {
 		editSlot() {
+			this.submitted = true;
 			let slot_edited = {};
 
 			// Validate all fields
@@ -388,7 +391,7 @@ export default {
 			<button class="tw-btn-cancel" @click="onClosePopup">
 				{{ translate('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_CANCEL') }}
 			</button>
-			<button class="tw-btn-primary" :disabled="disabledSubmit" @click="editSlot()">
+			<button class="tw-btn-primary" :disabled="disabledSubmit || submitted" @click="editSlot()">
 				{{ translate('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_CONFIRM') }}
 			</button>
 		</div>

@@ -58,6 +58,7 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 		$params = $event->getArgument('params');
 
 		$debugMode = (bool) $params->debug_mode ?? false;
+		$order = $params->order ?? '';
 
 		if (!class_exists('EmundusModelSync'))
 		{
@@ -89,7 +90,7 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 				$modelFiles = new \EmundusModelFiles();
 				$crmFactory = new MicrosoftDynamicsFactory($this->getDatabase(), $modelApplication, $repository);
 
-				$datasToImport = $repository->getDatas();
+				$datasToImport = $repository->getDatas($order);
 
 				foreach ($datasToImport as $dataToImport)
 				{
@@ -156,13 +157,13 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 						'onCallEventHandler',
 						[$eventName,
 							// Datas to pass to the event
-							['fnum' => $dataToImport['fnum'], 'data' => json_decode($dataToImport['json'], true), 'config' => ['name' => $dataToImport['name'], 'collectionname' => $dataToImport['collectionname']], 'status' => $log_status, 'message' => $message]
+							['fnum' => $dataToImport['fnum'], 'data' => $json, 'config' => ['name' => $dataToImport['name'], 'collectionname' => $dataToImport['collectionname']], 'status' => $log_status, 'message' => $message]
 						]
 					);
 					$onAfterMicrosoftDynamics             = new GenericEvent(
 						$eventName,
 						// Datas to pass to the event
-						['fnum' => $dataToImport['fnum'], 'data' => json_decode($dataToImport['json'], true), 'config' => ['name' => $dataToImport['name'], 'collectionname' => $dataToImport['collectionname']], 'status' => $log_status, 'message' => $message]
+						['fnum' => $dataToImport['fnum'], 'data' => $json, 'config' => ['name' => $dataToImport['name'], 'collectionname' => $dataToImport['collectionname']], 'status' => $log_status, 'message' => $message]
 					);
 
 					// Dispatch the event

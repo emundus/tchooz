@@ -25,6 +25,7 @@ const _sfc_main = {
     actualLanguage: "fr-FR",
     cancelPopupOpenForBookingId: null,
     initialEvent: null,
+    submitted: false,
     fields: [
       {
         param: "event_id",
@@ -173,6 +174,7 @@ const _sfc_main = {
   methods: {
     editSlot() {
       var _a, _b, _c, _d, _e;
+      this.submitted = true;
       let slot_edited = {};
       const slotValidationFailed = this.fields.some((field) => {
         if (field.displayed) {
@@ -372,7 +374,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_CANCEL")), 1),
       createBaseVNode("button", {
         class: "tw-btn-primary",
-        disabled: $options.disabledSubmit,
+        disabled: $options.disabledSubmit || _ctx.submitted,
         onClick: _cache[2] || (_cache[2] = ($event) => $options.editSlot())
       }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_CONFIRM")), 9, _hoisted_7)
     ]),
