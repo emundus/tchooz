@@ -47,7 +47,7 @@ readonly class ParcoursupRepository
 		{
 			foreach ($results as $result)
 			{
-				$datas[$result['id_parcoursup']] = json_decode($result['json'], true);
+				$datas[] = json_decode($result['json'], true);
 			}
 		}
 
@@ -104,7 +104,7 @@ readonly class ParcoursupRepository
 			}
 			//
 
-			if(!$this->updateParcoursupState($fnum, $datas->getParcourSupId()))
+			if(!$this->updateParcoursupState($fnum, $datas->getParcourSupId(), $datas->getCampaignId()))
 			{
 				$flushed = false;
 			}
@@ -376,15 +376,17 @@ readonly class ParcoursupRepository
 		return $filled;
 	}
 
-	private function updateParcoursupState(string $fnum, string $idParcoursup): bool
+	private function updateParcoursupState(string $fnum, string $idParcoursup, int $campaignId): bool
 	{
-		$updateValues = [
-			'id_parcoursup' => $idParcoursup,
-			'fnum' => $fnum,
-			'updated_at' => date('Y-m-d H:i:s'),
-			'json' => null
-		];
-		$updateValues = (object) $updateValues;
-		return $this->db->updateObject('#__emundus_campaign_candidature_parcoursup', $updateValues, 'id_parcoursup', true);
+		$query = $this->db->getQuery(true);
+
+		$query->update($this->db->quoteName('#__emundus_campaign_candidature_parcoursup'))
+			->set('fnum = ' . $this->db->quote($fnum))
+			->set('updated_at = ' . $this->db->quote(date('Y-m-d H:i:s')))
+			->set('json = null')
+			->where('id_parcoursup = ' . $this->db->quote($idParcoursup))
+			->where('campaign_id = ' . $this->db->quote($campaignId));
+		$this->db->setQuery($query);
+		return $this->db->execute();
 	}
 }
