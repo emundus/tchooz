@@ -756,6 +756,16 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$params['encrypt_datas'] = '1';
 		}
 
+		if ($plugin == 'average') {
+			$params['average_multiple_element'] = '';
+			$params['average_multiple_weight']  = '1';
+			$params['average_multiple_elements'] = json_encode([
+				'average_multiple_element' => [''],
+				'average_multiple_weight'  => ['1'],
+			]);
+			$params['used_as_total'] = 0;
+		}
+
 		return $params;
 	}
 

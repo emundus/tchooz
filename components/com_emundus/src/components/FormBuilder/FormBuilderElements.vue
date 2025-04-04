@@ -103,6 +103,10 @@ export default {
 			type: Object,
 			required: false,
 		},
+		mode: {
+			type: String,
+			default: 'forms',
+		},
 	},
 	data() {
 		return {
@@ -136,7 +140,13 @@ export default {
 		};
 	},
 	created() {
-		this.elements = formBuilderElements;
+		this.elements = formBuilderElements.filter((element) => {
+			if (element.formBuilderModes) {
+				return element.formBuilderModes.includes(this.mode);
+			} else {
+				return true;
+			}
+		});
 		this.groups = formBuilderSections;
 
 		eventsService.getEvents().then((response) => {

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="4">
+    <name>plg_fabrik_element_average</name>
+    <author>eMundus</author>
+    <creationDate>2024-10-18</creationDate>
+    <copyright>Copyright (C) 2005-2024 eMundus - All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see software_license.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.3.0</version>
+    <description>PLG_ELEMENT_AVERAGE_DESCRIPTION</description>
+    <files>
+        <filename plugin="average">average.php</filename>
+        <filename>index.html</filename>
+        <filename>average.js</filename>
+        <filename>average-min.js</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
+        <folder>layouts</folder>
+    </files>
+</extension>

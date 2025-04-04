@@ -120,6 +120,13 @@
     "published": true
   },
   {
+    "value": "average",
+    "icon": "calculate",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_AVERAGE",
+    "published": true,
+    "formBuilderModes": ["eval"]
+  },
+  {
     "value": "emundus_geolocalisation",
     "icon": "map",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION",

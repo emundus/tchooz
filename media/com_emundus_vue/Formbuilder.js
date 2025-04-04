@@ -922,6 +922,7 @@ const useFormBuilderStore = defineStore("formbuilder", {
   state: () => ({
     lastSave: null,
     pages: null,
+    pageElements: [],
     documentModels: [],
     rulesKeywords: ""
   }),
@@ -929,7 +930,8 @@ const useFormBuilderStore = defineStore("formbuilder", {
     getLastSave: (state) => state.lastSave,
     getPages: (state) => state.pages,
     getDocumentModels: (state) => state.documentModels,
-    getRulesKeywords: (state) => state.rulesKeywords
+    getRulesKeywords: (state) => state.rulesKeywords,
+    getPageElements: (state) => state.pageElements
   },
   actions: {
     updateLastSave(payload) {
@@ -940,6 +942,9 @@ const useFormBuilderStore = defineStore("formbuilder", {
     },
     updateRulesKeywords(payload) {
       this.rulesKeywords = payload;
+    },
+    updatePageElements(payload) {
+      this.pageElements = payload;
     }
   }
 });
@@ -1000,6 +1005,15 @@ const formBuilderElements = [
     icon: "notes",
     name: "COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA",
     published: true
+  },
+  {
+    value: "average",
+    icon: "calculate",
+    name: "COM_EMUNDUS_ONBOARD_TYPE_AVERAGE",
+    published: true,
+    formBuilderModes: [
+      "eval"
+    ]
   },
   {
     value: "nom",
@@ -1302,6 +1316,10 @@ const _sfc_main$u = {
     form: {
       type: Object,
       required: false
+    },
+    mode: {
+      type: String,
+      default: "forms"
     }
   },
   data() {
@@ -1334,7 +1352,13 @@ const _sfc_main$u = {
     };
   },
   created() {
-    this.elements = formBuilderElements;
+    this.elements = formBuilderElements.filter((element) => {
+      if (element.formBuilderModes) {
+        return element.formBuilderModes.includes(this.mode);
+      } else {
+        return true;
+      }
+    });
     this.groups = formBuilderSections;
     eventsService.getEvents().then((response) => {
       if (response.status) {
@@ -1580,6 +1604,7 @@ const emundus_geolocalisation = [{ "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEF
 const emundus_phonenumber = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY", "name": "default_country", "type": "sqldropdown", "table": "data_country", "key": "iso2", "value": "label", "translate": true, "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false, "options": [] }];
 const panel = [{ "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE", "name": "type", "type": "dropdown", "options": [{ "value": 1, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION" }, { "value": 2, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING" }, { "value": 3, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR" }, { "value": 4, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION", "name": "accordion", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE", "name": "title", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
 const currency = [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES", "name": "all_currencies_options", "type": "repeatable", "published": true, "fields": [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO", "name": "iso3", "type": "dropdown", "options": [{ "value": "EUR", "label": "Euro (€ EUR)" }, { "value": "USD", "label": "United States dollar ($ USD)" }, { "value": "JPY", "label": "Japanese yen (¥ JPY)" }, { "value": "GBP", "label": "British pound (£ GBP)" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN", "name": "minimal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX", "name": "maximal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR", "name": "thousand_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR", "name": "decimal_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS", "name": "decimal_numbers", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }] }];
+const average = [{ "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION", "name": "used_as_total", "type": "dropdown", "helptext": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION_HELP", "placeholder": "", "published": true, "sysadmin_only": false, "default": 0, "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "multiple": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS", "name": "average_multiple_elements", "type": "fabrikmodalrepeat", "published": true, "fields": [{ "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_ELEMENT", "name": "average_multiple_element", "type": "listfields", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_WEIGHT", "name": "average_multiple_weight", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }] }];
 const elementParams = {
   field,
   textarea,
@@ -1594,7 +1619,8 @@ const elementParams = {
   emundus_geolocalisation,
   emundus_phonenumber,
   panel,
-  currency
+  currency,
+  average
 };
 const _sfc_main$t = {
   name: "FormBuilderElementParams",
@@ -1621,6 +1647,10 @@ const _sfc_main$t = {
       type: Number,
       required: false,
       default: 0
+    },
+    parent_param: {
+      type: Object,
+      required: false
     }
   },
   data: () => ({
@@ -1646,6 +1676,9 @@ const _sfc_main$t = {
       if (param.type === "sqldropdown") {
         this.loading = true;
         this.getSqlDropdownOptions(param);
+      }
+      if (param.type === "fabrikmodalrepeat") {
+        this.element.params[param.name] = JSON.parse(this.element.params[param.name]);
       }
       if (param.reload_on_change) {
         let param_to_watch = this.params.find((p) => p.name === param.reload_on_change);
@@ -1765,6 +1798,19 @@ const _sfc_main$t = {
       delete this.element.params[param][param + key];
       this.$forceUpdate();
     },
+    removeFBModalRepeatableField(paramName, index) {
+      const entries = Object.keys(this.element.params[paramName]);
+      entries.forEach((entry) => {
+        this.element.params[paramName][entry].splice(index - 1, 1);
+      });
+      this.$forceUpdate();
+    },
+    addFBModalRepeatableField(paramName) {
+      const keys = Object.keys(this.element.params[paramName]);
+      keys.forEach((key) => {
+        this.element.params[paramName][key].push("");
+      });
+    },
     labelTranslate({ label }) {
       return this.translate(label);
     }
@@ -1780,49 +1826,62 @@ const _sfc_main$t = {
       return this.params.filter((param) => {
         return param.published && !param.sysadmin_only || this.sysadmin && param.sysadmin_only && param.published;
       });
+    },
+    listFieldsOptions() {
+      return useFormBuilderStore().getPageElements.filter((element) => {
+        return element.publish && this.element.id != element.element_id && ["field", "calc", "average", "dropdown", "radiobutton"].includes(element.plugin) && !["parent_id"].includes(element.name);
+      });
     }
   }
 };
-const _hoisted_1$t = { class: "form-group tw-mb-4" };
-const _hoisted_2$t = { key: 0 };
-const _hoisted_3$s = ["onUpdate:modelValue"];
-const _hoisted_4$r = ["value"];
-const _hoisted_5$p = ["onUpdate:modelValue"];
-const _hoisted_6$n = ["value"];
+const _hoisted_1$t = { key: 0 };
+const _hoisted_2$t = ["onUpdate:modelValue"];
+const _hoisted_3$s = ["value"];
+const _hoisted_4$r = ["onUpdate:modelValue"];
+const _hoisted_5$p = ["value"];
+const _hoisted_6$n = ["onUpdate:modelValue"];
 const _hoisted_7$n = ["onUpdate:modelValue"];
-const _hoisted_8$i = ["onUpdate:modelValue"];
-const _hoisted_9$f = { key: 3 };
-const _hoisted_10$a = ["onUpdate:modelValue", "id"];
-const _hoisted_11$7 = ["value"];
-const _hoisted_12$7 = {
+const _hoisted_8$i = { key: 3 };
+const _hoisted_9$f = ["onUpdate:modelValue", "id"];
+const _hoisted_10$a = ["value"];
+const _hoisted_11$7 = {
   key: 0,
   style: { "font-size": "small" }
 };
-const _hoisted_13$7 = { key: 4 };
-const _hoisted_14$6 = ["onUpdate:modelValue", "id"];
-const _hoisted_15$6 = ["value"];
-const _hoisted_16$5 = {
+const _hoisted_12$7 = { key: 4 };
+const _hoisted_13$7 = ["onUpdate:modelValue", "id"];
+const _hoisted_14$6 = ["value"];
+const _hoisted_15$6 = {
   key: 0,
   style: { "font-size": "small" }
 };
-const _hoisted_17$5 = { key: 5 };
-const _hoisted_18$5 = ["onUpdate:modelValue"];
-const _hoisted_19$5 = ["value"];
-const _hoisted_20$5 = { key: 6 };
-const _hoisted_21$4 = ["onUpdate:modelValue"];
-const _hoisted_22$3 = ["value"];
-const _hoisted_23$3 = { key: 7 };
-const _hoisted_24$3 = { class: "tw-flex tw-items-center tw-justify-between" };
-const _hoisted_25$3 = ["onClick"];
-const _hoisted_26$3 = { class: "tw-flex tw-justify-end" };
-const _hoisted_27$3 = ["onClick"];
-const _hoisted_28$2 = ["type", "onUpdate:modelValue", "placeholder"];
-const _hoisted_29$2 = ["type", "onUpdate:modelValue", "placeholder"];
-const _hoisted_30$2 = {
-  key: 10,
+const _hoisted_16$5 = { key: 5 };
+const _hoisted_17$5 = ["onUpdate:modelValue"];
+const _hoisted_18$5 = ["value"];
+const _hoisted_19$5 = { key: 6 };
+const _hoisted_20$5 = ["onUpdate:modelValue"];
+const _hoisted_21$4 = ["value"];
+const _hoisted_22$3 = { key: 7 };
+const _hoisted_23$3 = { class: "tw-flex tw-items-center tw-justify-between" };
+const _hoisted_24$3 = ["onClick"];
+const _hoisted_25$3 = { class: "tw-flex tw-justify-end" };
+const _hoisted_26$3 = ["onClick"];
+const _hoisted_27$3 = { key: 8 };
+const _hoisted_28$2 = { class: "tw-flex tw-items-center tw-justify-between" };
+const _hoisted_29$2 = ["onClick"];
+const _hoisted_30$2 = { class: "tw-flex tw-justify-end" };
+const _hoisted_31$2 = ["onClick"];
+const _hoisted_32$2 = { key: 9 };
+const _hoisted_33$2 = ["onUpdate:modelValue"];
+const _hoisted_34$2 = ["value"];
+const _hoisted_35$2 = ["onUpdate:modelValue", "placeholder"];
+const _hoisted_36$2 = ["type", "onUpdate:modelValue", "placeholder"];
+const _hoisted_37$1 = ["type", "onUpdate:modelValue", "placeholder"];
+const _hoisted_38$1 = {
+  key: 13,
   style: { "font-size": "small" }
 };
-const _hoisted_31$2 = {
+const _hoisted_39$1 = {
   key: 0,
   class: "em-page-loader"
 };
@@ -1831,11 +1890,14 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_form_builder_element_params = resolveComponent("form-builder-element-params", true);
   return openBlock(), createElementBlock("div", null, [
     (openBlock(true), createElementBlock(Fragment, null, renderList($options.displayedParams, (param) => {
-      return openBlock(), createElementBlock("div", _hoisted_1$t, [
+      return openBlock(), createElementBlock("div", {
+        key: param.name,
+        class: "form-group tw-mb-4"
+      }, [
         createBaseVNode("label", {
           class: normalizeClass(param.type === "repeatable" ? "tw-font-bold" : "")
         }, toDisplayString(_ctx.translate(param.label)), 3),
-        param.type === "dropdown" || param.type === "sqldropdown" ? (openBlock(), createElementBlock("div", _hoisted_2$t, [
+        param.type === "dropdown" || param.type === "sqldropdown" ? (openBlock(), createElementBlock("div", _hoisted_1$t, [
           $props.repeat_name !== "" && param.options.length > 0 && !param.multiple ? withDirectives((openBlock(), createElementBlock("select", {
             key: 0,
             "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
@@ -1845,9 +1907,9 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("option", {
                 key: option.value,
                 value: option.value
-              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_4$r);
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_3$s);
             }), 128))
-          ], 8, _hoisted_3$s)), [
+          ], 8, _hoisted_2$t)), [
             [vModelSelect, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
           ]) : param.options.length > 0 && !param.multiple ? withDirectives((openBlock(), createElementBlock("select", {
             key: 1,
@@ -1857,9 +1919,9 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
             (openBlock(true), createElementBlock(Fragment, null, renderList(param.options, (option) => {
               return openBlock(), createElementBlock("option", {
                 value: option.value
-              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_6$n);
+              }, toDisplayString(_ctx.translate(option.label)), 9, _hoisted_5$p);
             }), 256))
-          ], 8, _hoisted_5$p)), [
+          ], 8, _hoisted_4$r)), [
             [vModelSelect, $props.element.params[param.name]]
           ]) : param.options.length > 0 && param.multiple ? (openBlock(), createBlock(_component_multiselect, {
             key: 2,
@@ -1884,15 +1946,15 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
           key: 1,
           "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
           class: "tw-w-full"
-        }, null, 8, _hoisted_7$n)), [
+        }, null, 8, _hoisted_6$n)), [
           [vModelText, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
         ]) : param.type === "textarea" ? withDirectives((openBlock(), createElementBlock("textarea", {
           key: 2,
           "onUpdate:modelValue": ($event) => $props.element.params[param.name] = $event,
           class: "tw-w-full"
-        }, null, 8, _hoisted_8$i)), [
+        }, null, 8, _hoisted_7$n)), [
           [vModelText, $props.element.params[param.name]]
-        ]) : param.type === "databasejoin" && $props.repeat_name !== "" ? (openBlock(), createElementBlock("div", _hoisted_9$f, [
+        ]) : param.type === "databasejoin" && $props.repeat_name !== "" ? (openBlock(), createElementBlock("div", _hoisted_8$i, [
           withDirectives((openBlock(), createElementBlock("select", {
             "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
             key: _ctx.reloadOptions,
@@ -1904,13 +1966,13 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("option", {
                 key: option.database_name,
                 value: option.database_name
-              }, toDisplayString(option.label), 9, _hoisted_11$7);
+              }, toDisplayString(option.label), 9, _hoisted_10$a);
             }), 128))
-          ], 42, _hoisted_10$a)), [
+          ], 42, _hoisted_9$f)), [
             [vModelSelect, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
           ]),
-          _ctx.databasejoin_description ? (openBlock(), createElementBlock("label", _hoisted_12$7, toDisplayString(_ctx.databasejoin_description), 1)) : createCommentVNode("", true)
-        ])) : param.type === "databasejoin" ? (openBlock(), createElementBlock("div", _hoisted_13$7, [
+          _ctx.databasejoin_description ? (openBlock(), createElementBlock("label", _hoisted_11$7, toDisplayString(_ctx.databasejoin_description), 1)) : createCommentVNode("", true)
+        ])) : param.type === "databasejoin" ? (openBlock(), createElementBlock("div", _hoisted_12$7, [
           withDirectives((openBlock(), createElementBlock("select", {
             "onUpdate:modelValue": ($event) => $props.element.params[param.name] = $event,
             key: _ctx.reloadOptions,
@@ -1922,13 +1984,13 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("option", {
                 key: option.database_name,
                 value: option.database_name
-              }, toDisplayString(option.label), 9, _hoisted_15$6);
+              }, toDisplayString(option.label), 9, _hoisted_14$6);
             }), 128))
-          ], 42, _hoisted_14$6)), [
+          ], 42, _hoisted_13$7)), [
             [vModelSelect, $props.element.params[param.name]]
           ]),
-          _ctx.databasejoin_description ? (openBlock(), createElementBlock("label", _hoisted_16$5, toDisplayString(_ctx.databasejoin_description), 1)) : createCommentVNode("", true)
-        ])) : param.type === "databasejoin_cascade" && $props.repeat_name !== "" ? (openBlock(), createElementBlock("div", _hoisted_17$5, [
+          _ctx.databasejoin_description ? (openBlock(), createElementBlock("label", _hoisted_15$6, toDisplayString(_ctx.databasejoin_description), 1)) : createCommentVNode("", true)
+        ])) : param.type === "databasejoin_cascade" && $props.repeat_name !== "" ? (openBlock(), createElementBlock("div", _hoisted_16$5, [
           withDirectives((openBlock(), createElementBlock("select", {
             "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
             key: _ctx.reloadOptionsCascade,
@@ -1938,12 +2000,12 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("option", {
                 key: option.COLUMN_NAME,
                 value: option.COLUMN_NAME
-              }, toDisplayString(option.COLUMN_NAME), 9, _hoisted_19$5);
+              }, toDisplayString(option.COLUMN_NAME), 9, _hoisted_18$5);
             }), 128))
-          ], 8, _hoisted_18$5)), [
+          ], 8, _hoisted_17$5)), [
             [vModelSelect, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
           ])
-        ])) : param.type === "databasejoin_cascade" ? (openBlock(), createElementBlock("div", _hoisted_20$5, [
+        ])) : param.type === "databasejoin_cascade" ? (openBlock(), createElementBlock("div", _hoisted_19$5, [
           withDirectives((openBlock(), createElementBlock("select", {
             "onUpdate:modelValue": ($event) => $props.element.params[param.name] = $event,
             key: _ctx.reloadOptionsCascade,
@@ -1953,16 +2015,16 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
               return openBlock(), createElementBlock("option", {
                 key: option.COLUMN_NAME,
                 value: option.COLUMN_NAME
-              }, toDisplayString(option.COLUMN_NAME), 9, _hoisted_22$3);
+              }, toDisplayString(option.COLUMN_NAME), 9, _hoisted_21$4);
             }), 128))
-          ], 8, _hoisted_21$4)), [
+          ], 8, _hoisted_20$5)), [
             [vModelSelect, $props.element.params[param.name]]
           ])
-        ])) : param.type === "repeatable" ? (openBlock(), createElementBlock("div", _hoisted_23$3, [
+        ])) : param.type === "repeatable" ? (openBlock(), createElementBlock("div", _hoisted_22$3, [
           (openBlock(true), createElementBlock(Fragment, null, renderList(Object.entries($props.element.params[param.name]), (repeat_param, key) => {
             return openBlock(), createElementBlock("div", { key }, [
               _cache[3] || (_cache[3] = createBaseVNode("hr", null, null, -1)),
-              createBaseVNode("div", _hoisted_24$3, [
+              createBaseVNode("div", _hoisted_23$3, [
                 createBaseVNode("label", null, "-- " + toDisplayString(key + 1) + " --", 1),
                 key != 0 && key + 1 == Object.entries($props.element.params[param.name]).length ? (openBlock(), createElementBlock("button", {
                   key: 0,
@@ -1971,7 +2033,7 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
                   class: "mt-2 w-auto"
                 }, _cache[2] || (_cache[2] = [
                   createBaseVNode("span", { class: "material-symbols-outlined tw-text-red-600" }, "close", -1)
-                ]), 8, _hoisted_25$3)) : createCommentVNode("", true)
+                ]), 8, _hoisted_24$3)) : createCommentVNode("", true)
               ]),
               (openBlock(), createBlock(_component_form_builder_element_params, {
                 key: param.name + key,
@@ -1983,34 +2045,90 @@ function _sfc_render$t(_ctx, _cache, $props, $setup, $data, $options) {
               }, null, 8, ["element", "params", "repeat_name", "index", "databases"]))
             ]);
           }), 128)),
-          createBaseVNode("div", _hoisted_26$3, [
+          createBaseVNode("div", _hoisted_25$3, [
             createBaseVNode("button", {
               type: "button",
               onClick: ($event) => $options.addRepeatableField(param.name),
               class: "tw-btn-tertiary tw-mt-2 tw-w-auto"
-            }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE")), 9, _hoisted_27$3)
+            }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE")), 9, _hoisted_26$3)
           ])
-        ])) : $props.repeat_name !== "" ? withDirectives((openBlock(), createElementBlock("input", {
-          key: 8,
+        ])) : param.type === "fabrikmodalrepeat" ? (openBlock(), createElementBlock("div", _hoisted_27$3, [
+          (openBlock(true), createElementBlock(Fragment, null, renderList($props.element.params[param.name][Object.keys($props.element.params[param.name])[0]].length, (i) => {
+            return openBlock(), createElementBlock("div", { key: i }, [
+              _cache[5] || (_cache[5] = createBaseVNode("hr", null, null, -1)),
+              createBaseVNode("div", _hoisted_28$2, [
+                createBaseVNode("label", null, "-- " + toDisplayString(i) + " --", 1),
+                $props.element.params[param.name][Object.keys($props.element.params[param.name])[0]].length > 1 ? (openBlock(), createElementBlock("button", {
+                  key: 0,
+                  type: "button",
+                  onClick: ($event) => $options.removeFBModalRepeatableField(param.name, i),
+                  class: "mt-2 w-auto"
+                }, _cache[4] || (_cache[4] = [
+                  createBaseVNode("span", { class: "material-symbols-outlined tw-text-red-600" }, "close", -1)
+                ]), 8, _hoisted_29$2)) : createCommentVNode("", true)
+              ]),
+              (openBlock(true), createElementBlock(Fragment, null, renderList(param.fields, (sub_field) => {
+                return openBlock(), createBlock(_component_form_builder_element_params, {
+                  key: sub_field.name,
+                  element: $props.element,
+                  parent_param: param,
+                  params: [sub_field],
+                  databases: $props.databases,
+                  repeat_name: param.name,
+                  index: i
+                }, null, 8, ["element", "parent_param", "params", "databases", "repeat_name", "index"]);
+              }), 128))
+            ]);
+          }), 128)),
+          createBaseVNode("div", _hoisted_30$2, [
+            createBaseVNode("button", {
+              type: "button",
+              onClick: ($event) => $options.addFBModalRepeatableField(param.name),
+              class: "tw-btn-tertiary tw-mt-2 tw-w-auto"
+            }, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE")), 9, _hoisted_31$2)
+          ])
+        ])) : param.type === "listfields" ? (openBlock(), createElementBlock("div", _hoisted_32$2, [
+          withDirectives(createBaseVNode("select", {
+            "onUpdate:modelValue": ($event) => $props.element.params[$props.parent_param.name][param.name][$props.index - 1] = $event,
+            class: "tw-w-full"
+          }, [
+            (openBlock(true), createElementBlock(Fragment, null, renderList($options.listFieldsOptions, (option) => {
+              return openBlock(), createElementBlock("option", {
+                key: option.value,
+                value: option.value
+              }, toDisplayString(option.label), 9, _hoisted_34$2);
+            }), 128))
+          ], 8, _hoisted_33$2), [
+            [vModelSelect, $props.element.params[$props.parent_param.name][param.name][$props.index - 1]]
+          ])
+        ])) : $props.parent_param && $props.parent_param.name ? withDirectives((openBlock(), createElementBlock("input", {
+          key: 10,
+          "onUpdate:modelValue": ($event) => $props.element.params[$props.parent_param.name][param.name][$props.index - 1] = $event,
+          class: "tw-w-full",
+          placeholder: _ctx.translate(param.placeholder)
+        }, null, 8, _hoisted_35$2)), [
+          [vModelText, $props.element.params[$props.parent_param.name][param.name][$props.index - 1]]
+        ]) : $props.repeat_name !== "" ? withDirectives((openBlock(), createElementBlock("input", {
+          key: 11,
           type: param.type,
           "onUpdate:modelValue": ($event) => $props.element.params[$props.repeat_name][$options.index_name][param.name] = $event,
           class: "tw-w-full",
           placeholder: _ctx.translate(param.placeholder)
-        }, null, 8, _hoisted_28$2)), [
+        }, null, 8, _hoisted_36$2)), [
           [vModelDynamic, $props.element.params[$props.repeat_name][$options.index_name][param.name]]
         ]) : withDirectives((openBlock(), createElementBlock("input", {
-          key: 9,
+          key: 12,
           type: param.type,
           "onUpdate:modelValue": ($event) => $props.element.params[param.name] = $event,
           class: "tw-w-full",
           placeholder: _ctx.translate(param.placeholder)
-        }, null, 8, _hoisted_29$2)), [
+        }, null, 8, _hoisted_37$1)), [
           [vModelDynamic, $props.element.params[param.name]]
         ]),
-        param.helptext !== "" ? (openBlock(), createElementBlock("label", _hoisted_30$2, toDisplayString(_ctx.translate(param.helptext)), 1)) : createCommentVNode("", true)
+        param.helptext !== "" ? (openBlock(), createElementBlock("label", _hoisted_38$1, toDisplayString(_ctx.translate(param.helptext)), 1)) : createCommentVNode("", true)
       ]);
-    }), 256)),
-    _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_31$2)) : createCommentVNode("", true)
+    }), 128)),
+    _ctx.loading ? (openBlock(), createElementBlock("div", _hoisted_39$1)) : createCommentVNode("", true)
   ]);
 }
 const FormBuilderElementParams = /* @__PURE__ */ _export_sfc(_sfc_main$t, [["render", _sfc_render$t]]);
@@ -3915,6 +4033,27 @@ const _sfc_main$h = {
               }, 1500);
             }, 300);
           }
+          const allSectionsElements = [];
+          this.sections.forEach((section) => {
+            if (section.elements) {
+              Object.values(section.elements).forEach((element) => {
+                let regex = /id="([^"]+)"/;
+                let match = element.element.match(regex);
+                let inputId = match ? match[1] : null;
+                if (inputId) {
+                  allSectionsElements.push({
+                    label: section.label[useGlobalStore().getShortLang] + " - " + element.label[useGlobalStore().getShortLang],
+                    value: inputId,
+                    publish: element.publish,
+                    plugin: element.plugin,
+                    element_id: element.id,
+                    name: element.name
+                  });
+                }
+              });
+            }
+          });
+          useFormBuilderStore().updatePageElements(allSectionsElements);
         } else {
           this.displayError(this.translate("COM_EMUNDUS_FORM_BUILDER_ERROR"), this.translate(response.msg));
         }
@@ -8436,7 +8575,7 @@ const _sfc_main = {
       this.setSectionShown(this.showInSection);
     },
     setSectionShown(section) {
-      if (section == "rules-add") {
+      if (section === "rules-add") {
         this.selectTab("rules");
       } else {
         this.selectTab(section);
@@ -8701,10 +8840,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 default: withCtx(() => [
                   $options.leftPanelActiveTab === "Elements" ? (openBlock(), createBlock(_component_form_builder_elements, {
                     key: 0,
+                    mode: $data.mode,
                     onElementCreated: $options.onElementCreated,
                     form: $options.currentPage,
                     onCreateElementLastgroup: $options.createElementLastGroup
-                  }, null, 8, ["onElementCreated", "form", "onCreateElementLastgroup"])) : $options.leftPanelActiveTab === "Documents" ? (openBlock(), createBlock(_component_form_builder_document_formats, {
+                  }, null, 8, ["mode", "onElementCreated", "form", "onCreateElementLastgroup"])) : $options.leftPanelActiveTab === "Documents" ? (openBlock(), createBlock(_component_form_builder_document_formats, {
                     key: 1,
                     profile_id: $data.profile_id,
                     onOpenCreateDocument: $options.onEditDocument

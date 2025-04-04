@@ -63,18 +63,9 @@ class EmundusModelEvaluation extends JModelList
 		$this->_files = new EmundusModelFiles;
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>'))
-		{
-			$this->db     = Factory::getContainer()->get('DatabaseDriver');
-			$current_user = $this->app->getIdentity();
-			$session      = $this->app->getSession();
-		}
-		else
-		{
-			$this->db     = Factory::getDbo();
-			$current_user = Factory::getUser();
-			$session      = Factory::getSession();
-		}
+		$this->db     = Factory::getContainer()->get('DatabaseDriver');
+		$current_user = $this->app->getIdentity();
+		$session      = $this->app->getSession();
 
 		$menu = method_exists($this->app, 'getMenu') ? $this->app->getMenu() : null;
 		if (!empty($menu))
@@ -137,7 +128,7 @@ class EmundusModelEvaluation extends JModelList
 		if ($session->has('adv_cols'))
 		{
 			$adv = $session->get('adv_cols');
-			if (!empty($adv) && !is_null($adv))
+			if (!empty($adv))
 			{
 				$this->elements_id .= ',' . implode(',', $adv);
 			}
@@ -403,10 +394,7 @@ class EmundusModelEvaluation extends JModelList
 				}
 			}
 		}
-		/**if (isset($em_other_columns) && in_array('overall', $em_other_columns))
-		{
-			$this->_elements_default[] = ' AVG(ee.overall) as overall ';
-		}*/
+
 		if (empty($col_elt))
 		{
 			$col_elt = array();
@@ -2369,6 +2357,8 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	/**
+	 * @deprecated since 2.1.0
+	 *
 	 * @param $fnums
 	 *
 	 * @return mixed
@@ -2388,7 +2378,6 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$this->db->setQuery($query);
 			$evaluations_average = $this->db->loadAssocList('fnum', 'overall');
-
 		}
 		catch (Exception $e)
 		{
@@ -2396,6 +2385,97 @@ class EmundusModelEvaluation extends JModelList
 		}
 
 		return $evaluations_average;
+	}
+
+
+	/**
+	 * @param   array  $fnums
+	 * @param   array  $step_ids
+	 *
+	 * @return array
+	 */
+	public function getEvaluationAverageBySteps(array $fnums, int $user_id, array $step_ids = []): array
+	{
+		$evaluations_average = [];
+
+		if (!empty($fnums)) {
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+
+			$steps = [];
+			if (empty($step_ids)) {
+				$steps = $m_workflow->getEvaluatorSteps($user_id);
+			} else {
+				foreach ($step_ids as $step_id) {
+					$steps[] = $m_workflow->getStepData($step_id);
+				}
+			}
+
+			$query = $this->db->createQuery();
+
+			foreach ($steps as $step) {
+				$average_element = $this->getEvaluationFormAverageElement($step);
+
+				if (!empty($average_element)) {
+					$query->clear()
+						->select('ROUND(AVG(COALESCE(' . $this->db->quoteName('eval_table.' . $average_element['name']) . ', 0.00)),2) AS average, ecc.fnum')
+						->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+						->leftJoin($this->db->quoteName($step->table, 'eval_table') . ' on eval_table.ccid = ecc.id')
+						->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(',', $fnums) . ')')
+						->group($this->db->quoteName('ecc.fnum'));
+
+					try {
+						$this->db->setQuery($query);
+						$evaluations_average[$step->id] = $this->db->loadAssocList('fnum', 'average');
+					} catch (Exception $e) {
+						Log::add('Error getting evaluation averages : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+					}
+				}
+			}
+		}
+
+		return $evaluations_average;
+	}
+
+	/**
+	 * @param   object  $step
+	 *
+	 * @return array
+	 */
+	private function getEvaluationFormAverageElement(object $step): array
+	{
+		$element = [];
+
+		if (!empty($step->form_id)) {
+			$query = $this->db->createQuery();
+
+			$query->select('jfe.*')
+				->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+				->where('jffg.form_id = ' . $step->form_id)
+				->andWhere('jfe.published = 1')
+				->andWhere('jfe.plugin = ' . $this->db->quote('average'));
+
+			try {
+				$this->db->setQuery($query);
+				$avg_elements = $this->db->loadAssocList();
+
+				foreach ($avg_elements as $avg_element) {
+					$params = json_decode($avg_element['params'], true);
+
+					if ($params['used_as_total'] == 1) {
+						$element = $avg_element;
+						break;
+					}
+				}
+			} catch (Exception $e) {
+				Log::add('Error getting evaluation form average element : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $element;
 	}
 
 	function getEvalsByFnums($fnums)
