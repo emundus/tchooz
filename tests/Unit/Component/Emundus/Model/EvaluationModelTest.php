@@ -70,4 +70,17 @@ class EvaluationModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleAttachment($letter_attachement_id);
 		$this->h_dataset->deleteSampleLetter($letter_id);
 	}
+
+	/**
+	 * @covers EmundusModelEvaluation::getEvaluationAverageBySteps
+	 *
+	 * @return void
+	 */
+	public function  testgetEvaluationAverageBySteps()
+	{
+		$evaluations = $this->model->getEvaluationAverageBySteps([$this->dataset['fnum']], 1);
+		$this->assertIsArray($evaluations, 'getEvaluationAverageBySteps should return an array');
+
+		// TODO: create eval step with an eval form that contains an average field and test the function
+	}
 }

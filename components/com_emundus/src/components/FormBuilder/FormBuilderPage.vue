@@ -72,6 +72,9 @@ import formBuilderMixin from '@/mixins/formbuilder.js';
 import globalMixin from '@/mixins/mixin.js';
 import errorMixin from '@/mixins/errors.js';
 
+import { useFormBuilderStore } from '@/stores/formbuilder.js';
+import { useGlobalStore } from '@/stores/global.js';
+
 export default {
 	components: {
 		FormBuilderPageSection,
@@ -133,6 +136,33 @@ export default {
 							}, 1500);
 						}, 300);
 					}
+
+					const allSectionsElements = [];
+					this.sections.forEach((section) => {
+						if (section.elements) {
+							Object.values(section.elements).forEach((element) => {
+								let regex = /id="([^"]+)"/;
+								let match = element.element.match(regex);
+								let inputId = match ? match[1] : null;
+
+								if (inputId) {
+									allSectionsElements.push({
+										label:
+											section.label[useGlobalStore().getShortLang] +
+											' - ' +
+											element.label[useGlobalStore().getShortLang],
+										value: inputId,
+										publish: element.publish,
+										plugin: element.plugin,
+										element_id: element.id,
+										name: element.name,
+									});
+								}
+							});
+						}
+					});
+
+					useFormBuilderStore().updatePageElements(allSectionsElements);
 				} else {
 					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
 				}

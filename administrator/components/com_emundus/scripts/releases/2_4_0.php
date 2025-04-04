@@ -59,6 +59,10 @@ class Release2_4_0Installer extends ReleaseInstaller
 			$this->db->execute();
 			//
 
+			$manifest_cache = '{"name":"plg_fabrik_element_average","type":"plugin","creationDate":"2024-10-18","author":"eMundus","copyright":"Copyright (C) 2005-2024 eMundus - All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"2.3.0","description":"PLG_ELEMENT_AVERAGE_DESCRIPTION","group":"","changelogurl":"","filename":"average"}';
+			EmundusHelperUpdate::installExtension('plg_fabrik_element_average', 'average', $manifest_cache, 'plugin', 1, 'fabrik_element');
+			$tasks[] = EmundusHelperUpdate::enableEmundusPlugins('average', 'fabrik_element');
+
 			$result['status'] = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)

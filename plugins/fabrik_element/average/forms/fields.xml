@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields name="params">
+        <fieldset name="plg-average" label="PLG_ELEMENT_AVERAGE_SETTINGS">
+            <field name="average_multiple_elements"
+                   type="fabrikmodalrepeat"
+                   icon="list"
+                   label="PLG_ELEMENT_AVERAGE_ELEMENTS_LABEL"
+                   description="PLG_ELEMENT_AVERAGE_ELEMENTS_DESC"
+            >
+                <fields name="params">
+                    <fieldset modal="true"
+                              name="average_multiple_elements_modal"
+                              repeat="true">
+                        <field name="average_multiple_element"
+                               label="PLG_ELEMENT_AVERAGE_ELEMENT"
+                               type="listfields"
+                               valueformat="tableelement"
+                               usestep="true"
+                        />
+                        <field name="average_multiple_weight"
+                               label="PLG_ELEMENT_AVERAGE_ELEMENT_WEIGHT"
+                               type="number"
+                               default="1"
+                        />
+                    </fieldset>
+                </fields>
+            </field>
+        </fieldset>
+
+        <fieldset name="plg-average-advanced" label="PLG_ELEMENT_AVERAGE_ADVANCED_SETTINGS">
+            <field
+                    type="checkbox"
+                    name="used_as_total"
+                    label="PLG_ELEMENT_AVERAGE_USED_AS_TOTAL"
+                    description="PLG_ELEMENT_AVERAGE_USED_AS_TOTAL_DESC"
+                    default="0"
+            />
+        </fieldset>
+    </fields>
+</form>

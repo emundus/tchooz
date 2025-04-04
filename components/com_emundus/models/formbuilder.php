@@ -2286,6 +2286,10 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 
+			if ($element['plugin'] === 'average') {
+				$element['params']['average_multiple_elements'] = json_encode($element['params']['average_multiple_elements']);
+			}
+
 			if(($element['params']['alias'] === "" || $element['params']['alias'] === "element_sans_titre") && isset($element['label']['fr'])){
 				$element['params']['alias'] =  $element['label']['fr'];
 			}

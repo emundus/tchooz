@@ -186,6 +186,9 @@ class EmundusFilters
 						}
 
 						break;
+					case 'average':
+						$filter['type'] = 'number';
+						break;
 					default:
 						$filter['operator'] = 'LIKE';
 				}
