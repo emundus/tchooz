@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-cron-emundusdatasync" label="COM_FABRIK_OPTIONS">
+
+            <field type="text" name="base_url" label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_BASE_URL"/>
+
+            <field type="text" name="api_url" label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_API_URL"/>
+
+            <field type="list" name="auth_method" label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_AUTH_METHOD">
+                <option value="oauth2">OAuth2 (Client credentials)</option>
+            </field>
+
+            <field showon="auth_method:oauth2" type="text" name="login_url"
+                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_LOGIN_URL"/>
+
+            <field showon="auth_method:oauth2" type="text" name="client_id"
+                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_CLIENT_ID"/>
+
+            <field showon="auth_method:oauth2" type="password" name="client_secret"
+                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_CLIENT_SECRET"/>
+
+            <field name="mapping"
+                   type="subform"
+                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING"
+                   multiple="true"
+                   layout="joomla.form.field.subform.repeatable-table">
+                <form>
+                    <field name="table"
+                           type="text"
+                           label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_TABLE"
+                    />
+
+                    <field name="api_route"
+                           type="text"
+                           label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_API_ROUTE"
+                    />
+
+                    <field name="group_by"
+                           type="text"
+                           default=""
+                           label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_GROUP_BY"
+                    />
+
+                    <field name="where"
+                           type="text"
+                           default=""
+                           label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_WHERE"
+                    />
+
+                    <field name="attributes"
+                           type="subform"
+                           label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_ATTRIBUTES"
+                           multiple="true"
+                           layout="joomla.form.field.subform.repeatable-table">
+                        <form>
+                            <field name="column"
+                                   type="text"
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN"
+                            />
+
+                            <field name="api_attribute"
+                                   type="text"
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_API_ATTRIBUTE"
+                            />
+
+                            <field name="column_type"
+                                   type="list"
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_TYPE"
+                            >
+                                <option value="varchar">PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_TYPE_TEXT
+                                </option>
+                                <option value="int">PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_TYPE_INT</option>
+                                <option value="datetime">PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_TYPE_DATETIME
+                                </option>
+                                <option value="tinyint">PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_TYPE_TINYINT
+                                </option>
+                                <option value="join">PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_TYPE_JOIN</option>
+                            </field>
+
+                            <field name="join_table"
+                                   showon="column_type:join"
+                                   type="text"
+                                   default=""
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_JOIN_TABLE"
+                            />
+
+                            <field name="join_column"
+                                   showon="column_type:join"
+                                   type="text"
+                                   default="255"
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_JOIN_COLUMN"
+                            />
+
+                            <field name="column_length"
+                                   type="text"
+                                   default="255"
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_COLUMN_LENGTH"
+                            />
+
+                            <field name="lookup_column"
+                                   type="list"
+                                   default="0"
+                                   label="PLG_FABRIK_CRON_EMUNDUSDATASYNC_MAPPING_LOOKUP_COLUMN"
+                            >
+                                <option value="0">JNO</option>
+                                <option value="1">JYES</option>
+                            </field>
+                        </form>
+                    </field>
+                </form>
+            </field>
+        </fieldset>
+    </fields>
+</form>
