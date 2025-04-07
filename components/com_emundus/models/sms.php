@@ -311,7 +311,10 @@ class EmundusModelSMS extends JModelList
 		if (!empty($template_id)) {
 			$query = $this->db->getQuery(true);
 
-			if ($this->smsAddon->getConfiguration()['encoding'] === 'GSM-7' && !$allow_unicode) {
+			$sms_configuration = $this->smsAddon->getConfiguration();
+			$encoding = $sms_configuration['encoding'] ?? 'GSM-7';
+
+			if ($encoding === 'GSM-7' && !$allow_unicode) {
 				if (!class_exists('SMSEncodingHelper')) {
 					require_once(JPATH_ROOT . '/components/com_emundus/helpers/SMSEncodingHelper.php');
 				}
