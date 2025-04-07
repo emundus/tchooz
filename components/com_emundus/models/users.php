@@ -252,7 +252,7 @@ class EmundusModelUsers extends ListModel
 			$query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "<br>") as joomla_groupe,';
 		}
 
-		$query .= 'u.activation as active,u.block as block
+		$query .= 'u.activation as active,u.block as block,mfa.method as mfa_method
                     FROM #__users AS u
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
                     LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id and eup.profile_id != e.profile
@@ -261,7 +261,8 @@ class EmundusModelUsers extends ListModel
                     LEFT JOIN #__emundus_setup_profiles AS espr ON espr.id = e.profile
                     LEFT JOIN #__emundus_personal_detail AS epd ON u.id = epd.user
                     LEFT JOIN #__categories AS cat ON cat.id = e.university_id
-                    LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key like "emundus_profiles.newsletter")';
+                    LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key like "emundus_profiles.newsletter")
+                    LEFT JOIN #__user_mfa as mfa ON mfa.user_id = u.id AND mfa.default = 1';
 		if ($showJoomlagroups == 1) {
 			$query .= 'LEFT JOIN #__user_usergroup_map AS um ON ( u.id = um.user_id AND um.group_id != 2)
                     LEFT JOIN jos_usergroups AS usg ON ( um.group_id = usg.id)';

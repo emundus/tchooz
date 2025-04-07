@@ -84,20 +84,17 @@ if(!empty($user_module->id)) {
 
 		<?php if ($this->mfaConfigurationUI) : ?>
             <fieldset class="com-users-profile__multifactor">
-                <legend><?php echo Text::_('COM_USERS_PROFILE_MULTIFACTOR_AUTH'); ?></legend>
+                <h2><?php echo Text::_('COM_USERS_PROFILE_MULTIFACTOR_AUTH'); ?></h2>
 				<?php echo $this->mfaConfigurationUI ?>
             </fieldset>
 		<?php endif; ?>
 
         <div class="com-users-profile__edit-submit control-group">
-            <div class="controls tw-flex tw-justify-content-between">
-                <a class="tw-btn-cancel" href="#" onclick="history.go(-1);" title="<?php echo JText::_('JCANCEL'); ?>">
-					<?php echo JText::_('JCANCEL'); ?>
-                </a>
-                <button type="submit" class="tw-btn-primary validate" name="task" value="profile.save">
-					<?php echo Text::_('JSAVE'); ?>
-                </button>
+            <div class="controls tw-flex !tw-justify-end tw-w-full">
                 <input type="hidden" name="option" value="com_users">
+                <button type="submit" class="tw-btn-primary validate" name="task" value="profile.save">
+		            <?php echo Text::_('JSAVE'); ?>
+                </button>
             </div>
         </div>
 		<?php echo HTMLHelper::_('form.token'); ?>
