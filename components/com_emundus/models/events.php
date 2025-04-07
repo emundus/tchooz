@@ -2774,7 +2774,14 @@ class EmundusModelEvents extends BaseDatabaseModel
 			}
 			if (!empty($assoc_user))
 			{
-				$query->where('essu.user = ' . $assoc_user);
+				$query->extendWhere(
+					'AND',
+					[
+						$this->db->quoteName('essu.user') . ' = ' . $assoc_user,
+						$this->db->quoteName('esru.user') . ' = ' . $assoc_user,
+					],
+					'OR'
+				);
 			}
 			if (!empty($ids))
 			{

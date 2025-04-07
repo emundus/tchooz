@@ -33,25 +33,25 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 {
 	public function onBeforeLoad(): void
 	{
-		$language = $this->app->getLanguage();
+		$language     = $this->app->getLanguage();
 		$current_lang = $language->getTag();
 
-		$language->load('com_emundus', JPATH_SITE.'/components/com_emundus', $current_lang, true);
+		$language->load('com_emundus', JPATH_SITE . '/components/com_emundus', $current_lang, true);
 
-		$user = $this->app->getIdentity();
-		$form_model = $this->getModel();
+		$user          = $this->app->getIdentity();
+		$form_model    = $this->getModel();
 		$db_table_name = $form_model->getTableName();
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->createQuery();
+		$db            = Factory::getContainer()->get('DatabaseDriver');
+		$query         = $db->createQuery();
 
-		$input = $this->app->input;
-		$ccid = $input->getInt($db_table_name . '___ccid', 0);
-		$step_id = $input->getInt($db_table_name . '___step_id', 0);
-		$view = $input->getString('view', 'form');
+		$input          = $this->app->input;
+		$ccid           = $input->getInt($db_table_name . '___ccid', 0);
+		$step_id        = $input->getInt($db_table_name . '___step_id', 0);
+		$view           = $input->getString('view', 'form');
 		$current_row_id = $input->getInt('rowid', 0);
 
 		$campaign_id = null;
-		if(!empty($ccid))
+		if (!empty($ccid))
 		{
 			$query->clear()
 				->select('campaign_id')
@@ -62,27 +62,33 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		}
 
 		$m_workflow = new EmundusModelWorkflow();
-		$step_data = $m_workflow->getStepData($step_id,$campaign_id);
-		try {
+		$step_data  = $m_workflow->getStepData($step_id, $campaign_id);
+		try
+		{
 			$access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user->id);
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			$this->app->enqueueMessage($e->getMessage(), 'error');
 			$this->app->redirect('/');
 		}
 
-		$can_see = $access['can_see'];
+		$can_see  = $access['can_see'];
 		$can_edit = $access['can_edit'];
 
-		if (!$can_see) {
+		if (!$can_see)
+		{
 			$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 			$this->app->redirect('/');
 		}
 
 		$current_url = '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
-		$final_url = $current_url;
+		$final_url   = $current_url;
 
-		if (!empty($step_data) && $can_edit && $view === 'form') {
-			if ($step_data->multiple == 0) {
+		if (!empty($step_data) && $can_edit && $view === 'form')
+		{
+			if ($step_data->multiple == 0)
+			{
 				// if step_data is not multiple, we need to redirect to the unique row for this ccid
 				$query->clear()
 					->select('id')
@@ -92,7 +98,9 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 
 				$db->setQuery($query);
 				$row_id = $db->loadResult();
-			} else {
+			}
+			else
+			{
 				// if multiple, we need to redirect to the row of the current user if it exists
 				$query->clear()
 					->select('id')
@@ -105,37 +113,58 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 				$row_id = $db->loadResult();
 			}
 
-			if (!empty($row_id)) {
+			if (!empty($row_id))
+			{
 				// if coord or admin, he is allowed to edit all rows, so if rowid is not 0, keep it
 				// if not, replace it with the rowid
 
-				if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id)) {
+				if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id))
+				{
 					$final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
-					if (!str_contains($final_url, 'rowid')) {
+					if (!str_contains($final_url, 'rowid'))
+					{
 						$final_url .= '&rowid=' . $row_id;
 					}
 				}
 			}
 		}
 
-		if (!$can_edit && $view !== 'details') {
+		if (!$can_edit && $view !== 'details')
+		{
 			$this->app->enqueueMessage(Text::_($access['reason_cannot_edit']));
 			$final_url = str_replace('view=form', 'view=details', $final_url);
 		}
 
-		if ($current_url !== $final_url) {
+		if(!empty($step_data) && $step_data->lock == 1 && $view === 'form' && !empty($row_id))
+		{
+			$query->clear()
+				->select('evaluator')
+				->from($db_table_name)
+				->where('id = ' . $row_id);
+			$db->setQuery($query);
+			$evaluator = $db->loadResult();
+
+			// I can edit form only if i have update right and i'm not the evaluator
+			if(!EmundusHelperAccess::asAccessAction($step_data->action_id, 'u', $user->id) || $evaluator === $user->id)
+			{
+				$final_url = str_replace('view=form', 'view=details', $final_url);
+			}
+		}
+
+		if ($current_url !== $final_url)
+		{
 			$this->app->redirect($final_url);
 		}
 
-		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+		$fnum                                         = EmundusHelperFiles::getFnumFromId($ccid);
 		$form_model->data[$db_table_name . '___fnum'] = $fnum;
 
 		// log user access to evaluation
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-		$m_files = new EmundusModelFiles();
+		$m_files      = new EmundusModelFiles();
 		$applicant_id = $m_files->getFnumInfos($fnum)['applicant_id'];
 
-		require_once (JPATH_ROOT . '/components/com_emundus/models/logs.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 		EmundusModelLogs::log($user->id, $applicant_id, $fnum, $step_data->action_id, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION', json_encode(array('step_id' => $step_id)));
 	}
 
@@ -147,6 +176,41 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeSubmitEvaluation', ['formModel' => $form_model]]);
 	}
 
+	public function onJSReady()
+	{
+		$form_model = $this->getModel();
+
+		$db_table_name = $form_model->getTableName();
+		$db            = Factory::getContainer()->get('DatabaseDriver');
+		$query         = $db->createQuery();
+
+		$input          = $this->app->input;
+		$ccid           = $input->getInt($db_table_name . '___ccid', 0);
+		$step_id        = $input->getInt($db_table_name . '___step_id', 0);
+		$view           = $input->getString('view', 'form');
+		$current_row_id = $input->getInt('rowid', 0);
+
+		$campaign_id = null;
+		if (!empty($ccid))
+		{
+			$query->clear()
+				->select('campaign_id')
+				->from('#__emundus_campaign_candidature')
+				->where('id = ' . $ccid);
+			$db->setQuery($query);
+			$campaign_id = $db->loadResult();
+		}
+
+		$m_workflow = new EmundusModelWorkflow();
+		$step_data  = $m_workflow->getStepData($step_id, $campaign_id);
+
+		// If step_data is lock display a sweetalert to confirm submittion
+		if ($step_data->lock == 1)
+		{
+			echo '<script>document.addEventListener("DOMContentLoaded", function () {beforeSubmitEvaluation('.$form_model->getId().');});</script>';
+		}
+	}
+
 	public function onAfterProcess(): void
 	{
 		$formModel = $this->getModel();
@@ -155,8 +219,6 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		$this->app->triggerEvent('onCallEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $formModel]]);
 
 		echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
-
-		echo '<script>window.parent.ScrollToTop();</script>';
 
 		echo '<style>
 			.em-swal-title{

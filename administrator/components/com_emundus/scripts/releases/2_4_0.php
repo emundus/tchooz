@@ -306,6 +306,15 @@ class Release2_4_0Installer extends ReleaseInstaller
 				}
 			}
 
+			// Add lock column to jos_emundus_setup_workflow_steps
+			EmundusHelperUpdate::addColumn('jos_emundus_setup_workflows_steps', 'lock', 'TINYINT(1) DEFAULT 0');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TITLE','Soumettre l\'évaluation');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TITLE','Submit evaluation', 'override',0,null,null,'en-GB');
+
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT','Une fois votre évaluation soumise, vous ne pourrez plus la modifier. Veuillez vérifier attentivement vos réponses avant de valider.');
+			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT','Once you have submitted your evaluation, you will not be able to change it. Please check your answers carefully before validating.', 'override',0,null,null,'en-GB');
+
+
 			$result['status'] = !in_array(false, $tasks);
 
 			// if config sms not exist

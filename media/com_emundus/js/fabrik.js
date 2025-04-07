@@ -638,3 +638,43 @@ function togglePasswordVisibility() {
         }
     });
 }
+
+function beforeSubmitEvaluation(formId)
+{
+    const formSubmitButton = document.querySelector('#fabrikSubmit_'+formId);
+    if (formSubmitButton) {
+        formSubmitButton.type = 'button';
+        formSubmitButton.onclick = null;
+
+        formSubmitButton.addEventListener('click', function (event) {
+            const form = document.querySelector('form[name=form_'+formId+']');
+            event.stopImmediatePropagation();
+            event.preventDefault();
+
+            Swal.fire({
+                title: Joomla.Text._('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TITLE'),
+                text: Joomla.Text._('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT'),
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: Joomla.Text._('COM_EMUNDUS_ONBOARD_OK'),
+                cancelButtonText: Joomla.Text._('COM_EMUNDUS_ONBOARD_CANCEL'),
+                reverseButtons: true,
+                customClass: {
+                    title: 'em-swal-title',
+                    confirmButton: 'em-swal-confirm-button',
+                    cancelButton: 'em-swal-cancel-button',
+                    actions: 'em-swal-double-action',
+                },
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                    setTimeout(() => {
+                        form.submit();
+                    },500);
+                }
+            });
+        });
+    } else {
+        console.log('⚠️ Formulaire non trouvé !');
+    }
+}

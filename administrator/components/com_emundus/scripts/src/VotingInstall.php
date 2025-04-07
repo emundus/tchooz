@@ -267,7 +267,7 @@ class VotingInstall
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE', 'I give my favourite!', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>Vous vous apprêtez à voter pour ce projet.</p><p>Êtes-vous sûre de votre choix ? (une fois le coup de coeur attribué, vous ne pourrez plus le retirer)</p>');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>You are about to vote for this project.</p><p>Are you sure of your choice? (once the "coup de coeur" has been awarded, you will not be able to withdraw it)</p>', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_TEXT', '<p>You are about to vote for this project.</p><p>Are you sure of your choice? (once the "coup de coeur" has been awarded, you will not be able to withdraw it)</p>', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Oui, je vote !');
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_YES', 'Yes, I vote!', 'override', 0, null, null, 'en-GB');
@@ -294,7 +294,7 @@ class VotingInstall
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TITLE', 'Vote submitted!', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Votre vote a bien été pris en compte ! Merci de votre participation.');
-		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Your vote has been taken into account! Thank you for your participation.', 'override', null, null, null, 'en-GB');
+		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_SUCCESS_TEXT', 'Your vote has been taken into account! Thank you for your participation.', 'override', 0, null, null, 'en-GB');
 
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'Une erreur est survenue');
 		EmundusHelperUpdate::insertTranslationsTag('COM_FABRIK_VOTE_MODAL_ERROR_TITLE', 'An error has occurred', 'override', 0, null, null, 'en-GB');
