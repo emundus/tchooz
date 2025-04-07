@@ -200,6 +200,24 @@
 										}}</label>
 									</div>
 
+									<div
+										v-if="!isApplicantStep(step)"
+										class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
+									>
+										<input
+											v-model="step.lock"
+											true-value="1"
+											false-value="0"
+											type="checkbox"
+											:name="'step-' + step.id + '-lock'"
+											:id="'step-' + step.id + '-lock'"
+											class="tw-cursor-pointer"
+										/>
+										<label :for="'step-' + step.id + '-lock'" class="tw-mb-0 tw-cursor-pointer">{{
+											translate('COM_EMUNDUS_WORKFLOW_STEP_IS_LOCKED')
+										}}</label>
+									</div>
+
 									<div v-if="!isApplicantStep(step)" class="step-associated-groups">
 										<label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
 										<ul class="tw-my-2 tw-overflow-auto" style="max-height: 100px">

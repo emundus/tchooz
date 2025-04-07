@@ -92,8 +92,10 @@ const _sfc_main$2 = {
     iframeLoaded(event) {
       this.loading = false;
       let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
-      iframeDoc.querySelector(".emundus-form").classList.add("eval-form-split-view");
-      iframeDoc.querySelector("body .platform-content > div").classList.add("eval-form-split-view-container");
+      if (iframeDoc.querySelector(".emundus-form")) {
+        iframeDoc.querySelector(".emundus-form").classList.add("eval-form-split-view");
+        iframeDoc.querySelector("body .platform-content > div").classList.add("eval-form-split-view-container");
+      }
     }
   },
   computed: {
@@ -149,7 +151,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-ad6bff3b"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-ca80c115"]]);
 const client = new FetchClient("file");
 const filesService = {
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {

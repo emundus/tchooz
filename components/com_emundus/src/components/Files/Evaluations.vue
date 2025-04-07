@@ -108,9 +108,10 @@ export default {
 		iframeLoaded(event) {
 			this.loading = false;
 			let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
-			iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
-
-			iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
+			if (iframeDoc.querySelector('.emundus-form')) {
+				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
+				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
+			}
 		},
 	},
 	computed: {
