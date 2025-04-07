@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, j as normalizeStyle, w as withDirectives, v as vShow, F as Fragment, e as renderList, n as normalizeClass } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, w as withDirectives, j as normalizeStyle, v as vShow, F as Fragment, e as renderList, n as normalizeClass } from "./app_emundus.js";
 const basicPreset = [
   "red-1",
   "red-2",
