@@ -1760,7 +1760,7 @@ class EmundusHelperEvents
 			require_once(JPATH_SITE . '/components/com_emundus/models/sms.php');
 		}
 		$m_sms = new EmundusModelSMS();
-		$m_sms->triggerSMS([$student->fnum], $new_status, $code, true);
+		$m_sms->triggerSMS([$student->fnum], $new_status, $code, true, $student->id);
 
 		EmundusModelLogs::log($student->id, $applicant_id, $student->fnum, 1, 'u', 'COM_EMUNDUS_ACCESS_FILE_UPDATE', 'COM_EMUNDUS_ACCESS_FILE_SENT_BY_APPLICANT');
 
