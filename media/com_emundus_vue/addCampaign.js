@@ -1,4 +1,4 @@
-import { _ as _export_sfc, c as createElementBlock, o as openBlock, w as withDirectives, z as vModelText, d as createBaseVNode, n as normalizeClass, Q as withKeys, v as vShow, F as Fragment, e as renderList, t as toDisplayString, a2 as defineStore, a5 as X42, C as script, r as resolveComponent, b as createCommentVNode, h as withModifiers, m as createTextVNode, g as createVNode, f as withCtx, W as mergeProps, Z as toHandlers, Y as vModelCheckbox, y as vModelSelect, E as Transition, S as Swal, s as settingsService, u as useGlobalStore, R as campaignService, G as programmeService, a1 as formService } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, w as withDirectives, A as vModelText, d as createBaseVNode, Q as withKeys, n as normalizeClass, v as vShow, F as Fragment, e as renderList, t as toDisplayString, a2 as defineStore, D as script, a5 as V32, u as useGlobalStore, R as campaignService, S as Swal, a1 as formService, H as programmeService, s as settingsService, r as resolveComponent, b as createCommentVNode, g as withModifiers, m as createTextVNode, h as createVNode, f as withCtx, W as mergeProps, Z as toHandlers, Y as vModelCheckbox, z as vModelSelect, I as Transition } from "./app_emundus.js";
 import { D as DatePicker } from "./index.js";
 /* empty css       */
 const _sfc_main$1 = {
@@ -129,7 +129,7 @@ const _sfc_main = {
   name: "addCampaign",
   components: {
     Multiselect: script,
-    TipTapEditor: X42,
+    TipTapEditor: V32,
     Autocomplete,
     DatePicker
   },

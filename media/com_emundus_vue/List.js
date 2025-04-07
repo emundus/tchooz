@@ -1,4 +1,4 @@
-import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, w as withDirectives, y as vModelSelect, F as Fragment, e as renderList, z as vModelText, C as script, r as resolveComponent, n as normalizeClass, g as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, A as _imports_0, h as withModifiers, v as vShow, M as Modal, S as Swal$1, J as FetchClient, s as settingsService, u as useGlobalStore, q as ref, ab as userService, aa as resolveDynamicComponent, p as Teleport } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, w as withDirectives, z as vModelSelect, F as Fragment, e as renderList, A as vModelText, D as script, r as resolveComponent, n as normalizeClass, h as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, B as _imports_0, g as withModifiers, v as vShow, M as Modal, u as useGlobalStore, q as ref, ab as userService, s as settingsService, S as Swal$1, aa as resolveDynamicComponent, p as Teleport, J as FetchClient } from "./app_emundus.js";
 import ExportsSlotsModal from "./ExportSlotsModal.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
@@ -7,11 +7,11 @@ import { P as Parameter } from "./Parameter.js";
 import { e as eventsService } from "./events2.js";
 import "./core.js";
 import "./index.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 import "./EventBooking.js";
 import "./Info.js";
 import "./ColorPicker.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 const _sfc_main$9 = {
   name: "Head",
   props: {
