@@ -9,8 +9,8 @@
 	<dictionnary>
 		<entry name="5.1.5" value="1.1.4" />
 		<entry name="2025" date="yyyy" />
-		<entry name="mars" date="MM" />
-		<entry name="20" date="dd" />
+		<entry name="avril" date="MM" />
+		<entry name="06" date="dd" />
 	</dictionnary>
 	<files>
 		<file name="fedex2.xml">
