@@ -631,7 +631,7 @@ class hikashopAddressClass extends hikashopClass {
 		$orderClass = hikashop_get('class.order');
 		$status = true;
 
-		$current_user_id = hikashop_loadUser(false);
+		$current_user_id = hikashop_loadUser();
 		if ($elements->address_user_id != $current_user_id) {
 			return false;
 		}

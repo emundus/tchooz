@@ -80,6 +80,10 @@ $joomla_version_class = 'hika_j'.(int)HIKASHOP_JVERSION;
 if((int)HIKASHOP_JVERSION == 5) {
 	$joomla_version_class .= ' hika_j4';
 }
-echo '<div id="hikashop_main_content" class="hikashop_main_content '.$joomla_version_class.'">'.ob_get_clean().'</div>';
+$html = ob_get_clean();
+if(HIKASHOP_J50 && hikaInput::get()->getString('tmpl') === 'component') {
+	$html = '<div id="header"><div class="header-title"></div><div class="header-items"></div><div id="header-more-items"></div></div>'. $html;
+}
+echo '<div id="hikashop_main_content" class="hikashop_main_content '.$joomla_version_class.'">'.$html.'</div>';
 
 hikashop_cleanCart();

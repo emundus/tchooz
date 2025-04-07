@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>HikaShopCustom Price plugin</name>
-	<creationDate>20 mars 2025</creationDate>
+	<creationDate>06 avril 2025</creationDate>
 	<version>5.1.5</version>
 	<author>HikaShop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

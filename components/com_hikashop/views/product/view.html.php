@@ -3379,6 +3379,21 @@ if (!class_exists('HikaShopPriceHelper'))
 			return $this->retailPrices;
 		}
 
+		public function getFormattedAdvantage(&$price)
+		{
+			$retailPrices = $this->getRetailPrice();
+			$msrpInCorrectCurrency = $retailPrices->incTax;
+
+			if($this->mainCurr != $this->currCurrency) {
+				$msrpInCorrectCurrency = $this->currencyHelper->convertUniquePrice(
+					$retailPrices->incTax, $this->mainCurr, $this->currCurrency
+				);
+			}
+
+			$priceAdvantageValue = $msrpInCorrectCurrency - $price->price_value_with_tax;
+			return $this->formatPrice($priceAdvantageValue);
+		}
+
 		public function getFormattedRetailPrice($incTax = false)
 		{
 			$prices          = $this->getRetailPrice();

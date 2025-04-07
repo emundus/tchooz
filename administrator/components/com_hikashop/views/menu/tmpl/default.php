@@ -10,7 +10,7 @@ defined('_JEXEC') or die('Restricted access');
 ?><?php
 $doc = JFactory::getDocument();
 $doc->addCustomTag('<div class="theme-overlay">
-	<img class="overlay-spinner " src="http://localhost/J510/Joomla_5.1.0-Stable-Full_Package_fr/media/com_hikashop/images/spinner_03.svg">
+	<img class="overlay-spinner " src="' . HIKASHOP_IMAGES . 'spinner_03.svg">
 </div>');
 
 $doc->addStyleDeclaration("

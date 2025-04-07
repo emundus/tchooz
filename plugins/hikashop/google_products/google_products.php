@@ -478,7 +478,7 @@ class plgHikashopGoogle_products extends JPlugin {
 					"\t".'<channel>'."\n".
 								"\t\t".'<title><![CDATA[ '.$siteName.' ]]></title>'."\n".
 								"\t\t".'<description><![CDATA[ '.$siteDesc.' ]]></description>'."\n".
-								"\t\t".'<link><![CDATA[ '.$thi->siteAddress.' ]]></link>'."\n"."\n";
+								"\t\t".'<link><![CDATA[ '.$this->siteAddress.' ]]></link>'."\n"."\n";
 		$productClass = hikashop_get('class.product');
 		$volumeHelper = hikashop_get('helper.volume');
 		$weightHelper = hikashop_get('helper.weight');
