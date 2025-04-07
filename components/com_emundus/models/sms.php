@@ -439,7 +439,8 @@ class EmundusModelSMS extends JModelList
 			foreach ($fnums as $fnum) {
 				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 
-				$query->select('eu.user_id, eu.tel')
+				$query->clear()
+					->select('eu.user_id, eu.tel')
 					->from($this->db->quoteName('#__emundus_users', 'eu'))
 					->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('ecc.applicant_id'))
 					->where('ecc.fnum = ' . $this->db->quote($fnum));
