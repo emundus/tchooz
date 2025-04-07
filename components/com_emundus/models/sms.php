@@ -1021,6 +1021,8 @@ class EmundusModelSMS extends JModelList
 					$triggered_to_others = $this->triggerSMSToOthers($trigger, $fnums, $user_id);
 					$triggered = $triggered_to_applicants && $triggered_to_others;
 				}
+			} else {
+				$triggered = true; // No triggers found, so we consider that the everything is fine
 			}
 		}
 
@@ -1087,7 +1089,7 @@ class EmundusModelSMS extends JModelList
 					$triggered = $this->storeSmsToSend($sms_template['message'], $receivers, $trigger->sms_id, $user_id);
 				}
 			} else {
-				$triggered = true;
+				$triggered = true; // No users found, so we consider that the everything is fine
 			}
 		}
 

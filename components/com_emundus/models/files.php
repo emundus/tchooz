@@ -5107,9 +5107,7 @@ class EmundusModelFiles extends JModelLegacy
 				}, $students);
 				$stored = $m_sms->triggerSMS($fnums, $state, $codes, false, $user_id);
 
-				if ($stored) {
-					$msg .= '<div class="alert alert-dismissable alert-success">'.Text::_('COM_EMUNDUS_SMS_SENT').'</div>';
-				} else {
+				if (!$stored) {
 					$msg .= '<div class="alert alert-dismissable alert-danger">'.Text::_('COM_EMUNDUS_SMS_FAILED').'</div>';
 				}
 			}
