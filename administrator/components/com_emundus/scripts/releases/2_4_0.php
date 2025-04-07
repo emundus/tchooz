@@ -307,6 +307,76 @@ class Release2_4_0Installer extends ReleaseInstaller
 			}
 
 			$result['status'] = !in_array(false, $tasks);
+
+			// if config sms not exist
+			$query->clear()
+				->select('*')
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
+
+			$this->db->setQuery($query);
+			$config = $this->db->loadObject();
+
+			if (empty($config->namekey))
+			{
+				$params = '{"enabled":0,"displayed":0,"params":{"encoding":"UCS-2", "service": "ovh"}}';
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_setup_config'))
+					->columns($this->db->quoteName('namekey') . ', ' . $this->db->quoteName('value'))
+					->values($this->db->quote('sms') . ', ' . $this->db->quote($params));
+
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			EmundusHelperUpdate::addColumn('#__emundus_setup_emails_trigger', 'sms_id', 'INT(11) DEFAULT NULL');
+
+			$alter_query = "ALTER TABLE jos_emundus_setup_emails_trigger MODIFY email_id INT null";
+			$this->db->setQuery($alter_query);
+			$this->db->execute();
+
+			EmundusHelperUpdate::addColumn('#__emundus_setup_emails_trigger', 'sms_id', 'INT(11) DEFAULT NULL');
+
+			// Check if the foreign key already exists
+			$check_foreign_query = "SELECT COUNT(*) FROM information_schema.KEY_COLUMN_USAGE WHERE TABLE_NAME = 'jos_emundus_setup_emails_trigger' AND CONSTRAINT_NAME = 'jos_emundus_setup_emails_trigger_sms_id__fk'";
+			$this->db->setQuery($check_foreign_query);
+			$exists = $this->db->loadResult();
+
+			if(empty($exists))
+			{
+				$foreign_key_query = "alter table jos_emundus_setup_emails_trigger add constraint jos_emundus_setup_emails_trigger_sms_id__fk foreign key (sms_id) references jos_emundus_setup_sms (id) on update cascade on delete set null;";
+				$this->db->setQuery($foreign_key_query);
+				$this->db->execute();
+			}
+
+			// Create menu to edit trigger
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('onboardingmenu'))
+				->andWhere($this->db->quoteName('alias') . ' LIKE ' . $this->db->quote('edit-trigger') . ' OR ' . $this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=emails&layout=triggeredit'));
+			$this->db->setQuery($query);
+			$trigger_menu = $this->db->loadResult();
+
+			if(empty($trigger_menu))
+			{
+				$data              = [
+					'menutype'          => 'onboardingmenu',
+					'title'             => 'Ajouter/Modifier un déclencheur',
+					'alias'             => 'edit-trigger',
+					'path'              => 'edit-trigger',
+					'link'              => 'index.php?option=com_emundus&view=emails&layout=triggeredit',
+					'type'              => 'component',
+					'component_id'      => ComponentHelper::getComponent('com_emundus')->id,
+					'template_style_id' => 0,
+					'params'            => [
+						'menu_show' => 0,
+					],
+				];
+				$trigger_menu = EmundusHelperUpdate::addJoomlaMenu($data);
+				EmundusHelperUpdate::insertFalangTranslation(1, $trigger_menu['id'], 'menu', 'title', 'Add/Edit a trigger');
+			}
+			//
 		}
 		catch (\Exception $e)
 		{

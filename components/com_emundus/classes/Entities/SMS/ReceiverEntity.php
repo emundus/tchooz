@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\SMS\Entities;
+namespace classes\Entities\SMS;
 
 class ReceiverEntity
 {

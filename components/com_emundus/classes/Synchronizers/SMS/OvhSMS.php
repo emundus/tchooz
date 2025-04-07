@@ -1,8 +1,8 @@
 <?php
 
-namespace classes\SMS\Synchronizer;
+namespace classes\Synchronizers\SMS;
 
-use classes\SMS\Entities\SMSEntity;
+use classes\Entities\SMS\SMSEntity;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Ovh\Api;

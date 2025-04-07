@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use classes\Synchronizers\SMS\OvhSMS;
 use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Component\Config\Controller\ApplicationController;
@@ -23,10 +24,7 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Response\JsonResponse;
-use Joomla\CMS\Session\Session;
 use Joomla\CMS\Uri\Uri;
-use classes\SMS\Synchronizer\OvhSMS;
 
 /**
  * Settings Controller
@@ -2238,7 +2236,7 @@ class EmundusControllersettings extends BaseController
 					switch($app->type) {
 						case 'ovh':
 							if (!class_exists('OvhSMS')) {
-								require_once JPATH_ROOT . '/components/com_emundus/classes/SMS/Synchronizer/OvhSMS.php';
+								require_once(JPATH_ROOT . '/components/com_emundus/classes/Synchronizers/SMS/OvhSMS.php');
 							}
 							$synchronizer = new OvhSMS();
 							$sms_services = $synchronizer->getSmsServices();
@@ -2346,6 +2344,34 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
+	public function saveaddon()
+	{
+		$this->checkToken('post');
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 200;
+			$addon = $this->input->getRaw('addon', '{}');
+			$addon = json_decode($addon, true);
+
+			if (!empty($addon)) {
+				$saved = $this->m_settings->saveAddon($addon);
+
+				if ($saved) {
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('ADDON_SAVED');
+				} else  {
+					$response['message'] = Text::_('ADDON_NOT_SAVED');
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function toggleaddon()
 	{
 		$this->checkToken('post');
@@ -2361,7 +2387,7 @@ class EmundusControllersettings extends BaseController
 			$enabled = $this->input->getInt('enabled', 1);
 
 			if(!empty($addon_type)) {
-				$response['status'] = $this->m_settings->toggleAddon($addon_type,$enabled);
+				$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
 				if($response['status']) {
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');

@@ -10,11 +10,11 @@
 
 namespace Unit\Component\Emundus\Model;
 
-use classes\SMS\Synchronizer\OvhSMS;
+use classes\Entities\SMS\ReceiverEntity;
+use classes\Synchronizers\SMS\OvhSMS;
 use EmundusModelApplication;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
-use classes\SMS\Entities\ReceiverEntity;
 
 /**
  * @package     Unit\Component\Emundus\Model
@@ -145,7 +145,7 @@ class SMSModelTest extends UnitTestCase
 
 
 		if (!class_exists('OvhSMS')) {
-			require_once JPATH_ROOT . '/components/com_emundus/classes/SMS/Synchronizer/OvhSMS.php';
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Synchronizers/SMS/OvhSMS.php');
 		}
 
 		// fake OvhSMS

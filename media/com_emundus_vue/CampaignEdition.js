@@ -1,9 +1,23 @@
-import { _ as _export_sfc, V as VueDraggableNext, S as Swal, L as campaignService, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, a as createBlock, g as createVNode, f as withCtx, t as toDisplayString, N as TransitionGroup, F as Fragment, e as renderList, O as mergeProps, M as Modal, l as emailService, s as settingsService, h as withModifiers, w as withDirectives, n as normalizeClass, y as vModelSelect, I as axios, m as createTextVNode, Q as workflowService, u as useGlobalStore, R as vModelCheckbox, U as toHandlers, W as mixin, X as History, T as Tabs, v as vShow, Y as Transition, Z as programmeService, $ as formService } from "./app_emundus.js";
+import { _ as _export_sfc, V as VueDraggableNext, R as campaignService, S as Swal, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, a as createBlock, f as withCtx, t as toDisplayString, h as createVNode, U as TransitionGroup, F as Fragment, e as renderList, b as createCommentVNode, W as mergeProps, M as Modal, l as emailService, s as settingsService, g as withModifiers, w as withDirectives, n as normalizeClass, z as vModelSelect, O as axios, m as createTextVNode, u as useGlobalStore, X as workflowService, Y as vModelCheckbox, Z as toHandlers, T as Tabs, $ as History, a0 as mixin, a1 as formService, H as programmeService, v as vShow, I as Transition } from "./app_emundus.js";
 import addCampaign from "./addCampaign.js";
 import { v as vueDropzone } from "./vue-dropzone.js";
 import { q as qs } from "./index2.js";
 import { D as DatePicker } from "./index.js";
+import MessageTriggers from "./MessageTriggers.js";
 /* empty css       */
+import "./List.js";
+import "./ExportSlotsModal.js";
+import "./Skeleton.js";
+import "./Calendar.js";
+import "./core.js";
+import "./Parameter.js";
+import "./EventBooking.js";
+import "./events2.js";
+import "./Info.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
+import "./EditSlot.js";
+import "./ColorPicker.js";
 const _imports_0 = "/media/com_emundus_vue/assets/pdf.png";
 const _imports_1 = "/media/com_emundus_vue/assets/doc.png";
 const _imports_2 = "/media/com_emundus_vue/assets/excel.png";
@@ -1070,6 +1084,7 @@ const campaignSteps = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_
 const _sfc_main = {
   name: "CampaignEdition",
   components: {
+    MessageTriggers,
     Tabs,
     History,
     AddDocumentsDropfiles,
@@ -1355,7 +1370,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_campaign_more = resolveComponent("campaign-more");
   const _component_campaign_steps = resolveComponent("campaign-steps");
   const _component_add_documents_dropfiles = resolveComponent("add-documents-dropfiles");
-  const _component_add_email = resolveComponent("add-email");
+  const _component_message_triggers = resolveComponent("message-triggers");
   const _component_History = resolveComponent("History");
   return openBlock(), createElementBlock("div", _hoisted_1, [
     _cache[5] || (_cache[5] = createBaseVNode("div", { class: "em-w-custom" }, null, -1)),
@@ -1431,10 +1446,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 campaignId: _ctx.campaignId,
                 langue: _ctx.actualLanguage,
                 manyLanguages: _ctx.manyLanguages
-              }, null, 8, ["funnelCategorie", "profileId", "campaignId", "langue", "manyLanguages"])) : $options.selectedMenuItem.id === 5 && _ctx.program.id != 0 ? (openBlock(), createBlock(_component_add_email, {
+              }, null, 8, ["funnelCategorie", "profileId", "campaignId", "langue", "manyLanguages"])) : $options.selectedMenuItem.id === 5 && _ctx.program.id != 0 ? (openBlock(), createBlock(_component_message_triggers, {
                 key: 4,
-                prog: Number(_ctx.program.id)
-              }, null, 8, ["prog"])) : $options.selectedMenuItem.id === 6 ? (openBlock(), createBlock(_component_History, {
+                context: "campaign_id",
+                "context-id": _ctx.campaignId
+              }, null, 8, ["context-id"])) : $options.selectedMenuItem.id === 6 ? (openBlock(), createBlock(_component_History, {
                 key: 5,
                 extension: "com_emundus.campaign",
                 itemId: _ctx.campaignId
@@ -1455,7 +1471,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-e0da353e"]]);
+const CampaignEdition = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-7e24f98d"]]);
 export {
   CampaignEdition as default
 };

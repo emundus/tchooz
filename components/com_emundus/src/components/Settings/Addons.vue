@@ -2,12 +2,13 @@
 /* Services */
 import settingsService from '@/services/settings';
 import Messenger from '@/components/Settings/Addons/Messenger.vue';
+import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
 
 /* Components */
 
 export default {
 	name: 'Addons',
-	components: { Messenger },
+	components: { Messenger, SMSAddon },
 	data() {
 		return {
 			loading: true,
@@ -81,12 +82,21 @@ export default {
 			</div>
 
 			<Messenger
+				v-if="currentAddon.type === 'messenger'"
 				:addon="currentAddon"
 				@messengerSaved="
 					currentAddon = null;
 					getAddons();
 				"
 			/>
+			<SMSAddon
+				v-if="currentAddon.type === 'sms'"
+				:addon="currentAddon"
+				@addonSaved="
+					currentAddon = null;
+					getAddons();
+				"
+			></SMSAddon>
 		</div>
 
 		<div class="em-page-loader" v-if="loading"></div>

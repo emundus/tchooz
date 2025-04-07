@@ -28,6 +28,7 @@ use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
 use \Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use \classes\Entities\Settings\AddonEntity;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
@@ -3349,6 +3350,40 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	public function saveAddon(array $addon): bool
+	{
+		$saved = false;
+
+		if (!empty($addon)) {
+			switch($addon['type']) {
+				// todo: add more addons
+				case 'sms':
+					$config = [
+						'enabled' => $addon['enabled'],
+						'displayed' => $addon['displayed'],
+						'params' => $addon['configuration']
+					];
+
+					$query = $this->db->createQuery();
+
+					$query->update('#__emundus_setup_config')
+						->set('value = ' . $this->db->quote(json_encode($config)))
+						->where('namekey = ' . $this->db->quote($addon['type']));
+
+					try {
+						$this->db->setQuery($query);
+						$saved = $this->db->execute();
+					} catch (Exception $e) {
+						Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
+
+					break;
+			}
+		}
+
+		return $saved;
+	}
+
 	public function getAvailableGroups($search_query, $limit = 100)
 	{
 		$profiles = [];
@@ -3410,12 +3445,16 @@ class EmundusModelSettings extends ListModel
 		{
 			$emConfig = ComponentHelper::getParams('com_emundus');
 
-			// Messenger
-			$addon              = new stdClass();
-			$addon->name        = 'COM_EMUNDUS_ADDONS_MESSENGER';
-			$addon->type        = 'messenger';
-			$addon->icon        = 'chat_bubble';
-			$addon->description = 'COM_EMUNDUS_ADDONS_MESSENGER_DESC';
+			if (!class_exists('AddonEntity')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
+			}
+
+			$addon = new AddonEntity(
+				'COM_EMUNDUS_ADDONS_MESSENGER',
+				'messenger',
+				'chat_bubble',
+				'COM_EMUNDUS_ADDONS_MESSENGER_DESC'
+			);
 
 			$query = $this->db->getQuery(true);
 			$query->select('enabled')
@@ -3423,9 +3462,9 @@ class EmundusModelSettings extends ListModel
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('module'))
 				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
 			$this->db->setQuery($query);
-			$addon->enabled = $this->db->loadResult();
+			$enabled = $this->db->loadResult();
 
-			if ($addon->enabled)
+			if ($enabled)
 			{
 				$query->clear()
 					->select('count(id)')
@@ -3433,7 +3472,9 @@ class EmundusModelSettings extends ListModel
 					->where($this->db->quoteName('module') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'))
 					->where($this->db->quoteName('published') . ' = 1');
 				$this->db->setQuery($query);
-				$addon->enabled = $this->db->loadResult();
+				$enabled = $this->db->loadResult();
+
+				$addon->setEnabled((bool)$enabled);
 			}
 
 			$messenger_configuration                                      = [
@@ -3448,11 +3489,31 @@ class EmundusModelSettings extends ListModel
 				'messenger_notify_frequency_type'  => $emConfig->get('messenger_notify_frequency_type', 'daily'),
 			];
 			$messenger_configuration['messenger_notify_frequency_custom'] = $messenger_configuration['messenger_notify_frequency_times'] . ' ' . $messenger_configuration['messenger_notify_frequency_type'];
-			$addon->configuration                                         = json_encode($messenger_configuration);
+			$addon->setConfiguration($messenger_configuration);
 
 			$addons[] = $addon;
 			//
 
+			$smsAddon = new AddonEntity(
+				'COM_EMUNDUS_ADDONS_SMS',
+				'sms',
+				'send_to_mobile',
+				'COM_EMUNDUS_ADDONS_SMS_DESC'
+			);
+
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+			if ($params['displayed']) {
+				$smsAddon->setEnabled($params['enabled'] ?? 0);
+				$smsAddon->setDisplayed(true);
+				$smsAddon->setConfiguration($params['params'] ?? []);
+				$addons[] = $smsAddon;
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3462,7 +3523,7 @@ class EmundusModelSettings extends ListModel
 		return $addons;
 	}
 
-	public function toggleAddon($type, $enabled)
+	public function toggleAddon(string $type, int $enabled): bool
 	{
 		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 
@@ -3539,6 +3600,24 @@ class EmundusModelSettings extends ListModel
 						->where('link LIKE ' . $this->db->quote('index.php?option=com_emundus&view=messenger&format=raw&layout=coordinator'));
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
+					break;
+				case 'sms':
+					$query->select('value')
+						->from($this->db->quoteName('#__emundus_setup_config'))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
+
+					$this->db->setQuery($query);
+					$params = json_decode($this->db->loadResult(), true);
+
+					$params['enabled'] = $enabled === 1;
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_config'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
+
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
 					break;
 			}
 		}

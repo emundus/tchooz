@@ -1,4 +1,4 @@
-import { a6 as client, I as axios, _ as _export_sfc, W as mixin, J as script, a3 as X42, r as resolveComponent, c as createElementBlock, o as openBlock, F as Fragment, e as renderList, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, a as createBlock, n as normalizeClass, E as errors, w as withDirectives, g as createVNode, v as vShow, A as _imports_0 } from "./app_emundus.js";
+import { a8 as client, O as axios, _ as _export_sfc, a5 as V32, D as script, a0 as mixin, r as resolveComponent, o as openBlock, c as createElementBlock, F as Fragment, e as renderList, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, a as createBlock, n as normalizeClass, N as errors, h as createVNode, w as withDirectives, v as vShow, B as _imports_0 } from "./app_emundus.js";
 import { q as qs } from "./index2.js";
 const translationsService = {
   async checkSetup() {
@@ -270,7 +270,7 @@ const translationsService = {
 const _sfc_main$1 = {
   name: "TranslationRow",
   components: {
-    TipTapEditor: X42,
+    TipTapEditor: V32,
     Multiselect: script
   },
   mixins: [mixin],

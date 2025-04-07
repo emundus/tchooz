@@ -45,6 +45,7 @@ class EmundusViewSms extends JViewLegacy
 			Text::script('SAVE');
 			Text::script('COM_EMUNDUS_SMS_UPDATED_SUCCESSFULLY');
 			Text::script('COM_EMUNDUS_ONBOARD_ADD_SMS');
+			Text::script('COM_EMUNDUS_SMS_PLACEHOLDER');
 
 			$jinput = $app->input;
 			$layout = $jinput->getString('layout', null);
