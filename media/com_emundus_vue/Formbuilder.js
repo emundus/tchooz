@@ -1,4 +1,4 @@
-import { C as FetchClient, a1 as hooks, a0 as defineStore, S as Swal$1, u as useGlobalStore, _ as _export_sfc, E as errors, V as VueDraggableNext, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, g as createVNode, z as vModelText, f as withCtx, N as TransitionGroup, m as createTextVNode, v as vShow, J as script, a as createBlock, y as vModelSelect, a2 as vModelDynamic, a3 as X42, R as vModelCheckbox, j as normalizeStyle, K as withKeys, Y as Transition, W as mixin, $ as formService, a4 as vModelRadio, P as Popover, L as campaignService, a5 as IncrementalSelect, a6 as client$1, a7 as watch, M as Modal, X as History, s as settingsService } from "./app_emundus.js";
+import { J as FetchClient, a3 as hooks, a2 as defineStore, u as useGlobalStore, S as Swal$1, _ as _export_sfc, V as VueDraggableNext, N as errors, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, A as vModelText, h as createVNode, f as withCtx, U as TransitionGroup, m as createTextVNode, v as vShow, b as createCommentVNode, D as script, z as vModelSelect, a as createBlock, a4 as vModelDynamic, a5 as V32, Y as vModelCheckbox, j as normalizeStyle, Q as withKeys, I as Transition, a0 as mixin, a1 as formService, a6 as vModelRadio, P as Popover, R as campaignService, a7 as IncrementalSelect, a8 as client$1, a9 as watch, $ as History, M as Modal, s as settingsService } from "./app_emundus.js";
 import { e as eventsService } from "./events2.js";
 /* empty css       */
 import { t as translationsService, T as Translations } from "./Translations.js";
@@ -1007,15 +1007,6 @@ const formBuilderElements = [
     published: true
   },
   {
-    value: "average",
-    icon: "calculate",
-    name: "COM_EMUNDUS_ONBOARD_TYPE_AVERAGE",
-    published: true,
-    formBuilderModes: [
-      "eval"
-    ]
-  },
-  {
     value: "nom",
     icon: "text_fields",
     name: "COM_EMUNDUS_ONBOARD_TYPE_LASTNAME",
@@ -1121,6 +1112,15 @@ const formBuilderElements = [
     name: "COM_EMUNDUS_ONBOARD_TYPE_IBAN",
     description: "COM_EMUNDUS_ONBOARD_TYPE_IBAN_DESC",
     published: true
+  },
+  {
+    value: "average",
+    icon: "calculate",
+    name: "COM_EMUNDUS_ONBOARD_TYPE_AVERAGE",
+    published: true,
+    formBuilderModes: [
+      "eval"
+    ]
   },
   {
     value: "emundus_geolocalisation",
@@ -2136,7 +2136,7 @@ const _sfc_main$s = {
   name: "FormBuilderElementProperties",
   components: {
     FormBuilderElementParams,
-    TipTapEditor: X42
+    TipTapEditor: V32
   },
   props: {
     element: {
@@ -3080,7 +3080,7 @@ const _sfc_main$o = {
     }
   },
   components: {
-    TipTapEditor: X42
+    TipTapEditor: V32
   },
   data() {
     return {

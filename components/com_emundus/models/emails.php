@@ -24,6 +24,7 @@ use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
+use \classes\Entities\Messages\TriggerEntity;
 
 class EmundusModelEmails extends JModelList
 {
@@ -151,12 +152,13 @@ class EmundusModelEmails extends JModelList
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err1').' ON '.$this->_db->quoteName('err1.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err1.type').' = '.$this->_db->quote('receiver_cc_email'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers','err2').' ON '.$this->_db->quoteName('err2.parent_id').' = '.$this->_db->quoteName('eset.email_id').' AND '.$this->_db->quoteName('err2.type').' = '.$this->_db->quote('receiver_bcc_email'))
 				->where($this->_db->quoteName('eset.step').' = '.$this->_db->quote($step))
-				->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')');
+				->andWhere($this->_db->quoteName('eset.to_applicant').' IN ('.$to_applicant .')')
+				->andWhere('eset.email_id > 0');
 
 			if (!is_null($to_current_user)) {
 				$query->andWhere($this->_db->quoteName('eset.to_current_user') . ' IN (' . $to_current_user . ')');
 			}
-			$query->andWhere($this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($codes)) .') OR ' . $this->_db->quoteName('eset.all_program') . ' = 1')
+			$query->andWhere('(' . $this->_db->quoteName('esp.code').' IN ('.implode(',', $this->_db->quote($codes)) .') OR ' . $this->_db->quoteName('eset.all_program') . ' = 1)')
 				->group('eset.id');
 			try {
 				$this->_db->setQuery($query);
@@ -307,8 +309,8 @@ class EmundusModelEmails extends JModelList
 	public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null, $trigger_emails = null): array
 	{
 		$emails_sent = [];
-		$app = JFactory::getApplication();
-		$config = JFactory::getConfig();
+		$app = Factory::getApplication();
+		$config = $app->getConfig();
 
 		// Get default mail sender info
 		$mail_from_sys = $config->get('mailfrom');
@@ -2816,24 +2818,22 @@ class EmundusModelEmails extends JModelList
 
 		if (!empty($tid)) {
 			$query = $this->_db->getQuery(true);
-			$query->select(['DISTINCT(et.id) AS trigger_id', 'et.step AS status', 'et.email_id AS model', 'ep.profile_id AS target', 'et.to_current_user', 'et.to_applicant'])
+			$query->select(['DISTINCT(et.id) AS trigger_id', 'et.step AS status', 'et.email_id AS model', 'et.all_program',  'ep.profile_id AS target', 'et.to_current_user', 'et.to_applicant', 'et.email_id as email_id', 'et.sms_id as sms_id', 'GROUP_CONCAT(DISTINCT programmes.programme_id) AS program_ids', 'GROUP_CONCAT(DISTINCT profiles.profile_id) AS profile_ids', 'GROUP_CONCAT(DISTINCT groups.group_id) AS group_ids', 'GROUP_CONCAT(DISTINCT us.user_id) AS user_ids'])
 				->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'ep') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('ep.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'programmes') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('programmes.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_profile_id', 'profiles') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('profiles.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_group_id', 'groups') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('groups.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id', 'us') . ' ON ' . $this->_db->quoteName('et.id') . ' = ' . $this->_db->quoteName('us.parent_id'))
 				->where($this->_db->quoteName('et.id') . ' = ' . $this->_db->quote($tid));
 
 			try {
 				$this->_db->setQuery($query);
 				$trigger = $this->_db->loadObject();
-
-				$query->clear()
-					->select('us.user_id')
-					->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_user_id', 'tu'))
-					->leftJoin($this->_db->quoteName('#__emundus_users', 'us')
-						. ' ON ' .
-						$this->_db->quoteName('tu.user_id') . ' = ' . $this->_db->quoteName('us.user_id'))
-					->where($this->_db->quoteName('tu.parent_id') . ' = ' . $this->_db->quote($trigger->trigger_id));
-				$this->_db->setQuery($query);
-				$trigger->users = array_values($this->_db->loadObjectList());
+				$trigger->program_ids = !empty($trigger->program_ids) ? array_map('intval', explode(',', $trigger->program_ids)) : [];
+				$trigger->profile_ids = !empty($trigger->profile_ids) ? array_map('intval', explode(',', $trigger->profile_ids)) : [];
+				$trigger->group_ids = !empty($trigger->group_ids) ? array_map('intval', explode(',', $trigger->group_ids)) : [];
+				$trigger->user_ids = !empty($trigger->user_ids) ? array_map('intval', explode(',', $trigger->user_ids)) : [];
 			}
 			catch (Exception $e) {
 				Log::add('component/com_emundus/models/email | Error at getting trigger ' . $tid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -3507,6 +3507,179 @@ class EmundusModelEmails extends JModelList
 
 		return $sent;
 	}
-}
 
+	public function countEmailTriggers(int $campaign_id, int $program_id, string $search = '')
+	{
+		$count = 0;
+
+		try {
+			$query = $this->_db->createQuery();
+
+			if (!empty($campaign_id))
+			{
+				$query->clear()
+					->select('esp.id')
+					->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . 'ON esp.code = esc.training')
+					->where('esc.id = ' . $this->_db->quote($campaign_id));
+				$this->_db->setQuery($query);
+				$program_id = $this->_db->loadResult();
+			}
+
+			$query->clear()
+				->select('COUNT(et.id)')
+				->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'email') . ' ON email.id = et.email_id')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'est') . ' ON est.step = et.step')
+				->where('1=1');
+
+			if (!empty($program_id)) {
+				$query->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'estrpi') . ' ON estrpi.parent_id = et.id')
+					->where('(estrpi.programme_id = ' . $this->_db->quote($program_id) . ' OR et.all_program = 1)');
+			}
+
+			if (!empty($search)) {
+				$query->where('(email.subject LIKE ' . $this->_db->quote('%' . $search . '%') . ' OR sms.label LIKE ' . $this->_db->quote('%' . $search . '%') .')');
+			}
+
+			$this->_db->setQuery($query);
+			$count = $this->_db->loadResult();
+		} catch (Exception $e) {
+			Log::add('component/com_emundus/models/email | Error at getting triggers by program id ' . $program_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $count;
+	}
+
+	/**
+	 * @param   int  $campaign_id
+	 * @param   int  $program_id
+	 *
+	 * @return array
+	 */
+	public function getEmailTriggers(int $campaign_id, int $program_id, string $search = '', int $lim = 25, int $page = 1, string $order_by = '', string $sort = 'ASC'): array
+	{
+		$triggers = [];
+
+		try {
+			$query = $this->_db->createQuery();
+
+			if (!empty($campaign_id))
+			{
+				$query->clear()
+					->select('esp.id')
+					->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
+					->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp') . 'ON esp.code = esc.training')
+					->where('esc.id = ' . $this->_db->quote($campaign_id));
+				$this->_db->setQuery($query);
+				$program_id = $this->_db->loadResult();
+			}
+
+			$query->clear()
+				->select('et.id, email.id as email_id, et.sms_id as sms_id, sms.label as sms_label, email.subject as email_label, est.value as status, et.to_current_user, et.to_applicant')
+				->from($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'email') . ' ON email.id = et.email_id')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'est') . ' ON est.step = et.step')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_sms', 'sms') . ' ON sms.id = et.sms_id')
+				->where('1=1');
+
+			if (!empty($program_id)) {
+				$query->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'estrpi') . ' ON estrpi.parent_id = et.id')
+					->andWhere('(estrpi.programme_id = ' . $this->_db->quote($program_id) . ' OR et.all_program = 1)');
+			}
+
+			if (!empty($search)) {
+				$query->andWhere('(email.subject LIKE ' . $this->_db->quote('%' . $search . '%') . ' OR sms.label LIKE ' . $this->_db->quote('%' . $search . '%') . ')');
+			}
+			
+			if (!empty($order_by)) {
+				$query->order($this->_db->quoteName($order_by) . ' ' . $this->_db->escape($sort));
+			} else {
+				$query->order('et.id DESC');
+			}
+
+			$offset = ($page - 1) * $lim;
+
+			$this->_db->setQuery($query, $offset, $lim);
+
+			$triggers = $this->_db->loadAssocList();
+
+			foreach($triggers as $key => $trigger) {
+
+				if (!empty($trigger['email_id']) && !empty($trigger['sms_id'])) {
+					$triggers[$key]['label'] = [
+						'fr' => $trigger['email_label'] . ' / ' . $trigger['sms_label'],
+						'en' => $trigger['email_label'] . ' / ' . $trigger['sms_label']
+					];
+				} else if (!empty($trigger['email_id'])) {
+					$triggers[$key]['label'] = [
+						'fr' => $trigger['email_label'],
+						'en' => $trigger['email_label']
+					];
+				} else if (!empty($trigger['sms_id'])) {
+					$triggers[$key]['label'] = [
+						'fr' => $trigger['sms_label'],
+						'en' => $trigger['sms_label']
+					];
+				}
+			}
+		} catch (Exception $e) {
+			Log::add('component/com_emundus/models/email | Error at getting triggers by program id ' . $program_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $triggers;
+	}
+
+	public function saveTrigger(array $trigger, int $user_id): int
+	{
+		$trigger_id = 0;
+
+		if (!empty($trigger)) {
+			try {
+				if (!class_exists('TriggerEntity')) {
+					require_once(JPATH_ROOT .'/components/com_emundus/classes/Entities/Messages/TriggerEntity.php');
+				}
+
+				$program_ids = array_map(function ($program) {return $program['id'];}, $trigger['program_ids']);
+				if (!empty($trigger['trigger_id'])) {
+					$trigger_entity = new TriggerEntity($trigger['trigger_id']);
+					$trigger_entity->step = $trigger['status'];
+					$trigger_entity->email_id = (int)$trigger['email_id'] ?? 0;
+					$trigger_entity->sms_id = (int)$trigger['sms_id'] ?? 0;
+					$trigger_entity->program_ids = $program_ids;
+					$trigger_entity->to_current_user = (int)$trigger['to_current_user'] ?? 0;
+					$trigger_entity->to_applicant = (int)$trigger['to_applicant'] ?? 0;
+					$trigger_entity->user_ids = $trigger['user_ids'] ?? [];
+					$trigger_entity->role_ids = $trigger['profile_ids'] ?? [];
+					$trigger_entity->group_ids = $trigger['group_ids'] ?? [];
+					$trigger_entity->all_program = (int)$trigger['all_program'] ?? 0;
+				} else {
+					$trigger_entity = new TriggerEntity(
+						0,
+						$trigger['status'],
+						$program_ids,
+						(int)$trigger['email_id'] ?? 0,
+						(int)$trigger['sms_id'] ?? 0,
+						(int)$trigger['to_current_user'] ?? 0,
+						(int)$trigger['to_applicant'] ?? 0,
+						$trigger['user_ids'] ?? [],
+						$trigger['profile_ids'] ?? [],
+						$trigger['group_ids'] ?? [],
+						(int)$trigger['all_program'] ?? 0
+					);
+				}
+
+				$saved = $trigger_entity->save($user_id);
+
+				if ($saved) {
+					$trigger_id = $trigger_entity->getId();
+				}
+			} catch (Exception $e) {
+				Log::add('Error at saving trigger : ' . $e->getMessage(), Log::ERROR, 'com_emundus.emails');
+			}
+		}
+
+		return $trigger_id;
+	}
+}
 ?>

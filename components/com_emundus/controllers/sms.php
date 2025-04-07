@@ -21,8 +21,11 @@ class EmundusControllerSMS extends JControllerLegacy
 
 		require_once(JPATH_ROOT . '/components/com_emundus/models/sms.php');
 		$this->model = new EmundusModelSMS();
-
 		$this->sms_action_id = $this->model->getSmsActionId();
+
+		if (!class_exists('EmundusSMSException')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/Exception/EmundusSMSException.php');
+		}
 	}
 
 	private function sendJsonResponse($response): void
@@ -120,20 +123,25 @@ class EmundusControllerSMS extends JControllerLegacy
 			$message = $this->app->input->getString('message', '');
 			$message = strip_tags($message);
 			$category_id = $this->app->input->getInt('category_id', 0);
-
+			$allow_unicode = $this->app->input->getInt('allow_unicode', 0);
 			if (!empty($id) && !empty($label) && !empty($message)) {
+				$allow_unicode = $allow_unicode === 1;
 				$tags = [
 					'success_tag' => $this->app->input->getInt('success_tag', 0),
 					'failure_tag' => $this->app->input->getInt('failure_tag', 0)
 				];
 
+				try {
+					$updated = $this->model->updateTemplate($id, $label, $message, $this->user->id, $category_id, $tags, $allow_unicode);
 
-				$updated = $this->model->updateTemplate($id, $label, $message, $this->user->id, $category_id, $tags);
-
-				if ($updated) {
-					$response = ['code' => 200, 'message' => Text::_('SMS_TEMPLATE_UPDATED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('SMS_TEMPLATE_NOT_UPDATED'), 'status' => false];
+					if ($updated) {
+						$response = ['code' => 200, 'message' => Text::_('SMS_TEMPLATE_UPDATED'), 'status' => true];
+					} else {
+						$response = ['code' => 500, 'message' => Text::_('SMS_TEMPLATE_NOT_UPDATED'), 'status' => false];
+					}
+				} catch (EmundusSMSException $e) {
+					Log::add('Error updating SMS template: ' . $e->getDetailedMessage(), Log::ERROR, 'emundus');
+					$response = ['code' => 200, 'message' => Text::_('SMS_TEMPLATE_NOT_UPDATED'), 'status' => false, 'data' => $e->getContext()];
 				}
 			} else {
 				$response = ['code' => 500, 'message' => Text::_('SMS_TEMPLATE_NOT_UPDATED'), 'status' => false];
@@ -328,6 +336,26 @@ class EmundusControllerSMS extends JControllerLegacy
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && EmundusHelperAccess::asAccessAction($this->sms_action_id, 'r', $this->user->id))
 		{
 			$response = ['code' => 200, 'message' => Text::_('SMS_ACTIVATED'), 'status' => true,  'data' => $this->model->activated];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getSMSConfiguration()
+	{
+		$response = ['code' => 403, 'message' => Text::_('SMS_NOT_ACTIVATED'), 'status' => false];
+
+		if (EmundusHelperAccess::asAccessAction($this->sms_action_id, 'c', $this->user->id))
+		{
+			$response = ['code' => 200, 'message' => Text::_('SMS_ACTIVATED'), 'status' => true];
+			$addon = $this->model->getSMSAddon();
+
+			if (!empty($addon->configuration)) {
+				$configuration = json_decode($addon->configuration, true);
+				$response['data'] = $configuration;
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('SMS_CONFIGURATION_NOT_FOUND'), 'status' => false];
+			}
 		}
 
 		$this->sendJsonResponse($response);

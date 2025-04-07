@@ -420,6 +420,19 @@ export default {
 		}
 	},
 
+	async saveAddon(addon) {
+		try {
+			return await fetchClient.post('saveaddon', {
+				addon: JSON.stringify(addon),
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
 	async toggleAddonEnabled(addon_type, enabled) {
 		try {
 			return await fetchClient.post('toggleaddon', {

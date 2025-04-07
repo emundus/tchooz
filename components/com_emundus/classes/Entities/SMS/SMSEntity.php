@@ -1,10 +1,9 @@
 <?php
 
-namespace classes\SMS\Entities;
+namespace classes\Entities\SMS;
 
-use classes\SMS\Entities\ReceiverEntity;
-use Joomla\CMS\Log\Log;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 
 class SMSEntity {
 	/**
@@ -57,7 +56,7 @@ class SMSEntity {
 	{
 		require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 		$m_emails = new \EmundusModelEmails();
-		$post = $m_emails->setTags($this->getSender(), null, $receiver->getFnum(), null, $message);
+		$post = $m_emails->setTags($this->getSender(), ['USER_ID' => $receiver->getUserId()], $receiver->getFnum(), null, $message);
 
 		return preg_replace($post['patterns'], $post['replacements'], $message);
 	}
@@ -138,7 +137,7 @@ class SMSEntity {
 	/**
 	 * @param $phone_number
 	 *
-	 * @return \classes\SMS\Entities\ReceiverEntity|null
+	 * @return \classes\Entities\SMS\ReceiverEntity|null
 	 */
 	private function getReceiverFromPhoneNumber($phone_number): ?ReceiverEntity
 	{

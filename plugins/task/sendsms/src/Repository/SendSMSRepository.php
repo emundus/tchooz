@@ -3,12 +3,10 @@ namespace Joomla\Plugin\Task\SendSMS\Repository;
 
 defined('_JEXEC') or die;
 
+use classes\Synchronizers\SMS\OvhSMS;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
-use classes\SMS\Entities\SMSEntity;
-use classes\SMS\Entities\ReceiverEntity;
-use classes\SMS\Synchronizer\OvhSMS;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/sms.php');
 
@@ -49,7 +47,7 @@ class SendSMSRepository
 					default:
 						if (!class_exists('OvhSMS'))
 						{
-							require_once(JPATH_ROOT . '/components/com_emundus/classes/SMS/Synchronizer/OvhSMS.php');
+							require_once(JPATH_ROOT . '/components/com_emundus/classes/Synchronizers/SMS/OvhSMS.php');
 						}
 
 						$this->synchronizer = new OvhSMS();
