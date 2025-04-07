@@ -7,9 +7,11 @@
  */
 
 // No direct access to this file
+use Falang\Component\Administrator\Table\FalangContentTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Table\Table;
 use Joomla\Input\Input;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
@@ -141,7 +143,7 @@ class ImportModelImport extends FormModel
 
                         $translationValue = $objs[$key . "." . $fieldName];
 
-                        $fieldContent                  = new falangContent($db);
+                        $fieldContent = new FalangContentTable($db);
                         $fieldContent->reference_id    = $reference_id;
                         $fieldContent->language_id     = $targetlanguageId;
                         $fieldContent->reference_table = $table;
@@ -165,7 +167,7 @@ class ImportModelImport extends FormModel
                         //non existing field in translation file
                         $translationValue = $field->originalValue;
 
-                        $fieldContent                  = new falangContent($db);
+                        $fieldContent = new FalangContentTable($db);
                         $fieldContent->reference_id    = $reference_id;
                         $fieldContent->language_id     = $targetlanguageId;
                         $fieldContent->reference_table = $table;

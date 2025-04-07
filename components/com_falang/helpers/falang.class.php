@@ -209,16 +209,17 @@ class Falang {
 		}
 
 		// process fallback language
+        //since 5.16 the fallback is no more in the language
 		$fallbacklanguage = false;
 		$fallbackrows=array();
 		$idarray = explode(",",$ids);
 		$fallbackids=array();
-		if (isset($languages[$language]) && $languages[$language]->fallback_code!="") {
-			$fallbacklanguage = $languages[$language]->fallback_code;
-			if (!array_key_exists($fallbacklanguage, $languages)){
-				$allowfallback=false;
-			}
-		}
+//		if (isset($languages[$language]) && $languages[$language]->fallback_code!="") {
+//			$fallbacklanguage = $languages[$language]->fallback_code;
+//			if (!array_key_exists($fallbacklanguage, $languages)){
+//				$allowfallback=false;
+//			}
+//		}
 		if (!$fallbacklanguage) {
 			$allowfallback=false;
 		}

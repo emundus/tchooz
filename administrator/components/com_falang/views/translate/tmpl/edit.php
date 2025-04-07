@@ -137,6 +137,15 @@ foreach ($this->tranFilters as $filter) {
 	echo "<input type='hidden' name='".$filter->filterType."_filter_value' value='".$filter->filter_value."'/>";
 }
 
+//check if we are editing a yootheme content
+$yootheme_content = false;
+if ($elementTable->Name == 'content'){
+    foreach ($elementTable->Fields as $field){
+        if ($field->Name == 'fulltext'){
+            $yootheme_content = preg_match('/<!-- {\s?/', $field->originalValue);
+        }
+    }
+}
 
 //TODO sbou check this
 // Place a reference to the element Table in the config so that it can be used in translation of urlparams !!!
@@ -307,10 +316,14 @@ else {
                                     <!-- htmltext,text,textarea,image,param's,readonlytext,hiddentext-->
                                     <?php if (strtolower($field->Type)=='htmltext') { ?>
                                         <?php
-                                            $editorFields[] = array( "editor_".$field->Name, "origText_".$field->Name );
                                             //need to pass the id at the end or it was not working with codemirror
-                                            echo $wysiwygeditor->display("origText_".$field->Name,htmlspecialchars($field->originalValue ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons,"origText_".$field->Name);
-                                        ?>
+                                            if (!$yootheme_content){
+                                                $editorFields[] = array( "editor_".$field->Name, "origText_".$field->Name );
+                                                echo $wysiwygeditor->display("origText_".$field->Name,htmlspecialchars($field->originalValue ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons,"origText_".$field->Name);
+                                            } else {
+                                                ?> <div style="height:100px"><?php echo Text::_('COM_FALANG_YOOTHEME_BUILDER_CONTENT_MESSAGE'); ?></div>
+                                           <?php }
+                                    //end for yootheme content ?>
                                     <?php } //end if htmltext?>
                                     <?php if (strtolower($field->Type)=='titletext') { ?>
                                         <input class="form-control" type="text"  readonly value="<?php echo $field->originalValue;?>" >
@@ -385,7 +398,8 @@ else {
                                 <a class="button btn btn-delete" onclick="copyToClipboard('<?php echo $field->Name;?>','clear')" title="<?php echo Text::_('Delete'); ?>"><i class="icon-delete"></i></a>
 		                    <?php } ?>
 
-		                    <?php if( strtolower($field->Type)=='htmltext' && strtolower($field->Type)!='readonlytext') {?>
+                            <!-- don't display button for htmltext and non yootheme content default case -->
+                            <?php if( strtolower($field->Type)=='htmltext' && strtolower($field->Type)!='readonlytext' && !$yootheme_content) {?>
                                 <!-- Translate button -->
                                 <a class="button btn btn-translate <?php echo $translate_button_available ? '': 'disabled';?>"  onclick="copyToClipboard('<?php echo $field->Name;?>','translate');" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE',$translate_service); ?>"><i class="<?php echo $translate_button_icon;?>"></i></a>
                                 <!-- Copy button -->
@@ -393,6 +407,12 @@ else {
                                 <!-- Delete button -->
                                 <a class="button btn btn-delete" onclick="copyToClipboard('<?php echo $field->Name;?>','clear');" title="<?php echo Text::_('Delete'); ?>"><i class="icon-delete"></i></a>
 		                    <?php } ?>
+
+                            <!-- need a space for yoothem content to display the space for button -->
+                            <?php if( $yootheme_content) {?>
+                                &nbsp;
+                            <?php } ?>
+
 
                         </div>
 
@@ -421,17 +441,21 @@ else {
                                     <!-- fin display other field exept title and alias -->
                                     <!-- htmltext,text,textarea,image,param's,readonly,hiddentext-->
                                     <?php if (strtolower($field->Type)=='htmltext') { ?>
-                                        <?php $editorFields[] = array( "editor_".$field->Name, "refField_".$field->Name );
-                                        //need to pass the id at the end or it was not working with codemirror
-                                        echo $wysiwygeditor->display("refField_".$field->Name,htmlspecialchars($translationContent->value ?? '', ENT_COMPAT, 'UTF-8'), '100%','300', '70', '15',$field->ebuttons,"refField_".$field->Name);
-                                        ?>
+                                        <?php
+                                        if (!$yootheme_content) {
+                                            $editorFields[] = array("editor_" . $field->Name, "refField_" . $field->Name);
+                                            //need to pass the id at the end or it was not working with codemirror
+                                            echo $wysiwygeditor->display("refField_" . $field->Name, htmlspecialchars($translationContent->value ?? '', ENT_COMPAT, 'UTF-8'), '100%', '300', '70', '15', $field->ebuttons, "refField_" . $field->Name);
+                                        } else { ?>
+                                            <div><?php echo Text::_('COM_FALANG_YOOTHEME_BUILDER_CONTENT_MESSAGE'); ?></div>
+                                            <?php } ?>
                                     <?php } //end if htmltext?>
 
 	                                <?php if (strtolower($field->Type)=='titletext') { ?>
 		                                <?php
 		                                $length = ($field->Length>0)?$field->Length:60;
 		                                $maxLength = ($field->MaxLength>0) ? "maxlength=".$field->MaxLength:"";?>
-                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value ?? ''); ?>" "<?php echo $maxLength;?>"/>
+                                        <input class="form-control" type="text" name="refField_<?php echo $field->Name;?>" id="refField_<?php echo $field->Name;?>" size="<?php echo $length;?>" value="<?php echo htmlspecialchars($translationContent->value ?? ''); ?>" "<?php echo $maxLength;?>"/>
 	                                <?php } //end if titletext?>
 
                                     <?php if (strtolower($field->Type)=='text') { ?>

@@ -10,7 +10,7 @@
   		<field type="referenceid" name="id" translate="0">ID</field>
   		<field type="titletext" name="name" translate="1">Banner Name</field>
   		<field type="text" name="clickurl" translate="1">Click URL</field>
-		<field type="textarea" name="description" translate="1">Description</field>
+		<field type="htmltext" name="description" translate="1">Description</field>
 		<field type="textarea" name="custombannercode" translate="1">Custom banner code</field>
   	</table>
    </reference>
