@@ -29,10 +29,10 @@ class Release2_4_0Installer extends ReleaseInstaller
 		$query  = $this->db->getQuery(true);
 		$result = ['status' => false, 'message' => ''];
 
+		$tasks = [];
+
 		try
 		{
-			$tasks = [];
-
 			// Voting feature
 			$tasks['vote'] = false;
 
@@ -158,11 +158,9 @@ class Release2_4_0Installer extends ReleaseInstaller
 			if(!empty($component)) {
 				$params = json_decode($component->params);
 				$params->frontend_userparams = 0;
-
 				$component->params = json_encode($params);
 				$this->db->updateObject('#__extensions', $component, 'extension_id');
 			}
-
 			// Disable some joomla plugins
 			$tasks[] = EmundusHelperUpdate::disableEmundusPlugins('token');
 
@@ -177,11 +175,13 @@ class Release2_4_0Installer extends ReleaseInstaller
 
 			if(!empty($plugin->extension_id))
 			{
-				if(empty($plugin->params)) {
-					$params = [];
-					$params['timestep'] = 300;
+				if (empty($plugin->params))
+				{
+					$params                 = [];
+					$params['timestep']     = 300;
 					$params['force_enable'] = 0;
-				} else
+				}
+				else
 				{
 					$params           = json_decode($plugin->params);
 					$params->timestep = 300;
@@ -235,6 +235,75 @@ class Release2_4_0Installer extends ReleaseInstaller
 
 				$component->params = json_encode($params);
 				$this->db->updateObject('#__extensions', $component, 'extension_id');
+			}
+
+			$query->clear()
+				->select('id')
+				->from('#__emundus_setup_actions')
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('edit_user_role'));
+			$this->db->setQuery($query);
+			$action_id = $this->db->loadResult();
+
+			if (empty($action_id))
+			{
+				$insert_acl = [
+					'name'     => 'edit_user_role',
+					'label'    => 'COM_EMUNDUS_EDIT_USER_ROLE',
+					'multi'    => 0,
+					'c'        => 0,
+					'r'        => 1,
+					'u'        => 1,
+					'd'        => 1,
+					'ordering' => 40,
+					'status'   => 1,
+				];
+				$insert_acl = (object) $insert_acl;
+
+				if ($this->db->insertObject('#__emundus_setup_actions', $insert_acl))
+				{
+					$action_id = $this->db->lastInsertId();
+				}
+			}
+
+			$tasks[] = !empty($action_id);
+
+			// add right to all users that have the right to edit user, to avoid changing what was already set
+			if (!empty($action_id))
+			{
+				$query->clear()
+					->select('DISTINCT acl.group_id')
+					->from($this->db->quoteName('#__emundus_setup_actions','esa'))
+					->leftJoin($this->db->quoteName('#__emundus_acl','acl').' ON '.$this->db->quoteName('acl.action_id').' = '.$this->db->quoteName('esa.id') . ' AND ('.$this->db->quoteName('acl.c').' = 1 OR '.$this->db->quoteName('acl.u').' = 1)')
+					->where($this->db->quoteName('acl.action_id') . ' IN (12, 24, 20)')
+					->andWhere('(acl.c = 1 OR acl.u = 1)');
+
+				$this->db->setQuery($query);
+				$group_ids = $this->db->loadColumn();
+
+				foreach ($group_ids as $group_id)
+				{
+					$query->clear()
+						->select('COUNT(*)')
+						->from($this->db->quoteName('#__emundus_acl'))
+						->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($action_id))
+						->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote($group_id));
+					$this->db->setQuery($query);
+					$count = $this->db->loadResult();
+
+					if(empty($count))
+					{
+						$insert_acl_group = [
+							'group_id'  => $group_id,
+							'action_id' => $action_id,
+							'c'         => 0,
+							'r'         => 1,
+							'u'         => 1,
+							'd'         => 1,
+						];
+						$insert_acl_group = (object) $insert_acl_group;
+						$this->db->insertObject('#__emundus_acl', $insert_acl_group);
+					}
+				}
 			}
 
 			$result['status'] = !in_array(false, $tasks);

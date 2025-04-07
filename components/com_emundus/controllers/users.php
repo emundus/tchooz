@@ -148,6 +148,10 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 
+		if (empty($profile)) {
+			$profile = 1000;
+		}
+
 		$user->name     = $name;
 		$user->username = $username;
 		$user->email    = $email;
@@ -768,6 +772,18 @@ class EmundusControllerUsers extends BaseController
 
 		$m_users = $this->getModel('Users');
 		$res     = $m_users->editUser($newuser);
+
+		if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', $current_user->id) && !empty($newuser['profile']))
+		{
+			$other_profiles = explode(',', $newuser['em_oprofiles']);
+			$user_groups = explode(',', $newuser['em_groups']);
+			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
+
+			if ($edited === false)
+			{
+				$res = false;
+			}
+		}
 
 		if ($res === true && !is_array($res))
 		{
