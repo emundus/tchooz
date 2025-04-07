@@ -47,6 +47,6 @@ Class AddonEntity
 
 	public function getConfiguration(): array
 	{
-		return json_decode($this->configuration, true);
+		return !empty($this->configuration) ? json_decode($this->configuration, true) : [];
 	}
 }
