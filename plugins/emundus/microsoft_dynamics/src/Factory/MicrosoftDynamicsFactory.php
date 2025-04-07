@@ -338,7 +338,7 @@ class MicrosoftDynamicsFactory
 		return $value;
 	}
 
-	private function communeCodeToName(string $code): string
+	private function communeCodeToName(string $code): string|null
 	{
 		$fullName = '';
 		$query    = $this->database->getQuery(true);
@@ -363,7 +363,7 @@ class MicrosoftDynamicsFactory
 		return $fullName;
 	}
 
-	private function paysInseeToIso2(string|int $insee): string
+	private function paysInseeToIso2(string|int $insee): string|null
 	{
 		$iso2  = '';
 		$query = $this->database->getQuery(true);
@@ -385,7 +385,7 @@ class MicrosoftDynamicsFactory
 		return $iso2;
 	}
 
-	private function serieToCRM(string $serie): string
+	private function serieToCRM(string $serie): string|null
 	{
 		$serieCrm = '';
 
