@@ -217,6 +217,8 @@ class SecuritycheckproModel extends BaseModel
     */
     function chequear_vulnerabilidades()
     {
+		
+		
         /* Extraemos los componentes de 'securitycheck'*/
         $db = Factory::getDBO();
         $query = $this->_buildQuery();
@@ -732,15 +734,15 @@ class SecuritycheckproModel extends BaseModel
         $content = '<table class="table table-bordered table-hover">
 					<thead>
 						<tr>
-							<th class="alert alert-dark text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_DETAILS") . '
+							<th class="alert alert-warning text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_DETAILS") . '
 							</th>
-							<th class="alert alert-dark text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_CLASS") . '
+							<th class="alert alert-warning text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_CLASS") . '
 							</th>
-							<th class="alert alert-dark text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_PUBLISHED") . '
+							<th class="alert alert-warning text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_PUBLISHED") . '
 							</th>
-							<th class="alert alert-dark text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_VULNERABLE") . '
+							<th class="alert alert-warning text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_VULNERABLE") . '
 							</th>
-							<th class="alert alert-dark text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_SOLUTION") . '
+							<th class="alert alert-warning text-center" align="center">' . Text::_("COM_SECURITYCHECKPRO_VULNERABILITY_SOLUTION") . '
 							</th>
 						</tr>
 					</thead>';

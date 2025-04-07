@@ -54,7 +54,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <td class="left">
             <?php echo Text::_('COM_SECURITYCHECKPRO_SUPER_USERS_GROUP'); ?>
                                         </td>
-                                        <td><span class="badge bg-default"> </span>
+                                        <td><span class="badge bg-info"> </span>
                                         </td>
                                         <td class="left">
             <?php echo Text::_('COM_SECURITYCHECKPRO_OTHER_GROUPS'); ?>
@@ -146,7 +146,7 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                             } else if (array_search(7, $user_object->groups) !== false ) {
                                                 $span = '<span class="badge bg-warning">';
                                             } else {
-                                                $span = '<span class="badge bg-default">';
+                                                $span = '<span class="badge bg-info">';
                                             }
                                                             echo $span . $user_object->name . "</span>";
                                         } else {
