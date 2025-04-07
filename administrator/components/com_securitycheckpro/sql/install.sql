@@ -10,10 +10,10 @@ PRIMARY KEY (`id`)
 
 DROP TABLE IF EXISTS `#__securitycheckpro_dynamic_blacklist`;
 CREATE TABLE `#__securitycheckpro_dynamic_blacklist` (
-`ip` VARCHAR(255) NOT NULL,
+`ip` VARCHAR(100) NOT NULL,
 `timeattempt` DATETIME NOT NULL,
 `counter` INT NOT NULL DEFAULT 1,
-PRIMARY KEY (`ip`(191))
+PRIMARY KEY (`ip`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 DROP TABLE IF EXISTS `#__securitycheckpro_vuln_components`;
@@ -72,7 +72,12 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','5.0.0','<=','5.0.0','>=','Joomla! core','One high vulnerability','Nov 30 2023','Joomla 5.0.0','update','5.0.1'),
 ('Joomla!','core','4.0.1','<=','4.0.0','>=','Joomla! core','Five vulnerabilities','Jul 10 2024','Joomla 4.0.0 to 4.4.5','update','4.4.6'),
 ('Joomla!','core','5.1.1','<=','5.0.0','>=','Joomla! core','Five vulnerabilities','Jul 10 2024','Joomla 5.0.0 to 5.1.1','update','5.1.2'),
-('Joomla!','core','5.1.2','<=','5.0.0','>=','Joomla! core','Five vulnerabilities','Aug 20 2024','Joomla 5.0.0 to 5.1.2','update','5.1.3');
+('Joomla!','core','5.1.2','<=','5.0.0','>=','Joomla! core','Five vulnerabilities','Aug 20 2024','Joomla 5.0.0 to 5.1.2','update','5.1.3'),
+('Joomla!','core','4.4.9','<=','4.4.10','>=','Joomla! core','Three vulnerabilities','Jan 08 2025','Joomla 4.0.0 to 4.4.9','update','4.4.10'),
+('Joomla!','core','5.2.2','<=','5.0.0','>=','Joomla! core','Three vulnerabilities','Jan 08 2025','Joomla 5.0.0 to 5.2.2','update','5.2.3'),
+('Joomla!','core','5.2.3','<=','5.0.0','>=','Joomla! core','One vulnerability','Feb 19 2025','Joomla 5.0.0 to 5.2.3','update','5.2.4'),
+('com_convertforms','component','4.4.7','<=','5.0.0','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
+('com_convertforms','component','4.4.7','<=','4.0.0','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -150,10 +155,10 @@ INSERT INTO `#__securitycheckpro_file_manager` (`estado`,`estado_integrity`,`est
 
 DROP TABLE IF EXISTS `#__securitycheckpro_storage`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_storage` (
-`storage_key` varchar(255) NOT NULL,
+`storage_key` varchar(100) NOT NULL,
 `storage_value` longtext NOT NULL,
 PRIMARY KEY (`storage_key`)
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 INSERT INTO `#__securitycheckpro_storage` (`storage_key`,`storage_value`) VALUES 
 ('locked','0');
@@ -195,7 +200,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.24');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.27');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (
@@ -278,11 +283,11 @@ INSERT IGNORE INTO `#__securitycheckpro_trackactions_tables_data` (`id`, `type_t
 (18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_blacklist` (
-`ip` VARCHAR(255) NOT NULL,
-PRIMARY KEY (`ip`(191))
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+`ip` VARCHAR(100) NOT NULL,
+PRIMARY KEY (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_whitelist` (
-`ip` VARCHAR(255) NOT NULL,
-PRIMARY KEY (`ip`(191))
-) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+`ip` VARCHAR(100) NOT NULL,
+PRIMARY KEY (`ip`)
+) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

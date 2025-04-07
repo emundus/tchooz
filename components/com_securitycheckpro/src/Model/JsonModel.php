@@ -434,7 +434,7 @@ class JsonModel extends BaseModel
 		}
 	}
 
-	// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
+		// Función que empaqueta una respuesta en formato JSON codificado, cifrando los datos si es necesario
 
 	public function sendResponse($connect_back_url=null)
 	{
@@ -480,9 +480,8 @@ class JsonModel extends BaseModel
 			$this->site = $connect_back_url;
 		}
 		
-		//To be added in future versions
 		//Get the token
-		/*$token = '';
+		$token = '';
 			
 		$cc_config = $this->getControlCenterConfig();
 		if ( (is_array($cc_config)) && (array_key_exists('token',$cc_config)) ) {
@@ -498,7 +497,7 @@ class JsonModel extends BaseModel
 		
 		$headers = [
 			'Token: ' . $token
-		];*/
+		];
 								
 		// ... y los devolvemos al cliente
 		$ch = curl_init($this->site . "index.php?option=com_securitycheckprocontrolcenter&view=json&format=raw&json=" . urlencode($response));
@@ -511,8 +510,7 @@ class JsonModel extends BaseModel
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
 		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 		curl_setopt($ch, CURLOPT_USERAGENT, SCP_USER_AGENT);
-		//To be added in future versions
-		//curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);	
+		curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);	
 			
 		$response = curl_exec($ch);
 		
@@ -628,6 +626,9 @@ class JsonModel extends BaseModel
 		$extension_updates = null;
 		$installed_version = "0.0.0";
 		$hasUpdates = 0;
+		$today_logs = 0;
+		$updates_to_send = '';
+		$remote_data = array();
 
 		$db = Factory::getDBO();
 
@@ -760,7 +761,7 @@ class JsonModel extends BaseModel
 		// Obtenemos los parámetros del Firewall
 		$FirewallOptions = new BaseModel;
 		$FirewallOptions = $FirewallOptions->getConfig();
-		
+				
 		$this->write_log("Checking if kickstart exists...");
 		// Chequeamos si existe el fichero kickstart
 		$kickstart = $this->check_kickstart();
@@ -796,7 +797,54 @@ class JsonModel extends BaseModel
 		$this->write_log("Getting lock tables status...");
 		// Chequeamos si las tablas están bloqueadas
 		$tables_locked = $this->check_locked_tables();
-
+		
+		$this->write_log("Getting attacks stopped today...");
+		// Información sobre el número de logs del día
+		try 
+        {
+            $query = "SELECT COUNT(*) from #__securitycheckpro_logs WHERE DATE(time) = CURDATE()";            
+            $db->setQuery($query);
+            $today_logs= $db->loadResult();
+        } catch (\Throwable $e)
+        {            
+        }  
+		
+		$this->write_log("Getting info about updates...");
+		// Información sobre las extensiones/core actualizadas
+		try 
+        {
+			$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key="installs_remote"';
+			$db->setQuery($query);
+			$db->execute();
+			$updates_to_send = $db->loadResult();                 
+        } catch (\Throwable $e)
+        {            
+        } 
+		
+		if ( ($today_logs > 0) || (!empty($updates_to_send)) ) {
+			if ($today_logs > 0) {
+				$remote_data['logs'] = $today_logs;
+			}
+			if (!empty($updates_to_send)){
+				$remote_data['updates'] = $updates_to_send;
+				// Borramos la información de la tabla "installs_remote"
+				try 
+				{
+					$query = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='installs_remote'";
+					$db->setQuery($query);
+					$db->execute();                
+				} catch (\Throwable $e)
+				{            
+					$this->log_filename = "error.php";
+					$message = "Error deleting info from installs_remote table. Error: " . $e->getMessage();
+					$this->write_log($message,"ERROR");
+				} 				
+			}			
+			$remote_data = json_encode($remote_data);
+		} else {
+			$remote_data = null;
+		}
+		
 		$this->data = array(
 			'vuln_extensions'        => $vuln_extensions,
 			'logs_pending'    => $logs_pending,
@@ -828,7 +876,8 @@ class JsonModel extends BaseModel
 			'backend_protection'    => $ConfigApplied['hide_backend_url'],
 			'forbid_new_admins'        => $FirewallOptions['forbid_new_admins'],
 			'kickstart_exists'    => $kickstart,
-			'tables_blocked'    => $tables_locked
+			'tables_blocked'    => $tables_locked,
+			'remote_data'	=>	$remote_data
 		);
 
 		// Obtenemos el porcentaje para 'Overall security status'
@@ -1025,6 +1074,11 @@ class JsonModel extends BaseModel
 		{
 			$overall = $overall + 10;
 		}
+		
+		if ($info['logs_pending'] <= 10)
+		{
+			$overall = $overall + 5;
+		}
 
 		if ($info['files_with_incorrect_permissions'] == 0)
 		{
@@ -1043,7 +1097,7 @@ class JsonModel extends BaseModel
 
 		if ($info['suspicious_files'] == 0)
 		{
-			$overall = $overall + 20;
+			$overall = $overall + 15;
 		}
 
 		if ($info['backend_protection'])
@@ -1282,6 +1336,9 @@ class JsonModel extends BaseModel
 	private function UpdateCore()
 	{
 		$this->write_log("Updating CORE...");
+		
+		$old_version = JVERSION;
+		$this->write_log("Old core version: " . $old_version);	
 			
 		// Cargamos el lenguaje del componente 'com_installer'
 		$lang = Factory::getLanguage();
@@ -1335,7 +1392,10 @@ class JsonModel extends BaseModel
 					$result[0][1] = 'Core updated';
 					$result[0][0] = 1;
 					$this->write_log("CORE UPDATED successfully!");
-					InstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);	
+					InstallerHelper::cleanupInstall($package['packagefile'], $package['extractdir']);
+					// Trigger event after joomla update.
+					$app = Factory::getApplication();
+					$app->triggerEvent('onJoomlaAfterUpdate',[$old_version]);										
 					// Cargamos las librerías necesarias					
 					/*\JLoader::register('JNamespacePsr4Map', PATH_LIBRARIES . '/namespacemap.php');
 					// Re-create namespace map. It is needed when updating to a Joomla! version has new extension added

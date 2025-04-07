@@ -17,6 +17,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Filesystem\File;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 
 /**
  * Modelo Securitycheck
@@ -511,8 +512,8 @@ class FirewallconfigModel extends BaseModel
         $send = true;
     
         try {
-            // Invocamos la clase JMail
-            $mailer = Factory::getMailer();
+            // Instanciamos la clase para mandar emails
+            $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
             // Emisor
             $mailer->setSender($from);
             // Destinatario -- es una array de direcciones

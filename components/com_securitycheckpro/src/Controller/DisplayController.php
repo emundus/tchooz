@@ -53,8 +53,7 @@ class DisplayController extends BaseController
 				$token = $cc_config['token'];
 			}			
 			
-			//To be added in future versions
-			//if ( (!empty($token)) && (array_key_exists('Token',$headers)) && ($headers['Token'] == $token) ) {
+			if ( (!empty($token)) && (array_key_exists('token',$headers)) && ($headers['token'] == $token) ) {
 						
 				// Request comes from the Control Center			
 				$referrer = null;
@@ -86,12 +85,11 @@ class DisplayController extends BaseController
 				
 				// Devolvemos la respuesta
 				echo $json;	
-			//To be added in future versions
-			/*} else {		
+			} else {		
 				$model->log_filename = "error.php";
 				$message = "Token is empty or doesn't match with Control Center";
 				$model->write_log($message,"ERROR");
-			}*/
+			}
 		}
 	}
  
