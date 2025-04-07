@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Liste des méthodes d'authentifications">
+        <message>
+            Affiche la liste des méthodes d'authentifications disponibles.
+        </message>
+    </layout>
+</metadata>

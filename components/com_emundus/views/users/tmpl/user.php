@@ -6,6 +6,7 @@
  * Time: 09:15
  */
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Factory;
 
@@ -194,6 +195,22 @@ $timezone      = new DateTimeZone($offset);
                                     </div>
                                 </td>
                             <?php endif; ?>
+                            <?php elseif ($k == 'mfa_method') : ?>
+                                <?php if (!empty($value)) : ?>
+                                    <td>
+                                        <div class="em-cell">
+                                                    <span class="material-symbols-outlined" style="color:var(--main-500);"
+                                                          title="<?php echo Text::_('PLG_MULTIFACTORAUTH_'.strtoupper($value).'_METHOD_TITLE'); ?>">verified</span>
+                                        </div>
+                                    </td>
+                                <?php else : ?>
+                                    <td>
+                                        <div class="em-cell">
+                                                    <span class="material-symbols-outlined em-red-600-color"
+                                                          title="<?php echo JText::_('COM_EMUNDUS_USERS_MFA_DISABLED') ?>">block</span>
+                                        </div>
+                                    </td>
+                                <?php endif; ?>
                         <?php elseif ($k == 'profile') : ?>
                             <td>
                                 <?php if ($user->is_applicant_profile == 0) : ?>

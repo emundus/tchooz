@@ -846,6 +846,8 @@ Text::script('SMS_TEMPLATE_NOT_UPDATED');
 Text::script('COM_EMUNDUS_ACL_BOOKING');
 Text::script('COM_EMUNDUS_ACL_BOOKING_DESC');
 
+Text::script('COM_USERS_MFA_METHODS_DISABLED');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
