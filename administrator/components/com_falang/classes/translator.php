@@ -10,6 +10,10 @@ class translatorFactory
 {
 	private static $translator;
 
+
+    /*
+     * @update 5.16 use languageById standard method
+     * */
 	static public function getTranslator($target_language_id)
 	{
 		if (translatorFactory::$translator != null)
@@ -25,7 +29,7 @@ class translatorFactory
 		$languageParams = ComponentHelper::getParams('com_languages');
 
 		$from = $translator->languageCodeToISO($languageParams->get('site'));
-		$to   = $translator->languageCodeToISO($falangManager->activeLanguagesCacheByID[$target_language_id]->lang_code);
+		$to   = $translator->languageCodeToISO($falangManager->getLanguageByID($target_language_id)->lang_code);
 
 		$translator->installScripts($from, $to);
 		translatorFactory::$translator = $translator;

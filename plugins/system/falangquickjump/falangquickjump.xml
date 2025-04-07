@@ -2,12 +2,12 @@
 <extension version="4.0" type="plugin" group="system" method="upgrade" >
     <name>plg_system_falangquickjump</name>
     <author>Stéphane Bouey</author>
-    <creationDate>11 February 2025</creationDate>
+    <creationDate>03 April 2025</creationDate>
     <copyright>2011-2025, Faboba</copyright>
     <license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
     <authorEmail>stephane.bouey@faboba.com</authorEmail>
     <authorUrl>www.faboba.com</authorUrl>
-    <version>5.15</version>
+    <version>5.17</version>
     <description>PLG_SYSTEM_FALANGQUICKJUMP_XML_DESCRIPTION</description>
 	<files>
 		<filename plugin="falangquickjump">index.html</filename>

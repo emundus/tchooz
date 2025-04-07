@@ -23,7 +23,6 @@ $jinput = Factory::getApplication()->input;
 if (!Factory::getUser()->authorise('core.manage', 'com_falang')) {
     Factory::getApplication()->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'warning');
     return;
-    //return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
 jimport('joomla.filesystem.path');
@@ -33,11 +32,15 @@ jimport('joomla.filesystem.path');
 // See http://uk.php.net/ini.core for description of the flag
 @ini_set("zend.ze1_compatibility_mode","Off");
 
+// Initialize component's library
+require_once JPATH_ADMINISTRATOR . '/components/com_falang/autoload.php';
+
 /** required standard extentions **/
 require_once( JPATH_SITE .DS. 'components' .DS. 'com_falang' .DS. 'helpers' .DS. 'defines.php' );
 JLoader::register('FalangManager', FALANG_ADMINPATH .DS. 'classes' .DS. 'FalangManager.class.php' );
 JLoader::register('FalangExtensionHelper', FALANG_ADMINPATH .DS. 'helpers' .DS. 'extensionHelper.php' );
 JLoader::register('FalangVersion', FALANG_ADMINPATH .DS. 'version.php' );
+
 $falangManager = FalangManager::getInstance( dirname( __FILE__ ) );
 
 $cmd = $jinput->get('task','cpanel.show','CMD');
@@ -68,7 +71,6 @@ if (class_exists($controllerClass)) {
 	$controller = new $controllerClass();
 } else {
     Factory::getApplication()->enqueueMessage('Invalid Controller Class - '.$controllerClass, 'error');
-	//JError::raiseError(500, 'Invalid Controller Class - '.$controllerClass );
 }
 
 $config	= Factory::getConfig();

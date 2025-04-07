@@ -10,6 +10,7 @@
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
+use Falang\Component\Administrator\Table\FalangContentTable;
 use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
@@ -18,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Router;
+use Joomla\CMS\Table\Table;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 use Joomla\CMS\Component\Router\RouterFactoryInterface;
 use Joomla\CMS\Component\Router\RouterInterface;
@@ -731,6 +733,7 @@ final class plgSystemFalangdriver extends CMSPlugin
      * @update 4.12 save original text (null not accepted)
      * @update 5.0 original value is empty
      * @update 5.4 add showtime support use original gallery (the gallery can't be removed or changed)
+     * @update 5.17 save acfupload field as array
      *
      * @param $post
      * @return bool|void
@@ -785,7 +788,12 @@ final class plgSystemFalangdriver extends CMSPlugin
 		$values = array();
 		// Loop over the fields
 		foreach ($fields as $field) {
-            if ($field->type == 'showtime'){
+            //acf upload file are saved as array of json
+            if ($field->type == 'acfupload') {
+                $value = key_exists($field->name, $fieldsData) ? $fieldsData[$field->name] : null;
+                $values[$field->name] = array($value);
+            }
+            else if ($field->type == 'showtime'){
                 $values[$field->name] = $field->value;
             } else {
                 // Determine the value if it is available from the data
@@ -813,8 +821,9 @@ final class plgSystemFalangdriver extends CMSPlugin
 
 
 			$jsonValues = json_encode($values);
-			$fieldContent = new falangContent($db);
-			if (isset($falangId)){$fieldContent->id = $falangId;}
+            $fieldContent = new FalangContentTable($db);
+
+            if (isset($falangId)){$fieldContent->id = $falangId;}
 			$fieldContent->reference_id = $reference_id ;
 			$fieldContent->language_id = $language_id;
 			$fieldContent->reference_table= $context;

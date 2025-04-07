@@ -10,9 +10,11 @@
 defined('_JEXEC') or die;
 
 
+use Falang\Component\Administrator\Table\FalangContentTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Table\Table;
 
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/models/JFModel.php';
@@ -111,6 +113,8 @@ class FalangModelTranslate extends JFModel
 	/**
 	 * Deletes the selected translations (only the translations of course)
 	 * @return string	message
+     *
+     * @update 5.16 use FalangContentTable
 	 */
 	function _removeTranslation( $catid, $cid ) {
 		$message = '';
@@ -127,8 +131,7 @@ class FalangModelTranslate extends JFModel
 			// safety check -- complete overkill but better to be safe than sorry
 
 			// get the translation details
-			JLoader::import( 'models.FalangContent',FALANG_ADMINPATH);
-			$translation = new FalangContent($db);
+            $translation = new FalangContentTable($db);
 			$translation->load($translationid);
 
 			if (!isset($translation) || $translation->id == 0)		{
@@ -142,21 +145,17 @@ class FalangModelTranslate extends JFModel
 				continue;
 			}
 
-			//sbou4
 			$query = $db->getQuery(true);
 			$query->delete($db->quoteName('#__falang_content'))
 				->where('reference_table = '.$db->q($catid))
 				->where('language_id = '.$db->q($language_id))
 				->where('reference_id = '.$db->q($contentid));
-			//$sql= "DELETE from #__falang_content WHERE reference_table='$catid' and language_id=$language_id and reference_id=$contentid";
 			$db->setQuery($query);
 			try {
 				$db->execute();
 				$this->setState('message', Text::_('COM_FALANG_TRANSLATION_DELETED'));
 			} catch (Exception $e){
 				Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
-//				$this->setError(Text::_('Something dodgy going on here'));
-//				JError::raiseWarning( 400,Text::_('No valid table information: ') .$db->getErrorMsg());
 				continue;
 			}
 
