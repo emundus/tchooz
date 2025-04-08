@@ -888,15 +888,18 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						}
 
 						if (!empty($action->send_to_users_with_groups)) {
+                            $users_emails = [];
 							$user_ids = EmundusHelperAccess::getUsersFromGroupsThatCanAccessToFile($action->send_to_users_with_groups, $fnum);
 
-							$query->clear()
-								->select('email')
-								->from('#__users')
-								->where('id IN (' . implode(',', $db->quote($user_ids)) . ')');
+                            if (!empty($user_ids)) {
+                                $query->clear()
+                                    ->select('email')
+                                    ->from('#__users')
+                                    ->where('id IN (' . implode(',', $db->quote($user_ids)) . ')');
 
-							$db->setQuery($query);
-							$users_emails = $db->loadColumn();
+                                $db->setQuery($query);
+                                $users_emails = $db->loadColumn();
+                            }
 
 							if (!empty($users_emails)) {
 								foreach ($users_emails as $user_email) {

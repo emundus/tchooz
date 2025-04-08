@@ -803,7 +803,7 @@ class EmundusHelperAccess
 
 				if (!empty($group_ids)) {
 					$query->clear()
-						->select('DISTINCT ' . $db->quoteName('u.user_id'))
+						->select('DISTINCT ' . $db->quoteName('eg.user_id'))
 						->from($db->quoteName('#__emundus_groups', 'eg'))
 						->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
 
