@@ -31,6 +31,7 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseM
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
 use Joomla\Component\Users\Administrator\Model\UserModel;
 use Joomla\CMS\User\User;
+use Joomla\CMS\Mail\MailerFactoryInterface;
 
 class Securitycheckpro extends CMSPlugin 
 {
@@ -141,8 +142,10 @@ class Securitycheckpro extends CMSPlugin
             // Sanitizamos las entradas
             $ip = htmlspecialchars($ip);
             $ip = $db->escape($ip);
-            $username = htmlspecialchars($username);
-            $username = $db->escape($username);
+			if (!is_null($username)) {
+				$username = htmlspecialchars($username);
+				$username = $db->escape($username);
+			}            
             $tag_description = htmlspecialchars($tag_description);
             $tag_description = $db->escape($tag_description);
             $description = htmlspecialchars($description);
@@ -391,6 +394,27 @@ class Securitycheckpro extends CMSPlugin
                 }
             }
         }
+		
+		// Prevent arbitrary strings
+		$detect_arbitrary_strings = $this->pro_plugin->getValue('detect_arbitrary_strings', 0, 'pro_plugin');
+		if ($detect_arbitrary_strings) {							
+			// tipo 'cxDJopwYKHbTcy', 'HXGrIcgvt oFcsEdBAMhYW' pero no si todas las letras están en mayúscula
+			$mixed_case = $string;
+			$lower_case = strtolower($mixed_case);
+			$similar = similar_text($mixed_case, $lower_case);
+				
+			$number_of_capital_letters = strlen($mixed_case) - $similar;
+			
+			$string_with_no_spaces = str_replace(' ', '', $string);
+			$string_with_no_spaces_lenght = strlen($string_with_no_spaces);
+												
+			if ( ($string_with_no_spaces_lenght < 30) && ($string_with_no_spaces_lenght <> $number_of_capital_letters) && ($similar >= 4) && ($number_of_capital_letters > 3) ) {
+				$this->grabar_log($logs_attacks, $ip, 'ARBITRARY_STRING', '[' .$methods_options .':' .$a .']', 'SPAM_PROTECTION', $request_uri, $string, $username, $pageoption);
+				// Actualizamos la lista negra dinámica
+				$this->actualizar_lista_dinamica($ip);
+				$this->redirection(403, "", true);
+			}
+		}
         
 		/* Regex checker: https://regex101.com/
 			https://www.functions-online.com/preg_match.html
@@ -1456,7 +1480,7 @@ class Securitycheckpro extends CMSPlugin
         
             try 
             {
-                $mailer = Factory::getMailer();
+                $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
                 // Emisor
                 $mailer->setSender($from);
                 // Destinatario -- es una array de direcciones
@@ -2650,9 +2674,210 @@ class Securitycheckpro extends CMSPlugin
         
     }
 	
+	/**
+     * Translate an extension name (based on /administrator/components/com_installer/src/Model/InstallerModel.php)
+     *
+     * @param   string $name  The name of the extension.
+	 * @param   string $type  The type of the extension.
+     *
+     * @return  string 
+     *
+     *
+     */	
+	private function translate_name($name,$type) {
+		$name_translated = $name;
+		
+		$lang = Factory::getLanguage();
+		$db = Factory::getDBO();
+		
+		try {                        
+			$query = $db->getQuery(true)
+				->select('element,client_id,folder')
+				->from($db->quoteName('#__extensions'))
+				->where($db->quoteName('name').' = '.$db->quote($name));
+			$db->setQuery($query);
+			$item = $db->loadObject();
+		} catch (\Throwable $e) {  
+			return $name_translated;
+		}
+		
+		$path = $item->client_id ? JPATH_ADMINISTRATOR : JPATH_SITE;
+		
+        switch ($type) {
+            case 'component':
+                $extension = $item->element;
+                $source    = JPATH_ADMINISTRATOR . '/components/' . $extension;
+                $lang->load("$extension.sys", JPATH_ADMINISTRATOR) || $lang->load("$extension.sys", $source);
+				break;
+            case 'file':
+                $extension = 'files_' . $item->element;
+                $lang->load("$extension.sys", JPATH_SITE);
+                break;
+            case 'library':
+                $parts     = explode('/', $item->element);
+                $vendor    = (isset($parts[1]) ? $parts[0] : null);
+                $extension = 'lib_' . ($vendor ? implode('_', $parts) : $item->element);
+
+                if (!$lang->load("$extension.sys", $path)) {
+                    $source = $path . '/libraries/' . ($vendor ? $vendor . '/' . $parts[1] : $item->element);
+                    $lang->load("$extension.sys", $source);
+                }
+                break;
+            case 'module':
+                $extension = $item->element;
+                $source    = $path . '/modules/' . $extension;
+                $lang->load("$extension.sys", $path) || $lang->load("$extension.sys", $source);
+                break;
+            case 'plugin':
+                $extension = 'plg_' . $item->folder . '_' . $item->element;
+                $source    = JPATH_PLUGINS . '/' . $item->folder . '/' . $item->element;
+                $lang->load("$extension.sys", JPATH_ADMINISTRATOR) || $lang->load("$extension.sys", $source);
+                break;
+            case 'template':
+                $extension = 'tpl_' . $item->element;
+                $source    = $path . '/templates/' . $item->element;
+                $lang->load("$extension.sys", $path) || $lang->load("$extension.sys", $source);
+                break;
+            case 'package':
+            default:
+                $extension = $item->element;
+                $lang->load("$extension.sys", JPATH_SITE);
+                break;
+        }
+
+        // Translate the extension name if possible
+        $name_translated = Text::_($name);
+		
+		return $name_translated;
+	}
 	
+	/**
+     * On after CMS Update
+     *
+     * Method is called after user update the CMS.
+     *
+     * @param   AfterJoomlaUpdateEvent $event  The event instance.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     *
+     */	
+	private function update_installs_securitycheckpro_storage($table,$name,$type) {
+		$installs = null;
+        $empty = true;
+		$control_center_enabled = false;
+        
+        $db = Factory::getDBO();
+		
+		if ($table == "installs_remote") {
+			// Check if controlcenter is enabled
+			try {                        
+				// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
+				$query = $db->getQuery(true)
+					->select(array('storage_value'))
+					->from($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key').' = '.$db->quote("controlcenter"));
+				$db->setQuery($query);
+				$controlcenter_config = $db->loadResult();
+			} catch (\Throwable $e) {                
+			}
+			if (!is_null($controlcenter_config)){
+				$controlcenter_config_array = json_decode($controlcenter_config, true);
+				if ( (is_array($controlcenter_config_array)) && (array_key_exists("control_center_enabled",$controlcenter_config_array)) ) {
+					$control_center_enabled = $controlcenter_config_array['control_center_enabled'];
+				}			
+			}
+		}
+		
+		if ( ($table == "installs") || ( ($table == "installs_remote") && ($control_center_enabled == "1") ) ) {
+			
+			if ($name != "Joomla!") {
+				$name = $this->translate_name($name,$type);
+			}
+        
+			try {
+							
+				// Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
+				$query = $db->getQuery(true)
+					->select(array('storage_value'))
+					->from($db->quoteName('#__securitycheckpro_storage'))
+					->where($db->quoteName('storage_key').' = '.$db->quote($table));
+				$db->setQuery($query);
+				$installs = $db->loadResult();		
+									   
+				if (!empty($installs)) {
+					$empty = false;
+					$installs_array = json_decode($installs, true);
+					
+					// Obtenemos sólo el array de nombre para comprobar si ya hemos añadido la extensión            
+					$array_names = array_column($installs_array, 'name');
+					
+					if (!in_array($name, $array_names)) {
+						$extension_data = array(
+						'name' => $name,
+						'type' => $type
+						);
+						
+						$installs_array[] = $extension_data;
+					}                
+				} else 
+				{
+					$extension_data = array(
+					'name' => $name,
+					'type' => $type
+					);
+							
+					$installs_array[] = $extension_data;
+				}
+				
+				// Codificamos el array en formato json
+				$installs_array = json_encode($installs_array);
+										
+				// Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
+				$object = new \StdClass();                    
+				$object->storage_key = $table;
+				$object->storage_value = $installs_array;
+				
+				if ($empty) {
+					$res = $db->insertObject('#__securitycheckpro_storage', $object);
+				} else {
+					$res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
+				}
+				
+				// Let's write a file to tell securitycheck that a new extension has been installed. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php	
+				if ($table == "installs") {
+					$this->write_file(); 
+				}
+			} catch (\Throwable $e) {                
+				return false;
+			}
+		}
+	}
 	
-    /*  Chequeamos las extensions instaladas/actualizadas para usar esa info en la gestión de integtridad de los archivos     
+	/**
+     * On after CMS Update
+     *
+     * Method is called after user update the CMS.
+     *
+     * @param   Event $event  The event instance.
+     *
+     * @return  void
+     *
+     * @since   1.0.0
+     *
+     */
+    public function onJoomlaAfterUpdate(Event $event): void
+    {
+        $name = "Joomla!";
+        $type = "core";
+		
+		$this->update_installs_securitycheckpro_storage("installs",$name,$type);
+		$this->update_installs_securitycheckpro_storage("installs_remote",$name,$type);
+		
+	}	
+	
+    /*  Chequeamos las extensions instaladas/actualizadas para usar esa info en la gestión de integridad de los archivos     
     *
     * @name   string  Nombre de la extensión extraido del manifest (i.e [string] name "Akeeba Backup package")
     *
@@ -2664,74 +2889,18 @@ class Securitycheckpro extends CMSPlugin
     */
      public function onExtensionAfterInstall($installer, $eid)
     {
-        $installs = null;
-        $empty = true;
+		$manifest = $installer->get('manifest');
+		
+		if ($manifest === null) {
+			return;
+		}
+            
+        $name = $manifest->name->__toString();
+        $type = $manifest->attributes()['type']->__toString();
+		
+		$this->update_installs_securitycheckpro_storage("installs",$name,$type);
+		$this->update_installs_securitycheckpro_storage("installs_remote",$name,$type);		
         
-        $db = Factory::getDBO();
-        
-        try {
-                        
-            // Comprobamos si hay algún dato añadido o la tabla es null; dependiendo del resultado haremos un 'update' o un 'insert'
-            $query = $db->getQuery(true)
-                ->select(array('storage_value'))
-                ->from($db->quoteName('#__securitycheckpro_storage'))
-                ->where($db->quoteName('storage_key').' = '.$db->quote("installs"));
-            $db->setQuery($query);
-            $installs = $db->loadResult();
-			
-			$manifest = $installer->get('manifest');
-
-			if ($manifest === null) {
-				return;
-			}
-            
-            $name = $manifest->name->__toString();
-            $type = $manifest->attributes()['type']->__toString();
-                       
-            if (!empty($installs)) {
-                $empty = false;
-                $installs_array = json_decode($installs, true);
-                
-                // Obtenemos sólo el array de nombre para comprobar si ya hemos añadido la extensión            
-                $array_names = array_column($installs_array, 'name');
-                
-                if (!in_array($name, $array_names)) {
-                    $extension_data = array(
-                    'name' => $name,
-                    'type' => $type
-                    );
-                    
-                    $installs_array[] = $extension_data;
-                }                
-            } else 
-            {
-                $extension_data = array(
-                'name' => $name,
-                'type' => $type
-                );
-                        
-                $installs_array[] = $extension_data;
-            }
-            
-            // Codificamos el array en formato json
-            $installs_array = json_encode($installs_array);
-                                    
-            // Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
-            $object = new \StdClass();                    
-            $object->storage_key = "installs";
-            $object->storage_value = $installs_array;
-            
-            if ($empty) {
-                $res = $db->insertObject('#__securitycheckpro_storage', $object);
-            } else {
-                $res = $db->updateObject('#__securitycheckpro_storage', $object, 'storage_key');
-            }
-			
-			// Let's write a file to tell securitycheck that a new extension has been installed. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
-			$this->write_file(); 
-        } catch (Exception $e) {                
-            return false;
-        }
     }
 	
 	// Writes a file into the scan folder to know that we must update the vulnerabilities database

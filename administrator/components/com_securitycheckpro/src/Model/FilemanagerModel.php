@@ -658,10 +658,10 @@ class FileManagerModel extends BaseModel
 							switch ($hash_alg_db)
 							{
 								case "SHA1":
-									$hash_actual = sha1_file($pathname);
+									$hash_actual = hash_file("sha1",$pathname);
 									break;
 								case "MD5":
-									$hash_actual = md5_file($pathname);
+									$hash_actual = hash_file("md5",$pathname);
 									break;
 							}
 
@@ -716,10 +716,10 @@ class FileManagerModel extends BaseModel
 						switch ($hash_alg_db)
 						{
 							case "SHA1":
-								$hash_actual = sha1_file($pathname);
+								$hash_actual = hash_file("sha1",$pathname);
 								break;
 							case "MD5":
-								$hash_actual = md5_file($pathname);
+								$hash_actual = hash_file("md5",$pathname);
 								break;
 						}
 
@@ -1251,7 +1251,7 @@ class FileManagerModel extends BaseModel
 								'malware_code' => $malware_code,
 								'malware_alert_level'    => $malware_alert_level,
 								'safe_malwarescan' => $safe_malwarescan,
-								'sha1_value' => sha1_file($file),
+								'sha1_value' => hash_file("sha1",$file),
 								'data_id' => '',
 								'rest_ip' => '',
 								'online_check' => 200,

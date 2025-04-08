@@ -294,7 +294,13 @@ class FilemanagerController extends SecuritycheckproBaseController
     {
         $this->setRedirect('index.php?option=com_securitycheckpro');    
     }
-
+	
+	/* Redirecciona al Cponel */
+    function GoToLogs()
+    {
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=logs');    
+    }
+	
     /* Redirecciona a las listas del firewall */
     function GoToFirewallLists()
     {

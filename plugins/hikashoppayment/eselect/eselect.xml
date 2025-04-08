@@ -2,7 +2,7 @@
 <!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/plugin-install.dtd">
 <extension type="plugin" version="1.5" method="upgrade" group="hikashoppayment">
 	<name>Hikashop eSelect Payment Plugin</name>
-	<creationDate>20 mars 2025</creationDate>
+	<creationDate>06 avril 2025</creationDate>
 	<version>5.1.5</version>
 	<author>Obsidev</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

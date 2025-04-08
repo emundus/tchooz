@@ -411,6 +411,10 @@ export default {
 			type: String,
 			default: null,
 		},
+		defaultFilter: {
+			type: String,
+			default: null,
+		},
 	},
 	data() {
 		return {
@@ -590,7 +594,7 @@ export default {
 					this.setTabFilters(tab).then(() => {
 						if (typeof tab.getter !== 'undefined') {
 							let url =
-								'index.php?option=com_emundus&controller=' +
+								'/index.php?option=com_emundus&controller=' +
 								tab.controller +
 								'&task=' +
 								tab.getter +
@@ -616,6 +620,10 @@ export default {
 							}
 
 							url += '&view=' + this.viewType;
+
+							if (this.defaultFilter && this.defaultFilter.length > 0) {
+								url += '&' + this.defaultFilter;
+							}
 
 							try {
 								fetch(url)

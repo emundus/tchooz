@@ -1827,10 +1827,10 @@ class EmundusModelApplication extends ListModel
 
 								// modulo for strips css
 								if ($modulo % 2) {
-									$form .= '<tr class="table-strip-1"><td style="padding-right:50px;"><b>' . Text::_($element->label) . '</b></td> <td> ' . Text::_($elt) . '</td></tr>';
+									$form .= '<tr class="table-strip-1"><td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td> <td> ' . Text::_($elt) . '</td></tr>';
 								}
 								else {
-									$form .= '<tr class="table-strip-2"><td style="padding-right:50px;"><b>' . Text::_($element->label) . '</b></td> <td> ' . Text::_($elt) . '</td></tr>';
+									$form .= '<tr class="table-strip-2 tw-bg-neutral-0"><td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td> <td> ' . Text::_($elt) . '</td></tr>';
 								}
 								$modulo++;
 							}
@@ -1892,7 +1892,7 @@ class EmundusModelApplication extends ListModel
 					else {
 						$title = Text::_(trim($title[1]));
 					}
-					$forms       .= '<h5>' . $title . '</h5>';
+					$forms       .= '<h2>' . $title . '</h2>';
 					$form_params = json_decode($itemt->params);
 
 					$forms .= '<div class="flex flex-row items-center">';
@@ -1966,7 +1966,7 @@ class EmundusModelApplication extends ListModel
 							!in_array($g_params->repeat_group_show_first, $hidden_group_param_values)
 						) {
 							$forms .= '<fieldset class="em-personalDetail">
-											<h6 class="em-font-weight-400">' . Text::_($itemg->label) . '</h6>
+											<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>
 											<table class="em-restricted-group">
 												<thead><tr><td>' . Text::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</td></tr></thead>
 											</table>
@@ -2020,9 +2020,9 @@ class EmundusModelApplication extends ListModel
 									}
 									unset($element);
 
-									$forms .= '<fieldset class="em-personalDetail">';
-									$forms .= '<div class="flex flex-row justify-between form-group-title">';
-									$forms .= (!empty($itemg->label)) ? '<h6 class="em-font-weight-400">' . Text::_($itemg->label) . '</h6>' : '';
+									$forms .= '<fieldset class="em-personalDetail !tw-overflow-y-hidden" style="scrollbar-width: auto;">';
+									$forms .= '<div class="tw-flex tw-flex-row justify-between form-group-title tw-sticky tw-left-0">';
+									$forms .= (!empty($itemg->label)) ? '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>' : '';
 
 									if ($can_comment) {
 										$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit ';
@@ -2037,13 +2037,13 @@ class EmundusModelApplication extends ListModel
 
 									$forms .= '</div>';
 
-									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine"><thead><tr> ';
+									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine tw-p-6 tw-shadow-card !tw-rounded-coordinator-cards tw-border-separate !tw-border tw-border-neutral-400 tw-bg-neutral-0"><thead><tr class="!tw-border-0"> ';
 
 									foreach ($elements as &$element) {
-										if ($element->plugin != 'id') {
-											$forms .= '<th scope="col">';
+										if (!in_array($element->plugin, ['id', 'panel'])) {
+											$forms .= '<th scope="col" class="!tw-border-b !tw-border-b-neutral-400 !tw-h-auto">';
 
-											$forms .= '<div class="tw-flex tw-flex-row tw-items-center"><span>' . Text::_($element->label) . '</span>';
+											$forms .= '<div class="tw-flex tw-flex-row tw-items-center tw-w-full"><span class="tw-font-bold tw-text-ellipsis tw-overflow-hidden tw-whitespace-nowrap">' . Text::_($element->label) . '</span>';
 
 											if ($can_comment) {
 												$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit tw-ml-2';
@@ -2089,9 +2089,9 @@ class EmundusModelApplication extends ListModel
 									$forms .= '</tr></thead>';
 									// -- Ligne du tableau --
 									if (count($repeated_elements) > 0) {
-										$forms .= '<tbody>';
+										$forms .= '<tbody class="tw-border-0">';
 										foreach ($repeated_elements as $r_element) {
-											$forms .= '<tr>';
+											$forms .= '<tr class="!tw-bg-neutral-0 !tw-border-0">';
 											$j     = 0;
 											foreach ($r_element as $key => $r_elt) {
 
@@ -2315,7 +2315,7 @@ class EmundusModelApplication extends ListModel
 														$elt = $html_sanitizer->sanitize($elt);
 													}
 
-													$forms .= '<td><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '"> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</div></td>';
+													$forms .= '<td class="!tw-bg-neutral-0 tw-min-h-[45px] !tw-h-auto" style="border-bottom: 1px solid var(--neutral-400);"><div id="em_training_' . $r_element->id . '" class="course ' . $r_element->id . '"> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</div></td>';
 												}
 												$j++;
 											}
@@ -2332,10 +2332,10 @@ class EmundusModelApplication extends ListModel
 								$check_not_empty_group = $this->checkEmptyGroups($elements, $itemt->db_table_name, $fnum);
 
 								if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
-									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline">';
+									$forms .= '<table class="em-mt-8 em-mb-16 em-personalDetail-table-inline tw-p-6 tw-border-separate tw-rounded-coordinator-cards tw-shadow-card tw-bg-neutral-0">';
 
 									$forms .= '<div class="tw-flex tw-flex-row tw-justify-between form-group-title">';
-									$forms .= '<h6 class="em-font-weight-400">' . JText::_($itemg->label) . '</h6>';
+									$forms .= '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . JText::_($itemg->label) . '</h3>';
 									if ($can_comment) {
 										$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit ';
 										foreach ($file_comments as $comment) {
@@ -2350,6 +2350,10 @@ class EmundusModelApplication extends ListModel
 
 									$modulo = 0;
 									foreach ($elements as &$element) {
+
+										if($element->plugin === 'panel') {
+											continue;
+										}
 
 										if (!empty(trim($element->label))) {
 											// TODO : If databasejoin checkbox or multilist get value from children table. Add a query to get join table from jos_fabrik_joins where element_id = $element->id
@@ -2506,7 +2510,7 @@ class EmundusModelApplication extends ListModel
 													}
 												}
 
-												$elt = '<ul>';
+												$elt = '<ul class="!tw-m-0 tw-pl-4">';
 												foreach ($elm as $val)
 												{
 													$elt .= '<li>' . Text::_($val) . '</li>';
@@ -2639,11 +2643,11 @@ class EmundusModelApplication extends ListModel
 												$class = "table-strip-1";
 											}
 											else {
-												$class = "table-strip-2";
+												$class = "table-strip-2 !tw-bg-neutral-0";
 											}
 
-											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px;"><b>' . Text::_($element->label) . '</b></td>' : '';
-											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full" style="width:100%;"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? Text::_($elt) : $elt) . '</span>';
+											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '';
+											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full tw-items-center" style="width:100%; border-bottom: 1px solid var(--neutral-400);"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
 												$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit';

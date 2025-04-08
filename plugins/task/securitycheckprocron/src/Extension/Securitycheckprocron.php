@@ -26,7 +26,7 @@ use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-
+use Joomla\CMS\Mail\MailerFactoryInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -56,7 +56,9 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
         ],
     ];
 	
-	var $global_model = null;
+	protected $global_model = null;
+	
+	protected $pro_plugin = null;
 
     /**
      * @inheritDoc
@@ -139,7 +141,11 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
 		$number_of_files = $this->consulta_resultado_scan();
 		$send_email = $params->get('send_email_on_wrong_integrity', 1);
 		$email_subject = $params->get('email_subject_on_wrong_integrity', "");
-		if ($send_email && ($number_of_files[0] > 0)) {
+		
+		// Está la opción de mandar correos deshabilitada?
+		$is_online = Factory::getApplication()->get('mailonline', 1);
+				
+		if ( ($is_online) && ($send_email) && ($number_of_files[0] > 0)) {
 			$this-> mandar_correo($number_of_files[0], $number_of_files[1], $look_for_malware, $email_subject);
 		}   
     }
@@ -151,6 +157,7 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
 		$this->pro_plugin = new BaseModel();
         
 		// Variables del correo electrónico
+		$email_active = $this->pro_plugin->getValue('email_active', 0, 'pro_plugin');
         $email_to = $this->pro_plugin->getValue('email_to', '', 'pro_plugin');
         $to = explode(',', $email_to);
         $email_from_domain = $this->pro_plugin->getValue('email_from_domain', '', 'pro_plugin');
@@ -162,7 +169,7 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
         $sitename = $config->get('sitename');
     
         // Chequeamos si se han establecido los valores para mandar el correo
-        if (!empty($email_to)) {        
+        if ($email_active) {        
         
             /* Cargamos el lenguaje del sitio */
             $lang = Factory::getLanguage();
@@ -182,8 +189,8 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
             $body .= '</br>' . '</br>' . Text::_($lang->_('COM_SECURITYCHECKPRO_EMAIL_ALERT_BODY_ALERT'));
                     
             // Invocamos la clase Mail
-            $mailer = Factory::getMailer();
-            // Emisor
+            $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
+			// Emisor
             $mailer->setSender($from);
             // Destinatario -- es un array de direcciones
             $mailer->addRecipient($to);
@@ -197,9 +204,9 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
             // Enviamos el mensaje
             try{
 				$send = $mailer->Send();
-			} catch (Exception $e)
+			} catch (\Throwable $e)
             {
-               
+				// The email can not be sent. For example, if the option to send mails is enabled but there is not a valid provider we get a "Could not instantiate mail function" message.
             }
         }
             

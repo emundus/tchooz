@@ -35,7 +35,7 @@ if (!HIKASHOP_J40)
 	<tr>
 		<td class="hk_tbl_key"<?php echo $this->docTip('version');?>><?php echo JText::_('VERSION');?></td>
 		<td>
-			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2503201415]
+			HikaShop <?php echo $this->config->get('level').' '.$this->config->get('version'); ?> [2504062309]
 		</td>
 	</tr>
 	<tr>

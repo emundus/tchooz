@@ -41,9 +41,14 @@
 			</div>
 		</div>
 
-		<div class="modal-grid" :style="'grid-template-columns:' + this.ratioStyle" v-if="access">
+		<div
+			class="modal-grid"
+			style="height: calc(100% - 56px)"
+			:style="'grid-template-columns:' + this.ratioStyle"
+			v-if="access"
+		>
 			<div id="modal-applicationform">
-				<div class="scrollable">
+				<div class="scrollable" style="height: calc(100vh - 56px)">
 					<div
 						class="sticky-tab em-bg-neutral-100 tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300"
 						style="z-index: 2"
@@ -467,7 +472,7 @@ export default {
 	display: grid;
 	grid-gap: 16px;
 	width: 100%;
-	height: 100vh;
+	height: auto;
 }
 
 .scrollable {

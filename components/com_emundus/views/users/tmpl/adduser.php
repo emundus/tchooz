@@ -100,87 +100,90 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 	}
 	?>
     <fieldset class="em-addUser-profil em-mt-16">
-        <div class="form-group em-addUser-profil-selectProfil">
-            <label for="profiles"><?php echo Text::_('COM_EMUNDUS_PROFILE'); ?></label>
-            <select id="profiles" name="profiles" class="em-chosen em-mt-4">
-                <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
-				<?php foreach ($this->profiles as $profile) {
-					if ($profile->published && !$applicant_option) {
-						?>
-                        <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"
-                                pub="<?= $profile->published; ?>" <?php if (($this->edit == 1) && (in_array($this->user['profile'], $this->app_prof))) {
-							echo 'selected="true"';
-						} ?>><?= Text::_('COM_EMUNDUS_APPLICANT'); ?></option>
-						<?php
-						$applicant_option = true;
-					}
-                    elseif (!$profile->published) { ?>
-                        <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"
-                                pub="<?= $profile->published; ?>" <?php if (($this->edit == 1) && ($profile->id == $this->user['profile'])) {
-							echo 'selected="true"';
-						} ?>><?= trim($profile->label); ?></option>
-					<?php }
-				} ?>
-            </select>
 
-            <div class="em-addUser-profil-selectProfil-multiple mt-3">
-                <label for="oprofiles"><?= Text::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label>
-                <select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen em-mt-4">
+        <?php if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', Factory::getApplication()->getIdentity()->id)) { ?>
+            <div class="form-group em-addUser-profil-selectProfil">
+                <label for="profiles"><?php echo Text::_('COM_EMUNDUS_PROFILE'); ?></label>
+                <select id="profiles" name="profiles" class="em-chosen em-mt-4">
                     <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
-					<?php foreach ($this->profiles as $otherprofile) {
-						if ($otherprofile->published && !$applicant_option_others) {
-							?>
-                            <option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>"
-                                    pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true) ? 'selected="true"' : ''; ?>><?= Text::_('COM_EMUNDUS_APPLICANT'); ?></option>
-							<?php
-							$applicant_option_others = true;
-						}
-                        elseif (!$otherprofile->published) { ?>
-                            <option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>"
-                                    pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles))) ? 'selected="true"' : ''; ?>><?= trim($otherprofile->label); ?></option>
-						<?php }
-					} ?>
+                    <?php foreach ($this->profiles as $profile) {
+                        if ($profile->published && !$applicant_option) {
+                            ?>
+                            <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"
+                                    pub="<?= $profile->published; ?>" <?php if (($this->edit == 1) && (in_array($this->user['profile'], $this->app_prof))) {
+                                echo 'selected="true"';
+                            } ?>><?= Text::_('COM_EMUNDUS_APPLICANT'); ?></option>
+                            <?php
+                            $applicant_option = true;
+                        }
+                        elseif (!$profile->published) { ?>
+                            <option id="<?= $profile->acl_aro_groups; ?>" value="<?= $profile->id; ?>"
+                                    pub="<?= $profile->published; ?>" <?php if (($this->edit == 1) && ($profile->id == $this->user['profile'])) {
+                                echo 'selected="true"';
+                            } ?>><?= trim($profile->label); ?></option>
+                        <?php }
+                    } ?>
                 </select>
-            </div>
-        </div>
-		<?php if ($eMConfig->get('showUniversities')) : ?>
-            <div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0)) ? 'style="display:none;"' : ''; ?>>
-                <label for="univ"><?= Text::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
-                <select name="university_id" class="em-chosen em-mt-4" id="univ">
-                    <option value="0"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
-					<?php foreach ($this->universities as $university) : ?>
-                        <option value="<?= $university->id; ?>" <?= (($this->edit == 1) && ($university->id == $this->user['university_id'])) ? 'selected="true"' : ''; ?>><?= trim($university->title); ?></option>
-					<?php endforeach; ?>
-                </select>
-            </div>
-		<?php endif ?>
-        <div class="form-group em-hidden-nonapli-fields em-addUser-groups"
-             style="<?= (($this->edit != 1) || (empty($this->uGroups))) ? 'display:none;' : 'display:block;'; ?>">
-            <label for="groups"><?= Text::_('COM_EMUNDUS_GROUPS'); ?></label>
-            <select class="em-chosen em-mt-4" name="groups" id="groups" multiple="multiple">
-                <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
-				<?php foreach ($this->groups as $group) : ?>
-                    <option value="<?= $group->id; ?>" <?= (($this->edit == 1) && (array_key_exists($group->id, $this->uGroups))) ? 'selected="true"' : ''; ?>><?= trim($group->label); ?></option>
-				<?php endforeach; ?>
-            </select>
-        </div>
 
-
-		<?php if ($eMConfig->get('showJoomlagroups', 0)) : ?>
-            <div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1)) ? 'style="display:none;"' : ''; ?>>
-                <label for="jgroups"><?= Text::_('COM_EMUNDUS_JOOMLA_GROUPE'); ?></label>
-                <br/>
-                <select class="em-chosen" name="jgroups" id="jgroups" multiple="multiple">
-                    <option value="0" disabled="disabled"><?= Text::_('PLEASE_SELECT'); ?></option>
-					<?php foreach ($this->jgroups as $jgroup) : ?>
-                        <option value="<?= $jgroup->group_id; ?>" <?= (($this->edit == 1) && (array_key_exists($jgroup->group_id, $this->juGroups))) ? 'selected="true"' : ''; ?>><?= trim($jgroup->category_label); ?></option>
-					<?php endforeach; ?>
+                <div class="em-addUser-profil-selectProfil-multiple mt-3">
+                    <label for="oprofiles"><?= Text::_('COM_EMUNDUS_USERS_ALL_PROFILES'); ?></label>
+                    <select id="oprofiles" name="otherprofiles" size="5" multiple="multiple" class="em-chosen em-mt-4">
+                        <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                        <?php foreach ($this->profiles as $otherprofile) {
+                            if ($otherprofile->published && !$applicant_option_others) {
+                                ?>
+                                <option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>"
+                                        pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && $other_profiles_applicant === true) ? 'selected="true"' : ''; ?>><?= Text::_('COM_EMUNDUS_APPLICANT'); ?></option>
+                                <?php
+                                $applicant_option_others = true;
+                            }
+                            elseif (!$otherprofile->published) { ?>
+                                <option id="<?= $otherprofile->acl_aro_groups; ?>" value="<?= $otherprofile->id; ?>"
+                                        pub="<?= $otherprofile->published; ?>" <?= (($this->edit == 1) && (array_key_exists($otherprofile->id, $this->uOprofiles))) ? 'selected="true"' : ''; ?>><?= trim($otherprofile->label); ?></option>
+                            <?php }
+                        } ?>
+                    </select>
+                </div>
+            </div>
+            <?php if ($eMConfig->get('showUniversities')) : ?>
+                <div class="form-group em-hidden-nonapli-fields em-addUser-university" <?= (($this->edit != 1) || ($this->user['university_id'] == 0)) ? 'style="display:none;"' : ''; ?>>
+                    <label for="univ"><?= Text::_('COM_EMUNDUS_USERS_UNIVERSITY_FROM'); ?></label>
+                    <select name="university_id" class="em-chosen em-mt-4" id="univ">
+                        <option value="0"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                        <?php foreach ($this->universities as $university) : ?>
+                            <option value="<?= $university->id; ?>" <?= (($this->edit == 1) && ($university->id == $this->user['university_id'])) ? 'selected="true"' : ''; ?>><?= trim($university->title); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            <?php endif ?>
+            <div class="form-group em-hidden-nonapli-fields em-addUser-groups"
+                 style="<?= (($this->edit != 1) || (empty($this->uGroups))) ? 'display:none;' : 'display:block;'; ?>">
+                <label for="groups"><?= Text::_('COM_EMUNDUS_GROUPS'); ?></label>
+                <select class="em-chosen em-mt-4" name="groups" id="groups" multiple="multiple">
+                    <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
+                    <?php foreach ($this->groups as $group) : ?>
+                        <option value="<?= $group->id; ?>" <?= (($this->edit == 1) && (array_key_exists($group->id, $this->uGroups))) ? 'selected="true"' : ''; ?>><?= trim($group->label); ?></option>
+                    <?php endforeach; ?>
                 </select>
             </div>
-		<?php endif ?>
+
+            <?php if ($eMConfig->get('showJoomlagroups', 0)) : ?>
+                <div class="form-group em-hidden-nonapli-fields em-addUser-groups" <?= (($this->edit != 1)) ? 'style="display:none;"' : ''; ?>>
+                    <label for="jgroups"><?= Text::_('COM_EMUNDUS_JOOMLA_GROUPE'); ?></label>
+                    <br/>
+                    <select class="em-chosen" name="jgroups" id="jgroups" multiple="multiple">
+                        <option value="0" disabled="disabled"><?= Text::_('PLEASE_SELECT'); ?></option>
+                        <?php foreach ($this->jgroups as $jgroup) : ?>
+                            <option value="<?= $jgroup->group_id; ?>" <?= (($this->edit == 1) && (array_key_exists($jgroup->group_id, $this->juGroups))) ? 'selected="true"' : ''; ?>><?= trim($jgroup->category_label); ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+            <?php endif ?>
+
+	    <?php } ?>
 
         <div class="form-group em-hidden-appli-fields em-addUser-campaign"
-             style="<?= (($this->edit != 1) || (empty($this->uCamps))) ? 'display:none;' : 'display:block;'; ?>">
+             style="<?= (($this->edit != 1)) ? 'display:none;' : 'display:block;'; ?>">
             <label for="campaigns"><?= Text::_('COM_EMUNDUS_CAMPAIGN'); ?></label>
             <select name="campaigns" size="5" multiple="multiple" id="campaigns" class="em-chosen em-mt-4">
                 <option value="0" disabled="disabled"><?= Text::_('COM_EMUNDUS_PLEASE_SELECT'); ?></option>
@@ -500,37 +503,42 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
         function renderingSelects(value = null) {
             if (value == null) {
-                value = document.getElementById('profiles').value;
-            }
-            let main_profile_value = $('#profiles option[value="' + value + '"]').attr('pub');
-            let sub_profiles_values = getSelectValues(document.getElementById('oprofiles'));
-            let other_profiles_published = false;
-            let other_profiles_no_published = false;
-
-            sub_profiles_values.forEach((profile) => {
-                if ($('#oprofiles option[value="' + profile + '"]')[0].attributes.pub.value == 1) {
-                    other_profiles_published = true;
-                } else {
-                    other_profiles_no_published = true;
+                if(document.getElementById('profiles')) {
+                    value = document.getElementById('profiles').value;
                 }
-            })
+            }
 
-            if (main_profile_value == 1) {
-                $('.em-hidden-appli-fields').show();
-                if (other_profiles_no_published === false) {
-                    $('#groups_chosen .search-choice-close').click();
-                    $('.em-hidden-nonapli-fields').hide();
-                    $('.em-hidden-nonapli-fields select').val('').trigger("liszt:updated");
+            if(value) {
+                let main_profile_value = $('#profiles option[value="' + value + '"]').attr('pub');
+                let sub_profiles_values = getSelectValues(document.getElementById('oprofiles'));
+                let other_profiles_published = false;
+                let other_profiles_no_published = false;
+
+                sub_profiles_values.forEach((profile) => {
+                    if ($('#oprofiles option[value="' + profile + '"]')[0].attributes.pub.value == 1) {
+                        other_profiles_published = true;
+                    } else {
+                        other_profiles_no_published = true;
+                    }
+                })
+
+                if (main_profile_value == 1) {
+                    $('.em-hidden-appli-fields').show();
+                    if (other_profiles_no_published === false) {
+                        $('#groups_chosen .search-choice-close').click();
+                        $('.em-hidden-nonapli-fields').hide();
+                        $('.em-hidden-nonapli-fields select').val('').trigger("liszt:updated");
+                    } else {
+                        $('.em-hidden-nonapli-fields').show();
+                    }
                 } else {
                     $('.em-hidden-nonapli-fields').show();
-                }
-            } else {
-                $('.em-hidden-nonapli-fields').show();
-                if (other_profiles_published === false) {
-                    $('#campaigns_chosen .search-choice-close').click();
-                    $('.em-hidden-appli-fields').hide();
-                } else {
-                    $('.em-hidden-appli-fields').show();
+                    if (other_profiles_published === false) {
+                        $('#campaigns_chosen .search-choice-close').click();
+                        $('.em-hidden-appli-fields').hide();
+                    } else {
+                        $('.em-hidden-appli-fields').show();
+                    }
                 }
             }
         }

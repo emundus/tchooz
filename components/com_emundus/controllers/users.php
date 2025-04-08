@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Event\MultiFactor\NotifyActionLog;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
@@ -20,6 +21,8 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
+use Joomla\Component\Users\Administrator\Model\MethodsModel;
 
 /**
  * Emundus Component Users Controller
@@ -143,6 +146,10 @@ class EmundusControllerUsers extends BaseController
 		{
 			echo json_encode((object) array('status' => false, 'msg' => Text::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL')));
 			exit;
+		}
+
+		if (empty($profile)) {
+			$profile = 1000;
 		}
 
 		$user->name     = $name;
@@ -765,6 +772,18 @@ class EmundusControllerUsers extends BaseController
 
 		$m_users = $this->getModel('Users');
 		$res     = $m_users->editUser($newuser);
+
+		if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', $current_user->id) && !empty($newuser['profile']))
+		{
+			$other_profiles = explode(',', $newuser['em_oprofiles']);
+			$user_groups = explode(',', $newuser['em_groups']);
+			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
+
+			if ($edited === false)
+			{
+				$res = false;
+			}
+		}
 
 		if ($res === true && !is_array($res))
 		{
@@ -1810,16 +1829,64 @@ class EmundusControllerUsers extends BaseController
 	public function getacl()
 	{
 		$action = $this->input->get('action');
-		$crud = $this->input->getString('crud', 'r');
-		$fnum = $this->input->getString('fnum', '');
+		$crud   = $this->input->getString('crud', 'r');
+		$fnum   = $this->input->getString('fnum', '');
 
-		if(is_string($action)) {
+		if (is_string($action))
+		{
 			$action = EmundusHelperAccess::getActionIdFromActionName($action);
 		}
 
 		$right = EmundusHelperAccess::asAccessAction($action, $crud, $this->user->id, $fnum);
 
 		echo json_encode(array('status' => true, 'right' => $right));
+		exit;
+	}
+
+	public function disablemfa()
+	{
+		$result = [
+			'status' => true,
+			'msg'    => Text::_('COM_USERS_MFA_METHODS_DISABLED'),
+		];
+
+		if ($this->user->guest)
+		{
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		$this->checkToken($this->input->getMethod());
+
+		// Make sure I am allowed to edit the specified user
+		$userId = $this->input->getInt('user_id', null);
+		$user   = ($userId === null)
+			? $this->app->getIdentity()
+			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+		$user   = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
+
+		if (!MfaHelper::canDeleteMethod($user))
+		{
+			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		// Delete all MFA Methods for the user
+		/** @var MethodsModel $model */
+		$model = $this->app->bootComponent('com_users')->getMVCFactory()->createModel('Methods', 'Administrator');
+
+		$event = new NotifyActionLog('onComUsersControllerMethodsBeforeDisable', [$user]);
+		$this->app->getDispatcher()->dispatch($event->getName(), $event);
+
+		try
+		{
+			$model->deleteAll($user);
+		}
+		catch (\Exception $e)
+		{
+			$result['msg']    = $e->getMessage();
+			$result['status'] = false;
+		}
+
+		echo json_encode($result);
 		exit;
 	}
 }

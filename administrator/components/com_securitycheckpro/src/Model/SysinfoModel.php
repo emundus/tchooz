@@ -139,6 +139,7 @@ class SysinfoModel extends BaseModel
             $this->info['cron_plugin_enabled']        = $cron_plugin_enabled;
             $this->info['firewall_plugin_enabled']        = $firewall_plugin_enabled;
             $this->info['spam_protection_plugin_enabled']        = $spam_protection_plugin_enabled;
+			$this->info['unread_logs']        = $this->LogsPending();
             //$this->info['firewall_options']        = $FirewallOptions;
             $this->info['last_check']        = $values->data['last_check'];
             $this->info['last_check_integrity']        = $values->data['last_check_integrity'];        
@@ -166,6 +167,10 @@ class SysinfoModel extends BaseModel
             if (version_compare($info['coreinstalled'], $info['corelatest'], '==')) {
                 $overall = $overall + 4;
             }
+			if ($info['unread_logs'] <= 10) {
+                $overall = $overall + 5;
+            }
+			
             if ($info['files_with_incorrect_permissions'] == 0) {
                 $overall = $overall + 5;
             }
@@ -176,7 +181,7 @@ class SysinfoModel extends BaseModel
                 $overall = $overall + 30;
             }
             if ($info['suspicious_files'] == 0) {
-                $overall = $overall + 20;
+                $overall = $overall + 15;
             }
             if ($info['backend_protection']) {
                 $overall = $overall + 10;

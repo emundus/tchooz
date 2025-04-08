@@ -157,9 +157,7 @@ if ($showOriginalPrice && $showWithoutVAT && !empty($price->price_orig_value_wit
     ];
 }
 
-$retailPrices               = $priceHelper->getRetailPrice();
-$priceAdvantageValue        = $retailPrices->incTax - $price->price_value_with_tax;
-$priceAdvantageDisplayValue = $priceHelper->formatPrice($priceAdvantageValue);
+$priceAdvantageDisplayValue = $priceHelper->getFormattedAdvantage($price);
 
 if ($priceHelper->getRetailPrice()->incTax > 0) {
     $priceDisplayDataItems['advantage'] = [

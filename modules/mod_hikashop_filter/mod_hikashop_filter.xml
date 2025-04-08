@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" method="upgrade" client="site">
 	<name>Hikashop Filtering Module</name>
-	<creationDate>20 mars 2025</creationDate>
+	<creationDate>06 avril 2025</creationDate>
 	<version>5.1.5</version>
 	<author>Hikari Software</author>
 	<authorEmail>dev@hikashop.com</authorEmail>
@@ -33,7 +33,7 @@
 			<option value="inside">HIKA_INSIDE</option>
 		</param>
 		<param name="filters" type="filters" default="" label="FILTERS" description="FILTERS_SELECTION_DESC" />
-		<param name="itemid" type="text" default="356" label="MENU" description="FILTER_MODULE_MENU_DESC" />
+		<param name="itemid" type="text" default="519" label="MENU" description="FILTER_MODULE_MENU_DESC" />
 		<param name="force_redirect" type="radio" default="1" label="FORCE_REDIRECT" description="FORCE_REDIRECT_DESC">
 			<option value="0">HIKASHOP_NO</option>
 			<option value="1">HIKASHOP_YES</option>
@@ -111,7 +111,7 @@
 					<option value="inside">HIKA_INSIDE</option>
 				</field>
 				<field name="filters" type="filters" default="" label="FILTERS" description="FILTERS_SELECTION_DESC" />
-				<field name="itemid" type="text" default="356" label="MENU" description="FILTER_MODULE_MENU_DESC" />
+				<field name="itemid" type="text" default="519" label="MENU" description="FILTER_MODULE_MENU_DESC" />
 				<field name="force_redirect" type="radio" default="1" label="FORCE_REDIRECT" description="FORCE_REDIRECT_DESC" class="btn-group btn-group-yesno">
 					<option value="0">HIKASHOP_NO</option>
 					<option value="1">HIKASHOP_YES</option>

@@ -3,6 +3,16 @@ import { FetchClient } from './fetchClient.js';
 const client = new FetchClient('sms');
 
 export default {
+	async getSMSConfiguration() {
+		try {
+			return await client.get('getSMSconfiguration');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 	async getSmsTemplate(id) {
 		try {
 			return await client.get('getSmsTemplate', { id: id });
@@ -23,7 +33,7 @@ export default {
 			};
 		}
 	},
-	async updateTemplate(sms) {
+	async updateTemplate(sms, allow_unicode = false) {
 		try {
 			return await client.post('updateTemplate', {
 				id: sms.id,
@@ -32,6 +42,7 @@ export default {
 				category_id: sms.category_id,
 				success_tag: sms.success_tag,
 				failure_tag: sms.failure_tag,
+				allow_unicode: allow_unicode ? 1 : 0,
 			});
 		} catch (e) {
 			return {

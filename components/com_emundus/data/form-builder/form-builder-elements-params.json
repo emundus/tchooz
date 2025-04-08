@@ -664,5 +664,54 @@
         }
       ]
     }
+  ],
+  "average": [
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION",
+      "name": "used_as_total",
+      "type": "dropdown",
+      "helptext": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION_HELP",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false,
+      "default": 0,
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "multiple": false
+    },
+    {
+      "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS",
+      "name": "average_multiple_elements",
+      "type": "fabrikmodalrepeat",
+      "published": true,
+      "fields": [
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_ELEMENT",
+          "name": "average_multiple_element",
+          "type": "listfields",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        },
+        {
+          "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_WEIGHT",
+          "name": "average_multiple_weight",
+          "type": "number",
+          "helptext": "",
+          "placeholder": "",
+          "published": true,
+          "sysadmin_only": false
+        }
+      ]
+    }
   ]
 }

@@ -20,10 +20,6 @@
     align-items: center;
 }
 
-.com-users-profile__edit-form#member-profile fieldset:nth-child(3) {
-    display: none;
-}
-
 .com-users-profile__edit-form#member-profile {
     background: #fff;
     margin: 0 auto 50px auto;
@@ -253,4 +249,13 @@ form#member-profile.form-validate.form-horizontal.well span.star {
     .view-profile .em-coordinator #g-container-main .g-container {
         width: 50%;
     }
+}
+
+/** 2FA **/
+#com-users-methods-list {
+    margin-top: var(--em-spacing-2);
+}
+
+fieldset:has(label[for="jform_actionlogs_actionlogsNotify"]) {
+    display: none;
 }

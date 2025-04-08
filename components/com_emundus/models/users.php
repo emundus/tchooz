@@ -36,6 +36,7 @@ use Joomla\Component\Users\Site\Model\ResetModel;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use \Joomla\CMS\User\User;
 
 /**
  * Emundus Component Users Model
@@ -252,7 +253,7 @@ class EmundusModelUsers extends ListModel
 			$query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "<br>") as joomla_groupe,';
 		}
 
-		$query .= 'u.activation as active,u.block as block
+		$query .= 'u.activation as active,u.block as block,mfa.method as mfa_method
                     FROM #__users AS u
                     LEFT JOIN #__emundus_users AS e ON u.id = e.user_id
                     LEFT JOIN #__emundus_users_profiles AS eup ON e.user_id = eup.user_id and eup.profile_id != e.profile
@@ -261,7 +262,8 @@ class EmundusModelUsers extends ListModel
                     LEFT JOIN #__emundus_setup_profiles AS espr ON espr.id = e.profile
                     LEFT JOIN #__emundus_personal_detail AS epd ON u.id = epd.user
                     LEFT JOIN #__categories AS cat ON cat.id = e.university_id
-                    LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key like "emundus_profiles.newsletter")';
+                    LEFT JOIN #__user_profiles AS up ON ( u.id = up.user_id AND up.profile_key like "emundus_profiles.newsletter")
+                    LEFT JOIN #__user_mfa as mfa ON mfa.user_id = u.id AND mfa.default = 1';
 		if ($showJoomlagroups == 1) {
 			$query .= 'LEFT JOIN #__user_usergroup_map AS um ON ( u.id = um.user_id AND um.group_id != 2)
                     LEFT JOIN jos_usergroups AS usg ON ( um.group_id = usg.id)';
@@ -1897,23 +1899,24 @@ class EmundusModelUsers extends ListModel
 
 	public function affectToJoomlaGroups($users, $groups)
 	{
+		$affected = false;
+
 		try {
 			if (!empty($users)) {
 				$query = $this->db->getQuery(true);
 				$str = "";
-
 				foreach ($users as $user) {
 					$query->clear()
 						->select('group_id')
-						->from($db->quoteName('#__user_usergroup_map'))
-						->where($db->quoteName('user_id') . ' = ' . $user);
-					$db->setQuery($query);
-					$usergroups = $db->loadColumn();
+						->from($this->db->quoteName('#__user_usergroup_map'))
+						->where($this->db->quoteName('user_id') . ' = ' . $user);
+					$this->db->setQuery($query);
+					$usergroups = $this->db->loadColumn();
 
 					foreach ($groups as $gid) {
-						if(!in_array($gid, $usergroups))
+						if (!in_array($gid, $usergroups))
 						{
-							$str .= "(" . $user . ", $gid),";
+							$str .= "($user, $gid),";
 						}
 					}
 				}
@@ -1921,19 +1924,15 @@ class EmundusModelUsers extends ListModel
 
 				$query = "INSERT INTO #__user_usergroup_map(`user_id`, `group_id`) values $str";
 				$this->db->setQuery($query);
-				$res = $this->db->query();
+				$affected = $this->db->query();
 
-				return $res;
 			}
-			else
-				return 0;
-
 		}
 		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
+			Log::add('Error on affecting users to Joomla groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $affected;
 	}
 
 	public function removeJoomlaGroups($users, $groups) {
@@ -2494,7 +2493,7 @@ class EmundusModelUsers extends ListModel
 						$this->db->setQuery($query);
 						$new_default_profile = $this->db->loadResult();
 
-						$this->addProfileToUser($uid,$new_default_profile);
+						$this->addProfileToUser($uid, $new_default_profile);
 					}
 
 					$query->clear()
@@ -2726,9 +2725,9 @@ class EmundusModelUsers extends ListModel
 	}
 
 
-	public function editUser($user,$current_user = null)
+	public function editUser($user, $current_user = null)
 	{
-		if(empty($current_user)) {
+		if (empty($current_user)) {
 			$current_user = Factory::getApplication()->getIdentity();
 		}
 
@@ -2763,8 +2762,7 @@ class EmundusModelUsers extends ListModel
 
 		$query->update($this->db->quoteName('#__emundus_users'))
 			->set('firstname = ' . $this->db->quote($user['firstname']))
-			->set('lastname = ' . $this->db->quote($user['lastname']))
-			->set('profile = ' . $this->db->quote((int) $user['profile']));
+			->set('lastname = ' . $this->db->quote($user['lastname']));
 
 		if (!empty($user['university_id'])) {
 			$query->set('university_id = ' . $this->db->quote($user['university_id']));
@@ -2808,68 +2806,6 @@ class EmundusModelUsers extends ListModel
 			error_log($e->getMessage(), 0);
 
 			return false;
-		}
-
-		$query->clear()
-			->delete($this->db->quoteName('#__emundus_groups'))
-			->where('user_id = ' . $this->db->quote($user['id']));
-		$this->db->setQuery($query);
-		try {
-			$this->db->execute();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
-		}
-
-		$query->clear()
-			->delete($this->db->quoteName('#__user_profiles'))
-			->where('user_id = ' . $this->db->quote($user['id']) . ' and profile_key like "emundus_profile.newsletter"');
-		$this->db->setQuery($query);
-		try {
-			$this->db->execute();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
-		}
-
-		$query->clear()
-			->delete($this->db->quoteName('#__emundus_users_profiles'))
-			->where('user_id = ' . $this->db->quote($user['id']));
-		$this->db->setQuery($query);
-		try {
-			$this->db->execute();
-		}
-		catch (Exception $e) {
-			error_log($e->getMessage(), 0);
-
-			return false;
-		}
-
-		$this->addProfileToUser($user['id'], $user['profile']);
-
-		if (!empty($user['em_groups'])) {
-			$groups = explode(',', $user['em_groups']);
-			foreach ($groups as $group) {
-				$columns = array('user_id', 'group_id');
-				$values  = array($user['id'], $group);
-				$query->clear()
-					->insert($this->db->quoteName('#__emundus_groups'))
-					->columns($this->db->quoteName($columns))
-					->values(implode(',', $this->db->quote($values)));
-				$this->db->setQuery($query);
-				try {
-					$this->db->execute();
-				}
-				catch (Exception $e) {
-					error_log($e->getMessage(), 0);
-
-					return false;
-				}
-			}
 		}
 
 		if ($eMConfig->get('showJoomlagroups', 0) == 1) {
@@ -2943,22 +2879,6 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 
-		if (!empty($user['em_oprofiles'])) {
-			$oprofiles = explode(',', $user['em_oprofiles']);
-			$query->clear()
-				->select('profile_id')
-				->from($this->db->quoteName('#__emundus_users_profiles'))
-				->where('user_id = ' . $user['id']);
-			$this->db->setQuery($query);
-			$profiles_id = $this->db->loadColumn();
-
-			foreach ($oprofiles as $profile) {
-				if (!in_array($profile, $profiles_id)) {
-					$this->addProfileToUser($user['id'], $profile);
-				}
-			}
-		}
-
 		if ($user['news'] == "1") {
 			$columns = array('user_id', 'profile_key', 'profile_value', 'ordering');
 			$values  = array($user['id'], 'emundus_profile.newsletter', '"1"', 4);
@@ -2978,6 +2898,96 @@ class EmundusModelUsers extends ListModel
 		}
 
 		return true;
+	}
+
+	public function editUserProfiles(int $user_id, int $profile_id, array $other_profiles = [], array $groups = []): bool
+	{
+		$updated = false;
+
+		if (!empty($user_id) && !empty($profile_id)) {
+			$update_tasks = [];
+
+			try
+			{
+				$query = $this->db->createQuery();
+
+				$query->clear()
+					->delete($this->db->quoteName('#__user_profiles'))
+					->where('user_id = ' . $this->db->quote($user_id) . ' and profile_key like "emundus_profile.newsletter"');
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				$query->clear()
+					->delete($this->db->quoteName('#__emundus_users_profiles'))
+					->where('user_id = ' . $this->db->quote($user_id));
+
+				$this->db->setQuery($query);
+				$update_tasks[] = $this->db->execute();
+
+				$query->clear()
+					->update($this->db->quoteName('#__emundus_users'))
+					->set('profile = ' . $this->db->quote($profile_id))
+					->where('user_id = ' . $this->db->quote($user_id));
+
+				$this->db->setQuery($query);
+				$update_tasks[] = $this->db->execute();
+
+				$update_tasks[] = $this->addProfileToUser($user_id, $profile_id);
+
+				if (!empty($other_profiles)) {
+					$query->clear()
+						->select('profile_id')
+						->from($this->db->quoteName('#__emundus_users_profiles'))
+						->where('user_id = ' . $user_id);
+					$this->db->setQuery($query);
+					$profiles_id = $this->db->loadColumn();
+
+					foreach ($other_profiles as $profile) {
+						if (!in_array($profile, $profiles_id)) {
+							$update_tasks[] = $this->addProfileToUser($user_id, $profile);
+						}
+					}
+				}
+
+				try {
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_groups'))
+						->where('user_id = ' . $this->db->quote($user_id));
+
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
+				catch (Exception $e) {
+					Log::add('Error deleting user groups ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				}
+
+				if (!empty($groups)) {
+					foreach ($groups as $group) {
+						$columns = array('user_id', 'group_id');
+						$values  = array($user_id, $group);
+						$query->clear()
+							->insert($this->db->quoteName('#__emundus_groups'))
+							->columns($this->db->quoteName($columns))
+							->values(implode(',', $this->db->quote($values)));
+						try {
+							$this->db->setQuery($query);
+							$update_tasks[] = $this->db->execute();
+						}
+						catch (Exception $e) {
+							Log::add('Error adding user groups ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+						}
+					}
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error editing user ' . $user_id . ' profiles ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+
+			$updated = !in_array(false, $update_tasks);
+		}
+
+		return $updated;
 	}
 
 	public function getGroupDetails($gid)

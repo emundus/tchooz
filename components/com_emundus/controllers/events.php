@@ -1108,7 +1108,7 @@ class EmundusControllerEvents extends BaseController
 			$event       = $this->input->getInt('event', 0);
 			$location    = $this->input->getInt('location', 0);
 			$applicant   = $this->input->getInt('applicant', 0);
-			$assoc_users = $this->input->getInt('assoc_users', 0);
+			$assoc_user_filter = $this->input->getInt('assoc_user', 0);
 			$day         = $this->input->getString('day', '');
 
 			if ($view !== 'calendar')
@@ -1116,7 +1116,7 @@ class EmundusControllerEvents extends BaseController
 				require_once JPATH_SITE . '/components/com_emundus/models/users.php';
 				$m_users = new EmundusModelUsers();
 
-				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_users, 0, [], $this->user->id, $day);
+				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_user_filter, 0, [], $this->user->id, $day);
 				if (!empty($registrants) && $registrants['count'] > 0)
 				{
 					foreach ($registrants['datas'] as $registrant)

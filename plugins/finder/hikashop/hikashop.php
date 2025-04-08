@@ -558,7 +558,7 @@ class plgFinderHikashop extends plgFinderHikashopBridge
 	protected function getStateColumn() {
 		$conditions = array(
 			'WHEN a.product_type = \'trash\' THEN 0',
-			'WHEN a.product_access NOT IN (\'all\', \'\') OR a.product_access NOT LIKE \'%,9,%\' THEN 0',
+			'WHEN a.product_access NOT IN (\'all\', \'\') AND a.product_access NOT LIKE \'%,9,%\' THEN 0',
 		);
 		if(!function_exists('hikashop_config'))
 			$this->setup();

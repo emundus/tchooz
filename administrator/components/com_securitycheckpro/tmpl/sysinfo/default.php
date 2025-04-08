@@ -190,6 +190,41 @@ $lang2->load('plg_system_securitycheckpro');
                                             </li>
                                         </ul>
                                         </div>
+										
+										<!-- Unread logs -->
+                                        <div class="col-xl-3 mb-3">
+                                        <ul class="list-group">
+                                            <li class="list-group-item list-group-item-primary"><?php echo Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS'); ?></li>
+                                            <li class="list-group-item">
+                                                <?php 
+                                                if ($this->logs_pending <= 10 ) {
+                                                    echo "<span class=\"badge bg-success\">OK</span>";
+                                                } else {
+                                                    echo "<span class=\"badge bg-danger\">" . Text::sprintf('COM_SECURITYCHECKPRO_SECURITY_PROBLEM_FOUND', '1') . "</span>";
+                                                    ?>
+                                                    <button class="btn btn-info btn-sm" id="GoToLogs_button" type="button" href="#"><i class="icon-wrench icon-white"></i></button>
+                                                    <!-- Modal vuln extensions -->
+                                                    <div class="modal hide bd-example-modal-lg" id="modal_unread_logs" tabindex="-1" role="dialog" aria-labelledby="modal_vuln_extensionsLabel" aria-hidden="true">
+                                                        <div class="modal-dialog modal-lg" role="document">
+                                                            <div class="modal-content">
+																<div class="modal-header alert alert-info">
+																	<h2 class="modal-title"><?php echo Text::_('COM_SECURITYCHECKPRO_WHY_IS_THIS_IMPORTANT'); ?></h2>
+																	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+																</div>
+																<div class="modal-body">    
+																	<p class="tammano-18 margin-left-10"><?php echo Text::_('COM_SECURITYCHECKPRO_UNREAD_LOGS_INFO'); ?></p>    
+																</div>
+                                                                <div class="modal-footer">
+                                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><?php echo Text::_('COM_SECURITYCHECKPRO_CLOSE'); ?></button>
+                                                                </div>              
+                                                            </div>
+                                                        </div>
+                                                    </div>
+													<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#modal_unread_logs"><?php echo Text::_('COM_SECURITYCHECKPRO_MORE_INFO'); ?></button>                                                    
+                                                <?php }    ?>                            
+                                            </li>
+                                        </ul>
+                                        </div>
                                         
                                         <!-- Malware -->
                                         <div class="col-xl-3 mb-3">

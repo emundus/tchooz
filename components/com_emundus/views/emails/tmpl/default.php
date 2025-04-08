@@ -168,6 +168,7 @@ Text::script('COM_EMUNDUS_ONBOARD_EMAILS_FILTER_CATEGORY');
 Text::script('COM_EMUNDUS_ONBOARD_SMS');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_SMS');
 Text::script('COM_EMUNDUS_ONBOARD_NOSMS');
+Text::script('COM_EMUNDUS_SMS_PLACEHOLDER');
 
 require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_BASE . '/components/com_emundus/helpers/cache.php');

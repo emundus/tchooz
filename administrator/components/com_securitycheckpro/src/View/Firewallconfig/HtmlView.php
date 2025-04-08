@@ -467,6 +467,7 @@ class HtmlView extends BaseHtmlView {
         $spammer_write_log=null;
         $spammer_limit=3;
         $plugin_installed=false;
+		$detect_arbitrary_strings = 1;
 
         // Chequeamos si el plugin 'Spam protection' está instalado
         $plugin_installed = $model->is_plugin_installed('system', 'securitycheck_spam_protection');
@@ -486,6 +487,9 @@ class HtmlView extends BaseHtmlView {
         if (!is_null($items['spammer_what_to_check'])) {
             $spammer_what_to_check = $items['spammer_what_to_check'];    
         }
+		 if (!is_null($items['detect_arbitrary_strings'])) {
+            $detect_arbitrary_strings = $items['detect_arbitrary_strings'];    
+        }
 
         $this->check_if_user_is_spammer = $check_if_user_is_spammer;
         $this->spammer_action = $spammer_action;
@@ -493,6 +497,7 @@ class HtmlView extends BaseHtmlView {
         $this->spammer_limit = $spammer_limit;
         $this->plugin_installed = $plugin_installed;
         $this->spammer_what_to_check = $spammer_what_to_check;
+		$this->detect_arbitrary_strings = $detect_arbitrary_strings;
 
         // Pestaña url inspector
         // Esta el plugin habilitado?

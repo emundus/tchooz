@@ -53,6 +53,7 @@ list-style: none;
 
 .fabrikListFilterCheckbox {
 	text-align: left;
+	padding-left: 30px;
 }
 
 .fabrikDateListFilterRange {

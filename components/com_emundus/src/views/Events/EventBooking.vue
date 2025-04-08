@@ -253,36 +253,34 @@ export default {
 					const interval = end - start;
 					let minutes = Math.floor(interval / 1000 / 60);
 
+					let durationText = '';
+
 					if (minutes < 60) {
-						minutes = minutes + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES');
+						durationText = minutes + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES');
 					} else {
 						const hours = Math.floor(minutes / 60);
-						if (hours > 1) {
-							minutes = hours + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS');
-						} else {
-							minutes = hours + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOUR');
+						const remainingMinutes = minutes % 60;
+
+						durationText =
+							hours +
+							' ' +
+							(hours > 1
+								? this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOURS')
+								: this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOUR'));
+
+						if (remainingMinutes > 0) {
+							durationText +=
+								' ' + remainingMinutes + ' ' + this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES');
 						}
 					}
 
-					text = this.translate('COM_EMUNDUS_EVENT_SLOT_RECAP');
-					text = text.replace(
-						'{{date}}',
-						start.toLocaleDateString('fr-FR', {
-							weekday: 'long',
-							day: 'numeric',
-							month: 'long',
-						}),
-					);
-					text = text.replace(
-						'{{time}}',
-						start.toLocaleTimeString('fr-FR', {
-							hour: '2-digit',
-							minute: '2-digit',
-						}),
-					);
-					text = text.replace('{{duration}}', minutes);
+					text = this.translate('COM_EMUNDUS_EVENT_SLOT_RECAP')
+						.replace('{{date}}', start.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))
+						.replace('{{time}}', start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }))
+						.replace('{{duration}}', durationText);
 				}
 			}
+
 			return text;
 		},
 		displayedTimezone: function () {

@@ -31,7 +31,7 @@ return new class implements ServiceProviderInterface
      */
     public function register(Container $container)
     {
-        $container->set(
+		$container->set(
             PluginInterface::class,
             function (Container $container) {
                 $plugin = new Securitycheckprocron(
@@ -43,5 +43,7 @@ return new class implements ServiceProviderInterface
                 return $plugin;
             }
         );
+		
+		
     }
 };

@@ -631,7 +631,10 @@ $(document).ready(function () {
 	$(document).on('click', '.em-actions',async function (e) {
 
 		e.preventDefault();
-		var id = parseInt($(this).attr('id').split('|')[3]);
+		var id = $(this).attr('id').split('|')[3];
+		if (!isNaN(id)) {
+			id = parseInt(id);
+		}
 
 		// Prepare SweetAlert variables
 		var title = '';
@@ -681,6 +684,8 @@ $(document).ready(function () {
 		 * 24: edit user
 		 * 25: show user rights
 		 * 26: delete user
+		 * 27: remove group
+		 * 28: Disable MFA
 		 * 33: regenerate password
 		 * 34: send email
 		 */
@@ -840,6 +845,49 @@ $(document).ready(function () {
 					swal_popup_class = 'em-w-auto';
 					html = result
 				});
+
+				break;
+
+			case 'disablemfa':
+				var formData = new FormData();
+				formData.append('users', checkInput);
+				formData.append('state', 1);
+
+				let headers = {};
+				if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+					var csrf = Joomla.getOptions('csrf.token', '');
+					if (csrf) {
+						headers = {
+							'X-CSRF-Token': csrf,
+						};
+					}
+				}
+
+				fetch(url, {
+					method: 'POST',
+					body: formData,
+					headers: headers,
+				}).then((response) => {
+					if (response.ok) {
+						return response.json();
+					}
+					throw new Error(Joomla.Text._('COM_EMUNDUS_ERROR_OCCURED'));
+				}).then((result) => {
+					if (result.status) {
+						Swal.fire({
+							position: 'center',
+							icon: 'success',
+							title: result.msg,
+							showConfirmButton: false,
+							timer: 2500,
+							customClass: {
+								title: 'tw-w-full tw-justify-center',
+							}
+						}).then(() => {
+							reloadData(false);
+						});
+					}
+				})
 
 				break;
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Édition de déclencheur">
+        <message>
+            <![CDATA[Édition d'un déclencheur de message (email, sms, etc.)]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

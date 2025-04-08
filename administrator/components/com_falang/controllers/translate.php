@@ -373,12 +373,6 @@ class TranslateController extends AdminController   {
 				$this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR');
 			}
 
-			// Clear Translation Cache
-			$db = Factory::getDBO();
-			$lang = new TableJFLanguage($db);
-			$lang->load( $language_id );
-			$cache =  $this->_falangManager->getCache($lang->code);
-			//$cache->clean();
 		}
 		else {
 			$this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR_CATID');
@@ -642,6 +636,7 @@ class TranslateController extends AdminController   {
 
     /*
      * 5.9 add the update of the status published/unpublished for a translation
+     * 5.16 update the status => old is never set
      * */
 	function modalClose($linktype){
 
@@ -665,8 +660,12 @@ class TranslateController extends AdminController   {
 				try {
                     var btnqj= window.parent.jQuery('[data-id=\'{$key}\']');
                     if (task === 'translate.save'){
+                        //remove old status
                         window.parent.jQuery(btnqj.find('span.lang-unpublished').remove());
                         window.parent.jQuery(btnqj.find('span.lang-published').remove());
+                        window.parent.jQuery(btnqj[0].classList.remove('uptodate', 'notexist', 'old'));
+                        //add new one
+                        window.parent.jQuery(btnqj[0].classList.add('uptodate'));
                         if (published === 'on'){
                             window.parent.jQuery(btnqj.append('<span class=\"lang-published\"></span>'))
                         } else {
@@ -681,8 +680,12 @@ class TranslateController extends AdminController   {
 				try {
                      var btnqj= window.parent.jQuery('#modal-falang-quicktranslate-{$language_id}-btn');
                      if (task === 'translate.save'){
+                        //remove old status
                         window.parent.jQuery(btnqj.find('span.icon-unpublish').remove());
                         window.parent.jQuery(btnqj.find('span.icon-publish').remove());
+                        window.parent.jQuery(btnqj[0].classList.remove('uptodate', 'notexist', 'old'));
+                        //add new one
+                        window.parent.jQuery(btnqj[0].classList.add('uptodate'));
                         if (published === 'on'){
                             window.parent.jQuery(btnqj.prepend('<span class=\" icon-publish falang-status\"></span>'));
                         } else {

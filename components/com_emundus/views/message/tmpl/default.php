@@ -495,7 +495,7 @@ if ($allowed_attachments !== true) {
     var formData = new FormData();
     formData.append('fnums', fnums);
 
-    fetch('index.php?option=com_emundus&controller=messages&task=getattachmentsbyprofiles', {
+    fetch('/index.php?option=com_emundus&controller=messages&task=getattachmentsbyprofiles', {
         method: 'POST',
         body: formData
     }).then(response => response.json())

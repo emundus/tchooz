@@ -5,10 +5,10 @@ use Joomla\CMS\Language\Text;
 $d = $displayData;
 ?>
 
-<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly" style="background-color: <?php echo $d->backgroundColor ?>;border: solid 1px <?php echo $d->borderColor; ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>" name="<?php echo $d->name; ?>">
+<div id="<?php echo $d->id; ?>" class="fabrikinput fabrikElementReadOnly tw-flex tw-p-5 tw-rounded-form" style="background-color: <?php echo $d->backgroundColor ?>;border: solid 1px <?php echo $d->borderColor; ?>;<?php if ($d->type == 4): ?>padding: 0;<?php endif; ?>" name="<?php echo $d->name; ?>">
     <span class="material-symbols<?php echo $d->iconType ?>" style="color: <?php echo $d->iconColor ?>"><?php echo $d->icon ?></span>
 
-    <div class="fabrikElementContent tw-w-full" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
+    <div class="fabrikElementContent tw-w-full tw-ml-3" <?php if ($d->type == 4): ?>style="margin-left: 0;"<?php endif; ?>>
 	    <?php if ($d->accordion == 1) : ?>
             <div class="tw-flex tw-items-center tw-justify-between tw-cursor-pointer"
                  href="#<?php echo $d->id; ?>-content" onclick="toggleCollapse(this)" data-te-collapse-init data-toggle="collapse" aria-expanded="false" aria-controls="<?php echo $d->id; ?>-content" id="<?php echo $d->id; ?>-heading">

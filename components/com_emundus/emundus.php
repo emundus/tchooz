@@ -10,6 +10,7 @@
 defined('_JEXEC') or die('ACCESS_DENIED');
 
 use Joomla\CMS\Access\Exception\NotAllowed;
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -161,6 +162,7 @@ Text::script('COM_EMUNDUS_CHOOSE_EXTRACTION_OPTION');
 Text::script('COM_EMUNDUS_CHOOSE_OTHER_OPTION');
 Text::script('COM_EMUNDUS_EXPORTS_GENERATE_ZIP');
 Text::script('COM_EMUNDUS_ACTIONS_CANCEL');
+Text::script('COM_EMUNDUS_ACTIONS_SAVE_ANYWAY');
 Text::script('COM_EMUNDUS_OK');
 Text::script('COM_EMUNDUS_ACTIONS_BACK');
 Text::script('COM_EMUNDUS_USERNAME');
@@ -841,9 +843,28 @@ Text::script('COM_EMUNDUS_SMS_ASSOC_TAG_ON_FAILURE');
 Text::script('COM_EMUNDUS_SMS_NO_ASSOC_TAG');
 Text::script('COM_EMUNDUS_NO_RESULT');
 Text::script('SMS_TEMPLATE_NOT_UPDATED');
+Text::script('COM_EMUNDUS_SMS_MESSAGE_MAX_LENGTH');
+Text::script('COM_EMUNDUS_SMS_MESSAGE_CURRENT_LENGTH');
+Text::script('COM_EMUNDUS_SMS_INVALID_CHARACTERS');
+Text::script('COM_EMUNDUS_SMS_SANITIZED_MESSAGE');
+Text::script('COM_EMUNDUS_SMS_COMPATIBILITY');
+Text::script('COM_EMUNDUS_SMS_ENCODING_ERROR_DESCRIPTION');
+Text::script('COM_EMUNDUS_SMS_COMPATIBILITY_PARTS');
+Text::script('COM_EMUNDUS_SMS_INCOMPATIBLE_ENCODING');
+Text::script('COM_EMUNDUS_SMS_MESSAGE_TOO_LONG');
+Text::script('COM_EMUNDUS_SMS_HELP_SECTION_CONTENT');
+Text::script('COM_EMUNDUS_SMS_HELP_SECTION');
+Text::script('COM_EMUNDUS_SMS_ADVANCED_PARAMETERS');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERS');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_TRIGGER');
+Text::script('COM_EMUNDUS_ONBOARD_SEARCH');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_DELETE');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGER_DELETE');
 
 Text::script('COM_EMUNDUS_ACL_BOOKING');
 Text::script('COM_EMUNDUS_ACL_BOOKING_DESC');
+
+Text::script('COM_USERS_MFA_METHODS_DISABLED');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
@@ -924,7 +945,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == JApplicationHelper::getHash($token)) || $task == 'getfilereferent' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions'))) {
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions'))) {
 	$controller->execute($task);
 }
 elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')

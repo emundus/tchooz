@@ -16,6 +16,9 @@
         jQuery( "#GoToMalware_button" ).click(function() {
             Joomla.submitbutton('GoToMalware');
         });
+		jQuery( "#GoToLogs_button" ).click(function() {
+            Joomla.submitbutton('GoToLogs');
+        });
         jQuery( "#GoToIntegrity_button" ).click(function() {
             Joomla.submitbutton('GoToIntegrity');
         });
