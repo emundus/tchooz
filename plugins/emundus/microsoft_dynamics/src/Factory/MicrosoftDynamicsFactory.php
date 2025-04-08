@@ -26,7 +26,7 @@ class MicrosoftDynamicsFactory
 	{
 	}
 
-	public function getMicrosoftDynamicsConfig($name, $data, $training = null): array
+	public function getMicrosoftDynamicsConfig($name, $data, $training = null, $check_status = true): array
 	{
 		$configurations = [];
 
@@ -52,15 +52,20 @@ class MicrosoftDynamicsFactory
 						{
 							if ($config['event'] == $name && (!empty($config['programs']) && in_array($training, $config['programs'])))
 							{
-								if ($config['event'] == 'onAfterStatusChange' && !empty($data['state']))
+								if($check_status)
 								{
-									if (!empty($config['eventParams']) && !empty($config['eventParams']['state']) && $config['eventParams']['state'] == $data['state'])
+									if ($config['event'] == 'onAfterStatusChange' && !empty($data['state']))
 									{
-										if ((!empty($config['eventParams']['oldstate']) && $config['eventParams']['oldstate'] == $data['oldstate']) || empty($config['eventParams']['oldstate']))
+										if (!empty($config['eventParams']) && !empty($config['eventParams']['state']) && $config['eventParams']['state'] == $data['state'])
 										{
-											$configurations[] = $config;
+											if ((!empty($config['eventParams']['oldstate']) && $config['eventParams']['oldstate'] == $data['oldstate']) || empty($config['eventParams']['oldstate']))
+											{
+												$configurations[] = $config;
+											}
 										}
 									}
+								} else {
+									$configurations[] = $config;
 								}
 							}
 						}
@@ -404,7 +409,7 @@ class MicrosoftDynamicsFactory
 		return $serieCrm;
 	}
 
-	private function getbookingdate(int|string $availability): string
+	private function getbookingdate(int|string $availability): string|null
 	{
 		$bookingDate = '';
 		$query       = $this->database->getQuery(true);
@@ -422,7 +427,7 @@ class MicrosoftDynamicsFactory
 		return $bookingDate;
 	}
 
-	private function getbookinglocation(int|string $event): string
+	private function getbookinglocation(int|string $event): string|null
 	{
 		$location = '';
 		$query    = $this->database->getQuery(true);
