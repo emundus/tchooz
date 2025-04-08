@@ -103,7 +103,7 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 					{
 						$data           = json_decode($config['data'], true);
 						$data['fnum']   = $dataToImport['fnum'];
-						$configurations = $crmFactory->getMicrosoftDynamicsConfig($config['event'], $data, $config['training']);
+						$configurations = $crmFactory->getMicrosoftDynamicsConfig($config['event'], $data, $config['training'], false);
 
 						if (!empty($configurations))
 						{
