@@ -70,7 +70,7 @@ final class Teams extends CMSPlugin implements SubscriberInterface
 		$data = $event->getArguments();
 
 
-		if (!empty($this->api))
+		if (!empty($this->api) && is_object($data['availability']) && !empty($data['availability']->event_id))
 		{
 			$event = $this->checkTeamsEnabled($data['availability']->event_id);
 			if(!empty($event))
