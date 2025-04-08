@@ -23,6 +23,12 @@
                    label="PLG_CRON_ALLOW_ELEMENT"
                    size="30"
                    default="campaign_notification" />
+            <field name="status"
+                   type="text"
+                   description="PLG_CRON_STATUS_DESC"
+                   label="PLG_CRON_STATUS"
+                   size="30"
+                   default="" />
         </fieldset>
 
     </fields>
