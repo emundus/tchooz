@@ -35,7 +35,6 @@
                        description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_DESC"
                        multiple="true"
                        min="1"
-                       max="20"
                        filter="raw"
                        layout="joomla.form.field.subform.repeatable"
                 >
