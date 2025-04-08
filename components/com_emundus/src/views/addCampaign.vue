@@ -392,7 +392,11 @@
 							</select>
 							<span class="material-symbols-outlined tw-ml-2 tw-cursor-pointer" @click="getAllForms">refresh</span>
 						</div>
-						<a href="/forms" target="_blank" class="tw-underline">
+						<a
+							@click="redirectJRoute('index.php?option=com_emundus&view=form')"
+							target="_blank"
+							class="tw-cursor-pointer tw-underline"
+						>
 							{{ translate('COM_EMUNDUS_ONBOARD_ACCESS_TO_FORMS_LIST') }}
 						</a>
 					</div>
