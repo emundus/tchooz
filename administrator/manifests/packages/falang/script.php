@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2023. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2025. Faboba.com All rights reserved.
  */
 
 
@@ -180,7 +180,7 @@ class pkg_falangInstallerScript
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang standard<span>5.15</span></h2>
+	                <h2>Falang standard<span>5.17</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

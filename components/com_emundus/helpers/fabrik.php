@@ -756,6 +756,16 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$params['encrypt_datas'] = '1';
 		}
 
+		if ($plugin == 'average') {
+			$params['average_multiple_element'] = '';
+			$params['average_multiple_weight']  = '1';
+			$params['average_multiple_elements'] = json_encode([
+				'average_multiple_element' => [''],
+				'average_multiple_weight'  => ['1'],
+			]);
+			$params['used_as_total'] = 0;
+		}
+
 		return $params;
 	}
 
@@ -2055,5 +2065,222 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$min_low = $params->get('minimum_lowercase');
 
 		return Text::sprintf('USER_PASSWORD_TIP', $min_length, $min_int, $min_sym, $min_up, $min_low);
+	}
+
+
+	static function getFabrikJoins(int $lid): array
+	{
+		$fabrik_joins = [];
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__fabrik_joins'))
+				->where($db->quoteName('list_id') . ' = ' . $lid);
+			$db->setQuery($query);
+			$fabrik_joins = $db->loadObjectList('table_join');
+		}
+		catch (Exception $e) {
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get fabrik joins : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $fabrik_joins;
+	}
+
+	static function createFabrikJoin($join_from_table, $table_join, $lid = 0, $eid = 0, $table_key = 'fnum', $table_join_key = 'fnum', $join_type = 'left', $group_id = 0, $params = [])
+	{
+		$joined = ['status' => false, 'group_id' => $group_id, 'list_id' => $lid];
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try {
+			if(empty($params)) {
+				$params = [
+					'pk' => '`'.$table_join.'`'.'`id`'
+				];
+			}
+
+			if(empty($group_id) && !empty($lid)) {
+				$query->select('label,form_id')
+					->from($db->quoteName('#__fabrik_lists'))
+					->where($db->quoteName('id') . ' = ' . $db->quote($lid));
+				$db->setQuery($query);
+				$list = $db->loadObject();
+				$datas = [
+					'name' => $list->label . '- ['.$table_join.']',
+					'is_join' => 1
+				];
+				$created_group = EmundusHelperFabrik::addFabrikGroup($datas,[],1,true);
+				if($created_group) {
+					$group_id = $created_group['id'];
+					$joined['group_id'] = $group_id;
+
+					EmundusHelperFabrik::joinFormGroup($list->form_id,[$group_id]);
+				}
+			}
+
+			$data   = array(
+				'list_id'         => $lid,
+				'element_id'      => $eid,
+				'join_from_table' => $join_from_table,
+				'table_join'      => $table_join,
+				'table_key'       => $table_key,
+				'table_join_key'  => $table_join_key,
+				'join_type'       => $join_type,
+				'group_id'        => $group_id,
+				'params'          => json_encode($params)
+			);
+
+			$query->clear()
+				->insert($db->quoteName('#__fabrik_joins'))
+				->columns($db->quoteName(array_keys($data)))
+				->values(implode(',', $db->quote(array_values($data))));
+			$db->setQuery($query);
+
+			$joined['status'] = $db->execute();
+		}
+		catch (Exception $e) {
+			Log::add('component/com_emundus/helpers/fabrik | Cannot check fabrik joins for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $joined;
+	}
+
+	public static function addFabrikGroup($datas,$params = [], $published = 1, $no_label = false, $user = null) {
+		$result = ['status' => false, 'message' => '', 'id' => 0];
+
+		if(empty($datas['name'])){
+			$result['message'] = 'INSERTING FABRIK GROUP : Please indicate a name.';
+			return $result;
+		}
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('id')
+			->from($db->quoteName('#__fabrik_groups'))
+			->where($db->quoteName('name') . ' LIKE ' . $db->quote($datas['name']));
+		$db->setQuery($query);
+		$is_existing = $db->loadResult();
+
+		if(!$is_existing) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+
+			$default_params = EmundusHelperFabrik::prepareGroupParams();
+			$params = array_merge($default_params, $params);
+
+			if($no_label){
+				$datas['label'] = '';
+			} else {
+				if(empty($datas['label'])){
+					$datas['label'] = $datas['name'];
+				}
+			}
+
+			try {
+				$inserting_datas = [
+					'name' => $datas['name'],
+					'css' => !empty($datas['css']) ? $datas['css'] : '',
+					'label' => $datas['label'],
+					'created' => date('Y-m-d H:i:s'),
+					'created_by' => !empty($user) ? $user->id : 62,
+					'created_by_alias' => !empty($user) ? $user->username : 'admin',
+					'modified' => date('Y-m-d H:i:s'),
+					'modified_by' => 0,
+					'checked_out' => 0,
+					'checked_out_time' => date('Y-m-d H:i:s'),
+					'published' => $published,
+					'is_join' => !empty($datas['is_join']) ? $datas['is_join'] : 0,
+					'params' => json_encode($params)
+				];
+
+				$query->clear()
+					->insert($db->quoteName('#__fabrik_groups'))
+					->columns($db->quoteName(array_keys($inserting_datas)))
+					->values(implode(',',$db->quote(array_values($inserting_datas))));
+				$db->setQuery($query);
+				$db->execute();
+
+				$result['id'] = $db->insertid();
+			} catch (Exception $e) {
+				$result['message'] = 'INSERTING FABRIK GROUP : Error : ' . $e->getMessage();
+				return $result;
+			}
+		} else {
+			$result['id'] = $is_existing;
+		}
+
+		$result['status'] = true;
+		return $result;
+	}
+
+	public static function joinFormGroup($form_id,$groups_id) {
+		$result = ['status' => false, 'message' => ''];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try {
+			foreach ($groups_id as $group){
+				$query->clear()
+					->select('id')
+					->from($db->quoteName('#__fabrik_formgroup'))
+					->where($db->quoteName('form_id') . ' = ' . $form_id)
+					->andWhere($db->quoteName('group_id') . ' = ' . $group);
+				$db->setQuery($query);
+				$is_existing = $db->loadResult();
+
+				if(!$is_existing){
+					$query->clear()
+						->insert($db->quoteName('#__fabrik_formgroup'))
+						->set($db->quoteName('form_id') . ' = ' . $db->quote($form_id))
+						->set($db->quoteName('group_id') . ' = ' . $db->quote($group));
+					$db->setQuery($query);
+					$db->execute();
+				}
+			}
+		} catch (Exception $e) {
+			$result['message'] = 'JOIN FABRIK FORM WITH GROUPS : Error : ' . $e->getMessage();
+			return $result;
+		}
+
+		$result['status'] = true;
+		return $result;
+	}
+
+	public static function createPrefilterList($lid,$elt_name,$value,$condition = 'equals',$eval = 0,$grouped = 0,$access = 1)
+	{
+		$created = false;
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('fl.params,fl.db_table_name')
+			->from($db->quoteName('#__fabrik_lists','fl'))
+			->where($db->quoteName('fl.id') . ' = ' . $db->quote($lid));
+		$db->setQuery($query);
+		$list = $db->loadObject();
+
+		if(!empty($list)) {
+			$params = json_decode($list->params,true);
+
+			$params['filter-fields'][] = $list->db_table_name.'.'.$elt_name;
+			$params['filter-conditions'][] = $condition;
+			$params['filter-eval'][] = $eval;
+			$params['filter-value'][] = $value;
+			$params['filter-access'][] = $access;
+			$params['filter-grouped'][] = $grouped;
+
+			$query->clear()
+				->update($db->quoteName('#__fabrik_lists'))
+				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->where($db->quoteName('id') . ' = ' . $db->quote($lid));
+			$db->setQuery($query);
+			$created = $db->execute();
+		}
+
+		return $created;
 	}
 }

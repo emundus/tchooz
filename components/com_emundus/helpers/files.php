@@ -2720,11 +2720,11 @@ class EmundusHelperFiles
 			$config = Factory::getConfig();
 		}
 
-		$menu = @JFactory::getApplication()->getMenu();
+		$menu = $app->getMenu();
 		// If no active menu, use default
 		$active = ($menu->getActive()) ? $menu->getActive() : $menu->getDefault();
 
-		$user = JFactory::getUser();
+		$user = $app->getIdentity();
 		if ($fnum === null)
 		{
 			$actions = $m_users->getUserACL($user->id);

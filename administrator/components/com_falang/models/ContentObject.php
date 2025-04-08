@@ -11,13 +11,14 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Filter\OutputFilter;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Table\Table;
 use Joomla\String\StringHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-
-include_once(dirname(__FILE__) . DS . "FalangContent.php");
+use Falang\Component\Administrator\Table\FalangContentTable;
 
 class ContentObject
 {
@@ -72,6 +73,9 @@ class ContentObject
 	 *
 	 * @param    languageID        ID of the associated language
 	 * @param    elementTable      Reference to the ContentElementTable object
+     *
+     * @update 5.16 remove the use of TableJFLanguage
+     *              use native Joomla Language Helper class
 	 */
 	public function __construct($languageID, & $contentElement, $id = -1)
 	{
@@ -79,17 +83,8 @@ class ContentObject
 
 		if ($id > 0) $this->id = $id;
 		$this->language_id = $languageID;
-		// active languages are cached in FalangManager - use these if possible
-		$jfManager = FalangManager::getInstance();
-		if (isset($jfManager) && $jfManager->activeLanguagesCacheByID && array_key_exists($languageID, $jfManager->activeLanguagesCacheByID))
-		{
-			$lang = $jfManager->activeLanguagesCacheByID[$languageID];
-		}
-		else
-		{
-			$lang = new TableJFLanguage($db);
-			$lang->load($languageID);
-		}
+        $langs =  LanguageHelper::getContentLanguages([],false,'lang_id');
+        $lang = $langs[$languageID];
 		$this->language        = $lang->title;
 		$this->_contentElement = $contentElement;
 	}
@@ -126,6 +121,7 @@ class ContentObject
      *
      * @update 4.0.4 published switcher send on
      * @update 4.8 add $skip_params
+     * @update 5.16 use FalangContentTable
 	 *
 	 * @param    array      The values which should be bound to the object
 	 * @param    string     The field prefix
@@ -162,9 +158,9 @@ class ContentObject
 				$formArray[$prefix . "origText_" . $fieldName . $suffix] = $jinput->post->get($prefix . "origText_" . $fieldName . $suffix, '', 'RAW');
 
 				$translationValue = $formArray[$prefix . "refField_" . $fieldName . $suffix];
-				$fieldContent     = new falangContent($db);
+                $fieldContent = new FalangContentTable($db);
 
-				// code cleaner for xhtml transitional compliance
+                // code cleaner for xhtml transitional compliance
 				if ($field->Type == 'titletext' || $field->Type == 'text')
 				{
 					jimport('joomla.filter.output');
@@ -220,7 +216,7 @@ class ContentObject
                     $paramsid = intval($formArray[$prefix . "id_" . $fieldName . $suffix]);
                     //delete previous param's if exist
                     if (isset($paramsid)){
-                        $fieldContent                  = new falangContent($db);
+                        $fieldContent = new FalangContentTable($db);
                         $fieldContent->delete($paramsid);
                     }
     		        continue;
@@ -244,7 +240,8 @@ class ContentObject
 				$registry->loadArray($translationValue);
 				$translationValue = $registry->toString();
 
-				$fieldContent                  = new falangContent($db);
+                $fieldContent = new FalangContentTable($db);
+
 				//sbou4
 				$fieldContent->id              = intval($formArray[$prefix . "id_" . $fieldName . $suffix]);
 				$fieldContent->reference_id    = (intval($formArray[$prefix . "reference_id" . $suffix]) > 0) ? intval($formArray[$prefix . "reference_id" . $suffix]) : $this->id;
@@ -658,9 +655,10 @@ class ContentObject
 	}
 
 	/**
+     * Reads some of the information from the overview row
      *
      * @from 1.0
-     * Reads some of the information from the overview row
+     * @update 5.16 use FalangContentTable
 	 */
 	function readFromRow($row)
 	{
@@ -683,7 +681,7 @@ class ContentObject
 
 		// Go thru all the fields of the element and try to copy the content values
 		$elementTable = $this->_contentElement->getTable();
-		$fieldContent = new falangContent($db);
+        $fieldContent = Table::getInstance('FalangContent');
 		for ($i = 0; $i < count($elementTable->Fields); $i++)
 		{
 			$field     = $elementTable->Fields[$i];
@@ -710,10 +708,12 @@ class ContentObject
 
 	/** Reads all translation information from the database
 	 *
+     * @update 5.16 use new Factory db system
+     *              use new FalangContentTable
 	 */
 	function _loadContent()
 	{
-		$db  = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$app = Factory::getApplication();
 
 		$elementTable = $this->getTable();
@@ -735,19 +735,17 @@ class ContentObject
 		{
 			$app->enqueueMessage(Text::_($e->getMessage()), 'error');
 		}
-//		if($db->getErrorNum() != 0) {
-//			JError::raiseWarning( 400,Text::_('No valid table information: ') .$db->getErrorMsg());
-//		}
 
 		$translationFields = null;
 		if (count($rows) > 0)
 		{
 			foreach ($rows as $row)
 			{
-				$fieldContent = new falangContent($db);
-				if (!$fieldContent->bind($row))
+                $fieldContent = new FalangContentTable($db);
+
+                if (!$fieldContent->bind($row))
 				{
-					JError::raiseWarning(200, Text::_('Problems binding object to fields: ' . $fieldContent->getError()));
+                    Factory::getApplication()->enqueueMessage(Text::_('Problems binding object to fields: ' . $fieldContent->getError()), 'error');
 				}
 				$translationFields[$fieldContent->reference_field] = $fieldContent;
 			}
@@ -790,7 +788,7 @@ class ContentObject
 				}
 				else
 				{
-					$fieldContent                  = new falangContent($db);
+                    $fieldContent = new FalangContentTable($db);
 					$fieldContent->reference_id    = $this->id;
 					$fieldContent->reference_table = $elementTable->Name;
 					$fieldContent->reference_field = $field->Name;
@@ -939,6 +937,7 @@ class ContentObject
 	}
 
 	/** Checkouts all fields of this content element
+     * 5.16 change error display (remove JError)
 	 */
 	function checkout($who, $oid = null)
 	{
@@ -953,13 +952,14 @@ class ContentObject
 				if (isset($fieldContent->reference_id))
 				{
 					$fieldContent->checkout($who, $oid);
-					JError::raiseWarning(200, Text::_('Problems binding object to fields: ' . $fieldContent->getError()));
+                    Factory::getApplication()->enqueueMessage(Text::_('Problems checkout object to fields: ' . $fieldContent->getError()), 'error');
 				}
 			}
 		}
 	}
 
 	/** Checkouts all fields of this content element
+     * 5.16 change error display (remove JError)
 	 */
 	function checkin($oid = null)
 	{
@@ -974,7 +974,7 @@ class ContentObject
 				if (isset($fieldContent->reference_id))
 				{
 					$fieldContent->checkin($oid);
-					JError::raiseWarning(200, Text::_('Problems binding object to fields: ' . $fieldContent->getError()));
+                    Factory::getApplication()->enqueueMessage(Text::_('Problems binding object to fields: ' . $fieldContent->getError()), 'error');
 				}
 			}
 		}

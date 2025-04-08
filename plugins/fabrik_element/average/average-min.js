@@ -1,0 +1,82 @@
+/**
+ * IP Element
+ *
+ * @copyright: Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
+ * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
+ */
+
+define(['jquery', 'fab/element'], function (jQuery, FbElement) {
+    window.FbAverage = new Class({
+        Extends   : FbElement,
+        weight: 0,
+
+        initialize: function (element, options) {
+            this.setPlugin('FbAverage');
+            this.parent(element, options);
+        },
+
+        attachedToForm: function () {
+            this.options.elements_to_observe.each(function (element) {
+                if (element.weight) {
+                    this.weight += parseInt(element.weight);
+                }
+            }.bind(this));
+
+
+            if (this.options.elements_to_observe && this.options.elements_to_observe.length > 0) {
+                this.options.elements_to_observe.each(function (element) {
+                    this.addObserveEvent(element);
+                }.bind(this));
+            }
+        },
+        addObserveEvent(element_to_observe) {
+            if (element_to_observe === '') {
+                return;
+            }
+
+            if (this.form.formElements[element_to_observe.element]) {
+                this.form.formElements[element_to_observe.element].addNewEventAux(this.form.formElements[element_to_observe.element].getChangeEvent(), function (e) {
+                    this.calc(e, element_to_observe);
+                }.bind(this));
+            }
+        },
+
+        calc(event, element_to_observe) {
+            if (this.weight < 1) {
+                return;
+            }
+
+            // get all elements to observe values
+            let values = [];
+
+            this.options.elements_to_observe.each(function (element) {
+                if (this.form.formElements[element.element]) {
+                    const elementValue = this.form.formElements[element.element].getValue();
+
+                    if (isNaN(elementValue) || elementValue === '') {
+                        values.push(0);
+                    } else {
+                        // push element as much as its weight
+                        for (var i = 0; i < parseInt(element.weight); i++) {
+                            values.push(parseFloat(elementValue));
+                        }
+                    }
+                }
+            }.bind(this));
+
+            // calculate average
+            let sum = 0;
+            values.each(function (value) {
+                sum += parseFloat(value);
+            });
+
+            const average = parseFloat(sum / this.weight);
+
+            // set average value
+            this.update(average);
+            this.element.dispatchEvent(new Event('change'));
+        }
+    });
+
+    return window.FbAverage;
+});

@@ -1,7 +1,7 @@
 <template>
 	<div id="evaluations-container">
-		<div v-if="evaluations.length > 0" class="tw-h-full">
-			<nav class="tw-mt-1">
+		<div v-if="evaluations.length > 0" class="tw-flex tw-h-full tw-flex-col">
+			<nav class="tw-pt-1">
 				<ul class="tw-flex tw-list-none tw-flex-row">
 					<li
 						v-for="evaluation in evaluations"
@@ -20,7 +20,7 @@
 				v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
 				v-show="!loading"
 				:src="selectedEvaluation.url"
-				class="iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-6"
+				class="iframe-evaluation-list tw-w-full tw-grow tw-bg-coordinator-bg tw-p-6"
 				:key="selectedTab"
 				@load="iframeLoaded($event)"
 			>
@@ -107,6 +107,11 @@ export default {
 		},
 		iframeLoaded(event) {
 			this.loading = false;
+			let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
+			if (iframeDoc.querySelector('.emundus-form')) {
+				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
+				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
+			}
 		},
 	},
 	computed: {
@@ -124,5 +129,6 @@ export default {
 	width: 100%;
 	min-height: 80%;
 	border: unset;
+	height: 100%;
 }
 </style>

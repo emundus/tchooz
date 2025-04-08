@@ -763,7 +763,7 @@ class EmundusControllerEmail extends BaseController
 		}
 		else
 		{
-			$tid = $this->input->getInt('tid');
+			$tid = $this->input->getInt('id');
 
 			$status = $this->m_emails->removeTrigger($tid);
 
@@ -909,6 +909,103 @@ class EmundusControllerEmail extends BaseController
 			else
 			{
 				$response['msg'] = Text::_('ERROR_CANNOT_RETRIEVE_EXPERTS');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getemailtriggers()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$campaign_id = $this->input->getInt('campaign_id', 0);
+			$program_id = $this->input->getInt('program_id', 0);
+			$lim = $this->input->getInt('lim', 0);
+			$page = $this->input->getInt('page', 1);
+			$order_by = $this->input->getString('order_by', '');
+			$order_by = $order_by == 'label' ? 'email.subject' : $order_by;
+			$sort = $this->input->getString('sort', 'ASC');
+			$recherche = $this->input->getString('recherche', '');
+
+			$data = [
+				'count' => $this->m_emails->countEmailTriggers($campaign_id, $program_id, $recherche),
+				'datas' => $this->m_emails->getEmailTriggers($campaign_id, $program_id, $recherche, $lim, $page, $order_by, $sort)
+			];
+
+			foreach($data['datas'] as $key => $trigger) {
+				$type_values = [];
+
+				if (!empty($trigger['email_id']) && !empty($trigger['sms_id'])) {
+					$type_values[] = [
+						'key'     => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE'),
+						'value'   => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE_EMAIL_AND_SMS'),
+						'classes' => 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 label',
+					];
+				} else if (!empty($trigger['email_id'])) {
+					$type_values[] = [
+						'key'     => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE'),
+						'value'   => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE_EMAIL'),
+						'classes' => 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 label',
+					];
+				} else if (!empty($trigger['sms_id'])) {
+					$type_values[] = [
+						'key'     => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE'),
+						'value'   => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE_SMS'),
+						'classes' => 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 label',
+					];
+				}
+
+
+				$trigger['additional_columns'] = [
+					[
+						'key'     => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_TYPE'),
+						'values'   => $type_values,
+						'type'    => 'tags',
+						'display' => 'all',
+					],
+					[
+						'key'     => Text::_('COM_EMUNDUS_ONBOARD_TRIGGER_STEP'),
+						'value'   => $trigger['status'],
+						'classes' => '',
+						'display' => 'all',
+						'order_by' => 'est.value'
+					]
+				];
+
+				$data['datas'][$key] = $trigger;
+			}
+
+			$response = array('status' => true, 'msg' => Text::_('TRIGGERS_RETRIEVED'), 'data' => $data);
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function savetrigger() {
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$trigger = $this->input->getRaw('trigger', '');
+			$trigger = json_decode($trigger, true);
+
+			if (!empty($trigger)) {
+				if (empty($trigger['sms_id']) && empty($trigger['email_id'])) {
+					$response['msg'] = Text::_('COM_EMUNDUS_TRIGGER_NO_MESSAGE_SELECTED');
+				} else {
+					$trigger_id = $this->m_emails->saveTrigger($trigger, $this->_user->id);
+
+					if (!empty($trigger_id)) {
+						$response = array('status' => 1, 'msg' => Text::_('TRIGGER_SAVED'), 'id' => $trigger_id);
+					} else {
+						$response['msg'] = Text::_('COM_EMUNDUS_TRIGGER_FAILED_TO_SAVE');
+					}
+				}
+			} else {
+				$response['msg'] = Text::_('COM_EMUNDUS_TRIGGER_MISSING_PARAMS');
 			}
 		}
 

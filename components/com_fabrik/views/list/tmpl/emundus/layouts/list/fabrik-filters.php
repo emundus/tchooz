@@ -60,7 +60,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
 								$c++;
 								$required = $filter->required == 1 ? ' notempty' : ''; ?>
 								<tr data-filter-row="<?php echo $key; ?>"
-										class="fabrik_row oddRow<?php echo ($c % 2) . $required; ?> tw-flex tw-flex-col tw-w-full tw-max-w-[240px]">
+										class="fabrik_row oddRow<?php echo ($c % 2) . $required; ?> tw-flex tw-flex-col tw-min-w-[240px] tw-max-w-fit">
 									<td class="!tw-border-none !tw-border-0"><?php echo $filter->label; ?></td>
 									<td class="tw-w-full !tw-border-none"><?php echo $filter->element; ?></td>
 								</tr>
@@ -85,7 +85,7 @@ $style = $d->toggleFilters ? 'style="display:none"' : ''; ?>
                 <tr class="fabrik___heading">
                     <td class="!tw-border-none">
 						<?php if ($d->showClearFilters) : ?>
-                            <a class="<?php echo $clearFiltersClass; ?> em-flex-row em-error-button em-border-radius" href="#">
+                            <a class="<?php echo $clearFiltersClass; ?> em-flex-row em-error-button em-border-radius tw-text-neutral-0 visited:tw-text-neutral-0 hover:!tw-text-red-500" href="#">
                                 <span class="material-symbols-outlined em-mr-4" style="font-size: 18px">filter_alt_off</span>
 								<?php echo Text::_('COM_FABRIK_CLEAR'); ?>
                             </a>

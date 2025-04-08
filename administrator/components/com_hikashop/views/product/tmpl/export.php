@@ -160,7 +160,12 @@ if(!empty($this->products)) {
 				else
 					$price_value = number_format($floatValue, 5, '.', '');
 				$values[] = $price_value;
-				$codes[] = $this->currencies[$price->price_currency_id]->currency_code;
+				if(isset($this->currencies[$price->price_currency_id])) {
+					$codes[] = $this->currencies[$price->price_currency_id]->currency_code;
+				} else {
+					hikashop_writeToLog('currency with id '.$price->price_currency_id.' not found for price with id '.$price->price_id. ' for product with id '.$product->product_id, 'export');
+					$codes[] = '';
+				}
 				$qtys[] = $price->price_min_quantity;
 				$accesses[] = $price->price_access;
 				$users[] = $price->price_users;

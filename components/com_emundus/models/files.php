@@ -5098,6 +5098,24 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 
+		try {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/sms.php');
+			$m_sms = new EmundusModelSMS();
+			if ($m_sms->activated) {
+				$fnums = array_map(function($student) {
+					return $student->fnum;
+				}, $students);
+				$stored = $m_sms->triggerSMS($fnums, $state, $codes, false, $user_id);
+
+				if (!$stored) {
+					$msg .= '<div class="alert alert-dismissable alert-danger">'.Text::_('COM_EMUNDUS_SMS_FAILED').'</div>';
+				}
+			}
+		} catch (Exception $e) {
+			Log::add('Error trying to send SMS after update state: ' . $e->getMessage(), Log::ERROR, 'com_emundus.email');
+		}
+
+
 		return $msg;
 	}
 

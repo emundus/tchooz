@@ -226,6 +226,7 @@ class plgSystemFalangquickjump extends CMSPlugin
 
     /*
      * @update 5.9 add id to result / use to select the falang flag to update
+     * @update 5.16 add the FalangContentTable require once need by ContentObject
      * */
     public function gridIdHook() {
         $row = func_get_arg(0);
@@ -247,6 +248,7 @@ class plgSystemFalangquickjump extends CMSPlugin
             //get Falang Object info
             $contentElement = $falangManager->getContentElement($component[1]);
             JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
+            require_once(FALANG_ADMINPATH.'/src/Table/FalangContentTable.php');
             $actContentObject = new ContentObject( $language->lang_id, $contentElement );
             $loaded = $actContentObject->loadFromContentID( $id );
 
@@ -291,6 +293,8 @@ class plgSystemFalangquickjump extends CMSPlugin
     /**
      * Adds the translation toolbar button to the toolbar based on the
      * given parameters.
+     *
+     * @update 5.16 add the FalangContentTable require once need by ContentObject
      *
      */
     public function addToolbar() {
@@ -356,6 +360,7 @@ class plgSystemFalangquickjump extends CMSPlugin
         foreach ($languages as $language) {
             //get Falang Object info
             $contentElement = $falangManager->getContentElement($mapping[1]);
+            require_once(FALANG_ADMINPATH.'/src/Table/FalangContentTable.php');
             JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
             $actContentObject = new ContentObject( $language->lang_id, $contentElement );
             $loaded = $actContentObject->loadFromContentID( $id );

@@ -128,7 +128,7 @@ function search() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: 'index.php?option=com_emundus&controller='+controller+'&task=setfilters',
+            url: '/index.php?option=com_emundus&controller='+controller+'&task=setfilters',
             data: ({
                 val: JSON.stringify(($.extend({}, inputs))),
                 multi: false,
@@ -157,7 +157,7 @@ function reloadData(view,fnums = null) {
 
     $.ajax({
         type: 'GET',
-        url: 'index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
+        url: '/index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
         async: false,
         dataType: 'html',
         success: (data) => {
@@ -225,7 +225,7 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
     $.ajax({
         type: 'GET',
         async: async,
-        url: 'index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
+        url: '/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
         dataType: 'html',
         success: function(data) {
             let navbar = $('.navbar.navbar-inverse');
@@ -245,7 +245,7 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
 function addElement() {
     $.ajax({
         type: 'GET',
-        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getadvfilters&Itemid=' + itemId,
+        url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=getadvfilters&Itemid=' + itemId,
         dataType: 'json',
         success: function(result) {
             if (result.status) {
@@ -328,7 +328,7 @@ function usingModuleFilters()
 
     if (itemId > 0) {
         if (moduleFilters === null) {
-            fetch('index.php?option=com_emundus&controller=files&task=checkmenufilterparams&Itemid=' + itemId, {
+            fetch('/index.php?option=com_emundus&controller=files&task=checkmenufilterparams&Itemid=' + itemId, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json'
@@ -368,7 +368,7 @@ function refreshFilter(view) {
         view = (typeof view === 'undefined') ? 'files' : view;
         $.ajax({
             type: 'GET',
-            url: 'index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
+            url: '/index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
             dataType: 'html',
             success: function(data) {
                 let panelBody = $('#em-files-filters .panel-body');
@@ -390,7 +390,7 @@ function tableOrder(order) {
     addLoader();
     $.ajax({
         type: 'POST',
-        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=order',
+        url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=order',
         dataType: 'json',
         data: {
             filter_order: order
@@ -413,7 +413,7 @@ function doesSomeoneElseEditFile(fnum) {
         return new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
 
-            xhr.open('GET', 'index.php?option=com_emundus&controller=files&task=checkIfSomeoneElseIsEditing&format=json&fnum=' + fnum, true);
+            xhr.open('GET', '/index.php?option=com_emundus&controller=files&task=checkIfSomeoneElseIsEditing&format=json&fnum=' + fnum, true);
 
             xhr.onload = function() {
                 if (this.status === 200) {
@@ -496,7 +496,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
         $.ajax({
             type: 'get',
-            url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
             dataType: 'html',
             success: function (result) {
                 if (result) {
@@ -515,7 +515,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
     $.ajax({
         type: 'get',
-        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=collaborate',
+        url: '/index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=collaborate',
         dataType: 'html',
         success: function (result) {
             if (result) {
@@ -539,7 +539,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
     $.ajax({
         type: 'get',
-        url: 'index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=synthesis&action=0',
+        url: '/index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=synthesis&action=0',
         dataType: 'html',
         success: function(result) {
             $('#em-last-open .list-group .active').removeClass('active');
@@ -570,7 +570,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
             $.ajax({
                 type:'get',
-                url:'index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
+                url: '/index.php?option=com_emundus&controller=application&task=getapplicationmenu&fnum='+fnum.fnum,
                 dataType:'json',
                 success: function(result) {
 
@@ -613,9 +613,9 @@ function openFiles(fnum, page = 0, vue = false) {
                                 url += '&Itemid='+itemId;
 
                                 if(typeof menus[m].notifications != 'undefined'){
-                                    menuList += '<a href="'+url+'" class="list-group-item list-item-notifications tw-flex tw-items-center" title="'+menus[m].title+'" id="'+menus[m].id+'">';
+                                    menuList += '<a href="/'+url+'" class="list-group-item list-item-notifications tw-flex tw-items-center" title="'+menus[m].title+'" id="'+menus[m].id+'">';
                                 } else {
-                                    menuList += '<a href="' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
+                                    menuList += '<a href="/' + url + '" class="list-group-item" title="' + menus[m].title + '" id="' + menus[m].id + '">';
                                 }
 
                                 if (menus[m].hasSons) {
@@ -641,7 +641,7 @@ function openFiles(fnum, page = 0, vue = false) {
 
                         $.ajax({
                             type:'get',
-                            url:firstMenu,
+                            url:'/'+firstMenu,
                             dataType:'html',
                             data:({fnum:fnum.fnum}),
                             success: function(result) {
@@ -823,7 +823,7 @@ function getAllLetters() {
     return new Promise(function(resolve, reject) {
         const xhr = new XMLHttpRequest();
 
-        xhr.open('POST', 'index.php?option=com_emundus&controller=files&task=getAllLetters');
+        xhr.open('POST', '/index.php?option=com_emundus&controller=files&task=getAllLetters');
 
         xhr.onload = function() {
             if (xhr.status === 200) {
@@ -987,7 +987,7 @@ function runAction(action, url = '', option = '') {
             url = 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=addcomment';
             $.ajax({
                 type:'POST',
-                url:url,
+                url: '/'+url,
                 dataType:'json',
                 data:({id:id, fnums:checkInput, title: title, comment:comment}),
                 success: function(result) {
@@ -1105,7 +1105,7 @@ function runAction(action, url = '', option = '') {
 
             $.ajax({
                 type:'POST',
-                url:url,
+                url: '/'+url,
                 dataType:'json',
                 data:({
                     fnums: checkInput,
@@ -1154,7 +1154,7 @@ function runAction(action, url = '', option = '') {
             url = 'index.php?option=com_emundus&controller=files&task=getExistEmailTrigger';
             $.ajax({
                 type:'POST',
-                url:url,
+                url: '/'+url,
                 dataType:'json',
                 data:({
                     fnums: checkInput,
@@ -1256,7 +1256,7 @@ function runAction(action, url = '', option = '') {
 
             $.ajax({
                 type:'POST',
-                url:url,
+                url: '/'+url,
                 dataType:'json',
                 data:({fnums:checkInput, tag: tag}),
                 success: function(result) {
@@ -1335,7 +1335,7 @@ function runAction(action, url = '', option = '') {
             url = 'index.php?option=com_emundus&controller='+ viewValue + '&task=updatepublish';
             $.ajax({
                 type:'POST',
-                url:url,
+                url: '/'+url,
                 dataType:'json',
                 data:({fnums:checkInput, publish: publish}),
                 success: function(result) {
@@ -1414,7 +1414,7 @@ function runAction(action, url = '', option = '') {
             url = 'index.php?option=com_emundus&controller=files&task=exportfile';
             $.ajax({
                 type:'POST',
-                url:url,
+                url: '/'+url,
                 dataType:'json',
                 data:({fnums:checkInput, type: type}),
                 success: function(result) {
@@ -1431,7 +1431,7 @@ function runAction(action, url = '', option = '') {
                             url = 'index.php?option=com_emundus&controller='+ view +'&task=updatestate';
                             $.ajax({
                                 type:'POST',
-                                url:url,
+                                url: '/'+url,
                                 dataType:'json',
                                 data:({fnums:checkInput, state: state}),
                                 success: function(result) {
@@ -1469,7 +1469,7 @@ function runAction(action, url = '', option = '') {
                             url = 'index.php?option=com_emundus&controller=files&task=tagfile';
                             $.ajax({
                                 type:'POST',
-                                url:url,
+                                url: '/'+url,
                                 dataType:'json',
                                 data:({fnums:checkInput, tag: tag}),
                                 success: function(result) {
@@ -1572,7 +1572,7 @@ async function countFilesBeforeAction(fnums, action, verb) {
         }
 
         // add catch to handle errors
-        return fetch('index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
+        return fetch('/index.php?option=com_emundus&controller=files&task=countfilesbeforeaction',
             {
                 body: form,
                 method: 'POST'
@@ -1597,7 +1597,7 @@ function updateState(fnums, state)
 
     $.ajax({
         type:'POST',
-        url: 'index.php?option=com_emundus&controller=' + view + '&task=updatestate&Itemid=' + itemId,
+        url: '/index.php?option=com_emundus&controller=' + view + '&task=updatestate&Itemid=' + itemId,
         dataType:'json',
         data:({
             fnums: fnums,
@@ -1694,7 +1694,7 @@ async function setProfiles(json) {
     if (elements[0] !== "") {
         $.ajax({
             type: 'post',
-            url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+            url: '/index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
             dataType: 'JSON',
             data: {elts: elements.toString()},
             async: false,
@@ -1850,7 +1850,7 @@ $(document).ready(function() {
                 // get formid by fnum
                 $.ajax({
                     type:'post',
-                    url:'index.php?option=com_emundus&controller=files&task=getformid&Itemid='+itemId,
+                    url: '/index.php?option=com_emundus&controller=files&task=getformid&Itemid='+itemId,
                     data: {
                         fnum: fnum
                     },
@@ -1869,7 +1869,7 @@ $(document).ready(function() {
                 // get formid by fnum
                 $.ajax({
                     type:'post',
-                    url:'index.php?option=com_emundus&controller=files&task=getdecisionformid&Itemid='+itemId,
+                    url: '/index.php?option=com_emundus&controller=files&task=getdecisionformid&Itemid='+itemId,
                     data: {
                         fnum: fnum
                     },
@@ -2061,7 +2061,7 @@ $(document).ready(function() {
 
                             $.ajax({
                                 type:'post',
-                                url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                                url: '/index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
                                 data: {checkInput : checkInput},
                                 dataType:'json',
 
@@ -2084,7 +2084,7 @@ $(document).ready(function() {
                                 if (code != 0) {
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                        url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                         dataType:'json',
                                         success: function(result) {
                                             if (result.status) {
@@ -2143,7 +2143,7 @@ $(document).ready(function() {
                                 if (code != 0 && camp != 0) {
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                        url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                         dataType:'json',
 
                                         success: function(result) {
@@ -2260,13 +2260,13 @@ $(document).ready(function() {
                                     //$('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                        url: '/index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
                                         dataType:'json',
                                         success: function(result) {
                                             if (result.status) {
                                                 $.ajax({
                                                     type: 'post',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilterById',
+                                                    url: '/index.php?option=com_emundus&controller=files&task=getExportExcelFilterById',
                                                     dataType: 'JSON',
                                                     data: { id : id},
                                                     success: function(excelFilter) {
@@ -2288,7 +2288,7 @@ $(document).ready(function() {
 
                                                                 $.ajax({
                                                                     type: 'post',
-                                                                    url: 'index.php?option=com_emundus&controller=files&task=getselectedelements',
+                                                                    url: '/index.php?option=com_emundus&controller=files&task=getselectedelements',
                                                                     dataType: 'JSON',
                                                                     data: {elts: baseElements.split(',')},
                                                                     success: function (selectedElements) {
@@ -2363,7 +2363,7 @@ $(document).ready(function() {
 
                                                                 $.ajax({
                                                                     type:'get',
-                                                                    url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                                                    url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                                                     dataType:'json',
                                                                     success: function(result) {
                                                                         if (result.status) {
@@ -2434,7 +2434,7 @@ $(document).ready(function() {
                             // get export excel saved filter
                             $.ajax({
                                 type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
+                                url: '/index.php?option=com_emundus&controller=files&task=getExportExcelFilter',
                                 dataType:'json',
                                 success: function (result) {
                                     if (result.status) {
@@ -2588,7 +2588,7 @@ $(document).ready(function() {
 
                     $.ajax({
                         type:'post',
-                        url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                        url: '/index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
                         data: {checkInput : checkInput},
                         dataType:'json',
 
@@ -2611,7 +2611,7 @@ $(document).ready(function() {
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                        url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                         dataType:'json',
                                         async: false,
                                         success: function(result) {
@@ -2642,7 +2642,7 @@ $(document).ready(function() {
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                        url: '/index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
                                         data: {checkInput : checkInput},
                                         async: false,
                                         dataType:'json',
@@ -2657,7 +2657,7 @@ $(document).ready(function() {
 
                                                 $.ajax({
                                                     type:'get',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                                    url: '/index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                                     async: false,
                                                     dataType:'json',
 
@@ -2669,7 +2669,7 @@ $(document).ready(function() {
 
                                                             $.ajax({
                                                                 type:'get',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                                url: '/index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
                                                                 dataType:'json',
                                                                 success: function(result) {
 
@@ -2710,7 +2710,7 @@ $(document).ready(function() {
                         if (code != 0) {
                             $.ajax({
                                 type:'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                 dataType:'json',
 
                                 success: function(result) {
@@ -2727,7 +2727,7 @@ $(document).ready(function() {
 
                                         $.ajax({
                                             type:'get',
-                                            url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                            url: '/index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
                                             data: {checkInput : checkInput},
                                             dataType:'json',
 
@@ -2743,7 +2743,7 @@ $(document).ready(function() {
 
                                                     $.ajax({
                                                         type:'get',
-                                                        url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                                        url: '/index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                                         dataType:'json',
                                                         success: function(result) {
                                                             if (result.status) {
@@ -2757,7 +2757,7 @@ $(document).ready(function() {
 
                                                                 $.ajax({
                                                                     type:'get',
-                                                                    url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                                    url: '/index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
                                                                     dataType:'json',
                                                                     success: function(result) {
                                                                         if (result.status) {
@@ -2806,7 +2806,7 @@ $(document).ready(function() {
 
                         $.ajax({
                             type:'get',
-                            url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                            url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                             dataType:'json',
                             success: function(result) {
                                 if (result.status) {
@@ -2832,7 +2832,7 @@ $(document).ready(function() {
                                         if (camp != 0) {
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
+                                                url: '/index.php?option=com_emundus&controller=files&task=getformslist&code=' + code +'&camp=' + camp,
                                                 dataType:'json',
                                                 async: false,
                                                 success: function(result) {
@@ -2846,7 +2846,7 @@ $(document).ready(function() {
 
                                                         $.ajax({
                                                             type:'get',
-                                                            url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                            url: '/index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
                                                             dataType:'json',
                                                             success: function(result) {
                                                                 if (result.status) {
@@ -3046,7 +3046,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type:'post',
-                    url: 'index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
+                    url: '/index.php?option=com_emundus&controller=files&task=getPDFProgrammes',
                     data: {checkInput : checkInput},
                     dataType:'json',
                     success: function(result) {
@@ -3056,7 +3056,7 @@ $(document).ready(function() {
                             /// get all pdf models by user_id
                             $.ajax({
                                 type: 'get',
-                                url: 'index.php?option=com_emundus&controller=files&task=getAllExportPdfFilter',
+                                url: '/index.php?option=com_emundus&controller=files&task=getAllExportPdfFilter',
                                 dataType: 'json',
                                 success: function(result) {
                                     if(result.status) {
@@ -3153,7 +3153,7 @@ $(document).ready(function() {
                                                         if (elements[0] !== "") {
                                                             $.ajax({
                                                                 type: 'post',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
+                                                                url: '/index.php?option=com_emundus&controller=files&task=getfabrikdatabyelements',
                                                                 dataType: 'JSON',
                                                                 data: {elts: elements.toString()},
                                                                 async: false,
@@ -3263,7 +3263,7 @@ $(document).ready(function() {
 
                                     $.ajax({
                                         type:'get',
-                                        url: 'index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
+                                        url: '/index.php?option=com_emundus&controller=files&task=getPDFCampaigns&code=' + code,
                                         data: {checkInput : checkInput},
                                         dataType:'json',
                                         success: function(result) {
@@ -3318,7 +3318,7 @@ $(document).ready(function() {
                                     // step 1 --> grab all profiles by campaigns
                                     $.ajax({
                                         type: 'get',
-                                        url: 'index.php?option=com_emundus&controller=export&task=getprofiles',
+                                        url: '/index.php?option=com_emundus&controller=export&task=getprofiles',
                                         dataType: 'json',
                                         data: {
                                             camp: camp,
@@ -3341,7 +3341,7 @@ $(document).ready(function() {
                                                 var labels = profile_labels[index];
                                                 $.ajax({
                                                     type: 'get',
-                                                    url: 'index.php?option=com_emundus&controller=files&task=getformelem',
+                                                    url: '/index.php?option=com_emundus&controller=files&task=getformelem',
                                                     data: {
                                                         camp: camp,
                                                         code: code,
@@ -3352,7 +3352,7 @@ $(document).ready(function() {
                                                     success: function (data) {
                                                         $.ajax({
                                                             type: 'get',
-                                                            url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code + '&profile=' + menu,
+                                                            url: '/index.php?option=com_emundus&view=export_select_columns&format=raw&camp=' + camp + '&code=' + code + '&profile=' + menu,
                                                             async: false,
                                                             success: function (answer) {
                                                                 /// using Virtual DOM to render DOM --> append #formelement and #felts
@@ -3376,7 +3376,7 @@ $(document).ready(function() {
 
                                             $.ajax({
                                                 type:'get',
-                                                url: 'index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
+                                                url: '/index.php?option=com_emundus&controller=files&task=checkforms&code='+code,
                                                 dataType:'json',
                                                 async: false,
                                                 success: function(result) {
@@ -3403,7 +3403,7 @@ $(document).ready(function() {
                                                         if (camp != 0) {
                                                             $.ajax({
                                                                 type:'post',
-                                                                url: 'index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
+                                                                url: '/index.php?option=com_emundus&controller=files&task=getdoctype&code=' + code +'&camp=' + camp,
                                                                 dataType:'json',
                                                                 async: false,
                                                                 data: {
@@ -3616,7 +3616,7 @@ $(document).ready(function() {
                                 if (filName != null && camp != 0 & code != 0) {
                                     $.ajax({
                                         type: 'post',
-                                        url: 'index.php?option=com_emundus&controller=files&task=savePdfFilter&Itemid=' + itemId,
+                                        url: '/index.php?option=com_emundus&controller=files&task=savePdfFilter&Itemid=' + itemId,
                                         dataType: 'JSON',
                                         data: ({
                                             params: params,
@@ -3661,7 +3661,7 @@ $(document).ready(function() {
                                 var filter = $('#filt_save_pdf').val();
                                 $.ajax({
                                     type: 'post',
-                                    url: 'index.php?option=com_emundus&controller=files&task=deletePdfFilter',
+                                    url: '/index.php?option=com_emundus&controller=files&task=deletePdfFilter',
                                     dataType: 'JSON',
                                     data: { fid : filter },
                                     success: function(result) {
@@ -3730,7 +3730,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type:'get',
-                    url: 'index.php?option=com_emundus&controller=files&task=getstate',
+                    url: '/index.php?option=com_emundus&controller=files&task=getstate',
                     dataType:'json',
                     success: function(result) {
 
@@ -3757,7 +3757,7 @@ $(document).ready(function() {
 
                         $.ajax({
                             type:'get',
-                            url:'index.php?option=com_emundus&controller=files&task=gettags',
+                            url: '/index.php?option=com_emundus&controller=files&task=gettags',
                             dataType:'json',
                             success: function(result) {
 
@@ -3870,7 +3870,7 @@ $(document).ready(function() {
 
                 await $.ajax({
                     type:'POST',
-                    url:'index.php?option=com_emundus&view=files&format=raw&layout=access',
+                    url: '/index.php?option=com_emundus&view=files&format=raw&layout=access',
                     data: {
                         fnums: fnums
                     },
@@ -3939,7 +3939,7 @@ $(document).ready(function() {
 
                 await $.ajax({
                     type:'get',
-                    url:url,
+                    url: url,
                     dataType:'json',
                     success: function(result) {
                         tags = result;
@@ -4042,7 +4042,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type:'get',
-                    url:url,
+                    url: url,
                     dataType:'html',
                     success: function(result) {
                         $('#data').append(result);
@@ -4062,7 +4062,7 @@ $(document).ready(function() {
 
                 await $.ajax({
                     type:'get',
-                    url:url,
+                    url: url,
                     dataType:'json',
                     success: function(result) {
                         title = 'COM_EMUNDUS_PUBLISH_UPDATE';
@@ -4110,14 +4110,14 @@ $(document).ready(function() {
 
                 $.ajax({
                     type: 'post',
-                    url: 'index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
+                    url: '/index.php?option=com_emundus&controller=files&task=create_file_pdf&format=raw',
                     dataType: 'JSON',
                     success: function (response) {
                         var file = response.file;
                         var model = $('[id^=l_35]').attr('href').split('model=')[1];
                         $.ajax({
                             type: 'post',
-                            url: 'index.php?option=com_emundus&task=export_fiche_synthese',
+                            url: '/index.php?option=com_emundus&task=export_fiche_synthese',
                             dataType: 'JSON',
                             data: {checkInput: checkInput, file: file, model: model},
                             success: function (data) {
@@ -4314,7 +4314,7 @@ $(document).ready(function() {
                         if (filName != null) {
                             $.ajax({
                                 type: 'POST',
-                                url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=savefilters&Itemid=' + itemId,
+                                url: '/index.php?option=com_emundus&controller=' + $('#view').val() + '&task=savefilters&Itemid=' + itemId,
                                 dataType: 'json',
                                 data: ({
                                     name: filName
@@ -4363,7 +4363,7 @@ $(document).ready(function() {
             if(id) {
                 $.ajax({
                     type: 'POST',
-                    url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
+                    url: '/index.php?option=com_emundus&controller=' + $('#view').val() + '&task=setlimitstart',
                     dataType: 'json',
                     data: ({
                         limitstart: id
@@ -4393,7 +4393,7 @@ $(document).ready(function() {
 
             $.ajax({
                 type:'get',
-                url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
+                url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
                 dataType:"json",
                 data:({
                     fnum:fnum.fnum
@@ -4429,7 +4429,7 @@ $(document).ready(function() {
                     if (id != 0) {
                         $.ajax({
                             type: 'POST',
-                            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=deletefilters&Itemid=' + itemId,
+                            url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=deletefilters&Itemid=' + itemId,
                             dataType: 'json',
                             data: ({
                                 id: id
@@ -4524,7 +4524,7 @@ $(document).ready(function() {
 
                     $.ajax({
                         type: 'get',
-                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        url: '/index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
                         dataType: "json",
                         data: ({
                             fnum: fnum.fnum
@@ -4585,7 +4585,7 @@ $(document).ready(function() {
 
                     $.ajax({
                         type: 'get',
-                        url: 'index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
+                        url: '/index.php?option=com_emundus&controller=' + $('#view').val() + '&task=getfnuminfos',
                         dataType: "json",
                         data: ({
                             fnum: fnum.fnum
@@ -4620,7 +4620,7 @@ $(document).ready(function() {
 
                     $.ajax({
                         type:'get',
-                        url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
+                        url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
                         dataType:"json",
                         data:({
                             fnum:fnum.fnum
@@ -4648,7 +4648,7 @@ $(document).ready(function() {
                         fnum = fnum.substr(1, fnum.length);
                         $.ajax({
                             type:'POST',
-                            url:'index.php?option=com_emundus&controller=files&task=deletefile',
+                            url: '/index.php?option=com_emundus&controller=files&task=deletefile',
                             dataType:'json',
                             data:{
                                 fnum: fnum
@@ -4699,7 +4699,7 @@ $(document).ready(function() {
 
             $.ajax({
                 type:'get',
-                url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
+                url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=getfnuminfos',
                 dataType:"json",
                 data:({
                     fnum:fnum.fnum
@@ -4785,7 +4785,7 @@ $(document).ready(function() {
         $.ajax({
             type: 'POST',
             dataType: 'json',
-            url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
+            url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=setfilters',
             data: ({
                 id: $('#' + id).attr('name'),
                 val: val,
@@ -4796,7 +4796,7 @@ $(document).ready(function() {
                     $.ajax({
                         type: 'POST',
                         dataType: 'json',
-                        url: 'index.php?option=com_emundus&controller='+$('#view').val()+'&task=loadfilters',
+                        url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=loadfilters',
                         data: {
                             id: val
                         },
@@ -4827,7 +4827,7 @@ $(document).ready(function() {
         $('#' + fId).remove();
         $.ajax({
             type: 'POST',
-            url: 'index.php?option=com_emundus&controller=files&task=deladvfilter',
+            url: '/index.php?option=com_emundus&controller=files&task=deladvfilter',
             dataType: 'json',
             data: ({
                 elem: sonName,
@@ -5004,14 +5004,14 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'post',
-            url: 'index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
+            url: '/index.php?option=com_emundus&controller=messages&task=getrecapbyfnum',
             dataType: 'JSON',
             data: { fnum : fnum.toString() },
             success: function(result) {
 
                 $.ajax({
                     type: 'post',
-                    url: 'index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
+                    url: '/index.php?option=com_emundus&controller=messages&task=getmessagerecapbyfnum',
                     dataType: 'JSON',
                     data: { fnum : fnum },
                     success: function(data) {
@@ -5138,7 +5138,7 @@ $(document).ready(function() {
 
                             $.ajax({
                                 type: 'POST',
-                                url: 'index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
+                                url: '/index.php?option=com_emundus&controller=messages&task=sendemailtocandidat',
                                 async: false,
                                 dataType: 'JSON',
                                 data: { fnum: fnum, raw: raw, tmpl: email_recap.id},
@@ -5146,7 +5146,7 @@ $(document).ready(function() {
                                     var dest = '<p>' + Joomla.Text._('COM_EMUNDUS_MAILS_SEND_TO') + '</p><ul class="list-group" id="em-mails-sent" style="overflow-y: unset"><i>' + result.email + '</i></ul>';
                                     $.ajax({
                                         type: 'POST',
-                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        url: '/index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
                                         async: false,
                                         dataType: 'JSON',
                                         data: { fnum: fnum , tmpl: email_recap.id },
@@ -5191,7 +5191,7 @@ $(document).ready(function() {
                                 }, error: function(jqXHR, textStatus) {
                                     $.ajax({
                                         type: 'POST',
-                                        url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
+                                        url: '/index.php?option=com_emundus&controller=messages&task=addtagsbyfnum',
                                         async: false,
                                         dataType: 'JSON',
                                         data: { fnum: fnum , tmpl: email_recap.id },
@@ -5312,7 +5312,7 @@ $(document).ready(function() {
         if (filName != null) {
             $.ajax({
                 type: 'post',
-                url: 'index.php?option=com_emundus&controller=files&task=saveExcelFilter&Itemid=' + itemId,
+                url: '/index.php?option=com_emundus&controller=files&task=saveExcelFilter&Itemid=' + itemId,
                 dataType: 'JSON',
                 data: ({
                     params: params,
@@ -5383,7 +5383,7 @@ $(document).ready(function() {
 
                 $.ajax({
                     type: 'POST',
-                    url: 'index.php?option=com_emundus&controller=files&task=deletefilters&Itemid=' + itemId,
+                    url: '/index.php?option=com_emundus&controller=files&task=deletefilters&Itemid=' + itemId,
                     dataType: 'json',
                     data: ({
                         id: id
@@ -5478,7 +5478,7 @@ $(document).ready(function() {
         var id = $(this).attr('id').split('-');
         $.ajax({
             type:'post',
-            url:'index.php?option=com_emundus&controller='+$('#view').val()+'&task=unlinkevaluators',
+            url: '/index.php?option=com_emundus&controller='+$('#view').val()+'&task=unlinkevaluators',
             dataType:'json',
             data:({fnum:id[0], id:id[1], group: gr}),
             success: function(result) {
@@ -5775,7 +5775,7 @@ function updateProfileForm(profile){
     /* call to ajax */
     $.ajax({
         type: 'post',
-        url: 'index.php?option=com_emundus&controller=application&task=getform',
+        url: '/index.php?option=com_emundus&controller=application&task=getform',
         dataType: 'json',
         data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
         success: function(result) {
@@ -5822,7 +5822,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
 
                 $.ajax({
                     type: 'POST',
-                    url: 'index.php?option=com_emundus&view=message&format=raw&source_view=' + sourceView,
+                    url: '/index.php?option=com_emundus&view=message&format=raw&source_view=' + sourceView,
                     data: {
                         fnums: fnums,
                         body: body,
@@ -5910,7 +5910,7 @@ async function sendMailQueue(fnums, nbFiles = 0) {
 
                 $.ajax({
                     type: 'POST',
-                    url: 'index.php?option=com_emundus&controller=messages&task=previewemail',
+                    url: '/index.php?option=com_emundus&controller=messages&task=previewemail',
                     data: data,
                     success: function(result) {
                         result = JSON.parse(result);
@@ -6063,7 +6063,7 @@ function sendMail(data)
 
                 $.ajax({
                     type: 'post',
-                    url: 'index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
+                    url: '/index.php?option=com_emundus&controller=messages&task=addtagsbyfnums',
                     dataType: 'json',
 
                     data: { data: data },
@@ -6149,7 +6149,7 @@ function createScrollbarForElement(element, id) {
 
 async function getExportPDFModel(model) {
     if (model) {
-        return fetch('index.php?option=com_emundus&controller=files&task=getExportPdfFilterById&id=' + model)
+        return fetch('/index.php?option=com_emundus&controller=files&task=getExportPdfFilterById&id=' + model)
             .then((response) => {
                 if (response.ok) {
                     return response.json();
@@ -6192,11 +6192,11 @@ async function getApplicantForms(code, camp, grId, menu, itemId)
 {
     $.ajax({
         type: 'get',
-        url: 'index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&camp='+camp+'&code=' + code,
+        url: '/index.php?option=com_emundus&view=export_select_columns&format=raw&viewcall=files&camp='+camp+'&code=' + code,
         success: function (data) {
             $.ajax({
                 type:'get',
-                url: 'index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
+                url: '/index.php?option=com_emundus&controller=files&task=getformelem&code='+code+'&camp='+camp+'&Itemid='+itemId,
                 dataType:'json',
                 success: function(result) {
                     var item='<option value="0" selected>'+Joomla.Text._('PLEASE_SELECT')+'</option>';

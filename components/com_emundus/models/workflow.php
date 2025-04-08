@@ -166,7 +166,7 @@ class EmundusModelWorkflow extends JModelList
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'ordering'];
+							$fields = ['label', 'type', 'state', 'multiple', 'ordering', 'lock'];
 
 							$fields_set = [];
 							foreach($fields as $field) {

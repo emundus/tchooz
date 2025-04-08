@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="plugin" version="1.0" method="upgrade" group="hikashopshipping">
 	<name>Hikashop FedEx 2 Shipping Plugin</name>
-	<creationDate>20 mars 2025</creationDate>
+	<creationDate>06 avril 2025</creationDate>
 	<version>5.1.5</version>
 	<author>Hikashop</author>
 	<authorEmail>dev@hikashop.com</authorEmail>

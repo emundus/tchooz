@@ -1,4 +1,4 @@
-import { C as FetchClient, _ as _export_sfc, D as fileService, c as createElementBlock, o as openBlock, d as createBaseVNode, w as withDirectives, b as createCommentVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, v as vShow, T as Tabs, r as resolveComponent, g as createVNode, E as errors, M as Modal, G as Attachments, H as Comments, a as createBlock, f as withCtx, j as normalizeStyle, I as axios } from "./app_emundus.js";
+import { J as FetchClient, _ as _export_sfc, E as fileService, o as openBlock, c as createElementBlock, d as createBaseVNode, F as Fragment, e as renderList, n as normalizeClass, t as toDisplayString, w as withDirectives, v as vShow, b as createCommentVNode, T as Tabs, r as resolveComponent, h as createVNode, K as Comments, L as Attachments, M as Modal, N as errors, O as axios, a as createBlock, f as withCtx, j as normalizeStyle } from "./app_emundus.js";
 import { M as Messages } from "./Messages.js";
 import "./Parameter.js";
 import "./index.js";
@@ -91,6 +91,11 @@ const _sfc_main$2 = {
     },
     iframeLoaded(event) {
       this.loading = false;
+      let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
+      if (iframeDoc.querySelector(".emundus-form")) {
+        iframeDoc.querySelector(".emundus-form").classList.add("eval-form-split-view");
+        iframeDoc.querySelector("body .platform-content > div").classList.add("eval-form-split-view-container");
+      }
     }
   },
   computed: {
@@ -102,9 +107,9 @@ const _sfc_main$2 = {
 const _hoisted_1$2 = { id: "evaluations-container" };
 const _hoisted_2$2 = {
   key: 0,
-  class: "tw-h-full"
+  class: "tw-flex tw-h-full tw-flex-col"
 };
-const _hoisted_3$2 = { class: "tw-mt-1" };
+const _hoisted_3$2 = { class: "tw-pt-1" };
 const _hoisted_4$2 = { class: "tw-flex tw-list-none tw-flex-row" };
 const _hoisted_5$2 = ["onClick"];
 const _hoisted_6$1 = ["src"];
@@ -134,7 +139,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
       ]),
       $data.ccid > 0 && $options.selectedEvaluation && $options.selectedEvaluation.form_id ? withDirectives((openBlock(), createElementBlock("iframe", {
         src: $options.selectedEvaluation.url,
-        class: "iframe-evaluation-list tw-w-full tw-bg-coordinator-bg tw-p-6",
+        class: "iframe-evaluation-list tw-w-full tw-grow tw-bg-coordinator-bg tw-p-6",
         key: $data.selectedTab,
         onLoad: _cache[0] || (_cache[0] = ($event) => $options.iframeLoaded($event))
       }, null, 40, _hoisted_6$1)), [
@@ -146,7 +151,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-12951b18"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-ca80c115"]]);
 const client = new FetchClient("file");
 const filesService = {
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {
@@ -679,7 +684,10 @@ const _hoisted_7 = {
   class: "tw-flex tw-items-center"
 };
 const _hoisted_8 = { id: "modal-applicationform" };
-const _hoisted_9 = { class: "scrollable" };
+const _hoisted_9 = {
+  class: "scrollable",
+  style: { "height": "calc(100vh - 56px)" }
+};
 const _hoisted_10 = {
   class: "sticky-tab em-bg-neutral-100 tw-flex tw-items-center tw-justify-center tw-gap-4 tw-border-b tw-border-neutral-300",
   style: { "z-index": "2" }
@@ -740,7 +748,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       _ctx.access ? (openBlock(), createElementBlock("div", {
         key: 0,
         class: "modal-grid",
-        style: normalizeStyle("grid-template-columns:" + this.ratioStyle)
+        style: normalizeStyle([{ "height": "calc(100% - 56px)" }, "grid-template-columns:" + this.ratioStyle])
       }, [
         createBaseVNode("div", _hoisted_8, [
           createBaseVNode("div", _hoisted_9, [

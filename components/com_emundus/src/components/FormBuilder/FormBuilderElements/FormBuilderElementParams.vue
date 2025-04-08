@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<div v-for="param in displayedParams" class="form-group tw-mb-4">
+		<div v-for="param in displayedParams" :key="param.name" class="form-group tw-mb-4">
 			<label :class="param.type === 'repeatable' ? 'tw-font-bold' : ''">{{ translate(param.label) }}</label>
 
 			<!-- DROPDOWN -->
@@ -137,7 +137,60 @@
 				</div>
 			</div>
 
+			<div v-else-if="param.type === 'fabrikmodalrepeat'">
+				<div v-for="i in element.params[param.name][Object.keys(element.params[param.name])[0]].length" :key="i">
+					<hr />
+					<div class="tw-flex tw-items-center tw-justify-between">
+						<label>-- {{ i }} --</label>
+						<button
+							v-if="element.params[param.name][Object.keys(element.params[param.name])[0]].length > 1"
+							type="button"
+							@click="removeFBModalRepeatableField(param.name, i)"
+							class="mt-2 w-auto"
+						>
+							<span class="material-symbols-outlined tw-text-red-600">close</span>
+						</button>
+					</div>
+
+					<form-builder-element-params
+						v-for="sub_field in param.fields"
+						:key="sub_field.name"
+						:element="element"
+						:parent_param="param"
+						:params="[sub_field]"
+						:databases="databases"
+						:repeat_name="param.name"
+						:index="i"
+					></form-builder-element-params>
+				</div>
+
+				<div class="tw-flex tw-justify-end">
+					<button
+						type="button"
+						@click="addFBModalRepeatableField(param.name)"
+						class="tw-btn-tertiary tw-mt-2 tw-w-auto"
+					>
+						{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}
+					</button>
+				</div>
+			</div>
+
+			<!-- ELEMENT SELECTOR -->
+			<div v-else-if="param.type === 'listfields'">
+				<select v-model="element.params[parent_param.name][param.name][index - 1]" class="tw-w-full">
+					<option v-for="option in listFieldsOptions" :key="option.value" :value="option.value">
+						{{ option.label }}
+					</option>
+				</select>
+			</div>
+
 			<!-- INPUT (TEXT,NUMBER) -->
+			<input
+				v-else-if="parent_param && parent_param.name"
+				v-model="element.params[parent_param.name][param.name][index - 1]"
+				class="tw-w-full"
+				:placeholder="translate(param.placeholder)"
+			/>
 			<input
 				v-else-if="repeat_name !== ''"
 				:type="param.type"
@@ -168,6 +221,7 @@ import Multiselect from 'vue-multiselect';
 /* IMPORT YOUR SERVICES */
 import formBuilderService from '@/services/formbuilder';
 import { useGlobalStore } from '@/stores/global.js';
+import { useFormBuilderStore } from '@/stores/formbuilder.js';
 
 export default {
 	name: 'FormBuilderElementParams',
@@ -195,6 +249,10 @@ export default {
 			required: false,
 			default: 0,
 		},
+		parent_param: {
+			type: Object,
+			required: false,
+		},
 	},
 	data: () => ({
 		databasejoin_description: null,
@@ -221,6 +279,10 @@ export default {
 			if (param.type === 'sqldropdown') {
 				this.loading = true;
 				this.getSqlDropdownOptions(param);
+			}
+
+			if (param.type === 'fabrikmodalrepeat') {
+				this.element.params[param.name] = JSON.parse(this.element.params[param.name]);
 			}
 
 			if (param.reload_on_change) {
@@ -381,6 +443,22 @@ export default {
 			delete this.element.params[param][param + key];
 			this.$forceUpdate();
 		},
+		removeFBModalRepeatableField(paramName, index) {
+			const entries = Object.keys(this.element.params[paramName]);
+
+			entries.forEach((entry) => {
+				this.element.params[paramName][entry].splice(index - 1, 1);
+			});
+
+			this.$forceUpdate();
+		},
+		addFBModalRepeatableField(paramName) {
+			const keys = Object.keys(this.element.params[paramName]);
+
+			keys.forEach((key) => {
+				this.element.params[paramName][key].push('');
+			});
+		},
 		labelTranslate({ label }) {
 			return this.translate(label);
 		},
@@ -395,6 +473,16 @@ export default {
 		displayedParams() {
 			return this.params.filter((param) => {
 				return (param.published && !param.sysadmin_only) || (this.sysadmin && param.sysadmin_only && param.published);
+			});
+		},
+		listFieldsOptions() {
+			return useFormBuilderStore().getPageElements.filter((element) => {
+				return (
+					element.publish &&
+					this.element.id != element.element_id &&
+					['field', 'calc', 'average', 'dropdown', 'radiobutton'].includes(element.plugin) &&
+					!['parent_id'].includes(element.name)
+				);
 			});
 		},
 	},

@@ -77,7 +77,11 @@
 							:langue="actualLanguage"
 							:manyLanguages="manyLanguages"
 						/>
-						<add-email v-else-if="selectedMenuItem.id === 5 && program.id != 0" :prog="Number(program.id)"></add-email>
+						<message-triggers
+							v-else-if="selectedMenuItem.id === 5 && program.id != 0"
+							:context="'campaign_id'"
+							:context-id="campaignId"
+						></message-triggers>
 
 						<History v-else-if="selectedMenuItem.id === 6" extension="com_emundus.campaign" :itemId="campaignId" />
 					</transition>
@@ -110,6 +114,7 @@ import AddDocumentsDropfiles from '@/components/FunnelFormulaire/addDocumentsDro
 import addEmail from '@/components/FunnelFormulaire/addEmail.vue';
 import campaignMore from '@/components/FunnelFormulaire/CampaignMore.vue';
 import campaignSteps from '@/components/FunnelFormulaire/CampaignSteps.vue';
+import MessageTriggers from '@/views/MessageTriggers.vue';
 
 import { useGlobalStore } from '@/stores/global.js';
 import History from '@/views/History.vue';
@@ -119,6 +124,7 @@ export default {
 	name: 'CampaignEdition',
 
 	components: {
+		MessageTriggers,
 		Tabs,
 		History,
 		AddDocumentsDropfiles,

@@ -47,7 +47,7 @@ $this->is_iframe = $app->input->get('iframe', 0);
 <?php if($this->params->get('goback_button', 1) == 1) : ?>
     <div class="btn-group">
         <?php
-        echo '<div class="tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1">navigate_before</span>';
+        echo '<div class="tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group tw-mb-4 tw-mt-2 back-button-link"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1">navigate_before</span>';
         echo $form->gobackButton  . ' ' . $this->message;
         echo '</div>';
         ?>

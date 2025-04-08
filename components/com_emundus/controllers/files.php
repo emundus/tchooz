@@ -1545,7 +1545,7 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function generate_array()
 	{
-		$current_user = JFactory::getUser();
+		$current_user = Factory::getApplication()->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
@@ -1558,9 +1558,9 @@ class EmundusControllerFiles extends BaseController
 		$m_application = $this->getModel('Application');
 		$m_users       = $this->getModel('Users');
 
-		$session        = JFactory::getSession();
+		$session        = Factory::getApplication()->getSession();
 		$fnums          = $session->get('fnums_export');
-		$anonymize_data = EmundusHelperAccess::isDataAnonymized(JFactory::getUser()->id);
+		$anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
 
 		if (count($fnums) == 0) {
 			$fnums = array($session->get('application_fnum'));
@@ -1648,7 +1648,7 @@ class EmundusControllerFiles extends BaseController
 			$not_already_handled_fnums = array_diff($not_already_handled_fnums, $fnums);
 			$session->set('not_already_handled_fnums', $not_already_handled_fnums);
 
-			foreach ($colsup as $col) {
+			foreach ($colsup as $colsupkey => $col) {
 				$col = explode('.', $col);
 
 				switch ($col[0]) {
@@ -1707,15 +1707,21 @@ class EmundusControllerFiles extends BaseController
 						$colOpt['user-asoc'] = $m_files->getAssocByFnums($fnums, false, true);
 						break;
 					case 'overall':
-						require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
+						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 						$m_evaluations     = $this->getModel('Evaluation');
-						$colOpt['overall'] = $m_evaluations->getEvaluationAverageByFnum($fnums);
-						// Because the result can be empty and thus the fnum not set in the $colOpt array :
-						foreach ($fnums as $fnum) {
-							if (!isset($colOpt['overall'][$fnum])) {
-								$colOpt['overall'][$fnum] = '';
+						$evaluations_average_by_step = $m_evaluations->getEvaluationAverageBySteps($fnums, $current_user->id);
+
+						foreach($evaluations_average_by_step as $step_id => $average_by_fnum) {
+							$m_workflow = new EmundusModelWorkflow();
+							$step_data = $m_workflow->getStepData($step_id);
+							$colsup['overall_' . $step_id] = TEXT::_('COM_EMUNDUS_EVALUATIONS_OVERALL') . ' ' . $step_data->label;
+
+							foreach($average_by_fnum as $fnum => $average) {
+								$colOpt['overall_' . $step_id][$fnum] = (float)$average;
 							}
 						}
+
+						unset($colsup[$colsupkey]);
 						break;
 				}
 			}

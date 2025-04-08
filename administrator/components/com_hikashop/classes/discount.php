@@ -691,6 +691,17 @@ class hikashopDiscountClass extends hikashopClass {
 			} else
 				$cart->coupon->taxes[$tax->tax_namekey] = clone($tax);
 		}
+		$cart->coupon->total->prices[0]->price_value -= $shipping_price;
+		$cart->coupon->total->prices[0]->price_value_with_tax -= $shipping_price_with_tax;
+		foreach($taxes as $tax) {
+			$tax->tax_amount = -$tax->tax_amount;
+			$tax->amount = -$tax->amount;
+			if(isset($cart->coupon->total->prices[0]->taxes[$tax->tax_namekey])) {
+				$cart->coupon->total->prices[0]->taxes[$tax->tax_namekey]->tax_amount += $tax->tax_amount;
+				$coupon->total->prices[0]->taxes[$tax->tax_namekey]->amount += $tax->amount;
+			} else
+				$cart->coupon->total->prices[0]->taxes[$tax->tax_namekey]->tax_amount = clone($tax);
+		}
 
 		$cart->full_total->prices[0]->price_value -= $shipping_price;
 		$cart->full_total->prices[0]->price_value_with_tax -= $shipping_price_with_tax;

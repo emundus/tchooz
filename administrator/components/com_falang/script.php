@@ -3,7 +3,7 @@
  * @package     Falang for Joomla!
  * @author      Stéphane Bouey <stephane.bouey@faboba.com> - http://www.faboba.com
  * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
- * @copyright   Copyright (C) 2010-2020. Faboba.com All rights reserved.
+ * @copyright   Copyright (C) 2010-2025. Faboba.com All rights reserved.
  */
 
 // No direct access to this file
@@ -57,21 +57,37 @@ class com_falangInstallerScript
         )
     );
 
-    /** @var array Obsolete files and folders to remove from the Core release only */
+    /** @var array Obsolete files and folders to remove from the Core release only
+     *
+     * @update 5.16 add $falangRemoveFilesAllVersion
+     */
     private $falangRemoveFilesFree = array(
         'files' => array(
             'administrator/components/com_falang/views/translate/tmpl/popup.php'
         ),
-        'folders' => array()
+        'folders' => array(
+        )
     );
 
     private $falangRemoveFilesPaid = array(
         'files' => array(
             'administrator/components/com_falang/views/translate/tmpl/popup_free.php'
         ),
-        'folders' => array()
+        'folders' => array(
+        )
     );
 
+    private $falangRemoveFilesAllVersion = array(
+        'files' => array(
+            'administrator/components/com_falang/models/FalangContent.php',
+            'administrator/components/com_falang/tables/FalangContent.php',
+            'administrator/components/com_falang/tables/JFLanguage.php',
+            'administrator/components/com_falang/tables/index.html'
+        ),
+        'folders' => array(
+            'administrator/components/com_falang/tables/'
+        )
+    );
 
     function install($parent)
     {
@@ -106,6 +122,7 @@ class com_falangInstallerScript
      *
      * @update 5.0 disabled postflight on uninstall (fix error on FalangVersion)
      * @update 5.2 add default module param on install
+     * @update 5.16 add remove file for all versions
      *
      * @param string $type - Type of PostFlight action. Possible values are:
      *                           - * install
@@ -129,7 +146,11 @@ class com_falangInstallerScript
         } else {
             $falangRemoveFiles = $this->falangRemoveFilesPaid;
         }
+        //for free paid version
         $this->_removeObsoleteFilesAndFolders($falangRemoveFiles);
+
+        //vor all version
+        $this->_removeObsoleteFilesAndFolders($this->falangRemoveFilesAllVersion);
 
         $status = $this->_installSubextensions($parent, $type);
 

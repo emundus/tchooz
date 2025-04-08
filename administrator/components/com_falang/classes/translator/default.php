@@ -42,6 +42,9 @@ class TranslatorDefault {
         self::$languageCodeInISO += [$key => $value];
     }
 
+    /*
+     * 5.17 put back the English canadian and french canadian
+     * */
     static private $languageCodeInISO = array (
         'af-za' => 'AF',	// Afrikaans
         'sq-al' => 'AL', 	// Albanian
@@ -63,7 +66,7 @@ class TranslatorDefault {
         // 'prs-AF' => '',		// Dari Persian
         'nl-nl' => 'NL', 	// Dutch
         'en-au' => 'EN', 	// English Australia
-        // 'en-CA' => '',		// English Canadian
+        'en-CA' => 'EN',		// English Canadian
         'en-gb' => 'EN',	// Queen's English
         'en-us' => 'EN', 	// English US
         'eo-xx' => 'EO', 	// Esperanto
@@ -71,7 +74,7 @@ class TranslatorDefault {
         'fi-fi' => 'FI', 	// Finnish
         'nl-be' => 'NL', 	// Flemish
         'fr-fr' => 'FR', 	// French
-        // 'fr-CA' => '',		// French Canadian
+        'fr-CA' => 'FR',		// French Canadian
         'gl-es' => 'GZ', 	// Galcian
         'ka-ge' => 'KA',	// Georgian
         'de-de' => 'DE', 	// German

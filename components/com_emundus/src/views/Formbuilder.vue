@@ -95,6 +95,7 @@
 						<transition name="slide-right" mode="out-in">
 							<form-builder-elements
 								v-if="leftPanelActiveTab === 'Elements'"
+								:mode="mode"
 								@element-created="onElementCreated"
 								:form="currentPage"
 								@create-element-lastgroup="createElementLastGroup"
@@ -692,7 +693,7 @@ export default {
 			this.setSectionShown(this.showInSection);
 		},
 		setSectionShown(section) {
-			if (section == 'rules-add') {
+			if (section === 'rules-add') {
 				this.selectTab('rules');
 			} else {
 				this.selectTab(section);

@@ -22,7 +22,7 @@ if ($d->filterType === 'range-hidden') :
 <?php
 else :
 	?>
-<div class="fabrikDateListFilterRange" >
+<div class="fabrikDateListFilterRange tw-flex" >
 	<div class="row">
 		<div class="col-2 text-end tw-flex tw-items-center">
 		<label for="<?php echo $from->id; ?>"><?php echo Text::_('COM_FABRIK_DATE_RANGE_BETWEEN') . ' '; ?>

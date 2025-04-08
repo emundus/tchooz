@@ -123,6 +123,12 @@ Text::script('COM_EMUNDUS_OK');
 Text::script('COM_EMUNDUS_FABRIK_WRONG_PASSWORD_TITLE');
 Text::script('COM_EMUNDUS_FABRIK_WRONG_PASSWORD_DESC');
 
+Text::script('COM_EMUNDUS_EVALUATION_SAVED');
+Text::script('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TITLE');
+Text::script('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT');
+Text::script('COM_EMUNDUS_ONBOARD_OK');
+Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
+
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
 endif;

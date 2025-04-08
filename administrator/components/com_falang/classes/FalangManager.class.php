@@ -11,6 +11,7 @@ use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\Folder;
+use Joomla\CMS\Language\LanguageHelper;
 
 defined('_JEXEC') or die;
 
@@ -55,20 +56,16 @@ class FalangManager {
 
     var $_cache = null;//sbou5
 
-	/** Standard constructor */
+	/** Standard constructor
+     *
+     * @update 5.16 remove all old language system
+     */
 	public function __construct(){
 
 		include_once(FALANG_ADMINPATH .DS. "models".DS."ContentElement.php");
 
 		// now redundant
 		$this->_loadPrimaryKeyData();
-
-		$this->activeLanguagesCache = array();
-		$this->activeLanguagesCacheByShortcode = array();
-		$this->activeLanguagesCacheByID = array();
-		// get all languages and split out active below
-		$langlist = $this->getLanguages(false);
-		$this->_cacheLanguages($langlist);
 
 		// Must get the config here since if I do so dynamically it could be within a translation and really mess things up.
 		$this->componentConfig = ComponentHelper::getParams( 'com_falang' );
@@ -92,31 +89,6 @@ class FalangManager {
 			self::$instance = new FalangManager($adminPath);
 		}
 		return self::$instance;
-	}
-
-	/**
-	 * Cache languages in instance
-	 * This method splits the system relevant languages in various caches for faster access
-	 * @param array of languages to be stored
-	 */
-	function _cacheLanguages($langlist) {
-		$this->activeLanguagesCache = array();
-		$this->activeLanguagesCacheByShortcode = array();
-		$this->activeLanguagesCacheByID = array();
-
-		if (count($langlist)>0){
-			foreach ($langlist as $alang){
-				if ($alang->published){
-					$this->activeLanguagesCache[$alang->lang_code] = $alang;
-					$this->activeLanguagesCacheByID[$alang->lang_id] = $alang;
-					$this->activeLanguagesCacheByShortcode[$alang->sef] = $alang;
-				}
-				//sbou TODO vÃ©rifier la source car le code est dupliquÃ©
-				$this->allLanguagesCache[$alang->lang_code] = $alang;
-				$this->allLanguagesCacheByID[$alang->lang_id] = $alang;
-				$this->allLanguagesCacheByShortcode[$alang->sef] = $alang;
-			}
-		}
 	}
 
 	public static function setBuffer()
@@ -285,58 +257,13 @@ class FalangManager {
 		$config->set($varname, $newValue);
 	}
 
-	/** Creates an array with all the active languages for the JoomFish
-	 *
-	 * @return	Array of languages
-	 */
-	function getActiveLanguages($cacheReload=false) {
-		if( isset($this) && $cacheReload) {
-			$langList = $this->getLanguages();
-			$this->_cacheLanguages($langList);
-		}
-		/* if signed in as Manager or above include inactive languages too */
-		$user = Factory::getUser();
-		if ( isset($this) && $this->getCfg("frontEndPreview") && isset($user) && (strtolower($user->usertype)=="manager" || strtolower($user->usertype)=="administrator" || strtolower($user->usertype)=="super administrator")) {
-			if (isset($this) && isset($this->allLanguagesCache)) return $this->allLanguagesCache;
-		}
-		else {
-			if (isset($this) && isset($this->activeLanguagesCache)) return $this->activeLanguagesCache;
-		}
-		return FalangManager::getLanguages( true );
-	}
-
 	/** Creates an array with all languages for the Falang
 	 *
 	 * @param boolean	indicates if those languages must be active or not
 	 * @return	Array of languages
 	 */
 	function getLanguages( $active=true ) {
-		$db = Factory::getDBO();
-		$langActive=null;
-
-		//todo : put query joomla 3 style
-		$sql = 'SELECT * FROM #__languages';
-
-		if( $active ) {
-			$sql  .= ' WHERE published=1';
-		}
-		$sql .= ' ORDER BY ordering';
-
-		$db->setQuery(  $sql );
-		$rows = $db->loadObjectList('lang_id');
-
-		// We will need this class defined to popuplate the table
-		include_once(FALANG_ADMINPATH .DS. 'tables'.DS.'JFLanguage.php');
-		if( $rows ) {
-			foreach ($rows as $row) {
-				$lang = new TableJFLanguage($db);
-				$lang->bind($row);
-
-				$langActive[] = $lang;
-			}
-		}
-
-		return $langActive;
+        return LanguageHelper::getContentLanguages($active);
 	}
 
 	/**
@@ -345,15 +272,8 @@ class FalangManager {
 	 * @param array()
 	 */
 	function getLanguageByShortcode($shortcode, $active=false){
-		if ($active){
-			if (isset($this) && isset($this->activeLanguagesCacheByShortcode) && array_key_exists($shortcode,$this->activeLanguagesCacheByShortcode))
-				return $this->activeLanguagesCacheByShortcode[$shortcode];
-		}
-		else {
-			if (isset($this) && isset($this->allLanguagesCacheByShortcode) && array_key_exists($shortcode,$this->allLanguagesCacheByShortcode))
-				return $this->allLanguagesCacheByShortcode[$shortcode];
-		}
-		return false;
+        $result = LanguageHelper::getContentLanguages($active,true,'sef');
+        return $result[$shortcode];
 	}
 
 	/**
@@ -362,57 +282,35 @@ class FalangManager {
 	 * @param array()
 	 */
 	function getLanguageByCode($code, $active=false){
-		if ($active){
-			if (isset($this) && isset($this->activeLanguagesCache) && array_key_exists($code,$this->activeLanguagesCache))
-				return $this->activeLanguagesCache[$code];
-		}
-		else {
-			if (isset($this) && isset($this->allLanguagesCache) && array_key_exists($code,$this->allLanguagesCache))
-				return $this->allLanguagesCache[$code];
-		}
-		return false;
+        $result = LanguageHelper::getContentLanguages($active,true,'lang_code');
+        return $result[$code];
 	}
 
 	/**
-	 * Fetches full langauge data for given code from language cache
+	 * Fetches full langauge data for given ID from language cache
+     * @update 5.16 use native language system cache done by Joomla
 	 *
 	 * @param array()
 	 */
-	function getLanguageByID($id, $active=false){
-		if ($active){
-			if (isset($this) && isset($this->activeLanguagesCacheByID) && array_key_exists($id,$this->activeLanguagesCacheByID))
-				return $this->activeLanguagesCacheByID[$id];
-		}
-		else {
-			if (isset($this) && isset($this->allLanguagesCacheByID) && array_key_exists($id,$this->allLanguagesCacheByID))
-				return $this->allLanguagesCacheByID[$id];
-		}
-		return false;
+	function getLanguageByID($id){
+        $result  = LanguageHelper::getContentLanguages([],true,'lang_id');
+        return $result[$id];
 	}
 
 
+    /*
+     *
+	 * Fetches full langauge data for given code from language cache
+     * @update 5.16 use native language system cache done by Joomla
+     * */
 	function getLanguagesIndexedByCode($active=false){
-		if ($active){
-			if (isset($this) && isset($this->activeLanguagesCache))
-				return $this->activeLanguagesCache;
-		}
-		else {
-			if (isset($this) && isset($this->allLanguagesCache))
-				return $this->allLanguagesCache;
-		}
-		return false;
+        $result =LanguageHelper::getContentLanguages($active,true,'lang_code');
+        return $result;
 	}
 
 	function getLanguagesIndexedById($active=false){
-		if ($active){
-			if (isset($this) && isset($this->activeLanguagesCacheByID))
-				return $this->activeLanguagesCacheByID;
-		}
-		else {
-			if (isset($this) && isset($this->allLanguagesCacheByID))
-				return $this->allLanguagesCacheByID;
-		}
-		return false;
+        $result =LanguageHelper::getContentLanguages($active,true,'lang_id');
+        return $result;
 	}
 
 	/** Retrieves the language ID from the given language name
@@ -420,92 +318,10 @@ class FalangManager {
 	 * @param	string	Code language Tag (ex: en-GB,fr-FR)
 	 * @return	int 	Database id of this language
 	 */
-	function getLanguageID( $codeLangName="" ) {
-		$db = Factory::getDBO();
-		$query = $db->getQuery(true);
-		$langID = -1;
-		if ($codeLangName != "" ) {
-			// Should check all languages not just active languages
-			if (isset($this) && isset($this->allLanguagesCache) && array_key_exists($codeLangName,$this->allLanguagesCache)){
-				return $this->allLanguagesCache[$codeLangName]->lang_id;
-			}
-			else {
-				$query->select('lang_id')
-					->from('#__languages')
-					->where('published=1')
-					->where('lang_code = '.$db->quote($codeLangName))
-					->order('ordering');
-
-				$db->setQuery($query);
-				$langID = $db->loadResult(false);
-			}
-		}
-		return $langID;
+	function getLanguageID( $langCode="" ) {
+        $result =LanguageHelper::getContentLanguages([],true,'lang_code');
+        return $result[$langCode]->lang_id;
 	}
-
-	/** Retrieves the language code (for URL) from the given language name
-	 *  User by MijoSef and AceSef no more user see mail 22 july 2013
-	 * @param	string	Code language name (normally $mosConfig_lang
-	 * @return	int 	Database id of this language
-	 */
-	function getLanguageCode( $codeLangName="" ) {
-		$db = Factory::getDBO();
-		$query = $db->getQuery(true);
-		$langID = -1;
-		if ($codeLangName != "" ) {
-			if (isset($this) && isset($this->activeLanguagesCache) && array_key_exists($codeLangName,$this->activeLanguagesCache))
-				return $this->activeLanguagesCache[$codeLangName]->shortcode;//sef is the real but use shortcode to have the bug
-			else {
-				$query->select('sef')
-					->from('#__languages')
-					->where('published=1')
-					->where('code = '.$db->quote($codeLangName))
-					//->where('lang_code = '.$db->quote($codeLangName))//mijosef is waiting an sql error
-					->order('ordering');
-				$db->setQuery($query);
-				$langID = $db->loadResult(false);
-			}
-		}
-		return $langID;
-	}
-	function & getCache($lang=""){
-		$conf = Factory::getConfig();
-		if ($lang===""){
-			$lang=$conf->get('language');
-		}
-		// I need to get language specific cache for language switching module
-		if (!isset($this->_cache)) {
-			$this->_cache = array();
-		}
-		if (isset($this->_cache[$lang])){
-			return $this->_cache[$lang];
-		}
-
-		jimport('joomla.cache.cache');
-
-		if (version_compare(phpversion(),"5.0.0",">=")){
-			// Use new Joomfish DB Cache Storage Handler but only for php 5
-			$storage = 'jfdb';
-			// Make sure we have loaded the cache stroage handler
-			JLoader::import('JCacheStorageJFDB', dirname( __FILE__ ));
-		}
-		else {
-			$storage = 'file';
-		}
-
-		$options = array(
-			'defaultgroup' 	=> "falang-".$lang,
-			'cachebase' 	=> $conf->get('cache_path'),
-			'lifetime' 		=> $this->getCfg("cachelife",1440) * 60,	// minutes to seconds
-			'language' 		=> $conf->get('language'),
-			'storage'		=> $storage
-		);
-
-		$this->_cache[$lang] = Cache::getInstance( "callback", $options );
-		return $this->_cache[$lang];
-	}
-
-
 
 	public function getRawFieldTranslations($reftable,$reffield, $refids, $language,$only_publised = true)
 	{

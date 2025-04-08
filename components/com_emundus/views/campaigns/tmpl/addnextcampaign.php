@@ -256,6 +256,10 @@ Text::script('COM_EMUNDUS_ONBOARD_ALIAS_COPIED');
 Text::script('COM_EMUNDUS_OPTIONAL');
 Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
 
+Text::script('COM_EMUNDUS_ONBOARD_NOTRIGGERS');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_DELETE');
+Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
+
 $app = Factory::getApplication();
 if (version_compare(JVERSION, '4.0', '>')) {
 	$lang = $app->getLanguage();
