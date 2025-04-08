@@ -2288,7 +2288,7 @@ class EmundusModelApplication extends ListModel
 														$elt                   = Text::_($elements[$j]->content);
 													}
 													elseif ($elements[$j]->plugin == 'calc') {
-														$elt = Text::_($r_elt);
+														$elt = $r_elt;
 
 														$stripped = strip_tags($elt);
 														if ($stripped != $elt) {
@@ -2647,7 +2647,7 @@ class EmundusModelApplication extends ListModel
 											}
 
 											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '';
-											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full tw-items-center" style="width:100%; border-bottom: 1px solid var(--neutral-400);"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? Text::_($elt) : $elt) . '</span>';
+											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full tw-items-center" style="width:100%; border-bottom: 1px solid var(--neutral-400);"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
 												$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit';
@@ -3008,7 +3008,7 @@ class EmundusModelApplication extends ListModel
 													$elt = ($r_elt == 1) ? Text::_("JYES") : Text::_("JNO");
 												}
 												else if ($elements[$j]->plugin == 'calc') {
-													$elt = Text::_($r_elt);
+													$elt = $r_elt;
 
 													$stripped = strip_tags($elt);
 													if ($stripped != $elt) {
@@ -3469,7 +3469,7 @@ class EmundusModelApplication extends ListModel
 												$elt = substr($element->content, 2, strlen($element->content));
 											}
 											else if ($element->plugin == 'calc') {
-												$elt = Text::_($element->content);
+												$elt = $element->content;
 
 												$stripped = strip_tags($elt);
 												if ($stripped != $elt) {
@@ -3551,7 +3551,7 @@ class EmundusModelApplication extends ListModel
 												$forms .= '<table class="pdf-forms">';
 											}
 											else {
-												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? Text::_($elt) : $elt) . '</td></tr>';
+												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (!in_array($element->plugin,['field','textarea','calc']) ? Text::_($elt) : $elt) . '</td></tr>';
 											}
 										}
 									}
