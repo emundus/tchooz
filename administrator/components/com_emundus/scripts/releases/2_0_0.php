@@ -800,7 +800,7 @@ class Release2_0_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ERROR_404_BUTTON', 'Back to home page', 'override', 0, null, null, 'en-GB');
 
 			$error_particle = file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/error.yaml');
-			if ($error_particle == 'null')
+			if (!$error_particle || $error_particle == 'null')
 			{
 				$error_particle = "enabled: '1'
 title: 'Oups !'
