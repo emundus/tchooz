@@ -1,11 +1,24 @@
 <script>
+import Multiselect from 'vue-multiselect';
+
 export default {
 	name: 'Filter',
+	components: {
+		Multiselect,
+	},
 	props: {
 		filter: {
 			type: Object,
 			required: true,
 		},
+	},
+	created() {
+		if (this.filter.type === 'multiselect' && this.filter.value && typeof this.filter.value !== 'object') {
+			const matched = this.filter.options.find((opt) => opt.value == this.filter.value);
+			if (matched) {
+				this.filter.value = matched;
+			}
+		}
 	},
 	methods: {
 		onChangeFilter(filter) {
@@ -42,6 +55,30 @@ export default {
 		</template>
 		<template v-else-if="filter.type === 'date'">
 			<input type="date" v-model="filter.value" @change="onChangeFilter(filter)" />
+		</template>
+		<template v-else-if="filter.type === 'time'">
+			<input type="time" v-model="filter.value" @change="onChangeFilter(filter)" />
+		</template>
+
+		<template v-else-if="filter.type === 'multiselect'">
+			<multiselect
+				v-model="filter.value"
+				:options="filter.options"
+				:multiple="false"
+				:searchable="true"
+				:close-on-select="true"
+				:clear-on-select="false"
+				:preserve-search="true"
+				:select-label="''"
+				:deselect-label="''"
+				:selectedLabel="''"
+				:placeholder="translate('COM_EMUNDUS_ONBOARD_REGISTRANT_FILTER_SEARCH_PLACEHOLDER')"
+				label="label"
+				track-by="value"
+				@select="onChangeFilter(filter)"
+			>
+				<template #noResult>{{ translate('COM_EMUNDUS_MULTISELECT_NORESULTS') }}</template>
+			</multiselect>
 		</template>
 	</div>
 </template>

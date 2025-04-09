@@ -2329,6 +2329,7 @@ class EmundusModelApplication extends ListModel
 								// AFFICHAGE EN LIGNE
 							}
 							else {
+
 								$check_not_empty_group = $this->checkEmptyGroups($elements, $itemt->db_table_name, $fnum);
 
 								if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
@@ -2624,7 +2625,7 @@ class EmundusModelApplication extends ListModel
 
 													if(!empty($availability))
 													{
-														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+														$elt = EmundusHelperDate::displayDate($availability->start_date, 'd.m.Y H:i', 0) . ' - ' . EmundusHelperDate::displayDate($availability->end_date, 'd.m.Y H:i', 0);
 													}
 												}
 												else {

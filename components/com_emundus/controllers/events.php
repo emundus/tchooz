@@ -1107,16 +1107,17 @@ class EmundusControllerEvents extends BaseController
 
 			$event       = $this->input->getInt('event', 0);
 			$location    = $this->input->getInt('location', 0);
+			$room        = $this->input->getInt('room', 0);
 			$applicant   = $this->input->getInt('applicant', 0);
 			$assoc_user_filter = $this->input->getInt('assoc_user', 0);
 			$day         = $this->input->getString('day', '');
-
+			$hour        = $this->input->getString('hour', '');
 			if ($view !== 'calendar')
 			{
 				require_once JPATH_SITE . '/components/com_emundus/models/users.php';
 				$m_users = new EmundusModelUsers();
 
-				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_user_filter, 0, [], $this->user->id, $day);
+				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_user_filter, 0, [], $this->user->id, $day, $room, $hour);
 				if (!empty($registrants) && $registrants['count'] > 0)
 				{
 					foreach ($registrants['datas'] as $registrant)
@@ -1293,6 +1294,31 @@ class EmundusControllerEvents extends BaseController
 		{
 			$events           = $this->m_events->getFilterEvents();
 			$response['data'] = $events;
+
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+		}
+
+		echo json_encode($response);
+		exit();
+	}
+
+	public function getfilterrooms()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			header('HTTP/1.1 403 Forbidden');
+		}
+		else
+		{
+			$applicants       = $this->m_events->getFilterRooms();
+			$response['data'] = $applicants;
 
 			$response['status']  = true;
 			$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');

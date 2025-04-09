@@ -2681,6 +2681,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 		array      $ids = [],
 		int        $user_id = 0,
 		?string    $day = '',
+		int        $room = 0,
+		?string    $hour = ''
 	): array
 	{
 		$registrants = ['datas' => [], 'count' => 0];
@@ -2791,6 +2793,24 @@ class EmundusModelEvents extends BaseDatabaseModel
 			{
 				$query->where('DATE(esa.start_date) = ' . $this->db->quote($day));
 			}
+			if (!empty($room))
+			{
+				$query->where('dlr.name = ' . $room);
+			}
+			if (!empty($hour)) {
+				if (strlen($hour) === 5) {
+					$hour .= ':00';
+				}
+				$config = Factory::getApplication()->getConfig();
+				$offset = $config->get('offset');
+
+				$localDate = new DateTime(date('Y-m-d') . ' ' . $hour, new DateTimeZone($offset));
+				$localDate->setTimezone(new DateTimeZone('UTC'));
+
+				$utcHour = $localDate->format('H:i:s');
+
+				$query->where('TIME(esa.start_date) = ' . $this->db->quote($utcHour));
+			}
 
 			$query->group('er.id');
 
@@ -2873,6 +2893,27 @@ class EmundusModelEvents extends BaseDatabaseModel
 		}
 
 		return $applicants;
+	}
+
+	public function getFilterRooms(): array
+	{
+		$rooms = [];
+		$query      = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select([$this->db->quoteName('dlr.id', 'value'), 'dlr.name as label'])
+				->from($this->db->quoteName('data_location_rooms', 'dlr'));
+			$this->db->setQuery($query);
+			$rooms = $this->db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error while getting rooms: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+		}
+
+		return $rooms;
 	}
 
 	public function getFilterAssocUsers(): array
@@ -3108,24 +3149,41 @@ class EmundusModelEvents extends BaseDatabaseModel
 			            </thead>
 			            <tbody>';
 
+				$sortedReservations = [];
+
 				foreach ($reservations as $reservation)
 				{
 					try
 					{
-						$db    = $this->db;
+						$db = $this->db;
 						$query = $db->getQuery(true)
-							->select($db->quoteName('name'))
-							->from($db->quoteName('#__users'))
-							->where($db->quoteName('id') . ' = ' . (int) $reservation->user);
+							->select('CONCAT(' . $db->quoteName('lastname') . ', " ", ' . $db->quoteName('firstname') . ')')
+							->from($db->quoteName('#__emundus_users'))
+							->where($db->quoteName('user_id') . ' = ' . (int) $reservation->user);
 						$db->setQuery($query);
 						$username = $db->loadResult();
+
+						$sortedReservations[] = [
+							'reservation' => $reservation,
+							'username' => $username
+						];
 					}
+
 					catch (Exception $e)
 					{
-						Log::add('Error while getting user name in exportBookingsPDF method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
-
+						Log::add('Error while getting user first and last name in exportBookingsPDF method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
 						return false;
 					}
+				}
+
+				usort($sortedReservations, function($a, $b) {
+					return strcasecmp($a['username'], $b['username']);
+				});
+
+				foreach ($sortedReservations as $sortedReservation)
+				{
+					$reservation = $sortedReservation['reservation'];
+					$username = $sortedReservation['username'];
 
 					$selectColumns = [];
 					$user = null;
@@ -3138,6 +3196,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 						try
 						{
+							$db    = $this->db;
 							$query = $db->getQuery(true)
 								->select($selectColumns)
 								->from($db->quoteName('#__emundus_users', 'eu'))
@@ -3153,11 +3212,11 @@ class EmundusModelEvents extends BaseDatabaseModel
 						}
 					}
 
-					$day      = EmundusHelperDate::displayDate($item->start_date, 'COM_EMUNDUS_BIRTHDAY_FORMAT', 0);
-					$hour     = EmundusHelperDate::displayDate($item->start_date, 'H:i', 0);
-					$room     = $item->room;
-					$event_name = $item->label;
-					$location = $item->location;
+					$day      = EmundusHelperDate::displayDate($reservation->start_date, 'COM_EMUNDUS_BIRTHDAY_FORMAT', 0);
+					$hour     = EmundusHelperDate::displayDate($reservation->start_date, 'H:i', 0);
+					$room     = $reservation->room;
+					$event_name = $reservation->label;
+					$location = $reservation->location;
 
 					$html .= '<tr>';
 

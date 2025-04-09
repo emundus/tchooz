@@ -351,7 +351,7 @@
 							:is="resolvedComponent"
 							:items="checkedItems"
 							@close="closePopup()"
-							@update-items="getListItems()"
+							@update-items="getListItems"
 						/>
 					</modal>
 				</div>
@@ -541,7 +541,7 @@ export default {
 			this.getListItems(1, this.selectedListTab);
 		},
 
-		async getListItems(page = 1, tab = null) {
+		async getListItems(page = 1, tab = null, refreshFilters = false) {
 			this.checkedItems = [];
 
 			if (tab === null) {
@@ -591,7 +591,7 @@ export default {
 						this.searches[this.selectedListTab].lastSearch = searchValue;
 					}
 
-					this.setTabFilters(tab).then(() => {
+					this.setTabFilters(tab, refreshFilters).then(() => {
 						if (typeof tab.getter !== 'undefined') {
 							let url =
 								'/index.php?option=com_emundus&controller=' +
@@ -613,8 +613,13 @@ export default {
 
 							if (typeof this.filters[tab.key] !== 'undefined') {
 								this.filters[tab.key].forEach((filter) => {
-									if (filter.value !== '' && filter.value !== 'all') {
-										url += '&' + filter.key + '=' + filter.value;
+									const filterValue =
+										typeof filter.value === 'object' && filter.value !== null && 'value' in filter.value
+											? filter.value.value
+											: filter.value;
+
+									if (filterValue !== '' && filterValue !== 'all') {
+										url += '&' + filter.key + '=' + filterValue;
 									}
 								});
 							}
@@ -667,12 +672,12 @@ export default {
 			}
 		},
 
-		async setTabFilters(tab) {
+		async setTabFilters(tab, refreshFilters = false) {
 			return new Promise(async (resolve) => {
 				const urlParams = new URLSearchParams(window.location.search);
 
 				if (typeof tab.filters !== 'undefined' && tab.filters.length > 0) {
-					if (typeof this.filters[tab.key] === 'undefined') {
+					if (typeof this.filters[tab.key] === 'undefined' || refreshFilters) {
 						this.loading.filters = true;
 
 						this.filters[tab.key] = [];
@@ -689,7 +694,7 @@ export default {
 								filterValue = filterValueSession;
 							}
 
-							if (!filter.values) {
+							if (!filter.values || refreshFilters) {
 								if (filter.getter) {
 									this.filters[tab.key].push({
 										key: filter.key,
@@ -697,7 +702,7 @@ export default {
 										value: filterValue,
 										alwaysDisplay: filter.alwaysDisplay || false,
 										options: [],
-										type: filter.type || 'select',
+										type: filter.multiselect ? 'multiselect' : filter.type || 'select',
 									});
 
 									await this.setFilterOptions(
@@ -712,7 +717,7 @@ export default {
 										value: filterValue,
 										alwaysDisplay: filter.alwaysDisplay || false,
 										options: filter.values || [],
-										type: filter.type || 'select',
+										type: filter.multiselect ? 'multiselect' : filter.type || 'select',
 									});
 								}
 							} else {
@@ -722,7 +727,7 @@ export default {
 									value: filterValue,
 									alwaysDisplay: filter.alwaysDisplay || false,
 									options: filter.values || [],
-									type: filter.type || 'select',
+									type: filter.multiselect ? 'multiselect' : filter.type || 'select',
 								});
 							}
 						}
@@ -881,7 +886,9 @@ export default {
 			}
 
 			let url = 'index.php?option=com_emundus&controller=' + exp.controller + '&task=' + exp.action;
-			let parameters = { ids: this.checkedItems };
+			let parameters = {
+				ids: this.checkedItems.length > 0 ? this.checkedItems : this.displayedItems.map((item) => item.id),
+			};
 
 			if (Object.prototype.hasOwnProperty.call(exp, 'confirm')) {
 				Swal.fire({
@@ -926,7 +933,7 @@ export default {
 				'&task=' +
 				this.exportClicked.action;
 			let parameters = {
-				ids: this.checkedItems,
+				ids: this.checkedItems.length > 0 ? this.checkedItems : this.displayedItems.map((item) => item.id),
 				checkboxesValuesFromView: JSON.stringify(checkboxesValues.viewSelection),
 				checkboxesValuesFromProfile: JSON.stringify(checkboxesValues.profileSelection),
 			};

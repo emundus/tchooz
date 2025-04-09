@@ -2622,12 +2622,12 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-e52cc6e8],
 	margin: 0 auto;
 }
 
-#list-table[data-v-77f62f10] {
+#list-table[data-v-a0c2a100] {
   transition: all 0.3s;
   border: 0;
   border-spacing: 0 3px;
 }
-#list-table input[type=checkbox][data-v-77f62f10] {
+#list-table input[type=checkbox][data-v-a0c2a100] {
   -webkit-appearance: none;
      -moz-appearance: none;
           appearance: none;
@@ -2642,11 +2642,11 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-e52cc6e8],
   padding: 0;
   margin-right: 0;
 }
-#list-table input[type=checkbox][data-v-77f62f10]:checked {
+#list-table input[type=checkbox][data-v-a0c2a100]:checked {
   background-color: var(--em-profile-color);
   border-color: var(--em-profile-color);
 }
-#list-table input[type=checkbox][data-v-77f62f10]:checked::before {
+#list-table input[type=checkbox][data-v-a0c2a100]:checked::before {
   content: "✓";
   color: white;
   font-size: 16px;
@@ -2656,35 +2656,35 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-e52cc6e8],
   left: 50%;
   transform: translate(-50%, -50%);
 }
-#list-table thead th[data-v-77f62f10] {
+#list-table thead th[data-v-a0c2a100] {
   background-color: transparent !important;
   border: unset !important;
   box-shadow: unset;
 }
-#list-table.blocs[data-v-77f62f10] {
+#list-table.blocs[data-v-a0c2a100] {
   border: 0;
 }
-#list-table.blocs thead[data-v-77f62f10] {
+#list-table.blocs thead[data-v-a0c2a100] {
   display: none;
 }
-#list-table.blocs tbody[data-v-77f62f10] {
+#list-table.blocs tbody[data-v-a0c2a100] {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   -moz-column-gap: 24px;
        column-gap: 24px;
   row-gap: 24px;
 }
-#list-table.blocs tbody tr td[data-v-77f62f10] {
+#list-table.blocs tbody tr td[data-v-a0c2a100] {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   padding: 0;
 }
-#list-table.blocs tbody tr td.actions[data-v-77f62f10] {
+#list-table.blocs tbody tr td.actions[data-v-a0c2a100] {
   align-items: center;
   flex-direction: column;
 }
-#list-table.blocs tbody tr td ul[data-v-77f62f10]:not(.tw-p-4) {
+#list-table.blocs tbody tr td ul[data-v-a0c2a100]:not(.tw-p-4) {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -2692,34 +2692,34 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-e52cc6e8],
   padding: 0;
   margin: 0;
 }
-#list-table.blocs tbody tr td ul:not(.tw-p-4) li[data-v-77f62f10] {
+#list-table.blocs tbody tr td ul:not(.tw-p-4) li[data-v-a0c2a100] {
   list-style: none;
   cursor: pointer;
   width: 100%;
 }
-.skeleton-grid[data-v-77f62f10] {
+.skeleton-grid[data-v-a0c2a100] {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
   -moz-column-gap: 24px;
        column-gap: 24px;
   row-gap: 24px;
 }
-.placement-center[data-v-77f62f10] {
+.placement-center[data-v-a0c2a100] {
   position: fixed;
   left: 50%;
   transform: translate(-50%, -50%);
   top: 50%;
 }
-#tabs-loading :not(.skeleton-grid) .skeleton-item[data-v-77f62f10], #tabs-loading:not(.skeleton-grid) .skeleton-item[data-v-77f62f10],
-#items-loading :not(.skeleton-grid) .skeleton-item[data-v-77f62f10],
-#items-loading:not(.skeleton-grid) .skeleton-item[data-v-77f62f10] {
+#tabs-loading :not(.skeleton-grid) .skeleton-item[data-v-a0c2a100], #tabs-loading:not(.skeleton-grid) .skeleton-item[data-v-a0c2a100],
+#items-loading :not(.skeleton-grid) .skeleton-item[data-v-a0c2a100],
+#items-loading:not(.skeleton-grid) .skeleton-item[data-v-a0c2a100] {
   height: 40px !important;
   width: 100% !important;
   margin-bottom: 16px !important;
 }
-#tabs-loading .skeleton-grid .skeleton-item[data-v-77f62f10], #tabs-loading.skeleton-grid .skeleton-item[data-v-77f62f10],
-#items-loading .skeleton-grid .skeleton-item[data-v-77f62f10],
-#items-loading.skeleton-grid .skeleton-item[data-v-77f62f10] {
+#tabs-loading .skeleton-grid .skeleton-item[data-v-a0c2a100], #tabs-loading.skeleton-grid .skeleton-item[data-v-a0c2a100],
+#items-loading .skeleton-grid .skeleton-item[data-v-a0c2a100],
+#items-loading.skeleton-grid .skeleton-item[data-v-a0c2a100] {
   height: 200px !important;
   min-width: 340px !important;
 }#modalAddTriggercandidate .v--modal[data-v-eebb88e8],

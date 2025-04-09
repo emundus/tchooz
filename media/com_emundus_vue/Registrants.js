@@ -104,15 +104,8 @@ const _sfc_main = {
                   getter: "getfilterevents",
                   controller: "events",
                   key: "event",
-                  values: null
-                },
-                {
-                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_LABEL",
-                  allLabel: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_ALL",
-                  getter: "getlocations",
-                  controller: "events",
-                  key: "location",
-                  values: null
+                  values: null,
+                  multiselect: true
                 },
                 {
                   label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_APPLICANT_LABEL",
@@ -120,7 +113,36 @@ const _sfc_main = {
                   getter: "getfilterapplicants",
                   controller: "events",
                   key: "applicant",
-                  values: null
+                  values: null,
+                  multiselect: true
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_DAY_LABEL",
+                  type: "date",
+                  key: "day"
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_HOUR_LABEL",
+                  type: "time",
+                  key: "hour"
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_LABEL",
+                  allLabel: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_ALL",
+                  getter: "getlocations",
+                  controller: "events",
+                  key: "location",
+                  values: null,
+                  multiselect: true
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ROOM_LABEL",
+                  allLabel: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ROOM_ALL",
+                  getter: "getfilterrooms",
+                  controller: "events",
+                  key: "room",
+                  values: null,
+                  multiselect: true
                 },
                 {
                   label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ASSOC_USER_LABEL",
@@ -128,12 +150,8 @@ const _sfc_main = {
                   getter: "getfilterassocusers",
                   controller: "events",
                   key: "assoc_user",
-                  values: null
-                },
-                {
-                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_DAY_LABEL",
-                  type: "date",
-                  key: "day"
+                  values: null,
+                  multiselect: true
                 }
               ],
               exports: [
