@@ -1,5 +1,5 @@
 import list from "./List.js";
-import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode } from "./app_emundus.js";
+import { _ as _export_sfc, r as resolveComponent, c as createElementBlock, o as openBlock, g as createVNode } from "./app_emundus.js";
 import "./ExportSlotsModal.js";
 import "./Skeleton.js";
 import "./Calendar.js";
@@ -9,10 +9,10 @@ import "./Parameter.js";
 import "./EventBooking.js";
 import "./events2.js";
 import "./Info.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EditSlot.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main = {
   name: "Registrants",
   components: {
@@ -104,15 +104,8 @@ const _sfc_main = {
                   getter: "getfilterevents",
                   controller: "events",
                   key: "event",
-                  values: null
-                },
-                {
-                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_LABEL",
-                  allLabel: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_ALL",
-                  getter: "getlocations",
-                  controller: "events",
-                  key: "location",
-                  values: null
+                  values: null,
+                  multiselect: true
                 },
                 {
                   label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_APPLICANT_LABEL",
@@ -120,7 +113,36 @@ const _sfc_main = {
                   getter: "getfilterapplicants",
                   controller: "events",
                   key: "applicant",
-                  values: null
+                  values: null,
+                  multiselect: true
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_DAY_LABEL",
+                  type: "date",
+                  key: "day"
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_HOUR_LABEL",
+                  type: "time",
+                  key: "hour"
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_LABEL",
+                  allLabel: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_LOCATION_ALL",
+                  getter: "getlocations",
+                  controller: "events",
+                  key: "location",
+                  values: null,
+                  multiselect: true
+                },
+                {
+                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ROOM_LABEL",
+                  allLabel: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ROOM_ALL",
+                  getter: "getfilterrooms",
+                  controller: "events",
+                  key: "room",
+                  values: null,
+                  multiselect: true
                 },
                 {
                   label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ASSOC_USER_LABEL",
@@ -128,12 +150,8 @@ const _sfc_main = {
                   getter: "getfilterassocusers",
                   controller: "events",
                   key: "assoc_user",
-                  values: null
-                },
-                {
-                  label: "COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_DAY_LABEL",
-                  type: "date",
-                  key: "day"
+                  values: null,
+                  multiselect: true
                 }
               ],
               exports: [

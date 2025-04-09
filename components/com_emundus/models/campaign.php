@@ -1724,7 +1724,7 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	public function updateCampaign($data, $cid)
+	public function updateCampaign($data, $cid, int $user_id = 0)
 	{
 		$updated = false;
 
@@ -1738,7 +1738,11 @@ class EmundusModelCampaign extends ListModel
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
-			$app = JFactory::getApplication();
+			$app = Factory::getApplication();
+			if (empty($user_id)) {
+				$user_id = $app->getIdentity()->id;
+			}
+
 			$m_falang       = new EmundusModelFalang;
 			$lang           = $app->getLanguage();
 			$actualLanguage = substr($lang->getTag(), 0, 2);
@@ -1855,7 +1859,7 @@ class EmundusModelCampaign extends ListModel
 				$updated = $this->_db->execute();
 
 				if ($updated) {
-					Log::add('User ' . Factory::getApplication()->getIdentity()->id . ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
+					Log::add('User ' . $user_id. ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
 
 					$query->clear()
 						->delete($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
@@ -1928,13 +1932,13 @@ class EmundusModelCampaign extends ListModel
 						'onCallEventHandler',
 						['onAfterCampaignUpdate',
 							// Datas to pass to the event
-							['campaign' => $cid]
+							['campaign' => $cid, 'user_id' => $user_id]
 						]
 					);
 					$onAfterCampaignUpdate             = new GenericEvent(
 						'onAfterCampaignUpdate',
 						// Datas to pass to the event
-						['data' => $data, 'old_data' => $old_data]
+						['data' => $data, 'old_data' => $old_data, 'user_id' => $user_id]
 					);
 					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignUpdateEventHandler);
 					$dispatcher->dispatch('onAfterCampaignUpdate', $onAfterCampaignUpdate);

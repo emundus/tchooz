@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, n as normalizeClass, j as normalizeStyle } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, j as normalizeStyle, n as normalizeClass } from "./app_emundus.js";
 const _sfc_main = {
   name: "Skeleton.vue",
   props: {

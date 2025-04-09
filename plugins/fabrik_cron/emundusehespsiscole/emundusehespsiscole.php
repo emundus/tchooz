@@ -1,8 +1,5 @@
 <?php
 
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
-
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 require_once (JPATH_SITE . DS. 'components'.DS.'com_emundus'.DS.'models'.DS.'files.php');
 
@@ -30,8 +27,10 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         JLog::addLogger(['text_file' => 'com_emundus.emundusehespsiscole.info.php'], JLog::INFO, 'com_emundus.emundusehespsiscole');
         JLog::addLogger(['text_file' => 'com_emundus.emundusehespsiscole.error.php'], JLog::ERROR, 'com_emundus.emundusehespsiscole');
 
+        $date = date('Y-m-d H:i:s');
+
         $params = $this->getParams();
-        $eMConfig   = ComponentHelper::getParams('com_emundus');
+        $eMConfig   = JComponentHelper::getParams('com_emundus');
 
         $link = $eMConfig->get('filename');
         $id_element = $params->get('element', '');
@@ -47,16 +46,31 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
 
         $element = $this->getElementsName($id_element);
 
-        $db = Factory::getContainer()->get('DatabaseDriver');
+        $db = JFactory::getDbo();
+        //Requête qui  récupère la date de dernière exécution du plugin
         $query = $db->getQuery(true);
 
+        $query->select($db->quoteName('lastrun'));
+        $query->from($db->quoteName('#__fabrik_cron'));
+        $query->where($db->quoteName('plugin') . ' LIKE '.$db->quote('emundusehespsiscole'));
+
+        $db->setQuery($query);
+        $lastrun = $db->loadResult();
+        // Requête qui recherche les dossiers créés ou modifié à la date du lancement du cron
+        $query = $db->getQuery(true);
+        /*
+                $query->select('DISTINCT (fnum_to) as fnum');
+                $query->from($db->quoteName('#__emundus_logs'));
+                $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
+        */
         // Suite à la demande de pouvoir télécharger tous les dossiers complets, on ne cherche plus à identifier les dossiers dernièrement modifiés, seulement ceux non-archivés parmis une liste de statuts
-        $query->select('fnum')
-	        ->from($db->quoteName('#__emundus_campaign_candidature'))
-	        ->where($db->quoteName('published') . '=1 AND '.$db->quoteName('status') . ' IN ('.$status.') ORDER BY date_submitted DESC');
+        $query->select(array('fnum, applicant_id'));
+        $query->from($db->quoteName('#__emundus_campaign_candidature'));
+        $query->where($db->quoteName('published') . '=1 AND '.$db->quoteName('status') . ' IN ('.$status.') ORDER BY date_submitted DESC');
+
+        $db->setQuery($query);
 
         try {
-	        $db->setQuery($query);
             $resultlogs = $db->loadAssocList();
             JLog::add("Nb files to export: ".count($resultlogs), JLog::INFO, 'com_emundus.emundusehespsiscole');
         }
@@ -65,14 +79,38 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         }
 
         if(!empty($resultlogs)){
-	        $results = [];
+            $query = $db->getQuery(true);
+
+
             foreach ($resultlogs as $fnums) {
+
+                $request = $db->getQuery(true);
+                $request->select(array('id_ehesp','u.username'))
+                    ->from('#__emundus_users','eu')
+                    ->leftJoin('#__users u ON eu.user_id = u.id')
+                    ->leftJoin('#__emundus_campaign_candidature ecc ON eu.user_id = ecc.applicant_id')
+                    ->where('ecc.fnum LIKE '.$db->quote($fnums['fnum']));
+                $db->setQuery($request);
+
+                $identifiant_ehesp = $db->loadAssoc();
 
                 $query = "SELECT ";
 
                 //id_ehesp
                 if ($id_ehesp) {
-                    $query .= "eu.id_ehesp ";
+                    if(!empty($identifiant_ehesp['id_ehesp'])){
+                        $query .= "eu.id_ehesp ";
+                    }
+                    else{
+                        $query .= "u.username ";
+                        //update id_ehesp in #__emundus_users
+                        $query_update = $db->getQuery(true);
+                        $query_update->update('#__emundus_users')
+                            ->set('id_ehesp = '.$db->quote($identifiant_ehesp['username']))
+                            ->where('user_id = '.$db->quote($fnums['applicant_id']));
+                        $db->setQuery($query_update);
+                        $db->execute();
+                    }
                 }
                 if($id_emundus) {
                     $query .= ", eu.user_id ";
@@ -94,19 +132,19 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                 }
 
                 $results[] = $m_files->getFnumArray($fnums,$element,0,0,0,1,$query);
+
             }
 
             $entete = explode(',',trim($entete));
             $post[0] = $entete;
 
-            foreach($results as $result){
+            foreach($results as $key => $result){
                 foreach ($result as $res){
                     $post[] = array_values($res);
                 }
             }
 
-            $path = JPATH_SITE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.'.csv';
-
+            $path = JPATH_SITE.DS.'images'.DS.'emundus'.DS.'files'.DS.'archives'.DS.$link.'.csv'; // chemin du lien
             $yesterday_date = date('Y-m-d',strtotime('- 1 day'));
             $csv_file = $link.$yesterday_date.'.csv';
 
@@ -157,8 +195,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
     public function getElementsName($elements_id) {
         if (!empty($elements_id) && !empty(ltrim($elements_id))) {
 
-            $db = Factory::getContainer()->get('DatabaseDriver');
-
+            $db = JFactory::getDBO();
             $query = 'SELECT element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.created_by_alias AS created_by_alias, joins.table_join
                     FROM #__fabrik_elements element
                     INNER JOIN #__fabrik_groups AS groupe ON element.group_id = groupe.id

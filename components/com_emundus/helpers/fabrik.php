@@ -1967,12 +1967,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	 * @param   null  $fnum         int    The form number to search the element's value for
 	 * @param         $user_id      int    The user id to search the element's value for
      * @param         $load_option  string The query load method to use to retrieve the values
+     * @param   null  $step_id      int    The workflow step we want the values from
 	 *
 	 * @return mixed|string|null
 	 * @description Return the value of an element according to its alias in a form
 	 *
 	 */
-	static function getValueByAlias(string $alias, ?string $fnum = null, int $user_id = 0, string $load_option = 'result'): array
+	static function getValueByAlias(string $alias, ?string $fnum = null, int $user_id = 0, string $load_option = 'result', int $step_id = null): array
 	{
 		$value = ['value' => '', 'raw' => ''];
 
@@ -2025,6 +2026,10 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 									$query->where("user_id = " . $db->quote($user_id));
 								}
 							}
+
+                            if (!empty($step_id) && in_array('step_id', $columns)) {
+                                $query->where("step_id = " . $db->quote($step_id));
+                            }
 
 							$query->order('id DESC');
 							$db->setQuery($query);

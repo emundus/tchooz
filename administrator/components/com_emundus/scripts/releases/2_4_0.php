@@ -13,9 +13,7 @@ namespace scripts;
 
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
 use stdClass;
-use Symfony\Component\Yaml\Yaml;
 
 class Release2_4_0Installer extends ReleaseInstaller
 {
@@ -192,7 +190,7 @@ class Release2_4_0Installer extends ReleaseInstaller
 			}
 
 			// Add already_seen column to #__user_mfa
-			$tasks[] = EmundusHelperUpdate::addColumn('#__user_mfa', 'already_seen', 'TINYINT', 1,0,0);
+			$tasks[] = EmundusHelperUpdate::addColumn('#__user_mfa', 'already_seen', 'TINYINT', 1,0,0)['status'];
 
 			// Update parameters of com_mails
 			$query->clear()
@@ -261,7 +259,7 @@ class Release2_4_0Installer extends ReleaseInstaller
 
 				if ($this->db->insertObject('#__emundus_setup_actions', $insert_acl))
 				{
-					$action_id = $this->db->lastInsertId();
+					$action_id = $this->db->insertId();
 				}
 			}
 
@@ -314,8 +312,6 @@ class Release2_4_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT','Une fois votre évaluation soumise, vous ne pourrez plus la modifier. Veuillez vérifier attentivement vos réponses avant de valider.');
 			EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT','Once you have submitted your evaluation, you will not be able to change it. Please check your answers carefully before validating.', 'override',0,null,null,'en-GB');
 
-
-			$result['status'] = !in_array(false, $tasks);
 
 			// if config sms not exist
 			$query->clear()
@@ -386,6 +382,8 @@ class Release2_4_0Installer extends ReleaseInstaller
 				EmundusHelperUpdate::insertFalangTranslation(1, $trigger_menu['id'], 'menu', 'title', 'Add/Edit a trigger');
 			}
 			//
+
+			$result['status'] = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
 		{

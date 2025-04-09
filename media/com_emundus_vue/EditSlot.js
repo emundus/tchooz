@@ -1,5 +1,5 @@
 import { e as eventsService } from "./events2.js";
-import { _ as _export_sfc, M as Modal, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, g as withModifiers, F as Fragment, e as renderList, w as withDirectives, v as vShow, n as normalizeClass, a as createBlock, b as createCommentVNode } from "./app_emundus.js";
+import { _ as _export_sfc, M as Modal, r as resolveComponent, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, h as withModifiers, F as Fragment, e as renderList, w as withDirectives, v as vShow, n as normalizeClass, a as createBlock } from "./app_emundus.js";
 import { I as Info } from "./Info.js";
 import { P as Parameter } from "./Parameter.js";
 import { C as ColorPicker } from "./ColorPicker.js";
@@ -229,7 +229,7 @@ const _sfc_main = {
             timer: 1500
           }).then(() => {
             this.onClosePopup();
-            this.$emit("update-items");
+            this.$emit("update-items", 1, null, true);
           });
         } else {
           Swal.fire({

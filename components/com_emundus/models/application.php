@@ -2288,7 +2288,7 @@ class EmundusModelApplication extends ListModel
 														$elt                   = Text::_($elements[$j]->content);
 													}
 													elseif ($elements[$j]->plugin == 'calc') {
-														$elt = Text::_($r_elt);
+														$elt = $r_elt;
 
 														$stripped = strip_tags($elt);
 														if ($stripped != $elt) {
@@ -2329,6 +2329,7 @@ class EmundusModelApplication extends ListModel
 								// AFFICHAGE EN LIGNE
 							}
 							else {
+
 								$check_not_empty_group = $this->checkEmptyGroups($elements, $itemt->db_table_name, $fnum);
 
 								if($check_not_empty_group && !in_array($g_params->repeat_group_show_first, $hidden_group_param_values)) {
@@ -2624,7 +2625,7 @@ class EmundusModelApplication extends ListModel
 
 													if(!empty($availability))
 													{
-														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+														$elt = EmundusHelperDate::displayDate($availability->start_date, 'd.m.Y H:i', 0) . ' - ' . EmundusHelperDate::displayDate($availability->end_date, 'd.m.Y H:i', 0);
 													}
 												}
 												else {
@@ -2647,7 +2648,7 @@ class EmundusModelApplication extends ListModel
 											}
 
 											$tds = !empty(Text::_($element->label)) ? '<td style="padding-right:50px; padding-left: 0; border-bottom: 1px solid var(--neutral-400);"><b>' . Text::_($element->label) . '</b></td>' : '';
-											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full tw-items-center" style="width:100%; border-bottom: 1px solid var(--neutral-400);"><span>' . ((!in_array($element->plugin,['field','textarea'])) ? Text::_($elt) : $elt) . '</span>';
+											$tds .= '<td class="tw-flex tw-flex-row tw-justify-between tw-w-full tw-items-center" style="width:100%; border-bottom: 1px solid var(--neutral-400);"><span>' . ((!in_array($element->plugin,['field','textarea','calc'])) ? Text::_($elt) : $elt) . '</span>';
 
 											if ($can_comment) {
 												$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit';
@@ -3008,7 +3009,7 @@ class EmundusModelApplication extends ListModel
 													$elt = ($r_elt == 1) ? Text::_("JYES") : Text::_("JNO");
 												}
 												else if ($elements[$j]->plugin == 'calc') {
-													$elt = Text::_($r_elt);
+													$elt = $r_elt;
 
 													$stripped = strip_tags($elt);
 													if ($stripped != $elt) {
@@ -3469,7 +3470,7 @@ class EmundusModelApplication extends ListModel
 												$elt = substr($element->content, 2, strlen($element->content));
 											}
 											else if ($element->plugin == 'calc') {
-												$elt = Text::_($element->content);
+												$elt = $element->content;
 
 												$stripped = strip_tags($elt);
 												if ($stripped != $elt) {
@@ -3551,7 +3552,7 @@ class EmundusModelApplication extends ListModel
 												$forms .= '<table class="pdf-forms">';
 											}
 											else {
-												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (($element->plugin != 'field') ? Text::_($elt) : $elt) . '</td></tr>';
+												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (!in_array($element->plugin,['field','textarea','calc']) ? Text::_($elt) : $elt) . '</td></tr>';
 											}
 										}
 									}
@@ -6034,11 +6035,11 @@ class EmundusModelApplication extends ListModel
 						$logsStd->details = $_FILES['file']['name'];
 						$logsParams       = array('created' => [$logsStd]);
 						EmundusModelLogs::log($this->_user->id, $applicant_id, $data['fnum'], 4, 'c', 'COM_EMUNDUS_ACCESS_ATTACHMENT_CREATE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
-
-						PluginHelper::importPlugin('emundus', 'custom_event_handler');
-						Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data,$data['fnum']));
-						Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data,'fnum' => $data['fnum']]]);
 					}
+
+                    PluginHelper::importPlugin('emundus', 'custom_event_handler');
+                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data,$data['fnum']));
+                    Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data,'fnum' => $data['fnum']]]);
 				}
 			}
 			catch (Exception $e) {

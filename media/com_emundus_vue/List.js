@@ -1,4 +1,4 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, w as withDirectives, z as vModelSelect, F as Fragment, e as renderList, A as vModelText, D as script, r as resolveComponent, n as normalizeClass, h as createVNode, f as withCtx, m as createTextVNode, P as Popover, a as createBlock, x as Pagination, B as _imports_0, g as withModifiers, v as vShow, M as Modal, u as useGlobalStore, q as ref, ab as userService, s as settingsService, S as Swal$1, aa as resolveDynamicComponent, p as Teleport, J as FetchClient } from "./app_emundus.js";
+import { _ as _export_sfc, c as createElementBlock, o as openBlock, d as createBaseVNode, b as createCommentVNode, t as toDisplayString, C as script, r as resolveComponent, w as withDirectives, a as createBlock, y as vModelSelect, F as Fragment, e as renderList, z as vModelText, f as withCtx, m as createTextVNode, n as normalizeClass, g as createVNode, P as Popover, x as Pagination, A as _imports_0, h as withModifiers, v as vShow, M as Modal, S as Swal$1, J as FetchClient, s as settingsService, u as useGlobalStore, q as ref, ab as userService, aa as resolveDynamicComponent, p as Teleport } from "./app_emundus.js";
 import ExportsSlotsModal from "./ExportSlotsModal.js";
 import { S as Skeleton } from "./Skeleton.js";
 import Calendar from "./Calendar.js";
@@ -7,11 +7,11 @@ import { P as Parameter } from "./Parameter.js";
 import { e as eventsService } from "./events2.js";
 import "./core.js";
 import "./index.js";
-import "./LocationPopup.js";
-import "./LocationForm.js";
 import "./EventBooking.js";
 import "./Info.js";
 import "./ColorPicker.js";
+import "./LocationPopup.js";
+import "./LocationForm.js";
 const _sfc_main$9 = {
   name: "Head",
   props: {
@@ -57,10 +57,21 @@ function _sfc_render$9(_ctx, _cache, $props, $setup, $data, $options) {
 const Head = /* @__PURE__ */ _export_sfc(_sfc_main$9, [["render", _sfc_render$9], ["__scopeId", "data-v-041fbbe6"]]);
 const _sfc_main$8 = {
   name: "Filter",
+  components: {
+    Multiselect: script
+  },
   props: {
     filter: {
       type: Object,
       required: true
+    }
+  },
+  created() {
+    if (this.filter.type === "multiselect" && this.filter.value && typeof this.filter.value !== "object") {
+      const matched = this.filter.options.find((opt) => opt.value == this.filter.value);
+      if (matched) {
+        this.filter.value = matched;
+      }
     }
   },
   methods: {
@@ -76,6 +87,7 @@ const _hoisted_1$8 = { class: "tw-flex tw-items-center tw-justify-between" };
 const _hoisted_2$8 = { class: "!tw-mb-0 tw-font-medium" };
 const _hoisted_3$6 = ["value"];
 function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
+  const _component_multiselect = resolveComponent("multiselect");
   return openBlock(), createElementBlock("div", null, [
     createBaseVNode("div", _hoisted_1$8, [
       createBaseVNode("label", _hoisted_2$8, toDisplayString(_ctx.translate($props.filter.label)), 1),
@@ -106,7 +118,36 @@ function _sfc_render$8(_ctx, _cache, $props, $setup, $data, $options) {
       onChange: _cache[4] || (_cache[4] = ($event) => $options.onChangeFilter($props.filter))
     }, null, 544)), [
       [vModelText, $props.filter.value]
-    ]) : createCommentVNode("", true)
+    ]) : $props.filter.type === "time" ? withDirectives((openBlock(), createElementBlock("input", {
+      key: 2,
+      type: "time",
+      "onUpdate:modelValue": _cache[5] || (_cache[5] = ($event) => $props.filter.value = $event),
+      onChange: _cache[6] || (_cache[6] = ($event) => $options.onChangeFilter($props.filter))
+    }, null, 544)), [
+      [vModelText, $props.filter.value]
+    ]) : $props.filter.type === "multiselect" ? (openBlock(), createBlock(_component_multiselect, {
+      key: 3,
+      modelValue: $props.filter.value,
+      "onUpdate:modelValue": _cache[7] || (_cache[7] = ($event) => $props.filter.value = $event),
+      options: $props.filter.options,
+      multiple: false,
+      searchable: true,
+      "close-on-select": true,
+      "clear-on-select": false,
+      "preserve-search": true,
+      "select-label": "",
+      "deselect-label": "",
+      selectedLabel: "",
+      placeholder: _ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_FILTER_SEARCH_PLACEHOLDER"),
+      label: "label",
+      "track-by": "value",
+      onSelect: _cache[8] || (_cache[8] = ($event) => $options.onChangeFilter($props.filter))
+    }, {
+      noResult: withCtx(() => [
+        createTextVNode(toDisplayString(_ctx.translate("COM_EMUNDUS_MULTISELECT_NORESULTS")), 1)
+      ]),
+      _: 1
+    }, 8, ["modelValue", "options", "placeholder"])) : createCommentVNode("", true)
   ]);
 }
 const Filter = /* @__PURE__ */ _export_sfc(_sfc_main$8, [["render", _sfc_render$8]]);
@@ -186,15 +227,16 @@ const _sfc_main$7 = {
   },
   methods: {
     onChangeFilter(filter) {
+      const fieldValue = typeof filter.value === "object" && filter.value !== null && "value" in filter.value ? filter.value.value : filter.value;
       sessionStorage.setItem(
         "tchooz_filter_" + this.currentTabKey + "_" + filter.key + "/" + document.location.hostname,
-        filter.value
+        fieldValue
       );
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.has(filter.key)) {
-        urlParams.set(filter.key, filter.value);
+        urlParams.set(filter.key, fieldValue);
       } else {
-        urlParams.append(filter.key, filter.value);
+        urlParams.append(filter.key, fieldValue);
       }
       const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname + "?" + urlParams.toString();
       window.history.replaceState({ path: newUrl }, "", newUrl);
@@ -221,12 +263,12 @@ const _sfc_main$7 = {
   computed: {
     availableFilters() {
       return this.filters && this.filters[this.currentTabKey] ? this.filters[this.currentTabKey].filter((filter) => {
-        return (filter.type === "select" && filter.options.length > 0 || filter.type === "date") && !filter.alwaysDisplay;
+        return ((filter.type === "select" || filter.type === "multiselect") && filter.options.length > 0 || filter.type === "date" || filter.type === "time") && !filter.alwaysDisplay;
       }) : [];
     },
     defaultFilters() {
       return this.filters && this.filters[this.currentTabKey] ? this.filters[this.currentTabKey].filter((filter) => {
-        return (filter.type === "select" && filter.options.length > 0 || filter.type === "date") && filter.alwaysDisplay;
+        return ((filter.type === "select" || filter.type === "multiselect") && filter.options.length > 0 || filter.type === "date" || filter.type === "time") && filter.alwaysDisplay;
       }) : [];
     }
   },
@@ -1263,7 +1305,7 @@ const _sfc_main = {
       this.order = this.order === "ASC" ? "DESC" : "ASC";
       this.getListItems(1, this.selectedListTab);
     },
-    async getListItems(page = 1, tab = null) {
+    async getListItems(page = 1, tab = null, refreshFilters = false) {
       this.checkedItems = [];
       if (tab === null) {
         this.loading.tabs = true;
@@ -1305,7 +1347,7 @@ const _sfc_main = {
             this.searches[this.selectedListTab].search = searchValue;
             this.searches[this.selectedListTab].lastSearch = searchValue;
           }
-          this.setTabFilters(tab2).then(() => {
+          this.setTabFilters(tab2, refreshFilters).then(() => {
             if (typeof tab2.getter !== "undefined") {
               let url = "/index.php?option=com_emundus&controller=" + tab2.controller + "&task=" + tab2.getter + "&lim=" + this.numberOfItemsToDisplay + "&page=" + page;
               if (this.searches[tab2.key].search !== "") {
@@ -1317,8 +1359,9 @@ const _sfc_main = {
               }
               if (typeof this.filters[tab2.key] !== "undefined") {
                 this.filters[tab2.key].forEach((filter) => {
-                  if (filter.value !== "" && filter.value !== "all") {
-                    url += "&" + filter.key + "=" + filter.value;
+                  const filterValue = typeof filter.value === "object" && filter.value !== null && "value" in filter.value ? filter.value.value : filter.value;
+                  if (filterValue !== "" && filterValue !== "all") {
+                    url += "&" + filter.key + "=" + filterValue;
                   }
                 });
               }
@@ -1363,11 +1406,11 @@ const _sfc_main = {
         this.loading.items = false;
       }
     },
-    async setTabFilters(tab) {
+    async setTabFilters(tab, refreshFilters = false) {
       return new Promise(async (resolve) => {
         const urlParams = new URLSearchParams(window.location.search);
         if (typeof tab.filters !== "undefined" && tab.filters.length > 0) {
-          if (typeof this.filters[tab.key] === "undefined") {
+          if (typeof this.filters[tab.key] === "undefined" || refreshFilters) {
             this.loading.filters = true;
             this.filters[tab.key] = [];
             for (const filter of tab.filters) {
@@ -1380,7 +1423,7 @@ const _sfc_main = {
               } else if (filterValueSession) {
                 filterValue = filterValueSession;
               }
-              if (!filter.values) {
+              if (!filter.values || refreshFilters) {
                 if (filter.getter) {
                   this.filters[tab.key].push({
                     key: filter.key,
@@ -1388,7 +1431,7 @@ const _sfc_main = {
                     value: filterValue,
                     alwaysDisplay: filter.alwaysDisplay || false,
                     options: [],
-                    type: filter.type || "select"
+                    type: filter.multiselect ? "multiselect" : filter.type || "select"
                   });
                   await this.setFilterOptions(
                     typeof filter.controller !== "undefined" ? filter.controller : tab.controller,
@@ -1402,7 +1445,7 @@ const _sfc_main = {
                     value: filterValue,
                     alwaysDisplay: filter.alwaysDisplay || false,
                     options: filter.values || [],
-                    type: filter.type || "select"
+                    type: filter.multiselect ? "multiselect" : filter.type || "select"
                   });
                 }
               } else {
@@ -1412,7 +1455,7 @@ const _sfc_main = {
                   value: filterValue,
                   alwaysDisplay: filter.alwaysDisplay || false,
                   options: filter.values || [],
-                  type: filter.type || "select"
+                  type: filter.multiselect ? "multiselect" : filter.type || "select"
                 });
               }
             }
@@ -1541,7 +1584,9 @@ const _sfc_main = {
         return;
       }
       let url = "index.php?option=com_emundus&controller=" + exp.controller + "&task=" + exp.action;
-      let parameters = { ids: this.checkedItems };
+      let parameters = {
+        ids: this.checkedItems.length > 0 ? this.checkedItems : this.displayedItems.map((item) => item.id)
+      };
       if (Object.prototype.hasOwnProperty.call(exp, "confirm")) {
         Swal$1.fire({
           icon: "warning",
@@ -1575,7 +1620,7 @@ const _sfc_main = {
       }
       let url = "index.php?option=com_emundus&controller=" + this.exportClicked.controller + "&task=" + this.exportClicked.action;
       let parameters = {
-        ids: this.checkedItems,
+        ids: this.checkedItems.length > 0 ? this.checkedItems : this.displayedItems.map((item) => item.id),
         checkboxesValuesFromView: JSON.stringify(checkboxesValues.viewSelection),
         checkboxesValuesFromProfile: JSON.stringify(checkboxesValues.profileSelection)
       };
@@ -2192,7 +2237,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                           class: "tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1",
                           style: { "padding": "0.5rem" },
                           title: _ctx.translate($options.editAction.label)
-                        }, _cache[16] || (_cache[16] = [
+                        }, _cache[15] || (_cache[15] = [
                           createBaseVNode("span", { class: "material-symbols-outlined popover-toggle-btn tw-cursor-pointer" }, "edit", -1)
                         ]), 8, _hoisted_25)) : createCommentVNode("", true),
                         (openBlock(true), createElementBlock(Fragment, null, renderList($options.iconActions, (action) => {
@@ -2317,15 +2362,15 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
             delay: 100,
             adaptive: true,
             clickToClose: false,
-            onClick: _cache[15] || (_cache[15] = withModifiers(() => {
+            onClick: _cache[14] || (_cache[14] = withModifiers(() => {
             }, ["stop"]))
           }, {
             default: withCtx(() => [
               (openBlock(), createBlock(resolveDynamicComponent($options.resolvedComponent), {
                 items: $data.checkedItems,
                 onClose: _cache[13] || (_cache[13] = ($event) => $options.closePopup()),
-                onUpdateItems: _cache[14] || (_cache[14] = ($event) => $options.getListItems())
-              }, null, 40, ["items"]))
+                onUpdateItems: $options.getListItems
+              }, null, 40, ["items", "onUpdateItems"]))
             ]),
             _: 1
           })
@@ -2334,7 +2379,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     ]))
   ], 2);
 }
-const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-77f62f10"]]);
+const list = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render], ["__scopeId", "data-v-a0c2a100"]]);
 export {
   list as default
 };

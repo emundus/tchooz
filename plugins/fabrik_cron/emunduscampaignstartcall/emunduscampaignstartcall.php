@@ -8,10 +8,12 @@
  * @license     GNU/GPL http://www.gnu.org/copyleft/gpl.html
  */
 
-// No direct access
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\Uri\Uri;
 
+// No direct access
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -55,18 +57,23 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
         $reminderHours = $params->get('reminder_hours',null);
         $allow_element = $params->get('allow_element',null);
         $email_tmpl = $params->get('email_tmpl',null);
+        $status = $params->get('status',null);
 
         $m_model = new EmundusModelEmails();
         $this->log = '';
 
-        $db = Factory::getContainer()->get('DatabaseDriver');
+	    $db = Factory::getContainer()->get('DatabaseDriver');
 
         if(!empty($reminderHours) && !empty($allow_element) && !empty($email_tmpl)) {
             $query = 'select jesc.id,jesc.label,jecw.start_date,jecw.end_date
                     from jos_emundus_campaign_workflow_repeat_campaign as jecwr
                     left join jos_emundus_campaign_workflow jecw on jecwr.parent_id = jecw.id
                     left join jos_emundus_setup_campaigns jesc on jecwr.campaign = jesc.id
-                    where jecw.start_date BETWEEN now() and DATE_ADD(now(),INTERVAL  ' . $reminderHours . '  HOUR)';
+                    LEFT JOIN jos_emundus_campaign_workflow_repeat_entry_status as jecwr2 on jecwr2.parent_id = jecw.id
+                    where jecw.start_date BETWEEN now() and DATE_ADD(now(),INTERVAL  ' . $reminderHours . '  HOUR)
+                    and jecwr2.entry_status in ('.$status.')';
+
+
             $db->setQuery($query);
             $campaigns = $db->loadObjectList();
 
@@ -110,7 +117,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                         $tmpl = $db->loadObject();
 
                         // setup mail
-                        $email_from_sys = $this->app->get('mailfrom');
+	                    $email_from_sys = $this->app->get('mailfrom');
 
                         $from = $obj->emailfrom;
                         $fromname = $obj->name;
@@ -120,7 +127,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                             'CAMPAIGN_LABEL' => $campaign->label,
                             'CAMPAIGN_START_DATE' => date("d/m/Y H:i", strtotime($campaign->start_date)),
                             'CAMPAIGN_END_DATE' => date("d/m/Y H:i", strtotime($campaign->end_date)),
-                            'SITE_URL' => JURI::base(),
+                            'SITE_URL' => Uri::base(),
                         ];
 
                         $tags = $m_model->setTags($user_to_notified->user_id, $post, null, '', $obj->emailfrom . $obj->name . $obj->subject . $obj->message);
@@ -158,7 +165,7 @@ class PlgFabrik_Cronemunduscampaignstartcall extends PlgFabrik_Cron {
                         $send = $mailer->Send();
 
                         if ($send !== true) {
-                            JLog::add($send, JLog::ERROR, 'com_emundus');
+	                        Log::add($send, JLog::ERROR, 'com_emundus');
                         } else {
                             // Save email sended to this user
                             $query = $db->getQuery(true);
