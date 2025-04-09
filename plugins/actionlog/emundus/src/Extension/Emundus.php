@@ -73,8 +73,10 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 		$data     = $arguments['data'];
 		$old_data = $arguments['old_data'];
-
-		$jUser = $this->getApplication()->getIdentity();
+		$user_id  = $arguments['user_id'] ?? 0;
+		if (empty($user_id)) {
+			$user_id = $this->getApplication()->getIdentity()->id;
+		}
 
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CAMPAIGN';
 		$context            = 'com_emundus.campaign';
@@ -85,7 +87,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$this->setDiffData($data, $old_data);
 		$message = $this->setMessage($cid, 'update', 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CAMPAIGN_TITLE', 'done', $old_data, $data, $more_data);
 
-		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+		$this->addLog([$message], $messageLanguageKey, $context, $user_id);
 	}
 
 	public function onAfterCampaignCreate($data)

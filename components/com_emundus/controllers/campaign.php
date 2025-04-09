@@ -614,7 +614,7 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($cid))
 			{
-				$result = $this->m_campaign->updateCampaign($data, $cid);
+				$result = $this->m_campaign->updateCampaign($data, $cid, $this->_user->id);
 
 				if ($result)
 				{
