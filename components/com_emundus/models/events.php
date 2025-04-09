@@ -453,7 +453,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 					'group_concat(DISTINCT essu.user) as users',
 					'group_concat(DISTINCT concat(eu.lastname," ",eu.firstname)) as people',
 					'sum(esa.capacity) as availabilities_count',
-					'count(DISTINCT er.id) as booked_count'
 				];
 				$query->clear()
 					->select($columns)
@@ -462,7 +461,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 					->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('essu.user'))
 					->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.id') . ' = ' . $this->db->quoteName('eses.room'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.slot') . ' = ' . $this->db->quoteName('eses.id'))
-					->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.slot') . ' = ' . $this->db->quoteName('eses.id'))
 					->where($this->db->quoteName('eses.event') . ' = ' . $event_id)
 					->group('eses.id');
 				$this->_db->setQuery($query);
@@ -473,6 +471,15 @@ class EmundusModelEvents extends BaseDatabaseModel
 					// Convert UTC dates to platform timezone ($timezone)
 					$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
 					$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+
+					$query->clear()
+						->select('count(DISTINCT er.id)')
+						->from($this->db->quoteName('#__emundus_registrants', 'er'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_event_slots', 'eses') . ' ON ' . $this->db->quoteName('eses.id') . ' = ' . $this->db->quoteName('er.slot'))
+						->where($this->db->quoteName('eses.id') . ' = ' . $slot->id);
+					$this->_db->setQuery($query);
+					$slot->booked_count = $this->_db->loadResult();
+
 				}
 
 				$event->slots = $slots;
@@ -527,7 +534,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 				'group_concat(DISTINCT essu.user) as users',
 				'group_concat(DISTINCT concat(eu.lastname," ",eu.firstname)) as people',
 				'sum(esa.capacity) as availabilities_count',
-				'count(DISTINCT er.id) as booked_count'
 			];
 
 			$query->select($columns)
@@ -536,8 +542,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->leftJoin($this->db->quoteName('#__emundus_setup_slot_users', 'essu') . ' ON ' . $this->db->quoteName('essu.slot') . ' = ' . $this->db->quoteName('eses.id'))
 				->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.id') . ' = ' . $this->db->quoteName('essu.user'))
 				->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.id') . ' = ' . $this->db->quoteName('eses.room'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.slot') . ' = ' . $this->db->quoteName('eses.id'))
-				->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.slot') . ' = ' . $this->db->quoteName('eses.id'));
+				->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.slot') . ' = ' . $this->db->quoteName('eses.id'));
 			if (!empty($start))
 			{
 				$query->where($this->db->quoteName('eses.start_date') . ' >= ' . $this->db->quote($start));
@@ -559,6 +564,14 @@ class EmundusModelEvents extends BaseDatabaseModel
 				// Convert UTC dates to platform timezone ($timezone)
 				$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
 				$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+
+				$query->clear()
+					->select('count(DISTINCT er.id)')
+					->from($this->db->quoteName('#__emundus_registrants', 'er'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_event_slots', 'eses') . ' ON ' . $this->db->quoteName('eses.id') . ' = ' . $this->db->quoteName('er.slot'))
+					->where($this->db->quoteName('eses.id') . ' = ' . $slot->id);
+				$this->_db->setQuery($query);
+				$slot->booked_count = $this->_db->loadResult();
 			}
 		}
 		catch (Exception $e)
@@ -609,11 +622,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'));
 			if (!empty($start))
 			{
-				$query->where($this->db->quoteName('esa.start_date') . ' >= ' . $this->db->quote($start));
+				$timezone = $this->app->get('offset', 'Europe/Paris');
+				$query->where($this->db->quoteName('esa.start_date') . ' >= ' . $this->db->quote(Factory::getDate($start, $timezone)->toSql()));
 			}
 			if (!empty($end))
 			{
-				$query->where($this->db->quoteName('esa.end_date') . ' <= ' . $this->db->quote($end));
+				$timezone = $this->app->get('offset', 'Europe/Paris');
+				$query->where($this->db->quoteName('esa.end_date') . ' <= ' . $this->db->quote(Factory::getDate($end, $timezone)->toSql()));
 			}
 			if (!empty($events_ids))
 			{
