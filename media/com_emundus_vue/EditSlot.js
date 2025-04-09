@@ -229,7 +229,7 @@ const _sfc_main = {
             timer: 1500
           }).then(() => {
             this.onClosePopup();
-            this.$emit("update-items");
+            this.$emit("update-items", 1, null, true);
           });
         } else {
           Swal.fire({

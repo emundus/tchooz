@@ -93,18 +93,22 @@ export default {
 	},
 	methods: {
 		onChangeFilter(filter) {
+			const fieldValue =
+				typeof filter.value === 'object' && filter.value !== null && 'value' in filter.value
+					? filter.value.value
+					: filter.value;
 			// Store value to sessionStorage
 			sessionStorage.setItem(
 				'tchooz_filter_' + this.currentTabKey + '_' + filter.key + '/' + document.location.hostname,
-				filter.value,
+				fieldValue,
 			);
 
 			// Update URL
 			const urlParams = new URLSearchParams(window.location.search);
 			if (urlParams.has(filter.key)) {
-				urlParams.set(filter.key, filter.value);
+				urlParams.set(filter.key, fieldValue);
 			} else {
-				urlParams.append(filter.key, filter.value);
+				urlParams.append(filter.key, fieldValue);
 			}
 			const newUrl =
 				window.location.protocol + '//' + window.location.host + window.location.pathname + '?' + urlParams.toString();
@@ -151,7 +155,9 @@ export default {
 			return this.filters && this.filters[this.currentTabKey]
 				? this.filters[this.currentTabKey].filter((filter) => {
 						return (
-							((filter.type === 'select' && filter.options.length > 0) || filter.type === 'date') &&
+							(((filter.type === 'select' || filter.type === 'multiselect') && filter.options.length > 0) ||
+								filter.type === 'date' ||
+								filter.type === 'time') &&
 							!filter.alwaysDisplay
 						);
 					})
@@ -161,7 +167,9 @@ export default {
 			return this.filters && this.filters[this.currentTabKey]
 				? this.filters[this.currentTabKey].filter((filter) => {
 						return (
-							((filter.type === 'select' && filter.options.length > 0) || filter.type === 'date') &&
+							(((filter.type === 'select' || filter.type === 'multiselect') && filter.options.length > 0) ||
+								filter.type === 'date' ||
+								filter.type === 'time') &&
 							filter.alwaysDisplay
 						);
 					})
