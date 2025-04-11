@@ -434,15 +434,15 @@ class EmundusModelPayment extends JModelList
 		$product = false;
 
 		if (!empty($product_id)) {
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
 			$query->select('*')
 				->from('#__hikashop_product')
 				->where($db->quoteName('product_id') . ' = ' . $db->quote($product_id));
-			$db->setQuery($query);
 
 			try {
+				$db->setQuery($query);
 				$product = $db->loadObject();
 			}
 			catch (Exception $e) {
