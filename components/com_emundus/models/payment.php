@@ -1403,11 +1403,11 @@ class EmundusModelPayment extends JModelList
 
 			if (in_array('product_vendor_id', $columns_info)) {
 				$columns[] = 'product_vendor_id';
-				$values[] = $vendor_id;
+				$values[] = $db->quote($vendor_id);
 			}
 			if (in_array('product_vendor_params', $columns_info)) {
 				$columns[] = 'product_vendor_params';
-				$values[] = '';
+				$values[] = $db->quote('');
 			}
 
 			$query->insert('#__hikashop_product')
