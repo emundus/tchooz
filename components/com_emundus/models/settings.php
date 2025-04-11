@@ -3645,6 +3645,8 @@ class EmundusModelSettings extends ListModel
 				}, $setup->messenger_notify_groups);
 
 				$setup->messenger_notify_groups = implode(',', $setup->messenger_notify_groups);
+			} else {
+				$setup->messenger_notify_groups = '';
 			}
 			if (!empty($setup->messenger_notify_users))
 			{
@@ -3653,6 +3655,8 @@ class EmundusModelSettings extends ListModel
 				}, $setup->messenger_notify_users);
 
 				$setup->messenger_notify_users = implode(',', $setup->messenger_notify_users);
+			} else {
+				$setup->messenger_notify_users = '';
 			}
 
 			$emConfig->set('messenger_anonymous_coordinator', $setup->messenger_anonymous_coordinator);
