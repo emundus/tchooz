@@ -1759,6 +1759,7 @@ class EmundusControllerFiles extends BaseController
 				$date_elements = [];
 				$textarea_elements = [];
 				$iban_elements = [];
+                $calc_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine === 'step_id') {
 						$line .= Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . "\t";
@@ -1809,6 +1810,9 @@ class EmundusControllerFiles extends BaseController
 								}
 								$iban_elements[$elt_name] = $params->encrypt_datas;
 							}
+                            if ($fLine->element_plugin == 'calc') {
+                                $calc_elements[] = $fLine->tab_name.'___'.$fLine->element_name;
+                            }
 
 							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
@@ -1876,6 +1880,9 @@ class EmundusControllerFiles extends BaseController
 						}
 						$iban_elements[$elt_name] = $params->encrypt_datas;
 					}
+                    if ($fLine->element_plugin == 'calc') {
+                        $calc_elements[] = $fLine->tab_name.'___'.$fLine->element_name;
+                    }
 				}
 			}
 
@@ -2012,6 +2019,10 @@ class EmundusControllerFiles extends BaseController
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
 										}
+                                        elseif(in_array($k,$calc_elements)){
+                                            $v = strip_tags($v);
+                                            $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
+                                        }
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
 											$line .= Text::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
 										}
