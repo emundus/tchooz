@@ -74,7 +74,7 @@ class ApiMapper
 					case 'alias':
 						$fabrik_value = EmundusHelperFabrik::getValueByAlias($field->elementId, $this->fnum);
 
-						if (!empty($fabrik_value)) {
+						if (!empty($fabrik_value) && !empty($fabrik_value['raw'])) {
 							$fabrik_element_type = '';
 							$fabrik_elements = EmundusHelperFabrik::getElementsByAlias($field->elementId);
 							if (!empty($fabrik_elements)) {
@@ -139,7 +139,10 @@ class ApiMapper
 							try {
 								$this->db->setQuery($query);
 								$result = $this->db->loadResult();
-								$this->mapping[$field->attribute] = $this->sanitizeValue($field, $result);
+
+								if (!empty($result)) {
+									$this->mapping[$field->attribute] = $this->sanitizeValue($field, $result);
+								}
 							} catch (\Exception $e) {
 								Log::add('Failed to get value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
 							}
