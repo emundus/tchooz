@@ -1,6 +1,7 @@
-import { _ as _export_sfc, M as Modal, ab as userService, u as useGlobalStore, c as createElementBlock, o as openBlock, b as createCommentVNode, d as createBaseVNode, t as toDisplayString, j as normalizeStyle, F as Fragment, e as renderList, m as createTextVNode, w as withDirectives, v as vShow, ac as defineComponent, ad as h$5, p as Teleport, ae as isReactive } from "./app_emundus.js";
+import { _ as _export_sfc, M as Modal, u as useGlobalStore, ab as userService, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, b as createCommentVNode, j as normalizeStyle, F as Fragment, e as renderList, m as createTextVNode, w as withDirectives, v as vShow, ac as defineComponent, ad as isReactive, ae as h$5, p as Teleport } from "./app_emundus.js";
 import "./index.js";
 import "./Parameter.js";
+import "./LocationPopup.js";
 var colors = {
   methods: {
     lightenColor(color, percent) {
@@ -359,12 +360,12 @@ const _o = defineComponent({
     }, h$5(Fragment, {}, e2));
   }
 });
-var ve, h$4, _t, ft, V$2, Re, ht, we, pt, $e, Se, Me, vt, ee = {}, mt = [], Xt = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, me = Array.isArray;
-function A$2(e2, t2) {
+var ve, h$4, _t, ft, I$1, Re, ht, Se, pt, $e, we, Me, vt, ee = {}, mt = [], Xt = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, me = Array.isArray;
+function F$2(e2, t2) {
   for (var n2 in t2) e2[n2] = t2[n2];
   return e2;
 }
-function We(e2) {
+function Ae(e2) {
   e2 && e2.parentNode && e2.parentNode.removeChild(e2);
 }
 function U$1(e2, t2, n2) {
@@ -380,7 +381,7 @@ function de(e2, t2, n2, r2, i2) {
 function M$1(e2) {
   return e2.children;
 }
-function T$3(e2, t2) {
+function C$2(e2, t2) {
   this.props = e2, this.context = t2;
 }
 function H$2(e2, t2) {
@@ -388,27 +389,27 @@ function H$2(e2, t2) {
   for (var n2; t2 < e2.__k.length; t2++) if ((n2 = e2.__k[t2]) != null && n2.__e != null) return n2.__e;
   return typeof e2.type == "function" ? H$2(e2) : null;
 }
-function kt(e2) {
+function yt(e2) {
   var t2, n2;
   if ((e2 = e2.__) != null && e2.__c != null) {
     for (e2.__e = e2.__c.base = null, t2 = 0; t2 < e2.__k.length; t2++) if ((n2 = e2.__k[t2]) != null && n2.__e != null) {
       e2.__e = e2.__c.base = n2.__e;
       break;
     }
-    return kt(e2);
+    return yt(e2);
   }
 }
 function Ye(e2) {
-  (!e2.__d && (e2.__d = true) && V$2.push(e2) && !_e.__r++ || Re !== h$4.debounceRendering) && ((Re = h$4.debounceRendering) || ht)(_e);
+  (!e2.__d && (e2.__d = true) && I$1.push(e2) && !_e.__r++ || Re !== h$4.debounceRendering) && ((Re = h$4.debounceRendering) || ht)(_e);
 }
 function _e() {
   var e2, t2, n2, r2, i2, o2, a2, s2;
-  for (V$2.sort(we); e2 = V$2.shift(); ) e2.__d && (t2 = V$2.length, r2 = void 0, o2 = (i2 = (n2 = e2).__v).__e, a2 = [], s2 = [], n2.__P && ((r2 = A$2({}, i2)).__v = i2.__v + 1, h$4.vnode && h$4.vnode(r2), Ae(n2.__P, r2, i2, n2.__n, n2.__P.namespaceURI, 32 & i2.__u ? [o2] : null, a2, o2 ?? H$2(i2), !!(32 & i2.__u), s2), r2.__v = i2.__v, r2.__.__k[r2.__i] = r2, gt(a2, r2, s2), r2.__e != o2 && kt(r2)), V$2.length > t2 && V$2.sort(we));
+  for (I$1.sort(Se); e2 = I$1.shift(); ) e2.__d && (t2 = I$1.length, r2 = void 0, o2 = (i2 = (n2 = e2).__v).__e, a2 = [], s2 = [], n2.__P && ((r2 = F$2({}, i2)).__v = i2.__v + 1, h$4.vnode && h$4.vnode(r2), Fe(n2.__P, r2, i2, n2.__n, n2.__P.namespaceURI, 32 & i2.__u ? [o2] : null, a2, o2 ?? H$2(i2), !!(32 & i2.__u), s2), r2.__v = i2.__v, r2.__.__k[r2.__i] = r2, gt(a2, r2, s2), r2.__e != o2 && yt(r2)), I$1.length > t2 && I$1.sort(Se));
   _e.__r = 0;
 }
-function yt(e2, t2, n2, r2, i2, o2, a2, s2, d2, l2, _2) {
-  var u2, c2, f2, m2, v2, b2, k2 = r2 && r2.__k || mt, D2 = t2.length;
-  for (d2 = Qt(n2, t2, k2, d2, D2), u2 = 0; u2 < D2; u2++) (f2 = n2.__k[u2]) != null && (c2 = f2.__i === -1 ? ee : k2[f2.__i] || ee, f2.__i = u2, b2 = Ae(e2, f2, c2, i2, o2, a2, s2, d2, l2, _2), m2 = f2.__e, f2.ref && c2.ref != f2.ref && (c2.ref && Fe(c2.ref, null, f2), _2.push(f2.ref, f2.__c || m2, f2)), v2 == null && m2 != null && (v2 = m2), 4 & f2.__u || c2.__k === f2.__k ? d2 = Dt(f2, d2, e2) : typeof f2.type == "function" && b2 !== void 0 ? d2 = b2 : m2 && (d2 = m2.nextSibling), f2.__u &= -7);
+function Dt(e2, t2, n2, r2, i2, o2, a2, s2, d2, l2, _2) {
+  var u2, c2, f2, m2, v2, b2, y2 = r2 && r2.__k || mt, k2 = t2.length;
+  for (d2 = Qt(n2, t2, y2, d2, k2), u2 = 0; u2 < k2; u2++) (f2 = n2.__k[u2]) != null && (c2 = f2.__i === -1 ? ee : y2[f2.__i] || ee, f2.__i = u2, b2 = Fe(e2, f2, c2, i2, o2, a2, s2, d2, l2, _2), m2 = f2.__e, f2.ref && c2.ref != f2.ref && (c2.ref && je(c2.ref, null, f2), _2.push(f2.ref, f2.__c || m2, f2)), v2 == null && m2 != null && (v2 = m2), 4 & f2.__u || c2.__k === f2.__k ? d2 = kt(f2, d2, e2) : typeof f2.type == "function" && b2 !== void 0 ? d2 = b2 : m2 && (d2 = m2.nextSibling), f2.__u &= -7);
   return n2.__e = v2, d2;
 }
 function Qt(e2, t2, n2, r2, i2) {
@@ -417,10 +418,10 @@ function Qt(e2, t2, n2, r2, i2) {
   if (u2) for (o2 = 0; o2 < _2; o2++) (s2 = n2[o2]) != null && !(2 & s2.__u) && (s2.__e == r2 && (r2 = H$2(s2)), bt(s2, s2));
   return r2;
 }
-function Dt(e2, t2, n2) {
+function kt(e2, t2, n2) {
   var r2, i2;
   if (typeof e2.type == "function") {
-    for (r2 = e2.__k, i2 = 0; r2 && i2 < r2.length; i2++) r2[i2] && (r2[i2].__ = e2, t2 = Dt(r2[i2], t2, n2));
+    for (r2 = e2.__k, i2 = 0; r2 && i2 < r2.length; i2++) r2[i2] && (r2[i2].__ = e2, t2 = kt(r2[i2], t2, n2));
     return t2;
   }
   e2.__e != t2 && (t2 && e2.type && !n2.contains(t2) && (t2 = H$2(e2)), n2.insertBefore(e2.__e, t2 || null), t2 = e2.__e);
@@ -459,7 +460,7 @@ function ae(e2, t2, n2, r2, i2) {
     if (typeof r2 == "string" && (e2.style.cssText = r2 = ""), r2) for (t2 in r2) n2 && t2 in n2 || Ue(e2.style, t2, "");
     if (n2) for (t2 in n2) r2 && n2[t2] === r2[t2] || Ue(e2.style, t2, n2[t2]);
   }
-  else if (t2[0] == "o" && t2[1] == "n") o2 = t2 != (t2 = t2.replace(pt, "$1")), t2 = t2.toLowerCase() in e2 || t2 == "onFocusOut" || t2 == "onFocusIn" ? t2.toLowerCase().slice(2) : t2.slice(2), e2.l || (e2.l = {}), e2.l[t2 + o2] = n2, n2 ? r2 ? n2.u = r2.u : (n2.u = $e, e2.addEventListener(t2, o2 ? Me : Se, o2)) : e2.removeEventListener(t2, o2 ? Me : Se, o2);
+  else if (t2[0] == "o" && t2[1] == "n") o2 = t2 != (t2 = t2.replace(pt, "$1")), t2 = t2.toLowerCase() in e2 || t2 == "onFocusOut" || t2 == "onFocusIn" ? t2.toLowerCase().slice(2) : t2.slice(2), e2.l || (e2.l = {}), e2.l[t2 + o2] = n2, n2 ? r2 ? n2.u = r2.u : (n2.u = $e, e2.addEventListener(t2, o2 ? Me : we, o2)) : e2.removeEventListener(t2, o2 ? Me : we, o2);
   else {
     if (i2 == "http://www.w3.org/2000/svg") t2 = t2.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
     else if (t2 != "width" && t2 != "height" && t2 != "href" && t2 != "list" && t2 != "form" && t2 != "tabIndex" && t2 != "download" && t2 != "rowSpan" && t2 != "colSpan" && t2 != "role" && t2 != "popover" && t2 in e2) try {
@@ -480,36 +481,36 @@ function He(e2) {
     }
   };
 }
-function Ae(e2, t2, n2, r2, i2, o2, a2, s2, d2, l2) {
-  var _2, u2, c2, f2, m2, v2, b2, k2, D2, J2, W2, ie, G2, Ie, oe, ye, De, L2 = t2.type;
+function Fe(e2, t2, n2, r2, i2, o2, a2, s2, d2, l2) {
+  var _2, u2, c2, f2, m2, v2, b2, y2, k2, J2, A2, ie, G2, Ve, oe, De, ke, T2 = t2.type;
   if (t2.constructor !== void 0) return null;
   128 & n2.__u && (d2 = !!(32 & n2.__u), o2 = [s2 = t2.__e = n2.__e]), (_2 = h$4.__b) && _2(t2);
-  e: if (typeof L2 == "function") try {
-    if (k2 = t2.props, D2 = "prototype" in L2 && L2.prototype.render, J2 = (_2 = L2.contextType) && r2[_2.__c], W2 = _2 ? J2 ? J2.props.value : _2.__ : r2, n2.__c ? b2 = (u2 = t2.__c = n2.__c).__ = u2.__E : (D2 ? t2.__c = u2 = new L2(k2, W2) : (t2.__c = u2 = new T$3(k2, W2), u2.constructor = L2, u2.render = nn), J2 && J2.sub(u2), u2.props = k2, u2.state || (u2.state = {}), u2.context = W2, u2.__n = r2, c2 = u2.__d = true, u2.__h = [], u2._sb = []), D2 && u2.__s == null && (u2.__s = u2.state), D2 && L2.getDerivedStateFromProps != null && (u2.__s == u2.state && (u2.__s = A$2({}, u2.__s)), A$2(u2.__s, L2.getDerivedStateFromProps(k2, u2.__s))), f2 = u2.props, m2 = u2.state, u2.__v = t2, c2) D2 && L2.getDerivedStateFromProps == null && u2.componentWillMount != null && u2.componentWillMount(), D2 && u2.componentDidMount != null && u2.__h.push(u2.componentDidMount);
+  e: if (typeof T2 == "function") try {
+    if (y2 = t2.props, k2 = "prototype" in T2 && T2.prototype.render, J2 = (_2 = T2.contextType) && r2[_2.__c], A2 = _2 ? J2 ? J2.props.value : _2.__ : r2, n2.__c ? b2 = (u2 = t2.__c = n2.__c).__ = u2.__E : (k2 ? t2.__c = u2 = new T2(y2, A2) : (t2.__c = u2 = new C$2(y2, A2), u2.constructor = T2, u2.render = nn), J2 && J2.sub(u2), u2.props = y2, u2.state || (u2.state = {}), u2.context = A2, u2.__n = r2, c2 = u2.__d = true, u2.__h = [], u2._sb = []), k2 && u2.__s == null && (u2.__s = u2.state), k2 && T2.getDerivedStateFromProps != null && (u2.__s == u2.state && (u2.__s = F$2({}, u2.__s)), F$2(u2.__s, T2.getDerivedStateFromProps(y2, u2.__s))), f2 = u2.props, m2 = u2.state, u2.__v = t2, c2) k2 && T2.getDerivedStateFromProps == null && u2.componentWillMount != null && u2.componentWillMount(), k2 && u2.componentDidMount != null && u2.__h.push(u2.componentDidMount);
     else {
-      if (D2 && L2.getDerivedStateFromProps == null && k2 !== f2 && u2.componentWillReceiveProps != null && u2.componentWillReceiveProps(k2, W2), !u2.__e && (u2.shouldComponentUpdate != null && u2.shouldComponentUpdate(k2, u2.__s, W2) === false || t2.__v == n2.__v)) {
-        for (t2.__v != n2.__v && (u2.props = k2, u2.state = u2.__s, u2.__d = false), t2.__e = n2.__e, t2.__k = n2.__k, t2.__k.some(function(Z2) {
+      if (k2 && T2.getDerivedStateFromProps == null && y2 !== f2 && u2.componentWillReceiveProps != null && u2.componentWillReceiveProps(y2, A2), !u2.__e && (u2.shouldComponentUpdate != null && u2.shouldComponentUpdate(y2, u2.__s, A2) === false || t2.__v == n2.__v)) {
+        for (t2.__v != n2.__v && (u2.props = y2, u2.state = u2.__s, u2.__d = false), t2.__e = n2.__e, t2.__k = n2.__k, t2.__k.some(function(Z2) {
           Z2 && (Z2.__ = t2);
         }), ie = 0; ie < u2._sb.length; ie++) u2.__h.push(u2._sb[ie]);
         u2._sb = [], u2.__h.length && a2.push(u2);
         break e;
       }
-      u2.componentWillUpdate != null && u2.componentWillUpdate(k2, u2.__s, W2), D2 && u2.componentDidUpdate != null && u2.__h.push(function() {
+      u2.componentWillUpdate != null && u2.componentWillUpdate(y2, u2.__s, A2), k2 && u2.componentDidUpdate != null && u2.__h.push(function() {
         u2.componentDidUpdate(f2, m2, v2);
       });
     }
-    if (u2.context = W2, u2.props = k2, u2.__P = e2, u2.__e = false, G2 = h$4.__r, Ie = 0, D2) {
+    if (u2.context = A2, u2.props = y2, u2.__P = e2, u2.__e = false, G2 = h$4.__r, Ve = 0, k2) {
       for (u2.state = u2.__s, u2.__d = false, G2 && G2(t2), _2 = u2.render(u2.props, u2.state, u2.context), oe = 0; oe < u2._sb.length; oe++) u2.__h.push(u2._sb[oe]);
       u2._sb = [];
     } else do
       u2.__d = false, G2 && G2(t2), _2 = u2.render(u2.props, u2.state, u2.context), u2.state = u2.__s;
-    while (u2.__d && ++Ie < 25);
-    u2.state = u2.__s, u2.getChildContext != null && (r2 = A$2(A$2({}, r2), u2.getChildContext())), D2 && !c2 && u2.getSnapshotBeforeUpdate != null && (v2 = u2.getSnapshotBeforeUpdate(f2, m2)), s2 = yt(e2, me(ye = _2 != null && _2.type === M$1 && _2.key == null ? _2.props.children : _2) ? ye : [ye], t2, n2, r2, i2, o2, a2, s2, d2, l2), u2.base = t2.__e, t2.__u &= -161, u2.__h.length && a2.push(u2), b2 && (u2.__E = u2.__ = null);
+    while (u2.__d && ++Ve < 25);
+    u2.state = u2.__s, u2.getChildContext != null && (r2 = F$2(F$2({}, r2), u2.getChildContext())), k2 && !c2 && u2.getSnapshotBeforeUpdate != null && (v2 = u2.getSnapshotBeforeUpdate(f2, m2)), s2 = Dt(e2, me(De = _2 != null && _2.type === M$1 && _2.key == null ? _2.props.children : _2) ? De : [De], t2, n2, r2, i2, o2, a2, s2, d2, l2), u2.base = t2.__e, t2.__u &= -161, u2.__h.length && a2.push(u2), b2 && (u2.__E = u2.__ = null);
   } catch (Z2) {
     if (t2.__v = null, d2 || o2 != null) if (Z2.then) {
       for (t2.__u |= d2 ? 160 : 128; s2 && s2.nodeType == 8 && s2.nextSibling; ) s2 = s2.nextSibling;
       o2[o2.indexOf(s2)] = null, t2.__e = s2;
-    } else for (De = o2.length; De--; ) We(o2[De]);
+    } else for (ke = o2.length; ke--; ) Ae(o2[ke]);
     else t2.__e = n2.__e, t2.__k = n2.__k;
     h$4.__e(Z2, t2, n2);
   }
@@ -517,7 +518,7 @@ function Ae(e2, t2, n2, r2, i2, o2, a2, s2, d2, l2) {
   return (_2 = h$4.diffed) && _2(t2), 128 & t2.__u ? void 0 : s2;
 }
 function gt(e2, t2, n2) {
-  for (var r2 = 0; r2 < n2.length; r2++) Fe(n2[r2], n2[++r2], n2[++r2]);
+  for (var r2 = 0; r2 < n2.length; r2++) je(n2[r2], n2[++r2], n2[++r2]);
   h$4.__c && h$4.__c(t2, e2), e2.some(function(i2) {
     try {
       e2 = i2.__h, i2.__h = [], e2.some(function(o2) {
@@ -529,35 +530,35 @@ function gt(e2, t2, n2) {
   });
 }
 function tn(e2, t2, n2, r2, i2, o2, a2, s2, d2) {
-  var l2, _2, u2, c2, f2, m2, v2, b2 = n2.props, k2 = t2.props, D2 = t2.type;
-  if (D2 == "svg" ? i2 = "http://www.w3.org/2000/svg" : D2 == "math" ? i2 = "http://www.w3.org/1998/Math/MathML" : i2 || (i2 = "http://www.w3.org/1999/xhtml"), o2 != null) {
-    for (l2 = 0; l2 < o2.length; l2++) if ((f2 = o2[l2]) && "setAttribute" in f2 == !!D2 && (D2 ? f2.localName == D2 : f2.nodeType == 3)) {
+  var l2, _2, u2, c2, f2, m2, v2, b2 = n2.props, y2 = t2.props, k2 = t2.type;
+  if (k2 == "svg" ? i2 = "http://www.w3.org/2000/svg" : k2 == "math" ? i2 = "http://www.w3.org/1998/Math/MathML" : i2 || (i2 = "http://www.w3.org/1999/xhtml"), o2 != null) {
+    for (l2 = 0; l2 < o2.length; l2++) if ((f2 = o2[l2]) && "setAttribute" in f2 == !!k2 && (k2 ? f2.localName == k2 : f2.nodeType == 3)) {
       e2 = f2, o2[l2] = null;
       break;
     }
   }
   if (e2 == null) {
-    if (D2 == null) return document.createTextNode(k2);
-    e2 = document.createElementNS(i2, D2, k2.is && k2), s2 && (h$4.__m && h$4.__m(t2, o2), s2 = false), o2 = null;
+    if (k2 == null) return document.createTextNode(y2);
+    e2 = document.createElementNS(i2, k2, y2.is && y2), s2 && (h$4.__m && h$4.__m(t2, o2), s2 = false), o2 = null;
   }
-  if (D2 === null) b2 === k2 || s2 && e2.data === k2 || (e2.data = k2);
+  if (k2 === null) b2 === y2 || s2 && e2.data === y2 || (e2.data = y2);
   else {
     if (o2 = o2 && ve.call(e2.childNodes), b2 = n2.props || ee, !s2 && o2 != null) for (b2 = {}, l2 = 0; l2 < e2.attributes.length; l2++) b2[(f2 = e2.attributes[l2]).name] = f2.value;
     for (l2 in b2) if (f2 = b2[l2], l2 != "children") {
       if (l2 == "dangerouslySetInnerHTML") u2 = f2;
-      else if (!(l2 in k2)) {
-        if (l2 == "value" && "defaultValue" in k2 || l2 == "checked" && "defaultChecked" in k2) continue;
+      else if (!(l2 in y2)) {
+        if (l2 == "value" && "defaultValue" in y2 || l2 == "checked" && "defaultChecked" in y2) continue;
         ae(e2, l2, null, f2, i2);
       }
     }
-    for (l2 in k2) f2 = k2[l2], l2 == "children" ? c2 = f2 : l2 == "dangerouslySetInnerHTML" ? _2 = f2 : l2 == "value" ? m2 = f2 : l2 == "checked" ? v2 = f2 : s2 && typeof f2 != "function" || b2[l2] === f2 || ae(e2, l2, f2, b2[l2], i2);
+    for (l2 in y2) f2 = y2[l2], l2 == "children" ? c2 = f2 : l2 == "dangerouslySetInnerHTML" ? _2 = f2 : l2 == "value" ? m2 = f2 : l2 == "checked" ? v2 = f2 : s2 && typeof f2 != "function" || b2[l2] === f2 || ae(e2, l2, f2, b2[l2], i2);
     if (_2) s2 || u2 && (_2.__html === u2.__html || _2.__html === e2.innerHTML) || (e2.innerHTML = _2.__html), t2.__k = [];
-    else if (u2 && (e2.innerHTML = ""), yt(e2, me(c2) ? c2 : [c2], t2, n2, r2, D2 == "foreignObject" ? "http://www.w3.org/1999/xhtml" : i2, o2, a2, o2 ? o2[0] : n2.__k && H$2(n2, 0), s2, d2), o2 != null) for (l2 = o2.length; l2--; ) We(o2[l2]);
-    s2 || (l2 = "value", D2 == "progress" && m2 == null ? e2.removeAttribute("value") : m2 !== void 0 && (m2 !== e2[l2] || D2 == "progress" && !m2 || D2 == "option" && m2 !== b2[l2]) && ae(e2, l2, m2, b2[l2], i2), l2 = "checked", v2 !== void 0 && v2 !== e2[l2] && ae(e2, l2, v2, b2[l2], i2));
+    else if (u2 && (e2.innerHTML = ""), Dt(e2, me(c2) ? c2 : [c2], t2, n2, r2, k2 == "foreignObject" ? "http://www.w3.org/1999/xhtml" : i2, o2, a2, o2 ? o2[0] : n2.__k && H$2(n2, 0), s2, d2), o2 != null) for (l2 = o2.length; l2--; ) Ae(o2[l2]);
+    s2 || (l2 = "value", k2 == "progress" && m2 == null ? e2.removeAttribute("value") : m2 !== void 0 && (m2 !== e2[l2] || k2 == "progress" && !m2 || k2 == "option" && m2 !== b2[l2]) && ae(e2, l2, m2, b2[l2], i2), l2 = "checked", v2 !== void 0 && v2 !== e2[l2] && ae(e2, l2, v2, b2[l2], i2));
   }
   return e2;
 }
-function Fe(e2, t2, n2) {
+function je(e2, t2, n2) {
   try {
     if (typeof e2 == "function") {
       var r2 = typeof e2.__u == "function";
@@ -569,7 +570,7 @@ function Fe(e2, t2, n2) {
 }
 function bt(e2, t2, n2) {
   var r2, i2;
-  if (h$4.unmount && h$4.unmount(e2), (r2 = e2.ref) && (r2.current && r2.current !== e2.__e || Fe(r2, null, t2)), (r2 = e2.__c) != null) {
+  if (h$4.unmount && h$4.unmount(e2), (r2 = e2.ref) && (r2.current && r2.current !== e2.__e || je(r2, null, t2)), (r2 = e2.__c) != null) {
     if (r2.componentWillUnmount) try {
       r2.componentWillUnmount();
     } catch (o2) {
@@ -578,7 +579,7 @@ function bt(e2, t2, n2) {
     r2.base = r2.__P = null;
   }
   if (r2 = e2.__k) for (i2 = 0; i2 < r2.length; i2++) r2[i2] && bt(r2[i2], t2, n2 || typeof e2.type != "function");
-  n2 || We(e2.__e), e2.__c = e2.__ = e2.__e = void 0;
+  n2 || Ae(e2.__e), e2.__c = e2.__ = e2.__e = void 0;
 }
 function nn(e2, t2, n2) {
   return this.constructor(e2, n2);
@@ -615,23 +616,23 @@ ve = mt.slice, h$4 = { __e: function(e2, t2, n2, r2) {
   throw e2;
 } }, _t = 0, ft = function(e2) {
   return e2 != null && e2.constructor == null;
-}, T$3.prototype.setState = function(e2, t2) {
+}, C$2.prototype.setState = function(e2, t2) {
   var n2;
-  n2 = this.__s != null && this.__s !== this.state ? this.__s : this.__s = A$2({}, this.state), typeof e2 == "function" && (e2 = e2(A$2({}, n2), this.props)), e2 && A$2(n2, e2), e2 != null && this.__v && (t2 && this._sb.push(t2), Ye(this));
-}, T$3.prototype.forceUpdate = function(e2) {
+  n2 = this.__s != null && this.__s !== this.state ? this.__s : this.__s = F$2({}, this.state), typeof e2 == "function" && (e2 = e2(F$2({}, n2), this.props)), e2 && F$2(n2, e2), e2 != null && this.__v && (t2 && this._sb.push(t2), Ye(this));
+}, C$2.prototype.forceUpdate = function(e2) {
   this.__v && (this.__e = true, e2 && this.__h.push(e2), Ye(this));
-}, T$3.prototype.render = M$1, V$2 = [], ht = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, we = function(e2, t2) {
+}, C$2.prototype.render = M$1, I$1 = [], ht = typeof Promise == "function" ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, Se = function(e2, t2) {
   return e2.__v.__b - t2.__v.__b;
-}, _e.__r = 0, pt = /(PointerCapture)$|Capture$/i, $e = 0, Se = He(false), Me = He(true), vt = 0;
+}, _e.__r = 0, pt = /(PointerCapture)$|Capture$/i, $e = 0, we = He(false), Me = He(true), vt = 0;
 var z$2, g$3, ge, ze, xe = 0, Pt = [], P$2 = h$4, Ke = P$2.__b, Be = P$2.__r, Je = P$2.diffed, Ge = P$2.__c, Ze = P$2.unmount, qe = P$2.__;
-function ke(e2, t2) {
+function ye(e2, t2) {
   P$2.__h && P$2.__h(g$3, e2, xe || t2), xe = 0;
   var n2 = g$3.__H || (g$3.__H = { __: [], __h: [] });
   return e2 >= n2.__.length && n2.__.push({}), n2.__[e2];
 }
-function wt(e2, t2) {
-  var n2 = ke(z$2++, 7);
-  return St(n2.__H, t2) && (n2.__ = e2(), n2.__H = t2, n2.__h = e2), n2.__;
+function St(e2, t2) {
+  var n2 = ye(z$2++, 7);
+  return wt(n2.__H, t2) && (n2.__ = e2(), n2.__H = t2, n2.__h = e2), n2.__;
 }
 function sn$1() {
   for (var e2; e2 = Pt.shift(); ) if (e2.__P && e2.__H) try {
@@ -694,7 +695,7 @@ function Ee(e2) {
   var t2 = g$3;
   e2.__c = e2.__(), g$3 = t2;
 }
-function St(e2, t2) {
+function wt(e2, t2) {
   return !e2 || e2.length !== t2.length || t2.some(function(n2, r2) {
     return n2 !== e2[r2];
   });
@@ -711,7 +712,7 @@ function Qe(e2, t2) {
 function et(e2, t2) {
   this.props = e2, this.context = t2;
 }
-(et.prototype = new T$3()).isPureReactComponent = true, et.prototype.shouldComponentUpdate = function(e2, t2) {
+(et.prototype = new C$2()).isPureReactComponent = true, et.prototype.shouldComponentUpdate = function(e2, t2) {
   return Qe(this.props, e2) || Qe(this.state, t2);
 };
 var tt = h$4.__b;
@@ -751,7 +752,7 @@ function se() {
 h$4.unmount = function(e2) {
   var t2 = e2.__c;
   t2 && t2.__R && t2.__R(), t2 && 32 & e2.__u && (e2.type = null), nt && nt(e2);
-}, (be.prototype = new T$3()).__c = function(e2, t2) {
+}, (be.prototype = new C$2()).__c = function(e2, t2) {
   var n2 = t2.__c, r2 = this;
   r2.o == null && (r2.o = []), r2.o.push(n2);
   var i2 = xt(r2.__v), o2 = false, a2 = function() {
@@ -789,7 +790,7 @@ var rt = function(e2, t2, n2) {
     e2.i = n2 = n2[2];
   }
 };
-(se.prototype = new T$3()).__a = function(e2) {
+(se.prototype = new C$2()).__a = function(e2) {
   var t2 = this, n2 = xt(t2.__v), r2 = t2.l.get(e2);
   return r2[0]++, function(i2) {
     var o2 = function() {
@@ -809,18 +810,18 @@ var rt = function(e2, t2, n2) {
     rt(e2, n2, t2);
   });
 };
-var hn = typeof Symbol < "u" && Symbol.for && Symbol.for("react.element") || 60103, pn = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image(!S)|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/, vn = /^on(Ani|Tra|Tou|BeforeInp|Compo)/, mn = /[A-Z0-9]/g, kn = typeof document < "u", yn = function(e2) {
+var hn = typeof Symbol < "u" && Symbol.for && Symbol.for("react.element") || 60103, pn = /^(?:accent|alignment|arabic|baseline|cap|clip(?!PathU)|color|dominant|fill|flood|font|glyph(?!R)|horiz|image(!S)|letter|lighting|marker(?!H|W|U)|overline|paint|pointer|shape|stop|strikethrough|stroke|text(?!L)|transform|underline|unicode|units|v|vector|vert|word|writing|x(?!C))[A-Z]/, vn = /^on(Ani|Tra|Tou|BeforeInp|Compo)/, mn = /[A-Z0-9]/g, yn = typeof document < "u", Dn = function(e2) {
   return (typeof Symbol < "u" && typeof Symbol() == "symbol" ? /fil|che|rad/ : /fil|che|ra/).test(e2);
 };
-T$3.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function(e2) {
-  Object.defineProperty(T$3.prototype, e2, { configurable: true, get: function() {
+C$2.prototype.isReactComponent = {}, ["componentWillMount", "componentWillReceiveProps", "componentWillUpdate"].forEach(function(e2) {
+  Object.defineProperty(C$2.prototype, e2, { configurable: true, get: function() {
     return this["UNSAFE_" + e2];
   }, set: function(t2) {
     Object.defineProperty(this, e2, { configurable: true, writable: true, value: t2 });
   } });
 });
 var it = h$4.event;
-function Dn() {
+function kn() {
 }
 function gn() {
   return this.cancelBubble;
@@ -829,7 +830,7 @@ function bn() {
   return this.defaultPrevented;
 }
 h$4.event = function(e2) {
-  return it && (e2 = it(e2)), e2.persist = Dn, e2.isPropagationStopped = gn, e2.isDefaultPrevented = bn, e2.nativeEvent = e2;
+  return it && (e2 = it(e2)), e2.persist = kn, e2.isPropagationStopped = gn, e2.isDefaultPrevented = bn, e2.nativeEvent = e2;
 };
 var Pn = { enumerable: false, configurable: true, get: function() {
   return this.class;
@@ -839,9 +840,9 @@ h$4.vnode = function(e2) {
     var n2 = t2.props, r2 = t2.type, i2 = {}, o2 = r2.indexOf("-") === -1;
     for (var a2 in n2) {
       var s2 = n2[a2];
-      if (!(a2 === "value" && "defaultValue" in n2 && s2 == null || kn && a2 === "children" && r2 === "noscript" || a2 === "class" || a2 === "className")) {
+      if (!(a2 === "value" && "defaultValue" in n2 && s2 == null || yn && a2 === "children" && r2 === "noscript" || a2 === "class" || a2 === "className")) {
         var d2 = a2.toLowerCase();
-        a2 === "defaultValue" && "value" in n2 && n2.value == null ? a2 = "value" : a2 === "download" && s2 === true ? s2 = "" : d2 === "translate" && s2 === "no" ? s2 = false : d2[0] === "o" && d2[1] === "n" ? d2 === "ondoubleclick" ? a2 = "ondblclick" : d2 !== "onchange" || r2 !== "input" && r2 !== "textarea" || yn(n2.type) ? d2 === "onfocus" ? a2 = "onfocusin" : d2 === "onblur" ? a2 = "onfocusout" : vn.test(a2) && (a2 = d2) : d2 = a2 = "oninput" : o2 && pn.test(a2) ? a2 = a2.replace(mn, "-$&").toLowerCase() : s2 === null && (s2 = void 0), d2 === "oninput" && i2[a2 = d2] && (a2 = "oninputCapture"), i2[a2] = s2;
+        a2 === "defaultValue" && "value" in n2 && n2.value == null ? a2 = "value" : a2 === "download" && s2 === true ? s2 = "" : d2 === "translate" && s2 === "no" ? s2 = false : d2[0] === "o" && d2[1] === "n" ? d2 === "ondoubleclick" ? a2 = "ondblclick" : d2 !== "onchange" || r2 !== "input" && r2 !== "textarea" || Dn(n2.type) ? d2 === "onfocus" ? a2 = "onfocusin" : d2 === "onblur" ? a2 = "onfocusout" : vn.test(a2) && (a2 = d2) : d2 = a2 = "oninput" : o2 && pn.test(a2) ? a2 = a2.replace(mn, "-$&").toLowerCase() : s2 === null && (s2 = void 0), d2 === "oninput" && i2[a2 = d2] && (a2 = "oninputCapture"), i2[a2] = s2;
       }
     }
     r2 == "select" && i2.multiple && Array.isArray(i2.value) && (i2.value = fe(n2.children).forEach(function(l2) {
@@ -861,16 +862,16 @@ h$4.diffed = function(e2) {
   var t2 = e2.props, n2 = e2.__e;
   n2 != null && e2.type === "textarea" && "value" in t2 && t2.value !== n2.value && (n2.value = t2.value == null ? "" : t2.value);
 };
-var wn = Symbol.for("preact-signals");
-function je() {
+var Sn = Symbol.for("preact-signals");
+function We() {
   if (R > 1)
     R--;
   else {
     for (var e2, t2 = false; Q$1 !== void 0; ) {
       var n2 = Q$1;
-      for (Q$1 = void 0, Ce++; n2 !== void 0; ) {
+      for (Q$1 = void 0, Le++; n2 !== void 0; ) {
         var r2 = n2.o;
-        if (n2.o = void 0, n2.f &= -3, !(8 & n2.f) && Ct(n2)) try {
+        if (n2.o = void 0, n2.f &= -3, !(8 & n2.f) && Lt(n2)) try {
           n2.c();
         } catch (i2) {
           t2 || (e2 = i2, t2 = true);
@@ -878,87 +879,87 @@ function je() {
         n2 = r2;
       }
     }
-    if (Ce = 0, R--, t2) throw e2;
+    if (Le = 0, R--, t2) throw e2;
   }
 }
-var y$3 = void 0, Q$1 = void 0, R = 0, Ce = 0, he = 0;
+var D$2 = void 0, Q$1 = void 0, R = 0, Le = 0, he = 0;
 function Et(e2) {
-  if (y$3 !== void 0) {
+  if (D$2 !== void 0) {
     var t2 = e2.n;
-    if (t2 === void 0 || t2.t !== y$3)
-      return t2 = { i: 0, S: e2, p: y$3.s, n: void 0, t: y$3, e: void 0, x: void 0, r: t2 }, y$3.s !== void 0 && (y$3.s.n = t2), y$3.s = t2, e2.n = t2, 32 & y$3.f && e2.S(t2), t2;
+    if (t2 === void 0 || t2.t !== D$2)
+      return t2 = { i: 0, S: e2, p: D$2.s, n: void 0, t: D$2, e: void 0, x: void 0, r: t2 }, D$2.s !== void 0 && (D$2.s.n = t2), D$2.s = t2, e2.n = t2, 32 & D$2.f && e2.S(t2), t2;
     if (t2.i === -1)
-      return t2.i = 0, t2.n !== void 0 && (t2.n.p = t2.p, t2.p !== void 0 && (t2.p.n = t2.n), t2.p = y$3.s, t2.n = void 0, y$3.s.n = t2, y$3.s = t2), t2;
+      return t2.i = 0, t2.n !== void 0 && (t2.n.p = t2.p, t2.p !== void 0 && (t2.p.n = t2.n), t2.p = D$2.s, t2.n = void 0, D$2.s.n = t2, D$2.s = t2), t2;
   }
 }
-function w$3(e2) {
+function S$1(e2) {
   this.v = e2, this.i = 0, this.n = void 0, this.t = void 0;
 }
-w$3.prototype.brand = wn;
-w$3.prototype.h = function() {
+S$1.prototype.brand = Sn;
+S$1.prototype.h = function() {
   return true;
 };
-w$3.prototype.S = function(e2) {
+S$1.prototype.S = function(e2) {
   this.t !== e2 && e2.e === void 0 && (e2.x = this.t, this.t !== void 0 && (this.t.e = e2), this.t = e2);
 };
-w$3.prototype.U = function(e2) {
+S$1.prototype.U = function(e2) {
   if (this.t !== void 0) {
     var t2 = e2.e, n2 = e2.x;
     t2 !== void 0 && (t2.x = n2, e2.e = void 0), n2 !== void 0 && (n2.e = t2, e2.x = void 0), e2 === this.t && (this.t = n2);
   }
 };
-w$3.prototype.subscribe = function(e2) {
+S$1.prototype.subscribe = function(e2) {
   var t2 = this;
   return te(function() {
-    var n2 = t2.value, r2 = y$3;
-    y$3 = void 0;
+    var n2 = t2.value, r2 = D$2;
+    D$2 = void 0;
     try {
       e2(n2);
     } finally {
-      y$3 = r2;
+      D$2 = r2;
     }
   });
 };
-w$3.prototype.valueOf = function() {
+S$1.prototype.valueOf = function() {
   return this.value;
 };
-w$3.prototype.toString = function() {
+S$1.prototype.toString = function() {
   return this.value + "";
 };
-w$3.prototype.toJSON = function() {
+S$1.prototype.toJSON = function() {
   return this.value;
 };
-w$3.prototype.peek = function() {
-  var e2 = y$3;
-  y$3 = void 0;
+S$1.prototype.peek = function() {
+  var e2 = D$2;
+  D$2 = void 0;
   try {
     return this.value;
   } finally {
-    y$3 = e2;
+    D$2 = e2;
   }
 };
-Object.defineProperty(w$3.prototype, "value", { get: function() {
+Object.defineProperty(S$1.prototype, "value", { get: function() {
   var e2 = Et(this);
   return e2 !== void 0 && (e2.i = this.i), this.v;
 }, set: function(e2) {
   if (e2 !== this.v) {
-    if (Ce > 100) throw new Error("Cycle detected");
+    if (Le > 100) throw new Error("Cycle detected");
     this.v = e2, this.i++, he++, R++;
     try {
       for (var t2 = this.t; t2 !== void 0; t2 = t2.x) t2.t.N();
     } finally {
-      je();
+      We();
     }
   }
 } });
-function S$1(e2) {
-  return new w$3(e2);
+function w$3(e2) {
+  return new S$1(e2);
 }
-function Ct(e2) {
+function Lt(e2) {
   for (var t2 = e2.s; t2 !== void 0; t2 = t2.n) if (t2.S.i !== t2.i || !t2.S.h() || t2.S.i !== t2.i) return true;
   return false;
 }
-function Lt(e2) {
+function Tt(e2) {
   for (var t2 = e2.s; t2 !== void 0; t2 = t2.n) {
     var n2 = t2.S.n;
     if (n2 !== void 0 && (t2.r = n2), t2.S.n = t2, t2.i = -1, t2.n === void 0) {
@@ -967,81 +968,81 @@ function Lt(e2) {
     }
   }
 }
-function Tt(e2) {
+function Ct(e2) {
   for (var t2 = e2.s, n2 = void 0; t2 !== void 0; ) {
     var r2 = t2.p;
     t2.i === -1 ? (t2.S.U(t2), r2 !== void 0 && (r2.n = t2.n), t2.n !== void 0 && (t2.n.p = r2)) : n2 = t2, t2.S.n = t2.r, t2.r !== void 0 && (t2.r = void 0), t2 = r2;
   }
   e2.s = n2;
 }
-function K$2(e2) {
-  w$3.call(this, void 0), this.x = e2, this.s = void 0, this.g = he - 1, this.f = 4;
+function K$1(e2) {
+  S$1.call(this, void 0), this.x = e2, this.s = void 0, this.g = he - 1, this.f = 4;
 }
-(K$2.prototype = new w$3()).h = function() {
+(K$1.prototype = new S$1()).h = function() {
   if (this.f &= -3, 1 & this.f) return false;
   if ((36 & this.f) == 32 || (this.f &= -5, this.g === he)) return true;
-  if (this.g = he, this.f |= 1, this.i > 0 && !Ct(this))
+  if (this.g = he, this.f |= 1, this.i > 0 && !Lt(this))
     return this.f &= -2, true;
-  var e2 = y$3;
+  var e2 = D$2;
   try {
-    Lt(this), y$3 = this;
+    Tt(this), D$2 = this;
     var t2 = this.x();
     (16 & this.f || this.v !== t2 || this.i === 0) && (this.v = t2, this.f &= -17, this.i++);
   } catch (n2) {
     this.v = n2, this.f |= 16, this.i++;
   }
-  return y$3 = e2, Tt(this), this.f &= -2, true;
+  return D$2 = e2, Ct(this), this.f &= -2, true;
 };
-K$2.prototype.S = function(e2) {
+K$1.prototype.S = function(e2) {
   if (this.t === void 0) {
     this.f |= 36;
     for (var t2 = this.s; t2 !== void 0; t2 = t2.n) t2.S.S(t2);
   }
-  w$3.prototype.S.call(this, e2);
+  S$1.prototype.S.call(this, e2);
 };
-K$2.prototype.U = function(e2) {
-  if (this.t !== void 0 && (w$3.prototype.U.call(this, e2), this.t === void 0)) {
+K$1.prototype.U = function(e2) {
+  if (this.t !== void 0 && (S$1.prototype.U.call(this, e2), this.t === void 0)) {
     this.f &= -33;
     for (var t2 = this.s; t2 !== void 0; t2 = t2.n) t2.S.U(t2);
   }
 };
-K$2.prototype.N = function() {
+K$1.prototype.N = function() {
   if (!(2 & this.f)) {
     this.f |= 6;
     for (var e2 = this.t; e2 !== void 0; e2 = e2.x) e2.t.N();
   }
 };
-Object.defineProperty(K$2.prototype, "value", { get: function() {
+Object.defineProperty(K$1.prototype, "value", { get: function() {
   if (1 & this.f) throw new Error("Cycle detected");
   var e2 = Et(this);
   if (this.h(), e2 !== void 0 && (e2.i = this.i), 16 & this.f) throw this.v;
   return this.v;
 } });
-function Sn(e2) {
-  return new K$2(e2);
+function wn(e2) {
+  return new K$1(e2);
 }
 function Ot(e2) {
   var t2 = e2.u;
   if (e2.u = void 0, typeof t2 == "function") {
     R++;
-    var n2 = y$3;
-    y$3 = void 0;
+    var n2 = D$2;
+    D$2 = void 0;
     try {
       t2();
     } catch (r2) {
-      throw e2.f &= -2, e2.f |= 8, Ve(e2), r2;
+      throw e2.f &= -2, e2.f |= 8, Ie(e2), r2;
     } finally {
-      y$3 = n2, je();
+      D$2 = n2, We();
     }
   }
 }
-function Ve(e2) {
+function Ie(e2) {
   for (var t2 = e2.s; t2 !== void 0; t2 = t2.n) t2.S.U(t2);
   e2.x = void 0, e2.s = void 0, Ot(e2);
 }
 function Mn(e2) {
-  if (y$3 !== this) throw new Error("Out-of-order effect");
-  Tt(this), y$3 = e2, this.f &= -2, 8 & this.f && Ve(this), je();
+  if (D$2 !== this) throw new Error("Out-of-order effect");
+  Ct(this), D$2 = e2, this.f &= -2, 8 & this.f && Ie(this), We();
 }
 function ne(e2) {
   this.x = e2, this.u = void 0, this.s = void 0, this.o = void 0, this.f = 32;
@@ -1058,15 +1059,15 @@ ne.prototype.c = function() {
 };
 ne.prototype.S = function() {
   if (1 & this.f) throw new Error("Cycle detected");
-  this.f |= 1, this.f &= -9, Ot(this), Lt(this), R++;
-  var e2 = y$3;
-  return y$3 = this, Mn.bind(this, e2);
+  this.f |= 1, this.f &= -9, Ot(this), Tt(this), R++;
+  var e2 = D$2;
+  return D$2 = this, Mn.bind(this, e2);
 };
 ne.prototype.N = function() {
   2 & this.f || (this.f |= 2, this.o = Q$1, Q$1 = this);
 };
 ne.prototype.d = function() {
-  this.f |= 8, 1 & this.f || Ve(this);
+  this.f |= 8, 1 & this.f || Ie(this);
 };
 function te(e2) {
   var t2 = new ne(e2);
@@ -1088,7 +1089,7 @@ function pe(e2) {
 function $t(e2) {
   var t2 = this, n2 = e2.data, r2 = Nn(n2);
   r2.value = n2;
-  var i2 = wt(function() {
+  var i2 = St(function() {
     for (var o2 = t2.__v; o2 = o2.__; ) if (o2.__c) {
       o2.__c.__$f |= 4;
       break;
@@ -1096,7 +1097,7 @@ function $t(e2) {
     return t2.__$u.c = function() {
       var a2, s2 = t2.__$u.S(), d2 = i2.value;
       s2(), ft(d2) || ((a2 = t2.base) == null ? void 0 : a2.nodeType) !== 3 ? (t2.__$f |= 1, t2.setState({})) : t2.base.data = d2;
-    }, Sn(function() {
+    }, wn(function() {
       var a2 = r2.value.value;
       return a2 === 0 ? 0 : a2 === true ? "" : a2 || "";
     });
@@ -1104,7 +1105,7 @@ function $t(e2) {
   return i2.value;
 }
 $t.displayName = "_st";
-Object.defineProperties(w$3.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: $t }, props: { configurable: true, get: function() {
+Object.defineProperties(S$1.prototype, { constructor: { configurable: true, value: void 0 }, type: { configurable: true, value: $t }, props: { configurable: true, get: function() {
   return { data: this };
 } }, __b: { configurable: true, value: 1 } });
 B$3("__b", function(e2, t2) {
@@ -1112,7 +1113,7 @@ B$3("__b", function(e2, t2) {
     var n2, r2 = t2.props;
     for (var i2 in r2) if (i2 !== "children") {
       var o2 = r2[i2];
-      o2 instanceof w$3 && (n2 || (t2.__np = n2 = {}), n2[i2] = o2, r2[i2] = o2.peek());
+      o2 instanceof S$1 && (n2 || (t2.__np = n2 = {}), n2[i2] = o2, r2[i2] = o2.peek());
     }
   }
   e2(t2);
@@ -1153,7 +1154,7 @@ B$3("diffed", function(e2, t2) {
   e2(t2);
 });
 function Yn(e2, t2, n2, r2) {
-  var i2 = t2 in e2 && e2.ownerSVGElement === void 0, o2 = S$1(n2);
+  var i2 = t2 in e2 && e2.ownerSVGElement === void 0, o2 = w$3(n2);
   return { o: function(a2, s2) {
     o2.value = a2, r2 = s2;
   }, d: te(function() {
@@ -1186,7 +1187,7 @@ B$3("unmount", function(e2, t2) {
 B$3("__h", function(e2, t2, n2, r2) {
   (r2 < 3 || r2 === 9) && (t2.__$f |= 2), e2(t2, n2, r2);
 });
-T$3.prototype.shouldComponentUpdate = function(e2, t2) {
+C$2.prototype.shouldComponentUpdate = function(e2, t2) {
   var n2 = this.__$u, r2 = n2 && n2.s !== void 0;
   for (var i2 in t2) return true;
   if (this.__f || typeof this.u == "boolean" && this.u === true) {
@@ -1197,24 +1198,24 @@ T$3.prototype.shouldComponentUpdate = function(e2, t2) {
   return false;
 };
 function Nn(e2) {
-  return wt(function() {
-    return S$1(e2);
+  return St(function() {
+    return w$3(e2);
   }, []);
 }
 rn$1({});
-var I$1;
+var V$2;
 (function(e2) {
   e2.MONTH_DAYS = "month-days", e2.YEARS = "years";
-})(I$1 || (I$1 = {}));
-var Le;
-(function(e2) {
-  e2[e2.SUNDAY = 0] = "SUNDAY", e2[e2.MONDAY = 1] = "MONDAY", e2[e2.TUESDAY = 2] = "TUESDAY", e2[e2.WEDNESDAY = 3] = "WEDNESDAY", e2[e2.THURSDAY = 4] = "THURSDAY", e2[e2.FRIDAY = 5] = "FRIDAY", e2[e2.SATURDAY = 6] = "SATURDAY";
-})(Le || (Le = {}));
-Le.MONDAY;
+})(V$2 || (V$2 = {}));
 var Te;
 (function(e2) {
-  e2[e2.JANUARY = 0] = "JANUARY", e2[e2.FEBRUARY = 1] = "FEBRUARY", e2[e2.MARCH = 2] = "MARCH", e2[e2.APRIL = 3] = "APRIL", e2[e2.MAY = 4] = "MAY", e2[e2.JUNE = 5] = "JUNE", e2[e2.JULY = 6] = "JULY", e2[e2.AUGUST = 7] = "AUGUST", e2[e2.SEPTEMBER = 8] = "SEPTEMBER", e2[e2.OCTOBER = 9] = "OCTOBER", e2[e2.NOVEMBER = 10] = "NOVEMBER", e2[e2.DECEMBER = 11] = "DECEMBER";
+  e2[e2.SUNDAY = 0] = "SUNDAY", e2[e2.MONDAY = 1] = "MONDAY", e2[e2.TUESDAY = 2] = "TUESDAY", e2[e2.WEDNESDAY = 3] = "WEDNESDAY", e2[e2.THURSDAY = 4] = "THURSDAY", e2[e2.FRIDAY = 5] = "FRIDAY", e2[e2.SATURDAY = 6] = "SATURDAY";
 })(Te || (Te = {}));
+Te.MONDAY;
+var Ce;
+(function(e2) {
+  e2[e2.JANUARY = 0] = "JANUARY", e2[e2.FEBRUARY = 1] = "FEBRUARY", e2[e2.MARCH = 2] = "MARCH", e2[e2.APRIL = 3] = "APRIL", e2[e2.MAY = 4] = "MAY", e2[e2.JUNE = 5] = "JUNE", e2[e2.JULY = 6] = "JULY", e2[e2.AUGUST = 7] = "AUGUST", e2[e2.SEPTEMBER = 8] = "SEPTEMBER", e2[e2.OCTOBER = 9] = "OCTOBER", e2[e2.NOVEMBER = 10] = "NOVEMBER", e2[e2.DECEMBER = 11] = "DECEMBER";
+})(Ce || (Ce = {}));
 var N$2;
 (function(e2) {
   e2.SLASH = "/", e2.DASH = "-", e2.PERIOD = ".";
@@ -1249,22 +1250,22 @@ var Oe;
 (function(e2) {
   e2.TOP_START = "top-start", e2.TOP_END = "top-end", e2.BOTTOM_START = "bottom-start", e2.BOTTOM_END = "bottom-end";
 })(Oe || (Oe = {}));
-var n, l$3, t$2, u$3, i$2, r$2, o$2, e$2, f$3, c$2, s$3, a$2, h$3, p$3 = {}, v$2 = [], y$2 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, d$3 = Array.isArray;
+var n, l$3, u$3, t$2, i$2, r$2, o$2, e$2, f$3, c$2, s$3, a$2, h$3, p$3 = {}, v$2 = [], y$2 = /acit|ex(?:s|g|n|p|$)|rph|grid|ows|mnc|ntw|ine[ch]|zoo|^ord|itera/i, d$3 = Array.isArray;
 function w$2(n2, l2) {
-  for (var t2 in l2) n2[t2] = l2[t2];
+  for (var u2 in l2) n2[u2] = l2[u2];
   return n2;
 }
-function g$2(n2) {
+function _$1(n2) {
   n2 && n2.parentNode && n2.parentNode.removeChild(n2);
 }
-function _$1(l2, t2, u2) {
+function g$2(l2, u2, t2) {
   var i2, r2, o2, e2 = {};
-  for (o2 in t2) "key" == o2 ? i2 = t2[o2] : "ref" == o2 ? r2 = t2[o2] : e2[o2] = t2[o2];
-  if (arguments.length > 2 && (e2.children = arguments.length > 3 ? n.call(arguments, 2) : u2), "function" == typeof l2 && null != l2.defaultProps) for (o2 in l2.defaultProps) void 0 === e2[o2] && (e2[o2] = l2.defaultProps[o2]);
+  for (o2 in u2) "key" == o2 ? i2 = u2[o2] : "ref" == o2 ? r2 = u2[o2] : e2[o2] = u2[o2];
+  if (arguments.length > 2 && (e2.children = arguments.length > 3 ? n.call(arguments, 2) : t2), "function" == typeof l2 && null != l2.defaultProps) for (o2 in l2.defaultProps) void 0 === e2[o2] && (e2[o2] = l2.defaultProps[o2]);
   return m$1(l2, e2, i2, r2, null);
 }
-function m$1(n2, u2, i2, r2, o2) {
-  var e2 = { type: n2, props: u2, key: i2, ref: r2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: null == o2 ? ++t$2 : o2, __i: -1, __u: 0 };
+function m$1(n2, t2, i2, r2, o2) {
+  var e2 = { type: n2, props: t2, key: i2, ref: r2, __k: null, __: null, __b: 0, __e: null, __c: null, constructor: void 0, __v: null == o2 ? ++u$3 : o2, __i: -1, __u: 0 };
   return null == o2 && null != l$3.vnode && l$3.vnode(e2), e2;
 }
 function k$1(n2) {
@@ -1273,46 +1274,47 @@ function k$1(n2) {
 function x$1(n2, l2) {
   this.props = n2, this.context = l2;
 }
-function S(n2, l2) {
-  if (null == l2) return n2.__ ? S(n2.__, n2.__i + 1) : null;
-  for (var t2; l2 < n2.__k.length; l2++) if (null != (t2 = n2.__k[l2]) && null != t2.__e) return t2.__e;
-  return "function" == typeof n2.type ? S(n2) : null;
+function C$1(n2, l2) {
+  if (null == l2) return n2.__ ? C$1(n2.__, n2.__i + 1) : null;
+  for (var u2; l2 < n2.__k.length; l2++) if (null != (u2 = n2.__k[l2]) && null != u2.__e) return u2.__e;
+  return "function" == typeof n2.type ? C$1(n2) : null;
 }
-function C$1(n2) {
-  var l2, t2;
+function S(n2) {
+  var l2, u2;
   if (null != (n2 = n2.__) && null != n2.__c) {
-    for (n2.__e = n2.__c.base = null, l2 = 0; l2 < n2.__k.length; l2++) if (null != (t2 = n2.__k[l2]) && null != t2.__e) {
-      n2.__e = n2.__c.base = t2.__e;
+    for (n2.__e = n2.__c.base = null, l2 = 0; l2 < n2.__k.length; l2++) if (null != (u2 = n2.__k[l2]) && null != u2.__e) {
+      n2.__e = n2.__c.base = u2.__e;
       break;
     }
-    return C$1(n2);
+    return S(n2);
   }
 }
 function M(n2) {
-  (!n2.__d && (n2.__d = true) && i$2.push(n2) && !$$1.__r++ || r$2 !== l$3.debounceRendering) && ((r$2 = l$3.debounceRendering) || o$2)($$1);
+  (!n2.__d && (n2.__d = true) && i$2.push(n2) && !P$1.__r++ || r$2 !== l$3.debounceRendering) && ((r$2 = l$3.debounceRendering) || o$2)(P$1);
 }
-function $$1() {
-  for (var n2, t2, u2, r2, o2, f2, c2, s2 = 1; i$2.length; ) i$2.length > s2 && i$2.sort(e$2), n2 = i$2.shift(), s2 = i$2.length, n2.__d && (u2 = void 0, o2 = (r2 = (t2 = n2).__v).__e, f2 = [], c2 = [], t2.__P && ((u2 = w$2({}, r2)).__v = r2.__v + 1, l$3.vnode && l$3.vnode(u2), O(t2.__P, u2, r2, t2.__n, t2.__P.namespaceURI, 32 & r2.__u ? [o2] : null, f2, null == o2 ? S(r2) : o2, !!(32 & r2.__u), c2), u2.__v = r2.__v, u2.__.__k[u2.__i] = u2, z$1(f2, u2, c2), u2.__e != o2 && C$1(u2)));
-  $$1.__r = 0;
+function P$1() {
+  var n2, u2, t2, r2, o2, f2, c2, s2;
+  for (i$2.sort(e$2); n2 = i$2.shift(); ) n2.__d && (u2 = i$2.length, r2 = void 0, f2 = (o2 = (t2 = n2).__v).__e, c2 = [], s2 = [], t2.__P && ((r2 = w$2({}, o2)).__v = o2.__v + 1, l$3.vnode && l$3.vnode(r2), j$2(t2.__P, r2, o2, t2.__n, t2.__P.namespaceURI, 32 & o2.__u ? [f2] : null, c2, null == f2 ? C$1(o2) : f2, !!(32 & o2.__u), s2), r2.__v = o2.__v, r2.__.__k[r2.__i] = r2, z$1(c2, r2, s2), r2.__e != f2 && S(r2)), i$2.length > u2 && i$2.sort(e$2));
+  P$1.__r = 0;
 }
-function I(n2, l2, t2, u2, i2, r2, o2, e2, f2, c2, s2) {
-  var a2, h2, y2, d2, w2, g2, _2 = u2 && u2.__k || v$2, m2 = l2.length;
-  for (f2 = P$1(t2, l2, _2, f2, m2), a2 = 0; a2 < m2; a2++) null != (y2 = t2.__k[a2]) && (h2 = -1 === y2.__i ? p$3 : _2[y2.__i] || p$3, y2.__i = a2, g2 = O(n2, y2, h2, i2, r2, o2, e2, f2, c2, s2), d2 = y2.__e, y2.ref && h2.ref != y2.ref && (h2.ref && q$1(h2.ref, null, y2), s2.push(y2.ref, y2.__c || d2, y2)), null == w2 && null != d2 && (w2 = d2), 4 & y2.__u || h2.__k === y2.__k ? f2 = A$1(y2, f2, n2) : "function" == typeof y2.type && void 0 !== g2 ? f2 = g2 : d2 && (f2 = d2.nextSibling), y2.__u &= -7);
-  return t2.__e = w2, f2;
+function $$1(n2, l2, u2, t2, i2, r2, o2, e2, f2, c2, s2) {
+  var a2, h2, y2, d2, w2, _2, g2 = t2 && t2.__k || v$2, m2 = l2.length;
+  for (f2 = I(u2, l2, g2, f2, m2), a2 = 0; a2 < m2; a2++) null != (y2 = u2.__k[a2]) && (h2 = -1 === y2.__i ? p$3 : g2[y2.__i] || p$3, y2.__i = a2, _2 = j$2(n2, y2, h2, i2, r2, o2, e2, f2, c2, s2), d2 = y2.__e, y2.ref && h2.ref != y2.ref && (h2.ref && V$1(h2.ref, null, y2), s2.push(y2.ref, y2.__c || d2, y2)), null == w2 && null != d2 && (w2 = d2), 4 & y2.__u || h2.__k === y2.__k ? f2 = A$1(y2, f2, n2) : "function" == typeof y2.type && void 0 !== _2 ? f2 = _2 : d2 && (f2 = d2.nextSibling), y2.__u &= -7);
+  return u2.__e = w2, f2;
 }
-function P$1(n2, l2, t2, u2, i2) {
-  var r2, o2, e2, f2, c2, s2 = t2.length, a2 = s2, h2 = 0;
-  for (n2.__k = new Array(i2), r2 = 0; r2 < i2; r2++) null != (o2 = l2[r2]) && "boolean" != typeof o2 && "function" != typeof o2 ? (f2 = r2 + h2, (o2 = n2.__k[r2] = "string" == typeof o2 || "number" == typeof o2 || "bigint" == typeof o2 || o2.constructor == String ? m$1(null, o2, null, null, null) : d$3(o2) ? m$1(k$1, { children: o2 }, null, null, null) : void 0 === o2.constructor && o2.__b > 0 ? m$1(o2.type, o2.props, o2.key, o2.ref ? o2.ref : null, o2.__v) : o2).__ = n2, o2.__b = n2.__b + 1, e2 = null, -1 !== (c2 = o2.__i = L(o2, t2, f2, a2)) && (a2--, (e2 = t2[c2]) && (e2.__u |= 2)), null == e2 || null === e2.__v ? (-1 == c2 && (i2 > s2 ? h2-- : i2 < s2 && h2++), "function" != typeof o2.type && (o2.__u |= 4)) : c2 != f2 && (c2 == f2 - 1 ? h2-- : c2 == f2 + 1 ? h2++ : (c2 > f2 ? h2-- : h2++, o2.__u |= 4))) : n2.__k[r2] = null;
-  if (a2) for (r2 = 0; r2 < s2; r2++) null != (e2 = t2[r2]) && 0 == (2 & e2.__u) && (e2.__e == u2 && (u2 = S(e2)), B$2(e2, e2));
-  return u2;
+function I(n2, l2, u2, t2, i2) {
+  var r2, o2, e2, f2, c2, s2 = u2.length, a2 = s2, h2 = 0;
+  for (n2.__k = new Array(i2), r2 = 0; r2 < i2; r2++) null != (o2 = l2[r2]) && "boolean" != typeof o2 && "function" != typeof o2 ? (f2 = r2 + h2, (o2 = n2.__k[r2] = "string" == typeof o2 || "number" == typeof o2 || "bigint" == typeof o2 || o2.constructor == String ? m$1(null, o2, null, null, null) : d$3(o2) ? m$1(k$1, { children: o2 }, null, null, null) : void 0 === o2.constructor && o2.__b > 0 ? m$1(o2.type, o2.props, o2.key, o2.ref ? o2.ref : null, o2.__v) : o2).__ = n2, o2.__b = n2.__b + 1, e2 = null, -1 !== (c2 = o2.__i = L(o2, u2, f2, a2)) && (a2--, (e2 = u2[c2]) && (e2.__u |= 2)), null == e2 || null === e2.__v ? (-1 == c2 && h2--, "function" != typeof o2.type && (o2.__u |= 4)) : c2 != f2 && (c2 == f2 - 1 ? h2-- : c2 == f2 + 1 ? h2++ : (c2 > f2 ? h2-- : h2++, o2.__u |= 4))) : n2.__k[r2] = null;
+  if (a2) for (r2 = 0; r2 < s2; r2++) null != (e2 = u2[r2]) && 0 == (2 & e2.__u) && (e2.__e == t2 && (t2 = C$1(e2)), q$1(e2, e2));
+  return t2;
 }
-function A$1(n2, l2, t2) {
-  var u2, i2;
+function A$1(n2, l2, u2) {
+  var t2, i2;
   if ("function" == typeof n2.type) {
-    for (u2 = n2.__k, i2 = 0; u2 && i2 < u2.length; i2++) u2[i2] && (u2[i2].__ = n2, l2 = A$1(u2[i2], l2, t2));
+    for (t2 = n2.__k, i2 = 0; t2 && i2 < t2.length; i2++) t2[i2] && (t2[i2].__ = n2, l2 = A$1(t2[i2], l2, u2));
     return l2;
   }
-  n2.__e != l2 && (l2 && n2.type && !t2.contains(l2) && (l2 = S(n2)), t2.insertBefore(n2.__e, l2 || null), l2 = n2.__e);
+  n2.__e != l2 && (l2 && n2.type && !u2.contains(l2) && (l2 = C$1(n2)), u2.insertBefore(n2.__e, l2 || null), l2 = n2.__e);
   do {
     l2 = l2 && l2.nextSibling;
   } while (null != l2 && 8 == l2.nodeType);
@@ -1323,10 +1325,10 @@ function H$1(n2, l2) {
     H$1(n3, l2);
   }) : l2.push(n2)), l2;
 }
-function L(n2, l2, t2, u2) {
-  var i2, r2, o2 = n2.key, e2 = n2.type, f2 = l2[t2];
-  if (null === f2 && null == n2.key || f2 && o2 == f2.key && e2 === f2.type && 0 == (2 & f2.__u)) return t2;
-  if (u2 > (null != f2 && 0 == (2 & f2.__u) ? 1 : 0)) for (i2 = t2 - 1, r2 = t2 + 1; i2 >= 0 || r2 < l2.length; ) {
+function L(n2, l2, u2, t2) {
+  var i2, r2, o2 = n2.key, e2 = n2.type, f2 = l2[u2];
+  if (null === f2 || f2 && o2 == f2.key && e2 === f2.type && 0 == (2 & f2.__u)) return u2;
+  if (t2 > (null != f2 && 0 == (2 & f2.__u) ? 1 : 0)) for (i2 = u2 - 1, r2 = u2 + 1; i2 >= 0 || r2 < l2.length; ) {
     if (i2 >= 0) {
       if ((f2 = l2[i2]) && 0 == (2 & f2.__u) && o2 == f2.key && e2 === f2.type) return i2;
       i2--;
@@ -1338,186 +1340,183 @@ function L(n2, l2, t2, u2) {
   }
   return -1;
 }
-function T$2(n2, l2, t2) {
-  "-" == l2[0] ? n2.setProperty(l2, null == t2 ? "" : t2) : n2[l2] = null == t2 ? "" : "number" != typeof t2 || y$2.test(l2) ? t2 : t2 + "px";
+function T$2(n2, l2, u2) {
+  "-" == l2[0] ? n2.setProperty(l2, null == u2 ? "" : u2) : n2[l2] = null == u2 ? "" : "number" != typeof u2 || y$2.test(l2) ? u2 : u2 + "px";
 }
-function j$2(n2, l2, t2, u2, i2) {
+function F$1(n2, l2, u2, t2, i2) {
   var r2;
-  n: if ("style" == l2) if ("string" == typeof t2) n2.style.cssText = t2;
+  n: if ("style" == l2) if ("string" == typeof u2) n2.style.cssText = u2;
   else {
-    if ("string" == typeof u2 && (n2.style.cssText = u2 = ""), u2) for (l2 in u2) t2 && l2 in t2 || T$2(n2.style, l2, "");
-    if (t2) for (l2 in t2) u2 && t2[l2] === u2[l2] || T$2(n2.style, l2, t2[l2]);
+    if ("string" == typeof t2 && (n2.style.cssText = t2 = ""), t2) for (l2 in t2) u2 && l2 in u2 || T$2(n2.style, l2, "");
+    if (u2) for (l2 in u2) t2 && u2[l2] === t2[l2] || T$2(n2.style, l2, u2[l2]);
   }
-  else if ("o" == l2[0] && "n" == l2[1]) r2 = l2 != (l2 = l2.replace(f$3, "$1")), l2 = l2.toLowerCase() in n2 || "onFocusOut" == l2 || "onFocusIn" == l2 ? l2.toLowerCase().slice(2) : l2.slice(2), n2.l || (n2.l = {}), n2.l[l2 + r2] = t2, t2 ? u2 ? t2.t = u2.t : (t2.t = c$2, n2.addEventListener(l2, r2 ? a$2 : s$3, r2)) : n2.removeEventListener(l2, r2 ? a$2 : s$3, r2);
+  else if ("o" == l2[0] && "n" == l2[1]) r2 = l2 != (l2 = l2.replace(f$3, "$1")), l2 = l2.toLowerCase() in n2 || "onFocusOut" == l2 || "onFocusIn" == l2 ? l2.toLowerCase().slice(2) : l2.slice(2), n2.l || (n2.l = {}), n2.l[l2 + r2] = u2, u2 ? t2 ? u2.u = t2.u : (u2.u = c$2, n2.addEventListener(l2, r2 ? a$2 : s$3, r2)) : n2.removeEventListener(l2, r2 ? a$2 : s$3, r2);
   else {
     if ("http://www.w3.org/2000/svg" == i2) l2 = l2.replace(/xlink(H|:h)/, "h").replace(/sName$/, "s");
     else if ("width" != l2 && "height" != l2 && "href" != l2 && "list" != l2 && "form" != l2 && "tabIndex" != l2 && "download" != l2 && "rowSpan" != l2 && "colSpan" != l2 && "role" != l2 && "popover" != l2 && l2 in n2) try {
-      n2[l2] = null == t2 ? "" : t2;
+      n2[l2] = null == u2 ? "" : u2;
       break n;
     } catch (n3) {
     }
-    "function" == typeof t2 || (null == t2 || false === t2 && "-" != l2[4] ? n2.removeAttribute(l2) : n2.setAttribute(l2, "popover" == l2 && 1 == t2 ? "" : t2));
+    "function" == typeof u2 || (null == u2 || false === u2 && "-" != l2[4] ? n2.removeAttribute(l2) : n2.setAttribute(l2, "popover" == l2 && 1 == u2 ? "" : u2));
   }
 }
-function F$1(n2) {
-  return function(t2) {
+function O(n2) {
+  return function(u2) {
     if (this.l) {
-      var u2 = this.l[t2.type + n2];
-      if (null == t2.u) t2.u = c$2++;
-      else if (t2.u < u2.t) return;
-      return u2(l$3.event ? l$3.event(t2) : t2);
+      var t2 = this.l[u2.type + n2];
+      if (null == u2.t) u2.t = c$2++;
+      else if (u2.t < t2.u) return;
+      return t2(l$3.event ? l$3.event(u2) : u2);
     }
   };
 }
-function O(n2, t2, u2, i2, r2, o2, e2, f2, c2, s2) {
-  var a2, h2, p2, v2, y2, _2, m2, b2, S2, C2, M2, $2, P2, A2, H2, L2, T2, j2 = t2.type;
-  if (void 0 !== t2.constructor) return null;
-  128 & u2.__u && (c2 = !!(32 & u2.__u), o2 = [f2 = t2.__e = u2.__e]), (a2 = l$3.__b) && a2(t2);
-  n: if ("function" == typeof j2) try {
-    if (b2 = t2.props, S2 = "prototype" in j2 && j2.prototype.render, C2 = (a2 = j2.contextType) && i2[a2.__c], M2 = a2 ? C2 ? C2.props.value : a2.__ : i2, u2.__c ? m2 = (h2 = t2.__c = u2.__c).__ = h2.__E : (S2 ? t2.__c = h2 = new j2(b2, M2) : (t2.__c = h2 = new x$1(b2, M2), h2.constructor = j2, h2.render = D$1), C2 && C2.sub(h2), h2.props = b2, h2.state || (h2.state = {}), h2.context = M2, h2.__n = i2, p2 = h2.__d = true, h2.__h = [], h2._sb = []), S2 && null == h2.__s && (h2.__s = h2.state), S2 && null != j2.getDerivedStateFromProps && (h2.__s == h2.state && (h2.__s = w$2({}, h2.__s)), w$2(h2.__s, j2.getDerivedStateFromProps(b2, h2.__s))), v2 = h2.props, y2 = h2.state, h2.__v = t2, p2) S2 && null == j2.getDerivedStateFromProps && null != h2.componentWillMount && h2.componentWillMount(), S2 && null != h2.componentDidMount && h2.__h.push(h2.componentDidMount);
+function j$2(n2, u2, t2, i2, r2, o2, e2, f2, c2, s2) {
+  var a2, h2, p2, v2, y2, g2, m2, b2, C2, S2, M2, P2, I2, A2, H2, L2, T2, F2 = u2.type;
+  if (void 0 !== u2.constructor) return null;
+  128 & t2.__u && (c2 = !!(32 & t2.__u), o2 = [f2 = u2.__e = t2.__e]), (a2 = l$3.__b) && a2(u2);
+  n: if ("function" == typeof F2) try {
+    if (b2 = u2.props, C2 = "prototype" in F2 && F2.prototype.render, S2 = (a2 = F2.contextType) && i2[a2.__c], M2 = a2 ? S2 ? S2.props.value : a2.__ : i2, t2.__c ? m2 = (h2 = u2.__c = t2.__c).__ = h2.__E : (C2 ? u2.__c = h2 = new F2(b2, M2) : (u2.__c = h2 = new x$1(b2, M2), h2.constructor = F2, h2.render = B$2), S2 && S2.sub(h2), h2.props = b2, h2.state || (h2.state = {}), h2.context = M2, h2.__n = i2, p2 = h2.__d = true, h2.__h = [], h2._sb = []), C2 && null == h2.__s && (h2.__s = h2.state), C2 && null != F2.getDerivedStateFromProps && (h2.__s == h2.state && (h2.__s = w$2({}, h2.__s)), w$2(h2.__s, F2.getDerivedStateFromProps(b2, h2.__s))), v2 = h2.props, y2 = h2.state, h2.__v = u2, p2) C2 && null == F2.getDerivedStateFromProps && null != h2.componentWillMount && h2.componentWillMount(), C2 && null != h2.componentDidMount && h2.__h.push(h2.componentDidMount);
     else {
-      if (S2 && null == j2.getDerivedStateFromProps && b2 !== v2 && null != h2.componentWillReceiveProps && h2.componentWillReceiveProps(b2, M2), !h2.__e && (null != h2.shouldComponentUpdate && false === h2.shouldComponentUpdate(b2, h2.__s, M2) || t2.__v == u2.__v)) {
-        for (t2.__v != u2.__v && (h2.props = b2, h2.state = h2.__s, h2.__d = false), t2.__e = u2.__e, t2.__k = u2.__k, t2.__k.some(function(n3) {
-          n3 && (n3.__ = t2);
-        }), $2 = 0; $2 < h2._sb.length; $2++) h2.__h.push(h2._sb[$2]);
+      if (C2 && null == F2.getDerivedStateFromProps && b2 !== v2 && null != h2.componentWillReceiveProps && h2.componentWillReceiveProps(b2, M2), !h2.__e && (null != h2.shouldComponentUpdate && false === h2.shouldComponentUpdate(b2, h2.__s, M2) || u2.__v == t2.__v)) {
+        for (u2.__v != t2.__v && (h2.props = b2, h2.state = h2.__s, h2.__d = false), u2.__e = t2.__e, u2.__k = t2.__k, u2.__k.some(function(n3) {
+          n3 && (n3.__ = u2);
+        }), P2 = 0; P2 < h2._sb.length; P2++) h2.__h.push(h2._sb[P2]);
         h2._sb = [], h2.__h.length && e2.push(h2);
         break n;
       }
-      null != h2.componentWillUpdate && h2.componentWillUpdate(b2, h2.__s, M2), S2 && null != h2.componentDidUpdate && h2.__h.push(function() {
-        h2.componentDidUpdate(v2, y2, _2);
+      null != h2.componentWillUpdate && h2.componentWillUpdate(b2, h2.__s, M2), C2 && null != h2.componentDidUpdate && h2.__h.push(function() {
+        h2.componentDidUpdate(v2, y2, g2);
       });
     }
-    if (h2.context = M2, h2.props = b2, h2.__P = n2, h2.__e = false, P2 = l$3.__r, A2 = 0, S2) {
-      for (h2.state = h2.__s, h2.__d = false, P2 && P2(t2), a2 = h2.render(h2.props, h2.state, h2.context), H2 = 0; H2 < h2._sb.length; H2++) h2.__h.push(h2._sb[H2]);
+    if (h2.context = M2, h2.props = b2, h2.__P = n2, h2.__e = false, I2 = l$3.__r, A2 = 0, C2) {
+      for (h2.state = h2.__s, h2.__d = false, I2 && I2(u2), a2 = h2.render(h2.props, h2.state, h2.context), H2 = 0; H2 < h2._sb.length; H2++) h2.__h.push(h2._sb[H2]);
       h2._sb = [];
     } else do {
-      h2.__d = false, P2 && P2(t2), a2 = h2.render(h2.props, h2.state, h2.context), h2.state = h2.__s;
+      h2.__d = false, I2 && I2(u2), a2 = h2.render(h2.props, h2.state, h2.context), h2.state = h2.__s;
     } while (h2.__d && ++A2 < 25);
-    h2.state = h2.__s, null != h2.getChildContext && (i2 = w$2(w$2({}, i2), h2.getChildContext())), S2 && !p2 && null != h2.getSnapshotBeforeUpdate && (_2 = h2.getSnapshotBeforeUpdate(v2, y2)), L2 = a2, null != a2 && a2.type === k$1 && null == a2.key && (L2 = N$1(a2.props.children)), f2 = I(n2, d$3(L2) ? L2 : [L2], t2, u2, i2, r2, o2, e2, f2, c2, s2), h2.base = t2.__e, t2.__u &= -161, h2.__h.length && e2.push(h2), m2 && (h2.__E = h2.__ = null);
+    h2.state = h2.__s, null != h2.getChildContext && (i2 = w$2(w$2({}, i2), h2.getChildContext())), C2 && !p2 && null != h2.getSnapshotBeforeUpdate && (g2 = h2.getSnapshotBeforeUpdate(v2, y2)), f2 = $$1(n2, d$3(L2 = null != a2 && a2.type === k$1 && null == a2.key ? a2.props.children : a2) ? L2 : [L2], u2, t2, i2, r2, o2, e2, f2, c2, s2), h2.base = u2.__e, u2.__u &= -161, h2.__h.length && e2.push(h2), m2 && (h2.__E = h2.__ = null);
   } catch (n3) {
-    if (t2.__v = null, c2 || null != o2) if (n3.then) {
-      for (t2.__u |= c2 ? 160 : 128; f2 && 8 == f2.nodeType && f2.nextSibling; ) f2 = f2.nextSibling;
-      o2[o2.indexOf(f2)] = null, t2.__e = f2;
-    } else for (T2 = o2.length; T2--; ) g$2(o2[T2]);
-    else t2.__e = u2.__e, t2.__k = u2.__k;
-    l$3.__e(n3, t2, u2);
+    if (u2.__v = null, c2 || null != o2) if (n3.then) {
+      for (u2.__u |= c2 ? 160 : 128; f2 && 8 == f2.nodeType && f2.nextSibling; ) f2 = f2.nextSibling;
+      o2[o2.indexOf(f2)] = null, u2.__e = f2;
+    } else for (T2 = o2.length; T2--; ) _$1(o2[T2]);
+    else u2.__e = t2.__e, u2.__k = t2.__k;
+    l$3.__e(n3, u2, t2);
   }
-  else null == o2 && t2.__v == u2.__v ? (t2.__k = u2.__k, t2.__e = u2.__e) : f2 = t2.__e = V$1(u2.__e, t2, u2, i2, r2, o2, e2, c2, s2);
-  return (a2 = l$3.diffed) && a2(t2), 128 & t2.__u ? void 0 : f2;
+  else null == o2 && u2.__v == t2.__v ? (u2.__k = t2.__k, u2.__e = t2.__e) : f2 = u2.__e = N$1(t2.__e, u2, t2, i2, r2, o2, e2, c2, s2);
+  return (a2 = l$3.diffed) && a2(u2), 128 & u2.__u ? void 0 : f2;
 }
-function z$1(n2, t2, u2) {
-  for (var i2 = 0; i2 < u2.length; i2++) q$1(u2[i2], u2[++i2], u2[++i2]);
-  l$3.__c && l$3.__c(t2, n2), n2.some(function(t3) {
+function z$1(n2, u2, t2) {
+  for (var i2 = 0; i2 < t2.length; i2++) V$1(t2[i2], t2[++i2], t2[++i2]);
+  l$3.__c && l$3.__c(u2, n2), n2.some(function(u3) {
     try {
-      n2 = t3.__h, t3.__h = [], n2.some(function(n3) {
-        n3.call(t3);
+      n2 = u3.__h, u3.__h = [], n2.some(function(n3) {
+        n3.call(u3);
       });
     } catch (n3) {
-      l$3.__e(n3, t3.__v);
+      l$3.__e(n3, u3.__v);
     }
   });
 }
-function N$1(n2) {
-  return "object" != typeof n2 || null == n2 ? n2 : d$3(n2) ? n2.map(N$1) : w$2({}, n2);
-}
-function V$1(t2, u2, i2, r2, o2, e2, f2, c2, s2) {
-  var a2, h2, v2, y2, w2, _2, m2, b2 = i2.props, k2 = u2.props, x2 = u2.type;
+function N$1(u2, t2, i2, r2, o2, e2, f2, c2, s2) {
+  var a2, h2, v2, y2, w2, g2, m2, b2 = i2.props, k2 = t2.props, x2 = t2.type;
   if ("svg" == x2 ? o2 = "http://www.w3.org/2000/svg" : "math" == x2 ? o2 = "http://www.w3.org/1998/Math/MathML" : o2 || (o2 = "http://www.w3.org/1999/xhtml"), null != e2) {
     for (a2 = 0; a2 < e2.length; a2++) if ((w2 = e2[a2]) && "setAttribute" in w2 == !!x2 && (x2 ? w2.localName == x2 : 3 == w2.nodeType)) {
-      t2 = w2, e2[a2] = null;
+      u2 = w2, e2[a2] = null;
       break;
     }
   }
-  if (null == t2) {
+  if (null == u2) {
     if (null == x2) return document.createTextNode(k2);
-    t2 = document.createElementNS(o2, x2, k2.is && k2), c2 && (l$3.__m && l$3.__m(u2, e2), c2 = false), e2 = null;
+    u2 = document.createElementNS(o2, x2, k2.is && k2), c2 && (l$3.__m && l$3.__m(t2, e2), c2 = false), e2 = null;
   }
-  if (null === x2) b2 === k2 || c2 && t2.data === k2 || (t2.data = k2);
+  if (null === x2) b2 === k2 || c2 && u2.data === k2 || (u2.data = k2);
   else {
-    if (e2 = e2 && n.call(t2.childNodes), b2 = i2.props || p$3, !c2 && null != e2) for (b2 = {}, a2 = 0; a2 < t2.attributes.length; a2++) b2[(w2 = t2.attributes[a2]).name] = w2.value;
+    if (e2 = e2 && n.call(u2.childNodes), b2 = i2.props || p$3, !c2 && null != e2) for (b2 = {}, a2 = 0; a2 < u2.attributes.length; a2++) b2[(w2 = u2.attributes[a2]).name] = w2.value;
     for (a2 in b2) if (w2 = b2[a2], "children" == a2) ;
     else if ("dangerouslySetInnerHTML" == a2) v2 = w2;
     else if (!(a2 in k2)) {
       if ("value" == a2 && "defaultValue" in k2 || "checked" == a2 && "defaultChecked" in k2) continue;
-      j$2(t2, a2, null, w2, o2);
+      F$1(u2, a2, null, w2, o2);
     }
-    for (a2 in k2) w2 = k2[a2], "children" == a2 ? y2 = w2 : "dangerouslySetInnerHTML" == a2 ? h2 = w2 : "value" == a2 ? _2 = w2 : "checked" == a2 ? m2 = w2 : c2 && "function" != typeof w2 || b2[a2] === w2 || j$2(t2, a2, w2, b2[a2], o2);
-    if (h2) c2 || v2 && (h2.__html === v2.__html || h2.__html === t2.innerHTML) || (t2.innerHTML = h2.__html), u2.__k = [];
-    else if (v2 && (t2.innerHTML = ""), I("template" === u2.type ? t2.content : t2, d$3(y2) ? y2 : [y2], u2, i2, r2, "foreignObject" == x2 ? "http://www.w3.org/1999/xhtml" : o2, e2, f2, e2 ? e2[0] : i2.__k && S(i2, 0), c2, s2), null != e2) for (a2 = e2.length; a2--; ) g$2(e2[a2]);
-    c2 || (a2 = "value", "progress" == x2 && null == _2 ? t2.removeAttribute("value") : void 0 !== _2 && (_2 !== t2[a2] || "progress" == x2 && !_2 || "option" == x2 && _2 !== b2[a2]) && j$2(t2, a2, _2, b2[a2], o2), a2 = "checked", void 0 !== m2 && m2 !== t2[a2] && j$2(t2, a2, m2, b2[a2], o2));
+    for (a2 in k2) w2 = k2[a2], "children" == a2 ? y2 = w2 : "dangerouslySetInnerHTML" == a2 ? h2 = w2 : "value" == a2 ? g2 = w2 : "checked" == a2 ? m2 = w2 : c2 && "function" != typeof w2 || b2[a2] === w2 || F$1(u2, a2, w2, b2[a2], o2);
+    if (h2) c2 || v2 && (h2.__html === v2.__html || h2.__html === u2.innerHTML) || (u2.innerHTML = h2.__html), t2.__k = [];
+    else if (v2 && (u2.innerHTML = ""), $$1(u2, d$3(y2) ? y2 : [y2], t2, i2, r2, "foreignObject" == x2 ? "http://www.w3.org/1999/xhtml" : o2, e2, f2, e2 ? e2[0] : i2.__k && C$1(i2, 0), c2, s2), null != e2) for (a2 = e2.length; a2--; ) _$1(e2[a2]);
+    c2 || (a2 = "value", "progress" == x2 && null == g2 ? u2.removeAttribute("value") : void 0 !== g2 && (g2 !== u2[a2] || "progress" == x2 && !g2 || "option" == x2 && g2 !== b2[a2]) && F$1(u2, a2, g2, b2[a2], o2), a2 = "checked", void 0 !== m2 && m2 !== u2[a2] && F$1(u2, a2, m2, b2[a2], o2));
   }
-  return t2;
+  return u2;
 }
-function q$1(n2, t2, u2) {
+function V$1(n2, u2, t2) {
   try {
     if ("function" == typeof n2) {
       var i2 = "function" == typeof n2.__u;
-      i2 && n2.__u(), i2 && null == t2 || (n2.__u = n2(t2));
-    } else n2.current = t2;
+      i2 && n2.__u(), i2 && null == u2 || (n2.__u = n2(u2));
+    } else n2.current = u2;
   } catch (n3) {
-    l$3.__e(n3, u2);
+    l$3.__e(n3, t2);
   }
 }
-function B$2(n2, t2, u2) {
+function q$1(n2, u2, t2) {
   var i2, r2;
-  if (l$3.unmount && l$3.unmount(n2), (i2 = n2.ref) && (i2.current && i2.current !== n2.__e || q$1(i2, null, t2)), null != (i2 = n2.__c)) {
+  if (l$3.unmount && l$3.unmount(n2), (i2 = n2.ref) && (i2.current && i2.current !== n2.__e || V$1(i2, null, u2)), null != (i2 = n2.__c)) {
     if (i2.componentWillUnmount) try {
       i2.componentWillUnmount();
     } catch (n3) {
-      l$3.__e(n3, t2);
+      l$3.__e(n3, u2);
     }
     i2.base = i2.__P = null;
   }
-  if (i2 = n2.__k) for (r2 = 0; r2 < i2.length; r2++) i2[r2] && B$2(i2[r2], t2, u2 || "function" != typeof n2.type);
-  u2 || g$2(n2.__e), n2.__c = n2.__ = n2.__e = void 0;
+  if (i2 = n2.__k) for (r2 = 0; r2 < i2.length; r2++) i2[r2] && q$1(i2[r2], u2, t2 || "function" != typeof n2.type);
+  t2 || _$1(n2.__e), n2.__c = n2.__ = n2.__e = void 0;
 }
-function D$1(n2, l2, t2) {
-  return this.constructor(n2, t2);
+function B$2(n2, l2, u2) {
+  return this.constructor(n2, u2);
 }
-function E$2(t2, u2, i2) {
+function D$1(u2, t2, i2) {
   var r2, o2, e2, f2;
-  u2 == document && (u2 = document.documentElement), l$3.__ && l$3.__(t2, u2), o2 = (r2 = false) ? null : u2.__k, e2 = [], f2 = [], O(u2, t2 = u2.__k = _$1(k$1, null, [t2]), o2 || p$3, p$3, u2.namespaceURI, o2 ? null : u2.firstChild ? n.call(u2.childNodes) : null, e2, o2 ? o2.__e : u2.firstChild, r2, f2), z$1(e2, t2, f2);
+  t2 == document && (t2 = document.documentElement), l$3.__ && l$3.__(u2, t2), o2 = (r2 = false) ? null : t2.__k, e2 = [], f2 = [], j$2(t2, u2 = t2.__k = g$2(k$1, null, [u2]), o2 || p$3, p$3, t2.namespaceURI, o2 ? null : t2.firstChild ? n.call(t2.childNodes) : null, e2, o2 ? o2.__e : t2.firstChild, r2, f2), z$1(e2, u2, f2);
 }
-function K$1(n2) {
-  function l2(n3) {
-    var t2, u2;
-    return this.getChildContext || (t2 = /* @__PURE__ */ new Set(), (u2 = {})[l2.__c] = this, this.getChildContext = function() {
-      return u2;
+function J$1(n2, l2) {
+  var u2 = { __c: l2 = "__cC" + h$3++, __: n2, Consumer: function(n3, l3) {
+    return n3.children(l3);
+  }, Provider: function(n3) {
+    var u3, t2;
+    return this.getChildContext || (u3 = /* @__PURE__ */ new Set(), (t2 = {})[l2] = this, this.getChildContext = function() {
+      return t2;
     }, this.componentWillUnmount = function() {
-      t2 = null;
+      u3 = null;
     }, this.shouldComponentUpdate = function(n4) {
-      this.props.value !== n4.value && t2.forEach(function(n5) {
+      this.props.value !== n4.value && u3.forEach(function(n5) {
         n5.__e = true, M(n5);
       });
     }, this.sub = function(n4) {
-      t2.add(n4);
+      u3.add(n4);
       var l3 = n4.componentWillUnmount;
       n4.componentWillUnmount = function() {
-        t2 && t2.delete(n4), l3 && l3.call(n4);
+        u3 && u3.delete(n4), l3 && l3.call(n4);
       };
     }), n3.children;
-  }
-  return l2.__c = "__cC" + h$3++, l2.__ = n2, l2.Provider = l2.__l = (l2.Consumer = function(n3, l3) {
-    return n3.children(l3);
-  }).contextType = l2, l2;
+  } };
+  return u2.Provider.__ = u2.Consumer.contextType = u2;
 }
-n = v$2.slice, l$3 = { __e: function(n2, l2, t2, u2) {
+n = v$2.slice, l$3 = { __e: function(n2, l2, u2, t2) {
   for (var i2, r2, o2; l2 = l2.__; ) if ((i2 = l2.__c) && !i2.__) try {
-    if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n2)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, u2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
+    if ((r2 = i2.constructor) && null != r2.getDerivedStateFromError && (i2.setState(r2.getDerivedStateFromError(n2)), o2 = i2.__d), null != i2.componentDidCatch && (i2.componentDidCatch(n2, t2 || {}), o2 = i2.__d), o2) return i2.__E = i2;
   } catch (l3) {
     n2 = l3;
   }
   throw n2;
-} }, t$2 = 0, u$3 = function(n2) {
+} }, u$3 = 0, t$2 = function(n2) {
   return null != n2 && null == n2.constructor;
 }, x$1.prototype.setState = function(n2, l2) {
-  var t2;
-  t2 = null != this.__s && this.__s !== this.state ? this.__s : this.__s = w$2({}, this.state), "function" == typeof n2 && (n2 = n2(w$2({}, t2), this.props)), n2 && w$2(t2, n2), null != n2 && this.__v && (l2 && this._sb.push(l2), M(this));
+  var u2;
+  u2 = null != this.__s && this.__s !== this.state ? this.__s : this.__s = w$2({}, this.state), "function" == typeof n2 && (n2 = n2(w$2({}, u2), this.props)), n2 && w$2(u2, n2), null != n2 && this.__v && (l2 && this._sb.push(l2), M(this));
 }, x$1.prototype.forceUpdate = function(n2) {
   this.__v && (this.__e = true, n2 && this.__h.push(n2), M(this));
 }, x$1.prototype.render = k$1, i$2 = [], o$2 = "function" == typeof Promise ? Promise.prototype.then.bind(Promise.resolve()) : setTimeout, e$2 = function(n2, l2) {
   return n2.__v.__b - l2.__v.__b;
-}, $$1.__r = 0, f$3 = /(PointerCapture)$|Capture$/i, c$2 = 0, s$3 = F$1(false), a$2 = F$1(true), h$3 = 0;
+}, P$1.__r = 0, f$3 = /(PointerCapture)$|Capture$/i, c$2 = 0, s$3 = O(false), a$2 = O(true), h$3 = 0;
 var f$2 = 0;
 function u$2(e2, t2, n2, o2, i2, u2) {
   t2 || (t2 = {});
@@ -1528,20 +1527,20 @@ function u$2(e2, t2, n2, o2, i2, u2) {
   return l$3.vnode && l$3.vnode(l2), l2;
 }
 var t$1, r$1, u$1, i$1, o$1 = 0, f$1 = [], c$1 = l$3, e$1 = c$1.__b, a$1 = c$1.__r, v$1 = c$1.diffed, l$2 = c$1.__c, m = c$1.unmount, s$2 = c$1.__;
-function p$2(n2, t2) {
+function d$2(n2, t2) {
   c$1.__h && c$1.__h(r$1, n2, o$1 || t2), o$1 = 0;
   var u2 = r$1.__H || (r$1.__H = { __: [], __h: [] });
   return n2 >= u2.__.length && u2.__.push({}), u2.__[n2];
 }
-function d$2(n2) {
-  return o$1 = 1, h$2(D, n2);
+function h$2(n2) {
+  return o$1 = 1, p$2(D, n2);
 }
-function h$2(n2, u2, i2) {
-  var o2 = p$2(t$1++, 2);
+function p$2(n2, u2, i2) {
+  var o2 = d$2(t$1++, 2);
   if (o2.t = n2, !o2.__c && (o2.__ = [i2 ? i2(u2) : D(void 0, u2), function(n3) {
     var t2 = o2.__N ? o2.__N[0] : o2.__[0], r2 = o2.t(t2, n3);
     t2 !== r2 && (o2.__N = [r2, o2.__[1]], o2.__c.setState({}));
-  }], o2.__c = r$1, !r$1.__f)) {
+  }], o2.__c = r$1, !r$1.u)) {
     var f2 = function(n3, t2, r2) {
       if (!o2.__c.__H) return true;
       var u3 = o2.__c.__H.__.filter(function(n4) {
@@ -1558,7 +1557,7 @@ function h$2(n2, u2, i2) {
         }
       }), c2 && c2.call(this, n3, t2, r2) || i3;
     };
-    r$1.__f = true;
+    r$1.u = true;
     var c2 = r$1.shouldComponentUpdate, e2 = r$1.componentWillUpdate;
     r$1.componentWillUpdate = function(n3, t2, r2) {
       if (this.__e) {
@@ -1571,8 +1570,8 @@ function h$2(n2, u2, i2) {
   return o2.__N || o2.__;
 }
 function y$1(n2, u2) {
-  var i2 = p$2(t$1++, 3);
-  !c$1.__s && C(i2.__H, u2) && (i2.__ = n2, i2.u = u2, r$1.__H.__h.push(i2));
+  var i2 = d$2(t$1++, 3);
+  !c$1.__s && C(i2.__H, u2) && (i2.__ = n2, i2.i = u2, r$1.__H.__h.push(i2));
 }
 function A(n2) {
   return o$1 = 5, T$1(function() {
@@ -1580,11 +1579,11 @@ function A(n2) {
   }, []);
 }
 function T$1(n2, r2) {
-  var u2 = p$2(t$1++, 7);
+  var u2 = d$2(t$1++, 7);
   return C(u2.__H, r2) && (u2.__ = n2(), u2.__H = r2, u2.__h = n2), u2.__;
 }
 function x(n2) {
-  var u2 = r$1.context[n2.__c], i2 = p$2(t$1++, 9);
+  var u2 = r$1.context[n2.__c], i2 = d$2(t$1++, 9);
   return i2.c = n2, u2 ? (null == i2.__ && (i2.__ = true, u2.sub(r$1)), u2.props.value) : n2.__;
 }
 function j$1() {
@@ -1602,13 +1601,13 @@ c$1.__b = function(n2) {
   a$1 && a$1(n2), t$1 = 0;
   var i2 = (r$1 = n2.__c).__H;
   i2 && (u$1 === r$1 ? (i2.__h = [], r$1.__h = [], i2.__.forEach(function(n3) {
-    n3.__N && (n3.__ = n3.__N), n3.u = n3.__N = void 0;
+    n3.__N && (n3.__ = n3.__N), n3.i = n3.__N = void 0;
   })) : (i2.__h.forEach(z), i2.__h.forEach(B$1), i2.__h = [], t$1 = 0)), u$1 = r$1;
 }, c$1.diffed = function(n2) {
   v$1 && v$1(n2);
   var t2 = n2.__c;
   t2 && t2.__H && (t2.__H.__h.length && (1 !== f$1.push(t2) && i$1 === c$1.requestAnimationFrame || ((i$1 = c$1.requestAnimationFrame) || w$1)(j$1)), t2.__H.__.forEach(function(n3) {
-    n3.u && (n3.__H = n3.u), n3.u = void 0;
+    n3.i && (n3.__H = n3.i), n3.i = void 0;
   })), u$1 = r$1 = null;
 }, c$1.__c = function(n2, t2) {
   t2.some(function(n3) {
@@ -1736,8 +1735,8 @@ l$3.unmount = function(n2) {
     }
     this.__b = null;
   }
-  var i2 = e2.__a && _$1(k$1, null, n2.fallback);
-  return i2 && (i2.__u &= -33), [_$1(k$1, null, e2.__a ? null : n2.children), i2];
+  var i2 = e2.__a && g$2(k$1, null, n2.fallback);
+  return i2 && (i2.__u &= -33), [g$2(k$1, null, e2.__a ? null : n2.children), i2];
 };
 var H = function(n2, t2, e2) {
   if (++e2[1] === e2[0] && n2.l.delete(t2), n2.props.revealOrder && ("t" !== n2.props.revealOrder[0] || !n2.l.size)) for (e2 = n2.i; e2; ) {
@@ -1754,7 +1753,7 @@ function Z(n2) {
 function Y(n2) {
   var e2 = this, r2 = n2.h;
   e2.componentWillUnmount = function() {
-    E$2(null, e2.v), e2.v = null, e2.h = null;
+    D$1(null, e2.v), e2.v = null, e2.h = null;
   }, e2.h && e2.h !== r2 && e2.componentWillUnmount(), e2.v || (e2.h = r2, e2.v = { nodeType: 1, parentNode: r2, childNodes: [], contains: function() {
     return true;
   }, appendChild: function(n3) {
@@ -1763,10 +1762,10 @@ function Y(n2) {
     this.childNodes.push(n3), e2.h.insertBefore(n3, t2);
   }, removeChild: function(n3) {
     this.childNodes.splice(this.childNodes.indexOf(n3) >>> 1, 1), e2.h.removeChild(n3);
-  } }), E$2(_$1(Z, { context: e2.context }, n2.__v), e2.v);
+  } }), D$1(g$2(Z, { context: e2.context }, n2.__v), e2.v);
 }
 function $(n2, e2) {
-  var r2 = _$1(Y, { __v: n2, h: e2 });
+  var r2 = g$2(Y, { __v: n2, h: e2 });
   return r2.containerInfo = e2, r2;
 }
 (B.prototype = new x$1()).__a = function(n2) {
@@ -2194,7 +2193,7 @@ function h(i2) {
     r2.__$u.c = function() {
       var i4, t2 = r2.__$u.S(), f3 = e2.value;
       t2();
-      if (u$3(f3) || 3 !== (null == (i4 = r2.base) ? void 0 : i4.nodeType)) {
+      if (t$2(f3) || 3 !== (null == (i4 = r2.base) ? void 0 : i4.nodeType)) {
         r2.__$f |= 1;
         r2.setState({});
       } else r2.base.data = f3;
@@ -2346,9 +2345,10 @@ function useSignalEffect(i2) {
     });
   }, []);
 }
-const AppContext$1 = K$1({});
+const AppContext$1 = J$1({});
 const DateFormats$1 = {
   DATE_STRING: /^\d{4}-\d{2}-\d{2}$/,
+  TIME_STRING: /^\d{2}:\d{2}$/,
   DATE_TIME_STRING: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
 };
 let InvalidDateTimeError$1 = class InvalidDateTimeError extends Error {
@@ -2420,7 +2420,7 @@ function AppInput() {
   y$1(() => {
     $app.datePickerState.inputDisplayedValue.value = getLocalizedDate2($app.datePickerState.selectedDate.value);
   }, [$app.datePickerState.selectedDate.value, $app.config.locale.value]);
-  const [wrapperClasses, setWrapperClasses] = d$2([]);
+  const [wrapperClasses, setWrapperClasses] = h$2([]);
   const setInputElement = () => {
     const inputWrapperEl = document.getElementById(inputWrapperId);
     $app.datePickerState.inputWrapperElement.value = inputWrapperEl instanceof HTMLDivElement ? inputWrapperEl : void 0;
@@ -2575,8 +2575,8 @@ function MonthViewHeader({ setYearsView }) {
   const getYearFrom = (datePickerDate) => {
     return toIntegers(datePickerDate).year;
   };
-  const [selectedDateMonthName, setSelectedDateMonthName] = d$2(dateStringToLocalizedMonthName($app.datePickerState.datePickerDate.value));
-  const [datePickerYear, setDatePickerYear] = d$2(getYearFrom($app.datePickerState.datePickerDate.value));
+  const [selectedDateMonthName, setSelectedDateMonthName] = h$2(dateStringToLocalizedMonthName($app.datePickerState.datePickerDate.value));
+  const [datePickerYear, setDatePickerYear] = h$2(getYearFrom($app.datePickerState.datePickerDate.value));
   const setPreviousMonth = () => {
     $app.datePickerState.datePickerDate.value = getFirstDayOPreviousMonth($app.datePickerState.datePickerDate.value);
   };
@@ -3013,7 +3013,7 @@ function MonthViewWeek({ week }) {
 function MonthView({ seatYearsView }) {
   const elementId = randomStringId();
   const $app = x(AppContext$1);
-  const [month, setMonth] = d$2([]);
+  const [month, setMonth] = h$2([]);
   const renderMonth = () => {
     const newDatePickerDate = toJSDate$1($app.datePickerState.datePickerDate.value);
     setMonth($app.timeUnitsImpl.getMonthWithTrailingAndLeadingDays(newDatePickerDate.getFullYear(), newDatePickerDate.getMonth()));
@@ -3054,7 +3054,7 @@ function YearsView({ setMonthView }) {
   const maxYear = toJSDate$1($app.config.max).getFullYear();
   const years = Array.from({ length: maxYear - minYear + 1 }, (_2, i2) => minYear + i2);
   const { year: selectedYear } = toIntegers($app.datePickerState.selectedDate.value);
-  const [expandedYear, setExpandedYear] = d$2(selectedYear);
+  const [expandedYear, setExpandedYear] = h$2(selectedYear);
   const setNewDatePickerDate = (year, month) => {
     $app.datePickerState.datePickerDate.value = toDateString$1(new Date(year, month, 1));
     setMonthView();
@@ -3092,9 +3092,9 @@ const getScrollableParents = (el, acc = []) => {
 const POPUP_CLASS_NAME = "sx__date-picker-popup";
 function AppPopup() {
   const $app = x(AppContext$1);
-  const [datePickerView, setDatePickerView] = d$2(DatePickerView.MONTH_DAYS);
+  const [datePickerView, setDatePickerView] = h$2(DatePickerView.MONTH_DAYS);
   const basePopupClasses = [POPUP_CLASS_NAME, $app.config.placement];
-  const [classList, setClassList] = d$2(basePopupClasses);
+  const [classList, setClassList] = h$2(basePopupClasses);
   y$1(() => {
     setClassList([
       ...basePopupClasses,
@@ -3139,7 +3139,7 @@ function AppPopup() {
       position: "fixed"
     };
   };
-  const [fixedPositionStyle, setFixedPositionStyle] = d$2(getFixedPositionStyles());
+  const [fixedPositionStyle, setFixedPositionStyle] = h$2(getFixedPositionStyles());
   y$1(() => {
     const inputWrapper = $app.datePickerState.inputWrapperElement.value;
     if (inputWrapper === void 0)
@@ -3153,7 +3153,7 @@ function AppPopup() {
 }
 function AppWrapper({ $app }) {
   const initialClassList = ["sx__date-picker-wrapper"];
-  const [classList, setClassList] = d$2(initialClassList);
+  const [classList, setClassList] = h$2(initialClassList);
   y$1(() => {
     var _a;
     const list = [...initialClassList];
@@ -3170,7 +3170,7 @@ function AppWrapper({ $app }) {
     appPopupJSX = $(appPopupJSX, $app.config.teleportTo);
   return u$2(k$1, { children: u$2("div", { className: classList.join(" "), children: u$2(AppContext$1.Provider, { value: $app, children: [u$2(AppInput, {}), $app.datePickerState.isOpen.value && appPopupJSX] }) }) });
 }
-const AppContext = K$1({});
+const AppContext = J$1({});
 class DatePickerAppSingletonImpl {
   constructor(datePickerState, config2, timeUnitsImpl, translate2) {
     Object.defineProperty(this, "datePickerState", {
@@ -3278,7 +3278,7 @@ const getMonthAndYearForSelectedDate = ($app) => {
 };
 function RangeHeading() {
   const $app = x(AppContext);
-  const [currentHeading, setCurrentHeading] = d$2("");
+  const [currentHeading, setCurrentHeading] = h$2("");
   y$1(() => {
     if ($app.calendarState.view.value === InternalViewName.Week) {
       setCurrentHeading(getMonthAndYearForDateRange($app, $app.calendarState.range.value.start, $app.calendarState.range.value.end));
@@ -3298,7 +3298,7 @@ function TodayButton() {
 }
 function ViewSelection() {
   const $app = x(AppContext);
-  const [availableViews, setAvailableViews] = d$2([]);
+  const [availableViews, setAvailableViews] = h$2([]);
   useSignalEffect(() => {
     if ($app.calendarState.isCalendarSmall.value) {
       setAvailableViews($app.config.views.value.filter((view) => view.hasSmallScreenCompat));
@@ -3306,14 +3306,14 @@ function ViewSelection() {
       setAvailableViews($app.config.views.value.filter((view) => view.hasWideScreenCompat));
     }
   });
-  const [selectedViewLabel, setSelectedViewLabel] = d$2("");
+  const [selectedViewLabel, setSelectedViewLabel] = h$2("");
   useSignalEffect(() => {
     const selectedView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     if (!selectedView)
       return;
     setSelectedViewLabel($app.translate(selectedView.label));
   });
-  const [isOpen, setIsOpen] = d$2(false);
+  const [isOpen, setIsOpen] = h$2(false);
   const clickOutsideListener = (event) => {
     const target = event.target;
     if (target instanceof HTMLElement && !target.closest(".sx__view-selection")) {
@@ -3328,8 +3328,8 @@ function ViewSelection() {
     setIsOpen(false);
     $app.calendarState.setView(viewName, $app.datePickerState.selectedDate.value);
   };
-  const [viewSelectionItems, setViewSelectionItems] = d$2();
-  const [focusedViewIndex, setFocusedViewIndex] = d$2(0);
+  const [viewSelectionItems, setViewSelectionItems] = h$2();
+  const [focusedViewIndex, setFocusedViewIndex] = h$2(0);
   const handleSelectedViewKeyDown = (keyboardEvent) => {
     if (isKeyEnterOrSpace(keyboardEvent)) {
       setIsOpen(!isOpen);
@@ -3376,12 +3376,12 @@ function ForwardBackwardNavigation() {
       return;
     $app.datePickerState.selectedDate.value = currentView.backwardForwardFn($app.datePickerState.selectedDate.value, direction === "forwards" ? currentView.backwardForwardUnits : -currentView.backwardForwardUnits);
   };
-  const [localizedRange, setLocalizedRange] = d$2("");
+  const [localizedRange, setLocalizedRange] = h$2("");
   useSignalEffect(() => {
     setLocalizedRange(`${getLocalizedDate($app.calendarState.range.value.start, $app.config.locale.value)} ${$app.translate("to")} ${getLocalizedDate($app.calendarState.range.value.end, $app.config.locale.value)}`);
   });
-  const [rangeEndMinusOneRange, setRangeEndMinusOneRange] = d$2("");
-  const [rangeStartPlusOneRange, setRangeStartPlusOneRange] = d$2("");
+  const [rangeEndMinusOneRange, setRangeEndMinusOneRange] = h$2("");
+  const [rangeStartPlusOneRange, setRangeStartPlusOneRange] = h$2("");
   y$1(() => {
     const selectedView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
     if (!selectedView)
@@ -3402,6 +3402,2351 @@ function ForwardBackwardNavigation() {
   return u$2(k$1, { children: u$2("div", { className: "sx__forward-backward-navigation", "aria-label": localizedRange, "aria-live": "polite", children: [u$2(Chevron, { disabled: !!($app.config.minDate.value && dateFromDateTime$1(rangeEndMinusOneRange) < $app.config.minDate.value), onClick: () => navigate("backwards"), direction: "previous", buttonText: $app.translate("Previous period") }), u$2(Chevron, { disabled: !!($app.config.maxDate.value && dateFromDateTime$1(rangeStartPlusOneRange) > $app.config.maxDate.value), onClick: () => navigate("forwards"), direction: "next", buttonText: $app.translate("Next period") })] }) });
 }
 const getElementByCCID = (customComponentId) => document.querySelector(`[data-ccid="${customComponentId}"]`);
+function CalendarHeader() {
+  const $app = x(AppContext);
+  const datePickerAppSingleton = new DatePickerAppSingletonBuilder().withDatePickerState($app.datePickerState).withConfig($app.datePickerConfig).withTranslate($app.translate).withTimeUnitsImpl($app.timeUnitsImpl).build();
+  const headerContent = $app.config._customComponentFns.headerContent;
+  const headerContentId = h$2(headerContent ? randomStringId() : void 0)[0];
+  const headerContentLeftPrepend = $app.config._customComponentFns.headerContentLeftPrepend;
+  const headerContentLeftPrependId = h$2(headerContentLeftPrepend ? randomStringId() : void 0)[0];
+  const headerContentLeftAppend = $app.config._customComponentFns.headerContentLeftAppend;
+  const headerContentLeftAppendId = h$2(headerContentLeftAppend ? randomStringId() : void 0)[0];
+  const headerContentRightPrepend = $app.config._customComponentFns.headerContentRightPrepend;
+  const headerContentRightPrependId = h$2(headerContentRightPrepend ? randomStringId() : void 0)[0];
+  const headerContentRightAppend = $app.config._customComponentFns.headerContentRightAppend;
+  const headerContentRightAppendId = h$2(headerContentRightAppend ? randomStringId() : void 0)[0];
+  y$1(() => {
+    if (headerContent) {
+      headerContent(getElementByCCID(headerContentId), { $app });
+    }
+    if (headerContentLeftPrepend && headerContentLeftPrependId) {
+      headerContentLeftPrepend(getElementByCCID(headerContentLeftPrependId), {
+        $app
+      });
+    }
+    if (headerContentLeftAppend) {
+      headerContentLeftAppend(getElementByCCID(headerContentLeftAppendId), {
+        $app
+      });
+    }
+    if (headerContentRightPrepend) {
+      headerContentRightPrepend(getElementByCCID(headerContentRightPrependId), {
+        $app
+      });
+    }
+    if (headerContentRightAppend) {
+      headerContentRightAppend(getElementByCCID(headerContentRightAppendId), {
+        $app
+      });
+    }
+  }, []);
+  const keyForRerenderingOnLocaleChange = $app.config.locale.value;
+  return u$2("header", { className: "sx__calendar-header", "data-ccid": headerContentId, children: !headerContent && u$2(k$1, { children: [u$2("div", { className: "sx__calendar-header-content", children: [headerContentLeftPrependId && u$2("div", { "data-ccid": headerContentLeftPrependId }), u$2(TodayButton, {}), u$2(ForwardBackwardNavigation, {}), u$2(RangeHeading, {}, $app.config.locale.value), headerContentLeftAppendId && u$2("div", { "data-ccid": headerContentLeftAppendId })] }), u$2("div", { className: "sx__calendar-header-content", children: [headerContentRightPrependId && u$2("div", { "data-ccid": headerContentRightPrependId }), $app.config.views.value.length > 1 && u$2(ViewSelection, {}, keyForRerenderingOnLocaleChange + "-view-selection"), u$2(AppWrapper, { "$app": datePickerAppSingleton }), headerContentRightAppendId && u$2("div", { "data-ccid": headerContentRightAppendId })] })] }) });
+}
+const setWrapperElement = ($app, calendarId) => {
+  $app.elements.calendarWrapper = document.getElementById(calendarId);
+};
+const setScreenSizeCompatibleView = ($app, isSmall) => {
+  const currentView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
+  if (isSmall) {
+    if (currentView.hasSmallScreenCompat)
+      return;
+    const smallScreenCompatibleView = $app.config.views.value.find((view) => view.hasSmallScreenCompat);
+    if (smallScreenCompatibleView) {
+      $app.calendarState.setView(smallScreenCompatibleView.name, $app.datePickerState.selectedDate.value);
+    }
+  } else {
+    if (currentView.hasWideScreenCompat)
+      return;
+    const wideScreenCompatibleView = $app.config.views.value.find((view) => view.hasWideScreenCompat);
+    if (wideScreenCompatibleView) {
+      $app.calendarState.setView(wideScreenCompatibleView.name, $app.datePickerState.selectedDate.value);
+    }
+  }
+};
+const handleWindowResize = ($app) => {
+  const documentRoot = document.documentElement;
+  const calendarRoot = $app.elements.calendarWrapper;
+  const documentFontSize = +window.getComputedStyle(documentRoot).fontSize.split("p")[0];
+  const breakPointFor1RemEquals16px = 700;
+  const multiplier = 16 / documentFontSize;
+  const smallCalendarBreakpoint = breakPointFor1RemEquals16px / multiplier;
+  if (!calendarRoot)
+    return;
+  const isSmall = $app.config.callbacks.isCalendarSmall ? $app.config.callbacks.isCalendarSmall($app) : calendarRoot.clientWidth < smallCalendarBreakpoint;
+  const didIsSmallScreenChange = isSmall !== $app.calendarState.isCalendarSmall.value;
+  if (!didIsSmallScreenChange)
+    return;
+  $app.calendarState.isCalendarSmall.value = isSmall;
+  setScreenSizeCompatibleView($app, isSmall);
+};
+function useWrapperClasses($app) {
+  const calendarWrapperClass = "sx__calendar-wrapper";
+  const [wrapperClasses, setWrapperClasses] = h$2([
+    calendarWrapperClass
+  ]);
+  useSignalEffect(() => {
+    const classes = [calendarWrapperClass];
+    if ($app.calendarState.isCalendarSmall.value)
+      classes.push("sx__is-calendar-small");
+    if ($app.calendarState.isDark.value)
+      classes.push("is-dark");
+    if ($app.config.theme === "shadcn")
+      classes.push("is-shadcn");
+    setWrapperClasses(classes);
+  });
+  return wrapperClasses;
+}
+const initPlugins = ($app) => {
+  Object.values($app.config.plugins).forEach((plugin) => {
+    if (plugin === null || plugin === void 0 ? void 0 : plugin.onRender) {
+      plugin.onRender($app);
+    }
+  });
+};
+const destroyPlugins = ($app) => {
+  Object.values($app.config.plugins).forEach((plugin) => {
+    if (plugin === null || plugin === void 0 ? void 0 : plugin.destroy)
+      plugin.destroy();
+  });
+};
+const invokePluginsBeforeRender = ($app) => {
+  Object.values($app.config.plugins).forEach((plugin) => {
+    if (plugin === null || plugin === void 0 ? void 0 : plugin.beforeRender)
+      plugin.beforeRender($app);
+  });
+};
+function CalendarWrapper({ $app }) {
+  var _a;
+  const calendarId = randomStringId();
+  const viewContainerId = randomStringId();
+  y$1(() => {
+    var _a2;
+    setWrapperElement($app, calendarId);
+    initPlugins($app);
+    if ((_a2 = $app.config.callbacks) === null || _a2 === void 0 ? void 0 : _a2.onRender) {
+      $app.config.callbacks.onRender($app);
+    }
+    return () => destroyPlugins($app);
+  }, []);
+  const onResize = () => {
+    handleWindowResize($app);
+  };
+  y$1(() => {
+    if ($app.config.isResponsive) {
+      onResize();
+      window.addEventListener("resize", onResize);
+      return () => window.removeEventListener("resize", onResize);
+    }
+  }, []);
+  const wrapperClasses = useWrapperClasses($app);
+  const [currentView, setCurrentView] = h$2();
+  useSignalEffect(() => {
+    const newView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
+    const viewElement = document.getElementById(viewContainerId);
+    if (!newView || !viewElement || newView.name === (currentView === null || currentView === void 0 ? void 0 : currentView.name))
+      return;
+    if (currentView)
+      currentView.destroy();
+    setCurrentView(newView);
+    newView.render(viewElement, $app);
+  });
+  const [previousRangeStart, setPreviousRangeStart] = h$2("");
+  const [transitionClass, setTransitionClass] = h$2("");
+  useSignalEffect(() => {
+    var _a2, _b;
+    const newRangeStartIsLaterThanPrevious = (((_a2 = $app.calendarState.range.value) === null || _a2 === void 0 ? void 0 : _a2.start) || "") > previousRangeStart;
+    setTransitionClass(newRangeStartIsLaterThanPrevious ? "sx__slide-left" : "sx__slide-right");
+    setTimeout(() => {
+      setTransitionClass("");
+    }, 300);
+    setPreviousRangeStart(((_b = $app.calendarState.range.value) === null || _b === void 0 ? void 0 : _b.start) || "");
+  });
+  useSignalEffect(() => {
+    $app.datePickerConfig.locale.value = $app.config.locale.value;
+  });
+  return u$2(k$1, { children: u$2("div", { className: wrapperClasses.join(" "), id: calendarId, children: u$2("div", { className: "sx__calendar", children: u$2(AppContext.Provider, { value: $app, children: [u$2(CalendarHeader, {}), u$2("div", { className: ["sx__view-container", transitionClass].join(" "), id: viewContainerId }), $app.config.plugins.eventModal && $app.config.plugins.eventModal.calendarEvent.value && u$2($app.config.plugins.eventModal.ComponentFn, { "$app": $app }, (_a = $app.config.plugins.eventModal.calendarEvent.value) === null || _a === void 0 ? void 0 : _a.id)] }) }) }) });
+}
+const externalEventToInternal$1 = (event, config2) => {
+  const { id, start, end, title, description, location, people, _options, ...foreignProperties } = event;
+  return new CalendarEventBuilder$1(config2, id, start, end).withTitle(title).withDescription(description).withLocation(location).withPeople(people).withCalendarId(event.calendarId).withOptions(_options).withForeignProperties(foreignProperties).withCustomContent(event._customContent).build();
+};
+let EventsFacadeImpl$1 = class EventsFacadeImpl {
+  constructor($app) {
+    Object.defineProperty(this, "$app", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: $app
+    });
+  }
+  set(events) {
+    this.$app.calendarEvents.list.value = events.map((event) => externalEventToInternal$1(event, this.$app.config));
+  }
+  add(event) {
+    const newEvent = externalEventToInternal$1(event, this.$app.config);
+    const copiedEvents = [...this.$app.calendarEvents.list.value];
+    copiedEvents.push(newEvent);
+    this.$app.calendarEvents.list.value = copiedEvents;
+  }
+  get(id) {
+    var _a;
+    return (_a = this.$app.calendarEvents.list.value.find((event) => event.id === id)) === null || _a === void 0 ? void 0 : _a._getExternalEvent();
+  }
+  getAll() {
+    return this.$app.calendarEvents.list.value.map((event) => event._getExternalEvent());
+  }
+  remove(id) {
+    const index = this.$app.calendarEvents.list.value.findIndex((event) => event.id === id);
+    const copiedEvents = [...this.$app.calendarEvents.list.value];
+    copiedEvents.splice(index, 1);
+    this.$app.calendarEvents.list.value = copiedEvents;
+  }
+  update(event) {
+    const index = this.$app.calendarEvents.list.value.findIndex((e2) => e2.id === event.id);
+    const copiedEvents = [...this.$app.calendarEvents.list.value];
+    copiedEvents.splice(index, 1, externalEventToInternal$1(event, this.$app.config));
+    this.$app.calendarEvents.list.value = copiedEvents;
+  }
+};
+class CalendarApp {
+  constructor($app) {
+    var _a;
+    Object.defineProperty(this, "$app", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: $app
+    });
+    Object.defineProperty(this, "events", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "calendarContainerEl", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    this.events = new EventsFacadeImpl$1(this.$app);
+    invokePluginsBeforeRender(this.$app);
+    Object.values(this.$app.config.plugins).forEach((plugin) => {
+      if (!(plugin === null || plugin === void 0 ? void 0 : plugin.name))
+        return;
+      this[plugin.name] = plugin;
+    });
+    if ((_a = $app.config.callbacks) === null || _a === void 0 ? void 0 : _a.beforeRender) {
+      $app.config.callbacks.beforeRender($app);
+    }
+  }
+  render(el) {
+    this.calendarContainerEl = el;
+    D$1(g$2(CalendarWrapper, { $app: this.$app }), el);
+  }
+  destroy() {
+    Object.values(this.$app.config.plugins || {}).forEach((plugin) => {
+      if (!plugin || !plugin.destroy)
+        return;
+      plugin.destroy();
+    });
+    if (this.calendarContainerEl) {
+      D$1(null, this.calendarContainerEl);
+    }
+  }
+  setTheme(theme) {
+    this.$app.calendarState.isDark.value = theme === "dark";
+  }
+  getTheme() {
+    return this.$app.calendarState.isDark.value ? "dark" : "light";
+  }
+  /**
+   * @internal
+   * Purpose: To be consumed by framework adapters for custom component rendering.
+   * */
+  _setCustomComponentFn(fnId, fn2) {
+    this.$app.config._customComponentFns[fnId] = fn2;
+  }
+}
+class CalendarAppSingletonImpl {
+  constructor(config2, timeUnitsImpl, calendarState, datePickerState, translate2, datePickerConfig, calendarEvents, elements = { calendarWrapper: void 0 }) {
+    Object.defineProperty(this, "config", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: config2
+    });
+    Object.defineProperty(this, "timeUnitsImpl", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: timeUnitsImpl
+    });
+    Object.defineProperty(this, "calendarState", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: calendarState
+    });
+    Object.defineProperty(this, "datePickerState", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: datePickerState
+    });
+    Object.defineProperty(this, "translate", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: translate2
+    });
+    Object.defineProperty(this, "datePickerConfig", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: datePickerConfig
+    });
+    Object.defineProperty(this, "calendarEvents", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: calendarEvents
+    });
+    Object.defineProperty(this, "elements", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: elements
+    });
+  }
+}
+class CalendarAppSingletonBuilder {
+  constructor() {
+    Object.defineProperty(this, "config", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "timeUnitsImpl", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "datePickerState", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "calendarState", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "translate", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "datePickerConfig", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "calendarEvents", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+  }
+  build() {
+    return new CalendarAppSingletonImpl(this.config, this.timeUnitsImpl, this.calendarState, this.datePickerState, this.translate, this.datePickerConfig, this.calendarEvents);
+  }
+  withConfig(config2) {
+    this.config = config2;
+    return this;
+  }
+  withTimeUnitsImpl(timeUnitsImpl) {
+    this.timeUnitsImpl = timeUnitsImpl;
+    return this;
+  }
+  withDatePickerState(datePickerState) {
+    this.datePickerState = datePickerState;
+    return this;
+  }
+  withCalendarState(calendarState) {
+    this.calendarState = calendarState;
+    return this;
+  }
+  withTranslate(translate2) {
+    this.translate = translate2;
+    return this;
+  }
+  withDatePickerConfig(datePickerConfig) {
+    this.datePickerConfig = datePickerConfig;
+    return this;
+  }
+  withCalendarEvents(calendarEvents) {
+    this.calendarEvents = calendarEvents;
+    return this;
+  }
+}
+var DateFormatDelimiter;
+(function(DateFormatDelimiter2) {
+  DateFormatDelimiter2["SLASH"] = "/";
+  DateFormatDelimiter2["DASH"] = "-";
+  DateFormatDelimiter2["PERIOD"] = ".";
+})(DateFormatDelimiter || (DateFormatDelimiter = {}));
+var DateFormatOrder;
+(function(DateFormatOrder2) {
+  DateFormatOrder2["DMY"] = "DMY";
+  DateFormatOrder2["MDY"] = "MDY";
+  DateFormatOrder2["YMD"] = "YMD";
+})(DateFormatOrder || (DateFormatOrder = {}));
+const formatRules = {
+  slashMDY: {
+    delimiter: DateFormatDelimiter.SLASH,
+    order: DateFormatOrder.MDY
+  },
+  slashDMY: {
+    delimiter: DateFormatDelimiter.SLASH,
+    order: DateFormatOrder.DMY
+  },
+  slashYMD: {
+    delimiter: DateFormatDelimiter.SLASH,
+    order: DateFormatOrder.YMD
+  },
+  periodDMY: {
+    delimiter: DateFormatDelimiter.PERIOD,
+    order: DateFormatOrder.DMY
+  },
+  dashYMD: {
+    delimiter: DateFormatDelimiter.DASH,
+    order: DateFormatOrder.YMD
+  }
+};
+const dateFormatLocalizedRules = /* @__PURE__ */ new Map([
+  ["en-US", formatRules.slashMDY],
+  ["en-GB", formatRules.slashDMY],
+  ["zh-CN", formatRules.slashYMD],
+  ["de-DE", formatRules.periodDMY],
+  ["sv-SE", formatRules.dashYMD]
+]);
+class LocaleNotSupportedError extends Error {
+  constructor(locale) {
+    super(`Locale not supported: ${locale}`);
+  }
+}
+class InvalidDateFormatError extends Error {
+  constructor(dateFormat, locale) {
+    super(`Invalid date format: ${dateFormat} for locale: ${locale}`);
+  }
+}
+const _getMatchesOrThrow = (format, matcher, locale) => {
+  const matches = format.match(matcher);
+  if (!matches)
+    throw new InvalidDateFormatError(format, locale);
+  return matches;
+};
+const toDateString$2 = (format, locale) => {
+  const internationalFormat = /^\d{4}-\d{2}-\d{2}$/;
+  if (internationalFormat.test(format))
+    return format;
+  const localeDateFormatRule = dateFormatLocalizedRules.get(locale);
+  if (!localeDateFormatRule)
+    throw new LocaleNotSupportedError(locale);
+  const { order, delimiter } = localeDateFormatRule;
+  const pattern224Slashed = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
+  const pattern224Dotted = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/;
+  const pattern442Slashed = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/;
+  if (order === DateFormatOrder.DMY && delimiter === DateFormatDelimiter.SLASH) {
+    const matches = _getMatchesOrThrow(format, pattern224Slashed, locale);
+    const [, day, month, year] = matches;
+    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
+  }
+  if (order === DateFormatOrder.MDY && delimiter === DateFormatDelimiter.SLASH) {
+    const matches = _getMatchesOrThrow(format, pattern224Slashed, locale);
+    const [, month, day, year] = matches;
+    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
+  }
+  if (order === DateFormatOrder.YMD && delimiter === DateFormatDelimiter.SLASH) {
+    const matches = _getMatchesOrThrow(format, pattern442Slashed, locale);
+    const [, year, month, day] = matches;
+    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
+  }
+  if (order === DateFormatOrder.DMY && delimiter === DateFormatDelimiter.PERIOD) {
+    const matches = _getMatchesOrThrow(format, pattern224Dotted, locale);
+    const [, day, month, year] = matches;
+    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
+  }
+  throw new InvalidDateFormatError(format, locale);
+};
+const createDatePickerState = (config2, selectedDateParam) => {
+  var _a;
+  const currentDayDateString = toDateString$1(/* @__PURE__ */ new Date());
+  const initialSelectedDate = typeof selectedDateParam === "string" ? selectedDateParam : currentDayDateString;
+  const isOpen = d$1(false);
+  const isDisabled = d$1(config2.disabled || false);
+  const datePickerView = d$1(DatePickerView.MONTH_DAYS);
+  const selectedDate = d$1(initialSelectedDate);
+  const datePickerDate = d$1(initialSelectedDate || currentDayDateString);
+  const isDark = d$1(((_a = config2.style) === null || _a === void 0 ? void 0 : _a.dark) || false);
+  const inputDisplayedValue = d$1(selectedDateParam ? toLocalizedDateString(toJSDate$1(selectedDateParam), config2.locale.value) : "");
+  const lastValidDisplayedValue = d$1(inputDisplayedValue.value);
+  E(() => {
+    try {
+      const newValue = toDateString$2(inputDisplayedValue.value, config2.locale.value);
+      if (newValue < config2.min || newValue > config2.max) {
+        inputDisplayedValue.value = lastValidDisplayedValue.value;
+        return;
+      }
+      selectedDate.value = newValue;
+      datePickerDate.value = newValue;
+      lastValidDisplayedValue.value = inputDisplayedValue.value;
+    } catch (e2) {
+    }
+  });
+  let wasInitialized = false;
+  const handleOnChange = (selectedDate2) => {
+    if (!wasInitialized)
+      return wasInitialized = true;
+    config2.listeners.onChange(selectedDate2);
+  };
+  E(() => {
+    var _a2;
+    if ((_a2 = config2.listeners) === null || _a2 === void 0 ? void 0 : _a2.onChange)
+      handleOnChange(selectedDate.value);
+  });
+  return {
+    inputWrapperElement: d$1(void 0),
+    isOpen,
+    isDisabled,
+    datePickerView,
+    selectedDate,
+    datePickerDate,
+    inputDisplayedValue,
+    isDark,
+    open: () => isOpen.value = true,
+    close: () => isOpen.value = false,
+    toggle: () => isOpen.value = !isOpen.value,
+    setView: (view) => datePickerView.value = view
+  };
+};
+const datePickerDeDE$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "TT.MM.JJJJ",
+  "Next month": "Nächster Monat",
+  "Previous month": "Vorheriger Monat",
+  "Choose Date": "Datum auswählen"
+};
+const calendarDeDE$1 = {
+  Today: "Heute",
+  Month: "Monat",
+  Week: "Woche",
+  Day: "Tag",
+  "Select View": "Ansicht auswählen",
+  events: "Ereignisse",
+  event: "Ereignis",
+  "No events": "Keine Ereignisse",
+  "Next period": "Nächster Zeitraum",
+  "Previous period": "Vorheriger Zeitraum",
+  to: "bis",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Ganztägige und mehrtägige Ereignisse",
+  "Link to {{n}} more events on {{date}}": "Link zu {{n}} weiteren Ereignissen am {{date}}",
+  "Link to 1 more event on {{date}}": "Link zu 1 weiteren Ereignis am {{date}}"
+};
+const deDE$1 = {
+  ...datePickerDeDE$1,
+  ...calendarDeDE$1
+};
+const datePickerEnUS$1 = {
+  Date: "Date",
+  "MM/DD/YYYY": "MM/DD/YYYY",
+  "Next month": "Next month",
+  "Previous month": "Previous month",
+  "Choose Date": "Choose Date"
+};
+const calendarEnUS$1 = {
+  Today: "Today",
+  Month: "Month",
+  Week: "Week",
+  Day: "Day",
+  "Select View": "Select View",
+  events: "events",
+  event: "event",
+  "No events": "No events",
+  "Next period": "Next period",
+  "Previous period": "Previous period",
+  to: "to",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Full day- and multiple day events",
+  "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
+  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
+};
+const enUS$1 = {
+  ...datePickerEnUS$1,
+  ...calendarEnUS$1
+};
+const datePickerItIT$1 = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Mese successivo",
+  "Previous month": "Mese precedente",
+  "Choose Date": "Scegli la data"
+};
+const calendarItIT$1 = {
+  Today: "Oggi",
+  Month: "Mese",
+  Week: "Settimana",
+  Day: "Giorno",
+  "Select View": "Seleziona la vista",
+  events: "eventi",
+  event: "evento",
+  "No events": "Nessun evento",
+  "Next period": "Periodo successivo",
+  "Previous period": "Periodo precedente",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Eventi della giornata e plurigiornalieri",
+  "Link to {{n}} more events on {{date}}": "Link a {{n}} eventi in più il {{date}}",
+  "Link to 1 more event on {{date}}": "Link a 1 evento in più il {{date}}"
+};
+const itIT$1 = {
+  ...datePickerItIT$1,
+  ...calendarItIT$1
+};
+const datePickerEnGB$1 = {
+  Date: "Date",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Next month",
+  "Previous month": "Previous month",
+  "Choose Date": "Choose Date"
+};
+const calendarEnGB$1 = {
+  Today: "Today",
+  Month: "Month",
+  Week: "Week",
+  Day: "Day",
+  "Select View": "Select View",
+  events: "events",
+  event: "event",
+  "No events": "No events",
+  "Next period": "Next period",
+  "Previous period": "Previous period",
+  to: "to",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Full day- and multiple day events",
+  "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
+  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
+};
+const enGB$1 = {
+  ...datePickerEnGB$1,
+  ...calendarEnGB$1
+};
+const datePickerSvSE$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
+  "Next month": "Nästa månad",
+  "Previous month": "Föregående månad",
+  "Choose Date": "Välj datum"
+};
+const calendarSvSE$1 = {
+  Today: "Idag",
+  Month: "Månad",
+  Week: "Vecka",
+  Day: "Dag",
+  "Select View": "Välj vy",
+  events: "händelser",
+  event: "händelse",
+  "No events": "Inga händelser",
+  "Next period": "Nästa period",
+  "Previous period": "Föregående period",
+  to: "till",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Heldags- och flerdagshändelser",
+  "Link to {{n}} more events on {{date}}": "Länk till {{n}} fler händelser den {{date}}",
+  "Link to 1 more event on {{date}}": "Länk till 1 händelse till den {{date}}"
+};
+const svSE$1 = {
+  ...datePickerSvSE$1,
+  ...calendarSvSE$1
+};
+const datePickerZhCN$1 = {
+  Date: "日期",
+  "MM/DD/YYYY": "年/月/日",
+  "Next month": "下个月",
+  "Previous month": "上个月",
+  "Choose Date": "选择日期"
+};
+const calendarZhCN$1 = {
+  Today: "今天",
+  Month: "月",
+  Week: "周",
+  Day: "日",
+  "Select View": "选择视图",
+  events: "场活动",
+  event: "活动",
+  "No events": "没有活动",
+  "Next period": "下一段时间",
+  "Previous period": "上一段时间",
+  to: "至",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "全天和多天活动",
+  "Link to {{n}} more events on {{date}}": "链接到{{date}}上的{{n}}个更多活动",
+  "Link to 1 more event on {{date}}": "链接到{{date}}上的1个更多活动"
+};
+const zhCN$1 = {
+  ...datePickerZhCN$1,
+  ...calendarZhCN$1
+};
+const datePickerZhTW$1 = {
+  Date: "日期",
+  "MM/DD/YYYY": "年/月/日",
+  "Next month": "下個月",
+  "Previous month": "上個月",
+  "Choose Date": "選擇日期"
+};
+const calendarZhTW$1 = {
+  Today: "今天",
+  Month: "月",
+  Week: "周",
+  Day: "日",
+  "Select View": "選擇檢視模式",
+  events: "場活動",
+  event: "活動",
+  "No events": "沒有活動",
+  "Next period": "下一段時間",
+  "Previous period": "上一段時間",
+  to: "到",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "全天和多天活動",
+  "Link to {{n}} more events on {{date}}": "連接到{{date}}上的{{n}}個更多活動",
+  "Link to 1 more event on {{date}}": "連接到{{date}}上的1個更多活動"
+};
+const zhTW$1 = {
+  ...datePickerZhTW$1,
+  ...calendarZhTW$1
+};
+const datePickerJaJP$1 = {
+  Date: "日付",
+  "MM/DD/YYYY": "年/月/日",
+  "Next month": "次の月",
+  "Previous month": "前の月",
+  "Choose Date": "日付を選択"
+};
+const calendarJaJP$1 = {
+  Today: "今日",
+  Month: "月",
+  Week: "週",
+  Day: "日",
+  "Select View": "ビューを選択",
+  events: "イベント",
+  event: "イベント",
+  "No events": "イベントなし",
+  "Next period": "次の期間",
+  "Previous period": "前の期間",
+  to: "から",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "終日および複数日イベント",
+  "Link to {{n}} more events on {{date}}": "{{date}} に{{n}}件のイベントへのリンク",
+  "Link to 1 more event on {{date}}": "{{date}} に1件のイベントへのリンク"
+};
+const jaJP$1 = {
+  ...datePickerJaJP$1,
+  ...calendarJaJP$1
+};
+const datePickerRuRU$1 = {
+  Date: "Дата",
+  "MM/DD/YYYY": "ММ/ДД/ГГГГ",
+  "Next month": "Следующий месяц",
+  "Previous month": "Прошлый месяц",
+  "Choose Date": "Выберите дату"
+};
+const calendarRuRU$1 = {
+  Today: "Сегодня",
+  Month: "Месяц",
+  Week: "Неделя",
+  Day: "День",
+  "Select View": "Выберите вид",
+  events: "события",
+  event: "событие",
+  "No events": "Нет событий",
+  "Next period": "Следующий период",
+  "Previous period": "Прошлый период",
+  to: "по",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "События на целый день и несколько дней подряд",
+  "Link to {{n}} more events on {{date}}": "Ссылка на {{n}} дополнительных событий на {{date}}",
+  "Link to 1 more event on {{date}}": "Ссылка на 1 дополнительное событие на {{date}}"
+};
+const ruRU$1 = {
+  ...datePickerRuRU$1,
+  ...calendarRuRU$1
+};
+const datePickerKoKR$1 = {
+  Date: "일자",
+  "MM/DD/YYYY": "년/월/일",
+  "Next month": "다음 달",
+  "Previous month": "이전 달",
+  "Choose Date": "날짜 선택"
+};
+const calendarKoKR$1 = {
+  Today: "오늘",
+  Month: "월",
+  Week: "주",
+  Day: "일",
+  "Select View": "보기 선택",
+  events: "일정들",
+  event: "일정",
+  "No events": "일정 없음",
+  "Next period": "다음",
+  "Previous period": "이전",
+  to: "부터",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "종일 및 복수일 일정",
+  "Link to {{n}} more events on {{date}}": "{{date}}에 {{n}}개 이상의 이벤트로 이동",
+  "Link to 1 more event on {{date}}": "{{date}}에 1개 이상의 이벤트로 이동"
+};
+const koKR$1 = {
+  ...datePickerKoKR$1,
+  ...calendarKoKR$1
+};
+const datePickerFrFR$1 = {
+  Date: "Date",
+  "MM/DD/YYYY": "JJ/MM/AAAA",
+  "Next month": "Mois suivant",
+  "Previous month": "Mois précédent",
+  "Choose Date": "Choisir une date"
+};
+const calendarFrFR$1 = {
+  Today: "Aujourd'hui",
+  Month: "Mois",
+  Week: "Semaine",
+  Day: "Jour",
+  "Select View": "Choisir la vue",
+  events: "événements",
+  event: "événement",
+  "No events": "Aucun événement",
+  "Next period": "Période suivante",
+  "Previous period": "Période précédente",
+  to: "à",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Événements d'une ou plusieurs journées",
+  "Link to {{n}} more events on {{date}}": "Lien vers {{n}} autres événements le {{date}}",
+  "Link to 1 more event on {{date}}": "Lien vers 1 autre événement le {{date}}"
+};
+const frFR$1 = {
+  ...datePickerFrFR$1,
+  ...calendarFrFR$1
+};
+const datePickerDaDK$1 = {
+  Date: "Dato",
+  "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
+  "Next month": "Næste måned",
+  "Previous month": "Foregående måned",
+  "Choose Date": "Vælg dato"
+};
+const calendarDaDK$1 = {
+  Today: "I dag",
+  Month: "Måned",
+  Week: "Uge",
+  Day: "Dag",
+  "Select View": "Vælg visning",
+  events: "begivenheder",
+  event: "begivenhed",
+  "No events": "Ingen begivenheder",
+  "Next period": "Næste periode",
+  "Previous period": "Forgående periode",
+  to: "til",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Heldagsbegivenheder og flerdagsbegivenheder",
+  "Link to {{n}} more events on {{date}}": "Link til {{n}} flere begivenheder den {{date}}",
+  "Link to 1 more event on {{date}}": "Link til 1 mere begivenhed den {{date}}"
+};
+const daDK$1 = {
+  ...datePickerDaDK$1,
+  ...calendarDaDK$1
+};
+const datePickerPlPL$1 = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Następny miesiąc",
+  "Previous month": "Poprzedni miesiąc",
+  "Choose Date": "Wybiewrz datę"
+};
+const calendarPlPL$1 = {
+  Today: "Dzisiaj",
+  Month: "Miesiąc",
+  Week: "Tydzień",
+  Day: "Dzień",
+  "Select View": "Wybierz widok",
+  events: "wydarzenia",
+  event: "wydarzenie",
+  "No events": "Brak wydarzeń",
+  "Next period": "Następny okres",
+  "Previous period": "Poprzedni okres",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Wydarzenia całodniowe i wielodniowe",
+  "Link to {{n}} more events on {{date}}": "Link do {{n}} kolejnych wydarzeń w dniu {{date}}",
+  "Link to 1 more event on {{date}}": "Link do 1 kolejnego wydarzenia w dniu {{date}}"
+};
+const plPL$1 = {
+  ...datePickerPlPL$1,
+  ...calendarPlPL$1
+};
+const datePickerEsES$1 = {
+  Date: "Fecha",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Siguiente mes",
+  "Previous month": "Mes anterior",
+  "Choose Date": "Seleccione una fecha"
+};
+const calendarEsES$1 = {
+  Today: "Hoy",
+  Month: "Mes",
+  Week: "Semana",
+  Day: "Día",
+  "Select View": "Seleccione una vista",
+  events: "eventos",
+  event: "evento",
+  "No events": "Sin eventos",
+  "Next period": "Siguiente período",
+  "Previous period": "Período anterior",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Día completo y eventos de múltiples días",
+  "Link to {{n}} more events on {{date}}": "Enlace a {{n}} eventos más el {{date}}",
+  "Link to 1 more event on {{date}}": "Enlace a 1 evento más el {{date}}"
+};
+const esES$1 = {
+  ...datePickerEsES$1,
+  ...calendarEsES$1
+};
+const calendarNlNL$1 = {
+  Today: "Vandaag",
+  Month: "Maand",
+  Week: "Week",
+  Day: "Dag",
+  "Select View": "Kies weergave",
+  events: "gebeurtenissen",
+  event: "gebeurtenis",
+  "No events": "Geen gebeurtenissen",
+  "Next period": "Volgende periode",
+  "Previous period": "Vorige periode",
+  to: "tot",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Evenementen van een hele dag en meerdere dagen",
+  "Link to {{n}} more events on {{date}}": "Link naar {{n}} meer evenementen op {{date}}",
+  "Link to 1 more event on {{date}}": "Link naar 1 meer evenement op {{date}}"
+};
+const datePickerNlNL$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD-MM-JJJJ",
+  "Next month": "Volgende maand",
+  "Previous month": "Vorige maand",
+  "Choose Date": "Kies datum"
+};
+const nlNL$1 = {
+  ...datePickerNlNL$1,
+  ...calendarNlNL$1
+};
+const datePickerPtBR$1 = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Mês seguinte",
+  "Previous month": "Mês anterior",
+  "Choose Date": "Escolha uma data"
+};
+const calendarPtBR$1 = {
+  Today: "Hoje",
+  Month: "Mês",
+  Week: "Semana",
+  Day: "Dia",
+  "Select View": "Selecione uma visualização",
+  events: "eventos",
+  event: "evento",
+  "No events": "Sem eventos",
+  "Next period": "Período seguinte",
+  "Previous period": "Período anterior",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Dia inteiro e eventos de vários dias",
+  "Link to {{n}} more events on {{date}}": "Link para mais {{n}} eventos em {{date}}",
+  "Link to 1 more event on {{date}}": "Link para mais 1 evento em {{date}}"
+};
+const ptBR$1 = {
+  ...datePickerPtBR$1,
+  ...calendarPtBR$1
+};
+const datePickerSkSK$1 = {
+  Date: "Dátum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Ďalší mesiac",
+  "Previous month": "Predchádzajúci mesiac",
+  "Choose Date": "Vyberte dátum"
+};
+const calendarSkSK$1 = {
+  Today: "Dnes",
+  Month: "Mesiac",
+  Week: "Týždeň",
+  Day: "Deň",
+  "Select View": "Vyberte zobrazenie",
+  events: "udalosti",
+  event: "udalosť",
+  "No events": "Žiadne udalosti",
+  "Next period": "Ďalšie obdobie",
+  "Previous period": "Predchádzajúce obdobie",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodenné a viacdňové udalosti",
+  "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} ďalších udalostí dňa {{date}}",
+  "Link to 1 more event on {{date}}": "Odkaz na 1 ďalšiu udalosť dňa {{date}}"
+};
+const skSK$1 = {
+  ...datePickerSkSK$1,
+  ...calendarSkSK$1
+};
+const datePickerMkMK$1 = {
+  Date: "Датум",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Следен месец",
+  "Previous month": "Претходен месец",
+  "Choose Date": "Избери Датум"
+};
+const calendarMkMK$1 = {
+  Today: "Денес",
+  Month: "Месец",
+  Week: "Недела",
+  Day: "Ден",
+  "Select View": "Избери Преглед",
+  events: "настани",
+  event: "настан",
+  "No events": "Нема настани",
+  "Next period": "Следен период",
+  "Previous period": "Претходен период",
+  to: "до",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Целодневни и повеќедневни настани",
+  "Link to {{n}} more events on {{date}}": "Линк до {{n}} повеќе настани на {{date}}",
+  "Link to 1 more event on {{date}}": "Линк до 1 повеќе настан на {{date}}"
+};
+const mkMK$1 = {
+  ...datePickerMkMK$1,
+  ...calendarMkMK$1
+};
+const datePickerTrTR$1 = {
+  Date: "Tarih",
+  "MM/DD/YYYY": "GG/AA/YYYY",
+  "Next month": "Sonraki ay",
+  "Previous month": "Önceki ay",
+  "Choose Date": "Tarih Seç"
+};
+const calendarTrTR$1 = {
+  Today: "Bugün",
+  Month: "Aylık",
+  Week: "Haftalık",
+  Day: "Günlük",
+  "Select View": "Görünüm Seç",
+  events: "etkinlikler",
+  event: "etkinlik",
+  "No events": "Etkinlik yok",
+  "Next period": "Sonraki dönem",
+  "Previous period": "Önceki dönem",
+  to: "dan",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Tüm gün ve çoklu gün etkinlikleri",
+  "Link to {{n}} more events on {{date}}": "{{date}} tarihinde {{n}} etkinliğe bağlantı",
+  "Link to 1 more event on {{date}}": "{{date}} tarihinde 1 etkinliğe bağlantı"
+};
+const trTR$1 = {
+  ...datePickerTrTR$1,
+  ...calendarTrTR$1
+};
+const datePickerKyKG$1 = {
+  Date: "Датасы",
+  "MM/DD/YYYY": "АА/КК/ЖЖЖЖ",
+  "Next month": "Кийинки ай",
+  "Previous month": "Өткөн ай",
+  "Choose Date": "Күндү тандаңыз"
+};
+const calendarKyKG$1 = {
+  Today: "Бүгүн",
+  Month: "Ай",
+  Week: "Апта",
+  Day: "Күн",
+  "Select View": "Көрүнүштү тандаңыз",
+  events: "Окуялар",
+  event: "Окуя",
+  "No events": "Окуя жок",
+  "Next period": "Кийинки мезгил",
+  "Previous period": "Өткөн мезгил",
+  to: "чейин",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Күн бою жана бир нече күн катары менен болгон окуялар",
+  "Link to {{n}} more events on {{date}}": "{{date}} күнүндө {{n}} окуяга байланыш",
+  "Link to 1 more event on {{date}}": "{{date}} күнүндө 1 окуяга байланыш"
+};
+const kyKG$1 = {
+  ...datePickerKyKG$1,
+  ...calendarKyKG$1
+};
+const datePickerIdID$1 = {
+  Date: "Tanggal",
+  "MM/DD/YYYY": "DD.MM.YYYY",
+  "Next month": "Bulan depan",
+  "Previous month": "Bulan sebelumnya",
+  "Choose Date": "Pilih tanggal"
+};
+const calendarIdID$1 = {
+  Today: "Hari Ini",
+  Month: "Bulan",
+  Week: "Minggu",
+  Day: "Hari",
+  "Select View": "Pilih tampilan",
+  events: "Acara",
+  event: "Acara",
+  "No events": "Tidak ada acara",
+  "Next period": "Periode selanjutnya",
+  "Previous period": "Periode sebelumnya",
+  to: "sampai",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Sepanjang hari dan acara beberapa hari ",
+  "Link to {{n}} more events on {{date}}": "Tautan ke {{n}} acara lainnya pada {{date}}",
+  "Link to 1 more event on {{date}}": "Tautan ke 1 acara lainnya pada {{date}}"
+};
+const idID$1 = {
+  ...datePickerIdID$1,
+  ...calendarIdID$1
+};
+const datePickerCsCZ$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Další měsíc",
+  "Previous month": "Předchozí měsíc",
+  "Choose Date": "Vyberte datum"
+};
+const calendarCsCZ$1 = {
+  Today: "Dnes",
+  Month: "Měsíc",
+  Week: "Týden",
+  Day: "Den",
+  "Select View": "Vyberte zobrazení",
+  events: "události",
+  event: "událost",
+  "No events": "Žádné události",
+  "Next period": "Příští období",
+  "Previous period": "Předchozí období",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodenní a vícedenní události",
+  "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} dalších událostí dne {{date}}",
+  "Link to 1 more event on {{date}}": "Odkaz na 1 další událost dne {{date}}"
+};
+const csCZ$1 = {
+  ...datePickerCsCZ$1,
+  ...calendarCsCZ$1
+};
+const datePickerEtEE$1 = {
+  Date: "Kuupäev",
+  "MM/DD/YYYY": "PP.KK.AAAA",
+  "Next month": "Järgmine kuu",
+  "Previous month": "Eelmine kuu",
+  "Choose Date": "Vali kuupäev"
+};
+const calendarEtEE$1 = {
+  Today: "Täna",
+  Month: "Kuu",
+  Week: "Nädal",
+  Day: "Päev",
+  "Select View": "Vali vaade",
+  events: "sündmused",
+  event: "sündmus",
+  "No events": "Pole sündmusi",
+  "Next period": "Järgmine periood",
+  "Previous period": "Eelmine periood",
+  to: "kuni",
+  "Full day- and multiple day events": "Täispäeva- ja mitmepäevasündmused",
+  "Link to {{n}} more events on {{date}}": "Link {{n}} rohkematele sündmustele kuupäeval {{date}}",
+  "Link to 1 more event on {{date}}": "Link ühele lisasündmusele kuupäeval {{date}}"
+};
+const etEE$1 = {
+  ...datePickerEtEE$1,
+  ...calendarEtEE$1
+};
+const datePickerUkUA$1 = {
+  Date: "Дата",
+  "MM/DD/YYYY": "ММ/ДД/РРРР",
+  "Next month": "Наступний місяць",
+  "Previous month": "Минулий місяць",
+  "Choose Date": "Виберіть дату"
+};
+const calendarUkUA$1 = {
+  Today: "Сьогодні",
+  Month: "Місяць",
+  Week: "Тиждень",
+  Day: "День",
+  "Select View": "Виберіть вигляд",
+  events: "події",
+  event: "подія",
+  "No events": "Немає подій",
+  "Next period": "Наступний період",
+  "Previous period": "Минулий період",
+  to: "по",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Події на цілий день і кілька днів поспіль",
+  "Link to {{n}} more events on {{date}}": "Посилання на {{n}} додаткові події на {{date}}",
+  "Link to 1 more event on {{date}}": "Посилання на 1 додаткову подію на {{date}}"
+};
+const ukUA$1 = {
+  ...datePickerUkUA$1,
+  ...calendarUkUA$1
+};
+const datePickerSrLatnRS$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Sledeći mesec",
+  "Previous month": "Prethodni mesec",
+  "Choose Date": "Izaberite datum"
+};
+const calendarSrLatnRS$1 = {
+  Today: "Danas",
+  Month: "Mesec",
+  Week: "Nedelja",
+  Day: "Dan",
+  "Select View": "Odaberite pregled",
+  events: "Događaji",
+  event: "Događaj",
+  "No events": "Nema događaja",
+  "Next period": "Naredni period",
+  "Previous period": "Prethodni period",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodnevni i višednevni događaji",
+  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
+  "Link to 1 more event on {{date}}": "Link do jednog događaja na {{date}}"
+};
+const srLatnRS$1 = {
+  ...datePickerSrLatnRS$1,
+  ...calendarSrLatnRS$1
+};
+const datePickerCaES$1 = {
+  Date: "Data",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Següent mes",
+  "Previous month": "Mes anterior",
+  "Choose Date": "Selecciona una data"
+};
+const calendarCaES$1 = {
+  Today: "Avui",
+  Month: "Mes",
+  Week: "Setmana",
+  Day: "Dia",
+  "Select View": "Selecciona una vista",
+  events: "Esdeveniments",
+  event: "Esdeveniment",
+  "No events": "Sense esdeveniments",
+  "Next period": "Següent període",
+  "Previous period": "Període anterior",
+  to: "a",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Esdeveniments de dia complet i de múltiples dies",
+  "Link to {{n}} more events on {{date}}": "Enllaç a {{n}} esdeveniments més el {{date}}",
+  "Link to 1 more event on {{date}}": "Enllaç a 1 esdeveniment més el {{date}}"
+};
+const caES$1 = {
+  ...datePickerCaES$1,
+  ...calendarCaES$1
+};
+const datePickerSrRS$1 = {
+  Date: "Датум",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Следећи месец",
+  "Previous month": "Претходни месец",
+  "Choose Date": "Изаберите Датум"
+};
+const calendarSrRS$1 = {
+  Today: "Данас",
+  Month: "Месец",
+  Week: "Недеља",
+  Day: "Дан",
+  "Select View": "Изаберите преглед",
+  events: "Догађаји",
+  event: "Догађај",
+  "No events": "Нема догађаја",
+  "Next period": "Следећи период",
+  "Previous period": "Претходни период",
+  to: "да",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Целодневни и вишедневни догађаји",
+  "Link to {{n}} more events on {{date}}": "Линк до још {{n}} догађаја на {{date}}",
+  "Link to 1 more event on {{date}}": "Линк до још 1 догађаја {{date}}"
+};
+const srRS$1 = {
+  ...datePickerSrRS$1,
+  ...calendarSrRS$1
+};
+const datePickerLtLT$1 = {
+  Date: "Data",
+  "MM/DD/YYYY": "MMMM-MM-DD",
+  "Next month": "Kitas mėnuo",
+  "Previous month": "Ankstesnis mėnuo",
+  "Choose Date": "Pasirinkite datą"
+};
+const calendarLtLT$1 = {
+  Today: "Šiandien",
+  Month: "Mėnuo",
+  Week: "Savaitė",
+  Day: "Diena",
+  "Select View": "Pasirinkite vaizdą",
+  events: "įvykiai",
+  event: "įvykis",
+  "No events": "Įvykių nėra",
+  "Next period": "Kitas laikotarpis",
+  "Previous period": "Ankstesnis laikotarpis",
+  to: "iki",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Visos dienos ir kelių dienų įvykiai",
+  "Link to {{n}} more events on {{date}}": "Nuoroda į dar {{n}} įvykius {{date}}",
+  "Link to 1 more event on {{date}}": "Nuoroda į dar 1 vieną įvykį {{date}}"
+};
+const ltLT$1 = {
+  ...datePickerLtLT$1,
+  ...calendarLtLT$1
+};
+const datePickerHrHR$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "DD/MM/YYYY",
+  "Next month": "Sljedeći mjesec",
+  "Previous month": "Prethodni mjesec",
+  "Choose Date": "Izaberite datum"
+};
+const calendarHrHR$1 = {
+  Today: "Danas",
+  Month: "Mjesec",
+  Week: "Nedjelja",
+  Day: "Dan",
+  "Select View": "Odaberite pregled",
+  events: "Događaji",
+  event: "Događaj",
+  "No events": "Nema događaja",
+  "Next period": "Sljedeći period",
+  "Previous period": "Prethodni period",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Cjelodnevni i višednevni događaji",
+  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
+  "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}"
+};
+const hrHR$1 = {
+  ...datePickerHrHR$1,
+  ...calendarHrHR$1
+};
+const datePickerSlSI$1 = {
+  Date: "Datum",
+  "MM/DD/YYYY": "MM.DD.YYYY",
+  "Next month": "Naslednji mesec",
+  "Previous month": "Prejšnji mesec",
+  "Choose Date": "Izberi datum"
+};
+const calendarSlSI$1 = {
+  Today: "Danes",
+  Month: "Mesec",
+  Week: "Teden",
+  Day: "Dan",
+  "Select View": "Izberi pogled",
+  events: "dogodki",
+  event: "dogodek",
+  "No events": "Ni dogodkov",
+  "Next period": "Naslednji dogodek",
+  "Previous period": "Prejšnji dogodek",
+  to: "do",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Celodnevni in večdnevni dogodki",
+  "Link to {{n}} more events on {{date}}": "Povezava do {{n}} drugih dogodkov dne {{date}}",
+  "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}"
+};
+const slSI$1 = {
+  ...datePickerSlSI$1,
+  ...calendarSlSI$1
+};
+const datePickerFiFI$1 = {
+  Date: "Päivämäärä",
+  "MM/DD/YYYY": "VVVV-KK-PP",
+  "Next month": "Seuraava kuukausi",
+  "Previous month": "Edellinen kuukausi",
+  "Choose Date": "Valitse päivämäärä"
+};
+const calendarFiFI$1 = {
+  Today: "Tänään",
+  Month: "Kuukausi",
+  Week: "Viikko",
+  Day: "Päivä",
+  "Select View": "Valitse näkymä",
+  events: "tapahtumaa",
+  event: "tapahtuma",
+  "No events": "Ei tapahtumia",
+  "Next period": "Seuraava ajanjakso",
+  "Previous period": "Edellinen ajanjakso",
+  to: "-",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Koko ja usean päivän tapahtumat",
+  "Link to {{n}} more events on {{date}}": "Linkki {{n}} lisätapahtumaan päivämäärällä {{date}}",
+  "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}"
+};
+const fiFI$1 = {
+  ...datePickerFiFI$1,
+  ...calendarFiFI$1
+};
+const datePickerRoRO$1 = {
+  Date: "Data",
+  "MM/DD/YYYY": "LL/ZZ/AAAA",
+  "Next month": "Luna următoare",
+  "Previous month": "Luna anterioară",
+  "Choose Date": "Alege data"
+};
+const calendarRoRO$1 = {
+  Today: "Astăzi",
+  Month: "Lună",
+  Week: "Săptămână",
+  Day: "Zi",
+  "Select View": "Selectează vizualizarea",
+  events: "evenimente",
+  event: "eveniment",
+  "No events": "Fără evenimente",
+  "Next period": "Perioada următoare",
+  "Previous period": "Perioada anterioară",
+  to: "până la",
+  // as in 2/1/2020 to 2/2/2020
+  "Full day- and multiple day events": "Evenimente pe durata întregii zile și pe durata mai multor zile",
+  "Link to {{n}} more events on {{date}}": "Link către {{n}} evenimente suplimentare pe {{date}}",
+  "Link to 1 more event on {{date}}": "Link către 1 eveniment suplimentar pe {{date}}"
+};
+const roRO$1 = {
+  ...datePickerRoRO$1,
+  ...calendarRoRO$1
+};
+class InvalidLocaleError extends Error {
+  constructor(locale) {
+    super(`Invalid locale: ${locale}`);
+  }
+}
+const translate = (locale, languages) => (key, translationVariables) => {
+  if (!/^[a-z]{2}-[A-Z]{2}$/.test(locale.value) && "sr-Latn-RS" !== locale.value) {
+    throw new InvalidLocaleError(locale.value);
+  }
+  const deHyphenatedLocale = locale.value.replaceAll("-", "");
+  const language = languages.value[deHyphenatedLocale];
+  if (!language)
+    return key;
+  let translation = language[key] || key;
+  Object.keys(translationVariables || {}).forEach((variable) => {
+    const value = String(translationVariables === null || translationVariables === void 0 ? void 0 : translationVariables[variable]);
+    if (!value)
+      return;
+    translation = translation.replace(`{{${variable}}}`, value);
+  });
+  return translation;
+};
+const translations$1 = {
+  deDE: deDE$1,
+  enUS: enUS$1,
+  itIT: itIT$1,
+  enGB: enGB$1,
+  svSE: svSE$1,
+  zhCN: zhCN$1,
+  zhTW: zhTW$1,
+  jaJP: jaJP$1,
+  ruRU: ruRU$1,
+  koKR: koKR$1,
+  frFR: frFR$1,
+  daDK: daDK$1,
+  mkMK: mkMK$1,
+  plPL: plPL$1,
+  esES: esES$1,
+  nlNL: nlNL$1,
+  ptBR: ptBR$1,
+  skSK: skSK$1,
+  trTR: trTR$1,
+  kyKG: kyKG$1,
+  idID: idID$1,
+  csCZ: csCZ$1,
+  etEE: etEE$1,
+  ukUA: ukUA$1,
+  caES: caES$1,
+  srLatnRS: srLatnRS$1,
+  srRS: srRS$1,
+  ltLT: ltLT$1,
+  hrHR: hrHR$1,
+  slSI: slSI$1,
+  fiFI: fiFI$1,
+  roRO: roRO$1
+};
+class EventColors {
+  constructor(config2) {
+    Object.defineProperty(this, "config", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: config2
+    });
+  }
+  setLight() {
+    Object.entries(this.config.calendars.value || {}).forEach(([calendarName, calendar]) => {
+      if (!calendar.lightColors) {
+        console.warn(`No light colors defined for calendar ${calendarName}`);
+        return;
+      }
+      this.setColors(calendar.colorName, calendar.lightColors);
+    });
+  }
+  setDark() {
+    Object.entries(this.config.calendars.value || {}).forEach(([calendarName, calendar]) => {
+      if (!calendar.darkColors) {
+        console.warn(`No dark colors defined for calendar ${calendarName}`);
+        return;
+      }
+      this.setColors(calendar.colorName, calendar.darkColors);
+    });
+  }
+  setColors(colorName, colorDefinition) {
+    document.documentElement.style.setProperty(`--sx-color-${colorName}`, colorDefinition.main);
+    document.documentElement.style.setProperty(`--sx-color-${colorName}-container`, colorDefinition.container);
+    document.documentElement.style.setProperty(`--sx-color-on-${colorName}-container`, colorDefinition.onContainer);
+  }
+}
+const createCalendarState = (calendarConfig, timeUnitsImpl, selectedDate) => {
+  var _a;
+  const _view = d$1(((_a = calendarConfig.views.value.find((view2) => view2.name === calendarConfig.defaultView)) === null || _a === void 0 ? void 0 : _a.name) || calendarConfig.views.value[0].name);
+  const view = w(() => {
+    return _view.value;
+  });
+  const range = d$1(null);
+  let wasInitialized = false;
+  let lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE = null;
+  const callOnRangeUpdate = (_range) => {
+    if (!wasInitialized)
+      return wasInitialized = true;
+    if (calendarConfig.callbacks.onRangeUpdate && _range.value) {
+      calendarConfig.callbacks.onRangeUpdate(_range.value);
+    }
+    const lastRange = lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE;
+    if (!_range.value)
+      return;
+    if ((lastRange === null || lastRange === void 0 ? void 0 : lastRange.start) === _range.value.start && (lastRange === null || lastRange === void 0 ? void 0 : lastRange.end) === _range.value.end)
+      return;
+    Object.values(calendarConfig.plugins || {}).forEach((plugin) => {
+      var _a2;
+      (_a2 = plugin === null || plugin === void 0 ? void 0 : plugin.onRangeUpdate) === null || _a2 === void 0 ? void 0 : _a2.call(plugin, _range.value);
+      lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE = _range.value;
+    });
+  };
+  E(() => {
+    if (range.value) {
+      callOnRangeUpdate(range);
+    }
+  });
+  const setRange = (date) => {
+    var _a2, _b;
+    const selectedView = calendarConfig.views.value.find((availableView) => availableView.name === _view.value);
+    const newRange = selectedView.setDateRange({
+      calendarConfig,
+      date,
+      range,
+      timeUnitsImpl
+    });
+    if (newRange.start === ((_a2 = range.value) === null || _a2 === void 0 ? void 0 : _a2.start) && newRange.end === ((_b = range.value) === null || _b === void 0 ? void 0 : _b.end))
+      return;
+    range.value = newRange;
+  };
+  setRange(selectedDate || toDateString$1(/* @__PURE__ */ new Date()));
+  const isCalendarSmall = d$1(void 0);
+  const isDark = d$1(calendarConfig.isDark.value || false);
+  E(() => {
+    const eventColors = new EventColors(calendarConfig);
+    if (isDark.value) {
+      eventColors.setDark();
+    } else {
+      eventColors.setLight();
+    }
+  });
+  return {
+    view,
+    isDark,
+    setRange,
+    range,
+    isCalendarSmall,
+    setView: (newView, selectedDate2) => {
+      r(() => {
+        _view.value = newView;
+        setRange(selectedDate2);
+      });
+    }
+  };
+};
+const createCalendarEventsImpl = (events, backgroundEvents, config2) => {
+  const list = d$1(events.map((event) => {
+    return externalEventToInternal$1(event, config2);
+  }));
+  const filterPredicate = d$1(void 0);
+  return {
+    list,
+    filterPredicate,
+    backgroundEvents: d$1(backgroundEvents)
+  };
+};
+InternalViewName.Week;
+const DEFAULT_DAY_BOUNDARIES = {
+  start: 0,
+  end: 2400
+};
+const DEFAULT_WEEK_GRID_HEIGHT = 1600;
+const DATE_GRID_BLOCKER = "blocker";
+const timePointsPerDay = (dayStart, dayEnd, isHybridDay) => {
+  if (dayStart === dayEnd)
+    return 2400;
+  if (isHybridDay)
+    return 2400 - dayStart + dayEnd;
+  return dayEnd - dayStart;
+};
+class CalendarConfigImpl {
+  constructor(locale = DEFAULT_LOCALE, firstDayOfWeek = DEFAULT_FIRST_DAY_OF_WEEK, defaultView = InternalViewName.Week, views = [], dayBoundaries = DEFAULT_DAY_BOUNDARIES, weekOptions, calendars = {}, plugins = {}, isDark = false, isResponsive = true, callbacks = {}, _customComponentFns = {}, minDate = void 0, maxDate = void 0, monthGridOptions = {
+    nEventsPerDay: 4
+  }, theme = void 0, translations2 = {}) {
+    Object.defineProperty(this, "defaultView", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: defaultView
+    });
+    Object.defineProperty(this, "plugins", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: plugins
+    });
+    Object.defineProperty(this, "isResponsive", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: isResponsive
+    });
+    Object.defineProperty(this, "callbacks", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: callbacks
+    });
+    Object.defineProperty(this, "_customComponentFns", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: _customComponentFns
+    });
+    Object.defineProperty(this, "firstDayOfWeek", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "views", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "dayBoundaries", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "weekOptions", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "calendars", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "isDark", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "minDate", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "maxDate", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "monthGridOptions", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "locale", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: d$1(DEFAULT_LOCALE)
+    });
+    Object.defineProperty(this, "theme", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "translations", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    this.locale = d$1(locale);
+    this.firstDayOfWeek = d$1(firstDayOfWeek);
+    this.views = d$1(views);
+    this.dayBoundaries = d$1(dayBoundaries);
+    this.weekOptions = d$1(weekOptions);
+    this.calendars = d$1(calendars);
+    this.isDark = d$1(isDark);
+    this.minDate = d$1(minDate);
+    this.maxDate = d$1(maxDate);
+    this.monthGridOptions = d$1(monthGridOptions);
+    this.theme = theme;
+    this.translations = d$1(translations2);
+  }
+  get isHybridDay() {
+    return this.dayBoundaries.value.start > this.dayBoundaries.value.end || this.dayBoundaries.value.start !== 0 && this.dayBoundaries.value.start === this.dayBoundaries.value.end;
+  }
+  get timePointsPerDay() {
+    return timePointsPerDay(this.dayBoundaries.value.start, this.dayBoundaries.value.end, this.isHybridDay);
+  }
+}
+class CalendarConfigBuilder {
+  constructor() {
+    Object.defineProperty(this, "locale", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "firstDayOfWeek", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "defaultView", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "views", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "dayBoundaries", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "weekOptions", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: {
+        gridHeight: DEFAULT_WEEK_GRID_HEIGHT,
+        nDays: 7,
+        eventWidth: 100,
+        timeAxisFormatOptions: { hour: "numeric" },
+        eventOverlap: true
+      }
+    });
+    Object.defineProperty(this, "monthGridOptions", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "calendars", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "plugins", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: {}
+    });
+    Object.defineProperty(this, "isDark", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: false
+    });
+    Object.defineProperty(this, "isResponsive", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: true
+    });
+    Object.defineProperty(this, "callbacks", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "minDate", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "maxDate", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "backgroundEvents", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "theme", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "translations", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+  }
+  build() {
+    return new CalendarConfigImpl(this.locale || DEFAULT_LOCALE, typeof this.firstDayOfWeek === "number" ? this.firstDayOfWeek : DEFAULT_FIRST_DAY_OF_WEEK, this.defaultView || InternalViewName.Week, this.views || [], this.dayBoundaries || DEFAULT_DAY_BOUNDARIES, this.weekOptions, this.calendars, this.plugins, this.isDark, this.isResponsive, this.callbacks, {}, this.minDate, this.maxDate, this.monthGridOptions, this.theme, this.translations);
+  }
+  withLocale(locale) {
+    this.locale = locale;
+    return this;
+  }
+  withTranslations(translation) {
+    this.translations = translation;
+    return this;
+  }
+  withFirstDayOfWeek(firstDayOfWeek) {
+    this.firstDayOfWeek = firstDayOfWeek;
+    return this;
+  }
+  withDefaultView(defaultView) {
+    this.defaultView = defaultView;
+    return this;
+  }
+  withViews(views) {
+    this.views = views;
+    return this;
+  }
+  withDayBoundaries(dayBoundaries) {
+    if (!dayBoundaries)
+      return this;
+    this.dayBoundaries = {
+      start: timePointsFromString$2(dayBoundaries.start),
+      end: timePointsFromString$2(dayBoundaries.end)
+    };
+    return this;
+  }
+  withWeekOptions(weekOptions) {
+    this.weekOptions = {
+      ...this.weekOptions,
+      ...weekOptions
+    };
+    return this;
+  }
+  withCalendars(calendars) {
+    this.calendars = calendars;
+    return this;
+  }
+  withPlugins(plugins) {
+    if (!plugins)
+      return this;
+    plugins.forEach((plugin) => {
+      this.plugins[plugin.name] = plugin;
+    });
+    return this;
+  }
+  withIsDark(isDark) {
+    this.isDark = isDark;
+    return this;
+  }
+  withIsResponsive(isResponsive) {
+    this.isResponsive = isResponsive;
+    return this;
+  }
+  withCallbacks(listeners) {
+    this.callbacks = listeners;
+    return this;
+  }
+  withMinDate(minDate) {
+    this.minDate = minDate;
+    return this;
+  }
+  withMaxDate(maxDate) {
+    this.maxDate = maxDate;
+    return this;
+  }
+  withMonthGridOptions(monthOptions) {
+    this.monthGridOptions = monthOptions;
+    return this;
+  }
+  withBackgroundEvents(backgroundEvents) {
+    this.backgroundEvents = backgroundEvents;
+    return this;
+  }
+  withTheme(theme) {
+    this.theme = theme;
+    return this;
+  }
+}
+const createInternalConfig = (config2, plugins) => {
+  return new CalendarConfigBuilder().withLocale(config2.locale).withFirstDayOfWeek(config2.firstDayOfWeek).withDefaultView(config2.defaultView).withViews(config2.views).withDayBoundaries(config2.dayBoundaries).withWeekOptions(config2.weekOptions).withCalendars(config2.calendars).withPlugins(plugins).withIsDark(config2.isDark).withIsResponsive(config2.isResponsive).withCallbacks(config2.callbacks).withMinDate(config2.minDate).withMaxDate(config2.maxDate).withMonthGridOptions(config2.monthGridOptions).withBackgroundEvents(config2.backgroundEvents).withTheme(config2.theme).withTranslations(config2.translations || translations$1).build();
+};
+var Month;
+(function(Month2) {
+  Month2[Month2["JANUARY"] = 0] = "JANUARY";
+  Month2[Month2["FEBRUARY"] = 1] = "FEBRUARY";
+  Month2[Month2["MARCH"] = 2] = "MARCH";
+  Month2[Month2["APRIL"] = 3] = "APRIL";
+  Month2[Month2["MAY"] = 4] = "MAY";
+  Month2[Month2["JUNE"] = 5] = "JUNE";
+  Month2[Month2["JULY"] = 6] = "JULY";
+  Month2[Month2["AUGUST"] = 7] = "AUGUST";
+  Month2[Month2["SEPTEMBER"] = 8] = "SEPTEMBER";
+  Month2[Month2["OCTOBER"] = 9] = "OCTOBER";
+  Month2[Month2["NOVEMBER"] = 10] = "NOVEMBER";
+  Month2[Month2["DECEMBER"] = 11] = "DECEMBER";
+})(Month || (Month = {}));
+class NoYearZeroError extends Error {
+  constructor() {
+    super("Year zero does not exist in the Gregorian calendar.");
+  }
+}
+class ExtendedDateImpl extends Date {
+  constructor(yearArg, monthArg, dateArg) {
+    super(yearArg, monthArg, dateArg);
+    if (yearArg === 0)
+      throw new NoYearZeroError();
+    this.setFullYear(yearArg);
+  }
+  get year() {
+    return this.getFullYear();
+  }
+  get month() {
+    return this.getMonth();
+  }
+  get date() {
+    return this.getDate();
+  }
+}
+class TimeUnitsImpl {
+  constructor(config2) {
+    Object.defineProperty(this, "config", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: config2
+    });
+  }
+  get firstDayOfWeek() {
+    return this.config.firstDayOfWeek.value;
+  }
+  set firstDayOfWeek(firstDayOfWeek) {
+    this.config.firstDayOfWeek.value = firstDayOfWeek;
+  }
+  getMonthWithTrailingAndLeadingDays(year, month) {
+    if (year === 0)
+      throw new NoYearZeroError();
+    const firstDateOfMonth = new Date(year, month, 1);
+    const monthWithDates = [this.getWeekFor(firstDateOfMonth)];
+    let isInMonth = true;
+    let first = monthWithDates[0][0];
+    while (isInMonth) {
+      const newFirstDayOfWeek = new Date(first.getFullYear(), first.getMonth(), first.getDate() + 7);
+      if (newFirstDayOfWeek.getMonth() === month) {
+        monthWithDates.push(this.getWeekFor(newFirstDayOfWeek));
+        first = newFirstDayOfWeek;
+      } else {
+        isInMonth = false;
+      }
+    }
+    return monthWithDates;
+  }
+  getWeekFor(date) {
+    const week = [this.getFirstDateOfWeek(date)];
+    while (week.length < 7) {
+      const lastDateOfWeek = week[week.length - 1];
+      const nextDateOfWeek = new Date(lastDateOfWeek);
+      nextDateOfWeek.setDate(lastDateOfWeek.getDate() + 1);
+      week.push(nextDateOfWeek);
+    }
+    return week;
+  }
+  getMonthsFor(year) {
+    return Object.values(Month).filter((month) => !isNaN(Number(month))).map((month) => new ExtendedDateImpl(year, Number(month), 1));
+  }
+  getFirstDateOfWeek(date) {
+    const dateIsNthDayOfWeek = date.getDay() - this.firstDayOfWeek;
+    const firstDateOfWeek = date;
+    if (dateIsNthDayOfWeek === 0) {
+      return firstDateOfWeek;
+    } else if (dateIsNthDayOfWeek > 0) {
+      firstDateOfWeek.setDate(date.getDate() - dateIsNthDayOfWeek);
+    } else {
+      firstDateOfWeek.setDate(date.getDate() - (7 + dateIsNthDayOfWeek));
+    }
+    return firstDateOfWeek;
+  }
+}
+class TimeUnitsBuilder {
+  constructor() {
+    Object.defineProperty(this, "config", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+  }
+  build() {
+    return new TimeUnitsImpl(this.config);
+  }
+  withConfig(config2) {
+    this.config = config2;
+    return this;
+  }
+}
+const createTimeUnitsImpl = (internalConfig) => {
+  return new TimeUnitsBuilder().withConfig(internalConfig).build();
+};
+var Placement;
+(function(Placement2) {
+  Placement2["TOP_START"] = "top-start";
+  Placement2["TOP_END"] = "top-end";
+  Placement2["BOTTOM_START"] = "bottom-start";
+  Placement2["BOTTOM_END"] = "bottom-end";
+})(Placement || (Placement = {}));
+class ConfigImpl {
+  constructor(locale = DEFAULT_LOCALE, firstDayOfWeek = DEFAULT_FIRST_DAY_OF_WEEK, min = toDateString$1(new Date(1970, 0, 1)), max = toDateString$1(new Date((/* @__PURE__ */ new Date()).getFullYear() + 50, 11, 31)), placement = Placement.BOTTOM_START, listeners = {}, style = {}, teleportTo, label, name, disabled) {
+    Object.defineProperty(this, "min", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: min
+    });
+    Object.defineProperty(this, "max", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: max
+    });
+    Object.defineProperty(this, "placement", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: placement
+    });
+    Object.defineProperty(this, "listeners", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: listeners
+    });
+    Object.defineProperty(this, "style", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: style
+    });
+    Object.defineProperty(this, "teleportTo", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: teleportTo
+    });
+    Object.defineProperty(this, "label", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: label
+    });
+    Object.defineProperty(this, "name", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: name
+    });
+    Object.defineProperty(this, "disabled", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: disabled
+    });
+    Object.defineProperty(this, "locale", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "firstDayOfWeek", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    this.locale = d$1(locale);
+    this.firstDayOfWeek = d$1(firstDayOfWeek);
+  }
+}
+class ConfigBuilder {
+  constructor() {
+    Object.defineProperty(this, "locale", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "firstDayOfWeek", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "min", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "max", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "placement", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "listeners", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "style", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "teleportTo", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "label", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "name", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+    Object.defineProperty(this, "disabled", {
+      enumerable: true,
+      configurable: true,
+      writable: true,
+      value: void 0
+    });
+  }
+  build() {
+    return new ConfigImpl(this.locale, this.firstDayOfWeek, this.min, this.max, this.placement, this.listeners, this.style, this.teleportTo, this.label, this.name, this.disabled);
+  }
+  withLocale(locale) {
+    this.locale = locale;
+    return this;
+  }
+  withFirstDayOfWeek(firstDayOfWeek) {
+    this.firstDayOfWeek = firstDayOfWeek;
+    return this;
+  }
+  withMin(min) {
+    this.min = min;
+    return this;
+  }
+  withMax(max) {
+    this.max = max;
+    return this;
+  }
+  withPlacement(placement) {
+    this.placement = placement;
+    return this;
+  }
+  withListeners(listeners) {
+    this.listeners = listeners;
+    return this;
+  }
+  withStyle(style) {
+    this.style = style;
+    return this;
+  }
+  withTeleportTo(teleportTo) {
+    this.teleportTo = teleportTo;
+    return this;
+  }
+  withLabel(label) {
+    this.label = label;
+    return this;
+  }
+  withName(name) {
+    this.name = name;
+    return this;
+  }
+  withDisabled(disabled) {
+    this.disabled = disabled;
+    return this;
+  }
+}
+const createDatePickerConfig = (config2, dateSelectionCallback) => {
+  var _a, _b;
+  return new ConfigBuilder().withLocale(config2.locale).withFirstDayOfWeek(config2.firstDayOfWeek).withMin(config2.minDate).withMax(config2.maxDate).withTeleportTo((_a = config2.datePicker) === null || _a === void 0 ? void 0 : _a.teleportTo).withStyle((_b = config2.datePicker) === null || _b === void 0 ? void 0 : _b.style).withPlacement(Placement.BOTTOM_END).withListeners({ onChange: dateSelectionCallback }).build();
+};
+const createDateSelectionCallback = (calendarState, config2) => {
+  let lastEmittedDate = null;
+  return (date) => {
+    var _a;
+    calendarState.setRange(date);
+    if (((_a = config2.callbacks) === null || _a === void 0 ? void 0 : _a.onSelectedDateUpdate) && date !== lastEmittedDate) {
+      lastEmittedDate = date;
+      config2.callbacks.onSelectedDateUpdate(date);
+    }
+  };
+};
+const validatePlugins = (configPlugins, pluginArg) => {
+  if (configPlugins && pluginArg) {
+    throw new Error("You cannot provide plugins over the config object and as an argument to createCalendar.");
+  }
+};
+const validateConfig = (config2) => {
+  var _a, _b, _c, _d;
+  if (config2.selectedDate && !DateFormats$1.DATE_STRING.test(config2.selectedDate)) {
+    throw new Error("[Schedule-X error]: selectedDate must have the format YYYY-MM-DD");
+  }
+  if (config2.minDate && !DateFormats$1.DATE_STRING.test(config2.minDate)) {
+    throw new Error("[Schedule-X error]: minDate must have the format YYYY-MM-DD");
+  }
+  if (config2.maxDate && !DateFormats$1.DATE_STRING.test(config2.maxDate)) {
+    throw new Error("[Schedule-X error]: maxDate must have the format YYYY-MM-DD");
+  }
+  if (typeof config2.firstDayOfWeek !== "undefined" && (config2.firstDayOfWeek < 0 || config2.firstDayOfWeek > 6)) {
+    throw new Error("[Schedule-X error]: firstDayOfWeek must be a number between 0 and 6");
+  }
+  if (typeof ((_a = config2.weekOptions) === null || _a === void 0 ? void 0 : _a.gridHeight) !== "undefined" && config2.weekOptions.gridHeight < 0) {
+    throw new Error("[Schedule-X error]: weekOptions.gridHeight must be a positive number");
+  }
+  if (typeof ((_b = config2.weekOptions) === null || _b === void 0 ? void 0 : _b.nDays) !== "undefined" && (config2.weekOptions.nDays < 1 || config2.weekOptions.nDays > 7)) {
+    throw new Error("[Schedule-X error]: weekOptions.nDays must be a number between 1 and 7");
+  }
+  if (typeof ((_c = config2.weekOptions) === null || _c === void 0 ? void 0 : _c.eventWidth) !== "undefined" && (config2.weekOptions.eventWidth < 1 || config2.weekOptions.eventWidth > 100)) {
+    throw new Error("[Schedule-X error]: weekOptions.eventWidth must be an integer between 1 and 100");
+  }
+  if (typeof ((_d = config2.monthGridOptions) === null || _d === void 0 ? void 0 : _d.nEventsPerDay) !== "undefined" && config2.monthGridOptions.nEventsPerDay < 0) {
+    throw new Error("[Schedule-X error]: monthGridOptions.nEventsPerDay must be a positive number");
+  }
+  const dayBoundaryPattern = /^\d{2}:\d{2}$/;
+  if (typeof config2.dayBoundaries !== "undefined") {
+    const startFormatIsInvalid = !dayBoundaryPattern.test(config2.dayBoundaries.start);
+    const endFormatIsInvalid = !dayBoundaryPattern.test(config2.dayBoundaries.end);
+    if (startFormatIsInvalid || endFormatIsInvalid) {
+      throw new Error('[Schedule-X error]: dayBoundaries must be an object with "start"- and "end" properties, each with the format HH:mm');
+    }
+  }
+};
+const validateEvents$1 = (events = []) => {
+  events === null || events === void 0 ? void 0 : events.forEach((event) => {
+    if (!dateTimeStringRegex$1.test(event.start) && !dateStringRegex$2.test(event.start)) {
+      throw new Error(`[Schedule-X error]: Event start time ${event.start} is not a valid time format. Please refer to the docs for more information.`);
+    }
+    if (!dateTimeStringRegex$1.test(event.end) && !dateStringRegex$2.test(event.end)) {
+      throw new Error(`[Schedule-X error]: Event end time ${event.end} is not a valid time format. Please refer to the docs for more information.`);
+    }
+    const isIdDecimalNumber = typeof event.id === "number" && event.id % 1 !== 0;
+    if (isIdDecimalNumber) {
+      throw new Error(`[Schedule-X error]: Event id ${event.id} is not a valid id. Only non-unicode characters that can be used by document.querySelector is allowed, see: https://developer.mozilla.org/en-US/docs/Web/CSS/ident. We recommend using uuids or integers.`);
+    }
+    if (typeof event.id === "string" && !/^[a-zA-Z0-9_-]*$/.test(event.id)) {
+      throw new Error(`[Schedule-X error]: Event id ${event.id} is not a valid id. Only non-unicode characters that can be used by document.querySelector is allowed, see: https://developer.mozilla.org/en-US/docs/Web/CSS/ident. We recommend using uuids or integers.`);
+    }
+    if (typeof event.id !== "string" && typeof event.id !== "number") {
+      throw new Error(`[Schedule-X error]: Event id ${event.id} is not a valid id. Only non-unicode characters that can be used by document.querySelector is allowed, see: https://developer.mozilla.org/en-US/docs/Web/CSS/ident. We recommend using uuids or integers.`);
+    }
+  });
+};
+const createCalendarAppSingleton = (config2, plugins) => {
+  var _a;
+  const internalConfig = createInternalConfig(config2, plugins);
+  const timeUnitsImpl = createTimeUnitsImpl(internalConfig);
+  const calendarState = createCalendarState(internalConfig, timeUnitsImpl, config2.selectedDate);
+  const dateSelectionCallback = createDateSelectionCallback(calendarState, config2);
+  const datePickerConfig = createDatePickerConfig(config2, dateSelectionCallback);
+  const datePickerState = createDatePickerState(datePickerConfig, config2.selectedDate || ((_a = config2.datePicker) === null || _a === void 0 ? void 0 : _a.selectedDate));
+  const calendarEvents = createCalendarEventsImpl(config2.events || [], config2.backgroundEvents || [], internalConfig);
+  return new CalendarAppSingletonBuilder().withConfig(internalConfig).withTimeUnitsImpl(timeUnitsImpl).withDatePickerState(datePickerState).withCalendarEvents(calendarEvents).withDatePickerConfig(datePickerConfig).withCalendarState(calendarState).withTranslate(translate(internalConfig.locale, internalConfig.translations)).build();
+};
+const createCalendar = (config2, plugins) => {
+  validatePlugins(config2.plugins, plugins);
+  if (config2.skipValidation !== true) {
+    validateEvents$1(config2.events);
+    validateConfig(config2);
+  }
+  return new CalendarApp(createCalendarAppSingleton(config2, config2.plugins || []));
+};
 class PreactView {
   constructor(config2) {
     Object.defineProperty(this, "randomId", {
@@ -3468,7 +5813,7 @@ class PreactView {
     this.backwardForwardUnits = config2.backwardForwardUnits;
   }
   render(onElement, $app) {
-    E$2(_$1(this.Component, { $app, id: this.randomId }), onElement);
+    D$1(g$2(this.Component, { $app, id: this.randomId }), onElement);
   }
   destroy() {
     const el = document.getElementById(this.randomId);
@@ -3515,13 +5860,13 @@ const isUIEventTouchEvent = (event) => {
   return "touches" in event && typeof event.touches === "object";
 };
 function useEventInteractions($app) {
-  const [eventCopy, setEventCopy] = d$2();
+  const [eventCopy, setEventCopy] = h$2();
   const updateCopy = (newCopy) => {
     if (!newCopy)
       return setEventCopy(void 0);
     setEventCopy(deepCloneEvent(newCopy, $app));
   };
-  const [dragStartTimeout, setDragStartTimeout] = d$2();
+  const [dragStartTimeout, setDragStartTimeout] = h$2();
   const createDragStartTimeout = (callback, uiEvent) => {
     setDragStartTimeout(setTimeout(() => callback(uiEvent), 150));
   };
@@ -3863,7 +6208,7 @@ function TimeGridBackgroundEvent({ backgroundEvent, date }) {
   } }) });
 }
 function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
-  const [mouseDownOnChild, setMouseDownOnChild] = d$2(false);
+  const [mouseDownOnChild, setMouseDownOnChild] = h$2(false);
   const $app = x(AppContext);
   const timeStringFromDayBoundary = timeStringFromTimePoints$1($app.config.dayBoundaries.value.start);
   const timeStringFromDayBoundaryEnd = timeStringFromTimePoints$1($app.config.dayBoundaries.value.end);
@@ -3874,7 +6219,7 @@ function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
     end: dayEndDateTime
   };
   const sortedEvents = calendarEvents.sort(sortEventsByStartAndEnd);
-  const [eventsWithConcurrency, setEventsWithConcurrency] = d$2([]);
+  const [eventsWithConcurrency, setEventsWithConcurrency] = h$2([]);
   y$1(() => {
     setEventsWithConcurrency(handleEventConcurrency(sortedEvents));
   }, [calendarEvents]);
@@ -3905,7 +6250,7 @@ function TimeGridDay({ calendarEvents, date, backgroundEvents }) {
     "sx__time-grid-day",
     getClassNameForWeekday(toJSDate$1(date).getDay())
   ];
-  const [classNames, setClassNames] = d$2(baseClasses);
+  const [classNames, setClassNames] = h$2(baseClasses);
   useSignalEffect(() => {
     const newClassNames = [...baseClasses];
     if ($app.datePickerState.selectedDate.value === date)
@@ -3933,7 +6278,7 @@ const getTimeAxisHours = ({ start, end }, isHybridDay) => {
 };
 function TimeAxis() {
   const $app = x(AppContext);
-  const [hours, setHours] = d$2([]);
+  const [hours, setHours] = h$2([]);
   useSignalEffect(() => {
     setHours(getTimeAxisHours($app.config.dayBoundaries.value, $app.config.isHybridDay));
     const hoursPerDay = $app.config.timePointsPerDay / 100;
@@ -4005,13 +6350,6 @@ const positionInTimeGrid = (timeGridEvents, week, $app) => {
   }
   return week;
 };
-InternalViewName.Week;
-const DEFAULT_DAY_BOUNDARIES = {
-  start: 0,
-  end: 2400
-};
-const DEFAULT_WEEK_GRID_HEIGHT = 1600;
-const DATE_GRID_BLOCKER = "blocker";
 const positionInDateGrid = (sortedDateGridEvents, week) => {
   const weekDates = Object.keys(week).sort();
   const firstDateOfWeek = weekDates[0];
@@ -4208,7 +6546,7 @@ const filterByRange = (events, range) => {
 };
 const WeekWrapper = ({ $app, id }) => {
   document.documentElement.style.setProperty("--sx-week-grid-height", `${$app.config.weekOptions.value.gridHeight}px`);
-  const [week, setWeek] = d$2({});
+  const [week, setWeek] = h$2({});
   useSignalEffect(() => {
     var _a, _b;
     const rangeStart = (_a = $app.calendarState.range.value) === null || _a === void 0 ? void 0 : _a.start;
@@ -4278,2430 +6616,6 @@ const config$3 = {
 };
 const viewWeek = createPreactView(config$3);
 const createViewWeek = () => createPreactView(config$3);
-const DayWrapper = ({ $app, id }) => {
-  return u$2(WeekWrapper, { "$app": $app, id });
-};
-const config$2 = {
-  name: InternalViewName.Day,
-  label: "Day",
-  setDateRange: setRangeForDay,
-  hasWideScreenCompat: true,
-  hasSmallScreenCompat: true,
-  Component: DayWrapper,
-  backwardForwardFn: addDays,
-  backwardForwardUnits: 1
-};
-const viewDay = createPreactView(config$2);
-const createViewDay = () => createPreactView(config$2);
-const getWeekNumber = (d2, firstDayOfWeek) => {
-  d2 = new Date(Date.UTC(d2.getFullYear(), d2.getMonth(), d2.getDate()));
-  const dayOffset = (d2.getUTCDay() - firstDayOfWeek + 7) % 7;
-  d2.setUTCDate(d2.getUTCDate() - dayOffset + 3);
-  const yearStart = new Date(Date.UTC(d2.getUTCFullYear(), 0, 1));
-  const yearStartOffset = (yearStart.getUTCDay() - firstDayOfWeek + 7) % 7;
-  yearStart.setUTCDate(yearStart.getUTCDate() - yearStartOffset);
-  const weekNo = Math.ceil(((d2.getTime() - yearStart.getTime()) / 864e5 + 1) / 7);
-  const nextYearStart = new Date(Date.UTC(d2.getUTCFullYear() + 1, 0, 1));
-  const nextYearStartOffset = (nextYearStart.getUTCDay() - firstDayOfWeek + 7) % 7;
-  nextYearStart.setUTCDate(nextYearStart.getUTCDate() - nextYearStartOffset);
-  if (d2 >= nextYearStart) {
-    return 1;
-  }
-  return weekNo;
-};
-function WeekNumber() {
-  const $app = x(AppContext);
-  return u$2("div", { className: "sx__calendar-header__week-number", children: $app.translate("CW", {
-    week: getWeekNumber(toJSDate$1($app.datePickerState.selectedDate.value), $app.config.firstDayOfWeek.value)
-  }) });
-}
-function CalendarHeader() {
-  const $app = x(AppContext);
-  const datePickerAppSingleton = new DatePickerAppSingletonBuilder().withDatePickerState($app.datePickerState).withConfig($app.datePickerConfig).withTranslate($app.translate).withTimeUnitsImpl($app.timeUnitsImpl).build();
-  const headerContent = $app.config._customComponentFns.headerContent;
-  const headerContentId = d$2(headerContent ? randomStringId() : void 0)[0];
-  const headerContentLeftPrepend = $app.config._customComponentFns.headerContentLeftPrepend;
-  const headerContentLeftPrependId = d$2(headerContentLeftPrepend ? randomStringId() : void 0)[0];
-  const headerContentLeftAppend = $app.config._customComponentFns.headerContentLeftAppend;
-  const headerContentLeftAppendId = d$2(headerContentLeftAppend ? randomStringId() : void 0)[0];
-  const headerContentRightPrepend = $app.config._customComponentFns.headerContentRightPrepend;
-  const headerContentRightPrependId = d$2(headerContentRightPrepend ? randomStringId() : void 0)[0];
-  const headerContentRightAppend = $app.config._customComponentFns.headerContentRightAppend;
-  const headerContentRightAppendId = d$2(headerContentRightAppend ? randomStringId() : void 0)[0];
-  y$1(() => {
-    if (headerContent) {
-      headerContent(getElementByCCID(headerContentId), { $app });
-    }
-    if (headerContentLeftPrepend && headerContentLeftPrependId) {
-      headerContentLeftPrepend(getElementByCCID(headerContentLeftPrependId), {
-        $app
-      });
-    }
-    if (headerContentLeftAppend) {
-      headerContentLeftAppend(getElementByCCID(headerContentLeftAppendId), {
-        $app
-      });
-    }
-    if (headerContentRightPrepend) {
-      headerContentRightPrepend(getElementByCCID(headerContentRightPrependId), {
-        $app
-      });
-    }
-    if (headerContentRightAppend) {
-      headerContentRightAppend(getElementByCCID(headerContentRightAppendId), {
-        $app
-      });
-    }
-  }, []);
-  const keyForRerenderingOnLocaleChange = $app.config.locale.value;
-  const isDayOrWeekView = T$1(() => {
-    return [viewWeek.name, viewDay.name].includes($app.calendarState.view.value);
-  }, [$app.calendarState.view.value]);
-  return u$2("header", { className: "sx__calendar-header", "data-ccid": headerContentId, children: !headerContent && u$2(k$1, { children: [u$2("div", { className: "sx__calendar-header-content", children: [headerContentLeftPrependId && u$2("div", { "data-ccid": headerContentLeftPrependId }), u$2(TodayButton, {}), u$2(ForwardBackwardNavigation, {}), u$2(RangeHeading, {}, $app.config.locale.value), $app.config.showWeekNumbers.value && isDayOrWeekView && u$2(WeekNumber, {}), headerContentLeftAppendId && u$2("div", { "data-ccid": headerContentLeftAppendId })] }), u$2("div", { className: "sx__calendar-header-content", children: [headerContentRightPrependId && u$2("div", { "data-ccid": headerContentRightPrependId }), $app.config.views.value.length > 1 && u$2(ViewSelection, {}, keyForRerenderingOnLocaleChange + "-view-selection"), u$2(AppWrapper, { "$app": datePickerAppSingleton }), headerContentRightAppendId && u$2("div", { "data-ccid": headerContentRightAppendId })] })] }) });
-}
-const setWrapperElement = ($app, calendarId) => {
-  $app.elements.calendarWrapper = document.getElementById(calendarId);
-};
-const setScreenSizeCompatibleView = ($app, isSmall) => {
-  const currentView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
-  if (isSmall) {
-    if (currentView.hasSmallScreenCompat)
-      return;
-    const smallScreenCompatibleView = $app.config.views.value.find((view) => view.hasSmallScreenCompat);
-    if (smallScreenCompatibleView) {
-      $app.calendarState.setView(smallScreenCompatibleView.name, $app.datePickerState.selectedDate.value);
-    }
-  } else {
-    if (currentView.hasWideScreenCompat)
-      return;
-    const wideScreenCompatibleView = $app.config.views.value.find((view) => view.hasWideScreenCompat);
-    if (wideScreenCompatibleView) {
-      $app.calendarState.setView(wideScreenCompatibleView.name, $app.datePickerState.selectedDate.value);
-    }
-  }
-};
-const handleWindowResize = ($app) => {
-  const documentRoot = document.documentElement;
-  const calendarRoot = $app.elements.calendarWrapper;
-  const documentFontSize = +window.getComputedStyle(documentRoot).fontSize.split("p")[0];
-  const breakPointFor1RemEquals16px = 700;
-  const multiplier = 16 / documentFontSize;
-  const smallCalendarBreakpoint = breakPointFor1RemEquals16px / multiplier;
-  if (!calendarRoot)
-    return;
-  const isSmall = $app.config.callbacks.isCalendarSmall ? $app.config.callbacks.isCalendarSmall($app) : calendarRoot.clientWidth < smallCalendarBreakpoint;
-  const didIsSmallScreenChange = isSmall !== $app.calendarState.isCalendarSmall.value;
-  if (!didIsSmallScreenChange)
-    return;
-  $app.calendarState.isCalendarSmall.value = isSmall;
-  setScreenSizeCompatibleView($app, isSmall);
-};
-function useWrapperClasses($app) {
-  const calendarWrapperClass = "sx__calendar-wrapper";
-  const [wrapperClasses, setWrapperClasses] = d$2([
-    calendarWrapperClass
-  ]);
-  useSignalEffect(() => {
-    const classes = [calendarWrapperClass];
-    if ($app.calendarState.isCalendarSmall.value)
-      classes.push("sx__is-calendar-small");
-    if ($app.calendarState.isDark.value)
-      classes.push("is-dark");
-    if ($app.config.theme === "shadcn")
-      classes.push("is-shadcn");
-    setWrapperClasses(classes);
-  });
-  return wrapperClasses;
-}
-const initPlugins = ($app) => {
-  Object.values($app.config.plugins).forEach((plugin) => {
-    if (plugin === null || plugin === void 0 ? void 0 : plugin.onRender) {
-      plugin.onRender($app);
-    }
-  });
-};
-const destroyPlugins = ($app) => {
-  Object.values($app.config.plugins).forEach((plugin) => {
-    if (plugin === null || plugin === void 0 ? void 0 : plugin.destroy)
-      plugin.destroy();
-  });
-};
-const invokePluginsBeforeRender = ($app) => {
-  Object.values($app.config.plugins).forEach((plugin) => {
-    if (plugin === null || plugin === void 0 ? void 0 : plugin.beforeRender)
-      plugin.beforeRender($app);
-  });
-};
-function CalendarWrapper({ $app }) {
-  var _a;
-  const calendarId = randomStringId();
-  const viewContainerId = randomStringId();
-  y$1(() => {
-    var _a2;
-    setWrapperElement($app, calendarId);
-    initPlugins($app);
-    if ((_a2 = $app.config.callbacks) === null || _a2 === void 0 ? void 0 : _a2.onRender) {
-      $app.config.callbacks.onRender($app);
-    }
-    return () => destroyPlugins($app);
-  }, []);
-  const onResize = () => {
-    handleWindowResize($app);
-  };
-  y$1(() => {
-    if ($app.config.isResponsive) {
-      onResize();
-      window.addEventListener("resize", onResize);
-      return () => window.removeEventListener("resize", onResize);
-    }
-  }, []);
-  const wrapperClasses = useWrapperClasses($app);
-  const [currentView, setCurrentView] = d$2();
-  useSignalEffect(() => {
-    const newView = $app.config.views.value.find((view) => view.name === $app.calendarState.view.value);
-    const viewElement = document.getElementById(viewContainerId);
-    if (!newView || !viewElement || newView.name === (currentView === null || currentView === void 0 ? void 0 : currentView.name))
-      return;
-    if (currentView)
-      currentView.destroy();
-    setCurrentView(newView);
-    newView.render(viewElement, $app);
-  });
-  const [previousRangeStart, setPreviousRangeStart] = d$2("");
-  const [transitionClass, setTransitionClass] = d$2("");
-  useSignalEffect(() => {
-    var _a2, _b;
-    const newRangeStartIsLaterThanPrevious = (((_a2 = $app.calendarState.range.value) === null || _a2 === void 0 ? void 0 : _a2.start) || "") > previousRangeStart;
-    setTransitionClass(newRangeStartIsLaterThanPrevious ? "sx__slide-left" : "sx__slide-right");
-    setTimeout(() => {
-      setTransitionClass("");
-    }, 300);
-    setPreviousRangeStart(((_b = $app.calendarState.range.value) === null || _b === void 0 ? void 0 : _b.start) || "");
-  });
-  useSignalEffect(() => {
-    $app.datePickerConfig.locale.value = $app.config.locale.value;
-  });
-  return u$2(k$1, { children: u$2("div", { className: wrapperClasses.join(" "), id: calendarId, children: u$2("div", { className: "sx__calendar", children: u$2(AppContext.Provider, { value: $app, children: [u$2(CalendarHeader, {}), u$2("div", { className: ["sx__view-container", transitionClass].join(" "), id: viewContainerId }), $app.config.plugins.eventModal && $app.config.plugins.eventModal.calendarEvent.value && u$2($app.config.plugins.eventModal.ComponentFn, { "$app": $app }, (_a = $app.config.plugins.eventModal.calendarEvent.value) === null || _a === void 0 ? void 0 : _a.id)] }) }) }) });
-}
-const externalEventToInternal$1 = (event, config2) => {
-  const { id, start, end, title, description, location, people, _options, ...foreignProperties } = event;
-  return new CalendarEventBuilder$1(config2, id, start, end).withTitle(title).withDescription(description).withLocation(location).withPeople(people).withCalendarId(event.calendarId).withOptions(_options).withForeignProperties(foreignProperties).withCustomContent(event._customContent).build();
-};
-let EventsFacadeImpl$1 = class EventsFacadeImpl {
-  constructor($app) {
-    Object.defineProperty(this, "$app", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: $app
-    });
-  }
-  set(events) {
-    this.$app.calendarEvents.list.value = events.map((event) => externalEventToInternal$1(event, this.$app.config));
-  }
-  add(event) {
-    const newEvent = externalEventToInternal$1(event, this.$app.config);
-    const copiedEvents = [...this.$app.calendarEvents.list.value];
-    copiedEvents.push(newEvent);
-    this.$app.calendarEvents.list.value = copiedEvents;
-  }
-  get(id) {
-    var _a;
-    return (_a = this.$app.calendarEvents.list.value.find((event) => event.id === id)) === null || _a === void 0 ? void 0 : _a._getExternalEvent();
-  }
-  getAll() {
-    return this.$app.calendarEvents.list.value.map((event) => event._getExternalEvent());
-  }
-  remove(id) {
-    const index = this.$app.calendarEvents.list.value.findIndex((event) => event.id === id);
-    const copiedEvents = [...this.$app.calendarEvents.list.value];
-    copiedEvents.splice(index, 1);
-    this.$app.calendarEvents.list.value = copiedEvents;
-  }
-  update(event) {
-    const index = this.$app.calendarEvents.list.value.findIndex((e2) => e2.id === event.id);
-    const copiedEvents = [...this.$app.calendarEvents.list.value];
-    copiedEvents.splice(index, 1, externalEventToInternal$1(event, this.$app.config));
-    this.$app.calendarEvents.list.value = copiedEvents;
-  }
-};
-class CalendarApp {
-  constructor($app) {
-    var _a;
-    Object.defineProperty(this, "$app", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: $app
-    });
-    Object.defineProperty(this, "events", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "calendarContainerEl", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    this.events = new EventsFacadeImpl$1(this.$app);
-    invokePluginsBeforeRender(this.$app);
-    Object.values(this.$app.config.plugins).forEach((plugin) => {
-      if (!(plugin === null || plugin === void 0 ? void 0 : plugin.name))
-        return;
-      this[plugin.name] = plugin;
-    });
-    if ((_a = $app.config.callbacks) === null || _a === void 0 ? void 0 : _a.beforeRender) {
-      $app.config.callbacks.beforeRender($app);
-    }
-  }
-  render(el) {
-    this.calendarContainerEl = el;
-    E$2(_$1(CalendarWrapper, { $app: this.$app }), el);
-  }
-  destroy() {
-    Object.values(this.$app.config.plugins || {}).forEach((plugin) => {
-      if (!plugin || !plugin.destroy)
-        return;
-      plugin.destroy();
-    });
-    if (this.calendarContainerEl) {
-      E$2(null, this.calendarContainerEl);
-    }
-  }
-  setTheme(theme) {
-    this.$app.calendarState.isDark.value = theme === "dark";
-  }
-  getTheme() {
-    return this.$app.calendarState.isDark.value ? "dark" : "light";
-  }
-  /**
-   * @internal
-   * Purpose: To be consumed by framework adapters for custom component rendering.
-   * */
-  _setCustomComponentFn(fnId, fn2) {
-    this.$app.config._customComponentFns[fnId] = fn2;
-  }
-}
-class CalendarAppSingletonImpl {
-  constructor(config2, timeUnitsImpl, calendarState, datePickerState, translate2, datePickerConfig, calendarEvents, elements = { calendarWrapper: void 0 }) {
-    Object.defineProperty(this, "config", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: config2
-    });
-    Object.defineProperty(this, "timeUnitsImpl", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: timeUnitsImpl
-    });
-    Object.defineProperty(this, "calendarState", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: calendarState
-    });
-    Object.defineProperty(this, "datePickerState", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: datePickerState
-    });
-    Object.defineProperty(this, "translate", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: translate2
-    });
-    Object.defineProperty(this, "datePickerConfig", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: datePickerConfig
-    });
-    Object.defineProperty(this, "calendarEvents", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: calendarEvents
-    });
-    Object.defineProperty(this, "elements", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: elements
-    });
-  }
-}
-class CalendarAppSingletonBuilder {
-  constructor() {
-    Object.defineProperty(this, "config", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "timeUnitsImpl", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "datePickerState", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "calendarState", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "translate", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "datePickerConfig", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "calendarEvents", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-  }
-  build() {
-    return new CalendarAppSingletonImpl(this.config, this.timeUnitsImpl, this.calendarState, this.datePickerState, this.translate, this.datePickerConfig, this.calendarEvents);
-  }
-  withConfig(config2) {
-    this.config = config2;
-    return this;
-  }
-  withTimeUnitsImpl(timeUnitsImpl) {
-    this.timeUnitsImpl = timeUnitsImpl;
-    return this;
-  }
-  withDatePickerState(datePickerState) {
-    this.datePickerState = datePickerState;
-    return this;
-  }
-  withCalendarState(calendarState) {
-    this.calendarState = calendarState;
-    return this;
-  }
-  withTranslate(translate2) {
-    this.translate = translate2;
-    return this;
-  }
-  withDatePickerConfig(datePickerConfig) {
-    this.datePickerConfig = datePickerConfig;
-    return this;
-  }
-  withCalendarEvents(calendarEvents) {
-    this.calendarEvents = calendarEvents;
-    return this;
-  }
-}
-var DateFormatDelimiter;
-(function(DateFormatDelimiter2) {
-  DateFormatDelimiter2["SLASH"] = "/";
-  DateFormatDelimiter2["DASH"] = "-";
-  DateFormatDelimiter2["PERIOD"] = ".";
-})(DateFormatDelimiter || (DateFormatDelimiter = {}));
-var DateFormatOrder;
-(function(DateFormatOrder2) {
-  DateFormatOrder2["DMY"] = "DMY";
-  DateFormatOrder2["MDY"] = "MDY";
-  DateFormatOrder2["YMD"] = "YMD";
-})(DateFormatOrder || (DateFormatOrder = {}));
-const formatRules = {
-  slashMDY: {
-    delimiter: DateFormatDelimiter.SLASH,
-    order: DateFormatOrder.MDY
-  },
-  slashDMY: {
-    delimiter: DateFormatDelimiter.SLASH,
-    order: DateFormatOrder.DMY
-  },
-  slashYMD: {
-    delimiter: DateFormatDelimiter.SLASH,
-    order: DateFormatOrder.YMD
-  },
-  periodDMY: {
-    delimiter: DateFormatDelimiter.PERIOD,
-    order: DateFormatOrder.DMY
-  },
-  dashYMD: {
-    delimiter: DateFormatDelimiter.DASH,
-    order: DateFormatOrder.YMD
-  }
-};
-const dateFormatLocalizedRules = /* @__PURE__ */ new Map([
-  ["en-US", formatRules.slashMDY],
-  ["en-GB", formatRules.slashDMY],
-  ["zh-CN", formatRules.slashYMD],
-  ["de-DE", formatRules.periodDMY],
-  ["sv-SE", formatRules.dashYMD]
-]);
-class LocaleNotSupportedError extends Error {
-  constructor(locale) {
-    super(`Locale not supported: ${locale}`);
-  }
-}
-class InvalidDateFormatError extends Error {
-  constructor(dateFormat, locale) {
-    super(`Invalid date format: ${dateFormat} for locale: ${locale}`);
-  }
-}
-const _getMatchesOrThrow = (format, matcher, locale) => {
-  const matches = format.match(matcher);
-  if (!matches)
-    throw new InvalidDateFormatError(format, locale);
-  return matches;
-};
-const toDateString$2 = (format, locale) => {
-  const internationalFormat = /^\d{4}-\d{2}-\d{2}$/;
-  if (internationalFormat.test(format))
-    return format;
-  const localeDateFormatRule = dateFormatLocalizedRules.get(locale);
-  if (!localeDateFormatRule)
-    throw new LocaleNotSupportedError(locale);
-  const { order, delimiter } = localeDateFormatRule;
-  const pattern224Slashed = /^(\d{1,2})\/(\d{1,2})\/(\d{4})$/;
-  const pattern224Dotted = /^(\d{1,2})\.(\d{1,2})\.(\d{4})$/;
-  const pattern442Slashed = /^(\d{4})\/(\d{1,2})\/(\d{1,2})$/;
-  if (order === DateFormatOrder.DMY && delimiter === DateFormatDelimiter.SLASH) {
-    const matches = _getMatchesOrThrow(format, pattern224Slashed, locale);
-    const [, day, month, year] = matches;
-    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
-  }
-  if (order === DateFormatOrder.MDY && delimiter === DateFormatDelimiter.SLASH) {
-    const matches = _getMatchesOrThrow(format, pattern224Slashed, locale);
-    const [, month, day, year] = matches;
-    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
-  }
-  if (order === DateFormatOrder.YMD && delimiter === DateFormatDelimiter.SLASH) {
-    const matches = _getMatchesOrThrow(format, pattern442Slashed, locale);
-    const [, year, month, day] = matches;
-    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
-  }
-  if (order === DateFormatOrder.DMY && delimiter === DateFormatDelimiter.PERIOD) {
-    const matches = _getMatchesOrThrow(format, pattern224Dotted, locale);
-    const [, day, month, year] = matches;
-    return `${year}-${doubleDigit$2(+month)}-${doubleDigit$2(+day)}`;
-  }
-  throw new InvalidDateFormatError(format, locale);
-};
-const createDatePickerState = (config2, selectedDateParam) => {
-  var _a;
-  const currentDayDateString = toDateString$1(/* @__PURE__ */ new Date());
-  const initialSelectedDate = typeof selectedDateParam === "string" ? selectedDateParam : currentDayDateString;
-  const isOpen = d$1(false);
-  const isDisabled = d$1(config2.disabled || false);
-  const datePickerView = d$1(DatePickerView.MONTH_DAYS);
-  const selectedDate = d$1(initialSelectedDate);
-  const datePickerDate = d$1(initialSelectedDate || currentDayDateString);
-  const isDark = d$1(((_a = config2.style) === null || _a === void 0 ? void 0 : _a.dark) || false);
-  const inputDisplayedValue = d$1(selectedDateParam ? toLocalizedDateString(toJSDate$1(selectedDateParam), config2.locale.value) : "");
-  const lastValidDisplayedValue = d$1(inputDisplayedValue.value);
-  E(() => {
-    try {
-      const newValue = toDateString$2(inputDisplayedValue.value, config2.locale.value);
-      if (newValue < config2.min || newValue > config2.max) {
-        inputDisplayedValue.value = lastValidDisplayedValue.value;
-        return;
-      }
-      selectedDate.value = newValue;
-      datePickerDate.value = newValue;
-      lastValidDisplayedValue.value = inputDisplayedValue.value;
-    } catch (e2) {
-    }
-  });
-  let wasInitialized = false;
-  const handleOnChange = (selectedDate2) => {
-    if (!wasInitialized)
-      return wasInitialized = true;
-    config2.listeners.onChange(selectedDate2);
-  };
-  E(() => {
-    var _a2;
-    if ((_a2 = config2.listeners) === null || _a2 === void 0 ? void 0 : _a2.onChange)
-      handleOnChange(selectedDate.value);
-  });
-  return {
-    inputWrapperElement: d$1(void 0),
-    isOpen,
-    isDisabled,
-    datePickerView,
-    selectedDate,
-    datePickerDate,
-    inputDisplayedValue,
-    isDark,
-    open: () => isOpen.value = true,
-    close: () => isOpen.value = false,
-    toggle: () => isOpen.value = !isOpen.value,
-    setView: (view) => datePickerView.value = view
-  };
-};
-const datePickerDeDE$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "TT.MM.JJJJ",
-  "Next month": "Nächster Monat",
-  "Previous month": "Vorheriger Monat",
-  "Choose Date": "Datum auswählen"
-};
-const calendarDeDE$1 = {
-  Today: "Heute",
-  Month: "Monat",
-  Week: "Woche",
-  Day: "Tag",
-  "Select View": "Ansicht auswählen",
-  events: "Ereignisse",
-  event: "Ereignis",
-  "No events": "Keine Ereignisse",
-  "Next period": "Nächster Zeitraum",
-  "Previous period": "Vorheriger Zeitraum",
-  to: "bis",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Ganztägige und mehrtägige Ereignisse",
-  "Link to {{n}} more events on {{date}}": "Link zu {{n}} weiteren Ereignissen am {{date}}",
-  "Link to 1 more event on {{date}}": "Link zu 1 weiteren Ereignis am {{date}}",
-  CW: "KW {{week}}"
-};
-const deDE$1 = {
-  ...datePickerDeDE$1,
-  ...calendarDeDE$1
-};
-const datePickerEnUS$1 = {
-  Date: "Date",
-  "MM/DD/YYYY": "MM/DD/YYYY",
-  "Next month": "Next month",
-  "Previous month": "Previous month",
-  "Choose Date": "Choose Date"
-};
-const calendarEnUS$1 = {
-  Today: "Today",
-  Month: "Month",
-  Week: "Week",
-  Day: "Day",
-  "Select View": "Select View",
-  events: "events",
-  event: "event",
-  "No events": "No events",
-  "Next period": "Next period",
-  "Previous period": "Previous period",
-  to: "to",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Full day- and multiple day events",
-  "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
-  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}",
-  CW: "Week {{week}}"
-};
-const enUS$1 = {
-  ...datePickerEnUS$1,
-  ...calendarEnUS$1
-};
-const datePickerItIT$1 = {
-  Date: "Data",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Mese successivo",
-  "Previous month": "Mese precedente",
-  "Choose Date": "Scegli la data"
-};
-const calendarItIT$1 = {
-  Today: "Oggi",
-  Month: "Mese",
-  Week: "Settimana",
-  Day: "Giorno",
-  "Select View": "Seleziona la vista",
-  events: "eventi",
-  event: "evento",
-  "No events": "Nessun evento",
-  "Next period": "Periodo successivo",
-  "Previous period": "Periodo precedente",
-  to: "a",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Eventi della giornata e plurigiornalieri",
-  "Link to {{n}} more events on {{date}}": "Link a {{n}} eventi in più il {{date}}",
-  "Link to 1 more event on {{date}}": "Link a 1 evento in più il {{date}}",
-  CW: "Settimana {{week}}"
-};
-const itIT$1 = {
-  ...datePickerItIT$1,
-  ...calendarItIT$1
-};
-const datePickerEnGB$1 = {
-  Date: "Date",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Next month",
-  "Previous month": "Previous month",
-  "Choose Date": "Choose Date"
-};
-const calendarEnGB$1 = {
-  Today: "Today",
-  Month: "Month",
-  Week: "Week",
-  Day: "Day",
-  "Select View": "Select View",
-  events: "events",
-  event: "event",
-  "No events": "No events",
-  "Next period": "Next period",
-  "Previous period": "Previous period",
-  to: "to",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Full day- and multiple day events",
-  "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
-  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}",
-  CW: "Week {{week}}"
-};
-const enGB$1 = {
-  ...datePickerEnGB$1,
-  ...calendarEnGB$1
-};
-const datePickerSvSE$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
-  "Next month": "Nästa månad",
-  "Previous month": "Föregående månad",
-  "Choose Date": "Välj datum"
-};
-const calendarSvSE$1 = {
-  Today: "Idag",
-  Month: "Månad",
-  Week: "Vecka",
-  Day: "Dag",
-  "Select View": "Välj vy",
-  events: "händelser",
-  event: "händelse",
-  "No events": "Inga händelser",
-  "Next period": "Nästa period",
-  "Previous period": "Föregående period",
-  to: "till",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Heldags- och flerdagshändelser",
-  "Link to {{n}} more events on {{date}}": "Länk till {{n}} fler händelser den {{date}}",
-  "Link to 1 more event on {{date}}": "Länk till 1 händelse till den {{date}}",
-  CW: "Vecka {{week}}"
-};
-const svSE$1 = {
-  ...datePickerSvSE$1,
-  ...calendarSvSE$1
-};
-const datePickerZhCN$1 = {
-  Date: "日期",
-  "MM/DD/YYYY": "年/月/日",
-  "Next month": "下个月",
-  "Previous month": "上个月",
-  "Choose Date": "选择日期"
-};
-const calendarZhCN$1 = {
-  Today: "今天",
-  Month: "月",
-  Week: "周",
-  Day: "日",
-  "Select View": "选择视图",
-  events: "场活动",
-  event: "活动",
-  "No events": "没有活动",
-  "Next period": "下一段时间",
-  "Previous period": "上一段时间",
-  to: "至",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "全天和多天活动",
-  "Link to {{n}} more events on {{date}}": "链接到{{date}}上的{{n}}个更多活动",
-  "Link to 1 more event on {{date}}": "链接到{{date}}上的1个更多活动",
-  CW: "第{{week}}周"
-};
-const zhCN$1 = {
-  ...datePickerZhCN$1,
-  ...calendarZhCN$1
-};
-const datePickerZhTW$1 = {
-  Date: "日期",
-  "MM/DD/YYYY": "年/月/日",
-  "Next month": "下個月",
-  "Previous month": "上個月",
-  "Choose Date": "選擇日期"
-};
-const calendarZhTW$1 = {
-  Today: "今天",
-  Month: "月",
-  Week: "周",
-  Day: "日",
-  "Select View": "選擇檢視模式",
-  events: "場活動",
-  event: "活動",
-  "No events": "沒有活動",
-  "Next period": "下一段時間",
-  "Previous period": "上一段時間",
-  to: "到",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "全天和多天活動",
-  "Link to {{n}} more events on {{date}}": "連接到{{date}}上的{{n}}個更多活動",
-  "Link to 1 more event on {{date}}": "連接到{{date}}上的1個更多活動",
-  CW: "第{{week}}周"
-};
-const zhTW$1 = {
-  ...datePickerZhTW$1,
-  ...calendarZhTW$1
-};
-const datePickerJaJP$1 = {
-  Date: "日付",
-  "MM/DD/YYYY": "年/月/日",
-  "Next month": "次の月",
-  "Previous month": "前の月",
-  "Choose Date": "日付を選択"
-};
-const calendarJaJP$1 = {
-  Today: "今日",
-  Month: "月",
-  Week: "週",
-  Day: "日",
-  "Select View": "ビューを選択",
-  events: "イベント",
-  event: "イベント",
-  "No events": "イベントなし",
-  "Next period": "次の期間",
-  "Previous period": "前の期間",
-  to: "から",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "終日および複数日イベント",
-  "Link to {{n}} more events on {{date}}": "{{date}} に{{n}}件のイベントへのリンク",
-  "Link to 1 more event on {{date}}": "{{date}} に1件のイベントへのリンク",
-  CW: "週 {{week}}"
-};
-const jaJP$1 = {
-  ...datePickerJaJP$1,
-  ...calendarJaJP$1
-};
-const datePickerRuRU$1 = {
-  Date: "Дата",
-  "MM/DD/YYYY": "ММ/ДД/ГГГГ",
-  "Next month": "Следующий месяц",
-  "Previous month": "Прошлый месяц",
-  "Choose Date": "Выберите дату"
-};
-const calendarRuRU$1 = {
-  Today: "Сегодня",
-  Month: "Месяц",
-  Week: "Неделя",
-  Day: "День",
-  "Select View": "Выберите вид",
-  events: "события",
-  event: "событие",
-  "No events": "Нет событий",
-  "Next period": "Следующий период",
-  "Previous period": "Прошлый период",
-  to: "по",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "События на целый день и несколько дней подряд",
-  "Link to {{n}} more events on {{date}}": "Ссылка на {{n}} дополнительных событий на {{date}}",
-  "Link to 1 more event on {{date}}": "Ссылка на 1 дополнительное событие на {{date}}",
-  CW: "Неделя {{week}}"
-};
-const ruRU$1 = {
-  ...datePickerRuRU$1,
-  ...calendarRuRU$1
-};
-const datePickerKoKR$1 = {
-  Date: "일자",
-  "MM/DD/YYYY": "년/월/일",
-  "Next month": "다음 달",
-  "Previous month": "이전 달",
-  "Choose Date": "날짜 선택"
-};
-const calendarKoKR$1 = {
-  Today: "오늘",
-  Month: "월",
-  Week: "주",
-  Day: "일",
-  "Select View": "보기 선택",
-  events: "일정들",
-  event: "일정",
-  "No events": "일정 없음",
-  "Next period": "다음",
-  "Previous period": "이전",
-  to: "부터",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "종일 및 복수일 일정",
-  "Link to {{n}} more events on {{date}}": "{{date}}에 {{n}}개 이상의 이벤트로 이동",
-  "Link to 1 more event on {{date}}": "{{date}}에 1개 이상의 이벤트로 이동",
-  CW: "{{week}}주"
-};
-const koKR$1 = {
-  ...datePickerKoKR$1,
-  ...calendarKoKR$1
-};
-const datePickerFrFR$1 = {
-  Date: "Date",
-  "MM/DD/YYYY": "JJ/MM/AAAA",
-  "Next month": "Mois suivant",
-  "Previous month": "Mois précédent",
-  "Choose Date": "Choisir une date"
-};
-const calendarFrFR$1 = {
-  Today: "Aujourd'hui",
-  Month: "Mois",
-  Week: "Semaine",
-  Day: "Jour",
-  "Select View": "Choisir la vue",
-  events: "événements",
-  event: "événement",
-  "No events": "Aucun événement",
-  "Next period": "Période suivante",
-  "Previous period": "Période précédente",
-  to: "à",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Événements d'une ou plusieurs journées",
-  "Link to {{n}} more events on {{date}}": "Lien vers {{n}} autres événements le {{date}}",
-  "Link to 1 more event on {{date}}": "Lien vers 1 autre événement le {{date}}",
-  CW: "Semaine {{week}}"
-};
-const frFR$1 = {
-  ...datePickerFrFR$1,
-  ...calendarFrFR$1
-};
-const datePickerDaDK$1 = {
-  Date: "Dato",
-  "MM/DD/YYYY": "ÅÅÅÅ-MM-DD",
-  "Next month": "Næste måned",
-  "Previous month": "Foregående måned",
-  "Choose Date": "Vælg dato"
-};
-const calendarDaDK$1 = {
-  Today: "I dag",
-  Month: "Måned",
-  Week: "Uge",
-  Day: "Dag",
-  "Select View": "Vælg visning",
-  events: "begivenheder",
-  event: "begivenhed",
-  "No events": "Ingen begivenheder",
-  "Next period": "Næste periode",
-  "Previous period": "Forgående periode",
-  to: "til",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Heldagsbegivenheder og flerdagsbegivenheder",
-  "Link to {{n}} more events on {{date}}": "Link til {{n}} flere begivenheder den {{date}}",
-  "Link to 1 more event on {{date}}": "Link til 1 mere begivenhed den {{date}}",
-  CW: "Uge {{week}}"
-};
-const daDK$1 = {
-  ...datePickerDaDK$1,
-  ...calendarDaDK$1
-};
-const datePickerPlPL$1 = {
-  Date: "Data",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Następny miesiąc",
-  "Previous month": "Poprzedni miesiąc",
-  "Choose Date": "Wybiewrz datę"
-};
-const calendarPlPL$1 = {
-  Today: "Dzisiaj",
-  Month: "Miesiąc",
-  Week: "Tydzień",
-  Day: "Dzień",
-  "Select View": "Wybierz widok",
-  events: "wydarzenia",
-  event: "wydarzenie",
-  "No events": "Brak wydarzeń",
-  "Next period": "Następny okres",
-  "Previous period": "Poprzedni okres",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Wydarzenia całodniowe i wielodniowe",
-  "Link to {{n}} more events on {{date}}": "Link do {{n}} kolejnych wydarzeń w dniu {{date}}",
-  "Link to 1 more event on {{date}}": "Link do 1 kolejnego wydarzenia w dniu {{date}}",
-  CW: "Tydzień {{week}}"
-};
-const plPL$1 = {
-  ...datePickerPlPL$1,
-  ...calendarPlPL$1
-};
-const datePickerEsES$1 = {
-  Date: "Fecha",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Siguiente mes",
-  "Previous month": "Mes anterior",
-  "Choose Date": "Seleccione una fecha"
-};
-const calendarEsES$1 = {
-  Today: "Hoy",
-  Month: "Mes",
-  Week: "Semana",
-  Day: "Día",
-  "Select View": "Seleccione una vista",
-  events: "eventos",
-  event: "evento",
-  "No events": "Sin eventos",
-  "Next period": "Siguiente período",
-  "Previous period": "Período anterior",
-  to: "a",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Día completo y eventos de múltiples días",
-  "Link to {{n}} more events on {{date}}": "Enlace a {{n}} eventos más el {{date}}",
-  "Link to 1 more event on {{date}}": "Enlace a 1 evento más el {{date}}",
-  CW: "Semana {{week}}"
-};
-const esES$1 = {
-  ...datePickerEsES$1,
-  ...calendarEsES$1
-};
-const calendarNlNL$1 = {
-  Today: "Vandaag",
-  Month: "Maand",
-  Week: "Week",
-  Day: "Dag",
-  "Select View": "Kies weergave",
-  events: "gebeurtenissen",
-  event: "gebeurtenis",
-  "No events": "Geen gebeurtenissen",
-  "Next period": "Volgende periode",
-  "Previous period": "Vorige periode",
-  to: "tot",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Evenementen van een hele dag en meerdere dagen",
-  "Link to {{n}} more events on {{date}}": "Link naar {{n}} meer evenementen op {{date}}",
-  "Link to 1 more event on {{date}}": "Link naar 1 meer evenement op {{date}}",
-  CW: "Week {{week}}"
-};
-const datePickerNlNL$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "DD-MM-JJJJ",
-  "Next month": "Volgende maand",
-  "Previous month": "Vorige maand",
-  "Choose Date": "Kies datum"
-};
-const nlNL$1 = {
-  ...datePickerNlNL$1,
-  ...calendarNlNL$1
-};
-const datePickerPtBR$1 = {
-  Date: "Data",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Mês seguinte",
-  "Previous month": "Mês anterior",
-  "Choose Date": "Escolha uma data"
-};
-const calendarPtBR$1 = {
-  Today: "Hoje",
-  Month: "Mês",
-  Week: "Semana",
-  Day: "Dia",
-  "Select View": "Selecione uma visualização",
-  events: "eventos",
-  event: "evento",
-  "No events": "Sem eventos",
-  "Next period": "Período seguinte",
-  "Previous period": "Período anterior",
-  to: "a",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Dia inteiro e eventos de vários dias",
-  "Link to {{n}} more events on {{date}}": "Link para mais {{n}} eventos em {{date}}",
-  "Link to 1 more event on {{date}}": "Link para mais 1 evento em {{date}}",
-  CW: "Semana {{week}}"
-};
-const ptBR$1 = {
-  ...datePickerPtBR$1,
-  ...calendarPtBR$1
-};
-const datePickerSkSK$1 = {
-  Date: "Dátum",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Ďalší mesiac",
-  "Previous month": "Predchádzajúci mesiac",
-  "Choose Date": "Vyberte dátum"
-};
-const calendarSkSK$1 = {
-  Today: "Dnes",
-  Month: "Mesiac",
-  Week: "Týždeň",
-  Day: "Deň",
-  "Select View": "Vyberte zobrazenie",
-  events: "udalosti",
-  event: "udalosť",
-  "No events": "Žiadne udalosti",
-  "Next period": "Ďalšie obdobie",
-  "Previous period": "Predchádzajúce obdobie",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Celodenné a viacdňové udalosti",
-  "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} ďalších udalostí dňa {{date}}",
-  "Link to 1 more event on {{date}}": "Odkaz na 1 ďalšiu udalosť dňa {{date}}",
-  CW: "{{week}}. týždeň"
-};
-const skSK$1 = {
-  ...datePickerSkSK$1,
-  ...calendarSkSK$1
-};
-const datePickerMkMK$1 = {
-  Date: "Датум",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Следен месец",
-  "Previous month": "Претходен месец",
-  "Choose Date": "Избери Датум"
-};
-const calendarMkMK$1 = {
-  Today: "Денес",
-  Month: "Месец",
-  Week: "Недела",
-  Day: "Ден",
-  "Select View": "Избери Преглед",
-  events: "настани",
-  event: "настан",
-  "No events": "Нема настани",
-  "Next period": "Следен период",
-  "Previous period": "Претходен период",
-  to: "до",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Целодневни и повеќедневни настани",
-  "Link to {{n}} more events on {{date}}": "Линк до {{n}} повеќе настани на {{date}}",
-  "Link to 1 more event on {{date}}": "Линк до 1 повеќе настан на {{date}}",
-  CW: "Недела {{week}}"
-};
-const mkMK$1 = {
-  ...datePickerMkMK$1,
-  ...calendarMkMK$1
-};
-const datePickerTrTR$1 = {
-  Date: "Tarih",
-  "MM/DD/YYYY": "GG/AA/YYYY",
-  "Next month": "Sonraki ay",
-  "Previous month": "Önceki ay",
-  "Choose Date": "Tarih Seç"
-};
-const calendarTrTR$1 = {
-  Today: "Bugün",
-  Month: "Aylık",
-  Week: "Haftalık",
-  Day: "Günlük",
-  "Select View": "Görünüm Seç",
-  events: "etkinlikler",
-  event: "etkinlik",
-  "No events": "Etkinlik yok",
-  "Next period": "Sonraki dönem",
-  "Previous period": "Önceki dönem",
-  to: "dan",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Tüm gün ve çoklu gün etkinlikleri",
-  "Link to {{n}} more events on {{date}}": "{{date}} tarihinde {{n}} etkinliğe bağlantı",
-  "Link to 1 more event on {{date}}": "{{date}} tarihinde 1 etkinliğe bağlantı",
-  CW: "{{week}}. Hafta"
-};
-const trTR$1 = {
-  ...datePickerTrTR$1,
-  ...calendarTrTR$1
-};
-const datePickerKyKG$1 = {
-  Date: "Датасы",
-  "MM/DD/YYYY": "АА/КК/ЖЖЖЖ",
-  "Next month": "Кийинки ай",
-  "Previous month": "Өткөн ай",
-  "Choose Date": "Күндү тандаңыз"
-};
-const calendarKyKG$1 = {
-  Today: "Бүгүн",
-  Month: "Ай",
-  Week: "Апта",
-  Day: "Күн",
-  "Select View": "Көрүнүштү тандаңыз",
-  events: "Окуялар",
-  event: "Окуя",
-  "No events": "Окуя жок",
-  "Next period": "Кийинки мезгил",
-  "Previous period": "Өткөн мезгил",
-  to: "чейин",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Күн бою жана бир нече күн катары менен болгон окуялар",
-  "Link to {{n}} more events on {{date}}": "{{date}} күнүндө {{n}} окуяга байланыш",
-  "Link to 1 more event on {{date}}": "{{date}} күнүндө 1 окуяга байланыш",
-  CW: "Апта {{week}}"
-};
-const kyKG$1 = {
-  ...datePickerKyKG$1,
-  ...calendarKyKG$1
-};
-const datePickerIdID$1 = {
-  Date: "Tanggal",
-  "MM/DD/YYYY": "DD.MM.YYYY",
-  "Next month": "Bulan depan",
-  "Previous month": "Bulan sebelumnya",
-  "Choose Date": "Pilih tanggal"
-};
-const calendarIdID$1 = {
-  Today: "Hari Ini",
-  Month: "Bulan",
-  Week: "Minggu",
-  Day: "Hari",
-  "Select View": "Pilih tampilan",
-  events: "Acara",
-  event: "Acara",
-  "No events": "Tidak ada acara",
-  "Next period": "Periode selanjutnya",
-  "Previous period": "Periode sebelumnya",
-  to: "sampai",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Sepanjang hari dan acara beberapa hari ",
-  "Link to {{n}} more events on {{date}}": "Tautan ke {{n}} acara lainnya pada {{date}}",
-  "Link to 1 more event on {{date}}": "Tautan ke 1 acara lainnya pada {{date}}",
-  CW: "Minggu {{week}}"
-};
-const idID$1 = {
-  ...datePickerIdID$1,
-  ...calendarIdID$1
-};
-const datePickerCsCZ$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Další měsíc",
-  "Previous month": "Předchozí měsíc",
-  "Choose Date": "Vyberte datum"
-};
-const calendarCsCZ$1 = {
-  Today: "Dnes",
-  Month: "Měsíc",
-  Week: "Týden",
-  Day: "Den",
-  "Select View": "Vyberte zobrazení",
-  events: "události",
-  event: "událost",
-  "No events": "Žádné události",
-  "Next period": "Příští období",
-  "Previous period": "Předchozí období",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Celodenní a vícedenní události",
-  "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} dalších událostí dne {{date}}",
-  "Link to 1 more event on {{date}}": "Odkaz na 1 další událost dne {{date}}",
-  CW: "Týden {{week}}"
-};
-const csCZ$1 = {
-  ...datePickerCsCZ$1,
-  ...calendarCsCZ$1
-};
-const datePickerEtEE$1 = {
-  Date: "Kuupäev",
-  "MM/DD/YYYY": "PP.KK.AAAA",
-  "Next month": "Järgmine kuu",
-  "Previous month": "Eelmine kuu",
-  "Choose Date": "Vali kuupäev"
-};
-const calendarEtEE$1 = {
-  Today: "Täna",
-  Month: "Kuu",
-  Week: "Nädal",
-  Day: "Päev",
-  "Select View": "Vali vaade",
-  events: "sündmused",
-  event: "sündmus",
-  "No events": "Pole sündmusi",
-  "Next period": "Järgmine periood",
-  "Previous period": "Eelmine periood",
-  to: "kuni",
-  "Full day- and multiple day events": "Täispäeva- ja mitmepäevasündmused",
-  "Link to {{n}} more events on {{date}}": "Link {{n}} rohkematele sündmustele kuupäeval {{date}}",
-  "Link to 1 more event on {{date}}": "Link ühele lisasündmusele kuupäeval {{date}}",
-  CW: "Nädala number {{week}}"
-};
-const etEE$1 = {
-  ...datePickerEtEE$1,
-  ...calendarEtEE$1
-};
-const datePickerUkUA$1 = {
-  Date: "Дата",
-  "MM/DD/YYYY": "ММ/ДД/РРРР",
-  "Next month": "Наступний місяць",
-  "Previous month": "Минулий місяць",
-  "Choose Date": "Виберіть дату"
-};
-const calendarUkUA$1 = {
-  Today: "Сьогодні",
-  Month: "Місяць",
-  Week: "Тиждень",
-  Day: "День",
-  "Select View": "Виберіть вигляд",
-  events: "події",
-  event: "подія",
-  "No events": "Немає подій",
-  "Next period": "Наступний період",
-  "Previous period": "Минулий період",
-  to: "по",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Події на цілий день і кілька днів поспіль",
-  "Link to {{n}} more events on {{date}}": "Посилання на {{n}} додаткові події на {{date}}",
-  "Link to 1 more event on {{date}}": "Посилання на 1 додаткову подію на {{date}}",
-  CW: "Тиждень {{week}}"
-};
-const ukUA$1 = {
-  ...datePickerUkUA$1,
-  ...calendarUkUA$1
-};
-const datePickerSrLatnRS$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Sledeći mesec",
-  "Previous month": "Prethodni mesec",
-  "Choose Date": "Izaberite datum"
-};
-const calendarSrLatnRS$1 = {
-  Today: "Danas",
-  Month: "Mesec",
-  Week: "Nedelja",
-  Day: "Dan",
-  "Select View": "Odaberite pregled",
-  events: "Događaji",
-  event: "Događaj",
-  "No events": "Nema događaja",
-  "Next period": "Naredni period",
-  "Previous period": "Prethodni period",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Celodnevni i višednevni događaji",
-  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
-  "Link to 1 more event on {{date}}": "Link do jednog događaja na {{date}}",
-  CW: "Nedelja {{week}}"
-};
-const srLatnRS$1 = {
-  ...datePickerSrLatnRS$1,
-  ...calendarSrLatnRS$1
-};
-const datePickerCaES$1 = {
-  Date: "Data",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Següent mes",
-  "Previous month": "Mes anterior",
-  "Choose Date": "Selecciona una data"
-};
-const calendarCaES$1 = {
-  Today: "Avui",
-  Month: "Mes",
-  Week: "Setmana",
-  Day: "Dia",
-  "Select View": "Selecciona una vista",
-  events: "Esdeveniments",
-  event: "Esdeveniment",
-  "No events": "Sense esdeveniments",
-  "Next period": "Següent període",
-  "Previous period": "Període anterior",
-  to: "a",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Esdeveniments de dia complet i de múltiples dies",
-  "Link to {{n}} more events on {{date}}": "Enllaç a {{n}} esdeveniments més el {{date}}",
-  "Link to 1 more event on {{date}}": "Enllaç a 1 esdeveniment més el {{date}}",
-  CW: "Setmana {{week}}"
-};
-const caES$1 = {
-  ...datePickerCaES$1,
-  ...calendarCaES$1
-};
-const datePickerSrRS$1 = {
-  Date: "Датум",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Следећи месец",
-  "Previous month": "Претходни месец",
-  "Choose Date": "Изаберите Датум"
-};
-const calendarSrRS$1 = {
-  Today: "Данас",
-  Month: "Месец",
-  Week: "Недеља",
-  Day: "Дан",
-  "Select View": "Изаберите преглед",
-  events: "Догађаји",
-  event: "Догађај",
-  "No events": "Нема догађаја",
-  "Next period": "Следећи период",
-  "Previous period": "Претходни период",
-  to: "да",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Целодневни и вишедневни догађаји",
-  "Link to {{n}} more events on {{date}}": "Линк до још {{n}} догађаја на {{date}}",
-  "Link to 1 more event on {{date}}": "Линк до још 1 догађаја {{date}}",
-  CW: "Недеља {{week}}"
-};
-const srRS$1 = {
-  ...datePickerSrRS$1,
-  ...calendarSrRS$1
-};
-const datePickerLtLT$1 = {
-  Date: "Data",
-  "MM/DD/YYYY": "MMMM-MM-DD",
-  "Next month": "Kitas mėnuo",
-  "Previous month": "Ankstesnis mėnuo",
-  "Choose Date": "Pasirinkite datą"
-};
-const calendarLtLT$1 = {
-  Today: "Šiandien",
-  Month: "Mėnuo",
-  Week: "Savaitė",
-  Day: "Diena",
-  "Select View": "Pasirinkite vaizdą",
-  events: "įvykiai",
-  event: "įvykis",
-  "No events": "Įvykių nėra",
-  "Next period": "Kitas laikotarpis",
-  "Previous period": "Ankstesnis laikotarpis",
-  to: "iki",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Visos dienos ir kelių dienų įvykiai",
-  "Link to {{n}} more events on {{date}}": "Nuoroda į dar {{n}} įvykius {{date}}",
-  "Link to 1 more event on {{date}}": "Nuoroda į dar 1 vieną įvykį {{date}}",
-  CW: "{{week}} savaitė"
-};
-const ltLT$1 = {
-  ...datePickerLtLT$1,
-  ...calendarLtLT$1
-};
-const datePickerHrHR$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "DD/MM/YYYY",
-  "Next month": "Sljedeći mjesec",
-  "Previous month": "Prethodni mjesec",
-  "Choose Date": "Izaberite datum"
-};
-const calendarHrHR$1 = {
-  Today: "Danas",
-  Month: "Mjesec",
-  Week: "Nedjelja",
-  Day: "Dan",
-  "Select View": "Odaberite pregled",
-  events: "Događaji",
-  event: "Događaj",
-  "No events": "Nema događaja",
-  "Next period": "Sljedeći period",
-  "Previous period": "Prethodni period",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Cjelodnevni i višednevni događaji",
-  "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
-  "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}",
-  CW: "{{week}}. tjedan"
-};
-const hrHR$1 = {
-  ...datePickerHrHR$1,
-  ...calendarHrHR$1
-};
-const datePickerSlSI$1 = {
-  Date: "Datum",
-  "MM/DD/YYYY": "MM.DD.YYYY",
-  "Next month": "Naslednji mesec",
-  "Previous month": "Prejšnji mesec",
-  "Choose Date": "Izberi datum"
-};
-const calendarSlSI$1 = {
-  Today: "Danes",
-  Month: "Mesec",
-  Week: "Teden",
-  Day: "Dan",
-  "Select View": "Izberi pogled",
-  events: "dogodki",
-  event: "dogodek",
-  "No events": "Ni dogodkov",
-  "Next period": "Naslednji dogodek",
-  "Previous period": "Prejšnji dogodek",
-  to: "do",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Celodnevni in večdnevni dogodki",
-  "Link to {{n}} more events on {{date}}": "Povezava do {{n}} drugih dogodkov dne {{date}}",
-  "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}",
-  CW: "Teden {{week}}"
-};
-const slSI$1 = {
-  ...datePickerSlSI$1,
-  ...calendarSlSI$1
-};
-const datePickerFiFI$1 = {
-  Date: "Päivämäärä",
-  "MM/DD/YYYY": "VVVV-KK-PP",
-  "Next month": "Seuraava kuukausi",
-  "Previous month": "Edellinen kuukausi",
-  "Choose Date": "Valitse päivämäärä"
-};
-const calendarFiFI$1 = {
-  Today: "Tänään",
-  Month: "Kuukausi",
-  Week: "Viikko",
-  Day: "Päivä",
-  "Select View": "Valitse näkymä",
-  events: "tapahtumaa",
-  event: "tapahtuma",
-  "No events": "Ei tapahtumia",
-  "Next period": "Seuraava ajanjakso",
-  "Previous period": "Edellinen ajanjakso",
-  to: "-",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Koko ja usean päivän tapahtumat",
-  "Link to {{n}} more events on {{date}}": "Linkki {{n}} lisätapahtumaan päivämäärällä {{date}}",
-  "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}",
-  CW: "Viikko {{week}}"
-};
-const fiFI$1 = {
-  ...datePickerFiFI$1,
-  ...calendarFiFI$1
-};
-const datePickerRoRO$1 = {
-  Date: "Data",
-  "MM/DD/YYYY": "LL/ZZ/AAAA",
-  "Next month": "Luna următoare",
-  "Previous month": "Luna anterioară",
-  "Choose Date": "Alege data"
-};
-const calendarRoRO$1 = {
-  Today: "Astăzi",
-  Month: "Lună",
-  Week: "Săptămână",
-  Day: "Zi",
-  "Select View": "Selectează vizualizarea",
-  events: "evenimente",
-  event: "eveniment",
-  "No events": "Fără evenimente",
-  "Next period": "Perioada următoare",
-  "Previous period": "Perioada anterioară",
-  to: "până la",
-  // as in 2/1/2020 to 2/2/2020
-  "Full day- and multiple day events": "Evenimente pe durata întregii zile și pe durata mai multor zile",
-  "Link to {{n}} more events on {{date}}": "Link către {{n}} evenimente suplimentare pe {{date}}",
-  "Link to 1 more event on {{date}}": "Link către 1 eveniment suplimentar pe {{date}}",
-  CW: "Săptămâna {{week}}"
-};
-const roRO$1 = {
-  ...datePickerRoRO$1,
-  ...calendarRoRO$1
-};
-class InvalidLocaleError extends Error {
-  constructor(locale) {
-    super(`Invalid locale: ${locale}`);
-  }
-}
-const translate = (locale, languages) => (key, translationVariables) => {
-  if (!/^[a-z]{2}-[A-Z]{2}$/.test(locale.value) && "sr-Latn-RS" !== locale.value) {
-    throw new InvalidLocaleError(locale.value);
-  }
-  const deHyphenatedLocale = locale.value.replaceAll("-", "");
-  const language = languages.value[deHyphenatedLocale];
-  if (!language)
-    return key;
-  let translation = language[key] || key;
-  Object.keys(translationVariables || {}).forEach((variable) => {
-    const value = String(translationVariables === null || translationVariables === void 0 ? void 0 : translationVariables[variable]);
-    if (!value)
-      return;
-    translation = translation.replace(`{{${variable}}}`, value);
-  });
-  return translation;
-};
-const translations$1 = {
-  deDE: deDE$1,
-  enUS: enUS$1,
-  itIT: itIT$1,
-  enGB: enGB$1,
-  svSE: svSE$1,
-  zhCN: zhCN$1,
-  zhTW: zhTW$1,
-  jaJP: jaJP$1,
-  ruRU: ruRU$1,
-  koKR: koKR$1,
-  frFR: frFR$1,
-  daDK: daDK$1,
-  mkMK: mkMK$1,
-  plPL: plPL$1,
-  esES: esES$1,
-  nlNL: nlNL$1,
-  ptBR: ptBR$1,
-  skSK: skSK$1,
-  trTR: trTR$1,
-  kyKG: kyKG$1,
-  idID: idID$1,
-  csCZ: csCZ$1,
-  etEE: etEE$1,
-  ukUA: ukUA$1,
-  caES: caES$1,
-  srLatnRS: srLatnRS$1,
-  srRS: srRS$1,
-  ltLT: ltLT$1,
-  hrHR: hrHR$1,
-  slSI: slSI$1,
-  fiFI: fiFI$1,
-  roRO: roRO$1
-};
-class EventColors {
-  constructor(config2) {
-    Object.defineProperty(this, "config", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: config2
-    });
-  }
-  setLight() {
-    Object.entries(this.config.calendars.value || {}).forEach(([calendarName, calendar]) => {
-      if (!calendar.lightColors) {
-        console.warn(`No light colors defined for calendar ${calendarName}`);
-        return;
-      }
-      this.setColors(calendar.colorName, calendar.lightColors);
-    });
-  }
-  setDark() {
-    Object.entries(this.config.calendars.value || {}).forEach(([calendarName, calendar]) => {
-      if (!calendar.darkColors) {
-        console.warn(`No dark colors defined for calendar ${calendarName}`);
-        return;
-      }
-      this.setColors(calendar.colorName, calendar.darkColors);
-    });
-  }
-  setColors(colorName, colorDefinition) {
-    document.documentElement.style.setProperty(`--sx-color-${colorName}`, colorDefinition.main);
-    document.documentElement.style.setProperty(`--sx-color-${colorName}-container`, colorDefinition.container);
-    document.documentElement.style.setProperty(`--sx-color-on-${colorName}-container`, colorDefinition.onContainer);
-  }
-}
-const createCalendarState = (calendarConfig, timeUnitsImpl, selectedDate) => {
-  var _a;
-  const _view = d$1(((_a = calendarConfig.views.value.find((view2) => view2.name === calendarConfig.defaultView)) === null || _a === void 0 ? void 0 : _a.name) || calendarConfig.views.value[0].name);
-  const view = w(() => {
-    return _view.value;
-  });
-  const range = d$1(null);
-  let wasInitialized = false;
-  let lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE = null;
-  const callOnRangeUpdate = (_range) => {
-    if (!wasInitialized)
-      return wasInitialized = true;
-    if (calendarConfig.callbacks.onRangeUpdate && _range.value) {
-      calendarConfig.callbacks.onRangeUpdate(_range.value);
-    }
-    const lastRange = lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE;
-    if (!_range.value)
-      return;
-    if ((lastRange === null || lastRange === void 0 ? void 0 : lastRange.start) === _range.value.start && (lastRange === null || lastRange === void 0 ? void 0 : lastRange.end) === _range.value.end)
-      return;
-    Object.values(calendarConfig.plugins || {}).forEach((plugin) => {
-      var _a2;
-      (_a2 = plugin === null || plugin === void 0 ? void 0 : plugin.onRangeUpdate) === null || _a2 === void 0 ? void 0 : _a2.call(plugin, _range.value);
-      lastRangeEmitted__NEEDED_TO_PREVENT_RECURSION_IN_EVENT_RECURRENCE_PACKAGE_WHICH_CAUSES_RANGE_TO_UPDATE_AND_THUS_CAUSES_A_CYCLE = _range.value;
-    });
-  };
-  E(() => {
-    if (range.value) {
-      callOnRangeUpdate(range);
-    }
-  });
-  const setRange = (date) => {
-    var _a2, _b;
-    const selectedView = calendarConfig.views.value.find((availableView) => availableView.name === _view.value);
-    const newRange = selectedView.setDateRange({
-      calendarConfig,
-      date,
-      range,
-      timeUnitsImpl
-    });
-    if (newRange.start === ((_a2 = range.value) === null || _a2 === void 0 ? void 0 : _a2.start) && newRange.end === ((_b = range.value) === null || _b === void 0 ? void 0 : _b.end))
-      return;
-    range.value = newRange;
-  };
-  setRange(selectedDate || toDateString$1(/* @__PURE__ */ new Date()));
-  const isCalendarSmall = d$1(void 0);
-  const isDark = d$1(calendarConfig.isDark.value || false);
-  E(() => {
-    const eventColors = new EventColors(calendarConfig);
-    if (isDark.value) {
-      eventColors.setDark();
-    } else {
-      eventColors.setLight();
-    }
-  });
-  return {
-    view,
-    isDark,
-    setRange,
-    range,
-    isCalendarSmall,
-    setView: (newView, selectedDate2) => {
-      r(() => {
-        _view.value = newView;
-        setRange(selectedDate2);
-      });
-    }
-  };
-};
-const createCalendarEventsImpl = (events, backgroundEvents, config2) => {
-  const list = d$1(events.map((event) => {
-    return externalEventToInternal$1(event, config2);
-  }));
-  const filterPredicate = d$1(void 0);
-  return {
-    list,
-    filterPredicate,
-    backgroundEvents: d$1(backgroundEvents)
-  };
-};
-const timePointsPerDay = (dayStart, dayEnd, isHybridDay) => {
-  if (dayStart === dayEnd)
-    return 2400;
-  if (isHybridDay)
-    return 2400 - dayStart + dayEnd;
-  return dayEnd - dayStart;
-};
-class CalendarConfigImpl {
-  constructor(locale = DEFAULT_LOCALE, firstDayOfWeek = DEFAULT_FIRST_DAY_OF_WEEK, defaultView = InternalViewName.Week, views = [], dayBoundaries = DEFAULT_DAY_BOUNDARIES, weekOptions, calendars = {}, plugins = {}, isDark = false, isResponsive = true, callbacks = {}, _customComponentFns = {}, minDate = void 0, maxDate = void 0, monthGridOptions = {
-    nEventsPerDay: 4
-  }, theme = void 0, translations2 = {}, showWeekNumbers = false) {
-    Object.defineProperty(this, "defaultView", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: defaultView
-    });
-    Object.defineProperty(this, "plugins", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: plugins
-    });
-    Object.defineProperty(this, "isResponsive", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: isResponsive
-    });
-    Object.defineProperty(this, "callbacks", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: callbacks
-    });
-    Object.defineProperty(this, "_customComponentFns", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: _customComponentFns
-    });
-    Object.defineProperty(this, "firstDayOfWeek", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "views", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "dayBoundaries", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "weekOptions", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "calendars", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "isDark", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "minDate", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "maxDate", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "monthGridOptions", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "locale", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: d$1(DEFAULT_LOCALE)
-    });
-    Object.defineProperty(this, "theme", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "translations", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "showWeekNumbers", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: d$1(false)
-    });
-    this.locale = d$1(locale);
-    this.firstDayOfWeek = d$1(firstDayOfWeek);
-    this.views = d$1(views);
-    this.dayBoundaries = d$1(dayBoundaries);
-    this.weekOptions = d$1(weekOptions);
-    this.calendars = d$1(calendars);
-    this.isDark = d$1(isDark);
-    this.minDate = d$1(minDate);
-    this.maxDate = d$1(maxDate);
-    this.monthGridOptions = d$1(monthGridOptions);
-    this.theme = theme;
-    this.translations = d$1(translations2);
-    this.showWeekNumbers = d$1(showWeekNumbers);
-  }
-  get isHybridDay() {
-    return this.dayBoundaries.value.start > this.dayBoundaries.value.end || this.dayBoundaries.value.start !== 0 && this.dayBoundaries.value.start === this.dayBoundaries.value.end;
-  }
-  get timePointsPerDay() {
-    return timePointsPerDay(this.dayBoundaries.value.start, this.dayBoundaries.value.end, this.isHybridDay);
-  }
-}
-class CalendarConfigBuilder {
-  constructor() {
-    Object.defineProperty(this, "locale", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "firstDayOfWeek", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "defaultView", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "views", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "dayBoundaries", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "weekOptions", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: {
-        gridHeight: DEFAULT_WEEK_GRID_HEIGHT,
-        nDays: 7,
-        eventWidth: 100,
-        timeAxisFormatOptions: { hour: "numeric" },
-        eventOverlap: true
-      }
-    });
-    Object.defineProperty(this, "monthGridOptions", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "calendars", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "plugins", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: {}
-    });
-    Object.defineProperty(this, "isDark", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: false
-    });
-    Object.defineProperty(this, "isResponsive", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: true
-    });
-    Object.defineProperty(this, "callbacks", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "minDate", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "maxDate", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "backgroundEvents", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "theme", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "translations", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "showWeekNumbers", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-  }
-  build() {
-    return new CalendarConfigImpl(this.locale || DEFAULT_LOCALE, typeof this.firstDayOfWeek === "number" ? this.firstDayOfWeek : DEFAULT_FIRST_DAY_OF_WEEK, this.defaultView || InternalViewName.Week, this.views || [], this.dayBoundaries || DEFAULT_DAY_BOUNDARIES, this.weekOptions, this.calendars, this.plugins, this.isDark, this.isResponsive, this.callbacks, {}, this.minDate, this.maxDate, this.monthGridOptions, this.theme, this.translations, this.showWeekNumbers);
-  }
-  withLocale(locale) {
-    this.locale = locale;
-    return this;
-  }
-  withTranslations(translation) {
-    this.translations = translation;
-    return this;
-  }
-  withFirstDayOfWeek(firstDayOfWeek) {
-    this.firstDayOfWeek = firstDayOfWeek;
-    return this;
-  }
-  withDefaultView(defaultView) {
-    this.defaultView = defaultView;
-    return this;
-  }
-  withViews(views) {
-    this.views = views;
-    return this;
-  }
-  withDayBoundaries(dayBoundaries) {
-    if (!dayBoundaries)
-      return this;
-    this.dayBoundaries = {
-      start: timePointsFromString$2(dayBoundaries.start),
-      end: timePointsFromString$2(dayBoundaries.end)
-    };
-    return this;
-  }
-  withWeekOptions(weekOptions) {
-    this.weekOptions = {
-      ...this.weekOptions,
-      ...weekOptions
-    };
-    return this;
-  }
-  withCalendars(calendars) {
-    this.calendars = calendars;
-    return this;
-  }
-  withPlugins(plugins) {
-    if (!plugins)
-      return this;
-    plugins.forEach((plugin) => {
-      this.plugins[plugin.name] = plugin;
-    });
-    return this;
-  }
-  withIsDark(isDark) {
-    this.isDark = isDark;
-    return this;
-  }
-  withIsResponsive(isResponsive) {
-    this.isResponsive = isResponsive;
-    return this;
-  }
-  withCallbacks(listeners) {
-    this.callbacks = listeners;
-    return this;
-  }
-  withMinDate(minDate) {
-    this.minDate = minDate;
-    return this;
-  }
-  withMaxDate(maxDate) {
-    this.maxDate = maxDate;
-    return this;
-  }
-  withMonthGridOptions(monthOptions) {
-    this.monthGridOptions = monthOptions;
-    return this;
-  }
-  withBackgroundEvents(backgroundEvents) {
-    this.backgroundEvents = backgroundEvents;
-    return this;
-  }
-  withTheme(theme) {
-    this.theme = theme;
-    return this;
-  }
-  withWeekNumbers(showWeekNumbers) {
-    this.showWeekNumbers = showWeekNumbers;
-    return this;
-  }
-}
-const createInternalConfig = (config2, plugins) => {
-  return new CalendarConfigBuilder().withLocale(config2.locale).withFirstDayOfWeek(config2.firstDayOfWeek).withDefaultView(config2.defaultView).withViews(config2.views).withDayBoundaries(config2.dayBoundaries).withWeekOptions(config2.weekOptions).withCalendars(config2.calendars).withPlugins(plugins).withIsDark(config2.isDark).withIsResponsive(config2.isResponsive).withCallbacks(config2.callbacks).withMinDate(config2.minDate).withMaxDate(config2.maxDate).withMonthGridOptions(config2.monthGridOptions).withBackgroundEvents(config2.backgroundEvents).withTheme(config2.theme).withTranslations(config2.translations || translations$1).withWeekNumbers(config2.showWeekNumbers).build();
-};
-var Month;
-(function(Month2) {
-  Month2[Month2["JANUARY"] = 0] = "JANUARY";
-  Month2[Month2["FEBRUARY"] = 1] = "FEBRUARY";
-  Month2[Month2["MARCH"] = 2] = "MARCH";
-  Month2[Month2["APRIL"] = 3] = "APRIL";
-  Month2[Month2["MAY"] = 4] = "MAY";
-  Month2[Month2["JUNE"] = 5] = "JUNE";
-  Month2[Month2["JULY"] = 6] = "JULY";
-  Month2[Month2["AUGUST"] = 7] = "AUGUST";
-  Month2[Month2["SEPTEMBER"] = 8] = "SEPTEMBER";
-  Month2[Month2["OCTOBER"] = 9] = "OCTOBER";
-  Month2[Month2["NOVEMBER"] = 10] = "NOVEMBER";
-  Month2[Month2["DECEMBER"] = 11] = "DECEMBER";
-})(Month || (Month = {}));
-class NoYearZeroError extends Error {
-  constructor() {
-    super("Year zero does not exist in the Gregorian calendar.");
-  }
-}
-class ExtendedDateImpl extends Date {
-  constructor(yearArg, monthArg, dateArg) {
-    super(yearArg, monthArg, dateArg);
-    if (yearArg === 0)
-      throw new NoYearZeroError();
-    this.setFullYear(yearArg);
-  }
-  get year() {
-    return this.getFullYear();
-  }
-  get month() {
-    return this.getMonth();
-  }
-  get date() {
-    return this.getDate();
-  }
-}
-class TimeUnitsImpl {
-  constructor(config2) {
-    Object.defineProperty(this, "config", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: config2
-    });
-  }
-  get firstDayOfWeek() {
-    return this.config.firstDayOfWeek.value;
-  }
-  set firstDayOfWeek(firstDayOfWeek) {
-    this.config.firstDayOfWeek.value = firstDayOfWeek;
-  }
-  getMonthWithTrailingAndLeadingDays(year, month) {
-    if (year === 0)
-      throw new NoYearZeroError();
-    const firstDateOfMonth = new Date(year, month, 1);
-    const monthWithDates = [this.getWeekFor(firstDateOfMonth)];
-    let isInMonth = true;
-    let first = monthWithDates[0][0];
-    while (isInMonth) {
-      const newFirstDayOfWeek = new Date(first.getFullYear(), first.getMonth(), first.getDate() + 7);
-      if (newFirstDayOfWeek.getMonth() === month) {
-        monthWithDates.push(this.getWeekFor(newFirstDayOfWeek));
-        first = newFirstDayOfWeek;
-      } else {
-        isInMonth = false;
-      }
-    }
-    return monthWithDates;
-  }
-  getWeekFor(date) {
-    const week = [this.getFirstDateOfWeek(date)];
-    while (week.length < 7) {
-      const lastDateOfWeek = week[week.length - 1];
-      const nextDateOfWeek = new Date(lastDateOfWeek);
-      nextDateOfWeek.setDate(lastDateOfWeek.getDate() + 1);
-      week.push(nextDateOfWeek);
-    }
-    return week;
-  }
-  getMonthsFor(year) {
-    return Object.values(Month).filter((month) => !isNaN(Number(month))).map((month) => new ExtendedDateImpl(year, Number(month), 1));
-  }
-  getFirstDateOfWeek(date) {
-    const dateIsNthDayOfWeek = date.getDay() - this.firstDayOfWeek;
-    const firstDateOfWeek = date;
-    if (dateIsNthDayOfWeek === 0) {
-      return firstDateOfWeek;
-    } else if (dateIsNthDayOfWeek > 0) {
-      firstDateOfWeek.setDate(date.getDate() - dateIsNthDayOfWeek);
-    } else {
-      firstDateOfWeek.setDate(date.getDate() - (7 + dateIsNthDayOfWeek));
-    }
-    return firstDateOfWeek;
-  }
-}
-class TimeUnitsBuilder {
-  constructor() {
-    Object.defineProperty(this, "config", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-  }
-  build() {
-    return new TimeUnitsImpl(this.config);
-  }
-  withConfig(config2) {
-    this.config = config2;
-    return this;
-  }
-}
-const createTimeUnitsImpl = (internalConfig) => {
-  return new TimeUnitsBuilder().withConfig(internalConfig).build();
-};
-var Placement;
-(function(Placement2) {
-  Placement2["TOP_START"] = "top-start";
-  Placement2["TOP_END"] = "top-end";
-  Placement2["BOTTOM_START"] = "bottom-start";
-  Placement2["BOTTOM_END"] = "bottom-end";
-})(Placement || (Placement = {}));
-class ConfigImpl {
-  constructor(locale = DEFAULT_LOCALE, firstDayOfWeek = DEFAULT_FIRST_DAY_OF_WEEK, min = toDateString$1(new Date(1970, 0, 1)), max = toDateString$1(new Date((/* @__PURE__ */ new Date()).getFullYear() + 50, 11, 31)), placement = Placement.BOTTOM_START, listeners = {}, style = {}, teleportTo, label, name, disabled) {
-    Object.defineProperty(this, "min", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: min
-    });
-    Object.defineProperty(this, "max", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: max
-    });
-    Object.defineProperty(this, "placement", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: placement
-    });
-    Object.defineProperty(this, "listeners", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: listeners
-    });
-    Object.defineProperty(this, "style", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: style
-    });
-    Object.defineProperty(this, "teleportTo", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: teleportTo
-    });
-    Object.defineProperty(this, "label", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: label
-    });
-    Object.defineProperty(this, "name", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: name
-    });
-    Object.defineProperty(this, "disabled", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: disabled
-    });
-    Object.defineProperty(this, "locale", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "firstDayOfWeek", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    this.locale = d$1(locale);
-    this.firstDayOfWeek = d$1(firstDayOfWeek);
-  }
-}
-class ConfigBuilder {
-  constructor() {
-    Object.defineProperty(this, "locale", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "firstDayOfWeek", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "min", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "max", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "placement", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "listeners", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "style", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "teleportTo", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "label", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "name", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-    Object.defineProperty(this, "disabled", {
-      enumerable: true,
-      configurable: true,
-      writable: true,
-      value: void 0
-    });
-  }
-  build() {
-    return new ConfigImpl(this.locale, this.firstDayOfWeek, this.min, this.max, this.placement, this.listeners, this.style, this.teleportTo, this.label, this.name, this.disabled);
-  }
-  withLocale(locale) {
-    this.locale = locale;
-    return this;
-  }
-  withFirstDayOfWeek(firstDayOfWeek) {
-    this.firstDayOfWeek = firstDayOfWeek;
-    return this;
-  }
-  withMin(min) {
-    this.min = min;
-    return this;
-  }
-  withMax(max) {
-    this.max = max;
-    return this;
-  }
-  withPlacement(placement) {
-    this.placement = placement;
-    return this;
-  }
-  withListeners(listeners) {
-    this.listeners = listeners;
-    return this;
-  }
-  withStyle(style) {
-    this.style = style;
-    return this;
-  }
-  withTeleportTo(teleportTo) {
-    this.teleportTo = teleportTo;
-    return this;
-  }
-  withLabel(label) {
-    this.label = label;
-    return this;
-  }
-  withName(name) {
-    this.name = name;
-    return this;
-  }
-  withDisabled(disabled) {
-    this.disabled = disabled;
-    return this;
-  }
-}
-const createDatePickerConfig = (config2, dateSelectionCallback) => {
-  var _a, _b;
-  return new ConfigBuilder().withLocale(config2.locale).withFirstDayOfWeek(config2.firstDayOfWeek).withMin(config2.minDate).withMax(config2.maxDate).withTeleportTo((_a = config2.datePicker) === null || _a === void 0 ? void 0 : _a.teleportTo).withStyle((_b = config2.datePicker) === null || _b === void 0 ? void 0 : _b.style).withPlacement(Placement.BOTTOM_END).withListeners({ onChange: dateSelectionCallback }).build();
-};
-const createDateSelectionCallback = (calendarState, config2) => {
-  let lastEmittedDate = null;
-  return (date) => {
-    var _a;
-    calendarState.setRange(date);
-    if (((_a = config2.callbacks) === null || _a === void 0 ? void 0 : _a.onSelectedDateUpdate) && date !== lastEmittedDate) {
-      lastEmittedDate = date;
-      config2.callbacks.onSelectedDateUpdate(date);
-    }
-  };
-};
-const validatePlugins = (configPlugins, pluginArg) => {
-};
-const validateConfig = (config2) => {
-  var _a, _b, _c, _d;
-  if (config2.selectedDate && !DateFormats$1.DATE_STRING.test(config2.selectedDate)) {
-    throw new Error("[Schedule-X error]: selectedDate must have the format YYYY-MM-DD");
-  }
-  if (config2.minDate && !DateFormats$1.DATE_STRING.test(config2.minDate)) {
-    throw new Error("[Schedule-X error]: minDate must have the format YYYY-MM-DD");
-  }
-  if (config2.maxDate && !DateFormats$1.DATE_STRING.test(config2.maxDate)) {
-    throw new Error("[Schedule-X error]: maxDate must have the format YYYY-MM-DD");
-  }
-  if (typeof config2.firstDayOfWeek !== "undefined" && (config2.firstDayOfWeek < 0 || config2.firstDayOfWeek > 6)) {
-    throw new Error("[Schedule-X error]: firstDayOfWeek must be a number between 0 and 6");
-  }
-  if (typeof ((_a = config2.weekOptions) === null || _a === void 0 ? void 0 : _a.gridHeight) !== "undefined" && config2.weekOptions.gridHeight < 0) {
-    throw new Error("[Schedule-X error]: weekOptions.gridHeight must be a positive number");
-  }
-  if (typeof ((_b = config2.weekOptions) === null || _b === void 0 ? void 0 : _b.nDays) !== "undefined" && (config2.weekOptions.nDays < 1 || config2.weekOptions.nDays > 7)) {
-    throw new Error("[Schedule-X error]: weekOptions.nDays must be a number between 1 and 7");
-  }
-  if (typeof ((_c = config2.weekOptions) === null || _c === void 0 ? void 0 : _c.eventWidth) !== "undefined" && (config2.weekOptions.eventWidth < 1 || config2.weekOptions.eventWidth > 100)) {
-    throw new Error("[Schedule-X error]: weekOptions.eventWidth must be an integer between 1 and 100");
-  }
-  if (typeof ((_d = config2.monthGridOptions) === null || _d === void 0 ? void 0 : _d.nEventsPerDay) !== "undefined" && config2.monthGridOptions.nEventsPerDay < 0) {
-    throw new Error("[Schedule-X error]: monthGridOptions.nEventsPerDay must be a positive number");
-  }
-  const dayBoundaryPattern = /^\d{2}:\d{2}$/;
-  if (typeof config2.dayBoundaries !== "undefined") {
-    const startFormatIsInvalid = !dayBoundaryPattern.test(config2.dayBoundaries.start);
-    const endFormatIsInvalid = !dayBoundaryPattern.test(config2.dayBoundaries.end);
-    if (startFormatIsInvalid || endFormatIsInvalid) {
-      throw new Error('[Schedule-X error]: dayBoundaries must be an object with "start"- and "end" properties, each with the format HH:mm');
-    }
-  }
-};
-const validateEvents$1 = (events = []) => {
-  events === null || events === void 0 ? void 0 : events.forEach((event) => {
-    if (!dateTimeStringRegex$1.test(event.start) && !dateStringRegex$2.test(event.start)) {
-      throw new Error(`[Schedule-X error]: Event start time ${event.start} is not a valid time format. Please refer to the docs for more information.`);
-    }
-    if (!dateTimeStringRegex$1.test(event.end) && !dateStringRegex$2.test(event.end)) {
-      throw new Error(`[Schedule-X error]: Event end time ${event.end} is not a valid time format. Please refer to the docs for more information.`);
-    }
-    const isIdDecimalNumber = typeof event.id === "number" && event.id % 1 !== 0;
-    if (isIdDecimalNumber) {
-      throw new Error(`[Schedule-X error]: Event id ${event.id} is not a valid id. Only non-unicode characters that can be used by document.querySelector is allowed, see: https://developer.mozilla.org/en-US/docs/Web/CSS/ident. We recommend using uuids or integers.`);
-    }
-    if (typeof event.id === "string" && !/^[a-zA-Z0-9_-]*$/.test(event.id)) {
-      throw new Error(`[Schedule-X error]: Event id ${event.id} is not a valid id. Only non-unicode characters that can be used by document.querySelector is allowed, see: https://developer.mozilla.org/en-US/docs/Web/CSS/ident. We recommend using uuids or integers.`);
-    }
-    if (typeof event.id !== "string" && typeof event.id !== "number") {
-      throw new Error(`[Schedule-X error]: Event id ${event.id} is not a valid id. Only non-unicode characters that can be used by document.querySelector is allowed, see: https://developer.mozilla.org/en-US/docs/Web/CSS/ident. We recommend using uuids or integers.`);
-    }
-  });
-};
-const createCalendarAppSingleton = (config2, plugins) => {
-  var _a;
-  const internalConfig = createInternalConfig(config2, plugins);
-  const timeUnitsImpl = createTimeUnitsImpl(internalConfig);
-  const calendarState = createCalendarState(internalConfig, timeUnitsImpl, config2.selectedDate);
-  const dateSelectionCallback = createDateSelectionCallback(calendarState, config2);
-  const datePickerConfig = createDatePickerConfig(config2, dateSelectionCallback);
-  const datePickerState = createDatePickerState(datePickerConfig, config2.selectedDate || ((_a = config2.datePicker) === null || _a === void 0 ? void 0 : _a.selectedDate));
-  const calendarEvents = createCalendarEventsImpl(config2.events || [], config2.backgroundEvents || [], internalConfig);
-  return new CalendarAppSingletonBuilder().withConfig(internalConfig).withTimeUnitsImpl(timeUnitsImpl).withDatePickerState(datePickerState).withCalendarEvents(calendarEvents).withDatePickerConfig(datePickerConfig).withCalendarState(calendarState).withTranslate(translate(internalConfig.locale, internalConfig.translations)).build();
-};
-const createCalendar = (config2, plugins) => {
-  validatePlugins(config2.plugins);
-  if (config2.skipValidation !== true) {
-    validateEvents$1(config2.events);
-    validateConfig(config2);
-  }
-  return new CalendarApp(createCalendarAppSingleton(config2, config2.plugins || []));
-};
 const createWeekForMonth = (week, day) => {
   week.push({
     date: toDateString$1(day),
@@ -6838,7 +6752,7 @@ function MonthGridDay({ day, isFirstWeek, isLastWeek }) {
     "sx__month-grid-day",
     getClassNameForWeekday(jsDate.getDay())
   ];
-  const [wrapperClasses, setWrapperClasses] = d$2(baseClasses);
+  const [wrapperClasses, setWrapperClasses] = h$2(baseClasses);
   y$1(() => {
     const classes = [...baseClasses];
     if (dayMonth !== selectedDateMonth)
@@ -6878,11 +6792,10 @@ function MonthGridDay({ day, isFirstWeek, isLastWeek }) {
   }) }), numberOfNonDisplayedEvents > 0 ? u$2("button", { type: "button", className: "sx__month-grid-day__events-more sx__ripple--wide", "aria-label": getAriaLabelSingularOrPlural(numberOfNonDisplayedEvents), onClick: handleClickAdditionalEvents, children: `+ ${numberOfNonDisplayedEvents} ${getEventTranslationSingularOrPlural(numberOfNonDisplayedEvents)}` }) : null] });
 }
 function MonthGridWeek({ week, isFirstWeek, isLastWeek }) {
-  const $app = x(AppContext);
-  return u$2("div", { className: "sx__month-grid-week", children: [$app.config.showWeekNumbers.value && u$2("div", { className: "sx__month-grid-week__week-number", children: getWeekNumber(toJSDate$1(week[0].date), $app.config.firstDayOfWeek.value) }), week.map((day) => {
+  return u$2("div", { className: "sx__month-grid-week", children: week.map((day) => {
     const dateKey = day.date;
     return u$2(MonthGridDay, { day, isFirstWeek, isLastWeek }, dateKey);
-  })] });
+  }) });
 }
 const positionInMonthWeek = (sortedEvents, week) => {
   const weekDates = Object.keys(week).sort();
@@ -6945,7 +6858,7 @@ const positionInMonth = (month, sortedEvents) => {
   return month;
 };
 const MonthGridWrapper = ({ $app, id }) => {
-  const [month, setMonth] = d$2([]);
+  const [month, setMonth] = h$2([]);
   useSignalEffect(() => {
     $app.calendarEvents.list.value.forEach((event) => {
       event._eventFragments = {};
@@ -6964,7 +6877,7 @@ const MonthGridWrapper = ({ $app, id }) => {
   });
   return u$2(AppContext.Provider, { value: $app, children: u$2("div", { id, className: "sx__month-grid-wrapper", children: month.map((week, index) => u$2(MonthGridWeek, { week, isFirstWeek: index === 0, isLastWeek: index === month.length - 1 }, index)) }) });
 };
-const config$1 = {
+const config$2 = {
   name: InternalViewName.MonthGrid,
   label: "Month",
   setDateRange: setRangeForMonth,
@@ -6974,7 +6887,22 @@ const config$1 = {
   backwardForwardFn: addMonths,
   backwardForwardUnits: 1
 };
+createPreactView(config$2);
+const DayWrapper = ({ $app, id }) => {
+  return u$2(WeekWrapper, { "$app": $app, id });
+};
+const config$1 = {
+  name: InternalViewName.Day,
+  label: "Day",
+  setDateRange: setRangeForDay,
+  hasWideScreenCompat: true,
+  hasSmallScreenCompat: true,
+  Component: DayWrapper,
+  backwardForwardFn: addDays,
+  backwardForwardUnits: 1
+};
 createPreactView(config$1);
+const createViewDay = () => createPreactView(config$1);
 const createAgendaMonth = (date, timeUnitsImpl) => {
   const { year, month } = toIntegers(date);
   const monthWithDates = timeUnitsImpl.getMonthWithTrailingAndLeadingDays(year, month);
@@ -7026,20 +6954,12 @@ function MonthAgendaDay({ day, isActive, setActiveDate }) {
   }, className: "sx__month-agenda-day__event-icon" })) })] });
 }
 function MonthAgendaWeek({ week, setActiveDate, activeDate }) {
-  const $app = x(AppContext);
-  return u$2("div", { className: "sx__month-agenda-week", children: [$app.config.showWeekNumbers.value && u$2("div", { className: "sx__month-agenda-week__week-number", children: getWeekNumber(toJSDate$1(week[0].date), $app.config.firstDayOfWeek.value) }), week.map((day, index) => u$2(MonthAgendaDay, { setActiveDate, day, isActive: activeDate === day.date }, index + day.date))] });
+  return u$2("div", { className: "sx__month-agenda-week", children: week.map((day, index) => u$2(MonthAgendaDay, { setActiveDate, day, isActive: activeDate === day.date }, index + day.date)) });
 }
 function MonthAgendaDayNames({ week }) {
   const $app = x(AppContext);
   const localizedShortDayNames = getOneLetterOrShortDayNames(week.map((day) => toJSDate$1(day.date)), $app.config.locale.value);
-  const classNames = T$1(() => {
-    const ret = ["sx__month-agenda-day-names"];
-    if ($app.config.showWeekNumbers.value) {
-      ret.push("sx__has-week-numbers");
-    }
-    return ret.join(" ");
-  }, [$app.config.showWeekNumbers.value]);
-  return u$2("div", { className: classNames, children: localizedShortDayNames.map((oneLetterDayName) => u$2("div", { className: "sx__month-agenda-day-name", children: oneLetterDayName })) });
+  return u$2("div", { className: "sx__month-agenda-day-names", children: localizedShortDayNames.map((oneLetterDayName) => u$2("div", { className: "sx__month-agenda-day-name", children: oneLetterDayName })) });
 }
 const getAllEventDates = (startDate, endDate) => {
   let currentDate = startDate;
@@ -7125,7 +7045,7 @@ const MonthAgendaWrapper = ({ $app, id }) => {
     const filteredEvents = $app.calendarEvents.filterPredicate.value ? $app.calendarEvents.list.value.filter($app.calendarEvents.filterPredicate.value) : $app.calendarEvents.list.value;
     return positionEventsInAgenda(createAgendaMonth($app.datePickerState.selectedDate.value, $app.timeUnitsImpl), filteredEvents.sort(sortEventsByStartAndEnd));
   };
-  const [agendaMonth, setAgendaMonth] = d$2(getMonth());
+  const [agendaMonth, setAgendaMonth] = h$2(getMonth());
   y$1(() => {
     setAgendaMonth(getMonth());
   }, [
@@ -7167,6 +7087,7 @@ const dateTimeStringRegex = /^(\d{4})-(\d{2})-(\d{2}) (0[0-9]|1[0-9]|2[0-3]):[0-
 const dateStringRegex$1 = /^(\d{4})-(\d{2})-(\d{2})$/;
 const DateFormats = {
   DATE_STRING: /^\d{4}-\d{2}-\d{2}$/,
+  TIME_STRING: /^\d{2}:\d{2}$/,
   DATE_TIME_STRING: /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}$/
 };
 class InvalidDateTimeError2 extends Error {
@@ -7859,8 +7780,7 @@ const calendarDeDE = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Ganztägige und mehrtägige Ereignisse",
   "Link to {{n}} more events on {{date}}": "Link zu {{n}} weiteren Ereignissen am {{date}}",
-  "Link to 1 more event on {{date}}": "Link zu 1 weiteren Ereignis am {{date}}",
-  CW: "KW {{week}}"
+  "Link to 1 more event on {{date}}": "Link zu 1 weiteren Ereignis am {{date}}"
 };
 const deDE = {
   ...datePickerDeDE,
@@ -7888,8 +7808,7 @@ const calendarEnUS = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Full day- and multiple day events",
   "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
-  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}",
-  CW: "Week {{week}}"
+  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
 };
 const enUS = {
   ...datePickerEnUS,
@@ -7917,8 +7836,7 @@ const calendarItIT = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Eventi della giornata e plurigiornalieri",
   "Link to {{n}} more events on {{date}}": "Link a {{n}} eventi in più il {{date}}",
-  "Link to 1 more event on {{date}}": "Link a 1 evento in più il {{date}}",
-  CW: "Settimana {{week}}"
+  "Link to 1 more event on {{date}}": "Link a 1 evento in più il {{date}}"
 };
 const itIT = {
   ...datePickerItIT,
@@ -7946,8 +7864,7 @@ const calendarEnGB = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Full day- and multiple day events",
   "Link to {{n}} more events on {{date}}": "Link to {{n}} more events on {{date}}",
-  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}",
-  CW: "Week {{week}}"
+  "Link to 1 more event on {{date}}": "Link to 1 more event on {{date}}"
 };
 const enGB = {
   ...datePickerEnGB,
@@ -7975,8 +7892,7 @@ const calendarSvSE = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Heldags- och flerdagshändelser",
   "Link to {{n}} more events on {{date}}": "Länk till {{n}} fler händelser den {{date}}",
-  "Link to 1 more event on {{date}}": "Länk till 1 händelse till den {{date}}",
-  CW: "Vecka {{week}}"
+  "Link to 1 more event on {{date}}": "Länk till 1 händelse till den {{date}}"
 };
 const svSE = {
   ...datePickerSvSE,
@@ -8004,8 +7920,7 @@ const calendarZhCN = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "全天和多天活动",
   "Link to {{n}} more events on {{date}}": "链接到{{date}}上的{{n}}个更多活动",
-  "Link to 1 more event on {{date}}": "链接到{{date}}上的1个更多活动",
-  CW: "第{{week}}周"
+  "Link to 1 more event on {{date}}": "链接到{{date}}上的1个更多活动"
 };
 const zhCN = {
   ...datePickerZhCN,
@@ -8033,8 +7948,7 @@ const calendarZhTW = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "全天和多天活動",
   "Link to {{n}} more events on {{date}}": "連接到{{date}}上的{{n}}個更多活動",
-  "Link to 1 more event on {{date}}": "連接到{{date}}上的1個更多活動",
-  CW: "第{{week}}周"
+  "Link to 1 more event on {{date}}": "連接到{{date}}上的1個更多活動"
 };
 const zhTW = {
   ...datePickerZhTW,
@@ -8062,8 +7976,7 @@ const calendarJaJP = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "終日および複数日イベント",
   "Link to {{n}} more events on {{date}}": "{{date}} に{{n}}件のイベントへのリンク",
-  "Link to 1 more event on {{date}}": "{{date}} に1件のイベントへのリンク",
-  CW: "週 {{week}}"
+  "Link to 1 more event on {{date}}": "{{date}} に1件のイベントへのリンク"
 };
 const jaJP = {
   ...datePickerJaJP,
@@ -8091,8 +8004,7 @@ const calendarRuRU = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "События на целый день и несколько дней подряд",
   "Link to {{n}} more events on {{date}}": "Ссылка на {{n}} дополнительных событий на {{date}}",
-  "Link to 1 more event on {{date}}": "Ссылка на 1 дополнительное событие на {{date}}",
-  CW: "Неделя {{week}}"
+  "Link to 1 more event on {{date}}": "Ссылка на 1 дополнительное событие на {{date}}"
 };
 const ruRU = {
   ...datePickerRuRU,
@@ -8120,8 +8032,7 @@ const calendarKoKR = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "종일 및 복수일 일정",
   "Link to {{n}} more events on {{date}}": "{{date}}에 {{n}}개 이상의 이벤트로 이동",
-  "Link to 1 more event on {{date}}": "{{date}}에 1개 이상의 이벤트로 이동",
-  CW: "{{week}}주"
+  "Link to 1 more event on {{date}}": "{{date}}에 1개 이상의 이벤트로 이동"
 };
 const koKR = {
   ...datePickerKoKR,
@@ -8149,8 +8060,7 @@ const calendarFrFR = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Événements d'une ou plusieurs journées",
   "Link to {{n}} more events on {{date}}": "Lien vers {{n}} autres événements le {{date}}",
-  "Link to 1 more event on {{date}}": "Lien vers 1 autre événement le {{date}}",
-  CW: "Semaine {{week}}"
+  "Link to 1 more event on {{date}}": "Lien vers 1 autre événement le {{date}}"
 };
 const frFR = {
   ...datePickerFrFR,
@@ -8178,8 +8088,7 @@ const calendarDaDK = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Heldagsbegivenheder og flerdagsbegivenheder",
   "Link to {{n}} more events on {{date}}": "Link til {{n}} flere begivenheder den {{date}}",
-  "Link to 1 more event on {{date}}": "Link til 1 mere begivenhed den {{date}}",
-  CW: "Uge {{week}}"
+  "Link to 1 more event on {{date}}": "Link til 1 mere begivenhed den {{date}}"
 };
 const daDK = {
   ...datePickerDaDK,
@@ -8207,8 +8116,7 @@ const calendarPlPL = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Wydarzenia całodniowe i wielodniowe",
   "Link to {{n}} more events on {{date}}": "Link do {{n}} kolejnych wydarzeń w dniu {{date}}",
-  "Link to 1 more event on {{date}}": "Link do 1 kolejnego wydarzenia w dniu {{date}}",
-  CW: "Tydzień {{week}}"
+  "Link to 1 more event on {{date}}": "Link do 1 kolejnego wydarzenia w dniu {{date}}"
 };
 const plPL = {
   ...datePickerPlPL,
@@ -8236,8 +8144,7 @@ const calendarEsES = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Día completo y eventos de múltiples días",
   "Link to {{n}} more events on {{date}}": "Enlace a {{n}} eventos más el {{date}}",
-  "Link to 1 more event on {{date}}": "Enlace a 1 evento más el {{date}}",
-  CW: "Semana {{week}}"
+  "Link to 1 more event on {{date}}": "Enlace a 1 evento más el {{date}}"
 };
 const esES = {
   ...datePickerEsES,
@@ -8258,8 +8165,7 @@ const calendarNlNL = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Evenementen van een hele dag en meerdere dagen",
   "Link to {{n}} more events on {{date}}": "Link naar {{n}} meer evenementen op {{date}}",
-  "Link to 1 more event on {{date}}": "Link naar 1 meer evenement op {{date}}",
-  CW: "Week {{week}}"
+  "Link to 1 more event on {{date}}": "Link naar 1 meer evenement op {{date}}"
 };
 const datePickerNlNL = {
   Date: "Datum",
@@ -8294,8 +8200,7 @@ const calendarPtBR = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Dia inteiro e eventos de vários dias",
   "Link to {{n}} more events on {{date}}": "Link para mais {{n}} eventos em {{date}}",
-  "Link to 1 more event on {{date}}": "Link para mais 1 evento em {{date}}",
-  CW: "Semana {{week}}"
+  "Link to 1 more event on {{date}}": "Link para mais 1 evento em {{date}}"
 };
 const ptBR = {
   ...datePickerPtBR,
@@ -8323,8 +8228,7 @@ const calendarSkSK = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Celodenné a viacdňové udalosti",
   "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} ďalších udalostí dňa {{date}}",
-  "Link to 1 more event on {{date}}": "Odkaz na 1 ďalšiu udalosť dňa {{date}}",
-  CW: "{{week}}. týždeň"
+  "Link to 1 more event on {{date}}": "Odkaz na 1 ďalšiu udalosť dňa {{date}}"
 };
 const skSK = {
   ...datePickerSkSK,
@@ -8352,8 +8256,7 @@ const calendarMkMK = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Целодневни и повеќедневни настани",
   "Link to {{n}} more events on {{date}}": "Линк до {{n}} повеќе настани на {{date}}",
-  "Link to 1 more event on {{date}}": "Линк до 1 повеќе настан на {{date}}",
-  CW: "Недела {{week}}"
+  "Link to 1 more event on {{date}}": "Линк до 1 повеќе настан на {{date}}"
 };
 const mkMK = {
   ...datePickerMkMK,
@@ -8381,8 +8284,7 @@ const calendarTrTR = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Tüm gün ve çoklu gün etkinlikleri",
   "Link to {{n}} more events on {{date}}": "{{date}} tarihinde {{n}} etkinliğe bağlantı",
-  "Link to 1 more event on {{date}}": "{{date}} tarihinde 1 etkinliğe bağlantı",
-  CW: "{{week}}. Hafta"
+  "Link to 1 more event on {{date}}": "{{date}} tarihinde 1 etkinliğe bağlantı"
 };
 const trTR = {
   ...datePickerTrTR,
@@ -8410,8 +8312,7 @@ const calendarKyKG = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Күн бою жана бир нече күн катары менен болгон окуялар",
   "Link to {{n}} more events on {{date}}": "{{date}} күнүндө {{n}} окуяга байланыш",
-  "Link to 1 more event on {{date}}": "{{date}} күнүндө 1 окуяга байланыш",
-  CW: "Апта {{week}}"
+  "Link to 1 more event on {{date}}": "{{date}} күнүндө 1 окуяга байланыш"
 };
 const kyKG = {
   ...datePickerKyKG,
@@ -8439,8 +8340,7 @@ const calendarIdID = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Sepanjang hari dan acara beberapa hari ",
   "Link to {{n}} more events on {{date}}": "Tautan ke {{n}} acara lainnya pada {{date}}",
-  "Link to 1 more event on {{date}}": "Tautan ke 1 acara lainnya pada {{date}}",
-  CW: "Minggu {{week}}"
+  "Link to 1 more event on {{date}}": "Tautan ke 1 acara lainnya pada {{date}}"
 };
 const idID = {
   ...datePickerIdID,
@@ -8468,8 +8368,7 @@ const calendarCsCZ = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Celodenní a vícedenní události",
   "Link to {{n}} more events on {{date}}": "Odkaz na {{n}} dalších událostí dne {{date}}",
-  "Link to 1 more event on {{date}}": "Odkaz na 1 další událost dne {{date}}",
-  CW: "Týden {{week}}"
+  "Link to 1 more event on {{date}}": "Odkaz na 1 další událost dne {{date}}"
 };
 const csCZ = {
   ...datePickerCsCZ,
@@ -8496,8 +8395,7 @@ const calendarEtEE = {
   to: "kuni",
   "Full day- and multiple day events": "Täispäeva- ja mitmepäevasündmused",
   "Link to {{n}} more events on {{date}}": "Link {{n}} rohkematele sündmustele kuupäeval {{date}}",
-  "Link to 1 more event on {{date}}": "Link ühele lisasündmusele kuupäeval {{date}}",
-  CW: "Nädala number {{week}}"
+  "Link to 1 more event on {{date}}": "Link ühele lisasündmusele kuupäeval {{date}}"
 };
 const etEE = {
   ...datePickerEtEE,
@@ -8525,8 +8423,7 @@ const calendarUkUA = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Події на цілий день і кілька днів поспіль",
   "Link to {{n}} more events on {{date}}": "Посилання на {{n}} додаткові події на {{date}}",
-  "Link to 1 more event on {{date}}": "Посилання на 1 додаткову подію на {{date}}",
-  CW: "Тиждень {{week}}"
+  "Link to 1 more event on {{date}}": "Посилання на 1 додаткову подію на {{date}}"
 };
 const ukUA = {
   ...datePickerUkUA,
@@ -8554,8 +8451,7 @@ const calendarSrLatnRS = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Celodnevni i višednevni događaji",
   "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
-  "Link to 1 more event on {{date}}": "Link do jednog događaja na {{date}}",
-  CW: "Nedelja {{week}}"
+  "Link to 1 more event on {{date}}": "Link do jednog događaja na {{date}}"
 };
 const srLatnRS = {
   ...datePickerSrLatnRS,
@@ -8583,8 +8479,7 @@ const calendarCaES = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Esdeveniments de dia complet i de múltiples dies",
   "Link to {{n}} more events on {{date}}": "Enllaç a {{n}} esdeveniments més el {{date}}",
-  "Link to 1 more event on {{date}}": "Enllaç a 1 esdeveniment més el {{date}}",
-  CW: "Setmana {{week}}"
+  "Link to 1 more event on {{date}}": "Enllaç a 1 esdeveniment més el {{date}}"
 };
 const caES = {
   ...datePickerCaES,
@@ -8612,8 +8507,7 @@ const calendarSrRS = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Целодневни и вишедневни догађаји",
   "Link to {{n}} more events on {{date}}": "Линк до још {{n}} догађаја на {{date}}",
-  "Link to 1 more event on {{date}}": "Линк до још 1 догађаја {{date}}",
-  CW: "Недеља {{week}}"
+  "Link to 1 more event on {{date}}": "Линк до још 1 догађаја {{date}}"
 };
 const srRS = {
   ...datePickerSrRS,
@@ -8641,8 +8535,7 @@ const calendarLtLT = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Visos dienos ir kelių dienų įvykiai",
   "Link to {{n}} more events on {{date}}": "Nuoroda į dar {{n}} įvykius {{date}}",
-  "Link to 1 more event on {{date}}": "Nuoroda į dar 1 vieną įvykį {{date}}",
-  CW: "{{week}} savaitė"
+  "Link to 1 more event on {{date}}": "Nuoroda į dar 1 vieną įvykį {{date}}"
 };
 const ltLT = {
   ...datePickerLtLT,
@@ -8670,8 +8563,7 @@ const calendarHrHR = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Cjelodnevni i višednevni događaji",
   "Link to {{n}} more events on {{date}}": "Link do još {{n}} događaja na {{date}}",
-  "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}",
-  CW: "{{week}}. tjedan"
+  "Link to 1 more event on {{date}}": "Link do još jednog događaja na {{date}}"
 };
 const hrHR = {
   ...datePickerHrHR,
@@ -8699,8 +8591,7 @@ const calendarSlSI = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Celodnevni in večdnevni dogodki",
   "Link to {{n}} more events on {{date}}": "Povezava do {{n}} drugih dogodkov dne {{date}}",
-  "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}",
-  CW: "Teden {{week}}"
+  "Link to 1 more event on {{date}}": "Povezava do še enega dogodka dne {{date}}"
 };
 const slSI = {
   ...datePickerSlSI,
@@ -8728,8 +8619,7 @@ const calendarFiFI = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Koko ja usean päivän tapahtumat",
   "Link to {{n}} more events on {{date}}": "Linkki {{n}} lisätapahtumaan päivämäärällä {{date}}",
-  "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}",
-  CW: "Viikko {{week}}"
+  "Link to 1 more event on {{date}}": "Linkki 1 lisätapahtumaan päivämäärällä {{date}}"
 };
 const fiFI = {
   ...datePickerFiFI,
@@ -8757,8 +8647,7 @@ const calendarRoRO = {
   // as in 2/1/2020 to 2/2/2020
   "Full day- and multiple day events": "Evenimente pe durata întregii zile și pe durata mai multor zile",
   "Link to {{n}} more events on {{date}}": "Link către {{n}} evenimente suplimentare pe {{date}}",
-  "Link to 1 more event on {{date}}": "Link către 1 eveniment suplimentar pe {{date}}",
-  CW: "Săptămâna {{week}}"
+  "Link to 1 more event on {{date}}": "Link către 1 eveniment suplimentar pe {{date}}"
 };
 const roRO = {
   ...datePickerRoRO,
@@ -8810,14 +8699,14 @@ const translations = {
 export {
   EventDay as E,
   _o as _,
-  createCalendar as a,
-  createCalendarControlsPlugin as b,
+  createCalendarControlsPlugin as a,
+  createCalendar as b,
   createEventsServicePlugin as c,
   createViewWeek as d,
   colors as e,
   d$1 as f,
-  d$2 as g,
-  E as h,
+  E as g,
+  h$2 as h,
   createViewDay as i,
   k$1 as k,
   mergeLocales as m,

@@ -2757,7 +2757,8 @@ class EmundusModelApplication extends ListModel
 					$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
 				}
 
-					/*-- Liste des groupes -- */
+				/*-- Liste des groupes -- */
+				$hidden_group_param_values = [0, '-1', '-2'];
 				foreach ($groupes as $itemg) {
 					$query    = $this->_db->getQuery(true);
 					$g_params = json_decode($itemg->params);
@@ -2767,10 +2768,13 @@ class EmundusModelApplication extends ListModel
 					}
 
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
-						$forms .= '<h3 class="group">' . Text::_($itemg->label) . '</h3>';
-						$forms .= '<table>
-										<thead><tr><th>' . Text::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
+						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
+						{
+							$forms .= '<h3 class="group">' . Text::_($itemg->label) . '</h3>';
+							$forms .= '<table style="margin: 0 18px;text-align: center;width: 95%;border: solid 1px black;">
+										<thead><tr><th style="font-size: 12px; text-align: center;font-weight: 400;">' . Text::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
 									</table>';
+						}
 						continue;
 					}
 
