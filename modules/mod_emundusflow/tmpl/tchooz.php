@@ -227,24 +227,26 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 
 	<?php
 
-	$m_email = new EmundusModelEmails();
+	$file_tags_display = '';
+	if (!empty($file_tags)) {
+	    $m_email = new EmundusModelEmails();
+	    $emundusUser = JFactory::getSession()->get('emundusUser');
 
-	$emundusUser = JFactory::getSession()->get('emundusUser');
+	    $post = array(
+		    'APPLICANT_ID'   => $user->id,
+		    'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
+		    'CAMPAIGN_LABEL' => $emundusUser->label,
+		    'CAMPAIGN_YEAR'  => $emundusUser->year,
+		    'CAMPAIGN_START' => $emundusUser->start_date,
+		    'CAMPAIGN_END'   => $emundusUser->end_date,
+		    'CAMPAIGN_CODE'  => $emundusUser->training,
+		    'FNUM'           => $emundusUser->fnum
+	    );
 
-	$post = array(
-		'APPLICANT_ID'   => $user->id,
-		'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($emundusUser->end_date)),
-		'CAMPAIGN_LABEL' => $emundusUser->label,
-		'CAMPAIGN_YEAR'  => $emundusUser->year,
-		'CAMPAIGN_START' => $emundusUser->start_date,
-		'CAMPAIGN_END'   => $emundusUser->end_date,
-		'CAMPAIGN_CODE'  => $emundusUser->training,
-		'FNUM'           => $emundusUser->fnum
-	);
-
-	$tags              = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $file_tags);
-	$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
-	$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($emundusUser->fnum));
+	    $tags              = $m_email->setTags($user->id, $post, $emundusUser->fnum, '', $file_tags);
+	    $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+	    $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($emundusUser->fnum));
+    }
 
 	?>
 
