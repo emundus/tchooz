@@ -1967,7 +1967,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 * @throws Exception
 	 * @since version 2.2.0
 	 */
-	public function getAvailabilitiesByCampaignsAndPrograms($cid = 0, $program_code = '', $start = '', $end = '', $location = 0, $check_booking_limit_reached = 0, $events_ids = [], $check_availables_to_show = true)
+	public function getAvailabilitiesByCampaignsAndPrograms($cid = 0, $program_code = '', $start = '', $end = '', $location = 0, $check_booking_limit_reached = 0, $events_ids = [], $check_slots_availables_to_show = true)
 	{
 		$timezone = $this->app->get('offset', 'Europe/Paris');
 
@@ -2028,10 +2028,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 							'ea.event as event_id',
 							'ea.start_date as start',
 							'ea.end_date as end',
-							'ea.capacity'
+							'ea.capacity',
+							'COUNT(er.id) as registered_count'
 						])
 						->from($this->db->quoteName('#__emundus_setup_availabilities', 'ea'))
+						->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.availability') . ' = ' . $this->db->quoteName('ea.id'))
 						->where($this->db->quoteName('ea.event') . ' = ' . $event);
+
 					if (!empty($start))
 					{
 						$query->where($this->db->quoteName('ea.start_date') . ' >= ' . $this->db->quote($start));
@@ -2040,10 +2043,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 					{
 						$query->where($this->db->quoteName('ea.end_date') . ' <= ' . $this->db->quote($end));
 					}
-					$query->group('ea.id');
 
-					if (!empty($slots_infos->slots_availables_to_show) && $check_availables_to_show)
+					$query->group('ea.id');
+					$query->order($this->db->quoteName('ea.start_date') . ' ASC');
+
+					if (!empty($slots_infos->slots_availables_to_show) && $check_slots_availables_to_show)
 					{
+						$query->having('ea.capacity > COUNT(er.id)');
 						$query->setLimit($slots_infos->slots_availables_to_show);
 					}
 
@@ -2755,7 +2761,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('er.availability'),
 			];
 
-			$query->select('count(er.id)')
+			$query->select('count(distinct er.id)')
 				->from($this->db->quoteName('#__emundus_registrants', 'er'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('er.event'))
 				->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ese.location'))
@@ -2827,8 +2833,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$query->where('TIME(esa.start_date) = ' . $this->db->quote($utcHour));
 			}
 
-			$query->group('er.id');
-
 			$this->_db->setQuery($query);
 			$registrants['count'] = $this->_db->loadResult();
 
@@ -2843,6 +2847,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 			{
 				$query->order('er.id ' . $sort);
 			}
+			$query->group('er.id');
 
 			$this->_db->setQuery($query, $offset, $limit);
 			$registrants['datas'] = $this->_db->loadObjectList();
