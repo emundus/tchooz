@@ -173,8 +173,8 @@ const _sfc_main = {
     }
   },
   methods: {
-    nameWithYear({ label, year }) {
-      return `${label} (${year})`;
+    nameWithYear({ label, program, year }) {
+      return `${label} (${program} - ${year})`;
     },
     async getMessagesByFnum(loader = true, scroll = true) {
       this.messages_loading = loader;
@@ -525,7 +525,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $data.createNewChatroom ? (openBlock(), createBlock(_component_modal, {
         key: 0,
         name: "messenger-files-modal",
-        class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal"),
+        class: normalizeClass("placement-center tw-max-h-[80vh] tw-min-w-[400px] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal"),
         transition: "nice-modal-fade",
         width: "40%",
         height: "30%",
@@ -617,7 +617,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         createBaseVNode("label", _hoisted_16, toDisplayString(chatroom.campaign), 1),
                         chatroom.unread && chatroom.unread > 0 ? (openBlock(), createElementBlock("div", _hoisted_17, toDisplayString(chatroom.unread), 1)) : createCommentVNode("", true)
                       ]),
-                      createBaseVNode("p", _hoisted_18, toDisplayString(chatroom.year), 1)
+                      createBaseVNode("p", _hoisted_18, toDisplayString(chatroom.program) + " - " + toDisplayString(chatroom.year), 1)
                     ])
                   ], 8, _hoisted_13)
                 ], 2);
@@ -646,7 +646,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     }, [
                       createBaseVNode("div", _hoisted_22, [
                         createBaseVNode("label", _hoisted_23, toDisplayString(chatroom.campaign), 1),
-                        createBaseVNode("p", _hoisted_24, toDisplayString(chatroom.year), 1)
+                        createBaseVNode("p", _hoisted_24, toDisplayString(chatroom.program) + " - " + toDisplayString(chatroom.year), 1)
                       ])
                     ], 8, _hoisted_21)
                   ], 2);

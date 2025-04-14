@@ -131,10 +131,11 @@ class EmundusModelMessenger extends ListModel
 	{
 		$query = $this->db->createQuery();
 
-		$query->select('ec.*,esc.label as campaign,esc.year')
+		$query->select('ec.*,esc.label as campaign,esc.year, esp.id as program_id, esp.label as program')
 			->from($this->db->quoteName('#__emundus_chatroom', 'ec'))
 			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.id') . ' = ' . $this->db->quoteName('ec.ccid'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
 			->where($this->db->quoteName('ec.id') . ' = ' . $id);
 		$this->db->setQuery($query);
 
@@ -163,10 +164,11 @@ class EmundusModelMessenger extends ListModel
 			$query = $this->db->createQuery();
 
 			$query->clear()
-				->select('ec.*,esc.label as campaign,esc.year')
+				->select('ec.*, esc.label as campaign, esc.year, esp.id as program_id, esp.label as program')
 				->from($this->db->quoteName('#__emundus_chatroom', 'ec'))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ec.ccid') . ' = ' . $this->db->quoteName('ecc.id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
 				->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $user_id);
 			$this->db->setQuery($query);
 			$chatrooms = $this->db->loadObjectList();
@@ -247,9 +249,10 @@ class EmundusModelMessenger extends ListModel
 
 		if (!empty($user_id))
 		{
-			$query->select('sc.*,cc.fnum,cc.published as file_publish')
+			$query->select('sc.*,cc.fnum,cc.published as file_publish, sp.label as program, sp.id as program_id')
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'sc') . ' ON ' . $this->db->quoteName('sc.id') . ' = ' . $this->db->quoteName('cc.campaign_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sp.code') . ' = ' . $this->db->quoteName('sc.training'))
 				->where($this->db->quoteName('cc.applicant_id') . ' = ' . $user_id);
 			//->group('sc.id');
 
