@@ -281,6 +281,14 @@ export default {
 				this.getSqlDropdownOptions(param);
 			}
 
+			if (param.type === 'dropdown') {
+				if (param.getOptionsTask) {
+					formBuilderService.getDropdownOptions(param.getOptionsTask).then((response) => {
+						param.options = response.data;
+					});
+				}
+			}
+
 			if (param.type === 'fabrikmodalrepeat') {
 				this.element.params[param.name] = JSON.parse(this.element.params[param.name]);
 			}
