@@ -990,4 +990,16 @@ export default {
 			value: value,
 		});
 	},
+
+	async getCurrencies() {
+		return client.get('getCurrencies').then((response) => {
+			return response;
+		});
+	},
+
+	async getDropdownOptions(task) {
+		return client.get(task).then((response) => {
+			return response;
+		});
+	},
 };
