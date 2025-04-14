@@ -8,13 +8,23 @@ if (!in_array($input_tab, $this->tabs)) {
     $input_tab = $default_tab;
 }
 
+$icons = [
+    'history' => 'history',
+    'forms' => 'content_paste',
+    'attachments' => 'description',
+    'comments' => 'comment'
+];
+
 ?>
 
 <div class="tw-flex tw-items-center tw-border-b-1 tw-border-neutral-300">
     <?php foreach ($this->tabs as $key => $tab) : ?>
-        <div class="tw-py-4 tw-px-5 tw-border-b <?php if ($key == 0) : ?>tw-border-main-500<?php else : ?>tw-border-neutral-400<?php endif; ?> tw-cursor-pointer"
+        <div class="tw-py-4 tw-px-5 tw-border-b tw-flex tw-gap-2 <?php if ($key == 0) : ?>tw-border-main-500<?php else : ?>tw-border-neutral-400<?php endif; ?> tw-cursor-pointer"
              id="tab_<?php echo $tab; ?>"
              onclick="selectTab('<?php echo $tab; ?>')">
+            <span class="material-symbols-outlined -tw-mb-2 tw-text-neutral-900">
+                <?php echo $icons[$tab] ?? 'help'; ?>
+            </span>
             <span class="em-font-size-14"><?php echo Text::_('COM_EMUNDUS_APPLICATION_HISTORY_TAB_' . strtoupper($tab)); ?></span>
         </div>
     <?php endforeach; ?>
