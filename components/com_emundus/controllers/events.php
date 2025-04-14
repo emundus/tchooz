@@ -918,7 +918,7 @@ class EmundusControllerEvents extends BaseController
 				$cid          = $user->campaign_id;
 			}
 
-			$check_availables_to_show = !EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id);
+			$check_availables_to_show = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id));
 
 			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location, $check_booking_limit_reached, $events_ids, $check_availables_to_show);
 			$response['data']     = $event_availabilities;
@@ -1178,7 +1178,8 @@ class EmundusControllerEvents extends BaseController
 								'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
 								'value'   => $hour,
 								'classes' => '',
-								'display' => 'table'
+								'display' => 'table',
+								'order_by' => 'TIME(esa.start_date)'
 							],
 							[
 								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION'),

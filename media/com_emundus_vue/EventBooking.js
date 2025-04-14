@@ -44,6 +44,7 @@ const _sfc_main = {
         if (this.myBookings.length === 0 && location_filter_elt) {
           location_filter_elt.addEventListener("change", (event) => {
             this.location = event.target.value;
+            this.currentStartIndex = 0;
             if (this.location && this.location !== 0 && this.location !== "0" && this.location !== "") {
               this.getSlots();
             } else {
