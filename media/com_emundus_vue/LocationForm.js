@@ -1,6 +1,6 @@
 import { P as Parameter } from "./Parameter.js";
 import { e as eventsService } from "./events2.js";
-import { _ as _export_sfc, s as settingsService, u as useGlobalStore, r as resolveComponent, c as createElementBlock, o as openBlock, n as normalizeClass, d as createBaseVNode, t as toDisplayString, h as withModifiers, F as Fragment, e as renderList, w as withDirectives, v as vShow, g as createVNode, b as createCommentVNode } from "./app_emundus.js";
+import { _ as _export_sfc, u as useGlobalStore, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, n as normalizeClass, d as createBaseVNode, t as toDisplayString, g as withModifiers, F as Fragment, e as renderList, w as withDirectives, v as vShow, h as createVNode, b as createCommentVNode } from "./app_emundus.js";
 import "./index.js";
 import "./EventBooking.js";
 import "./Info.js";
