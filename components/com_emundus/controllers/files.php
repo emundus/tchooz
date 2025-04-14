@@ -1642,7 +1642,7 @@ class EmundusControllerFiles extends BaseController
 			// On met a jour la liste des fnums traités
 			$fnums = array();
 			foreach ($fnumsArray as $fnum) {
-				$fnums[] = $fnum['fnum'];	
+				$fnums[] = $fnum['fnum'];
 			}
 
 			$not_already_handled_fnums = array_diff($not_already_handled_fnums, $fnums);
@@ -1789,16 +1789,25 @@ class EmundusControllerFiles extends BaseController
 
 							if (in_array($fLine->element_plugin,['date','jdate'])) {
 								$params                                                         = json_decode($fLine->element_attribs);
-								if($fLine->element_plugin == 'jdate') {
-									$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->jdate_form_format;
-								} else {
-									$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+									$elt_name = $fLine->table_join.'___'.$fLine->element_name;
 								}
+								if($fLine->element_plugin == 'jdate') {
+									$date_elements[$elt_name] = $params->jdate_form_format;
+								} else {
+									$date_elements[$elt_name] = $params->date_form_format;
+								}
+
 							}
 
 							if ($fLine->element_plugin == 'textarea') {
-								$params                                                             = json_decode($fLine->element_attribs);
-								$textarea_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->use_wysiwyg;
+								$params = json_decode($fLine->element_attribs);
+								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+									$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+								}
+								$textarea_elements[$elt_name] = $params->use_wysiwyg;
 							}
 
 							if ($fLine->element_plugin == 'iban') {
@@ -1855,17 +1864,25 @@ class EmundusControllerFiles extends BaseController
 				$iban_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if (in_array($fLine->element_plugin,['date','jdate'])) {
-						$params = json_decode($fLine->element_attribs);
+						$params                                                         = json_decode($fLine->element_attribs);
+						$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+						if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+							$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+						}
 						if($fLine->element_plugin == 'jdate') {
-							$date_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->jdate_form_format;
+							$date_elements[$elt_name] = $params->jdate_form_format;
 						} else {
-							$date_elements[$fLine->tab_name . '___' . $fLine->element_name] = $params->date_form_format;
+							$date_elements[$elt_name] = $params->date_form_format;
 						}
 					}
 
 					if ($fLine->element_plugin == 'textarea') {
 						$params = json_decode($fLine->element_attribs);
-						$textarea_elements[$fLine->tab_name.'___'.$fLine->element_name] = $params->use_wysiwyg;
+						$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
+						if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
+							$elt_name = $fLine->table_join.'___'.$fLine->element_name;
+						}
+						$textarea_elements[$elt_name] = $params->use_wysiwyg;
 					}
 
 					if ($fLine->element_plugin == 'iban') {
