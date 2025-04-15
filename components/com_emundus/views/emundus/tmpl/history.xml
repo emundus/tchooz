@@ -17,6 +17,7 @@
                 <option value="status">Status</option>
                 <option value="diff">Differences</option>
                 <option value="retry">Retry</option>
+                <option value="fnum">File number</option>
             </field>
             <field
                 name="more_data"

@@ -1990,11 +1990,20 @@ class EmundusControllersettings extends BaseController
 			$length = $this->m_settings->getHistoryLength($extension, $item_id);
 			$requests = $this->m_settings->getHistory($extension, $only_pending, $page, $limit, $item_id);
 
+			// Search for a files or evaluation view
+			$menu = $this->app->getMenu();
+			$emundusUser      = $this->app->getSession()->get('emundusUser');
+			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+			if(empty($files_menu)) {
+				$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
+			}
+
 			$response['status']  = true;
 			$response['code']    = 200;
 			$response['message'] = Text::_('REQUESTS_FOUND');
 			$response['data']    = $requests;
 			$response['length']    = $length;
+			$response['files_menu'] = $files_menu->route;
 		}
 
 		echo json_encode((object) $response);

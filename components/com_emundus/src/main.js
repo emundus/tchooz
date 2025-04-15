@@ -170,7 +170,7 @@ if (document) {
 							extension: datas.extension,
 							itemid: Number(datas.itemid),
 							columns: datas.columns ? datas.columns.split(',') : null,
-							moreData: datas.moredata.split(','),
+							moreData: datas.moredata ? datas.moredata.split(',') : null,
 						});
 						break;
 					case 'Expert/Expert':
