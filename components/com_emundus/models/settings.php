@@ -2678,7 +2678,7 @@ class EmundusModelSettings extends ListModel
 			}
 			$query->group([$this->db->quoteName('u.id'), $this->db->quoteName('u.name')]);
 			$query->order($this->db->quoteName('u.name') . ' ASC');
-			$this->db->setQuery($query, 0, $limit);
+			$this->db->setQuery($query);
 			$managers = $this->db->loadObjectList();
 		}
 

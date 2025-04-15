@@ -166,14 +166,14 @@ export default {
 		if (!this.$props.slot) {
 			this.fields.find((field) => field.param === 'start_date').value = this.roundToQuarter(this.date);
 
-			const date = new Date(this.date);
+			const date = new Date(this.fields.find((field) => field.param === 'start_date').value);
 			if (this.$props.duration_type === 'minutes') {
 				date.setMinutes(date.getMinutes() + this.$props.duration);
 			} else {
 				date.setHours(date.getHours() + this.$props.duration);
 			}
 
-			this.fields.find((field) => field.param === 'end_date').value = this.roundToQuarter(null, date);
+			this.fields.find((field) => field.param === 'end_date').value = this.formatDate(date);
 
 			// minDate is the end date + 1 day
 			this.minDate = new Date(date);

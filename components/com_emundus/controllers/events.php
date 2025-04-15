@@ -109,6 +109,12 @@ class EmundusControllerEvents extends BaseController
 							'classes' => 'go-to-campaign-link',
 							'display' => 'table'
 						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CAPACITY'),
+							'value'   => $event->booked_count . ' / ' . $event->availabilities_count . ' ' . Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_BOOKED_SLOT_NUMBER'),
+							'classes' => '',
+							'display' => 'all'
+						],
 					];
 
 					$event->additional_columns = array_merge($event->additional_columns, $no_campaigns_programs);
@@ -1097,21 +1103,21 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$view      = $this->input->getString('view', '');
-			$filter    = $this->input->getString('filter', '');
-			$sort      = $this->input->getString('sort', 'DESC');
-			$recherche = $this->input->getString('recherche', '');
-			$lim       = $this->input->getInt('lim', 0);
-			$page      = $this->input->getInt('page', 0);
-			$order_by  = $this->input->getString('order_by', 'er.id');
+			$view              = $this->input->getString('view', '');
+			$filter            = $this->input->getString('filter', '');
+			$sort              = $this->input->getString('sort', 'DESC');
+			$recherche         = $this->input->getString('recherche', '');
+			$lim               = $this->input->getInt('lim', 0);
+			$page              = $this->input->getInt('page', 0);
+			$order_by          = $this->input->getString('order_by', 'er.id');
 
-			$event       = $this->input->getInt('event', 0);
-			$location    = $this->input->getInt('location', 0);
-			$room        = $this->input->getInt('room', 0);
-			$applicant   = $this->input->getInt('applicant', 0);
-			$assoc_user_filter = $this->input->getInt('assoc_user', 0);
-			$day         = $this->input->getString('day', '');
-			$hour        = $this->input->getString('hour', '');
+			$event             = $this->input->getInt('event', 0);
+			$location          = $this->input->getInt('location', 0);
+			$room              = $this->input->getInt('room', 0);
+			$applicant         = $this->input->getInt('applicant', 0);
+			$assoc_user_filter = $this->input->getString('assoc_user', '');
+			$day               = $this->input->getString('day', '');
+			$hour              = $this->input->getString('hour', '');
 			if ($view !== 'calendar')
 			{
 				require_once JPATH_SITE . '/components/com_emundus/models/users.php';
@@ -1139,7 +1145,23 @@ class EmundusControllerEvents extends BaseController
 									$assoc_users[] = $assoc_user[0]->lastname . ' ' . $assoc_user[0]->firstname;
 								}
 							}
+							if($order_by === 'assoc_users')
+							{
+								if($sort === 'ASC')
+								{
+									usort($assoc_users, function($a, $b) {
+										return strcasecmp($a, $b);
+									});
+								}
+								else if($sort === 'DESC')
+								{
+									usort($assoc_users, function($a, $b) {
+										return strcasecmp($b, $a);
+									});
+								}
+							}
 						}
+						$registrant->assoc_users = $assoc_users;
 
 						if ($registrant->is_conference_link == 0)
 						{
@@ -1158,7 +1180,7 @@ class EmundusControllerEvents extends BaseController
 						if(empty($files_menu)) {
 							$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 						}
-						
+
 						$registrant->additional_columns = [
 							[
 								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
@@ -1195,13 +1217,31 @@ class EmundusControllerEvents extends BaseController
 								'display' => 'table'
 							],
 							[
-								'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_ASSOC_USER'),
-								'value'   => implode(', ', $assoc_users),
-								'id'      => $registrant->assoc_user_id,
-								'classes' => '',
-								'display' => 'table'
+								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_ASSOC_USER'),
+								'value'    => implode(', ', $assoc_users),
+								'id'       => $registrant->assoc_user_id,
+								'classes'  => '',
+								'display'  => 'table',
+								'order_by' => 'assoc_users'
 							],
 						];
+					}
+					if ($order_by === 'assoc_users') {
+						usort($registrants['datas'], function($a, $b) use ($sort) {
+							$aEmpty = empty($a->assoc_users);
+							$bEmpty = empty($b->assoc_users);
+
+							if ($aEmpty && !$bEmpty) return 1;
+							if (!$aEmpty && $bEmpty) return -1;
+							if ($aEmpty && $bEmpty) return 0;
+
+							$aUsers = implode(',', $a->assoc_users);
+							$bUsers = implode(',', $b->assoc_users);
+
+							return $sort === 'ASC'
+								? strcasecmp($aUsers, $bUsers)
+								: strcasecmp($bUsers, $aUsers);
+						});
 					}
 				}
 
@@ -1344,6 +1384,9 @@ class EmundusControllerEvents extends BaseController
 		else
 		{
 			$ids = $this->input->getString('ids', '');
+			$checkboxesValuesFromView = $this->input->getString('checkboxesValuesFromView', '');
+			$checkboxesValuesFromProfile = $this->input->getString('checkboxesValuesFromProfile', '');
+
 			if (!empty($ids))
 			{
 				$ids = explode(',', $ids);
@@ -1352,21 +1395,30 @@ class EmundusControllerEvents extends BaseController
 			{
 				$ids = [];
 			}
+			if (!empty($checkboxesValuesFromView) && $checkboxesValuesFromView !== "[]")
+			{
+				$checkboxesValuesFromView = json_decode($checkboxesValuesFromView, true);
+			}
+			else
+			{
+				$checkboxesValuesFromView = [];
+			}
+			if (!empty($checkboxesValuesFromProfile) && $checkboxesValuesFromProfile !== "[]")
+			{
+				$checkboxesValuesFromProfile = json_decode($checkboxesValuesFromProfile, true);
+				$m_users = new EmundusModelUsers();
+				$checkboxesValuesFromProfile = $m_users->getColumnsFromProfileForm($checkboxesValuesFromProfile);
+			}
+			else
+			{
+				$checkboxesValuesFromProfile = [];
+			}
 
 			$items = $this->m_events->getRegistrants('', 'DESC', '', 0, 0, '', 0, 0, 0, 0, 0, $ids);
 
 			if (!empty($items) && !empty($items['datas']))
 			{
-				$columns        = [
-					Text::_('COM_EMUNDUS_APPLICATION_APPLICANT'),
-					Text::_('COM_EMUNDUS_ONBOARD_LABEL_REGISTRANTS'),
-					Text::_('COM_EMUNDUS_REGISTRANTS_DAY'),
-					Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
-					Text::_('COM_EMUNDUS_REGISTRANTS_LOCATION'),
-					Text::_('COM_EMUNDUS_REGISTRANTS_ROOM'),
-					Text::_('COM_EMUNDUS_REGISTRANTS_ASSOC_USER')
-				];
-				$excel_filepath = $this->m_events->exportBookingsExcel($items['datas'], $columns);
+				$excel_filepath = $this->m_events->exportBookingsExcel($items['datas'], $checkboxesValuesFromView, $checkboxesValuesFromProfile);
 
 				if ($excel_filepath && file_exists($excel_filepath))
 				{
