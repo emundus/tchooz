@@ -23,6 +23,17 @@
     width: 100%;
 }
 
+/* Ajout d'un icône "open in new tab" sur les url externes */
+.em-applicant #em_user_menu li > a[target="_blank"]::after {
+    content: "open_in_new";
+    display: inline-block;
+    font-family: "Material Symbols Outlined", sans-serif;
+    margin-left: 8px;
+    text-decoration: none;
+    position: relative;
+    top: 2px;
+}
+
 @media all and (max-width: 479px) {
     #header-b {
         justify-content: center;
