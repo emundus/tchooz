@@ -116,6 +116,8 @@ class EmundusModelSettings extends ListModel
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 		$falang = new EmundusModelFalang;
 
+		$emConfig = ComponentHelper::getParams('com_emundus');
+
 		$query->select('*')
 			->from($this->db->quoteName('#__emundus_setup_status'))
 			->order('ordering ASC');
@@ -138,7 +140,10 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$files = $this->db->loadResult();
 
-				if ($files > 0)
+				$status_for_send = $emConfig->get('status_for_send',0);
+				$default_send_status = $emConfig->get('default_send_status');
+
+				if ($files > 0 || in_array($statu->step,[$status_for_send,$default_send_status]))
 				{
 					$statu->edit = 0;
 				}
