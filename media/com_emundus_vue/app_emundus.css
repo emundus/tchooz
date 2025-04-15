@@ -938,23 +938,23 @@ body ::-webkit-scrollbar-track {
 	color: var(--neutral-500) !important;
 }
 
-table[data-v-7ac1a86a] {
+table[data-v-b0cb7931] {
 	border: unset;
 }
-table thead th[data-v-7ac1a86a] {
+table thead th[data-v-b0cb7931] {
 	background: transparent;
 	padding: 18px 12px;
 }
-table thead tr[data-v-7ac1a86a] {
+table thead tr[data-v-b0cb7931] {
 	border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr[data-v-7ac1a86a]:not(:last-child) {
+table tbody tr[data-v-b0cb7931]:not(:last-child) {
 	border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr td[data-v-7ac1a86a] {
+table tbody tr td[data-v-b0cb7931] {
 	padding: 18px 12px;
 }
-.placement-center[data-v-7ac1a86a] {
+.placement-center[data-v-b0cb7931] {
 	position: fixed;
 	left: 50%;
 	transform: translate(-50%, -50%);

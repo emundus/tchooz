@@ -232,7 +232,23 @@ class MicrosoftDynamicsFactory
 			$method = $field['transform'];
 			if (method_exists($this, $method))
 			{
-				$value = $this->$method($value);
+				$reflection = new \ReflectionMethod($this, $method);
+				$parameters = $reflection->getParameters();
+				$apiParameter = false;
+				foreach ($parameters as $parameter)
+				{
+					if ($parameter->getName() == 'api')
+					{
+						$apiParameter = true;
+					}
+				}
+
+				if($apiParameter) {
+					$value = $this->$method($value, $api);
+				} else
+				{
+					$value = $this->$method($value);
+				}
 			}
 		}
 
@@ -443,6 +459,44 @@ class MicrosoftDynamicsFactory
 		}
 
 		return $location;
+	}
+
+	private function getCRMStatus(int|string $status): string|null
+	{
+		$crmStatus = '';
+		$query       = $this->database->getQuery(true);
+
+		if(!empty($status))
+		{
+			$query->select('id_crm')
+				->from($this->database->quoteName('jos_emundus_setup_status'))
+				->where($this->database->quoteName('step') . ' = ' . $this->database->quote($status));
+			$this->database->setQuery($query);
+
+			$crmStatus = $this->database->loadResult();
+		}
+
+		return $crmStatus;
+	}
+
+	private function getCRMParametre(string $parameter, object $api): string|null
+	{
+		$value = '';
+
+		$params = [
+			'$top'    => 1,
+			'$select' => $parameter
+		];
+
+		$m_sync = new \EmundusModelSync();
+		$result = $m_sync->callApi($api, 'esa_parametres', 'get', $params);
+
+		if ($result['status'] == 200 && !empty($result['data']))
+		{
+			$value = $result['data']->value[0]->{$parameter};
+		}
+
+		return $value;
 	}
 
 	private function remove_accents(string $string): string

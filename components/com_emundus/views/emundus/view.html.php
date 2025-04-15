@@ -21,7 +21,7 @@ class EmundusViewEmundus extends JViewLegacy
 {
 	protected $columns = 'title,message_language_key,log_date,user_id,diff';
 
-	protected $more_data_columns = [];
+	protected $more_data_columns = '';
 
 	function display($tpl = null)
 	{
@@ -42,6 +42,7 @@ class EmundusViewEmundus extends JViewLegacy
 		$more_data = $menu_params->get('more_data', '');
 		if (!empty($more_data)) {
 			$this->more_data_columns = $more_data;
+			$this->more_data_columns = implode(',', $this->more_data_columns);
 		}
 
 		// Display the template
