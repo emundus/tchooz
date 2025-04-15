@@ -17,6 +17,9 @@ class plgHikashopMarket extends JPlugin {
 	}
 
 	private function init() {
+		if(hikashop_isClient('cli')) {
+			return;
+		}
 		static $init = null;
 		if($init !== null)
 			return $init;
