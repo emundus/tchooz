@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form>
+    <field
+        name="used_object"
+        type="list"
+        label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_USED_OBJECT_LABEL"
+        default="fnum"
+    >
+        <option value="fnum">PLG_EMUNDUSCUSTOMACTIONS_FIELD_USED_OBJECT_FNUM</option>
+        <option value="user_id">PLG_EMUNDUSCUSTOMACTIONS_FIELD_USED_OBJECT_USER_ID</option>
+    </field>
+
     <field name="targeted_column" type="field" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_COLUMN_LABEL"
            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_COLUMN_DESC"/>
     <field name="operator" type="list" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR" default="=">

@@ -11,6 +11,8 @@ use Gantry\Framework\Document;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Event\GenericEvent;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -154,6 +156,11 @@ class PlgSystemEmundus extends CMSPlugin
 			}
 
 			$app->setBody($body);
+
+			PluginHelper::importPlugin('emundus');
+			$dispatcher = $app->getDispatcher();
+			$onAfterRender = new GenericEvent('onCallEventHandler', ['onAfterRender', ['session' => $e_session]]);
+			$dispatcher->dispatch('onCallEventHandler', $onAfterRender);
 		}
 	}
 }
