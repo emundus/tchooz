@@ -2697,7 +2697,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		int|string $event = 0,
 		int|string $location = 0,
 		int        $applicant = 0,
-		int        $assoc_user = 0,
+		string     $assoc_user = '',
 		int        $slot = 0,
 		array      $ids = [],
 		int        $user_id = 0,
@@ -2795,17 +2795,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 			{
 				$query->where('er.user = ' . $applicant);
 			}
-			if (!empty($assoc_user))
-			{
-				$query->extendWhere(
-					'AND',
-					[
-						$this->db->quoteName('essu.user') . ' = ' . $assoc_user,
-						$this->db->quoteName('esru.user') . ' = ' . $assoc_user,
-					],
-					'OR'
-				);
-			}
 			if (!empty($ids))
 			{
 				$query->where('er.id IN (' . implode(',', $ids) . ')');
@@ -2839,7 +2828,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 			$query->clear('select')
 				->select($columns);
 
-			if (!empty($order_by))
+			if (!empty($order_by) && $order_by !== 'assoc_users')
 			{
 				$query->order($order_by . ' ' . $sort);
 			}
@@ -2848,6 +2837,17 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$query->order('er.id ' . $sort);
 			}
 			$query->group('er.id');
+			if (!empty($assoc_user))
+			{
+				if($assoc_user === 'no_assoc_users')
+				{
+					$query->having('(assoc_user_id IS NULL OR assoc_user_id = "")');
+				}
+				else
+				{
+					$query->having('FIND_IN_SET(' . (int)$assoc_user . ', assoc_user_id)');
+				}
+			}
 
 			$this->_db->setQuery($query, $offset, $limit);
 			$registrants['datas'] = $this->_db->loadObjectList();
@@ -2961,6 +2961,11 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 			foreach (array_merge($assoc_users_registrants, $assoc_users_slots) as $user)
 			{
+				$assoc_users['no_assoc_users'] = [
+					'value' => 'no_assoc_users',
+					'label' => Text::_('COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ASSOC_USER_NONE')
+				];
+
 				$assoc_users[$user->value] = [
 					'value' => $user->value,
 					'label' => $user->label
@@ -2978,7 +2983,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		return $assoc_users;
 	}
 
-	public function exportBookingsExcel($items, $columns = [])
+	public function exportBookingsExcel($items, $checkboxesValuesFromView, $checkboxesValuesFromProfile)
 	{
 		if (!class_exists(EmundusModelUsers::class))
 		{
@@ -2990,67 +2995,147 @@ class EmundusModelEvents extends BaseDatabaseModel
 		$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
 		$fp             = fopen($excel_filepath, 'w');
 
-		if (!empty($items) && $fp !== false)
+		$columns = [];
+
+		if (!empty($items) && (!empty($checkboxesValuesFromView) || !empty($checkboxesValuesFromProfile)) && $fp !== false)
 		{
+			if (!empty($checkboxesValuesFromView)) {
+				foreach ($checkboxesValuesFromView as $value) {
+					$columns[] = Text::_($value);
+				}
+			}
+			if (!empty($checkboxesValuesFromProfile)) {
+				foreach ($checkboxesValuesFromProfile as $obj) {
+					if (isset($obj->label)) {
+						$columns[] = Text::_($obj->label);
+					}
+				}
+			}
 
 			fputcsv($fp, $columns, ';');
 			$app          = Factory::getApplication();
 			$language     = $app->getLanguage();
 			$current_lang = $language->getTag();
 
+			$events       = [];
 			foreach ($items as $item)
 			{
-				$username = null;
-				try
-				{
-					$db    = $this->db;
-					$query = $db->getQuery(true)
-						->select($db->quoteName('name'))
-						->from($db->quoteName('#__users'))
-						->where($db->quoteName('id') . ' = ' . (int) $item->user);
-					$db->setQuery($query);
-					$username = $db->loadResult();
-				}
-				catch (Exception $e)
-				{
-					Log::add('Error while getting user name in exportBookingsExcel method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+				$event_name = $item->label;
+				$event_location = $item->location;
 
-					return false;
-				}
-
-				if ($username !== null)
+				if (!isset($events[$event_name]))
 				{
-					$assoc_users = [];
-					if (!empty($item->assoc_user_id))
+					$events[$event_name] = [
+						'location' => $event_location,
+						'reservations' => []
+					];
+				}
+				$events[$event_name]['reservations'][] = $item;
+			}
+
+			$sortedReservations = [];
+
+			foreach ($events as $event_name => $eventData)
+			{
+				$location = $eventData['location'];
+				$reservations = $eventData['reservations'];
+
+				$sortedReservations = [];
+
+				foreach ($reservations as $reservation)
+				{
+					try
 					{
+						$db = $this->db;
+						$query = $db->getQuery(true)
+							->select('CONCAT(' . $db->quoteName('lastname') . ', " ", ' . $db->quoteName('firstname') . ')')
+							->from($db->quoteName('#__emundus_users'))
+							->where($db->quoteName('user_id') . ' = ' . (int) $reservation->user);
+						$db->setQuery($query);
+						$username = $db->loadResult();
 
-						$users = explode(',', $item->assoc_user_id);
-						foreach ($users as $user)
+						$sortedReservations[] = [
+							'reservation' => $reservation,
+							'username' => $username
+						];
+					}
+
+					catch (Exception $e)
+					{
+						Log::add('Error while getting user first and last name in exportBookingsExcel method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+						return false;
+					}
+				}
+
+				usort($sortedReservations, function($a, $b) {
+					return strcasecmp($a['username'], $b['username']);
+				});
+
+				foreach ($sortedReservations as $sortedReservation)
+				{
+					$reservation = $sortedReservation['reservation'];
+					$username = $sortedReservation['username'];
+
+					$selectColumns = [];
+					$user = null;
+
+					if(!empty($checkboxesValuesFromProfile))
+					{
+						foreach ($checkboxesValuesFromProfile as $checkboxesValueFromProfile) {
+							$selectColumns[] = 'eu.' .  $checkboxesValueFromProfile->name;
+						}
+
+						try
 						{
-							$assoc_user = $m_users->getUserById($user);
-							if (!empty($assoc_user) && !empty($assoc_user[0]))
-							{
-								$assoc_users[] = $assoc_user[0]->lastname . ' ' . $assoc_user[0]->firstname;
-							}
+							$db    = $this->db;
+							$query = $db->getQuery(true)
+								->select($selectColumns)
+								->from($db->quoteName('#__emundus_users', 'eu'))
+								->where($db->quoteName('user_id') . ' = ' . (int) $reservation->user);
+							$db->setQuery($query);
+							$user = $db->loadObject();
+						}
+						catch (Exception $e)
+						{
+							Log::add('Error while getting user in exportBookingsPDF method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+
+							return false;
 						}
 					}
 
-					$event       = $item->label;
-					$day         = EmundusHelperDate::displayDate($item->start_date, 'COM_EMUNDUS_BIRTHDAY_FORMAT', 0);
-					$hour        = EmundusHelperDate::displayDate($item->start_date, 'H:i', 0);
-					$location    = $item->location;
-					$room        = $item->room;
-					$assoc_users = implode(', ', $assoc_users);
+					$day      = EmundusHelperDate::displayDate($reservation->start_date, 'COM_EMUNDUS_BIRTHDAY_FORMAT', 0);
+					$hour     = EmundusHelperDate::displayDate($reservation->start_date, 'H:i', 0);
+					$room     = $reservation->room;
+					$event_name = $reservation->label;
+					$location = $reservation->location;
 
-					$row = [
-						$username,
-						$event,
-						$day,
-						$hour,
-						$location,
-						$room,
-						$assoc_users
-					];
+					$row = [];
+
+					if (in_array('COM_EMUNDUS_ONBOARD_LABEL_REGISTRANTS', $checkboxesValuesFromView)) {
+						$row[] =  $event_name;
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_USER', $checkboxesValuesFromView)) {
+						$row[] =  $username;
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_DAY', $checkboxesValuesFromView)) {
+						$row[] =  $day;
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_HOUR', $checkboxesValuesFromView)) {
+						$row[] =  $hour;
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_LOCATION', $checkboxesValuesFromView)) {
+						$row[] =  $location;
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_ROOM', $checkboxesValuesFromView)) {
+						$row[] =  $room;
+					}
+
+					if(!empty($selectColumns) && $user)
+					{
+						foreach ($checkboxesValuesFromProfile as $checkboxesValueFromProfile) {
+							$row[] = EmundusHelperFabrik::formatElementValue($checkboxesValueFromProfile->name, $user->{$checkboxesValueFromProfile->name}, $checkboxesValueFromProfile->group_id, $reservation->user);
+						}
+					}
 
 					fputcsv($fp, $row, ';');
 				}

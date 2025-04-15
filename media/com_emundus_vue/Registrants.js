@@ -170,7 +170,8 @@ const _sfc_main = {
                   controller: "events",
                   name: "exportcsv",
                   method: "get",
-                  multiple: true
+                  multiple: true,
+                  exportModal: true
                 }
               ]
             }

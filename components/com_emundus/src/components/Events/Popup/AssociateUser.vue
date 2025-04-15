@@ -8,12 +8,14 @@ export default {
 	components: { Parameter },
 	props: {
 		items: Array,
+		slot: Object,
 	},
 	emits: ['close', 'valueUpdated'],
 	data: () => ({
 		actualLanguage: 'fr-FR',
 		cancelPopupOpenForBookingId: null,
 		initialEvent: null,
+		registrants: [],
 
 		fields: [
 			{
@@ -57,6 +59,9 @@ export default {
 			},
 		],
 	}),
+	created() {
+		this.registrants = this.$props.slot ? [this.$props.slot.id] : this.$props.items;
+	},
 	methods: {
 		onClosePopup() {
 			this.$emit('close');
@@ -67,7 +72,7 @@ export default {
 			this.fields[0].value.forEach((juror) => {
 				jurors.push(juror.value);
 			});
-			eventsService.assocUsers(this.$props.items, jurors, this.fields[1].value).then((response) => {
+			eventsService.assocUsers(this.registrants, jurors, this.fields[1].value).then((response) => {
 				if (response.status === true) {
 					Swal.fire({
 						position: 'center',
@@ -116,7 +121,7 @@ export default {
 		confirmButton: function () {
 			return this.translate('COM_EMUNDUS_ONBOARD_REGISTRANT_CONFIRM_ASSOCIATE').replace(
 				'{{registrantCount}}',
-				this.$props.items.length,
+				this.registrants.length,
 			);
 		},
 	},
