@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>plg_task_email_recall</name>
+	<author>Joomla! Project</author>
+	<creationDate>2025-01</creationDate>
+	<copyright>(C) 2025 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>admin@joomla.org</authorEmail>
+	<authorUrl>www.joomla.org</authorUrl>
+	<version>4.1</version>
+	<description>PLG_TASK_EMAIL_RECALL_XML_DESCRIPTION</description>
+	<namespace path="src">Emundus\Plugin\Task\EmailRecall</namespace>
+	<files>
+		<folder plugin="emailrecall">services</folder>
+		<folder>src</folder>
+		<folder>forms</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_task_emailrecall.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_emailrecall.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_task_emailrecall.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_task_emailrecall.sys.ini</language>
+	</languages>
+</extension>

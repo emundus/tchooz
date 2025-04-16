@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fields name="params">
+        <fieldset name="task_params">
+            <field name="email_id"
+                   type="sql"
+                   default=""
+                   label="PLG_TASK_EMAIL_RECALL_EMAIL_ID_LABEL"
+                   description="PLG_TASK_EMAIL_RECALL_EMAIL_ID_DESC"
+                   query="SELECT id, subject FROM #__emundus_setup_emails ORDER BY subject"
+                   key_field="id"
+                   value_field="subject"
+				   required="true"
+            />
+
+			<field name="files_to_check"
+				   type="sql"
+				   default=""
+				   label="PLG_TASK_EMAIL_RECALL_STATUS_LABEL"
+				   description="PLG_TASK_EMAIL_RECALL_STATUS_DESC"
+				   query="SELECT step, value FROM #__emundus_setup_status ORDER BY ordering"
+				   key_field="step"
+				   value_field="value"
+				   layout="joomla.form.field.list-fancy-select"
+				   required="true"
+				   multiple="true"
+			/>
+
+			<field name="element_to_observe"
+				   type="sql"
+				   default=""
+				   label="PLG_TASK_EMAIL_RECALL_ELEMENT_TO_OBSERVE_LABEL"
+				   description="PLG_TASK_EMAIL_RECALL_ELEMENT_TO_OBSERVE_DESC"
+				   query="SELECT id, concat(label,' - ',name) as fullname FROM #__fabrik_elements WHERE plugin IN ('jdate','date') AND published = 1 ORDER BY name"
+				   key_field="id"
+				   value_field="fullname"
+				   layout="joomla.form.field.list-fancy-select"
+				   required="true"
+				   multiple="true"
+			/>
+
+			<field
+					name="element_available_in_tags"
+					type="subform"
+					label="PLG_TASK_EMAIL_RECALL_ELEMENTS_AVAILABLE_IN_TAGS_LABEL"
+					layout="joomla.form.field.subform.repeatable-table"
+					icon="list"
+					multiple="true"
+			>
+				<form hidden="true" name="list_templates_modal" repeat="true">
+					<field
+							type="sql"
+							label="PLG_TASK_EMAIL_RECALL_ELEMENTS_AVAILABLE_IN_TAGS_ELEMENT"
+							name="element"
+							query="SELECT id, concat(label,' - ',name) as fullname FROM #__fabrik_elements WHERE published = 1 ORDER BY name"
+							key_field="id"
+							value_field="fullname"
+							layout="joomla.form.field.list-fancy-select"
+					/>
+
+					<field
+							name="tag"
+							type="text"
+							label="PLG_TASK_EMAIL_RECALL_ELEMENTS_AVAILABLE_IN_TAGS_TAG"
+					/>
+				</form>
+			</field>
+
+			<field name="frequency"
+				   type="field"
+				   default=""
+				   label="PLG_TASK_EMAIL_RECALL_FREQUENCY_LABEL"
+				   description="PLG_TASK_EMAIL_RECALL_FREQUENCY_LABEL_DESC"
+				   required="true"
+			/>
+
+			<field name="notify_associated"
+				   type="list"
+				   default=""
+				   label="PLG_TASK_EMAIL_RECALL_NOTIFY_ASSOCIATED_LABEL"
+				   description="PLG_TASK_EMAIL_RECALL_NOTIFY_ASSOCIATED_DESC"
+			>
+				<option value="0">PLG_TASK_EMAIL_RECALL_NOTIFY_ASSOCIATED_NOONE</option>
+				<option value="1">PLG_TASK_EMAIL_RECALL_NOTIFY_ASSOCIATED_GROUPS</option>
+				<option value="2">PLG_TASK_EMAIL_RECALL_NOTIFY_ASSOCIATED_USERS</option>
+			</field>
+
+			<field name="group_id"
+				   type="sql"
+				   default=""
+				   label="PLG_TASK_EMAIL_RECALL_GROUP_ID_LABEL"
+				   description="PLG_TASK_EMAIL_RECALL_GROUP_ID_DESC"
+				   query="SELECT id, label FROM #__emundus_setup_groups WHERE published = 1 ORDER BY id"
+				   key_field="id"
+				   value_field="label"
+				   header="PLG_TASK_EMAIL_RECALL_GROUP_ID_ALL"
+			/>
+
+			<field name="profile_id"
+				   type="sql"
+				   default=""
+				   label="PLG_TASK_EMAIL_RECALL_PROFILE_ID_LABEL"
+				   description="PLG_TASK_EMAIL_RECALL_PROFILE_ID_DESC"
+				   query="SELECT id, label FROM #__emundus_setup_profiles WHERE status = 1 and published = 0 ORDER BY id"
+				   key_field="id"
+				   value_field="label"
+				   header="PLG_TASK_EMAIL_RECALL_PROFILE_ID_ALL"
+			/>
+        </fieldset>
+    </fields>
+</form>
