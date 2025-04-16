@@ -1106,11 +1106,11 @@ class EventsModelTest extends UnitTestCase
 	public function testGetFilterAssocUsers()
 	{
 		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
 		$evaluator_1_email = 'evaluator_1' . rand(0, 1000) . '@emundus.test.fr';
 		$evaluator_2_email = 'evaluator_2' . rand(0, 1000) . '@emundus.test.fr';
 		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+		$user_id_coordinator = $this->dataset['coordinator'];
+
 		$evaluator_1 = $this->h_dataset->createSampleUser(6, $evaluator_1_email, 'test1234', [2], "Evaluteur", "Numéro UN");
 		$evaluator_2 = $this->h_dataset->createSampleUser(6, $evaluator_2_email, 'test1234', [2], "Evaluteur", "Numéro DEUX");
 
@@ -1130,9 +1130,8 @@ class EventsModelTest extends UnitTestCase
 		$this->assertGreaterThan(0, $registrant_id, 'The method createAvailabilityRegistrant should return a positive integer');
 
 		$assoc_users = $this->model->getFilterAssocUsers();
-		dump($assoc_users);
 		$this->assertIsArray($assoc_users, 'The method getFilterAssocUsers should return an array') ;
-		$this->assertSame(2, count($assoc_users), 'The method getFilterAssocUsers should return all associated filter users');
+		$this->assertSame(3, count($assoc_users), 'The method getFilterAssocUsers should return all associated filter users');
 
 		$this->h_dataset->deleteSampleFile($applicant_file);
 		$this->h_dataset->deleteSampleUser($user_id_coordinator);

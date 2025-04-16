@@ -2959,13 +2959,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 			$this->db->setQuery($query);
 			$assoc_users_slots = $this->db->loadObjectList();
 
+			$assoc_users['no_assoc_users'] = [
+				'value' => 'no_assoc_users',
+				'label' => Text::_('COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ASSOC_USER_NONE')
+			];
+
 			foreach (array_merge($assoc_users_registrants, $assoc_users_slots) as $user)
 			{
-				$assoc_users['no_assoc_users'] = [
-					'value' => 'no_assoc_users',
-					'label' => Text::_('COM_EMUNDUS_ONBOARD_REGISTRANTS_FILTER_ASSOC_USER_NONE')
-				];
-
 				$assoc_users[$user->value] = [
 					'value' => $user->value,
 					'label' => $user->label
