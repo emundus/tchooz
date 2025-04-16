@@ -74,8 +74,15 @@ class ApiMapper
 					case 'alias':
 						$fabrik_value = EmundusHelperFabrik::getValueByAlias($field->elementId, $this->fnum);
 
-						if (!empty($fabrik_value)) {
-							$this->mapping[$field->attribute] = $this->sanitizeValue($field, $fabrik_value['raw']);
+						if (!empty($fabrik_value) && !empty($fabrik_value['raw'])) {
+							$fabrik_element_type = '';
+							$fabrik_elements = EmundusHelperFabrik::getElementsByAlias($field->elementId);
+							if (!empty($fabrik_elements)) {
+								$fabrik_element_type = $fabrik_elements[0]->plugin;
+							}
+
+
+							$this->mapping[$field->attribute] = $this->sanitizeValue($field, $fabrik_value['raw'], $fabrik_element_type);
 						} else {
 							$this->mapping[$field->attribute] = '';
 						}
@@ -132,7 +139,10 @@ class ApiMapper
 							try {
 								$this->db->setQuery($query);
 								$result = $this->db->loadResult();
-								$this->mapping[$field->attribute] = $this->sanitizeValue($field, $result);
+
+								if (!empty($result)) {
+									$this->mapping[$field->attribute] = $this->sanitizeValue($field, $result);
+								}
 							} catch (\Exception $e) {
 								Log::add('Failed to get value : ' . $e->getMessage(), Log::ERROR, 'com_emundus.mapper');
 							}
@@ -160,7 +170,7 @@ class ApiMapper
 	 *
 	 * @return string
 	 */
-	private function sanitizeValue(object $field, string $value): string
+	private function sanitizeValue(object $field, string $value, string $fabrik_element_type = ''): string
 	{
 		$transformed_value = $value;
 
@@ -170,6 +180,14 @@ class ApiMapper
 					$transformed_value = $field->options->{$value} ?? '';
 					break;
 				default:
+					break;
+			}
+		}
+
+		if (!empty($fabrik_element_type)) {
+			switch($fabrik_element_type) {
+				case 'emundus_phonenumber':
+					$transformed_value = preg_replace('/^[a-zA-Z]{2}/', '', $transformed_value);
 					break;
 			}
 		}

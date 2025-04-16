@@ -116,6 +116,8 @@ class EmundusModelSettings extends ListModel
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 		$falang = new EmundusModelFalang;
 
+		$emConfig = ComponentHelper::getParams('com_emundus');
+
 		$query->select('*')
 			->from($this->db->quoteName('#__emundus_setup_status'))
 			->order('ordering ASC');
@@ -138,7 +140,10 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$files = $this->db->loadResult();
 
-				if ($files > 0)
+				$status_for_send = $emConfig->get('status_for_send',0);
+				$default_send_status = $emConfig->get('default_send_status');
+
+				if ($files > 0 || in_array($statu->step,[$status_for_send,$default_send_status]))
 				{
 					$statu->edit = 0;
 				}
@@ -2673,7 +2678,7 @@ class EmundusModelSettings extends ListModel
 			}
 			$query->group([$this->db->quoteName('u.id'), $this->db->quoteName('u.name')]);
 			$query->order($this->db->quoteName('u.name') . ' ASC');
-			$this->db->setQuery($query, 0, $limit);
+			$this->db->setQuery($query);
 			$managers = $this->db->loadObjectList();
 		}
 
@@ -3645,6 +3650,8 @@ class EmundusModelSettings extends ListModel
 				}, $setup->messenger_notify_groups);
 
 				$setup->messenger_notify_groups = implode(',', $setup->messenger_notify_groups);
+			} else {
+				$setup->messenger_notify_groups = '';
 			}
 			if (!empty($setup->messenger_notify_users))
 			{
@@ -3653,6 +3660,8 @@ class EmundusModelSettings extends ListModel
 				}, $setup->messenger_notify_users);
 
 				$setup->messenger_notify_users = implode(',', $setup->messenger_notify_users);
+			} else {
+				$setup->messenger_notify_users = '';
 			}
 
 			$emConfig->set('messenger_anonymous_coordinator', $setup->messenger_anonymous_coordinator);

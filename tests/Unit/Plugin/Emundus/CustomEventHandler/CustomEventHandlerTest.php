@@ -56,18 +56,22 @@ class CustomEventHandlerTest extends UnitTestCase
 	{
 		$fnum = $this->dataset['fnum'];
 
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[], $fnum]);
+		$conditions = new \stdClass();
+		$conditions->condition_1 = new \stdClass();
+
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$conditions, $fnum]);
 		$this->assertFalse($passed, 'If no conditions are set, the event should not pass.');
 
 		$condition = new \stdClass();
 		$condition->targeted_column = 'jos_emundus_campaign_candidature.fnum';
 		$condition->targeted_value = $fnum;
 
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+		$conditions->condition_1 = $condition;
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$conditions, $fnum]);
 		$this->assertTrue($passed, 'If the condition is met, the event should pass.');
 
 		$condition->targeted_value = $fnum + 1;
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$conditions, $fnum]);
 		$this->assertFalse($passed, 'If the condition is not met, the event should not pass.');
 
 		$condition->targeted_value = $fnum;
@@ -75,19 +79,23 @@ class CustomEventHandlerTest extends UnitTestCase
 		$condition2->targeted_column = 'jos_emundus_setup_programmes.id';
 		$condition2->targeted_value = $this->dataset['program']['programme_id'];
 
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition, $condition2], $fnum]);
+		$multiple_conditions = new \stdClass();
+		$multiple_conditions->condition_1 = $condition;
+		$multiple_conditions->condition_2 = $condition2;
+
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$multiple_conditions, $fnum]);
 		$this->assertTrue($passed, 'If more than one condition, and all of them are met, the event should pass.');
 
 		$condition2->targeted_value = $this->dataset['program']['programme_id'] + 1;
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition, $condition2], $fnum]);
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$multiple_conditions, $fnum]);
 		$this->assertFalse($passed, 'If more than one condition, and one of them is not met, the event should not pass.');
 
 		$condition->operator = 'IN';
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$conditions, $fnum]);
 		$this->assertTrue($passed, 'Operator IN should work as well.');
 
 		$condition->operator = '!=';
-		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+		$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$conditions, $fnum]);
 		$this->assertFalse($passed, 'Operator != should work as well.');
 
 		$condition->operator = '=';
@@ -116,7 +124,7 @@ class CustomEventHandlerTest extends UnitTestCase
 		if ($executed) {
 			$condition->targeted_column = 'test_alias_fnum';
 			$condition->targeted_value = $fnum;
-			$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [[$condition], $fnum]);
+			$passed = self::callPrivateMethod($this->model, 'checkEventConditions', [$conditions, $fnum]);
 			$this->assertTrue($passed, 'Passing the alias of the column should work as well.');
 		}
 	}
@@ -126,7 +134,7 @@ class CustomEventHandlerTest extends UnitTestCase
 	 * @return void
 	 */
 	public function testlaunchEventAction() {
-		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [null, null]);
+		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [null, '']);
 		$this->assertFalse($landed, 'If no action and no fnum is set, the action should not be launched');
 
 		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [null, $this->dataset['fnum']]);
@@ -186,10 +194,12 @@ class CustomEventHandlerTest extends UnitTestCase
 		$this->assertFalse($status, 'If the form id is not the same as the one in the data, the action should not be launched');
 
 		$data['formid'] = 380;
+		$conditions = new \stdClass();
 		$condition = new \stdClass();
 		$condition->targeted_column = 'jos_emundus_campaign_candidature.fnum';
 		$condition->targeted_value = $this->dataset['fnum'];
-		$custom_action->conditions = [$condition];
+		$conditions->condition_1 = $condition;
+		$custom_action->conditions = $conditions;
 
 		$action = new \stdClass();
 		$action->action_type = 'update_file_status';

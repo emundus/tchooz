@@ -74,7 +74,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$data     = $arguments['data'];
 		$old_data = $arguments['old_data'];
 		$user_id  = $arguments['user_id'] ?? 0;
-		if (empty($user_id)) {
+		if (empty($user_id))
+		{
 			$user_id = $this->getApplication()->getIdentity()->id;
 		}
 
@@ -140,6 +141,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_CREATE';
 		$context            = 'com_emundus.microsoftdynamics';
 
+		$more_data['fnum']    = $arguments['fnum'];
 		$more_data['entity']  = $arguments['config']['name'];
 		$more_data['message'] = $arguments['message'];
 
@@ -157,6 +159,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_MICROSOFT_DYNAMICS_UPDATE';
 		$context            = 'com_emundus.microsoftdynamics';
 
+		$more_data['fnum']    = $arguments['fnum'];
 		$more_data['entity']  = $arguments['config']['name'];
 		$more_data['message'] = $arguments['message'];
 

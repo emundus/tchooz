@@ -584,6 +584,7 @@
               "label": "British pound (£ GBP)"
             }
           ],
+          "getOptionsTask": "getCurrencyListOptions",
           "helptext": "",
           "placeholder": "",
           "published": true,

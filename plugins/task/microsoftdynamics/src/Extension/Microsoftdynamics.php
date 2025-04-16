@@ -151,6 +151,15 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 					{
 						$log_status = 'error';
 						$message    = $result['message'];
+
+						if($dataToImport['retry'] < 3)
+						{
+							$repository->updateRetry($dataToImport['id'], $dataToImport['retry'] + 1);
+						}
+						else {
+							// Set status to error
+							$repository->updateStatus($dataToImport['id'], 'error');
+						}
 					}
 
 					$onAfterMicrosoftDynamicsEventHandler = new GenericEvent(

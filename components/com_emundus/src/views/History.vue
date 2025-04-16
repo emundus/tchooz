@@ -31,6 +31,9 @@
 						<th v-if="columns.includes('user_id')">
 							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_BY') }}
 						</th>
+						<th v-if="columns.includes('fnum')">
+							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_FNUM') }}
+						</th>
 						<th v-if="columns.includes('status')">
 							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_STATUS') }}
 						</th>
@@ -40,7 +43,7 @@
 						<th v-if="columns.includes('retry')">
 							{{ translate('COM_EMUNDUS_GLOBAL_HISTORY_RETRY') }}
 						</th>
-						<th v-for="column in moreData" :key="column">{{ column }}</th>
+						<th v-if="moreData" v-for="column in moreData" :key="column">{{ column }}</th>
 					</tr>
 				</thead>
 
@@ -80,6 +83,13 @@
 						</td>
 
 						<td v-if="columns.includes('user_id')">{{ data.logged_by }}</td>
+
+						<td v-if="columns.includes('fnum')">
+							<template v-if="filesRoute !== ''">
+								<a :href="filesRoute + '#' + data.message.fnum" target="_blank">{{ data.message.fnum }}</a>
+							</template>
+							<template v-else>{{ data.message.fnum }}</template>
+						</td>
 
 						<td v-if="columns.includes('status')">
 							<div class="tw-flex tw-items-center">
@@ -152,7 +162,7 @@
 							<span v-else class="tw-block tw-w-full tw-text-center"> - </span>
 						</td>
 
-						<td v-for="column in moreData" :key="column">
+						<td v-if="moreData" v-for="column in moreData" :key="column">
 							{{ data.message[column] }}
 						</td>
 
@@ -352,6 +362,8 @@ export default {
 			historyLength: 0,
 			page: 1,
 			limit: 10,
+
+			filesRoute: '',
 		};
 	},
 	setup() {
@@ -389,6 +401,8 @@ export default {
 						data.message.new_data = Object.values(data.message.new_data);
 					}
 				});
+
+				this.filesRoute = response.files_menu;
 
 				this.history = response.data;
 				this.loading = false;

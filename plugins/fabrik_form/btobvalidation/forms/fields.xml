@@ -15,6 +15,13 @@
                    placeholder="125"
                    description="PLG_FABRIK_FORM_BTOBVALIDATION_EMAIL_ID_DESC"
                    label="PLG_FABRIK_FORM_BTOBVALIDATION_EMAIL_ID"/>
+
+            <field name="btob_keep_files_at_status"
+                   type="text"
+                   default=""
+                   placeholder="1,2,3"
+                   label="PLG_FABRIK_FORM_BTOBVALIDATION_KEEP_FILES_AT_STATUS"
+            />
         </fieldset>
     </fields>
 </form>

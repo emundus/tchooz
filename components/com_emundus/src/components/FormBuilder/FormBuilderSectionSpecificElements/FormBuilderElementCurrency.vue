@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import formbuilderService from '@/services/formbuilder.js';
+
 export default {
 	props: {
 		element: {
@@ -30,28 +32,36 @@ export default {
 	data() {
 		return {
 			loading: false,
-
+			currencyOptions: [],
 			editable: false,
 			dynamicComponent: 0,
 		};
 	},
-	created() {},
-	methods: {},
+	created() {
+		this.getCurrencies();
+	},
+	methods: {
+		getCurrencies() {
+			formbuilderService.getCurrencies().then((response) => {
+				this.currencyOptions = response.data;
+			});
+		},
+	},
 	watch: {},
 	computed: {
 		currencyIcon() {
-			switch (this.element.params['all_currencies_options']['all_currencies_options0'].iso3) {
-				case 'USD':
-					return '$';
-				case 'EUR':
-					return '€';
-				case 'GBP':
-					return '£';
-				case 'JPY':
-					return '¥';
-				default:
-					return '€';
-			}
+			const matchingCurrency =
+				this.currencyOptions.length > 0
+					? this.currencyOptions.find((currency) => {
+							if (currency.iso3 === this.element.params['all_currencies_options']['all_currencies_options0'].iso3) {
+								return true;
+							}
+						})
+					: null;
+
+			return matchingCurrency
+				? matchingCurrency.symbol
+				: this.element.params['all_currencies_options']['all_currencies_options0'].iso3;
 		},
 	},
 };

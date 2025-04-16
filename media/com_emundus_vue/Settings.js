@@ -1,4 +1,4 @@
-import { _ as _export_sfc, $ as mixin, T as Tabs, a0 as History, S as Swal$1, s as settingsService, r as resolveComponent, c as createElementBlock, o as openBlock, g as createVNode, b as createCommentVNode, a as createBlock, F as Fragment, d as createBaseVNode, t as toDisplayString, e as renderList, w as withDirectives, v as vShow, m as createTextVNode, n as normalizeClass, C as script, a8 as client, O as axios, z as vModelText, j as normalizeStyle, K as errors, V as VueDraggableNext, u as useGlobalStore, f as withCtx, Q as withKeys, a2 as defineStore, a5 as X42, Y as vModelCheckbox, W as mergeProps, aa as resolveDynamicComponent, y as vModelSelect } from "./app_emundus.js";
+import { _ as _export_sfc, $ as History, T as Tabs, a0 as mixin, s as settingsService, S as Swal$1, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode, F as Fragment, d as createBaseVNode, t as toDisplayString, a as createBlock, e as renderList, w as withDirectives, v as vShow, m as createTextVNode, b as createCommentVNode, n as normalizeClass, D as script, a8 as client, O as axios, A as vModelText, j as normalizeStyle, V as VueDraggableNext, N as errors, u as useGlobalStore, f as withCtx, Q as withKeys, a2 as defineStore, a5 as V32, Y as vModelCheckbox, W as mergeProps, aa as resolveDynamicComponent, z as vModelSelect } from "./app_emundus.js";
 import { P as Parameter } from "./Parameter.js";
 import { I as Info } from "./Info.js";
 import { t as translationsService, T as Translations } from "./Translations.js";
@@ -3019,7 +3019,7 @@ const _sfc_main$e = {
   name: "editArticle",
   components: {
     Multiselect: script,
-    TipTapEditor: X42
+    TipTapEditor: V32
   },
   props: {
     actualLanguage: {
@@ -3313,7 +3313,7 @@ const _sfc_main$d = {
   name: "EditFooter",
   components: {
     Multiselect: script,
-    TipTapEditor: X42
+    TipTapEditor: V32
   },
   props: {
     actualLanguage: String

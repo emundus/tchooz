@@ -1697,7 +1697,7 @@ class EmundusModelFormbuilder extends JModelList
 								$column_added = $this->db->execute();
 							}
 							catch (Exception $e) {
-								Log::add('Failed to add column for element ' . $elementId . ' in group ' . $gid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+								Log::add('Failed to add column for element ' . $elementId . ' in group ' . $gid . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 								$column_added = false;
 							}
 
@@ -4228,7 +4228,7 @@ class EmundusModelFormbuilder extends JModelList
 			$form_id = $this->db->loadResult();
 		}
 		catch (Exception $e) {
-			Log::add('formBuilder model: Error trying to find fotm id from group id', Log::ERROR, 'com_emundus.error');
+			Log::add('formBuilder model: Error trying to find fotm id from group id', Log::ERROR, 'com_emundus.formbuilder');
 		}
 
 		return $form_id;
@@ -4314,7 +4314,7 @@ class EmundusModelFormbuilder extends JModelList
 					$deleted = $this->db->execute();
 				}
 				catch (Exception $e) {
-					Log::add('Failed to delete form ' . $form_id . ' model ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					Log::add('Failed to delete form ' . $form_id . ' model ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 				}
 			}
 			else {
@@ -4353,7 +4353,7 @@ class EmundusModelFormbuilder extends JModelList
 					$deleted = $this->db->execute();
 				}
 				catch (Exception $e) {
-					Log::add('Failed to delete ' . implode(',', $models_to_delete) . ' model ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					Log::add('Failed to delete ' . implode(',', $models_to_delete) . ' model ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 				}
 			}
 			else {
@@ -4419,7 +4419,7 @@ class EmundusModelFormbuilder extends JModelList
 					}
 				}
 				catch (Exception $e) {
-					Log::add('Failed to copy form from id : ' . $form_id_to_copy . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					Log::add('Failed to copy form from id : ' . $form_id_to_copy . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 				}
 			}
 		}
@@ -4458,7 +4458,7 @@ class EmundusModelFormbuilder extends JModelList
 				}
 			}
 			catch (Exception $e) {
-				Log::add('Failed to copy Fabrik list ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				Log::add('Failed to copy Fabrik list ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 			}
 
 			if (!empty($new_list_id)) {
@@ -4473,7 +4473,7 @@ class EmundusModelFormbuilder extends JModelList
 					$this->db->execute();
 				}
 				catch (Exception $e) {
-					Log::add('Failed to update Fabrik list label and intro ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					Log::add('Failed to update Fabrik list label and intro ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 				}
 			}
 		}
@@ -4498,7 +4498,7 @@ class EmundusModelFormbuilder extends JModelList
 				$list = $this->db->loadObject();
 			}
 			catch (Exception $e) {
-				Log::add('Failed to find list id from form id ' . $form_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				Log::add('Failed to find list id from form id ' . $form_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 			}
 		}
 
@@ -4700,7 +4700,7 @@ class EmundusModelFormbuilder extends JModelList
 	{
 		$datas = [];
 
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$tables_allowed = [];
@@ -4718,7 +4718,7 @@ class EmundusModelFormbuilder extends JModelList
 				$query->clear()
 					->select('sef')
 					->from($db->quoteName('#__languages'))
-					->where($db->quoteName('lang_code') . ' = ' . $db->quote(JFactory::getLanguage()->getTag()));
+					->where($db->quoteName('lang_code') . ' = ' . $db->quote(Factory::getApplication()->getLanguage()->getTag()));
 				$db->setQuery($query);
 				$language = $db->loadResult();
 
@@ -4761,5 +4761,49 @@ class EmundusModelFormbuilder extends JModelList
 		}
 
 		return $updated;
+	}
+
+	public function getCurrencies(int $published = 1): array
+	{
+		$currencies = [];
+		$query = $this->db->createQuery();
+
+		$query->select('*')
+			->from($this->db->quoteName('data_currency'))
+			->where('published = ' . $this->db->quote($published))
+			->order('name ASC');
+
+		try {
+			$this->db->setQuery($query);
+			$currencies = $this->db->loadObjectList();
+		}
+		catch (Exception $e) {
+			Log::add('component/com_emundus/models/formbuilder | Error at getting currencies : ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+		}
+
+		return $currencies;
+	}
+
+
+	public function getCurrencyListOptions(): array
+	{
+		$currencies = [];
+
+		$query = $this->db->createQuery();
+
+		$query->select('iso3 as value, CONCAT(name, " (", symbol,")") as label')
+			->from($this->db->quoteName('data_currency'))
+			->where('published = 1')
+			->order('name ASC');
+
+		try {
+			$this->db->setQuery($query);
+			$currencies = $this->db->loadObjectList();
+		}
+		catch (Exception $e) {
+			Log::add('component/com_emundus/models/formbuilder | Error at getting currency list options : ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+		}
+
+		return $currencies;
 	}
 }

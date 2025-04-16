@@ -1,5 +1,5 @@
 import { P as Parameter } from "./Parameter.js";
-import { J as FetchClient, _ as _export_sfc, M as Modal, C as script, r as resolveComponent, c as createElementBlock, o as openBlock, a as createBlock, b as createCommentVNode, f as withCtx, d as createBaseVNode, t as toDisplayString, h as withModifiers, g as createVNode, m as createTextVNode, n as normalizeClass, j as normalizeStyle, w as withDirectives, z as vModelText, F as Fragment, e as renderList, v as vShow, Q as withKeys } from "./app_emundus.js";
+import { J as FetchClient, _ as _export_sfc, D as script, M as Modal, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock, f as withCtx, d as createBaseVNode, t as toDisplayString, g as withModifiers, b as createCommentVNode, h as createVNode, m as createTextVNode, n as normalizeClass, j as normalizeStyle, w as withDirectives, A as vModelText, F as Fragment, e as renderList, v as vShow, Q as withKeys } from "./app_emundus.js";
 import { A as AttachDocument } from "./AttachDocument.js";
 import { S as Skeleton } from "./Skeleton.js";
 const client = new FetchClient("messenger");
@@ -173,8 +173,8 @@ const _sfc_main = {
     }
   },
   methods: {
-    nameWithYear({ label, year }) {
-      return `${label} (${year})`;
+    nameWithYear({ label, program, year }) {
+      return `${label} (${program} - ${year})`;
     },
     async getMessagesByFnum(loader = true, scroll = true) {
       this.messages_loading = loader;
@@ -525,7 +525,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       $data.createNewChatroom ? (openBlock(), createBlock(_component_modal, {
         key: 0,
         name: "messenger-files-modal",
-        class: normalizeClass("placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal"),
+        class: normalizeClass("placement-center tw-max-h-[80vh] tw-min-w-[400px] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal"),
         transition: "nice-modal-fade",
         width: "40%",
         height: "30%",
@@ -617,7 +617,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                         createBaseVNode("label", _hoisted_16, toDisplayString(chatroom.campaign), 1),
                         chatroom.unread && chatroom.unread > 0 ? (openBlock(), createElementBlock("div", _hoisted_17, toDisplayString(chatroom.unread), 1)) : createCommentVNode("", true)
                       ]),
-                      createBaseVNode("p", _hoisted_18, toDisplayString(chatroom.year), 1)
+                      createBaseVNode("p", _hoisted_18, toDisplayString(chatroom.program) + " - " + toDisplayString(chatroom.year), 1)
                     ])
                   ], 8, _hoisted_13)
                 ], 2);
@@ -646,7 +646,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     }, [
                       createBaseVNode("div", _hoisted_22, [
                         createBaseVNode("label", _hoisted_23, toDisplayString(chatroom.campaign), 1),
-                        createBaseVNode("p", _hoisted_24, toDisplayString(chatroom.year), 1)
+                        createBaseVNode("p", _hoisted_24, toDisplayString(chatroom.program) + " - " + toDisplayString(chatroom.year), 1)
                       ])
                     ], 8, _hoisted_21)
                   ], 2);

@@ -108,6 +108,31 @@
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_URL_LABEL"
             description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_URL_DESC"
     />
+
+    <field
+            showon="action_type:redirect"
+            name="redirect_only_on_pages_rule"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_TARGET_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_TARGET_DESC"
+            default="0"
+    >
+        <option value="0">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_TARGET_ALL</option>
+        <option value="1">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_TARGET_ONLY</option>
+        <option value="2">PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_TARGET_EXCEPT</option>
+    </field>
+
+    <field
+            showon="redirect_only_on_pages_rule:1,2"
+            name="redirect_only_on_pages"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_REDIRECT_SELECTED_PAGES_LABEL"
+            query="SELECT id, title FROM #__menu"
+            key_field="id"
+            value_field="title"
+            multiple="true"
+            layout="joomla.form.field.list-fancy-select"
+    />
     <field
             showon="action_type:redirect"
             name="redirect_message"
