@@ -209,8 +209,7 @@ class EventsModelTest extends UnitTestCase
 
 	public function testSaveLocation()
 	{
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
+		$user_id_coordinator = $this->dataset['coordinator'];
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
 		$this->assertIsInt($location_id, 'The method saveLocation should return an integer');
