@@ -226,7 +226,7 @@ class plgSystemFalangquickjump extends CMSPlugin
 
     /*
      * @update 5.9 add id to result / use to select the falang flag to update
-     * @update 5.16 add the FalangContentTable require once need by ContentObject
+     * @update 5.16 add the FalangContentTable in the use to fix update bug
      * */
     public function gridIdHook() {
         $row = func_get_arg(0);
