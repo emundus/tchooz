@@ -3097,9 +3097,9 @@ class EmundusModelCampaign extends ListModel
 					$row_id = $this->_db->loadResult();
 
 					if (!empty($row_id)) {
-						$form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $row_id . '&tmpl=component&iframe=1';
+						$form_url = 'index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $row_id . '&tmpl=component&iframe=1';
 					} else {
-						$form_url = '/index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
+						$form_url = 'index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
 					}
 				}
 			}
