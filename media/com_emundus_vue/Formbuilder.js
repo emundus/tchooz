@@ -819,6 +819,16 @@ const formBuilderService = {
       param,
       value
     });
+  },
+  async getCurrencies() {
+    return client.get("getCurrencies").then((response) => {
+      return response;
+    });
+  },
+  async getDropdownOptions(task) {
+    return client.get(task).then((response) => {
+      return response;
+    });
   }
 };
 //! moment.js locale configuration
@@ -1603,7 +1613,7 @@ const jdate = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_CALENDAR_DEFAULT_TODAY", 
 const emundus_geolocalisation = [{ "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LNG", "name": "default_lng", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_LAT", "name": "default_lat", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_DEFAULT_ZOOM", "name": "default_zoom", "type": "number", "minlength": 1, "maxlength": 20, "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_GEOLOC_GET_LOCATION", "name": "get_location", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
 const emundus_phonenumber = [{ "label": "COM_EMUNDUS_ONBOARD_BUILDER_PHONENUMBER_DEFAULT_COUNTRY", "name": "default_country", "type": "sqldropdown", "table": "data_country", "key": "iso2", "value": "label", "translate": true, "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false, "options": [] }];
 const panel = [{ "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE", "name": "type", "type": "dropdown", "options": [{ "value": 1, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_INFORMATION" }, { "value": 2, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_WARNING" }, { "value": 3, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_ERROR" }, { "value": 4, "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_TYPE_NONE" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION", "name": "accordion", "type": "dropdown", "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE", "name": "title", "type": "text", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }];
-const currency = [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES", "name": "all_currencies_options", "type": "repeatable", "published": true, "fields": [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO", "name": "iso3", "type": "dropdown", "options": [{ "value": "EUR", "label": "Euro (€ EUR)" }, { "value": "USD", "label": "United States dollar ($ USD)" }, { "value": "JPY", "label": "Japanese yen (¥ JPY)" }, { "value": "GBP", "label": "British pound (£ GBP)" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN", "name": "minimal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX", "name": "maximal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR", "name": "thousand_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR", "name": "decimal_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS", "name": "decimal_numbers", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }] }];
+const currency = [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES", "name": "all_currencies_options", "type": "repeatable", "published": true, "fields": [{ "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_ISO", "name": "iso3", "type": "dropdown", "options": [{ "value": "EUR", "label": "Euro (€ EUR)" }, { "value": "USD", "label": "United States dollar ($ USD)" }, { "value": "JPY", "label": "Japanese yen (¥ JPY)" }, { "value": "GBP", "label": "British pound (£ GBP)" }], "getOptionsTask": "getCurrencyListOptions", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MIN", "name": "minimal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_MAX", "name": "maximal_value", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR", "name": "thousand_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_SEPARATOR", "name": "decimal_separator", "type": "dropdown", "options": [{ "value": " ", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_BLANK_SPACE" }, { "value": ",", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_COMMA" }, { "value": ".", "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_THOUSAND_SEPARATOR_DOT" }], "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_CURRENCY_CURRENCIES_DECIMAL_NUMBERS", "name": "decimal_numbers", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }] }];
 const average = [{ "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION", "name": "used_as_total", "type": "dropdown", "helptext": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION_HELP", "placeholder": "", "published": true, "sysadmin_only": false, "default": 0, "options": [{ "value": 0, "label": "JNO" }, { "value": 1, "label": "JYES" }], "multiple": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS", "name": "average_multiple_elements", "type": "fabrikmodalrepeat", "published": true, "fields": [{ "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_ELEMENT", "name": "average_multiple_element", "type": "listfields", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }, { "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_WEIGHT", "name": "average_multiple_weight", "type": "number", "helptext": "", "placeholder": "", "published": true, "sysadmin_only": false }] }];
 const elementParams = {
   field,
@@ -1676,6 +1686,13 @@ const _sfc_main$t = {
       if (param.type === "sqldropdown") {
         this.loading = true;
         this.getSqlDropdownOptions(param);
+      }
+      if (param.type === "dropdown") {
+        if (param.getOptionsTask) {
+          formBuilderService.getDropdownOptions(param.getOptionsTask).then((response) => {
+            param.options = response.data;
+          });
+        }
       }
       if (param.type === "fabrikmodalrepeat") {
         this.element.params[param.name] = JSON.parse(this.element.params[param.name]);
@@ -3227,28 +3244,30 @@ const _sfc_main$m = {
   data() {
     return {
       loading: false,
+      currencyOptions: [],
       editable: false,
       dynamicComponent: 0
     };
   },
   created() {
+    this.getCurrencies();
   },
-  methods: {},
+  methods: {
+    getCurrencies() {
+      formBuilderService.getCurrencies().then((response) => {
+        this.currencyOptions = response.data;
+      });
+    }
+  },
   watch: {},
   computed: {
     currencyIcon() {
-      switch (this.element.params["all_currencies_options"]["all_currencies_options0"].iso3) {
-        case "USD":
-          return "$";
-        case "EUR":
-          return "€";
-        case "GBP":
-          return "£";
-        case "JPY":
-          return "¥";
-        default:
-          return "€";
-      }
+      const matchingCurrency = this.currencyOptions.length > 0 ? this.currencyOptions.find((currency2) => {
+        if (currency2.iso3 === this.element.params["all_currencies_options"]["all_currencies_options0"].iso3) {
+          return true;
+        }
+      }) : null;
+      return matchingCurrency ? matchingCurrency.symbol : this.element.params["all_currencies_options"]["all_currencies_options0"].iso3;
     }
   }
 };

@@ -219,7 +219,8 @@ if (!empty($this->custom_title)) :?>
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_VIEW') . '</br>';
 					}
 					if (($item->can_be_deleted == 1 || $item->is_validated == "0") && !$block_upload) {
-						$div .= '<a class="em-flex-row em-error-button" href="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '"><span class="material-symbols-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
+						$div .= '<a onclick="deletedoc(this)" class="em-flex-row em-error-button tw-cursor-pointer" data-url="' . JRoute::_('index.php?option=com_emundus&task=delete&uid=' . $item->id . '&aid=' . $item->attachment_id . '&duplicate=' . $attachment->duplicate . '&nb=' . $attachment->nb . '&Itemid=' . $itemid . '#a' . $attachment->id) . '">
+						<span class="material-symbols-outlined em-mr-4">delete_outline</span> ' . Text::_('COM_EMUNDUS_ACTIONS_DELETE') . '</a>';
 					}
 					else {
 						$div .= Text::_('COM_EMUNDUS_ATTACHMENTS_CANT_DELETE') . '</br>';
@@ -853,7 +854,7 @@ if (!empty($this->custom_title)) :?>
 
         //ADDPIPE check if video is uploaded. If yes, reaload page
         function is_file_uploaded(fnum, aid, applicant_id) {
-    let is_file_uploaded_timer = setInterval(function(){
+        let is_file_uploaded_timer = setInterval(function(){
 
                 $.ajax({
                     type: 'POST',
@@ -941,6 +942,23 @@ if (!empty($this->custom_title)) :?>
                 },
                 error: function (jqXHR) {
                     console.log("ERROR: " + jqXHR.responseText);
+                }
+            });
+        }
+
+        function deletedoc(element) {
+            Swal.fire({
+                title: "<?= JText::_('COM_EMUNDUS_FORM_BUILDER_DELETE_DOCUMENT'); ?>",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#28a745",
+                cancelButtonColor: "#dc3545",
+                reverseButtons: true,
+                confirmButtonText: "<?php echo JText::_('JYES');?>",
+                cancelButtonText: "<?php echo JText::_('JNO');?>"
+            }).then((confirm) => {
+                if (confirm.value) {
+                    document.location.href = element.getAttribute('data-url');
                 }
             });
         }

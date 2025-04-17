@@ -102,6 +102,28 @@ class MicrosoftDynamicsRepository
 		return $this->db->execute();
 	}
 
+	public function updateRetry(int $dataId, int $retry): bool
+	{
+		$this->query->clear()
+			->update($this->db->quoteName('#__emundus_microsoft_dynamics_queue'))
+			->set('retry = ' . $this->db->quote($retry))
+			->where('id = ' . $this->db->quote($dataId));
+		$this->db->setQuery($this->query);
+
+		return $this->db->execute();
+	}
+
+	public function updateStatus(int $dataId, string $status): bool
+	{
+		$this->query->clear()
+			->update($this->db->quoteName('#__emundus_microsoft_dynamics_queue'))
+			->set('status = ' . $this->db->quote($status))
+			->where('id = ' . $this->db->quote($dataId));
+		$this->db->setQuery($this->query);
+
+		return $this->db->execute();
+	}
+
 	public function getDatas(?string $order = null): array
 	{
 		$this->query->clear()
@@ -265,6 +287,13 @@ class MicrosoftDynamicsRepository
 				'type'   => 'VARCHAR',
 				'length' => 100,
 				'null'   => 1
+			],
+			[
+				'name'   => 'retry',
+				'type'   => 'INT',
+				'length' => 11,
+				'null'   => 0,
+				'default' => 0
 			]
 		];
 

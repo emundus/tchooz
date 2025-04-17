@@ -166,6 +166,7 @@ export default {
 									name: 'exportcsv',
 									method: 'get',
 									multiple: true,
+									exportModal: true,
 								},
 							],
 						},

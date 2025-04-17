@@ -38,17 +38,6 @@ else
 {
 	$session->clear('login_campaign_id');
 }
-
-$displayRegistration = true;
-$user_module         = ModuleHelper::getModule('mod_emundus_user_dropdown');
-if ($user_module->id)
-{
-	$params = json_decode($user_module->params);
-	if ($params->show_registration == 2)
-	{
-		$displayRegistration = false;
-	}
-}
 ?>
 <div class="com-users-login login">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -298,7 +287,7 @@ if ($user_module->id)
 			<?php echo HTMLHelper::_('form.token'); ?>
     </form>
 
-	<?php if ($usersConfig->get('allowUserRegistration') && $displayRegistration) : ?>
+	<?php if ($usersConfig->get('allowUserRegistration') && $this->displayRegistration) : ?>
         <div>
 			<?php echo JText::_('COM_USERS_LOGIN_NO_ACCOUNT'); ?>
             <a class="hover:tw-underline" href="<?php echo Route::_($this->registrationLink); ?>">

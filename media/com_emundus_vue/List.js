@@ -1016,13 +1016,15 @@ const _sfc_main$1 = {
   name: "AssociateUser",
   components: { Parameter },
   props: {
-    items: Array
+    items: Array,
+    slot: Object
   },
   emits: ["close", "valueUpdated"],
   data: () => ({
     actualLanguage: "fr-FR",
     cancelPopupOpenForBookingId: null,
     initialEvent: null,
+    registrants: [],
     fields: [
       {
         param: "juror",
@@ -1065,6 +1067,9 @@ const _sfc_main$1 = {
       }
     ]
   }),
+  created() {
+    this.registrants = this.$props.slot ? [this.$props.slot.id] : this.$props.items;
+  },
   methods: {
     onClosePopup() {
       this.$emit("close");
@@ -1074,7 +1079,7 @@ const _sfc_main$1 = {
       this.fields[0].value.forEach((juror) => {
         jurors.push(juror.value);
       });
-      eventsService.assocUsers(this.$props.items, jurors, this.fields[1].value).then((response) => {
+      eventsService.assocUsers(this.registrants, jurors, this.fields[1].value).then((response) => {
         if (response.status === true) {
           Swal.fire({
             position: "center",
@@ -1116,7 +1121,7 @@ const _sfc_main$1 = {
     confirmButton: function() {
       return this.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_CONFIRM_ASSOCIATE").replace(
         "{{registrantCount}}",
-        this.$props.items.length
+        this.registrants.length
       );
     }
   }

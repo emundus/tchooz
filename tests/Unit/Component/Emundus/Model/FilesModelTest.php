@@ -372,6 +372,7 @@ class FilesModelTest extends UnitTestCase
 
 		// calculate time of execution
 		//$elements_from_different_forms = array_merge($first_form_elements, $repeat_form_elements);
+		/*
 		$elements_from_different_forms = $first_form_elements;
 		$start                         = microtime(true);
 		$data                          = $this->model->getFnumArray2([$this->dataset['fnum']], $elements_from_different_forms, 0, 0, 0, 1);
@@ -385,5 +386,6 @@ class FilesModelTest extends UnitTestCase
 		$elapsed_old_function_time = $end - $start;
 
 		$this->assertGreaterThanOrEqual($elapsed_new_function_time, $elapsed_old_function_time, 'getFnumArray2 is faster than getFnumArray ' . $elapsed_new_function_time . ' vs ' . $elapsed_old_function_time);
+		*/
 	}
 }

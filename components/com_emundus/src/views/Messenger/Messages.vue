@@ -95,8 +95,8 @@ export default {
 		}
 	},
 	methods: {
-		nameWithYear({ label, year }) {
-			return `${label} (${year})`;
+		nameWithYear({ label, program, year }) {
+			return `${label} (${program} - ${year})`;
 		},
 
 		async getMessagesByFnum(loader = true, scroll = true) {
@@ -393,7 +393,7 @@ export default {
 		<div v-if="!loading" class="tw-flex tw-h-full tw-flex-col">
 			<modal
 				:name="'messenger-files-modal'"
-				:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal'"
+				:class="'placement-center tw-max-h-[80vh] tw-min-w-[400px] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal'"
 				transition="nice-modal-fade"
 				:width="'40%'"
 				:height="'30%'"
@@ -494,7 +494,7 @@ export default {
 											</div>
 										</div>
 
-										<p class="tw-text-sm tw-italic">{{ chatroom.year }}</p>
+										<p class="tw-text-sm tw-italic">{{ chatroom.program }} - {{ chatroom.year }}</p>
 									</div>
 								</div>
 							</div>
@@ -530,7 +530,7 @@ export default {
 									>
 										<div class="tw-w-full">
 											<label class="tw-font-semibold">{{ chatroom.campaign }}</label>
-											<p class="tw-text-sm tw-italic">{{ chatroom.year }}</p>
+											<p class="tw-text-sm tw-italic">{{ chatroom.program }} - {{ chatroom.year }}</p>
 										</div>
 									</div>
 								</div>

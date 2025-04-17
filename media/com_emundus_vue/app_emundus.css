@@ -938,23 +938,23 @@ body ::-webkit-scrollbar-track {
 	color: var(--neutral-500) !important;
 }
 
-table[data-v-7ac1a86a] {
+table[data-v-b0cb7931] {
 	border: unset;
 }
-table thead th[data-v-7ac1a86a] {
+table thead th[data-v-b0cb7931] {
 	background: transparent;
 	padding: 18px 12px;
 }
-table thead tr[data-v-7ac1a86a] {
+table thead tr[data-v-b0cb7931] {
 	border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr[data-v-7ac1a86a]:not(:last-child) {
+table tbody tr[data-v-b0cb7931]:not(:last-child) {
 	border-bottom: solid 1px var(--neutral-400);
 }
-table tbody tr td[data-v-7ac1a86a] {
+table tbody tr td[data-v-b0cb7931] {
 	padding: 18px 12px;
 }
-.placement-center[data-v-7ac1a86a] {
+.placement-center[data-v-b0cb7931] {
 	position: fixed;
 	left: 50%;
 	transform: translate(-50%, -50%);
@@ -2425,19 +2425,19 @@ input[type='checkbox'].event-checkbox[data-v-ac25df4a] {
 .calendars-list[data-v-ac25df4a] {
 	grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
 }
-#modalAddTriggercandidate .v--modal[data-v-e52cc6e8],
-#modalAddTriggermanual .v--modal[data-v-e52cc6e8],
-span[id*=modalEmailPreview_] .v--modal[data-v-e52cc6e8],
-#modalUpdateLogo .v--modal[data-v-e52cc6e8],
-#modalUpdateIcon .v--modal[data-v-e52cc6e8],
-#modalUpdateColors .v--modal[data-v-e52cc6e8] {
+#modalAddTriggercandidate .v--modal[data-v-c763d8ff],
+#modalAddTriggermanual .v--modal[data-v-c763d8ff],
+span[id*=modalEmailPreview_] .v--modal[data-v-c763d8ff],
+#modalUpdateLogo .v--modal[data-v-c763d8ff],
+#modalUpdateIcon .v--modal[data-v-c763d8ff],
+#modalUpdateColors .v--modal[data-v-c763d8ff] {
   padding: 32px !important;
 }
-span[id*=modalEditElement] .v--modal[data-v-e52cc6e8],
-#modalAddDocuments .v--modal[data-v-e52cc6e8],
-#modalAffectCampaign .v--modal[data-v-e52cc6e8],
-#modalMenu .v--modal[data-v-e52cc6e8],
-#modalSide .v--modal[data-v-e52cc6e8] {
+span[id*=modalEditElement] .v--modal[data-v-c763d8ff],
+#modalAddDocuments .v--modal[data-v-c763d8ff],
+#modalAffectCampaign .v--modal[data-v-c763d8ff],
+#modalMenu .v--modal[data-v-c763d8ff],
+#modalSide .v--modal[data-v-c763d8ff] {
   position: fixed;
   right: 0;
   left: unset !important;
@@ -2446,15 +2446,15 @@ span[id*=modalEditElement] .v--modal[data-v-e52cc6e8],
   top: 0 !important;
   overflow: scroll;
 }
-span[id*=modalEditElement] .v--modal-overlay[data-v-e52cc6e8],
-#modalAddDocuments .v--modal-overlay[data-v-e52cc6e8],
-#modalMenu .v--modal-overlay[data-v-e52cc6e8],
-#modalSide .v--modal-overlay[data-v-e52cc6e8] {
+span[id*=modalEditElement] .v--modal-overlay[data-v-c763d8ff],
+#modalAddDocuments .v--modal-overlay[data-v-c763d8ff],
+#modalMenu .v--modal-overlay[data-v-c763d8ff],
+#modalSide .v--modal-overlay[data-v-c763d8ff] {
   background: unset;
 }
 
 /**** CUSTOM VUE DROPZONE ****/
-#customdropzone[data-v-e52cc6e8] {
+#customdropzone[data-v-c763d8ff] {
   letter-spacing: 0.2px;
   background: #fff;
   color: #c5c8ce;
@@ -2468,42 +2468,42 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-e52cc6e8],
   display: flex;
   cursor: pointer;
 }
-.dz-preview[data-v-e52cc6e8] {
+.dz-preview[data-v-c763d8ff] {
   width: 100%;
   display: inline-block;
   text-align: center;
 }
-.dz-image[data-v-e52cc6e8] {
+.dz-image[data-v-c763d8ff] {
   width: auto;
   height: 100px;
   margin-bottom: 10px;
 }
-.dz-image > div[data-v-e52cc6e8] {
+.dz-image > div[data-v-c763d8ff] {
   height: 100px;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
-.dz-details[data-v-e52cc6e8] {
+.dz-details[data-v-c763d8ff] {
   color: black;
   transition: opacity 0.2s linear;
   text-align: center;
 }
-.dz-success-mark[data-v-e52cc6e8] {
+.dz-success-mark[data-v-c763d8ff] {
   display: none;
 }
-.dz-default.dz-message[data-v-e52cc6e8] {
+.dz-default.dz-message[data-v-c763d8ff] {
   text-align: center !important;
 }
-.dz-error-mark[data-v-e52cc6e8] {
+.dz-error-mark[data-v-c763d8ff] {
   display: none;
 }
-.dz-remove[data-v-e52cc6e8] {
+.dz-remove[data-v-c763d8ff] {
   color: #1c6ef2;
 }
 
 /**** END ****/
-.placement-center[data-v-e52cc6e8] {
+.placement-center[data-v-c763d8ff] {
 	position: fixed;
 	left: 50%;
 	transform: translate(-50%, -50%);

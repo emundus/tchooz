@@ -18,6 +18,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 
+require_once(JPATH_ROOT  . '/components/com_emundus/models/formbuilder.php');
+
 /**
  * FormBuilder Controller
  *
@@ -31,7 +33,7 @@ class EmundusControllerFormbuilder extends BaseController
 	protected $app;
 
 	private $user;
-	private $m_formbuilder;
+	private EmundusModelFormbuilder $m_formbuilder;
 
 	/**
 	 * Constructor.
@@ -47,11 +49,10 @@ class EmundusControllerFormbuilder extends BaseController
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
 
 		$this->app           = Factory::getApplication();
 		$this->user          = $this->app->getIdentity();
-		$this->m_formbuilder = $this->getModel('Formbuilder');
+		$this->m_formbuilder = new EmundusModelFormbuilder();
 	}
 
 	public function updateOrder()
@@ -1472,6 +1473,34 @@ class EmundusControllerFormbuilder extends BaseController
 					$response['code'] = 200;
 				}
 			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getCurrencies()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$currencies = $this->m_formbuilder->getCurrencies();
+			$response = ['status' => true, 'msg' => Text::_('SUCCESS'), 'code' => 200, 'data' => $currencies];
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getCurrencyListOptions()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$currencyList = $this->m_formbuilder->getCurrencyListOptions();
+			$response = ['status' => true, 'msg' => Text::_('SUCCESS'), 'code' => 200, 'data' => $currencyList];
 		}
 
 		echo json_encode((object) $response);

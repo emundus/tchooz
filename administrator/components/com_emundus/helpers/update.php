@@ -3055,7 +3055,7 @@ class EmundusHelperUpdate
 		return $result;
 	}
 
-	public static function addCustomEvents($events)
+	public static function addCustomEvents($events): array
 	{
 		$response = [
 			'status'  => false,
@@ -3064,8 +3064,8 @@ class EmundusHelperUpdate
 
 		if (!empty($events))
 		{
-			$db    = Factory::getDbo();
-			$query = $db->getQuery(true);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
 			$rows = [];
 			foreach ($events as $event)
