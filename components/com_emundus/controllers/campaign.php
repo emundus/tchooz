@@ -16,6 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
 
 /**
  * Emundus Campaign Controller
@@ -1281,6 +1282,7 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($url))
 			{
+				$url = !empty(Uri::base()) ? Uri::base() . $url : '/'.$url;
 				$response = ['status' => 1, 'msg' => Text::_('URL_RETRIEVED'), 'data' => $url, 'code' => 200];
 			}
 			else
