@@ -158,8 +158,8 @@ class FabrikAdminModelGroup extends FabModelAdmin
 			$data['created_by']       = $this->user->get('id');
 			$data['created_by_alias'] = $this->user->get('username');
 			$data['created']          = Factory::getDate()->toSql();
-		} elseif (FabrikWorker::isNullDate($data['created'])) {
-			$data['created'] = date('Y-m-d H:i:s');
+		} elseif (array_key_exists('created',$data) && FabrikWorker::isNullDate($data['created'])) {
+			$data['created'] = null;
 		}
 		$makeJoin   = false;
 		$unMakeJoin = false;
@@ -250,7 +250,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 	 */
 	protected function joinedGroupExists($id)
 	{
-		$item = FabTable::getInstance('Group', 'FabrikTable');
+		$item = \FabTable::getInstance('Group', 'FabrikTable');
 		$item->load($id);
 
 		return $item->join_id == '' ? false : true;
@@ -272,7 +272,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 
 		$formId = (int) $data['form'];
 		$id     = (int) $data['id'];
-		$item   = FabTable::getInstance('FormGroup', 'FabrikTable');
+		$item   = \FabTable::getInstance('FormGroup', 'FabrikTable');
 		$item->load(array('form_id' => $formId, 'group_id' => $id));
 
 		if ($item->id == '')
@@ -302,7 +302,7 @@ class FabrikAdminModelGroup extends FabModelAdmin
 		$groupModel = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Group', 'FabrikFEModel');
 		$groupModel->setId($data['id']);
 		$listModel = $groupModel->getListModel();
-		$item      = FabTable::getInstance('Group', 'FabrikTable');
+		$item      = \FabTable::getInstance('Group', 'FabrikTable');
 		$item->load($data['id']);
 		$join = $this->getTable('join');
 		$join->load(array('id' => $item->join_id));

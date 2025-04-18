@@ -74,7 +74,7 @@ define(['jquery', 'fab/list-plugin'], function (jQuery, FbListPlugin) {
 
 					Fabrik.loader.start('list_' + this.options.ref, 'sorting', true);
 					new Request({
-						url         : 'index.php',
+						url         : Fabrik.liveSite + 'index.php',
 						'data'      : {
 							'option'   : 'com_fabrik',
 							'format'   : 'raw',

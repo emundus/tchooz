@@ -256,7 +256,7 @@ class FabrikViewListBase extends FabrikView
 
 		$opts->formels             = $formEls;
 		$opts->fabrik_show_in_list = $input->get('fabrik_show_in_list', array(), 'array');
-		$opts->popup_width         = $params->get('popup_width', '');
+		$opts->popup_width         = $params->get('popup_width', '1000');
 		$opts->popup_height        = $params->get('popup_height', '');
 		$xOffset                   = $params->get('popup_offset_x', '');
 		$yOffset                   = $params->get('popup_offset_y', '');

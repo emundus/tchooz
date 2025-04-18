@@ -79,26 +79,26 @@ $states	= array(
 				<?= Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
-
+ <div class="table-responsive">
 	<table class="table table-striped" id="elementList">
 		<thead>
 			<tr>
 				<td class="w-1 text-center">
 					<?= HTMLHelper::_('grid.checkall'); ?>
 				</td>
-				<th scope="col" class="w-1 d-none d-md-table-cell">
+				<th scope="col" class="w-1 d-md-table-cell">
                     <?= HTMLHelper::_('searchtools.sort', 'JGRID_HEADING_ID', 'e.id', $listDirn, $listOrder); ?>
 				</th>
 
-                <th scope="col" class="w-3 d-none d-md-table-cell">
+                <th scope="col" class="w-3 d-md-table-cell">
                     <?= HTMLHelper::_('searchtools.sort', '', 'e.ordering', $listDirn, $listOrder); ?>
                 </th>
 
-                <th scope="col" class="w-3 d-none d-md-table-cell">
+                <th scope="col" class="w-3 d-md-table-cell">
 					<?= Text::_('COM_FABRIK_LINK');?>
                 </th>
 
-                <th scope="col" class="w-8 d-none d-md-table-cell">
+                <th scope="col" class="w-8 d-md-table-cell">
                     <?= HTMLHelper::_('searchtools.sort', 'COM_FABRIK_NAME', 'e.name', $listDirn, $listOrder); ?>
 				</th>
                 <th scope="col" class="w-8 d-none d-md-table-cell">
@@ -237,6 +237,7 @@ $states	= array(
 			<?php endforeach; ?>
 		</tbody>
 	</table>
+	</div>
 	<?php endif; ?>
 
 	<input type="hidden" name="task" value="" />

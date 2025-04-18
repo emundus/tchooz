@@ -87,6 +87,7 @@
 								<option value="in">IN</option>
 								<option value="not_in">NOT IN</option>
 								<option value="thisyear">COM_FABRIK_LIST_THIS_YEAR</option>
+								<option value="lastyear">COM_FABRIK_LIST_LAST_YEAR</option>
 								<option value="earlierthisyear">COM_FABRIK_LIST_EARLIER_THIS_YEAR</option>
 								<option value="laterthisyear">COM_FABRIK_LIST_LATER_THIS_YEAR</option>
 								<option value="yesterday">COM_FABRIK_YESTERDAY</option>

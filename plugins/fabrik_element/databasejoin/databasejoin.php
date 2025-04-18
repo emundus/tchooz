@@ -1955,7 +1955,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 		$db     = $this->getDb();
 
 		// Lets see if we can get the field type of the field we are joining to
-		$join = FabTable::getInstance('Join', 'FabrikTable');
+		$join = \FabTable::getInstance('Join', 'FabrikTable');
 
 		if ((int) $this->id !== 0)
 		{
@@ -2151,7 +2151,18 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 
 		foreach ($data as $k => $label)
 		{
-			$data[$k] = Text::_($label);
+			//Multiselect dbjoins
+            if (is_array($label)) {
+                $parts = [];
+                foreach($label as $p) {
+                    $parts[] = Text::_($p);
+                }
+                $label = implode(',',$parts);
+                $data[$k] = $label;
+            }
+            else {
+                $data[$k] = Text::_($label);
+			}
 		}
 
 		$data = json_encode($data);
@@ -2998,7 +3009,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 			}
 		}
 
-		if ($data == '' || $data == '-1')
+		if (empty($data) || $data == '-1')
 		{
 			return true;
 		}
@@ -3401,7 +3412,7 @@ class PlgFabrik_ElementDatabasejoin extends PlgFabrik_ElementList
 	protected function updateFabrikJoin($data, $elementId, $tableJoin, $keyCol, $label)
 	{
 		$element = $this->getElement();
-		$join    = FabTable::getInstance('Join', 'FabrikTable');
+		$join    = \FabTable::getInstance('Join', 'FabrikTable');
 
 		/* $$$ rob 08/05/2012 - toggling from dropdown to multiselect set the list_id to 1, so if you
 		 * reset to dropdown then this key would not load the existing join so a secondary join record

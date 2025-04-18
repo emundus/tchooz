@@ -29,5 +29,7 @@ clear: left;
     background-position: right 1rem center, center right 0.1rem !important;
 	 padding-right:0 !important;
 }
+/*Enhanced choosen container gets element style width:0 if group is hidden on load; so force it to parent width*/
+.fabrikElement .chosen-container-multi {width:auto!important;}
 ";
 ?>
