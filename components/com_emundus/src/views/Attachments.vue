@@ -204,7 +204,6 @@
 							:sync="sync"
 							:canSee="canSee"
 							@open-modal="openModal(attachment)"
-							@update-checked-attachments="updateCheckedAttachments"
 							@update-status="updateStatus"
 							@change-permission="changePermission"
 							:columns="$props.columns"
@@ -763,17 +762,8 @@ export default {
 				);
 				this.checkedAttachments = [];
 			}
-		},
-		updateCheckedAttachments(aid) {
-			if (this.checkedAttachments.includes(aid)) {
-				this.checkedAttachments.splice(this.checkedAttachments.indexOf(aid), 1);
-			} else {
-				this.checkedAttachments.push(aid);
-			}
 
-			if (this.checkedAttachments.length === 0) {
-				document.querySelector('#check-th input').checked = false;
-			}
+			this.attachmentStore.setCheckedAttachments(this.checkedAttachments);
 		},
 		filterCheckedAttachments() {
 			this.checkedAttachments = this.checkedAttachments.filter((aid) => {
@@ -929,7 +919,7 @@ export default {
 			});
 		},
 		checkedAttachments: function () {
-			this.attachmentStore.setCheckedAttachments = this.checkedAttachments;
+			this.attachmentStore.setCheckedAttachments(this.checkedAttachments);
 		},
 		categories: function () {
 			const localCategory = localStorage.getItem('vue-attachment-category');
