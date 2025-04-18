@@ -1,19 +1,21 @@
 # Docker installation
-You can edit some variables by copying `docker-compose.yml` file
+You can edit some variables by copying `docker-compose.yml` file to `docker-compose-[username].yml` file.
 
-Docker compose will create 3 containers :
-- A container with PHP and Apache ([localhost](https://localhost:8585/)
-- A container with MySQL
+## Containers list
+- A container with PHP and Apache ([localhost](https://localhost:8585/))
+- A container MySQL
+- A container Redis
 
-To run local development with Https 
-> macOS
+## Enable HTTPS locally
+To run local development with HTTPS 
+### macOS
 > ```shell
 > brew install mkcert
 > mkcert -install
 > cd .docker/apache/certs
 > mkcert localhost
 > ```
-> Linux
+### Linux
 > ```shell
 > sudo apt update
 > sudo apt install mkcert libnss3-tools -y
@@ -22,8 +24,38 @@ To run local development with Https
 > mkcert localhost
 > ```
 
+## Database configuration
+- **Configuration 1 (default)**: Fresh installation with database persistence on a Docker volume.
+- Configuration 2: Fresh installation with database persistence on your local machine.
+- Configuration 3: Load an existing Tchooz database.
+
+To configure the database, you can comment and uncomment the following lines in the `docker-compose.yml` file:
+```yaml
+      # (Required) Use a custom MySQL configuration for Tchooz
+      - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
+      # (Config 1 - default: Tchooz fresh install with database persistant in a Docker volume
+      - ./.docker/installation/databases:/docker-entrypoint-initdb.d
+      # (Config 2: Tchooz fresh install with database persistant in a host volume
+      # - ./.docker/data/mysql:/var/lib/mysql
+      # - ./.docker/installation/databases:/docker-entrypoint-initdb.d
+      # (Config 3: Tchooz custom install without database persistant
+      # - /mypath/tchooz_custom_database.sql:/docker-entrypoint-initdb.d/tchooz_custom_database.sql
+```
+
+## Useful commands
+- Start the containers:
 ```shell
 docker compose -f docker-compose-[username].yml up --build -d
+```
+
+- Stop and remove the containers and database:
+```shell
+docker compose -f docker-compose-[username].yml down -v && rm -f configuration.php
+```
+
+- Stop without removing the database:
+```shell
+docker compose -f docker-compose-[username].yml down
 ```
 
 ## Project update
