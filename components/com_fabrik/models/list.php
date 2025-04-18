@@ -4059,7 +4059,7 @@ class FabrikFEModelList extends FormModel
 		if (!isset($this->table) || !is_object($this->table))
 		{
 			Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->table = FabTable::getInstance('List', 'FabrikTable');
+			$this->table = \FabTable::getInstance('List', 'FabrikTable');
 			$id = $this->getId();
 
 			if ($id !== 0)
@@ -4641,7 +4641,7 @@ class FabrikFEModelList extends FormModel
 	public function loadFromFormId($formId)
 	{
 		Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/table');
-		$row = FabTable::getInstance('List', 'FabrikTable');
+		$row = \FabTable::getInstance('List', 'FabrikTable');
 		$row->load(array('form_id' => $formId));
 		$this->table = $row;
 		$this->setId($row->id);
@@ -5708,14 +5708,25 @@ class FabrikFEModelList extends FormModel
 			 *  and exact match off, like ...
 			 *  LOWER('"[[:<:]]Brose[[:>:]]"')
 			 *  ... so I fixed it the long handed way ... could prolly be done more elegantly, but this should work!
+			 *
+			 * $$$trob - since MySQL8.0.4 changed from Henry Spencer regexp to ICU
 			 */
 			if ($fullWordsOnly == '1')
 			{
+				$word_start = "\"\\\\b";
+				$word_end = "\\\\b\"";
+				$dbVersion = $db->getVersion();
+				
+				if (version_compare($dbVersion, '8.0.4', '<')) {
+					$word_start = "\"[[:<:]]";
+					$word_end = "[[:>:]]\"";
+				}
+				
 				if (is_array($value))
 				{
 					foreach ($value as &$v)
 					{
-						$v = "\"[[:<:]]" . $v . "[[:>:]]\"";
+						$v = $word_start . $v . $word_end;
 					}
 					if (strtoupper($condition) === 'REGEXP')
 					{
@@ -5725,7 +5736,7 @@ class FabrikFEModelList extends FormModel
 				}
 				else
 				{
-					$value = "\"[[:<:]]" . $value . "[[:>:]]\"";
+					$value = $word_start . $value . $word_end;
 					if (strtoupper($condition) === 'REGEXP')
 					{
 						// $$$ 15/11/2012 - moved from before getFilterValue() to after as otherwise date filters in querystrings created wonky query
@@ -8966,6 +8977,14 @@ class FabrikFEModelList extends FormModel
 
 				if ((int) $join->list_id !== 0)
 				{
+					//Only delete joined records if join is from main-table.PK to joined-table.FK
+					//Skip joins going from main-table.FK to joined-table.PK 
+					$join_table_pk = $join->params->get('pk','');
+					
+					if ($db->qn($join->table_join) . '.' . $db->qn($join->table_join_key) == $join_table_pk) {
+						continue;
+					}
+					
 					$query->clear();
 					$query->delete($db->qn($join->table_join))->where($db->qn($join->table_join_key) . ' IN (' . $val . ')');
 					$db->setQuery($query);

@@ -159,7 +159,7 @@ class FabrikFEModelConnection extends FabModel
 			}
 			else
 			{
-				$this->connection = FabTable::getInstance('Connection', 'FabrikTable');
+				$this->connection = \FabTable::getInstance('Connection', 'FabrikTable');
 				$this->connection->load($this->id);
 			}
 
@@ -450,7 +450,7 @@ class FabrikFEModelConnection extends FabModel
 		{
 			// $$$ rob connections are pooled for all packages - each package should use
 			// jos_fabrik_connections and not jos_fabrik_connections
-			$row = FabTable::getInstance('Connection', 'FabrikTable');
+			$row = \FabTable::getInstance('Connection', 'FabrikTable');
 			$row->load(array('default' => 1));
 			$this->decryptPw($row);
 			$this->defaultConnection = $row;

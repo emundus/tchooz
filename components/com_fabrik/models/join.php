@@ -102,7 +102,7 @@ class FabrikFEModelJoin extends FabModel
 	{
 		if (!isset($this->join))
 		{
-			$this->join = FabTable::getInstance('join', 'FabrikTable');
+			$this->join = \FabTable::getInstance('join', 'FabrikTable');
 
 			if (isset($this->data))
 			{
@@ -160,7 +160,7 @@ class FabrikFEModelJoin extends FabModel
 	{
 		if (!isset($this->join))
 		{
-			$this->join = FabTable::getInstance('join', 'FabrikTable');
+			$this->join = \FabTable::getInstance('join', 'FabrikTable');
 			$this->join->load(array($key => $id));
 			$this->paramsType($this->join);
 		}

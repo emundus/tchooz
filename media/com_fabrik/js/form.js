@@ -451,9 +451,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 case 'show':
                     fxElement.fade('show').removeClass('fabrikHide');
                     if (groupfx) {
-                        // strange fix for ie8
-                        // http://fabrik.unfuddle.com/projects/17220/tickets/by_number/703?cycle=true
-                        document.id(id).getElements('.fabrikinput').setStyle('opacity', '1');
                         this.showGroupTab(id);
                         // if it was hidden by group's "Show Group" setting ("Yes, but hidden"), need to show()
                         fxElement.show();
@@ -894,7 +891,7 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                     if (typeOf(el) === 'array') {
                         if (typeOf(document.id(el[1])) === 'null') {
                             /* Some elements may not exist if this is a new record, specifically the lockrow element */
-                            if (document.getElements('input[name=rowid]')[0].value != "" && el[0] != 'FbLockrow') {
+                            if ((document.getElements('input[name=rowid]')[0]) && (document.getElements('input[name=rowid]')[0].value != "") && el[0] != 'FbLockrow') {
                                 fconsole('Fabrik form::addElements: Cannot add element "' + el[1] +
                                     '" because it does not exist in HTML.');
                             }
@@ -2570,6 +2567,10 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                         if (fs) {
                             fs.setAttribute('id', subElementContainer.id);
                         }
+						// Update the element main container label if there is one (is not there e.g. in repeat group table layout)
+						let container_label = subElementContainer.getParent('.fabrikElementContainer').getElement('label');
+						if (container_label) container_label.htmlFor = subElementContainer.id;
+
                     } else {
                         newEl.cloneUpdateIds(lastinput.id);
                     }
@@ -2601,11 +2602,6 @@ define(['jquery', 'fab/encoder', 'fab/fabrik', 'lib/debounce/jquery.ba-throttle-
                 }
             }.bind(this));
             
-            // Update the element container label
-            if( container )
-            {
-                lastinput.getParent('.fabrikElementContainer').getElement('label').htmlFor = container.id;
-            }
             var o = {};
             o[i] = newElementControllers;
             this.addElements(o);

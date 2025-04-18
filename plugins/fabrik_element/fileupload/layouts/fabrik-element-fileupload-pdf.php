@@ -8,7 +8,7 @@ $ext = File::getExt($d->filename);
 ?>
 
 <a class="download-archive fabrik-filetype-<?php echo $ext; ?>" title="<?php echo $d->filename; ?>"
-	href="<?php echo $d->file; ?>">
+	href="<?php echo $d->file; ?>" target="_blank" rel="noopener noreferrer">
 
 	<?php
 	if ($d->thumb) :

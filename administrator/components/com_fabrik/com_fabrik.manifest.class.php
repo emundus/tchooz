@@ -32,6 +32,16 @@ class Com_FabrikInstallerScript
 	 */
 	public function preflight($type, $parent)
 	{ 
+		$jversion = new Version();
+
+		if (version_compare($jversion->getShortVersion(), '5.0', '<')) {
+			throw new RuntimeException('Fabrik can not be installed on versions of Joomla older than 4.2');
+			return false;
+		}
+		if (version_compare($jversion->getShortVersion(), '6.0', '>')) {
+			throw new RuntimeException('Fabrik can not yet be installed on Joomla 6');
+			return false;
+		}
 
 	}
 
@@ -183,7 +193,7 @@ class Com_FabrikInstallerScript
 
 			$this->fixMenuComponentId();
 
-			if (method_exists(Factory::getApplication(), 'isClient') && !Factory::getApplication()->isClient('cli') && $this->templateOverride() === false) return false;
+			if ($this->templateOverride() === false) return false;
 		}
 
 		if ($type !== 'update' && $type !== 'uninstall')

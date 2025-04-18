@@ -189,7 +189,7 @@ class FabrikFEModelGroup extends FabModel
 		if (is_null($this->group))
 		{
 			Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->group = FabTable::getInstance('Group', 'FabrikTable');
+			$this->group = \FabTable::getInstance('Group', 'FabrikTable');
 			$this->group->load($this->getId());
 		}
 
@@ -1175,7 +1175,7 @@ class FabrikFEModelGroup extends FabModel
 
 		// Create form group
 		$formId              = isset($this->_newFormid) ? $this->_newFormid : $this->getFormModel()->getId();
-		$formGroup           = FabTable::getInstance('FormGroup', 'FabrikTable');
+		$formGroup           = \FabTable::getInstance('FormGroup', 'FabrikTable');
 		$formGroup->form_id  = $formId;
 		$formGroup->group_id = $group->id;
 		$formGroup->ordering = 999999;

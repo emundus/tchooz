@@ -40,6 +40,7 @@ $editIcon = '<span class="fa fa-pen-square me-2" aria-hidden="true"></span>';
 						<?= Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 					</div>
 				<?php else : ?>
+				 <div class="table-responsive">
 					<table class="table table-striped">
 						<thead>
 							<tr>
@@ -122,6 +123,7 @@ $editIcon = '<span class="fa fa-pen-square me-2" aria-hidden="true"></span>';
 							<?php endforeach; ?>
 						</tbody>
 					</table>
+					</div>
 
 					<?php // load the pagination. ?>
 					<?= $this->pagination->getListFooter(); ?>

@@ -2,12 +2,12 @@
 <extension client="site" method="upgrade" type="module" version="4">
   <name>mod_fabrik_list</name>
   <author>Fabrikar</author>
-  <creationDate>2024-10-18</creationDate>
-  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <creationDate>2025-04-16</creationDate>
+  <copyright>Copyright (C) 2005-2025 Fabrikar - All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see software_license.txt</license>
   <authorEmail>team@fabrikar.com</authorEmail>
   <authorUrl>https://www.fabrikar.com</authorUrl>
-  <version>4.4.1</version>
+  <version>4.5.2</version>
   <description>MOD_FABRIK_LIST_XML_DESCRIPTION</description>
   <files>
     <filename module="mod_fabrik_list">mod_fabrik_list.php</filename>
@@ -108,6 +108,7 @@
                 <option value="not_in">NOT IN</option>
                 <option value="exists">EXISTS</option>
                 <option value="thisyear">COM_FABRIK_THIS_YEAR</option>
+                <option value="lastyear">COM_FABRIK_LAST_YEAR</option>
                 <option value="earlierthisyear">MOD_FABRIK_LIST_EARLIER_THIS_YEAR</option>
                 <option value="laterthisyear">MOD_FABRIK_LIST_LATER_THIS_YEAR</option>
                 <option value="yesterday">COM_FABRIK_YESTERDAY</option>

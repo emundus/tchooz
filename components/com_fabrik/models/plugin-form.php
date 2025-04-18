@@ -635,7 +635,7 @@ class PlgFabrik_Form extends FabrikPlugin
 	{
 		if ($this->log === null)
 		{
-			$this->log                = FabTable::getInstance('log', 'FabrikTable');
+			$this->log                = \FabTable::getInstance('log', 'FabrikTable');
 			$this->log->referring_url = $this->app->getInput()->server->getString('REQUEST_URI');
 		}
 		$this->log->message_type = $msgType;

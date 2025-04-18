@@ -1049,11 +1049,16 @@ EOD;
 				}
 			}
 
-			if ($app->isClient('administrator') && $app->input->get('format') !== 'pdf') {
-				/* For some reason this navbar is being shown for fabrik menu items, I gave up after 5 hours of debug, this is easier 
-				* trob: this is breaking domPDF on backend lists (somehow the style loading as array), so don't do it if format=pdf
-				*/
-				Factory::getDocument()->addStyleDeclaration("button.navbar-toggler.toggler-burger {display : none !important;}");
+			if ($app->isClient('administrator')) {
+				$format = $app->input->get('format');
+				$currentView = $app->input->get('view');
+
+				if ($format !== 'pdf' && in_array($currentView, ['fabrik'])) {
+					/* For some reason this navbar is being shown for fabrik menu items, I gave up after 5 hours of debug, this is easier 
+					* trob: this is breaking domPDF on backend lists (somehow the style loading as array), so don't do it if format=pdf
+					*/
+					Factory::getDocument()->addStyleDeclaration("button.navbar-toggler.toggler-burger {display : none !important;}");
+				}
 			}
 
 			if ($fbConfig->get('advanced_behavior', '0') !== '0')

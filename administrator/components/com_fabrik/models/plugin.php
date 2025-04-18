@@ -67,12 +67,12 @@ class FabrikAdminModelPlugin extends BaseDatabaseModel
 
 		if ($type === 'validationrule')
 		{
-			$item = FabTable::getInstance('Element', 'FabrikTable');
+			$item = \FabTable::getInstance('Element', 'FabrikTable');
 			$item->load($this->getState('id'));
 		}
 		elseif ($type === 'elementjavascript')
 		{
-			$item = FabTable::getInstance('Jsaction', 'FabrikTable');
+			$item = \FabTable::getInstance('Jsaction', 'FabrikTable');
 			$item->load($this->getState('id'));
 			$data = $item->getProperties();
 		}

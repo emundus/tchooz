@@ -48,13 +48,16 @@ class FabrikControllerEmailform extends BaseController
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
-		// Test for failed validation then page refresh
-		if ($model = $this->getModel($modelName, 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
+		// Push a model into the view (may have been set in content plugin already)
+		try {
+			if ($model = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel($modelName, 'FabrikFEModel'))
+			{
+				$view->setModel($model, true);
+			}
+		} catch (\Exception $e) {
+			$view->error = 	\Joomla\CMS\Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 		}
 		// Display the view
-		$view->error = $this->getError();
 		$view->display();
 
 		return $this;

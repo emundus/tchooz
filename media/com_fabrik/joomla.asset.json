@@ -1,0 +1,915 @@
+{
+    "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
+    "name": "com_fabrik",
+    "version": "4.0.0",
+    "description": "Fabrik",
+    "license": "GPL-2.0-or-later",
+    "assets": [
+        {
+            "name": "com_fabrik.admin.headings",
+            "description": "Admin Headings Styles",
+            "type": "style",
+            "uri": "com_fabrik/admin/headings.css"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.element",
+            "description": "Admin Element List Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/element.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.fabrikcontenttypelist",
+            "description": "Content Type Ajax Preview",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/fabrikcontenttypelist.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.fabrikmodalrepeat",
+            "description": "Admin Modal Repeat Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/fabrikmodalrepeat.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.fabriksubform",
+            "description": "Admin Fabrik Subform handler",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/fabriksubform.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.fabriktables",
+            "description": "Admin Fabrik Tables Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/fabriktables.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.listfields",
+            "description": "Admin Listfields Dropdown Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/listfields.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.repeatgroup",
+            "description": "Admin RepeatGroup Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/repeatgroup.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.fabriksubform",
+            "description": "Handle subform add/removes",
+            "type": "script",
+            "uri": "administrator/components/com_fabrik/models/fields/fabriksubform.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.suboptions",
+            "description": "Admin SubOptions Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/suboptions.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.swaplist",
+            "description": "Admin SwapList Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/swaplist.js"
+        },
+        {
+            "name": "com_fabrik.admin.models.fields.tables",
+            "description": "Admin Table Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/models/fields/tables.js"
+        },
+        {
+            "name": "com_fabrik.admin.views.cron.admincron",
+            "description": "Admin Cron Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/cron/admincron.js",
+            "dependencies": [
+                "com_fabrik.admin.views.pluginmanager",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.element.adminelement",
+            "description": "Admin Element Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/element/adminelement.js",
+            "dependencies": [
+                "com_fabrik.admin.views.pluginmanager",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.fabrikadmin",
+            "description": "Admin Styles",
+            "type": "style",
+            "uri": "com_fabrik/admin/views/fabrikadmin.css"
+        },
+        {
+            "name": "com_fabrik.admin.views.list.admin-filters",
+            "description": "Fabrik Admin List / Data / Pre-Filters manager",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/list/admin-filters.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.list.adminlist",
+            "description": "Admin List Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/list/adminlist.js",
+            "dependencies": [
+                "com_fabrik.admin.views.pluginmanager",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.listform",
+            "description": "Created by rob on 22/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/listform.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.namespace",
+            "description": "Admin Namespace",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/namespace.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.pluginmanager",
+            "description": "Admin Plugin Manager",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/pluginmanager.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.admin.views.visualization.adminvisualization",
+            "description": "Admin Visualization Editor",
+            "type": "script",
+            "uri": "com_fabrik/admin/views/visualization/adminvisualization.js",
+            "dependencies": [
+                "com_fabrik.admin.views.pluginmanager",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.ace",
+            "description": "Ace js code editor",
+            "type": "script",
+            "uri": "https://cdnjs.cloudflare.com/ajax/libs/ace/1.9.6/ace.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.at",
+            "description": "At Who - no longer supported",
+            "type": "script",
+            "uri": "com_fabrik/lib/at/atwho.js"
+        },
+        {
+            "name": "com_fabrik.lib.at",
+            "description": "At Who - no longer supported",
+            "type": "style",
+            "uri": "com_fabrik/lib/at/atwho.css"
+        },
+        {
+            "name": "com_fabrik.lib.carat",
+            "description": "Get carat Position",
+            "type": "script",
+            "uri": "com_fabrik/lib/carat/carat.js"
+        },
+        {
+            "name": "com_fabrik.lib.clockpicker",
+            "description": "ClockPicker",
+            "type": "script",
+            "uri": "com_fabrik/lib/clockpicker/bootstrap-clockpicker.js"
+        },
+        {
+            "name": "com_fabrik.lib.clockpicker",
+            "description": "ClockPicker",
+            "type": "style",
+            "uri": "com_fabrik/lib/clockpicker/bootstrap-clockpicker.css"
+        },
+        {
+            "name": "com_fabrik.lib.datejs",
+            "description": "DateJs Preset",
+            "type": "preset",
+            "dependencies": [
+                "com_fabrik.lib.datejs.core#script",
+                "com_fabrik.lib.datejs.extras#script",
+                "com_fabrik.lib.datejs.parser#script"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.datejs.core",
+            "description": "Datejs Core",
+            "type": "script",
+            "uri": "com_fabrik/lib/datejs/core.js"
+        },
+        {
+            "name": "com_fabrik.lib.datejs.extras",
+            "description": "Datejs Extras",
+            "type": "script",
+            "uri": "com_fabrik/lib/datejs/extras.js"
+        },
+        {
+            "name": "com_fabrik.lib.datejs.parser",
+            "description": "Datejs Parser",
+            "type": "script",
+            "uri": "com_fabrik/lib/datejs/parser.js"
+        },
+        {
+            "name": "com_fabrik.lib.debounce",
+            "description": "Fabrik/jQuery throttle / debounce",
+            "type": "script",
+            "uri": "com_fabrik/lib/debounce/jquery.ba-throttle-debounce.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.elevatezoomplus",
+            "description": "Elevate Zoom Plus",
+            "type": "script",
+            "uri": "com_fabrik/lib/elevatezoom-plus/jquery.ez-plus.js"
+        },
+        {
+            "name": "com_fabrik.lib.event.mock",
+            "description": "Supplies a Mock Event object for use on fireEvent",
+            "type": "script",
+            "uri": "com_fabrik/lib/Event.mock.js"
+        },
+        {
+            "name": "com_fabrik.lib.form_placeholder",
+            "description": "Provides a fallback for the placeholder property on input elements for older browsers",
+            "type": "script",
+            "uri": "com_fabrik/lib/form_placeholder/Form.Placeholder.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.geo-location",
+            "description": "Google Geo Location",
+            "type": "script",
+            "uri": "com_fabrik/lib/geo-location/geo.js"
+        },
+        {
+            "name": "com_fabrik.lib.googlemaps.distancewidget",
+            "description": "Google Distance Widget",
+            "type": "script",
+            "uri": "com_fabrik/lib/googlemaps/distancewidget.js"
+        },
+        {
+            "name": "com_fabrik.lib.jqueryui",
+            "description": "",
+            "type": "script",
+            "uri": "com_fabrik/lib/jquery-ui/jquery-ui.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.mcl",
+            "description": "MCL Canvas",
+            "type": "preset",
+            "dependencies": [
+                "com_fabrik.lib.mcl.canvas#script",
+                "com_fabrik.lib.mcl.canvasitem#script",
+                "com_fabrik.lib.mcl.cmorph#script",
+                "com_fabrik.lib.mcl.layer#script",
+                "com_fabrik.lib.mcl.layerhash#script",
+                "com_fabrik.lib.mcl.thread#script"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.mcl.canvas",
+            "description": "MCL Canvas",
+            "type": "script",
+            "uri": "com_fabrik/lib/mcl/CANVAS.js"
+        },
+        {
+            "name": "com_fabrik.lib.mcl.canvasitem",
+            "description": "MCL Canvas",
+            "type": "script",
+            "uri": "com_fabrik/lib/mcl/CanvasItem.js"
+        },
+        {
+            "name": "com_fabrik.lib.mcl.cmorph",
+            "description": "MCL Canvas",
+            "type": "script",
+            "uri": "com_fabrik/lib/mcl/cmorph.js"
+        },
+        {
+            "name": "com_fabrik.lib.mcl.layer",
+            "description": "MCL Canvas",
+            "type": "script",
+            "uri": "com_fabrik/lib/mcl/Layer.js"
+        },
+        {
+            "name": "com_fabrik.lib.mcl.layerhash",
+            "description": "MCL Canvas",
+            "type": "script",
+            "uri": "com_fabrik/lib/mcl/LayerHash.js"
+        },
+        {
+            "name": "com_fabrik.lib.mcl.thread",
+            "description": "MCL Canvas",
+            "type": "script",
+            "uri": "com_fabrik/lib/mcl/Thread.js"
+        },
+        {
+            "name": "com_fabrik.lib.mediabox",
+            "description": "MediaBox",
+            "type": "script",
+            "uri": "com_fabrik/lib/mediabox-advanced/mediaboxAdv.js"
+        },
+        {
+            "name": "com_fabrik.lib.slick",
+            "description": "Slick",
+            "type": "preset",
+            "dependencies": [
+                "com_fabrik.lib.elevatezoomplus#script",
+                "com_fabrik.lib.slick#script",
+                "com_fabrik.lib.slick#style",
+                "com_fabrik.lib.slicktheme#style"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.slick",
+            "description": "Slick",
+            "type": "script",
+            "uri": "com_fabrik/lib/slick/slick.js"
+        },
+        {
+            "name": "com_fabrik.lib.slick",
+            "description": "Slick",
+            "type": "style",
+            "uri": "com_fabrik/lib/slick/slick.css"
+        },
+        {
+            "name": "com_fabrik.lib.slicktheme",
+            "description": "Slick Theme",
+            "type": "style",
+            "uri": "com_fabrik/lib/slick/slick-theme.css"
+        },
+        {
+            "name": "com_fabrik.lib.slimbox",
+            "description": "Slimbox",
+            "type": "script",
+            "uri": "com_fabrik/lib/slimbox2/js/slimbox2.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.slimbox",
+            "description": "Slimbox",
+            "type": "style",
+            "uri": "com_fabrik/lib/slimbox2/slimbox2.css"
+        },
+        {
+            "name": "com_fabrik.lib.tablesorter",
+            "description": "Table Sorter",
+            "type": "script",
+            "uri": "com_fabrik/lib/tablesorter/jquery.tablesorter.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.lib.tablesorter.theme.blue",
+            "description": "Table Sorter Widget Theme",
+            "type": "style",
+            "uri": "com_fabrik/lib/tablesorter/theme.blue.min.css"
+        },
+        {
+            "name": "com_fabrik.lib.tablesorter.theme.bootstrap",
+            "description": "Table Sorter Widget Theme",
+            "type": "style",
+            "uri": "com_fabrik/lib/tablesorter/theme.bootstrap.css"
+        },
+        {
+            "name": "com_fabrik.lib.tablesorter.theme.bootstrap_3",
+            "description": "Table Sorter Widget Theme",
+            "type": "style",
+            "uri": "com_fabrik/lib/tablesorter/theme.bootstrap_3.css"
+        },
+        {
+            "name": "com_fabrik.lib.tablesorter.widget",
+            "description": "Table Sorter Widget",
+            "type": "script",
+            "uri": "com_fabrik/lib/tablesorter/jquery.tablesorter.widget.js"
+        },
+        {
+            "name": "com_fabrik.lib.wickedpicker",
+            "description": "WickedPicker",
+            "type": "script",
+            "uri": "com_fabrik/lib/wickedpicker/wickedpicker.js"
+        },
+        {
+            "name": "com_fabrik.lib.wickedpicker",
+            "description": "WickedPicker",
+            "type": "style",
+            "uri": "com_fabrik/lib/wickedpicker/wickedpicker.css"
+        },
+        {
+            "name": "com_fabrik.site.advanced-search",
+            "description": "Advanced Search",
+            "type": "script",
+            "uri": "com_fabrik/site/advanced-search.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.ajaxassets",
+            "description": "Load assets for Partial or Raw views",
+            "type": "script",
+            "uri": "com_fabrik/site/ajaxassets.js"
+        },
+        {
+            "name": "com_fabrik.site.autocomplete",
+            "description": "Auto-Complete",
+            "type": "script",
+            "uri": "com_fabrik/site/autocomplete.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.autocomplete-bootstrap",
+            "description": "Bootstrap Auto-Complete",
+            "type": "script",
+            "uri": "com_fabrik/site/autocomplete-bootstrap.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.autocomplete-bootstrap-cdd",
+            "description": "Created by rob on 18/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/autocomplete-bootstrap-cdd.js",
+            "dependencies": [
+                "com_fabrik.autocomplete-bootstrap",
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.blockuserinput",
+            "description": "Block Until Fabrik is Ready",
+            "type": "script",
+            "uri": "com_fabrik/site/blockuserinput.js"
+        },
+        {
+            "name": "com_fabrik.site.calendar",
+            "description": "-----------------------------------------------------------",
+            "type": "preset",
+            "dependencies": [
+                "com_fabrik.site.calendar#script",
+                "com_fabrik.site.calendar#style",
+                "com_fabrik.site.calendar-setup#script"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.calendar",
+            "description": "-----------------------------------------------------------",
+            "type": "script",
+            "uri": "com_fabrik/site/calendar.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.calendar",
+            "description": "---------------------------------------------------------------------------",
+            "type": "style",
+            "uri": "com_fabrik/site/calendar-jos.min.css"
+        },
+        {
+            "name": "com_fabrik.site.calendar-setup",
+            "description": "---------------------------------------------------------------------------",
+            "type": "script",
+            "uri": "com_fabrik/site/calendar-setup.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik",
+                "com_fabrik.site.calendar"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.canvas",
+            "description": "Canvas",
+            "type": "script",
+            "uri": "com_fabrik/site/canvas.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.canvas-extra",
+            "description": "Canvas Extra",
+            "type": "script",
+            "uri": "com_fabrik/site/canvas-extra.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.chosen",
+            "description": "",
+            "type": "style",
+            "uri": "com_fabrik/site/chosen.css"
+        },
+        {
+            "name": "com_fabrik.site.chosen-loader",
+            "description": "For:",
+            "type": "script",
+            "uri": "com_fabrik/site/chosen-loader.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.chosen.jquery",
+            "description": "",
+            "type": "script",
+            "uri": "com_fabrik/site/chosen.jquery.js"
+        },
+        {
+            "name": "com_fabrik.site.core",
+            "description": "All the esential bits need for Fabrik to run",
+            "type": "preset",
+            "dependencies": [
+                "com_fabrik.site.chosen-loader#script",
+                "com_fabrik.site.fabrik#script",
+                "com_fabrik.site.fabrik#style",
+                "com_fabrik.site.window#script",
+                "tippy.js#script"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.element",
+            "description": "Element",
+            "type": "script",
+            "uri": "com_fabrik/site/element.js",
+            "dependencies": [
+                "com_fabrik.lib.event.mock",
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.elementlist",
+            "description": "Element List",
+            "type": "script",
+            "uri": "com_fabrik/site/elementlist.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.encoder",
+            "description": "A Javascript object to encode and/or decode html characters using HTML or Numeric entities that handles double or partial encoding",
+            "type": "script",
+            "uri": "com_fabrik/site/encoder.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.fabrik",
+            "description": "Various Fabrik JS classes",
+            "type": "script",
+            "uri": "com_fabrik/site/fabrik.js",
+            "dependencies": [
+            	"com_fabrik.site.ajaxassets",
+                "com_fabrik.site.loader",
+                "com_fabrik.site.mootools.core",
+                "com_fabrik.site.mootools.ext",
+                "com_fabrik.site.mootools.more",
+                "com_fabrik.site.requestqueue",
+                "com_fabrik.site.utils"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.fabrik",
+            "description": "Site Fabrik Styles",
+            "type": "style",
+            "uri": "com_fabrik/site/fabrik.css"
+        },
+        {
+            "name": "com_fabrik.site.fabrik.custom",
+            "description": "Site Fabrik User Custom Styles",
+            "type": "style",
+            "uri": "com_fabrik/site/custom.css"
+        },
+        {
+            "name": "com_fabrik.site.fileelement",
+            "description": "Created by rob on 18/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/fileelement.js",
+            "dependencies": [
+                "com_fabrik.site.element",
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.filtertoggle",
+            "description": "FilterToggle",
+            "type": "script",
+            "uri": "com_fabrik/site/filtertoggle.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.form",
+            "description": "Form",
+            "type": "script",
+            "uri": "com_fabrik/site/form.js",
+            "dependencies": [
+                "com_fabrik.lib.debounce",
+                "com_fabrik.lib.form_placeholder",
+                "com_fabrik.site.element",
+                "com_fabrik.site.encoder",
+                "com_fabrik.site.fabrik",
+                "com_fabrik.site.form-submit"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.form-submit",
+            "description": "Form Submitter: delays form submission until all elements report that they",
+            "type": "script",
+            "uri": "com_fabrik/site/form-submit.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.frontpackage",
+            "description": "FrontPackage",
+            "type": "script",
+            "uri": "com_fabrik/site/frontpackage.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.history",
+            "description": "History",
+            "type": "script",
+            "uri": "com_fabrik/site/history.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.icongen",
+            "description": "Icon Generator",
+            "type": "script",
+            "uri": "com_fabrik/site/icongen.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.icons",
+            "description": "Define icons",
+            "type": "script",
+            "uri": "com_fabrik/site/icons.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.inline",
+            "description": "Simple Inline Editor",
+            "type": "script",
+            "uri": "com_fabrik/site/inline.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.keynav",
+            "description": "Keynav",
+            "type": "script",
+            "uri": "com_fabrik/site/keynav.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.labels",
+            "description": "Labels",
+            "type": "script",
+            "uri": "com_fabrik/site/labels.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.list",
+            "description": "List",
+            "type": "script",
+            "uri": "com_fabrik/site/list.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik",
+                "com_fabrik.site.list-grouped-toggler",
+                "com_fabrik.site.list-keys"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.list-actions",
+            "description": "Created by rob on 21/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/list-actions.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.list-grouped-toggler",
+            "description": "Created by rob on 21/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/list-grouped-toggler.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.list-keys",
+            "description": "Created by rob on 21/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/list-keys.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.list-plugin",
+            "description": "List Plugin",
+            "type": "script",
+            "uri": "com_fabrik/site/list-plugin.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.list-toggle",
+            "description": "List Toggle",
+            "type": "script",
+            "uri": "com_fabrik/site/list-toggle.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.listfilter",
+            "description": "List Filter",
+            "type": "script",
+            "uri": "com_fabrik/site/listfilter.js",
+            "dependencies": [
+                "com_fabrik.site.advanced-search",
+                "com_fabrik.site.fabrik",
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.loader",
+            "description": "Created by rob on 21/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/loader.js",
+            "dependencies": [
+                "jquery"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.mootools",
+            "description": "Mootools Bundle",
+            "type": "preset",
+            "dependencies": [
+                "com_fabrik.site.mootools.core#script",
+                "com_fabrik.site.mootools.ext#script",
+                "com_fabrik.site.mootools.more#script"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.mootools.core",
+            "description": "",
+            "type": "script",
+            "uri": "com_fabrik/site/mootools-core.js"
+        },
+        {
+            "name": "com_fabrik.site.mootools.ext",
+            "description": "Mootools extensions",
+            "type": "script",
+            "uri": "com_fabrik/site/mootools-ext.js",
+            "dependencies": [
+                "com_fabrik.site.mootools.more"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.mootools.more",
+            "description": "",
+            "type": "script",
+            "uri": "com_fabrik/site/mootools-more.js",
+            "dependencies": [
+                "com_fabrik.site.mootools.core"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.pages",
+            "description": "Pages",
+            "type": "script",
+            "uri": "com_fabrik/site/pages.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.requestqueue",
+            "description": "Created by rob on 21/03/2016.",
+            "type": "script",
+            "uri": "com_fabrik/site/requestqueue.js",
+            "dependencies": [
+                "com_fabrik.site.mootools.core"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.tabs",
+            "description": "Tabs",
+            "type": "script",
+            "uri": "com_fabrik/site/tabs.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.tips",
+            "description": "Tooltips",
+            "type": "script",
+            "uri": "com_fabrik/site/tips.js",
+            "dependencies": [
+                "com_fabrik.site.fabrik"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.tipsBootStrapMock",
+            "description": "Bootstrap Tooltips",
+            "type": "script",
+            "uri": "com_fabrik/site/tipsBootStrapMock.js",
+            "dependencies": [
+                "jquery",
+                "bootstrap.popover",
+                "tippy.js"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.utils",
+            "description": "",
+            "type": "script",
+            "uri": "com_fabrik/site/utils.js",
+            "dependencies": [
+                "com_fabrik.site.mootools.core"
+            ]
+        },
+        {
+            "name": "com_fabrik.site.window",
+            "description": "Fabrik Window",
+            "type": "script",
+            "uri": "com_fabrik/site/window.js",
+            "dependencies": [
+                "com_fabrik.lib.jqueryui",
+                "com_fabrik.site.tips",
+                "jquery"
+            ]
+        },
+        {
+            "name": "luxon",
+            "description": "A powerful, modern, and friendly wrapper for JavaScript dates and times.",
+            "type": "script",
+            "uri": "https://cdn.jsdelivr.net/npm/luxon@3.5.0/build/global/luxon.min.js"
+        },
+        {
+            "name": "popper.js",
+            "description": "Popover Placement",
+            "type": "script",
+            "uri": "https://unpkg.com/@popperjs/core@2"
+        }
+    ]
+}

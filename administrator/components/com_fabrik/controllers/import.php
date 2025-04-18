@@ -61,7 +61,7 @@ class FabrikAdminControllerImport extends FabControllerForm
 		$plugins       = $input->get('plugin', array(), 'array');
 		$pluginManager = FabrikWorker::getPluginManager();
 		$elementModel  = $pluginManager->getPlugIn('field', 'element');
-		$element       = FabTable::getInstance('Element', 'FabrikTable');
+		$element       = \FabTable::getInstance('Element', 'FabrikTable');
 		$newElements   = $input->get('createElements', array(), 'array');
 
 		// @TODO use actual element plugin getDefaultProperties()

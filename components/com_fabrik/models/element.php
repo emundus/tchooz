@@ -333,7 +333,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		parent::__construct($subject, $config);
 		$this->validator = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('ElementValidator', 'FabrikFEModel');
 		$this->validator->setElementModel($this);
-		$this->access = new stdClass;
+		$this->access = new \stdClass;
 	}
 
 	/**
@@ -395,7 +395,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if (!$this->element || $force)
 		{
 			Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$row = FabTable::getInstance('Element', 'FabrikTable');
+			$row = \FabTable::getInstance('Element', 'FabrikTable');
 			$row->load($this->id);
 			$this->element = $row;
 
@@ -423,7 +423,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 			if ((int) $element->parent_id !== 0)
 			{
-				$this->parent = FabTable::getInstance('element', 'FabrikTable');
+				$this->parent = \FabTable::getInstance('element', 'FabrikTable');
 				$this->parent->load($element->parent_id);
 			}
 			else
@@ -450,7 +450,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if (!$this->element)
 		{
 			Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$this->element = FabTable::getInstance('Element', 'FabrikTable');
+			$this->element = \FabTable::getInstance('Element', 'FabrikTable');
 		}
 
 		if (is_object($row))
@@ -649,7 +649,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		if ($iconFile === '{extension}')
 		{
 			$iconFileInfo = pathinfo(trim(strip_tags($data)));
-			$iconFile = FArrayHelper::getValue($iconFileInfo, 'extension', '');
+			$iconFile = \FArrayHelper::getValue($iconFileInfo, 'extension', '');
 		}
 
 		if ((int) $params->get('icon_folder', 0) === 0 && $iconFile === '')
@@ -666,7 +666,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			return $data;
 		}
 
-		$cleanData  = empty($iconFile) ? FabrikString::clean(strip_tags($data)) : $iconFile;
+		$cleanData  = empty($iconFile) ? \FabrikString::clean(strip_tags($data)) : $iconFile;
 		$cleanDatas = array($this->getElement()->name . '_' . $cleanData, $cleanData);
 		$opts = array('forceImage' => true);
 
@@ -684,7 +684,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		{
 			foreach ($this->imageExtensions as $ex)
 			{
-				$img = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), false, $opts);
+				$img = \FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), false, $opts);
 
 				if (!empty($img))
 				{
@@ -695,19 +695,19 @@ class PlgFabrik_Element extends FabrikPlugin
 			if (empty($img) && $iconFolder === 2)
 			{
 				$opts = array('forceImage' => false);
-				$img = FabrikHelperHTML::image($cleanData, $view, $tmpl, array(), false, $opts);
+				$img = \FabrikHelperHTML::image($cleanData, $view, $tmpl, array(), false, $opts);
 			}
 
 			if (!empty($img))
 			{
 				$this->iconsSet = true;
-				$opts           = new stdClass;
+				$opts           = new \stdClass;
 				$opts->position = 'top';
 				$opts           = json_encode($opts);
 				$data           = '<span>' . $data . '</span>';
 
 				// See if data has an <a> tag
-				$html = FabrikHelperHTML::loadDOMDocument($data);
+				$html = \FabrikHelperHTML::loadDOMDocument($data);
 				$as   = $html->getElementsBytagName('a');
 
 				if ($params->get('icon_hovertext', true))
@@ -727,8 +727,8 @@ class PlgFabrik_Element extends FabrikPlugin
 
 					$data = htmlspecialchars($data, ENT_QUOTES);
 
-					$layout                  = FabrikHelperHTML::getLayout('element.fabrik-element-listicon-tip');
-					$displayData             = new stdClass;
+					$layout                  = \FabrikHelperHTML::getLayout('element.fabrik-element-listicon-tip');
+					$displayData             = new \stdClass;
 					$displayData->img     = $img;
 					$displayData->title   = $data;
 					$displayData->href    = $aHref;
@@ -749,7 +749,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					if ($as->length)
 					{
 						$img = $html->createElement('img');
-						$src = FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true, array('forceImage' => true));
+						$src = \FabrikHelperHTML::image($cleanData . '.' . $ex, $view, $tmpl, array(), true, array('forceImage' => true));
 						$img->setAttribute('src', $src);
 						$as->item(0)->nodeValue = '';
 						$as->item(0)->appendChild($img);
@@ -859,9 +859,9 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function getAsField_html(&$aFields, &$aAsFields, $opts = array())
 	{
 		$dbTable    = $this->actualTableName();
-		$db         = FabrikWorker::getDbo();
+		$db         = \FabrikWorker::getDbo();
 		$table      = $this->getListModel()->getTable();
-		$fullElName = FArrayHelper::getValue($opts, 'alias', $db->qn($dbTable . '___' . $this->element->name));
+		$fullElName = \FArrayHelper::getValue($opts, 'alias', $db->qn($dbTable . '___' . $this->element->name));
 		$fName      = $dbTable . '.' . $this->element->name;
 		$k          = $db->qn($fName);
 		$secret     = $this->config->get('secret');
@@ -881,8 +881,8 @@ class PlgFabrik_Element extends FabrikPlugin
 			}
 
 			$joinTable  = $this->getJoinModel()->getJoin()->table_join;
-			//$fullElName = FArrayHelper::getValue($opts, 'alias', $k);
-			$fullElName = FArrayHelper::getValue($opts, 'alias', $fullElName);
+			//$fullElName = \FArrayHelper::getValue($opts, 'alias', $k);
+			$fullElName = \FArrayHelper::getValue($opts, 'alias', $fullElName);
 			$str        = $this->buildQueryElementConcat($jKey);
 		}
 		else
@@ -1055,7 +1055,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				// Could be  a linked parent element in which case the form doesn't contain the element whose id is $lookUpId
 				if (!$lookUp)
 				{
-					$lookUp = FabrikWorker::getPluginManager()->getElementPlugin($lookUpId);
+					$lookUp = \FabrikWorker::getPluginManager()->getElementPlugin($lookUpId);
 				}
 
 				if ($lookUp)
@@ -1066,14 +1066,14 @@ class PlgFabrik_Element extends FabrikPlugin
 				}
 				else
 				{
-					FabrikWorker::logError('Did not load element ' . $lookUpId . ' for element::canView()', 'error');
+					\FabrikWorker::logError('Did not load element ' . $lookUpId . ' for element::canView()', 'error');
 				}
 			}
 		}
 		else if ($this->access->$key && $view == 'form')
 		{
 			$formModel = $this->getFormModel();
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = \FabrikWorker::getPluginManager();
 			if (in_array(false, $pluginManager->runPlugins('onElementCanView', $formModel, 'form', $this)))
 			{
 				$this->access->$key = false;
@@ -1082,7 +1082,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		else if ($this->access->$key && $view == 'list')
 		{
 			$listModel = $this->getListModel();
-			$pluginManager = FabrikWorker::getPluginManager();
+			$pluginManager = \FabrikWorker::getPluginManager();
 			if (in_array(false, $pluginManager->runPlugins('onElementCanViewList', $listModel, 'list', $this)))
 			{
 				$this->access->$key = false;
@@ -1107,7 +1107,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		// Odd! even though defined in initialize() for confirmation plugin access was not set.
 		if (!isset($this->access))
 		{
-			$this->access = new stdClass;
+			$this->access = new \stdClass;
 		}
 
 		if (!is_object($this->access) || !isset($this->access->use))
@@ -1153,7 +1153,7 @@ class PlgFabrik_Element extends FabrikPlugin
 						// Could be  a linked parent element in which case the form doesn't contain the element whose id is $lookUpId
 						if (!$lookUp)
 						{
-							$lookUp = FabrikWorker::getPluginManager()->getElementPlugin($lookUpId);
+							$lookUp = \FabrikWorker::getPluginManager()->getElementPlugin($lookUpId);
 						}
 
 						if ($lookUp)
@@ -1164,14 +1164,14 @@ class PlgFabrik_Element extends FabrikPlugin
 						}
 						else
 						{
-							FabrikWorker::logError('Did not load element ' . $lookUpId . ' for element::canUse()', 'error');
+							\FabrikWorker::logError('Did not load element ' . $lookUpId . ' for element::canUse()', 'error');
 						}
 					}
 				}
 				else if ($this->access->use && $location == 'form')
 				{
 					$formModel = $this->getFormModel();
-					$pluginManager = FabrikWorker::getPluginManager();
+					$pluginManager = \FabrikWorker::getPluginManager();
 					if (in_array(false, $pluginManager->runPlugins('onElementCanUse', $formModel, 'form', $this)))
 					{
 						$this->access->use = false;
@@ -1410,7 +1410,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		if (!isset($this->default))
 		{
-			$w       = new FabrikWorker;
+			$w       = new \FabrikWorker;
 			$element = $this->getElement();
 			$default = $w->parseMessageForPlaceHolder($element->default, $data);
 
@@ -1427,10 +1427,10 @@ class PlgFabrik_Element extends FabrikPlugin
 				}
 				else
 				{
-					FabrikHelperHTML::debug($default, 'element eval default:' . $element->label);
-					FabrikWorker::clearEval();
+					\FabrikHelperHTML::debug($default, 'element eval default:' . $element->label);
+					\FabrikWorker::clearEval();
 					$default = Php::Eval(['code' => $default, 'vars'=>['data'=>$data]]);
-					FabrikWorker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
+					\FabrikWorker::logEval($default, 'Caught exception on eval of ' . $element->name . ': %s');
 
 					// Test this does stop error
 					$this->_default = $default === false ? '' : $default;
@@ -2158,7 +2158,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function copyRow($id, $copyText = 'Copy of %s', $groupId = null, $name = null)
 	{
 		/** @var FabrikTableElement $rule */
-		$rule = FabTable::getInstance('Element', 'FabrikTable');
+		$rule = \FabTable::getInstance('Element', 'FabrikTable');
 
 		$rule->load((int) $id);
 		$rule->id    = null;
@@ -2212,7 +2212,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		 */
 		if (is_a($this, 'PlgFabrik_ElementDatabasejoin'))
 		{
-			$join = FabTable::getInstance('Join', 'FabrikTable');
+			$join = \FabTable::getInstance('Join', 'FabrikTable');
 			$join->load(array('element_id' => $id));
 			$join->id         = null;
 			$join->element_id = $rule->id;
@@ -2229,7 +2229,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		foreach ($actions as $id)
 		{
-			$jsCode = FabTable::getInstance('Jsaction', 'FabrikTable');
+			$jsCode = \FabTable::getInstance('Jsaction', 'FabrikTable');
 			$jsCode->load($id);
 			$jsCode->id         = 0;
 			$jsCode->element_id = $rule->id;
@@ -4686,6 +4686,9 @@ class PlgFabrik_Element extends FabrikPlugin
 			case 'thisyear':
 				$query = ' YEAR(' . $key . ') = YEAR(NOW()) ';
 				break;
+			case 'lastyear':
+				$query = ' YEAR(' . $this->addConvert($key) . ') = YEAR(NOW()) - 1 ';
+				break;
 			case 'earlierthisyear':
 				$query = ' (DAYOFYEAR(' . $key . ') <= DAYOFYEAR(NOW()) AND YEAR(' . $key . ') = YEAR(NOW())) ';
 				break;
@@ -5318,7 +5321,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			}
 
 			$uberObject          = new stdClass;
-			$uberObject->value   = $uberTotal / count($results2);
+			$uberObject->value = count($results2) == 0 ? 0 : $uberTotal / count($results2);
 			$uberObject->label   = Text::_('COM_FABRIK_AVERAGE');
 			$uberObject->special = true;
 			$uberObject->class   = 'splittotal';
@@ -5883,7 +5886,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	public function formJavascriptClass(&$srcs, $script = '', &$shim = array())
 	{
 		$name   = $this->getElement()->plugin;
-		$ext    = FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
+		$ext    = \FabrikHelperHTML::isDebug() ? '.js' : '-min.js';
 		$formId = $this->getFormModel()->getId();
 		static $elementClasses;
 
@@ -5899,12 +5902,12 @@ class PlgFabrik_Element extends FabrikPlugin
 		// Load up the default script
 		if ($script == '')
 		{
-			$script = 'plugins/fabrik_element/' . $name . '/' . $name . $ext;
-		}
+			$script = $script = 'plugins/fabrik_element/' . $name . '/' . $name . $ext;
+		} 
 
 		if (empty($elementClasses[$formId][$script]))
 		{
-			$srcs['Element' . ucfirst($name)] = $script;
+            $srcs['Element' . ucfirst($name)] = $script;
 			$elementClasses[$formId][$script] = 1;
 		}
 	}
@@ -5970,7 +5973,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			return;
 		}
 
-		$db    = FabrikWorker::getDbo(true);
+		$db    = \FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->delete('#__fabrik_joins')->where('element_id = ' . $id);
 		$db->setQuery($query);
@@ -6082,7 +6085,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	public function ajax_loadTableFields()
 	{
-		$db             = FabrikWorker::getDbo();
+		$db             = \FabrikWorker::getDbo();
 		$listModel      = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('List', 'FabrikFEModel');
 		$input          = $this->app->getInput();
 		$this->_cnnId   = $input->getInt('cid', 0);
@@ -6204,7 +6207,7 @@ class PlgFabrik_Element extends FabrikPlugin
 		 * which we need to deprecate.
 		 */
 		if (!array_key_exists($name, $formModel->formDataWithTableName))
-			//if ($this->dataConsideredEmpty(FArrayHelper::getValue($formModel->formDataWithTableName, $name, '')))
+			//if ($this->dataConsideredEmpty(\FArrayHelper::getValue($formModel->formDataWithTableName, $name, '')))
 		{
 			$this->getEmptyDataValue($data);
 		}
@@ -6223,12 +6226,12 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * Shows the data formatted for the list view
 	 *
 	 * @param   string   $data     Elements data
-	 * @param   stdClass &$thisRow All the data in the lists current row
+	 * @param   \stdClass &$thisRow All the data in the lists current row
 	 * @param   array    $opts     Rendering options
 	 *
 	 * @return  string    formatted value
 	 */
-	public function renderListData($data, stdClass &$thisRow, $opts = array())
+	public function renderListData($data, \stdClass &$thisRow, $opts = array())
 	{
         $profiler = Profiler::getInstance('Application');
         JDEBUG ? $profiler->mark("renderListData: parent: start: {$this->element->name}") : null;
@@ -6238,7 +6241,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		if (!ArrayHelper::getValue($opts, 'json', false))
 		{
-			$data = FabrikWorker::JSONtoData($data, true);
+			$data = \FabrikWorker::JSONtoData($data, true);
 		}
 		else
 		{
@@ -6325,7 +6328,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			$r = $data;
 		}
 
-        $displayData = new stdClass;
+        $displayData = new \stdClass;
         $displayData->text = $r;
 
         if (ArrayHelper::getValue($opts, 'custom_layout', 1)) {
@@ -6411,9 +6414,9 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		$basePath                        = COM_FABRIK_BASE . '/components/com_fabrik/layouts/element';
 		$layout                          = new FileLayout('fabrik-element-addoptions', $basePath, array('debug' => false, 'component' => 'com_fabrik', 'client' => 'site'));
-		$displayData                     = new stdClass;
+		$displayData                     = new \stdClass;
 		$displayData->id                 = $this->getHTMLId($repeatCounter);
-		$displayData->add_image          = FabrikHelperHTML::image('plus', 'form', @$this->tmpl, array('alt' => Text::_('COM_FABRIK_ADD')));
+		$displayData->add_image          = \FabrikHelperHTML::image('plus', 'form', @$this->tmpl, array('alt' => Text::_('COM_FABRIK_ADD')));
 		$displayData->allowadd_onlylabel = $params->get('allowadd-onlylabel');
 		$displayData->savenewadditions   = $params->get('savenewadditions');
 		$displayData->onlylabel          = $onlylabel;
@@ -6550,7 +6553,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	public function getDefaultAttribs()
 	{
-		$o                               = new stdClass;
+		$o                               = new \stdClass;
 		$o->rollover                     = '';
 		$o->comment                      = '';
 		$o->sub_default_value            = '';
@@ -6858,7 +6861,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		// Needed for ajax update (since we are calling this method via dispatcher element is not set)
 		$input = $this->app->getInput();
-		$o         = new stdClass;
+		$o         = new \stdClass;
 		$formModel = $this->getFormModel();
 		$this->setId($input->getInt('element_id'));
 		$this->loadMeForAjax();
@@ -6879,7 +6882,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			return;
 		}
 
-		$cache  = FabrikWorker::getCache();
+		$cache  = \FabrikWorker::getCache();
 		$search = $input->get('value', '', 'string');
 		// uh oh, can't serialize PDO db objects so no can cache, as J! serializes the args
 		if ($this->config->get('dbtype') === 'pdomysql')
@@ -7156,7 +7159,7 @@ class PlgFabrik_Element extends FabrikPlugin
 			$id = $this->id;
 		}
 
-		$db    = FabrikWorker::getDbo(true);
+		$db    = \FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
 		$query->select('id')->from('#__fabrik_elements')->where('parent_id = ' . (int) $id);
 		$db->setQuery($query);
@@ -7279,7 +7282,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	public function updateJoinedPks($oldName, $newName)
 	{
-		$db    = FabrikWorker::getDbo(true);
+		$db    = \FabrikWorker::getDbo(true);
 		$item  = $this->getListModel()->getTable();
 		$query = $db->getQuery(true);
 
@@ -7299,7 +7302,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		foreach ($ids as $id)
 		{
-			$join = FabTable::getInstance('Join', 'FabrikTable');
+			$join = \FabTable::getInstance('Join', 'FabrikTable');
 			$join->load($id);
 			$params = new Registry($join->params);
 
@@ -7414,7 +7417,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	public function getPluginManager()
 	{
-		return FabrikWorker::getPluginManager();
+		return \FabrikWorker::getPluginManager();
 	}
 
 	/**
@@ -7430,7 +7433,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 */
 	public function getJoinRepeatCount($data, $oJoin)
 	{
-		return count(FArrayHelper::getValue($data, $oJoin->table_join . '___id', array()));
+		return count(\FArrayHelper::getValue($data, $oJoin->table_join . '___id', array()));
 	}
 
 	/**
@@ -7553,7 +7556,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	{
 		// first run plugins, which may set row class
 		$listModel = $this->getListModel();
-		$args = new stdClass;
+		$args = new \stdClass;
 		$args->rowClass = '';
 		$args->data = $data;
 		$pluginResults = \Fabrik\Helpers\Worker::getPluginManager()->runPlugins(
@@ -7599,7 +7602,7 @@ class PlgFabrik_Element extends FabrikPlugin
 							$data[$groupKey][$i]->rowClasses = [];
 						}
 
-						$data[$groupKey][$i]->rowClasses[] = FabrikString::getRowClass($c, $this->element->name);
+						$data[$groupKey][$i]->rowClasses[] = \FabrikString::getRowClass($c, $this->element->name);
 
 						// plugins may have already created a rowClass
 						if (isset($data[$groupKey][$i]->pluginRowClass))
@@ -7645,7 +7648,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		if ($rowClass === '1')
 		{
-			return FabrikString::getRowClass($element->value, $this->element->name);
+			return \FabrikString::getRowClass($element->value, $this->element->name);
 		}
 
 		return '';
@@ -7769,7 +7772,7 @@ class PlgFabrik_Element extends FabrikPlugin
         if (array_key_exists('fabrik_copy_from_table', $formData))
         {
             $idName = $name . '_id';
-            $idValues = FArrayHelper::getValue($formData, $idName, array());
+            $idValues = \FArrayHelper::getValue($formData, $idName, array());
 
             if (!empty($idValues))
             {
@@ -7777,9 +7780,9 @@ class PlgFabrik_Element extends FabrikPlugin
             }
         }
 
-		$d = FArrayHelper::getValue($formData, $rawName, FArrayHelper::getValue($formData, $name));
+		$d = \FArrayHelper::getValue($formData, $rawName, \FArrayHelper::getValue($formData, $name));
 		// set $emptyish to false so if no selection, we don't save a bogus empty row
-		$allJoinValues = FabrikWorker::JSONtoData($d, true, false);
+		$allJoinValues = \FabrikWorker::JSONtoData($d, true, false);
 
 		if ($groupModel->isJoin())
 		{
@@ -7790,11 +7793,11 @@ class PlgFabrik_Element extends FabrikPlugin
 		else
 		{
 			$k         = 'rowid';
-			$parentIds = empty($allJoinValues) ? array() : FArrayHelper::array_fill(0, count($allJoinValues), $formData[$k]);
+			$parentIds = empty($allJoinValues) ? array() : \FArrayHelper::array_fill(0, count($allJoinValues), $formData[$k]);
 		}
 
 		$paramsKey = $this->getJoinParamsKey();
-		$allParams = (array) FArrayHelper::getValue($formData, $paramsKey, array());
+		$allParams = (array) \FArrayHelper::getValue($formData, $paramsKey, array());
 		$allParams = array_values($allParams);
 		$i         = 0;
 		$idsToKeep = array();
@@ -7808,7 +7811,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 			if ($groupModel->canRepeat())
 			{
-				$joinValues = FArrayHelper::getValue($allJoinValues, $i, array());
+				$joinValues = \FArrayHelper::getValue($allJoinValues, $i, array());
 			}
 			else
 			{
@@ -7839,11 +7842,11 @@ class PlgFabrik_Element extends FabrikPlugin
 
 			foreach ($joinValues as $jIndex => $jid)
 			{
-				$record             = new stdClass;
+				$record             = new \stdClass;
 				$record->parent_id  = $parentId;
-				$fkVal              = FArrayHelper::getValue($joinValues, $jIndex);
+				$fkVal              = \FArrayHelper::getValue($joinValues, $jIndex);
 				$record->$shortName = $fkVal;
-				$record->params     = FArrayHelper::getValue($allParams, $jIndex);
+				$record->params     = \FArrayHelper::getValue($allParams, $jIndex);
 
 				// Stop notice with file-upload where fkVal is an array
 				if (array_key_exists($fkVal, $ids))
@@ -7863,7 +7866,7 @@ class PlgFabrik_Element extends FabrikPlugin
 
 					if (!$this->allowDuplicates)
 					{
-						$newId                    = new stdClass;
+						$newId                    = new \stdClass;
 						$newId->id                = $lastInsertId;
 						$newId->$shortName        = $record->$shortName;
 						$ids[$record->$shortName] = $newId;
@@ -8139,7 +8142,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					$this->validationError .= $msg['message'] . '<br />';
 				}
 			}
-			FabrikWorker::killMessage($this->app, 'warning');
+			\FabrikWorker::killMessage($this->app, 'warning');
 
 			return false;
 		}
@@ -8223,11 +8226,11 @@ class PlgFabrik_Element extends FabrikPlugin
 			{
 				$elementModel = $elementModels[$j];
 				$elKey = $elementModel->getFullName(true, false);
-				$v = FArrayHelper::getValue($d, $elKey);
+				$v = \FArrayHelper::getValue($d, $elKey);
 
 				if (is_array($v))
 				{
-					$origData = FArrayHelper::getValue($d, $elKey, array());
+					$origData = \FArrayHelper::getValue($d, $elKey, array());
 
 					if (!array_key_exists($elKey . '_raw', $d))
 					{
@@ -8236,13 +8239,13 @@ class PlgFabrik_Element extends FabrikPlugin
 
 					foreach (array_keys($v) as $x)
 					{
-						$origVal = FArrayHelper::getValue($origData, $x);
+						$origVal = \FArrayHelper::getValue($origData, $x);
 						$d[$elKey][$x] = $elementModel->getLabelForValue($v[$x], $origVal, true);
 					}
 				}
 				else
 				{
-					$origData = FArrayHelper::getValue($d, $elKey);
+					$origData = \FArrayHelper::getValue($d, $elKey);
 
 					if (!array_key_exists($elKey . '_raw', $d))
 					{

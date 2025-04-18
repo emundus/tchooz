@@ -187,7 +187,7 @@ class PlgFabrik_ListUpdate_col extends PlgFabrik_List
 			$values = FArrayHelper::getValue($output, 'fabrik___filter', array());
 			$values = FArrayHelper::getValue($values, $key, array());
 
-			for ($i = 0; $i < count($values['elementid']); $i ++)
+			for ($i = 0; $i < count($values['elementid']??[]); $i ++)
 			{
 				$id = $values['elementid'][$i];
 
