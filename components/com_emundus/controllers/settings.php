@@ -228,13 +228,13 @@ class EmundusControllersettings extends BaseController
 		}
 		else
 		{
-
-
 			$tag   = $this->input->getInt('tag');
 			$label = $this->input->getString('label');
 			$color = $this->input->getString('color');
 
-			$changeresponse = $this->m_settings->updateTags($tag, $label, $color);
+			$result = $this->m_settings->updateTags($tag, $label, $color);
+			$msg = $result ? JText::_('SUCCESS') : JText::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS');
+			$changeresponse = array('status' => $result, 'msg' => $msg);
 		}
 		echo json_encode((object) $changeresponse);
 		exit;
