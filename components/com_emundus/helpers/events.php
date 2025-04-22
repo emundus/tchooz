@@ -95,7 +95,17 @@ class EmundusHelperEvents
 				$m_form    = new EmundusModelForm();
 				$m_profile = new EmundusModelProfile();
 
-				$prid               = $m_profile->getProfileByFnum($user->fnum);
+                $em_params	= JComponentHelper::getParams('com_emundus');
+                $use_session = $em_params->get('use_session', 0);
+
+				$prid = 0;
+                if ($use_session) {
+                    $prid = $app->getSession()->get('emundusUser')->profile;
+                }
+                if (empty($prid)) {
+                    $prid = $m_profile->getProfileByFnum($user->fnum);
+                }
+
 				$submittion_page    = $m_form->getSubmittionPage($prid);
 				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
 
@@ -191,7 +201,8 @@ class EmundusHelperEvents
 
 		try
 		{
-			$user = JFactory::getSession()->get('emundusUser');
+			$app = Factory::getApplication();
+			$user = $app->getSession()->get('emundusUser');
 
 			if (isset($user->fnum))
 			{
@@ -202,7 +213,17 @@ class EmundusHelperEvents
 
 				$this->clearFormSession($user->fnum, $params['formModel']->id);
 
-				$prid               = $mProfile->getProfileByFnum($user->fnum);
+                $em_params	= ComponentHelper::getParams('com_emundus');
+                $use_session = $em_params->get('use_session', 0);
+
+				$prid = 0;
+                if ($use_session) {
+                    $prid = $app->getSession()->get('emundusUser')->profile;
+                }
+                if (empty($prid)) {
+                    $prid = $mProfile->getProfileByFnum($user->fnum);
+                }
+
 				$submittion_page    = $mForm->getSubmittionPage($prid);
 				$submittion_page_id = (int) explode('=', $submittion_page->link)[3];
 
@@ -1138,6 +1159,7 @@ class EmundusHelperEvents
 			$params                  = ComponentHelper::getParams('com_emundus');
 			$scholarship_document_id = $params->get('scholarship_document_id', null);
 			$application_fee         = $params->get('application_fee', 0);
+            $use_session = $params->get('use_session', 0);
 
 			$mApplication    = new EmundusModelApplication;
 			$mEmails         = new EmundusModelEmails;
@@ -1146,10 +1168,10 @@ class EmundusHelperEvents
 			$application_fee = (!empty($application_fee) && !empty($mProfile->getHikashopMenu($user->profile)));
 
 			//$validations = $mApplication->checkFabrikValidations($user->fnum, true, $itemid);
-			$attachments_progress = $mApplication->getAttachmentsProgress($user->fnum);
-			$forms_progress       = $mApplication->getFormsProgress($user->fnum);
+			$attachments_progress = $mApplication->getAttachmentsProgress($user->fnum, null, $use_session);
+			$forms_progress       = $mApplication->getFormsProgress($user->fnum, null, $use_session);
 
-			$profile_by_status = $mProfile->getProfileByStatus($user->fnum);
+			$profile_by_status = $mProfile->getProfileByStatus($user->fnum, $use_session);
 
 			if (empty($profile_by_status['profile']))
 			{
@@ -1368,8 +1390,11 @@ class EmundusHelperEvents
 
 			if (isset($user->fnum))
 			{
-				$mApplication->getFormsProgress($user->fnum);
-				$mApplication->getAttachmentsProgress($user->fnum);
+                $em_params	= JComponentHelper::getParams('com_emundus');
+                $use_session = $em_params->get('use_session', 0);
+
+				$mApplication->getFormsProgress($user->fnum, null, $use_session);
+				$mApplication->getAttachmentsProgress($user->fnum, null, $use_session);
 				$fnum = $user->fnum;
 			}
 

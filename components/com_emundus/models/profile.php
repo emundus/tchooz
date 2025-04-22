@@ -651,11 +651,17 @@ class EmundusModelProfile extends ListModel
 	 *
 	 * @return  array
 	 **/
-	function getProfileByStatus($fnum)
+	function getProfileByStatus($fnum,$use_session = 0)
 	{
 		$query = $this->_db->getQuery(true);
 
 		$res = [];
+
+        if($use_session == '1'){
+            $res['profile'] = JFactory::getSession()->get('emundusUser')->profile;
+            $res['campaign_id'] = $fnumInfos['campaign_id'];
+            return $res;
+        }
 
 		if (!empty($fnum))
 		{
