@@ -2372,6 +2372,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->select('esa.start_date as start, esa.end_date as end')
 				->select('ese.link as link_event, ese.name as event_name, ese.slot_can_book_until_days as can_book_until_days, ese.slot_can_book_until_date as can_book_until_date, ese.slot_can_cancel as can_cancel, ese.slot_can_cancel_until_days as can_cancel_until_days, ese.slot_can_cancel_until_date as can_cancel_until_date')
 				->select('del.name as name_location')
+				->select('del.address as address_location')
+				->select('del.description as description_location')
 				->select('dlr.name as room_name')
 				->from($this->db->quoteName('#__emundus_registrants', 'er'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.id') . ' = ' . $this->db->quoteName('er.availability'))
