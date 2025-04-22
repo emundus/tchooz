@@ -94,9 +94,11 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 			$this->app->redirect($new_url);
 		}
 
-		$applicant_can_renew = ComponentHelper::getParams('com_emundus')->get('applicant_can_renew', '0');
+		$emundus_config = ComponentHelper::getParams('com_emundus');
+		$applicant_can_renew = $emundus_config->get('applicant_can_renew', '0');
 		$cid = $this->app->getInput()->getInt('cid');
-		if(!empty($cid)) {
+		require_once JPATH_SITE . '/components/com_emundus/helpers/menu.php';
+		if (!empty($cid)) {
 			require_once JPATH_SITE . '/components/com_emundus/models/campaign.php';
 			$m_campaign = new EmundusModelCampaign;
 			$allowed_campaigns = $m_campaign->getAllowedCampaign($this->app->getIdentity()->id);
@@ -117,7 +119,16 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 				}
 
 				$this->app->enqueueMessage(Text::_($message), 'error');
-				$this->app->redirect('index.php');
+				$this->app->redirect(EmundusHelperMenu::getHomepageLink());
+			}
+
+
+			if (!class_exists('EmundusHelperFiles')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+			}
+			if (!EmundusHelperFiles::checkLimitationFilesRules(Factory::getApplication()->getIdentity()->id, $cid)) {
+				$this->app->enqueueMessage(Text::_('COM_EMUNDUS_LIMIT_FILES_BY_CAMPAIGN_BY_STATUS_REACHED'), 'error');
+				$this->app->redirect(EmundusHelperMenu::getHomepageLink());
 			}
 
 			$formModel->data['jos_emundus_campaign_candidature___campaign_id_raw'] = $cid;

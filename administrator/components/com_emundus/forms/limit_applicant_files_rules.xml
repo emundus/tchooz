@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <fields>
+        <field name="limit_files_by"
+               type="list"
+               default="campaigns"
+               label="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_BY"
+               description="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_BY_HELPTEXT">
+            <option value="campaigns">
+                COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_BY_CAMPAIGNS
+            </option>
+            <option value="programs">
+                COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_BY_PROGRAMS
+            </option>
+            <option value="years">
+                COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_BY_YEARS
+            </option>
+            <option value="users">
+                COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_BY_USERS
+            </option>
+        </field>
+
+        <field
+                name="limit_files_max"
+                type="integer"
+                default="0"
+                first="0"
+                last="10"
+                step="1"
+                label="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_MAX"
+        />
+
+        <field name="limit_files_count_status"
+               type="sql"
+               default=""
+               label="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_COUNT_STATUSES"
+               description=""
+               query="SELECT step, value FROM jos_emundus_setup_status"
+               key_field="step"
+               value_field="value"
+               multiple="true"
+               layout="joomla.form.field.list-fancy-select"
+        />
+    </fields>
+</form>
