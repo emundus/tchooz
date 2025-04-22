@@ -107,46 +107,53 @@ class JFormFieldFabrikeditor extends TextareaField
 		$aceId  = $this->id . '_' . sprintf("%06x", mt_rand(0, 0xffffff));
 		$script = '
 window.addEvent(\'domready\', function () {
-	var field = document.id("' . $this->id . '");
-	var FbEditor = ace.edit("' . $aceId . '-ace");
-	FbEditor.setTheme("ace/theme/' . $theme . '");
-	FbEditor.getSession().setMode(' . $aceMode . ');
-	FbEditor.setValue(field.value);
-	FbEditor.navigateFileStart();
-	FbEditor.setAnimatedScroll(true);
-	FbEditor.setBehavioursEnabled(true);
-	FbEditor.setDisplayIndentGuides(true);
-	FbEditor.setHighlightGutterLine(true);
-	FbEditor.setHighlightSelectedWord(true);
-	FbEditor.setShowFoldWidgets(true);
-	FbEditor.setWrapBehavioursEnabled(true);
-	FbEditor.getSession().setUseWrapMode(true);
-	FbEditor.getSession().setTabSize(2);
-	FbEditor.on("blur", function () {
-		if (field.value !== FbEditor.getValue()) {
-			field.value = FbEditor.getValue();
-			field.fireEvent("change", field);
-		}
-		field.fireEvent("blur", field);
-	});
-	var maxlines = Math.floor((' . $maxHeight . ' - 2) / FbEditor.renderer.lineHeight);
-	var updateHeight = function () {
-		var s = FbEditor.getSession();
-		var r = FbEditor.renderer;
-		var l = s.getScreenLength();
-		var h = (l > maxlines ? maxlines : l)
-		      * r.lineHeight
-		      + (r.$horizScroll ? r.scrollBar.getWidth() : 0)
-		      + 2;
-		h = h < ' . $minHeight . ' ? ' . $minHeight . ' : h;
-		c = document.id("' . $aceId . '-aceContainer").getStyle("height").toInt();
-		if (c !== h) {
-			document.id("' . $aceId . '-aceContainer").setStyle("height", h.toString() + "px");
-			FbEditor.resize();
-		}
-	}
-	updateHeight();
-	FbEditor.getSession().on("change", updateHeight);
+    const intervalId = setInterval(() => {
+        const aceDiv = document.getElementById("' . $aceId . '-ace"); 
+        if (aceDiv) { // If the div is found
+            clearInterval(intervalId); // Stop checking
+
+			var field = document.id("' . $this->id . '");
+			var FbEditor = ace.edit("' . $aceId . '-ace");
+			FbEditor.setTheme("ace/theme/' . $theme . '");
+			FbEditor.getSession().setMode(' . $aceMode . ');
+			FbEditor.setValue(field.value);
+			FbEditor.navigateFileStart();
+			FbEditor.setAnimatedScroll(true);
+			FbEditor.setBehavioursEnabled(true);
+			FbEditor.setDisplayIndentGuides(true);
+			FbEditor.setHighlightGutterLine(true);
+			FbEditor.setHighlightSelectedWord(true);
+			FbEditor.setShowFoldWidgets(true);
+			FbEditor.setWrapBehavioursEnabled(true);
+			FbEditor.getSession().setUseWrapMode(true);
+			FbEditor.getSession().setTabSize(2);
+			FbEditor.on("blur", function () {
+				if (field.value !== FbEditor.getValue()) {
+					field.value = FbEditor.getValue();
+					field.fireEvent("change", field);
+				}
+				field.fireEvent("blur", field);
+			});
+			var maxlines = Math.floor((' . $maxHeight . ' - 2) / FbEditor.renderer.lineHeight);
+			var updateHeight = function () {
+				var s = FbEditor.getSession();
+				var r = FbEditor.renderer;
+				var l = s.getScreenLength();
+				var h = (l > maxlines ? maxlines : l)
+				      * r.lineHeight
+				      + (r.$horizScroll ? r.scrollBar.getWidth() : 0)
+				      + 2;
+				h = h < ' . $minHeight . ' ? ' . $minHeight . ' : h;
+				c = document.id("' . $aceId . '-aceContainer").getStyle("height").toInt();
+				if (c !== h) {
+					document.id("' . $aceId . '-aceContainer").setStyle("height", h.toString() + "px");
+					FbEditor.resize();
+				}
+			}
+			updateHeight();
+			FbEditor.getSession().on("change", updateHeight);
+        }
+    }, 50); // Check every 50 milliseconds
 });
 		';
 

@@ -94,6 +94,8 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 		$task = $this->getTask();
 		$value = FArrayHelper::getValue($data, $task, 0, 'int');
 
+		$this->setRedirect(Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
+
 		if (empty($cid))
 		{
 //			JError::raiseWarning(500, Text::_($this->text_prefix . '_NO_ITEM_SELECTED'));
@@ -107,13 +109,8 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 			$cid = ArrayHelper::toInteger($cid);
 
 			// Publish the items.
-			if (!$model->addToListView($cid, $value))
-			{
-				//JError::raiseWarning(500, $model->getError());
-				\Joomla\CMS\Factory::getApplication()->enqueueMessage($model->getError(), 'error');	
-			}
-			else
-			{
+			try {
+				$model->addToListView($cid, $value);
 				if ($value == 1)
 				{
 					$nText = $this->text_prefix . '_N_ITEMS_ADDED_TO_LIST_VIEW';
@@ -124,10 +121,11 @@ class FabrikAdminControllerElements extends FabControllerAdmin
 				}
 
 				$this->setMessage(Text::plural($nText, count($cid)));
+			} catch (\Exception $e) {
+				\Joomla\CMS\Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 			}
 		}
 
-		$this->setRedirect(Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
 	}
 
 	/**

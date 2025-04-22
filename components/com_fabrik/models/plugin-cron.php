@@ -60,7 +60,7 @@ class PlgFabrik_Cron extends FabrikPlugin
 		if (!$this->row || $force)
 		{
 			Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_fabrik/tables');
-			$row = FabTable::getInstance('Cron', 'FabrikTable');
+			$row = \FabTable::getInstance('Cron', 'FabrikTable');
 			$row->load($this->id);
 			$this->row = $row;
 		}

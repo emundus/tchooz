@@ -2,11 +2,11 @@
 <extension client="site" method="upgrade" type="component" version="4">
   <name>com_fabrik</name>
   <author>Fabrikar</author>
-  <creationDate>2024-10-18</creationDate>
-  <copyright>Copyright (C) 2005-2024 Fabrikar - All rights reserved.</copyright>
+  <creationDate>2025-04-16</creationDate>
+  <copyright>Copyright (C) 2005-2025 Fabrikar - All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see software_license.txt</license>
-  <version>4.4.1</version>
-  <gitdate>2024-10-18</gitdate>
+  <version>4.5.2</version>
+  <gitdate>2025-04-16</gitdate>
   <description>COM_FABRIK_XML_DESCRIPTION</description>
   <scriptfile>com_fabrik.manifest.class.php</scriptfile>
   <files folder="site">
@@ -26,6 +26,7 @@
     <folder>com_fabrik/images</folder>
     <folder>com_fabrik/css</folder>
     <folder>com_fabrik/js</folder>
+    <file>com_fabrik/joomla.asset.json</file>
   </media>
   <administration>
     <menu img="../administrator/components/com_fabrik/images/fabrik.png" view="home">com_fabrik</menu>

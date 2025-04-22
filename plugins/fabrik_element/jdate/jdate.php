@@ -323,6 +323,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 			$format .= ' ' . $timeFormat;
 		}
 
+		// J!4.4.0 issue breaks the time picker if 24h enabled; showing week number will make it work again
 		$calOpts['weekNumbers'] = $params->get('jdate_show_week_numbers', '0') === '1';
 
 		$str[] = '<div class="fabrikSubElementContainer" id="' . $id . '">';
@@ -1255,7 +1256,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 				{
 					// Will only work on php 5.3.6
 					$value = Factory::getDate('first day of January ' . $value)->toSql();
-					$next  = Factory::getDate('first day of January ' . ($value + 1));
+					$next  = Factory::getDate('first day of January ' . intval($value) + 1)->toSql();
 				}
 				elseif ($this->isMonth($value))
 				{
@@ -2234,6 +2235,9 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		{
 			case 'thisyear':
 				$query = ' YEAR(' . $this->addConvert($key) . ') = YEAR(NOW()) ';
+				break;
+			case 'lastyear':
+				$query = ' YEAR(' . $this->addConvert($key) . ') = YEAR(NOW()) - 1 ';
 				break;
 			case 'earlierthisyear':
 				$query = ' (DAYOFYEAR(' . $this->addConvert($key) . ') <= DAYOFYEAR(NOW()) AND YEAR(' . $this->addConvert($key) . ') = YEAR(NOW())) ';

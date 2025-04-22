@@ -1,3 +1,4 @@
+# docker-compose.yml for local development environment setup
 services:
   joomla:
     container_name: joomla5
@@ -23,7 +24,7 @@ services:
       TCHOOZ_DISPLAY_OFFLINE_MESSAGE: 1
       TCHOOZ_OFFLINE_IMAGE: images/logo.png
       TCHOOZ_SITENAME: Tchooz
-      TCHOOZ_DEBUG: 0
+      TCHOOZ_DEBUG: true
       TCHOOZ_DEBUG_LANG: 0
       TCHOOZ_LIVE_SITE: 'https://localhost:8585/'
       TCHOOZ_SECRET: TXGin8XS4BEqA8cA
@@ -48,24 +49,24 @@ services:
       TCHOOZ_SESSION_HANDLER: database
       TCHOOZ_FORCE_SSL: 0
       TCHOOZ_REDIS_PERSIST: 0
-      TCHOOZ_REDIS_HOST: redis
+      TCHOOZ_REDIS_HOST: joomlaredis
       TCHOOZ_REDIS_PORT: 6379
       TCHOOZ_REDIS_DB: 0
       TCHOOZ_MAIL_REPLY_TO:
       TCHOOZ_MAIL_REPLY_TO_NAME:
       TCHOOZ_SESSION_REDIS_PERSIST: 0
-      TCHOOZ_SESSION_REDIS_HOST: redis
+      TCHOOZ_SESSION_REDIS_HOST: joomlaredis
       TCHOOZ_SESSION_REDIS_PORT: 6379
       TCHOOZ_SESSION_REDIS_DB: 0
       TCHOOZ_BEHIND_LOADBALANCER: 0
       TCHOOZ_ADMIN_ACCESS_TOKEN: X3xAqXmxNkAKd5ckHBqmT
       TCHOOZ_COORD_USERNAME: coordinator
-      TCHOOZ_COORD_MAIL: dev@emundus.io
+      TCHOOZ_COORD_MAIL: dev@emundus.fr
       TCHOOZ_COORD_FIRST_NAME: Dev
       TCHOOZ_COORD_LAST_NAME: EMUNDUS
       TCHOOZ_COORD_PASSWORD: password
       TCHOOZ_SYSADMIN_USERNAME: sysadmin
-      TCHOOZ_SYSADMIN_MAIL: sysadmin@emundus.io
+      TCHOOZ_SYSADMIN_MAIL: sysadmin@emundus.fr
       TCHOOZ_SYSADMIN_FIRST_NAME: Administrator
       TCHOOZ_SYSADMIN_LAST_NAME: EMUNDUS
       TCHOOZ_SYSADMIN_PASSWORD: password
@@ -73,7 +74,7 @@ services:
       TCHOOZ_CUSTOMER_ID: 999999
     volumes:
       - ./.docker/apache/000-default.conf:/etc/apache2/sites-available/000-default.conf
-      - .:/var/www/html
+      - .:/var/www/html:z
     depends_on:
       joomladb:
         condition: service_healthy
@@ -99,9 +100,19 @@ services:
       - "127.0.0.1:13308:3306"
     restart: always
     volumes:
-      # Delete this folder to reset the database
-      - ./.docker/data/mysql:/var/lib/mysql
-      # Uncomment this line to use a custom my.cnf file
+      # (Required) Use a custom MySQL configuration for Tchooz
       - ./.docker/mysql/conf/my.cnf:/etc/mysql/conf.d/my.cnf
-      # Uncomment this line to use a custom sql file to init database
+      # (Config 1 - default: Tchooz fresh install with database persistant in a Docker volume
       - ./.docker/installation/databases:/docker-entrypoint-initdb.d
+      # (Config 2: Tchooz fresh install with database persistant in a host volume
+      # - ./.docker/data/mysql:/var/lib/mysql
+      # - ./.docker/installation/databases:/docker-entrypoint-initdb.d
+      # (Config 3: Tchooz custom install without database persistant
+      # - /tmp/name_db_yyyy-mm-dd.sql:/docker-entrypoint-initdb.d/tchooz_custom_database.sql
+
+  joomlaredis:
+    container_name: joomla5_redis
+    image: redis:7
+    restart: always
+    ports:
+      - "6379:6379"

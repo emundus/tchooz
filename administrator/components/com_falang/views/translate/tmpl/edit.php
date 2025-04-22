@@ -172,8 +172,7 @@ else {
         console.log(action);
         try {
             if (action == "copy") {
-                srcEl = document.getElementById(field);
-                srcEl.value = value.trim();
+                setTranslation(field, value)
             }
             if (action == "translate"){
                 translateService(field, value);

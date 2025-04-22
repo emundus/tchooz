@@ -38,7 +38,7 @@ if (!empty($d->user_select_message))
 					<a class="btn add button btn-primary" href="#">
 						<?php echo $d->addImg; ?>
 					</a>
-					<a class="btn button delete" href="#">
+					<a class="btn button delete btn-danger" href="#">
 						<?php echo $d->delImg; ?>
 					</a>
 				</div>
@@ -46,5 +46,5 @@ if (!empty($d->user_select_message))
 		</tr>
 		</tbody>
 	</table>
-	<input class="button btn button-primary" value="<?php echo Text::_('COM_FABRIK_APPLY'); ?>" type="button">
+	<input class="button btn btn-primary" value="<?php echo Text::_('COM_FABRIK_APPLY'); ?>" type="button">
 </form>

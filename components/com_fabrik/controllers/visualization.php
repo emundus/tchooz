@@ -119,7 +119,7 @@ class FabrikControllerVisualization extends BaseController
 	 */
 	protected function getViewName()
 	{
-		$viz = FabTable::getInstance('Visualization', 'FabrikTable');
+		$viz = \FabTable::getInstance('Visualization', 'FabrikTable');
 		$viz->load($this->input->getInt('id'));
 		$viewName = $viz->plugin;
 		$this->addViewPath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viewName . '/views');

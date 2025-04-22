@@ -165,6 +165,7 @@ class PlgFabrik_ElementIp extends PlgFabrik_Element
 
 		if (empty($data) || !array_key_exists($key, $data) || (array_key_exists($key, $data) && empty($data[$key])))
 		{
+			$opts['use_default'] = true;
 			$value = $this->getDefaultOnACL($data, $opts);
 
 			return $value;

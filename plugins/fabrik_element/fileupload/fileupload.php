@@ -3153,13 +3153,31 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 	 */
 	public function addEmailAttachement($data)
 	{
+		$params = $this->getParams();
+		
+		if ($this->isAjax() && $params->get('ajax_max', 4) == 1)
+		{
+			// Single ajax upload
+			if (is_object($data))
+			{
+				$data = $data->file;
+			}
+			else
+			{
+				$data = FabrikWorker::JSONtoData($data, false);
+				if ($data !== '')
+				{
+					$data= FArrayHelper::getValue($data, 0);
+				}
+			}
+		}
+
 		if (is_object($data))
 		{
 			$data = $data->file;
 		}
 
 		// @TODO: check what happens here with open base_dir in effect
-		$params = $this->getParams();
 
 		if ($params->get('ul_email_file'))
 		{
@@ -3633,6 +3651,31 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		$elName   = $this->getFullName(true, false);
 		$filePath = $row->$elName;
 		$filePath = FabrikWorker::JSONtoData($filePath, false);
+
+		if ($params->get('ajax_max', 4) == 1)
+		{
+			// Single ajax upload
+			if (is_object($filePath))
+			{
+				$filePath = $filePath->file;
+			}
+			else
+			{
+				if (is_array($filePath))
+				{
+					$filePath = $filePath[0];
+
+					if (empty($filePath))
+					{
+						$filePath = '';
+					}
+					else {
+						$filePath = $filePath->file;
+					}
+				}
+			}
+		}
+
 		$filePath = is_object($filePath) ? FArrayHelper::fromObject($filePath) : (array) $filePath;
 
 		/*
@@ -3657,7 +3700,6 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 			exit;
 		}
-
 
 		$filePath = FArrayHelper::getValue($filePath, $repeatCount);
 
@@ -3732,14 +3774,20 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		if ($hit_counter = $params->get('fu_download_hit_counter', ''))
 		{
-			JError::setErrorHandling(E_ALL, 'ignore');
 			$listModel = $this->getListModel();
 			$pk        = $listModel->getPrimaryKey();
 			$fabrikDb  = $listModel->getDb();
 			list($table_name, $element_name) = explode('.', $hit_counter);
 			$sql = "UPDATE $table_name SET $element_name = COALESCE($element_name,0) + 1 WHERE $pk = " . $fabrikDb->q($rowId);
-			$fabrikDb->setQuery($sql);
-			$fabrikDb->execute();
+
+			// Run the query and handle any errors with an exception
+			try {
+				$fabrikDb->setQuery($sql);
+				$fabrikDb->execute();
+			}
+			catch (\Exception $e) {
+				$view->error = 	\Joomla\CMS\Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+			}
 		}
 	}
 
@@ -3760,7 +3808,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		if ((int) $params->get('fu_download_log', 0))
 		{
 			$input = $this->app->input;
-			$log                = FabTable::getInstance('log', 'FabrikTable');
+			$log                = \FabTable::getInstance('log', 'FabrikTable');
 			$log->message_type  = 'fabrik.fileupload.download';
 			$msg                = new stdClass;
 			$msg->file          = $filePath;
@@ -3865,7 +3913,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		}
 
 		$repeatCounter = (int) $input->getInt('repeatCounter');
-		$join          = FabTable::getInstance('join', 'FabrikTable');
+		$join          = \FabTable::getInstance('join', 'FabrikTable');
 		$join->load(array('element_id' => $input->getInt('element_id')));
 		$this->setId($input->getInt('element_id'));
 		$this->getElement();

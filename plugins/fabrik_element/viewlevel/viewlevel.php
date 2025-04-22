@@ -160,4 +160,22 @@ class PlgFabrik_ElementViewlevel extends PlgFabrik_ElementList
 
 		return $return;
 	}
+	
+	/**
+	 * Viewlevel element doesn't have a default.
+	 * If there's no edit access set the default according to the selection as it is done for the editable dropdown rendering
+	 *
+	 * @param   array  $data  form data
+	 *
+	 * @return mixed
+	 */
+	public function getDefaultValue($data = array())
+	{
+		$selected = $this->user->getAuthorisedViewLevels();
+		arsort($selected);
+		$selected = array_shift($selected);
+
+		$this->default = $selected;
+		return $this->default;
+	}
 }

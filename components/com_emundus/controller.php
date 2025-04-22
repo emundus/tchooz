@@ -558,15 +558,8 @@ class EmundusController extends JControllerLegacy
 		if (EmundusHelperAccess::isApplicant($current_user->id)) {
 			$user = $current_user;
 			$fnum = $user->fnum;
-			if ($duplicate == 1 && $nb <= 1 && $copy_application_form == 1) {
-				$fnums = implode(',', $this->_db->quote(array_keys($user->fnums)));
-				$where = ' AND user_id=' . $user->id . ' AND attachment_id=' . $attachment_id . ' AND `fnum` in (select fnum from `#__emundus_campaign_candidature` where `status` IN (' . $status_for_send . '))';
-			}
-			else {
-				$fnums = $this->_db->quote($fnum);
-				$where = ' AND user_id=' . $user->id . ' AND id=' . $upload_id;
-			}
-
+			$fnums = $this->_db->quote($fnum);
+			$where = ' AND user_id=' . $user->id . ' AND id=' . $upload_id;
 		}
 		elseif (EmundusHelperAccess::asAccessAction(4, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
 			$user  = $m_profile->getEmundusUser($student_id);
@@ -587,10 +580,13 @@ class EmundusController extends JControllerLegacy
 			$url = 'index.php?option=com_emundus&view=checklist&Itemid=' . $itemid;
 
 
-		$query = 'SELECT id, filename
+		$query  = 'SELECT id, filename
                     FROM #__emundus_uploads
-                    WHERE user_id = ' . $user->id . '
-                    AND fnum IN (' . $fnums . ') ' . $where;
+                    WHERE user_id = '.$user->id.'
+                    AND fnum IN ('.$fnums.')';
+		if(!empty($where)) {
+			$query .= $where;
+		}
 
 		try {
 

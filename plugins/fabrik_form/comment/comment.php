@@ -577,7 +577,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$this->fixTable();
 
 		$input = $this->app->input;
-		$row = FabTable::getInstance('comment', 'FabrikTable');
+		$row = \FabTable::getInstance('comment', 'FabrikTable');
 		$filter = InputFilter::getInstance();
 		$request = $filter->clean($_REQUEST, 'array');
 
@@ -943,7 +943,7 @@ class PlgFabrik_FormComment extends PlgFabrik_Form
 		$commentId = $this->app->input->getInt('commentid');
 
 		// TableComment
-		$c = FabTable::getInstance('Comment', 'FabrikTable');
+		$c = \FabTable::getInstance('Comment', 'FabrikTable');
 		$c->load($commentId);
 		echo "<a href=\"mailto:$c->email\">$c->email</a>";
 	}

@@ -135,7 +135,8 @@ class PlgFabrik_ListLink extends plgFabrik_List
 		parent::onLoadJavascriptInstance($args);
 		$opts = $this->getElementJSOptions();
 		$params = $this->getParams();
-		$opts->link = Route::_($params->get('table_link_link', ''));
+		$rawLink = Route::_($params->get('table_link_link', ''));
+		$opts->link = htmlspecialchars_decode($rawLink, ENT_QUOTES);
 		$opts->newTab = $params->get('table_link_new_tab', '0') === '1';
 		$opts->fabrikLink = ($params->get('table_link_isfabrik', '0') === '1' && $this->getModel()->getParams()->get('list_ajax_links') == '1')
 			|| $params->get('table_link_isfabrik', '0') === '2';

@@ -18,10 +18,11 @@ $imgProps = array('alt' => Text::_('COM_FABRIK_TOGGLE'), 'data-role' => 'toggle'
 ?>
 
 <?php if ($d->emptyDataMessage != '') : ?>
-<a href="#" class="toggle">
-    <?php else: ?>
+	<a href="#" class="toggle">
+<?php else: ?>
     <a href="#" class="toggle fabrikTip" title="<?php echo $d->emptyDataMessage ?>" opts='{trigger: "hover"}'>
-        <?php endif; ?>
+<?php endif; ?>
+
         <?php echo FabrikHelperHTML::image('arrow-down', 'list', $d->tmpl, $imgProps); ?>
         <span class="groupTitle">
 		<?php echo $d->title; ?> 
@@ -29,5 +30,11 @@ $imgProps = array('alt' => Text::_('COM_FABRIK_TOGGLE'), 'data-role' => 'toggle'
 		if ($d->group_by_show_count) : ?>
 			<span class="groupCount">( <?php echo $d->count ?> )</span>
 		<?php endif; ?>	
-	</span>
-    </a>
+        </span>
+	</a>
+
+<?php if (!empty($d->extra)) : ?>
+	<div class="groupExtra">
+		<?php echo $d->extra; ?>
+	</div>
+<?php endif; ?>

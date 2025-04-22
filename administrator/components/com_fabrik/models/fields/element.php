@@ -90,18 +90,32 @@ class JFormFieldElement extends ListField
 
 		$opts = new stdClass;
 
-		if ($this->form->repeat)
-		{
-			// In repeat fieldset/group
-			$conn        = $connection . '-' . $this->form->repeatCounter;
-			$opts->table = 'jform_' . $table . '-' . $this->form->repeatCounter;
+		/* Check if we are part of a subform, if so we need to insert the subform id parts */
+		if (strpos($this->form->getName(), 'subform.') === 0) {
+			/* yes, we are in a subform, extract the subform id part, dropping the repeat counter. */
+			$connectionParts = explode("_", $connection);
+			array_shift($connectionParts);
+			$observe = implode('_', $connectionParts);
+			$conn = str_replace([$this->fieldname, 'jform_'], [$observe, ''], $this->id);
+			array_pop($connectionParts);
+			array_push($connectionParts, 'table');
+			$table = implode('_', $connectionParts);
+			$opts->table = str_replace($this->fieldname, $table, $this->id);;
+			$opts->isTemplate = (strpos($this->id, 'datasourcesX') !== false);
+		} else {
+			if ($this->form->repeat)
+			{
+				// In repeat fieldset/group
+				$conn        = $connection . '-' . $this->form->repeatCounter;
+				$opts->table = 'jform_' . $table . '-' . $this->form->repeatCounter;
+			}
+			else
+			{
+				$conn        = ($c === false || !$connectionInRepeat) ? $connection : $connection . '-' . $c;
+				$opts->table = ($c === false || !$connectionInRepeat) ? 'jform_' . $table : 'jform_' . $table . '-' . $c;
+			}
 		}
-		else
-		{
-			$conn        = ($c === false || !$connectionInRepeat) ? $connection : $connection . '-' . $c;
-			$opts->table = ($c === false || !$connectionInRepeat) ? 'jform_' . $table : 'jform_' . $table . '-' . $c;
-		}
-
+		
 		$opts->published            = $published;
 		$opts->showintable          = $showInTable;
 		$opts->excludejoined        = $excludeJoined;

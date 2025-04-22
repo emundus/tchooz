@@ -90,15 +90,17 @@ class FabrikController extends BaseController
 		// Set the default view name from the Request
 		$view = $this->getView($viewName, $viewType);
 
-		// Push a model into the view
-		if ($model = $this->getModel($modelName))
-		{
-			$view->setModel($model, true);
+		try {
+			// Push a model into the view
+			if ($model = $this->getModel($modelName))
+			{
+				$view->setModel($model, true);
+			}
+		} catch (\Exception $e) {
+			$view->error = 	$e->getMessage();
 		}
 
 		// Display the view
-
-		$view->error = $this->getError();
 
 		if (($viewName = 'form' || $viewName = 'details'))
 		{
