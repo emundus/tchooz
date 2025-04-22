@@ -248,4 +248,12 @@ class FilesHelperTest extends UnitTestCase
 		$session->clear('em-quick-search-filters');
 		$session->clear('em-applied-filters');
 	}
+
+	public function testCheckLimitationFilesRules()
+	{
+		$applicant_id = $this->dataset['applicant'];
+
+		$can_create_new = $this->helper::checkLimitationFilesRules($applicant_id, $this->dataset['campaign']);
+		$this->assertTrue($can_create_new, 'Check limitation files rules with correct applicant id and campaign id returns true');
+	}
 }

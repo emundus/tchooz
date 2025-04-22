@@ -2088,6 +2088,12 @@ class EmundusModelSettings extends ListModel
 				case 'emundus':
 					if (array_key_exists($param, $params['emundus']))
 					{
+						if ($param === 'limit_files_status') {
+							$value = array_map(function ($item) {
+								return (int)$item->step;
+							}, $value);
+						}
+
 						$eMConfig = ComponentHelper::getParams('com_emundus');
 						$eMConfig->set($param, $value);
 						$componentid = ComponentHelper::getComponent('com_emundus')->id;
@@ -2139,8 +2145,9 @@ class EmundusModelSettings extends ListModel
 
 		if ($updated)
 		{
-			$this->userID   = Factory::getUser()->id;
-			$this->userName = Factory::getUser()->name;
+			$user = Factory::getApplication()->getIdentity();
+			$this->userID   = $user->id;
+			$this->userName = $user->name;
 			if ($value !== "")
 			{
 				if ($param == 'smtppass' || $param == 'custom_email_smtppass')

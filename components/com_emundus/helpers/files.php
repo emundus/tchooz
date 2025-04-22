@@ -18,6 +18,7 @@ jimport('joomla.application.component.helper');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * eMundus Component Query Helper
@@ -6710,6 +6711,119 @@ class EmundusHelperFiles
 		}
 
 		return $id;
+	}
+
+	/**
+	 * @param   int  $user_id
+	 * @param   int  $campaign_id
+	 * @param   int  $program_id
+	 *
+	 * @return bool
+	 */
+	public static function checkLimitationFilesRules(int $user_id, int $campaign_id, int $program_id = 0): bool
+	{
+		$can_create_new_file = true;
+
+		if (!empty($user_id)) {
+			$emundus_config = ComponentHelper::getParams('com_emundus');
+			$limitation_rules = $emundus_config->get('limit_files_rules');
+
+			if (!empty($limitation_rules)) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->createQuery();
+
+				if (empty($program_id))
+				{
+					$query->select('sp.id')
+						->from('#__emundus_setup_programmes as sp')
+						->leftJoin('#__emundus_setup_campaigns as esc ON esc.training = sp.code')
+						->where('esc.id = ' . $campaign_id);
+					$db->setQuery($query);
+					$program_id = $db->loadResult();
+				}
+
+				foreach ($limitation_rules as $limitation_rule) {
+					if (empty($limitation_rule->limit_files_by) || !in_array($limitation_rule->limit_files_by, ['campaigns', 'programs', 'users', 'years'])) {
+						continue;
+					}
+
+					$query->clear();
+					switch($limitation_rule->limit_files_by) {
+						case 'campaigns':
+							$query->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->where('ecc.campaign_id = ' . $campaign_id)
+								->andWhere('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+							break;
+						case 'programs':
+							$query->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->leftJoin('#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+								->leftJoin('#__emundus_setup_programmes as sp ON sp.code = esc.training')
+								->where('sp.id = ' . $program_id)
+								->andWhere('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+
+							break;
+						case 'users':
+							$query->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->where('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+							break;
+						case 'years':
+							$query->select('esc.year')
+								->from('#__emundus_setup_campaigns as esc')
+								->where('esc.id = ' . $campaign_id);
+
+							$db->setQuery($query);
+							$year = $db->loadResult();
+
+							$query->clear()
+								->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->leftJoin('#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+								->where('esc.year = ' . $db->quote($year))
+								->andWhere('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+							break;
+					}
+
+					try {
+						$db->setQuery($query);
+						$nb_files = $db->loadResult();
+
+						if ($nb_files >= $limitation_rule->limit_files_max) {
+							$can_create_new_file = false;
+							break;
+						}
+					} catch (Exception $e) {
+						Log::add('Failed to get number of files for user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
+				}
+			}
+		} else {
+			$can_create_new_file = false;
+		}
+
+		return $can_create_new_file;
 	}
 }
 

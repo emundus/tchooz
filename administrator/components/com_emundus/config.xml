@@ -339,6 +339,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+
         <field name="collaborate_link"
                type="sql"
 			   default=""
@@ -368,6 +369,15 @@
                key_field="id"
                value_field="label"
         />
+        <field
+            name="limit_files_rules"
+            type="subform"
+            formsource="administrator/components/com_emundus/forms/limit_applicant_files_rules.xml"
+            label="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_RULES"
+            description="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_RULES_DESC"
+            multiple="true"
+        />
+
     </fieldset>
     <fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
         <field
