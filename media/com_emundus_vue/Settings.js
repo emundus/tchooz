@@ -2054,27 +2054,35 @@ const _sfc_main$h = {
       });
     },
     async updateTag(tag) {
-      const newLabel = document.getElementById("tag_label_" + tag.id).textContent;
+      const newLabel = document.getElementById("tag_label_" + tag.id).textContent.trim();
       if (newLabel.length > 0) {
-        this.$emit("updateSaving", true);
-        let index = this.colors.findIndex((item) => item.value === tag.class);
-        const formData = new FormData();
-        formData.append("tag", tag.id);
-        formData.append("label", newLabel);
-        formData.append("color", this.colors[index].name);
-        await client().post("index.php?option=com_emundus&controller=settings&task=updatetags", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        }).then((response) => {
-          this.$emit("updateSaving", false);
-          if (response.status) {
-            tag.label = newLabel;
-            this.$emit("updateLastSaving", this.formattedDate("", "LT"));
-          } else {
-            this.displayError("COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG", response.msg);
-          }
-        });
+        if (newLabel !== tag.label) {
+          this.$emit("updateSaving", true);
+          let index = this.colors.findIndex((item) => item.value === tag.class);
+          const formData = new FormData();
+          formData.append("tag", tag.id);
+          formData.append("label", newLabel);
+          formData.append("color", this.colors[index].name);
+          await client().post("index.php?option=com_emundus&controller=settings&task=updatetags", formData, {
+            headers: {
+              "Content-Type": "multipart/form-data"
+            }
+          }).then((response) => {
+            this.$emit("updateSaving", false);
+            if (response.status) {
+              if (response.data.status) {
+                tag.label = newLabel;
+                this.$emit("updateLastSaving", this.formattedDate("", "LT"));
+              } else {
+                document.getElementById("tag_label_" + tag.id).textContent = tag.label;
+                this.displayError("COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG", response.data.msg);
+              }
+            } else {
+              document.getElementById("tag_label_" + tag.id).textContent = tag.label;
+              this.displayError("COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG", response.msg);
+            }
+          });
+        }
       } else {
         document.getElementById("tag_label_" + tag.id).textContent = tag.label;
         this.displayError("COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG", "COM_EMUNDUS_SETTINGS_FORBIDDEN_EMPTY_TAG");
@@ -2100,7 +2108,7 @@ const _sfc_main$h = {
           "Content-Type": "application/x-www-form-urlencoded"
         }
       }).then((newtag) => {
-        this.tags.push(newtag.data);
+        this.tags.unshift(newtag.data);
         setTimeout(() => {
           this.getHexColors(newtag.data);
         }, 100);
@@ -2243,7 +2251,7 @@ function _sfc_render$h(_ctx, _cache, $props, $setup, $data, $options) {
     ])
   ]);
 }
-const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-32d360a4"]]);
+const EditTags = /* @__PURE__ */ _export_sfc(_sfc_main$h, [["render", _sfc_render$h], ["__scopeId", "data-v-814c3d63"]]);
 const getTemplate = () => `
 <div class="dz-preview dz-file-preview">
   <div class="dz-image">
