@@ -180,8 +180,10 @@ class EmundusViewChecklist extends JViewLegacy
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/application.php');
 				$m_application = new EmundusModelApplication;
 
-				$this->attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum);
-				$this->forms_prog       = $m_application->getFormsProgress($this->_user->fnum);
+                $use_session = $eMConfig->get('use_session', 0);
+
+				$this->attachments_prog = $m_application->getAttachmentsProgress($this->_user->fnum, null, $use_session);
+				$this->forms_prog       = $m_application->getFormsProgress($this->_user->fnum, null, $use_session);
 
 				$profile_attachments_ids                    = array();
 				$all_profile_attachments_ids                = array();
