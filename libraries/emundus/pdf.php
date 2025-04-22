@@ -979,6 +979,11 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                     $status = $m_files->getStatusByFnums(explode(',', $fnum));
                     $htmldata .= '<tr class="sent"><td><b>' . JText::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' :</b> ' . $status[$fnum]['value'] . '</td></tr>';
                 }
+	            if ($attachments) {
+		            $uploads = $m_application->getUserAttachmentsByFnum($fnum, '');
+					$files_updated = count($uploads) > 1 ? JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED') : JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_UPLOADED');
+		            $htmldata .= '<tr class="sent"><td><b>' . $files_updated . ' :</b>' . ' ' . count($uploads) . '</a></td></tr>';
+	            }
 
 				$htmldata .= '</table>';
 

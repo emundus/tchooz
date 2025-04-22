@@ -5566,7 +5566,7 @@ class EmundusModelFiles extends JModelLegacy
 							$infos = $m_profile->getFnumDetails($fnum);
 							$campaign_id = $infos['campaign_id'];
 
-							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data, in_array("upload", $options));
 						}
 					}
 
