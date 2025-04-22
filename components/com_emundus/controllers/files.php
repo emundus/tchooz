@@ -1866,6 +1866,7 @@ class EmundusControllerFiles extends BaseController
 				$date_elements = [];
 				$textarea_elements = [];
 				$iban_elements = [];
+                $calc_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if (in_array($fLine->element_plugin,['date','jdate'])) {
 						$params                                                         = json_decode($fLine->element_attribs);
