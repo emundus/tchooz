@@ -682,6 +682,49 @@ class EmundusModelEmails extends JModelList
 				$replacements[] = $fnumInfos['training'];
 				$patterns[]     = '/\[TRAINING_PROGRAMME\]/';
 				$replacements[] = $programme->label;
+
+				// Add booking tags if the booking is enabled
+				try
+				{
+					if (!class_exists('EmundusModelEvents')) {
+						require_once(JPATH_SITE . '/components/com_emundus/models/events.php');
+					}
+					$m_events = new EmundusModelEvents();
+					$registration = $m_events->getMyBookingsInformations($fnumInfos['applicant_id'],[],$fnumInfos['ccid']);
+
+					if(!empty($registration))
+					{
+						$registration = $registration[0];
+						if (!class_exists('EmundusHelperDate')) {
+							require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+						}
+						$start_date = \EmundusHelperDate::displayDate($registration->start, 'DATE_FORMAT_LC1');
+						$start_hour = \EmundusHelperDate::displayDate($registration->start, 'H:i');
+						$end_hour = \EmundusHelperDate::displayDate($registration->end, 'H:i');
+
+						$location_link = $registration->link_registrant;
+						if(empty($location_link)) {
+							if(strpos($location_link, 'http') === false && !empty($registration->address)) {
+								$location_link = 'https://www.google.com/maps?q='.urlencode($registration->address);
+							}
+						}
+						$booking_tags = [
+							'BOOKING_START_DATE'           => $start_date,
+							'BOOKING_START_HOUR'           => $start_hour,
+							'BOOKING_END_HOUR'             => $end_hour,
+							'BOOKING_LOCATION'             => $registration->name_location,
+							'BOOKING_LOCATION_LINK'        => $location_link,
+						];
+						foreach ($booking_tags as $tag => $value) {
+							$patterns[] = '/\['.$tag.'\]/';
+							$replacements[] = $value;
+						}
+					}
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error when try to set constants for bookin module',Log::ERROR,'com_emundus.email');
+				}
 			}
 		}
 
