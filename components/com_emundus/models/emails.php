@@ -761,10 +761,8 @@ class EmundusModelEmails extends JModelList
 			if (strpos($value, 'php|') === false) {
 				$request = explode('|', $value);
 
-				if (count($request) > 1) {
-
+				if (count($request) === 3) {
 					try {
-
 						$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
 						$db->setQuery($query);
 						$result = $db->loadResult();
@@ -777,29 +775,32 @@ class EmundusModelEmails extends JModelList
 						$result = "";
 
 					}
-					if ($tag['tag'] == 'PHOTO') {
-						if (empty($result)) {
-							$result = 'media/com_emundus/images/icones/personal.png';
+
+					$replacements[] = $result;
+				}
+				elseif ($tag['tag'] == 'PHOTO') {
+					if (empty($result)) {
+						$result = 'media/com_emundus/images/icones/personal.png';
+					}
+					else {
+						if (file_exists(EMUNDUS_PATH_REL . $user_id . '/tn_' . $result)) {
+							$result = EMUNDUS_PATH_REL . $user_id . '/tn_' . $result;
 						}
 						else {
-							if (file_exists(EMUNDUS_PATH_REL . $user_id . '/tn_' . $result)) {
-								$result = EMUNDUS_PATH_REL . $user_id . '/tn_' . $result;
-							}
-							else {
-								$result = EMUNDUS_PATH_REL . $user_id . '/' . $result;
-							}
+							$result = EMUNDUS_PATH_REL . $user_id . '/' . $result;
+						}
 
-							if ($base64) {
-								$type   = pathinfo($result, PATHINFO_EXTENSION);
-								$data   = file_get_contents($result);
-								$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
-							}
+						if ($base64) {
+							$type   = pathinfo($result, PATHINFO_EXTENSION);
+							$data   = file_get_contents($result);
+							$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
 						}
 					}
+
 					$replacements[] = $result;
 				}
 				else {
-					$replacements[] = $request[0];
+					$replacements[] = $value;
 				}
 			}
 			elseif (!empty($fnum)) {
@@ -878,7 +879,7 @@ class EmundusModelEmails extends JModelList
 
 			if (strpos($value, 'php|') === false) {
 				$request = explode('|', $value);
-				if (count($request) > 1) {
+				if (count($request) === 3) {
 					$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
 					try
 					{
@@ -890,11 +891,9 @@ class EmundusModelEmails extends JModelList
 						Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 						$replacements[] = "";
 					}
-
-
 				}
 				else {
-					$replacements[] = $request[0];
+					$replacements[] = $value;
 				}
 			}
 			else {
