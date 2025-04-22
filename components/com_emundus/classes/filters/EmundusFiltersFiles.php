@@ -271,6 +271,7 @@ class EmundusFiltersFiles extends EmundusFilters
 		$profiles = $this->getProfiles();
         $profile_form_ids = [];
         $config_form_ids = [];
+		$more_campaign_form_ids = [];
 
 		if (!empty($profiles)) {
 			// get all forms associated to the user's profiles
@@ -299,7 +300,17 @@ class EmundusFiltersFiles extends EmundusFilters
             $config_form_ids = $this->config['more_fabrik_forms'];
         }
 
-        $form_ids = array_merge($profile_form_ids, $config_form_ids);
+		if(!class_exists('EmundusModelCampaign')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+		}
+		$m_campaign = new EmundusModelCampaign();
+		$more_campaign_form = $m_campaign->getCampaignMoreForm();
+		if(!empty($more_campaign_form) && !empty($more_campaign_form['form_id'])) {
+			$more_campaign_form_ids[] = $more_campaign_form['form_id'];
+			$this->config['more_fabrik_forms'][] = $more_campaign_form['form_id'];
+		}
+
+        $form_ids = array_merge($profile_form_ids, $config_form_ids, $more_campaign_form_ids);
 
 		$unsorted_elements = $this->getElementsFromFabrikForms($form_ids);
 
@@ -1061,7 +1072,7 @@ class EmundusFiltersFiles extends EmundusFilters
 					$config_more_fabrik_forms = empty($config_more_fabrik_forms) ? [] : $config_more_fabrik_forms;
 
 					foreach($this->filters as $key => $filter) {
-						if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $config_more_fabrik_forms)) {
+						if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $config_more_fabrik_forms)  && !in_array($filter['form_id'], $config_more_fabrik_forms)) {
 							$this->filters[$key]['available'] = false;
 						}
 					}
