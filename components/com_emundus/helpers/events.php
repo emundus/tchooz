@@ -1958,16 +1958,17 @@ class EmundusHelperEvents
 					}
 					else
 					{
+						$programme_id = !empty($params['data']) ? $params['data']['jos_emundus_setup_programmes___id'] : $params['formModel']->formData['id'];
 						$menu = Factory::getApplication()->getMenu();
-						$item = $menu->getItems('link', 'index.php?option=com_emundus&view=campaigns', true);
+						$item = $menu->getItems('link', 'index.php?option=com_emundus&view=programme&layout=edit', true);
 
 						if (!empty($item->route))
 						{
-							Factory::getApplication()->redirect('/' . $item->route);
+							Factory::getApplication()->redirect('/' . $item->route . '?id=' . $programme_id);
 						}
 						else
 						{
-							Factory::getApplication()->redirect('/index.php?option=com_emundus&view=campaigns');
+							Factory::getApplication()->redirect('/index.php?option=com_emundus&view=programme&layout=edit&id=' . $programme_id);
 						}
 					}
 				}
