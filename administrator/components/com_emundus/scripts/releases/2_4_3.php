@@ -21,6 +21,32 @@ class Release2_4_3Installer extends ReleaseInstaller
 			$event_result = \EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterSubmitFile', 'category' => 'File', 'published' => 1]]);
 			$tasks[] = $event_result['status'];
 
+			// Be sure that jos_emundus_setup_campaigns_more table exist
+			$columns = [
+				[
+					'name' => 'date_time',
+					'type' => 'DATE',
+					'null' => 0,
+				],
+				[
+					'name' => 'campaign_id',
+					'type' => 'INT',
+					'null' => 0
+				]
+			];
+			$foreign_keys = [
+				[
+					'name'           => 'jos_emundus_setup_campaigns_more_campaign_id_fk',
+					'from_column'    => 'campaign_id',
+					'ref_table'      => 'jos_emundus_setup_campaigns',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true,
+				],
+			];
+
+			$tasks[] = \EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_more', $columns, $foreign_keys)['status'];
+
 			$result['status'] = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)

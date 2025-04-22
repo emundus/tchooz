@@ -10,6 +10,7 @@
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+
 // phpcs:enable PSR1.Files.SideEffects
 
 use Joomla\CMS\Component\ComponentHelper;
@@ -22,7 +23,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Language\Text;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
-require_once(JPATH_SITE. '/components/com_emundus/helpers/menu.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 
 /**
  * Emundus Component Campaign Model
@@ -93,7 +94,8 @@ class EmundusModelCampaign extends ListModel
 		$this->setState('limit', $limit);
 		$this->setState('limitstart', $limitstart);
 
-		if (!class_exists('HtmlSanitizerSingleton')) {
+		if (!class_exists('HtmlSanitizerSingleton'))
+		{
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 	}
@@ -144,7 +146,8 @@ class EmundusModelCampaign extends ListModel
 		$filter_order_Dir = $this->getState('filter_order_Dir');
 
 		$can_be_ordering = array('id', 'label', 'year', 'start_date', 'end_date');
-		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
+		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
+		{
 			$orderby = ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
 		}
 
@@ -164,14 +167,16 @@ class EmundusModelCampaign extends ListModel
 	{
 		$allowed_campaigns = [];
 
-		if (empty($uid)) {
+		if (empty($uid))
+		{
 			$uid = $this->_user->id;
 		}
 
 		$query = $this->_buildQuery();
 
-		if (!empty($uid)) {
-			require_once(JPATH_SITE. '/components/com_emundus/models/profile.php');
+		if (!empty($uid))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
 			$m_profile           = new EmundusModelProfile();
 			$userProfiles        = $m_profile->getUserProfiles($uid);
 			$userEmundusProfiles = $m_profile->getProfileByApplicant($uid);
@@ -190,14 +195,17 @@ class EmundusModelCampaign extends ListModel
 			$id_profiles         = $eMConfig->get('id_profiles', '0');
 			$id_profiles         = explode(',', $id_profiles);
 
-			foreach ($userProfiles as $profile) {
-				if (in_array($profile->id, $id_profiles)) {
+			foreach ($userProfiles as $profile)
+			{
+				if (in_array($profile->id, $id_profiles))
+				{
 					$applicant_can_renew = 1;
 					break;
 				}
 			}
 
-			switch ($applicant_can_renew) {
+			switch ($applicant_can_renew)
+			{
 				// Applicant can only have one file per campaign.
 				case 2:
 					$query .= ' AND id NOT IN (
@@ -218,18 +226,23 @@ class EmundusModelCampaign extends ListModel
 			}
 		}
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$allowed_campaigns = array_column($this->_db->loadAssocList(), 'id');
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error at model/campaign -> query: ' . $query, Log::ERROR, 'com_emundus.error');
 			$allowed_campaigns = [];
 		}
 
-		if (!empty($allowed_campaigns)) {
-			foreach ($allowed_campaigns as $cid => $campaign) {
-				if ($this->isLimitObtained($cid)) {
+		if (!empty($allowed_campaigns))
+		{
+			foreach ($allowed_campaigns as $cid => $campaign)
+			{
+				if ($this->isLimitObtained($cid))
+				{
 					unset($allowed_campaigns[$cid]);
 				}
 			}
@@ -270,7 +283,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$campaign = [];
 
-		if (!empty($campaign_id)) {
+		if (!empty($campaign_id))
+		{
 			$query = $this->_db->getQuery(true);
 			$query->select('*')
 				->from('#__emundus_setup_campaigns AS esc')
@@ -279,10 +293,12 @@ class EmundusModelCampaign extends ListModel
 
 			$this->_db->setQuery($query);
 
-			try {
+			try
+			{
 				$campaign = $this->_db->loadAssoc();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('Failed to retrieve campaign from id ' . $campaign_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -305,15 +321,18 @@ class EmundusModelCampaign extends ListModel
 		$query->select(['tu.*'])
 			->from($this->_db->quoteName('#__emundus_setup_teaching_unity', 'tu'));
 
-		if ($published) {
+		if ($published)
+		{
 			$query->where($this->_db->quoteName('tu.published') . ' = 1');
 		}
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$all_campaigns = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error getting campaigns at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 		}
 
@@ -331,10 +350,12 @@ class EmundusModelCampaign extends ListModel
 	{
 		$program = [];
 
-		if (!empty($campaign_id)) {
+		if (!empty($campaign_id))
+		{
 			$campaign = $this->getCampaignByID($campaign_id);
 
-			if (!empty($campaign)) {
+			if (!empty($campaign))
+			{
 				$query = 'SELECT esp.*
 					FROM #__emundus_setup_programmes AS esp
 					WHERE esp.code like "' . $campaign['training'] . '"';
@@ -357,7 +378,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$program = null;
 
-		if (!empty($training)) {
+		if (!empty($training))
+		{
 			$query = 'SELECT esp.*
 					FROM #__emundus_setup_programmes AS esp
 					WHERE esp.code like "' . $training . '"';
@@ -397,7 +419,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$campaigns = [];
 
-		if (!empty($code)) {
+		if (!empty($code))
+		{
 			$query = $this->_db->createQuery();
 
 			$query->select('esc.*')
@@ -405,10 +428,13 @@ class EmundusModelCampaign extends ListModel
 				->where('esc.training = ' . $this->_db->quote($code))
 				->order('esc.end_date DESC');
 
-			try {
+			try
+			{
 				$this->_db->setQuery($query);
 				$campaigns = $this->_db->loadObjectList();
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('Error getting campaigns by program at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.campaign.error');
 			}
 		}
@@ -547,10 +573,12 @@ class EmundusModelCampaign extends ListModel
 		$query = 'INSERT INTO `#__emundus_campaign_candidature` (`applicant_id`, `campaign_id`, `fnum`)
 		VALUES (' . $aid . ', ' . $cid . ', CONCAT(DATE_FORMAT(NOW(),\'%Y%m%d%H%i%s\'),LPAD(`campaign_id`, 7, \'0\'),LPAD(`applicant_id`, 7, \'0\')))';
 		$this->_db->setQuery($query);
-		try {
+		try
+		{
 			$this->_db->Query();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error getting selected campaign ' . $cid . ' at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query), Log::ERROR, 'com_emundus.error');
 		}
 	}
@@ -566,10 +594,12 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = 'UPDATE #__emundus_final_grade SET result_sent=1, date_result_sent=NOW() WHERE student_id=' . $aid . ' AND campaign_id=' . $campaign_id;
 		$this->_db->setQuery($query);
-		try {
+		try
+		{
 			$this->_db->Query();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			// catch any database errors.
 		}
 	}
@@ -603,7 +633,8 @@ class EmundusModelCampaign extends ListModel
 	function getPagination()
 	{
 		// Load the content if it doesn't already exist
-		if (empty($this->_pagination)) {
+		if (empty($this->_pagination))
+		{
 			jimport('joomla.html.pagination');
 			$this->_pagination = new JPagination($this->getTotal(), $this->getState('limitstart'), $this->getState('limit'));
 		}
@@ -620,7 +651,8 @@ class EmundusModelCampaign extends ListModel
 	function getTotal()
 	{
 		// Load the content if it doesn't already exist
-		if (empty($this->_total)) {
+		if (empty($this->_total))
+		{
 			$query        = $this->_buildQuery();
 			$this->_total = $this->_getListCount($query);
 		}
@@ -664,37 +696,45 @@ class EmundusModelCampaign extends ListModel
 		$data['training']  = '';
 		$data['published'] = 1;
 
-		if (!empty($data) && !empty($programmes)) {
+		if (!empty($data) && !empty($programmes))
+		{
 			$column = array_keys($data);
 
 			$values       = array();
 			$values_unity = array();
 			$result       = '';
-			foreach ($programmes as $v) {
-				try {
+			foreach ($programmes as $v)
+			{
+				try
+				{
 					$query = 'SELECT count(id) FROM `#__emundus_setup_campaigns` WHERE year LIKE ' . $this->_db->Quote($data['year']) . ' AND  training LIKE ' . $this->_db->Quote($v['code']);
 					$this->_db->setQuery($query);
 					$cpt = $this->_db->loadResult();
 
-					if ($cpt == 0) {
+					if ($cpt == 0)
+					{
 						$values[]       = '(' . $this->_db->Quote($data['start_date']) . ', ' . $this->_db->Quote($data['end_date']) . ', ' . $data['profile_id'] . ', ' . $this->_db->Quote($data['year']) . ', ' . $this->_db->Quote($data['short_description']) . ', ' . $this->_db->Quote($data['date_time']) . ', ' . $data['user'] . ', ' . $this->_db->Quote($v['label']) . ', ' . $this->_db->Quote($v['code']) . ', ' . $data['published'] . ')';
 						$values_unity[] = '(' . $this->_db->Quote($v['code']) . ', ' . $this->_db->Quote($v['label']) . ', ' . $this->_db->Quote($data['year']) . ', ' . $data['profile_id'] . ', ' . $this->_db->Quote($v['programmes']) . ')';
 
 						$result .= '<i class="green check circle outline icon"></i> ' . $v['label'] . ' [' . $data['year'] . '] [' . $v['code'] . '] ' . JText::_('CREATED') . '<br>';
 					}
-					else {
+					else
+					{
 						$result .= '<i class="orange remove circle outline icon"></i> ' . $v['label'] . ' [' . $data['year'] . '] [' . $v['code'] . '] ' . JText::_('ALREADY_EXIST') . '<br>';
 					}
 				}
-				catch (Exception $e) {
+				catch (Exception $e)
+				{
 					Log::add($e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 					return $e->getMessage();
 				}
 			}
 
-			try {
-				if (!empty($values)) {
+			try
+			{
+				if (!empty($values))
+				{
 					$query = 'INSERT INTO `#__emundus_setup_campaigns` (`' . implode('`, `', $column) . '`) VALUES ' . implode(',', $values);
 					$this->_db->setQuery($query);
 					$this->_db->execute();
@@ -704,13 +744,15 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->execute();
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add($e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 				return $e->getMessage();
 			}
 		}
-		else {
+		else
+		{
 			return false;
 		}
 
@@ -733,11 +775,13 @@ class EmundusModelCampaign extends ListModel
 			->order('id DESC')
 			->setLimit('1');
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$latestCampaign = $this->_db->loadResult();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error getting latest programme at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 		}
 
@@ -761,12 +805,14 @@ class EmundusModelCampaign extends ListModel
 			->leftJoin($this->_db->quoteName('#__emundus_setup_thematiques', 't') . ' ON ' . $this->_db->quoteName('t.id') . ' = ' . $this->_db->quoteName('p.programmes'))
 			->where($this->_db->quoteName('tu.published') . ' = 1 AND ' . $this->_db->quoteName('p.published') . ' = 1');
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error getting latest programme at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 
 			return [];
@@ -788,15 +834,18 @@ class EmundusModelCampaign extends ListModel
 		$query->select(['tu.*'])
 			->from($this->_db->quoteName('#__emundus_setup_teaching_unity', 'tu'));
 
-		if (!empty($id) && is_numeric($id)) {
+		if (!empty($id) && is_numeric($id))
+		{
 			$query->where($this->_db->quoteName('tu.id') . ' = ' . $id);
 		}
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$response = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error getting latest programme at model/campaign at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 		}
 
@@ -823,12 +872,14 @@ class EmundusModelCampaign extends ListModel
 			->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status', 'escrl') . ' ON ' . $this->_db->quoteName('escrl.parent_id') . ' = ' . $this->_db->quoteName('esc.id'))
 			->where($this->_db->quoteName('esc.id') . ' = ' . $id);
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadObject();
 		}
-		catch (Exception $exception) {
+		catch (Exception $exception)
+		{
 			Log::add('Error getting campaign limit at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 
 			return null;
@@ -839,8 +890,8 @@ class EmundusModelCampaign extends ListModel
 	/**
 	 * Check if campaign's limit is obtained
 	 *
-	 * @param int $campaign_id
-	 * @param string fnum, if not empty, check if fnum is in the list of candidature defined in the limit steps
+	 * @param   int  $campaign_id
+	 * @param   string fnum, if not empty, check if fnum is in the list of candidature defined in the limit steps
 	 *               if it is, return true
 	 *
 	 * @return bool
@@ -852,27 +903,32 @@ class EmundusModelCampaign extends ListModel
 	{
 		$is_limit_obtained = false;
 
-		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($campaign_id)) {
+		if (EmundusHelperAccess::isApplicant($this->_user->id) && !empty($campaign_id))
+		{
 			$limit = $this->getLimit($campaign_id);
 
-			if (!empty($limit->is_limited) && !empty($limit->limit)) {
+			if (!empty($limit->is_limited) && !empty($limit->limit))
+			{
 				$query = $this->_db->getQuery(true);
 
 				$query->select('COUNT(id)')
 					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
 					->where($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
 					->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
-					->andWhere($this->_db->quoteName('published').' = 1');
+					->andWhere($this->_db->quoteName('published') . ' = 1');
 
-				try {
+				try
+				{
 					$this->_db->setQuery($query);
 					$is_limit_obtained = ($limit->limit <= $this->_db->loadResult());
 				}
-				catch (Exception $exception) {
+				catch (Exception $exception)
+				{
 					Log::add('Error checking obtained limit at query :' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus.error');
 				}
 
-				if (!empty($fnum)) {
+				if (!empty($fnum))
+				{
 					// is fnum in the list of candidature defined in the limit steps ?
 					$query = $this->_db->getQuery(true);
 					$query->clear()
@@ -881,13 +937,15 @@ class EmundusModelCampaign extends ListModel
 						->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum))
 						->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $campaign_id)
 						->andWhere($this->_db->quoteName('status') . ' IN (' . $limit->steps . ')')
-						->andWhere($this->_db->quoteName('published').' = 1');
+						->andWhere($this->_db->quoteName('published') . ' = 1');
 
-					try {
+					try
+					{
 						$this->_db->setQuery($query);
 						$is_limit_obtained = ($this->_db->loadResult() > 0) ? false : $is_limit_obtained;
 					}
-					catch (Exception $exception) {
+					catch (Exception $exception)
+					{
 						Log::add('Error checking if fnum is in limit status ' . $exception->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 				}
@@ -917,20 +975,26 @@ class EmundusModelCampaign extends ListModel
 
 		$query = $this->_db->getQuery(true);
 
-		if (empty($lim) || $lim == 'all') {
+		if (empty($lim) || $lim == 'all')
+		{
 			$limit = '';
-		} else {
+		}
+		else
+		{
 			$limit = $lim;
 		}
 
-		if (empty($page) || empty($limit)) {
+		if (empty($page) || empty($limit))
+		{
 			$offset = 0;
 		}
-		else {
+		else
+		{
 			$offset = ($page - 1) * $limit;
 		}
 
-		if (empty($sort)) {
+		if (empty($sort))
+		{
 			$sort = 'DESC';
 		}
 		$date = new Date();
@@ -940,8 +1004,10 @@ class EmundusModelCampaign extends ListModel
 		$m_programme = new EmundusModelProgramme;
 		$programs    = $m_programme->getUserPrograms($this->_user->id);
 
-		if (!empty($programs)) {
-			if ($program != "all") {
+		if (!empty($programs))
+		{
+			if ($program != "all")
+			{
 				$programs = array_filter($programs, function ($value) use ($program) {
 					return $value == $program;
 				});
@@ -949,10 +1015,12 @@ class EmundusModelCampaign extends ListModel
 			//
 
 			$filterDate = null;
-			if ($filter == 'yettocome') {
+			if ($filter == 'yettocome')
+			{
 				$filterDate = 'Date(' . $this->_db->quoteName('sc.start_date') . ') > ' . $this->_db->quote($date);
 			}
-			elseif ($filter == 'ongoing') {
+			elseif ($filter == 'ongoing')
+			{
 				$filterDate =
 					'(Date(' .
 					$this->_db->quoteName('sc.end_date') .
@@ -964,7 +1032,8 @@ class EmundusModelCampaign extends ListModel
 					' <= ' .
 					$this->_db->quote($date);
 			}
-			elseif ($filter == 'Terminated') {
+			elseif ($filter == 'Terminated')
+			{
 				$filterDate =
 					'Date(' .
 					$this->_db->quoteName('sc.end_date') .
@@ -973,15 +1042,18 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->quote($date) .
 					' AND end_date != "0000-00-00 00:00:00"';
 			}
-			elseif ($filter == 'Publish') {
+			elseif ($filter == 'Publish')
+			{
 				$filterDate = $this->_db->quoteName('sc.published') . ' = 1';
 			}
-			elseif ($filter == 'Unpublish') {
+			elseif ($filter == 'Unpublish')
+			{
 				$filterDate = $this->_db->quoteName('sc.published') . ' = 0';
 			}
 
 			$fullRecherche = null;
-			if (!empty($recherche)) {
+			if (!empty($recherche))
+			{
 				$fullRecherche = '(' .
 					$this->_db->quoteName('sc.label') .
 					' LIKE ' .
@@ -1028,31 +1100,37 @@ class EmundusModelCampaign extends ListModel
 
 			$query->where($this->_db->quoteName('sc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
 
-			if (!empty($filterDate)) {
+			if (!empty($filterDate))
+			{
 				$query->andWhere($filterDate);
 			}
-			if (!empty($fullRecherche)) {
+			if (!empty($fullRecherche))
+			{
 				$query->andWhere($fullRecherche);
 			}
-			if ($session !== 'all') {
+			if ($session !== 'all')
+			{
 				$query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
 			}
 			$query->group('sc.id')
 				->order($order_by . ' ' . $sort);
 
-			try {
+			try
+			{
 				$this->_db->setQuery($query);
 				$campaigns_count = sizeof($this->_db->loadObjectList());
 
 				$this->_db->setQuery($query, $offset, $limit);
 				$campaigns = $this->_db->loadObjectList();
 
-				if (empty($campaigns) && $offset != 0) {
+				if (empty($campaigns) && $offset != 0)
+				{
 					return $this->getAssociatedCampaigns($filter, $sort, $recherche, $lim, 0, $program, $session);
 				}
 				$associated_campaigns = array('datas' => $campaigns, 'count' => $campaigns_count);
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error when try to get list of campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1073,7 +1151,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$campaigns = [];
 
-		if (!empty($program)) {
+		if (!empty($program))
+		{
 			$query = $this->_db->getQuery(true);
 			$date  = new Date();
 
@@ -1083,11 +1162,13 @@ class EmundusModelCampaign extends ListModel
 				->where($this->_db->quoteName('sp.id') . ' = ' . $this->_db->quote($program))
 				->andWhere($this->_db->quoteName('sc.end_date') . ' >= ' . $this->_db->quote($date));
 
-			try {
+			try
+			{
 				$this->_db->setQuery($query);
 				$campaigns = $this->_db->loadObjectList();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error when try to get campaigns associated to programs : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1113,7 +1194,8 @@ class EmundusModelCampaign extends ListModel
 
 		$deleted = false;
 
-		if (!empty($data)) {
+		if (!empty($data))
+		{
 			$data = !is_array($data) ? [$data] : $data;
 
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
@@ -1126,7 +1208,7 @@ class EmundusModelCampaign extends ListModel
 					['campaign' => $data]
 				]
 			);
-			$onBeforeCampaignDelete = new GenericEvent(
+			$onBeforeCampaignDelete             = new GenericEvent(
 				'onBeforeCampaignDelete',
 				// Datas to pass to the event
 				['campaign' => $data]
@@ -1136,13 +1218,16 @@ class EmundusModelCampaign extends ListModel
 
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 
-				foreach (array_values($data) as $id) {
+				foreach (array_values($data) as $id)
+				{
 					$falang->deleteFalang($id, 'emundus_setup_campaigns', 'label');
 				}
 
-				if ($force_delete === true) {
+				if ($force_delete === true)
+				{
 					$query->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
 						->where($this->_db->quoteName('campaign_id') . ' IN (' . implode(", ", array_values($data)) . ')');
 
@@ -1156,13 +1241,16 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$deleted = $this->_db->execute();
 
-					if($deleted) {
-						foreach ($data as $key => $val) {
+					if ($deleted)
+					{
+						foreach ($data as $key => $val)
+						{
 							$details_menu = $this->getCampaignDetailsMenu($val);
-							if(!empty($details_menu)) {
+							if (!empty($details_menu))
+							{
 								$query->clear()
 									->delete($this->_db->quoteName('#__menu'))
-									->where($this->_db->quoteName('id').' = '.$details_menu->id);
+									->where($this->_db->quoteName('id') . ' = ' . $details_menu->id);
 								$this->_db->setQuery($query);
 								$this->_db->execute();
 							}
@@ -1171,7 +1259,8 @@ class EmundusModelCampaign extends ListModel
 
 					Log::add('User ' . JFactory::getUser()->id . ' deleted campaign(s) ' . implode(", ", array_values($data)) . ' ' . date('d/m/Y H:i:s'), Log::INFO, 'com_emundus');
 				}
-				else {
+				else
+				{
 					// delete only if there are no files attached to the campaign
 					$query->clear()
 						->select('count(*)')
@@ -1181,7 +1270,8 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$nb_files = $this->_db->loadResult();
 
-					if ($nb_files < 1) {
+					if ($nb_files < 1)
+					{
 						$query->clear()
 							->update($this->_db->quoteName('#__emundus_setup_campaigns'))
 							->set($this->_db->quoteName('published') . ' = 0')
@@ -1192,7 +1282,8 @@ class EmundusModelCampaign extends ListModel
 					}
 				}
 
-				if ($deleted) {
+				if ($deleted)
+				{
 					$onAfterCampaignDeleteEventHandler = new GenericEvent(
 						'onCallEventHandler',
 						['onAfterCampaignDelete',
@@ -1200,7 +1291,7 @@ class EmundusModelCampaign extends ListModel
 							['campaign' => $data]
 						]
 					);
-					$onAfterCampaignDelete = new GenericEvent(
+					$onAfterCampaignDelete             = new GenericEvent(
 						'onAfterCampaignDelete',
 						// Datas to pass to the event
 						['campaign' => $data]
@@ -1209,7 +1300,8 @@ class EmundusModelCampaign extends ListModel
 					$dispatcher->dispatch('onAfterCampaignDelete', $onAfterCampaignDelete);
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error when delete campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1224,13 +1316,16 @@ class EmundusModelCampaign extends ListModel
 
 		$unpublished = false;
 
-		if (!empty($data)) {
-			if (!is_array($data)) {
+		if (!empty($data))
+		{
+			if (!is_array($data))
+			{
 				$data = [$data];
 			}
 
 			$query = $this->_db->getQuery(true);
-			foreach ($data as $key => $val) {
+			foreach ($data as $key => $val)
+			{
 				$data[$key] = htmlspecialchars($val);
 			}
 
@@ -1241,7 +1336,7 @@ class EmundusModelCampaign extends ListModel
 					['campaign' => $data]
 				]
 			);
-			$onBeforeCampaignUnpublish = new GenericEvent(
+			$onBeforeCampaignUnpublish             = new GenericEvent(
 				'onBeforeCampaignUnpublish',
 				// Datas to pass to the event
 				['campaign' => $data]
@@ -1249,7 +1344,8 @@ class EmundusModelCampaign extends ListModel
 			$dispatcher->dispatch('onCallEventHandler', $onBeforeCampaignUnpublishEventHandler);
 			$dispatcher->dispatch('onBeforeCampaignUnpublish', $onBeforeCampaignUnpublish);
 
-			try {
+			try
+			{
 				$fields        = [
 					$this->_db->quoteName('published') . ' = 0'
 				];
@@ -1264,11 +1360,14 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$unpublished = $this->_db->execute();
 
-				if ($unpublished) {
-					foreach ($data as $key => $val) {
+				if ($unpublished)
+				{
+					foreach ($data as $key => $val)
+					{
 						$details_menu = $this->getCampaignDetailsMenu($val);
 
-						if (!empty($details_menu)) {
+						if (!empty($details_menu))
+						{
 							$update = [
 								'id'        => $details_menu->id,
 								'published' => 0
@@ -1285,7 +1384,7 @@ class EmundusModelCampaign extends ListModel
 							['campaign' => $data]
 						]
 					);
-					$onAfterCampaignUnpublish = new GenericEvent(
+					$onAfterCampaignUnpublish             = new GenericEvent(
 						'onAfterCampaignUnpublish',
 						// Datas to pass to the event
 						['campaign' => $data]
@@ -1294,7 +1393,8 @@ class EmundusModelCampaign extends ListModel
 					$dispatcher->dispatch('onAfterCampaignUnpublish', $onAfterCampaignUnpublish);
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error when unpublish campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1317,13 +1417,16 @@ class EmundusModelCampaign extends ListModel
 
 		$published = false;
 
-		if (!empty($data)) {
-			if (!is_array($data)) {
+		if (!empty($data))
+		{
+			if (!is_array($data))
+			{
 				$data = [$data];
 			}
 
 			$query = $this->_db->getQuery(true);
-			foreach ($data as $key => $val) {
+			foreach ($data as $key => $val)
+			{
 				$data[$key] = htmlspecialchars($val);
 			}
 
@@ -1334,7 +1437,7 @@ class EmundusModelCampaign extends ListModel
 					['campaign' => $data]
 				]
 			);
-			$onBeforeCampaignPublish = new GenericEvent(
+			$onBeforeCampaignPublish             = new GenericEvent(
 				'onBeforeCampaignPublish',
 				// Datas to pass to the event
 				['campaign' => $data]
@@ -1342,7 +1445,8 @@ class EmundusModelCampaign extends ListModel
 			$dispatcher->dispatch('onCallEventHandler', $onBeforeCampaignPublishEventHandler);
 			$dispatcher->dispatch('onBeforeCampaignPublish', $onBeforeCampaignPublish);
 
-			try {
+			try
+			{
 				$fields        = [$this->_db->quoteName('published') . ' = 1'];
 				$sc_conditions = [$this->_db->quoteName('id') . ' IN (' . implode(", ", array_values($data)) . ')'];
 
@@ -1353,13 +1457,16 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$published = $this->_db->execute();
 
-				if ($published) {
-					foreach ($data as $key => $val) {
+				if ($published)
+				{
+					foreach ($data as $key => $val)
+					{
 						$details_menu = $this->getCampaignDetailsMenu($val);
 
-						if(!empty($details_menu)) {
+						if (!empty($details_menu))
+						{
 							$update = [
-								'id' => $details_menu->id,
+								'id'        => $details_menu->id,
 								'published' => 1
 							];
 							$update = (object) $update;
@@ -1374,7 +1481,7 @@ class EmundusModelCampaign extends ListModel
 							['campaign' => $data]
 						]
 					);
-					$onAfterCampaignPublish = new GenericEvent(
+					$onAfterCampaignPublish             = new GenericEvent(
 						'onAfterCampaignPublish',
 						// Datas to pass to the event
 						['campaign' => $data]
@@ -1383,7 +1490,8 @@ class EmundusModelCampaign extends ListModel
 					$dispatcher->dispatch('onAfterCampaignPublish', $onAfterCampaignPublish);
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error when publish campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1402,10 +1510,12 @@ class EmundusModelCampaign extends ListModel
 	{
 		$duplicated = false;
 
-		if (!empty($id)) {
+		if (!empty($id))
+		{
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 				$columns = array_keys(
 					$this->_db->getTableColumns('#__emundus_setup_campaigns')
 				);
@@ -1422,8 +1532,10 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$values = $this->_db->loadAssoc();
 
-				foreach($values as $key => $value) {
-					if ($value == '') {
+				foreach ($values as $key => $value)
+				{
+					if ($value == '')
+					{
 						unset($values[$key]);
 						$columns = array_diff($columns, [$key]);
 					}
@@ -1439,27 +1551,36 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$duplicated = $this->_db->execute();
 
-				if ($duplicated) {
+				if ($duplicated)
+				{
 					$new_campaign_id = $this->_db->insertid();
 
-					if (!empty($new_campaign_id)) {
+					if (!empty($new_campaign_id))
+					{
 						$new_category_id = $this->getCampaignCategory($new_campaign_id);
 
-						if (!empty($new_category_id)) {
-							if (mkdir(JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id, 0755)) {
-								$old_category_id = $this->getCampaignCategory($id);
+						if (!empty($new_category_id))
+						{
+							if (mkdir(JPATH_ROOT . '/media/com_dropfiles/' . $new_category_id, 0755))
+							{
+								$old_category_id        = $this->getCampaignCategory($id);
 								$old_campaign_documents = $this->getCampaignDropfilesDocuments($old_category_id);
 
-								if (!empty($old_campaign_documents)) {
-									foreach($old_campaign_documents as $document) {
-										$document->catid = $new_category_id;
+								if (!empty($old_campaign_documents))
+								{
+									foreach ($old_campaign_documents as $document)
+									{
+										$document->catid  = $new_category_id;
 										$document->author = $this->_user->id;
 
 										$columns = array_keys($this->_db->getTableColumns('#__dropfiles_files'));
-										$columns = array_filter($columns, function ($k) {return $k != 'id';});
+										$columns = array_filter($columns, function ($k) {
+											return $k != 'id';
+										});
 
 										$values = '';
-										foreach ($columns as $column) {
+										foreach ($columns as $column)
+										{
 											$values .= $this->_db->quote($document->$column) . ', ';
 										}
 										$values = rtrim($values, ', ');
@@ -1473,8 +1594,8 @@ class EmundusModelCampaign extends ListModel
 										$this->_db->execute();
 
 										// Copy documents on server
-										$old_path = JPATH_ROOT.'/media/com_dropfiles/' . $old_category_id . '/' . $document->file;
-										$new_path = JPATH_ROOT.'/media/com_dropfiles/' . $new_category_id . '/' . $document->file;
+										$old_path = JPATH_ROOT . '/media/com_dropfiles/' . $old_category_id . '/' . $document->file;
+										$new_path = JPATH_ROOT . '/media/com_dropfiles/' . $new_category_id . '/' . $document->file;
 										copy($old_path, $new_path);
 									}
 								}
@@ -1482,7 +1603,9 @@ class EmundusModelCampaign extends ListModel
 						}
 					}
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				error_log($query->__toString() . $e->getMessage());
 				Log::add('component/com_emundus/models/campaign | Error when duplicate campaigns : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
@@ -1508,11 +1631,13 @@ class EmundusModelCampaign extends ListModel
 			->from($this->_db->quoteName('#__emundus_setup_teaching_unity', 'tu'))
 			->order('tu.id DESC');
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$years = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add(preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
@@ -1530,8 +1655,10 @@ class EmundusModelCampaign extends ListModel
 	{
 		$campaign_id = 0;
 
-		if (!empty($data) && !empty($data['label'])) {
-			if(empty($user_id)) {
+		if (!empty($data) && !empty($data['label']))
+		{
+			if (empty($user_id))
+			{
 				$user_id = $this->app->getIdentity()->id;
 			}
 
@@ -1540,18 +1667,20 @@ class EmundusModelCampaign extends ListModel
 			require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 			$m_settings = new EmundusModelSettings;
 			$m_emails   = new EmundusModelEmails;
-			$m_form   = new EmundusModelForm;
+			$m_form     = new EmundusModelForm;
 
-			if (version_compare(JVERSION, '4.0', '>')) {
+			if (version_compare(JVERSION, '4.0', '>'))
+			{
 				$lang = $this->app->getLanguage();
 			}
-			else {
+			else
+			{
 				$lang = Factory::getLanguage();
 			}
 
 			$actualLanguage = !empty($lang->getTag()) ? substr($lang->getTag(), 0, 2) : 'fr';
 
-			$eMConfig = ComponentHelper::getParams('com_emundus');
+			$eMConfig                       = ComponentHelper::getParams('com_emundus');
 			$create_default_program_trigger = $eMConfig->get('create_default_program_trigger', 1);
 
 			$i            = 0;
@@ -1570,73 +1699,94 @@ class EmundusModelCampaign extends ListModel
 			$query = $this->_db->getQuery(true);
 
 			$campaign_languages = [];
-			foreach ($data as $key => $val) {
-				if (!in_array($key, $campaign_columns)) {
-					if ($key == 'languages') {
+			foreach ($data as $key => $val)
+			{
+				if (!in_array($key, $campaign_columns))
+				{
+					if ($key == 'languages')
+					{
 						$campaign_languages = $val;
 					}
 
 					unset($data[$key]);
 				}
-				else {
-					if ($key == 'profileLabel') {
+				else
+				{
+					if ($key == 'profileLabel')
+					{
 						unset($data['profileLabel']);
 					}
-					if ($key == 'label') {
+					if ($key == 'label')
+					{
 						$labels->fr    = !empty($data['label']['fr']) ? $data['label']['fr'] : '';
 						$labels->en    = !empty($data['label']['en']) ? $data['label']['en'] : '';
 						$data['label'] = $data['label'][$actualLanguage];
 					}
-					if ($key == 'description' && $data['description'] == 'null') {
+					if ($key == 'description' && $data['description'] == 'null')
+					{
 						$data['description'] = '';
 					}
-					if ($key == 'limit_status') {
+					if ($key == 'limit_status')
+					{
 						$limit_status = $data['limit_status'];
 						unset($data['limit_status']);
 					}
-					if ($key == 'profile_id' && empty($data['profile_id'])) {
+					if ($key == 'profile_id' && empty($data['profile_id']))
+					{
 						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC);
 
-						if(!empty($forms)) {
+						if (!empty($forms))
+						{
 							$data['profile_id'] = $forms[0]->id;
 						}
 
-						if (empty($data['profile_id'])) {
+						if (empty($data['profile_id']))
+						{
 							$data['profile_id'] = 1000;
 						}
 					}
-					if($key == 'start_date' || $key == 'end_date'){
-						$dateStr = str_replace(' ', 'T', $val);
-						$date = new DateTime($dateStr);
+					if ($key == 'start_date' || $key == 'end_date')
+					{
+						$dateStr    = str_replace(' ', 'T', $val);
+						$date       = new DateTime($dateStr);
 						$data[$key] = $date->format('Y-m-d H:i:s');
 					}
 				}
 			}
 
 			$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-			if (isset($data['description'])) {
+			if (isset($data['description']))
+			{
 				$data['description'] = $htmlSanitizer->sanitizeFor('section', $data['description']);
 			}
-			if (isset($data['short_description'])) {
+			if (isset($data['short_description']))
+			{
 				$data['short_description'] = $htmlSanitizer->sanitizeFor('section', $data['short_description']);
 			}
 
-			if (!empty($data['label'])) {
+			if (!empty($data['label']))
+			{
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_setup_campaigns'))
 					->columns($this->_db->quoteName(array_keys($data)))
 					->values(implode(',', $this->_db->Quote(array_values($data))));
 
-				try {
+				try
+				{
 					$this->_db->setQuery($query);
 					$inserted = $this->_db->execute();
 
-					if ($inserted) {
+					if ($inserted)
+					{
 						$campaign_id = $this->_db->insertid();
-						if (!empty($campaign_id)) {
-							if ($data['is_limited'] == 1) {
-								foreach ($limit_status as $key => $limit_statu) {
-									if ($limit_statu == 'true') {
+						if (!empty($campaign_id))
+						{
+							if ($data['is_limited'] == 1)
+							{
+								foreach ($limit_status as $key => $limit_statu)
+								{
+									if ($limit_statu == 'true')
+									{
 										$query->clear()
 											->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'));
 										$query->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($campaign_id))
@@ -1649,7 +1799,8 @@ class EmundusModelCampaign extends ListModel
 
 							if (!empty($campaign_languages))
 							{
-								foreach($campaign_languages as $language) {
+								foreach ($campaign_languages as $language)
+								{
 									$query->clear()
 										->insert($this->_db->quoteName('#__emundus_setup_campaigns_languages'))
 										->set($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($campaign_id))
@@ -1663,7 +1814,8 @@ class EmundusModelCampaign extends ListModel
 							$m_settings->onAfterCreateCampaign();
 
 							// Create a default trigger
-							if (!empty($data['training']) && !empty($create_default_program_trigger)) {
+							if (!empty($data['training']) && !empty($create_default_program_trigger))
+							{
 								$query->clear()
 									->select('id')
 									->from($this->_db->quoteName('#__emundus_setup_programmes'))
@@ -1671,10 +1823,12 @@ class EmundusModelCampaign extends ListModel
 								$this->_db->setQuery($query);
 								$pid = $this->_db->loadResult();
 
-								if (!empty($pid)) {
+								if (!empty($pid))
+								{
 									$emails = $m_emails->getTriggersByProgramId($pid);
 
-									if (empty($emails)) {
+									if (empty($emails))
+									{
 										$trigger = array(
 											'status'        => 1,
 											'model'         => 1,
@@ -1691,7 +1845,7 @@ class EmundusModelCampaign extends ListModel
 							$this->createYear($data);
 
 							// Create menu item with alias
-							if(!empty($data['alias']))
+							if (!empty($data['alias']))
 							{
 								$this->createCampaignAlias($campaign_id, $data['alias'], $data['label']);
 							}
@@ -1704,10 +1858,12 @@ class EmundusModelCampaign extends ListModel
 						}
 					}
 				}
-				catch (Exception $e) {
+				catch (Exception $e)
+				{
 					Log::add('component/com_emundus/models/campaign | Error when create the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
 					error_log($query->__toString() . ' -> ' . $e->getMessage());
+
 					return $e->getMessage();
 				}
 			}
@@ -1728,8 +1884,10 @@ class EmundusModelCampaign extends ListModel
 	{
 		$updated = false;
 
-		if (!empty($data) && !empty($cid)) {
-			if (empty($data['start_date']) || empty($data['end_date'])) {
+		if (!empty($data) && !empty($cid))
+		{
+			if (empty($data['start_date']) || empty($data['end_date']))
+			{
 				return $updated;
 			}
 
@@ -1739,7 +1897,8 @@ class EmundusModelCampaign extends ListModel
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
 			$app = Factory::getApplication();
-			if (empty($user_id)) {
+			if (empty($user_id))
+			{
 				$user_id = $app->getIdentity()->id;
 			}
 
@@ -1747,17 +1906,19 @@ class EmundusModelCampaign extends ListModel
 			$lang           = $app->getLanguage();
 			$actualLanguage = substr($lang->getTag(), 0, 2);
 
-			$limit_status = [];
-			$fields       = [];
-			$columns      = [];
+			$limit_status  = [];
+			$fields        = [];
+			$columns       = [];
 			$keys_to_unset = ['limit_status', 'profileLabel', 'progid', 'status', 'languages'];
-			$labels       = new stdClass;
+			$labels        = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
 			$app->triggerEvent('onCallEventHandler', ['onBeforeCampaignUpdate', ['campaign' => $cid]]);
 
-			foreach ($data as $key => $val) {
-				if ($val === '' || is_null($val)) {
+			foreach ($data as $key => $val)
+			{
+				if ($val === '' || is_null($val))
+				{
 					$keys_to_unset[] = $key;
 					continue;
 				}
@@ -1765,11 +1926,14 @@ class EmundusModelCampaign extends ListModel
 				if (!in_array($key, $keys_to_unset))
 				{
 					$columns[] = $this->_db->quoteName($key);
-				} else {
+				}
+				else
+				{
 					continue;
 				}
 
-				switch ($key) {
+				switch ($key)
+				{
 					case 'label':
 						$labels        = $data['label'];
 						$data['label'] = $data['label'][$actualLanguage];
@@ -1782,7 +1946,8 @@ class EmundusModelCampaign extends ListModel
 					case 'eval_end_date':
 					case 'admission_start_date':
 					case 'admission_end_date':
-						if (empty($val)) {
+						if (empty($val))
+						{
 							$val = '0000-00-00 00:00:00';
 						}
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
@@ -1795,7 +1960,8 @@ class EmundusModelCampaign extends ListModel
 						break;
 					case 'alias':
 						$details_menu = $this->getCampaignDetailsMenu($cid);
-						if(!empty($details_menu)) {
+						if (!empty($details_menu))
+						{
 							$query->clear()
 								->update($this->_db->quoteName('#__menu'))
 								->set($this->_db->quoteName('alias') . ' = ' . $this->_db->quote($val))
@@ -1803,14 +1969,17 @@ class EmundusModelCampaign extends ListModel
 								->where($this->_db->quoteName('id') . ' = ' . $details_menu->id);
 							$this->_db->setQuery($query);
 							$this->_db->execute();
-						} else {
+						}
+						else
+						{
 							$this->createCampaignAlias($cid, $val, $data['label']);
 						}
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 						break;
 					case 'profile_id':
-						if (empty($val)) {
+						if (empty($val))
+						{
 							$val = 1000;
 						}
 
@@ -1819,7 +1988,8 @@ class EmundusModelCampaign extends ListModel
 					case 'limit':
 					case 'pinned':
 					case 'is_limited':
-						if (!isset($val) || $val == '') {
+						if (!isset($val) || $val == '')
+						{
 							$val = 0;
 						}
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
@@ -1827,7 +1997,7 @@ class EmundusModelCampaign extends ListModel
 					case 'description':
 					case 'short_description':
 						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-						$val = $htmlSanitizer->sanitizeFor('section', $val);
+						$val           = $htmlSanitizer->sanitizeFor('section', $val);
 
 						$fields[] = $this->_db->quoteName($key) . ' = ' . $this->_db->quote($val);
 
@@ -1839,13 +2009,14 @@ class EmundusModelCampaign extends ListModel
 			}
 
 			$query->clear()
-				->select(implode(',',$columns))
+				->select(implode(',', $columns))
 				->from($this->_db->quoteName('#__emundus_setup_campaigns'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($cid));
 			$this->_db->setQuery($query);
 			$old_data = $this->_db->loadAssoc();
 
-			if (!empty($data['label'])) {
+			if (!empty($data['label']))
+			{
 				$m_falang->updateFalang($labels, $cid, 'emundus_setup_campaigns', 'label');
 			}
 
@@ -1854,12 +2025,14 @@ class EmundusModelCampaign extends ListModel
 				->set($fields)
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($cid));
 
-			try {
+			try
+			{
 				$this->_db->setQuery($query);
 				$updated = $this->_db->execute();
 
-				if ($updated) {
-					Log::add('User ' . $user_id. ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
+				if ($updated)
+				{
+					Log::add('User ' . $user_id . ' updated campaign ' . $cid . ' ' . date('d/m/Y H:i:s') . ' query ' . $query->__toString(), Log::INFO, 'com_emundus.campaign');
 
 					$query->clear()
 						->delete($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
@@ -1867,9 +2040,12 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$this->_db->execute();
 
-					if ($data['is_limited'] == 1) {
-						foreach ($limit_status as $key => $limit_statu) {
-							if ($limit_statu == 'true') {
+					if ($data['is_limited'] == 1)
+					{
+						foreach ($limit_status as $key => $limit_statu)
+						{
+							if ($limit_statu == 'true')
+							{
 								$query->clear()
 									->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
 									->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($cid))
@@ -1889,8 +2065,10 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$this->_db->execute();
 
-					if(!empty($data['languages'])) {
-						foreach ($data['languages'] as $lang_id) {
+					if (!empty($data['languages']))
+					{
+						foreach ($data['languages'] as $lang_id)
+						{
 							$query->clear()
 								->insert('#__emundus_setup_campaigns_languages')
 								->set('campaign_id = ' . $cid)
@@ -1909,8 +2087,10 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$this->_db->execute();
 
-					if(!empty($data['languages'])) {
-						foreach ($data['languages'] as $lang_id) {
+					if (!empty($data['languages']))
+					{
+						foreach ($data['languages'] as $lang_id)
+						{
 							$query->clear()
 								->insert('#__emundus_setup_campaigns_languages')
 								->set('campaign_id = ' . $cid)
@@ -1923,11 +2103,12 @@ class EmundusModelCampaign extends ListModel
 
 					$this->createYear($data);
 
-					foreach ($keys_to_unset as $key) {
+					foreach ($keys_to_unset as $key)
+					{
 						unset($data[$key]);
 					}
 
-					$dispatcher = Factory::getApplication()->getDispatcher();
+					$dispatcher                        = Factory::getApplication()->getDispatcher();
 					$onAfterCampaignUpdateEventHandler = new GenericEvent(
 						'onCallEventHandler',
 						['onAfterCampaignUpdate',
@@ -1943,11 +2124,13 @@ class EmundusModelCampaign extends ListModel
 					$dispatcher->dispatch('onCallEventHandler', $onAfterCampaignUpdateEventHandler);
 					$dispatcher->dispatch('onAfterCampaignUpdate', $onAfterCampaignUpdate);
 				}
-				else {
+				else
+				{
 					Log::add('Attempt to update $campaign ' . $cid . ' with data ' . json_encode($data) . ' failed.', Log::WARNING, 'com_emundus.error');
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error when update the campaign : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -1969,10 +2152,12 @@ class EmundusModelCampaign extends ListModel
 
 		$prid = !empty($profile) ? $profile : $data['profile_id'];
 
-		if (!empty($prid)) {
+		if (!empty($prid))
+		{
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 				// Check if teaching unity does not already exists
 				$query->select('count(id)')
 					->from($this->_db->quoteName('#__emundus_setup_teaching_unity'))
@@ -1982,7 +2167,8 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$teaching_unity_exist = $this->_db->loadResult();
 
-				if ($teaching_unity_exist == 0) {
+				if ($teaching_unity_exist == 0)
+				{
 					$query->clear()
 						->insert($this->_db->quoteName('#__emundus_setup_teaching_unity'))
 						->set($this->_db->quoteName('code') . ' = ' . $this->_db->quote($data['training']))
@@ -1995,11 +2181,13 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$created = $this->_db->execute();
 				}
-				else {
+				else
+				{
 					$created = true;
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error at year creation : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2016,7 +2204,8 @@ class EmundusModelCampaign extends ListModel
 	 */
 	public function getCampaignDetailsById($id)
 	{
-		if (empty($id)) {
+		if (empty($id))
+		{
 			return false;
 		}
 
@@ -2027,7 +2216,8 @@ class EmundusModelCampaign extends ListModel
 
 		$results = new stdClass();
 
-		try {
+		try
+		{
 			$query->select(['sc.*', 'spr.label AS profileLabel', 'sp.id as progid'])
 				->from($this->_db->quoteName('#__emundus_setup_campaigns', 'sc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_profiles', 'spr') . ' ON ' . $this->_db->quoteName('spr.id') . ' = ' . $this->_db->quoteName('sc.profile_id'))
@@ -2038,7 +2228,8 @@ class EmundusModelCampaign extends ListModel
 			$results->campaign = $this->_db->loadObject();
 			$results->label    = $m_falang->getFalang($id, 'emundus_setup_campaigns', 'label');
 
-			if ($results->campaign->is_limited == 1) {
+			if ($results->campaign->is_limited == 1)
+			{
 				$query->clear()
 					->select('limit_status')
 					->from($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
@@ -2056,7 +2247,8 @@ class EmundusModelCampaign extends ListModel
 
 			return $results;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/campaign | Error at getting the campaign by id ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2079,12 +2271,14 @@ class EmundusModelCampaign extends ListModel
 			->from($this->_db->quoteName('#__emundus_setup_campaigns'))
 			->where($this->_db->quoteName('date_time') . ' = ' . $this->_db->quote($currentDate));
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 
 			return $this->_db->loadObject();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/campaign | Error at getting the campaign created today : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2103,13 +2297,15 @@ class EmundusModelCampaign extends ListModel
 	{
 		$updated = false;
 
-		if (!empty($profile) && !empty($campaign)) {
+		if (!empty($profile) && !empty($campaign))
+		{
 			$query = $this->_db->getQuery(true);
 			$query->select('id, label, year, training, profile_id')
 				->from($this->_db->quoteName('#__emundus_setup_campaigns'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($campaign));
 
-			try {
+			try
+			{
 				$this->_db->setQuery($query);
 				$old_data = $this->_db->loadAssoc();
 
@@ -2128,8 +2324,9 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$checklist = $this->_db->loadObject();
 
-				if ($checklist == null) {
-					require_once(JPATH_SITE. '/components/com_emundus/models/form.php');
+				if ($checklist == null)
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
 					$m_form = new EmundusModelForm;
 					$m_form->addChecklistMenu($profile);
 				}
@@ -2146,7 +2343,7 @@ class EmundusModelCampaign extends ListModel
 				$this->createYear($old_data, $profile);
 				//
 
-				$new_data = $old_data;
+				$new_data               = $old_data;
 				$new_data['profile_id'] = $profile;
 
 				$app = JFactory::getApplication();
@@ -2155,7 +2352,8 @@ class EmundusModelCampaign extends ListModel
 
 				$updated = true;
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error at updating setup_profile of the campaign: ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2186,10 +2384,13 @@ class EmundusModelCampaign extends ListModel
                   ) = 0';
 
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$campaigns = $this->_db->loadObjectList();
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/campaign | Error getting campaigns without setup_profiles associated: ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 		}
 
@@ -2211,12 +2412,13 @@ class EmundusModelCampaign extends ListModel
 		$date  = new Date();
 
 		// Get affected programs
-		require_once(JPATH_SITE. '/components/com_emundus/models/programme.php');
+		require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
 
 		$m_programme = new EmundusModelProgramme;
 		$programs    = $m_programme->getUserPrograms($this->_user->id);
 
-		if (!empty($programs)) {
+		if (!empty($programs))
+		{
 			$searchName = $this->_db->quoteName('label') . ' LIKE ' . $this->_db->quote('%' . $term . '%');
 
 			$query->select('id,label')
@@ -2226,11 +2428,13 @@ class EmundusModelCampaign extends ListModel
 				->andWhere($searchName)
 				->andWhere($this->_db->quoteName('training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
 
-			try {
+			try
+			{
 				$this->_db->setQuery($query);
 				$campaigns_to_affect = $this->_db->loadObjectList();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Error getting campaigns without setup_profiles associated with search terms : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2255,19 +2459,23 @@ class EmundusModelCampaign extends ListModel
 			'msg'    => JText::_('ERROR_CANNOT_ADD_DOCUMENT')
 		];
 
-		if (empty($pid)) {
+		if (empty($pid))
+		{
 			$created['msg'] = 'Missing profile id';
 		}
-		else {
+		else
+		{
 			$query          = $this->_db->getQuery(true);
 			$lang           = JFactory::getLanguage();
 			$actualLanguage = substr($lang->getTag(), 0, 2);
 			$types          = implode(";", array_values($types));
 
-			if (empty($document['name'][$actualLanguage]) || empty($types)) {
+			if (empty($document['name'][$actualLanguage]) || empty($types))
+			{
 				$created['msg'] = 'Missing name or types';
 			}
-			else {
+			else
+			{
 				$query
 					->insert($this->_db->quoteName('#__emundus_setup_attachments'));
 
@@ -2280,20 +2488,25 @@ class EmundusModelCampaign extends ListModel
 					->set($this->_db->quoteName('nbmax') . ' = ' . $this->_db->quote($document['nbmax']));
 
 				/// insert image resolution if image is found
-				if ($document['minResolution'] != null and $document['maxResolution'] != null) {
-					if (empty($document['minResolution']['width']) or (int) $document['minResolution']['width'] == 0) {
+				if ($document['minResolution'] != null and $document['maxResolution'] != null)
+				{
+					if (empty($document['minResolution']['width']) or (int) $document['minResolution']['width'] == 0)
+					{
 						$document['minResolution']['width'] = 'null';
 					}
 
-					if (empty($document['minResolution']['height']) or (int) $document['minResolution']['height'] == 0) {
+					if (empty($document['minResolution']['height']) or (int) $document['minResolution']['height'] == 0)
+					{
 						$document['minResolution']['height'] = 'null';
 					}
 
-					if (empty($document['maxResolution']['width']) or (int) $document['maxResolution']['width'] == 0) {
+					if (empty($document['maxResolution']['width']) or (int) $document['maxResolution']['width'] == 0)
+					{
 						$document['maxResolution']['width'] = 'null';
 					}
 
-					if (empty($document['maxResolution']['height']) or (int) $document['maxResolution']['height'] == 0) {
+					if (empty($document['maxResolution']['height']) or (int) $document['maxResolution']['height'] == 0)
+					{
 						$document['maxResolution']['height'] = 'null';
 					}
 
@@ -2304,7 +2517,8 @@ class EmundusModelCampaign extends ListModel
 						->set($this->_db->quoteName('max_height') . ' = ' . $document['maxResolution']['height']);
 				}
 
-				try {
+				try
+				{
 					require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
 					$m_falang = new EmundusModelFalang;
 					$this->_db->setQuery($query);
@@ -2338,7 +2552,8 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->execute();
 					$created['status'] = $newdocument;
 				}
-				catch (Exception $e) {
+				catch (Exception $e)
+				{
 					Log::add('component/com_emundus/models/campaign | Cannot create a document : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 					$created['msg'] = $e->getMessage();
 				}
@@ -2370,11 +2585,15 @@ class EmundusModelCampaign extends ListModel
 
 		$types = array_values($types);
 		// If video and mp4 in types check addpipe status : remove video if not enabled else remove mp4
-		if (in_array('video', $types) || in_array('mp4', $types)) {
+		if (in_array('video', $types) || in_array('mp4', $types))
+		{
 			$addpipe = ComponentHelper::getParams('com_emundus')->get('addpipe_activation', 0);
-			if ($addpipe == 0) {
+			if ($addpipe == 0)
+			{
 				$types = array_diff($types, ['video']);
-			} else {
+			}
+			else
+			{
 				$types = array_diff($types, ['mp4']);
 			}
 		}
@@ -2387,54 +2606,67 @@ class EmundusModelCampaign extends ListModel
 			->set($this->_db->quoteName('nbmax') . ' = ' . $this->_db->quote($document['nbmax']));
 
 		/// many cases
-		if (isset($document['minResolution'])) {
+		if (isset($document['minResolution']))
+		{
 
 			/// isset + !empty - !is_null === !empty (just it)
-			if (!empty($document['minResolution']['width'])) {
+			if (!empty($document['minResolution']['width']))
+			{
 				$query->set($this->_db->quoteName('min_width') . ' = ' . $document['minResolution']['width']);
 			}
-			else {
+			else
+			{
 				$query->set($this->_db->quoteName('min_width') . ' = null');
 			}
 
 			/// isset + !empty - !is_null === !empty (just it)
-			if (!empty($document['minResolution']['height'])) {
+			if (!empty($document['minResolution']['height']))
+			{
 				$query->set($this->_db->quoteName('min_height') . ' = ' . $document['minResolution']['height']);
 			}
-			else {
+			else
+			{
 				$query->set($this->_db->quoteName('min_height') . ' = null');
 			}
 		}
-		else {
+		else
+		{
 			$query->set($this->_db->quoteName('min_width') . ' = null')
 				->set($this->_db->quoteName('min_height') . ' = null');
 		}
 
-		if (isset($document['maxResolution'])) {
+		if (isset($document['maxResolution']))
+		{
 			/// isset + !empty - !is_null === !empty (just it)
-			if (!empty($document['maxResolution']['width'])) {
+			if (!empty($document['maxResolution']['width']))
+			{
 				$query->set($this->_db->quoteName('max_width') . ' = ' . $document['maxResolution']['width']);
 			}
-			else {
+			else
+			{
 				$query->set($this->_db->quoteName('max_width') . ' = null');
 			}
 
 			/// isset + !empty - !is_null === !empty (just it)
-			if (!empty($document['maxResolution']['height'])) {
+			if (!empty($document['maxResolution']['height']))
+			{
 				$query->set($this->_db->quoteName('max_height') . ' = ' . $document['maxResolution']['height']);
 			}
-			else {
+			else
+			{
 				$query->set($this->_db->quoteName('max_height') . ' = null');
 			}
 		}
-		else {
+		else
+		{
 			$query->set($this->_db->quoteName('max_width') . ' = null')
 				->set($this->_db->quoteName('max_height') . ' = null');
 		}
 
 		$query->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($did));
 
-		try {
+		try
+		{
 			$this->_db->setQuery($query);
 			$this->_db->execute();
 			$query->clear()
@@ -2457,7 +2689,8 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$assignations = $this->_db->loadResult();
 
-			if (empty($assignations)) {
+			if (empty($assignations))
+			{
 				$query->clear()
 					->select('max(ordering)')
 					->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
@@ -2471,9 +2704,10 @@ class EmundusModelCampaign extends ListModel
 					->set($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did))
 					->set($this->_db->quoteName('mandatory') . ' = ' . $this->_db->quote($document['mandatory']))
 					->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote(($ordering + 1)))
-					->set($this->_db->quoteName('has_sample') . ' = '. $this->_db->quote($params['has_sample']));
+					->set($this->_db->quoteName('has_sample') . ' = ' . $this->_db->quote($params['has_sample']));
 
-				if ($did === 20) {
+				if ($did === 20)
+				{
 					$query->set($this->_db->quoteName('displayed') . ' = ' . 0);
 				}
 
@@ -2481,26 +2715,32 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->execute();
 			}
 
-			if (!empty($params['file']) && $params['has_sample']) {
+			if (!empty($params['file']) && $params['has_sample'])
+			{
 				$allowed_ext = array('jpg', 'jpeg', 'png', 'doc', 'docx', 'pdf', 'xls', 'xlsx');
 				$ext         = strtolower(pathinfo($params['file']['name'], PATHINFO_EXTENSION));
-				if (in_array($ext, $allowed_ext)) {
+				if (in_array($ext, $allowed_ext))
+				{
 					$filename  = $params['file']['name'];
 					$directory = "/images/custom/attachments/$did/$pid/";
 
-					if (!file_exists(JPATH_ROOT . '/images/custom/attachments')) {
+					if (!file_exists(JPATH_ROOT . '/images/custom/attachments'))
+					{
 						$created = mkdir(JPATH_ROOT . '/images/custom/attachments', 0775);
 					}
-					if (!file_exists(JPATH_ROOT . '/images/custom/attachments/' . $did)) {
+					if (!file_exists(JPATH_ROOT . '/images/custom/attachments/' . $did))
+					{
 						$created = mkdir(JPATH_ROOT . '/images/custom/attachments/' . $did, 0775);
 					}
-					if (!file_exists(JPATH_ROOT . '/images/custom/attachments/' . $did . '/' . $pid)) {
+					if (!file_exists(JPATH_ROOT . '/images/custom/attachments/' . $did . '/' . $pid))
+					{
 						$created = mkdir(JPATH_ROOT . '/images/custom/attachments/' . $did . '/' . $pid, 0775);
 					}
 
 					$filepath    = $directory . "$filename";
 					$destination = JPATH_ROOT . $filepath;
-					if (move_uploaded_file($params['file']['tmp_name'], $destination)) {
+					if (move_uploaded_file($params['file']['tmp_name'], $destination))
+					{
 						$query->clear()
 							->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
 							->set($this->_db->quoteName('sample_filepath') . ' = ' . $this->_db->quote($filepath))
@@ -2511,15 +2751,19 @@ class EmundusModelCampaign extends ListModel
 						$this->_db->setQuery($query);
 						$this->_db->execute();
 					}
-					else {
+					else
+					{
 						Log::add('component/com_emundus/models/campaign | Cannot upload a document model for ' . $did . ' and profile ' . $pid, Log::ERROR, 'com_emundus.error');
 
 					}
 				}
-				else {
+				else
+				{
 					Log::add(JFactory::getUser()->id . ' Cannot upload a document model for ' . $did . ' and profile ' . $pid, Log::INFO, 'com_emundus');
 				}
-			} else {
+			}
+			else
+			{
 				$query->clear()
 					->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
 					->set('has_sample = 0')
@@ -2532,8 +2776,10 @@ class EmundusModelCampaign extends ListModel
 
 			return true;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/campaign | Cannot update a document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+
 			return false;
 		}
 	}
@@ -2542,7 +2788,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->update('#__emundus_setup_attachment_profiles')
 				->set('mandatory = ' . $mandatory)
 				->where('profile_id = ' . $pid)
@@ -2552,7 +2799,8 @@ class EmundusModelCampaign extends ListModel
 
 			return $this->_db->execute();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			return false;
 		}
 	}
@@ -2568,27 +2816,32 @@ class EmundusModelCampaign extends ListModel
 	{
 		$campaign_dropfile_cat = false;
 
-		if (!empty($cid)) {
+		if (!empty($cid))
+		{
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 				$query->select('id')
 					->from($this->_db->quoteName('#__categories'))
 					->where('json_valid(`params`)')
-					->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"'.$cid.'"'))
+					->andWhere('json_extract(`params`, "$.idCampaign") LIKE ' . $this->_db->quote('"' . $cid . '"'))
 					->andWhere($this->_db->quoteName('extension') . ' = ' . $this->_db->quote('com_dropfiles'));
 				$this->_db->setQuery($query);
 				$campaign_dropfile_cat = $this->_db->loadResult();
 
-				if (!$campaign_dropfile_cat) {
+				if (!$campaign_dropfile_cat)
+				{
 					JPluginHelper::importPlugin('emundus', 'setup_category');
 					$result = $this->app->triggerEvent('onAfterCampaignCreate', [$cid]);
-					if ($result) {
+					if ($result)
+					{
 						$campaign_dropfile_cat = $this->getCampaignCategory($cid);
 					}
 				}
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Cannot get dropfiles category of the campaign ' . $cid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2607,10 +2860,12 @@ class EmundusModelCampaign extends ListModel
 	{
 		$documents = [];
 
-		if (!empty($campaign_cat)) {
+		if (!empty($campaign_cat))
+		{
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 				$query->select('*')
 					->from($this->_db->quoteName('#__dropfiles_files'))
 					->where($this->_db->quoteName('catid') . ' = ' . $this->_db->quote($campaign_cat))
@@ -2619,7 +2874,9 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 
 				$documents = $this->_db->loadObjectList();
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Cannot get dropfiles documents of the category ' . $campaign_cat . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2638,7 +2895,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('*')
 				->from($this->_db->quoteName('#__dropfiles_files'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($did));
@@ -2646,7 +2904,8 @@ class EmundusModelCampaign extends ListModel
 
 			return $this->_db->loadObject();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/campaign | Cannot get the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2664,7 +2923,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('file,catid')
 				->from($this->_db->quoteName('#__dropfiles_files'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($did)));
@@ -2679,7 +2939,8 @@ class EmundusModelCampaign extends ListModel
 
 			return $this->_db->execute();
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('component/com_emundus/models/campaign | Cannot delete the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2698,21 +2959,25 @@ class EmundusModelCampaign extends ListModel
 	{
 		$updated = false;
 
-		if (!empty($did) && !empty($name)) {
-			if (strlen($name) > 200) {
+		if (!empty($did) && !empty($name))
+		{
+			if (strlen($name) > 200)
+			{
 				$name = substr($name, 0, 200);
 			}
 
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 				$query->update($this->_db->quoteName('#__dropfiles_files'))
 					->set($this->_db->quoteName('title') . ' = ' . $this->_db->quote($name))
 					->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote(($did)));
 				$this->_db->setQuery($query);
 				$updated = $this->_db->execute();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Cannot update the dropfile document ' . $did . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2731,11 +2996,14 @@ class EmundusModelCampaign extends ListModel
 	{
 		$updated = false;
 
-		if (!empty($documents)) {
+		if (!empty($documents))
+		{
 			$query = $this->_db->getQuery(true);
-			try {
+			try
+			{
 				$doc_order_updated = [];
-				foreach ($documents as $document) {
+				foreach ($documents as $document)
+				{
 					$query->clear()
 						->update($this->_db->quoteName('#__dropfiles_files'))
 						->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote($document['ordering']))
@@ -2745,7 +3013,9 @@ class EmundusModelCampaign extends ListModel
 				}
 
 				$updated = !in_array(false, $doc_order_updated);
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('component/com_emundus/models/campaign | Cannot reorder the dropfile documents : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -2764,7 +3034,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('*')
 				->from($this->_db->quoteName('#__modules'))
 				->where('json_valid(`note`)')
@@ -2774,20 +3045,24 @@ class EmundusModelCampaign extends ListModel
 
 			$files = array();
 
-			if ($form_module != null) {
+			if ($form_module != null)
+			{
 				// create the DOMDocument object, and load HTML from string
 				$dochtml = new DOMDocument();
 				$dochtml->loadHTML($form_module->content);
 
 				// gets all DIVs
 				$links = $dochtml->getElementsByTagName('a');
-				foreach ($links as $link) {
+				foreach ($links as $link)
+				{
 					$file = new stdClass;
-					if ($link->hasAttribute('href')) {
+					if ($link->hasAttribute('href'))
+					{
 						$file->link = $link->getAttribute('href');
 						$file->name = $link->textContent;
 					}
-					if ($link->parentNode->hasAttribute('id')) {
+					if ($link->parentNode->hasAttribute('id'))
+					{
 						$file->id = $link->parentNode->getAttribute('id');
 					}
 					$files[] = $file;
@@ -2796,7 +3071,8 @@ class EmundusModelCampaign extends ListModel
 
 			return $files;
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2816,7 +3092,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('*')
 				->from($this->_db->quoteName('#__modules'))
 				->where('json_valid(`note`)')
@@ -2824,7 +3101,8 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$form_module = $this->_db->loadObject();
 
-			if ($form_module != null) {
+			if ($form_module != null)
+			{
 				// create the DOMDocument object, and load HTML from string
 				$dochtml = new DOMDocument();
 				$dochtml->loadHTML($form_module->content);
@@ -2845,11 +3123,13 @@ class EmundusModelCampaign extends ListModel
 
 				return $this->_db->execute();
 			}
-			else {
+			else
+			{
 				return true;
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error updating form document in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2868,7 +3148,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('*')
 				->from($this->_db->quoteName('#__modules'))
 				->where('json_valid(`note`)')
@@ -2887,7 +3168,8 @@ class EmundusModelCampaign extends ListModel
 
 			$newcontent = explode('</body>', explode('<body>', $dochtml->saveHTML())[1])[0];
 
-			if (strpos($newcontent, '<li') === false) {
+			if (strpos($newcontent, '<li') === false)
+			{
 				$query->clear()
 					->select('m.id')
 					->from($this->_db->quoteName('#__menu', 'm'))
@@ -2896,7 +3178,8 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$mids = $this->_db->loadObjectList();
 
-				foreach ($mids as $mid) {
+				foreach ($mids as $mid)
+				{
 					$query->clear()
 						->delete($this->_db->quoteName('#__modules_menu'))
 						->where($this->_db->quoteName('moduleid') . ' = ' . $this->_db->quote($form_module->id))
@@ -2912,7 +3195,8 @@ class EmundusModelCampaign extends ListModel
 
 				return $this->_db->execute();
 			}
-			else {
+			else
+			{
 				$query->clear()
 					->update('#__modules')
 					->set($this->_db->quoteName('content') . ' = ' . $this->_db->quote($newcontent))
@@ -2922,7 +3206,8 @@ class EmundusModelCampaign extends ListModel
 				return $this->_db->execute();
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Error updating form document in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
@@ -2930,47 +3215,55 @@ class EmundusModelCampaign extends ListModel
 	}
 
 	/**
-	 * @deprecated Use getCurrentWorkflowStepFromFile of model workflow instead
-	 *
 	 * @param $emundusUser
 	 *
 	 * @return false|object False if error, object containing emundus_campaign_workflow id, start date and end_date if success
 	 *
-	 * @since version 1.30.0
+	 * @deprecated Use getCurrentWorkflowStepFromFile of model workflow instead
+	 *
+	 * @since      version 1.30.0
 	 */
 	public function getCurrentCampaignWorkflow($fnum)
 	{
 		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 		$m_workflow = new EmundusModelWorkflow();
+
 		return $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 	}
 
 	/**
-	 * @param $campaign_id int
-	 * @param array $step_types if 1, only applicant steps, if 2, only admin steps, can be both
+	 * @param          $campaign_id int
+	 * @param   array  $step_types  if 1, only applicant steps, if 2, only admin steps, can be both
+	 *
 	 * @return array
 	 */
 	public function getAllCampaignWorkflows($campaign_id, $step_types = [1])
 	{
 		$steps = [];
 
-		if (!empty($campaign_id)) {
+		if (!empty($campaign_id))
+		{
 			$program = $this->getProgrammeByCampaignID($campaign_id);
 
-			if (!empty($program['id'])) {
+			if (!empty($program['id']))
+			{
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 				$m_workflow = new EmundusModelWorkflow();
 
 				$workflows = $m_workflow->getWorkflows([], 0, 0, [$program['id']]);
 
-				if (!empty($workflows)) {
-					foreach($workflows as $workflow) {
+				if (!empty($workflows))
+				{
+					foreach ($workflows as $workflow)
+					{
 						$wf_data = $m_workflow->getWorkflow($workflow->id);
 
-						foreach ($wf_data['steps'] as $step) {
-							if (in_array($step->type, $step_types) || in_array($m_workflow->getParentStepType($step->type), $step_types)) {
+						foreach ($wf_data['steps'] as $step)
+						{
+							if (in_array($step->type, $step_types) || in_array($m_workflow->getParentStepType($step->type), $step_types))
+							{
 								$step->profile = $step->profile_id;
-								$steps[] = $step;
+								$steps[]       = $step;
 							}
 						}
 					}
@@ -2985,15 +3278,18 @@ class EmundusModelCampaign extends ListModel
 	{
 		$pinned = false;
 
-		if (!empty($cid)) {
+		if (!empty($cid))
+		{
 			// check if campaign exists
 			$campaign = $this->getCampaignByID($cid);
 
-			if (!empty($campaign)) {
+			if (!empty($campaign))
+			{
 				$db    = JFactory::getDbo();
 				$query = $db->getQuery(true);
 
-				try {
+				try
+				{
 					$query->clear()
 						->select('id')
 						->from($db->quoteName('#__emundus_setup_campaigns'))
@@ -3001,7 +3297,8 @@ class EmundusModelCampaign extends ListModel
 					$db->setQuery($query);
 					$campaigns_already_pinned = $db->loadColumn();
 
-					if (!empty($campaigns_already_pinned)) {
+					if (!empty($campaigns_already_pinned))
+					{
 						$this->unpinCampaign($campaigns_already_pinned);
 					}
 
@@ -3013,7 +3310,8 @@ class EmundusModelCampaign extends ListModel
 
 					$pinned = $db->execute();
 				}
-				catch (Exception $e) {
+				catch (Exception $e)
+				{
 					Log::add('Error updating form document in component/com_emundus/models/campaign: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				}
 			}
@@ -3035,7 +3333,8 @@ class EmundusModelCampaign extends ListModel
 		$campaign_id = array_filter($campaign_id, 'is_numeric');
 		$campaign_id = array_filter($campaign_id);
 
-		if (!empty($campaign_id)) {
+		if (!empty($campaign_id))
+		{
 			$db    = JFactory::getDbo();
 			$query = $db->getQuery(true);
 
@@ -3043,11 +3342,13 @@ class EmundusModelCampaign extends ListModel
 				->set($db->quoteName('pinned') . ' = 0')
 				->where($db->quoteName('id') . ' IN (' . implode(',', $campaign_id) . ')');
 
-			try {
+			try
+			{
 				$db->setQuery($query);
 				$unpinned = $db->execute();
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				Log::add('Error setting pinned = 0 for $cid ' . $campaign_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
@@ -3055,53 +3356,74 @@ class EmundusModelCampaign extends ListModel
 		return $unpinned;
 	}
 
-	/**
-	 * @param $campaign_id int
-	 * @return string
-	 */
-	public function getCampaignMoreFormUrl($campaign_id): string
+	public function getCampaignMoreForm(?int $campaign_id = 0): array
 	{
-		$form_url = '';
+		$form = [];
 
-		if (!empty($campaign_id)) {
-			$query = $this->_db->getQuery(true);
+		$query = $this->_db->createQuery();
 
-			// get the form id where the table is jos_emundus_setup_campaigns_more
-			$query->select('form_id')
-				->from($this->_db->quoteName('#__fabrik_lists'))
-				->where($this->_db->quoteName('db_table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_campaigns_more'));
+		// get the form id where the table is jos_emundus_setup_campaigns_more
+		$query->select('form_id')
+			->from($this->_db->quoteName('#__fabrik_lists'))
+			->where($this->_db->quoteName('db_table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_campaigns_more'));
+		$this->_db->setQuery($query);
+		$form_id = $this->_db->loadResult();
 
+		if (!empty($form_id))
+		{
+			// check if there are more elements other than id, date_time and campaign_id
+			// otherwhise, we don't need to display the form
+			$query->clear()
+				->select('jfe.id,jfe.name,jfe.label')
+				->from($this->_db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($this->_db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->_db->quoteName('jffg.group_id') . ' = ' . $this->_db->quoteName('jfe.group_id'))
+				->where($this->_db->quoteName('jffg.form_id') . ' = ' . $this->_db->quote($form_id))
+				->andWhere('jfe.published = 1')
+				->andWhere('jfe.name NOT IN ("id", "date_time", "campaign_id")');
 			$this->_db->setQuery($query);
-			$form_id = $this->_db->loadResult();
+			$elements = $this->_db->loadAssocList();
 
-			if (!empty($form_id)) {
-				// check if there are more elements other than id, date_time and campaign_id
-				// otherwhise, we don't need to display the form
-				$query->clear()
-					->select('COUNT(jfe.id)')
-					->from($this->_db->quoteName('#__fabrik_elements', 'jfe'))
-					->leftJoin($this->_db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->_db->quoteName('jffg.group_id') . ' = ' . $this->_db->quoteName('jfe.group_id'))
-					->where($this->_db->quoteName('jffg.form_id') . ' = ' . $this->_db->quote($form_id))
-					->andWhere('jfe.published = 1')
-					->andWhere('jfe.name NOT IN ("id", "date_time", "campaign_id")');
-				$this->_db->setQuery($query);
-				$nb_elements = $this->_db->loadResult();
+			if (count($elements) > 0)
+			{
+				$form['form_id']  = $form_id;
+				$form['elements'] = $elements;
 
-				if ($nb_elements > 0) {
+				$form['url'] = '';
+				if (!empty($campaign_id))
+				{
 					$query->clear()
 						->select('id')
 						->from($this->_db->quoteName('#__emundus_setup_campaigns_more'))
 						->where('campaign_id = ' . $this->_db->quote($campaign_id));
-
 					$this->_db->setQuery($query);
-					$row_id = $this->_db->loadResult();
+					$form['row_id'] = $this->_db->loadResult();
 
-					if (!empty($row_id)) {
-						$form_url = 'index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $row_id . '&tmpl=component&iframe=1';
-					} else {
-						$form_url = 'index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
+					if (!empty($form['row_id']))
+					{
+						$form['url'] = 'index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=' . $form['row_id'] . '&tmpl=component&iframe=1';
+					}
+					else
+					{
+						$form['url'] = 'index.php?option=com_fabrik&view=form&formid=' . $form_id . '&rowid=0&tmpl=component&iframe=1&jos_emundus_setup_campaigns_more___campaign_id=' . $campaign_id . '&Itemid=0';
 					}
 				}
+			}
+		}
+
+		return $form;
+	}
+
+	public function getCampaignMoreFormUrl(int $campaign_id): string
+	{
+		$form_url = '';
+
+		if (!empty($campaign_id))
+		{
+			$form = $this->getCampaignMoreForm($campaign_id);
+
+			if (!empty($form) && !empty($form['url']))
+			{
+				$form_url = $form['url'];
 			}
 		}
 
@@ -3117,7 +3439,7 @@ class EmundusModelCampaign extends ListModel
 		{
 			$menus_to_exclude = [];
 
-			if(!empty($cid))
+			if (!empty($cid))
 			{
 				$query->select('id,params')
 					->from($this->_db->quoteName('#__menu'))
@@ -3138,7 +3460,7 @@ class EmundusModelCampaign extends ListModel
 				->select('alias')
 				->from($this->_db->quoteName('#__menu'))
 				->where($this->_db->quoteName('client_id') . ' = 0');
-			if(!empty($menus_to_exclude))
+			if (!empty($menus_to_exclude))
 			{
 				$query->where($this->_db->quoteName('id') . ' NOT IN (' . implode(',', $menus_to_exclude) . ')');
 			}
@@ -3160,9 +3482,9 @@ class EmundusModelCampaign extends ListModel
 		try
 		{
 			$query = $this->_db->getQuery(true);
-			require_once (JPATH_SITE.DS.'administrator/components/com_emundus/helpers/update.php');
+			require_once(JPATH_SITE . DS . 'administrator/components/com_emundus/helpers/update.php');
 
-			$modules_id =  [];
+			$modules_id = [];
 
 			$query->clear()
 				->select('id,params')
@@ -3170,9 +3492,11 @@ class EmundusModelCampaign extends ListModel
 				->where($this->_db->quoteName('module') . ' LIKE ' . $this->_db->quote('mod_emundus_campaign'));
 			$this->_db->setQuery($query);
 			$modules = $this->_db->loadObjectList();
-			foreach ($modules as $module) {
+			foreach ($modules as $module)
+			{
 				$params = json_decode($module->params);
-				if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign') {
+				if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign')
+				{
 					$modules_id[] = $module->id;
 				}
 			}
@@ -3185,20 +3509,21 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$menu_id = $this->_db->loadResult();
 
-			if(!empty($menu_id)) {
-				$alias = $alias.'-'.$cid;
+			if (!empty($menu_id))
+			{
+				$alias = $alias . '-' . $cid;
 			}
 
 			$params = [
-				'menutype' => 'campaigns',
-				'title'    => $label,
-				'alias'    => $alias,
-				'path'     => $alias,
-				'type' => 'component',
-				'link' => 'index.php?option=com_emundus&view=programme',
+				'menutype'     => 'campaigns',
+				'title'        => $label,
+				'alias'        => $alias,
+				'path'         => $alias,
+				'type'         => 'component',
+				'link'         => 'index.php?option=com_emundus&view=programme',
 				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
-				'params'   => [
-					'com_emundus_programme_campaign_id' => $cid,
+				'params'       => [
+					'com_emundus_programme_campaign_id'    => $cid,
 					'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
 				]
 			];
@@ -3228,9 +3553,11 @@ class EmundusModelCampaign extends ListModel
 			$this->_db->setQuery($query);
 			$menus = $this->_db->loadObjectList();
 
-			foreach ($menus as $menu) {
+			foreach ($menus as $menu)
+			{
 				$params = json_decode($menu->params);
-				if (!empty($params->com_emundus_programme_campaign_id) && $params->com_emundus_programme_campaign_id == $cid) {
+				if (!empty($params->com_emundus_programme_campaign_id) && $params->com_emundus_programme_campaign_id == $cid)
+				{
 					$details_menu = $menu;
 					break;
 				}
@@ -3253,10 +3580,12 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.40.0
 	 */
-	function getProfilesFromCampaignId($campaign_ids) {
+	function getProfilesFromCampaignId($campaign_ids)
+	{
 		$profile_ids = [];
 
-		if (!empty($campaign_ids)) {
+		if (!empty($campaign_ids))
+		{
 			$query = $this->_db->getQuery(true);
 
 			$query->select('DISTINCT profile_id')
@@ -3274,18 +3603,22 @@ class EmundusModelCampaign extends ListModel
 			}
 
 			// profiles from workflows
-			if (!class_exists('EmundusModelWorkflow')) {
+			if (!class_exists('EmundusModelWorkflow'))
+			{
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			}
 			$m_worfklow = new EmundusModelWorkflow();
 			$workflows  = $m_worfklow->getWorkflows();
 
-			if (!empty($workflows)) {
+			if (!empty($workflows))
+			{
 				$programme_codes = [];
-				foreach ($campaign_ids as $cid) {
+				foreach ($campaign_ids as $cid)
+				{
 					$programme = $this->getProgrammeByCampaignID($cid);
 
-					if (!in_array($programme['code'], $programme_codes)) {
+					if (!in_array($programme['code'], $programme_codes))
+					{
 						$programme_codes[] = $programme['code'];
 					}
 				}
@@ -3312,7 +3645,8 @@ class EmundusModelCampaign extends ListModel
 	{
 		$languages = [];
 
-		if (!empty($campaign_id)) {
+		if (!empty($campaign_id))
+		{
 			$query = $this->_db->createQuery();
 
 			$query->select('el.lang_id as value, el.title as label')
@@ -3338,10 +3672,12 @@ class EmundusModelCampaign extends ListModel
 	{
 		$languages = [];
 
-		if (!empty($fnum)) {
+		if (!empty($fnum))
+		{
 			$query = $this->_db->getQuery(true);
 
-			try {
+			try
+			{
 				$query->clear()
 					->select($this->_db->quoteName('escl.lang_id'))
 					->from($this->_db->quoteName('#__emundus_setup_campaigns_languages', 'escl'))
@@ -3351,7 +3687,8 @@ class EmundusModelCampaign extends ListModel
 				$this->_db->setQuery($query);
 				$languages = $this->_db->loadColumn();
 
-				if (empty($languages)) {
+				if (empty($languages))
+				{
 					// maybe the program has language restrictions
 					$query->clear()
 						->select($this->_db->quoteName('espl.lang_id'))
@@ -3365,7 +3702,9 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$languages = $this->_db->loadColumn();
 				}
-			} catch (Exception $e) {
+			}
+			catch (Exception $e)
+			{
 				Log::add('Error getting campaign languages ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
