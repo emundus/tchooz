@@ -13,6 +13,9 @@
 
 // phpcs:enable PSR1.Files.SideEffects
 
+use classes\Entities\ApplicationFile\ApplicationFileEntity;
+use classes\Entities\Settings\AddonEntity;
+use classes\Repository\ApplicationFile\ApplicationFileRepository;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
@@ -22,8 +25,13 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Language\Text;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use \classes\Factories\ImportFactory;
+
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\CMS\User\UserHelper;
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 /**
  * Emundus Component Campaign Model
@@ -62,10 +70,18 @@ class EmundusModelCampaign extends ListModel
 	 */
 	private $config;
 
+	private EmundusHelperCache $h_cache;
+
+	private ?AddonEntity $importAddon = null;
+
 	function __construct()
 	{
 		parent::__construct();
 		global $option;
+
+		if (!class_exists('AddonEntity')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
+		}
 
 		Log::addLogger([
 			'text_file'         => 'com_emundus.campaign.error.php',
@@ -81,6 +97,9 @@ class EmundusModelCampaign extends ListModel
 		$this->_em_user = $this->app->getSession()->get('emundusUser');
 		$this->_user    = $this->app->getIdentity();
 		$this->config   = $this->app->getConfig();
+		$this->h_cache  = new EmundusHelperCache();
+
+		$this->setImportAddon();
 
 		// Get pagination request variables
 		$filter_order     = $this->app->getUserStateFromRequest($option . 'filter_order', 'filter_order', 'label', 'cmd');
@@ -3710,5 +3729,425 @@ class EmundusModelCampaign extends ListModel
 		}
 
 		return $languages;
+	}
+
+	public function generateModel(array $campaign, array $options, string $format = 'xlsx'): string
+	{
+		$xlsx_file = '';
+
+		try
+		{
+			if (!class_exists('ImportFactory'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Factories/ImportFactory.php');
+			}
+			$importFactory = new ImportFactory(null, $this->_db);
+
+			if ($format == 'xlsx')
+			{
+				$xlsx_file = $importFactory->generateXlsxModel($campaign, $options);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $xlsx_file;
+	}
+
+	public function scanImportFile(array $file): int
+	{
+		$rows_to_import = 0;
+
+		try
+		{
+			if (!class_exists('ImportFactory'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Factories/ImportFactory.php');
+			}
+			$importFactory = new ImportFactory($file);
+			$csv_filename  = $importFactory->getCsvFilename();
+
+			// Import the CSV file
+			if (is_file($csv_filename) && pathinfo($csv_filename, PATHINFO_EXTENSION) == 'csv')
+			{
+				// auto_detect_line_endings allows PHP to detect MACOS line endings or else things get ugly...
+				ini_set('auto_detect_line_endings', true);
+
+				$csv_file = fopen($csv_filename, 'r');
+				if (!$csv_file)
+				{
+					throw new Exception('Error opening CSV file');
+				}
+				fclose($csv_file);
+
+				$importFactory->setCsvDelimiter();
+				$importFactory->setColumns();
+
+				$rows_to_import = count($importFactory->getRowsToImport());
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $rows_to_import;
+	}
+
+	public function importFiles(array $file, int $campaign_id, int $send_email, int $create_new_fnum, int $user_id = 0): array
+	{
+		if (empty($user_id))
+		{
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
+
+		$files_imported     = [];
+		$files_not_imported = [];
+
+		PluginHelper::importPlugin('emundus', 'custom_event_handler');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+
+		$query = $this->_db->getQuery(true);
+
+		try
+		{
+			if (!class_exists('ImportFactory'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Factories/ImportFactory.php');
+			}
+			$importFactory = new ImportFactory($file);
+			$csv_filename  = $importFactory->getCsvFilename();
+
+			// Import the CSV file
+			if (is_file($csv_filename) && pathinfo($csv_filename, PATHINFO_EXTENSION) == 'csv')
+			{
+				// auto_detect_line_endings allows PHP to detect MACOS line endings or else things get ugly...
+				ini_set('auto_detect_line_endings', true);
+
+				$csv_file = fopen($csv_filename, 'r');
+				if (!$csv_file)
+				{
+					throw new Exception('Error opening CSV file');
+				}
+				fclose($csv_file);
+
+				$onBeforeImportCSVEventHandler = new GenericEvent(
+					'onCallEventHandler',
+					['onBeforeImportCSV',
+						[
+							'csv'             => $csv_filename,
+							'create_new_fnum' => $create_new_fnum,
+						]
+					]
+				);
+				$onBeforeImportCSV             = new GenericEvent(
+					'onBeforeImportCSV',
+					[
+						'csv'             => $csv_filename,
+						'create_new_fnum' => $create_new_fnum,
+					]
+				);
+				$dispatcher->dispatch('onCallEventHandler', $onBeforeImportCSVEventHandler);
+				$dispatcher->dispatch('onBeforeImportCSV', $onBeforeImportCSV);
+
+				$importFactory->setCsvDelimiter();
+				$importFactory->setColumns();
+
+				$rows_to_import = $importFactory->getRowsToImport();
+
+				if (!empty($rows_to_import))
+				{
+					if (!class_exists('ApplicationFileEntity'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/ApplicationFile/ApplicationFileEntity.php');
+					}
+					if (!class_exists('ApplicationFileRepository'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/classes/Repository/ApplicationFile/ApplicationFileRepository.php');
+					}
+					$applicationFileRepository = new ApplicationFileRepository($this->_db, $user_id);
+					if (!class_exists('EmundusHelperDate'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/helpers/EmundusHelperDate.php');
+					}
+					if (!class_exists('EmundusModelUsers'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+					}
+					$m_users = new EmundusModelUsers();
+
+					foreach ($rows_to_import as $row)
+					{
+						$origin_datas = [];
+						if(!empty($row['orig_datas'])) {
+							$origin_datas = $row['orig_datas'];
+							unset($row['orig_datas']);
+						}
+
+						if (!empty($row['email']) && !empty($row['firstname']) && !empty($row['lastname']))
+						{
+							$username = !empty($row['username']) ? $row['username'] : $row['email'];
+							$user     = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($username);
+
+							if (empty($user->id))
+							{
+								$now      = EmundusHelperDate::getNow();
+								$password = UserHelper::genRandomPassword();
+
+								// Check if user already exists
+								$user                = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
+								$user->email         = $row['email'];
+								$user->username      = $username;
+								$user->name          = $row['lastname'] . ' ' . $row['firstname'];
+								$user->password      = UserHelper::hashPassword($password);
+								$user->registerDate  = $now;
+								$user->lastvisitDate = null;
+								$user->block         = 0;
+								$user->params        = json_encode([]);
+
+								if (!$this->_db->insertObject('#__users', $user))
+								{
+									throw new Exception('Error inserting user');
+								}
+								$user->id = $this->_db->insertid();
+
+								$user_group           = new stdClass();
+								$user_group->user_id  = $user->id;
+								$user_group->group_id = 2; // Registered
+								if (!$this->_db->insertObject('#__user_usergroup_map', $user_group))
+								{
+									throw new Exception('Error inserting user group');
+								}
+
+								$emundus_user['firstname']    = $row['firstname'];
+								$emundus_user['lastname']     = $row['lastname'];
+								$emundus_user['profile']      = !empty($row['profile']) ? $row['profile'] : 1000;
+								$emundus_user['em_oprofiles'] = '';
+								$emundus_user['univ_id']      = 0;
+								$emundus_user['em_groups']    = '';
+								$emundus_user['em_campaigns'] = [];
+								$emundus_user['news']         = '';
+
+								$m_users->addEmundusUser($user->id, $emundus_user);
+							}
+
+							$importApplicationEntity = new ApplicationFileEntity($user);
+							$importApplicationEntity->setCampaignId($campaign_id);
+
+							if (!empty($row['campaign']))
+							{
+								// If we have [ ] in the status, take value between brackets
+								if (preg_match('/\[(.*?)\]/', $row['campaign'], $matches))
+								{
+									$cid = (int) $matches[1];
+								}
+								else
+								{
+									$cid = (int) $row['campaign'];
+								}
+
+								$importApplicationEntity->setCampaignId($cid);
+							}
+
+							if (!empty($row['status']))
+							{
+								// If we have [ ] in the status, take value between brackets
+								if (preg_match('/\[(.*?)\]/', $row['status'], $matches))
+								{
+									$status = (int) $matches[1];
+								}
+								else
+								{
+									$status = (int) $row['status'];
+								}
+
+								$importApplicationEntity->setStatus($status);
+							}
+
+							if (!empty($row['fnum']))
+							{
+								$importApplicationEntity->setFnum($row['fnum']);
+							}
+							else
+							{
+								$fnum = '';
+
+								if ($create_new_fnum === 0 || $create_new_fnum === 2)
+								{
+									// Check if user have already a file in this campaign id
+									$query->clear()
+										->select('fnum')
+										->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+										->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($campaign_id))
+										->andWhere($this->_db->quoteName('applicant_id') . ' = ' . $this->_db->quote($user->id));
+									$this->_db->setQuery($query);
+									$fnum = $this->_db->loadResult();
+								}
+
+								if (empty($fnum))
+								{
+									$importApplicationEntity->generateFnum($campaign_id);
+								}
+								else
+								{
+									if($create_new_fnum === 2) {
+										// Do nothing, we continue with the next row
+										continue;
+									}
+									$importApplicationEntity->setFnum($fnum);
+								}
+							}
+
+							$fnum = $importApplicationEntity->getFnum();
+
+							// Get only array properties of $row
+							$datas  = array_filter($row, function ($key) {
+								return is_array($key);
+							});
+							$status = false;
+							if (!empty($datas))
+							{
+								$datas = $importFactory->formatDatas($datas);
+								$importApplicationEntity->setData($datas);
+
+								if ($applicationFileRepository->flush($importApplicationEntity))
+								{
+									$files_imported[] = $fnum;
+									$status           = true;
+								}
+								else
+								{
+									$files_not_imported[] = $fnum;
+								}
+							}
+							else
+							{
+								$files_imported[] = $fnum;
+								$status           = true;
+							}
+
+							$onAfterImportRowEventHandler = new GenericEvent(
+								'onCallEventHandler',
+								['onAfterImportRow',
+									[
+										'fnum'   => $fnum,
+										'status' => $status ? 'success' : 'error',
+										'data' => $origin_datas
+									]
+								]
+							);
+							$onAfterImportRow             = new GenericEvent(
+								'onAfterImportRow',
+								[
+									'fnum'   => $fnum,
+									'status' => $status ? 'success' : 'error',
+									'data' =>  $origin_datas
+								]
+							);
+							$dispatcher->dispatch('onCallEventHandler', $onAfterImportRowEventHandler);
+							$dispatcher->dispatch('onAfterImportRow', $onAfterImportRow);
+						}
+
+						sleep(1);
+					}
+
+					$onAfterImportCSVEventHandler = new GenericEvent(
+						'onCallEventHandler',
+						['onAfterImportCSV',
+							[
+								'csv'                => $csv_filename,
+								'create_new_fnum'    => $create_new_fnum,
+								'files_imported'     => $files_imported,
+								'files_not_imported' => $files_not_imported,
+							]
+						]
+					);
+					$onAfterImportCSV             = new GenericEvent(
+						'onAfterImportCSV',
+						[
+							'csv'                => $csv_filename,
+							'create_new_fnum'    => $create_new_fnum,
+							'files_imported'     => $files_imported,
+							'files_not_imported' => $files_not_imported,
+						]
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onAfterImportCSVEventHandler);
+					$dispatcher->dispatch('onAfterImportCSV', $onAfterImportCSV);
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return ['files_imported' => $files_imported, 'files_not_imported' => $files_not_imported];
+	}
+
+	private function setImportAddon(): void
+	{
+		$cache_import_addon =$this->h_cache->get('import_addon');
+
+		if (!empty($cache_import_addon)) {
+			$this->importAddon = new AddonEntity(
+				$cache_import_addon->name,
+				$cache_import_addon->type,
+				$cache_import_addon->icon,
+				$cache_import_addon->description,
+				$cache_import_addon->configuration,
+				$cache_import_addon->enabled,
+				$cache_import_addon->displayed
+			);
+		}
+
+		if (empty($this->importAddon)) {
+			$query = $this->_db->createQuery();
+
+			$query->select($this->_db->quoteName('value'))
+				->from($this->_db->quoteName('#__emundus_setup_config'))
+				->where($this->_db->quoteName('namekey') . ' = ' . $this->_db->quote('import'));
+			try {
+				$this->_db->setQuery($query);
+				$config = $this->_db->loadResult();
+
+				if (!empty($config)) {
+					$config = json_decode($config, true);
+					$this->importAddon = new AddonEntity(
+						'COM_EMUNDUS_ADDONS_IMPORT',
+						'import',
+						'drive_folder_upload',
+						'COM_EMUNDUS_ADDONS_IMPORT_DESC',
+						'',
+						(bool)$config['enabled'],
+						(bool)$config['displayed']
+					);
+
+					$configuration = [];
+
+					$this->importAddon->setConfiguration($configuration);
+
+					$this->h_cache->set('import_addon', $this->importAddon);
+				} else {
+					$this->importAddon = new AddonEntity(
+						'COM_EMUNDUS_ADDONS_IMPORT',
+						'import',
+						'drive_folder_upload',
+						'COM_EMUNDUS_ADDONS_IMPORT_DESC',
+						'',
+						false,
+						false
+					);
+				}
+			} catch (\Exception $e) {
+				Log::add('Error on load import addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
+			}
+		}
+	}
+
+	public function getImportAddon(): AddonEntity
+	{
+		return $this->importAddon;
 	}
 }

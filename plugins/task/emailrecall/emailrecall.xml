@@ -9,7 +9,7 @@
 	<authorUrl>www.joomla.org</authorUrl>
 	<version>4.1</version>
 	<description>PLG_TASK_EMAIL_RECALL_XML_DESCRIPTION</description>
-	<namespace path="src">Emundus\Plugin\Task\EmailRecall</namespace>
+	<namespace path="src">Emundus\Plugin\Task\Emailrecall</namespace>
 	<files>
 		<folder plugin="emailrecall">services</folder>
 		<folder>src</folder>

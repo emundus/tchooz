@@ -264,4 +264,57 @@ export default {
 			};
 		}
 	},
+
+	async getImportModel(campaignId, options, format = 'xlsx') {
+		try {
+			return await client.get('getimportmodel', {
+				id: campaignId,
+				format: format,
+				status: options.status,
+				forms: options.forms,
+				evaluations: options.evaluations,
+				validators: options.validators,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async scanImportFile(csvImport) {
+		try {
+			return await client.post('scanimportfile', csvImport);
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async importFiles(csvImport) {
+		try {
+			return await client.post('importfiles', csvImport);
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async isImportActivated(campaignId) {
+		try {
+			return await client.get('isimportactivated', {
+				campaign_id: campaignId,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };
