@@ -1,5 +1,6 @@
 import list from "./List.js";
-import { _ as _export_sfc, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode } from "./app_emundus.js";
+import { u as useCampaignStore } from "./campaign.js";
+import { _ as _export_sfc, R as campaignService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock } from "./app_emundus.js";
 import "./ExportSlotsModal.js";
 import "./Skeleton.js";
 import "./Calendar.js";
@@ -20,6 +21,8 @@ const _sfc_main = {
   },
   data() {
     return {
+      campaignActivated: null,
+      renderingKey: 1,
       config: {
         campaigns: {
           title: "COM_EMUNDUS_ONBOARD_CAMPAIGNS",
@@ -176,8 +179,32 @@ const _sfc_main = {
             }
           ]
         }
+      },
+      importAction: {
+        action: "importfiles",
+        label: "COM_EMUNDUS_ONBOARD_ACTION_IMPORT_FILES",
+        type: "modal",
+        component: "Import",
+        name: "import",
+        multiple: false
       }
     };
+  },
+  created() {
+    if (useCampaignStore().getActivated === null) {
+      campaignService.isImportActivated().then((response) => {
+        this.campaignActivated = response.data;
+        if (this.campaignActivated) {
+          useCampaignStore().updateActivated(true);
+          this.config.campaigns.tabs[0].actions.push(this.importAction);
+          this.renderingKey++;
+        } else {
+          useCampaignStore().updateActivated(false);
+        }
+      });
+    } else {
+      this.campaignActivated = useCampaignStore().getActivated;
+    }
   },
   computed: {
     configString() {
@@ -189,10 +216,11 @@ const _hoisted_1 = { id: "campaigns-list" };
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_list = resolveComponent("list");
   return openBlock(), createElementBlock("div", _hoisted_1, [
-    createVNode(_component_list, {
+    (openBlock(), createBlock(_component_list, {
       "default-lists": $options.configString,
-      "default-type": "campaigns"
-    }, null, 8, ["default-lists"])
+      "default-type": "campaigns",
+      key: $data.renderingKey
+    }, null, 8, ["default-lists"]))
   ]);
 }
 const Campaigns = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);

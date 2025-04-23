@@ -650,7 +650,7 @@ const _hoisted_15 = ["name", "id", "checked"];
 const _hoisted_16 = { key: 5 };
 const _hoisted_17 = {
   "data-toggle": "radio_buttons",
-  class: "tw-grid tw-grid-cols-1 tw-gap-4 md:tw-grid-cols-2 lg:tw-grid-cols-2"
+  class: "tw-grid tw-grid-cols-1 tw-gap-2 md:tw-grid-cols-2 lg:tw-grid-cols-2"
 };
 const _hoisted_18 = ["name", "id", "value", "checked"];
 const _hoisted_19 = ["for"];
@@ -683,7 +683,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
     $data.parameter.hideLabel !== true ? (openBlock(), createElementBlock("label", {
       key: 0,
       for: $options.paramId,
-      class: normalizeClass(["tw-flex tw-items-end tw-font-semibold", $data.parameter.helptext && $props.helpTextType === "above" ? "tw-mb-0" : ""])
+      class: normalizeClass(["tw-flex tw-items-end tw-font-medium", $data.parameter.helptext && $props.helpTextType === "above" ? "tw-mb-0" : ""])
     }, [
       createTextVNode(toDisplayString(_ctx.translate($data.parameter.label)) + " ", 1),
       $data.parameter.optional !== true ? (openBlock(), createElementBlock("span", _hoisted_2, "*")) : createCommentVNode("", true),
@@ -871,7 +871,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
         ]),
         createBaseVNode("label", {
           for: $options.paramId + "_input",
-          class: "!tw-mb-0 tw-ml-2 tw-flex tw-cursor-pointer tw-items-center tw-font-bold"
+          class: "!tw-mb-0 tw-ml-2 tw-flex tw-cursor-pointer tw-items-center tw-font-medium"
         }, [
           $data.parameter.iconLabel ? (openBlock(), createElementBlock("span", _hoisted_26, toDisplayString($data.parameter.iconLabel), 1)) : createCommentVNode("", true),
           createTextVNode(" " + toDisplayString(_ctx.translate($data.parameter.label)), 1)

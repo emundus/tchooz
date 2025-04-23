@@ -64,6 +64,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onAmmonFoundSimilarName'        => 'onAmmonFoundSimilarName',
 			'onAmmonSync'                    => 'onAmmonSync',
 			'onWebhookCallbackFailed'        => 'onWebhookCallbackFailed',
+			'onAfterImportRow'               => 'onAfterImportRow'
 		];
 	}
 
@@ -245,6 +246,22 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$context            = 'com_emundus.webhook.' . $arguments['type'];
 
 		$message = $this->setMessage(0, 'create', 'PLG_EMUNDUS_WEBHOOK_CALLBACK_FAILED', 'error', [], [], $arguments['datas']);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterImportRow(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_IMPORT_ROW';
+		$context            = 'com_emundus.import';
+
+		$more_data['fnum']    = $arguments['fnum'];
+
+		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_IMPORT_ROW', $arguments['status'], [], $arguments['data'], $more_data);
 
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}

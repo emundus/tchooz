@@ -663,7 +663,7 @@ class EmundusHelperFiles
 	 * @return array
 	 */
 
-	public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(), $profile = null): array
+	public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(), $profile = null, bool $evaluation_elements = false): array
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
@@ -696,6 +696,7 @@ class EmundusHelperFiles
 		{
 			$plist = $m_profile->getProfileIDByCourse($code, $camps);
 		}
+		
 
 		if (!is_null($profile))
 		{
@@ -781,6 +782,23 @@ class EmundusHelperFiles
 					}
 				}
 
+				if($evaluation_elements) {
+					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
+					$m_evaluation = new EmundusModelEvaluation();
+					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
+
+					if(!empty($eval_elements)) {
+						// Merge the evaluation elements with the existing elements
+						foreach ($eval_elements as $key => $value) {
+							$value->form_label    = Text::_($value->form_label);
+							$value->table_label   = Text::_($value->table_label);
+							$value->group_label   = Text::_($value->group_label);
+							$value->element_label = Text::_($value->element_label);
+							$elts[]               = $value;
+						}
+					}
+				}
+
 				return $elts;
 
 			}
@@ -853,7 +871,14 @@ class EmundusHelperFiles
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
                         AND menu.published = 1
                         AND element.plugin!="display"';
-				$order = 'ORDER BY p.id, menu.lft, menu.id, formgroup.ordering, element.ordering';
+				if (is_array($plist) && count($plist) > 0)
+				{
+					$order = 'ORDER BY FIELD(p.id,'.implode(',', $plist).'), menu.lft, menu.id, formgroup.ordering, element.ordering';
+				}
+				else
+				{
+					$order = 'ORDER BY p.id, menu.lft, menu.id, formgroup.ordering, element.ordering';
+				}
 			}
 
 			$query .= ' ' . $join . ' ' . $where . ' ' . $order;
@@ -881,9 +906,25 @@ class EmundusHelperFiles
 						$elts[]               = $value;
 					}
 				}
+				
+				if($evaluation_elements) {
+					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
+					$m_evaluation = new EmundusModelEvaluation();
+					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
+
+					if(!empty($eval_elements)) {
+						// Merge the evaluation elements with the existing elements
+						foreach ($eval_elements as $key => $value) {
+							$value->form_label    = Text::_($value->form_label);
+							$value->table_label   = Text::_($value->table_label);
+							$value->group_label   = Text::_($value->group_label);
+							$value->element_label = Text::_($value->element_label);
+							$elts[]               = $value;
+						}
+					}
+				}
 
 				return $elts;
-
 			}
 			catch (Exception $e)
 			{

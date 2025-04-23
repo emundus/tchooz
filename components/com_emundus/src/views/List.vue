@@ -257,7 +257,7 @@
 													<modal
 														:name="'modal-component'"
 														transition="nice-modal-fade"
-														:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+														:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
 														:width="'600px'"
 														:delay="100"
 														:adaptive="true"
@@ -266,7 +266,7 @@
 													>
 														<component
 															:is="resolvedComponent"
-															:slot="item"
+															:item="item"
 															@close="closePopup()"
 															@update-items="getListItems()"
 														/>
@@ -378,6 +378,7 @@ import Calendar from '@/views/Events/Calendar.vue';
 import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
+import Import from '@/components/Campaigns/Import.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -400,6 +401,7 @@ export default {
 		Popover,
 		Gantt,
 		EditSlot,
+		Import,
 		AssociateUser,
 	},
 	props: {
@@ -427,6 +429,7 @@ export default {
 			components: {
 				EditSlot,
 				AssociateUser,
+				Import,
 			},
 
 			lists: {},

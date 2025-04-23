@@ -4,7 +4,7 @@
 		<label
 			v-if="parameter.hideLabel !== true"
 			:for="paramId"
-			class="tw-flex tw-items-end tw-font-semibold"
+			class="tw-flex tw-items-end tw-font-medium"
 			:class="parameter.helptext && helpTextType === 'above' ? 'tw-mb-0' : ''"
 		>
 			{{ translate(parameter.label) }}
@@ -152,7 +152,7 @@
 			<div v-else-if="parameter.type === 'radiobutton'">
 				<fieldset
 					data-toggle="radio_buttons"
-					class="tw-grid tw-grid-cols-1 tw-gap-4 md:tw-grid-cols-2 lg:tw-grid-cols-2"
+					class="tw-grid tw-grid-cols-1 tw-gap-2 md:tw-grid-cols-2 lg:tw-grid-cols-2"
 				>
 					<div v-for="option in parameter.options" :key="option.value" class="fabrikgrid_radio">
 						<input
@@ -196,7 +196,7 @@
 				</div>
 				<label
 					:for="paramId + '_input'"
-					class="!tw-mb-0 tw-ml-2 tw-flex tw-cursor-pointer tw-items-center tw-font-bold"
+					class="!tw-mb-0 tw-ml-2 tw-flex tw-cursor-pointer tw-items-center tw-font-medium"
 				>
 					<span v-if="parameter.iconLabel" class="material-symbols-outlined tw-mr-1 tw-text-neutral-900">{{
 						parameter.iconLabel
