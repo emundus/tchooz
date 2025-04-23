@@ -2581,8 +2581,13 @@ class EmundusModelFiles extends JModelLegacy
 						$where           = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $repeat_join_table . '.' . $elt->element_name;
 						$join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
 
-						$select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
-                                FROM ' . $tableAlias[$elt->tab_name] . '
+                        if ($methode == 2) {
+                            $select = '(SELECT GROUP_CONCAT(('.$join_val_column.') SEPARATOR ", ") ';
+                        } else {
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ") ';
+                        }
+
+                        $select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN ' . $repeat_join_table . ' ON ' . $repeat_join_table . '.parent_id = ' . $tableAlias[$elt->tab_name] . '.id
                                 LEFT JOIN ' . $from . ' as t ON t.' . $where . '
                                 WHERE ' . $tableAlias[$elt->tab_name] . '.fnum=jos_emundus_campaign_candidature.fnum)';
@@ -2599,8 +2604,14 @@ class EmundusModelFiles extends JModelLegacy
 							}
 							$select = implode(',', $if) . ',' . $select . $endif;
 						}
-						$select = '(SELECT GROUP_CONCAT(DISTINCT(' . $select . ') SEPARATOR ", ")
-                                FROM ' . $tableAlias[$elt->tab_name] . '
+
+                        if ($methode == 2) {
+                            $select = '(SELECT GROUP_CONCAT(('.$select.') ORDER BY `'.$repeat_join_table.'`.`id` SEPARATOR ", ") ';
+                        } else {
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT ('.$select.') ORDER BY `'.$repeat_join_table.'`.`id` SEPARATOR ", ") ';
+                        }
+
+                        $select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN ' . $repeat_join_table . ' ON ' . $repeat_join_table . '.parent_id = ' . $tableAlias[$elt->tab_name] . '.id
                                 WHERE ' . $tableAlias[$elt->tab_name] . '.fnum=jos_emundus_campaign_candidature.fnum)';
 						$query  .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
