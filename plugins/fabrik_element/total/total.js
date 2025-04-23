@@ -172,7 +172,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             }
 
             this.update(total.toFixed(self.options.fixed));
-            this.element.dispatchEvent(new Event('change'));
         }
 
     });

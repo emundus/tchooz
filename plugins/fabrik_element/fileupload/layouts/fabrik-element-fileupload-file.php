@@ -17,7 +17,7 @@ if ($d->useThumb) :
 <?php
 else :
 	?>
-	<a class="download-archive fabrik-filetype-<?php echo $d->ext;?>" title="<?php echo $d->file; ?>" href="<?php echo $d->file; ?>">
+	<a class="download-archive fabrik-filetype-<?php echo $d->ext; ?>" title="<?php echo $d->file; ?>" href="<?php echo $d->file; ?>" target="_blank" rel="noopener noreferrer">
 		<?php echo $d->filename; ?>
 	</a>
 <?php

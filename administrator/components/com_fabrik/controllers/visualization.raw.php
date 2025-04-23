@@ -49,7 +49,7 @@ class FabrikAdminControllerVisualization extends FormController
 		$app = Factory::getApplication();
 		$input = $app->input;
 		$id = $input->getInt('visualizationid');
-		$viz = FabTable::getInstance('Visualization', 'FabrikTable');
+		$viz = \FabTable::getInstance('Visualization', 'FabrikTable');
 		$viz->load($id);
 		BaseDatabaseModel::addIncludePath(JPATH_SITE . '/plugins/fabrik_visualization/' . $viz->plugin . '/models');
 		$model = $this->getModel($viz->plugin);

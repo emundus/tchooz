@@ -36,8 +36,8 @@
 				<li class="tw-flex">
 					<a
 						class="tw-cursor-pointer"
-						:class="{ disabled: this.currentPage === totalPages }"
-						@click="this.currentPage !== totalPages ? (this.currentPage += 1) : null"
+						:class="{ disabled: this.currentPage >= totalPages }"
+						@click="this.currentPage < totalPages ? (this.currentPage += 1) : null"
 					>
 						<span class="material-symbols-outlined">navigate_next</span>
 					</a>
@@ -89,6 +89,12 @@ export default {
 
 			return limit;
 		},
+		updateCurrentPage() {
+			const total = Math.ceil(this.dataLength / this.currentLimit);
+			if (this.currentPage > total) {
+				this.currentPage = total;
+			}
+		},
 	},
 	watch: {
 		currentPage() {
@@ -96,6 +102,9 @@ export default {
 		},
 		currentLimit() {
 			this.$emit('update:limit', this.currentLimit);
+		},
+		dataLength() {
+			this.updateCurrentPage();
 		},
 	},
 	computed: {

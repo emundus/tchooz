@@ -135,7 +135,7 @@ class FabrikFEModelVisualization extends FabModel
 	{
 		if (!isset($this->row))
 		{
-			$this->row = FabTable::getInstance('Visualization', 'FabrikTable');
+			$this->row = \FabTable::getInstance('Visualization', 'FabrikTable');
 			$this->row->load($this->getState('id'));
 			$this->setListIds();
 

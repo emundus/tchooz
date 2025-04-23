@@ -51,12 +51,15 @@ class FabrikAdminControllerEmailform extends BaseController
 		$view = $this->getView($viewName, $viewType);
 
 		// Push a model into the view (may have been set in content plugin already)
-		if ($model = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Form', 'FabrikFEModel'))
-		{
-			$view->setModel($model, true);
+		try {
+			if ($model = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Form', 'FabrikFEModel'))
+			{
+				$view->setModel($model, true);
+			}
+		} catch (\Exception $e) {
+			$view->error = 	\Joomla\CMS\Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 		}
 		// Display the view
-		$view->error = $this->getError();
 		$view->display();
 	}
 }

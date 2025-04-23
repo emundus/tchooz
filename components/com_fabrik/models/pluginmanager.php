@@ -565,7 +565,7 @@ class FabrikFEModelPluginmanager extends FabModel
 	 */
 	public function getPluginFromId($id, $type = 'Element')
 	{
-		$el = FabTable::getInstance($type, 'FabrikTable');
+		$el = \FabTable::getInstance($type, 'FabrikTable');
 		$el->load($id);
 		$o = $this->loadPlugIn($el->plugin, $type);
 		$o->setId($id);

@@ -42,6 +42,7 @@ $listDirn = $this->state->get('list.direction');
 				<?= Text::_('JGLOBAL_NO_MATCHING_RESULTS'); ?>
 			</div>
 		<?php else : ?>
+		 <div class="table-responsive">
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -107,6 +108,7 @@ $listDirn = $this->state->get('list.direction');
 			<?php endforeach; ?>
 		</tbody>
 	</table>
+	</div>
 	<?php endif; ?>
 
 	<input type="hidden" name="task" value="" />

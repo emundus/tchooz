@@ -530,7 +530,7 @@ class FabrikAdminModelForm extends FabModelAdmin {
 
 		if ($res) {
 			foreach ($ids as $cid) {
-				$item = FabTable::getInstance('FormGroup', 'FabrikTable');
+				$item = \FabTable::getInstance('FormGroup', 'FabrikTable');
 				$item->load(array('form_id' => $cid));
 				$item->delete();
 			}

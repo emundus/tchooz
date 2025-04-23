@@ -18,7 +18,7 @@ const _sfc_main = {
     Modal
   },
   props: {
-    slot: Object
+    item: Object
   },
   emits: ["close", "valueUpdated"],
   data: () => ({
@@ -132,32 +132,32 @@ const _sfc_main = {
     ]
   }),
   created: function() {
-    if (this.slot) {
+    if (this.item) {
       this.fields.forEach((field) => {
         var _a, _b, _c, _d, _e;
-        if (this.slot[field.param]) {
+        if (this.item[field.param]) {
           if (field.param === "user") {
-            field.value = this.slot["ccid"];
+            field.value = this.item["ccid"];
           } else {
-            field.value = this.slot[field.param];
+            field.value = this.item[field.param];
           }
         } else if (field.param === "user") {
-          let index = this.slot.registrantSelected ? (_b = (_a = this.slot.registrants) == null ? void 0 : _a.datas) == null ? void 0 : _b.findIndex((r) => r.id === this.slot.registrantSelected.id) : -1;
-          field.value = index !== -1 ? ((_e = (_d = (_c = this.slot.registrants) == null ? void 0 : _c.datas) == null ? void 0 : _d[index]) == null ? void 0 : _e.ccid) ?? null : null;
+          let index = this.item.registrantSelected ? (_b = (_a = this.item.registrants) == null ? void 0 : _a.datas) == null ? void 0 : _b.findIndex((r) => r.id === this.item.registrantSelected.id) : -1;
+          field.value = index !== -1 ? ((_e = (_d = (_c = this.item.registrants) == null ? void 0 : _c.datas) == null ? void 0 : _d[index]) == null ? void 0 : _e.ccid) ?? null : null;
         } else if (field.param === "booking") {
-          field.value = this.slot["availability"] ?? this.slot["id"];
+          field.value = this.item["availability"] ?? this.item["id"];
         } else if (field.param === "juror") {
-          if (this.slot["additional_columns"]) {
-            const jurors = this.slot["additional_columns"].find(
+          if (this.item["additional_columns"]) {
+            const jurors = this.item["additional_columns"].find(
               (col) => col.key === Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS")
             );
             field.value = jurors.id ? jurors.id.split(",").map((id) => Number(id.trim())) : [];
-          } else if (this.slot["assoc_user_id"]) {
-            field.value = this.slot["assoc_user_id"] ? this.slot["assoc_user_id"].split(",").map((id) => Number(id.trim())) : [];
-          } else if (this.slot["registrantSelected"] && this.slot["registrantSelected"]["assoc_user_id"]) {
-            field.value = this.slot["registrantSelected"]["assoc_user_id"].split(",").map((id) => Number(id.trim()));
-          } else if (this.slot["users"]) {
-            field.value = this.slot["users"].split(",").map((id) => Number(id.trim()));
+          } else if (this.item["assoc_user_id"]) {
+            field.value = this.item["assoc_user_id"] ? this.item["assoc_user_id"].split(",").map((id) => Number(id.trim())) : [];
+          } else if (this.item["registrantSelected"] && this.item["registrantSelected"]["assoc_user_id"]) {
+            field.value = this.item["registrantSelected"]["assoc_user_id"].split(",").map((id) => Number(id.trim()));
+          } else if (this.item["users"]) {
+            field.value = this.item["users"].split(",").map((id) => Number(id.trim()));
           } else {
             field.value = [];
           }
@@ -198,15 +198,15 @@ const _sfc_main = {
         }
       });
       if (slotValidationFailed) return;
-      if (this.slot) {
-        if (this.slot.calendarId && !this.slot.registrants) {
+      if (this.item) {
+        if (this.item.calendarId && !this.item.registrants) {
           slot_edited["id"] = 0;
         } else {
-          if (this.slot.calendarId) {
-            let index = this.slot.registrantSelected ? (_b = (_a = this.slot.registrants) == null ? void 0 : _a.datas) == null ? void 0 : _b.findIndex((r) => r.id === this.slot.registrantSelected.id) : -1;
-            slot_edited["id"] = index !== -1 ? ((_e = (_d = (_c = this.slot.registrants) == null ? void 0 : _c.datas) == null ? void 0 : _d[index]) == null ? void 0 : _e.id) ?? null : null;
+          if (this.item.calendarId) {
+            let index = this.item.registrantSelected ? (_b = (_a = this.item.registrants) == null ? void 0 : _a.datas) == null ? void 0 : _b.findIndex((r) => r.id === this.item.registrantSelected.id) : -1;
+            slot_edited["id"] = index !== -1 ? ((_e = (_d = (_c = this.item.registrants) == null ? void 0 : _c.datas) == null ? void 0 : _d[index]) == null ? void 0 : _e.id) ?? null : null;
           } else {
-            slot_edited["id"] = this.slot.id;
+            slot_edited["id"] = this.item.id;
           }
         }
       } else {
@@ -217,7 +217,7 @@ const _sfc_main = {
           Swal.fire({
             position: "center",
             icon: "success",
-            title: this.slot ? Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_SAVED") : Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_ADD_SAVED"),
+            title: this.item ? Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_SAVED") : Joomla.JText._("COM_EMUNDUS_ONBOARD_REGISTRANT_ADD_SAVED"),
             showConfirmButton: true,
             allowOutsideClick: false,
             reverseButtons: true,
@@ -260,7 +260,7 @@ const _sfc_main = {
               }
             });
             if (field.param === "booking") {
-              if (this.slot && this.slot["event_id"] !== ((_a = this.fields.find((f) => f.param === "event_id")) == null ? void 0 : _a.value)) {
+              if (this.item && this.item["event_id"] !== ((_a = this.fields.find((f) => f.param === "event_id")) == null ? void 0 : _a.value)) {
                 field.value = null;
               }
             }
@@ -286,8 +286,8 @@ const _sfc_main = {
       });
     },
     bookingSlot() {
-      if (this.slot) {
-        return this.slot["availability"] ?? this.slot["id"];
+      if (this.item) {
+        return this.item["availability"] ?? this.item["id"];
       }
       return null;
     }
@@ -310,7 +310,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   return openBlock(), createElementBlock("div", null, [
     createBaseVNode("div", _hoisted_1, [
       createBaseVNode("div", _hoisted_2, [
-        $props.slot ? (openBlock(), createElementBlock("h2", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT")), 1)) : (openBlock(), createElementBlock("h2", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_ADD")), 1)),
+        $props.item ? (openBlock(), createElementBlock("h2", _hoisted_3, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT")), 1)) : (openBlock(), createElementBlock("h2", _hoisted_4, toDisplayString(_ctx.translate("COM_EMUNDUS_ONBOARD_REGISTRANT_ADD")), 1)),
         createBaseVNode("button", {
           class: "tw-cursor-pointer tw-bg-transparent",
           onClick: _cache[0] || (_cache[0] = withModifiers((...args) => $options.onClosePopup && $options.onClosePopup(...args), ["prevent"]))

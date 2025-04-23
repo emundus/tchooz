@@ -113,6 +113,7 @@ export default {
 				{ label: 'COM_EMUNDUS_REGISTRANTS_HOUR' },
 				{ label: 'COM_EMUNDUS_REGISTRANTS_LOCATION' },
 				{ label: 'COM_EMUNDUS_REGISTRANTS_ROOM' },
+				{ label: 'COM_EMUNDUS_REGISTRANTS_ASSOC_USER' },
 			],
 			selectAll: false,
 			loading: false,

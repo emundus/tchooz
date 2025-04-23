@@ -24,6 +24,61 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
     var Fabrik = {
         events: {}
     };
+    // Filters auto open on desktop and tablet in Groups & Elements
+    function addClassToFilters() {
+        if (
+            document.body.classList.contains('com_fabrik') &&
+            (document.body.classList.contains('view-elements') || document.body.classList.contains('view-groups')) &&
+            window.innerWidth >= 768
+        ) {
+            document.querySelectorAll('.js-stools-container-filters').forEach(container => {
+                container.classList.add('js-stools-container-filters-visible');
+            });
+        }
+    }
+
+    addClassToFilters();
+      // Filter Form & Group
+    document.querySelectorAll('optgroup[label=""]').forEach(optgroup => {
+        Array.from(optgroup.children).forEach(option => optgroup.parentElement.insertBefore(option, optgroup.parentElement.firstChild));
+        optgroup.remove();
+    });
+
+    if (window.location.href.includes('view=elements')) {
+        const formSelect = document.getElementById('filter_form');
+        const groupSelect = document.getElementById('filter_group');
+
+        formSelect.addEventListener('change', filterGroups);
+
+        filterGroups();
+        resetInvalidGroupSelection();
+    }
+
+    function filterGroups() {
+        const selectedFormLabel = document.getElementById('filter_form').options[document.getElementById('filter_form').selectedIndex].text;
+        Array.from(document.getElementById('filter_group').getElementsByTagName('optgroup')).forEach(optgroup => {
+            optgroup.style.display = (optgroup.label === selectedFormLabel || document.getElementById('filter_form').value === '') ? 'block' : 'none';
+        });
+    }
+
+    function resetInvalidGroupSelection() {
+        const formSelect = document.getElementById('filter_form');
+        const groupSelect = document.getElementById('filter_group');
+        const selectedGroup = groupSelect.value;
+        const selectedFormLabel = formSelect.options[formSelect.selectedIndex].text;
+
+        if (!formSelect.value) return;
+
+        const isGroupValid = Array.from(groupSelect.getElementsByTagName('optgroup')).some(optgroup =>
+            optgroup.label === selectedFormLabel &&
+            Array.from(optgroup.getElementsByTagName('option')).some(option => option.value === selectedGroup)
+        );
+
+        if (!isGroupValid && selectedGroup !== "") {
+            groupSelect.value = ""; 
+            document.querySelector('form').submit(); 
+        }
+    }
 
     /**
      * Get the bootstrap version. Returns either 2.x of 3.x

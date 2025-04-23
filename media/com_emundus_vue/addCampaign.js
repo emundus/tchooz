@@ -1,6 +1,7 @@
-import { _ as _export_sfc, o as openBlock, c as createElementBlock, w as withDirectives, A as vModelText, d as createBaseVNode, Q as withKeys, n as normalizeClass, v as vShow, F as Fragment, e as renderList, t as toDisplayString, a2 as defineStore, D as script, a5 as V32, u as useGlobalStore, R as campaignService, S as Swal, a1 as formService, H as programmeService, s as settingsService, r as resolveComponent, b as createCommentVNode, g as withModifiers, m as createTextVNode, h as createVNode, f as withCtx, W as mergeProps, Z as toHandlers, Y as vModelCheckbox, z as vModelSelect, I as Transition } from "./app_emundus.js";
+import { _ as _export_sfc, o as openBlock, c as createElementBlock, w as withDirectives, A as vModelText, d as createBaseVNode, Q as withKeys, n as normalizeClass, v as vShow, F as Fragment, e as renderList, t as toDisplayString, D as script, a5 as V32, u as useGlobalStore, R as campaignService, S as Swal, a1 as formService, H as programmeService, s as settingsService, r as resolveComponent, b as createCommentVNode, g as withModifiers, m as createTextVNode, h as createVNode, f as withCtx, W as mergeProps, Z as toHandlers, Y as vModelCheckbox, z as vModelSelect, I as Transition } from "./app_emundus.js";
 import { D as DatePicker } from "./index.js";
 /* empty css       */
+import { u as useCampaignStore } from "./campaign.js";
 const _sfc_main$1 = {
   name: "autocomplete",
   props: {
@@ -107,24 +108,6 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
   ]);
 }
 const Autocomplete = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-54f23536"]]);
-const useCampaignStore = defineStore("campaign", {
-  state: () => ({
-    unsavedChanges: false,
-    allowPinnedCampaign: false,
-    pinned: 0
-  }),
-  actions: {
-    setUnsavedChanges(value) {
-      this.unsavedChanges = value;
-    },
-    setPinned(value) {
-      this.pinned = value;
-    },
-    setAllowPinnedCampaign(value) {
-      this.allowPinnedCampaign = value;
-    }
-  }
-});
 const _sfc_main = {
   name: "addCampaign",
   components: {

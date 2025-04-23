@@ -18,6 +18,7 @@ jimport('joomla.application.component.helper');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Component\ComponentHelper;
 
 /**
  * eMundus Component Query Helper
@@ -662,7 +663,7 @@ class EmundusHelperFiles
 	 * @return array
 	 */
 
-	public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(), $profile = null): array
+	public static function getElements($code = array(), $camps = array(), $fabrik_elements = array(), $profile = null, bool $evaluation_elements = false): array
 	{
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
@@ -695,6 +696,7 @@ class EmundusHelperFiles
 		{
 			$plist = $m_profile->getProfileIDByCourse($code, $camps);
 		}
+		
 
 		if (!is_null($profile))
 		{
@@ -780,6 +782,23 @@ class EmundusHelperFiles
 					}
 				}
 
+				if($evaluation_elements) {
+					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
+					$m_evaluation = new EmundusModelEvaluation();
+					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
+
+					if(!empty($eval_elements)) {
+						// Merge the evaluation elements with the existing elements
+						foreach ($eval_elements as $key => $value) {
+							$value->form_label    = Text::_($value->form_label);
+							$value->table_label   = Text::_($value->table_label);
+							$value->group_label   = Text::_($value->group_label);
+							$value->element_label = Text::_($value->element_label);
+							$elts[]               = $value;
+						}
+					}
+				}
+
 				return $elts;
 
 			}
@@ -852,7 +871,14 @@ class EmundusHelperFiles
                         AND menu.menutype IN ( "' . implode('","', $menutype) . '" ) 
                         AND menu.published = 1
                         AND element.plugin!="display"';
-				$order = 'ORDER BY p.id, menu.lft, menu.id, formgroup.ordering, element.ordering';
+				if (is_array($plist) && count($plist) > 0)
+				{
+					$order = 'ORDER BY FIELD(p.id,'.implode(',', $plist).'), menu.lft, menu.id, formgroup.ordering, element.ordering';
+				}
+				else
+				{
+					$order = 'ORDER BY p.id, menu.lft, menu.id, formgroup.ordering, element.ordering';
+				}
 			}
 
 			$query .= ' ' . $join . ' ' . $where . ' ' . $order;
@@ -880,9 +906,25 @@ class EmundusHelperFiles
 						$elts[]               = $value;
 					}
 				}
+				
+				if($evaluation_elements) {
+					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
+					$m_evaluation = new EmundusModelEvaluation();
+					$eval_elements = $m_evaluation->getEvaluationElementsName(0,0,$code,true);
+
+					if(!empty($eval_elements)) {
+						// Merge the evaluation elements with the existing elements
+						foreach ($eval_elements as $key => $value) {
+							$value->form_label    = Text::_($value->form_label);
+							$value->table_label   = Text::_($value->table_label);
+							$value->group_label   = Text::_($value->group_label);
+							$value->element_label = Text::_($value->element_label);
+							$elts[]               = $value;
+						}
+					}
+				}
 
 				return $elts;
-
 			}
 			catch (Exception $e)
 			{
@@ -6710,6 +6752,119 @@ class EmundusHelperFiles
 		}
 
 		return $id;
+	}
+
+	/**
+	 * @param   int  $user_id
+	 * @param   int  $campaign_id
+	 * @param   int  $program_id
+	 *
+	 * @return bool
+	 */
+	public static function checkLimitationFilesRules(int $user_id, int $campaign_id, int $program_id = 0): bool
+	{
+		$can_create_new_file = true;
+
+		if (!empty($user_id)) {
+			$emundus_config = ComponentHelper::getParams('com_emundus');
+			$limitation_rules = $emundus_config->get('limit_files_rules');
+
+			if (!empty($limitation_rules)) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->createQuery();
+
+				if (empty($program_id))
+				{
+					$query->select('sp.id')
+						->from('#__emundus_setup_programmes as sp')
+						->leftJoin('#__emundus_setup_campaigns as esc ON esc.training = sp.code')
+						->where('esc.id = ' . $campaign_id);
+					$db->setQuery($query);
+					$program_id = $db->loadResult();
+				}
+
+				foreach ($limitation_rules as $limitation_rule) {
+					if (empty($limitation_rule->limit_files_by) || !in_array($limitation_rule->limit_files_by, ['campaigns', 'programs', 'users', 'years'])) {
+						continue;
+					}
+
+					$query->clear();
+					switch($limitation_rule->limit_files_by) {
+						case 'campaigns':
+							$query->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->where('ecc.campaign_id = ' . $campaign_id)
+								->andWhere('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+							break;
+						case 'programs':
+							$query->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->leftJoin('#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+								->leftJoin('#__emundus_setup_programmes as sp ON sp.code = esc.training')
+								->where('sp.id = ' . $program_id)
+								->andWhere('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+
+							break;
+						case 'users':
+							$query->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->where('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+							break;
+						case 'years':
+							$query->select('esc.year')
+								->from('#__emundus_setup_campaigns as esc')
+								->where('esc.id = ' . $campaign_id);
+
+							$db->setQuery($query);
+							$year = $db->loadResult();
+
+							$query->clear()
+								->select('COUNT(DISTINCT ecc.fnum)')
+								->from('#__emundus_campaign_candidature as ecc')
+								->leftJoin('#__emundus_setup_campaigns as esc ON esc.id = ecc.campaign_id')
+								->where('esc.year = ' . $db->quote($year))
+								->andWhere('ecc.applicant_id = ' . $user_id)
+								->andWhere('ecc.published = 1');
+
+							if (!empty($limitation_rule->limit_files_count_status)) {
+								$query->andWhere('ecc.status IN (' . implode(',', $limitation_rule->limit_files_count_status) . ')');
+							}
+							break;
+					}
+
+					try {
+						$db->setQuery($query);
+						$nb_files = $db->loadResult();
+
+						if ($nb_files >= $limitation_rule->limit_files_max) {
+							$can_create_new_file = false;
+							break;
+						}
+					} catch (Exception $e) {
+						Log::add('Failed to get number of files for user ' . $user_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+					}
+				}
+			}
+		} else {
+			$can_create_new_file = false;
+		}
+
+		return $can_create_new_file;
 	}
 }
 

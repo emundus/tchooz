@@ -111,6 +111,9 @@ class Php
         /* the use lines from the original source */  
         $content = array_merge($content, $useLines);
 
+        /* Allow dynamic properties so we can set the $this vars */
+        $content[] = '#[AllowDynamicProperties]';
+        
         /* Define the class */
         $content[] = 'class '.$params['className'].'{';
 

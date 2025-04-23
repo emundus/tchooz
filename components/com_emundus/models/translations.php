@@ -5,45 +5,37 @@
  * @copyright   Copyright (C) 2015 emundus.fr. All rights reserved.
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
+
 // No direct access
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Languages\Administrator\Model\OverrideModel;
 
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-class EmundusModelTranslations extends JModelList
+class EmundusModelTranslations extends ListModel
 {
-	var $_db = null;
 
-	/**
-	 * @codeCoverageIgnore
-	 * Constructor
-	 *
-	 * @since 1.5
-	 */
 	function __construct()
 	{
 		parent::__construct();
-		$this->_db = JFactory::getDBO();
 
 		jimport('joomla.log.log');
-		JLog::addLogger(['text_file' => 'com_emundus.translations.php'], JLog::ALL, ['com_emundus.translations']);
+		Log::addLogger(['text_file' => 'com_emundus.translations.php'], Log::ALL, ['com_emundus.translations']);
 	}
 
-	/**
-	 * Check if translation tool is ready to use
-	 *
-	 * @return false|mixed|null
-	 *
-	 * @since version 1.28.0
-	 */
-	public function checkSetup()
+	public function checkSetup(): bool|int
 	{
-		try {
+		try
+		{
 			$query = $this->_db->getQuery(true);
 
 			$query->select('count(id)')
@@ -52,27 +44,20 @@ class EmundusModelTranslations extends JModelList
 
 			return $this->_db->loadResult();
 		}
-			// @codeCoverageIgnoreStart
-		catch (Exception $e) {
-			JLog::add('Problem when try to get setup translation tool with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to get setup translation tool with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
-		// @codeCoverageIgnoreEnd
 	}
 
-	/**
-	 * Configure setup at first launch of the translation tool
-	 *
-	 * @return false|mixed|void
-	 *
-	 * @since version 1.28.0
-	 */
-	public function configureSetup()
+	public function configureSetup(): bool
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query
 				->select('DISTINCT(element), CONCAT(type, "s") AS type')
 				->from($this->_db->quoteName('#__extensions'))
@@ -82,24 +67,21 @@ class EmundusModelTranslations extends JModelList
 
 			$extensions = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
-			JLog::add('Error getting extensions with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Error getting extensions with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 
 		// Components, modules, extensions files
 		$files = [];
-		foreach ($this->getPlatformLanguages() as $language) {
-			/*foreach ($extensions as $extension) {
-				$file = JPATH_SITE . '/' . $extension->type . '/' . $extension->element . '/language/' . $language . '/' . $language.'.'.$extension->element. '.ini';
-				if (file_exists($file)) {
-					$files[] = $file;
-				}
-			}*/
+		foreach ($this->getPlatformLanguages() as $language)
+		{
 			// Overrides
 			$override_file = JPATH_SITE . '/language/overrides/' . $language . '.override.ini';
-			if (file_exists($override_file)) {
+			if (file_exists($override_file))
+			{
 				$files[] = $override_file;
 			}
 			//
@@ -121,8 +103,9 @@ class EmundusModelTranslations extends JModelList
 			$this->_db->quoteName('reference_field'),
 		];
 
-		foreach ($files as $file) {
-			$parsed_file = JLanguageHelper::parseIniFile($file);
+		foreach ($files as $file)
+		{
+			$parsed_file = LanguageHelper::parseIniFile($file);
 
 			$file      = explode('/', $file);
 			$file_name = end($file);
@@ -130,8 +113,10 @@ class EmundusModelTranslations extends JModelList
 
 			$key_added = [];
 
-			foreach ($parsed_file as $key => $val) {
-				if (!in_array(strtoupper($key), $key_added)) {
+			foreach ($parsed_file as $key => $val)
+			{
+				if (!in_array(strtoupper($key), $key_added))
+				{
 					$query->clear()
 						->select('count(id)')
 						->from($this->_db->quoteName('jos_emundus_setup_languages'))
@@ -140,8 +125,10 @@ class EmundusModelTranslations extends JModelList
 						->andWhere($this->_db->quoteName('location') . ' = ' . $this->_db->quote($file_name));
 					$this->_db->setQuery($query);
 
-					if ($this->_db->loadResult() == 0) {
-						if (strpos($file_name, 'override') !== false) {
+					if ($this->_db->loadResult() == 0)
+					{
+						if (strpos($file_name, 'override') !== false)
+						{
 							// Search if value is use in fabrik
 							$reference_table = null;
 							$reference_id    = null;
@@ -154,31 +141,37 @@ class EmundusModelTranslations extends JModelList
 							$this->_db->setQuery($query);
 							$find = $this->_db->loadResult();
 
-							if (!empty($find)) {
+							if (!empty($find))
+							{
 								$reference_table = 'fabrik_forms';
 								$reference_id    = $find;
 								$reference_field = 'label';
 							}
-							else {
+							else
+							{
 								$query->clear()
 									->select('id,intro')
 									->from($this->_db->quoteName('#__fabrik_forms'));
 								$this->_db->setQuery($query);
 								$forms_intro = $this->_db->loadObjectList();
 
-								foreach ($forms_intro as $intro) {
-									if (strip_tags($intro->intro) == $key) {
+								foreach ($forms_intro as $intro)
+								{
+									if (strip_tags($intro->intro) == $key)
+									{
 										$find = $intro->id;
 										break;
 									}
 								}
 
-								if (!empty($find)) {
+								if (!empty($find))
+								{
 									$reference_table = 'fabrik_forms';
 									$reference_id    = $find;
 									$reference_field = 'intro';
 								}
-								else {
+								else
+								{
 									$query->clear()
 										->select('id')
 										->from($this->_db->quoteName('#__fabrik_groups'))
@@ -186,32 +179,38 @@ class EmundusModelTranslations extends JModelList
 									$this->_db->setQuery($query);
 									$find = $this->_db->loadResult();
 
-									if (!empty($find)) {
+									if (!empty($find))
+									{
 										$reference_table = 'fabrik_groups';
 										$reference_id    = $find;
 										$reference_field = 'label';
 									}
-									else {
+									else
+									{
 										$query->clear()
 											->select('id,params')
 											->from($this->_db->quoteName('#__fabrik_groups'));
 										$this->_db->setQuery($query);
 										$groups_params = $this->_db->loadObjectList();
 
-										foreach ($groups_params as $group_params) {
+										foreach ($groups_params as $group_params)
+										{
 											$params = json_decode($group_params->params);
-											if (strip_tags($params->intro) == $key) {
+											if (strip_tags($params->intro) == $key)
+											{
 												$find = $group_params->id;
 												break;
 											}
 										}
 
-										if (!empty($find)) {
+										if (!empty($find))
+										{
 											$reference_table = 'fabrik_groups';
 											$reference_id    = $find;
 											$reference_field = 'intro';
 										}
-										else {
+										else
+										{
 											$query->clear()
 												->select('id')
 												->from($this->_db->quoteName('#__fabrik_elements'))
@@ -219,12 +218,14 @@ class EmundusModelTranslations extends JModelList
 											$this->_db->setQuery($query);
 											$find = $this->_db->loadResult();
 
-											if (!empty($find)) {
+											if (!empty($find))
+											{
 												$reference_table = 'fabrik_elements';
 												$reference_id    = $find;
 												$reference_field = 'label';
 											}
-											else {
+											else
+											{
 												$query->clear()
 													->select('id,params')
 													->from($this->_db->quoteName('#__fabrik_elements'))
@@ -232,16 +233,19 @@ class EmundusModelTranslations extends JModelList
 												$this->_db->setQuery($query);
 												$elements_params = $this->_db->loadObjectList();
 
-												foreach ($elements_params as $element_params) {
+												foreach ($elements_params as $element_params)
+												{
 													$params      = json_decode($element_params->params);
 													$sub_options = $params->sub_options;
-													if (in_array($key, array_values($sub_options->sub_labels))) {
+													if (in_array($key, array_values($sub_options->sub_labels)))
+													{
 														$find = $element_params->id;
 														break;
 													}
 												}
 
-												if (!empty($find)) {
+												if (!empty($find))
+												{
 													$reference_table = 'fabrik_elements';
 													$reference_id    = $find;
 													$reference_field = 'sub_labels';
@@ -254,10 +258,12 @@ class EmundusModelTranslations extends JModelList
 							//
 							$row = [$this->_db->quote($key), $this->_db->quote($language), $this->_db->quote($val), $this->_db->quote($val), $this->_db->quote(md5($val)), $this->_db->quote(md5($val)), $this->_db->quote($file_name), $this->_db->quote('override'), 62, $this->_db->quote($reference_id), $this->_db->quote($reference_table), $this->_db->quote($reference_field)];
 						}
-						else {
+						else
+						{
 							$row = [$this->_db->quote($key), $this->_db->quote($language), $this->_db->quote($val), $this->_db->quote($val), $this->_db->quote(md5($val)), $this->_db->quote(md5($val)), $this->_db->quote($file_name), $this->_db->quote(null), 62, $this->_db->quote(null), $this->_db->quote(null), $this->_db->quote(null)];
 						}
-						try {
+						try
+						{
 							$query
 								->clear()
 								->insert($this->_db->quoteName('jos_emundus_setup_languages'))
@@ -267,8 +273,9 @@ class EmundusModelTranslations extends JModelList
 							$this->_db->setQuery($query);
 							$this->_db->execute();
 						}
-						catch (Exception $e) {
-							JLog::add('Problem when insert translations at first launch with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+						catch (Exception $e)
+						{
+							Log::add('Problem when insert translations at first launch with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 							return false;
 						}
@@ -277,16 +284,11 @@ class EmundusModelTranslations extends JModelList
 				}
 			}
 		}
+
+		return true;
 	}
 
-	/**
-	 * Get our translations definitions
-	 *
-	 * @return array
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getTranslationsObject()
+	public function getTranslationsObject(): array
 	{
 		$objects = array();
 
@@ -295,12 +297,15 @@ class EmundusModelTranslations extends JModelList
 		jimport('joomla.filesystem.folder');
 		$dir        = JPATH_ROOT . '/components/com_emundus/contentelements/';
 		$filesindir = Joomla\Filesystem\Folder::files($dir, '.xml');
-		if (count($filesindir) > 0) {
-			foreach ($filesindir as $file) {
+		if (count($filesindir) > 0)
+		{
+			foreach ($filesindir as $file)
+			{
 				$object = new stdClass;
 				unset($xmlDoc);
 				$xmlDoc = new DOMDocument();
-				if ($xmlDoc->load($dir . $file)) {
+				if ($xmlDoc->load($dir . $file))
+				{
 					$xpath        = new DOMXPath($xmlDoc);
 					$tableElement = $xpath->query('//reference/table')->item(0);
 
@@ -322,8 +327,10 @@ class EmundusModelTranslations extends JModelList
 					$fields          = array();
 					$indexedSections = array();
 
-					foreach ($tableFields as $tableField) {
-						if (trim($tableField->getAttribute('type')) == 'children') {
+					foreach ($tableFields as $tableField)
+					{
+						if (trim($tableField->getAttribute('type')) == 'children')
+						{
 							$field          = new stdClass;
 							$field->Type    = trim($tableField->getAttribute('type'));
 							$field->Name    = trim($tableField->getAttribute('name'));
@@ -335,7 +342,8 @@ class EmundusModelTranslations extends JModelList
 						}
 					}
 
-					foreach ($tableSections as $tableSection) {
+					foreach ($tableSections as $tableSection)
+					{
 						$section                  = new stdClass;
 						$section->Label           = trim($tableSection->getAttribute('label'));
 						$section->Name            = trim($tableSection->getAttribute('name'));
@@ -345,8 +353,10 @@ class EmundusModelTranslations extends JModelList
 						$section->ReferenceColumn = trim($tableSection->getAttribute('reference_column'));
 						$section->indexedFields   = array();
 
-						foreach ($tableFields as $tableField) {
-							if (trim($tableField->getAttribute('section')) == $section->Name) {
+						foreach ($tableFields as $tableField)
+						{
+							if (trim($tableField->getAttribute('section')) == $section->Name)
+							{
 								$field          = new stdClass;
 								$field->Type    = trim($tableField->getAttribute('type'));
 								$field->Name    = trim($tableField->getAttribute('name'));
@@ -373,185 +383,181 @@ class EmundusModelTranslations extends JModelList
 		return $objects;
 	}
 
-	/**
-	 * Get references datas
-	 *
-	 * @param $table
-	 * @param $reference_id
-	 * @param $label
-	 * @param $filters
-	 *
-	 * @return array|false|mixed
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getDatas($table, $reference_id, $label, $filters)
+	public function getDatas(string $table, string $reference_id, string $label, string $filters): array
 	{
+		$datas = array();
+
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select($this->_db->quoteName($reference_id) . 'as id,' . $this->_db->quoteName($label) . 'as label')
 				->from($this->_db->quoteName('#__' . $table));
-			if (!empty($filters)) {
+			if (!empty($filters))
+			{
 				$filters = explode(',', $filters);
-				foreach ($filters as $filter) {
+				foreach ($filters as $filter)
+				{
 					$query->where($this->_db->quoteName($filter) . ' = 1');
 				}
 			}
 			$this->_db->setQuery($query);
 
-			return $this->_db->loadObjectList();
+			$datas = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
-			JLog::add('Problem when try to get datas from table ' . $table . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to get datas from table ' . $table . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
+		}
 
-			return false;
-		}
+		return $datas;
 	}
 
-	/**
-	 * Get childrens to filter our translations
-	 *
-	 * @param $table
-	 * @param $reference_id
-	 * @param $label
-	 *
-	 * @return array|false|mixed
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getChildrens($table, $reference_id, $label)
+	public function getChildrens(string $table, int $reference_id, string $label)
 	{
+		$childrens = array();
+
 		$query = $this->_db->getQuery(true);
 
-		if ($table == 'fabrik_forms') {
+		if ($table == 'fabrik_forms')
+		{
 			$forms = array();
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 			$h_menu = new EmundusHelperMenu;
 
 			$tableuser = $h_menu->buildMenuQuery($reference_id);
-			foreach ($tableuser as $menu) {
+			foreach ($tableuser as $menu)
+			{
 				$forms[] = $menu->form_id;
 			}
 		}
 
-		try {
+		try
+		{
 			$query->select('id,' . $this->_db->quoteName($label) . ' as label')
 				->from($this->_db->quoteName('#__' . $table));
 
-			if (isset($forms)) {
+			if (isset($forms))
+			{
 				$query->where($this->_db->quoteName('id') . ' IN (' . implode(',', $forms) . ')');
 				$query->order('field(id,' . implode(',', $forms) . ') ASC');
 			}
 			$this->_db->setQuery($query);
-			$values = $this->_db->loadObjectList();
+			$childrens = $this->_db->loadObjectList();
 
-			foreach ($values as $key => $value) {
-				$values[$key]->label = JText::_($value->label);
+			foreach ($childrens as $children)
+			{
+				$children->label = Text::_($children->label);
 			}
-
-			return $values;
 		}
-		catch (Exception $e) {
-			JLog::add('Problem when try to get childrens from table ' . $table . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
-
-			return false;
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to get childrens from table ' . $table . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 		}
+
+		return $childrens;
 	}
 
-	/**
-	 * Get translations with many filters
-	 *
-	 * @param $type
-	 * @param $lang_code
-	 * @param $search
-	 * @param $location
-	 * @param $reference_table
-	 * @param $reference_id
-	 * @param $tag
-	 *
-	 * @return array|mixed
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getTranslations($type = 'override', $lang_code = '*', $search = '', $location = '', $reference_table = '', $reference_id = 0, $reference_fields = '', $tag = '')
+	public function getTranslations(?string $type = 'override', ?string $lang_code = '*', ?string $search = '', ?string $location = '', ?string $reference_table = '', int|array $reference_id = 0, string|array $reference_fields = '', ?string $tag = ''): array
 	{
 		$translations = [];
 
-		try {
+		try
+		{
 			$query = $this->_db->getQuery(true);
 
 			$query->select('*')
 				->from($this->_db->quoteName('#__emundus_setup_languages'))
 				->where($this->_db->quoteName('type') . ' LIKE ' . $this->_db->quote('%' . $type . '%'));
 
-			if ($lang_code !== '*' && !empty($lang_code)) {
+			if ($lang_code !== '*' && !empty($lang_code))
+			{
 				$query->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
 			}
-			if (!empty($search)) {
+			if (!empty($search))
+			{
 				$query->where($this->_db->quoteName('override') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
 			}
-			if (!empty($location)) {
+			if (!empty($location))
+			{
 				$query->where($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 			}
-			if (!empty($reference_table)) {
+			if (!empty($reference_table))
+			{
 				$query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
 			}
-			if (!empty($reference_fields)) {
-				if (is_array($reference_fields)) {
+			if (!empty($reference_fields))
+			{
+				if (is_array($reference_fields))
+				{
 					$query->where($this->_db->quoteName('reference_field') . ' IN (' . implode(',', $this->_db->quote($reference_fields)) . ')');
 				}
-				else {
+				else
+				{
 					$query->where($this->_db->quoteName('reference_field') . ' LIKE ' . $this->_db->quote($reference_fields));
 				}
 			}
-			if (!empty($reference_id)) {
-				if (is_array($reference_id)) {
+			if (!empty($reference_id))
+			{
+				if (is_array($reference_id))
+				{
 					$query->where($this->_db->quoteName('reference_id') . ' IN (' . implode(',', $this->_db->quote($reference_id)) . ')');
 				}
-				else {
+				else
+				{
 					$query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
 				}
 			}
-			if (!empty($tag)) {
+			if (!empty($tag))
+			{
 				$query->where($this->_db->quoteName('tag') . ' LIKE ' . $this->_db->quote($tag));
 			}
 			$this->_db->setQuery($query);
 			$translations = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
-			JLog::add('Problem when try to get translations with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to get translations with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 		}
 
 		return $translations;
 	}
 
-	/**
-	 * Create a new translation in base and insert it in override file
-	 *
-	 * @param $tag
-	 * @param $override
-	 * @param $lang_code
-	 * @param $location
-	 * @param $type
-	 * @param $reference_table
-	 * @param $reference_id
-	 *
-	 * @return bool|void
-	 *
-	 * @since version
-	 */
-	public function insertTranslation($tag, $override, $lang_code, $location = '', $type = 'override', $reference_table = '', $reference_id = 0, $reference_field = '')
+	public function insertTranslation(string $tag, string $override, string $lang_code, ?string $location = '', ?string $type = 'override', ?string $reference_table = '', ?int $reference_id = 0, ?string $reference_field = '', ?int $user_id = 0): bool
 	{
-		$inserted  = false;
-		$isCorrect = $this->checkTagIsCorrect($tag, $override, 'insert', $lang_code);
+		$inserted = false;
 
-		if ($isCorrect && empty($this->getTranslations($type, $lang_code, '', $location, '', 0, '', $tag))) {
+		$app = Factory::getApplication();
+
+		if ($app->isClient('cli'))
+		{
+			$isCorrect = $this->checkTagIsCorrect($tag, $override, 'insert', $lang_code);
+
+			if (!$isCorrect)
+			{
+				return false;
+			}
+		}
+		else
+		{
+			$OverrideModel   = new OverrideModel();
+			$LanguagesHelper = new \Joomla\Component\Languages\Administrator\Helper\LanguagesHelper();
+			$tag             = $LanguagesHelper::filterKey($tag);
+		}
+
+		if (empty($this->getTranslations($type, $lang_code, '', $location, '', 0, '', $tag)))
+		{
 			$query = $this->_db->getQuery(true);
-			$user  = JFactory::getUser();
 
-			try {
-				if (empty($location)) {
+			if (empty($user_id))
+			{
+				$user_id = $app->getIdentity()->id;
+			}
+
+			try
+			{
+				if (empty($location))
+				{
 					$location = $lang_code . '.override.ini';
 				}
 
@@ -569,9 +575,9 @@ class EmundusModelTranslations extends JModelList
 					$this->_db->quote($reference_table),
 					$this->_db->quote($reference_field),
 					1,
-					$user->id,
+					$user_id,
 					$this->_db->quote(date('Y-m-d H:i:s')),
-					$user->id,
+					$user_id,
 					$this->_db->quote(date('Y-m-d H:i:s'))
 				];
 
@@ -580,63 +586,83 @@ class EmundusModelTranslations extends JModelList
 					->values(implode(',', $values));
 				$this->_db->setQuery($query);
 
-				if ($this->_db->execute()) {
-					$override_file = JPATH_SITE . '/language/overrides/' . $location;
-					if (file_exists($override_file)) {
-						$parsed_file       = JLanguageHelper::parseIniFile($override_file);
-						$parsed_file[$tag] = $override;
-						$inserted          = JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+				if ($this->_db->execute())
+				{
+					if ($app->isClient('cli'))
+					{
+						$override_file = JPATH_SITE . '/language/overrides/' . $location;
+						if (file_exists($override_file))
+						{
+							$parsed_file       = LanguageHelper::parseIniFile($override_file);
+							$parsed_file[$tag] = $override;
+							$inserted          = LanguageHelper::saveToIniFile($override_file, $parsed_file);
+						}
+					}
+					else
+					{
+						$app->setUserState('com_languages.overrides.filter.language', $lang_code);
+
+						$data     = [
+							'key'      => $tag,
+							'override' => $override,
+							'id'       => $tag
+						];
+						$inserted = $OverrideModel->save($data);
 					}
 				}
-				else {
-					JLog::add('Failed to insert translation into database with tag ' . $tag . ' and value ' . $override, JLog::ERROR, 'com_emundus.translations');
+				else
+				{
+					Log::add('Failed to insert translation into database with tag ' . $tag . ' and value ' . $override, Log::ERROR, 'com_emundus.translations');
 				}
 			}
-			catch (Exception $e) {
-				JLog::add('Problem when try to insert translation into file ' . $location . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+			catch (Exception $e)
+			{
+				Log::add('Problem when try to insert translation into file ' . $location . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 			}
 		}
 
 		return $inserted;
 	}
 
-	/**
-	 * Update a translation
-	 * If the translation is not override (ex. com_emundus) we insert it in override file
-	 *
-	 * @param $tag
-	 * @param $override
-	 * @param $lang_code
-	 * @param $type
-	 *
-	 * @return bool|string false if error, tag if success
-	 *
-	 * @since version
-	 */
-	public function updateTranslation($tag, $override, $lang_code, $type = 'override', $reference_table = '', $reference_id = 0, $reference_field = '', $user_id = null)
+	public function updateTranslation(string $tag, string $override, string $lang_code, ?string $type = 'override', ?string $reference_table = '', ?int $reference_id = 0, ?string $reference_field = '', ?int $user_id = 0): bool|string
 	{
 		$saved = false;
 
-		if (!$this->checkTagIsCorrect($tag, $override, 'update', $lang_code)) {
-			return false;
+		$app = Factory::getApplication();
+
+		if ($app->isClient('cli'))
+		{
+			if (!$this->checkTagIsCorrect($tag, $override, 'update', $lang_code))
+			{
+				return false;
+			}
+
+			$tag_already_exists = $this->checkTagExists($tag, $reference_table, $reference_id);
+			if (!$tag_already_exists)
+			{
+				$tag = $this->generateNewTag($tag, $reference_table, $reference_id);
+			}
 		}
-		$tag_already_exists = $this->checkTagExists($tag, $reference_table, $reference_id);
-		if (!$tag_already_exists) {
-			$tag = $this->generateNewTag($tag, $reference_table, $reference_id);
+		else
+		{
+			$OverrideModel   = new OverrideModel();
+			$LanguagesHelper = new \Joomla\Component\Languages\Administrator\Helper\LanguagesHelper();
+			$tag             = $LanguagesHelper::filterKey($tag);
 		}
 
 		$query = $this->_db->getQuery(true);
 
-		if(empty($user_id)) {
-			$user = Factory::getApplication()->getIdentity();
-		} else {
-			$user = Factory::getUser($user_id);
+		if (empty($user_id))
+		{
+			$user_id = $app->getIdentity()->id;
 		}
 
 		$location = $lang_code . '.override.ini';
 
-		try {
-			if ($type === 'override') {
+		try
+		{
+			if ($type === 'override')
+			{
 				$query->select('id')
 					->from($this->_db->qn('#__emundus_setup_languages'))
 					->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag))
@@ -645,12 +671,14 @@ class EmundusModelTranslations extends JModelList
 				$this->_db->setQuery($query);
 				$id = $this->_db->loadResult();
 
-				if (!empty($id)) {
+				if (!empty($id))
+				{
 					$query->clear()
 						->update($this->_db->qn('#__emundus_setup_languages'))
 						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
 				}
-				else {
+				else
+				{
 					$query->clear()
 						->insert($this->_db->qn('#__emundus_setup_languages'))
 						->set($this->_db->qn('tag') . ' = ' . $this->_db->q($tag))
@@ -658,152 +686,159 @@ class EmundusModelTranslations extends JModelList
 						->set($this->_db->qn('type') . ' = ' . $this->_db->q($type))
 						->set($this->_db->qn('original_text') . ' = ' . $this->_db->q($override))
 						->set($this->_db->qn('original_md5') . ' = ' . $this->_db->q(md5($override)))
-						->set($this->_db->qn('created_by') . ' = ' . $this->_db->q($user->id))
+						->set($this->_db->qn('created_by') . ' = ' . $this->_db->q($user_id))
 						->set($this->_db->qn('created_date') . ' = ' . $this->_db->q(date('Y-m-d H:i:s')));
 				}
 
 				$query->set($this->_db->quoteName('override') . ' = ' . $this->_db->quote($override))
 					->set($this->_db->quoteName('override_md5') . ' = ' . $this->_db->quote(md5($override)))
-					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user->id))
+					->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user_id))
 					->set($this->_db->quoteName('modified_date') . ' = ' . $this->_db->quote(date('Y-m-d H:i:s')))
 					->set($this->_db->quoteName('location') . ' = ' . $this->_db->quote($location));
 
-				if (!empty($reference_table)) {
+				if (!empty($reference_table))
+				{
 					$query->set($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table));
 				}
-				if (!empty($reference_id)) {
+				if (!empty($reference_id))
+				{
 					$query->set($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id));
 				}
-				if (!empty($reference_field)) {
+				if (!empty($reference_field))
+				{
 					$query->set($this->_db->quoteName('reference_field') . ' = ' . $this->_db->quote($reference_field));
 				}
 
 				$this->_db->setQuery($query);
 
-				if ($this->_db->execute()) {
-					$override_file = JPATH_BASE . '/language/overrides/' . $location;
-					if (file_exists($override_file)) {
-						$parsed_file       = JLanguageHelper::parseIniFile($override_file);
-						$parsed_file[$tag] = $override;
-						$saved             = JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+				if ($this->_db->execute())
+				{
+					if ($app->isClient('cli'))
+					{
+						$override_file = JPATH_BASE . '/language/overrides/' . $location;
+						if (file_exists($override_file))
+						{
+							$parsed_file       = LanguageHelper::parseIniFile($override_file);
+							$parsed_file[$tag] = $override;
+							$saved             = LanguageHelper::saveToIniFile($override_file, $parsed_file);
 
-						if ($saved) {
-							$saved = $tag;
 						}
 					}
-					else {
-						$saved = false;
+					else
+					{
+						$app->setUserState('com_languages.overrides.filter.language', $lang_code);
+
+						$data  = [
+							'key'      => $tag,
+							'override' => $override,
+							'id'       => $tag
+						];
+						$saved = $OverrideModel->save($data);
+					}
+
+					if ($saved)
+					{
+						$saved = $tag;
 					}
 				}
 			}
-			else {
+			else
+			{
 				$existing_translation = $this->getTranslations('override', $lang_code, '', '', '', '', $tag);
-				if (empty($existing_translation)) {
+				if (empty($existing_translation))
+				{
 					$saved = $this->insertTranslation($tag, $override, $lang_code);
 				}
-				else {
+				else
+				{
 					$saved = $this->updateTranslation($tag, $override, $lang_code);
 				}
 			}
 		}
-			// @codeCoverageIgnoreStart
-		catch (Exception $e) {
-
-			error_log($e->getMessage());
-			JLog::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to update translation ' . $tag . ' into file ' . $location . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 
-		// @codeCoverageIgnoreEnd
-
 		return $saved;
 	}
 
-	/**
-	 * Delete a translation in base and then remove it from overrides files
-	 *
-	 * @param $tag
-	 * @param $lang_code
-	 * @param $reference_table
-	 * @param $reference_id
-	 *
-	 * @return false|void
-	 *
-	 * @since version
-	 */
-	public function deleteTranslation($tag = '', $lang_code = '*', $reference_table = '', $reference_id = 0)
+	public function deleteTranslation(?string $tag = '', ?string $lang_code = '*', ?string $reference_table = '', ?int $reference_id = 0): bool
 	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->delete($this->_db->quoteName('#__emundus_setup_languages'))
 				->where($this->_db->quoteName('type') . ' = ' . $this->_db->quote('override'));
 
-			if (!empty($tag)) {
+			if (!empty($tag))
+			{
 				$query->where($this->_db->quoteName('tag') . ' = ' . $this->_db->quote($tag));
 			}
-			if ($lang_code !== '*' && !empty($lang_code)) {
+			if ($lang_code !== '*' && !empty($lang_code))
+			{
 				$query->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
 			}
-			if (!empty($reference_table)) {
+			if (!empty($reference_table))
+			{
 				$query->where($this->_db->quoteName('reference_table') . ' LIKE ' . $this->_db->quote($reference_table));
 			}
-			if (!empty($reference_id)) {
+			if (!empty($reference_id))
+			{
 				$query->where($this->_db->quoteName('reference_id') . ' LIKE ' . $this->_db->quote($reference_id));
 			}
 			$this->_db->setQuery($query);
 			$this->_db->execute();
 
-			if ($lang_code == '*') {
-				$languages = JLanguageHelper::getLanguages();
+			if ($lang_code == '*')
+			{
+				$languages = LanguageHelper::getLanguages();
 
-				foreach ($languages as $language) {
+				foreach ($languages as $language)
+				{
 					$location      = $language->lang_code . '.override.ini';
 					$override_file = JPATH_SITE . '/language/overrides/' . $location;
-					if (file_exists($override_file)) {
-						$parsed_file = JLanguageHelper::parseIniFile($override_file);
+					if (file_exists($override_file))
+					{
+						$parsed_file = LanguageHelper::parseIniFile($override_file);
 						unset($parsed_file[$tag]);
-						JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+						LanguageHelper::saveToIniFile($override_file, $parsed_file);
 					}
 				}
 			}
-			else {
+			else
+			{
 				$location      = $lang_code . '.override.ini';
 				$override_file = JPATH_SITE . '/language/overrides/' . $location;
-				if (file_exists($override_file)) {
-					$parsed_file = JLanguageHelper::parseIniFile($override_file);
+				if (file_exists($override_file))
+				{
+					$parsed_file = LanguageHelper::parseIniFile($override_file);
 					unset($parsed_file[$tag]);
-					JLanguageHelper::saveToIniFile($override_file, $parsed_file);
+					LanguageHelper::saveToIniFile($override_file, $parsed_file);
 				}
 			}
 
 			return true;
 		}
-			// @codeCoverageIgnoreStart
-		catch (Exception $e) {
-			JLog::add('Problem when try to delete translation ' . $tag . ' with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to delete translation ' . $tag . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
-		// @codeCoverageIgnoreEnd
 	}
 
-	/**
-	 * Get default language of the platform
-	 *
-	 * @return false|mixed|null
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getDefaultLanguage()
+	public function getDefaultLanguage(): object|bool
 	{
-
 		$lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->select('lang_code,title_native')
 				->from($this->_db->quoteName('#__languages'))
 				->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang));
@@ -811,80 +846,66 @@ class EmundusModelTranslations extends JModelList
 
 			return $this->_db->loadObject();
 		}
-			// @codeCoverageIgnoreStart
-		catch (Exception $e) {
-			JLog::add('Problem when try to fet default language with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to fet default language with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
-		// @codeCoverageIgnoreEnd
 	}
 
 	public function getPlatformLanguages(): array
 	{
-		$db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query
-			->select($db->quoteName('lang_code'))
-			->from($db->quoteName('#__languages'))
-			->where($db->quoteName('published') . ' = 1 ');
-		$db->setQuery($query);
-
-		try {
-			return $db->loadColumn();
-		}
-			// @codeCoverageIgnoreStart
-		catch (Exception $e) {
-			return [];
-		}
-		// @codeCoverageIgnoreEnd
-	}
-
-	/**
-	 * Get all languages available on our platform
-	 *
-	 * @return array|false|mixed
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getAllLanguages()
-	{
 		$query = $this->_db->getQuery(true);
 
-		try {
+		$query
+			->select($this->_db->quoteName('lang_code'))
+			->from($this->_db->quoteName('#__languages'))
+			->where($this->_db->quoteName('published') . ' = 1 ');
+		$this->_db->setQuery($query);
+
+		try
+		{
+			return $this->_db->loadColumn();
+		}
+		catch (Exception $e)
+		{
+			return [];
+		}
+	}
+
+	public function getAllLanguages(): array
+	{
+		$languages = array();
+
+		$query = $this->_db->getQuery(true);
+
+		try
+		{
 			$query->select('lang_code,title_native,published')
 				->from($this->_db->quoteName('#__languages'));
 			$this->_db->setQuery($query);
 
-			return $this->_db->loadObjectList();
+			$languages = $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
-			JLog::add('Problem when try to fet default language with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to fet default language with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
+		}
 
-			return false;
-		}
+		return $languages;
 	}
 
-	/**
-	 * Update default language or/and secondary languages
-	 *
-	 * @param $lang_code
-	 * @param $published
-	 * @param $default boolean to specify if we are changing default language or secondary languages
-	 *
-	 * @return false|mixed
-	 *
-	 * @since version 1.28.0
-	 */
-	public function updateLanguage($lang_code, $published, $default)
+	public function updateLanguage(string $lang_code, int $published, $default): bool
 	{
 		$updated = false;
-		$query = $this->_db->getQuery(true);
+		$query   = $this->_db->getQuery(true);
 
-		try {
-			if (!empty($default)) {
-				$old_lang = $this->getDefaultLanguage();
+		try
+		{
+			if (!empty($default))
+			{
+				$old_lang        = $this->getDefaultLanguage();
 				$language_params = ComponentHelper::getParams('com_languages');
 				$language_params->set('site', $lang_code);
 
@@ -894,7 +915,7 @@ class EmundusModelTranslations extends JModelList
 					->where($this->_db->quoteName('extension_id') . ' = ' . ComponentHelper::getComponent('com_languages')->id);
 				$this->_db->setQuery($query);
 
-				if($this->_db->execute())
+				if ($this->_db->execute())
 				{
 					$query->clear()
 						->update($this->_db->quoteName('#__languages'))
@@ -902,7 +923,7 @@ class EmundusModelTranslations extends JModelList
 						->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
 					$this->_db->setQuery($query);
 
-					if($this->_db->execute())
+					if ($this->_db->execute())
 					{
 						$query->clear()
 							->update($this->_db->quoteName('#__languages'))
@@ -914,7 +935,8 @@ class EmundusModelTranslations extends JModelList
 					}
 				}
 			}
-			else {
+			else
+			{
 				$query->update($this->_db->quoteName('#__languages'))
 					->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
 					->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code));
@@ -923,18 +945,20 @@ class EmundusModelTranslations extends JModelList
 				$updated = $this->_db->execute();
 			}
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			Log::add('Problem when try to update language ' . $lang_code . ' with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 		}
 
 		return $updated;
 	}
 
-	public function updateFalangModule($published)
+	public function updateFalangModule(int $published): bool
 	{
-		try {
-			$query = $this->_db->getQuery(true);
+		$query = $this->_db->getQuery(true);
 
+		try
+		{
 			$query->update('#__modules')
 				->set($this->_db->quoteName('published') . ' = ' . $this->_db->quote($published))
 				->where($this->_db->quoteName('module') . ' = ' . $this->_db->quote('mod_falang'));
@@ -942,35 +966,23 @@ class EmundusModelTranslations extends JModelList
 
 			return $this->_db->execute();
 		}
-		catch (Exception $e) {
-			JLog::add('Problem when try to unpublish falang module with error : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('Problem when try to unpublish falang module with error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 	}
 
-	/**
-	 * Get translations with Falang system (campaigns, emails, programs, status)
-	 *
-	 * @param $default_lang
-	 * @param $lang_to
-	 * @param $reference_id
-	 * @param $fields
-	 * @param $reference_table
-	 * @param $reference_field
-	 *
-	 * @return false|stdClass
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table)
+	public function getTranslationsFalang(string $default_lang, string $lang_to, int $reference_id, string $fields, string $reference_table): object|bool
 	{
 		$translations = new stdClass();
 		$fields       = explode(',', $fields);
 
 		$query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$query->clear()
 				->select('lang_id')
 				->from($this->_db->quoteName('#__languages'))
@@ -987,7 +999,8 @@ class EmundusModelTranslations extends JModelList
 
 			$translations->{$reference_id} = new stdClass;
 
-			foreach ($fields as $field) {
+			foreach ($fields as $field)
+			{
 				$labels                  = new stdClass;
 				$labels->reference_field = $field;
 				$labels->reference_table = $reference_table;
@@ -1003,7 +1016,8 @@ class EmundusModelTranslations extends JModelList
 				$this->_db->setQuery($query);
 				$labels->default_lang = $this->_db->loadResult();
 
-				if (empty($labels->default_lang)) {
+				if (empty($labels->default_lang))
+				{
 					$query->clear()
 						->select('tablepkID')
 						->from($this->_db->quoteName('#__falang_tableinfo'))
@@ -1021,7 +1035,7 @@ class EmundusModelTranslations extends JModelList
 				}
 
 				$query->clear()
-					->select('value')
+					->select($this->_db->quoteName('value'))
 					->from($this->_db->quoteName('#__falang_content'))
 					->where($this->_db->quoteName('reference_id') . ' = ' . $this->_db->quote($reference_id))
 					->where($this->_db->quoteName('reference_table') . ' = ' . $this->_db->quote($reference_table))
@@ -1034,43 +1048,34 @@ class EmundusModelTranslations extends JModelList
 
 			return $translations;
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/translations | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/translations | Error at getting the translations ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 	}
 
-	/**
-	 * Update a translation with Falang system
-	 *
-	 * @param $value
-	 * @param $lang_to
-	 * @param $reference_table
-	 * @param $reference_id
-	 * @param $field
-	 *
-	 * @return false|mixed
-	 *
-	 * @since version
-	 */
-	public function updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field, $user_id = null)
+	public function updateFalangTranslation(string $value, string $lang_to, string $reference_table, int $reference_id, string $field, ?int $user_id = 0): bool
 	{
 		$updated = false;
 		$query   = $this->_db->getQuery(true);
 
-		if (empty($user_id)) {
+		if (empty($user_id))
+		{
 			$user_id = Factory::getApplication()->getIdentity()->id;
 		}
 
-		try {
+		try
+		{
 			$query->select('lang_id')
 				->from($this->_db->quoteName('#__languages'))
 				->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_to));
 			$this->_db->setQuery($query);
 			$lang_to_id = $this->_db->loadResult();
 
-			if (!empty($lang_to_id)) {
+			if (!empty($lang_to_id))
+			{
 				$query->clear()
 					->select('id')
 					->from($this->_db->quoteName('#__falang_content'))
@@ -1081,14 +1086,16 @@ class EmundusModelTranslations extends JModelList
 				$this->_db->setQuery($query);
 				$falang_translation = $this->_db->loadResult();
 
-				if (!empty($falang_translation)) {
+				if (!empty($falang_translation))
+				{
 					$query->clear()
 						->update($this->_db->quoteName('#__falang_content'))
 						->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($value))
 						->set($this->_db->quoteName('modified_by') . ' = ' . $this->_db->quote($user_id))
 						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($falang_translation));
 				}
-				else {
+				else
+				{
 					$query->clear()
 						->insert($this->_db->quoteName('#__falang_content'))
 						->set($this->_db->quoteName('language_id') . ' = ' . $this->_db->quote($lang_to_id))
@@ -1104,52 +1111,46 @@ class EmundusModelTranslations extends JModelList
 
 				$this->_db->setQuery($query);
 				$updated = $this->_db->execute();
-			} else {
-				JLog::add('component/com_emundus/models/translations | Error at getting the language id for ' . $lang_to, JLog::ERROR, 'com_emundus.translations');
+			}
+			else
+			{
+				Log::add('component/com_emundus/models/translations | Error at getting the language id for ' . $lang_to, Log::ERROR, 'com_emundus.translations');
 			}
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/translations | Error at updating the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/translations | Error at updating the translation ' . $reference_id . ' references to table ' . $reference_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 		}
 
 		return $updated;
 	}
 
-	/**
-	 * Get reference id by filters
-	 *
-	 * @param $reference_table
-	 * @param $reference_column
-	 * @param $join_table
-	 * @param $join_column
-	 * @param $reference_id
-	 *
-	 * @return array|false|mixed
-	 *
-	 * @since version 1.28.0
-	 */
-	public function getJoinReferenceId($reference_table, $reference_column, $join_table, $join_column, $reference_id)
+	public function getJoinReferenceId(string $reference_table, string $reference_column, string $join_table, string $join_column, int|array $reference_id): array|bool
 	{
 		$query = $this->_db->getQuery(true);
 
-
-		try {
+		try
+		{
 			$query->select('rt.id')
 				->from($this->_db->quoteName('#__' . $reference_table, 'rt'))
 				->leftJoin($this->_db->quoteName('#__' . $join_table, 'jt') . ' ON ' . $this->_db->quoteName('rt.id') . ' = ' . $this->_db->quoteName('jt.' . $reference_column));
-			if (is_array($reference_id)) {
+			if (is_array($reference_id))
+			{
 				$query->where($this->_db->quoteName('jt.' . $join_column) . ' IN (' . implode(',', $this->_db->quote($reference_id)) . ')');
 			}
-			else {
+			else
+			{
 				$query->where($this->_db->quoteName('jt.' . $join_column) . ' = ' . $this->_db->quote($reference_id));
 			}
 
-			if ($reference_table == 'fabrik_groups') {
+			if ($reference_table == 'fabrik_groups')
+			{
 				$query->where('JSON_EXTRACT(rt.params,"$.repeat_group_show_first")' . ' = ' . $this->_db->quote(1))
 					->where($this->_db->quoteName('rt.published') . ' = 1');
 			}
 
-			if ($reference_table == 'fabrik_elements') {
+			if ($reference_table == 'fabrik_elements')
+			{
 				$query->where($this->_db->quoteName('rt.hidden') . ' <> 1')
 					->where($this->_db->quoteName('rt.published') . ' = 1');
 			}
@@ -1158,19 +1159,21 @@ class EmundusModelTranslations extends JModelList
 
 			return $this->_db->loadColumn();
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/translations | Error at getting the reference id by join with id ' . $reference_id . ' references to table ' . $join_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/translations | Error at getting the reference id by join with id ' . $reference_id . ' references to table ' . $join_table . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 	}
 
-	public function getOrphelins($default_lang, $lang_code, $type = 'override')
+	public function getOrphelins(string $default_lang, string $lang_code, ?string $type = 'override'): array|bool
 	{
 		$query     = $this->_db->getQuery(true);
 		$sub_query = $this->_db->getQuery(true);
 
-		try {
+		try
+		{
 			$sub_query->select('tag')
 				->from($this->_db->quoteName('#__emundus_setup_languages'))
 				->where($this->_db->quoteName('lang_code') . ' = ' . $this->_db->quote($lang_code))
@@ -1185,112 +1188,109 @@ class EmundusModelTranslations extends JModelList
 
 			return $this->_db->loadObjectList();
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/translations | Error at getting orphelins : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/translations | Error at getting orphelins : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 	}
 
-	public function sendPurposeNewLanguage($language, $comment)
+	public function sendPurposeNewLanguage($language, $comment): bool
 	{
-		try {
-			include_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+		try
+		{
+			include_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+			include_once(JPATH_SITE . '/components/com_emundus/controllers/messages.php');
 			$c_messages = new EmundusControllerMessages();
 
-			$template = JFactory::getApplication()->getTemplate(true);
-			$params   = $template->params;
-			$config   = JFactory::getConfig();
+			$template = Factory::getApplication()->getTemplate(true);
+			$config   = Factory::getApplication()->getConfig();
+
 			// Get LOGO
-			if (!empty($params->get('logo')->custom->image)) {
-				$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-				$logo = !empty($logo['path']) ? JURI::base() . $logo['path'] : "";
-
-			}
-			else {
-				$logo_module = JModuleHelper::getModuleById('90');
-				preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-				$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-				if ((bool) preg_match($pattern, $tab[1])) {
-					$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-				}
-
-				$logo = JURI::base() . $tab[1];
-			}
+			$logo = EmundusHelperEmails::getLogo();
 
 			$post = [
 				'SITE_NAME'      => $config->get('sitename'),
-				'SITE_URL'       => JURI::base(),
+				'SITE_URL'       => Uri::base(),
 				'LANGUAGE_FIELD' => $language,
 				'LOGO'           => $logo
 			];
 
 			return $c_messages->sendEmailNoFnum('support@emundus.fr', 'installation_new_language', $post);
 		}
-		catch (Exception $e) {
-			JLog::add('component/com_emundus/models/translations | Error at sending email to purpose a new language : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/translations | Error at sending email to purpose a new language : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 
 			return false;
 		}
 	}
 
-	public function checkTagIsCorrect($tag, $override, $action, $lang)
+	public function checkTagIsCorrect(string $tag, string $override, string $action, string $lang): bool
 	{
 		$isCorrect = false;
 
-		if (!empty($tag)) {
-			if (!preg_match('/[$^*()=+\\\[<?;]/', $tag, $matches)) {
+		if (!empty($tag))
+		{
+			if (!preg_match('/[$^*()=+\\\[<?;]/', $tag, $matches))
+			{
 				$isCorrect = true;
 			}
-			else {
-				JLog::add("Problem when try to $action translation into file, tag [$tag] for override [$override] contains forbidden characters ", JLog::ERROR, 'com_emundus.translations');
+			else
+			{
+				Log::add("Problem when try to $action translation into file, tag [$tag] for override [$override] contains forbidden characters ", Log::ERROR, 'com_emundus.translations');
 			}
 		}
-		else {
-			JLog::add("Problem when try to $action translation into file, missing tag for this override $override, $lang", JLog::ERROR, 'com_emundus.translations');
+		else
+		{
+			Log::add("Problem when try to $action translation into file, missing tag for this override $override, $lang", Log::ERROR, 'com_emundus.translations');
 		}
 
 		return $isCorrect;
 	}
 
-	public function checkTagExists($tag, $reference_table, $reference_id)
+	public function checkTagExists(string $tag, string $reference_table, int $reference_id): bool
 	{
 		$tagExistsInBdd       = false;
 		$tagExistsInOverrides = false;
 		$translations         = $this->getTranslations('override', '*', '', '', $reference_table, $reference_id, $tag);
 
-		if (!empty($translations)) {
+		if (!empty($translations))
+		{
 			$tagExistsInBdd = true;
 		}
-		else {
+		else
+		{
 			$tagExistsInOverrides = $this->checkTagExistsInOverrideFiles($tag);
 		}
 
 		return ($tagExistsInBdd || $tagExistsInOverrides);
 	}
 
-	public function checkTagExistsInOverrideFiles($tag, $languages = null)
+	public function checkTagExistsInOverrideFiles(string $tag, ?array $languages = []): bool
 	{
 		$existsInOverrideFiles = false;
 		$languages             = empty($languages) ? $this->getPlatformLanguages() : $languages;
 
 		$files = [];
-		foreach ($languages as $language) {
+		foreach ($languages as $language)
+		{
 			$override_file = JPATH_SITE . '/language/overrides/' . $language . '.override.ini';
-			if (file_exists($override_file)) {
+			if (file_exists($override_file))
+			{
 				$files[] = $override_file;
 			}
 		}
 
-		foreach ($files as $file) {
+		foreach ($files as $file)
+		{
 			$parsed_file = JLanguageHelper::parseIniFile($file);
 
-			if (!empty($parsed_file)) {
-				if (in_array($tag, array_keys($parsed_file))) {
+			if (!empty($parsed_file))
+			{
+				if (in_array($tag, array_keys($parsed_file)))
+				{
 					$existsInOverrideFiles = true;
 					break;
 				}
@@ -1300,13 +1300,14 @@ class EmundusModelTranslations extends JModelList
 		return $existsInOverrideFiles;
 	}
 
-	public function generateNewTag($tag, $reference_table = '', $reference_id = 0)
+	public function generateNewTag(string $tag, string $reference_table, int $reference_id): string
 	{
-		if (!empty($reference_table) && !empty($reference_id)) {
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		if (!empty($reference_table) && !empty($reference_id))
+		{
+			$query = $this->_db->getQuery(true);
 
-			switch ($reference_table) {
+			switch ($reference_table)
+			{
 				case 'fabrik_elements':
 					$element_id = $reference_id;
 					$group_id   = 0;
@@ -1315,13 +1316,15 @@ class EmundusModelTranslations extends JModelList
 						->from('#__fabrik_elements')
 						->where('id = ' . $element_id);
 
-					$db->setQuery($query);
+					$this->_db->setQuery($query);
 
-					try {
-						$group_id = $db->loadResult();
+					try
+					{
+						$group_id = $this->_db->loadResult();
 					}
-					catch (Exception $e) {
-						JLog::add("Error trying to find group_id from element_id $element_id " . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+					catch (Exception $e)
+					{
+						Log::add("Error trying to find group_id from element_id $element_id " . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 					}
 
 					$tag = 'ELEMENT_' . $group_id . '_' . $element_id;
@@ -1337,25 +1340,28 @@ class EmundusModelTranslations extends JModelList
 						->from('#__fabrik_formgroup')
 						->where('group_id = ' . $reference_id);
 
-					$db->setQuery($query);
+					$this->_db->setQuery($query);
 
-					try {
-						$form_id = $db->loadResult();
+					try
+					{
+						$form_id = $this->_db->loadResult();
 					}
-					catch (Exception $e) {
-						JLog::add("Error trying to find form_id from group_id $group_id " . preg_replace("/[\r\n]/", " ", $e->getMessage()), JLog::ERROR, 'com_emundus.translations');
+					catch (Exception $e)
+					{
+						Log::add("Error trying to find form_id from group_id $group_id " . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus.translations');
 					}
 
 					$tag = 'GROUP_' . $form_id . '_' . $group_id;
 					break;
 				default:
-					JLog::add("Impossible to generate a new tag. $tag has no TAG in setup_languages nor in override files, but reference_id is empty.", JLog::INFO, 'com_emundus.translations');
+					Log::add("Impossible to generate a new tag. $tag has no TAG in setup_languages nor in override files, but reference_id is empty.", Log::INFO, 'com_emundus.translations');
 					break;
 			}
 
 			$index   = 0;
 			$tmp_tag = $tag;
-			while ($this->checkTagExistsInOverrideFiles($tmp_tag)) {
+			while ($this->checkTagExistsInOverrideFiles($tmp_tag))
+			{
 				$tmp_tag = $tag . '_' . $index;
 			}
 			$tag = $tmp_tag;
@@ -1364,38 +1370,41 @@ class EmundusModelTranslations extends JModelList
 		return $tag;
 	}
 
-	public function updateElementLabel($tag, $reference_table, $reference_id): bool
+	public function updateElementLabel(string $tag, string $reference_table, int $reference_id): bool
 	{
 		$updated = false;
 
-		if (!empty($tag) && !empty($reference_table) && !empty($reference_id)) {
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+		if (!empty($tag) && !empty($reference_table) && !empty($reference_id))
+		{
+			$query = $this->_db->getQuery(true);
 
-			switch ($reference_table) {
+			switch ($reference_table)
+			{
 				case 'fabrik_elements':
 					$query->update('#__fabrik_elements')
-						->set('label = ' . $db->quote($tag))
+						->set('label = ' . $this->_db->quote($tag))
 						->where('id = ' . $reference_id);
 					break;
 				case 'fabrik_forms':
 					$query->update('#__fabrik_forms')
-						->set('label = ' . $db->quote($tag))
+						->set('label = ' . $this->_db->quote($tag))
 						->where('id = ' . $reference_id);
 					break;
 				case 'fabrik_groups':
 					$query->update('#__fabrik_groups')
-						->set('label = ' . $db->quote($tag))
+						->set('label = ' . $this->_db->quote($tag))
 						->where('id = ' . $reference_id);
 					break;
 			}
 
-			$db->setQuery($query);
-			try {
-				$updated = $db->execute();
+			$this->_db->setQuery($query);
+			try
+			{
+				$updated = $this->_db->execute();
 			}
-			catch (Exception $e) {
-				JLog::add("Error trying to update label for $reference_table, $reference_id, $tag " . $e->getMessage(), JLog::ERROR, 'com_emundus.translations');
+			catch (Exception $e)
+			{
+				Log::add("Error trying to update label for $reference_table, $reference_id, $tag " . $e->getMessage(), Log::ERROR, 'com_emundus.translations');
 			}
 		}
 

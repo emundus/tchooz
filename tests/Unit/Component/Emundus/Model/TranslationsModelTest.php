@@ -33,29 +33,29 @@ class TranslationsModelTest extends UnitTestCase
 	public function testInsertTranslation()
 	{
 		// Test insert translation with empty key return false
-		$inserted = $this->model->insertTranslation('', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
+		$inserted = $this->model->insertTranslation('', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999, '', $this->dataset['coordinator']);
 		$this->assertFalse($inserted);
 
 		// Make sure $^*()=+\[<?; are not allowed in tag
-		$inserted = $this->model->insertTranslation('E[L<$EN^()T_TE\T', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999);
+		$inserted = $this->model->insertTranslation('E[L<$EN^()T_TE\T', 'Test élément avec clé vide', 'fr-FR', '', 'override', 'fabrik_elements', 999999, '', $this->dataset['coordinator']);
 		$this->assertFalse($inserted);
 
-		if (empty($this->model->getTranslations('override', 'fr-FR', '', '', 'fabrik_elements', 0, '', 'ELEMENT_TEST'))) {
+		if (empty($this->model->getTranslations('override', 'fr-FR', '', '', '', 0, '', 'ELEMENT_TEST'))) {
 			// TEST 1 - Insert a basic translation of a fabrik_element
-			$this->assertSame(true, $this->model->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999, 'label'));
+			$this->assertSame(true, $this->model->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999, 'label', $this->dataset['coordinator']));
 		}
 		else {
 			// TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element
-			$this->assertSame(false, $this->model->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999, 'label'));
+			$this->assertSame(false, $this->model->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', 9999, 'label', $this->dataset['coordinator']));
 		}
 
-		if (empty($this->model->getTranslations('override', 'en-GB', '', '', 'fabrik_elements', 0, '', 'ELEMENT_TEST'))) {
+		if (empty($this->model->getTranslations('override', 'en-GB', '', '', '', 0, '', 'ELEMENT_TEST'))) {
 			// TEST 1 - Insert a basic translation of a fabrik_element in english file
-			$this->assertSame(true, $this->model->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999, 'label'));
+			$this->assertSame(true, $this->model->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999, 'label', $this->dataset['coordinator']));
 		}
 		else {
 			// TEST 2 - Failed waiting - Insert a basic translation of a fabrik_element in english file
-			$this->assertSame(false, $this->model->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999, 'label'));
+			$this->assertSame(false, $this->model->insertTranslation('ELEMENT_TEST', 'My element', 'en-GB', '', 'override', 'fabrik_elements', 9999, 'label', $this->dataset['coordinator']));
 		}
 	}
 
@@ -82,10 +82,10 @@ class TranslationsModelTest extends UnitTestCase
 		$this->assertNotEmpty($this->model->getTranslations('override', 'en-GB'));
 
 		// TEST 6 - GET FABRIK TRANSLATIONS IN LANGUAGE NOT EXISTING
-		$this->assertEmpty($this->model->getTranslations('override', 'pt-PT'));
+		$this->assertEmpty($this->model->getTranslations('override', 'nl-NL'));
 
 		// TEST 7 - GET FABRIK OPTIONS of the element 7777
-		$this->assertNotEmpty($this->model->getTranslations('override', '*', '', '', '', 9999));
+		$this->assertNotEmpty($this->model->getTranslations('override', '*', '', '', 'fabrik_elements', 0, 'sub_labels'));
 
 		// TEST 8 - GET FABRIK ELEMENTS on lang fr-FR
 		$this->assertNotEmpty($this->model->getTranslations('override', 'fr-FR', '', '', 'fabrik_elements'));

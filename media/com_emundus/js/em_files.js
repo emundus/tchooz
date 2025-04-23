@@ -5614,9 +5614,18 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '[id^=emundus_elm_]', function(e) {
-        const eid = $(this).attr('id').split('emundus_elm_')[1];
+        let eid = 0;
+        let element = null;
+
+        if ($(this).attr('id').indexOf('emundus_elm_step_') !== -1) {
+            eid = $(this).attr('id').split('emundus_elm_step_')[1].split('_')[1];
+            element = document.getElementById($(this).attr('id'));
+        } else {
+            eid = $(this).attr('id').split('emundus_elm_')[1];
+            element = document.getElementById('emundus_elm_' + eid);
+
+        }
         const isXlsExport = document.getElementById('appelement');
-        const element = document.getElementById('emundus_elm_' + eid);
 
         if (isXlsExport) {
             if ($(this).is(":checked")) {
@@ -6271,7 +6280,7 @@ function addElementToXlsRecap(e, exportRecapContainer) {
     let elementId = e.value;
 
     if (!document.getElementById(elementId + '-item') || (e.getAttribute('data-step-id') && !document.querySelector('[id="' + elementId + '-item"][data-step-id="' + e.getAttribute('data-step-id') + '"]'))) {
-        let elementLabel = document.querySelector('label[for="emundus_elm_' + elementId + '"]').textContent;
+        let elementLabel = document.querySelector('label[for="' + e.id + '"]').textContent;
         let elementLi = document.createElement('li');
         elementLi.classList.add('em-export-item', 'tw-flex', 'tw-flex-row');
         elementLi.id = elementId + '-item';

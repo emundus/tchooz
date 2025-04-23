@@ -228,13 +228,13 @@ class EmundusControllersettings extends BaseController
 		}
 		else
 		{
-
-
 			$tag   = $this->input->getInt('tag');
 			$label = $this->input->getString('label');
 			$color = $this->input->getString('color');
 
-			$changeresponse = $this->m_settings->updateTags($tag, $label, $color);
+			$result = $this->m_settings->updateTags($tag, $label, $color);
+			$msg = $result ? JText::_('SUCCESS') : JText::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS');
+			$changeresponse = array('status' => $result, 'msg' => $msg);
 		}
 		echo json_encode((object) $changeresponse);
 		exit;
@@ -1093,13 +1093,13 @@ class EmundusControllersettings extends BaseController
 
 	public function updateemundusparam()
 	{
-		$user     = Factory::getApplication()->getIdentity();
-		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+		$user     = $this->app->getIdentity();
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
 		{
-			$response['msg'] = JText::_('MISSING_PARAMS');
-			$jinput          = Factory::getApplication()->input;
+			$response['msg'] = Text::_('MISSING_PARAMS');
+			$jinput          = $this->app->input;
 			$component       = $jinput->getString('component');
 			$param           = $jinput->getString('param');
 			$value           = $jinput->getString('value', null);
@@ -1144,18 +1144,16 @@ class EmundusControllersettings extends BaseController
 					$param = json_decode($param);
 					if ($this->m_settings->updateEmundusParam($param->component, $param->param, $param->value, $config))
 					{
-						$response['msg'] .= JText::_('SUCCESS') . ' for ' . $param->param . $param->value . '. ';
-
+						$response['msg'] .= Text::_('SUCCESS') . ' for ' . $param->param . $param->value . '. ';
 
 						if ($param === 'list_limit')
 						{
 							$this->app->getSession()->set('limit', $param->value);
 						}
-
 					}
 					else
 					{
-						$response['msg']    .= JText::_('PARAM_NOT_UPDATED') . ' for ' . $param->param . '. ';
+						$response['msg']   .= Text::_('PARAM_NOT_UPDATED') . ' for ' . $param->param . '. ';
 						$response['status'] = false;
 					}
 				}
@@ -1164,7 +1162,7 @@ class EmundusControllersettings extends BaseController
 		else
 		{
 			$response['status'] = false;
-			$response['msg']    = JText::_('ACCESS_DENIED');
+			$response['msg']    = Text::_('ACCESS_DENIED');
 		}
 
 		echo json_encode($response);

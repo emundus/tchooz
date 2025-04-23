@@ -150,7 +150,8 @@ class FabrikFEModelCSVExport extends FabModel
 				return;
 			}
 
-			$str .= implode($this->delimiter, $headings) . $end_of_line;
+			//Add heading string only after heading elements have been unset
+			//$str .= implode($this->delimiter, $headings) . $end_of_line;
 		}
 
 		$incRaw       = $input->get('incraw', true);
@@ -159,6 +160,9 @@ class FabrikFEModelCSVExport extends FabModel
 		$exportFormat = $this->model->getParams()->get('csvfullname');
 		$shortKey     = FabrikString::shortColName($table->db_primary_key);
 		$a            = array();
+		$data_string  = '';
+		$headings_flip = array_flip($headings??[]);
+		$doubleQuote  = $this->model->getParams()->get('csv_double_quote', '1') === '1';
 
 		foreach ($data as $group)
 		{
@@ -192,27 +196,49 @@ class FabrikFEModelCSVExport extends FabModel
 						}
 					}
 				}
-
-				if ($incData && $incRaw)
-				{
-					foreach ($a as $key => $val)
-					{
-						// Remove Un-needed repeat join element values.
-						if (array_key_exists($key . '___params', $a))
-						{
-							unset($a[$key . '___params']);
-						}
-
-						if (array_key_exists($key . '_id', $a))
-						{
-							unset($a[$key . '_id']);
-						}
-					}
-				}
-
+				
 				if ($input->get('inccalcs') == 1)
 				{
 					array_unshift($a, ' ');
+				}
+
+				// Remove Un-needed repeat join element values.
+				/* Also remove the corresondending headers, which are not keyed :( 
+				 * _id and ___params are always full-element-name_id resp. ___params without _raw, 
+				 * depending on the header type they may or may not be there
+				 */
+				if ($incData || $incRaw) {
+					
+					foreach ($a as $key => $val) {
+						
+						$ix_name = str_replace('_raw', '', $key) . '___params';
+
+						if (array_key_exists($ix_name, $a)) {
+							unset($a[$ix_name]);
+						}
+						
+						//Unset header if there is one, headers may be quoted
+						$qix_name = $doubleQuote ? '"' . $ix_name . '"' : $ix_name;
+						if (array_key_exists($qix_name,$headings_flip)) {
+							unset($headings[$headings_flip[$qix_name]]);
+							$headings = array_values($headings);
+							$headings_flip = array_flip($headings);
+						}
+
+						$ix_name = str_replace('_raw', '', $key) . '_id';
+
+						if (array_key_exists($ix_name, $a)) {			
+							unset($a[$ix_name]);
+						}
+						
+						//Unset header if there is one, headers may be quoted
+						$qix_name = $doubleQuote ? '"' . $ix_name . '"' : $ix_name;
+						if (array_key_exists($qix_name,$headings_flip)) {								
+							unset($headings[$headings_flip[$qix_name]]);
+							$headings = array_values($headings);
+							$headings_flip = array_flip($headings);
+						}
+					}
 				}
 
 				$this->carriageReturnFix($a);
@@ -233,11 +259,17 @@ class FabrikFEModelCSVExport extends FabModel
 					$a = $this->model->csvExportRow;
 				}
 
-				$str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
-				$str .= $end_of_line;
+				$data_str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
+				$data_str .= $end_of_line;
 			}
 		}
 
+		//Add headings string
+		if ($start === 0) {
+			$str .= implode($this->delimiter, $headings) . $end_of_line;
+		}
+		
+		$str             .= $data_str;
 		$res              = new stdClass;
 		$res->total       = $total;
 		$res->count       = $start + $this->getStep();

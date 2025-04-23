@@ -42,7 +42,7 @@ class EmundusViewEmundus extends JViewLegacy
 		$more_data = $menu_params->get('more_data', '');
 		if (!empty($more_data)) {
 			$this->more_data_columns = $more_data;
-			$this->more_data_columns = implode(',', $this->more_data_columns);
+			$this->more_data_columns = explode(',', $this->more_data_columns);
 		}
 
 		// Display the template

@@ -170,7 +170,7 @@ class PlgSystemFabrikcron extends CMSPlugin
 
 		$now = $input->get('fabrikcron_run', false);
 
-		$this->log = FabTable::getInstance('Log', 'FabrikTable');
+		$this->log = \FabTable::getInstance('Log', 'FabrikTable');
 
 		if (!$now)
 		{

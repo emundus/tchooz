@@ -176,6 +176,7 @@ class EmundusModelFiles extends JModelLegacy
 					'jecc' => 'jos_emundus_campaign_candidature',
 					'ss'   => 'jos_emundus_setup_status',
 					'esc'  => 'jos_emundus_setup_campaigns',
+					'escm'  => 'jos_emundus_setup_campaigns_more',
 					'sp'   => 'jos_emundus_setup_programmes',
 					'u'    => 'jos_users',
 					'eu'   => 'jos_emundus_users',
@@ -702,6 +703,7 @@ class EmundusModelFiles extends JModelLegacy
 			'jecc' => 'jos_emundus_campaign_candidature',
 			'ss'   => 'jos_emundus_setup_status',
 			'esc'  => 'jos_emundus_setup_campaigns',
+			'escm'  => 'jos_emundus_setup_campaigns_more',
 			'sp'   => 'jos_emundus_setup_programmes',
 			'u'    => 'jos_users',
 			'eu'   => 'jos_emundus_users',
@@ -790,6 +792,7 @@ class EmundusModelFiles extends JModelLegacy
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+                    LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
@@ -2578,8 +2581,13 @@ class EmundusModelFiles extends JModelLegacy
 						$where           = explode('___', $element_attribs->cascadingdropdown_id)[1] . '=' . $repeat_join_table . '.' . $elt->element_name;
 						$join_val_column = !empty($element_attribs->cascadingdropdown_label_concat) ? 'CONCAT(' . str_replace('{thistable}', 't', str_replace('{shortlang}', $this->locales, $element_attribs->cascadingdropdown_label_concat)) . ')' : 't.' . explode('___', $element_attribs->cascadingdropdown_label)[1];
 
-						$select = '(SELECT GROUP_CONCAT(DISTINCT(' . $join_val_column . ') SEPARATOR ", ")
-                                FROM ' . $tableAlias[$elt->tab_name] . '
+                        if ($methode == 2) {
+                            $select = '(SELECT GROUP_CONCAT(('.$join_val_column.') SEPARATOR ", ") ';
+                        } else {
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT('.$join_val_column.') SEPARATOR ", ") ';
+                        }
+
+                        $select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN ' . $repeat_join_table . ' ON ' . $repeat_join_table . '.parent_id = ' . $tableAlias[$elt->tab_name] . '.id
                                 LEFT JOIN ' . $from . ' as t ON t.' . $where . '
                                 WHERE ' . $tableAlias[$elt->tab_name] . '.fnum=jos_emundus_campaign_candidature.fnum)';
@@ -2596,8 +2604,14 @@ class EmundusModelFiles extends JModelLegacy
 							}
 							$select = implode(',', $if) . ',' . $select . $endif;
 						}
-						$select = '(SELECT GROUP_CONCAT(DISTINCT(' . $select . ') SEPARATOR ", ")
-                                FROM ' . $tableAlias[$elt->tab_name] . '
+
+                        if ($methode == 2) {
+                            $select = '(SELECT GROUP_CONCAT(('.$select.') ORDER BY `'.$repeat_join_table.'`.`id` SEPARATOR ", ") ';
+                        } else {
+                            $select = '(SELECT GROUP_CONCAT(DISTINCT ('.$select.') ORDER BY `'.$repeat_join_table.'`.`id` SEPARATOR ", ") ';
+                        }
+
+                        $select .= 'FROM '.$tableAlias[$elt->tab_name].'
                                 LEFT JOIN ' . $repeat_join_table . ' ON ' . $repeat_join_table . '.parent_id = ' . $tableAlias[$elt->tab_name] . '.id
                                 WHERE ' . $tableAlias[$elt->tab_name] . '.fnum=jos_emundus_campaign_candidature.fnum)';
 						$query  .= ', ' . $select . ' AS ' . $elt->table_join . '___' . $elt->element_name;
@@ -5566,7 +5580,7 @@ class EmundusModelFiles extends JModelLegacy
 							$infos = $m_profile->getFnumDetails($fnum);
 							$campaign_id = $infos['campaign_id'];
 
-							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data);
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data, in_array("upload", $options));
 						}
 					}
 

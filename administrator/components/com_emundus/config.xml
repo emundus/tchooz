@@ -334,11 +334,16 @@
         <field name="status_for_delete" type="text" default="" label="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE"
                description="COM_EMUNDUS_SEND_APPLICATION_STATUS_FOR_DELETE_DESC"/>
         <field name="default_send_status" type="text" default="1" label="COM_EMUNDUS_SEND_APPLICATION_DEFAULT_STATUS" description="COM_EMUNDUS_SEND_APPLICATION_DEFAULT_STATUS_DESC" />
+        <field name="use_session" type="list" default="0" description="MOD_EMUNDUS_CHECKLIST_USE_SESSION" label="MOD_EMUNDUS_CHECKLIST_USE_SESSION_DESC" >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
         <field name="allow_anonym_files" type="radio" default="0" label="COM_EMUNDUS_ALLOW_ANONYM_FILES"
                description="COM_EMUNDUS_ALLOW_ANONYM_FILES_DESC">
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+
         <field name="collaborate_link"
                type="sql"
 			   default=""
@@ -368,6 +373,15 @@
                key_field="id"
                value_field="label"
         />
+        <field
+            name="limit_files_rules"
+            type="subform"
+            formsource="administrator/components/com_emundus/forms/limit_applicant_files_rules.xml"
+            label="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_RULES"
+            description="COM_EMUNDUS_ONBOARD_SETTINGS_LIMIT_FILES_RULES_DESC"
+            multiple="true"
+        />
+
     </fieldset>
     <fieldset label="COM_EMUNDUS_FORM_BUILDER" name="form_builder" description="COM_EMUNDUS_FORM_BUILDER_DESC">
         <field

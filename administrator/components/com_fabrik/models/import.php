@@ -55,8 +55,8 @@ class FabrikAdminModelImport extends FabModelAdmin
 
 		if (!array_key_exists($sig, $this->tables))
 		{
-			$config['dbo']      = FabrikWorker::getDbo(true);
-			$this->tables[$sig] = FabTable::getInstance($type, $prefix, $config);
+			$config['dbo']      = \FabrikWorker::getDbo(true);
+			$this->tables[$sig] = \FabTable::getInstance($type, $prefix, $config);
 		}
 
 		return $this->tables[$sig];

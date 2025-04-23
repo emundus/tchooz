@@ -8,7 +8,7 @@ $nolinkImg    = '<img class="fabrikLightBoxImage" ' . $height . 'src="' . $d->fi
 
 if ($d->showImage == 0 && !$d->inListView) :
 	?>
-	<a href="<?php echo $d->fullSize; ?>"><?php echo basename($d->file);?></a>
+		<a href="<?php echo $d->fullSize; ?>" target="_blank" rel="noopener noreferrer"><?php echo basename($d->file);?></a>
 <?php
 else :
 	if ($d->isSlideShow) :

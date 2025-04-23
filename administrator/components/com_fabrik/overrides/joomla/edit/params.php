@@ -7,7 +7,9 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 use Fabrik\Helpers\Php;
+
 
 /* The following is used by the install/upgrade script to validate whether an installed override is ours or not */
 $validationtag = 'FABRIK_JOOMLA_EDIT_LAYOUT_OVERRIDE';
@@ -18,9 +20,9 @@ $formData = $displayData->getForm()->getData();
 $fabrikMenu = $displayData->getName() == 'item' && stristr($formData->get('link',''),'com_fabrik');
 $fabrikModule = $displayData->getName() == 'module' && stristr($formData->get('module',''),'mod_fabrik');
 
-if (!$fabrikMenu && !$fabrikModule) 
+if (!$fabrikMenu && !$fabrikModule || PluginHelper::isEnabled("system", "fabrik") === false) 
 {
-	require_once $originalLayout;
+	require $originalLayout;
 	return;
 }
 

@@ -59,12 +59,12 @@ class EmundusModelFormbuilder extends JModelList
 	}
 
 	/** TRANSLATION SYSTEM */
-	public function translate($key, $values, $reference_table = '', $id = '', $reference_field = '')
+	public function translate($key, $values, $reference_table = '', $id = '', $reference_field = '', $user_id = 0)
 	{
 		$languages = JLanguageHelper::getLanguages();
 		foreach ($languages as $language) {
 			if (!empty($values) && isset($values[$language->sef])) {
-				$this->m_translations->insertTranslation($key, $values[$language->sef], $language->lang_code, '', 'override', $reference_table, $id, $reference_field);
+				$this->m_translations->insertTranslation($key, $values[$language->sef], $language->lang_code, '', 'override', $reference_table, $id, $reference_field, $user_id);
 			}
 		}
 
@@ -129,7 +129,7 @@ class EmundusModelFormbuilder extends JModelList
 			$translation = $text;
 
 			$fileName = constant('JPATH_SITE') . '/language/overrides/' . $code_lang . '.override.ini';
-			$strings  = JLanguageHelper::parseIniFile($fileName);
+			$strings  = LanguageHelper::parseIniFile($fileName);
 
 			if(isset($strings[$text])) {
 				$translation = $strings[$text];
@@ -1072,9 +1072,14 @@ class EmundusModelFormbuilder extends JModelList
 		}
 	}
 
-	function createGroup($label, $fid, $repeat_group_show_first = 1, $mode = 'form')
+	function createGroup($label, $fid, $repeat_group_show_first = 1, $mode = 'form', $user = null)
 	{
 		$group = [];
+
+		if(empty($user))
+		{
+			$user = Factory::getApplication()->getIdentity();
+		}
 
 		if (!empty($fid)) {
 
@@ -1087,7 +1092,7 @@ class EmundusModelFormbuilder extends JModelList
 			$path_to_files  = array();
 			$Content_Folder = array();
 
-			$languages = JLanguageHelper::getLanguages();
+			$languages = LanguageHelper::getLanguages();
 			foreach ($languages as $language) {
 				$path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
 
@@ -1126,10 +1131,10 @@ class EmundusModelFormbuilder extends JModelList
 					'GROUP_' . $fid,
 					1,
 					date('Y-m-d H:i:s'),
-					JFactory::getUser()->id,
-					JFactory::getUser()->username,
+					$user->id,
+					$user->username,
 					date('Y-m-d H:i:s'),
-					JFactory::getUser()->id,
+					$user->id,
 					0,
 					date('Y-m-d H:i:s'),
 					0,
@@ -1147,7 +1152,7 @@ class EmundusModelFormbuilder extends JModelList
 
 				if (!empty($groupid)) {
 					$tag = 'GROUP_' . $fid . '_' . $groupid;
-					$this->translate($tag, $label, 'fabrik_groups', $groupid, 'label');
+					$this->translate($tag, $label, 'fabrik_groups', $groupid, 'label', $user->id);
 
 					$query->clear()
 						->update($this->db->quoteName('#__fabrik_groups'))
@@ -1426,10 +1431,13 @@ class EmundusModelFormbuilder extends JModelList
 		return $created_elements;
 	}
 
-	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 1, $published = 1, $parent_id = 0, $width = 20)
+	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 1, $published = 1, $parent_id = 0, $width = 20, $user = null)
 	{
-
 		$query = $this->db->getQuery(true);
+
+		if(empty($user)) {
+			$user = Factory::getApplication()->getIdentity();
+		}
 
 		try {
 			//Create element in fabrik_elements
@@ -1442,10 +1450,10 @@ class EmundusModelFormbuilder extends JModelList
 				'label'                => $label,
 				'checked_out_time'     => date('Y-m-d H:i:s'),
 				'created'              => date('Y-m-d H:i:s'),
-				'created_by'           => JFactory::getUser()->id,
-				'created_by_alias'     => JFactory::getUser()->username,
+				'created_by'           => $user->id,
+				'created_by_alias'     => $user->username,
 				'modified'             => date('Y-m-d H:i:s'),
-				'modified_by'          => JFactory::getUser()->id,
+				'modified_by'          => $user->id,
 				'width'                => $width,
 				'default'              => $default,
 				'hidden'               => $hidden,
@@ -1615,7 +1623,7 @@ class EmundusModelFormbuilder extends JModelList
 						else {
 							$label = $this->h_fabrik->initLabel($plugin);
 						}
-						$this->translate('ELEMENT_' . $gid . '_' . $elementId, $label, 'fabrik_elements', $elementId, 'label');
+						$this->translate('ELEMENT_' . $gid . '_' . $elementId, $label, 'fabrik_elements', $elementId, 'label', $user->id);
 						if ($evaluation) {
 							$name = 'criteria_' . $gid . '_' . $elementId;
 						}
@@ -1640,11 +1648,19 @@ class EmundusModelFormbuilder extends JModelList
 							$sub_labels = [];
 
 							$sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
-							$sub_values[] = 0;
-							$labels       = array(
-								'fr' => 'Option 1',
-								'en' => 'Option 1'
-							);
+							if ($plugin === 'dropdown') {
+								$sub_values[] = 0;
+								$labels       = array(
+									'fr' => 'Veuillez sélectionner',
+									'en' => 'Please select'
+								);
+							} else {
+								$sub_values[] = 1;
+								$labels       = array(
+									'fr' => 'Option 1',
+									'en' => 'Option 1'
+								);
+							}
 							$this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'), $labels, 'fabrik_elements', $elementId, 'sub_labels');
 
 							$params['sub_options'] = array(

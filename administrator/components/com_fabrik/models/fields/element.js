@@ -57,15 +57,17 @@ var elementElement = new Class({
 		if (typeOf(this.el) === 'null') {
 			fconsole('element didnt find me, ', s);
 		}
-		var add = this.el.getParent().getElement('button');
-		if (typeOf(add) !== 'null') {
-			add.addEvent('mousedown', function (e) {
-				e.stop();
-				this.addPlaceHolder();
-			}.bind(this));
-			add.addEvent('click', function (e) {
-				e.stop();
-			});
+		if ('isTemplate' in this.options === false || this.options.isTemplate === false) {
+			var add = this.el.getParent().getElement('button');
+			if (typeOf(add) !== 'null') {
+				add.addEvent('mousedown', function (e) {
+					e.stop();
+					this.addPlaceHolder();
+				}.bind(this));
+				add.addEvent('click', function (e) {
+					e.stop();
+				});
+			}
 		}
 		FabrikAdmin.model.fields.fabriktable[this.options.table].registerElement(this);
 	},

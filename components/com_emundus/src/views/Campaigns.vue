@@ -1,11 +1,13 @@
 <template>
 	<div id="campaigns-list">
-		<list :default-lists="configString" :default-type="'campaigns'"></list>
+		<list :default-lists="configString" :default-type="'campaigns'" :key="renderingKey"></list>
 	</div>
 </template>
 
 <script>
 import list from '@/views/list.vue';
+import { useCampaignStore } from '@/stores/campaign.js';
+import campaignService from '@/services/campaign.js';
 
 export default {
 	name: 'Campaigns',
@@ -14,6 +16,9 @@ export default {
 	},
 	data() {
 		return {
+			campaignActivated: null,
+			renderingKey: 1,
+
 			config: {
 				campaigns: {
 					title: 'COM_EMUNDUS_ONBOARD_CAMPAIGNS',
@@ -171,7 +176,32 @@ export default {
 					],
 				},
 			},
+
+			importAction: {
+				action: 'importfiles',
+				label: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_FILES',
+				type: 'modal',
+				component: 'Import',
+				name: 'import',
+				multiple: false,
+			},
 		};
+	},
+	created() {
+		if (useCampaignStore().getActivated === null) {
+			campaignService.isImportActivated().then((response) => {
+				this.campaignActivated = response.data;
+				if (this.campaignActivated) {
+					useCampaignStore().updateActivated(true);
+					this.config.campaigns.tabs[0].actions.push(this.importAction);
+					this.renderingKey++;
+				} else {
+					useCampaignStore().updateActivated(false);
+				}
+			});
+		} else {
+			this.campaignActivated = useCampaignStore().getActivated;
+		}
 	},
 	computed: {
 		configString() {
