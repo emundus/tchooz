@@ -1640,11 +1640,19 @@ class EmundusModelFormbuilder extends JModelList
 							$sub_labels = [];
 
 							$sub_labels[] = strtoupper('sublabel_' . $gid . '_' . $elementId . '_0');
-							$sub_values[] = 0;
-							$labels       = array(
-								'fr' => 'Option 1',
-								'en' => 'Option 1'
-							);
+							if ($plugin === 'dropdown') {
+								$sub_values[] = 0;
+								$labels       = array(
+									'fr' => 'Veuillez sélectionner',
+									'en' => 'Please select',
+								);
+							} else {
+								$sub_values[] = 1;
+								$labels       = array(
+									'fr' => 'Option 1',
+									'en' => 'Option 1',
+								);
+							}
 							$this->translate(strtoupper('sublabel_' . $gid . '_' . $elementId . '_0'), $labels, 'fabrik_elements', $elementId, 'sub_labels');
 
 							$params['sub_options'] = array(
