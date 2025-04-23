@@ -530,6 +530,8 @@ class JFalangDatabase extends JOverrideDatabase {
      * Note that this creates a translation which is identical to the original - when we update
      * the original in the default language we then keep the translation (although it will appread out of date!).
      *
+     * @update 5.18 fix bug introduce in 5.16 with new FalangContentTable
+     *
      * @param	string	table name
      * @param	object	instance with information to store
      * @param	string	primary key name of table
@@ -574,6 +576,7 @@ class JFalangDatabase extends JOverrideDatabase {
             $contentElement = $falangManager->getContentElement( $tableName );
             if( isset( $contentElement ) && $contentElement->getFrontEdit() == 1 ) {
                 include_once(JPATH_ADMINISTRATOR."/components/com_falang/models/ContentObject.php");
+                require_once(FALANG_ADMINPATH.'/src/Table/FalangContentTable.php');
                 $actContentObject = new ContentObject( $falangManager->getLanguageID($current_lang), $contentElement );
 
                 $objectLanguague = isset($object->language)? $object->language:null;

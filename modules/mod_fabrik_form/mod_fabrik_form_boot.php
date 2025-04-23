@@ -57,14 +57,19 @@ if (empty($formId))
 }
 
 $readonly = $params->get('readonly', '0');
+$templateForm = $params->get('template', 'default'); 
+$templateDetails = $params->get('template_details', 'default'); // Template ReadOnly YES
+
 if ($readonly == 1) {
-	require_once COM_FABRIK_FRONTEND . '/controllers/details.php';
-	$controller = new FabrikControllerDetails;
-	$input->set('view', 'details');
+    $input->set('layout', $templateDetails);
+    require_once COM_FABRIK_FRONTEND . '/controllers/details.php';
+    $controller = new FabrikControllerDetails;
+    $input->set('view', 'details');
 } else {
-	require_once COM_FABRIK_FRONTEND . '/controllers/form.php';
-	$controller = new FabrikControllerForm;
-	$input->set('view', 'form');
+    $input->set('layout', $templateForm);
+    require_once COM_FABRIK_FRONTEND . '/controllers/form.php';
+    $controller = new FabrikControllerForm;
+    $input->set('view', 'form');
 }
 
 $layout = $params->get('template', 'default');
@@ -86,7 +91,7 @@ $moduleAjax = $params->get('formmodule_useajax', true);
 /* $$$rob for table views in category blog layouts when no layout specified in {} the blog layout
  * was being used to render the table - which was not found which gave a 500 error
 */
-$input->set('layout', $layout);
+//$input->set('layout', $layout);
 
 // Display the view
 $controller->isMambot = true;

@@ -64,9 +64,10 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                 $query->where($db->quoteName('message') . ' IN ('.$status.') AND '.$db->quoteName('timestamp').' BETWEEN '.$db->quote($lastrun).' AND '.$db->quote($date).' ORDER BY timestamp DESC');
         */
         // Suite à la demande de pouvoir télécharger tous les dossiers complets, on ne cherche plus à identifier les dossiers dernièrement modifiés, seulement ceux non-archivés parmis une liste de statuts
-        $query->select(array('fnum, applicant_id'));
-        $query->from($db->quoteName('#__emundus_campaign_candidature'));
-        $query->where($db->quoteName('published') . '=1 AND '.$db->quoteName('status') . ' IN ('.$status.') ORDER BY date_submitted DESC');
+        $query->select(array('fnum'));
+        $query->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'));
+        $query->leftJoin('#__users u ON ecc.applicant_id = u.id');
+        $query->where($db->quoteName('published') . '=1 AND '.$db->quoteName('status') . ' IN ('.$status.') AND u.block = 0 ORDER BY date_submitted DESC');
 
         $db->setQuery($query);
 
@@ -81,15 +82,15 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
         if(!empty($resultlogs)){
             $query = $db->getQuery(true);
 
-
             foreach ($resultlogs as $fnums) {
-
+                $fnumInfos = $m_files->getFnumInfos($fnums['fnum']);
                 $request = $db->getQuery(true);
                 $request->select(array('id_ehesp','u.username'))
-                    ->from('#__emundus_users','eu')
+                    ->from('#__emundus_users eu')
                     ->leftJoin('#__users u ON eu.user_id = u.id')
                     ->leftJoin('#__emundus_campaign_candidature ecc ON eu.user_id = ecc.applicant_id')
                     ->where('ecc.fnum LIKE '.$db->quote($fnums['fnum']));
+
                 $db->setQuery($request);
 
                 $identifiant_ehesp = $db->loadAssoc();
@@ -107,7 +108,7 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
                         $query_update = $db->getQuery(true);
                         $query_update->update('#__emundus_users')
                             ->set('id_ehesp = '.$db->quote($identifiant_ehesp['username']))
-                            ->where('user_id = '.$db->quote($fnums['applicant_id']));
+                            ->where('user_id = '.$db->quote($fnumInfos['applicant_id']));
                         $db->setQuery($query_update);
                         $db->execute();
                     }
@@ -140,7 +141,9 @@ class PlgFabrik_Cronemundusehespsiscole extends PlgFabrik_Cron
 
             foreach($results as $key => $result){
                 foreach ($result as $res){
-                    $post[] = array_values($res);
+                    if(!empty($res)){
+                        $post[] = array_values($res);
+                    }
                 }
             }
 

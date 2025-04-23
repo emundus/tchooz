@@ -479,7 +479,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 						->where($this->db->quoteName('eses.id') . ' = ' . $slot->id);
 					$this->_db->setQuery($query);
 					$slot->booked_count = $this->_db->loadResult();
-
 				}
 
 				$event->slots = $slots;
@@ -694,7 +693,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 					'group_concat(DISTINCT essu.user) as users',
 					'group_concat(DISTINCT concat(eu.lastname," ",eu.firstname)) as people',
 					'sum(esa.capacity) as availabilities_count',
-					'count(DISTINCT er.id) as booked_count'
 				];
 
 				$query->select($columns)
@@ -704,7 +702,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 					->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.id') . ' = ' . $this->db->quoteName('essu.user'))
 					->leftJoin($this->db->quoteName('data_location_rooms', 'dlr') . ' ON ' . $this->db->quoteName('dlr.id') . ' = ' . $this->db->quoteName('eses.room'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.slot') . ' = ' . $this->db->quoteName('eses.id'))
-					->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.slot') . ' = ' . $this->db->quoteName('eses.id'))
 					->where($this->db->quoteName('eses.id') . ' = ' . $slot_id);
 				$query->group('eses.id');
 				$this->_db->setQuery($query);
@@ -713,6 +710,14 @@ class EmundusModelEvents extends BaseDatabaseModel
 				// Convert UTC dates to platform timezone ($timezone)
 				$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
 				$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+
+				$query->clear()
+					->select('count(DISTINCT er.id)')
+					->from($this->db->quoteName('#__emundus_registrants', 'er'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_event_slots', 'eses') . ' ON ' . $this->db->quoteName('eses.id') . ' = ' . $this->db->quoteName('er.slot'))
+					->where($this->db->quoteName('eses.id') . ' = ' . $slot->id);
+				$this->_db->setQuery($query);
+				$slot->booked_count = $this->_db->loadResult();
 			}
 			catch (Exception $e)
 			{
@@ -1774,7 +1779,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 						{
 							$query->clear()
 								->delete($this->db->quoteName('#__emundus_users_assoc'))
-								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')');
+								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')')
+								->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($candidature->fnum));
 							$this->db->setQuery($query);
 							$this->db->execute();
 						}
@@ -2372,6 +2378,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->select('esa.start_date as start, esa.end_date as end')
 				->select('ese.link as link_event, ese.name as event_name, ese.slot_can_book_until_days as can_book_until_days, ese.slot_can_book_until_date as can_book_until_date, ese.slot_can_cancel as can_cancel, ese.slot_can_cancel_until_days as can_cancel_until_days, ese.slot_can_cancel_until_date as can_cancel_until_date')
 				->select('del.name as name_location')
+				->select('del.address as address_location')
+				->select('del.description as description_location')
 				->select('dlr.name as room_name')
 				->from($this->db->quoteName('#__emundus_registrants', 'er'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_availabilities', 'esa') . ' ON ' . $this->db->quoteName('esa.id') . ' = ' . $this->db->quoteName('er.availability'))
@@ -3097,7 +3105,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 						}
 						catch (Exception $e)
 						{
-							Log::add('Error while getting user in exportBookingsPDF method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+							Log::add('Error while getting user in exportBookingsExcel method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
 
 							return false;
 						}
@@ -3128,6 +3136,41 @@ class EmundusModelEvents extends BaseDatabaseModel
 					}
 					if (in_array('COM_EMUNDUS_REGISTRANTS_ROOM', $checkboxesValuesFromView)) {
 						$row[] =  $room;
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_ASSOC_USER', $checkboxesValuesFromView)) {
+						try
+						{
+							$db    = $this->db;
+							$query = $db->getQuery(true)
+								->select('DISTINCT COALESCE(esru.user, essu.user) as assoc_user_id')
+								->from($this->db->quoteName('#__emundus_registrants', 'er'))
+								->leftJoin($this->db->quoteName('#__emundus_setup_slot_users', 'essu') . ' ON ' . $this->db->quoteName('essu.slot') . ' = ' . $this->db->quoteName('er.slot'))
+								->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'))
+								->where($this->db->quoteName('er.id') . ' = ' . $reservation->id);
+							$db->setQuery($query);
+							$jurorsIds = $db->loadColumn();
+
+							if (!empty($jurorsIds)) {
+
+								$query->clear()
+									->select('GROUP_CONCAT(CONCAT(eu.lastname, " ", eu.firstname)) as assoc_user_name')
+									->from($this->db->quoteName('#__emundus_users', 'eu'))
+									->where('eu.user_id IN (' . implode(',', array_map('intval', $jurorsIds)) . ')');
+
+								$db->setQuery($query);
+								$jurors = $db->loadColumn();
+							} else {
+								$jurors = null;
+							}
+						}
+						catch (Exception $e)
+						{
+							Log::add('Error while getting assocs users in exportBookingsExcel method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+
+							return false;
+						}
+
+						$row[] =  implode(', ', $jurors);
 					}
 
 					if(!empty($selectColumns) && $user)
@@ -3342,6 +3385,41 @@ class EmundusModelEvents extends BaseDatabaseModel
 					}
 					if (in_array('COM_EMUNDUS_REGISTRANTS_ROOM', $checkboxesValuesFromView)) {
 						$html .= '<td>' . $room . '</td>';
+					}
+					if (in_array('COM_EMUNDUS_REGISTRANTS_ASSOC_USER', $checkboxesValuesFromView)) {
+						try
+						{
+							$db    = $this->db;
+							$query = $db->getQuery(true)
+								->select('DISTINCT COALESCE(esru.user, essu.user) as assoc_user_id')
+								->from($this->db->quoteName('#__emundus_registrants', 'er'))
+								->leftJoin($this->db->quoteName('#__emundus_setup_slot_users', 'essu') . ' ON ' . $this->db->quoteName('essu.slot') . ' = ' . $this->db->quoteName('er.slot'))
+								->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'))
+								->where($this->db->quoteName('er.id') . ' = ' . $reservation->id);
+							$db->setQuery($query);
+							$jurorsIds = $db->loadColumn();
+
+							if (!empty($jurorsIds)) {
+
+								$query->clear()
+									->select('GROUP_CONCAT(CONCAT(eu.lastname, " ", eu.firstname)) as assoc_user_name')
+									->from($this->db->quoteName('#__emundus_users', 'eu'))
+									->where('eu.user_id IN (' . implode(',', array_map('intval', $jurorsIds)) . ')');
+
+								$db->setQuery($query);
+								$jurors = $db->loadColumn();
+							} else {
+								$jurors = null;
+							}
+						}
+						catch (Exception $e)
+						{
+							Log::add('Error while getting assocs users in exportBookingsPDF method : ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+
+							return false;
+						}
+
+						$html .= '<td>' . implode(', ', $jurors) . '</td>';
 					}
 
 					if(!empty($selectColumns) && $user)

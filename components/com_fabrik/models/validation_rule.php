@@ -153,7 +153,7 @@ class PlgFabrik_Validationrule extends FabrikPlugin
 		$condition = trim($w->parseMessageForPlaceHolder($condition, $post));
 		FabrikWorker::clearEval();
 		$res = Php::Eval(['code' => $condition, 'vars'=>['formModel'=>$formModel, 'data'=>$data]]);
-		FabrikWorker::logEval($res, 'Caught exception on eval in validation condition : %s');
+		FabrikWorker::logEval($res, 'Caught exception in elementID ' . $this->elementModel->element->id . ' on eval in ' . $this->pluginName . ' validation condition : %s');
 
 		if (is_null($res))
 		{

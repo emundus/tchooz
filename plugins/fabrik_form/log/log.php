@@ -612,7 +612,7 @@ class PlgFabrik_FormLog extends PlgFabrik_Form
 					}
 					else
 					{
-						$origValue = $this->origData[$fullKey];
+						$origValue = array_key_exists($fullKey, $this->origData) ? $this->origData[$fullKey] : '';
 						$changeTypeId = 2;
 					}
 

@@ -957,6 +957,7 @@ class JFContentParams extends CMSObject
      * @update 5.10 display original value for custom fields (text, radio, checkbox)
      * @update 5.13 change the way the tab are open not on a list to open but on a list to not open (allow extra plugin to work directly)
      *              add display original value for list and list multiple
+     * @update 5.18 add editor custom fields copy/translate (message for original)
      * */
     function render($type)
     {
@@ -1051,7 +1052,7 @@ class JFContentParams extends CMSObject
         $ignoreFieldsets = ['jmetadata', 'item_associations','workflow'];
         if (isset($customfieldSets))
         {
-            $supported_original = array('Text','Checkboxes','Radio','Textarea','List');
+            $supported_original = array('Text','Checkboxes','Radio','Textarea','List','Editor');
             $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
             $languages	= LanguageHelper::getLanguages('lang_code');
             $language = $languages[$default_lang];
@@ -1099,13 +1100,20 @@ class JFContentParams extends CMSObject
                                             <?php echo HTMLHelper::_('image', 'mod_languages/' .$language->image  . '.gif',$language->title_native, array('title'=>$language->title_native,'style'=>'opacity:0.5;width:18px;height:12px;') , true); ?>
                                         </div>
                                         <?php
-                                        if ($field->type == 'Text' || $field->type == 'Textarea') { ?>
+                                        if ($field->type == 'Text' || $field->type == 'Textarea' || $field->type == 'Editor') { ?>
                                             <div class="falang-cf" style = "" >
                                                 <a style="margin-right: 5px;" class="button btn-translate" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo $originalValue;?>','translate')" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE','Translate'); ?>"><i class="fas fa-globe"></i></a>
                                                 <a class="button btn-copy" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo $originalValue;?>','copy')" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
                                             </div>
                                             <?php } ?>
-                                        <div class="" style="font-style: italic;color: #ccc;"><?php echo '&nbsp;'.$originalValue; ?></div>
+                                        <?php
+                                        //don't display original value for Editor type
+                                        if ($field->type == 'Editor') { ?>
+                                            <div class="" style="font-style: italic;color: #ccc;"><?php echo Text::_('COM_FALANG_CUSTOM_FIELDS_EDITOR_MESSAGE'); ?></div>
+                                        <?php } else { ?>
+                                            <div class="" style="font-style: italic;color: #ccc;"><?php echo '&nbsp;'.$originalValue; ?></div>
+                                        <?php }  ?>
+
                                     </div>
                                 </div>
                             <?php } ?>

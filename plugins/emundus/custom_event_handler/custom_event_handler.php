@@ -772,7 +772,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											break;
 										case '=':
 										case '!=':
-											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+											$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
 											break;
 										default:
 											$conditions_status[] = false;

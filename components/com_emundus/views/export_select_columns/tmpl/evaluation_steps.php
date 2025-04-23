@@ -90,8 +90,8 @@ if (!empty($this->elements)) {
 		}
 
 		$html_steps .= '<div class="tw-flex-row">
-				<input name="ud[]" type="checkbox" id="emundus_elm_' . $element->id . '" class="emundusitem_' .  $element->group_id . ' tw-cursor-pointer" value="' .  $element->id . '" data-step-id="' . $element->step_id . '">
-				<label for="emundus_elm_' .  $element->id . '" class="tw-cursor-pointer">' . Text::_($element->element_label) . '</label>
+				<input name="ud[]" type="checkbox" id="emundus_elm_step_' . $element->step_id .'_' . $element->id . '" class="emundusitem_' .  $element->group_id . ' tw-cursor-pointer" value="' .  $element->id . '" data-step-id="' . $element->step_id . '">
+				<label for="emundus_elm_step_' . $element->step_id .'_' . $element->id . '" class="tw-cursor-pointer">' . Text::_($element->element_label) . '</label>
 			</div>';
 	}
 

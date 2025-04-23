@@ -8,22 +8,26 @@
  */
 
 var onFabrikReadyBody = false;
-var blockDiv = '<div id="blockDiv" style="position:absolute; left:0; right:0; height:100%; width:100%; z-index:9999999;"></div>';
+var blockDiv        = '<div id="blockDiv" style=" z-index:9999999;"></div>';
+var blockDivTabs    = '<div id="blockDivTabs" style=" z-index:9999999;"></div>';
+var actionsSelector = '.fabrikActions';
+var tabsSelector    = '.fabrikForm ul.nav.nav-tabs';
 
 function onFabrikReadyBlock(e) {
-    if (blockDiv.length == 0) return false;
+    if (blockDiv.length == 0 && blockDivTabs.length == 0) return false;
     e.stopPropagation();
     e.preventDefault();
     alert(Joomla.JText._("COM_FABRIK_STILL_LOADING"));
     blockDiv = '';
+	blockDivTabs = '';
     return false;
 }
 
 function onFabrikReady() {
     if (window.jQuery) {
         if (typeof Fabrik === "undefined") {
-            if (onFabrikReadyBody === false && jQuery('.fabrikActions').length && jQuery("#blockDiv").length === 0) {
-                jQuery('.fabrikActions').before(blockDiv);
+			if (onFabrikReadyBody === false && jQuery(actionsSelector).length && jQuery("#blockDiv").length === 0) {
+                jQuery(actionsSelector).wrap(blockDiv);
                 
                 jQuery("#blockDiv").click(function(e) {
                     return onFabrikReadyBlock(e);
@@ -31,10 +35,21 @@ function onFabrikReady() {
                 jQuery("#blockDiv").mousedown(function(e) {
                     return onFabrikReadyBlock(e);
                 });
+            }
+            if (onFabrikReadyBody === false && jQuery(tabsSelector).length && jQuery("#blockDivTabs").length === 0) {
+                jQuery(tabsSelector).wrap(blockDivTabs);
+                
+                jQuery("#blockDivTabs").click(function(e) {
+                    return onFabrikReadyBlock(e);
+                });
+                jQuery("#blockDivTabs").mousedown(function(e) {
+                    return onFabrikReadyBlock(e);
+                });
             }    
             setTimeout(onFabrikReady, 50);
        } else {
-            jQuery("#blockDiv").remove();
+			jQuery(actionsSelector).unwrap();
+			jQuery(tabsSelector).unwrap();
         }
     }
 }

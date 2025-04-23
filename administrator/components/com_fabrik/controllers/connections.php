@@ -99,6 +99,8 @@ class FabrikAdminControllerConnections extends FabControllerAdmin
 			$this->setMessage(Text::_('COM_FABRIK_CONNECTION_CANT_UNSET_DEFAULT'));
 		}
 
+		$this->setRedirect(Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
+
 		if (empty($cid))
 		{
 //			JError::raiseWarning(500, Text::_($this->text_prefix . '_NO_ITEM_SELECTED'));
@@ -115,18 +117,14 @@ class FabrikAdminControllerConnections extends FabControllerAdmin
 				$model = $this->getModel();
 
 				// Publish the items.
-				if (!$model->setDefault($cid, $value))
-				{
-//					JError::raiseWarning(500, $model->getError());
-					\Joomla\CMS\Factory::getApplication()->enqueueMessage($model->getError(), 'error');
-				}
-				else
-				{
+				try {
+					$model->setDefault($cid, $value);
 					$this->setMessage(Text::_('COM_FABRIK_CONNECTION_SET_DEFAULT'));
+				} catch (\Exception $e) {
+					\Joomla\CMS\Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 				}
 			}
 		}
 
-		$this->setRedirect(Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
 	}
 }

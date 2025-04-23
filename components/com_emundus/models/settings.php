@@ -514,13 +514,24 @@ class EmundusModelSettings extends ListModel
 		try
 		{
 			$query->clear()
-				->update('#__emundus_setup_action_tag')
-				->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label))
-				->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
+				->select('id')
+				->from('#__emundus_setup_action_tag')
+				->where($this->db->quoteName('label') . ' = ' . $this->db->quote($label));
 			$this->db->setQuery($query);
+			$result = $this->db->loadResult();
 
-			return $this->db->execute();
+			if(empty($result))
+			{
+				$query->clear()
+					->update('#__emundus_setup_action_tag')
+					->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label))
+					->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
+				$this->db->setQuery($query);
+
+				return $this->db->execute();
+			}
+			return false;
 		}
 		catch (Exception $e)
 		{
@@ -2088,6 +2099,12 @@ class EmundusModelSettings extends ListModel
 				case 'emundus':
 					if (array_key_exists($param, $params['emundus']))
 					{
+						if ($param === 'limit_files_status') {
+							$value = array_map(function ($item) {
+								return (int)$item->step;
+							}, $value);
+						}
+
 						$eMConfig = ComponentHelper::getParams('com_emundus');
 						$eMConfig->set($param, $value);
 						$componentid = ComponentHelper::getComponent('com_emundus')->id;
@@ -2139,8 +2156,9 @@ class EmundusModelSettings extends ListModel
 
 		if ($updated)
 		{
-			$this->userID   = Factory::getUser()->id;
-			$this->userName = Factory::getUser()->name;
+			$user = Factory::getApplication()->getIdentity();
+			$this->userID   = $user->id;
+			$this->userName = $user->name;
 			if ($value !== "")
 			{
 				if ($param == 'smtppass' || $param == 'custom_email_smtppass')

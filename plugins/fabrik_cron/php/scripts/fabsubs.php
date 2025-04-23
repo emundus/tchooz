@@ -166,7 +166,7 @@ ORDER BY s.lastpay_date
 	$rows = $db->loadObjectList();
 //var_dump($db->getQuery(), $rows);exit;
 	$now = Factory::getDate()->toSql();
-	$sub = FabTable::getInstance('Subscription', 'FabrikTable');
+	$sub = \FabTable::getInstance('Subscription', 'FabrikTable');
 	foreach ($rows as $row) {
 		$sub->load($row->subid);
 		$sub->status = 'Expired';

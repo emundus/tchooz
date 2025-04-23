@@ -450,7 +450,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 				$joinData['table_join'] = preg_replace('/(.*)_([0-9]*)_repeat/', $matches[1] . '_' . $new . '_repeat', $joinData['table_join']);
 			}
 
-			$joinTable = FabTable::getInstance('Join', 'FabrikTable');
+			$joinTable = \FabTable::getInstance('Join', 'FabrikTable');
 			$joinTable->save($joinData);
 			$this->joinIds[] = $joinTable->get('id');
 		}
@@ -464,7 +464,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 			$join->setAttribute('element_id', $newId);
 			$joinData           = FabrikContentTypHelper::domNodeAttributesToArray($join);
 			$joinData['params'] = json_encode(FabrikContentTypHelper::nodeParams($join));
-			$joinTable          = FabTable::getInstance('Join', 'FabrikTable');
+			$joinTable          = \FabTable::getInstance('Join', 'FabrikTable');
 			$joinTable->save($joinData);
 			$this->joinIds[] = $joinTable->get('id');
 		}
@@ -499,7 +499,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 
 		foreach ($this->joinIds as $joinId)
 		{
-			$joinTable = FabTable::getInstance('Join', 'FabrikTable');
+			$joinTable = \FabTable::getInstance('Join', 'FabrikTable');
 			$joinTable->load($joinId);
 
 			if ((int) $joinTable->get('element_id') === 0)
@@ -529,7 +529,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 		foreach ($this->elementIds as $elementId)
 		{
 			/** @var FabrikTableElement $element */
-			$element = FabTable::getInstance('Element', 'FabrikTable');
+			$element = \FabTable::getInstance('Element', 'FabrikTable');
 			$element->load($elementId);
 			$elementParams = new Registry($element->params);
 
@@ -600,7 +600,7 @@ class FabrikAdminModelContentTypeImport extends FabModelAdmin
 			$groupData           = FabrikContentTypHelper::domNodeAttributesToArray($group, $groupData);
 			$groupData['params'] = FabrikContentTypHelper::nodeParams($group);
 			$groupModel          = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Group', 'FabrikFEModel');
-			$groupTable          = FabTable::getInstance('Group', 'FabrikTable');
+			$groupTable          = \FabTable::getInstance('Group', 'FabrikTable');
 			$groupTable->bind($groupData);
 			$groupModel->setGroup($groupTable);
 

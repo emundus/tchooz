@@ -152,6 +152,7 @@ class EmundusModelEvaluation extends JModelList
 					'jecc' => 'jos_emundus_campaign_candidature',
 					'ss'   => 'jos_emundus_setup_status',
 					'esc'  => 'jos_emundus_setup_campaigns',
+					'escm'  => 'jos_emundus_setup_campaigns_more',
 					'sp'   => 'jos_emundus_setup_programmes',
 					'u'    => 'jos_users',
 					'eu'   => 'jos_emundus_users',
@@ -1316,6 +1317,7 @@ class EmundusModelEvaluation extends JModelList
 			'jecc' => 'jos_emundus_campaign_candidature',
 			'ss'   => 'jos_emundus_setup_status',
 			'esc'  => 'jos_emundus_setup_campaigns',
+			'escm'  => 'jos_emundus_setup_campaigns_more',
 			'sp'   => 'jos_emundus_setup_programmes',
 			'u'    => 'jos_users',
 			'eu'   => 'jos_emundus_users',
@@ -1416,6 +1418,7 @@ class EmundusModelEvaluation extends JModelList
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
 					LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+					LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
 					LEFT JOIN #__users as u on u.id = jecc.applicant_id

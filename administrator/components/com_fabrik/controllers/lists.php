@@ -67,6 +67,8 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 		$task = $this->getTask();
 		$value = FArrayHelper::getValue($data, $task, 0, 'int');
 
+		$this->setRedirect(Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
+
 		if (empty($cid))
 		{
 			$this->setMessage(Text::_($this->text_prefix . '_NO_ITEM_SELECTED'), 'error');
@@ -80,12 +82,8 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 
 			// Publish the items.
 
-			if (!$model->publish($formIds, $value))
-			{
-				$this->setMessage($model->getError(), 'error');
-			}
-			else
-			{
+			try {
+				$model->publish($formIds, $value);
 				// Publish the groups
 				$groupModel = $this->getModel('Group');
 
@@ -114,10 +112,11 @@ class FabrikAdminControllerLists extends FabControllerAdmin
 				}
 				// Finally publish the list
 				parent::publish();
+			} catch (\Exception $e) {
+				$this->setMessage($e->getMessage());
 			}
 		}
 
-		$this->setRedirect(Route::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));
 	}
 
 	/**

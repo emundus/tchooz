@@ -97,7 +97,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 		$pluginManager = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('Pluginmanager', 'FabrikFEModel');
 		$listModel = Factory::getApplication()->bootComponent('com_fabrik')->getMVCFactory()->createModel('List', 'FabrikFEModel');
 		$c = 0;
-		$this->log = FabTable::getInstance('Log', 'FabrikTable');
+		$this->log = \FabTable::getInstance('Log', 'FabrikTable');
 
 		register_shutdown_function(array($this, 'shutdownHandler'));
 
@@ -110,7 +110,7 @@ class FabrikAdminControllerCrons extends FabControllerAdmin
 			$this->log->referring_url = '';
 			$this->log->message_type = 'plg.cron.' . $row->plugin;
 			$plugin = $pluginManager->getPlugIn($row->plugin, 'cron');
-			$table = FabTable::getInstance('cron', 'FabrikTable');
+			$table = \FabTable::getInstance('cron', 'FabrikTable');
 			$table->load($row->id);
 			$plugin->setRow($table);
 			$pluginParams = $plugin->getParams();

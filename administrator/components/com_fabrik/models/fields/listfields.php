@@ -361,6 +361,19 @@ class JFormFieldListfields extends ListField
 
 		return $formModel->getElementOptions($useStep, $valField, $onlyListFields, $showRaw, $pluginFilters, $labelMethod, $noJoins);
 	}
+	private function getBasePath($path, $delim) {
+		$result = "";
+		$pattern = '/^' . preg_quote($delim). '(?:\d+|X)$/';
+		$pathParts = explode("__", $path);
+		foreach ($pathParts as $pathPart) {
+			if (preg_match($pattern, $pathPart)) {
+				$result .= ($result == "" ? : "__"). $pathPart;
+				break;
+			}
+			 $result .= ($result === "" ? "" : "__") . $pathPart;
+		}
+		return $result;
+	}
 
 	/**
 	 * Get JS
@@ -381,12 +394,26 @@ class JFormFieldListfields extends ListField
 		$repeat            = FabrikAdminElementHelper::getRepeat($this) || $repeat;
 		$c                 = (int) FabrikAdminElementHelper::getRepeatCounter($this);
 		$mode              = $this->getAttribute('mode');
-		$connectionDd      = $repeat ? $connection . '-' . $c : $connection;
 		$highlightPk       = FabrikWorker::toBoolean($this->getAttribute('highlightpk', false), false);
 		$tableDd           = $this->getAttribute('table');
 		$opts              = new stdClass;
-		$opts->table       = ($repeat) ? 'jform_' . $tableDd . '-' . $c : 'jform_' . $tableDd;
-		$opts->conn        = 'jform_' . $connectionDd;
+		/* Check if we are part of a subform, if so we need to insert the subform id parts */
+		if (strpos($this->form->getName(), 'subform.') === 0) {
+			/* yes, we are in a subform, figure out the connection paths. */
+			/* make an array of the parts, dropping the jform part */
+			$startPath = str_replace('jform_', '', $this->id);
+			$pathParts = explode('__', $startPath);
+			if (preg_match('/\[(.*?)\](.*)/', $connection, $matches)) {
+                $startPath = self::getBasePath($startPath, $matches[1]);
+			}
+			$conn = $startPath . '_' . $connection;			
+			$opts->table = str_replace('jform_', '', $startPath) . '_table';
+			$opts->isTemplate = (strpos($this->id, 'datasourcesX') !== false);
+		} else {
+			$conn      = $repeat ? $connection . '-' . $c : $connection;
+			$opts->table       = ($repeat) ? 'jform_' . $tableDd . '-' . $c : 'jform_' . $tableDd;
+		}
+		$opts->conn        = 'jform_' . $conn;
 		$opts->value       = $this->value;
 		$opts->repeat      = $repeat;
 		$opts->showAll     = (int) $this->getAttribute('showall', '1');

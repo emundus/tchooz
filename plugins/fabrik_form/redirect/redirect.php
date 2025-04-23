@@ -88,9 +88,7 @@ class PlgFabrik_FormRedirect extends PlgFabrik_Form
 			$next_rowid = '&rowid=' . $navIds->next;
 			$itemId = FabrikWorker::itemId();
 
-			if ($this->app->
-
-isClient('administrator'))
+			if ($this->app->isClient('administrator'))
 			{
 				$url = 'index.php?option=com_' . $this->package . '&task=form.view&formid=' . $form->id;
 			}
@@ -429,8 +427,7 @@ isClient('administrator'))
 								$grouped = true;
 							}
 
-							if ($v != '')
-							{
+							if (!$element->dataConsideredEmpty($v,0)) {
 								$store['join'][] = $join;
 								$store['key'][] = FabrikString::safeColName($name);
 								$store['condition'][] = '=';

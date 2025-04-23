@@ -682,6 +682,49 @@ class EmundusModelEmails extends JModelList
 				$replacements[] = $fnumInfos['training'];
 				$patterns[]     = '/\[TRAINING_PROGRAMME\]/';
 				$replacements[] = $programme->label;
+
+				// Add booking tags if the booking is enabled
+				try
+				{
+					if (!class_exists('EmundusModelEvents')) {
+						require_once(JPATH_SITE . '/components/com_emundus/models/events.php');
+					}
+					$m_events = new EmundusModelEvents();
+					$registration = $m_events->getMyBookingsInformations($fnumInfos['applicant_id'],[],$fnumInfos['ccid']);
+
+					if(!empty($registration))
+					{
+						$registration = $registration[0];
+						if (!class_exists('EmundusHelperDate')) {
+							require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+						}
+						$start_date = \EmundusHelperDate::displayDate($registration->start, 'DATE_FORMAT_LC1');
+						$start_hour = \EmundusHelperDate::displayDate($registration->start, 'H:i');
+						$end_hour = \EmundusHelperDate::displayDate($registration->end, 'H:i');
+
+						$location_link = $registration->link_registrant;
+						if(empty($location_link)) {
+							if(strpos($location_link, 'http') === false && !empty($registration->address)) {
+								$location_link = 'https://www.google.com/maps?q='.urlencode($registration->address);
+							}
+						}
+						$booking_tags = [
+							'BOOKING_START_DATE'           => $start_date,
+							'BOOKING_START_HOUR'           => $start_hour,
+							'BOOKING_END_HOUR'             => $end_hour,
+							'BOOKING_LOCATION'             => $registration->name_location,
+							'BOOKING_LOCATION_LINK'        => $location_link,
+						];
+						foreach ($booking_tags as $tag => $value) {
+							$patterns[] = '/\['.$tag.'\]/';
+							$replacements[] = $value;
+						}
+					}
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error when try to set constants for bookin module',Log::ERROR,'com_emundus.email');
+				}
 			}
 		}
 
@@ -761,10 +804,8 @@ class EmundusModelEmails extends JModelList
 			if (strpos($value, 'php|') === false) {
 				$request = explode('|', $value);
 
-				if (count($request) > 1) {
-
+				if (count($request) === 3) {
 					try {
-
 						$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
 						$db->setQuery($query);
 						$result = $db->loadResult();
@@ -777,29 +818,32 @@ class EmundusModelEmails extends JModelList
 						$result = "";
 
 					}
-					if ($tag['tag'] == 'PHOTO') {
-						if (empty($result)) {
-							$result = 'media/com_emundus/images/icones/personal.png';
+
+					$replacements[] = $result;
+				}
+				elseif ($tag['tag'] == 'PHOTO') {
+					if (empty($result)) {
+						$result = 'media/com_emundus/images/icones/personal.png';
+					}
+					else {
+						if (file_exists(EMUNDUS_PATH_REL . $user_id . '/tn_' . $result)) {
+							$result = EMUNDUS_PATH_REL . $user_id . '/tn_' . $result;
 						}
 						else {
-							if (file_exists(EMUNDUS_PATH_REL . $user_id . '/tn_' . $result)) {
-								$result = EMUNDUS_PATH_REL . $user_id . '/tn_' . $result;
-							}
-							else {
-								$result = EMUNDUS_PATH_REL . $user_id . '/' . $result;
-							}
+							$result = EMUNDUS_PATH_REL . $user_id . '/' . $result;
+						}
 
-							if ($base64) {
-								$type   = pathinfo($result, PATHINFO_EXTENSION);
-								$data   = file_get_contents($result);
-								$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
-							}
+						if ($base64) {
+							$type   = pathinfo($result, PATHINFO_EXTENSION);
+							$data   = file_get_contents($result);
+							$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
 						}
 					}
+
 					$replacements[] = $result;
 				}
 				else {
-					$replacements[] = $request[0];
+					$replacements[] = $value;
 				}
 			}
 			elseif (!empty($fnum)) {
@@ -878,7 +922,7 @@ class EmundusModelEmails extends JModelList
 
 			if (strpos($value, 'php|') === false) {
 				$request = explode('|', $value);
-				if (count($request) > 1) {
+				if (count($request) === 3) {
 					$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
 					try
 					{
@@ -890,11 +934,9 @@ class EmundusModelEmails extends JModelList
 						Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 						$replacements[] = "";
 					}
-
-
 				}
 				else {
-					$replacements[] = $request[0];
+					$replacements[] = $value;
 				}
 			}
 			else {

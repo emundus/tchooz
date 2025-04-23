@@ -137,6 +137,18 @@ class PlgFabrik_ElementDigsig extends PlgFabrik_Element
 
 		return parent::renderListData($data, $thisRow, $opts);
 	}
+	
+	/**
+	 * Shows the data formatted for the CSV export view
+	 *
+	 * @param   string $data     Element data
+	 * @param   object &$thisRow All the data in the tables current row
+	 *
+	 * @return    string    Formatted value; digsig is stored as JSON which breaks the export logic, so make a non-JSON string for export for now
+	 */
+	public function renderListData_csv($data, &$thisRow) {
+		return 'digsig-csv-export: '.$data;
+	}
 
 	/**
 	 * Use JLayouts to render an image representation of the signature.

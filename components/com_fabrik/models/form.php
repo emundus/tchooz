@@ -979,7 +979,7 @@ class FabrikFEModelForm extends FabModelForm
 
 				// $$ rob 25/02/2011 this was doing a query per group - pointless as we bind $groupD to $row afterwards
 				// $row = $thisGroup->getGroup();
-				$row = FabTable::getInstance('Group', 'FabrikTable');
+				$row = \FabTable::getInstance('Group', 'FabrikTable');
 				$row->bind($groupD);
 				$thisGroup->setGroup($row);
 
@@ -1802,7 +1802,18 @@ class FabrikFEModelForm extends FabModelForm
 						reset($elementModels);
 						$tmpElement        = current($elementModels);
 						$smallerElHTMLName = $tmpElement->getFullName(true, false);
-						$repeatGroup       = count($this->formData[$smallerElHTMLName]);
+						if (isset($this->formData[$smallerElHTMLName])) {
+							$fieldData = $this->formData[$smallerElHTMLName];
+
+							if (is_array($fieldData)) {
+								$repeatGroup = count($fieldData);
+							} else {
+								$repeatGroup = !empty($fieldData) ? 1 : 0; // 1 if data exists, 0 if empty
+							}
+						} else {
+							$repeatGroup = 0; // Default if the key does not exist
+						}
+
 					}
 				}
 			}
