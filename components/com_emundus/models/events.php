@@ -1774,7 +1774,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 						{
 							$query->clear()
 								->delete($this->db->quoteName('#__emundus_users_assoc'))
-								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')');
+								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')')
+								->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($candidature->fnum));
 							$this->db->setQuery($query);
 							$this->db->execute();
 						}
