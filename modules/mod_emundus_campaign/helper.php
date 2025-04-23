@@ -162,6 +162,12 @@ class modEmundusCampaignHelper
 	public function getCurrent(string $condition, ?int $teachingUnityDates = null, ?string $order = 'start_date', ?int $mod_em_campaign_show_pinned_campaign = 0): array
 	{
 		$current_campaigns  = $this->getCampaigns('current', $condition, $teachingUnityDates, $order, $mod_em_campaign_show_pinned_campaign);
+
+		PluginHelper::importPlugin('emundus');
+		$dispatcher = Factory::getApplication()->getDispatcher();
+		$onAfterGetCurrentCampaigns = new GenericEvent('onCallEventHandler', ['onAfterGetCurrentCampaigns', ['current_campaigns' => &$current_campaigns]]);
+		$dispatcher->dispatch('onCallEventHandler', $onAfterGetCurrentCampaigns);
+
 		$this->totalCurrent = count($current_campaigns);
 
 		return $current_campaigns;
