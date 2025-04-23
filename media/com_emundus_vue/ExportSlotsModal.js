@@ -13,7 +13,8 @@ const _sfc_main = {
         { label: "COM_EMUNDUS_REGISTRANTS_DAY" },
         { label: "COM_EMUNDUS_REGISTRANTS_HOUR" },
         { label: "COM_EMUNDUS_REGISTRANTS_LOCATION" },
-        { label: "COM_EMUNDUS_REGISTRANTS_ROOM" }
+        { label: "COM_EMUNDUS_REGISTRANTS_ROOM" },
+        { label: "COM_EMUNDUS_REGISTRANTS_ASSOC_USER" }
       ],
       selectAll: false,
       loading: false
