@@ -18,7 +18,7 @@ export default {
 		Modal,
 	},
 	props: {
-		slot: Object,
+		item: Object,
 	},
 	emits: ['close', 'valueUpdated'],
 	data: () => ({
@@ -134,36 +134,36 @@ export default {
 		],
 	}),
 	created: function () {
-		if (this.slot) {
+		if (this.item) {
 			this.fields.forEach((field) => {
-				if (this.slot[field.param]) {
+				if (this.item[field.param]) {
 					if (field.param === 'user') {
-						field.value = this.slot['ccid'];
+						field.value = this.item['ccid'];
 					} else {
-						field.value = this.slot[field.param];
+						field.value = this.item[field.param];
 					}
 				} else if (field.param === 'user') {
-					let index = this.slot.registrantSelected
-						? this.slot.registrants?.datas?.findIndex((r) => r.id === this.slot.registrantSelected.id)
+					let index = this.item.registrantSelected
+						? this.item.registrants?.datas?.findIndex((r) => r.id === this.item.registrantSelected.id)
 						: -1;
 
-					field.value = index !== -1 ? (this.slot.registrants?.datas?.[index]?.ccid ?? null) : null;
+					field.value = index !== -1 ? (this.item.registrants?.datas?.[index]?.ccid ?? null) : null;
 				} else if (field.param === 'booking') {
-					field.value = this.slot['availability'] ?? this.slot['id'];
+					field.value = this.item['availability'] ?? this.item['id'];
 				} else if (field.param === 'juror') {
-					if (this.slot['additional_columns']) {
-						const jurors = this.slot['additional_columns'].find(
+					if (this.item['additional_columns']) {
+						const jurors = this.item['additional_columns'].find(
 							(col) => col.key === Joomla.JText._('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_USERS'),
 						);
 						field.value = jurors.id ? jurors.id.split(',').map((id) => Number(id.trim())) : [];
-					} else if (this.slot['assoc_user_id']) {
-						field.value = this.slot['assoc_user_id']
-							? this.slot['assoc_user_id'].split(',').map((id) => Number(id.trim()))
+					} else if (this.item['assoc_user_id']) {
+						field.value = this.item['assoc_user_id']
+							? this.item['assoc_user_id'].split(',').map((id) => Number(id.trim()))
 							: [];
-					} else if (this.slot['registrantSelected'] && this.slot['registrantSelected']['assoc_user_id']) {
-						field.value = this.slot['registrantSelected']['assoc_user_id'].split(',').map((id) => Number(id.trim()));
-					} else if (this.slot['users']) {
-						field.value = this.slot['users'].split(',').map((id) => Number(id.trim()));
+					} else if (this.item['registrantSelected'] && this.item['registrantSelected']['assoc_user_id']) {
+						field.value = this.item['registrantSelected']['assoc_user_id'].split(',').map((id) => Number(id.trim()));
+					} else if (this.item['users']) {
+						field.value = this.item['users'].split(',').map((id) => Number(id.trim()));
 					} else {
 						field.value = [];
 					}
@@ -211,18 +211,18 @@ export default {
 
 			if (slotValidationFailed) return;
 
-			if (this.slot) {
-				if (this.slot.calendarId && !this.slot.registrants) {
+			if (this.item) {
+				if (this.item.calendarId && !this.item.registrants) {
 					slot_edited['id'] = 0;
 				} else {
-					if (this.slot.calendarId) {
-						let index = this.slot.registrantSelected
-							? this.slot.registrants?.datas?.findIndex((r) => r.id === this.slot.registrantSelected.id)
+					if (this.item.calendarId) {
+						let index = this.item.registrantSelected
+							? this.item.registrants?.datas?.findIndex((r) => r.id === this.item.registrantSelected.id)
 							: -1;
 
-						slot_edited['id'] = index !== -1 ? (this.slot.registrants?.datas?.[index]?.id ?? null) : null;
+						slot_edited['id'] = index !== -1 ? (this.item.registrants?.datas?.[index]?.id ?? null) : null;
 					} else {
-						slot_edited['id'] = this.slot.id;
+						slot_edited['id'] = this.item.id;
 					}
 				}
 			} else {
@@ -234,7 +234,7 @@ export default {
 					Swal.fire({
 						position: 'center',
 						icon: 'success',
-						title: this.slot
+						title: this.item
 							? Joomla.JText._('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT_SAVED')
 							: Joomla.JText._('COM_EMUNDUS_ONBOARD_REGISTRANT_ADD_SAVED'),
 						showConfirmButton: true,
@@ -280,7 +280,7 @@ export default {
 						});
 
 						if (field.param === 'booking') {
-							if (this.slot && this.slot['event_id'] !== this.fields.find((f) => f.param === 'event_id')?.value) {
+							if (this.item && this.item['event_id'] !== this.fields.find((f) => f.param === 'event_id')?.value) {
 								field.value = null;
 							}
 						}
@@ -311,8 +311,8 @@ export default {
 			});
 		},
 		bookingSlot() {
-			if (this.slot) {
-				return this.slot['availability'] ?? this.slot['id'];
+			if (this.item) {
+				return this.item['availability'] ?? this.item['id'];
 			}
 			return null;
 		},
@@ -324,7 +324,7 @@ export default {
 	<div>
 		<div class="tw-pt-4">
 			<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
-				<h2 v-if="slot">
+				<h2 v-if="item">
 					{{ translate('COM_EMUNDUS_ONBOARD_REGISTRANT_EDIT') }}
 				</h2>
 				<h2 v-else>

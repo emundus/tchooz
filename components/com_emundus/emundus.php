@@ -716,6 +716,7 @@ Text::script('COM_EMUNDUS_INTERVIEW');                     # 34
 Text::script('COM_EMUNDUS_FICHE_DE_SYNTHESE');             # 35
 Text::script('COM_EMUNDUS_MESSENGER');                     # 36
 Text::script('COM_EMUNDUS_ACCESS_LOGS');                   # 37
+Text::script('COM_EMUNDUS_IMPORT_FILES');
 
 Text::script('COM_EMUNDUS_EDIT_COMMENT_BODY');
 Text::script('COM_EMUNDUS_EDIT_COMMENT_TITLE');

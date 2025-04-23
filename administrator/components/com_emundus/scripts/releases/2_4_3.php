@@ -44,8 +44,26 @@ class Release2_4_3Installer extends ReleaseInstaller
 					'delete_cascade' => true,
 				],
 			];
-
 			$tasks[] = \EmundusHelperUpdate::createTable('jos_emundus_setup_campaigns_more', $columns, $foreign_keys)['status'];
+
+			$query->clear()
+				->select('*')
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
+			$this->db->setQuery($query);
+			$config = $this->db->loadObject();
+
+			if (empty($config->namekey))
+			{
+				$params = '{"enabled":0,"displayed":0,"params":{}}';
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_setup_config'))
+					->columns($this->db->quoteName('namekey') . ', ' . $this->db->quoteName('value'))
+					->values($this->db->quote('import') . ', ' . $this->db->quote($params));
+
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
 
 			$result['status'] = !in_array(false, $tasks);
 		}

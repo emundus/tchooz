@@ -17,7 +17,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Emundus\Plugin\Task\EmailRecall\Extension\EmailRecall;
+use Emundus\Plugin\Task\EmailRecall\Extension\Emailrecall;
 
 return new class () implements ServiceProviderInterface {
     /**
@@ -34,7 +34,7 @@ return new class () implements ServiceProviderInterface {
         $container->set(
             PluginInterface::class,
             function (Container $container) {
-                $plugin = new EmailRecall(
+                $plugin = new Emailrecall(
                     $container->get(DispatcherInterface::class),
                     (array) PluginHelper::getPlugin('task', 'emailrecall'),
                     JPATH_ROOT . '/images/'

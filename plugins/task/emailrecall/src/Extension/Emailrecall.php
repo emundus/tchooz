@@ -8,7 +8,7 @@
  * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Emundus\Plugin\Task\EmailRecall\Extension;
+namespace Emundus\Plugin\Task\Emailrecall\Extension;
 
 use DateTime;
 use EmundusModelEmails;
@@ -35,7 +35,7 @@ use Joomla\Event\SubscriberInterface;
  *
  * @since  4.1.0
  */
-final class EmailRecall extends CMSPlugin implements SubscriberInterface
+final class Emailrecall extends CMSPlugin implements SubscriberInterface
 {
 	use DatabaseAwareTrait;
 	use TaskPluginTrait;

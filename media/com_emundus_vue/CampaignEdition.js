@@ -5,6 +5,7 @@ import { q as qs } from "./index2.js";
 import { D as DatePicker } from "./index.js";
 import MessageTriggers from "./MessageTriggers.js";
 /* empty css       */
+import "./campaign.js";
 import "./List.js";
 import "./ExportSlotsModal.js";
 import "./Skeleton.js";
