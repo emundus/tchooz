@@ -3511,7 +3511,8 @@ class EmundusModelFormbuilder extends JModelList
 		$query = $this->db->getQuery(true);
 
 		$query->select('*')
-			->from($this->db->quoteName('#__emundus_datas_library'));
+			->from($this->db->quoteName('#__emundus_datas_library'))
+			->order('label');
 		$this->db->setQuery($query);
 		try {
 			return $this->db->loadObjectList();
