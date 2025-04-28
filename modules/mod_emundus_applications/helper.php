@@ -553,9 +553,9 @@ class modemundusApplicationsHelper
 
 				if (in_array($application->status, $custom_action->mod_em_application_custom_action_status)) {
 					if ($custom_action->mod_em_application_custom_action_type == 2) {
-						$html .= '<div class="em-flex-row px-2.5 py-2">';
+						$html .= '<a class="tw-text-neutral-900 tw-cursor-pointer tw-flex">';
 						if ($custom_action->mod_em_application_custom_action_icon) {
-							$html .= '<span class="material-symbols-outlined em-font-size-16 em-mr-8">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
+							$html .= '<span class="material-symbols-outlined tw-mr-2">' . $custom_action->mod_em_application_custom_action_icon . '</span>';
 						}
 
 						$html .= '<span id="actions_button_custom_' . $custom_action_key . '" 
@@ -563,7 +563,7 @@ class modemundusApplicationsHelper
                                     data-text="' . $custom_action->mod_em_application_custom_action_new_status_message . '"
                                     data-fnum="' . $application->fnum . '"  
                                   >' . Text::_($custom_action->mod_em_application_custom_action_label) . '</span>';
-						$html .= '</div>';
+						$html .= '</a>';
 					}
 					else {
 						if (!empty($custom_action->mod_em_application_custom_action_link)) {
