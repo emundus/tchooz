@@ -66,6 +66,31 @@ class FilesModelTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers EmundusModelFiles::unshareUsers
+	 *
+	 * @since version 1.0.0
+	 */
+	public function testunshareUsers()
+	{
+		$shared = $this->model->shareUsers([2], EVALUATOR_RIGHTS, [$this->dataset['fnum']], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+
+		if($shared) {
+			$unshared = $this->model->unshareUsers([2],[$this->dataset['fnum']],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+
+			$this->assertTrue($unshared, 'unshareUsers returns true if the unsharing is successful');
+		}
+
+		$unshared = $this->model->unshareUsers([2], [], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+		$this->assertFalse($unshared, 'unshareUsers returns false if no fnum is given');
+
+		$unshared = $this->model->unshareUsers([], [$this->dataset['fnum']], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+		$this->assertFalse($unshared, 'unshareUsers returns false if no user is given');
+
+		$unshared = $this->model->unshareUsers([2], [$this->dataset['fnum']], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+		$this->assertTrue($unshared, 'unshareUsers returns true even if the user is not shared');
+	}
+
+	/**
 	 * @covers EmundusModelFiles::getAllFnums
 	 *
 	 * @since version 1.0.0

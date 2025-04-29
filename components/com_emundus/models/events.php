@@ -1777,12 +1777,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 						if (!empty($users_assoc))
 						{
-							$query->clear()
-								->delete($this->db->quoteName('#__emundus_users_assoc'))
-								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')')
-								->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($candidature->fnum));
-							$this->db->setQuery($query);
-							$this->db->execute();
+							$m_files->unshareUsers($users_assoc, [$candidature->fnum]);
 						}
 
 						$query->clear()
@@ -3561,12 +3556,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 					if(!empty($old_users))
 					{
-						$query->clear()
-							->delete($this->db->quoteName('#__emundus_users_assoc'))
-							->where('fnum = ' . $this->db->quote($fnum))
-							->where('user_id IN (' . implode(',', $old_users) . ')');
-						$this->db->setQuery($query);
-						$this->db->execute();
+						$m_files->unshareUsers($old_users, [$fnum]);
 					}
 
 					$query->clear()
