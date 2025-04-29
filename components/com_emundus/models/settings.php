@@ -28,7 +28,7 @@ use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
 use \Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
-use \classes\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Settings\AddonEntity;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 

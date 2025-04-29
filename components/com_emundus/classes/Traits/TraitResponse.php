@@ -7,7 +7,7 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace classes\Traits;
+namespace Tchooz\Traits;
 
 trait TraitResponse
 {

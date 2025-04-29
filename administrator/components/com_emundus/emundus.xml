@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="4" method="upgrade">
+<extension type="component" method="upgrade">
 	<name>com_emundus</name>
 	<creationDate>2023-03-31</creationDate>
 	<author>eMundus</author>
@@ -9,7 +9,6 @@
 	<license>GNU, GPLv3</license>
 	<version>2.4.3</version>
 	<description><![CDATA[COM_TCHOOZ_COMPONENT_DESCRIPTION]]></description>
-	<namespace>Joomla\Component\Emundus</namespace>
 
 	<scriptfile>com_emundus.manifest.class.php</scriptfile>
 

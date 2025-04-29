@@ -1,17 +1,17 @@
 <?php
 /**
- * @package     classes\Repositories\Contacts
+ * @package     Tchooz\Repositories\Contacts
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace classes\Repositories\Contacts;
+namespace Tchooz\Repositories\Contacts;
 
-use classes\Attributes\TableAttribute;
-use classes\Entities\Contacts\ContactEntity;
-use classes\Traits\TraitTable;
+use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Traits\TraitTable;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;

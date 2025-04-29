@@ -1,7 +1,7 @@
 <?php
-namespace classes\Repository\ApplicationFile;
+namespace Tchooz\Repository\ApplicationFile;
 
-use classes\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;

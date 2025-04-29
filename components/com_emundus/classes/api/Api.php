@@ -7,7 +7,7 @@
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace classes\api;
+namespace Tchooz\api;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;

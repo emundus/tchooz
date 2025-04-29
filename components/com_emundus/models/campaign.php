@@ -13,9 +13,9 @@
 
 // phpcs:enable PSR1.Files.SideEffects
 
-use classes\Entities\ApplicationFile\ApplicationFileEntity;
-use classes\Entities\Settings\AddonEntity;
-use classes\Repository\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
@@ -25,7 +25,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Language\Text;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
-use \classes\Factories\ImportFactory;
+use Tchooz\Factories\ImportFactory;
 
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;

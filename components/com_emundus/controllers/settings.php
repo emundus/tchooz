@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-use classes\Synchronizers\SMS\OvhSMS;
+use Tchooz\Synchronizers\SMS\OvhSMS;
 use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Component\Config\Controller\ApplicationController;

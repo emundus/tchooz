@@ -1,13 +1,13 @@
 <?php
 /**
- * @package     classes\Attributes
+ * @package     Tchooz\Attributes
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace classes\Attributes;
+namespace Tchooz\Attributes;
 
 #[\Attribute]
 class TableAttribute

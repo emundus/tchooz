@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\Entities\Messages;
+namespace Tchooz\Entities\Messages;
 
 use Google\Exception;
 use Joomla\CMS\Log\Log;

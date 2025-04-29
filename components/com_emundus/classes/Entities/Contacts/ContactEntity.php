@@ -1,13 +1,13 @@
 <?php
 /**
- * @package     classes\Entities\Contacts
+ * @package     Tchooz\Entities\Contacts
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace classes\Entities\Contacts;
+namespace Tchooz\Entities\Contacts;
 
 class ContactEntity
 {

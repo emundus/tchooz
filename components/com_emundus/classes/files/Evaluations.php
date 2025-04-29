@@ -1,7 +1,7 @@
 <?php
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'files' . DS . 'Files.php');
 
-use classes\files\Files;
+use Tchooz\files\Files;
 use Joomla\CMS\Factory;
 
 class Evaluations extends Files
