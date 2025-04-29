@@ -54,11 +54,11 @@ defined('_JEXEC') or die;
 
 						$post = array(
 							'APPLICANT_ID'   => $user->id,
-							'DEADLINE'       => JHTML::_('date', $application->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+							'DEADLINE'       => JHTML::_('date', $application->end_date, JText::_('DATE_FORMAT_LC2'), null),
 							'CAMPAIGN_LABEL' => $application->label,
 							'CAMPAIGN_YEAR'  => $application->year,
-							'CAMPAIGN_START' => JHTML::_('date', $application->start_date, JText::_('DATE_FORMAT_OFFSET1'), null),
-							'CAMPAIGN_END'   => JHTML::_('date', $application->end_date, JText::_('DATE_FORMAT_OFFSET1'), null),
+							'CAMPAIGN_START' => JHTML::_('date', $application->start_date, JText::_('DATE_FORMAT_LC2'), null),
+							'CAMPAIGN_END'   => JHTML::_('date', $application->end_date, JText::_('DATE_FORMAT_LC2'), null),
 							'CAMPAIGN_CODE'  => $application->training,
 							'FNUM'           => $application->fnum
 						);
