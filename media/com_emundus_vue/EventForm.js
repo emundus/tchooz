@@ -1726,6 +1726,9 @@ const _sfc_main$2 = {
       while (this.$props.event.slots[key] && this.$props.event.slots[key].start < (/* @__PURE__ */ new Date()).toISOString()) {
         key++;
       }
+      if (key >= this.$props.event.slots.length) {
+        key = this.$props.event.slots.length - 1;
+      }
       let selectedDate = new Date(this.$props.event.slots[key].start);
       selectedDate = selectedDate.toISOString().split("T")[0];
       calendarControls.setDate(selectedDate);
