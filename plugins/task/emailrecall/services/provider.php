@@ -17,7 +17,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use Emundus\Plugin\Task\EmailRecall\Extension\Emailrecall;
+use Emundus\Plugin\Task\Emailrecall\Extension\Emailrecall;
 
 return new class () implements ServiceProviderInterface {
     /**

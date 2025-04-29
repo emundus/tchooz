@@ -198,6 +198,7 @@ final class Emailrecall extends CMSPlugin implements SubscriberInterface
 			}
 			catch (\Exception $e)
 			{
+				echo '<pre>'; var_dump($e->getMessage()); echo '</pre>'; die;
 				Log::add($e->getMessage(), Log::ERROR, 'com_emundus.task_email_recall.php');
 
 				return TaskStatus::INVALID_EXIT;
@@ -273,78 +274,106 @@ final class Emailrecall extends CMSPlugin implements SubscriberInterface
 
 	private function getUsersToNotify(object $params, string $fnum): array
 	{
-		$users = [];
-
-		$db    = $this->getDatabase();
-		$query = $db->createQuery();
-
-		switch ($params->notify_associated)
+		try
 		{
-			case 1:
-				// Get groups associated directly to fnum and get all users of those groups
-				$query->clear()
-					->select('DISTINCT group_id')
-					->from($db->quoteName('#__emundus_group_assoc'))
-					->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-					->where($db->quoteName('action_id') . ' = 1')
-					->where($db->quoteName('r') . ' = 1');
-				$db->setQuery($query);
-				$groups = $db->loadColumn();
+			$users = [];
 
-				$query->clear()
-					->select('user_id')
-					->from($db->quoteName('#__emundus_groups'))
-					->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')');
-				$db->setQuery($query);
-				$users = $db->loadColumn();
-				break;
-			case 2:
-				// Get users directly associated to fnum
-				$query->clear()
-					->select('user_id')
-					->from($db->quoteName('#__emundus_users_assoc'))
-					->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
-					->where($db->quoteName('action_id') . ' = 1')
-					->where($db->quoteName('r') . ' = 1');
-				$db->setQuery($query);
-				$users = $db->loadColumn();
-				break;
-		}
+			$db    = $this->getDatabase();
+			$query = $db->createQuery();
+			
+			$notify_associated = (array)$params->notify_associated;
+			// Order of priority
+			usort($notify_associated, function($a, $b) {
+				return (int)$a->notify_associated_priority - (int)$b->notify_associated_priority;
+			});
 
-		if (!empty($params->group_id))
-		{
-			$query->clear()
-				->select('user_id')
-				->from($db->quoteName('#__emundus_groups'))
-				->where($db->quoteName('group_id') . ' = ' . $params->group_id);
-			if (!empty($users))
+			foreach ($notify_associated as $associated)
 			{
-				$query->where($db->quoteName('user_id') . ' IN (' . implode(',', $users) . ')');
-			}
-			$db->setQuery($query);
-			$users = $db->loadColumn();
-		}
+				switch ($associated->notify_associated_type)
+				{
+					case 1:
+						// Get groups associated directly to fnum and get all users of those groups
+						$query->clear()
+							->select('DISTINCT group_id')
+							->from($db->quoteName('#__emundus_group_assoc'))
+							->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+							->where($db->quoteName('action_id') . ' = 1')
+							->where($db->quoteName('r') . ' = 1');
+						$db->setQuery($query);
+						$groups = $db->loadColumn();
 
-		if (!empty($params->profile_id))
+						if (!empty($groups))
+						{
+							$query->clear()
+								->select('user_id')
+								->from($db->quoteName('#__emundus_groups'))
+								->where($db->quoteName('group_id') . ' IN (' . implode(',', $groups) . ')');
+							$db->setQuery($query);
+							$users = $db->loadColumn();
+						}
+						break;
+					case 2:
+						// Get users directly associated to fnum
+						$query->clear()
+							->select('user_id')
+							->from($db->quoteName('#__emundus_users_assoc'))
+							->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum))
+							->where($db->quoteName('action_id') . ' = 1')
+							->where($db->quoteName('r') . ' = 1');
+						$db->setQuery($query);
+						$users = $db->loadColumn();
+						break;
+				}
+
+				if(!empty($users))
+				{
+					if (!empty($associated->group_id))
+					{
+						$query->clear()
+							->select('user_id')
+							->from($db->quoteName('#__emundus_groups'))
+							->where($db->quoteName('group_id') . ' = ' . $associated->group_id);
+						if (!empty($users))
+						{
+							$query->where($db->quoteName('user_id') . ' IN (' . implode(',', $users) . ')');
+						}
+						$db->setQuery($query);
+						$users = $db->loadColumn();
+					}
+
+					if (!empty($associated->profile_id))
+					{
+						$query->clear()
+							->select('eu.user_id')
+							->from($db->quoteName('#__emundus_users', 'eu'))
+							->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'))
+							->where($db->quoteName('eu.profile') . ' = ' . $associated->profile_id)
+							->orWhere($db->quoteName('eup.profile_id') . ' = ' . $associated->profile_id);
+						if (!empty($users))
+						{
+							$query->extendWhere(
+								'AND',
+								$db->quoteName('eu.user_id') . ' IN (' . implode(',', $users) . ')'
+							);
+						}
+						$db->setQuery($query);
+						$users = $db->loadColumn();
+					}
+				}
+				
+				if(!empty($users))
+				{
+					break;
+				}
+			}
+
+			return array_unique($users);
+		}
+		catch (\Exception $e)
 		{
-			$query->clear()
-				->select('eu.user_id')
-				->from($db->quoteName('#__emundus_users', 'eu'))
-				->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON ' . $db->quoteName('eup.user_id') . ' = ' . $db->quoteName('eu.user_id'))
-				->where($db->quoteName('eu.profile') . ' = ' . $params->profile_id)
-				->orWhere($db->quoteName('eup.profile_id') . ' = ' . $params->profile_id);
-			if (!empty($users))
-			{
-				$query->extendWhere(
-					'AND',
-					$db->quoteName('eu.user_id') . ' IN (' . implode(',', $users) . ')'
-				);
-			}
-			$db->setQuery($query);
-			$users = $db->loadColumn();
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.task_email_recall.php');
+			throw $e;
 		}
-
-		return array_unique($users);
 	}
 
 	private function getEmail(int $user_id): ?string
