@@ -11,8 +11,8 @@
 // No direct access
 require_once JPATH_SITE . '/components/com_emundus/classes/api/Api.php';
 
-use classes\api\Api;
-use classes\api\FileSynchronizer;
+use Tchooz\api\Api;
+use Tchooz\api\FileSynchronizer;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 
@@ -457,7 +457,7 @@ class EmundusModelSync extends JModelList
 		$states = array();
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
-		if (class_exists('classes\api\FileSynchronizer'))
+		if (class_exists('Tchooz\api\FileSynchronizer'))
 		{
 			$synchronizer = new FileSynchronizer($type);
 			foreach ($upload_ids as $upload_id)
@@ -474,7 +474,7 @@ class EmundusModelSync extends JModelList
 		$states = array();
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
-		if (class_exists('classes\api\FileSynchronizer'))
+		if (class_exists('Tchooz\api\FileSynchronizer'))
 		{
 			$synchronizer = new FileSynchronizer($type);
 			foreach ($upload_ids as $upload_id)
@@ -491,7 +491,7 @@ class EmundusModelSync extends JModelList
 		$states = array();
 
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'api' . DS . 'FileSynchronizer.php');
-		if (class_exists('classes\api\FileSynchronizer'))
+		if (class_exists('Tchooz\api\FileSynchronizer'))
 		{
 			$synchronizer = new FileSynchronizer($type);
 			foreach ($upload_ids as $upload_id)

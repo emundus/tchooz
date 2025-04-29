@@ -1,13 +1,13 @@
 <?php
 /**
- * @package     classes\Factories
+ * @package     Tchooz\Factories
  * @subpackage
  *
  * @copyright   A copyright
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace classes\Factories;
+namespace Tchooz\Factories;
 
 use EmundusHelperFiles;
 use EmundusModelFormbuilder;

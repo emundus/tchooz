@@ -24,7 +24,7 @@ use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Registry\Registry;
-use \classes\Entities\Messages\TriggerEntity;
+use Tchooz\Entities\Messages\TriggerEntity;
 
 class EmundusModelEmails extends JModelList
 {

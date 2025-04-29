@@ -15,3 +15,8 @@ $jpath_root = implode(DIRECTORY_SEPARATOR, $parts);
 define('EMUNDUS_PATH_ABS',     $jpath_root.DIRECTORY_SEPARATOR.'images/emundus/files/');
 define('EMUNDUS_PATH_REL', 'images/emundus/files/');
 define('EMUNDUS_PHOTO_AID', 10);
+
+if(file_exists('libraries/emundus/vendor/autoload.php'))
+{
+	require_once 'libraries/emundus/vendor/autoload.php';
+}

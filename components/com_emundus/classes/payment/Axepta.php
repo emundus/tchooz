@@ -7,7 +7,7 @@
  *
  */
 
-use classes\payment\blowfish\Blowfish;
+use Tchooz\payment\blowfish\Blowfish;
 
 include('Blowfish.php');
 

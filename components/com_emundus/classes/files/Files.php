@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\files;
+namespace Tchooz\files;
 
 use JFactory;
 use JLog;

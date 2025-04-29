@@ -1,7 +1,7 @@
 <?php
 
 
-namespace classes\api;
+namespace Tchooz\api;
 
 /**
  * @package     com_emundus

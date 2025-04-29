@@ -1,5 +1,5 @@
 <?php
-namespace classes\Entities\ApplicationFile;
+namespace Tchooz\Entities\ApplicationFile;
 
 use Joomla\CMS\User\User;
 

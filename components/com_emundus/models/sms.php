@@ -14,14 +14,14 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-use classes\Entities\SMS\ReceiverEntity;
-use classes\Entities\SMS\SMSEntity;
-use classes\Synchronizers\SMS\OvhSMS;
+use Tchooz\Entities\SMS\ReceiverEntity;
+use Tchooz\Entities\SMS\SMSEntity;
+use Tchooz\Synchronizers\SMS\OvhSMS;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use \classes\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Settings\AddonEntity;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
