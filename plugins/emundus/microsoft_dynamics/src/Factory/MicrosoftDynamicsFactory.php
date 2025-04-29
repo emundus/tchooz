@@ -50,7 +50,7 @@ class MicrosoftDynamicsFactory
 					{
 						foreach ($params['configurations'] as $config)
 						{
-							if ($config['event'] == $name && (!empty($config['programs']) && in_array($training, $config['programs'])))
+							if (($config['event'] == $name || $name === 'onMicrosftDynamicsSync') && (!empty($config['programs']) && in_array($training, $config['programs'])))
 							{
 								if($check_status)
 								{
@@ -160,7 +160,7 @@ class MicrosoftDynamicsFactory
 			$applicant,
 			$params,
 			$filters,
-			['event' => $config['event'], 'training' => $data['fnumInfos']['training'], 'data' => json_encode(['state' => $data['state'], 'oldstate' => $data['oldstate'], 'name' => $config['name'], 'collectionname' => $config['collectionname']])],
+			['event' => $config['event'], 'training' => $data['fnumInfos']['training'], 'data' => json_encode(['state' => $config['eventParams']['state'], 'oldstate' => $config['eventParams']['oldstate'], 'name' => $config['name'], 'collectionname' => $config['collectionname']])],
 			$data['fnum']
 		);
 
@@ -497,6 +497,17 @@ class MicrosoftDynamicsFactory
 		}
 
 		return $value;
+	}
+
+	private function sanitizePhone(string $phone): string
+	{
+		if(!empty($phone))
+		{
+			return preg_replace('/^[a-zA-Z]{2}/', '', $phone);
+		}
+		else {
+			return '';
+		}
 	}
 
 	private function remove_accents(string $string): string
