@@ -98,6 +98,8 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 					$config        = json_decode($dataToImport['config'], true);
 					$json          = json_decode($dataToImport['json'], true);
 					$lookupFilters = json_decode($dataToImport['lookup_filters'], true);
+					$fields_only_create = [];
+					$fields_only_update = [];
 
 					if (empty($json))
 					{
@@ -119,6 +121,19 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 
 									if ($crmFactory->prepareDatas($api, $config, $data))
 									{
+										// Filter fields that we don't want to update
+										foreach ($config['fields'] as $field)
+										{
+											if($field['action'] === 'create')
+											{
+												$fields_only_create[] = $field['attribute'];
+											}
+											if($field['action'] === 'update')
+											{
+												$fields_only_update[] = $field['attribute'];
+											}
+										}
+
 										$json          = $repository->getJsonData($dataToImport);
 										$lookupFilters = $repository->getLookupFilters($dataToImport);
 									}
@@ -131,10 +146,30 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 					$rowId = $repository->getRowId($dataToImport['name'], $dataToImport['collectionname'], $api, $lookupFilters);
 					if (!empty($rowId))
 					{
+						// Remove values that we don't want to update
+						foreach ($fields_only_create as $field)
+						{
+							if (isset($json[$field]))
+							{
+								unset($json[$field]);
+							}
+							elseif(isset($json[$field.'@odata.bind']))
+							{
+								unset($json[$field.'@odata.bind']);
+							}
+						}
 						$eventName = 'onAfterMicrosoftDynamicsUpdate';
 					}
 					else
 					{
+						// Remove values that we don't want to create
+						foreach ($fields_only_update as $field)
+						{
+							if (isset($json[$field]))
+							{
+								unset($json[$field]);
+							}
+						}
 						$eventName = 'onAfterMicrosoftDynamicsCreate';
 					}
 

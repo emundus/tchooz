@@ -45,6 +45,7 @@ final class MicrosoftDynamics extends CMSPlugin implements SubscriberInterface
 	{
 		return [
 			'onAfterStatusChange' => 'process',
+			'onMicrosftDynamicsSync' => 'process',
 		];
 	}
 
@@ -58,7 +59,15 @@ final class MicrosoftDynamics extends CMSPlugin implements SubscriberInterface
 
 		if (!empty($api) && $api->enabled == 1)
 		{
-			if (!empty($data['fnum']))
+			if(!empty($data['fnums']))
+			{
+				$fnums = $data['fnums'];
+			}
+			else {
+				$fnums = [$data['fnum']];
+			}
+			
+			if (!empty($fnums))
 			{
 				Log::addLogger(['text_file' => 'com_emundus.microsoft_dynamics.log.php'], Log::DEBUG, 'com_emundus.microsoft_dynamics');
 				Log::addLogger(['text_file' => 'com_emundus.microsoft_dynamics.error.php'], Log::ERROR, 'com_emundus.microsoft_dynamics');
@@ -68,22 +77,27 @@ final class MicrosoftDynamics extends CMSPlugin implements SubscriberInterface
 				$repository       = new MicrosoftDynamicsRepository($this->getDatabase());
 				$crmFactory = new MicrosoftDynamicsFactory($this->getDatabase(), $modelApplication, $repository);
 
-				$fnumInfos = $modelFiles->getFnumInfos($data['fnum']);
-				if (!empty($fnumInfos))
+				foreach ($fnums as $fnum)
 				{
-					$data['fnumInfos'] = $fnumInfos;
-					$training          = $fnumInfos['training'];
-
-					$configurations = $crmFactory->getMicrosoftDynamicsConfig($name, $data, $training);
-
-					if (!empty($configurations))
+					$data['fnum'] = $fnum;
+					$fnumInfos = $modelFiles->getFnumInfos($fnum);
+					if (!empty($fnumInfos))
 					{
-						foreach ($configurations as $config)
+						$data['fnumInfos'] = $fnumInfos;
+						$training          = $fnumInfos['training'];
+
+						$configurations = $crmFactory->getMicrosoftDynamicsConfig($name, $data, $training, $name !== 'onMicrosftDynamicsSync');
+
+						if (!empty($configurations))
 						{
-							if (!empty($config['action']) && !empty($config['collectionname']) && !empty($config['name']))
+							foreach ($configurations as $config)
 							{
-								if(!$crmFactory->prepareDatas($api, $config, $data, false)) {
-									Log::add('Error while preparing datas for Microsoft Dynamics', Log::ERROR, 'com_emundus.microsoft_dynamics');
+								if (!empty($config['action']) && !empty($config['collectionname']) && !empty($config['name']))
+								{
+									if (!$crmFactory->prepareDatas($api, $config, $data, false))
+									{
+										Log::add('Error while preparing datas for Microsoft Dynamics', Log::ERROR, 'com_emundus.microsoft_dynamics');
+									}
 								}
 							}
 						}

@@ -52,28 +52,43 @@ class MicrosoftDynamicsRepository
 
 		// Check if the data already exists
 		$this->query->clear()
-			->select('id')
+			->select('id,config')
 			->from($this->db->quoteName('#__emundus_microsoft_dynamics_queue'))
 			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($dynamicsEntity->getFnum()))
 			->where($this->db->quoteName('collectionname') . ' = ' . $this->db->quote($collectionname))
 			->where($this->db->quoteName('name') . ' = ' . $this->db->quote($name))
 			->where($this->db->quoteName('action') . ' = ' . $this->db->quote($action));
 		$this->db->setQuery($this->query);
-		$importId = $this->db->loadResult();
+		$imports = $this->db->loadAssocList();
 
-		if (!empty($importId))
+		foreach ($imports as $import)
 		{
-			$importDatas['id'] = $importId;
-			$importDatas       = (object) $importDatas;
+			if (!empty($import['id']))
+			{
+				$importConfig = json_decode($import['config'], true);
+				if (!empty($importConfig['data']))
+				{
+					$importConfig['data'] = json_decode($importConfig['data'], true);
+				}
+				$currentConfigData = [];
+				if (!empty($dynamicsEntity->getConfig()['data']))
+				{
+					$currentConfigData = json_decode($dynamicsEntity->getConfig()['data'], true);
+				}
 
-			return $this->db->updateObject('jos_emundus_microsoft_dynamics_queue', $importDatas, 'id');
-		}
-		else
-		{
-			$importDatas = (object) $importDatas;
+				if (!empty($importConfig) && is_array($importConfig['data']) && !empty($currentConfigData) && $importConfig['data']['state'] == $currentConfigData['state'])
+				{
+					$importDatas['id'] = $import['id'];
+					$importDatas       = (object) $importDatas;
 
-			return $this->db->insertObject('jos_emundus_microsoft_dynamics_queue', $importDatas);
+					return $this->db->updateObject('jos_emundus_microsoft_dynamics_queue', $importDatas, 'id');
+				}
+			}
 		}
+
+		$importDatas = (object) $importDatas;
+
+		return $this->db->insertObject('jos_emundus_microsoft_dynamics_queue', $importDatas);
 	}
 
 	public function flushApi(string $collectionname, string $datas, object $api, string $rowId): array
