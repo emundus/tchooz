@@ -606,7 +606,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				'eses.more_infos',
 				'group_concat(DISTINCT essu.user) as users',
 				'group_concat(DISTINCT concat(eu.lastname," ",eu.firstname)) as people',
-				'esa.capacity as availabilities_count',
+				'eses.slot_capacity as availabilities_count',
 				'count(DISTINCT er.id) as booked_count'
 			];
 
@@ -1530,6 +1530,20 @@ class EmundusModelEvents extends BaseDatabaseModel
 							if (empty($availability_id))
 							{
 								$insert_availabilities[] = $slot->id . ', ' . $event_id . ', ' . $this->db->quote($availability['start']) . ', ' . $this->db->quote($availability['end']) . ', ' . $this->db->quote($slot->slot_capacity);
+							}
+							else {
+								// Update the existing availability if it exists
+								$update_query = $this->db->getQuery(true);
+
+								$update_query->clear()
+									->update($this->db->quoteName('#__emundus_setup_availabilities'))
+									->set($this->db->quoteName('capacity') . ' = ' . $this->db->quote($slot->slot_capacity))
+									->where($this->db->quoteName('id') . ' = ' . $availability_id);
+								$this->db->setQuery($update_query);
+								if ($this->db->execute())
+								{
+									$saved = true;
+								}
 							}
 						}
 					}
