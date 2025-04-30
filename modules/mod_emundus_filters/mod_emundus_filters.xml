@@ -18,7 +18,6 @@
     <config>
         <fields name="params">
             <fieldset name="basic">
-                <field type="checkbox" name="force_reload_on_refresh" default="0" label="MOD_EM_FILTER_FORCE_RELOAD_ON_REFRESH"/>
                 <field type="list" name="filter_on_fnums" label="MOD_EMUNDUS_FILTER_FILTER_ON_FNUM" default="1">
                     <option value="1">JYES</option>
                     <!--<option value="0">JNO</option>-->
@@ -43,9 +42,11 @@
                     </form>
                 </field>
 
+                <field type="checkbox" name="force_reload_on_refresh" checked="0" label="MOD_EM_FILTER_FORCE_RELOAD_ON_REFRESH"/>
+
                 <!-- fields shown on fnum context -->
                 <fieldset showon="filter_on_fnum=1">
-                    <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" default="1"/>
+                    <field type="checkbox" name="count_filter_values" label="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES" description="MOD_EMUNDUS_FILTER_COUNT_FILTER_VALUES_DESC" checked="1"/>
                     <field type="list" name="filter_status" label="FILTER_ON_STATUS">
                         <option value="0">JNO</option>
                         <option value="1">JYES</option>
@@ -72,7 +73,7 @@
                             type="checkbox"
                             name="filter_campaign_display_program"
                             label="FILTER_DISPLAY_CAMPAIGN_PROGRAM"
-                            default="0"
+                            checked="0"
                     />
 
                     <field type="list" name="filter_programs" label="FILTER_ON_PROGRAM">
@@ -90,7 +91,7 @@
                             type="checkbox"
                             name="filter_programs_display_category"
                             label="FILTER_DISPLAY_PROGRAM_CATEGORY"
-                            default="0"
+                            checked="0"
                     />
                     <field type="list" name="filter_years" label="FILTER_ON_YEAR">
                         <option value="0">JNO</option>
