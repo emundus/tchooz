@@ -18,7 +18,6 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Plugin\Emundus\Ammon\Repository\AmmonRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -35,6 +34,14 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 	private DatabaseDriver $db;
 
 	private int $registration_file_status;
+
+	private int $specific_file_status;
+
+	private string $specific_programme_category = '';
+
+	private string $current_file_programme_category = '';
+
+	private string $current_file_status = '';
 
 	/**
 	 * Constructor.
@@ -65,6 +72,8 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 		$name = $event->getName();
 		$data = $event->getArguments();
 		$this->registration_file_status = $this->params->get('status', 0);
+		$this->specific_file_status = $this->params->get('status_cas', 99999);
+		$this->specific_programme_category = $this->params->get('program_cas', 'undefined');
 		$user = Factory::getApplication()->getIdentity();
 
 		if ($name === 'onAfterStatusChange') {
@@ -72,15 +81,18 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($fnum)) {
 				$session_id = $this->getSessionFromFnum($fnum);
+				$this->setCurrentFileProgrammeCategory($fnum);
 				$valid = $this->checkStatus($fnum) && $this->notAlreadyRegistered($fnum, $session_id);
 
 				if ($valid) {
 					$force_new_user_if_not_found = $data['force_new_user_if_not_found'] ?? false;
+					$skip_company = !empty($this->specific_file_status) && $this->specific_file_status == $this->current_file_status && !empty($this->current_file_programme_category) && $this->current_file_programme_category === $this->specific_programme_category;
+
 					if (!empty($session_id)) {
 						Log::add('Start registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api', Log::INFO, 'plugin.emundus.ammon');
 
 						try {
-							$saved_in_queue = $this->saveInQueue($fnum, $session_id, $force_new_user_if_not_found, $user->id);
+							$saved_in_queue = $this->saveInQueue($fnum, $session_id, $force_new_user_if_not_found, $skip_company, $user->id);
 
 							if (!$saved_in_queue) {
 								Log::add('Something went wrong when trying to save fnum ' . $fnum . ' in ammon queue', Log::ERROR, 'plugin.emundus.ammon');
@@ -122,12 +134,34 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 		return $session;
 	}
 
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return void
+	 */
+	private function setCurrentFileProgrammeCategory(string $fnum): void
+	{
+		if (!empty($fnum)) {
+			$query = $this->db->createQuery();
+			$query->clear()
+				->select($this->db->quoteName('esp.programmes'))
+				->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+				->where($this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$program_category                      = $this->db->loadResult();
+			$this->current_file_programme_category = $program_category;
+		}
+	}
+
 	private function checkStatus(string $fnum): bool
 	{
 		$valid = false;
 
 		if (!empty($fnum)) {
-			$query = $this->db->getQuery(true);
+			$query = $this->db->createQuery();
 			$query->select($this->db->quoteName('status'))
 				->from($this->db->quoteName('#__emundus_campaign_candidature'))
 				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
@@ -135,11 +169,14 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 			try {
 				$this->db->setQuery($query);
 				$status = $this->db->loadResult();
+				$this->current_file_status = $status;
 
 				if ($status == $this->registration_file_status) {
 					$valid = true;
+				} else if ($status == $this->specific_file_status && $this->current_file_programme_category === $this->specific_programme_category) {
+					$valid = true;
 				}
-			} catch (Exception $e) {
+			} catch (\Exception $e) {
 				Log::add('Error when trying to get status from fnum ' . $fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
 			}
 		}
@@ -177,10 +214,12 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 	 * @param   string  $fnum
 	 * @param   int     $session_id
 	 * @param   bool    $force_new_user_if_not_found
+	 * @param   bool    $skip_company
+	 * @param   int     $user_id
 	 *
 	 * @return bool
 	 */
-	private function saveInQueue(string $fnum, int $session_id, bool $force_new_user_if_not_found, int $user_id): bool
+	private function saveInQueue(string $fnum, int $session_id, bool $force_new_user_if_not_found, bool $skip_company, int $user_id): bool
 	{
 		$saved = false;
 
@@ -196,20 +235,27 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 				$id = $this->db->loadResult();
 
 				$force_new = $force_new_user_if_not_found ? 1 : 0;
+				$skip = $skip_company ? 1 : 0;
 
 				if (empty($id)) {
 					$query = $this->db->getQuery(true);
 					$query->insert('#__emundus_ammon_queue')
-						->columns('fnum, session_id, force_new_user_if_not_found, file_status, status, created_by, created_date')
-						->values($this->db->quote($fnum) . ', ' . $this->db->quote($session_id) . ', ' . $this->db->quote($force_new) . ', ' . $this->db->quote($this->registration_file_status) . ', ' . $this->db->quote('pending') . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
+						->columns('fnum, session_id, force_new_user_if_not_found, skip_company, file_status, status, created_by, created_date')
+						->values($this->db->quote($fnum) . ', ' . $this->db->quote($session_id) . ', ' . $this->db->quote($force_new) . ', ' . $this->db->quote($skip) . ', ' . $this->db->quote($this->registration_file_status) . ', ' . $this->db->quote('pending') . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
 
 					$this->db->setQuery($query);
 					$saved = $this->db->execute();
 				} else {
 					$query->update('#__emundus_ammon_queue')
 						->set('force_new_user_if_not_found = ' . $this->db->quote($force_new))
-						->set('updated_date = ' . $this->db->quote(date('Y-m-d H:i:s')))
-						->where('id = ' . $this->db->quote($id));
+						->set('skip_company = ' . $this->db->quote($skip))
+						->set('updated_date = ' . $this->db->quote(date('Y-m-d H:i:s')));
+
+					if ($this->current_file_programme_category === $this->specific_programme_category) {
+						$query->set('status = ' . $this->db->quote('pending'))->set('attempts = 0');
+					}
+
+					$query->where('id = ' . $this->db->quote($id));
 
 					$this->db->setQuery($query);
 					$saved = $this->db->execute();

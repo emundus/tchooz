@@ -26,6 +26,26 @@
                        key_field="step"
                        value_field="value"
                 />
+
+
+                <field name="status_cas"
+                       label="PLG_EMUNDUS_AMMON_STATUS_CAS"
+                       description="PLG_EMUNDUS_AMMON_STATUS_CAS_DESC"
+                       type="sql"
+                       query="SELECT step, value FROM #__emundus_setup_status"
+                       key_field="step"
+                       value_field="value"
+                />
+
+                <field name="program_cas"
+                       label="PLG_EMUNDUS_AMMON_PROGRAM_CAS"
+                       description="PLG_EMUNDUS_AMMON_PROGRAM_CAS_DESC"
+                       type="sql"
+                       query="SELECT DISTINCT programmes FROM #__emundus_setup_programmes WHERE programmes IS NOT NULL AND programmes != ''"
+                       key_field="programmes"
+                       value_field="programmes"
+                       header="PLG_EMUNDUS_AMMON_PROGRAM_CAS_HEADER"
+                />
             </fieldset>
         </fields>
     </config>
