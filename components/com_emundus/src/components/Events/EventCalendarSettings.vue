@@ -131,6 +131,9 @@ export default {
 			while (this.$props.event.slots[key] && this.$props.event.slots[key].start < new Date().toISOString()) {
 				key++;
 			}
+      if (key >= this.$props.event.slots.length) {
+        key = this.$props.event.slots.length - 1;
+      }
 			let selectedDate = new Date(this.$props.event.slots[key].start);
 
 			//let selectedDate = new Date(this.$props.event.slots[0].start);

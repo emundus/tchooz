@@ -606,7 +606,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				'eses.more_infos',
 				'group_concat(DISTINCT essu.user) as users',
 				'group_concat(DISTINCT concat(eu.lastname," ",eu.firstname)) as people',
-				'esa.capacity as availabilities_count',
+				'eses.slot_capacity as availabilities_count',
 				'count(DISTINCT er.id) as booked_count'
 			];
 
@@ -1531,6 +1531,20 @@ class EmundusModelEvents extends BaseDatabaseModel
 							{
 								$insert_availabilities[] = $slot->id . ', ' . $event_id . ', ' . $this->db->quote($availability['start']) . ', ' . $this->db->quote($availability['end']) . ', ' . $this->db->quote($slot->slot_capacity);
 							}
+							else {
+								// Update the existing availability if it exists
+								$update_query = $this->db->getQuery(true);
+
+								$update_query->clear()
+									->update($this->db->quoteName('#__emundus_setup_availabilities'))
+									->set($this->db->quoteName('capacity') . ' = ' . $this->db->quote($slot->slot_capacity))
+									->where($this->db->quoteName('id') . ' = ' . $availability_id);
+								$this->db->setQuery($update_query);
+								if ($this->db->execute())
+								{
+									$saved = true;
+								}
+							}
 						}
 					}
 
@@ -1777,12 +1791,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 						if (!empty($users_assoc))
 						{
-							$query->clear()
-								->delete($this->db->quoteName('#__emundus_users_assoc'))
-								->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $users_assoc) . ')')
-								->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($candidature->fnum));
-							$this->db->setQuery($query);
-							$this->db->execute();
+							$m_files->unshareUsers($users_assoc, [$candidature->fnum]);
 						}
 
 						$query->clear()
@@ -3561,12 +3570,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 					if(!empty($old_users))
 					{
-						$query->clear()
-							->delete($this->db->quoteName('#__emundus_users_assoc'))
-							->where('fnum = ' . $this->db->quote($fnum))
-							->where('user_id IN (' . implode(',', $old_users) . ')');
-						$this->db->setQuery($query);
-						$this->db->execute();
+						$m_files->unshareUsers($old_users, [$fnum]);
 					}
 
 					$query->clear()

@@ -1128,6 +1128,9 @@ class FileMaker
 			// User was updated in Filemaker
 			if (intval($emundus_file->applicant_id) != intval($user_id)) {
 				$applicant_file_update_result = $this->updateFileApplicantId($single_field_data, $user_id, $emundus_file->fnum);
+                // Get the file again because the fnum and applicant_id have changed
+                $emundus_file = $this->getEmundusFile($single_field_data->fieldData->uuid);
+                $fnum = $emundus_file->fnum;
 				$project_information_update_result = $this->updateProjectInformation($single_field_data, $emundus_file->fnum);
 				if($applicant_file_update_result && $project_information_update_result){
 					$m_message->sendEmail($emundus_file->fnum, $step_properties->email);
@@ -1537,11 +1540,14 @@ class FileMaker
 	{
 		$result = false;
 
+        $new_fnum = substr($fnum, 0, 21) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+
 		$query = $this->db->getQuery(true);
 		$query->clear()
 			->update($this->db->quoteName('#__emundus_campaign_candidature'))
-			->set($this->db->quoteName('applicant_id') . ' = ' . $user_id)
-			->where($this->db->quoteName('uuid') . "=" . $this->db->quote($file->fieldData->uuid));
+            ->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($new_fnum))
+			->set($this->db->quoteName('applicant_id') . ' = ' . $this->db->quote($user_id))
+			->where($this->db->quoteName('uuid') . ' = ' . $this->db->quote($file->fieldData->uuid));
 		try {
 			$this->db->setQuery($query);
 			$result = $this->db->execute();

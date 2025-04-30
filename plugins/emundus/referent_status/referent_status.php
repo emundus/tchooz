@@ -130,10 +130,10 @@ class PlgEmundusReferent_status extends CMSPlugin {
 
 						$post = array(
 							'FNUM' => $applicant->fnum,
-							'DEADLINE' => HTMLHelper::_('date', $applicant->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+							'DEADLINE' => HTMLHelper::_('date', $applicant->end_date, Text::_('DATE_FORMAT_LC2'), null),
 							'CAMPAIGN_LABEL' => $applicant->label,
-							'CAMPAIGN_START' => HTMLHelper::_('date', $applicant->start_date, Text::_('DATE_FORMAT_OFFSET1'), null),
-							'CAMPAIGN_END' => HTMLHelper::_('date', $applicant->end_date, Text::_('DATE_FORMAT_OFFSET1'), null),
+							'CAMPAIGN_START' => HTMLHelper::_('date', $applicant->start_date, Text::_('DATE_FORMAT_LC2'), null),
+							'CAMPAIGN_END' => HTMLHelper::_('date', $applicant->end_date, Text::_('DATE_FORMAT_LC2'), null),
 							'FIRSTNAME' => $applicant->firstname,
 							'LASTNAME' => strtoupper($applicant->lastname),
 							'UPLOAD_URL' => $link_upload,

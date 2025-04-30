@@ -204,6 +204,14 @@ class EmundusFilters
 	{
 		$elements = [];
 
+		if ($this->h_cache->isEnabled()) {
+			$elements = $this->h_cache->get('em-filters-associated-elements-' . $element_id);
+
+			if (!empty($elements)) {
+				return $elements;
+			}
+		}
+
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
@@ -233,6 +241,10 @@ class EmundusFilters
 			try {
 				$db->setQuery($query);
 				$elements = $db->loadAssocList();
+
+				if ($this->h_cache->isEnabled()) {
+					$this->h_cache->set('em-filters-associated-elements-' . $element_id, $elements);
+				}
 			} catch (Exception $e) {
 				Log::add('Failed to get elements associated element id ' . $element_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
 			}

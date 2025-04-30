@@ -96,10 +96,10 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 		$sent             = false;
 
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
-		$params           = $event->getArgument('params');
-		$this->limit            = (int)$params->limit ?? 100;
-		$this->max_attempts = (int)$params->max_attempts ?? 3;
-		$this->email_id_to_sales = (int)$params->email_id_to_sales ?? 0;
+		$params = $event->getArgument('params');
+		$this->limit = (int) $params->limit ?? 100;
+		$this->max_attempts = (int) $params->max_attempts ?? 3;
+		$this->email_id_to_sales = (int) $params->email_id_to_sales ?? 0;
 		Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
 
 		$pending_files = $this->getPendingFiles();
@@ -107,12 +107,13 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 		{
 			foreach ($pending_files as $file)
 			{
-				$force_new_user_if_not_found = $file->force_new_user_if_not_found ?? false;
+				$force_new_user_if_not_found = $file->force_new_user_if_not_found == 1;
+				$skip_company = $file->skip_company == 1;
 
 				$message = '';
 				try {
 					$repository = new AmmonRepository($file->fnum, $file->session_id, $file->file_status, $this->email_id_to_sales);
-					$sent       = $repository->registerFileToSession($force_new_user_if_not_found);
+					$sent       = $repository->registerFileToSession($force_new_user_if_not_found, $skip_company);
 				} catch (\Exception $e) {
 					$sent   = false;
 					Log::add('Something went wrong when trying to register fnum ' . $file->fnum . ' in ammon api : ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');

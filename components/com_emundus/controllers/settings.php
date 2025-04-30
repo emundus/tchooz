@@ -2001,7 +2001,7 @@ class EmundusControllersettings extends BaseController
 			$response['message'] = Text::_('REQUESTS_FOUND');
 			$response['data']    = $requests;
 			$response['length']    = $length;
-			$response['files_menu'] = $files_menu->route;
+			$response['files_menu'] = '/'.$files_menu->route;
 		}
 
 		echo json_encode((object) $response);

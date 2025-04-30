@@ -79,7 +79,7 @@ foreach ($this->headings as $heading => $label) {
                                 <span class="material-symbols-outlined mr-2"><?php echo $icon ?></span>
 							<?php endif; ?>
 
-                            <p title="<?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?>" class="em-neutral-700-color"><?php echo $label ?> <?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?></p>
+                            <p title="<?php echo isset($this->_row->data) ? strip_tags($this->_row->data->$heading) : ''; ?>" class="em-neutral-700-color"><?php echo $label ?> <?php echo isset($this->_row->data) ? $this->_row->data->$heading : ''; ?></p>
                         </div>
 						<?php
 					}
