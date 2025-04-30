@@ -103,7 +103,6 @@ export default {
 					new Date().toISOString().split('T'),
 					'',
 					this.location,
-					1,
 					this.$props.componentsProps ? [this.$props.componentsProps.event_id] : [],
 				);
 				let slots = responseSlots.data;

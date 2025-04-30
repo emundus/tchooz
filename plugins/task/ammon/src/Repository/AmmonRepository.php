@@ -11,6 +11,7 @@ use Joomla\Plugin\Task\Ammon\Factory\AmmonFactory;
 use Joomla\Plugin\Task\Ammon\Synchronizer\AmmonSynchronizer;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Event\DispatcherInterface;
 
 require_once(JPATH_SITE . '/components/com_emundus/models/sync.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
@@ -27,12 +28,13 @@ class AmmonRepository
 	private int $file_status = 0;
 	private int $email_id_to_sales = 0;
 	private int $ammon_session_id;
-	private $sync_model = null;
-	private $api;
+	private \EmundusModelSync $sync_model;
+	private ?object $api;
 	private array $configurations = [];
 	private AmmonFactory $factory;
 	private AmmonSynchronizer $synchronizer;
 	private DatabaseDriver $db;
+	private DispatcherInterface $dispatcher;
 
 	public function __construct(string $fnum, int $ammon_session_id, int $file_status = 0, int $email_id_to_sales = 0)
 	{
@@ -76,46 +78,50 @@ class AmmonRepository
 	 *
 	 * @return bool
 	 */
-	public function registerFileToSession(bool $force_new_user_if_not_found = false): bool
+	public function registerFileToSession(bool $force_new_user_if_not_found = false, bool $skip_company = false): bool
 	{
 		$registered = false;
 
 		try {
-			$company = $this->getOrCreateCompany();
-			if (!empty($company)) {
-				if ($this->companyIsPaying()) {
-					Log::add('Company ' . $company->establishmentName . ' is paying a part for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
+			if (!$skip_company) {
+				$company = $this->getOrCreateCompany();
+				if (!empty($company)) {
+					if ($this->companyIsPaying()) {
+						Log::add('Company ' . $company->establishmentName . ' is paying a part for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 
-					$manager = $this->getCompanyManager($company);
-
-					if (empty($manager)) {
-						$manager = $this->createCompanyManager($company);
+						$manager = $this->getCompanyManager($company);
 
 						if (empty($manager)) {
-							throw new \Exception('Failed to create company manager in ammon.');
-						}
-					}
+							$manager = $this->createCompanyManager($company);
 
-					$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
-					if ($different_referee['raw'] == 1) {
-						Log::add('Need to create a different referee for '. $this->fnum, Log::INFO, 'plugin.emundus.ammon');
-
-						$registration_referee = $this->getRegistrationReferee($company);
-						if (empty($registration_referee)) {
-							$registration_referee = $this->createRegistrationReferee($company);
-
-							if (empty($registration_referee)) {
-								throw new \Exception('Failed to create registration different referee in ammon.');
-							} else {
-								Log::add('Registration referee created successfully for ' . $this->fnum);
+							if (empty($manager)) {
+								throw new \Exception('Failed to create company manager in ammon.');
 							}
 						}
+
+						$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
+						if ($different_referee['raw'] == 1) {
+							Log::add('Need to create a different referee for '. $this->fnum, Log::INFO, 'plugin.emundus.ammon');
+
+							$registration_referee = $this->getRegistrationReferee($company);
+							if (empty($registration_referee)) {
+								$registration_referee = $this->createRegistrationReferee($company);
+
+								if (empty($registration_referee)) {
+									throw new \Exception('Failed to create registration different referee in ammon.');
+								} else {
+									Log::add('Registration referee created successfully for ' . $this->fnum);
+								}
+							}
+						} else {
+							Log::add('No need to create a different referee for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
+						}
 					} else {
-						Log::add('No need to create a different referee for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
+						Log::add('Company ' . $company->establishmentName . ' is not paying for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 					}
-				} else {
-					Log::add('Company ' . $company->establishmentName . ' is not paying for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 				}
+			} else {
+				$company = null;
 			}
 
 			$applicant = $this->getOrCreateApplicant($force_new_user_if_not_found);
@@ -503,33 +509,5 @@ class AmmonRepository
 		}
 
 		return $sent;
-	}
-
-	/**
-	 * @param   string  $fnum
-	 *
-	 * @return bool
-	 */
-	public function saveAmmonRegistration(string $fnum): bool
-	{
-		$saved = false;
-
-		if (!empty($fnum)) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->createQuery();
-
-			$query->update($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-				->set($db->quoteName('ecc.registered_in_ammon') . ' = 1')
-				->where($db->quoteName('ecc.fnum') . ' = ' . $db->quote($fnum));
-
-			try {
-				$db->setQuery($query);
-				$saved = $db->execute();
-			} catch (\Exception $e) {
-				Log::add('Failed to update registration for fnum ' . $fnum . ' ' . $e->getMessage(), Log::ERROR, 'plugin.emundus.ammon');
-			}
-		}
-
-		return $saved;
 	}
 }

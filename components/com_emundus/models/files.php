@@ -31,6 +31,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\User;
 use Joomla\Database\ParameterType;
 
 /**
@@ -1439,6 +1440,53 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $shared;
+	}
+
+	public function unshareUsers(array $users, array $fnums, ?User $current_user = null): bool
+	{
+		try
+		{
+			if(empty($users) || empty($fnums))
+			{
+				return false;
+			}
+
+			if(empty($current_user))
+			{
+				$current_user = $this->app->getIdentity();
+			}
+
+			$query = $this->_db->getQuery(true);
+
+			$query->delete($this->_db->quoteName('#__emundus_users_assoc'))
+				->where($this->_db->quoteName('user_id') . ' IN (' . implode(',', $users) . ')')
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
+			$this->_db->setQuery($query);
+
+			if($unshared = $this->_db->execute())
+			{
+				$query->clear()
+					->select('name')
+					->from($this->_db->quoteName('#__users'))
+					->where($this->_db->quoteName('id') . ' IN (' . implode(',', $users) . ')');
+				$this->_db->setQuery($query);
+				$user_names = $this->_db->loadColumn();
+
+				foreach ($fnums as $fnum)
+				{
+					$fnumInfos  = $this->getFnumInfos($fnum);
+					$logsParams = array('deleted' => array_unique($user_names, SORT_REGULAR));
+					EmundusModelLogs::log($current_user->id, $fnumInfos['applicant_id'], $fnum, 11, 'd', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to unshare users' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			$unshared = false;
+		}
+
+		return $unshared;
 	}
 
 	/**

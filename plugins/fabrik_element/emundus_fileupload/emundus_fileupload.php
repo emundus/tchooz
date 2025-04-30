@@ -17,6 +17,15 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 
+if(!class_exists('FabrikFEModelForm'))
+{
+	require_once JPATH_SITE . '/components/com_fabrik/models/form.php';
+}
+if(!class_exists('FabrikFEModelList'))
+{
+	require_once JPATH_SITE . '/components/com_fabrik/models/list.php';
+}
+
 /**
  * Plugin element to render fields
  *

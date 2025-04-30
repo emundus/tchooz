@@ -14,9 +14,11 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Plugin\PluginHelper;
 
 class EmundusControllerSync extends BaseController
 {
@@ -402,6 +404,53 @@ class EmundusControllerSync extends BaseController
 			}
 			else {
 				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function sendtomicrosoftcrm()
+	{
+		$response = array('status' => 0, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if(EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)){
+			$fnums  = $this->input->getString('fnums', null);
+
+			if(!empty($fnums))
+			{
+				$dispatcher = Factory::getApplication()->getDispatcher();
+				PluginHelper::importPlugin('emundus');
+
+				$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+
+				$onMicrosftDynamicsSyncEventHandler = new GenericEvent(
+					'onCallEventHandler',
+					['onMicrosftDynamicsSync',
+						// Datas to pass to the event
+						['fnums' => $fnums]
+					]
+				);
+				$onMicrosftDynamicsSync             = new GenericEvent(
+					'onMicrosftDynamicsSync',
+					// Datas to pass to the event
+					['fnums' => $fnums]
+				);
+
+				try
+				{
+					$dispatcher->dispatch('onCallEventHandler', $onMicrosftDynamicsSyncEventHandler);
+					$dispatcher->dispatch('onMicrosftDynamicsSync', $onMicrosftDynamicsSync);
+
+					$response['status'] = 1;
+					$response['msg']    = Text::_('COM_EMUNDUS_SEND_TO_MICROSOFT_DYNAMICS_SUCCESS');
+				}
+				catch (Exception $e)
+				{
+					$response['status'] = 0;
+					$response['msg']    = $e->getMessage();
+				}
 			}
 		}
 

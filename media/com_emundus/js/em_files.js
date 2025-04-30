@@ -1534,6 +1534,37 @@ function runAction(action, url = '', option = '') {
             });
             break;
 
+        case 'crm':
+            let form = new FormData();
+            form.append('fnums', checkInput);
+
+            fetch('/index.php?option=com_emundus&controller=sync&task=sendtomicrosoftcrm', {
+                method: 'POST',
+                body: form
+            }).then((response) => {
+                return response.json();
+            }).then((result) => {
+                if(result.status)
+                {
+                    Swal.fire({
+                        position: 'center',
+                        icon: 'success',
+                        title: Joomla.Text._('COM_EMUNDUS_ONBOARD_SUCCESS'),
+                        text: result.msg,
+                        showConfirmButton: true,
+                        reverseButtons: true,
+                        customClass: {
+                            title: 'em-swal-title',
+                            confirmButton: 'em-swal-confirm-button',
+                            actions: 'em-swal-single-action'
+                        },
+                        timer: 3000
+                    });
+                }
+            });
+            break;
+
+
         default:
             break;
     }
@@ -4163,6 +4194,10 @@ $(document).ready(function() {
                 });
                 break;
 
+            case 'crm':
+                multipleSteps = true;
+                break;
+
             default:
                 break;
         }
@@ -4200,7 +4235,7 @@ $(document).ready(function() {
             });
 
         } else {
-            runAction(id);
+            runAction(id, url);
         }
 
         $('.modal-chzn-select').chosen({width:'100%', search_contains: true});
