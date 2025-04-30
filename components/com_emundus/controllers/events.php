@@ -908,12 +908,10 @@ class EmundusControllerEvents extends BaseController
 			$start                       = $this->input->getString('start', '');
 			$end                         = $this->input->getString('end', '');
 			$location                    = $this->input->getInt('location', 0);
-			$check_booking_limit_reached = $this->input->getInt('check_booking_limit_reached', 0);
 			$events_ids                  = $this->input->getString('events_ids', '');
 			$events_ids                  = explode(',', $events_ids);
 
 			$events_ids = array_map('trim', $events_ids);
-
 
 			$program_code = '';
 			$cid          = 0;
@@ -925,6 +923,7 @@ class EmundusControllerEvents extends BaseController
 			}
 
 			$check_availables_to_show = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id));
+			$check_booking_limit_reached = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id));
 
 			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location, $check_booking_limit_reached, $events_ids, $check_availables_to_show);
 			$response['data']     = $event_availabilities;

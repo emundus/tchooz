@@ -221,19 +221,12 @@ export default {
 		}
 	},
 
-	async getAvailabilitiesByCampaignsAndPrograms(
-		start = '',
-		end = '',
-		location = 0,
-		check_booking_limit_reached = 0,
-		events_ids = [],
-	) {
+	async getAvailabilitiesByCampaignsAndPrograms(start = '', end = '', location = 0, events_ids = []) {
 		try {
 			return await fetchClient.get('getavailabilitiesbycampaignsandprograms', {
 				start: start,
 				end: end,
 				location: location,
-				check_booking_limit_reached: check_booking_limit_reached,
 				events_ids: events_ids,
 			});
 		} catch (e) {

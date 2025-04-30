@@ -83,7 +83,6 @@ const _sfc_main = {
           (/* @__PURE__ */ new Date()).toISOString().split("T"),
           "",
           this.location,
-          1,
           this.$props.componentsProps ? [this.$props.componentsProps.event_id] : []
         );
         let slots = responseSlots.data;

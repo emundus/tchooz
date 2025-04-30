@@ -196,13 +196,12 @@ const eventsService = {
       };
     }
   },
-  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0, check_booking_limit_reached = 0, events_ids = []) {
+  async getAvailabilitiesByCampaignsAndPrograms(start = "", end = "", location = 0, events_ids = []) {
     try {
       return await fetchClient.get("getavailabilitiesbycampaignsandprograms", {
         start,
         end,
         location,
-        check_booking_limit_reached,
         events_ids
       });
     } catch (e) {
