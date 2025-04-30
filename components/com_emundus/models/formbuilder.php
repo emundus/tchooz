@@ -2156,7 +2156,24 @@ class EmundusModelFormbuilder extends JModelList
 
                         if(stripos($element['params']['database_join_where_sql'], 'WHERE') !== false)
 						{
-                            $element['params']['database_join_where_sql'] = preg_replace('/\bWHERE(.*) NOT IN\b(.*)/i', '', $element['params']['database_join_where_sql']);
+                            $element['params']['database_join_where_sql'] = preg_replace(
+                                [
+                                    // Case 1: WHERE {thistable}.id NOT IN (...) AND ...
+                                    '/\bWHERE\s+{thistable}\.id\s+NOT\s+IN\s*\([^)]*\)\s+AND\s+/i',
+
+                                    // Case 2: WHERE {thistable}.id NOT IN (...) only (no other conditions)
+                                    '/\bWHERE\s+{thistable}\.id\s+NOT\s+IN\s*\([^)]*\)\s*(?=ORDER BY|\Z)/i',
+
+                                    // Case 3: AND {thistable}.id NOT IN (...) somewhere later in the WHERE clause
+                                    '/\s+AND\s+{thistable}\.id\s+NOT\s+IN\s*\([^)]*\)/i'
+                                ],
+                                [
+                                    'WHERE ', // Case 1: remove the condition but keep WHERE
+                                    '',       // Case 2: remove entirely
+                                    ''        // Case 3: remove entirely
+                                ],
+                                $element['params']['database_join_where_sql']
+                            );
 							if(empty($element['params']['database_join_where_sql'])) {
 								$element['params']['database_join_where_sql'] = 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
 							} else {
@@ -2166,7 +2183,24 @@ class EmundusModelFormbuilder extends JModelList
 							$element['params']['database_join_where_sql'] .= 'WHERE {thistable}.' . $element['params']['join_key_column'] . ' NOT IN (' . implode(',',$this->db->quote($ids_to_exclude)) . ')';
 						}
 					} else {
-						$element['params']['database_join_where_sql'] = preg_replace('/\bWHERE(.*) NOT IN\b(.*)/i', '', $element['params']['database_join_where_sql']);
+                        $element['params']['database_join_where_sql'] = preg_replace(
+                            [
+                                // Case 1: WHERE {thistable}.id NOT IN (...) AND ...
+                                '/\bWHERE\s+{thistable}\.id\s+NOT\s+IN\s*\([^)]*\)\s+AND\s+/i',
+
+                                // Case 2: WHERE {thistable}.id NOT IN (...) only (no other conditions)
+                                '/\bWHERE\s+{thistable}\.id\s+NOT\s+IN\s*\([^)]*\)\s*(?=ORDER BY|\Z)/i',
+
+                                // Case 3: AND {thistable}.id NOT IN (...) somewhere later in the WHERE clause
+                                '/\s+AND\s+{thistable}\.id\s+NOT\s+IN\s*\([^)]*\)/i'
+                            ],
+                            [
+                                'WHERE ', // Case 1: remove the condition but keep WHERE
+                                '',       // Case 2: remove entirely
+                                ''        // Case 3: remove entirely
+                            ],
+                            $element['params']['database_join_where_sql']
+                        );
 					}
 
 					// If table have a published column add it to where
@@ -2187,7 +2221,7 @@ class EmundusModelFormbuilder extends JModelList
 						{
 							// If we have a order by clause, we need to remove it and add it at the end
 							$order_by = '';
-							if (stripos($element['params']['database_join_where_sql'], 'order by') !== false)
+							if (stripos($element['params']['database_join_where_sql'], 'ORDER BY') !== false)
 							{
 								preg_match_all("/\bORDER BY\b(.*)/i", $element['params']['database_join_where_sql'], $order_by, PREG_SET_ORDER, 0);
 								if (!empty($order_by))
@@ -2214,16 +2248,17 @@ class EmundusModelFormbuilder extends JModelList
 					// If $element['params']['database_join_where_sql'] start by AND or OR, remove it
 					$element['params']['database_join_where_sql'] = preg_replace('/^AND\s+/i', 'WHERE ', $element['params']['database_join_where_sql']);
 
-					$order_by_column = !empty($element['params']['join_val_column']) ? $element['params']['join_val_column'] : $element['params']['join_key_column'];
-					if(stripos($element['params']['database_join_where_sql'], 'order by') !== false)
+					$order_by_column = !empty($element['params']['join_val_column']) ? '{thistable}.'.$element['params']['join_val_column'] : '{thistable}.'.$element['params']['join_key_column'];
+                    $order_by_column = !empty($element['params']['join_val_column_concat']) ? $element['params']['join_val_column_concat'] : $order_by_column;
+					if(stripos($element['params']['database_join_where_sql'], 'ORDER BY') !== false)
 					{
-						preg_replace('/\bORDER BY\b(.*)/i', 'ORDER BY {thistable}.' . $order_by_column, $element['params']['database_join_where_sql']);
+						preg_replace('/\bORDER BY\b(.*)/i', 'ORDER BY ' . $order_by_column, $element['params']['database_join_where_sql']);
 					} else {
 						if(!empty($element['params']['database_join_where_sql']))
 						{
-							$element['params']['database_join_where_sql'] .= ' order by {thistable}.' . $order_by_column;
+							$element['params']['database_join_where_sql'] .= ' ORDER BY ' . $order_by_column;
 						} else {
-							$element['params']['database_join_where_sql'] .= 'order by {thistable}.' . $order_by_column;
+							$element['params']['database_join_where_sql'] .= 'ORDER BY ' . $order_by_column;
 						}
 					}
 				}
