@@ -21,7 +21,7 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-cron.php';
 require_once JPATH_SITE.'/components/com_emundus/classes/api/Api.php';
-use classes\api\IxParapheur;
+use Tchooz\api\IxParapheur;
 
 /**
  * A cron task to email records to a give set of users (incomplete application)

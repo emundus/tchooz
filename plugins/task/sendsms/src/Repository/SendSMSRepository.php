@@ -3,7 +3,7 @@ namespace Joomla\Plugin\Task\SendSMS\Repository;
 
 defined('_JEXEC') or die;
 
-use classes\Synchronizers\SMS\OvhSMS;
+use Tchooz\Synchronizers\SMS\OvhSMS;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;

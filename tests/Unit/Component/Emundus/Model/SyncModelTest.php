@@ -12,7 +12,7 @@ namespace Unit\Component\Emundus\Model;
 
 use EmundusModelApplication;
 use Joomla\Tests\Unit\UnitTestCase;
-use classes\api\Api;
+use Tchooz\api\Api;
 
 /**
  * @package     Unit\Component\Emundus\Model
