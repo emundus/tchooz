@@ -18,6 +18,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.view');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * HTML View class for the Emundus Component
@@ -57,12 +58,18 @@ class EmundusViewFiles extends JViewLegacy
 
 	protected array $code;
 	protected array $fnum_assoc;
-	protected string $filters;
-	protected bool $use_module_for_filters;
+	protected bool $use_module_for_filters = true;
 
 	protected array $docs;
 	protected array $prgs;
 	protected string $fnums;
+
+	/** FILTERS */
+	protected $applied_filters;
+	protected $filters;
+	protected $quick_search_filters;
+	protected int $count_filter_values;
+
 
 	public function __construct($config = array())
 	{
@@ -75,35 +82,7 @@ class EmundusViewFiles extends JViewLegacy
 
 
 		$this->app = Factory::getApplication();
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$this->user = $this->app->getIdentity();
-		}
-		else {
-			$this->user = Factory::getUser();
-		}
-
-		$menu = $this->app->getMenu();
-		$itemId = $this->app->input->getInt('Itemid', 0);
-		if(empty($itemId) && !empty($menu)) {
-			$current_menu = $menu->getActive();
-			if (!empty($current_menu)) {
-				$itemId = $current_menu->id;
-			}
-		}
-
-		$menu_params = $menu->getParams($itemId);
-		if (!empty($menu_params)) {
-			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
-		} else {
-			$this->use_module_for_filters = false;
-		}
-
-		$session = $this->app->getSession();
-		if ($this->use_module_for_filters) {
-			$session->set('last-filters-use-advanced', true);
-		} else {
-			$session->set('last-filters-use-advanced', false);
-		}
+		$this->user = $this->app->getIdentity();
 
 		parent::__construct($config);
 	}
@@ -111,11 +90,12 @@ class EmundusViewFiles extends JViewLegacy
 	/** @noinspection PhpInconsistentReturnPointsInspection */
 	public function display($tpl = null)
 	{
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
 			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 		}
 
-		$h_files = new EmundusHelperFiles;
+		$h_files              = new EmundusHelperFiles;
 		$params               = JComponentHelper::getParams('com_emundus');
 		$default_actions      = $params->get('default_actions', '[]');
 		$hide_default_actions = $params->get('hide_default_actions', 0);
@@ -127,17 +107,21 @@ class EmundusViewFiles extends JViewLegacy
 		$m_files = new EmundusModelFiles();
 		$h_files->setMenuFilter();
 
-		switch ($layout) {
+		switch ($layout)
+		{
 			case 'access':
 				$fnums     = $this->app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 
-				if (@$fnums_obj[0] == 'all') {
+				if (@$fnums_obj[0] == 'all')
+				{
 					$fnums = $m_files->getAllFnums();
 				}
-				else {
+				else
+				{
 					$fnums = array();
-					foreach ($fnums_obj as $key => $value) {
+					foreach ($fnums_obj as $key => $value)
+					{
 						$fnums[] = @$value->fnum;
 					}
 				}
@@ -148,7 +132,8 @@ class EmundusViewFiles extends JViewLegacy
 				$evalGroups         = $m_files->getEvalGroups();
 				$actions            = $m_files->getAllActions();
 				$actions_evaluators = json_decode($default_actions);
-				if (empty($actions_evaluators)) {
+				if (empty($actions_evaluators))
+				{
 					$actions_evaluators = (object) [1 => (object) ["id" => 1, "c" => 0, "r" => 1, "u" => 0, "d" => 0]];
 				}
 
@@ -171,20 +156,26 @@ class EmundusViewFiles extends JViewLegacy
 
 				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 
-				if (isset($current_menu) && !empty($current_menu)) {
+				if (isset($current_menu) && !empty($current_menu))
+				{
 
 					$params = $menu->getParams($Itemid);
 
-					if ($fnum === "0") {
+					if ($fnum === "0")
+					{
 						$items = $h_files->getMenuList($params);
 					}
-					else {
+					else
+					{
 						$items = $h_files->getMenuList($params, $fnum);
 					}
 
-					if(empty($fnum)) {
+					if (empty($fnum))
+					{
 						$this->menu_title = $current_menu->title;
-					} else {
+					}
+					else
+					{
 						$this->menu_title = '<button id="em-close-file" class="back-button-menuactions tw-flex tw-items-center tw-text-neutral-0 tw-cursor-pointer bg-transparent tw-font-semibold tw-group !tw-border-none hover:!tw-bg-transparent">
 						<span class="material-symbols-outlined tw-mr-1 -tw-ml-[15px]">chevron_left</span>
 						<span class="group-hover:tw-underline">' . JText::_('GO_BACK') . '</span>
@@ -195,7 +186,8 @@ class EmundusViewFiles extends JViewLegacy
 					$this->display = $display;
 					$this->fnum    = $fnum;
 				}
-				else {
+				else
+				{
 					echo JText::_('ERROR_MENU_ID_NOT_FOUND');
 
 					return false;
@@ -203,46 +195,61 @@ class EmundusViewFiles extends JViewLegacy
 				break;
 
 			case 'filters':
-				if (!$this->use_module_for_filters) {
-					$m_user        = new EmundusModelUsers();
-					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id);
+				$menu         = $this->app->getMenu();
+				$current_menu = $menu->getActive();
 
-					// get all fnums manually associated to user
-					$groups               = $m_user->getUserGroups($this->user->id, 'Column');
-					$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
-					$fnum_assoc           = $m_user->getApplicantsAssoc($this->user->id);
-					$m_files->fnum_assoc  = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 
-					$this->code       = $m_files->code;
-					$this->fnum_assoc = $m_files->fnum_assoc;
+				if (!empty($current_menu))
+				{
+					$menu_params = $menu->getParams($Itemid);
+					require_once JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
 
-					$filters       = $h_files->resetFilter();
-					$this->filters = $filters;
+					try
+					{
+						$m_filters                  = new EmundusFiltersFiles($menu_params->toArray());
+						$this->filters              = $m_filters->getFilters();
+						$this->applied_filters      = $m_filters->getAppliedFilters();
+						$this->quick_search_filters = $m_filters->getQuickSearchFilters();
+						$this->count_filter_values  = $menu_params->get('count_filter_values', 0);
+					}
+					catch (Exception $e)
+					{
+						$this->app->enqueueMessage($e->getMessage());
+						$this->app->redirect('/');
+					}
 				}
 				break;
 
 			case 'docs':
 				$fnumsObj = $this->app->input->getString('fnums', "");
 
-				if (!empty($fnumsObj)) {
+				if (!empty($fnumsObj))
+				{
 					$fnums = array();
-					if ($fnumsObj == 'all') {
+					if ($fnumsObj == 'all')
+					{
 						$fnums = $m_files->getAllFnums();
 					}
-					else {
+					else
+					{
 						$fnumsObj = json_decode(stripslashes($fnumsObj), false, 512, JSON_BIGINT_AS_STRING);
 
-						foreach ($fnumsObj as $fObj) {
-							if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum)) {
+						foreach ($fnumsObj as $fObj)
+						{
+							if (EmundusHelperAccess::asAccessAction(27, 'c', JFactory::getUser()->id, $fObj->fnum))
+							{
 								$fnums[] = $fObj->fnum;
 							}
 						}
 					}
-					if (!empty($fnums)) {
+					if (!empty($fnums))
+					{
 						$prgs = $m_files->getProgByFnums($fnums);
 						$docs = $m_files->getDocsByProg(key($prgs));
 					}
-					else {
+					else
+					{
 						echo JText::_('ACCESS_DENIED');
 						exit();
 					}
@@ -253,7 +260,8 @@ class EmundusViewFiles extends JViewLegacy
 					$fnums_array = implode(',', $fnums);
 					$this->fnums = $fnums_array;
 				}
-				else {
+				else
+				{
 					echo JText::_('COM_EMUNDUS_ONBOARD_NOFILES');
 					exit();
 				}
@@ -262,7 +270,7 @@ class EmundusViewFiles extends JViewLegacy
 
 			// Get list of application files
 			default:
-				$e_user = $this->app->getSession()->get('emundusUser');
+				$e_user       = $this->app->getSession()->get('emundusUser');
 				$menu         = $this->app->getMenu();
 				$current_menu = $menu->getActive();
 
@@ -273,15 +281,15 @@ class EmundusViewFiles extends JViewLegacy
 
 				$m_user = new EmundusModelUsers();
 
-				$groups               = $m_user->getUserGroups($this->user->id, 'Column',$e_user->profile);
+				$groups = $m_user->getUserGroups($this->user->id, 'Column', $e_user->profile);
 
 				// get all fnums manually associated to user
 				$fnum_assoc_to_groups = $m_user->getApplicationsAssocToGroups($groups);
 				$fnum_assoc           = $m_user->getApplicantsAssoc($this->user->id);
 
-				$m_files->fnum_assoc  = array_merge($fnum_assoc_to_groups, $fnum_assoc);
-				$m_files->code = [];
-				if(!empty($groups))
+				$m_files->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
+				$m_files->code       = [];
+				if (!empty($groups))
 				{
 					$m_files->code = $m_user->getUserGroupsProgrammeAssoc($this->user->id, 'jesgrc.course', $groups);
 				}
@@ -289,16 +297,20 @@ class EmundusViewFiles extends JViewLegacy
 				$this->code       = $m_files->code;
 				$this->fnum_assoc = $m_files->fnum_assoc;
 
-				if(!empty($m_files->fnum_assoc) || !empty($m_files->code)) {
+				if (!empty($m_files->fnum_assoc) || !empty($m_files->code))
+				{
 					// get applications files
 					$users = $m_files->getUsers();
-				} else {
+				}
+				else
+				{
 					$users = array();
 				}
 
 				// Get elements from model and proccess them to get an easy to use array containing the element type
 				$elements = $m_files->getElementsVar();
-				foreach ($elements as $elt) {
+				foreach ($elements as $elt)
+				{
 					$elt_name          = $elt->tab_name . "___" . $elt->element_name;
 					$eltarr[$elt_name] = [
 						"plugin"    => $elt->element_plugin,
@@ -308,7 +320,8 @@ class EmundusViewFiles extends JViewLegacy
 					];
 				}
 
-				if (isset($eltarr)) {
+				if (isset($eltarr))
+				{
 					$elements = $eltarr;
 				}
 
@@ -318,8 +331,10 @@ class EmundusViewFiles extends JViewLegacy
 				$defaultElements = $this->get('DefaultElements');
 				$data            = array(array('check' => '#', 'name' => JText::_('COM_EMUNDUS_FILES_APPLICATION_FILES'), 'status' => JText::_('COM_EMUNDUS_STATUS')));
 				$fl              = array();
-				if (count($defaultElements) > 0) {
-					foreach ($defaultElements as $elt) {
+				if (count($defaultElements) > 0)
+				{
+					foreach ($defaultElements as $elt)
+					{
 						$fl[$elt->tab_name . '___' . $elt->element_name] = $elt->element_label;
 					}
 				}
@@ -329,12 +344,15 @@ class EmundusViewFiles extends JViewLegacy
 				$objAccess = [];
 				$colsSup   = [];
 
-				if (!empty($users)) {
+				if (!empty($users))
+				{
 					$i          = 1;
 					$taggedFile = array();
-					foreach ($columnSupl as $col) {
+					foreach ($columnSupl as $col)
+					{
 						$col = explode('.', $col);
-						switch ($col[0]) {
+						switch ($col[0])
+						{
 							case 'evaluators':
 								$data[0]['EVALUATORS'] = JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS');
 								$colsSup['evaluators'] = $h_files->createEvaluatorList($col[1], $m_files);
@@ -374,8 +392,10 @@ class EmundusViewFiles extends JViewLegacy
 							case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
-								foreach (JModuleHelper::getModules('') as $module) {
-									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $this->app->input->get('Itemid', null))) {
+								foreach (JModuleHelper::getModules('') as $module)
+								{
+									if ($module->module == 'mod_emundus_custom' && ($module->menuid == 0 || $module->menuid == $this->app->input->get('Itemid', null)))
+									{
 										$mod_emundus_custom[$module->title] = $module->content;
 										$data[0][$module->title]            = JText::_($module->title);
 										$colsSup[$module->title]            = array();
@@ -387,17 +407,20 @@ class EmundusViewFiles extends JViewLegacy
 						}
 					}
 
-					foreach ($users as $user) {
+					foreach ($users as $user)
+					{
 						$usObj       = new stdClass();
 						$usObj->val  = 'X';
 						$fnumArray[] = $user['fnum'];
 						$line        = array('check' => $usObj);
 
-						if (array_key_exists($user['fnum'], $taggedFile)) {
+						if (array_key_exists($user['fnum'], $taggedFile))
+						{
 							$class        = $taggedFile[$user['fnum']]['class'];
 							$usObj->class = $taggedFile[$user['fnum']]['class'];
 						}
-						else {
+						else
+						{
 							$class        = null;
 							$usObj->class = null;
 						}
@@ -405,29 +428,34 @@ class EmundusViewFiles extends JViewLegacy
 						$unread_messages   = array();
 						$unread_messages[] = $m_files->getUnreadMessages($this->user->id);
 						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
-						$keys = array_keys($unread_messages);
+						$keys              = array_keys($unread_messages);
 						natsort($keys);
 
-						foreach ($user as $key => $value) {
+						foreach ($user as $key => $value)
+						{
 							$userObj = new stdClass();
 
-							if ($key == 'fnum') {
+							if ($key == 'fnum')
+							{
 								$userObj->val   = $value;
 								$userObj->class = $class;
 								$userObj->type  = 'fnum';
-								if ($displayPhoto) {
+								if ($displayPhoto)
+								{
 									$userObj->photo = $h_files->getPhotos($value);
 								}
-								$userObj->user       = JFactory::getUser((int) $user['applicant_id']);
-								$userObj->user->name = $user['name'];
+								$userObj->user            = JFactory::getUser((int) $user['applicant_id']);
+								$userObj->user->name      = $user['name'];
 								$userObj->unread_messages = $unread_messages[$value];
 
-								$line['fnum']        = $userObj;
+								$line['fnum'] = $userObj;
 							}
-							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire') {
+							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire')
+							{
 								continue;
 							}
-							elseif (isset($elements) && in_array($key, array_keys($elements))) {
+							elseif (isset($elements) && in_array($key, array_keys($elements)))
+							{
 								$userObj->val          = $value;
 								$userObj->type         = $elements[$key]['plugin'];
 								$userObj->status_class = $user['status_class'];
@@ -436,12 +464,14 @@ class EmundusViewFiles extends JViewLegacy
 								$line[$key]            = $userObj;
 
 								// Radiobuttons are a strange beast, we need to get all of the values
-								if ($userObj->type == 'radiobutton') {
+								if ($userObj->type == 'radiobutton')
+								{
 									$params         = json_decode($userObj->params);
 									$userObj->radio = array_combine($params->sub_options->sub_labels, $params->sub_options->sub_values);
 								}
 							}
-							else {
+							else
+							{
 								$userObj->val          = $value;
 								$userObj->type         = 'text';
 								$userObj->status_class = $user['status_class'];
@@ -449,23 +479,29 @@ class EmundusViewFiles extends JViewLegacy
 							}
 						}
 
-						if (count(@$colsSup) > 0) {
-							foreach ($colsSup as $key => $obj) {
+						if (count(@$colsSup) > 0)
+						{
+							foreach ($colsSup as $key => $obj)
+							{
 								$userObj = new stdClass();
-								if (!is_null($obj)) {
-									if (array_key_exists($user['fnum'], $obj)) {
+								if (!is_null($obj))
+								{
+									if (array_key_exists($user['fnum'], $obj))
+									{
 										$userObj->val                     = $obj[$user['fnum']];
 										$userObj->type                    = 'html';
 										$userObj->fnum                    = $user['fnum'];
 										$line[JText::_(strtoupper($key))] = $userObj;
 									}
-									else {
+									else
+									{
 										$userObj->val  = '';
 										$userObj->type = 'html';
 										$line[$key]    = $userObj;
 									}
 								}
-								elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access' || (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom))) {
+								elseif ($key === 'overall' || $key === 'id_tag' || $key === 'access' || (!empty($mod_emundus_custom) && array_key_exists($key, $mod_emundus_custom)))
+								{
 									$line[$key] = "";
 								}
 							}
@@ -474,26 +510,31 @@ class EmundusViewFiles extends JViewLegacy
 						$i++;
 					}
 
-					if (isset($colsSup['overall'])) {
+					if (isset($colsSup['overall']))
+					{
 						$m_evaluation       = new EmundusModelEvaluation;
 						$colsSup['overall'] = $m_evaluation->getEvaluationAverageByFnum($fnumArray);
 					}
 
-					if (isset($colsSup['id_tag'])) {
+					if (isset($colsSup['id_tag']))
+					{
 						$tags              = $m_files->getTagsByFnum($fnumArray);
 						$colsSup['id_tag'] = $h_files->createTagsList($tags);
 					}
 
-					if (isset($colsSup['access'])) {
+					if (isset($colsSup['access']))
+					{
 						$objAccess = $m_files->getAccessorByFnums($fnumArray);
 					}
 
-					if (isset($colsSup['form_progress'])) {
+					if (isset($colsSup['form_progress']))
+					{
 						$forms_progress           = $m_files->getFormProgress($fnumArray);
 						$colsSup['form_progress'] = $h_files->createFormProgressList($forms_progress);
 					}
 
-					if (isset($colsSup['attachment_progress'])) {
+					if (isset($colsSup['attachment_progress']))
+					{
 						$attachments_progress           = $m_files->getAttachmentProgress($fnumArray);
 						$colsSup['attachment_progress'] = $h_files->createAttachmentProgressList($attachments_progress);
 					}
@@ -511,16 +552,21 @@ class EmundusViewFiles extends JViewLegacy
 						}
 					}*/
 
-					if (isset($colsSup['commentaire'])) {
-						foreach ($fnumArray as $fnum) {
+					if (isset($colsSup['commentaire']))
+					{
+						foreach ($fnumArray as $fnum)
+						{
 							$notifications_comments        = sizeof($m_files->getCommentsByFnum([$fnum]));
 							$colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">' . $notifications_comments . '</p> ';
 						}
 					}
 
-					if (!empty($mod_emundus_custom)) {
-						foreach ($mod_emundus_custom as $key => $module) {
-							if (isset($colsSup[$key])) {
+					if (!empty($mod_emundus_custom))
+					{
+						foreach ($mod_emundus_custom as $key => $module)
+						{
+							if (isset($colsSup[$key]))
+							{
 								$colsSup[$key] = $h_files->createHTMLList($module, $fnumArray);
 							}
 						}
@@ -528,22 +574,27 @@ class EmundusViewFiles extends JViewLegacy
 
 					$this->keys_order = ['check' => -1, 'fnum' => 0];
 
-					if (!empty($menu_params->get('em_columns_ordered'))) {
+					if (!empty($menu_params->get('em_columns_ordered')))
+					{
 						$columns_ordered = explode(',', $menu_params->get('em_columns_ordered'));
-						$i = 1;
-						foreach ($columns_ordered as $key) {
+						$i               = 1;
+						foreach ($columns_ordered as $key)
+						{
 							$this->keys_order[$key] = $i;
 							$i++;
 						}
 					}
-					
-					foreach($data[0] as $k => $v) {
-						if (!array_key_exists($k, $this->keys_order) && $k != 'name') {
+
+					foreach ($data[0] as $k => $v)
+					{
+						if (!array_key_exists($k, $this->keys_order) && $k != 'name')
+						{
 							$this->keys_order[$k] = 999;
 						}
 					}
 				}
-				else {
+				else
+				{
 					$data = JText::_('COM_EMUNDUS_NO_RESULT');
 				}
 

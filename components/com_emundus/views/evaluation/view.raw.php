@@ -33,7 +33,6 @@ class EmundusViewEvaluation extends JViewLegacy
 	protected $cfnum;
 	protected $code;
 	protected $fnum_assoc;
-	protected $filters;
 	protected $form_url_edit;
 	protected $datas;
 	protected $colsSup;
@@ -43,11 +42,17 @@ class EmundusViewEvaluation extends JViewLegacy
 	protected $formid;
 	protected $lists;
 	protected $pagination;
-	protected $use_module_for_filters = 0;
+	protected bool $use_module_for_filters = true;
 	protected bool $open_file_in_modal = false;
 	protected string $modal_ratio = '66/33';
 
 	protected $modal_tabs = null;
+
+	/** FILTERS */
+	protected $applied_filters;
+	protected $filters;
+	protected $quick_search_filters;
+	protected int $count_filter_values;
 
 	public function __construct($config = array())
 	{
@@ -69,7 +74,6 @@ class EmundusViewEvaluation extends JViewLegacy
 			$current_menu                 = $menu->getActive();
 			if (!empty($current_menu)) {
 				$menu_params                  = $menu->getParams($current_menu->id);
-				$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 				$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
 
 				if ($this->open_file_in_modal) {
@@ -129,22 +133,29 @@ class EmundusViewEvaluation extends JViewLegacy
 				break;
 
 			case 'filters':
-				if (!$this->use_module_for_filters) {
-					$m_evaluation = $this->getModel('Evaluation');
-					$m_user       = new EmundusModelUsers();
+				$menu         = $this->app->getMenu();
+				$current_menu = $menu->getActive();
 
-					$m_evaluation->code = $m_user->getUserGroupsProgrammeAssoc($this->_user->id);
+				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
 
-					// get all fnums manually associated to user
-					$groups                   = $m_user->getUserGroups($this->_user->id, 'Column');
-					$fnum_assoc_to_groups     = $m_user->getApplicationsAssocToGroups($groups);
-					$fnum_assoc               = $m_user->getApplicantsAssoc($this->_user->id);
-					$m_evaluation->fnum_assoc = array_merge($fnum_assoc_to_groups, $fnum_assoc);
-					$this->code               = $m_evaluation->code;
-					$this->fnum_assoc         = $m_evaluation->fnum_assoc;
+				if (!empty($current_menu))
+				{
+					$menu_params = $menu->getParams($Itemid);
+					require_once JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
+					try
+					{
+						$m_filters = new EmundusFiltersFiles($menu_params->toArray());
 
-					// reset filter
-					$this->filters = EmundusHelperFiles::resetFilter();
+						$this->filters              = $m_filters->getFilters();
+						$this->applied_filters      = $m_filters->getAppliedFilters();
+						$this->quick_search_filters = $m_filters->getQuickSearchFilters();
+						$this->count_filter_values  = $menu_params->get('count_filter_values', 0);
+					}
+					catch (Exception $e)
+					{
+						$this->app->enqueueMessage($e->getMessage());
+						$this->app->redirect('/');
+					}
 				}
 				break;
 
