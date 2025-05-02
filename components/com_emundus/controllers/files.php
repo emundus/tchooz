@@ -4080,14 +4080,18 @@ class EmundusControllerFiles extends BaseController
 	public function checkmenufilterparams()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
-		$user_id  = JFactory::getUser()->id;
+		$user_id  = Factory::getApplication()->getIdentity()->id;
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
 			$itemId      = $this->input->getInt('Itemid', 0);
 			$menu        = $this->app->getMenu();
 			$menu_params = $menu->getParams($itemId);
+			$use_module_filters = false;
+			if (isset($menu_params['filter_status'])) {
+				$use_module_filters = true;
+			}
 
-			$response['use_module_filters'] = boolval($menu_params->get('em_use_module_for_filters', false));
+			$response['use_module_filters'] = $use_module_filters;
 			$response['status']             = true;
 			$response['code']               = 200;
 			$response['msg']                = Text::_('SUCCESS');
@@ -4105,27 +4109,27 @@ class EmundusControllerFiles extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
-			$module_id = $app->input->getInt('module_id', 0);
+			$menu_id = $app->input->getInt('menu_id', 0);
 
-			if (!empty($module_id)) {
+			if (!empty($menu_id)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('params')
-					->from('#__modules')
-					->where('id = ' . $db->quote($module_id));
+					->from('#__menu')
+					->where('id = ' . $db->quote($menu_id));
 
 				$db->setQuery($query);
-				$module_params = $db->loadResult();
-				$module_params = json_decode($module_params, true);
+				$menu_params = $db->loadResult();
+				$menu_params = json_decode($menu_params, true);
 
 				try {
 					if (!class_exists('EmundusFiltersFiles')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
-					$m_filters = new EmundusFiltersFiles($module_params, false, true);
+					$m_filters = new EmundusFiltersFiles($menu_params, false, true);
 
 					$response['data'] = $m_filters->getFilters();
 					$response['status'] = true;
@@ -4149,24 +4153,23 @@ class EmundusControllerFiles extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
-			$module_id = $app->input->getInt('module_id', 0);
 			$menu_id = $app->input->getInt('menu_id', 0);
 
-			if (!empty($module_id)) {
+			if (!empty($menu_id)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('params')
-					->from('#__modules')
-					->where('id = ' . $db->quote($module_id));
+					->from('#__menu')
+					->where('id = ' . $db->quote($menu_id));
 
 				$db->setQuery($query);
-				$module_params = $db->loadResult();
-				$module_params = json_decode($module_params, true);
+				$menu_params = $db->loadResult();
+				$menu_params = json_decode($menu_params, true);
 
-				if (!empty($module_params) && $module_params['count_filter_values'] == 1) {
+				if (!empty($menu_params) && $menu_params['count_filter_values'] == 1) {
 					$session = $app->getSession();
 					$applied_filters = $session->get('em-applied-filters', []);
 
@@ -4178,12 +4181,8 @@ class EmundusControllerFiles extends BaseController
 							}
 						}
 
-						if (!empty($menu_id)) {
-							$menu = $app->getMenu();
-							$menu_item = $menu->getItem($menu_id);
-						} else {
-							$menu_item = null;
-						}
+						$menu = $app->getMenu();
+						$menu_item = $menu->getItem($menu_id);
 
 						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 						$h_files = new EmundusHelperFiles();

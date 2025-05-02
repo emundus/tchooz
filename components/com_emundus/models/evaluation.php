@@ -1180,28 +1180,18 @@ class EmundusModelEvaluation extends JModelList
 	{
 		$h_files = new EmundusHelperFiles();
 
-		if ($this->use_module_filters)
-		{
-			$caller_params = array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code,
-				'eval'       => true,
-			);
+		$caller_params = array(
+			'fnum_assoc' => $this->fnum_assoc,
+			'code'       => $this->code,
+			'eval'       => true,
+		);
 
-			if (!empty($step_id))
-			{
-				$caller_params['step_id'] = $step_id;
-			}
-
-			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
-		}
-		else
+		if (!empty($step_id))
 		{
-			return $h_files->_buildWhere($already_joined_tables, 'files', array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
+			$caller_params['step_id'] = $step_id;
 		}
+
+		return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
 	}
 
 	public function getUsers($current_fnum = null, $user_id = null, $all = false)

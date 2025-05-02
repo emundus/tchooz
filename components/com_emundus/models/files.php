@@ -643,21 +643,10 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$h_files = new EmundusHelperFiles();
 
-		$session = Factory::getApplication()->getSession();
-		$last_filters_use_advanced = $session->get('last-filters-use-advanced', false);
-
-		if ($this->use_module_filters || $last_filters_use_advanced) {
-			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
-		}
-		else {
-			return $h_files->_buildWhere($already_joined_tables, 'files', array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
-		}
+		return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+			'fnum_assoc' => $this->fnum_assoc,
+			'code'       => $this->code
+		));
 	}
 
 	/**
@@ -799,12 +788,6 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
 
-		/*
-		 * TODO: replace, jos_emundus_evaluations does not exist anymore
-		 * if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
-		}*/
-
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
             LEFT JOIN #__messages as m on m.page = ec.id AND m.state = 0 AND m.page IS NOT NULL ';
@@ -812,7 +795,6 @@ class EmundusModelFiles extends JModelLegacy
 		if (in_array('commentaire', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_comments as ecom on ecom.fnum = jecc.fnum ';
 		}
-
 
 		$q = $this->_buildWhere($already_joined_tables);
 		if (!empty($leftJoin)) {
@@ -2346,19 +2328,22 @@ class EmundusModelFiles extends JModelLegacy
 
 		try {
 			$files = $this->getAllUsers(0, 0, $menu_id);
-			if ($assoc_tab_fnums) {
-				foreach ($files as $file) {
-					if ($file['applicant_id'] > 0) {
-						$fnums[] = array('fnum'         => $file['fnum'],
-						                 'applicant_id' => $file['applicant_id'],
-						                 'campaign_id'  => $file['campaign_id']
-						);
+
+			if (!empty($files)) {
+				if ($assoc_tab_fnums) {
+					foreach ($files as $file) {
+						if ($file['applicant_id'] > 0) {
+							$fnums[] = array('fnum'         => $file['fnum'],
+							                 'applicant_id' => $file['applicant_id'],
+							                 'campaign_id'  => $file['campaign_id']
+							);
+						}
 					}
 				}
-			}
-			else {
-				foreach ($files as $file) {
-					$fnums[] = $file['fnum'];
+				else {
+					foreach ($files as $file) {
+						$fnums[] = $file['fnum'];
+					}
 				}
 			}
 		} catch (Exception $e) {

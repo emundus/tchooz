@@ -961,6 +961,117 @@ table tbody tr td[data-v-b0cb7931] {
 	top: 50%;
 }
 
+.values-selection[data-v-37521239] {
+	max-height: 180px;
+	overflow-y: auto;
+}
+.multi-select-filter-card[data-v-37521239] {
+	position: relative;
+}
+.multi-select-filter-card .toggle-open-close[data-v-37521239] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+span.label[data-v-37521239] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.recap[data-v-37521239] {
+	overflow: hidden;
+}
+.em-filter-value-checkbox.disabled[data-v-37521239] {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+#advanced-select ul[data-v-f47bb4b1] {
+	list-style-type: none;
+	max-height: 300px;
+	overflow-y: auto;
+}
+#advanced-select ul li.tw-cursor-pointer[data-v-f47bb4b1]:hover {
+	background-color: #e4e4e4;
+}
+
+.date-filter-card[data-v-e469e9a4] {
+	position: relative;
+}
+.date-filter-card .toggle-open-close[data-v-e469e9a4] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+span.label[data-v-e469e9a4] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+
+.default-filter-card[data-v-968d509e] {
+	position: relative;
+}
+.default-filter-card .toggle-open-close[data-v-968d509e] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+span.label[data-v-968d509e] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.recap[data-v-968d509e] {
+	overflow: hidden;
+}
+
+#emundus-filters {
+	position: relative;
+}
+#emundus-filters .recap-label {
+	display: -webkit-box !important;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#select-scopes:not(.hidden) {
+	position: absolute;
+	top: 42px;
+	z-index: 2;
+	list-style-type: none;
+	margin: 0;
+	padding: 8px;
+}
+#select-scopes li {
+	padding: 8px;
+}
+#global-search-values {
+	height: 42px;
+	overflow-y: auto;
+}
+.global-search-scope button {
+	white-space: break-spaces;
+	text-align: left;
+}
+#current-global-search {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	outline: 0;
+}
+.global-search-tag {
+	padding: 4px;
+}
+#save-filter-new-name {
+	position: absolute;
+	top: 0;
+}
+
 .tchooz-widget[data-v-01f8cbb9] {
 	height: 100%;
 }

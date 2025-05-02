@@ -2206,9 +2206,8 @@ class EmundusModelUsers extends ListModel
 			}
 			$query->where($this->db->quoteName('jesp.published') . ' = 1');
 
-			$this->db->setQuery($query);
-
 			try {
+				$this->db->setQuery($query);
 				$program_ids = $this->db->loadColumn();
 			}
 			catch (Exception $e) {

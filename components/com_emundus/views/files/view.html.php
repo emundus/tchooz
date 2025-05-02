@@ -27,31 +27,13 @@ class EmundusViewFiles extends HtmlView
 	protected $itemId;
 	protected $cfnum;
 	protected $actions;
-	protected $use_module_for_filters;
+	protected bool $use_module_for_filters = true;
 	protected array $lists;
 	protected JPagination $pagination;
 
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-
-		$app = Factory::getApplication();
-		$menu                         = $app->getMenu();
-		$current_menu                 = $menu->getActive();
-		$menu_params                  = $menu->getParams($current_menu->id);
-		$session = $app->getSession();
-
-		if (!empty($menu_params)) {
-			$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
-		} else {
-			$this->use_module_for_filters = false;
-		}
-
-		if ($this->use_module_for_filters) {
-			$session->set('last-filters-use-advanced', true);
-		} else {
-			$session->set('last-filters-use-advanced', false);
-		}
 	}
 
 	public function display($tpl = null)

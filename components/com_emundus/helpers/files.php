@@ -36,21 +36,22 @@ class EmundusHelperFiles
     */
 	public static function clear()
 	{
-		$session = JFactory::getSession();
+		$app = Factory::getApplication();
+
+		$session = $app->getSession();
 		$session->set('filt_params', array());
 		$session->set('select_filter', null);
 		$session->set('adv_cols', array());
+		$session->set('em-applied-filters', []);
+
 		$session->clear('filter_order');
 		$session->clear('filter_order_Dir');
-		$limit      = JFactory::getApplication()->getCfg('list_limit');
+		$limit      = $app->get('list_limit');
 		$limitstart = 0;
 		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
 		$session->set('limit', $limit);
 		$session->set('limitstart', $limitstart);
-
-		//@EmundusHelperFiles::resetFilter();
-
 	}
 
 	/*
@@ -4526,7 +4527,7 @@ class EmundusHelperFiles
 	public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null)
 	{
 		$app = Factory::getApplication();
-		if(empty($user)) {
+		if (empty($user)) {
 			$user = $app->getIdentity();
 		}
 
@@ -4559,19 +4560,20 @@ class EmundusHelperFiles
 			$where['q'] .= ' AND esc.published = ' . $db->quote('1');
 		}
 
-		if (!empty($caller_params) && $caller_params['eval']) {
+		if (!empty($caller_params) && isset($caller_params['eval']) && $caller_params['eval']) {
 			$where['q'] .= ' AND jecc.status <> 0';
 		}
 
-		if (empty($menu_item))
-		{
-			$menu = $app->getMenu();
-			if (!empty($menu))
+		if (!Factory::getApplication()->isCli()) {
+			if (empty($menu_item))
 			{
-				$menu_item = $menu->getActive();
+				$menu = $app->getMenu();
+				if (!empty($menu))
+				{
+					$menu_item = $menu->getActive();
+				}
 			}
 		}
-
 
 		if (!empty($menu_item))
 		{
@@ -5780,7 +5782,7 @@ class EmundusHelperFiles
 						}
 						break;
 					case 'IN':
-						if ($fabrik_element_data['plugin'] === 'checkbox')
+						if (!empty($fabrik_element_data) && $fabrik_element_data['plugin'] === 'checkbox')
 						{ // value is stored as a serialized array
 
 							if (is_array($values))
@@ -6197,8 +6199,9 @@ class EmundusHelperFiles
 								$query .= $leftJoins;
 							}
 
-							if(!empty($menu_item)) {
-								if($menu_item->query['view'] == 'evaluation') {
+							$where_params['eval'] = false;
+							if (!empty($menu_item)) {
+								if ($menu_item->query['view'] == 'evaluation') {
 									$where_params['eval'] = true;
 								}
 							}

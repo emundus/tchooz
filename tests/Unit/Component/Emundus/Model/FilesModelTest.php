@@ -100,10 +100,26 @@ class FilesModelTest extends UnitTestCase
 		$fnums = $this->model->getAllFnums(false, 1);
 		$this->assertIsArray($fnums, 'getusers returns an array');
 
-		$session = Factory::getApplication()->getSession();
-		$session->set('filt_params', ['programme' => [$this->dataset['program']['programme_code']]]);
+		$filter = [
+			'id' => 'programs',
+			'uid' => 'programs',
+			'label' => 'Formations',
+			'type' => 'select',
+			'value' => [$this->dataset['program']['programme_id']],
+			'values' => [],
+			'operator' => 'IN',
+			'andorOperator' => 'OR',
+			'default' => true,
+			'available' => true,
+			'order' => 0,
+		];
 
-		$fnums = $this->model->getAllFnums(false, 1);
+		$session = Factory::getApplication()->getSession();
+		$session->set('em-applied-filters', [$filter]);
+
+		$this->model->shareUsers([2], EVALUATOR_RIGHTS, [$this->dataset['fnum']], Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+		$fnums = $this->model->getAllFnums(false, 2);
+
 		$this->assertNotEmpty($fnums, 'if a fnum exists, by default get users should return a value');
 		$this->assertTrue(in_array($this->dataset['fnum'], $fnums), 'If a fnum is associated to me. I should see it.');
 	}
