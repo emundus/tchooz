@@ -697,7 +697,7 @@ class EmundusModelFiles extends JModelLegacy
 			$em_other_columns = array();
 		}
 
-		$query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
+		$select = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
 
 		// prevent double left join on query
 		$already_joined_tables = [
@@ -787,10 +787,10 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		if (!empty($this->_elements_default)) {
-			$query .= ', ' . implode(',', $this->_elements_default);
+			$select .= ', ' . implode(',', $this->_elements_default);
 		}
 
-		$query .= ' FROM #__emundus_campaign_candidature as jecc
+		$query = ' FROM #__emundus_campaign_candidature as jecc
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
@@ -821,19 +821,18 @@ class EmundusModelFiles extends JModelLegacy
 		$query .= $q['join'];
 		$query .= ' WHERE u.block=0 ' . $q['q'];
 
-		$query .= ' GROUP BY jecc.fnum';
-
-		$query .= $this->_buildContentOrderBy();
-
 		try {
-			$this->_db->setQuery($query);
-			$this->_applicants = $this->_db->loadAssocList();
+			$this->_db->setQuery('SELECT COUNT(DISTINCT jecc.id) ' . $query);
+			$this->_total = $this->_db->loadResult();
+
+			$query .= ' GROUP BY jecc.fnum';
+			$query .= $this->_buildContentOrderBy();
 
 			if ($limit > 0) {
 				$query .= " limit $limitStart, $limit ";
 			}
 
-			$this->_db->setQuery($query);
+			$this->_db->setQuery($select . ' ' . $query);
 			$user_files = $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
