@@ -707,9 +707,10 @@ class EmundusFiltersFiles extends EmundusFilters
 		}
 
 		if ($config['filter_steps']) {
-			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
 			$m_workflow = new EmundusModelWorkflow();
-
 			$workflows = $m_workflow->getWorkflows([], 0, 0, $this->user_programs);
 			$steps = [];
 			$values_selected = [];
@@ -816,6 +817,58 @@ class EmundusFiltersFiles extends EmundusFilters
 				'operator'       => 'IN',
 				'operators'      => ['IN', 'NOT IN']
 			];
+		}
+
+		if ($config['filter_evaluators']) {
+			$evaluators = [];
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+			$steps = $m_workflow->getEvaluatorSteps($this->user->id);
+
+			$at_least_one = false;
+			foreach($steps as $step)
+			{
+				if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction($step->action_id, 'u', $this->user->id))
+				{
+					$at_least_one = true;
+
+					$query->clear()
+						->select('DISTINCT ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+						->from('#__users as ju')
+						->leftJoin($step->table . ' AS eval_table ON eval_table.evaluator = ju.id')
+						->where('eval_table.step_id = ' . $step->id);
+
+					try
+					{
+						$db->setQuery($query);
+						$evaluators = array_merge($evaluators, $db->loadAssocList());
+					}
+					catch (Exception $e)
+					{
+						Log::add('Failed to get evaluators associated to profiles that current' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+					}
+				}
+			}
+
+			if ($at_least_one) {
+				$this->applied_filters[] = [
+					'uid'            => 'evaluators',
+					'id'             => 'evaluators',
+					'label'          => Text::_('MOD_EMUNDUS_FILTERS_EVALUATORS'),
+					'type'           => 'select',
+					'values'         => $evaluators,
+					'value'          => [],
+					'default'        => true,
+					'available'      => true,
+					'order'          => $config['filter_steps_order'],
+					'andorOperator'  => 'OR',
+					'andorOperators' => ['OR'],
+					'operator'       => 'IN',
+					'operators'      => ['IN', 'NOT IN']
+				];
+			}
 		}
 
 		$session = $this->app->getSession();

@@ -5200,6 +5200,53 @@ class EmundusHelperFiles
 									}
 
 									break;
+								case 'evaluators':
+									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+									$m_workflow = new EmundusModelWorkflow();
+									$steps = $m_workflow->getEvaluatorSteps($user->id);
+
+									$evaluator_row_ids = [];
+									if (!empty($steps) && !empty($filter['value'])) {
+										foreach ($steps as $step) {
+											$query = $db->createQuery();
+											$query->select('jecc.id')
+												->from($db->quoteName('jos_emundus_campaign_candidature', 'jecc'))
+												->leftJoin($db->quoteName($step->table, 'eval') . ' ON eval.ccid = jecc.id AND eval.step_id = ' . $db->quote($step->id))
+												->where('jecc.published = 1');
+
+											if ($filter['operator'] === 'IN') {
+												if (is_array($filter['value'])) {
+													$query->where('evaluator IN (' . implode(',', $filter['value']) . ')');
+												} else {
+													$query->where('evaluator = ' . $db->quote($filter['value']));
+												}
+											} else {
+												if (is_array($filter['value'])) {
+													$query->where('evaluator NOT IN (' . implode(',', $filter['value']) . ') OR evaluator IS NULL');
+												} else {
+													$query->where('evaluator != ' . $db->quote($filter['value']) . ' OR evaluator IS NULL');
+												}
+											}
+
+											$db->setQuery($query);
+											$ccids = $db->loadColumn();
+
+											if (!empty($ccids)) {
+												$evaluator_row_ids = array_merge($evaluator_row_ids, $ccids);
+											}
+										}
+
+										if (!empty($evaluator_row_ids)) {
+											$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $evaluator_row_ids, 'IN');
+										} else {
+											if ($filter['operator'] === 'IN') {
+												$where['q'] .= ' AND 1=2';
+											} else {
+												$where['q'] .= ' AND 1=1';
+											}
+										}
+									}
+									break;
 								default:
 									break;
 							}
