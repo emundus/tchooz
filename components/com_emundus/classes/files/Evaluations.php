@@ -1,7 +1,7 @@
 <?php
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'classes' . DS . 'files' . DS . 'Files.php');
 
-use classes\files\Files;
+use Tchooz\files\Files;
 use Joomla\CMS\Factory;
 
 class Evaluations extends Files
@@ -10,7 +10,7 @@ class Evaluations extends Files
 	protected array $evaluated = [];
 	protected array $all = [];
 	protected array $in_progress = [];
-	protected string $selected_tab = 'to_evaluate';
+	protected string $selected_tab = 'all';
 
 	public function __construct()
 	{
@@ -138,7 +138,10 @@ class Evaluations extends Files
 				$program_ids = $db->loadColumn();
 
 				if (!empty($program_ids)) {
-					$m_workflow = new EmundusModelWorkflow;
+					if (!class_exists('EmundusModelWorkflow')) {
+						require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					}
+					$m_workflow = new EmundusModelWorkflow();
 					foreach ($program_ids as $program_id) {
 						$steps = $m_workflow->getEvaluatorStepsByProgram($program_id);
 

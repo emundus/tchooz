@@ -10,8 +10,8 @@
 
 namespace Unit\Component\Emundus\Model;
 
-use classes\Entities\SMS\ReceiverEntity;
-use classes\Synchronizers\SMS\OvhSMS;
+use Tchooz\Entities\SMS\ReceiverEntity;
+use Tchooz\Synchronizers\SMS\OvhSMS;
 use EmundusModelApplication;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;

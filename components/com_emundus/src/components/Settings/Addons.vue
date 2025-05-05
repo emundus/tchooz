@@ -3,12 +3,13 @@
 import settingsService from '@/services/settings';
 import Messenger from '@/components/Settings/Addons/Messenger.vue';
 import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
+import RankingTool from '@/components/Settings/Addons/RankingTool.vue';
 
 /* Components */
 
 export default {
 	name: 'Addons',
-	components: { Messenger, SMSAddon },
+	components: { Messenger, SMSAddon, RankingTool },
 	data() {
 		return {
 			loading: true,
@@ -85,6 +86,14 @@ export default {
 				v-if="currentAddon.type === 'messenger'"
 				:addon="currentAddon"
 				@messengerSaved="
+					currentAddon = null;
+					getAddons();
+				"
+			/>
+			<RankingTool
+				v-else-if="currentAddon.type === 'ranking'"
+				:addon="currentAddon"
+				@rankingToolSaved="
 					currentAddon = null;
 					getAddons();
 				"

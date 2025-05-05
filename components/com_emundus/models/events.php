@@ -2014,7 +2014,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 			{
 				$query = $this->db->getQuery(true);
 
-
 				// If location is set filter events by location
 				if (!empty($location))
 				{
@@ -2026,102 +2025,99 @@ class EmundusModelEvents extends BaseDatabaseModel
 					$events = array_intersect($events, $this->db->loadColumn());
 				}
 
-				$availabilities = [];
 				foreach ($events as $event)
 				{
-					$query->clear()
-						->select('slots_availables_to_show, slot_can_book_until_days, slot_can_book_until_date')
-						->from($this->db->quoteName('#__emundus_setup_events', 'ese'))
-						->where($this->db->quoteName('ese.id') . ' = ' . $event);
-					$this->db->setQuery($query);
-					$slots_infos = $this->db->loadObject();
-
-					$query->clear()
-						->select([
-							'ea.id',
-							'ea.slot',
-							'ea.event as event_id',
-							'ea.start_date as start',
-							'ea.end_date as end',
-							'ea.capacity',
-							'COUNT(er.id) as registered_count'
-						])
-						->from($this->db->quoteName('#__emundus_setup_availabilities', 'ea'))
-						->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.availability') . ' = ' . $this->db->quoteName('ea.id'))
-						->where($this->db->quoteName('ea.event') . ' = ' . $event);
-
-					if (!empty($start))
+					if(!empty($event))
 					{
-						$query->where($this->db->quoteName('ea.start_date') . ' >= ' . $this->db->quote($start));
-					}
-					if (!empty($end))
-					{
-						$query->where($this->db->quoteName('ea.end_date') . ' <= ' . $this->db->quote($end));
-					}
+						$query->clear()
+							->select('slots_availables_to_show, slot_can_book_until_days, slot_can_book_until_date')
+							->from($this->db->quoteName('#__emundus_setup_events', 'ese'))
+							->where($this->db->quoteName('ese.id') . ' = ' . $event);
+						$this->db->setQuery($query);
+						$slots_infos = $this->db->loadObject();
 
-					$query->group('ea.id');
-					$query->order($this->db->quoteName('ea.start_date') . ' ASC');
+						$query->clear()
+							->select([
+								'ea.id',
+								'ea.slot',
+								'ea.event as event_id',
+								'ea.start_date as start',
+								'ea.end_date as end',
+								'ea.capacity',
+								'COUNT(er.id) as registered_count'
+							])
+							->from($this->db->quoteName('#__emundus_setup_availabilities', 'ea'))
+							->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.availability') . ' = ' . $this->db->quoteName('ea.id'))
+							->where($this->db->quoteName('ea.event') . ' = ' . $event);
 
-					if (!empty($slots_infos->slots_availables_to_show) && $check_slots_availables_to_show)
-					{
-						$query->having('ea.capacity > COUNT(er.id)');
-						$query->setLimit($slots_infos->slots_availables_to_show);
-					}
-
-					$this->_db->setQuery($query);
-					$availabilities = array_merge($availabilities, $this->_db->loadObjectList());
-
-					if ($check_booking_limit_reached)
-					{
-						$now                     = new DateTime();
-						$filtered_availabilities = [];
-
-						if (!empty($slots_infos->slot_can_book_until_date))
+						if (!empty($start))
 						{
-							$limitDate = (new DateTime($slots_infos->slot_can_book_until_date))->format('Y-m-d');
-							if ($now->format('Y-m-d') <= $limitDate)
-							{
-								foreach ($availabilities as $slot)
-								{
-									// Convert UTC dates to platform timezone ($timezone)
-									$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
-									$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
-
-									$filtered_availabilities[] = $slot;
-								}
-							}
+							$query->where($this->db->quoteName('ea.start_date') . ' >= ' . $this->db->quote($start));
 						}
-						elseif (!empty($slots_infos->slot_can_book_until_days))
+						if (!empty($end))
 						{
-							foreach ($availabilities as $slot)
+							$query->where($this->db->quoteName('ea.end_date') . ' <= ' . $this->db->quote($end));
+						}
+
+						$query->group('ea.id');
+						$query->order($this->db->quoteName('ea.start_date') . ' ASC');
+
+						if (!empty($slots_infos->slots_availables_to_show) && $check_slots_availables_to_show)
+						{
+							$query->having('ea.capacity > COUNT(er.id)');
+							$query->setLimit($slots_infos->slots_availables_to_show);
+						}
+
+						$this->_db->setQuery($query);
+						$event_availabilities = $this->_db->loadObjectList();
+
+						if ($check_booking_limit_reached)
+						{
+							$now                     = new DateTime();
+							$filtered_availabilities = [];
+
+							if (!empty($slots_infos->slot_can_book_until_date))
 							{
-								$limitDate = (new DateTime($slot->start));
-								$limitDate->modify('-' . $slots_infos->slot_can_book_until_days . ' days');
-								$limitDate = $limitDate->format('Y-m-d');
-
-								if (!($now->format('Y-m-d') > $limitDate))
+								$limitDate = (new DateTime($slots_infos->slot_can_book_until_date))->format('Y-m-d');
+								if ($now->format('Y-m-d') <= $limitDate)
 								{
-									// Convert UTC dates to platform timezone ($timezone)
-									$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
-									$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
-
-									$filtered_availabilities[] = $slot;
+									$filtered_availabilities = $event_availabilities;
 								}
 							}
+							elseif (!empty($slots_infos->slot_can_book_until_days))
+							{
+								foreach ($event_availabilities as $slot)
+								{
+									$limitDate = (new DateTime($slot->start));
+									$limitDate->modify('-' . $slots_infos->slot_can_book_until_days . ' days');
+									$limitDate = $limitDate->format('Y-m-d');
+
+									if (!($now->format('Y-m-d') > $limitDate))
+									{
+										$filtered_availabilities[] = $slot;
+									}
+								}
+							}
+							else
+							{
+								$filtered_availabilities = $event_availabilities;
+							}
+
+							$availabilities = array_merge($availabilities, $filtered_availabilities);
 						}
 						else
 						{
-							foreach ($availabilities as $slot)
-							{
-								// Convert UTC dates to platform timezone ($timezone)
-								$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
-								$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
-
-								$filtered_availabilities[] = $slot;
-							}
+							$availabilities = array_merge($availabilities, $event_availabilities);
 						}
-
-						$availabilities = $filtered_availabilities;
+					}
+				}
+				if(!empty($availabilities))
+				{
+					foreach ($availabilities as $availability)
+					{
+						// Convert UTC dates to platform timezone ($timezone)
+						$availability->start = EmundusHelperDate::displayDate($availability->start, 'Y-m-d H:i', 0);
+						$availability->end   = EmundusHelperDate::displayDate($availability->end, 'Y-m-d H:i', 0);
 					}
 				}
 			}

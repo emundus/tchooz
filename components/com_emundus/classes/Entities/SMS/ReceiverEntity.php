@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\Entities\SMS;
+namespace Tchooz\Entities\SMS;
 
 class ReceiverEntity
 {

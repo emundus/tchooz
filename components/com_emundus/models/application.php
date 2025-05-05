@@ -4056,6 +4056,15 @@ class EmundusModelApplication extends ListModel
 				->where($this->_db->quoteName('c.id') . ' = ' . $this->_db->quote($cid));
 			$this->_db->setQuery($query);
 			$synthesis = $this->_db->loadObject();
+
+			if (!empty($synthesis->synthesis)) {
+				if(!class_exists('HtmlSanitizerSingleton')) {
+					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'html.php');
+				}
+				
+				$sanitizer = HtmlSanitizerSingleton::getInstance();
+				$synthesis->synthesis = $sanitizer->sanitize($synthesis->synthesis);
+			}
 		}
 		catch (Exception $e) {
 			$synthesis = null;

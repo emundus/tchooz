@@ -42,6 +42,7 @@
 
 					<div v-for="tab in tabs" :key="tab.name">
 						<div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
+						<Synthesis :fnum="file.fnum"> </Synthesis>
 						<Attachments
 							v-if="tab.name === 'attachments' && selected === 'attachments'"
 							:fnum="file.fnum"
@@ -77,10 +78,11 @@ import errors from '@/mixins/errors.js';
 import Comments from '@/views/Comments.vue';
 import Modal from '@/components/Modal.vue';
 import Evaluations from '@/components/Files/Evaluations.vue';
+import Synthesis from '@/components/Files/Synthesis.vue';
 
 export default {
 	name: 'Application',
-	components: { Evaluations, Comments, Attachments, Modal },
+	components: { Synthesis, Evaluations, Comments, Attachments, Modal },
 	props: {
 		file: Object | String,
 		type: String,
@@ -109,6 +111,11 @@ export default {
 					label: 'COM_EMUNDUS_FILES_COMMENTS',
 					name: 'comments',
 					access: '10',
+				},
+				{
+					label: 'COM_EMUNDUS_APPLICATION_SYNTHESIS',
+					name: 'synthesis',
+					access: '1',
 				},
 			],
 		},

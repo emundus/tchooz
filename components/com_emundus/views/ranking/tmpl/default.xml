@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="COM_EMUNDUS_RANKING_VIEW_DEFAULT_TITLE">
+        <message>
+            <![CDATA[COM_EMUNDUS_RANKING_VIEW_DEFAULT_TITLE_DESC]]>
+        </message>
+    </layout>
+    <fields name="params">
+        <fieldset name="basic">
+            <field
+                    name="title"
+                    type="text"
+                    label="COM_EMUNDUS_RANKING_TITLE"
+                    description="COM_EMUNDUS_RANKING_TITLE_DESC"
+                    default="COM_EMUNDUS_CLASSEMENT_TITLE"
+            />
+            <field
+                    name="introduction"
+                    type="editor"
+                    label="COM_EMUNDUS_RANKING_INTRODUCTION"
+                    description="COM_EMUNDUS_RANKING_INTRODUCTION_DESC"
+                    filter="safehtml"
+                    size="20"
+            />
+            <field
+                    name="force_readonly"
+                    type="checkbox"
+                    label="COM_EMUNDUS_RANKING_FORCE_READONLY"
+                    description="COM_EMUNDUS_RANKING_FORCE_READONLY_DESC"
+                    default="0"
+            />
+            <field name="comparison_modal_tabs"
+                   type="list"
+                   label="COM_EMUNDUS_COMPARISON_MODAL_TABS"
+                   description="COM_EMUNDUS_COMPARISON_MODAL_TABS_DESC"
+                   multiple="true"
+                   size="5"
+                   default='["forms", "attachments", "comments"]'
+            >
+                <option value="forms">Formulaires</option>
+                <option value="attachments">Documents</option>
+                <option value="comments">Commentaire</option>
+                <option value="evaluation">Évaluation</option>
+                <option value="admission">Admission</option>
+                <option value="decision">Décision</option>
+            </field>
+            <field
+                    name="comparison_modal_specific_tabs"
+                    type="subform"
+                    multiple="true"
+                    label="COM_EMUNDUS_COMPARISON_MODAL_SPECIFIC_TABS"
+                    description="COM_EMUNDUS_COMPARISON_MODAL_SPECIFIC_TABS_DESC"
+            >
+                <form>
+                    <field name="specific_tab_label" type="text" label="SPECIFIC_TAB_LABEL"/>
+                    <field name="specific_tab_iframe_url" type="text" label="SPECIFIC_TAB_IFRAME_URL"/>
+                </form>
+            </field>
+        </fieldset>
+    </fields>
+</metadata>

@@ -14,7 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-use classes\Synchronizers\SMS\OvhSMS;
+use Tchooz\Synchronizers\SMS\OvhSMS;
 use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Component\Config\Controller\ApplicationController;
@@ -2431,6 +2431,29 @@ class EmundusControllersettings extends BaseController
 		}
 
 		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getfabrikformslist()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel(Factory::getApplication()->getIdentity()->id)) {
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['msg'] = Text::_('FABRIK_FORMS_LIST');
+
+			if (!class_exists('EmundusHelperFabrik')) {
+				require_once (JPATH_ROOT.'/components/com_emundus/helpers/fabrik.php');
+			}
+			$response['data'] = EmundusHelperFabrik::getFabrikFormsList();
+		}
+
+		if ($response['code'] === 403) {
+			header('HTTP/1.1 403 Forbidden');
+		}
+
+		echo json_encode((object)$response);
 		exit;
 	}
 }

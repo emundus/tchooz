@@ -1180,28 +1180,18 @@ class EmundusModelEvaluation extends JModelList
 	{
 		$h_files = new EmundusHelperFiles();
 
-		if ($this->use_module_filters)
-		{
-			$caller_params = array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code,
-				'eval'       => true,
-			);
+		$caller_params = array(
+			'fnum_assoc' => $this->fnum_assoc,
+			'code'       => $this->code,
+			'eval'       => true,
+		);
 
-			if (!empty($step_id))
-			{
-				$caller_params['step_id'] = $step_id;
-			}
-
-			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
-		}
-		else
+		if (!empty($step_id))
 		{
-			return $h_files->_buildWhere($already_joined_tables, 'files', array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
+			$caller_params['step_id'] = $step_id;
 		}
+
+		return $h_files->_moduleBuildWhere($already_joined_tables, 'files', $caller_params);
 	}
 
 	public function getUsers($current_fnum = null, $user_id = null, $all = false)
@@ -2880,6 +2870,7 @@ class EmundusModelEvaluation extends JModelList
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/emails.php');
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/users.php');
+		require_once(JPATH_SITE . DS . 'components/com_emundus/helpers/fabrik.php');
 		require_once(JPATH_LIBRARIES . DS . 'emundus/fpdi.php');
 		require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 		$_mEval  = new EmundusModelEvaluation();
@@ -3112,7 +3103,10 @@ class EmundusModelEvaluation extends JModelList
 								$preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
 								$tags       = $preprocess->getVariables();
 
+								$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
+
 								$idFabrik  = [];
+								$aliasFabrik  = [];
 								$setupTags = [];
 								foreach ($tags as $i => $val)
 								{
@@ -3120,6 +3114,16 @@ class EmundusModelEvaluation extends JModelList
 									if (is_numeric($tag))
 									{
 										$idFabrik[] = $tag;
+									}
+									elseif(in_array($tag, $fabrik_aliases))
+									{
+										$elt = EmundusHelperFabrik::getElementsByAlias($tag);
+
+										if(!empty($elt[0]))
+										{
+											$idFabrik[] = $elt[0]->id;
+											$aliasFabrik[$tag] = $elt[0]->id;
+										}
 									}
 									else
 									{
@@ -3270,7 +3274,14 @@ class EmundusModelEvaluation extends JModelList
 												$preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
 											} else {
 												$value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
-												$preprocess->setValue($id, $value);
+
+												if(in_array($id, $aliasFabrik))
+												{
+													$alias = array_search($id, $aliasFabrik);
+													$preprocess->setValue($alias, $value);
+												} else {
+													$preprocess->setValue($id, $value);
+												}
 											}
 										}
 										else {

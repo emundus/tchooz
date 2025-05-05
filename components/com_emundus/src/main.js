@@ -24,16 +24,20 @@ import clickOutside from './directives/clickOutside';
 
 /** STYLE **/
 import './assets/css/main.scss';
+
+/** COMPONENTS **/
 import Attachments from '@/views/Attachments.vue';
 import Comments from '@/views/Comments.vue';
 import WorkflowEdit from '@/views/Workflows/WorkflowEdit.vue';
 import ProgramEdit from '@/views/Program/ProgramEdit.vue';
 import History from '@/views/History.vue';
 import Expert from '@/views/Expert/Expert.vue';
+import Filters from '@/views/Filters.vue';
 import Dashboard from '@/views/Dashboard/Dashboard.vue';
 import SMSEdit from '@/views/SMS/SMSEdit.vue';
 import SMSAppFile from '@/views/SMS/SMSAppFile.vue';
 import SMSSend from '@/views/SMS/SMSSend.vue';
+import Rankings from '@/views/Ranking/rankings.vue';
 
 if (document) {
 	let app = null;
@@ -69,6 +73,10 @@ if (document) {
 	if (messengerElement) {
 		elements.push(messengerElement);
 	}
+	const filterElement = document.getElementById('em_filters');
+	if (filterElement) {
+		elements.push(filterElement);
+	}
 
 	for (const el of elements) {
 		if (el) {
@@ -89,6 +97,8 @@ if (document) {
 					'SMS/SMSEdit',
 					'SMS/SMSAppFile',
 					'SMS/SMSSend',
+					'Filters',
+					'Ranking/rankings',
 				];
 
 				if (filesElement || componentNames.includes(componentName)) {
@@ -186,6 +196,28 @@ if (document) {
 						});
 
 						app.use(VueFusionCharts, FusionCharts, Charts, FusionTheme);
+						break;
+					case 'Filters':
+						const appliedFilters = JSON.parse(atob(el.getAttribute('data-applied-filters')));
+						const filters = JSON.parse(atob(el.getAttribute('data-filters')));
+
+						app = createApp(Filters, {
+							menuId: parseInt(el.getAttribute('data-menu-id')),
+							defaultAppliedFilters: appliedFilters,
+							defaultFilters: filters,
+							defaultQuickSearchFilters: JSON.parse(atob(el.getAttribute('data-quick-search-filters'))),
+							countFilterValues: el.getAttribute('data-count-filter-values') === '1',
+							allowAddFilter: el.getAttribute('data-allow-add-filter') === '1',
+						});
+						break;
+					case 'Ranking/rankings':
+						app = createApp(Rankings, {
+							hierarchy_id: datas.hierarchy_id,
+							user: datas.user,
+							fileTabsStr: datas.filetabsstr,
+							specificTabs: datas.specifictabs,
+							readonly: datas.readonly == 1,
+						});
 						break;
 					default:
 						if (el.getAttribute('data')) {

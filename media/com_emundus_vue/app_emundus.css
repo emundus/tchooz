@@ -961,6 +961,117 @@ table tbody tr td[data-v-b0cb7931] {
 	top: 50%;
 }
 
+.values-selection[data-v-37521239] {
+	max-height: 180px;
+	overflow-y: auto;
+}
+.multi-select-filter-card[data-v-37521239] {
+	position: relative;
+}
+.multi-select-filter-card .toggle-open-close[data-v-37521239] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+span.label[data-v-37521239] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.recap[data-v-37521239] {
+	overflow: hidden;
+}
+.em-filter-value-checkbox.disabled[data-v-37521239] {
+	pointer-events: none;
+	opacity: 0.5;
+}
+
+#advanced-select ul[data-v-f47bb4b1] {
+	list-style-type: none;
+	max-height: 300px;
+	overflow-y: auto;
+}
+#advanced-select ul li.tw-cursor-pointer[data-v-f47bb4b1]:hover {
+	background-color: #e4e4e4;
+}
+
+.date-filter-card[data-v-e469e9a4] {
+	position: relative;
+}
+.date-filter-card .toggle-open-close[data-v-e469e9a4] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+span.label[data-v-e469e9a4] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+
+.default-filter-card[data-v-968d509e] {
+	position: relative;
+}
+.default-filter-card .toggle-open-close[data-v-968d509e] {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+}
+span.label[data-v-968d509e] {
+	font-weight: normal !important;
+	display: flex !important;
+	width: -moz-fit-content;
+	width: fit-content;
+}
+.recap[data-v-968d509e] {
+	overflow: hidden;
+}
+
+#emundus-filters {
+	position: relative;
+}
+#emundus-filters .recap-label {
+	display: -webkit-box !important;
+	-webkit-line-clamp: 3;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+#select-scopes:not(.hidden) {
+	position: absolute;
+	top: 42px;
+	z-index: 2;
+	list-style-type: none;
+	margin: 0;
+	padding: 8px;
+}
+#select-scopes li {
+	padding: 8px;
+}
+#global-search-values {
+	height: 42px;
+	overflow-y: auto;
+}
+.global-search-scope button {
+	white-space: break-spaces;
+	text-align: left;
+}
+#current-global-search {
+	border: none;
+	border-radius: 0;
+	box-shadow: none;
+	outline: 0;
+}
+.global-search-tag {
+	padding: 4px;
+}
+#save-filter-new-name {
+	position: absolute;
+	top: 0;
+}
+
 .tchooz-widget[data-v-01f8cbb9] {
 	height: 100%;
 }
@@ -1051,6 +1162,189 @@ table tbody tr td[data-v-b0cb7931] {
   position: absolute;
   right: 5px;
 }
+#iframe-evaluation[data-v-003f1cc8] {
+	height: 100%;
+}
+
+#iframe-tab-custom {
+	height: 100vh;
+}
+#iframe-custom {
+	height: 100%;
+	width: 100%;
+}
+#application-tabs > div[data-v-c7521427] {
+  width: 100%;
+  overflow: scroll;
+}
+#compare-files-container-header-1 {
+	height: 54px;
+	padding: 16px 8px;
+	position: relative;
+	background-color: var(--main-900);
+	color: var(--neutral-0) !important;
+p,
+	span,
+	.material-icons-outlined {
+		color: var(--neutral-0) !important;
+}
+#close-modal-wrapper {
+		position: absolute;
+		top: 16px;
+		left: 8px;
+}
+}
+.compare-files-container-header-2 {
+	background-color: var(--main-700);
+	color: var(--neutral-0) !important;
+	padding: 16px 8px;
+	height: 54px;
+span,
+	.material-icons-outlined {
+		color: var(--neutral-0) !important;
+}
+}
+.left-view {
+	border-right: 1px solid var(--neutral-200);
+}
+#files-to-compare-with-container {
+	height: calc(100% - 54px);
+}
+#comparison-wrapper-left,
+#comparison-wrapper-right {
+#edit-modal {
+		width: 50vw !important;
+		height: calc(100% - 108px) !important;
+		top: 108px !important;
+		left: 0 !important;
+		transform: none;
+		box-shadow: none;
+}
+#edit-modal .modal-body,
+	#em-attachment-preview {
+		width: 100% !important;
+}
+}
+#comparison-wrapper-right {
+#edit-modal {
+		right: 0 !important;
+		left: unset !important;
+}
+}
+.alert.mb-2 {
+  margin-bottom: var(--em-spacing-2) !important;
+}
+#ranking-list #ranking-lists-container {
+  align-items: flex-start;
+}
+#ranking-list #ranking-lists-container .file-identifier {
+  align-items: flex-start;
+}
+#ranking-list #ranking-lists-container tr,
+#ranking-list #ranking-lists-container td {
+  height: 64px;
+  white-space: nowrap;
+}
+#ranking-list #ranking-lists-container table:not(#unranked-files) th {
+  height: 98px;
+}
+#ranking-list #ranking-lists-container #my-ranking-list,
+#ranking-list #ranking-lists-container #other-ranking-lists {
+  border-radius: 4px;
+  border-spacing: 0;
+  border-collapse: separate;
+}
+#ranking-list #ranking-lists-container #other-ranking-lists {
+  overflow: auto;
+}
+#ranking-list #ranking-lists-container #other-ranking-lists th div {
+  max-height: 5em;
+  overflow: scroll;
+  text-overflow: ellipsis;
+  font-weight: 700;
+}
+#ranking-list #ranking-lists-container #other-ranking-lists th.border-right,
+#ranking-list #ranking-lists-container #other-ranking-lists td.border-right {
+  border-right: 1px solid var(--neutral-300);
+}
+#ranking-list #ranking-lists-container table#ranked-files {
+  border-bottom: 0;
+}
+#ranking-list #ranking-lists-container #my-ranking-list {
+  border: solid var(--main-200);
+}
+#ranking-list #ranking-lists-container #my-ranking-list thead th {
+  background-color: var(--main-100) !important;
+}
+#ranking-list #ranking-lists-container #my-ranking-list tbody td,
+#ranking-list #ranking-lists-container #my-ranking-list tbody tr {
+  background-color: var(--main-50);
+  border: 0;
+}
+#ranking-list button.em-primary-button span {
+  color: var(--neutral-0);
+}
+#ranking-list button.em-primary-button:hover span {
+  color: var(--main-500);
+}
+#ranking-list button.em-secondary-button span {
+  color: var(--em-coordinator-secondary-color);
+}
+#ranking-list button.em-secondary-button:hover span {
+  color: var(--neutral-0);
+}
+#ranking-list .handle:hover {
+  cursor: grab;
+}
+#ranking-list .dragging {
+  cursor: grabbing;
+}
+#ranking-list .dragging #ranked-files tbody#ranked-files-list {
+  border: 4px dashed var(--main-200);
+}
+#ranking-list .dragging #unranked-files-list td {
+  background-color: var(--grey-bg-color) !important;
+}
+#ask-to-lock-rankings-modal .v--modal {
+  overflow: unset !important;
+  border-radius: 0.3125em !important;
+  height: -moz-fit-content !important;
+  height: fit-content !important;
+}
+#compareFiles #my-ranking-list {
+  overflow-x: auto;
+}
+label[data-v-40bc4916] {
+	margin: 0;
+}
+#select-packages-options[data-v-40bc4916] {
+	max-height: 400px;
+	overflow-y: auto;
+}
+.tw-btn-primary:hover {
+.material-icons-outlined[data-v-40bc4916] {
+		color: var(--em-profile-color);
+}
+}
+
+#rankings-by-package {
+.ranking-navigation-item {
+		min-width: 200px;
+		max-width: 200px;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+}
+#export-modal {
+		max-height: 80vh !important;
+		width: 80vw !important;
+		top: 10vh !important;
+		left: 10vw !important;
+		height: auto !important;
+		border-radius: 0.25rem !important;
+}
+}
+
 .no-options .multiselect__content-wrapper {
 	display: none !important;
 }

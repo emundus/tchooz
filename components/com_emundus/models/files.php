@@ -33,6 +33,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\Database\ParameterType;
+use \Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 /**
  * Class EmundusModelFiles
@@ -643,21 +644,10 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$h_files = new EmundusHelperFiles();
 
-		$session = Factory::getApplication()->getSession();
-		$last_filters_use_advanced = $session->get('last-filters-use-advanced', false);
-
-		if ($this->use_module_filters || $last_filters_use_advanced) {
-			return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
-		}
-		else {
-			return $h_files->_buildWhere($already_joined_tables, 'files', array(
-				'fnum_assoc' => $this->fnum_assoc,
-				'code'       => $this->code
-			));
-		}
+		return $h_files->_moduleBuildWhere($already_joined_tables, 'files', array(
+			'fnum_assoc' => $this->fnum_assoc,
+			'code'       => $this->code
+		));
 	}
 
 	/**
@@ -697,7 +687,7 @@ class EmundusModelFiles extends JModelLegacy
 			$em_other_columns = array();
 		}
 
-		$query = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
+		$select = 'select jecc.fnum, ss.step, ss.value as status, ss.class as status_class, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, jecc.applicant_id, jecc.campaign_id ';
 
 		// prevent double left join on query
 		$already_joined_tables = [
@@ -787,10 +777,10 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		if (!empty($this->_elements_default)) {
-			$query .= ', ' . implode(',', $this->_elements_default);
+			$select .= ', ' . implode(',', $this->_elements_default);
 		}
 
-		$query .= ' FROM #__emundus_campaign_candidature as jecc
+		$query = ' FROM #__emundus_campaign_candidature as jecc
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
@@ -798,12 +788,6 @@ class EmundusModelFiles extends JModelLegacy
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id
                     LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
                     LEFT JOIN #__emundus_tag_assoc as eta on eta.fnum=jecc.fnum ';
-
-		/*
-		 * TODO: replace, jos_emundus_evaluations does not exist anymore
-		 * if (in_array('overall', $em_other_columns)) {
-			$query .= ' LEFT JOIN #__emundus_evaluations as ee on ee.fnum = jecc.fnum ';
-		}*/
 
 		if (in_array('unread_messages', $em_other_columns)) {
 			$query .= ' LEFT JOIN #__emundus_chatroom as ec on ec.fnum = jecc.fnum
@@ -813,7 +797,6 @@ class EmundusModelFiles extends JModelLegacy
 			$query .= ' LEFT JOIN #__emundus_comments as ecom on ecom.fnum = jecc.fnum ';
 		}
 
-
 		$q = $this->_buildWhere($already_joined_tables);
 		if (!empty($leftJoin)) {
 			$query .= $leftJoin;
@@ -821,19 +804,18 @@ class EmundusModelFiles extends JModelLegacy
 		$query .= $q['join'];
 		$query .= ' WHERE u.block=0 ' . $q['q'];
 
-		$query .= ' GROUP BY jecc.fnum';
-
-		$query .= $this->_buildContentOrderBy();
-
 		try {
-			$this->_db->setQuery($query);
-			$this->_applicants = $this->_db->loadAssocList();
+			$this->_db->setQuery('SELECT COUNT(DISTINCT jecc.id) ' . $query);
+			$this->_total = $this->_db->loadResult();
+
+			$query .= ' GROUP BY jecc.fnum';
+			$query .= $this->_buildContentOrderBy();
 
 			if ($limit > 0) {
 				$query .= " limit $limitStart, $limit ";
 			}
 
-			$this->_db->setQuery($query);
+			$this->_db->setQuery($select . ' ' . $query);
 			$user_files = $this->_db->loadAssocList();
 		}
 		catch (Exception $e) {
@@ -1286,29 +1268,57 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getEvalGroups()
 	{
+		$eval_groups = [
+			'groups' => [],
+			'users' => []
+		];
+
 		try {
+			$query = $this->_db->getQuery(true);
+			$query->select('*')
+				->from('#__emundus_setup_groups')
+				->where('published = 1');
 
-
-			$query = 'select * from #__emundus_setup_groups where 1';
 			$this->_db->setQuery($query);
+			$eval_groups['groups'] = $this->_db->loadAssocList();
 
-			$evalGroups['groups'] = $this->_db->loadAssocList();
+			$query->clear()
+				->select('id, label')
+				->from('#__emundus_setup_profiles')
+				->where('published != 1')
+				->andWhere('id != 1');
 
-			$query = 'SELECT DISTINCT(eu.user_id) as user_id, CONCAT( eu.lastname, " ", eu.firstname ) as name, esp.label, u.email
-                        FROM #__emundus_users AS eu
-                        LEFT JOIN #__users AS u ON u.id=eu.user_id
-                        LEFT JOIN #__emundus_setup_profiles AS esp ON esp.id = eu.profile
-                        LEFT JOIN #__emundus_users_profiles AS eup ON eup.user_id = eu.user_id
-                        WHERE u.block=0 AND eu.profile !=1 AND esp.published !=1';
 			$this->_db->setQuery($query);
+			$non_applicant_profiles = $this->_db->loadAssocList('id');
 
-			$evalGroups['users'] = $this->_db->loadAssocList();
+			if (!empty($non_applicant_profiles)) {
+				$non_applicant_profiles_ids = array_keys($non_applicant_profiles);
+				$query->clear()
+					->select('DISTINCT(eu.user_id) as user_id, CONCAT(eu.lastname, " ", eu.firstname) as name, u.email, eu.profile as default_profile_id, GROUP_CONCAT(DISTINCT eup.profile_id) as profiles_ids')
+					->from('#__emundus_users AS eu')
+					->leftJoin('#__users AS u ON u.id = eu.user_id')
+					->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = eu.user_id')
+					->where('u.block = 0')
+					->where('(eu.profile IN (' . implode(',', $non_applicant_profiles_ids) . ') OR eup.profile_id IN (' . implode(',', $non_applicant_profiles_ids) . '))')
+					->group('eu.user_id');
 
-			return $evalGroups;
+				$this->_db->setQuery($query);
+				$eval_groups['users'] = $this->_db->loadAssocList();
+
+				foreach($eval_groups['users'] as $key => $user) {
+					if (!in_array($user['default_profile_id'], $non_applicant_profiles_ids)) {
+						$profile_ids = explode(',', $user['profiles_ids']);
+						$eval_groups['users'][$key]['label'] = $non_applicant_profiles[$profile_ids[0]]['label'];
+					} else {
+						$eval_groups['users'][$key]['label'] = $non_applicant_profiles[$user['default_profile_id']]['label'];
+					}
+				}
+			}
+		} catch(Exception $e) {
+			Log::add(Uri::getInstance(). ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
-		catch (Exception $e) {
-			throw $e;
-		}
+
+		return $eval_groups;
 	}
 
 	/**
@@ -2346,19 +2356,22 @@ class EmundusModelFiles extends JModelLegacy
 
 		try {
 			$files = $this->getAllUsers(0, 0, $menu_id);
-			if ($assoc_tab_fnums) {
-				foreach ($files as $file) {
-					if ($file['applicant_id'] > 0) {
-						$fnums[] = array('fnum'         => $file['fnum'],
-						                 'applicant_id' => $file['applicant_id'],
-						                 'campaign_id'  => $file['campaign_id']
-						);
+
+			if (!empty($files)) {
+				if ($assoc_tab_fnums) {
+					foreach ($files as $file) {
+						if ($file['applicant_id'] > 0) {
+							$fnums[] = array('fnum'         => $file['fnum'],
+							                 'applicant_id' => $file['applicant_id'],
+							                 'campaign_id'  => $file['campaign_id']
+							);
+						}
 					}
 				}
-			}
-			else {
-				foreach ($files as $file) {
-					$fnums[] = $file['fnum'];
+				else {
+					foreach ($files as $file) {
+						$fnums[] = $file['fnum'];
+					}
 				}
 			}
 		} catch (Exception $e) {
@@ -2934,16 +2947,21 @@ class EmundusModelFiles extends JModelLegacy
 			$already_joined = [
 				'jecc' => 'jos_emundus_campaign_candidature',
 				'esc'  => 'jos_emundus_setup_campaigns',
+				'escm'  => 'jos_emundus_setup_campaigns_more',
 				'sp'   => 'jos_emundus_setup_programmes',
+				'estu' => 'jos_emundus_setup_teaching_unity',
 				'u'    => 'jos_users',
 			];
 
 			$from     = ' FROM #__emundus_campaign_candidature as jecc ';
 			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm ON escm.campaign_id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training ';
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 
 			$elements_as = [];
+
 			foreach ($elements as $element) {
 				$saved_element_as = $element->tab_name . '___' . $element->element_name;
 				$is_repeat        = false;
@@ -4407,8 +4425,10 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0)
+	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0): array
 	{
+		$values = [];
+
 		if (!is_array($fnums))
 		{
 			$fnums = [$fnums];
@@ -4416,32 +4436,64 @@ class EmundusModelFiles extends JModelLegacy
 
 		$query = $this->_db->getQuery(true);
 
-		$query->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
-			->from($this->_db->quoteName($tableName))
-			->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
+		// check if column fnum exists
+		$fnum_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('fnum'))->loadResult();
 
-		if (!empty($row_id)) {
-			$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
-		}
+		if (!empty($fnum_column_existing)) {
+			$query->clear()
+				->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
+				->from($this->_db->quoteName($tableName))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 
-		try {
-			$this->_db->setQuery($query);
-
-			$values = $this->_db->loadAssocList('fnum');
-
-			if(!empty($dateFormat))
-			{
-				foreach ($values as &$value)
-				{
-					$value['val'] = date($dateFormat, strtotime($value['val']));
-				}
+			if (!empty($row_id)) {
+				$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
 			}
 
-			return $values;
+			try {
+				$this->_db->setQuery($query);
+				$values = $this->_db->loadAssocList('fnum');
+
+				if(!empty($dateFormat))
+				{
+					foreach ($values as &$value)
+					{
+						$value['val'] = date($dateFormat, strtotime($value['val']));
+					}
+				}
+			}
+			catch (Exception $e) {
+				throw $e;
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
+		else
+		{
+			$user_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('user_id'))->loadResult();
+
+			if (!empty($user_column_existing))
+			{
+				try {
+					foreach ($fnums as $fnum) {
+						$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+						$query->clear()
+							->select($this->_db->quoteName($name) . ' as val')
+							->from($this->_db->quoteName($tableName))
+							->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
+
+						$this->_db->setQuery($query);
+						$value = $this->_db->loadResult();
+
+						$values[$fnum] = [
+							'val' => $value,
+							'fnum' => $fnum
+						];
+					}
+				} catch (Exception $e) {
+					throw $e;
+				}
+			}
 		}
+
+		return $values;
 	}
 
 	/**
@@ -6111,5 +6163,50 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $new_fnums_data;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return string
+	 */
+	public function getFileSynthesis(string $fnum): string
+	{
+		$synthesis = '';
+
+		if (!empty($fnum))
+		{
+			$query = $this->_db->createQuery();
+			$query->select('ecc.applicant_id, esp.synthesis')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'), 'ecc.campaign_id = esc.id')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp'), 'esc.training = esp.code')
+				->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
+
+			$this->_db->setQuery($query);
+			$file = $this->_db->loadAssoc();
+
+			if (!empty($file['synthesis'])) {
+				if (!class_exists('EmundusModelEmails')) {
+					require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+				}
+
+				try {
+					$m_emails = new EmundusModelEmails();
+					$tags = $m_emails->setTags($file['applicant_id'], null, $fnum, '', $file['synthesis'], false, true);
+					$synthesis = preg_replace($tags['patterns'], $tags['replacements'], $file['synthesis']);
+					$synthesis = $m_emails->setTagsFabrik($synthesis, [$fnum]);
+				} catch (Exception $e) {
+					Log::add('Error getting synthesis: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		if (!empty($synthesis)) {
+			$sanitizer = HtmlSanitizerSingleton::getInstance();
+			$synthesis = $sanitizer->sanitize($synthesis);
+		}
+
+		return $synthesis;
 	}
 }

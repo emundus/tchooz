@@ -40,5 +40,11 @@
         "giggsey/libphonenumber-for-php": "^8.13",
         "symfony/html-sanitizer": "^7.2",
         "ovh/ovh": "^3.5"
+    },
+    "autoload": {
+        "psr-4": {"Tchooz\\": "../../components/com_emundus/classes"}
+    },
+    "require-dev": {
+        "symfony/var-dumper": "^7.2"
     }
 }

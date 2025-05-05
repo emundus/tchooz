@@ -1934,7 +1934,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		{
 			try
 			{
-				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin')
+				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params')
 					->from($db->quoteName('#__fabrik_elements', 'fe'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
@@ -2287,5 +2287,56 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 
 		return $created;
+	}
+
+	public static function getFabrikFormsList(): array
+	{
+		$forms = [];
+
+		try {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id, label')
+				->from($db->quoteName('#__fabrik_forms'))
+				->where($db->quoteName('published') . ' = 1');
+
+			$db->setQuery($query);
+			$forms = $db->loadAssocList();
+
+			$forms = array_map(function($form) {
+				$form['label'] = Text::_($form['label']);
+				return $form;
+			}, $forms);
+		} catch (Exception $e) {
+			JLog::add('Failed to get forms associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+		}
+
+		return $forms;
+	}
+
+	public static function getAllFabrikAliases(): array
+	{
+		$aliases = [];
+
+		try
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select("replace(json_extract(params,'$.alias'),'\"', '')")
+				->from($db->quoteName('#__fabrik_elements'))
+				->where($db->quoteName('published') . ' = 1')
+				->where("json_extract(params,'$.alias') <> '' and json_extract(params,'$.alias') is not null");
+			$query->group('json_extract(params,"$.alias")');
+			$db->setQuery($query);
+			$aliases = $db->loadColumn();
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $aliases;
 	}
 }

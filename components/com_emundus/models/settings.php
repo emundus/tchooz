@@ -28,7 +28,7 @@ use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Symfony\Component\Yaml\Yaml;
 use \Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
-use \classes\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Settings\AddonEntity;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 
@@ -3515,7 +3515,6 @@ class EmundusModelSettings extends ListModel
 			$addon->setConfiguration($messenger_configuration);
 
 			$addons[] = $addon;
-			//
 
 			$smsAddon = new AddonEntity(
 				'COM_EMUNDUS_ADDONS_SMS',
@@ -3536,6 +3535,30 @@ class EmundusModelSettings extends ListModel
 				$smsAddon->setDisplayed(true);
 				$smsAddon->setConfiguration($params['params'] ?? []);
 				$addons[] = $smsAddon;
+			}
+
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
+
+			$this->db->setQuery($query);
+			$params = $this->db->loadResult();
+
+			if (!empty($params)) {
+				$params = json_decode($params, true);
+				if ($params['displayed']) {
+					$rankingAddon = new AddonEntity(
+						Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING'),
+						'ranking',
+						'leaderboard',
+						Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING_DESC')
+					);
+					$rankingAddon->setEnabled($params['enabled'] ?? 0);
+					$rankingAddon->setDisplayed(true);
+					$rankingAddon->setConfiguration($params['params'] ?? []);
+					$addons[] = $rankingAddon;
+				}
 			}
 		}
 		catch (Exception $e)
@@ -3642,6 +3665,38 @@ class EmundusModelSettings extends ListModel
 					$updated = $this->db->execute();
 
 					break;
+				case 'ranking':
+					$query->clear()
+						->update($this->db->quoteName('#__menu'))
+						->set('published = ' . $this->db->quote($enabled))
+						->where('link LIKE ' . $this->db->quote('index.php?option=com_emundus&view=ranking'));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_emails'))
+						->set('published = ' . $this->db->quote($enabled))
+						->where('lbl LIKE ' . $this->db->quote('ranking_locked'))
+						->orWhere('lbl LIKE ' . $this->db->quote('ask_lock_ranking'));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->select('value')
+						->from($this->db->quoteName('#__emundus_setup_config'))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
+
+					$this->db->setQuery($query);
+					$params = json_decode($this->db->loadResult(), true);
+
+					$params['enabled'] = $enabled;
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_config'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
+
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
 			}
 		}
 		catch (Exception $e)

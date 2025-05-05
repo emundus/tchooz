@@ -7,14 +7,14 @@
  * @license	GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-use classes\api\FileSynchronizer;
+use Tchooz\api\FileSynchronizer;
 
 defined('_JEXEC') or die('Restricted access');
 
 require_once JPATH_SITE.'/components/com_emundus/classes/api/Api.php';
 require_once JPATH_SITE.'/components/com_emundus/classes/api/IxParapheur.php';
 
-use classes\api\IxParapheur;
+use Tchooz\api\IxParapheur;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
