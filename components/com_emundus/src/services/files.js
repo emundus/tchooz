@@ -146,4 +146,106 @@ export default {
 			return false;
 		}
 	},
+
+	async getComments(fnum) {
+		try {
+			const response = await client.get('getcomments', {
+				fnum: fnum,
+			});
+
+			// make sure that response.data.data is an array and that every element has id property
+			if (Array.isArray(response.data.data)) {
+				const correctResponse = response.data.data.every((comment) => {
+					if (!comment.hasOwnProperty('id')) {
+						return false;
+					}
+
+					return true;
+				});
+
+				if (correctResponse) {
+					return response.data;
+				} else {
+					return {
+						data: [],
+						status: false,
+						msg: 'Invalid response',
+					};
+				}
+			} else {
+				return {
+					data: [],
+					status: false,
+					msg: 'Invalid response',
+				};
+			}
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async saveComment(fnum, comment) {
+		const formData = new FormData();
+		formData.append('fnum', fnum);
+		Object.keys(comment).forEach((key) => {
+			formData.append(key, comment[key]);
+		});
+
+		try {
+			const response = await client.post('savecomment', formData);
+
+			return response.data;
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async deleteComment(cid) {
+		const formData = new FormData();
+		formData.append('cid', cid);
+
+		try {
+			const response = await client.post('deletecomment', formData);
+
+			return response.data;
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getApplicationForm(fnum) {
+		try {
+			// we want to get html from response
+			const html = await fetch(
+				'index.php?option=com_emundus&view=application&format=raw&layout=form&fnum=' + fnum + '&context=ranking',
+				{
+					method: 'GET',
+					headers: {
+						'Content-Type': 'text/html',
+					},
+				},
+			)
+				.then((response) => {
+					if (response.ok) {
+						return response.text();
+					}
+				})
+				.then((data) => {
+					return data;
+				});
+
+			return html;
+		} catch (e) {
+			return false;
+		}
+	},
 };

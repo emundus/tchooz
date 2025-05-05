@@ -937,28 +937,33 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getstate()
 	{
-		$m_files = $this->getModel('Files');
-		$states  = $m_files->getAllStatus();
-		$selected_state = $this->app->getSession()->get('last_status_selected',0);
+		$response = ['status' => false, 'msg'=> Text::_('ACCESS_DENIED')];
+		$user = $this->app->getIdentity();
 
-		if(empty($selected_state)) {
-			$fnum = $this->input->getString('fnum', null);
-			if (!empty($fnum)) {
-				$state          = $m_files->getStatusByFnums([$fnum]);
-				$selected_state = $state[$fnum]['status'];
+		if (!$user->guest) {
+
+			$m_files = $this->getModel('Files');
+			$states  = $m_files->getAllStatus();
+			$selected_state = $this->app->getSession()->get('last_status_selected',0);
+
+			if(empty($selected_state)) {
+				$fnum = $this->input->getString('fnum', null);
+				if (!empty($fnum)) {
+					$state          = $m_files->getStatusByFnums([$fnum]);
+					$selected_state = $state[$fnum]['status'];
+				}
 			}
-		}
 
-		echo json_encode((object)
-		(
-			array(
-				'status'       => true,
-				'states'       => $states,
-				'state'        => Text::_('COM_EMUNDUS_STATE'),
+			$response = [
+				'status' => true,
+				'states' => $states,
+				'state' => Text::_('COM_EMUNDUS_STATE'),
 				'select_state' => Text::_('PLEASE_SELECT_STATE'),
 				'selected_state' => $selected_state
-			)
-		));
+            ];
+		}
+
+		echo json_encode((object)$response);
 		exit;
 	}
 
@@ -1561,9 +1566,9 @@ class EmundusControllerFiles extends BaseController
 		$m_application = $this->getModel('Application');
 		$m_users       = $this->getModel('Users');
 
-		$session        = Factory::getApplication()->getSession();
+		$session        = $this->app->getSession();
 		$fnums          = $session->get('fnums_export');
-		$anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
+		$anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user->id);
 
 		if (count($fnums) == 0) {
 			$fnums = array($session->get('application_fnum'));
@@ -1869,6 +1874,9 @@ class EmundusControllerFiles extends BaseController
 							case 'user-assoc':
 								$line .= Text::_('COM_EMUNDUS_ASSOCIATED_USERS') . "\t";
 								break;
+							case 'ranking':
+								// do nothing, handled later
+								break;
 							default:
 								$line .= '"' . preg_replace("/\r|\n|\t/", "", $vOpt) . '"' . "\t";
 								break;
@@ -1935,6 +1943,46 @@ class EmundusControllerFiles extends BaseController
 								foreach ($fnumsArray[$idx] as $key => $value) {
 									if (substr($key, 0, 26) === "jos_emundus_evaluations___") {
 										$fnumsArray[$idx][$key] = Text::_('COM_EMUNDUS_ACCESS_NO_RIGHT');
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (in_array('ranking', $colsup)) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/ranking.php');
+				$m_ranking = new EmundusModelRanking();
+
+				if ($m_ranking->isActivated()) {
+					$hierarchies = $m_ranking->getHierarchies();
+
+					foreach ($hierarchies as $hierarchy) {
+						$files_rankings = $m_ranking->getAllRankingsSuperAdmin($hierarchy['id'], 0, 0, [], [], [], '', '', 'ecc.fnum', 'ASC', $fnums);
+						// add a header column for each hierarchy and another for the ranker
+						$element_csv[0] .= Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING') . ' ' . $hierarchy['label'] . "\t";
+						$element_csv[0] .= Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER') . ' ' . $hierarchy['label'] . "\t";
+
+						foreach ($files_rankings as $ranking_row) {
+							$fnumsArray[$ranking_row['fnum']]['ranking_' . $hierarchy['id']] = $ranking_row['rank'] !== -1 && !empty($ranking_row['rank']) ? $ranking_row['rank'] : Text::_('COM_EMUNDUS_RANKING_NOT_RANKED');
+							$fnumsArray[$ranking_row['fnum']]['ranker_' . $hierarchy['id']] = $ranking_row['ranker_name'];
+						}
+
+						if (!empty($hierarchy['form_id'])) {
+							$hierarchy_form_elements = $m_ranking->getHierarchyFormElements($hierarchy['form_id'], 'array');
+
+							foreach($hierarchy_form_elements as $form_element) {
+								$element_csv[0] .= strip_tags(Text::_($form_element['label'])) . "\t";
+
+								foreach ($files_rankings as $ranking_row) {
+									$element_id = $form_element['db_table_name'] . '___' . $form_element['element_name'];
+									$value = $m_files->getFabrikElementValue($form_element, $ranking_row['fnum']);
+
+									if (isset($value[$form_element['id']][$ranking_row['fnum']]['val'])) {
+										$fnumsArray[$ranking_row['fnum']][$element_id] = $value[$form_element['id']][$ranking_row['fnum']]['val'];
+									} else {
+										$fnumsArray[$ranking_row['fnum']][$element_id] = '';
 									}
 								}
 							}
@@ -4298,6 +4346,34 @@ class EmundusControllerFiles extends BaseController
 			{
 				$response['msg']  = Text::_('MISSING_PARAMS');
 				$response['code'] = 400;
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function renderemundustags() {
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$string = $this->input->getString('string', '');
+			$fnum = $this->input->getString('fnum', '');
+
+			if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+				if (!empty($string)) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+					$m_emails = new EmundusModelEmails();
+					$tags = $m_emails->setTags($this->_user->id, null, $fnum, '', $string);
+					$string = preg_replace($tags['patterns'], $tags['replacements'], $string);
+
+					$response['data'] = $string;
+					$response['status'] = true;
+					$response['code'] = 200;
+				} else {
+					$response['msg'] = Text::_('MISSING_PARAMS');
+					$response['code'] = 500;
+				}
 			}
 		}
 

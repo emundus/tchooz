@@ -173,6 +173,7 @@
 		</div>
 		<section id="filters-bottom-actions">
 			<button
+				v-if="allowAddFilter"
 				id="em-add-filter"
 				class="tw-btn-cancel tw-mt-4 tw-w-full tw-bg-white"
 				@click="openFilterOptions = !openFilterOptions"
@@ -227,6 +228,10 @@ export default {
 		countFilterValues: {
 			type: Boolean,
 			default: false,
+		},
+		allowAddFilter: {
+			type: Boolean,
+			default: true,
 		},
 	},
 	data() {

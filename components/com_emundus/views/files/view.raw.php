@@ -69,6 +69,7 @@ class EmundusViewFiles extends JViewLegacy
 	protected $filters;
 	protected $quick_search_filters;
 	protected int $count_filter_values;
+	protected int $allow_add_filter;
 
 
 	public function __construct($config = array())
@@ -81,7 +82,7 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
 
-		$this->app = Factory::getApplication();
+		$this->app  = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
 
 		parent::__construct($config);
@@ -212,6 +213,7 @@ class EmundusViewFiles extends JViewLegacy
 						$this->applied_filters      = $m_filters->getAppliedFilters();
 						$this->quick_search_filters = $m_filters->getQuickSearchFilters();
 						$this->count_filter_values  = $menu_params->get('count_filter_values', 0);
+						$this->allow_add_filter     = $menu_params->get('allow_add_filter', 1);
 					}
 					catch (Exception $e)
 					{

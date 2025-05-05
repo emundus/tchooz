@@ -13,6 +13,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      data-filters='<?= base64_encode(json_encode($this->filters)) ?>'
      data-quick-search-filters='<?= base64_encode(json_encode($this->quick_search_filters)) ?>'
      data-count-filter-values='<?= $this->count_filter_values ?>'
+     data-allow-add-filter='<?= $this->allow_add_filter ?>'
 ></div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

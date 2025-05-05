@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="COM_EMUNDUS_RANKING_VIEW_ALL_RANKING_TITLE">
+        <message>
+            <![CDATA[COM_EMUNDUS_RANKING_VIEW_ALL_RANKING_TITLE_DESC]]>
+        </message>
+    </layout>
+    <fields name="params">
+        <fieldset name="basic">
+            <field
+                    name="title"
+                    type="text"
+                    label="COM_EMUNDUS_RANKING_TITLE"
+                    description="COM_EMUNDUS_RANKING_TITLE_DESC"
+                    default="COM_EMUNDUS_CLASSEMENT_TITLE"
+            />
+            <field
+                    name="introduction"
+                    type="editor"
+                    label="COM_EMUNDUS_RANKING_INTRODUCTION"
+                    description="COM_EMUNDUS_RANKING_INTRODUCTION_DESC"
+                    filter="safehtml"
+                    size="20"
+            />
+        </fieldset>
+    </fields>
+</metadata>

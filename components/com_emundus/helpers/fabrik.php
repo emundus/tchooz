@@ -2289,6 +2289,32 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $created;
 	}
 
+	public static function getFabrikFormsList(): array
+	{
+		$forms = [];
+
+		try {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('id, label')
+				->from($db->quoteName('#__fabrik_forms'))
+				->where($db->quoteName('published') . ' = 1');
+
+			$db->setQuery($query);
+			$forms = $db->loadAssocList();
+
+			$forms = array_map(function($form) {
+				$form['label'] = Text::_($form['label']);
+				return $form;
+			}, $forms);
+		} catch (Exception $e) {
+			JLog::add('Failed to get forms associated to profiles that current user can access : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.filters.error');
+		}
+
+		return $forms;
+	}
+
 	public static function getAllFabrikAliases(): array
 	{
 		$aliases = [];
