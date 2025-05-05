@@ -1976,6 +1976,19 @@ $(document).ready(function() {
 
             // Export Excel
             case 6:
+                var rankingActivated = false;
+
+                fetch('/index.php?option=com_emundus&controller=ranking&task=isActivated').then((response) => {
+                    return response.json();
+                }).then((result) => {
+                   if (result.data) {
+                       rankingActivated = true;
+                   }
+                }).catch((error) => {
+                    // do nothing
+                });
+
+
                 addLoader();
 
                 title = 'COM_EMUNDUS_EXCEL_GENERATION';
@@ -2241,7 +2254,7 @@ $(document).ready(function() {
                             var grId = null;
                             var menu = null;
 
-                            $('#oelts').append('<div>' +
+                            let oelts_content = '<div>' +
                                 '<div class="tw-p-4 tw-bg-neutral-200 tw-rounded-lg tw-mt-3">'+
                                 '<label><strong>'+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL')+'</strong></label>'+
                                 '<p class="tw-text-neutral-500 tw-text-xs !tw-mt-0 tw-h-[30px]">  '+Joomla.Text._('COM_EMUNDUS_CHOOSE_OTHER_COL_HELP')+'</p>'+
@@ -2260,8 +2273,17 @@ $(document).ready(function() {
                                 '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="user-assoc" name="em-ex-user" id="em-ex-user"/>' +
                                 '<label for="em-ex-user" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_ASSOCIATED_USERS')+'</label></div>' +
                                 '<div class="tw-flex tw-mb-1"><input class="em-ex-check" type="checkbox" value="overall" name="em-ex-overall" id="em-ex-overall"/>' +
-                                '<label for="em-ex-overall" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label></div>' +
-                                '</div></div></div>')
+                                '<label for="em-ex-overall" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_EVALUATIONS_OVERALL')+'</label></div>';
+
+                            if (rankingActivated) {
+                                oelts_content +=
+                                    '<div class="em-flex-row em-mb-4"><input class="em-ex-check" type="checkbox" value="ranking" name="em-ex-ranking" id="em-ex-ranking"/>' +
+                                    '<label for="em-ex-ranking" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_RANKING_EXPORT_RANKING')+'</label></div>';
+                            }
+
+                            oelts_content += '</div></div></div>';
+
+                            $('#oelts').append(oelts_content);
 
                             // TODO: fix upper-case options
                             // '<div class="em-flex-row em-mb-4"><input class="em-ex-check0" type="checkbox" value="upper-case" name="upper-case" id="upper-case" style="max-height: 20px;"/>' +
@@ -6262,7 +6284,12 @@ window.addEventListener('emundus-start-apply-filters', () => {
 });
 
 window.addEventListener('emundus-apply-filters-success', () => {
-     reloadData(document.getElementById('view').getAttribute('value'), false);
+    let view = document.getElementById('view');
+    if (view) {
+        reloadData(view.getAttribute('value'), false);
+    } else {
+        removeLoader();
+    }
 });
 
 async function getEvaluationStepsForms(programCode)

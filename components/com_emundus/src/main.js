@@ -37,6 +37,7 @@ import Dashboard from '@/views/Dashboard/Dashboard.vue';
 import SMSEdit from '@/views/SMS/SMSEdit.vue';
 import SMSAppFile from '@/views/SMS/SMSAppFile.vue';
 import SMSSend from '@/views/SMS/SMSSend.vue';
+import Rankings from '@/views/Ranking/rankings.vue';
 
 if (document) {
 	let app = null;
@@ -97,6 +98,7 @@ if (document) {
 					'SMS/SMSAppFile',
 					'SMS/SMSSend',
 					'Filters',
+					'Ranking/rankings',
 				];
 
 				if (filesElement || componentNames.includes(componentName)) {
@@ -205,6 +207,16 @@ if (document) {
 							defaultFilters: filters,
 							defaultQuickSearchFilters: JSON.parse(atob(el.getAttribute('data-quick-search-filters'))),
 							countFilterValues: el.getAttribute('data-count-filter-values') === '1',
+							allowAddFilter: el.getAttribute('data-allow-add-filter') === '1',
+						});
+						break;
+					case 'Ranking/rankings':
+						app = createApp(Rankings, {
+							hierarchy_id: datas.hierarchy_id,
+							user: datas.user,
+							fileTabsStr: datas.filetabsstr,
+							specificTabs: datas.specifictabs,
+							readonly: datas.readonly == 1,
 						});
 						break;
 					default:

@@ -10,7 +10,7 @@ class Evaluations extends Files
 	protected array $evaluated = [];
 	protected array $all = [];
 	protected array $in_progress = [];
-	protected string $selected_tab = 'to_evaluate';
+	protected string $selected_tab = 'all';
 
 	public function __construct()
 	{

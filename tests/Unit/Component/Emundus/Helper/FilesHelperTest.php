@@ -225,7 +225,7 @@ class FilesHelperTest extends UnitTestCase
 
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
 		$this->assertNotEmpty($where['q'], 'Build where with filters returns not empty string');
-		$this->assertSame(' AND esc.published = \'1\' AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
+		$this->assertSame(' AND esc.published > 0 AND (jecc.applicant_id LIKE \'%test%\' OR jecc.fnum LIKE \'%test%\' OR u.username LIKE \'%test%\' OR eu.firstname LIKE \'%test%\' OR eu.lastname LIKE \'%test%\' OR u.email LIKE \'%test%\') AND jecc.published = \'1\'', $where['q'], 'Build where with filters returns correct string');
 
 		$session->set('em-quick-search-filters', [
 			[
@@ -234,7 +234,7 @@ class FilesHelperTest extends UnitTestCase
 			]
 		]);
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
-		$this->assertSame(' AND esc.published = \'1\' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with no scope returns only default filter on published');
+		$this->assertSame(' AND esc.published > 0 AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with no scope returns only default filter on published');
 
 		$session->set('em-quick-search-filters', [
 			[
@@ -243,7 +243,7 @@ class FilesHelperTest extends UnitTestCase
 			]
 		]);
 		$where = $this->helper->_moduleBuildWhere([], 'files', [], [], $menu_item);
-		$this->assertSame(' AND esc.published = \'1\' AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
+		$this->assertSame(' AND esc.published > 0 AND jecc.published = \'1\'', $where['q'], 'Build where with quick search filters with unhandled scope returns only default filter on published');
 
 		$session->clear('em-quick-search-filters');
 		$session->clear('em-applied-filters');

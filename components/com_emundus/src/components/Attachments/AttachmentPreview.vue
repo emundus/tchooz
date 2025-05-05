@@ -20,19 +20,20 @@
 import attachmentService from '@/services/attachment';
 import { useAttachmentStore } from '@/stores/attachment.js';
 
-import { storeToRefs } from 'pinia';
-import { watch } from 'vue';
-
 export default {
 	props: {
 		user: {
 			type: Number,
 			required: true,
 		},
+		defaultAttachment: {
+			type: Object,
+			default: null,
+		},
 	},
 	data() {
 		return {
-			attachment: useAttachmentStore().selectedAttachment,
+			attachment: null,
 			preview: '',
 			overflowX: false,
 			overflowY: false,
@@ -47,19 +48,8 @@ export default {
 			this.$refs['a-preview'].attachShadow({ mode: 'open' });
 		}
 
-		const attachmentStore = useAttachmentStore();
-		const { selectedAttachment } = storeToRefs(attachmentStore);
-		watch(selectedAttachment, () => {
-			const keys = Object.keys(selectedAttachment);
+		this.attachment = this.defaultAttachment;
 
-			if (keys.length !== 0) {
-				this.attachment = selectedAttachment;
-				this.openMsg = false;
-				this.getPreview();
-			}
-		});
-
-		this.attachment = attachmentStore.selectedAttachment;
 		this.getPreview();
 	},
 	methods: {

@@ -153,6 +153,10 @@ class EmundusControllerFile extends BaseController
 
 		if (!empty($fnum)) {
 			if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id, $fnum) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id, $fnum)) {
+				if (!method_exists($this->files, 'getEvaluationFormByFnum')) {
+					$this->files = new Evaluations();
+				}
+
 				$results['data'] = $this->files->getEvaluationFormByFnum($fnum);
 				$results['status'] = 1;
 				$results['msg'] = '';
@@ -169,6 +173,10 @@ class EmundusControllerFile extends BaseController
 
 		if (EmundusHelperAccess::asAccessAction(5, 'r', $this->_user->id) || EmundusHelperAccess::asAccessAction(5, 'c', $this->_user->id)) {
 			$fnum = $this->input->getString('fnum', null);
+
+			if (!method_exists($this->files, 'getMyEvaluation')) {
+				$this->files = new Evaluations();
+			}
 
 			$results['data'] = $this->files->getMyEvaluation($fnum);
 		}

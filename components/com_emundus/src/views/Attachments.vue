@@ -288,6 +288,7 @@
 							@fileNotFound="canDownload = false"
 							@canDownload="canDownload = true"
 							:user="displayedUser.user_id"
+							:default-attachment="selectedAttachment"
 						></AttachmentPreview>
 						<AttachmentEdit
 							v-if="displayEdit && openedModal"
