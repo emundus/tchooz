@@ -8,10 +8,10 @@ export default {
 			type: String,
 			required: true,
 		},
-    content: {
-      type: String,
-      default: '',
-    }
+		content: {
+			type: String,
+			default: '',
+		},
 	},
 	data() {
 		return {
@@ -21,12 +21,12 @@ export default {
 		};
 	},
 	mounted() {
-    if (!this.content) {
-      this.getSynthesis();
-    } else {
-      this.synthesis = this.content;
-      this.loading = false;
-    }
+		if (!this.content) {
+			this.getSynthesis();
+		} else {
+			this.synthesis = this.content;
+			this.loading = false;
+		}
 	},
 	methods: {
 		getSynthesis() {
