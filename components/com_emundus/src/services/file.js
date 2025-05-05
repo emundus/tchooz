@@ -51,4 +51,11 @@ export default {
 			};
 		}
 	},
+	async getFileSynthesis(fnum) {
+		try {
+			return await client.get('getFileSynthesis&fnum=' + fnum);
+		} catch (e) {
+			return false;
+		}
+	},
 };

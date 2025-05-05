@@ -88,7 +88,12 @@
 								:fullname="$props.fullname"
 								:applicant="$props.applicant"
 							/>
-
+							<Synthesis
+                v-if="tab.name === 'synthesis' && selected === 'synthesis'"
+                :fnum="selectedFile.fnum"
+                :content="filesSynthesis[selectedFile.fnum]"
+              >
+							</Synthesis>
 							<div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
 								<iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-h-screen tw-w-full"></iframe>
 							</div>
@@ -127,10 +132,12 @@ import evaluationService from '@/services/evaluation.js';
 import fileService from '@/services/file.js';
 import EvaluationList from '@/components/Files/EvaluationList.vue';
 import Messages from './Messenger/Messages.vue';
+import Synthesis from '@/components/Files/Synthesis.vue';
 
 export default {
 	name: 'ApplicationSingle',
 	components: {
+		Synthesis,
 		Messages,
 		EvaluationList,
 		Comments,
@@ -177,22 +184,27 @@ export default {
 			{
 				label: 'COM_EMUNDUS_FILES_APPLICANT_FILE',
 				name: 'application',
-				access: '1',
-			},
+				access: '1'
+      },
 			{
 				label: 'COM_EMUNDUS_FILES_ATTACHMENTS',
 				name: 'attachments',
-				access: '4',
-			},
+				access: '4'
+      },
 			{
 				label: 'COM_EMUNDUS_FILES_COMMENTS',
 				name: 'comments',
-				access: '10',
-			},
+				access: '10'
+      },
 			{
 				label: 'COM_EMUNDUS_FILES_MESSENGER',
 				name: 'messenger',
-				access: '36',
+				access: '36'
+      },
+			{
+				label: 'COM_EMUNDUS_APPLICATION_SYNTHESIS',
+				name: 'synthesis',
+				access: '1'
 			},
 		],
 		ccid: 0,
@@ -201,6 +213,7 @@ export default {
 		student_id: null,
 		hidden: false,
 		loading: false,
+    filesSynthesis: {},
 	}),
 
 	created() {
@@ -260,6 +273,30 @@ export default {
 				}
 			});
 		},
+    getSynthesis(fnum) {
+
+      fileService
+        .getFileSynthesis(fnum)
+        .then((response) => {
+          if (response.data.length == 0) {
+            this.tabs = this.tabs.filter((tab) => tab.name !== 'synthesis');
+          } else {
+            // re add the synthesis tab if it was removed
+            if (!this.tabs.find((tab) => tab.name === 'synthesis')) {
+              this.tabs.push({
+                label: 'COM_EMUNDUS_APPLICATION_SYNTHESIS',
+                name: 'synthesis',
+                access: '1'
+              });
+            }
+
+            this.filesSynthesis[this.selectedFile.fnum] = response.data;
+          }
+        })
+        .catch((error) => {
+          console.error('Error fetching synthesis:', error);
+        });
+    },
 		render() {
 			this.loading = true;
 			let fnum = '';
@@ -270,7 +307,10 @@ export default {
 				fnum = this.selectedFile.fnum;
 			}
 
-			if (typeof this.selectedFile == 'string') {
+      this.getSynthesis(fnum)
+
+
+      if (typeof this.selectedFile == 'string') {
 				filesService.getFile(fnum, this.$props.type).then((result) => {
 					if (result.status == 1) {
 						this.selectedFile = result.data;
@@ -335,7 +375,7 @@ export default {
 						this.loading = false;
 					});
 			}
-		},
+    },
 
 		getApplicationForm() {
 			axios({

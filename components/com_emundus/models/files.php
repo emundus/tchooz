@@ -33,6 +33,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\Database\ParameterType;
+use \Component\Emundus\Helpers\HtmlSanitizerSingleton;
 
 /**
  * Class EmundusModelFiles
@@ -6096,5 +6097,50 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $new_fnums_data;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return string
+	 */
+	public function getFileSynthesis(string $fnum): string
+	{
+		$synthesis = '';
+
+		if (!empty($fnum))
+		{
+			$query = $this->_db->createQuery();
+			$query->select('ecc.applicant_id, esp.synthesis')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'), 'ecc.campaign_id = esc.id')
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'esp'), 'esc.training = esp.code')
+				->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
+
+			$this->_db->setQuery($query);
+			$file = $this->_db->loadAssoc();
+
+			if (!empty($file['synthesis'])) {
+				if (!class_exists('EmundusModelEmails')) {
+					require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+				}
+
+				try {
+					$m_emails = new EmundusModelEmails();
+					$tags = $m_emails->setTags($file['applicant_id'], null, $fnum, '', $file['synthesis'], false, true);
+					$synthesis = preg_replace($tags['patterns'], $tags['replacements'], $file['synthesis']);
+					$synthesis = $m_emails->setTagsFabrik($synthesis, [$fnum]);
+				} catch (Exception $e) {
+					Log::add('Error getting synthesis: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+			}
+		}
+
+		if (!empty($synthesis)) {
+			$sanitizer = HtmlSanitizerSingleton::getInstance();
+			$synthesis = $sanitizer->sanitize($synthesis);
+		}
+
+		return $synthesis;
 	}
 }

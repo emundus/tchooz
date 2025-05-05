@@ -22,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
+use \Tchooz\Traits\TraitResponse;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
@@ -45,6 +46,8 @@ class EmundusControllerFiles extends BaseController
 
 	private $_user;
 	private $_db;
+
+	use TraitResponse;
 
 	/**
 	 * Constructor.
@@ -4317,5 +4320,26 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		return $is_evaluation_menu;
+	}
+
+	public function getFileSynthesis()
+	{
+		$this->checkToken('get');
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnum = $this->input->getString('fnum', null);
+
+			if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+				$response['code'] = 200;
+				$response['status'] = true;
+				$response['message'] = '';
+				$m_files = $this->getModel('Files');
+
+				$response['data'] = $m_files->getFileSynthesis($fnum);
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

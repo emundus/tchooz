@@ -581,7 +581,7 @@ class Files
 
 	public function getFilesQuery($select, $left_joins = [], $wheres = [], $access = '', $limit = 0, $offset = 0, $return = 'object')
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
