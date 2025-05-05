@@ -2919,16 +2919,21 @@ class EmundusModelFiles extends JModelLegacy
 			$already_joined = [
 				'jecc' => 'jos_emundus_campaign_candidature',
 				'esc'  => 'jos_emundus_setup_campaigns',
+				'escm'  => 'jos_emundus_setup_campaigns_more',
 				'sp'   => 'jos_emundus_setup_programmes',
+				'estu' => 'jos_emundus_setup_teaching_unity',
 				'u'    => 'jos_users',
 			];
 
 			$from     = ' FROM #__emundus_campaign_candidature as jecc ';
 			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm ON escm.campaign_id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training ';
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 
 			$elements_as = [];
+
 			foreach ($elements as $element) {
 				$saved_element_as = $element->tab_name . '___' . $element->element_name;
 				$is_repeat        = false;

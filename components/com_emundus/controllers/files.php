@@ -1602,6 +1602,22 @@ class EmundusControllerFiles extends BaseController
 			$ordered_elements[$c] = $elements[$c];
 		}
 
+		// Order elements to have jos_emundus_setup_campaigns_more and jos_emundus_setup_campaigns first
+		$orders = [
+			'jos_emundus_campaign_candidature' => 1,
+			'jos_emundus_setup_campaigns' => 2,
+			'jos_emundus_setup_campaigns_more' => 3,
+			'jos_emundus_setup_programmes' => 4,
+			'jos_users' => 5,
+		];
+
+		usort($ordered_elements, function ($a, $b) use ($orders) {
+			$orderA = $orders[$a->tab_name] ?? PHP_INT_MAX; // Default to high value if not found
+			$orderB = $orders[$b->tab_name] ?? PHP_INT_MAX;
+
+			return $orderA <=> $orderB;
+		});
+
 		$failed_with_old_method = false;
 		if ($methode == 2) {
 			$fnumsArray = $m_files->getFnumArray($fnums, $ordered_elements, $methode, $start, $limit, 0);

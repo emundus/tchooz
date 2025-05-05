@@ -480,6 +480,10 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        <field name="display_teaching_unity_columns" type="radio" default="0" label="COM_EMUNDUS_DISPLAY_TEACHING_UNITY_COLUMNS" description="COM_EMUNDUS_DISPLAY_TEACHING_UNITY_COLUMNS_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
 
         <field name="export_application_pdf_title_color" type="text" default="#000000"
                label="COM_EMUNDUS_EXPORT_APPLICATION_TITLE_COLOR"
