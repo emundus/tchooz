@@ -2061,12 +2061,17 @@ $(document).ready(function() {
                                 '<table style="width:100%;"><tr>'+
                                 '<th class="em-bg-transparent"><div class="tw-flex tw-cursor-pointer" id="showelements">' +
                                 '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" id="showelements_icon" class="material-symbols-outlined tw-mr-1" style="transform: rotate(-90deg)">expand_more</span>' +
-                                '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_CHOOSE_FORM_ELEM')+'</p>'+
+                                '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_FORM_FORMS')+'</p>'+
                                 '</div></th>' +
 
                                 '<th class="em-bg-transparent" id="th-eval"><div class="tw-flex tw-cursor-pointer" id="showevalelements">' +
                                 '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined tw-mr-1" id="showevalelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
-                                '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_CHOOSE_EVAL_FORM_ELEM')+'</p>'+
+                                '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_FORM_EVAL_FORMS')+'</p>'+
+                                '</div></th>' +
+
+                                '<th class="em-bg-transparent" id="th-campaign"><div class="em-flex-row em-pointer" id="showcampaignelements">' +
+                                '<span title="'+Joomla.Text._('COM_EMUNDUS_SHOW_ELEMENTS')+'" class="material-symbols-outlined em-mr-4" id="showcampaignelements_icon" style="transform: rotate(-90deg)">expand_more</span>' +
+                                '<p class="!tw-mt-0">'+Joomla.Text._('COM_EMUNDUS_ONBOARD_CAMPAIGNS_AND_PROGRAMS')+'</p>'+
                                 '</div></th>' +
 
                                 '</tr></table>' +
@@ -2080,6 +2085,10 @@ $(document).ready(function() {
                                 '</div>'+
                                 '<div id="evalelement" style="display: none;">' +
                                 '<div id="eval-elements-popup" style="display: none;">' +
+                                '</div>' +
+                                '</div>' +
+                                '<div id="campaignelement">' +
+                                '<div id="campaign-elements-popup" style="display: none;">' +
                                 '</div>' +
                                 '</div>' +
                                 '</div>' +
@@ -2128,6 +2137,10 @@ $(document).ready(function() {
                                                     $('#th-eval').show();
                                                     $('#evalelement').show();
                                                 }
+
+                                                getCampaignsProgramsInfo(code).then((html) => {
+                                                    document.getElementById('campaign-elements-popup').innerHTML = html;
+                                                });
 
                                                 /// add loading
                                                 $('.modal-header').before('<div id="loadingimg-campaign"><img src="'+loading+'" alt="loading"/></div>');
@@ -2192,6 +2205,8 @@ $(document).ready(function() {
                                                 document.getElementsByClassName('em-swal-confirm-button')[0].style.opacity = 1;
 
                                                 getApplicantForms(code, camp, grId, menu, itemId);
+
+                                                getCampaignsProgramsInfo(code, camp);
                                             }
                                         },
                                         error: function (jqXHR) {
@@ -2575,6 +2590,9 @@ $(document).ready(function() {
 
                     const evalElementsContainer = document.createElement('div');
                     evalElementsContainer.id = 'eval-elements-container';
+
+                    const campaignElementsContainer = document.createElement('div');
+                    campaignElementsContainer.id = 'campaign-elements-container';
 
                     evalDefaultCheckWrapper.append(evalStepsCheckbox);
                     evalDefaultCheckWrapper.append(evalStepsLabel);
@@ -5554,6 +5572,9 @@ $(document).ready(function() {
             $('#eval-elements-popup').hide();
             $('#showevalelements_icon').css('transform','rotate(-90deg)');
 
+            $('#campaign-elements-popup').hide();
+            $('#showcampaignelements_icon').css('transform','rotate(-90deg)');
+
             $('#elements-popup').toggle(300);
             $('#showelements_icon').css('transform','rotate(0deg)');
 
@@ -5570,12 +5591,34 @@ $(document).ready(function() {
             $('#elements-popup').hide();
             $('#showelements_icon').css('transform','rotate(-90deg)');
 
+            $('#campaign-elements-popup').hide();
+            $('#showcampaignelements_icon').css('transform','rotate(-90deg)');
+
             $('#eval-elements-popup').toggle(300);
             $('#showevalelements_icon').css('transform','rotate(0deg)');
 
         } else {
             $('#eval-elements-popup').toggle(300);
             $('#showevalelements_icon').css('transform','rotate(-90deg)');
+        }
+    });
+
+    $(document).on('click', '#showcampaignelements', function() {
+        var campaign_elements_block = document.getElementById('campaign-elements-popup');
+        if (campaign_elements_block.style.display == 'none') {
+
+            $('#elements-popup').hide();
+            $('#showelements_icon').css('transform','rotate(-90deg)');
+
+            $('#eval-elements-popup').hide();
+            $('#showevalelements_icon').css('transform','rotate(-90deg)');
+
+            $('#campaign-elements-popup').toggle(300);
+            $('#showcampaignelements_icon').css('transform','rotate(0deg)');
+
+        } else {
+            $('#campaign-elements-popup').toggle(300);
+            $('#showcampaignelements_icon').css('transform','rotate(-90deg)');
         }
     });
 
@@ -6302,6 +6345,17 @@ async function getApplicantForms(code, camp, grId, menu, itemId)
         error: function (jqXHR) {
             console.log(jqXHR.responseText);
         }
+    });
+}
+
+async function getCampaignsProgramsInfo(code, camp)
+{
+    return await fetch('/index.php?option=com_emundus&view=export_select_columns&format=raw&layout=campaign&form=campaign').then((response) => {
+        return response.text();
+    }).then((html) => {
+        return html;
+    }).catch((e) => {
+        return '<p>Oops</p>';
     });
 }
 

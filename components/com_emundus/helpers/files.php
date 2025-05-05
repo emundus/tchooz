@@ -697,7 +697,7 @@ class EmundusHelperFiles
 		{
 			$plist = $m_profile->getProfileIDByCourse($code, $camps);
 		}
-		
+
 
 		if (!is_null($profile))
 		{
@@ -907,7 +907,7 @@ class EmundusHelperFiles
 						$elts[]               = $value;
 					}
 				}
-				
+
 				if($evaluation_elements) {
 					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
 					$m_evaluation = new EmundusModelEvaluation();
@@ -3951,7 +3951,6 @@ class EmundusHelperFiles
 
 		try
 		{
-
 			$_string      = implode(',', $selectedElts);
 			$_find_in_set = "'" . $_string . "'";
 
