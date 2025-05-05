@@ -138,7 +138,10 @@ class Evaluations extends Files
 				$program_ids = $db->loadColumn();
 
 				if (!empty($program_ids)) {
-					$m_workflow = new EmundusModelWorkflow;
+					if (!class_exists('EmundusModelWorkflow')) {
+						require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					}
+					$m_workflow = new EmundusModelWorkflow();
 					foreach ($program_ids as $program_id) {
 						$steps = $m_workflow->getEvaluatorStepsByProgram($program_id);
 
