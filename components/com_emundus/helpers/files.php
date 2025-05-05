@@ -6803,6 +6803,30 @@ class EmundusHelperFiles
 		return $id;
 	}
 
+	public static function getApplicantIdFromFnum(string $fnum): int
+	{
+		$applicant_id = 0;
+
+		if (!empty($fnum))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('applicant_id')
+				->from('#__emundus_campaign_candidature')
+				->where('fnum = ' . $db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$applicant_id = (int)$db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Failed to get applicant id from fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $applicant_id;
+	}
+
 	/**
 	 * @param   int  $user_id
 	 * @param   int  $campaign_id

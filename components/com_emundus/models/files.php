@@ -4397,8 +4397,10 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0)
+	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0): array
 	{
+		$values = [];
+
 		if (!is_array($fnums))
 		{
 			$fnums = [$fnums];
@@ -4406,32 +4408,64 @@ class EmundusModelFiles extends JModelLegacy
 
 		$query = $this->_db->getQuery(true);
 
-		$query->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
-			->from($this->_db->quoteName($tableName))
-			->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
+		// check if column fnum exists
+		$fnum_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('fnum'))->loadResult();
 
-		if (!empty($row_id)) {
-			$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
-		}
+		if (!empty($fnum_column_existing)) {
+			$query->clear()
+				->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
+				->from($this->_db->quoteName($tableName))
+				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 
-		try {
-			$this->_db->setQuery($query);
-
-			$values = $this->_db->loadAssocList('fnum');
-
-			if(!empty($dateFormat))
-			{
-				foreach ($values as &$value)
-				{
-					$value['val'] = date($dateFormat, strtotime($value['val']));
-				}
+			if (!empty($row_id)) {
+				$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
 			}
 
-			return $values;
+			try {
+				$this->_db->setQuery($query);
+				$values = $this->_db->loadAssocList('fnum');
+
+				if(!empty($dateFormat))
+				{
+					foreach ($values as &$value)
+					{
+						$value['val'] = date($dateFormat, strtotime($value['val']));
+					}
+				}
+			}
+			catch (Exception $e) {
+				throw $e;
+			}
 		}
-		catch (Exception $e) {
-			throw $e;
+		else
+		{
+			$user_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('user_id'))->loadResult();
+
+			if (!empty($user_column_existing))
+			{
+				try {
+					foreach ($fnums as $fnum) {
+						$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+						$query->clear()
+							->select($this->_db->quoteName($name) . ' as val')
+							->from($this->_db->quoteName($tableName))
+							->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
+
+						$this->_db->setQuery($query);
+						$value = $this->_db->loadResult();
+
+						$values[$fnum] = [
+							'val' => $value,
+							'fnum' => $fnum
+						];
+					}
+				} catch (Exception $e) {
+					throw $e;
+				}
+			}
 		}
+
+		return $values;
 	}
 
 	/**
