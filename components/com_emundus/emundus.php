@@ -922,6 +922,7 @@ Text::script('MOD_EMUNDUS_FILTERS_WORKFLOW_EVALUATION_STATE');
 Text::script('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE');
 Text::script('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED');
 Text::script('MOD_EMUNDUS_FILTERS_RESET');
+Text::script('MOD_EMUNDUS_FILTERS_EVALUATORS');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
