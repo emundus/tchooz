@@ -72,7 +72,9 @@ class PlgFabrik_FormEmundusAttachmentPublic extends plgFabrik_Form
 		$referent_edit = $eMConfig->get('referent_can_edit_after_deadline');
 
 		require_once(JPATH_BASE . '/components/com_emundus/models/files.php');
+        require_once(JPATH_BASE . '/components/com_emundus/models/workflow.php');
 		$m_files = new EmundusModelFiles();
+        $m_workflow = new EmundusModelWorkflow();
 
 		$query->select('*')
 			->from($this->_db->quoteName('#__emundus_files_request'))
@@ -90,10 +92,26 @@ class PlgFabrik_FormEmundusAttachmentPublic extends plgFabrik_Form
 			$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 			$now      = $dateTime->format('Y-m-d H:i:s');
 
-			$current_start_date  = $fnumInfos['start_date'];
-			$current_end_date    = $fnumInfos['end_date'];
+            $current_phase = $m_workflow->getCurrentWorkflowStepFromFile($obj->fnum);
+            $infinite_step = false;
+            if (!empty($current_phase) && !empty($current_phase->id))
+            {
+                if ($current_phase->infinite)
+                {
+                    $infinite_step = true;
+                }
+
+                $current_end_date   = !empty($current_phase->end_date) ? $current_phase->end_date : $fnumInfos['end_date'];
+                $current_start_date = !empty($current_phase->start_date) ? $current_phase->start_date : $fnumInfos['start_date'];
+            }
+            else
+            {
+                $current_end_date   = $fnumInfos['end_date'];
+                $current_start_date = $fnumInfos['start_date'];
+            }
+
 			$is_campaign_started = strtotime(date($now)) >= strtotime($current_start_date);
-			$is_dead_line_passed = strtotime(date($now)) > strtotime($current_end_date);
+            $is_dead_line_passed = !$infinite_step && strtotime(date($now)) > strtotime($current_end_date);
 
 			if (!$is_campaign_started) {
 				$this->app->enqueueMessage(Text::_('COM_EMUNDUS_REFERENT_PERIOD_NOT_STARTED'), 'error');
