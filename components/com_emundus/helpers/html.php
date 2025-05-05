@@ -2,7 +2,6 @@
 
 namespace Component\Emundus\Helpers;
 
-
 use Symfony\Component\HtmlSanitizer\HtmlSanitizer;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 

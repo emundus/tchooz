@@ -32,7 +32,7 @@ const evaluationService = {
     }
   }
 };
-const _sfc_main$2 = {
+const _sfc_main$3 = {
   name: "Evaluations",
   props: {
     fnum: {
@@ -104,8 +104,8 @@ const _sfc_main$2 = {
     }
   }
 };
-const _hoisted_1$2 = { id: "evaluations-container" };
-const _hoisted_2$2 = {
+const _hoisted_1$3 = { id: "evaluations-container" };
+const _hoisted_2$3 = {
   key: 0,
   class: "tw-flex tw-h-full tw-flex-col"
 };
@@ -121,9 +121,9 @@ const _hoisted_8$1 = {
   key: 1,
   class: "tw-m-2 tw-rounded tw-border tw-border-blue-500 tw-bg-blue-50 tw-p-2 tw-text-center tw-text-neutral-900"
 };
-function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
-  return openBlock(), createElementBlock("div", _hoisted_1$2, [
-    $data.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$2, [
+function _sfc_render$3(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$3, [
+    $data.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_2$3, [
       createBaseVNode("nav", _hoisted_3$2, [
         createBaseVNode("ul", _hoisted_4$2, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($data.evaluations, (evaluation) => {
@@ -151,7 +151,7 @@ function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
     ])) : (openBlock(), createElementBlock("p", _hoisted_8$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EDITABLE_EVALUATIONS")), 1))
   ]);
 }
-const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-ca80c115"]]);
+const Evaluations = /* @__PURE__ */ _export_sfc(_sfc_main$3, [["render", _sfc_render$3], ["__scopeId", "data-v-ca80c115"]]);
 const client = new FetchClient("file");
 const filesService = {
   async getFiles(type = "default", refresh = false, limit = 25, page = 0) {
@@ -284,7 +284,7 @@ const filesService = {
     }
   }
 };
-const _sfc_main$1 = {
+const _sfc_main$2 = {
   name: "EvaluationList",
   props: {
     ccid: {
@@ -339,8 +339,8 @@ const _sfc_main$1 = {
     }
   }
 };
-const _hoisted_1$1 = ["id"];
-const _hoisted_2$1 = { class: "tw-mb-4" };
+const _hoisted_1$2 = ["id"];
+const _hoisted_2$2 = { class: "tw-mb-4" };
 const _hoisted_3$1 = {
   key: 0,
   class: "tw-h-full tw-p-4"
@@ -350,12 +350,12 @@ const _hoisted_5$1 = {
   key: 1,
   class: "tw-m-2 tw-rounded tw-border tw-border-blue-500 tw-bg-blue-50 tw-p-2 tw-text-center tw-text-neutral-900"
 };
-function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+function _sfc_render$2(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Tabs = resolveComponent("Tabs");
   return openBlock(), createElementBlock("div", {
     id: "evaluation-step-" + $props.step.id + "-list"
   }, [
-    createBaseVNode("h2", _hoisted_2$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST")), 1),
+    createBaseVNode("h2", _hoisted_2$2, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST")), 1),
     _ctx.evaluations.length > 0 ? (openBlock(), createElementBlock("div", _hoisted_3$1, [
       createVNode(_component_Tabs, {
         tabs: $options.evaluationsTabs,
@@ -368,12 +368,69 @@ function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
         class: "iframe-selected-evaluation tw-w-full"
       }, null, 8, _hoisted_4$1))
     ])) : (openBlock(), createElementBlock("p", _hoisted_5$1, toDisplayString(_ctx.translate("COM_EMUNDUS_EVALUATIONS_LIST_NO_EVALUATIONS")), 1))
-  ], 8, _hoisted_1$1);
+  ], 8, _hoisted_1$2);
 }
-const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1], ["__scopeId", "data-v-754fc6df"]]);
+const EvaluationList = /* @__PURE__ */ _export_sfc(_sfc_main$2, [["render", _sfc_render$2], ["__scopeId", "data-v-754fc6df"]]);
+const _sfc_main$1 = {
+  name: "Synthesis",
+  props: {
+    fnum: {
+      type: String,
+      required: true
+    },
+    content: {
+      type: String,
+      default: ""
+    }
+  },
+  data() {
+    return {
+      synthesis: "",
+      loading: true,
+      error: false
+    };
+  },
+  mounted() {
+    if (!this.content) {
+      this.getSynthesis();
+    } else {
+      this.synthesis = this.content;
+      this.loading = false;
+    }
+  },
+  methods: {
+    getSynthesis() {
+      this.loading = true;
+      this.error = false;
+      fileService.getFileSynthesis(this.fnum).then((response) => {
+        this.synthesis = response.data;
+        this.loading = false;
+      }).catch((error) => {
+        this.error = true;
+        this.loading = false;
+        console.error("Error fetching synthesis:", error);
+      });
+    }
+  }
+};
+const _hoisted_1$1 = {
+  id: "application-synthesis",
+  class: "tw-m-4 tw-rounded tw-border tw-p-4"
+};
+const _hoisted_2$1 = ["innerHTML"];
+function _sfc_render$1(_ctx, _cache, $props, $setup, $data, $options) {
+  return openBlock(), createElementBlock("div", _hoisted_1$1, [
+    !$data.loading && !$data.error ? (openBlock(), createElementBlock("div", {
+      key: 0,
+      innerHTML: $data.synthesis
+    }, null, 8, _hoisted_2$1)) : createCommentVNode("", true)
+  ]);
+}
+const Synthesis = /* @__PURE__ */ _export_sfc(_sfc_main$1, [["render", _sfc_render$1]]);
 const _sfc_main = {
   name: "ApplicationSingle",
   components: {
+    Synthesis,
     Messages,
     EvaluationList,
     Comments,
@@ -436,6 +493,11 @@ const _sfc_main = {
         label: "COM_EMUNDUS_FILES_MESSENGER",
         name: "messenger",
         access: "36"
+      },
+      {
+        label: "COM_EMUNDUS_APPLICATION_SYNTHESIS",
+        name: "synthesis",
+        access: "1"
       }
     ],
     ccid: 0,
@@ -443,7 +505,8 @@ const _sfc_main = {
     access: null,
     student_id: null,
     hidden: false,
-    loading: false
+    loading: false,
+    filesSynthesis: {}
   }),
   created() {
     if (this.defaultTabs.length > 0) {
@@ -491,6 +554,24 @@ const _sfc_main = {
         }
       });
     },
+    getSynthesis(fnum) {
+      fileService.getFileSynthesis(fnum).then((response) => {
+        if (response.data.length == 0) {
+          this.tabs = this.tabs.filter((tab) => tab.name !== "synthesis");
+        } else {
+          if (!this.tabs.find((tab) => tab.name === "synthesis")) {
+            this.tabs.push({
+              label: "COM_EMUNDUS_APPLICATION_SYNTHESIS",
+              name: "synthesis",
+              access: "1"
+            });
+          }
+          this.filesSynthesis[this.selectedFile.fnum] = response.data;
+        }
+      }).catch((error) => {
+        console.error("Error fetching synthesis:", error);
+      });
+    },
     render() {
       this.loading = true;
       let fnum = "";
@@ -499,6 +580,7 @@ const _sfc_main = {
       } else {
         fnum = this.selectedFile.fnum;
       }
+      this.getSynthesis(fnum);
       if (typeof this.selectedFile == "string") {
         filesService.getFile(fnum, this.$props.type).then((result) => {
           if (result.status == 1) {
@@ -696,12 +778,13 @@ const _hoisted_11 = ["onClick"];
 const _hoisted_12 = { class: "tw-text-sm" };
 const _hoisted_13 = { key: 0 };
 const _hoisted_14 = ["innerHTML"];
-const _hoisted_15 = { key: 4 };
+const _hoisted_15 = { key: 5 };
 const _hoisted_16 = ["id", "src"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Attachments = resolveComponent("Attachments");
   const _component_Comments = resolveComponent("Comments");
   const _component_Messages = resolveComponent("Messages");
+  const _component_Synthesis = resolveComponent("Synthesis");
   const _component_evaluation_list = resolveComponent("evaluation-list");
   const _component_Evaluations = resolveComponent("Evaluations");
   const _component_modal = resolveComponent("modal");
@@ -791,6 +874,11 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     fullname: _ctx.$props.fullname,
                     applicant: _ctx.$props.applicant
                   }, null, 8, ["fnum", "fullname", "applicant"])) : createCommentVNode("", true),
+                  tab.name === "synthesis" && _ctx.selected === "synthesis" ? (openBlock(), createBlock(_component_Synthesis, {
+                    key: 4,
+                    fnum: _ctx.selectedFile.fnum,
+                    content: _ctx.filesSynthesis[_ctx.selectedFile.fnum]
+                  }, null, 8, ["fnum", "content"])) : createCommentVNode("", true),
                   tab.type && tab.type === "iframe" && _ctx.selected === tab.name ? (openBlock(), createElementBlock("div", _hoisted_15, [
                     createBaseVNode("iframe", {
                       id: tab.name,
@@ -799,7 +887,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     }, null, 8, _hoisted_16)
                   ])) : createCommentVNode("", true),
                   tab.type && tab.type === "evaluation-list" && _ctx.selected === tab.name ? (openBlock(), createBlock(_component_evaluation_list, {
-                    key: 5,
+                    key: 6,
                     step: tab.step,
                     ccid: this.ccid
                   }, null, 8, ["step", "ccid"])) : createCommentVNode("", true)
