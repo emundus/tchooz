@@ -75,6 +75,11 @@ class EmundusAdminViewModules extends HtmlView
 	            'title' => 'Événements pour un site vitrine',
 	            'desc' => '',
 	            'install_button' => 'Installer'
+            ],
+            'ranking' => [
+	            'title' => 'Classement',
+	            'desc' => 'Installation des tables de classement, d\'un menu administrateur et d\'un email Système.',
+	            'install_button' => 'Installer'
             ]
         ];
         $this->modules = $modules;

@@ -24,18 +24,12 @@ defined('_JEXEC') or die('Restricted access');
                     </div>
                     <div class="buttons" style="float:right; margin-top:0px">
                         <div class="em-flex-row">
-							<?php
-							if ($this->use_module_for_filters) {
-								?>
-                                <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
+                            <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
                                     <span class="material-symbols-outlined em-pointer em-color-white"
                                           title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>">save</span>
-                                </label>
-                                <input type="button" style="display: none" id="save-filter"
-                                       title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>"/>
-								<?php
-							}
-							?>
+                            </label>
+                            <input type="button" style="display: none" id="save-filter"
+                                   title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>" />
                             <label for="clear-search" class="em-flex-row">
                                 <span class="material-symbols-outlined em-pointer em-color-white"
                                       title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
@@ -48,13 +42,8 @@ defined('_JEXEC') or die('Restricted access');
 
                 <div class="panel-body em-containerFilter-body">
 					<?php
-					if (!$this->use_module_for_filters) {
-						echo @$this->filters;
-					}
-					else {
-						echo JHtml::_('content.prepare', '{loadposition emundus_filters}');
-					}
-					?>
+					    echo $this->filters;
+                    ?>
                 </div>
             </div>
 

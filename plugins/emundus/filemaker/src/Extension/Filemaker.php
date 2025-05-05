@@ -9,7 +9,7 @@ use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
-use classes\api\FileMaker as FileMakerAPI;
+use Tchooz\api\FileMaker as FileMakerAPI;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;

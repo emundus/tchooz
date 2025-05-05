@@ -1,4 +1,4 @@
-import { a2 as defineStore } from "./app_emundus.js";
+import { ax as defineStore } from "./app_emundus.js";
 const useCampaignStore = defineStore("campaign", {
   state: () => ({
     unsavedChanges: false,

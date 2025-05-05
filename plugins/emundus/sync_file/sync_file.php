@@ -7,7 +7,7 @@
  * @license       GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-use classes\api\FileSynchronizer;
+use Tchooz\api\FileSynchronizer;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 

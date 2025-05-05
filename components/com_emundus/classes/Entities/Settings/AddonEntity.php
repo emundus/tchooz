@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\Entities\Settings;
+namespace Tchooz\Entities\Settings;
 
 Class AddonEntity
 {

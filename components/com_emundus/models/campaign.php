@@ -13,9 +13,9 @@
 
 // phpcs:enable PSR1.Files.SideEffects
 
-use classes\Entities\ApplicationFile\ApplicationFileEntity;
-use classes\Entities\Settings\AddonEntity;
-use classes\Repository\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
@@ -25,7 +25,7 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Language\Text;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
-use \classes\Factories\ImportFactory;
+use Tchooz\Factories\ImportFactory;
 
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
@@ -4149,5 +4149,126 @@ class EmundusModelCampaign extends ListModel
 	public function getImportAddon(): AddonEntity
 	{
 		return $this->importAddon;
+	}
+
+	public function getAllCampaignElements(): array
+	{
+		$elements = [];
+
+		$display_teaching_unity_columns = ComponentHelper::getParams('com_emundus')->get('display_teaching_unity_columns', 0);
+
+		$query = 'SHOW COLUMNS FROM `jos_emundus_setup_campaigns`';
+		$this->_db->setQuery($query);
+		$columns['jos_emundus_setup_campaigns'] = $this->_db->loadColumn();
+
+		$query = 'SHOW COLUMNS FROM `jos_emundus_setup_campaigns_more`';
+		$this->_db->setQuery($query);
+		$columns['jos_emundus_setup_campaigns_more'] = $this->_db->loadColumn();
+
+		$query = 'SHOW COLUMNS FROM `jos_emundus_setup_programmes`';
+		$this->_db->setQuery($query);
+		$columns['jos_emundus_setup_programmes'] = $this->_db->loadColumn();
+
+		if($display_teaching_unity_columns == 1)
+		{
+			$query = 'SHOW COLUMNS FROM `jos_emundus_setup_teaching_unity`';
+			$this->_db->setQuery($query);
+			$columns['jos_emundus_setup_teaching_unity'] = $this->_db->loadColumn();
+		}
+
+		$query = $this->_db->getQuery(true);
+
+		$forms = [];
+
+		$query->select('form_id')
+			->from($this->_db->quoteName('#__fabrik_lists'))
+			->where($this->_db->quoteName('db_table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_campaigns'));
+		$this->_db->setQuery($query);
+		$campaign_base_formid = $this->_db->loadResult();
+		if(!empty($campaign_base_formid)) {
+			$forms['jos_emundus_setup_campaigns'] = $campaign_base_formid;
+		}
+
+		$query->clear()
+			->select('form_id')
+			->from($this->_db->quoteName('#__fabrik_lists'))
+			->where($this->_db->quoteName('db_table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_campaigns_more'));
+		$this->_db->setQuery($query);
+		$more_form_id = $this->_db->loadResult();
+
+		if(!empty($more_form_id)) {
+			$forms['jos_emundus_setup_campaigns_more'] = $more_form_id;
+		}
+
+		$query->clear()
+			->select('form_id')
+			->from($this->_db->quoteName('#__fabrik_lists'))
+			->where($this->_db->quoteName('db_table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_programmes'));
+		$this->_db->setQuery($query);
+		$programme_base_formid = $this->_db->loadResult();
+		if(!empty($programme_base_formid)) {
+			$forms['jos_emundus_setup_programmes'] = $programme_base_formid;
+		}
+
+		if($display_teaching_unity_columns == 1)
+		{
+			$query->clear()
+				->select('form_id')
+				->from($this->_db->quoteName('#__fabrik_lists'))
+				->where($this->_db->quoteName('db_table_name') . ' = ' . $this->_db->quote('jos_emundus_setup_teaching_unity'));
+			$this->_db->setQuery($query);
+			$teaching_unity_base_formid = $this->_db->loadResult();
+			if (!empty($teaching_unity_base_formid))
+			{
+				$forms['jos_emundus_setup_teaching_unity'] = $teaching_unity_base_formid;
+			}
+		}
+
+		foreach ($forms as $table => $form_id)
+		{
+			if (!empty($form_id))
+			{
+				$show_in_list_summary = 1;
+				if($table === 'jos_emundus_setup_campaigns_more') {
+					$show_in_list_summary = 0;
+				}
+
+				$query->clear()
+					->select('group_id')
+					->from('#__fabrik_formgroup')
+					->where('form_id = ' . $form_id);
+
+				$this->_db->setQuery($query);
+				$group_ids = $this->_db->loadColumn();
+
+				if (!empty($group_ids))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
+					require_once JPATH_SITE . '/components/com_emundus/helpers/list.php';
+					$m_eval         = new EmundusModelEvaluation();
+					$h_list         = new EmundusHelperList;
+					$group_elements = $m_eval->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, 0, ['panel', 'display']);
+
+					foreach ($group_elements as $group_element)
+					{
+						if (!empty($group_element->element_id) && !in_array($group_element->name, ['id', 'date_time', 'published', 'label', 'training']) && in_array($group_element->name, $columns[$group_element->table_name]))
+						{
+							$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
+							if (in_array($step_element->element_plugin, ['panel', 'display']))
+							{
+								continue;
+							}
+
+							$step_element->table_label = Text::_($step_element->table_label);
+							$step_element->label       = 'Campaign';
+							$step_element->form_id     = $form_id;
+							$elements[]                = $step_element;
+						}
+					}
+				}
+			}
+		}
+
+		return $elements;
 	}
 }

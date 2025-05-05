@@ -1,6 +1,6 @@
 import list from "./List.js";
 import { u as useCampaignStore } from "./campaign.js";
-import { _ as _export_sfc, R as campaignService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock } from "./app_emundus.js";
+import { _ as _export_sfc, X as campaignService, r as resolveComponent, o as openBlock, c as createElementBlock, a as createBlock } from "./app_emundus.js";
 import "./ExportSlotsModal.js";
 import "./Skeleton.js";
 import "./Calendar.js";

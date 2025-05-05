@@ -279,16 +279,21 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 				$attachment_id = $recipient['attachment_id'];
 
-				// TODO : Check if we already sent a file request today, merge this query with query uploaded. If a file request is sent today OR already uploaded we don't send this email
-				$query->clear()
-					->select('count(id)')
-					->from($this->_db->quoteName('#__emundus_files_request', 'jefr'))
-					->where($this->_db->quoteName('jefr.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-					->andWhere($this->_db->quoteName('jefr.email') . ' = ' . $this->_db->quote($recipient['email']))
-					->andWhere($this->_db->quoteName('jefr.attachment_id') . ' = ' . $this->_db->quote($attachment_id))
-					->andWhere($this->_db->quoteName('jefr.uploaded') . ' = 1');
-				$this->_db->setQuery($query);
-				$isSelectedReferent = (int) $this->_db->loadResult();
+                $allow_multiple_requests = $this->getParam('allow_multiple_requests',false);
+                if ($allow_multiple_requests) {
+                    $isSelectedReferent = 0;
+                } else {
+                    // TODO : Check if we already sent a file request today, merge this query with query uploaded. If a file request is sent today OR already uploaded we don't send this email
+                    $query->clear()
+                        ->select('count(id)')
+                        ->from($this->_db->quoteName('#__emundus_files_request', 'jefr'))
+                        ->where($this->_db->quoteName('jefr.fnum') . ' LIKE ' . $this->_db->quote($fnum))
+                        ->andWhere($this->_db->quoteName('jefr.email') . ' = ' . $this->_db->quote($recipient['email']))
+                        ->andWhere($this->_db->quoteName('jefr.attachment_id') . ' = ' . $this->_db->quote($attachment_id))
+                        ->andWhere($this->_db->quoteName('jefr.uploaded') . ' = 1');
+                    $this->_db->setQuery($query);
+                    $isSelectedReferent = (int) $this->_db->loadResult();
+                }
 
 				if ($isSelectedReferent > 0)
 				{
@@ -296,15 +301,19 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 				}
 				else
 				{
-					$query->clear()
-						->select('count(id)')
-						->from($this->_db->quoteName('#__emundus_files_request'))
-						->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum))
-						->andWhere($this->_db->quoteName('student_id') . ' = ' . $this->_db->quote($student->id))
-						->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachment_id))
-						->andWhere($this->_db->quoteName('uploaded') . ' = 1');
-					$this->_db->setQuery($query);
-					$is_uploaded = $this->_db->loadResult();
+                    if ($allow_multiple_requests) {
+                        $is_uploaded = 0;
+                    } else {
+                        $query->clear()
+                            ->select('count(id)')
+                            ->from($this->_db->quoteName('#__emundus_files_request'))
+                            ->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum))
+                            ->andWhere($this->_db->quoteName('student_id') . ' = ' . $this->_db->quote($student->id))
+                            ->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachment_id))
+                            ->andWhere($this->_db->quoteName('uploaded') . ' = 1');
+                        $this->_db->setQuery($query);
+                        $is_uploaded = $this->_db->loadResult();
+                    }
 
 					if ($is_uploaded == 0)
 					{

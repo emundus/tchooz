@@ -7,13 +7,13 @@
  * @license    GNU/GPLv2 http://www.gnu.org/licenses/gpl-2.0.html
  */
 
-namespace classes\api;
+namespace Tchooz\api;
 
 use JComponentHelper;
 use JFactory;
 use JLog;
 
-use classes\api\Api;
+use Tchooz\api\Api;
 
 defined('_JEXEC') or die('Restricted access');
 

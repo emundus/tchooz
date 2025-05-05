@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\Entities\SMS;
+namespace Tchooz\Entities\SMS;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
@@ -137,7 +137,7 @@ class SMSEntity {
 	/**
 	 * @param $phone_number
 	 *
-	 * @return \classes\Entities\SMS\ReceiverEntity|null
+	 * @return \Tchooz\Entities\SMS\ReceiverEntity|null
 	 */
 	private function getReceiverFromPhoneNumber($phone_number): ?ReceiverEntity
 	{

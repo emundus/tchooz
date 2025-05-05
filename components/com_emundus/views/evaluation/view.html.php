@@ -26,7 +26,7 @@ class EmundusViewEvaluation extends JViewLegacy
 	private $_db;
 	protected $itemId;
 	protected $actions;
-	protected bool $use_module_for_filters;
+	protected bool $use_module_for_filters = true;
 	protected bool $open_file_in_modal;
 
 	protected $modal_tabs = null;
@@ -43,7 +43,6 @@ class EmundusViewEvaluation extends JViewLegacy
 			$current_menu                 = $menu->getActive();
 			if (!empty($current_menu)) {
 				$menu_params                  = $menu->getParams($current_menu->id);
-				$this->use_module_for_filters = boolval($menu_params->get('em_use_module_for_filters', 0));
 				$this->open_file_in_modal     = boolval($menu_params->get('em_open_file_in_modal', 0));
 
 				if ($this->open_file_in_modal) {

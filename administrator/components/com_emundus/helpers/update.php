@@ -3439,12 +3439,14 @@ class EmundusHelperUpdate
 	 * @param $table
 	 * @param $columns       (need to be formatted as object (name,type = 'VARCHAR',length,null)
 	 * @param $foreigns_key  (need to be formatted as object (name,from_column,ref_table,ref_column,update_cascade,delete_cascade)
+	 * @param $comment
+	 * @param $unique_keys
 	 *
 	 * @return array
 	 *
 	 * @since version 1.35.0
 	 */
-	public static function createTable($table, $columns = [], $foreigns_key = [], $comment = '')
+	public static function createTable($table, $columns = [], $foreigns_key = [], $comment = '', $unique_keys = [])
 	{
 		$result = ['status' => false, 'message' => ''];
 
@@ -3518,6 +3520,15 @@ class EmundusHelperUpdate
 						}
 					}
 				}
+
+				if (!empty($unique_keys)) {
+					foreach ($unique_keys as $unique_key) {
+						if (!empty($unique_key['name'])) {
+							$query .= ', CONSTRAINT ' . $unique_key['name'] . ' UNIQUE (' . implode(',', $unique_key['columns']) . ')';
+						}
+					}
+				}
+
 				$query .= ')';
 				if (!empty($comment))
 				{

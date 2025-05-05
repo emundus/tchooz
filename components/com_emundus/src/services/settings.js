@@ -472,4 +472,12 @@ export default {
 			};
 		}
 	},
+
+	async getFabrikFormsList() {
+		try {
+			return await fetchClient.get('index.php?option=com_emundus&controller=settings&task=getfabrikformslist');
+		} catch (e) {
+			return false;
+		}
+	},
 };

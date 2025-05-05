@@ -36,21 +36,22 @@ class EmundusHelperFiles
     */
 	public static function clear()
 	{
-		$session = JFactory::getSession();
+		$app = Factory::getApplication();
+
+		$session = $app->getSession();
 		$session->set('filt_params', array());
 		$session->set('select_filter', null);
 		$session->set('adv_cols', array());
+		$session->set('em-applied-filters', []);
+
 		$session->clear('filter_order');
 		$session->clear('filter_order_Dir');
-		$limit      = JFactory::getApplication()->getCfg('list_limit');
+		$limit      = $app->get('list_limit');
 		$limitstart = 0;
 		$limitstart = ($limit != 0 ? (floor($limitstart / $limit) * $limit) : 0);
 
 		$session->set('limit', $limit);
 		$session->set('limitstart', $limitstart);
-
-		//@EmundusHelperFiles::resetFilter();
-
 	}
 
 	/*
@@ -696,7 +697,7 @@ class EmundusHelperFiles
 		{
 			$plist = $m_profile->getProfileIDByCourse($code, $camps);
 		}
-		
+
 
 		if (!is_null($profile))
 		{
@@ -906,7 +907,7 @@ class EmundusHelperFiles
 						$elts[]               = $value;
 					}
 				}
-				
+
 				if($evaluation_elements) {
 					require_once JPATH_SITE.DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php';
 					$m_evaluation = new EmundusModelEvaluation();
@@ -3950,7 +3951,6 @@ class EmundusHelperFiles
 
 		try
 		{
-
 			$_string      = implode(',', $selectedElts);
 			$_find_in_set = "'" . $_string . "'";
 
@@ -4526,7 +4526,7 @@ class EmundusHelperFiles
 	public function _moduleBuildWhere($already_joined = array(), $caller = 'files', $caller_params = [], $filters_to_exclude = [], $menu_item = null, $user = null)
 	{
 		$app = Factory::getApplication();
-		if(empty($user)) {
+		if (empty($user)) {
 			$user = $app->getIdentity();
 		}
 
@@ -4556,22 +4556,23 @@ class EmundusHelperFiles
 
 		if ($caller == 'files')
 		{
-			$where['q'] .= ' AND esc.published = ' . $db->quote('1');
+			$where['q'] .= ' AND esc.published > 0';
 		}
 
-		if (!empty($caller_params) && $caller_params['eval']) {
+		if (!empty($caller_params) && isset($caller_params['eval']) && $caller_params['eval']) {
 			$where['q'] .= ' AND jecc.status <> 0';
 		}
 
-		if (empty($menu_item))
-		{
-			$menu = $app->getMenu();
-			if (!empty($menu))
+		if (!Factory::getApplication()->isCli()) {
+			if (empty($menu_item))
 			{
-				$menu_item = $menu->getActive();
+				$menu = $app->getMenu();
+				if (!empty($menu))
+				{
+					$menu_item = $menu->getActive();
+				}
 			}
 		}
-
 
 		if (!empty($menu_item))
 		{
@@ -4632,7 +4633,30 @@ class EmundusHelperFiles
 
 				$at_least_one = false;
 
-				$scopes = ['jecc.applicant_id', 'jecc.fnum', 'u.username', 'eu.firstname', 'eu.lastname', 'u.email'];
+				$campaign_candidature_alias = array_search('jos_emundus_campaign_candidature', $already_joined);
+				$emundus_users_alias = array_search('jos_emundus_users', $already_joined);
+				if (empty($emundus_users_alias)) {
+					$emundus_users_alias = 'eu';
+					$where['join'] .= ' LEFT JOIN ' . $db->quoteName('jos_emundus_users', $emundus_users_alias) . ' ON ' . $db->quoteName($emundus_users_alias.'.id') . ' = ' . $db->quoteName($campaign_candidature_alias.'.applicant_id');
+					$already_joined[$emundus_users_alias] = 'jos_emundus_users';
+				}
+
+				$users_alias = array_search('jos_users', $already_joined);
+				if (empty($users_alias)) {
+					$users_alias = 'u';
+					$where['join'] .= ' LEFT JOIN ' . $db->quoteName('jos_users', $users_alias) . ' ON ' . $db->quoteName($users_alias.'.id') . ' = ' . $db->quoteName($emundus_users_alias.'.user_id');
+					$already_joined['u'] = 'jos_users';
+				}
+
+				$scopes = [
+					$campaign_candidature_alias . '.applicant_id' => 'jecc.applicant_id',
+					$campaign_candidature_alias . '.fnum' => 'jecc.fnum',
+					$users_alias . '.username' => 'u.username',
+					$emundus_users_alias . '.firstname' =>  'eu.firstname',
+					$emundus_users_alias . '.lastname' => 'eu.lastname',
+					$users_alias . '.email' => 'u.email',
+				];
+
 				foreach ($quick_search_filters as $index => $filter)
 				{
 					if (!empty($filter['scope']))
@@ -4641,7 +4665,8 @@ class EmundusHelperFiles
 						{
 							$at_least_one = true;
 
-							foreach ($scopes as $scope_index => $scope)
+							$scope_index = 0;
+							foreach ($scopes as $scope_alias => $scope)
 							{
 								if ($index > 0 || $scope_index > 0)
 								{
@@ -4649,6 +4674,7 @@ class EmundusHelperFiles
 								}
 
 								$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
+								$scope_index++;
 							}
 							// if filter value is a concat of firstname and lastname
 							// in this case, we split the value and search for each part
@@ -4663,12 +4689,13 @@ class EmundusHelperFiles
 						}
 						else if (in_array($filter['scope'], $scopes))
 						{
+							$scope_alias = array_search($filter['scope'], $scopes);
 							$at_least_one = true;
 							if ($index > 0)
 							{
 								$quick_search_where .= ' OR ';
 							}
-							$quick_search_where .= $this->writeQueryWithOperator($filter['scope'], $filter['value'], '=');
+							$quick_search_where .= $this->writeQueryWithOperator($scope_alias, $filter['value'], '=');
 						}
 					}
 				}
@@ -5197,6 +5224,53 @@ class EmundusHelperFiles
 										}
 									}
 
+									break;
+								case 'evaluators':
+									require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+									$m_workflow = new EmundusModelWorkflow();
+									$steps = $m_workflow->getEvaluatorSteps($user->id);
+
+									$evaluator_row_ids = [];
+									if (!empty($steps) && !empty($filter['value'])) {
+										foreach ($steps as $step) {
+											$query = $db->createQuery();
+											$query->select('jecc.id')
+												->from($db->quoteName('jos_emundus_campaign_candidature', 'jecc'))
+												->leftJoin($db->quoteName($step->table, 'eval') . ' ON eval.ccid = jecc.id AND eval.step_id = ' . $db->quote($step->id))
+												->where('jecc.published = 1');
+
+											if ($filter['operator'] === 'IN') {
+												if (is_array($filter['value'])) {
+													$query->where('evaluator IN (' . implode(',', $filter['value']) . ')');
+												} else {
+													$query->where('evaluator = ' . $db->quote($filter['value']));
+												}
+											} else {
+												if (is_array($filter['value'])) {
+													$query->where('evaluator NOT IN (' . implode(',', $filter['value']) . ') OR evaluator IS NULL');
+												} else {
+													$query->where('evaluator != ' . $db->quote($filter['value']) . ' OR evaluator IS NULL');
+												}
+											}
+
+											$db->setQuery($query);
+											$ccids = $db->loadColumn();
+
+											if (!empty($ccids)) {
+												$evaluator_row_ids = array_merge($evaluator_row_ids, $ccids);
+											}
+										}
+
+										if (!empty($evaluator_row_ids)) {
+											$where['q'] .= ' AND ' . $this->writeQueryWithOperator('jecc.id', $evaluator_row_ids, 'IN');
+										} else {
+											if ($filter['operator'] === 'IN') {
+												$where['q'] .= ' AND 1=2';
+											} else {
+												$where['q'] .= ' AND 1=1';
+											}
+										}
+									}
 									break;
 								default:
 									break;
@@ -5780,7 +5854,7 @@ class EmundusHelperFiles
 						}
 						break;
 					case 'IN':
-						if ($fabrik_element_data['plugin'] === 'checkbox')
+						if (!empty($fabrik_element_data) && $fabrik_element_data['plugin'] === 'checkbox')
 						{ // value is stored as a serialized array
 
 							if (is_array($values))
@@ -6197,8 +6271,9 @@ class EmundusHelperFiles
 								$query .= $leftJoins;
 							}
 
-							if(!empty($menu_item)) {
-								if($menu_item->query['view'] == 'evaluation') {
+							$where_params['eval'] = false;
+							if (!empty($menu_item)) {
+								if ($menu_item->query['view'] == 'evaluation') {
 									$where_params['eval'] = true;
 								}
 							}
@@ -6754,6 +6829,30 @@ class EmundusHelperFiles
 		return $id;
 	}
 
+	public static function getApplicantIdFromFnum(string $fnum): int
+	{
+		$applicant_id = 0;
+
+		if (!empty($fnum))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('applicant_id')
+				->from('#__emundus_campaign_candidature')
+				->where('fnum = ' . $db->quote($fnum));
+
+			try {
+				$db->setQuery($query);
+				$applicant_id = (int)$db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Failed to get applicant id from fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $applicant_id;
+	}
+
 	/**
 	 * @param   int  $user_id
 	 * @param   int  $campaign_id
@@ -6865,6 +6964,29 @@ class EmundusHelperFiles
 		}
 
 		return $can_create_new_file;
+	}
+
+	public static function getApplicantIdFromFileId($id)
+	{
+		$applicant_id = 0;
+
+		if (!empty($id)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->select('applicant_id')
+				->from('#__emundus_campaign_candidature')
+				->where('id = ' . $db->quote($id));
+
+			try {
+				$db->setQuery($query);
+				$applicant_id = $db->loadResult();
+			} catch (Exception $e) {
+				$applicant_id = 0;
+			}
+		}
+
+		return $applicant_id;
 	}
 }
 

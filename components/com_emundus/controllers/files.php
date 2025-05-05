@@ -22,6 +22,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
+use \Tchooz\Traits\TraitResponse;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
@@ -45,6 +46,8 @@ class EmundusControllerFiles extends BaseController
 
 	private $_user;
 	private $_db;
+
+	use TraitResponse;
 
 	/**
 	 * Constructor.
@@ -934,28 +937,33 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function getstate()
 	{
-		$m_files = $this->getModel('Files');
-		$states  = $m_files->getAllStatus();
-		$selected_state = $this->app->getSession()->get('last_status_selected',0);
+		$response = ['status' => false, 'msg'=> Text::_('ACCESS_DENIED')];
+		$user = $this->app->getIdentity();
 
-		if(empty($selected_state)) {
-			$fnum = $this->input->getString('fnum', null);
-			if (!empty($fnum)) {
-				$state          = $m_files->getStatusByFnums([$fnum]);
-				$selected_state = $state[$fnum]['status'];
+		if (!$user->guest) {
+
+			$m_files = $this->getModel('Files');
+			$states  = $m_files->getAllStatus();
+			$selected_state = $this->app->getSession()->get('last_status_selected',0);
+
+			if(empty($selected_state)) {
+				$fnum = $this->input->getString('fnum', null);
+				if (!empty($fnum)) {
+					$state          = $m_files->getStatusByFnums([$fnum]);
+					$selected_state = $state[$fnum]['status'];
+				}
 			}
-		}
 
-		echo json_encode((object)
-		(
-			array(
-				'status'       => true,
-				'states'       => $states,
-				'state'        => Text::_('COM_EMUNDUS_STATE'),
+			$response = [
+				'status' => true,
+				'states' => $states,
+				'state' => Text::_('COM_EMUNDUS_STATE'),
 				'select_state' => Text::_('PLEASE_SELECT_STATE'),
 				'selected_state' => $selected_state
-			)
-		));
+            ];
+		}
+
+		echo json_encode((object)$response);
 		exit;
 	}
 
@@ -1558,9 +1566,9 @@ class EmundusControllerFiles extends BaseController
 		$m_application = $this->getModel('Application');
 		$m_users       = $this->getModel('Users');
 
-		$session        = Factory::getApplication()->getSession();
+		$session        = $this->app->getSession();
 		$fnums          = $session->get('fnums_export');
-		$anonymize_data = EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id);
+		$anonymize_data = EmundusHelperAccess::isDataAnonymized($current_user->id);
 
 		if (count($fnums) == 0) {
 			$fnums = array($session->get('application_fnum'));
@@ -1601,6 +1609,22 @@ class EmundusControllerFiles extends BaseController
 		foreach ($col as $c) {
 			$ordered_elements[$c] = $elements[$c];
 		}
+
+		// Order elements to have jos_emundus_setup_campaigns_more and jos_emundus_setup_campaigns first
+		$orders = [
+			'jos_emundus_campaign_candidature' => 1,
+			'jos_emundus_setup_campaigns' => 2,
+			'jos_emundus_setup_campaigns_more' => 3,
+			'jos_emundus_setup_programmes' => 4,
+			'jos_users' => 5,
+		];
+
+		usort($ordered_elements, function ($a, $b) use ($orders) {
+			$orderA = $orders[$a->tab_name] ?? PHP_INT_MAX; // Default to high value if not found
+			$orderB = $orders[$b->tab_name] ?? PHP_INT_MAX;
+
+			return $orderA <=> $orderB;
+		});
 
 		$failed_with_old_method = false;
 		if ($methode == 2) {
@@ -1850,6 +1874,9 @@ class EmundusControllerFiles extends BaseController
 							case 'user-assoc':
 								$line .= Text::_('COM_EMUNDUS_ASSOCIATED_USERS') . "\t";
 								break;
+							case 'ranking':
+								// do nothing, handled later
+								break;
 							default:
 								$line .= '"' . preg_replace("/\r|\n|\t/", "", $vOpt) . '"' . "\t";
 								break;
@@ -1916,6 +1943,46 @@ class EmundusControllerFiles extends BaseController
 								foreach ($fnumsArray[$idx] as $key => $value) {
 									if (substr($key, 0, 26) === "jos_emundus_evaluations___") {
 										$fnumsArray[$idx][$key] = Text::_('COM_EMUNDUS_ACCESS_NO_RIGHT');
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			if (in_array('ranking', $colsup)) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/ranking.php');
+				$m_ranking = new EmundusModelRanking();
+
+				if ($m_ranking->isActivated()) {
+					$hierarchies = $m_ranking->getHierarchies();
+
+					foreach ($hierarchies as $hierarchy) {
+						$files_rankings = $m_ranking->getAllRankingsSuperAdmin($hierarchy['id'], 0, 0, [], [], [], '', '', 'ecc.fnum', 'ASC', $fnums);
+						// add a header column for each hierarchy and another for the ranker
+						$element_csv[0] .= Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING') . ' ' . $hierarchy['label'] . "\t";
+						$element_csv[0] .= Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER') . ' ' . $hierarchy['label'] . "\t";
+
+						foreach ($files_rankings as $ranking_row) {
+							$fnumsArray[$ranking_row['fnum']]['ranking_' . $hierarchy['id']] = $ranking_row['rank'] !== -1 && !empty($ranking_row['rank']) ? $ranking_row['rank'] : Text::_('COM_EMUNDUS_RANKING_NOT_RANKED');
+							$fnumsArray[$ranking_row['fnum']]['ranker_' . $hierarchy['id']] = $ranking_row['ranker_name'];
+						}
+
+						if (!empty($hierarchy['form_id'])) {
+							$hierarchy_form_elements = $m_ranking->getHierarchyFormElements($hierarchy['form_id'], 'array');
+
+							foreach($hierarchy_form_elements as $form_element) {
+								$element_csv[0] .= strip_tags(Text::_($form_element['label'])) . "\t";
+
+								foreach ($files_rankings as $ranking_row) {
+									$element_id = $form_element['db_table_name'] . '___' . $form_element['element_name'];
+									$value = $m_files->getFabrikElementValue($form_element, $ranking_row['fnum']);
+
+									if (isset($value[$form_element['id']][$ranking_row['fnum']]['val'])) {
+										$fnumsArray[$ranking_row['fnum']][$element_id] = $value[$form_element['id']][$ranking_row['fnum']]['val'];
+									} else {
+										$fnumsArray[$ranking_row['fnum']][$element_id] = '';
 									}
 								}
 							}
@@ -4080,14 +4147,18 @@ class EmundusControllerFiles extends BaseController
 	public function checkmenufilterparams()
 	{
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
-		$user_id  = JFactory::getUser()->id;
+		$user_id  = Factory::getApplication()->getIdentity()->id;
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
 			$itemId      = $this->input->getInt('Itemid', 0);
 			$menu        = $this->app->getMenu();
 			$menu_params = $menu->getParams($itemId);
+			$use_module_filters = false;
+			if (isset($menu_params['filter_status'])) {
+				$use_module_filters = true;
+			}
 
-			$response['use_module_filters'] = boolval($menu_params->get('em_use_module_for_filters', false));
+			$response['use_module_filters'] = $use_module_filters;
 			$response['status']             = true;
 			$response['code']               = 200;
 			$response['msg']                = Text::_('SUCCESS');
@@ -4105,27 +4176,27 @@ class EmundusControllerFiles extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
-			$module_id = $app->input->getInt('module_id', 0);
+			$menu_id = $app->input->getInt('menu_id', 0);
 
-			if (!empty($module_id)) {
+			if (!empty($menu_id)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('params')
-					->from('#__modules')
-					->where('id = ' . $db->quote($module_id));
+					->from('#__menu')
+					->where('id = ' . $db->quote($menu_id));
 
 				$db->setQuery($query);
-				$module_params = $db->loadResult();
-				$module_params = json_decode($module_params, true);
+				$menu_params = $db->loadResult();
+				$menu_params = json_decode($menu_params, true);
 
 				try {
 					if (!class_exists('EmundusFiltersFiles')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
-					$m_filters = new EmundusFiltersFiles($module_params, false, true);
+					$m_filters = new EmundusFiltersFiles($menu_params, false, true);
 
 					$response['data'] = $m_filters->getFilters();
 					$response['status'] = true;
@@ -4149,24 +4220,23 @@ class EmundusControllerFiles extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
-			$module_id = $app->input->getInt('module_id', 0);
 			$menu_id = $app->input->getInt('menu_id', 0);
 
-			if (!empty($module_id)) {
+			if (!empty($menu_id)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$query->select('params')
-					->from('#__modules')
-					->where('id = ' . $db->quote($module_id));
+					->from('#__menu')
+					->where('id = ' . $db->quote($menu_id));
 
 				$db->setQuery($query);
-				$module_params = $db->loadResult();
-				$module_params = json_decode($module_params, true);
+				$menu_params = $db->loadResult();
+				$menu_params = json_decode($menu_params, true);
 
-				if (!empty($module_params) && $module_params['count_filter_values'] == 1) {
+				if (!empty($menu_params) && $menu_params['count_filter_values'] == 1) {
 					$session = $app->getSession();
 					$applied_filters = $session->get('em-applied-filters', []);
 
@@ -4178,12 +4248,8 @@ class EmundusControllerFiles extends BaseController
 							}
 						}
 
-						if (!empty($menu_id)) {
-							$menu = $app->getMenu();
-							$menu_item = $menu->getItem($menu_id);
-						} else {
-							$menu_item = null;
-						}
+						$menu = $app->getMenu();
+						$menu_item = $menu->getItem($menu_id);
 
 						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 						$h_files = new EmundusHelperFiles();
@@ -4287,6 +4353,34 @@ class EmundusControllerFiles extends BaseController
 		exit;
 	}
 
+	public function renderemundustags() {
+		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$string = $this->input->getString('string', '');
+			$fnum = $this->input->getString('fnum', '');
+
+			if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+				if (!empty($string)) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+					$m_emails = new EmundusModelEmails();
+					$tags = $m_emails->setTags($this->_user->id, null, $fnum, '', $string);
+					$string = preg_replace($tags['patterns'], $tags['replacements'], $string);
+
+					$response['data'] = $string;
+					$response['status'] = true;
+					$response['code'] = 200;
+				} else {
+					$response['msg'] = Text::_('MISSING_PARAMS');
+					$response['code'] = 500;
+				}
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
 	public function getProfiles()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
@@ -4318,5 +4412,26 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		return $is_evaluation_menu;
+	}
+
+	public function getFileSynthesis()
+	{
+		$this->checkToken('get');
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$fnum = $this->input->getString('fnum', null);
+
+			if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+				$response['code'] = 200;
+				$response['status'] = true;
+				$response['message'] = '';
+				$m_files = $this->getModel('Files');
+
+				$response['data'] = $m_files->getFileSynthesis($fnum);
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

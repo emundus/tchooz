@@ -1889,4 +1889,34 @@ class EmundusControllerUsers extends BaseController
 		echo json_encode($result);
 		exit;
 	}
+
+	function getuseraccessrights()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
+			$m_users = $this->getModel('Users');
+			$response['data'] = $m_users->getUserACL($this->user->id);
+			$response['status'] = true;
+			$response['msg'] = Text::_('COM_EMUNDUS_SUCCESS');
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	function getprofiles()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			$m_users = $this->getModel('Users');
+			$response['data'] = array_values($m_users->getProfiles());
+			$response['status'] = true;
+			$response['msg'] = Text::_('COM_EMUNDUS_SUCCESS');
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
 }

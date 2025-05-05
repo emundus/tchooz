@@ -53,6 +53,11 @@ class EmundusAdminControllerModules extends JControllerLegacy
 	        case 'events':
 		        $result['status'] = $this->installEvents();
 		        break;
+	        case 'ranking':
+		        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/ranking.php');
+		        $mRanking = new EmundusAdministrationModelRanking();
+		        $result['status'] = $mRanking->install(true);
+		        break;
 	        default:
                 $result['message'] = 'Module not found';
         }

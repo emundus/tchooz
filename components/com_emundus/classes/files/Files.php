@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\files;
+namespace Tchooz\files;
 
 use JFactory;
 use JLog;
@@ -359,6 +359,11 @@ class Files
 				'u' => \EmundusHelperAccess::asAccessAction(4, 'u', $this->current_user->id, $fnum),
 				'c' => \EmundusHelperAccess::asAccessAction(4, 'c', $this->current_user->id, $fnum),
 			],
+			5 => [
+				'r' => \EmundusHelperAccess::asAccessAction(5,'r',$this->current_user->id,$fnum),
+				'u' => \EmundusHelperAccess::asAccessAction(5,'u',$this->current_user->id,$fnum),
+				'c' => \EmundusHelperAccess::asAccessAction(5,'c',$this->current_user->id,$fnum),
+			],
 			10 => [
 				'r' => \EmundusHelperAccess::asAccessAction(10, 'r', $this->current_user->id, $fnum),
 				'c' => \EmundusHelperAccess::asAccessAction(10, 'c', $this->current_user->id, $fnum),
@@ -581,7 +586,7 @@ class Files
 
 	public function getFilesQuery($select, $left_joins = [], $wheres = [], $access = '', $limit = 0, $offset = 0, $return = 'object')
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {

@@ -1,6 +1,6 @@
 <?php
 
-namespace classes\payment\blowfish;
+namespace Tchooz\payment\blowfish;
 
 /**
  * Class Blowfish

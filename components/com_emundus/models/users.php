@@ -2206,9 +2206,8 @@ class EmundusModelUsers extends ListModel
 			}
 			$query->where($this->db->quoteName('jesp.published') . ' = 1');
 
-			$this->db->setQuery($query);
-
 			try {
+				$this->db->setQuery($query);
 				$program_ids = $this->db->loadColumn();
 			}
 			catch (Exception $e) {
@@ -5220,4 +5219,94 @@ class EmundusModelUsers extends ListModel
 		return $groups_mapping;
 	}
 
+	public function addUserFromParams($params, $current_user, $send_email = 1) {
+		$created = false;
+
+		if (!empty($params['username']) && !empty($params['email'])) {
+			$user = clone(JFactory::getUser(0));
+
+			if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $params['username']) !== 1) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD'));
+			}
+
+			require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
+			$h_emails = new EmundusHelperEmails();
+			if (!$h_emails->correctEmail($params['email'])) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL'));
+			}
+
+			$user->name = $params['name'];
+			$user->username = $params['username'];
+			$user->email = $params['email'];
+			if ($params['ldap'] == 0) {
+				// If we are creating a new user from the LDAP system, he does not have a password.
+				include_once(JPATH_SITE.'/components/com_emundus/helpers/users.php');
+				$h_users = new EmundusHelperUsers;
+				$password = $h_users->generateStrongPassword();
+				$user->password = md5($password);
+			}
+			$now = EmundusHelperDate::getNow();
+			$user->registerDate = $now;
+			$user->lastvisitDate = null;
+			$user->groups = array($params['jgr']);
+			$user->block = 0;
+
+			$other_param['firstname'] 		= $params['firstname'];
+			$other_param['lastname'] 		= $params['lastname'];
+			$other_param['profile'] 		= $params['profile'];
+			$other_param['em_oprofiles'] 	= !empty($params['oprofiles']) ? explode(',', $params['oprofiles']): $params['oprofiles'];
+			$other_param['univ_id'] 		= $params['univ_id'];
+			$other_param['em_groups'] 		= !empty($params['groups']) ? explode(',', $params['groups']): $params['groups'];
+			$other_param['em_campaigns'] 	= !empty($params['campaigns']) ? explode(',', $params['campaigns']): $params['campaigns'];
+			$other_param['news'] 			= $params['news'];
+
+			$acl_aro_groups = $this->getDefaultGroup($params['profile']);
+			$user->groups = $acl_aro_groups;
+
+			$usertype = $this->found_usertype($acl_aro_groups[0]);
+			$user->usertype = $usertype;
+
+			$uid = $this->adduser($user, $other_param);
+
+			if (is_array($uid)) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR'));
+			} else if (empty($uid)) {
+				throw new Exception($user->getError());
+			}
+
+			// If index.html does not exist, create the file otherwise the process will stop with the next step
+			if (!file_exists(EMUNDUS_PATH_ABS.'index.html')) {
+				$filename = EMUNDUS_PATH_ABS.'index.html';
+				$file = fopen($filename, 'w');
+				fwrite($file, '');
+				fclose($file);
+			}
+
+			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
+				throw new Exception(JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN'));
+			}
+
+			if ($send_email) {
+				// Envoi de la confirmation de création de compte par email
+				if (!class_exists('EmundusModelEmails')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+				}
+				$m_emails = new EmundusModelEmails();
+
+				$email = $params['ldap'] == 1 ? 'new_ldap_account' : 'new_account';
+				$pswd = $params['ldap'] == 0 ? $password : null;
+				$post = $params['ldap'] == 0 ? array('PASSWORD' => $pswd) : array();
+
+				$sent = $m_emails->sendEmailNoFnum($user->email, $email, $post, $user->id, [], null, false);
+
+				if (!$sent) {
+					throw new Exception(JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT'));
+				}
+			}
+
+			$created = true;
+		}
+
+		return $created;
+	}
 }
