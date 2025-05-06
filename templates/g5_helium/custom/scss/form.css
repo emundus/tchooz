@@ -1117,16 +1117,10 @@
         .currencyElement {
             position: relative;
 
-            input.fabrikinput {
-                max-width: fit-content;
-                border-top-right-radius: 0;
-                border-bottom-right-radius: 0;
-            }
-
             select#currency_selectValue {
                 position: absolute;
-                left: 181px;
-                border-left: 0;
+                right: 0;
+                border: none;
                 min-width: unset;
                 background: transparent;
                 width: 40px !important;
