@@ -3301,26 +3301,28 @@ class EmundusModelFiles extends JModelLegacy
 						}
 						break;
 					case 'booking':
-						$config = Factory::getApplication()->getConfig();
-						$offset = $config->get('offset');
-						$databasejoin_sub_query .= ", (SELECT CONCAT(
+						$config            = Factory::getApplication()->getConfig();
+						$offset            = $config->get('offset');
+						$booking_sub_query = "(SELECT CONCAT(
 								    DATE_FORMAT(CONVERT_TZ(start_date, 'UTC', '" . $offset . "'), '%d.%m.%Y %H:%i'), 
 								    ' - ', 
 								    DATE_FORMAT(CONVERT_TZ(end_date, 'UTC', 'Europe/Paris'), '%d.%m.%Y %H:%i'))
 								";
-						$databasejoin_sub_query .= ' FROM jos_emundus_setup_availabilities';
+						$booking_sub_query .= ' FROM jos_emundus_setup_availabilities';
 
-						if ($is_repeat) {
-							$databasejoin_sub_query .= ' WHERE jos_emundus_setup_availabilities.id = ' . $child_element_table_alias . '.' . $element->element_name .')';
-							$databasejoin_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
-							$saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+						if ($is_repeat)
+						{
+							$booking_sub_query .= ' WHERE jos_emundus_setup_availabilities.id = ' . $child_element_table_alias . '.' . $element->element_name . ')';
+							$booking_sub_query .= ' AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+							$saved_element_as  = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 						}
-						else {
-							$databasejoin_sub_query .= ' WHERE jos_emundus_setup_availabilities.id = ' . $element_table_alias . '.' . $element->element_name .')';
-							$databasejoin_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
+						else
+						{
+							$booking_sub_query .= ' WHERE jos_emundus_setup_availabilities.id = ' . $element_table_alias . '.' . $element->element_name . ')';
+							$booking_sub_query .= ' AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 
-						$query .= ', ' . $databasejoin_sub_query;
+						$query .= ', ' . $booking_sub_query;
 						break;
 
 					default:
