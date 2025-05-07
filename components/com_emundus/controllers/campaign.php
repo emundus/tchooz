@@ -1566,6 +1566,45 @@ class EmundusControllerCampaign extends BaseController
 		echo json_encode($response);
 		exit();
 	}
+
+	public function getuseridfromfnum()
+	{
+		$response = [
+			'status'  => false,
+			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
+			'data'    => []
+		];
+
+		$fnum = $this->input->getString('fnum', '');
+
+		if (!empty($fnum))
+		{
+			if (!EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum))
+			{
+				header('HTTP/1.1 403 Forbidden');
+			}
+			else
+			{
+
+				$m_campaign = $this->getModel('Campaign');
+				$user_id    = $m_campaign->getUserIdFromFnum($fnum);
+
+				if (!empty($user_id))
+				{
+					$response['data']    = $user_id;
+					$response['status']  = true;
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+				}
+			}
+		}
+		else
+		{
+			header('HTTP/1.1 400 Bad Request');
+		}
+
+		echo json_encode($response);
+		exit();
+	}
 }
 
 ?>

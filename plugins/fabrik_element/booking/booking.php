@@ -33,10 +33,11 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$format           = 'hours';
-		$config           = $this->app->getConfig();
-		$timezone         = [];
-		$timezone['name'] = $config->get('offset', 'UTC');
+		$app                  = Factory::getApplication();
+		$format               = 'hours';
+		$config               = $this->app->getConfig();
+		$timezone             = [];
+		$timezone['name']     = $config->get('offset', 'UTC');
 
 		$dateTZ = new DateTimeZone($timezone['name']);
 		$date   = new DateTime('now', $dateTZ);
@@ -62,6 +63,7 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 		$displayData->timezone            = $timezone['name'];
 		$displayData->offset              = $timezone['offset'];
 		$displayData->location_filter_elt = $params->get('location_filter_elt', '');
+		$displayData->is_applicant        = $app->getSession()->get('emundusUser')->applicant;
 
 		return $layout->render($displayData);
 	}
