@@ -101,6 +101,10 @@ class EmundusModelFiles extends JModelLegacy
 		if(!class_exists('EmundusHelperAccess')) {
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		}
+		if(!class_exists('EmundusHelperCache')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
+		}
+		$h_cache = new EmundusHelperCache();
 
 		$this->locales = substr($language->getTag(), 0, 2);
 
@@ -212,9 +216,16 @@ class EmundusModelFiles extends JModelLegacy
 					$join_val_column_concat = str_replace('{shortlang}', substr(JFactory::getLanguage()->getTag(), 0, 2), $join_val_column_concat);
 					$column                 = (!empty($join_val_column_concat) && $join_val_column_concat != '') ? 'CONCAT(' . $join_val_column_concat . ')' : $attribs->join_val_column;
 
-					// Check if the db table has a published column. So we don't get the unpublished value
-					$this->_db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
-					$publish_query = ($this->_db->loadResult()) ? " AND $attribs->join_db_name.published = 1 " : '';
+					$published_column = $h_cache->get('published_column_'.$attribs->join_db_name);
+					if($published_column === false)
+					{
+						// Check if the db table has a published column. So we don't get the unpublished value
+						$this->_db->setQuery("SHOW COLUMNS FROM $attribs->join_db_name LIKE 'published'");
+						$published_column = $this->_db->loadResult();
+
+						$h_cache->set('published_column_'.$attribs->join_db_name, $published_column);
+					}
+					$publish_query = ($published_column) ? " AND $attribs->join_db_name.published = 1 " : '';
 
 					if ($group_params->repeat_group_button == 1) {
 						$query = '(
@@ -4910,7 +4921,7 @@ class EmundusModelFiles extends JModelLegacy
 			// Get count of messages since last reply from an other user that applicant
 			$query->select('ecc.fnum, COUNT(m.message_id) as nb')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature','ecc'))
-				->leftJoin($this->_db->quoteName('#__emundus_chatroom','ec').' ON '.$this->_db->quoteName('ec.fnum').' LIKE '.$this->_db->quoteName('ecc.fnum'))
+				->leftJoin($this->_db->quoteName('#__emundus_chatroom','ec').' ON '.$this->_db->quoteName('ec.fnum').' = '.$this->_db->quoteName('ecc.fnum'))
 				->leftJoin($this->_db->quoteName('#__messages','m').' ON '.$this->_db->quoteName('m.page').' = '.$this->_db->quoteName('ec.id'))
 				->where($this->_db->quoteName('m.user_id_from').' = '.$this->_db->quoteName('ecc.applicant_id'))
 				->andWhere($this->_db->quoteName('m.date_time') . ' > COALESCE((SELECT MAX(date_time) FROM jos_messages WHERE page = ec.id AND user_id_from <> ecc.applicant_id),"1970-01-01 00:00:00")')

@@ -16,7 +16,7 @@
 				>save</span
 			>
 
-			<div id="global-search-wrapper tw-relative">
+			<div id="global-search-wrapper" class="tw-relative">
 				<div
 					id="global-search-values"
 					ref="globalSearchValues"
