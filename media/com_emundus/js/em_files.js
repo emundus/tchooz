@@ -150,51 +150,59 @@ function clearchosen(target){
     $(target)[0].sumo.unSelectAll();
 }
 
-function reloadData(view,fnums = null) {
-    view = (typeof view === 'undefined') ? 'files' : view;
-
+function reloadData(view = 'files', fnums = null) {
     addLoader();
 
-    $.ajax({
-        type: 'GET',
-        url: '/index.php?option=com_emundus&view='+view+'&layout=data&format=raw&Itemid=' + itemId + '&cfnum=' + cfnum,
-        async: false,
-        dataType: 'html',
-        success: (data) => {
+    const url = "/index.php?option=com_emundus&view="+view+"&layout=data&format=raw&Itemid="+itemId+"&cfnum="+cfnum;
+
+    fetch(url, {
+        method: 'GET',
+        headers: {
+            'Accept': 'text/html',
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.text();
+        })
+        .then(data => {
             removeLoader();
 
-            let col9 = $('.col-md-9 .panel.panel-default');
-            if(col9.length > 0) {
+            const col9 = $('.col-md-9 .panel.panel-default');
+            if (col9.length > 0) {
                 col9.remove();
-                if($('.col-md-9')) {
+                if ($('.col-md-9')) {
                     $('.col-md-9').append(data);
                 }
             }
 
-            let col12 = $('.col-md-12 .panel.panel-default');
-            if(col12.length > 0) {
+            const col12 = $('.col-md-12 .panel.panel-default');
+            if (col12.length > 0) {
                 col12.remove();
-                if($('.col-md-12')) {
+                if ($('.col-md-12')) {
                     $('.col-md-12').append(data);
                 }
             }
 
-            if(fnums) {
+            if (fnums) {
                 fnums = JSON.parse(fnums);
-                if(fnums) {
+                if (fnums) {
                     fnums = Object.values(fnums);
                 }
 
-                for(let i = 0; i < fnums.length; i++) {
-                    let checkbox = $('#'+fnums[i]+'_check');
-                    if(checkbox) {
+                for (let i = 0; i < fnums.length; i++) {
+                    let checkbox = $('#' + fnums[i] + '_check');
+                    if (checkbox) {
                         checkbox.prop('checked', true);
                     }
                 }
+
                 reloadActions(view, undefined, true);
             }
-        },
-        error: function(jqXHR) {
+        })
+        .catch(error => {
             removeLoader();
 
             Swal.fire({
@@ -205,11 +213,10 @@ function reloadData(view,fnums = null) {
                     confirmButton: 'em-swal-confirm-button',
                     actions: 'em-swal-single-action'
                 },
-            })
+            });
 
-            console.log(jqXHR.responseText);
-        }
-    });
+            console.log(error);
+        });
 }
 
 function reloadActions(view, fnum, onCheck, async, display = 'none') {
@@ -364,26 +371,7 @@ usingModuleFilters();
 function refreshFilter(view) {
     usingModuleFilters();
 
-    if (moduleFilters === false || moduleFilters === null) {
-        view = (typeof view === 'undefined') ? 'files' : view;
-        $.ajax({
-            type: 'GET',
-            url: '/index.php?option=com_emundus&view='+view+'&layout=filters&format=raw&Itemid=' + itemId,
-            dataType: 'html',
-            success: function(data) {
-                let panelBody = $('#em-files-filters .panel-body');
-                panelBody.empty();
-                panelBody.append(data);
-                $('.chzn-select').chosen();
-                reloadData($('#view').val());
-            },
-            error: function(jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
-    } else {
-        reloadData($('#view').val(), false);
-    }
+    reloadData($('#view').val(), false);
 }
 
 function tableOrder(order) {

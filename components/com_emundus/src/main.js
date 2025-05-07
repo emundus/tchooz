@@ -103,7 +103,9 @@ if (document) {
 
 				if (filesElement || componentNames.includes(componentName)) {
 					Array.prototype.slice.call(el.attributes).forEach(function (attr) {
-						datas[attr.name] = attr.value;
+						if (attr.name !== 'id' && attr.name !== 'component') {
+							datas[attr.name] = attr.value;
+						}
 					});
 
 					if (datas.attachments) {

@@ -21,18 +21,21 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
 
+require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+
 class EmundusModelWorkflow extends JModelList
 {
 	private $app;
-
 	private $db;
 
+	private EmundusHelperCache $h_cache;
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
 		$this->app = Factory::getApplication();
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->h_cache = new EmundusHelperCache();
 
 		Log::addLogger(['text_file' => 'com_emundus.workflow.php'], Log::ALL, array('com_emundus.workflow'));
 	}
@@ -563,13 +566,31 @@ class EmundusModelWorkflow extends JModelList
 					}
 
 					if (!empty($data->type)) {
-						$query->clear()
-							->select('action_id')
-							->from($this->db->quoteName('#__emundus_setup_step_types'))
-							->where('id = ' . $data->type);
+						$found_from_cache = false;
+						if ($this->h_cache->isEnabled()) {
+							$action_ids_by_types = $this->h_cache->get('action_ids_by_types');
+							$action_ids_by_types = empty($action_ids_by_types) ? [] : $action_ids_by_types;
 
-						$this->db->setQuery($query);
-						$data->action_id = $this->db->loadResult();
+							if (isset($action_ids_by_types[$data->type])) {
+								$found_from_cache = true;
+								$data->action_id = $action_ids_by_types[$data->type];
+							}
+						}
+
+						if (!$found_from_cache) {
+							$query->clear()
+								->select('action_id')
+								->from($this->db->quoteName('#__emundus_setup_step_types'))
+								->where('id = ' . $data->type);
+
+							$this->db->setQuery($query);
+							$data->action_id = $this->db->loadResult();
+
+							if ($this->h_cache->isEnabled()) {
+								$action_ids_by_types[$data->type] = $data->action_id;
+								$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
+							}
+						}
 					}
 
 					$query->clear()
@@ -1098,6 +1119,21 @@ class EmundusModelWorkflow extends JModelList
 		$action_id = 0;
 
 		if (!empty($step_id)) {
+			if ($this->h_cache->isEnabled()) {
+				$action_ids_by_steps = $this->h_cache->get('action_ids_by_steps');
+
+				if (!empty($action_ids_by_steps))
+				{
+					if (isset($action_ids_by_steps[$step_id])) {
+						return $action_ids_by_steps[$step_id];
+					}
+				}
+				else
+				{
+					$action_ids_by_steps = [];
+				}
+			}
+
 			$query = $this->db->createQuery();
 			$query->select('type')
 				->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
@@ -1114,6 +1150,18 @@ class EmundusModelWorkflow extends JModelList
 
 				$this->db->setQuery($query);
 				$action_id = $this->db->loadResult();
+
+				if ($this->h_cache->isEnabled())
+				{
+					$action_ids_by_type = $this->h_cache->get('action_ids_by_types');
+					$action_ids_by_type = empty($action_ids_by_type) ? [] : $action_ids_by_type;
+					$action_ids_by_type[$step_types['type']] = $action_id;
+					$this->h_cache->set('action_ids_by_types', $action_ids_by_steps);
+
+
+					$action_ids_by_steps[$step_id] = $action_id;
+					$this->h_cache->set('action_ids_by_steps', $action_ids_by_steps);
+				}
 			}
 		}
 
@@ -1294,18 +1342,31 @@ class EmundusModelWorkflow extends JModelList
 		$is_evaluation_step = false;
 
 		if (!empty($type)) {
+			if ($this->h_cache->isEnabled())
+			{
+				$are_evaluation_steps = $this->h_cache->get('are_evaluation_steps');
+
+				if (!empty($are_evaluation_steps) && isset($are_evaluation_steps[$type]))
+				{
+					return $are_evaluation_steps[$type];
+				}
+
+				if (empty($are_evaluation_steps))
+				{
+					$are_evaluation_steps = [];
+				}
+			}
+
 			if ($type == 2) {
 				$is_evaluation_step = true;
 			} else {
-				$query = $this->db->createQuery();
-				$query->select('parent_id')
-					->from($this->db->quoteName('#__emundus_setup_step_types'))
-					->where('id = ' . $type);
-
-				$this->db->setQuery($query);
-				$parent_id = $this->db->loadResult();
-
+				$parent_id = $this->getParentStepType($type);
 				$is_evaluation_step = $parent_id == 2;
+			}
+
+			if ($this->h_cache->isEnabled()) {
+				$are_evaluation_steps[$type] = $is_evaluation_step;
+				$this->h_cache->set('are_evaluation_steps', $are_evaluation_steps);
 			}
 		}
 
