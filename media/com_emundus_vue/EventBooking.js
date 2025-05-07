@@ -1,5 +1,5 @@
 import { e as eventsService } from "./events2.js";
-import { _ as _export_sfc, u as useGlobalStore, r as resolveComponent, o as openBlock, c as createElementBlock, d as createBaseVNode, t as toDisplayString, j as normalizeStyle, F as Fragment, e as renderList, n as normalizeClass, b as createCommentVNode, a as createBlock } from "./app_emundus.js";
+import { _ as _export_sfc, u as useGlobalStore, X as campaignService, s as settingsService, r as resolveComponent, o as openBlock, c as createElementBlock, h as createVNode, d as createBaseVNode, t as toDisplayString, j as normalizeStyle, F as Fragment, e as renderList, n as normalizeClass, b as createCommentVNode, a as createBlock } from "./app_emundus.js";
 import { I as Info } from "./Info.js";
 const _sfc_main = {
   name: "EventBooking",
@@ -24,43 +24,60 @@ const _sfc_main = {
         offset: 0,
         name: ""
       },
-      location: 0
+      location: 0,
+      source: null,
+      registrantsLink: "",
+      isApplicant: false,
+      userId: 0
     };
   },
   created() {
-    this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
-    this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : "1";
-    this.currentTimezone.name = useGlobalStore().getDatas.timezone ? useGlobalStore().getDatas.timezone.value : "Europe/Paris";
-    let location_filter_elt = useGlobalStore().getDatas.location_filter_elt ? useGlobalStore().getDatas.location_filter_elt.value : null;
-    if (location_filter_elt && location_filter_elt !== "" && document.getElementById(location_filter_elt)) {
-      location_filter_elt = document.getElementById(location_filter_elt);
-    }
-    if (!this.$props.componentsProps) {
-      this.getMyBookings().then((bookings) => {
-        this.myBookings = bookings;
-        if (this.myBookings.length > 0) {
-          this.slotSelected = this.myBookings[0].availability;
-        }
-        if (this.myBookings.length === 0 && location_filter_elt) {
-          location_filter_elt.addEventListener("change", (event) => {
-            this.location = event.target.value;
-            this.currentStartIndex = 0;
+    this.source = useGlobalStore().getDatas.source ? useGlobalStore().getDatas.source.value : null;
+    this.isApplicant = useGlobalStore().getDatas.isApplicant ? parseInt(useGlobalStore().getDatas.isApplicant.value) : false;
+    if (this.source !== "fabrik" || this.isApplicant) {
+      this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
+      this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : "1";
+      this.currentTimezone.name = useGlobalStore().getDatas.timezone ? useGlobalStore().getDatas.timezone.value : "Europe/Paris";
+      let location_filter_elt = useGlobalStore().getDatas.location_filter_elt ? useGlobalStore().getDatas.location_filter_elt.value : null;
+      if (location_filter_elt && location_filter_elt !== "" && document.getElementById(location_filter_elt)) {
+        location_filter_elt = document.getElementById(location_filter_elt);
+      }
+      if (!this.$props.componentsProps) {
+        this.getMyBookings().then((bookings) => {
+          this.myBookings = bookings;
+          if (this.myBookings.length > 0) {
+            this.slotSelected = this.myBookings[0].availability;
+          }
+          if (this.myBookings.length === 0 && location_filter_elt) {
+            location_filter_elt.addEventListener("change", (event) => {
+              this.location = event.target.value;
+              this.currentStartIndex = 0;
+              if (this.location && this.location !== 0 && this.location !== "0" && this.location !== "") {
+                this.getSlots();
+              } else {
+                this.slots = [];
+                this.availableDates = [];
+              }
+            });
             if (this.location && this.location !== 0 && this.location !== "0" && this.location !== "") {
               this.getSlots();
-            } else {
-              this.slots = [];
-              this.availableDates = [];
             }
-          });
-          if (this.location && this.location !== 0 && this.location !== "0" && this.location !== "") {
+          } else {
             this.getSlots();
           }
-        } else {
-          this.getSlots();
-        }
-      });
+        });
+      } else {
+        this.getSlots();
+      }
     } else {
-      this.getSlots();
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.has("fnum")) {
+        const fnum = urlParams.get("fnum");
+        this.getUserIdByFnum(fnum).then((id) => {
+          this.userId = id;
+          this.getRegistrantsLink();
+        });
+      }
     }
   },
   methods: {
@@ -134,6 +151,18 @@ const _sfc_main = {
         this.loading = false;
       }
     },
+    async getUserIdByFnum(fnum) {
+      return new Promise((resolve, reject) => {
+        campaignService.getUserIdByFnum(fnum).then((response) => {
+          if (response.status) {
+            resolve(response.data);
+          } else {
+            console.error("Error when try to retrieve user id by fnum", response.error);
+            reject([]);
+          }
+        });
+      });
+    },
     formatDay(date) {
       return date.toLocaleDateString("fr-FR", { weekday: "long" }).charAt(0).toUpperCase() + date.toLocaleDateString("fr-FR", { weekday: "long" }).slice(1);
     },
@@ -197,6 +226,16 @@ const _sfc_main = {
         return slot.totalBookers >= slot.totalCapacity + 1;
       }
       return slot.totalBookers >= slot.totalCapacity;
+    },
+    getRegistrantsLink() {
+      settingsService.getSEFLink("index.php?option=com_emundus&view=events&layout=registrants", useGlobalStore().getCurrentLang).then((response) => {
+        if (response.status) {
+          this.registrantsLink = "/" + response.data;
+          if (this.userId) {
+            this.registrantsLink += "?applicant=" + this.userId;
+          }
+        }
+      });
     }
   },
   computed: {
@@ -230,6 +269,11 @@ const _sfc_main = {
     },
     displayedTimezone: function() {
       return this.currentTimezone.name.replace("_", " ") + " (UTC" + (this.currentTimezone.offset > 0 ? "+" : "") + this.currentTimezone.offset + ")";
+    },
+    editingSlotFromFileText: function() {
+      let text = this.translate("COM_EMUNDUS_EVENT_MESSAGE_EDITING_SLOT_FROM_FILE");
+      text = text.replace("{{registrantsLink}}", this.registrantsLink);
+      return text;
     }
   },
   watch: {
@@ -243,38 +287,44 @@ const _sfc_main = {
   }
 };
 const _hoisted_1 = { class: "tw-relative tw-flex tw-w-full tw-flex-col tw-items-center tw-gap-4 tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4" };
-const _hoisted_2 = {
-  key: 0,
+const _hoisted_2 = { key: 0 };
+const _hoisted_3 = {
+  key: 1,
   class: "tw-w-full"
 };
-const _hoisted_3 = { class: "tw-mb-3 tw-flex tw-items-center tw-gap-1" };
-const _hoisted_4 = { class: "tw-text-base" };
-const _hoisted_5 = { class: "tw-flex tw-w-full tw-items-start tw-gap-1" };
-const _hoisted_6 = ["disabled"];
-const _hoisted_7 = {
+const _hoisted_4 = { class: "tw-mb-3 tw-flex tw-items-center tw-gap-1" };
+const _hoisted_5 = { class: "tw-text-base" };
+const _hoisted_6 = { class: "tw-flex tw-w-full tw-items-start tw-gap-1" };
+const _hoisted_7 = ["disabled"];
+const _hoisted_8 = {
   key: 0,
   class: "tw-flex tw-w-auto tw-flex-1 tw-flex-row tw-items-stretch tw-justify-center tw-gap-4"
 };
-const _hoisted_8 = { class: "tw-text-center tw-text-lg" };
-const _hoisted_9 = { class: "tw-text-center tw-text-sm tw-text-neutral-500" };
-const _hoisted_10 = { class: "tw-mt-4 tw-grid tw-w-full tw-grid-cols-2 tw-gap-2" };
-const _hoisted_11 = ["disabled", "onClick"];
-const _hoisted_12 = ["disabled"];
-const _hoisted_13 = { key: 1 };
-const _hoisted_14 = {
-  key: 2,
+const _hoisted_9 = { class: "tw-text-center tw-text-lg" };
+const _hoisted_10 = { class: "tw-text-center tw-text-sm tw-text-neutral-500" };
+const _hoisted_11 = { class: "tw-mt-4 tw-grid tw-w-full tw-grid-cols-2 tw-gap-2" };
+const _hoisted_12 = ["disabled", "onClick"];
+const _hoisted_13 = ["disabled"];
+const _hoisted_14 = { key: 2 };
+const _hoisted_15 = {
+  key: 3,
   class: "em-loader"
 };
-const _hoisted_15 = ["id", "name", "value"];
+const _hoisted_16 = ["id", "name", "value"];
 function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
   const _component_Info = resolveComponent("Info");
   return openBlock(), createElementBlock("div", _hoisted_1, [
-    $options.visibleDates.length > 0 && $data.myBookings.length === 0 && !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_2, [
-      createBaseVNode("div", _hoisted_3, [
+    this.source === "fabrik" && !this.isApplicant ? (openBlock(), createElementBlock("div", _hoisted_2, [
+      createVNode(_component_Info, {
+        class: "tw-w-full",
+        text: this.editingSlotFromFileText
+      }, null, 8, ["text"])
+    ])) : $options.visibleDates.length > 0 && $data.myBookings.length === 0 && !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_3, [
+      createBaseVNode("div", _hoisted_4, [
         _cache[2] || (_cache[2] = createBaseVNode("span", { class: "material-symbols-outlined !tw-text-base" }, "language", -1)),
-        createBaseVNode("span", _hoisted_4, toDisplayString($options.displayedTimezone), 1)
+        createBaseVNode("span", _hoisted_5, toDisplayString($options.displayedTimezone), 1)
       ]),
-      createBaseVNode("div", _hoisted_5, [
+      createBaseVNode("div", _hoisted_6, [
         createBaseVNode("button", {
           class: "tw-rounded-coordinator tw-border-0 tw-bg-transparent tw-p-2 hover:tw-bg-neutral-100",
           type: "button",
@@ -286,8 +336,8 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: _cache[0] || (_cache[0] = (...args) => $options.previousDates && $options.previousDates(...args))
         }, _cache[3] || (_cache[3] = [
           createBaseVNode("span", { class: "material-symbols-outlined" }, "chevron_left", -1)
-        ]), 12, _hoisted_6),
-        $data.slots ? (openBlock(), createElementBlock("div", _hoisted_7, [
+        ]), 12, _hoisted_7),
+        $data.slots ? (openBlock(), createElementBlock("div", _hoisted_8, [
           (openBlock(true), createElementBlock(Fragment, null, renderList($options.visibleDates, (date, index) => {
             return openBlock(), createElementBlock("div", {
               key: index,
@@ -299,9 +349,9 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                 flexGrow: "1"
               }
             }, [
-              createBaseVNode("p", _hoisted_8, toDisplayString($options.formatDay(date)), 1),
-              createBaseVNode("p", _hoisted_9, toDisplayString($options.formatShortDate(date)), 1),
-              createBaseVNode("div", _hoisted_10, [
+              createBaseVNode("p", _hoisted_9, toDisplayString($options.formatDay(date)), 1),
+              createBaseVNode("p", _hoisted_10, toDisplayString($options.formatShortDate(date)), 1),
+              createBaseVNode("div", _hoisted_11, [
                 (openBlock(true), createElementBlock(Fragment, null, renderList($options.getAvailableSlotsForDate(date), (slot) => {
                   return openBlock(), createElementBlock("button", {
                     type: "button",
@@ -313,7 +363,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
                     key: slot.id,
                     disabled: $options.disabledSlot(slot),
                     onClick: ($event) => $options.updateSelectedSlots(slot.id)
-                  }, toDisplayString(slot.displayTime), 11, _hoisted_11);
+                  }, toDisplayString(slot.displayTime), 11, _hoisted_12);
                 }), 128))
               ])
             ]);
@@ -330,13 +380,13 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
           onClick: _cache[1] || (_cache[1] = (...args) => $options.nextDates && $options.nextDates(...args))
         }, _cache[4] || (_cache[4] = [
           createBaseVNode("span", { class: "material-symbols-outlined" }, "chevron_right", -1)
-        ]), 12, _hoisted_12)
+        ]), 12, _hoisted_13)
       ])
-    ])) : $options.visibleDates.length === 0 && !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_13, [
+    ])) : $options.visibleDates.length === 0 && !$data.loading ? (openBlock(), createElementBlock("div", _hoisted_14, [
       createBaseVNode("span", null, toDisplayString(_ctx.translate("COM_EMUNDUS_EVENT_NO_SLOT_AVAILABLE")), 1)
-    ])) : $data.loading ? (openBlock(), createElementBlock("div", _hoisted_14)) : createCommentVNode("", true),
+    ])) : $data.loading ? (openBlock(), createElementBlock("div", _hoisted_15)) : createCommentVNode("", true),
     $data.slotSelected && this.slots.length > 0 ? (openBlock(), createBlock(_component_Info, {
-      key: 3,
+      key: 4,
       class: "tw-w-full",
       text: $options.selectedSlotInfo
     }, null, 8, ["text"])) : createCommentVNode("", true),
@@ -346,7 +396,7 @@ function _sfc_render(_ctx, _cache, $props, $setup, $data, $options) {
       id: $data.name,
       name: $data.name,
       value: $data.slotSelected
-    }, null, 8, _hoisted_15)
+    }, null, 8, _hoisted_16)
   ]);
 }
 const EventBooking = /* @__PURE__ */ _export_sfc(_sfc_main, [["render", _sfc_render]]);
