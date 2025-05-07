@@ -14,14 +14,15 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
-use Tchooz\Entities\SMS\ReceiverEntity;
-use Tchooz\Entities\SMS\SMSEntity;
-use Tchooz\Synchronizers\SMS\OvhSMS;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Entities\SMS\ReceiverEntity;
+use Tchooz\Entities\SMS\SMSEntity;
+use Tchooz\Exception\EmundusSMSException;
+use Tchooz\Synchronizers\SMS\OvhSMS;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
@@ -47,7 +48,7 @@ class EmundusModelSMS extends JModelList
 		if (!class_exists('AddonEntity')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
 		}
-		if (!class_exists('EmundusSMSException')) {
+		if (!class_exists('Tchooz\Exception\EmundusSMSException')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/Exception/EmundusSMSException.php');
 		}
 

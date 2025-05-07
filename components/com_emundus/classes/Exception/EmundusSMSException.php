@@ -1,6 +1,8 @@
 <?php
 
-class EmundusSMSException extends Exception
+namespace Tchooz\Exception;
+
+class EmundusSMSException extends \Exception
 {
 	/**
 	 * @var array Informations supplémentaires sur l'erreur

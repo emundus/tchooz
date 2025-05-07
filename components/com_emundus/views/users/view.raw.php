@@ -16,7 +16,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\Component\Emundus\Site\Exception\EmundusException;
+use Tchooz\Exception\EmundusException;
 
 /**
  * HTML Users View class for the Emundus Component

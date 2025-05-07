@@ -7,7 +7,7 @@
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-namespace Joomla\Component\Emundus\Site\Exception;
+namespace Tchooz\Exception;
 
 // phpcs:disable PSR1.Files.SideEffects
 use Joomla\CMS\Factory;

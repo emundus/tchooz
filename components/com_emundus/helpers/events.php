@@ -22,7 +22,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Component\Emundus\Site\Exception\EmundusException;
+use Tchooz\Exception\EmundusException;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
