@@ -3442,14 +3442,14 @@ class EmundusModelSettings extends ListModel
 		try
 		{
 			$query->clear()
-				->select('idp_name,metadata_url')
+				->select('idp_name,idp_entity_id')
 				->from($this->db->quoteName('#__miniorange_saml_config'));
 			$this->db->setQuery($query);
 			$config = $this->db->loadAssoc();
 
-			if (!empty($config) && !empty($config['metadata_url']))
+			if (!empty($config) && !empty($config['idp_entity_id']))
 			{
-				$config['metadata_url'] = Uri::base() . '?morequest=sso&idp=' . $config['metadata_url'];
+				$config['metadata_url'] = Uri::base() . '?morequest=sso&idp=' . $config['idp_entity_id'];
 			}
 		}
 		catch (Exception $e)

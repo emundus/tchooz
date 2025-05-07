@@ -2211,8 +2211,7 @@ class EmundusHelperUpdate
 			$result['status']  = false;
 			$result['message'] = 'INSERTING MENU : ' . $e->getMessage();
 
-			$db->setQuery('UNLOCK TABLES');
-			$db->execute();
+			$db->unlockTables();
 		}
 
 		return $result;
@@ -4646,106 +4645,114 @@ class EmundusHelperUpdate
 
 	public static function generateCampaignsAlias()
 	{
-		require_once JPATH_ROOT . '/components/com_emundus/models/formbuilder.php';
-		$m_formbuilder = new EmundusModelFormbuilder();
-		$db = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		try
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/models/formbuilder.php';
+			$m_formbuilder = new EmundusModelFormbuilder();
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
 
-		$query->clear()
-			->select('id')
-			->from($db->quoteName('#__menu_types'))
-			->where($db->quoteName('menutype') . ' = ' . $db->quote('campaigns'));
-		$db->setQuery($query);
-		$menutype = $db->loadResult();
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__menu_types'))
+				->where($db->quoteName('menutype') . ' = ' . $db->quote('campaigns'));
+			$db->setQuery($query);
+			$menutype = $db->loadResult();
 
-		if(empty($menutype)) {
-			$insert = [
-				'menutype' => 'campaigns',
-				'title' => 'Détails des campagnes',
-				'description' => 'Liste des liens de menus pour accéder aux détails des campagnes',
-				'client_id' => 0,
-			];
-			$insert = (object) $insert;
-			$db->insertObject('#__menu_types', $insert);
-		}
-
-		$query->clear()
-			->select('id,label,alias')
-			->from($db->quoteName('#__emundus_setup_campaigns'));
-		$db->setQuery($query);
-		$campaigns = $db->loadObjectList();
-
-		foreach ($campaigns as $campaign) {
-			if(empty($campaign->alias)) {
-				$alias = $m_formbuilder->replaceAccents($campaign->label);
-				$alias = preg_replace('/[^A-Za-z0-9]/', '-', $alias);
-				$alias = str_replace(' ', '-', $alias);
-				$alias = strtolower($alias);
-			} else {
-				$alias = $campaign->alias;
+			if(empty($menutype)) {
+				$insert = [
+					'menutype' => 'campaigns',
+					'title' => 'Détails des campagnes',
+					'description' => 'Liste des liens de menus pour accéder aux détails des campagnes',
+					'client_id' => 0,
+				];
+				$insert = (object) $insert;
+				$db->insertObject('#__menu_types', $insert);
 			}
 
 			$query->clear()
-				->select('id,menutype,params')
-				->from($db->quoteName('#__menu'))
-				->where($db->quoteName('alias') . ' LIKE ' . $db->quote($alias))
-				->where($db->quoteName('client_id') . ' = 0');
+				->select('id,label,alias')
+				->from($db->quoteName('#__emundus_setup_campaigns'));
 			$db->setQuery($query);
-			$item = $db->loadObject();
+			$campaigns = $db->loadObjectList();
 
-			$update_campaign = true;
-			$create_item = true;
-			if(!empty($item)) {
-				$params = json_decode($item->params, true);
-				if($item->menutype == 'campaigns' && $params['com_emundus_programme_campaign_id'] == $campaign->id) {
-					$create_item = false;
+			foreach ($campaigns as $campaign) {
+				if(empty($campaign->alias)) {
+					$alias = $m_formbuilder->replaceAccents($campaign->label);
+					$alias = preg_replace('/[^A-Za-z0-9]/', '-', $alias);
+					$alias = str_replace(' ', '-', $alias);
+					$alias = strtolower($alias);
 				} else {
-					$alias = $alias . '-' . $campaign->id;
+					$alias = $campaign->alias;
 				}
-			}
-
-			if($create_item) {
-				$modules_id =  [];
 
 				$query->clear()
-					->select('id,params')
-					->from($db->quoteName('#__modules'))
-					->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_campaign'));
+					->select('id,menutype,params')
+					->from($db->quoteName('#__menu'))
+					->where($db->quoteName('alias') . ' LIKE ' . $db->quote($alias))
+					->where($db->quoteName('client_id') . ' = 0');
 				$db->setQuery($query);
-				$modules = $db->loadObjectList();
-				foreach ($modules as $module) {
-					$params = json_decode($module->params);
-					if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign') {
-						$modules_id[] = $module->id;
+				$item = $db->loadObject();
+
+				$update_campaign = true;
+				$create_item = true;
+				if(!empty($item)) {
+					$params = json_decode($item->params, true);
+					if($item->menutype == 'campaigns' && $params['com_emundus_programme_campaign_id'] == $campaign->id) {
+						$create_item = false;
+					} else {
+						$alias = $alias . '-' . $campaign->id;
 					}
 				}
 
-				$params = [
-					'menutype' => 'campaigns',
-					'title'    => $campaign->label,
-					'alias'    => $alias,
-					'path'     => $alias,
-					'type' => 'component',
-					'link' => 'index.php?option=com_emundus&view=programme',
-					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
-					'params'   => [
-						'com_emundus_programme_campaign_id' => $campaign->id,
-						'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
-					]
-				];
+				if($create_item) {
+					$modules_id =  [];
 
-				$update_campaign = self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
-			}
+					$query->clear()
+						->select('id,params')
+						->from($db->quoteName('#__modules'))
+						->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_campaign'));
+					$db->setQuery($query);
+					$modules = $db->loadObjectList();
+					foreach ($modules as $module) {
+						$params = json_decode($module->params);
+						if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign') {
+							$modules_id[] = $module->id;
+						}
+					}
 
-			if($update_campaign)
-			{
-				$query->clear()
-					->update($db->quoteName('#__emundus_setup_campaigns'))
-					->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
-					->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
-				$db->setQuery($query);
-				$db->execute();
+					$params = [
+						'menutype' => 'campaigns',
+						'title'    => $campaign->label,
+						'alias'    => $alias,
+						'path'     => $alias,
+						'type' => 'component',
+						'link' => 'index.php?option=com_emundus&view=programme',
+						'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+						'params'   => [
+							'com_emundus_programme_campaign_id' => $campaign->id,
+							'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
+						]
+					];
+
+					$update_campaign = self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
+				}
+
+				if($update_campaign)
+				{
+					$query->clear()
+						->update($db->quoteName('#__emundus_setup_campaigns'))
+						->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
+						->where($db->quoteName('id') . ' = ' . $db->quote($campaign->id));
+					$db->setQuery($query);
+					$db->execute();
+				}
 			}
+		}
+		catch (Exception $e)
+		{
+			// Handle exception
+			echo $e->getMessage();
 		}
 
 		return true;

@@ -14,6 +14,9 @@
  */
 
 // no direct access
+use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
@@ -33,15 +36,15 @@ class EmundusHelperCache
 
 	public function __construct($group = 'com_emundus', $handler = '', $lifetime = '', $context = 'component')
 	{
-		JLog::addLogger(['text_file' => 'com_emundus.cache.error.php'], JLog::ERROR, ['com_emundus.cache.error']);
+		Log::addLogger(['text_file' => 'com_emundus.cache.error.php'], Log::ERROR, ['com_emundus.cache.error']);
 
 		$cache_path = JPATH_SITE . '/cache';
 		if (is_dir($cache_path)) {
-			$config        = JFactory::getConfig();
+			$config        = Factory::getConfig();
 			$cache_enabled = $config->get('caching'); // 1 = conservative, 2 = progressive
 			$cache_handler = $config->get('cache_handler', 'file');
 
-			if ($cache_enabled > 0 && $cache_handler == 'file') {
+			if ($cache_enabled > 0) {
 				if ($context === 'component' || $cache_enabled === 2) {
 					if (empty($lifetime)) {
 						$cache_time = $config->get('cachetime', 15);
@@ -49,7 +52,7 @@ class EmundusHelperCache
 					}
 
 					$this->group = $group;
-					$this->cache = JFactory::getCache($group, $handler);
+					$this->cache = Factory::getCache($group, $handler);
 					$this->cache->setLifeTime($lifetime);
 					$this->cache->setCaching(true);
 					$this->cache_enabled = true;
@@ -58,7 +61,7 @@ class EmundusHelperCache
 		}
 		else {
 			error_log('Cache directory does not exists!');
-			JLog::add('Cache directory does not exists!', JLog::WARNING, 'com_emundus.cache.error');
+			Log::add('Cache directory does not exists!', Log::WARNING, 'com_emundus.cache.error');
 		}
 	}
 
@@ -105,11 +108,11 @@ class EmundusHelperCache
 						$cleaned = $this->deleteDir($group);
 					} catch (Exception $e) {
 						$cleaned = false;
-						JLog::add('Error cleaning cache of group ' . $group . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.cache.error');
+						Log::add('Error cleaning cache of group ' . $group . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.cache.error');
 					}
 				} else {
 					$cleaned = false;
-					JLog::add('Cache directory of group ' . $group . ' does not exists!', JLog::WARNING, 'com_emundus.cache.error');
+					Log::add('Cache directory of group ' . $group . ' does not exists!', Log::WARNING, 'com_emundus.cache.error');
 				}
 			}
 		}

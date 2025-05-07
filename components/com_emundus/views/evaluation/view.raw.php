@@ -142,34 +142,6 @@ class EmundusViewEvaluation extends JViewLegacy
 				$this->items = $menuActions;
 				break;
 
-			case 'filters':
-				$menu         = $this->app->getMenu();
-				$current_menu = $menu->getActive();
-
-				$Itemid = $this->app->input->getInt('Itemid', $current_menu->id);
-
-				if (!empty($current_menu))
-				{
-					$menu_params = $menu->getParams($Itemid);
-					require_once JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';
-					try
-					{
-						$m_filters = new EmundusFiltersFiles($menu_params->toArray());
-
-						$this->filters              = $m_filters->getFilters();
-						$this->applied_filters      = $m_filters->getAppliedFilters();
-						$this->quick_search_filters = $m_filters->getQuickSearchFilters();
-						$this->count_filter_values  = $menu_params->get('count_filter_values', 0);
-						$this->allow_add_filter     = $menu_params->get('allow_add_filter', 1);
-					}
-					catch (Exception $e)
-					{
-						$this->app->enqueueMessage($e->getMessage());
-						$this->app->redirect('/');
-					}
-				}
-				break;
-
 			default :
 				$this->cfnum = $jinput->getString('cfnum', null);
 

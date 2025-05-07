@@ -11,6 +11,7 @@
 namespace Joomla\Plugin\Emundus\Emails\Extension;
 
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\User\UserFactoryAwareTrait;
@@ -63,6 +64,8 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 		if(!empty($data['availability']->event_id) && !empty($data['fnum']))
 		{
 			$query = $db->getQuery(true);
+
+			$timezone = Factory::getApplication()->get('offset', 'Europe/Paris');
 
 			try
 			{
@@ -130,6 +133,8 @@ final class Emails extends CMSPlugin implements SubscriberInterface
 					$ics .= "BEGIN:VEVENT\n";
 					$ics .= "DTSTART:" . date('Ymd\THis', strtotime($data['availability']->start)) . "\n";
 					$ics .= "DTEND:" . date('Ymd\THis', strtotime($data['availability']->end)) . "\n";
+					$ics .= "DTSTART;TZID=" . $timezone . ":" . date('Ymd\THis', strtotime($data['availability']->start)) . "\n";
+					$ics .= "DTEND;TZID=" . $timezone . ":" . date('Ymd\THis', strtotime($data['availability']->end)) . "\n";
 					$ics .= "SUMMARY:" . $email_to_send['ics_event_name'] . "\n";
 					$ics .= "LOCATION:" . $complete_location['name'] . "\n";
 					$ics .= "DESCRIPTION:" . $location_link . "\n";

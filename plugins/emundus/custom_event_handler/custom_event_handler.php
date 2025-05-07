@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Uri\Uri;
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 class plgEmundusCustom_event_handler extends CMSPlugin
 {
@@ -37,6 +38,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 	private $form_categories = ['Form', 'Evaluation'];
 
+	private EmundusHelperCache $h_cache;
+
 	function __construct(&$subject, $config)
 	{
 		parent::__construct($subject, $config);
@@ -48,6 +51,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		$emundus_config = ComponentHelper::getParams('com_emundus');
 		$this->automated_task_user = $emundus_config->get('automated_task_user', 1);
+
+		$this->h_cache = new EmundusHelperCache();
 	}
 
 
@@ -516,6 +521,19 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		if (!empty($event_label))
 		{
+			if ($this->h_cache->isEnabled()) {
+				$categories = $this->h_cache->get('ceh_categories');
+
+				if (!empty($categories) && isset($categories[$event_label])) {
+					return $categories[$event_label];
+				}
+
+				if (!empty($categories))
+				{
+					$categories = [];
+				}
+			}
+
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
@@ -527,6 +545,11 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			{
 				$db->setQuery($query);
 				$category = $db->loadResult();
+
+				if ($this->h_cache->isEnabled()) {
+					$categories[$event_label] = $category;
+					$this->h_cache->set('ceh_categories', $categories);
+				}
 			}
 			catch (Exception $e)
 			{

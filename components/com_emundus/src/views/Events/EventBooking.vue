@@ -1,5 +1,7 @@
 <script>
 import eventsService from '@/services/events';
+import settingsService from '@/services/settings.js';
+import campaignService from '@/services/campaign.js';
 import { useGlobalStore } from '@/stores/global.js';
 import Info from '@/components/Utils/Info.vue';
 
@@ -32,55 +34,75 @@ export default {
 			},
 
 			location: 0,
+			source: null,
+			registrantsLink: '',
+			isApplicant: false,
+			userId: 0,
 		};
 	},
 	created() {
-		this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
-		this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
-		this.currentTimezone.name = useGlobalStore().getDatas.timezone
-			? useGlobalStore().getDatas.timezone.value
-			: 'Europe/Paris';
+		this.source = useGlobalStore().getDatas.source ? useGlobalStore().getDatas.source.value : null;
+		this.isApplicant = useGlobalStore().getDatas.isApplicant
+			? parseInt(useGlobalStore().getDatas.isApplicant.value)
+			: false;
 
-		// If we want to filter the slots by location
-		let location_filter_elt = useGlobalStore().getDatas.location_filter_elt
-			? useGlobalStore().getDatas.location_filter_elt.value
-			: null;
-		if (location_filter_elt && location_filter_elt !== '' && document.getElementById(location_filter_elt)) {
-			location_filter_elt = document.getElementById(location_filter_elt);
-		}
+		if (this.source !== 'fabrik' || this.isApplicant) {
+			this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
+			this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
+			this.currentTimezone.name = useGlobalStore().getDatas.timezone
+				? useGlobalStore().getDatas.timezone.value
+				: 'Europe/Paris';
 
-		if (!this.$props.componentsProps) {
-			// First check if the user has already booked a slot
-			this.getMyBookings().then((bookings) => {
-				this.myBookings = bookings;
+			// If we want to filter the slots by location
+			let location_filter_elt = useGlobalStore().getDatas.location_filter_elt
+				? useGlobalStore().getDatas.location_filter_elt.value
+				: null;
+			if (location_filter_elt && location_filter_elt !== '' && document.getElementById(location_filter_elt)) {
+				location_filter_elt = document.getElementById(location_filter_elt);
+			}
 
-				if (this.myBookings.length > 0) {
-					this.slotSelected = this.myBookings[0].availability;
-				}
+			if (!this.$props.componentsProps) {
+				// First check if the user has already booked a slot
+				this.getMyBookings().then((bookings) => {
+					this.myBookings = bookings;
 
-				if (this.myBookings.length === 0 && location_filter_elt) {
-					location_filter_elt.addEventListener('change', (event) => {
-						this.location = event.target.value;
+					if (this.myBookings.length > 0) {
+						this.slotSelected = this.myBookings[0].availability;
+					}
 
-						this.currentStartIndex = 0;
+					if (this.myBookings.length === 0 && location_filter_elt) {
+						location_filter_elt.addEventListener('change', (event) => {
+							this.location = event.target.value;
+
+							this.currentStartIndex = 0;
+
+							if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+								this.getSlots();
+							} else {
+								this.slots = [];
+								this.availableDates = [];
+							}
+						});
 
 						if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
 							this.getSlots();
-						} else {
-							this.slots = [];
-							this.availableDates = [];
 						}
-					});
-
-					if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+					} else {
 						this.getSlots();
 					}
-				} else {
-					this.getSlots();
-				}
-			});
+				});
+			} else {
+				this.getSlots();
+			}
 		} else {
-			this.getSlots();
+			const urlParams = new URLSearchParams(window.location.search);
+			if (urlParams.has('fnum')) {
+				const fnum = urlParams.get('fnum');
+				this.getUserIdByFnum(fnum).then((id) => {
+					this.userId = id;
+					this.getRegistrantsLink();
+				});
+			}
 		}
 	},
 	methods: {
@@ -165,6 +187,18 @@ export default {
 				this.loading = false;
 			}
 		},
+		async getUserIdByFnum(fnum) {
+			return new Promise((resolve, reject) => {
+				campaignService.getUserIdByFnum(fnum).then((response) => {
+					if (response.status) {
+						resolve(response.data);
+					} else {
+						console.error('Error when try to retrieve user id by fnum', response.error);
+						reject([]);
+					}
+				});
+			});
+		},
 		formatDay(date) {
 			return (
 				date.toLocaleDateString('fr-FR', { weekday: 'long' }).charAt(0).toUpperCase() +
@@ -235,6 +269,18 @@ export default {
 			}
 			return slot.totalBookers >= slot.totalCapacity;
 		},
+		getRegistrantsLink() {
+			settingsService
+				.getSEFLink('index.php?option=com_emundus&view=events&layout=registrants', useGlobalStore().getCurrentLang)
+				.then((response) => {
+					if (response.status) {
+						this.registrantsLink = '/' + response.data;
+						if (this.userId) {
+							this.registrantsLink += '?applicant=' + this.userId;
+						}
+					}
+				});
+		},
 	},
 	computed: {
 		visibleDates: function () {
@@ -293,6 +339,12 @@ export default {
 				')'
 			);
 		},
+		editingSlotFromFileText: function () {
+			let text = this.translate('COM_EMUNDUS_EVENT_MESSAGE_EDITING_SLOT_FROM_FILE');
+			text = text.replace('{{registrantsLink}}', this.registrantsLink);
+
+			return text;
+		},
 	},
 	watch: {
 		currentStartIndex(newIndex) {
@@ -310,7 +362,11 @@ export default {
 	<div
 		class="tw-relative tw-flex tw-w-full tw-flex-col tw-items-center tw-gap-4 tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4"
 	>
-		<div v-if="visibleDates.length > 0 && myBookings.length === 0 && !loading" class="tw-w-full">
+		<div v-if="this.source === 'fabrik' && !this.isApplicant">
+			<Info class="tw-w-full" :text="this.editingSlotFromFileText" />
+		</div>
+
+		<div v-else-if="visibleDates.length > 0 && myBookings.length === 0 && !loading" class="tw-w-full">
 			<div class="tw-mb-3 tw-flex tw-items-center tw-gap-1">
 				<span class="material-symbols-outlined !tw-text-base">language</span>
 				<span class="tw-text-base">{{ displayedTimezone }}</span>

@@ -4271,4 +4271,26 @@ class EmundusModelCampaign extends ListModel
 
 		return $elements;
 	}
+
+	public function getUserIdFromFnum(string $fnum): int
+	{
+		$applicant_id = 0;
+
+		if (!empty($fnum)) {
+			$query = $this->_db->createQuery();
+
+			$query->select('applicant_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$applicant_id = (int)$this->_db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Error getting user id from fnum : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
+			}
+		}
+
+		return $applicant_id;
+	}
 }

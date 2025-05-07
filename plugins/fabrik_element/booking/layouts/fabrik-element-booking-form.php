@@ -29,14 +29,15 @@ else {
 	$many_languages = '0';
 }
 
-$user               = $app->getIdentity();
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
+$user                 = $app->getIdentity();
+$coordinator_access   = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
+$sysadmin_access      = EmundusHelperAccess::isAdministrator($user->id);
 
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 Text::script('COM_EMUNDUS_EVENT_NO_SLOT_AVAILABLE');
+Text::script('COM_EMUNDUS_EVENT_MESSAGE_EDITING_SLOT_FROM_FILE');
 Text::script('COM_EMUNDUS_EVENT_SLOT_RECAP');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_MINUTES');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_DURATION_HOUR');
@@ -56,7 +57,8 @@ $d = $displayData;
      name_element="<?= $d->name ?>"
      timezone="<?= $d->timezone; ?>"
      offset="<?= $d->offset; ?>"
-     location_filter_elt="<?= $d->location_filter_elt ?>"
+     isApplicant="<?= $d->is_applicant ?>"
+     source="fabrik"
 >
 </div>
 

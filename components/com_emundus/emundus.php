@@ -9,7 +9,6 @@
 // No direct access
 defined('_JEXEC') or die('ACCESS_DENIED');
 
-use Joomla\CMS\Access\Exception\NotAllowed;
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -18,7 +17,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
-use Joomla\Component\Emundus\Site\Exception\EmundusException;
+use Tchooz\Exception\EmundusException;
 
 $app = Factory::getApplication();
 

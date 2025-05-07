@@ -3,6 +3,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Exception\EmundusSMSException;
 
 class EmundusControllerSMS extends JControllerLegacy
 {
@@ -23,7 +24,7 @@ class EmundusControllerSMS extends JControllerLegacy
 		$this->model = new EmundusModelSMS();
 		$this->sms_action_id = $this->model->getSmsActionId();
 
-		if (!class_exists('EmundusSMSException')) {
+		if (!class_exists('Tchooz\Exception\EmundusSMSException')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/Exception/EmundusSMSException.php');
 		}
 	}

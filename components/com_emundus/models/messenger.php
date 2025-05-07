@@ -39,6 +39,28 @@ class EmundusModelMessenger extends ListModel
 		}
 	}
 
+	public function checkMessengerState(): bool
+	{
+		$enabled = false;
+
+		try
+		{
+			$query = $this->db->createQuery();
+
+			$query->select('enabled')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('mod_emundus_messenger_notifications'));
+			$this->db->setQuery($query);
+			$enabled = $this->db->loadResult() == 1;
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error when try to check if messenger is enabled : ' . $e->getMessage(), 'error', 'emundus');
+		}
+
+		return $enabled;
+	}
+
 	public function createChatroom($fnum = null, $id = null)
 	{
 		$query    = $this->db->createQuery();
@@ -567,7 +589,7 @@ class EmundusModelMessenger extends ListModel
 				{
 					$notifications = $h_cache->get('notifications_'.$user_id);
 
-					if(empty($notifications))
+					if($notifications === false)
 					{
 						$query->select('ec.fnum, ecn.chatroom_id as page, COUNT(ecn.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(ecn.message_id) as messages')
 							->from($this->db->quoteName('#__emundus_chatroom_notifications', 'ecn'))
@@ -591,7 +613,7 @@ class EmundusModelMessenger extends ListModel
 
 					$notifications = $h_cache->get('notifications_no_applicant');
 
-					if(empty($notifications))
+					if($notifications === false)
 					{
 						// Get count of messages since last reply from an other user that applicant
 						$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(m.message_id) as messages')

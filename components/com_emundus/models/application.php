@@ -3506,7 +3506,7 @@ class EmundusModelApplication extends ListModel
 
 													if(!empty($availability))
 													{
-														$elt = date('d.m.Y H:i', strtotime($availability->start_date)) . ' - ' . date('d.m.Y H:i', strtotime($availability->end_date));
+														$elt = EmundusHelperDate::displayDate($availability->start_date, 'd.m.Y H:i', 0) . ' - ' . EmundusHelperDate::displayDate($availability->end_date, 'd.m.Y H:i', 0);
 													}
 												}
 											}

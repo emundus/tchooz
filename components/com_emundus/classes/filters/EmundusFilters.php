@@ -114,10 +114,13 @@ class EmundusFilters
 					case 'calc':
 						$found_from_cache = false;
 						if ($this->h_cache->isEnabled()) {
-							$element_filter_type = $this->h_cache->get('em-filters-element-' . $element['id'] . '-type');
+							$elements_filters_type = $this->h_cache->get('em-filters-elements-type');
+							if (empty($elements_filters_type)) {
+								$elements_filters_type = [];
+							}
 
-							if (!empty($element_filter_type)) {
-								$filter['type'] = $element_filter_type;
+							if (!empty($elements_filters_type) && !empty($elements_filters_type[$element['id']])) {
+								$filter['type'] = $elements_filters_type[$element['id']];
 
 								switch($filter['type']) {
 									case 'number':
@@ -177,7 +180,8 @@ class EmundusFilters
 									}
 
 									if ($this->h_cache->isEnabled()) {
-										$this->h_cache->set('em-filters-element-' . $element['id'] . '-type', $filter['type']);
+										$elements_filters_type[$element['id']] = $filter['type'];
+										$this->h_cache->set('em-filters-elements-type', $elements_filters_type);
 									}
 								} catch (Exception $e) {
 									Log::add('Failed to get column type from table ' . $table_infos['db_table_name'] . ' and column ' . $table_infos['name'] . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');

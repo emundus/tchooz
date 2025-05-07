@@ -317,4 +317,17 @@ export default {
 			};
 		}
 	},
+
+	async getUserIdByFnum(fnum) {
+		try {
+			return await client.get('getuseridfromfnum', {
+				fnum: fnum,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };
