@@ -28,6 +28,10 @@ export default defineConfig(({ mode }) => {
       emptyOutDir: true,
       rollupOptions: {
         output: {
+					format: 'iife', // Force IIFE format
+					globals: {
+						vue: 'Vue'
+					},
           entryFileNames: 'app_emundus.js',
           chunkFileNames: '[name].js',
           assetFileNames: (assetInfo) => {
