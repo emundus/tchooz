@@ -104,6 +104,21 @@ When you are ready to build the project for production, you can run the followin
 ```
 > This command have to be run before any commit
 
+### Profile with Blackfire
+Set env variable in your docker-compose.yml file with your Blackfire credentials (https://app.blackfire.io/my/settings/credentials) and restart your docker containers:
+```yaml
+  environment:
+        BLACKFIRE_SERVER_ID: your_blackfire_server_id
+        BLACKFIRE_SERVER_TOKEN: your_blackfire_server_token
+        BLACKFIRE_CLIENT_ID: your_blackfire_client_id
+        BLACKFIRE_CLIENT_TOKEN: your_blackfire_client_token
+```
+```bash
+docker compose -f docker-compose-[username].yml up --build -d
+```
+
+Launch the profiler in your browser with the Blackfire extension. You can find the extension in your browser's extension store.
+
 ## Tests Back-end
 ### Installation
 
