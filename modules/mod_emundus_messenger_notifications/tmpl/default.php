@@ -60,7 +60,7 @@ if (!$user->guest && ($applicant || EmundusHelperAccess::asAccessAction(36,'c',$
 	$datas = [
 		'fnum'            => $fnum,
 		'fullname'        => $name,
-		'unread_messages' => $unread_messages,
+		'unread_messages' => $unread_messages ?: [],
 		'applicant'       => $applicant
 	];
 	?>
@@ -70,6 +70,6 @@ if (!$user->guest && ($applicant || EmundusHelperAccess::asAccessAction(36,'c',$
          data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
     ></div>
 
-    <script type="module" src="media/com_emundus_vue/app_emundus.js"></script>
+    <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash; ?>"></script>
 
 <?php } ?>
