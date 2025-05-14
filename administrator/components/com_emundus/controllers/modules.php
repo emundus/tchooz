@@ -58,6 +58,10 @@ class EmundusAdminControllerModules extends JControllerLegacy
 		        $mRanking = new EmundusAdministrationModelRanking();
 		        $result['status'] = $mRanking->install(true);
 		        break;
+	        case 'expert':
+		        require_once (JPATH_ADMINISTRATOR . '/components/com_emundus/models/expert.php');
+		        $mExpert = new EmundusAdministrationModelExpert();
+		        $result['status'] = $mExpert->install(true);
 	        default:
                 $result['message'] = 'Module not found';
         }

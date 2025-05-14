@@ -80,6 +80,11 @@ class EmundusAdminViewModules extends HtmlView
 	            'title' => 'Classement',
 	            'desc' => 'Installation des tables de classement, d\'un menu administrateur et d\'un email Système.',
 	            'install_button' => 'Installer'
+            ],
+            'expert' => [
+	            'title' => 'Expert',
+	            'desc' => 'Installation des tables de configuration des experts',
+	            'install_button' => 'Installer'
             ]
         ];
         $this->modules = $modules;
