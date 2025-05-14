@@ -652,10 +652,11 @@ class EmundusModelWorkflow extends JModelList
 
 	/**
 	 * @param $user_id
+     * @param bool $read_only_steps
 	 *
 	 * @return array
 	 */
-	public function getEvaluatorSteps($user_id): array
+	public function getEvaluatorSteps($user_id, bool $read_only_steps = true): array
 	{
 		$steps = [];
 
@@ -672,7 +673,7 @@ class EmundusModelWorkflow extends JModelList
 
 				foreach ($workflow_data['steps'] as $step)
 				{
-					if ($this->isEvaluationStep($step->type) && (EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id) || EmundusHelperAccess::asAccessAction($step->action_id, 'r', $user_id)))
+					if ($this->isEvaluationStep($step->type) && (EmundusHelperAccess::asAccessAction($step->action_id, 'c', $user_id) || ($read_only_steps && EmundusHelperAccess::asAccessAction($step->action_id, 'r', $user_id))))
 					{
 						$steps[] = $step;
 					}
