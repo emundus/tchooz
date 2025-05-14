@@ -11,9 +11,11 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-list.php';
@@ -117,6 +119,28 @@ class PlgFabrik_ListCopy extends PlgFabrik_List
 		{
 			$id     = reset($ids);
 			$status = $this->copyGroupRights($id, $formModel->formData['rowid']);
+		}
+
+		if($status) {
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			PluginHelper::importPlugin('emundus');
+
+			$onAfterFabrikCopyRowEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				['onAfterFabrikCopyRow',
+					// Datas to pass to the event
+					['ids' => $ids]
+				]
+			);
+			$onAfterFabrikCopyRow             = new GenericEvent(
+				'onAfterFabrikCopyRow',
+				// Datas to pass to the event
+				['ids' => $ids]
+			);
+
+			// Dispatch the event
+			$dispatcher->dispatch('onCallEventHandler', $onAfterFabrikCopyRowEventHandler);
+			$dispatcher->dispatch('onAfterFabrikCopyRow', $onAfterFabrikCopyRow);
 		}
 
 		return $status;
