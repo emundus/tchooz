@@ -65,6 +65,19 @@
 					</div>
 
 					<div v-if="!loading">
+						<div class="tw-fixed tw-mt-4 tw-flex" style="z-index: 20; left: 0">
+							<Synthesis v-if="openSynthesis" :fnum="selectedFile.fnum" :content="filesSynthesis[selectedFile.fnum]">
+							</Synthesis>
+
+							<button
+								class="tw-btn-primary tw-mt-4 tw-h-fit"
+								style="border-radius: 0 8px 8px 0"
+								@click="openSynthesis = !openSynthesis"
+							>
+								<span class="material-symbols-outlined">contact_page</span>
+							</button>
+						</div>
+
 						<div v-for="tab in tabs" :key="tab.name">
 							<div v-if="tab.name === 'application' && selected === 'application'" v-html="applicationform"></div>
 							<Attachments
@@ -88,12 +101,6 @@
 								:fullname="$props.fullname"
 								:applicant="$props.applicant"
 							/>
-							<Synthesis
-								v-if="tab.name === 'synthesis' && selected === 'synthesis'"
-								:fnum="selectedFile.fnum"
-								:content="filesSynthesis[selectedFile.fnum]"
-							>
-							</Synthesis>
 							<div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
 								<iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-h-screen tw-w-full"></iframe>
 							</div>
@@ -180,6 +187,8 @@ export default {
 		selectedFile: null,
 		applicationform: '',
 		selected: 'application',
+		openSynthesis: false,
+
 		tabs: [
 			{
 				label: 'COM_EMUNDUS_FILES_APPLICANT_FILE',
@@ -200,11 +209,6 @@ export default {
 				label: 'COM_EMUNDUS_FILES_MESSENGER',
 				name: 'messenger',
 				access: '36',
-			},
-			{
-				label: 'COM_EMUNDUS_APPLICATION_SYNTHESIS',
-				name: 'synthesis',
-				access: '1',
 			},
 		],
 		ccid: 0,
@@ -277,19 +281,8 @@ export default {
 			fileService
 				.getFileSynthesis(fnum)
 				.then((response) => {
-					if (response.data.length == 0) {
-						this.tabs = this.tabs.filter((tab) => tab.name !== 'synthesis');
-					} else {
-						// re add the synthesis tab if it was removed
-						if (!this.tabs.find((tab) => tab.name === 'synthesis')) {
-							this.tabs.push({
-								label: 'COM_EMUNDUS_APPLICATION_SYNTHESIS',
-								name: 'synthesis',
-								access: '1',
-							});
-						}
-
-						this.filesSynthesis[this.selectedFile.fnum] = response.data;
+					if (response.data.length != 0) {
+						this.filesSynthesis[fnum] = response.data;
 					}
 				})
 				.catch((error) => {
@@ -448,6 +441,7 @@ export default {
 		onClose(e) {
 			e.preventDefault();
 			this.hidden = true;
+			this.loading = true;
 			this.showModal = false;
 			document.querySelector('body').style.overflow = 'visible';
 
