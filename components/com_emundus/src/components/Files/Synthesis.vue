@@ -16,7 +16,7 @@ export default {
 	data() {
 		return {
 			synthesis: '',
-			loading: true,
+			loading: false,
 			error: false,
 		};
 	},
@@ -25,7 +25,6 @@ export default {
 			this.getSynthesis();
 		} else {
 			this.synthesis = this.content;
-			this.loading = false;
 		}
 	},
 	methods: {
@@ -50,8 +49,15 @@ export default {
 </script>
 
 <template>
-	<div id="application-synthesis" class="tw-m-4 tw-rounded tw-border tw-p-4">
-		<div v-if="!loading && !error" v-html="synthesis"></div>
+	<div
+		id="application-synthesis"
+		class="tw-border tw-bg-white tw-p-4 tw-shadow-card"
+		style="border-radius: 0 8px 8px 0"
+	>
+		<div v-if="!loading">
+			<h3>{{ translate('COM_EMUNDUS_APPLICATION_SYNTHESIS') }}</h3>
+		</div>
+		<div class="tw-mt-3" v-if="!loading && !error" v-html="synthesis"></div>
 	</div>
 </template>
 
