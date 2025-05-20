@@ -14,6 +14,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
@@ -121,6 +122,24 @@ class Parcoursup extends CMSPlugin implements SubscriberInterface
 							['type' => 'parcoursup', 'datas' => $buildDatas->getApplicationFile()]
 						);
 						$dispatcher->dispatch('onWebhookCallbackFailed', $onWebhookCallbackFailed);
+					}
+					else {
+						$onWebhookCallbackSuccess = new GenericEvent(
+							'onWebhookCallbackSuccess',
+							// Datas to pass to the event
+							['type' => 'parcoursup', 'datas' => $buildDatas->getApplicationFile()]
+						);
+						$dispatcher->dispatch('onWebhookCallbackSuccess', $onWebhookCallbackSuccess);
+
+						PluginHelper::importPlugin('emundus');
+						$onWebhookCallbackSuccessEventHandler = new GenericEvent(
+							'onCallEventHandler',
+							['onWebhookCallbackSuccess',
+								// Datas to pass to the event
+								['datas' => $buildDatas->getApplicationFile()]
+							]
+						);
+						$result = $dispatcher->dispatch('onCallEventHandler', $onWebhookCallbackSuccessEventHandler);
 					}
 				}
 			}
