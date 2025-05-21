@@ -49,7 +49,8 @@ if (sizeof($tmp_campaigns) > 0)
 	foreach ($tmp_campaigns as $key => $campaign)
 	{
         $item = $menu->getItems('alias', $campaign->alias, true);
-        if(!empty($item))
+        // Change link of campaign only if there is a menu item with the alias and no custom link on the program
+        if(!empty($item) && empty($campaign->link))
         {
             $campaign->link = $campaign->alias;
         }
