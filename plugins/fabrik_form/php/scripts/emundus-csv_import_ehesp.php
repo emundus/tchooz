@@ -460,7 +460,7 @@ foreach ($parsed_data as $row_id => $insert_row) {
         JLog::add('--- '.$row_id.' Username: '.$username, JLog::INFO, 'com_emundus.csvimport');
 
         $user = clone(JFactory::getUser(0));
-        if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $username) !== 1) {
+        if (preg_match('/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-z\-0-9]+\.)+[a-z]{2,}))$/', $username) !== 1 && preg_match('/^[0-9]{3,}$/', $username) !==1) {
             JLog::add('ERROR: Username format not OK: '.$username, JLog::ERROR, 'com_emundus.csvimport');
             continue;
         }
