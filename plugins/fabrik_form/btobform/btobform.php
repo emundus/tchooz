@@ -323,7 +323,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'registration_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
 					'correspondence_different_contact' => 0,
 					'correspondence_different_email' => '',
-					'correspondence_phone' => $profile->telephone_responsable,
+					'correspondence_phone' => '',
 					'correspondence_different_phone' => '',
 					'registration_company_price' => $financement_entreprise . '€',
 					'registration_organism_price' => $financement_organisme . '€',
