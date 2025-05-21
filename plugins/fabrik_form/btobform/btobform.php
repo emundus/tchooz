@@ -28,37 +28,52 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 		$cid = Factory::getApplication()->getInput()->getInt('cid', 0);
 
-		$query->clear()
-			->select('esp.btob_max_applicants')
-			->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
-			->where('esc.id = :cid')
-			->bind(':cid', $cid, ParameterType::INTEGER);
-		$db->setQuery($query);
-		$max_files_per_session = $db->loadResult();
-		if (empty($max_files_per_session))
-		{
-			$max_files_per_session = $this->getParams()->get('btob_form_max_file_per_session', 4);
-		}
+        $query->clear()
+            ->select('esp.opened_to_btob')
+            ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+            ->where('esc.id = :cid')
+            ->bind(':cid', $cid, ParameterType::INTEGER);
+        $db->setQuery($query);
+        $opened_to_btob = $db->loadResult();
 
-		$nb_dossiers          = 0;
-		$nb_dossiers_possible = $max_files_per_session;
-		if (!empty($user->id))
-		{
-			$query->clear()
-				->select('count(id)')
-				->from('#__emundus_campaign_candidature')
-				->where('applicant_id = :id')
-				->where('campaign_id = :cid')
-				->bind(':cid', $cid, ParameterType::INTEGER)
-				->bind(':id', $user->id, ParameterType::INTEGER);
-			$db->setQuery($query);
-			$nb_dossiers = $db->loadResult();
+        if ($opened_to_btob == 1) {
+            $query->clear()
+                ->select('esp.btob_max_applicants')
+                ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+                ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+                ->where('esc.id = :cid')
+                ->bind(':cid', $cid, ParameterType::INTEGER);
+            $db->setQuery($query);
+            $max_files_per_session = $db->loadResult();
+            if (empty($max_files_per_session))
+            {
+                $max_files_per_session = $this->getParams()->get('btob_form_max_file_per_session', 4);
+            }
 
-			$nb_dossiers_possible = $max_files_per_session - $nb_dossiers;
-		}
+            $nb_dossiers          = 0;
+            $nb_dossiers_possible = $max_files_per_session;
+            if (!empty($user->id))
+            {
+                $query->clear()
+                    ->select('count(id)')
+                    ->from('#__emundus_campaign_candidature')
+                    ->where('applicant_id = :id')
+                    ->where('campaign_id = :cid')
+                    ->bind(':cid', $cid, ParameterType::INTEGER)
+                    ->bind(':id', $user->id, ParameterType::INTEGER);
+                $db->setQuery($query);
+                $nb_dossiers = $db->loadResult();
 
-		$formModel->data['jos_emundus_btob___nb_dossiers'] = Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_AVAILABLE', $nb_dossiers, $nb_dossiers_possible);
+                $nb_dossiers_possible = $max_files_per_session - $nb_dossiers;
+            }
+
+            $formModel->data['jos_emundus_btob___nb_dossiers'] = Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_AVAILABLE', $nb_dossiers, $nb_dossiers_possible);
+        } else {
+            $app = Factory::getApplication();
+            $app->enqueueMessage(Text::_('PLG_FABRIK_FORM_BTOBFORM_CAMPAIGN_NOT_OPEN_TO_BTOB'), 'error');
+            $app->redirect('index.php');
+        }
 	}
 
 	public function onBeforeProcess()
