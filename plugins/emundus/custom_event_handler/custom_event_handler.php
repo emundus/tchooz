@@ -794,6 +794,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
 											break;
 										case '=':
+                                            $query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+                                            break;
 										case '!=':
 											$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
 											break;
