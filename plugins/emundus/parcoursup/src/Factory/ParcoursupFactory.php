@@ -78,18 +78,21 @@ class ParcoursupFactory
 			$application->addData($elementId, $value);
 		}
 
-		// Create User object
-		$user = $this->userFactory->buildUser(
-			$application->getApplicationFileKey('name'),
-			$application->getApplicationFileKey('firstname'),
-			$application->getApplicationFileKey('lastname'),
-			$application->getApplicationFileKey('username') ?? $application->getApplicationFileKey('email'),
-			$application->getApplicationFileKey('email'),
-			[2],
-			$skipActivation,
-			1000
-		);
-		$application->setUser($user);
+		if(!empty($application->getApplicationFileKey('name')) && !empty($application->getApplicationFileKey('firstname'))  && !empty($application->getApplicationFileKey('lastname')))
+		{
+			// Create User object
+			$user = $this->userFactory->buildUser(
+				$application->getApplicationFileKey('name'),
+				$application->getApplicationFileKey('firstname'),
+				$application->getApplicationFileKey('lastname'),
+				$application->getApplicationFileKey('username') ?? $application->getApplicationFileKey('email'),
+				$application->getApplicationFileKey('email'),
+				[2],
+				$skipActivation,
+				1000
+			);
+			$application->setUser($user);
+		}
 
 		return $application;
 	}

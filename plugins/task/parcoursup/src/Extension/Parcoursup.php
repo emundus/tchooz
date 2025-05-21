@@ -114,7 +114,7 @@ class Parcoursup extends CMSPlugin implements SubscriberInterface
 				{
 					$buildDatas = $parcoursupFactory->buildDatas($dataToImport, $skipActivation);
 
-					if (!$repository->flush($buildDatas))
+					if (!$fnum = $repository->flush($buildDatas))
 					{
 						$onWebhookCallbackFailed = new GenericEvent(
 							'onWebhookCallbackFailed',
@@ -136,7 +136,7 @@ class Parcoursup extends CMSPlugin implements SubscriberInterface
 							'onCallEventHandler',
 							['onWebhookCallbackSuccess',
 								// Datas to pass to the event
-								['datas' => $buildDatas->getApplicationFile()]
+								['datas' => $buildDatas->getApplicationFile(), 'fnum' => $fnum]
 							]
 						);
 						$result = $dispatcher->dispatch('onCallEventHandler', $onWebhookCallbackSuccessEventHandler);
