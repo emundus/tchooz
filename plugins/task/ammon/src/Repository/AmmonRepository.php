@@ -449,7 +449,7 @@ class AmmonRepository
 			$query = $this->db->getQuery(true);
 
 			$query->select('id')
-				->from('#__emundus_btob_inscription_1244_repeat')
+				->from('#__emundus_btob_1237_repeat')
 				->where('fnum = ' . $this->db->quote($fnum));
 
 			try {

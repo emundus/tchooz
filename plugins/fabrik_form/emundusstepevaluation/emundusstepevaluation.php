@@ -85,55 +85,56 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		$current_url = '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
 		$final_url   = $current_url;
 
-		if (!empty($step_data) && $can_edit && $view === 'form')
-		{
-			if ($step_data->multiple == 0)
-			{
-				// if step_data is not multiple, we need to redirect to the unique row for this ccid
-				$query->clear()
-					->select('id')
-					->from($db_table_name)
-					->where($db->quoteName('ccid') . ' = ' . $ccid)
-					->andWhere($db->quoteName('step_id') . ' = ' . $step_id);
+        if (!empty($step_data)) {
+            if ($step_data->multiple == 0)
+            {
+                // if step_data is not multiple, we need to redirect to the unique row for this ccid
+                $query->clear()
+                    ->select('id')
+                    ->from($db_table_name)
+                    ->where($db->quoteName('ccid') . ' = ' . $ccid)
+                    ->andWhere($db->quoteName('step_id') . ' = ' . $step_id);
 
-				$db->setQuery($query);
-				$row_id = $db->loadResult();
-			}
-			else
-			{
-				// if multiple, we need to redirect to the row of the current user if it exists
-				$query->clear()
-					->select('id')
-					->from($db_table_name)
-					->where($db->quoteName('ccid') . ' = ' . $ccid)
-					->andWhere($db->quoteName('step_id') . ' = ' . $step_id)
-					->where($db->quoteName('evaluator') . ' = ' . $user->id);
+                $db->setQuery($query);
+                $row_id = $db->loadResult();
+            }
+            else
+            {
+                // if multiple, we need to redirect to the row of the current user if it exists
+                $query->clear()
+                    ->select('id')
+                    ->from($db_table_name)
+                    ->where($db->quoteName('ccid') . ' = ' . $ccid)
+                    ->andWhere($db->quoteName('step_id') . ' = ' . $step_id)
+                    ->where($db->quoteName('evaluator') . ' = ' . $user->id);
 
-				$db->setQuery($query);
-				$row_id = $db->loadResult();
-			}
+                $db->setQuery($query);
+                $row_id = $db->loadResult();
+            }
+        }
 
-			if (!empty($row_id))
-			{
-				// if coord or admin, he is allowed to edit all rows, so if rowid is not 0, keep it
-				// if not, replace it with the rowid
+        if (!empty($step_data) && (($can_edit && $view === 'form') || (!$can_edit && $view !== 'details')))
+        {
+            if (!empty($row_id))
+            {
+                // if coord or admin, he is allowed to edit all rows, so if rowid is not 0, keep it
+                // if not, replace it with the rowid
 
-				if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id))
-				{
-					$final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
-					if (!str_contains($final_url, 'rowid'))
-					{
-						$final_url .= '&rowid=' . $row_id;
-					}
-				}
-			}
-		}
+                if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id))
+                {
+                    $final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
+                    if (!str_contains($final_url, 'rowid'))
+                    {
+                        $final_url .= '&rowid=' . $row_id;
+                    }
+                }
+            }
+        }
 
-		if (!$can_edit && $view !== 'details')
-		{
-			$this->app->enqueueMessage(Text::_($access['reason_cannot_edit']));
-			$final_url = str_replace('view=form', 'view=details', $final_url);
-		}
+        if (!$can_edit && $view !== 'details') {
+            $this->app->enqueueMessage(Text::_($access['reason_cannot_edit']));
+            $final_url = str_replace('view=form', 'view=details', $final_url);
+        }
 
 		if(!empty($step_data) && $step_data->lock == 1 && $view === 'form' && !empty($row_id))
 		{
