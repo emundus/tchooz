@@ -259,6 +259,10 @@ class plgUserEmundus extends CMSPlugin
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 			$m_users = new EmundusModelusers();
 
+			if(PluginHelper::getPlugin('system', 'emundusproxyredirect')) {
+				return;
+			}
+
 			if (PluginHelper::getPlugin('authentication', 'ldap') && ($option !== 'com_emundus' && $controller !== 'users' && $task !== 'adduser')) {
 				$return = $m_users->searchLDAP($user['username']);
 
