@@ -59,6 +59,7 @@ $d = $displayData;
      offset="<?= $d->offset; ?>"
      isApplicant="<?= $d->is_applicant ?>"
      source="fabrik"
+     location_filter_elt="<?= $d->location_filter_elt ?>"
 >
 </div>
 
