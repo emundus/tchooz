@@ -45,14 +45,13 @@ export default {
 		this.isApplicant = useGlobalStore().getDatas.isApplicant
 			? parseInt(useGlobalStore().getDatas.isApplicant.value)
 			: false;
+		this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
+		this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
+		this.currentTimezone.name = useGlobalStore().getDatas.timezone
+			? useGlobalStore().getDatas.timezone.value
+			: 'Europe/Paris';
 
 		if (this.source !== 'fabrik' && !this.isApplicant) {
-			this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
-			this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
-			this.currentTimezone.name = useGlobalStore().getDatas.timezone
-				? useGlobalStore().getDatas.timezone.value
-				: 'Europe/Paris';
-
 			if (!this.$props.componentsProps) {
 				// First check if the user has already booked a slot
 				this.getMyBookings().then((bookings) => {
