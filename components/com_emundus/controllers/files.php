@@ -2040,23 +2040,16 @@ class EmundusControllerFiles extends BaseController
 										if (!empty($key_table) && in_array($key_table, $encrypted_tables)) {
 											$decoded_value = json_decode($v, true);
 
-											if (!empty($decoded_value)) {
-												$all_decrypted_data = [];
-												foreach ($decoded_value as $decoded_sub_value) {
-													$decrypted_data = openssl_decrypt($decoded_sub_value, $cipher, $encryption_key, 0);
-													if ($decrypted_data !== false) {
-														$all_decrypted_data[] = $decrypted_data;
-													}
-												}
+                                            if (!empty($decoded_value)) {
+                                                $all_decrypted_data = [];
+                                                foreach ($decoded_value as $decoded_sub_value) {
+                                                    $all_decrypted_data[] = EmundusHelperFabrik::decryptDatas($decoded_sub_value);
+                                                }
 
-												$v = '[' . implode(',', $all_decrypted_data) . ']';
-											}
-											else {
-												$decrypted_data = openssl_decrypt($v, $cipher, $encryption_key, 0);
-												if ($decrypted_data !== false) {
-													$v = $decrypted_data;
-												}
-											}
+                                                $v = '[' . implode(',', $all_decrypted_data) . ']';
+                                            } else {
+                                                $v = EmundusHelperFabrik::decryptDatas($v);
+                                            }
 										}
 									}
 
