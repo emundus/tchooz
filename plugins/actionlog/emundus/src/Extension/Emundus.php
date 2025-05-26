@@ -64,7 +64,15 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onAmmonFoundSimilarName'        => 'onAmmonFoundSimilarName',
 			'onAmmonSync'                    => 'onAmmonSync',
 			'onWebhookCallbackFailed'        => 'onWebhookCallbackFailed',
-			'onAfterImportRow'               => 'onAfterImportRow'
+			'onAfterImportRow'               => 'onAfterImportRow',
+			'onYousignRequestInitiated'      => 'onYousignRequestInitiated',
+			'onYousignDocumentAdded'         => 'onYousignDocumentAdded',
+			'onYousignSignersUpdated'        => 'onYousignSignersUpdated',
+			'onYousignRequestActivated'      => 'onYousignRequestActivated',
+			'onYousignRequestCompleted'      => 'onYousignRequestCompleted',
+			'onYousignError'                 => 'onYousignError',
+			'onYousignSendReminder'          => 'onYousignSendReminder',
+			'onYousignRequestCancelled'      => 'onYousignRequestCancelled'
 		];
 	}
 
@@ -259,9 +267,137 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_IMPORT_ROW';
 		$context            = 'com_emundus.import';
 
-		$more_data['fnum']    = $arguments['fnum'];
+		$more_data['fnum'] = $arguments['fnum'];
 
 		$message = $this->setMessage($arguments['id'], 'create', 'PLG_ACTIONLOG_EMUNDUS_IMPORT_ROW', $arguments['status'], [], $arguments['data'], $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignRequestInitiated(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_INITIATED';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_INITIATED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignDocumentAdded(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_DOCUMENT_ADDED';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_DOCUMENT_ADDED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignSignersUpdated(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_SIGNERS_UPDATED';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_SIGNERS_UPDATED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignRequestActivated(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_ACTIVATED';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_ACTIVATED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignRequestCompleted(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_COMPLETED';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_COMPLETED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignError(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_ERROR';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['message'] = $arguments['message'];
+
+		$message = $this->setMessage(0, 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_ERROR', 'error', [], $arguments['data'], $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignSendReminder(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_SEND_REMINDER';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_SEND_REMINDER', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onYousignRequestCancelled(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_CANCELLED';
+		$context            = 'com_emundus.yousign';
+
+		$more_data['fnum'] = $arguments['application_file']['fnum'];
+
+		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_CANCELLED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
 
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}

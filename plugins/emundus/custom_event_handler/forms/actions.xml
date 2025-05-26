@@ -6,6 +6,7 @@
         <option value="send_email">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SEND_EMAIL</option>
         <option value="redirect">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_REDIRECT</option>
         <option value="generate_letter">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_GENERATE_LETTER</option>
+        <option value="sign_flow">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGN_FLOW</option>
     </field>
 
     <field
@@ -167,4 +168,38 @@
             value_field="title"
     />
     <!-- End Generate letter fields -->
+
+    <!-- Sign flow fields -->
+    <field
+            showon="action_type:sign_flow"
+            name="signer_connector"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_CONNECTOR_LABEL"
+    >
+        <option value="yousign">Yousign</option>
+    </field>
+
+    <field
+            showon="action_type:sign_flow"
+            name="attachment_type"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ATTACHMENT_ID_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ATTACHMENT_ID_DESC"
+            query="SELECT id, value FROM #__emundus_setup_attachments"
+            key_field="id"
+            value_field="value"
+    />
+
+    <field
+            showon="action_type:sign_flow"
+            type="subform"
+            name="action_signers"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGNERS_LABEL"
+            multiple="true"
+            formsource="plugins/emundus/custom_event_handler/forms/signers.xml"
+    >
+    </field>
+
+
+    <!-- End Sign flow fields -->
 </form>

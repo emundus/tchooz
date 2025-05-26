@@ -8,6 +8,8 @@
  */
 
 // No direct access to this file
+defined('_JEXEC') or die('Restricted Access');
+
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
@@ -32,8 +34,6 @@ Text::script('COM_EMUNDUS_ONBOARD_LABEL');
 Text::script('COM_EMUNDUS_PAGINATION_DISPLAY');
 Text::script('COM_EMUNDUS_ONBOARD_EVENT_LOCATIONS_ALL');
 Text::script('COM_EMUNDUS_ONBOARD_NO_EVENTS');
-
-defined('_JEXEC') or die('Restricted Access');
 
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
 

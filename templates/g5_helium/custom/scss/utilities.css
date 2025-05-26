@@ -249,7 +249,7 @@
     /* SWEET ALERT */
     div:where(.swal2-container) {
         div:where(.swal2-popup) {
-            padding: var(--em-alert-modal-padding) !important;
+            padding: 24px !important;
             align-items: flex-start;
 
             iframe {
@@ -292,7 +292,7 @@
                 @apply tw-text-base;
                 text-align: left;
                 overflow: visible;
-                margin: var(--em-spacing-5) 0 0 0;
+                margin: 0;
                 padding: 0;
 
                     label:not([for]), .em-addUser label:not([for*="same_login_email"]), .em-addGroup label, .em-affect-groups label{
@@ -316,7 +316,7 @@
             }
 
             .swal2-actions {
-                @apply tw-mt-10;
+                @apply tw-mt-8;
                 @apply tw-w-full;
                 button {
                     @apply tw-m-0;
@@ -335,16 +335,16 @@
                 background: var(--red-50, #FEF3F2);
                 border-radius: 4px;
                 justify-content: start;
-                color: var(--neutral-900);
+                color: var(--neutral-800);
             }
 
             label:where(.swal2-input-label) {
-                margin: 0 0 4px 0;
+                margin: 12px 0 4px 0;
                 display: block;
-                color: var(--neutral-900);
+                color: var(--neutral-800);
             }
 
-            input:where(.swal2-input) {
+            input:where(.swal2-input), textarea:where(.swal2-textarea) {
                 margin: 0;
             }
         }
@@ -367,7 +367,7 @@
     }*/
 
     .swal2-popup {
-        border-radius: var(--em-default-br) !important;
+        border-radius: 1rem !important;
         width: 38em !important;
     }
 

@@ -17,6 +17,10 @@
         <option value="!=">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_NOT_EQUAL</option>
         <option value="IN">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_IN</option>
         <option value="NOT IN">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_NOT_IN</option>
+        <option value="inferior">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_INFERIOR</option>
+        <option value="inferior_equal">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_INFERIOR_EQUAL</option>
+        <option value="superior">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_SUPERIOR</option>
+        <option value="superior_equal">PLG_EMUNDUSCUSTOMACTIONS_FIELD_OPERATOR_SUPERIOR_EQUAL</option>
     </field>
     <field name="targeted_value" type="text" label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_LABEL"
            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_TARGETED_VALUE_DESC"/>

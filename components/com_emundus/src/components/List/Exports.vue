@@ -119,11 +119,11 @@ export default {
 
 <template>
 	<section id="default-exports" class="tw-flex tw-gap-4">
-		<div class="tw-flex tw-items-center tw-gap-2">
+		<div v-if="multipleExportsPopover.length > 0">
+			<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('EXPORT') }}</label>
 			<popover
-				v-if="multipleExportsPopover.length > 0"
 				:button="translate('EXPORT')"
-				:button-class="'tw-bg-white tw-border tw-h-[38px] hover:tw-border-form-border-hover tw-rounded-form'"
+				:button-class="'tw-btn-secondary tw-h-form'"
 				:icon="'keyboard_arrow_down'"
 				:position="'bottom-left'"
 				:popoverContentStyle="{ width: 'max-content' }"

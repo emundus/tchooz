@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Création d'une requête de signature">
+        <message>
+            <![CDATA[Créer une requête de signature.]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

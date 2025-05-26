@@ -31,20 +31,27 @@ export class FetchClient {
 		}
 
 		return fetch(url, options)
-			.then((response) => {
+			.then(async (response) => {
 				if (response.ok) {
 					return response.json();
 				} else {
-					throw new Error(
-						'An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.',
-					);
+					let errorMessage = 'An error occurred.';
+					try {
+						const errorData = await response.json();
+						errorMessage = errorData.message || JSON.stringify(errorData);
+					} catch (e) {
+						try {
+							errorMessage = await response.text();
+						} catch (_) {}
+					}
+					throw new Error(errorMessage);
 				}
 			})
 			.then((data) => {
 				return data;
 			})
 			.catch((error) => {
-				throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+				throw new Error(error.message);
 			});
 	}
 

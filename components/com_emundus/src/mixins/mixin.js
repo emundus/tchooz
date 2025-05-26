@@ -62,7 +62,7 @@ var mixin = {
 
 			return html.replace(/<(?:.|\n)*?>/gm, '');
 		},
-		getUserNameById: function (id) {
+		getUserNameById: async function (id) {
 			let completeName = '';
 			id = parseInt(id);
 
@@ -72,12 +72,11 @@ var mixin = {
 				if (user) {
 					completeName = user.firstname + ' ' + user.lastname;
 				} else {
-					userService.getUserNameById(id).then((data) => {
-						if (data.status && data.user.user_id == id) {
-							completeName = data.user.firstname + ' ' + data.user.lastname;
-							userStore.setUsers([data.user]);
-						}
-					});
+					const data = await userService.getUserNameById(id);
+					if (data.status && data.user.user_id == id) {
+						completeName = data.user.firstname + ' ' + data.user.lastname;
+						userStore.addUser(data.user);
+					}
 				}
 			}
 

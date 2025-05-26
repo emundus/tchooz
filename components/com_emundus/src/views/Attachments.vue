@@ -82,7 +82,7 @@
 								<input class="attachment-check" type="checkbox" @change="updateAllCheckedAttachments" />
 							</th>
 							<th v-if="columns.includes('name')" id="name" @click="orderBy('value')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_NAME') }}</span>
+								<label class="tw-cursor-pointer tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_NAME') }}</label>
 								<span
 									v-if="sort.orderBy === 'value' && sort.order === 'asc'"
 									class="material-symbols-outlined tw-text-base"
@@ -94,21 +94,10 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</span>
-								<span
-									v-if="sort.orderBy === 'timedate' && sort.order === 'asc'"
-									class="material-symbols-outlined tw-text-base"
-									>arrow_upward</span
-								>
-								<span
-									v-if="sort.orderBy === 'timedate' && sort.order === 'desc'"
-									class="material-symbols-outlined tw-text-base"
-									>arrow_downward</span
-								>
-							</th>
 							<th v-if="columns.includes('desc')" id="desc" class="desc" @click="orderBy('upload_description')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION') }}</span>
+								<label class="tw-cursor-pointer tw-font-medium">{{
+									translate('COM_EMUNDUS_ATTACHMENTS_DESCRIPTION')
+								}}</label>
 								<span
 									v-if="sort.orderBy === 'upload_description' && sort.order === 'asc'"
 									class="material-symbols-outlined tw-text-base"
@@ -121,7 +110,9 @@
 								>
 							</th>
 							<th v-if="columns.includes('category')" id="category" class="category" @click="orderBy('category')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}</span>
+								<label class="tw-cursor-pointer tw-font-medium">{{
+									translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY')
+								}}</label>
 								<span
 									v-if="sort.orderBy === 'category' && sort.order === 'asc'"
 									class="material-symbols-outlined tw-text-base"
@@ -134,7 +125,7 @@
 								>
 							</th>
 							<th v-if="columns.includes('status')" id="status" class="status" @click="orderBy('is_validated')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}</span>
+								<label class="tw-cursor-pointer tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_CHECK') }}</label>
 								<span
 									v-if="sort.orderBy === 'is_validated' && sort.order === 'asc'"
 									class="material-symbols-outlined tw-text-base"
@@ -146,8 +137,25 @@
 									>arrow_downward</span
 								>
 							</th>
+							<th v-if="columns.includes('date')" id="date" class="date" @click="orderBy('timedate')">
+								<label class="tw-cursor-pointer tw-font-medium">{{
+									translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE')
+								}}</label>
+								<span
+									v-if="sort.orderBy === 'timedate' && sort.order === 'asc'"
+									class="material-symbols-outlined tw-text-base"
+									>arrow_upward</span
+								>
+								<span
+									v-if="sort.orderBy === 'timedate' && sort.order === 'desc'"
+									class="material-symbols-outlined tw-text-base"
+									>arrow_downward</span
+								>
+							</th>
 							<th v-if="canSee && columns.includes('user')" id="user" @click="orderBy('user_id')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}</span>
+								<label class="tw-cursor-pointer tw-font-medium">{{
+									translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY')
+								}}</label>
 								<span
 									v-if="sort.orderBy === 'user_id' && sort.order === 'asc'"
 									class="material-symbols-outlined tw-text-base"
@@ -159,21 +167,10 @@
 									>arrow_downward</span
 								>
 							</th>
-							<th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}</span>
-								<span
-									v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'"
-									class="material-symbols-outlined tw-text-base"
-									>arrow_upward</span
-								>
-								<span
-									v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'"
-									class="material-symbols-outlined tw-text-base"
-									>arrow_downward</span
-								>
-							</th>
 							<th v-if="columns.includes('modified')" id="modified" class="date" @click="orderBy('modified')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}</span>
+								<label class="tw-cursor-pointer tw-font-medium">{{
+									translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE')
+								}}</label>
 								<span
 									v-if="sort.orderBy === 'modified' && sort.order === 'asc'"
 									class="material-symbols-outlined tw-text-base"
@@ -185,11 +182,29 @@
 									>arrow_downward</span
 								>
 							</th>
+							<th v-if="canSee && columns.includes('modified_by')" id="modified_by" @click="orderBy('modified_by')">
+								<label class="tw-cursor-pointer tw-font-medium">{{
+									translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY')
+								}}</label>
+								<span
+									v-if="sort.orderBy === 'modified_by' && sort.order === 'asc'"
+									class="material-symbols-outlined tw-text-base"
+									>arrow_upward</span
+								>
+								<span
+									v-if="sort.orderBy === 'modified_by' && sort.order === 'desc'"
+									class="material-symbols-outlined tw-text-base"
+									>arrow_downward</span
+								>
+							</th>
+							<th v-if="sign && columns.includes('sign')" id="sign" class="sign" @click="orderBy('sign')">
+								<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_SIGNERS') }}</label>
+							</th>
 							<th v-if="columns.includes('permissions')" id="permissions" class="permissions">
-								{{ translate('COM_EMUNDUS_ATTACHMENTS_PERMISSIONS') }}
+								<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_PERMISSIONS') }}</label>
 							</th>
 							<th v-if="sync && columns.includes('sync')" id="sync" class="sync" @click="orderBy('sync')">
-								<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SYNC') }}</span>
+								<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_SYNC') }}</label>
 							</th>
 						</tr>
 					</thead>
@@ -202,6 +217,7 @@
 							:checkedAttachmentsProp="checkedAttachments"
 							:canUpdate="canUpdate"
 							:sync="sync"
+							:sign="sign"
 							:canSee="canSee"
 							@open-modal="openModal(attachment)"
 							@update-status="updateStatus"
@@ -251,36 +267,46 @@
 							<span class="material-symbols-outlined">open_in_new</span>
 							<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_IN_GED') }}</span>
 						</a>
-						<a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-mr-6">
+						<a download v-if="canDownload" :href="attachmentPath" class="download btn-icon-text tw-btn-primary tw-mr-6">
 							<span class="material-symbols-outlined"> file_download </span>
 							<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_LINK_TO_DOWNLOAD') }}</span>
 						</a>
-						<div class="prev-next-attachments tw-mr-2 tw-flex tw-items-center tw-justify-between">
-							<div
-								class="prev tw-mr-1 tw-flex tw-items-center"
-								:class="{ active: selectedAttachmentPosition > 0 }"
-								@click="changeAttachment(selectedAttachmentPosition - 1, true)"
-							>
-								<span class="material-symbols-outlined"> navigate_before </span>
-							</div>
-							<span class="lvl">{{ selectedAttachmentPosition + 1 }} /{{ displayedAttachments.length }}</span>
-							<div
-								class="next tw-ml-1 tw-flex tw-items-center"
-								:class="{
-									active: selectedAttachmentPosition < displayedAttachments.length - 1,
-								}"
-								@click="changeAttachment(selectedAttachmentPosition + 1)"
-							>
-								<span class="material-symbols-outlined"> navigate_next </span>
-							</div>
-						</div>
-						<span class="material-symbols-outlined tw-cursor-pointer" @click="closeModal">close</span>
+						<ul class="pagination pagination-sm !tw-m-0 tw-flex tw-items-center tw-gap-1">
+							<li class="tw-flex">
+								<a
+									class="tw-flex tw-cursor-pointer tw-items-center"
+									:class="{ active: selectedAttachmentPosition > 0 }"
+									@click="changeAttachment(selectedAttachmentPosition - 1, true)"
+								>
+									<span class="material-symbols-outlined">navigate_before</span>
+								</a>
+							</li>
+							<li class="active">
+								<a class="!tw-w-auto !tw-rounded-coordinator"
+									>{{ selectedAttachmentPosition + 1 }}/{{ displayedAttachments.length }}</a
+								>
+							</li>
+							<li class="tw-flex">
+								<a
+									class="tw-flex tw-cursor-pointer tw-items-center"
+									:class="{
+										active: selectedAttachmentPosition < displayedAttachments.length - 1,
+									}"
+									@click="changeAttachment(selectedAttachmentPosition + 1)"
+								>
+									<span class="material-symbols-outlined"> navigate_next </span>
+								</a>
+							</li>
+						</ul>
+						<span class="material-symbols-outlined tw-ml-6 tw-cursor-pointer tw-text-neutral-900" @click="closeModal"
+							>close</span
+						>
 					</div>
 				</div>
 				<transition :name="slideTransition" @before-leave="beforeLeaveSlide">
 					<div
 						v-if="!modalLoading && displayedUser.user_id && displayedFnum"
-						class="modal-body tw-flex tw-items-center"
+						class="modal-body tw-flex !tw-w-full tw-items-center"
 						:class="{ 'only-preview': onlyPreview }"
 					>
 						<AttachmentPreview
@@ -296,9 +322,11 @@
 							:columns="$props.columns"
 							:is_applicant="$props.is_applicant"
 							:is-displayed="!onlyPreview"
+							:sign="sign"
 							@closeModal="closeModal"
 							@saveChanges="updateAttachment"
 							@update-displayed="toggleOnlyPreview"
+							@change-attachment="updateSelectedAttachment"
 						></AttachmentEdit>
 					</div>
 				</transition>
@@ -318,6 +346,7 @@ import attachmentService from '@/services/attachment.js';
 import userService from '@/services/user.js';
 import fileService from '@/services/file.js';
 import syncService from '@/services/sync.js';
+import settingsService from '@/services/settings.js';
 
 import mixin from '../mixins/mixin.js';
 import Swal from 'sweetalert2';
@@ -365,6 +394,7 @@ export default {
 					'modified_by',
 					'modified',
 					'permissions',
+					'signed_status',
 					'sync',
 				];
 			},
@@ -406,6 +436,7 @@ export default {
 			changeFileEvent: null,
 			sync: false,
 			syncSelectedPreview: null,
+			sign: false,
 			exportLink: '',
 			search: '',
 			category: 'all',
@@ -430,6 +461,16 @@ export default {
 			.catch((error) => {
 				console.log(error);
 				this.sync = false;
+			});
+
+		settingsService
+			.checkAddonStatus('numeric_sign')
+			.then((response) => {
+				this.sign = response.data.enabled;
+			})
+			.catch((error) => {
+				console.log(error);
+				this.sign = false;
 			});
 	},
 	mounted() {
@@ -723,6 +764,12 @@ export default {
 			setTimeout(() => {
 				this.modalLoading = false;
 			}, 500);
+		},
+		updateSelectedAttachment(attachment_id) {
+			const selectedAttachmentPosition = this.displayedAttachments.findIndex(
+				(attachment) => attachment.aid == attachment_id,
+			);
+			this.changeAttachment(selectedAttachmentPosition);
 		},
 		resetOrder() {
 			this.sort = { last: '', order: '', orderBy: '' };
@@ -1091,7 +1138,6 @@ export default {
 
 	.wrapper {
 		margin: 20px;
-		width: calc(100% - 40px);
 
 		&.loading {
 			min-height: 50vh;
@@ -1306,5 +1352,38 @@ export default {
 
 #add-document-section {
 	justify-content: center;
+}
+
+.pagination li a {
+	background: hsl(from var(--em-profile-color) h s l / 15%);
+	border: none;
+	color: var(--em-profile-color) !important;
+	border-radius: var(--em-applicant-br);
+	padding: 5px 10px;
+	font-size: 12px;
+	height: 30px;
+	width: 30px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	text-decoration: unset;
+}
+.pagination li.active a {
+	background: var(--em-profile-color);
+	color: var(--neutral-0) !important;
+}
+.pagination li:first-child a,
+.pagination li:last-child a {
+	background: none;
+	border-radius: var(--em-applicant-br);
+}
+.pagination li a:hover {
+	background: hsl(from var(--em-profile-color) h s l / 30%);
+}
+.pagination li a.disabled:hover {
+	background: none;
+}
+.pagination li a.disabled span {
+	color: var(--neutral-500) !important;
 }
 </style>

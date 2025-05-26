@@ -219,9 +219,7 @@ p,
 }
 
 .gantry:not(.applicant-form):not(.files-board) {
-  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings, &.view-events,
-
-, & . view-emundus . layout-history {
+  &.view-campaigns, &.view-form.com_emundus, &.view-emails, &.view-settings, &.view-events, &.view-sign, &.view-emundus .layout-history {
   #g-container-main {
     padding-top: 26px !important;
 
@@ -3931,6 +3929,7 @@ ul.unstyled.em-linkForgot li a {
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-form,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-workflows,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-events,
+.gantry:not(.applicant-form):not(.files-board).com_emundus.view-sign,
 .gantry:not(.applicant-form):not(.files-board).com_emundus.view-emundus.layout-history,
 {
   #g-container-main {
@@ -8203,6 +8202,7 @@ tbody .el-table__row:nth-child(odd) {
 
 .swal2-popup.swal2-modal.swal2-show #swal2-title {
   text-align: center;
+  margin-bottom: 32px;
 }
 
 .view-login {

@@ -157,8 +157,8 @@
 											'hover:tw-underline': editAction,
 										}"
 										:title="item.label[params.shortlang]"
-										>{{ item.label[params.shortlang] }}</span
-									>
+										v-html="item.label[params.shortlang]"
+									></span>
 								</td>
 								<td
 									class="columns tw-p-4"
@@ -186,7 +186,7 @@
 									<div v-else-if="column.hasOwnProperty('long_value')">
 										<span
 											@click="displayLongValue($event, column.long_value)"
-											class="tw-mb-2 tw-mt-2"
+											class="tw-mb-2 tw-mt-2 tw-block tw-w-fit"
 											:class="column.classes"
 											v-html="column.value"
 										></span>
@@ -229,7 +229,7 @@
 												v-for="action in iconActions"
 												:key="action.name"
 												v-show="action.display"
-												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-p-[0.5rem]"
 												:class="[
 													action.buttonClasses,
 													{
@@ -379,6 +379,7 @@ import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
 import Import from '@/components/Campaigns/Import.vue';
+import SaveRequest from '@/views/Sign/SaveRequest.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -387,6 +388,9 @@ import { FetchClient } from '../services/fetchClient.js';
 
 /* Stores */
 import { useGlobalStore } from '@/stores/global.js';
+
+/* Mixins */
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'List',
@@ -403,6 +407,7 @@ export default {
 		EditSlot,
 		Import,
 		AssociateUser,
+		SaveRequest,
 	},
 	props: {
 		defaultLists: {
@@ -418,6 +423,7 @@ export default {
 			default: null,
 		},
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			loading: {
@@ -430,6 +436,7 @@ export default {
 				EditSlot,
 				AssociateUser,
 				Import,
+				SaveRequest,
 			},
 
 			lists: {},
@@ -842,6 +849,8 @@ export default {
 						icon: 'warning',
 						title: this.translate(action.label),
 						text: this.translate(action.confirm),
+						input: action.input ? action.input : null,
+						inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
 						showCancelButton: true,
 						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
 						cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
@@ -853,7 +862,10 @@ export default {
 							actions: 'em-swal-double-action',
 						},
 					}).then((result) => {
-						if (result.value) {
+						if (result.isConfirmed) {
+							if (action.input) {
+								parameters['input'] = result.value;
+							}
 							this.executeAction(url, parameters, action.method);
 						}
 					});
@@ -983,7 +995,11 @@ export default {
 				addLoader();
 
 				if (method === 'get') {
-					response = await fetchClient.get(task, data);
+					response = await fetchClient.get(task, data).catch((error) => {
+						console.error(error.message);
+						this.alertError('COM_EMUNDUS_ERROR', error.message);
+						removeLoader();
+					});
 				} else if (method === 'post') {
 					response = await fetchClient.post(task, data);
 				} else if (method === 'delete') {
@@ -1023,10 +1039,10 @@ export default {
 
 						this.getListItems();
 					} else {
-						if (response.msg) {
+						if (response.msg || response.message) {
 							Swal.fire({
 								icon: 'error',
-								title: this.translate(response.msg),
+								title: this.translate(response.msg || response.message),
 								reverseButtons: true,
 								customClass: {
 									title: 'em-swal-title',

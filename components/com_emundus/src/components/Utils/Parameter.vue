@@ -27,6 +27,7 @@
 		</span>
 
 		<div
+			v-show="!parameter.hidden"
 			name="input-field"
 			class="tw-flex tw-items-center"
 			:class="{
@@ -341,7 +342,7 @@ export default {
 			required: false,
 		},
 	},
-	emits: ['valueUpdated', 'needSaving'],
+	emits: ['valueUpdated', 'needSaving', 'ajaxOptionsLoaded'],
 	data() {
 		return {
 			initValue: null,
@@ -447,7 +448,11 @@ export default {
 		addOption(newOption) {
 			if (this.multiselectOptions.taggable) {
 				// Check if newOption is already in the list
-				if (this.multiOptions.find((option) => option.name === newOption)) {
+				if (
+					this.multiOptions &&
+					this.multiOptions.length > 0 &&
+					this.multiOptions.find((option) => option.name === newOption)
+				) {
 					return false;
 				}
 
@@ -518,10 +523,16 @@ export default {
 						};
 
 						settingsService
-							.getAsyncOptions(this.$props.multiselectOptions.asyncRoute, data, { signal })
+							.getAsyncOptions(
+								this.$props.multiselectOptions.asyncRoute,
+								data,
+								{ signal },
+								this.$props.multiselectOptions.asyncController,
+							)
 							.then((response) => {
 								this.multiOptions = response.data;
 								this.isLoading = false;
+								this.$emit('ajaxOptionsLoaded', this.multiOptions, this.parameter.param);
 								resolve(true);
 							});
 					}, 500);
@@ -585,12 +596,7 @@ export default {
 	watch: {
 		value: {
 			handler: function (val, oldVal) {
-				if (
-					this.parameter.type !== 'multiselect' ||
-					(this.parameter.type === 'multiselect' && !this.multiselectOptions.taggable)
-				) {
-					this.parameter.value = val;
-				}
+				this.parameter.value = val;
 
 				if (this.parameter.splitField) {
 					this.parameter.concatValue = val + this.parameter.splitChar + this.valueSecondary;

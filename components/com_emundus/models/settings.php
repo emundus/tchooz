@@ -14,23 +14,25 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Mail\MailerFactoryInterface;
-use Joomla\CMS\MVC\Model\ListModel;
-use Joomla\CMS\Uri\Uri;
-use Joomla\Registry\Registry;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\Exception\MailDisabledException;
-use PHPMailer\PHPMailer\Exception as phpMailerException;
-use Symfony\Component\Yaml\Yaml;
-use \Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
-use Tchooz\Entities\Settings\AddonEntity;
-use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Database\ParameterType;
+use Joomla\Registry\Registry;
+use PHPMailer\PHPMailer\Exception as phpMailerException;
+use Smalot\PdfParser\Parser;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
+use Symfony\Component\Yaml\Yaml;
+use Tchooz\Entities\Settings\AddonEntity;
 
 class EmundusModelSettings extends ListModel
 {
@@ -140,10 +142,10 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$files = $this->db->loadResult();
 
-				$status_for_send = $emConfig->get('status_for_send',0);
+				$status_for_send     = $emConfig->get('status_for_send', 0);
 				$default_send_status = $emConfig->get('default_send_status');
 
-				if ($files > 0 || in_array($statu->step,[$status_for_send,$default_send_status]))
+				if ($files > 0 || in_array($statu->step, [$status_for_send, $default_send_status]))
 				{
 					$statu->edit = 0;
 				}
@@ -520,7 +522,7 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$result = $this->db->loadResult();
 
-			if(empty($result))
+			if (empty($result))
 			{
 				$query->clear()
 					->update('#__emundus_setup_action_tag')
@@ -531,6 +533,7 @@ class EmundusModelSettings extends ListModel
 
 				return $this->db->execute();
 			}
+
 			return false;
 		}
 		catch (Exception $e)
@@ -747,11 +750,12 @@ class EmundusModelSettings extends ListModel
 			->allowRelativeMedias(true)
 			->forceHttpsUrls(true);
 
-		if (!class_exists('HtmlSanitizerSingleton')) {
+		if (!class_exists('HtmlSanitizerSingleton'))
+		{
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance($config);
-		$content = $htmlSanitizer->sanitizeFor('body', $content);
+		$content       = $htmlSanitizer->sanitizeFor('body', $content);
 
 		try
 		{
@@ -1618,7 +1622,7 @@ class EmundusModelSettings extends ListModel
 			$query->select('id')
 				->from($this->db->quoteName('#__content'))
 				->where($this->db->quoteName('featured') . ' = 1')
-				->andWhere($this->db->quoteName('state').' IN (0,1)');
+				->andWhere($this->db->quoteName('state') . ' IN (0,1)');
 			$this->db->setQuery($query);
 			$article_id = $this->db->loadResult();
 		}
@@ -2099,9 +2103,10 @@ class EmundusModelSettings extends ListModel
 				case 'emundus':
 					if (array_key_exists($param, $params['emundus']))
 					{
-						if ($param === 'limit_files_status') {
+						if ($param === 'limit_files_status')
+						{
 							$value = array_map(function ($item) {
-								return (int)$item->step;
+								return (int) $item->step;
 							}, $value);
 						}
 
@@ -2156,7 +2161,7 @@ class EmundusModelSettings extends ListModel
 
 		if ($updated)
 		{
-			$user = Factory::getApplication()->getIdentity();
+			$user           = Factory::getApplication()->getIdentity();
 			$this->userID   = $user->id;
 			$this->userName = $user->name;
 			if ($value !== "")
@@ -2366,7 +2371,9 @@ class EmundusModelSettings extends ListModel
 				if ($custom_config == 1)
 				{
 					$config['smtppass'] = $emConfig->get('custom_email_smtppass');
-				} else {
+				}
+				else
+				{
 					$config['smtppass'] = $emConfig->get('default_email_smtppass');
 				}
 			}
@@ -2525,11 +2532,12 @@ class EmundusModelSettings extends ListModel
 			$message = json_decode($action_log->message, true);
 			if (!empty($message['retry']) && $message['retry'] === true)
 			{
-				if (!empty($message['retry_event'])) {
+				if (!empty($message['retry_event']))
+				{
 					$event_parameters = $message['retry_event_parameters'] ?? [];
 
 					PluginHelper::importPlugin('emundus');
-					$event = new GenericEvent($message['retry_event'], $event_parameters);
+					$event      = new GenericEvent($message['retry_event'], $event_parameters);
 					$dispatcher = Factory::getApplication()->getDispatcher();
 					$dispatcher->dispatch($message['retry_event'], $event);
 
@@ -2558,7 +2566,8 @@ class EmundusModelSettings extends ListModel
 	{
 		$applicants = [];
 
-		try {
+		try
+		{
 			$query = $this->db->getQuery(true);
 
 			$query->clear()
@@ -2568,7 +2577,8 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$campaigns = $this->db->loadColumn();
 
-			if (empty($campaigns)) {
+			if (empty($campaigns))
+			{
 				$query->clear()
 					->select('programme')
 					->from($this->db->quoteName('#__emundus_setup_events_repeat_program'))
@@ -2576,7 +2586,8 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$programs = $this->db->loadColumn();
 
-				if (!empty($programs)) {
+				if (!empty($programs))
+				{
 					$query->clear()
 						->select('esc.id')
 						->from($this->db->quoteName('#__emundus_setup_campaigns', 'esc'))
@@ -2587,7 +2598,8 @@ class EmundusModelSettings extends ListModel
 				}
 			}
 
-			if (!empty($campaigns)) {
+			if (!empty($campaigns))
+			{
 				$query->clear()
 					->select('ecc.id, ecc.applicant_id, esc.label')
 					->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
@@ -2597,7 +2609,8 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$candidatures = $this->db->loadObjectList();
 
-				if (!empty($candidatures)) {
+				if (!empty($candidatures))
+				{
 					$ccIds = array_column($candidatures, 'id');
 
 					$query->clear()
@@ -2610,31 +2623,37 @@ class EmundusModelSettings extends ListModel
 					$excludedIds = $this->db->loadColumn();
 
 
-					if (!empty($excludedIds)) {
-						if (!empty($applicantsExceptions)) {
+					if (!empty($excludedIds))
+					{
+						if (!empty($applicantsExceptions))
+						{
 							$excludedIds = array_diff($excludedIds, $applicantsExceptions);
 						}
 
 						$candidatures = array_filter($candidatures, fn($c) => !in_array($c->id, $excludedIds));
 					}
 
-					if (!empty($candidatures)) {
+					if (!empty($candidatures))
+					{
 						$applicantIds = array_column($candidatures, 'applicant_id');
 						$query->clear()
 							->select('user_id, firstname, lastname')
 							->from($this->db->quoteName('#__emundus_users'))
 							->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $applicantIds) . ')');
-						if (!empty($search_query)) {
+						if (!empty($search_query))
+						{
 							$query->where('CONCAT(' . $this->db->quoteName('firstname') . ', " ", ' . $this->db->quoteName('lastname') . ') LIKE ' . $this->db->quote('%' . $search_query . '%'));
 						}
 						$this->db->setQuery($query);
 						$users = $this->db->loadObjectList('user_id');
 
-						foreach ($candidatures as $candidature) {
-							if (isset($users[$candidature->applicant_id])) {
+						foreach ($candidatures as $candidature)
+						{
+							if (isset($users[$candidature->applicant_id]))
+							{
 								$applicants[] = (object) [
 									'value' => $candidature->id,
-									'name' => $users[$candidature->applicant_id]->lastname . ' ' . $users[$candidature->applicant_id]->firstname . ' - ' . $candidature->label
+									'name'  => $users[$candidature->applicant_id]->lastname . ' ' . $users[$candidature->applicant_id]->firstname . ' - ' . $candidature->label
 								];
 							}
 						}
@@ -2644,7 +2663,9 @@ class EmundusModelSettings extends ListModel
 					}
 				}
 			}
-		} catch (Exception $e) {
+		}
+		catch (Exception $e)
+		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
@@ -2752,10 +2773,13 @@ class EmundusModelSettings extends ListModel
 		{
 			$query = $this->db->getQuery(true);
 
-			if (empty($search_query)) {
+			if (empty($search_query))
+			{
 				$query->select('esp.id as value, esp.label as name')
 					->from($this->db->quoteName('#__emundus_setup_programmes', 'esp'));
-			} else {
+			}
+			else
+			{
 				$current_lang_tag = Factory::getApplication()->getLanguage()->getTag();
 				$query->clear()
 					->select($this->db->quoteName('lang_id'))
@@ -2783,8 +2807,9 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query, 0, $limit);
 			$programs = $this->db->loadObjectList();
 
-			$programs = array_map(function($program) {
+			$programs = array_map(function ($program) {
 				$program->name = !empty($program->translated_label) ? $program->translated_label : $program->name;
+
 				return $program;
 			}, $programs);
 		}
@@ -2877,15 +2902,8 @@ class EmundusModelSettings extends ListModel
 		$mainframe = Factory::getApplication();
 		$updated   = false;
 
-		if (empty($user))
-		{
-			$user = $mainframe->getIdentity();
-		}
-
 		if (!empty($app_id) && !empty($setup))
 		{
-			$query = $this->db->getQuery(true);
-
 			try
 			{
 				$app = $this->getApp($app_id);
@@ -2906,6 +2924,8 @@ class EmundusModelSettings extends ListModel
 						case 'ovh':
 							$updated = $this->setupOvh($app, $setup);
 							break;
+						case 'yousign':
+							$updated = $this->setupYousign($app, $setup);
 						default:
 							break;
 					}
@@ -2915,6 +2935,36 @@ class EmundusModelSettings extends ListModel
 			{
 				Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
+		}
+
+		return $updated;
+	}
+
+	public function updateConsumptions(string $type, string|array $consumptions): bool
+	{
+		$updated = false;
+
+		try
+		{
+			if (!empty($type))
+			{
+				if (is_array($consumptions))
+				{
+					$consumptions = json_encode($consumptions);
+				}
+
+				$query = $this->db->getQuery(true);
+
+				$query->update($this->db->quoteName('#__emundus_setup_sync'))
+					->set($this->db->quoteName('consumptions') . ' = ' . $this->db->quote($consumptions))
+					->where($this->db->quoteName('type') . ' = ' . $this->db->quote($type));
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;
@@ -3065,7 +3115,7 @@ class EmundusModelSettings extends ListModel
 					'method'           => 'post',
 					'client_id'        => '',
 					'client_secret'    => '',
-					'login' 		   => $setup->login,
+					'login'            => $setup->login,
 					'password'         => EmundusHelperFabrik::encryptDatas($setup->password),
 					'login_attribute'  => 'username',
 					'tenant_id'        => '',
@@ -3085,12 +3135,12 @@ class EmundusModelSettings extends ListModel
 		}
 		else
 		{
-			$config = json_decode($app->config, true);
-			$config['base_url'] = $setup->base_url;
-			$config['api_key'] = $setup->api_key;
-			$config['authentication']['login']     = $setup->login;
+			$config                               = json_decode($app->config, true);
+			$config['base_url']                   = $setup->base_url;
+			$config['api_key']                    = $setup->api_key;
+			$config['authentication']['login']    = $setup->login;
 			$config['authentication']['password'] = EmundusHelperFabrik::encryptDatas($setup->password);
-			$config['authentication']['route']  = 'api/init/' . $setup->api_key . '/Ammon?languageCode=FR&select=User';
+			$config['authentication']['route']    = 'api/init/' . $setup->api_key . '/Ammon?languageCode=FR&select=User';
 		}
 
 		try
@@ -3103,10 +3153,11 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$updated = $this->db->execute();
 
-			if ($updated) {
+			if ($updated)
+			{
 				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 				$columns = [
-					['name' => 'created_by', 'type' => 'INT',  'null' => 0],
+					['name' => 'created_by', 'type' => 'INT', 'null' => 0],
 					['name' => 'created_date', 'type' => 'DATETIME', 'null' => 0],
 					['name' => 'updated_by', 'type' => 'INT', 'null' => 1],
 					['name' => 'updated_date', 'type' => 'DATETIME', 'null' => 1],
@@ -3144,24 +3195,30 @@ class EmundusModelSettings extends ListModel
 	{
 		$updated = false;
 
-		if (empty($app->config) || $app->config == '{}') {
+		if (empty($app->config) || $app->config == '{}')
+		{
 			$config = [
 				'authentication' => [
-					'client_id'    => isset($setup->client_id) ?? '',
+					'client_id'     => isset($setup->client_id) ?? '',
 					'client_secret' => isset($setup->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->client_secret) : '',
-					'consumer_key' => isset($setup->consumer_key) ?? '',
+					'consumer_key'  => isset($setup->consumer_key) ?? '',
 				]
 			];
-		} else {
+		}
+		else
+		{
 			$config = json_decode($app->config, true);
 
-			if (isset($setup->client_id)) {
+			if (isset($setup->client_id))
+			{
 				$config['authentication']['client_id'] = $setup->client_id;
 			}
-			if (isset($setup->client_secret)) {
+			if (isset($setup->client_secret))
+			{
 				$config['authentication']['client_secret'] = EmundusHelperFabrik::encryptDatas($setup->client_secret);
 			}
-			if (isset($setup->consumer_key)) {
+			if (isset($setup->consumer_key))
+			{
 				$config['authentication']['consumer_key'] = $setup->consumer_key;
 			}
 		}
@@ -3176,7 +3233,8 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$updated = $this->db->execute();
 
-			if ($updated) {
+			if ($updated)
+			{
 				require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
 				EmundusHelperUpdate::enableEmundusPlugins('sendsms', 'task');
 
@@ -3316,7 +3374,8 @@ class EmundusModelSettings extends ListModel
 				//
 			}
 
-			if ($app->type === 'ovh') {
+			if ($app->type === 'ovh')
+			{
 				// TODO: make sure action id sms is created
 			}
 		}
@@ -3344,7 +3403,8 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$updated = $this->db->execute();
 
-				if($updated) {
+				if ($updated)
+				{
 					$query->clear()
 						->select('type')
 						->from($this->db->quoteName('#__emundus_setup_sync'))
@@ -3352,13 +3412,23 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$app_type = $this->db->loadResult();
 
-					if($app_type === 'ovh')
+					if ($app_type === 'ovh')
 					{
 						// Enable scheduler task
 						$query->clear()
 							->update($this->db->quoteName('#__scheduler_tasks'))
 							->set($this->db->quoteName('state') . ' = ' . $enabled)
 							->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plg_task_sms_task_get'));
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+					if ($app_type === 'yousign')
+					{
+						// Enable scheduler task
+						$query->clear()
+							->update($this->db->quoteName('#__scheduler_tasks'))
+							->set($this->db->quoteName('state') . ' = ' . $enabled)
+							->where($this->db->quoteName('type') . ' = ' . $this->db->quote('yousign.api'));
 						$this->db->setQuery($query);
 						$this->db->execute();
 					}
@@ -3377,14 +3447,16 @@ class EmundusModelSettings extends ListModel
 	{
 		$saved = false;
 
-		if (!empty($addon)) {
-			switch($addon['type']) {
+		if (!empty($addon))
+		{
+			switch ($addon['type'])
+			{
 				// todo: add more addons
 				case 'sms':
 					$config = [
-						'enabled' => $addon['enabled'],
+						'enabled'   => $addon['enabled'],
 						'displayed' => $addon['displayed'],
-						'params' => $addon['configuration']
+						'params'    => $addon['configuration']
 					];
 
 					$query = $this->db->createQuery();
@@ -3393,10 +3465,13 @@ class EmundusModelSettings extends ListModel
 						->set('value = ' . $this->db->quote(json_encode($config)))
 						->where('namekey = ' . $this->db->quote($addon['type']));
 
-					try {
+					try
+					{
 						$this->db->setQuery($query);
 						$saved = $this->db->execute();
-					} catch (Exception $e) {
+					}
+					catch (Exception $e)
+					{
 						Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
@@ -3468,7 +3543,8 @@ class EmundusModelSettings extends ListModel
 		{
 			$emConfig = ComponentHelper::getParams('com_emundus');
 
-			if (!class_exists('AddonEntity')) {
+			if (!class_exists('AddonEntity'))
+			{
 				require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Settings/AddonEntity.php');
 			}
 
@@ -3497,7 +3573,7 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$enabled = $this->db->loadResult();
 
-				$addon->setEnabled((bool)$enabled);
+				$addon->setEnabled((bool) $enabled);
 			}
 
 			$messenger_configuration                                      = [
@@ -3530,7 +3606,8 @@ class EmundusModelSettings extends ListModel
 
 			$this->db->setQuery($query);
 			$params = json_decode($this->db->loadResult(), true);
-			if ($params['displayed']) {
+			if ($params['displayed'])
+			{
 				$smsAddon->setEnabled($params['enabled'] ?? 0);
 				$smsAddon->setDisplayed(true);
 				$smsAddon->setConfiguration($params['params'] ?? []);
@@ -3630,11 +3707,11 @@ class EmundusModelSettings extends ListModel
 					}
 
 					// Publish emails
-					$emails = ['messenger_reminder','messenger_reminder_group'];
+					$emails = ['messenger_reminder', 'messenger_reminder_group'];
 					$query->clear()
 						->update($this->db->quoteName('#__emundus_setup_emails'))
 						->set('published = ' . $this->db->quote($enabled))
-						->where('lbl IN (' . implode(',',$this->db->quote($emails)) . ')');
+						->where('lbl IN (' . implode(',', $this->db->quote($emails)) . ')');
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
@@ -3723,7 +3800,9 @@ class EmundusModelSettings extends ListModel
 				}, $setup->messenger_notify_groups);
 
 				$setup->messenger_notify_groups = implode(',', $setup->messenger_notify_groups);
-			} else {
+			}
+			else
+			{
 				$setup->messenger_notify_groups = '';
 			}
 			if (!empty($setup->messenger_notify_users))
@@ -3733,7 +3812,9 @@ class EmundusModelSettings extends ListModel
 				}, $setup->messenger_notify_users);
 
 				$setup->messenger_notify_users = implode(',', $setup->messenger_notify_users);
-			} else {
+			}
+			else
+			{
 				$setup->messenger_notify_users = '';
 			}
 
@@ -3835,32 +3916,34 @@ class EmundusModelSettings extends ListModel
 							$task['next_execution'] = $this->calcNextExecution();
 						}
 
-						if($type == 'weekly') {
+						if ($type == 'weekly')
+						{
 							unset($execution_rules['interval-hours']);
 							unset($execution_rules['interval-minutes']);
 
-							$each_days = round(7/$times);
+							$each_days                        = round(7 / $times);
 							$execution_rules['rule-type']     = 'interval-days';
 							$execution_rules['interval-days'] = $each_days;
 
 							$cron_rules['type'] = 'interval';
-							$cron_rules['exp']  = 'P'.$each_days.'D';
+							$cron_rules['exp']  = 'P' . $each_days . 'D';
 
 							$task['next_execution'] = $this->calcNextExecution($each_days);
 						}
 
-						if($type == 'daily') {
+						if ($type == 'daily')
+						{
 							unset($execution_rules['interval-days']);
 							unset($execution_rules['interval-minutes']);
 
-							$each_hours = round(24/$times);
-							$execution_rules['rule-type']     = 'interval-hours';
+							$each_hours                        = round(24 / $times);
+							$execution_rules['rule-type']      = 'interval-hours';
 							$execution_rules['interval-hours'] = $each_hours;
 
 							$cron_rules['type'] = 'interval';
-							$cron_rules['exp']  = 'PT'.$each_hours.'H';
+							$cron_rules['exp']  = 'PT' . $each_hours . 'H';
 
-							$task['next_execution'] = $this->calcNextExecution($each_hours,'hour');
+							$task['next_execution'] = $this->calcNextExecution($each_hours, 'hour');
 						}
 						break;
 				}
@@ -3890,10 +3973,12 @@ class EmundusModelSettings extends ListModel
 		$now = new DateTime();
 
 		// Create a date for now at 12:00
-		if($cron_type === 'day')
+		if ($cron_type === 'day')
 		{
 			$todayAtNoon = (clone $now)->setTime(12, 0);
-		} else {
+		}
+		else
+		{
 			$todayAtNoon = (clone $now);
 		}
 
@@ -3917,7 +4002,8 @@ class EmundusModelSettings extends ListModel
 	{
 		$events = [];
 
-		if(empty($user_id)) {
+		if (empty($user_id))
+		{
 			$user_id = $this->app->getIdentity()->id;
 		}
 
@@ -3929,7 +4015,8 @@ class EmundusModelSettings extends ListModel
 			$m_programme = new EmundusModelProgramme;
 			$programs    = $m_programme->getUserPrograms($user_id);
 
-			if (!empty($programs)) {
+			if (!empty($programs))
+			{
 				$event_ids = [];
 				$query->clear()
 					->select('esc.id')
@@ -3939,7 +4026,7 @@ class EmundusModelSettings extends ListModel
 				$this->db->setQuery($query);
 				$campaigns = $this->db->loadColumn();
 
-				if(!empty($campaigns))
+				if (!empty($campaigns))
 				{
 					$query->clear()
 						->select('event')
@@ -3952,19 +4039,20 @@ class EmundusModelSettings extends ListModel
 
 				$query->clear()
 					->select('event')
-					->from($this->db->quoteName('#__emundus_setup_events_repeat_program','eserp'))
+					->from($this->db->quoteName('#__emundus_setup_events_repeat_program', 'eserp'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.id') . ' = ' . $this->db->quoteName('eserp.programme'))
 					->where($this->db->quoteName('esp.code') . ' IN (' . implode(',', $this->db->quote($programs)) . ')');
 				$this->db->setQuery($query);
-				$event_ids = array_merge($this->db->loadColumn(),$event_ids);
+				$event_ids = array_merge($this->db->loadColumn(), $event_ids);
 
-				if(!empty($event_ids))
+				if (!empty($event_ids))
 				{
 					$query->clear()
 						->select('ese.id as value, ese.name')
 						->from($this->db->quoteName('#__emundus_setup_events', 'ese'))
 						->where($this->db->quoteName('ese.id') . ' IN (' . implode(',', $event_ids) . ')');
-					if(!empty($search_query)) {
+					if (!empty($search_query))
+					{
 						$query->where($this->db->quoteName('ese.name') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
 					}
 					$query->group([$this->db->quoteName('ese.id'), $this->db->quoteName('ese.name')]);
@@ -3983,4 +4071,262 @@ class EmundusModelSettings extends ListModel
 		return $events;
 	}
 
+	public function setupYousign($app, $setup)
+	{
+		$updated = false;
+
+		$base_url = $setup->mode == 0 ? 'https://api-sandbox.yousign.app/v3' : 'https://api.yousign.app/v3';
+
+		if (empty($app->config) || $app->config == '{}')
+		{
+			$config = [
+				'base_url'       => $base_url,
+				'mode'           => $setup->mode,
+				'create_webhook' => $setup->create_webhook,
+				'authentication' => [
+					'type'          => 'bearer',
+					'token_storage' => 'database',
+					'token'         => EmundusHelperFabrik::encryptDatas($setup->token)
+				]
+			];
+		}
+		else
+		{
+			$config = json_decode($app->config, true);
+
+			$token = $setup->token;
+			// If token have only * characters do not update it
+			if (preg_match('/^\*+$/', $token))
+			{
+				$token = $config['authentication']['token'];
+			}
+			else
+			{
+				$token = EmundusHelperFabrik::encryptDatas($token);
+			}
+
+			$config['base_url']                = $base_url;
+			$config['authentication']['token'] = $token;
+			$config['create_webhook']          = $setup->create_webhook;
+			$config['mode']                    = $setup->mode;
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+
+			// Create scheduled task if not exists
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('jos_scheduler_tasks'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('yousign.api'));
+			$this->db->setQuery($query);
+			$task_id = $this->db->loadResult();
+
+			if (empty($task_id))
+			{
+				$execution_rules = [
+					'rule-type'        => 'interval-minutes',
+					'interval-minutes' => 30,
+					'exec-day'         => 01,
+					'exec-time'        => '12:00'
+				];
+				$cron_rules      = [
+					'type' => 'interval',
+					'exp'  => 'PT30M'
+				];
+
+				if (!class_exists('EmundusHelperUpdate'))
+				{
+					require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
+				}
+				EmundusHelperUpdate::createSchedulerTask('Yousign', 'yousign.api', $execution_rules, $cron_rules);
+			}
+			else
+			{
+				// Just enable it
+				$query->clear()
+					->update($this->db->quoteName('#__scheduler_tasks'))
+					->set($this->db->quoteName('state') . ' = 1')
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($task_id));
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	public function getAddonStatus(string $addon_type): array
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = :namekey')
+				->bind(':namekey', $addon_type);
+			$this->db->setQuery($query);
+			$result = $this->db->loadResult();
+
+			if (!empty($result))
+			{
+				$result = json_decode($result, true);
+				if (isset($result['enabled']))
+				{
+					$result['enabled']   = (bool) $result['enabled'];
+					$result['displayed'] = (bool) $result['displayed'];
+					$result['params']    = (array) $result['params'];
+				}
+			}
+			else
+			{
+				$result = [
+					'enabled'   => false,
+					'displayed' => false,
+					'params'    => []
+				];
+			}
+
+			return $result;
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			throw $e;
+		}
+	}
+
+	public function getFileInfosFromUploadId(int $upload_id): array
+	{
+		$infos = [];
+
+		try
+		{
+			// Get file path
+			$query = $this->db->getQuery(true);
+
+			$query->select('eu.id, eu.filename, ecc.applicant_id, eu.thumbnail')
+				->from($this->db->quoteName('#__emundus_uploads','eu'))
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature','ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('eu.fnum'))
+				->where($this->db->quoteName('eu.id') . ' = :upload_id')
+				->bind(':upload_id', $upload_id, ParameterType::INTEGER);
+			$this->db->setQuery($query);
+			$file = $this->db->loadObject();
+			
+			if(!empty($file->filename))
+			{
+				$file_path = JPATH_ROOT.'/images/emundus/files/'.$file->applicant_id.'/'.$file->filename;
+
+				// Check if file exists
+				if(file_exists($file_path))
+				{
+					if(empty($file->thumbnail))
+					{
+						try
+						{
+							$thumbnail_width = 200;
+
+							if (!extension_loaded('imagick'))
+							{
+								throw new Exception('Imagick extension is not loaded.');
+							}
+
+							$imagick = new Imagick();
+							$imagick->setResolution(150, 150);
+							$imagick->readImage($file_path . '[0]');
+							$imagick->setImageFormat('png');
+							$imagick->thumbnailImage($thumbnail_width, 0);
+
+							// Convert image to base64
+							$thumbnailData   = $imagick->getImageBlob();
+							$base64Thumbnail = base64_encode($thumbnailData);
+
+							$file->thumbnail = $base64Thumbnail;
+
+							// Move to tmp directory instead of database or redis
+							$this->db->updateObject('#__emundus_uploads', $file, 'id');
+						}
+						catch (Exception $e)
+						{
+							Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+							$base64Thumbnail = '';
+						}
+
+					}
+					else {
+						$base64Thumbnail = $file->thumbnail;
+					}
+
+					$infos['thumbnail'] = $base64Thumbnail;
+
+					// If pdf, get text content
+					if (pathinfo($file->filename, PATHINFO_EXTENSION) === 'pdf')
+					{
+						$parser = new Parser();
+						$pdf = $parser->parseFile($file_path);
+						$infos['pages_length'] = count($pdf->getPages());
+						$infos['text'] = $pdf->getText();
+					}
+
+					return $infos;
+				}
+				else {
+					throw new Exception('File not found: ' . $file_path);
+				}
+			}
+			else {
+				throw new Exception('File not found for upload ID: ' . $upload_id);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			throw $e;
+		}
+	}
+
+	public function updateWebhook($type, $secret_key): bool
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('id, config')
+				->from($this->db->quoteName('#__emundus_setup_sync'))
+				->where($this->db->quoteName('type') . ' = :type')
+				->bind(':type', $type);
+			$this->db->setQuery($query);
+			$sync = $this->db->loadObject();
+
+			if(!empty($sync->id))
+			{
+				$config = json_decode($sync->config, true);
+				$config['secret_key'] = EmundusHelperFabrik::encryptDatas($secret_key);
+				$sync->config = json_encode($config);
+
+				return $this->db->updateObject('#__emundus_setup_sync', $sync, 'id');
+			}
+			else {
+				throw new Exception('Sync not found for type: ' . $type);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			throw $e;
+		}
+	}
 }
