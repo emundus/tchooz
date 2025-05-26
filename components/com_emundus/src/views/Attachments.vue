@@ -252,6 +252,7 @@
 				:draggable="true"
 				@closed="closeModal"
 				:click-to-close="false"
+				:center="centerPreview"
 			>
 				<div class="modal-head tw-flex tw-w-full tw-items-center tw-justify-between">
 					<div id="actions-left" class="tw-flex tw-items-center tw-justify-start">
@@ -406,6 +407,10 @@ export default {
 		displayEdit: {
 			type: Boolean,
 			default: true,
+		},
+		centerPreview: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [mixin],
