@@ -216,13 +216,15 @@ class TransactionRepository
 
 		$query = $this->db->createQuery();
 
-		$old_transaction_status = null;
+		$old_data = [];
 
 		if (empty($transaction->getId())) {
 			$query->clear()
 				->insert($this->db->quoteName('jos_emundus_payment_transaction'))
 				->columns($this->db->quoteName(['cart_id', 'amount', 'currency_id', 'payment_method_id', 'status', 'synchronizer_id', 'created_at', 'created_by', 'updated_at', 'updated_by', 'step_id', 'data', 'fnum']))
 				->values($this->db->quote($transaction->getCartId()) . ', ' . $this->db->quote($transaction->getAmount()) . ', ' . $this->db->quote($transaction->getCurrency()->getId()) . ', ' . $this->db->quote($transaction->getPaymentMethod()->getId()) . ', ' . $this->db->quote($transaction->getStatus()->value) . ', ' . $this->db->quote($transaction->getSynchronizerId()) . ', ' . $this->db->quote(date('Y-m-d H:i:s')) . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')) . ', ' . $this->db->quote($user_id) . ', ' . $this->db->quote($transaction->getStepId()) . ', '. $this->db->quote($transaction->getData()) . ', ' . $this->db->quote($transaction->getFnum()));
+
+			$old_data['status'] = null;
 		}
 		else
 		{
@@ -304,7 +306,7 @@ class TransactionRepository
 
 				$details = ['updated' => [
 					['old' => $old_data['status'], 'new' => $transaction->getStatus()->value],
-					['old' => $old_data['external_reference'], 'new' => $transaction->getExternalReference()],
+					['old' => !empty($old_data['external_reference']) ? $old_data['external_reference'] : '' , 'new' => $transaction->getExternalReference()],
 				]];
 			} else {
 				$details = [];

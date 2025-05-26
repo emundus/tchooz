@@ -20,7 +20,7 @@ export default {
 			<p id="product-description">{{ product.description }}</p>
 			<div
 				id="product-price"
-				class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-rounded-full tw-border tw-border-neutral-700 tw-bg-neutral-300 tw-px-2 tw-py-1 tw-text-neutral-700"
+				class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-rounded-full tw-border tw-border-neutral-700 tw-bg-neutral-300 tw-px-2 tw-py-1 tw-text-neutral-700 tw-w-fit"
 			>
 				<span class="material-symbols-outlined tw-cursor-pointer tw-text-2xl">payments</span>
 				<span>{{ product.displayed_price }}</span>
