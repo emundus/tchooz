@@ -210,10 +210,10 @@ class EmundusViewApplication extends HtmlView
 						$this->nameCategory        = $m_files->getAttachmentCategories();
 						$this->student_id          = $fnumInfos['applicant_id'];
 						$this->is_applicant = $this->_user->applicant;
-						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync', 'sign'];
 						if($this->_user->applicant) {
 							//TODO: Add menu parameters
-							$this->columns = ['name', 'date', 'desc', 'status', 'modified'];
+							$this->columns = ['name', 'date', 'desc', 'status', 'modified', 'sign'];
 						}
 					}
 					else {

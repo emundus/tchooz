@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field
+            name="signer_order"
+            type="number"
+            default="1"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_ORDER_LABEL"
+    />
+
+    <field
+            name="signer_type"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_LABEL"
+    >
+        <option value="element">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_ALIAS</option>
+        <option value="fixed">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_FIXED</option>
+        <option value="applicant">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_APPLICANT</option>
+    </field>
+
+    <field
+            showon="signer_type!:applicant"
+            name="signer_email"
+            type="text"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_EMAIL_LABEL"
+    />
+
+    <field
+            showon="signer_type!:applicant"
+            name="signer_firstname"
+            type="text"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_FIRSTNAME_LABEL"
+    />
+
+    <field
+            showon="signer_type!:applicant"
+            name="signer_lastname"
+            type="text"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_LASTNAME_LABEL"
+    />
+</form>

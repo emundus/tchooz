@@ -136,11 +136,9 @@ export default {
 		multipleActionsPopover() {
 			let actions = [];
 
-			if (this.checkedItems.length > 0) {
-				actions = this.tab.actions.filter((action) => {
-					return action.multiple && action.display;
-				});
-			}
+			actions = this.tab.actions.filter((action) => {
+				return action.multiple && action.display;
+			});
 
 			return actions;
 		},
@@ -157,35 +155,37 @@ export default {
 </script>
 
 <template>
-	<section id="default-actions" class="tw-flex tw-gap-4" style="margin-top: 1.75rem">
+	<section id="default-actions" class="tw-flex tw-gap-4">
 		<div class="tw-flex tw-items-center tw-gap-2">
-			<popover
-				v-if="checkedItems.length > 0 && multipleActionsPopover.length > 0"
-				:button="translate('COM_EMUNDUS_ONBOARD_ACTIONS')"
-				:button-class="'tw-bg-white tw-border tw-h-[38px] hover:tw-border-form-border-hover tw-rounded-form'"
-				:icon="'keyboard_arrow_down'"
-				:position="'bottom-left'"
-				class="custom-popover-arrow"
-			>
-				<ul class="tw-m-0 tw-list-none tw-items-center tw-p-4">
-					<li
-						v-for="action in multipleActionsPopover"
-						:key="action.name"
-						@click="onClickAction(action)"
-						class="tw-px-2 tw-py-1.5"
-						:class="{
-							'tw-cursor-not-allowed tw-text-neutral-500': !(
-								typeof action.showon === 'undefined' || evaluateShowOn(action.showon)
-							),
-							'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300':
-								(typeof action.showon !== 'undefined' && evaluateShowOn(action.showon)) ||
-								typeof action.showon === 'undefined',
-						}"
-					>
-						{{ translate(action.label) }}
-					</li>
-				</ul>
-			</popover>
+			<div v-if="multipleActionsPopover.length > 0">
+				<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</label>
+				<popover
+					:button="translate('COM_EMUNDUS_ONBOARD_ACTIONS')"
+					:button-class="'tw-btn-secondary tw-h-form'"
+					:icon="'keyboard_arrow_down'"
+					:position="'bottom-left'"
+					class="custom-popover-arrow"
+				>
+					<ul class="tw-m-0 tw-list-none tw-items-center tw-p-4">
+						<li
+							v-for="action in multipleActionsPopover"
+							:key="action.name"
+							@click="onClickAction(action)"
+							class="tw-px-2 tw-py-1.5"
+							:class="{
+								'tw-cursor-not-allowed tw-text-neutral-500':
+									checkedItems.length === 0 || !(typeof action.showon === 'undefined' || evaluateShowOn(action.showon)),
+								'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300':
+									checkedItems.length > 0 &&
+									((typeof action.showon !== 'undefined' && evaluateShowOn(action.showon)) ||
+										typeof action.showon === 'undefined'),
+							}"
+						>
+							{{ translate(action.label) }}
+						</li>
+					</ul>
+				</popover>
+			</div>
 
 			<Exports
 				:items="items"
@@ -199,34 +199,34 @@ export default {
 				@update-items="updateItems"
 			/>
 
-			<div
-				class="tw-flex tw-min-w-[15rem] tw-items-center"
-				v-if="tab.displaySearch === true || typeof tab.displaySearch === 'undefined'"
-			>
-				<input
-					name="search"
-					type="text"
-					v-model="searches[tabKey].search"
-					:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-					class="tw-m-0 !tw-h-[38px] !tw-rounded-coordinator"
-					:class="{
-						'em-disabled-events': items[tabKey].length < 1 && searches[tabKey].search === '',
-					}"
-					:disabled="items[tabKey].length < 1 && searches[tabKey].search === ''"
-					@change="searchItems"
-					@keyup="searchItems"
-				/>
-				<span class="material-symbols-outlined tw-ml-[-32px] tw-mr-2 tw-cursor-pointer" @click="searchItems">
-					search
-				</span>
+			<div v-if="tab.displaySearch === true || typeof tab.displaySearch === 'undefined'">
+				<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('COM_EMUNDUS_ONBOARD_SEARCH') }}</label>
+				<div class="tw-flex tw-min-w-[15rem] tw-items-center">
+					<input
+						name="search"
+						type="text"
+						v-model="searches[tabKey].search"
+						:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
+						class="tw-m-0 !tw-rounded-coordinator"
+						:class="{
+							'em-disabled-events': items[tabKey].length < 1 && searches[tabKey].search === '',
+						}"
+						:disabled="items[tabKey].length < 1 && searches[tabKey].search === ''"
+						@change="searchItems"
+						@keyup="searchItems"
+					/>
+					<span class="material-symbols-outlined tw-ml-[-32px] tw-mr-2 tw-cursor-pointer" @click="searchItems">
+						search
+					</span>
+				</div>
 			</div>
 		</div>
 
-		<div class="view-type tw-flex tw-items-center tw-gap-2">
+		<div class="view-type tw-flex tw-items-end tw-gap-2">
 			<span
 				v-for="viewTypeOption in views"
 				:key="viewTypeOption.value"
-				class="material-symbols-outlined !tw-flex tw-h-[38px] tw-w-[38px] tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-0 tw-p-4"
+				class="material-symbols-outlined !tw-flex tw-h-form tw-w-form tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-0 tw-p-4"
 				:class="{
 					'active tw-border-main-500 tw-text-main-500': viewTypeOption.value === currentView,
 					'tw-border-neutral-600 tw-text-neutral-600': viewTypeOption.value !== currentView,

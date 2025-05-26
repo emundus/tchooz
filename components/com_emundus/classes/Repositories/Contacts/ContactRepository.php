@@ -44,6 +44,10 @@ readonly class ContactRepository
 		if(empty($contact->getId()))
 		{
 			$contact_object->user_id = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($contact_object->email)->id;
+			if(empty($contact_object->user_id)) {
+				$contact_object->user_id = null;
+			}
+
 			if($this->db->insertObject($this->getTableName(self::class), $contact_object))
 			{
 				return $this->db->insertid();
@@ -90,7 +94,7 @@ readonly class ContactRepository
 
 		if(!empty($contact))
 		{
-			return new ContactEntity($contact['email'], $contact['lastname'], $contact['firstname'], $contact['phone_1']);
+			return new ContactEntity($contact['email'], $contact['lastname'], $contact['firstname'], $contact['phone_1'], $contact['id']);
 		}
 
 		return null;

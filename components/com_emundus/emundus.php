@@ -345,6 +345,8 @@ Text::script('COM_EMUNDUS_EXPORT_EXCEL');
 Text::script('COM_EMUNDUS_CREATE_CSV');
 Text::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD');
 Text::script('COM_EMUNDUS_ATTACHMENTS_DOWNLOAD_READY');
+Text::script('COM_EMUNDUS_ATTACHMENTS_OPEN_ORIGINAL_VALUE');
+Text::script('COM_EMUNDUS_ATTACHMENTS_OPEN_SIGNED_VALUE');
 Text::script('EXPECTED_GRADUATION_DATE');
 Text::script('GRADE_POINT_AVERAGE');
 Text::script('GRADUATION_DATE');
@@ -643,6 +645,7 @@ Text::script('COM_EMUNDUS_EXPORTS_EXPORT_TO_ZIP');
 Text::script('COM_EMUNDUS_ACTIONS_SEARCH');
 Text::script('COM_EMUNDUS_TROMBINOSCOPE');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT');
+Text::script('COM_EMUNDUS_ATTACHMENTS_SIGNERS');
 
 Text::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 Text::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
@@ -1023,7 +1026,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions'))) {
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || $task === 'yousigncallback')) {
 	$controller->execute($task);
 }
 elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')

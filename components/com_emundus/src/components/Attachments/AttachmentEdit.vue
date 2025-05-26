@@ -2,9 +2,9 @@
 	<div id="attachment-edit">
 		<div class="wrapper">
 			<h2 class="title">{{ attachment.value }}</h2>
-			<div class="editable-data">
-				<div class="input-group">
-					<label for="description">{{ translate('DESCRIPTION') }}</label>
+			<div class="editable-data tw-flex tw-flex-col tw-gap-4">
+				<div>
+					<label for="description">Description</label>
 					<textarea
 						v-if="attachment.allowed_types !== 'video'"
 						name="description"
@@ -19,7 +19,7 @@
 				</div>
 
 				<div
-					class="input-group valid-state"
+					class="valid-state tw-flex tw-flex-col"
 					:class="{
 						success: attachmentIsValidated == 1,
 						warning: attachmentIsValidated == 2,
@@ -43,52 +43,88 @@
 						</option>
 					</select>
 				</div>
-				<div class="input-group" v-if="canUpdate || (is_applicant == 1 && attachmentIsValidated == 0)">
+				<div v-if="canUpdate || (is_applicant == 1 && attachmentIsValidated == 0)">
 					<label for="replace">{{ translate('COM_EMUNDUS_ATTACHMENTS_REPLACE') }}</label>
 					<input type="file" name="replace" @change="updateFile" :accept="allowedType" />
 				</div>
-				<div class="input-group" v-if="is_applicant != 1">
-					<label for="can_be_viewed">{{ translate('COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED') }}</label>
-					<input
-						type="checkbox"
-						name="can_be_viewed"
-						v-model="attachmentCanBeViewed"
-						:disabled="!canUpdate"
-						@click="saveChanges"
-					/>
+				<div class="tw-flex tw-items-center" v-if="is_applicant != 1">
+					<div class="em-toggle">
+						<input
+							type="checkbox"
+							class="em-toggle-check tw-mt-2"
+							id="can_be_viewed"
+							name="can_be_viewed"
+							v-model="attachmentCanBeViewed"
+							:disabled="!canUpdate"
+						/>
+						<strong class="b em-toggle-switch"></strong>
+						<strong class="b em-toggle-track"></strong>
+					</div>
+					<span for="can_be_viewed" class="tw-ml-2 tw-flex tw-items-center"
+						>{{ translate('COM_EMUNDUS_ATTACHMENTS_CAN_BE_VIEWED') }}
+					</span>
 				</div>
-				<div class="input-group" v-if="is_applicant != 1">
-					<label for="can_be_deleted">{{ translate('COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED') }}</label>
-					<input
-						type="checkbox"
-						name="can_be_deleted"
-						v-model="attachmentCanBeDeleted"
-						:disabled="!canUpdate"
-						@click="saveChanges"
-					/>
+				<div class="tw-flex tw-items-center" v-if="is_applicant != 1">
+					<div class="em-toggle">
+						<input
+							type="checkbox"
+							class="em-toggle-check tw-mt-2"
+							id="can_be_deleted"
+							name="can_be_deleted"
+							v-model="attachmentCanBeDeleted"
+							:disabled="!canUpdate"
+						/>
+						<strong class="b em-toggle-switch"></strong>
+						<strong class="b em-toggle-track"></strong>
+					</div>
+					<span for="can_be_deleted" class="tw-ml-2 tw-flex tw-items-center"
+						>{{ translate('COM_EMUNDUS_ATTACHMENTS_CAN_BE_DELETED') }}
+					</span>
 				</div>
 			</div>
+
 			<div class="non-editable-data">
-				<div v-if="columns.includes('date')">
-					<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</span>
-					<span class="tw-text-right">{{ formattedDate(attachment.timedate) }}</span>
-				</div>
-				<div v-if="attachment.user_id && canSee">
-					<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}</span>
-					<span class="tw-text-right">{{ getUserNameById(attachment.user_id) }}</span>
-				</div>
-				<div v-if="attachment.category && columns.includes('category')">
-					<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}</span>
+				<div
+					v-if="attachment.category && this.categories[attachment.category] && columns.includes('category')"
+					class="tw-gap-[12px] tw-py-2"
+				>
+					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_CATEGORY') }}</label>
 					<span class="tw-text-right">{{ this.categories[attachment.category] }}</span>
 				</div>
-				<div v-if="attachment.modified_by && canSee && columns.includes('modified_by')">
-					<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}</span>
-					<span class="tw-text-right">{{ getUserNameById(attachment.modified_by) }}</span>
+				<div v-if="columns.includes('date')" class="tw-gap-[12px] tw-py-2">
+					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_SEND_DATE') }}</label>
+					<span class="tw-text-right">{{ formattedDate(attachment.timedate) }}</span>
 				</div>
-				<div v-if="attachment.modified && columns.includes('modified')">
-					<span>{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}</span>
+				<div v-if="attachment.user_id && canSee" class="tw-gap-[12px] tw-py-2">
+					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_UPLOADED_BY') }}</label>
+					<span class="tw-text-right">{{ attachment.user_name }}</span>
+				</div>
+				<div v-if="sign && attachment.signers && columns.includes('sign')" class="tw-gap-[12px] tw-py-2">
+					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_SIGNERS') }}</label>
+					<span class="tw-text-right" v-html="attachment.signers"></span>
+				</div>
+				<div v-if="attachment.modified && columns.includes('modified')" class="tw-gap-[12px] tw-py-2">
+					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFICATION_DATE') }}</label>
 					<span class="tw-text-right">{{ formattedDate(attachment.modified) }}</span>
 				</div>
+				<div v-if="attachment.modified_by && canSee && columns.includes('modified_by')" class="tw-gap-[12px] tw-py-2">
+					<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ATTACHMENTS_MODIFIED_BY') }}</label>
+					<span class="tw-text-right">{{ attachment.modified_user_name }}</span>
+				</div>
+				<button
+					class="tw-btn-primary tw-mt-4 tw-w-full"
+					v-if="attachment.signed_file && attachment.original_upload_id"
+					@click="$emit('change-attachment', attachment.original_upload_id)"
+				>
+					{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_ORIGINAL_VALUE') }}
+				</button>
+				<button
+					class="tw-btn-primary tw-mt-4 tw-w-full"
+					v-else-if="!attachment.signed_file && attachment.signed_upload_id"
+					@click="$emit('change-attachment', attachment.signed_upload_id)"
+				>
+					{{ translate('COM_EMUNDUS_ATTACHMENTS_OPEN_SIGNED_VALUE') }}
+				</button>
 				<!-- TODO: add file size -->
 			</div>
 		</div>
@@ -136,6 +172,10 @@ export default {
 			type: String,
 			default: null,
 		},
+		sign: {
+			type: Boolean,
+			default: true,
+		},
 		columns: {
 			type: Array,
 			default() {
@@ -151,11 +191,13 @@ export default {
 					'modified',
 					'permissions',
 					'sync',
+					'sign',
 				];
 			},
 		},
 	},
 	mixins: [mixin],
+	emits: ['change-attachment', 'update-displayed'],
 	data() {
 		return {
 			displayed: true,
@@ -281,12 +323,20 @@ export default {
 			return allowed_type;
 		},
 	},
+	watch: {
+		attachmentCanBeViewed() {
+			this.saveChanges();
+		},
+
+		attachmentCanBeDeleted() {
+			this.saveChanges();
+		},
+	},
 };
 </script>
 
 <style lang="scss">
 #attachment-edit {
-	padding: 16px 16px 16px 10px;
 	height: 100%;
 	float: right;
 	border-left: 1px solid var(--border-color);
@@ -309,8 +359,10 @@ export default {
 	}
 
 	.wrapper {
-		width: 100%;
 		height: 100%;
+		width: -moz-available;
+		width: -webkit-fill-available;
+		width: stretch;
 
 		.title {
 			margin-bottom: 16px;
@@ -319,28 +371,10 @@ export default {
 
 	.editable-data {
 		width: 100%;
-		overflow: hidden;
 
 		h2 {
 			text-overflow: ellipsis;
 			overflow: hidden;
-		}
-
-		label {
-			font-size: 10px;
-			font-weight: 400 !important;
-			color: var(--grey-color);
-		}
-
-		textarea {
-			border-radius: 0;
-			border-color: transparent;
-			background-color: var(--grey-bg-color);
-
-			&:hover,
-			&:focus {
-				box-shadow: none;
-			}
 		}
 
 		select {
@@ -362,11 +396,6 @@ export default {
 			justify-content: space-between;
 			align-items: center;
 			border-bottom: 1px solid var(--border-color);
-			padding: 8px 0;
-
-			span:first-of-type {
-				color: var(--grey-color);
-			}
 
 			&:last-child {
 				border-bottom: none;
@@ -405,7 +434,7 @@ export default {
 			background-color: var(--grey-bg-color);
 			color: var(--grey-color);
 			border: none;
-			width: max-content;
+			width: 100%;
 		}
 
 		select::-ms-expand {

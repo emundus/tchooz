@@ -345,6 +345,42 @@ function birthDateValidation(element, minAge = 0, maxAge = 0, minMessage = 'Vous
     return userBirthDate
 }
 
+function getAgeFromDate(date) {
+    const regex = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+    const match = date.match(regex);
+    if (!match) {
+        return 0;
+    }
+
+    const [_, dayStr, monthStr, yearStr] = match;
+    const day = parseInt(dayStr, 10);
+    const month = parseInt(monthStr, 10);
+    const year = parseInt(yearStr, 10);
+
+    const birthDate = new Date(year, month - 1, day);
+    if (
+        birthDate.getFullYear() !== year ||
+        birthDate.getMonth() !== month - 1 ||
+        birthDate.getDate() !== day
+    ) {
+        return 0;
+    }
+
+    const today = new Date();
+    let age = today.getFullYear() - year;
+
+    const currentMonth = today.getMonth();
+    const currentDay = today.getDate();
+    if (
+        currentMonth < birthDate.getMonth() ||
+        (currentMonth === birthDate.getMonth() && currentDay < birthDate.getDate())
+    ) {
+        age--;
+    }
+
+    return age;
+}
+
 /**
  * Function to display a modal with a message in form 102
  */

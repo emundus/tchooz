@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>plg_emundus_yousign</name>
+    <version>1.0.0</version>
+    <creationDate>April 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to integrate Yousign on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\Yousign</namespace>
+    <files>
+        <folder plugin="yousign">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

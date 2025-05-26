@@ -13,12 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Helper\ModuleHelper;
-use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
-use scripts\Release2_0_0Installer;
 
 class Com_EmundusInstallerScript
 {
@@ -170,7 +167,6 @@ class Com_EmundusInstallerScript
 	 */
 	public function postflight($type, $parent)
 	{
-
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 

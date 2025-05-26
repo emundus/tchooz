@@ -7,10 +7,11 @@ import TeamsSetup from '@/components/Settings/Integration/TeamsSetup.vue';
 import DynamicsSetup from '@/components/Settings/Integration/DynamicsSetup.vue';
 import AmmonSetup from '@/components/Settings/Integration/AmmonSetup.vue';
 import OVHSetup from '@/components/Settings/Integration/OVHSetup.vue';
+import YousignSetup from '@/components/Settings/Integration/YousignSetup.vue';
 
 export default {
 	name: 'Integration',
-	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup },
+	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup, YousignSetup },
 	data() {
 		return {
 			loading: true,
@@ -69,13 +70,13 @@ export default {
 				</p>
 
 				<div v-if="app.enabled === 0 && app.config === '{}'">
-					<button class="tw-btn-tertiary tw-w-full" @click="currentApp = app">
+					<button class="tw-btn-secondary tw-w-full" @click="currentApp = app">
 						<span>{{ translate('COM_EMUNDUS_SETTINGS_INTEGRATION_ADD') }}</span>
 					</button>
 				</div>
 
 				<div v-else>
-					<button class="tw-btn-tertiary tw-w-full" @click="currentApp = app">
+					<button class="tw-btn-secondary tw-w-full" @click="currentApp = app">
 						<span>{{ translate('COM_EMUNDUS_SETTINGS_INTEGRATION_UPDATE') }}</span>
 					</button>
 				</div>
@@ -87,7 +88,7 @@ export default {
 		</div>
 
 		<div v-if="currentApp">
-			<div class="tw-mb-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1" @click="currentApp = null">
+			<div class="tw-mb-2 tw-flex tw-w-fit tw-cursor-pointer tw-items-center tw-gap-1" @click="currentApp = null">
 				<span class="material-symbols-outlined tw-text-neutral-900">arrow_back</span>
 				<span>{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
 			</div>
@@ -120,6 +121,14 @@ export default {
 				v-else-if="currentApp.type === 'ovh'"
 				:app="currentApp"
 				@ovhInstalled="
+					currentApp = null;
+					getApps();
+				"
+			/>
+			<YousignSetup
+				v-else-if="currentApp.type === 'yousign'"
+				:app="currentApp"
+				@yousignInstalled="
 					currentApp = null;
 					getApps();
 				"

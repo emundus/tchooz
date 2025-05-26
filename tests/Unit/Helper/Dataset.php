@@ -387,8 +387,8 @@ class Dataset
 		$rand_id = rand();
 
 		$query->insert('#__emundus_setup_attachments')
-			->columns(['lbl', 'value', 'description', 'allowed_types'])
-			->values($this->db->quote('_test_unitaire_' . $rand_id) . ',' . $this->db->quote('Test unitaire ' . $rand_id) . ',' . $this->db->quote('Document pour les tests unitaire') . ',' .$this->db->quote('pdf'));
+			->columns(['lbl', 'value', 'description', 'allowed_types', 'nbmax'])
+			->values($this->db->quote('_test_unitaire_' . $rand_id) . ',' . $this->db->quote('Test unitaire ' . $rand_id) . ',' . $this->db->quote('Document pour les tests unitaire') . ',' .$this->db->quote('pdf'). ',' . $this->db->quote(1));
 
 		$this->db->setQuery($query);
 		$inserted = $this->db->execute();
@@ -896,5 +896,41 @@ class Dataset
 		$m_events->saveBookingNotifications($event_id, $booking_notifications, $user_id);
 
 		return ['event_id' => $event_id, 'event_slots' => $event_slots];
+	}
+
+	public function createSampleContact(string $email, string $firstname, string $lastname, string $phone = ''): int
+	{
+		$query = $this->db->getQuery(true);
+
+		$contact = [
+			'email' => $email,
+			'firstname' => $firstname,
+			'lastname' => $lastname,
+			'phone_1' => $phone
+		];
+
+		$query->insert('jos_emundus_contacts')
+			->columns(array_keys($contact))
+			->values(implode(',', array_map([$this->db, 'quote'], array_values($contact))));
+
+		$this->db->setQuery($query);
+		if($this->db->execute())
+		{
+			return $this->db->insertid();
+		}
+		else
+		{
+			return 0;
+		}
+	}
+
+	public function deleteSampleContact(int $id): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->delete('jos_emundus_contacts')
+			->where('id = ' . $id);
+		$this->db->setQuery($query);
+		return $this->db->execute();
 	}
 }

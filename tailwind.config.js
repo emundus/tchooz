@@ -10,6 +10,7 @@ module.exports = {
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./plugins/fabrik_list/js/scripts/*.{html,js}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
+        "./components/com_emundus/classes/**/*.php",
         "./components/com_emundus/controllers/**/*.{html,js,php,vue}",
         "./components/com_emundus/models/**/*.{html,js,php,vue}",
         "./components/com_emundus/src/**/*.{html,js,php,vue}",
@@ -40,6 +41,10 @@ module.exports = {
         },
         {
             pattern: /tw-grid-cols-/,
+            variants: ['sm', 'md', 'lg'],
+        },
+        {
+            pattern: /tw-grid-rows-/,
             variants: ['sm', 'md', 'lg'],
         },
         {
@@ -187,6 +192,9 @@ module.exports = {
                 'xxs': '8px'
             },
             height: {
+                'form': 'var(--em-form-height)',
+            },
+            width: {
                 'form': 'var(--em-form-height)',
             }
         },

@@ -55,23 +55,32 @@ abstract class UnitTestCase extends TestCase
 
 		if (!empty($className) && class_exists($className))
 		{
-			if (!empty($construct_args)) {
+			if (!empty($construct_args))
+			{
 				$this->model = new $className(...$construct_args);
-			} else {
+			}
+			else
+			{
 				$this->model = new $className();
 			}
-		} else {
+		}
+		else
+		{
 			if (!empty($name))
 			{
-				if (empty($directory)) {
+				if (empty($directory))
+				{
 					$directory = JPATH_BASE . '/components/com_emundus/models/';
 				}
 
 				require_once $directory . $name . '.php';
 
-				if (!empty($construct_args)) {
+				if (!empty($construct_args))
+				{
 					$this->model = new $className(...$construct_args);
-				} else {
+				}
+				else
+				{
 					$this->model = new $className();
 				}
 			}
@@ -119,10 +128,15 @@ abstract class UnitTestCase extends TestCase
 	protected function setUp(): void
 	{
 		$this->dataset['applicant']   = $this->h_dataset->createSampleUser(1000, 'applicant_' . rand(0, 1000) . '@emundus.fr');
-		$this->dataset['coordinator'] = $this->h_dataset->createSampleUser(2, 'coordinator_' . rand(0, 1000) . '@emundus.fr','test1234',[2,7]);
+		$this->dataset['coordinator'] = $this->h_dataset->createSampleUser(2, 'coordinator_' . rand(0, 1000) . '@emundus.fr', 'test1234', [2, 7]);
 		$this->dataset['program']     = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
 		$this->dataset['campaign']    = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
 		$this->dataset['fnum']        = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		if(!class_exists('EmundusHelperFiles'))
+		{
+			require_once JPATH_BASE . '/components/com_emundus/helpers/files.php';
+		}
+		$this->dataset['ccid']        = \EmundusHelperFiles::getIdFromFnum($this->dataset['fnum']);
 	}
 
 	protected function tearDown(): void
@@ -133,8 +147,10 @@ abstract class UnitTestCase extends TestCase
 		$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
 		$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
 	}
-	protected static function callPrivateMethod($obj, $name, array $args) {
-		$class = new \ReflectionClass($obj);
+
+	protected static function callPrivateMethod($obj, $name, array $args)
+	{
+		$class  = new \ReflectionClass($obj);
 		$method = $class->getMethod($name);
 
 		if (version_compare(PHP_VERSION, '8.1.0', '<'))
