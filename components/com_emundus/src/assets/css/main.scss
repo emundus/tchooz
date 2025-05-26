@@ -66,6 +66,7 @@
 .view-settings #g-container-main .g-container,
 .view-workflows #g-container-main .g-container,
 .view-events #g-container-main .g-container,
+.view-payment:not(.layout-cart) #g-container-main .g-container,
 .view-sign #g-container-main .g-container,
 .view-emundus.layout-history #g-container-main .g-container {
 	width: auto;
@@ -79,6 +80,7 @@
 .view-emails.no-layout #g-container-main,
 .view-form #g-container-main,
 .view-events #g-container-main,
+.view-payment:not(.layout-cart) #g-container-main,
 .view-sign #g-container-main,
 .view-emundus.layout-history #g-container-main {
 	padding-left: 76px;
@@ -192,6 +194,16 @@ body ::-webkit-scrollbar-track {
 	position: absolute;
 	bottom: -10px;
 	left: 0px;
+}
+
+.vue-swatches__wrapper.position-left::after {
+	border-left: 10px solid transparent;
+	border-right: 10px solid transparent;
+	border-top: 10px solid transparent;
+	border-bottom: 10px solid #cecece;
+	right: 0;
+	top: -20px;
+	left: unset;
 }
 
 .vue-swatches__trigger {

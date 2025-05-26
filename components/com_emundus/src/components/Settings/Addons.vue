@@ -4,12 +4,13 @@ import settingsService from '@/services/settings';
 import Messenger from '@/components/Settings/Addons/Messenger.vue';
 import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
 import RankingTool from '@/components/Settings/Addons/RankingTool.vue';
+import PaymentAddon from '@/components/Settings/Addons/PaymentAddon.vue';
 
 /* Components */
 
 export default {
 	name: 'Addons',
-	components: { Messenger, SMSAddon, RankingTool },
+	components: { Messenger, SMSAddon, RankingTool, PaymentAddon },
 	data() {
 		return {
 			loading: true,
@@ -106,6 +107,15 @@ export default {
 					getAddons();
 				"
 			></SMSAddon>
+
+			<PaymentAddon
+				v-if="currentAddon.type === 'payment'"
+				:addon="currentAddon"
+				@addonSaved="
+					currentAddon = null;
+					getAddons();
+				"
+			></PaymentAddon>
 		</div>
 
 		<div class="em-page-loader" v-if="loading"></div>

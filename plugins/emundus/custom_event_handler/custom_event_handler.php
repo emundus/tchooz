@@ -22,6 +22,11 @@ use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Entities\Payment\AlterationEntity;
+use Tchooz\Repositories\Payment\CartRepository;
+use Tchooz\Repositories\Payment\ProductRepository;
+use Tchooz\Repositories\Payment\DiscountRepository;
+use Tchooz\Entities\Payment\AlterationType;
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
@@ -828,13 +833,25 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										case 'NOT IN':
 											$values = explode('|', $condition->targeted_value);
 
-											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
 											break;
 										case '=':
-                                            $query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-                                            break;
+											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+											break;
 										case '!=':
 											$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
+											break;
+										case 'inferior':
+											$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+											break;
+										case 'inferior_equal':
+											$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+											break;
+										case 'superior':
+											$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+											break;
+										case 'superior_equal':
+											$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
 											break;
 										case 'inferior':
 											$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
@@ -886,7 +903,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											case 'IN':
 											case 'NOT IN':
 												$values = explode('|', $condition->targeted_value);
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
 												break;
 											case '=':
 												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
@@ -973,12 +990,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											case '=':
 											case 'IN':
 												$values = explode('|', $condition->targeted_value);
-												$query->andWhere('eup.profile_id IN (' . $db->quote(implode(',', $values)) . ') OR eu.profile IN (' . $db->quote(implode(',', $values)) . ')');
+												$query->andWhere('eup.profile_id IN (' . implode(',', $db->quote($values)) . ') OR eu.profile IN (' . implode(',', $db->quote($values)) . ')');
 												break;
 											case '!=':
 											case 'NOT IN':
 												$values = explode('|', $condition->targeted_value);
-												$query->andWhere('eup.profile_id NOT IN (' . $db->quote(implode(',', $values)) . ') AND eu.profile NOT IN (' . $db->quote(implode(',', $values)) . ')');
+												$query->andWhere('eup.profile_id NOT IN (' . implode(',', $db->quote($values)) . ') AND eu.profile NOT IN (' . implode(',', $db->quote($values)) . ')');
 												break;
 										}
 									}
@@ -1002,7 +1019,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											case 'NOT IN':
 												$values = explode('|', $condition->targeted_value);
 
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
 												break;
 											case '=':
 												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
@@ -1082,7 +1099,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		if (!empty($action))
 		{
-			$actions_that_needs_fnum = ['update_file_status', 'update_file_tags', 'generate_letter', 'sign_flow'];
+			$actions_that_needs_fnum = ['update_file_status', 'update_file_tags', 'generate_letter', 'sign_flow', 'alter_cart'];
 
 			if (in_array($action->action_type, $actions_that_needs_fnum) && empty($fnum))
 			{
@@ -1407,6 +1424,11 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						}
 					}
 					break;
+				case 'alter_cart':
+					if (!empty($action->alter_cart_action)) {
+						$landed = $this->runCartAction($action, $fnum);
+					}
+					break;
 				default:
 					// do nothing
 					break;
@@ -1414,5 +1436,127 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		}
 
 		return $landed;
+	}
+
+	/**
+	 * @param           $action
+	 * @param   string  $fnum
+	 *
+	 * @return bool
+	 */
+	private function runCartAction($action, string $fnum): bool
+	{
+		$ran = false;
+
+		if (!class_exists('EmundusModelWorkflow')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+		}
+		$m_workflow = new EmundusModelWorkflow();
+		$step = $m_workflow->getPaymentStepFromFnum($fnum);
+
+		if (!empty($step->id)) {
+			$cart_repository = new CartRepository();
+			$cart = $cart_repository->getCartByFnum($fnum, $step->id);
+			if (!empty($cart)) {
+				$action->discount_id = (int) $action->discount_id;
+				$action->product_id = (int) $action->product_id;
+				switch ($action->alter_cart_action)
+				{
+					case 'add_product':
+						if (!empty($action->product_id)) {
+							// only add product if it is not already in the cart
+							$already_in_cart = false;
+							foreach ($cart->getProducts() as $product) {
+								if ($product->getId() === $action->product_id) {
+									$already_in_cart = true;
+									break;
+								}
+							}
+
+							if (!$already_in_cart) {
+								$product_repository = new ProductRepository();
+								$product = $product_repository->getProductById($action->product_id);
+
+								if (!empty($product->getId())) {
+									$cart->addProduct($product);
+									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
+								}
+							} else {
+								$ran = true;
+							}
+						}
+						break;
+					case 'remove_product':
+						if (!empty($action->product_id)) {
+							// only remove product if it is in the cart
+							$still_in_cart = false;
+							foreach ($cart->getProducts() as $product) {
+								if ($product->getId() === $action->product_id) {
+									$still_in_cart = true;
+									break;
+								}
+							}
+
+							if ($still_in_cart) {
+								$product_repository = new ProductRepository();
+								$product = $product_repository->getProductById($action->product_id);
+
+								if (!empty($product->getId())) {
+									$cart->removeProduct($product);
+									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
+								}
+							} else {
+								$ran = true;
+							}
+						}
+						break;
+					case 'add_discount':
+						if (!empty($action->discount_id)) {
+							$discount_repository = new DiscountRepository();
+							$discount = $discount_repository->getDiscountById($action->discount_id);
+
+							if (!empty($discount)) {
+								// only add discount if it is not already in the cart
+								$already_in_cart = false;
+								foreach ($cart->getPriceAlterations() as $alteration) {
+									if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id) {
+										$already_in_cart = true;
+										break;
+									}
+								}
+
+								if (!$already_in_cart) {
+									$alteration = new AlterationEntity(0, $cart->getId(), null, $discount, $discount->getDescription(), -$discount->getValue(), AlterationType::from($discount->getType()->value), $this->automated_task_user);
+									$ran = $cart_repository->addAlteration($cart, $alteration, $this->automated_task_user);
+								} else {
+									$ran = true;
+								}
+							}
+						}
+						break;
+					case 'remove_discount':
+						if (!empty($action->discount_id)) {
+							// only remove discount if it is in the cart
+							$still_in_cart = false;
+							$alteration_to_remove = null;
+							foreach ($cart->getPriceAlterations() as $alteration) {
+								if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id) {
+									$alteration_to_remove = $alteration;
+									$still_in_cart = true;
+									break;
+								}
+							}
+							if ($still_in_cart && !empty($alteration_to_remove)) {
+								$ran = $cart_repository->removeAlteration($cart, $alteration_to_remove, $this->automated_task_user);
+							} else {
+								$ran = true;
+							}
+						}
+						break;
+				}
+			}
+		}
+
+		return $ran;
 	}
 }

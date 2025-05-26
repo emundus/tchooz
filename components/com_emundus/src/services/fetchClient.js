@@ -91,23 +91,22 @@ export class FetchClient {
 		}
 
 		return fetch(url, parameters)
-			.then((response) => {
+			.then(async (response) => {
 				if (response.ok) {
 					return response.json();
 				} else {
-					throw new Error(
-						'An error occurred while fetching the data. ' + response.status + ' ' + response.statusText + '.',
-					);
+					const errorText = await response.text();
+					throw new Error(errorText);
 				}
 			})
 			.then((data) => {
 				return data;
 			})
 			.catch((error) => {
-				if (err.name === 'TimeoutError') {
+				if (error.name === 'TimeoutError') {
 					throw new Error('The request timed out. ' + error.message + '.');
 				} else {
-					throw new Error('An error occurred while fetching the data. ' + error.message + '.');
+					throw new Error(error.message);
 				}
 			});
 	}

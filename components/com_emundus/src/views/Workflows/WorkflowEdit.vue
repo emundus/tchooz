@@ -46,189 +46,229 @@
 							handle=".handle"
 							@end="onDragStepEnd"
 						>
-							<div
-								v-for="step in steps"
-								:key="step.id"
-								class="workflow-step tw-rounded tw-border tw-p-4 tw-shadow-sm"
-								:class="{
-									'tw-bg-slate-50': step.state != 1,
-									'em-white-bg': step.state == 1,
-									'tw-border-red-600': displayErrors && fieldsInError[step.id] && fieldsInError[step.id].length > 0,
-								}"
-							>
-								<div class="workflow-step-head tw-flex tw-flex-row tw-justify-between tw-gap-2">
-									<div class="tw-mb-4 tw-flex tw-flex-row tw-items-start">
-										<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
-										<h4 class="tw-line-clamp-2 tw-break-all">
-											{{ step.label }}
-										</h4>
-									</div>
-									<popover>
-										<ul class="tw-list-none !tw-p-0">
-											<li
-												class="archive-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300"
-												@click="duplicateStep(step.id)"
-											>
-												{{ translate('COM_EMUNDUS_ACTIONS_DUPLICATE') }}
-											</li>
-											<li
-												v-if="step.state == 1"
-												class="archive-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300"
-												@click="updateStepState(step.id, 0)"
-											>
-												{{ translate('COM_EMUNDUS_ACTIONS_ARCHIVE') }}
-											</li>
-											<li
-												v-else
-												class="archive-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300"
-												@click="updateStepState(step.id, 1)"
-											>
-												{{ translate('COM_EMUNDUS_ACTIONS_UNARCHIVE') }}
-											</li>
-											<li
-												class="delete-workflow-step tw-cursor-pointer tw-p-2 hover:tw-bg-neutral-300"
-												@click="beforeDeleteStep(step.id)"
-											>
-												{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}
-											</li>
-										</ul>
-									</popover>
+							<div v-for="step in steps" :key="step.id" class="workflow-step">
+								<div
+									class="tw-flex tw-w-fit tw-flex-row tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-3 tw-pb-1 tw-pt-2"
+									:class="stepHeaderClass(step)"
+								>
+									<span v-if="isPaymentStep(step)" class="material-symbols-outlined tw-mr-1 tw-text-white">paid</span>
+									<span v-else class="material-symbols-outlined tw-mr-1 tw-text-white">group</span>
+									<span class="tw-text-sm tw-text-white"> {{ stepTypeLabel(step.type) }} </span>
 								</div>
 
-								<div class="workflow-step-content">
-									<div class="tw-mb-4 tw-flex tw-flex-col">
-										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL') }}</label>
-										<input type="text" v-model="step.label" />
+								<div class="tw-rounded-b-lg tw-rounded-r-lg tw-border tw-p-4 tw-shadow-sm" :class="stepClass(step)">
+									<div class="workflow-step-head tw-flex tw-w-full tw-flex-row tw-gap-2">
+										<div class="tw-mb-4 tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between">
+											<span
+												class="material-symbols-outlined handle tw-cursor-grab"
+												:class="'tw-text-' + stepColor(step) + '-500'"
+											>
+												drag_indicator
+											</span>
+											<h4 class="tw-line-clamp-2 tw-break-all">
+												<input type="text" v-model="step.label" />
+											</h4>
+											<popover>
+												<ul class="tw-list-none !tw-p-3">
+													<li
+														class="archive-workflow-step tw-cursor-pointer tw-rounded-lg tw-px-3 tw-pb-2 tw-pt-2 hover:tw-bg-neutral-300"
+														@click="duplicateStep(step.id)"
+													>
+														{{ translate('COM_EMUNDUS_ACTIONS_DUPLICATE') }}
+													</li>
+													<li
+														v-if="step.state == 1"
+														class="archive-workflow-step tw-cursor-pointer tw-rounded-lg tw-px-3 tw-pb-2 tw-pt-2 hover:tw-bg-neutral-300"
+														@click="updateStepState(step.id, 0)"
+													>
+														{{ translate('COM_EMUNDUS_ACTIONS_ARCHIVE') }}
+													</li>
+													<li
+														v-else
+														class="archive-workflow-step tw-cursor-pointer tw-rounded-lg tw-px-3 tw-pb-2 tw-pt-2 hover:tw-bg-neutral-300"
+														@click="updateStepState(step.id, 1)"
+													>
+														{{ translate('COM_EMUNDUS_ACTIONS_UNARCHIVE') }}
+													</li>
+													<li
+														class="delete-workflow-step tw-cursor-pointer tw-rounded-lg tw-px-3 tw-pb-2 tw-pt-2 hover:tw-bg-neutral-300"
+														@click="beforeDeleteStep(step.id)"
+													>
+														{{ translate('COM_EMUNDUS_ACTIONS_DELETE') }}
+													</li>
+												</ul>
+											</popover>
+										</div>
+									</div>
+
+									<div v-if="step.adjust_balance_step_id > 0" class="tw-mb-4">
 										<span
-											class="tw-text-red-600"
-											v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('label')"
+											:class="
+												'tw-border-' +
+												stepColor(step) +
+												'-500' +
+												' tw-rounded-full tw-border tw-px-3 tw-pb-2 tw-pt-2' +
+												' tw-text-' +
+												stepColor(step) +
+												'-500' +
+												' tw-whitespace-nowrap'
+											"
+											>{{ translate('COM_EMUNDUS_WORKFLOW_PAYMENT_STEP_RELATED_TO') }}
+											<strong>{{ getStepLabelById(step.adjust_balance_step_id) }}</strong></span
 										>
-											{{ translate('COM_EMUNDUS_WORKFLOW_STEP_LABEL_REQUIRED') }}
-										</span>
 									</div>
 
-									<div class="tw-mb-4 tw-flex tw-flex-col">
-										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
-										<select v-model="step.type">
-											<option v-for="type in stepTypes" :key="type.id" :value="type.id">
-												<span v-if="type.parent_id > 0"> - </span>
-												{{ translate(type.label) }}
-											</option>
-										</select>
-									</div>
+									<div class="workflow-step-content">
+										<div class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
+											<select v-model="step.type">
+												<option v-for="type in stepTypes" :key="type.id" :value="type.id">
+													<span v-if="type.parent_id > 0"> - </span>
+													{{ translate(type.label) }}
+												</option>
+											</select>
+										</div>
 
-									<div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
-										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
-										<select v-model="step.profile_id">
-											<option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">
-												{{ profile.label }}
-											</option>
-										</select>
+										<div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+											<select v-model="step.profile_id">
+												<option v-for="profile in applicantProfiles" :key="profile.id" :value="profile.id">
+													{{ profile.label }}
+												</option>
+											</select>
 
-										<span
-											class="tw-text-red-600"
-											v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')"
+											<span
+												class="tw-text-red-600"
+												v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')"
+											>
+												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
+											</span>
+										</div>
+
+										<div v-else-if="isEvaluationStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
+											<select v-model="step.form_id">
+												<option v-for="form in evaluationForms" :key="form.id" :value="form.id">
+													{{ form.label }}
+												</option>
+											</select>
+
+											<span
+												class="tw-text-red-600"
+												v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')"
+											>
+												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
+											</span>
+										</div>
+
+										<div class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
+											<Multiselect
+												:options="statuses"
+												v-model="step.entry_status"
+												label="label"
+												track-by="id"
+												:placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
+												:selectLabel="translate('PRESS_ENTER_TO_SELECT')"
+												:multiple="true"
+											>
+											</Multiselect>
+
+											<span
+												class="tw-text-red-600"
+												v-if="
+													displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('entry_status')
+												"
+											>
+												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED') }}
+											</span>
+										</div>
+
+										<div v-if="isApplicantStep(step) || isPaymentStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
+											<select v-model="step.output_status">
+												<option value="-1">
+													{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}
+												</option>
+												<option v-for="status in statuses" :key="status.id" :value="status.id">
+													{{ status.label }}
+												</option>
+											</select>
+										</div>
+
+										<div
+											v-if="isEvaluationStep(step)"
+											class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
 										>
-											{{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
-										</span>
-									</div>
+											<input
+												v-model="step.multiple"
+												true-value="1"
+												false-value="0"
+												type="checkbox"
+												:name="'step-' + step.id + '-multiple'"
+												:id="'step-' + step.id + '-multiple'"
+												class="tw-cursor-pointer"
+											/>
+											<label :for="'step-' + step.id + '-multiple'" class="tw-mb-0 tw-cursor-pointer">{{
+												translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE')
+											}}</label>
+										</div>
 
-									<div v-else class="tw-mb-4 tw-flex tw-flex-col">
-										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
-										<select v-model="step.form_id">
-											<option v-for="form in evaluationForms" :key="form.id" :value="form.id">
-												{{ form.label }}
-											</option>
-										</select>
-
-										<span
-											class="tw-text-red-600"
-											v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('form_id')"
+										<div
+											v-if="isEvaluationStep(step)"
+											class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
 										>
-											{{ translate('COM_EMUNDUS_WORKFLOW_STEP_FORM_REQUIRED') }}
-										</span>
-									</div>
+											<input
+												v-model="step.lock"
+												true-value="1"
+												false-value="0"
+												type="checkbox"
+												:name="'step-' + step.id + '-lock'"
+												:id="'step-' + step.id + '-lock'"
+												class="tw-cursor-pointer"
+											/>
+											<label :for="'step-' + step.id + '-lock'" class="tw-mb-0 tw-cursor-pointer">{{
+												translate('COM_EMUNDUS_WORKFLOW_STEP_IS_LOCKED')
+											}}</label>
+										</div>
 
-									<div class="tw-mb-4 tw-flex tw-flex-col">
-										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS') }}</label>
-										<Multiselect
-											:options="statuses"
-											v-model="step.entry_status"
-											label="label"
-											track-by="id"
-											:placeholder="translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_SELECT')"
-											:selectLabel="translate('PRESS_ENTER_TO_SELECT')"
-											:multiple="true"
-										>
-										</Multiselect>
+										<div v-if="isEvaluationStep(step)" class="step-associated-groups">
+											<label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
+											<ul class="tw-my-2 tw-overflow-auto" style="max-height: 100px">
+												<li v-for="group_id in getGroupsFromStepType(step.type)" :key="group_id">
+													{{ getGroupLabel(group_id) }}
+												</li>
+											</ul>
 
-										<span
-											class="tw-text-red-600"
-											v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('entry_status')"
-										>
-											{{ translate('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_REQUIRED') }}
-										</span>
-									</div>
+											<a href="/users-menu/groups" class="tw-underline">{{
+												translate('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS')
+											}}</a>
+										</div>
 
-									<div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
-										<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
-										<select v-model="step.output_status">
-											<option value="-1">
-												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS_SELECT') }}
-											</option>
-											<option v-for="status in statuses" :key="status.id" :value="status.id">
-												{{ status.label }}
-											</option>
-										</select>
-									</div>
-
-									<div
-										v-if="!isApplicantStep(step)"
-										class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
-									>
-										<input
-											v-model="step.multiple"
-											true-value="1"
-											false-value="0"
-											type="checkbox"
-											:name="'step-' + step.id + '-multiple'"
-											:id="'step-' + step.id + '-multiple'"
-											class="tw-cursor-pointer"
-										/>
-										<label :for="'step-' + step.id + '-multiple'" class="tw-mb-0 tw-cursor-pointer">{{
-											translate('COM_EMUNDUS_WORKFLOW_STEP_IS_MULTIPLE')
-										}}</label>
-									</div>
-
-									<div
-										v-if="!isApplicantStep(step)"
-										class="tw-mb-4 tw-flex tw-cursor-pointer tw-flex-row tw-items-center"
-									>
-										<input
-											v-model="step.lock"
-											true-value="1"
-											false-value="0"
-											type="checkbox"
-											:name="'step-' + step.id + '-lock'"
-											:id="'step-' + step.id + '-lock'"
-											class="tw-cursor-pointer"
-										/>
-										<label :for="'step-' + step.id + '-lock'" class="tw-mb-0 tw-cursor-pointer">{{
-											translate('COM_EMUNDUS_WORKFLOW_STEP_IS_LOCKED')
-										}}</label>
-									</div>
-
-									<div v-if="!isApplicantStep(step)" class="step-associated-groups">
-										<label>{{ translate('COM_EMUNDUS_WORKFLOW_STEP_GROUPS') }}</label>
-										<ul class="tw-my-2 tw-overflow-auto" style="max-height: 100px">
-											<li v-for="group_id in getGroupsFromStepType(step.type)" :key="group_id">
-												{{ getGroupLabel(group_id) }}
-											</li>
-										</ul>
-
-										<a href="/users-menu/groups" class="tw-underline">{{
-											translate('COM_EMUNDUS_WORKFLOW_EDIT_RIGHTS')
-										}}</a>
+										<div v-if="isPaymentStep(step) && step.id > 0">
+											<a
+												:href="
+													'/index.php?option=com_emundus&view=workflows&layout=editpaymentstep&wid=' +
+													workflowId +
+													'&step_id=' +
+													step.id
+												"
+												class="tw-btn-primary"
+												:class="
+													'tw-border-' +
+													stepColor(step) +
+													'-500 tw-bg-' +
+													stepColor(step) +
+													'-500 hover:tw-border-' +
+													stepColor(step) +
+													'-500 hover:!tw-text-' +
+													stepColor(step) +
+													'-500'
+												"
+											>
+												{{ translate('COM_EMUNDUS_WORKFLOW_CONFIGURE_PAYMENT_STEP') }}
+											</a>
+										</div>
 									</div>
 								</div>
 							</div>
@@ -755,6 +795,22 @@ export default {
 
 			return isApplicantStep;
 		},
+		isEvaluationStep(step) {
+			let isEvaluationStep = step.type == 2;
+
+			if (!isEvaluationStep) {
+				const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
+
+				if (stepType.parent_id == 2) {
+					isEvaluationStep = true;
+				}
+			}
+
+			return isEvaluationStep;
+		},
+		isPaymentStep(step) {
+			return !this.isEvaluationStep(step) && !this.isApplicantStep(step);
+		},
 		isProgramAssociatedToAnotherWorkflow(program) {
 			return program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);
 		},
@@ -763,6 +819,40 @@ export default {
 				step.ordering = index + 1;
 				return step;
 			});
+		},
+		getStepLabelById(stepId) {
+			return this.steps.find((step) => step.id == stepId).label;
+		},
+		stepTypeLabel(type) {
+			return this.translate(this.stepTypes.find((stepType) => stepType.id === type).label);
+		},
+		stepHeaderClass(step) {
+			return 'tw-bg-' + this.stepColor(step) + '-500 tw-border-' + this.stepColor(step) + '-500 tw-border-2';
+		},
+		stepColor(step) {
+			let stepColor = 'blue';
+			const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
+
+			if (stepType && stepType.class && stepType.class !== '') {
+				stepColor = stepType.class;
+			}
+
+			return stepColor;
+		},
+		stepClass(step) {
+			let stepClass = '';
+
+			if (step.state == 1) {
+				stepClass += ' tw-bg-' + this.stepColor(step) + '-50 tw-border-' + this.stepColor(step) + '-500 tw-border-2';
+			} else {
+				stepClass += ' tw-bg-slate-50';
+			}
+
+			if (this.displayErrors && this.fieldsInError[step.id] && this.fieldsInError[step.id].length > 0) {
+				stepClass += ' tw-border-red-600';
+			}
+
+			return stepClass;
 		},
 	},
 	computed: {

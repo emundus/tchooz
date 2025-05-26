@@ -20,6 +20,11 @@ export default {
 			this.$emit('action', action);
 		},
 	},
+	computed: {
+		isHtmlIntro() {
+			return this.introduction && this.translate(this.introduction).includes('</');
+		},
+	},
 };
 </script>
 
@@ -36,7 +41,9 @@ export default {
 			>
 		</div>
 
-		<p v-if="introduction" class="tw-text-neutral-700">
+		<div v-if="isHtmlIntro" v-html="translate(introduction)" class="tw-text-neutral-700"></div>
+
+		<p v-else-if="introduction" class="tw-text-neutral-700">
 			{{ translate(introduction) }}
 		</p>
 	</div>
@@ -48,7 +55,7 @@ export default {
 }
 
 #onboarding_list .head {
-	background: var(--em-coordinator-bg);
+	background: transparent;
 	z-index: 9;
 }
 

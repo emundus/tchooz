@@ -1,10 +1,10 @@
 <template>
-	<div>
+	<div class="tw-flex tw-flex-col tw-gap-2">
 		<!-- LABEL -->
 		<label
 			v-if="parameter.hideLabel !== true"
 			:for="paramId"
-			class="tw-flex tw-items-end tw-font-medium"
+			class="tw-mb-0 tw-flex tw-items-end tw-font-medium"
 			:class="parameter.helptext && helpTextType === 'above' ? 'tw-mb-0' : ''"
 		>
 			{{ translate(parameter.label) }}
@@ -44,21 +44,54 @@
 			</div>
 
 			<!-- SELECT -->
-			<select
+			<div
 				v-if="parameter.type === 'select'"
-				class="dropdown-toggle w-select !tw-mb-0 tw-min-w-[30%]"
-				:class="[
-					errors[parameter.param] ? 'tw-rounded-lg !tw-border-red-500' : '',
-					parameter.secondParameterType === 'select' ? 'tw-w-auto' : 'tw-w-full',
-				]"
-				:id="paramId"
-				v-model="value"
-				:disabled="parameter.editable === false"
+				class="tw-flex tw-w-full tw-min-w-[30%] tw-items-center tw-gap-2"
+				:class="parameter.classes ? parameter.classes : ''"
 			>
-				<option v-for="option in parameter.options" :key="option.value" :value="option.value">
-					{{ translate(option.label) }}
-				</option>
-			</select>
+				<select
+					class="dropdown-toggle w-select !tw-mb-0 tw-w-full"
+					:class="[
+						errors[parameter.param] ? 'tw-rounded-lg !tw-border-red-500' : '',
+						parameter.secondParameterType === 'select' ? 'tw-w-auto' : 'tw-w-full',
+					]"
+					:id="paramId"
+					v-model="value"
+					:disabled="parameter.editable === false"
+				>
+					<option v-for="option in parameter.options" :key="option.value" :value="option.value">
+						{{ translate(option.label) }}
+					</option>
+				</select>
+
+				<!-- if select has a add new parameter -->
+				<div v-if="parameter.addNew && parameter.addNew.component">
+					<span
+						class="material-symbols-outlined not-to-close-modal tw-btn-primary tw-cursor-pointer tw-p-[9px]"
+						@click="displayModal('addNew' + parameter.param)"
+						>add_circle</span
+					>
+
+					<modal
+						:ref="'addNew' + parameter.param"
+						:name="'addNew' + parameter.param"
+						:width="'50%'"
+						:height="'auto'"
+						:transition="'fade'"
+						:click-to-close="true"
+						:open-on-create="false"
+						:center="true"
+					>
+						<component
+							:is="parameter.addNew.component"
+							v-model="value"
+							:componentsProps="this.$props.componentsProps"
+							@saved="onAddNewValue(parameter)"
+						>
+						</component>
+					</modal>
+				</div>
+			</div>
 
 			<!-- MULTISELECT -->
 			<multiselect
@@ -151,22 +184,19 @@
 
 			<!-- RADIOBUTTON -->
 			<div v-else-if="parameter.type === 'radiobutton'">
-				<fieldset
-					data-toggle="radio_buttons"
-					class="tw-grid tw-grid-cols-1 tw-gap-2 md:tw-grid-cols-2 lg:tw-grid-cols-2"
-				>
-					<div v-for="option in parameter.options" :key="option.value" class="fabrikgrid_radio">
+				<fieldset data-toggle="radio_buttons" class="tw-flex tw-flex-col tw-gap-1">
+					<div v-for="option in parameter.options" :key="option.value" class="tw-flex tw-items-center tw-gap-2">
 						<input
 							v-model="value"
 							type="radio"
-							class="fabrikinput"
+							class="fabrikinput !tw-mr-0 !tw-h-fit tw-cursor-pointer"
 							:class="parameter.hideRadio ? '!tw-hidden' : ''"
 							:name="paramName"
 							:id="paramId + '_input_' + option.value"
 							:value="option.value"
 							:checked="value === option.value"
 						/>
-						<label :for="paramId + '_input_' + option.value">
+						<label :for="paramId + '_input_' + option.value" class="tw-mb-0 tw-cursor-pointer">
 							<span class="tw-flex tw-items-center tw-gap-2">
 								<img
 									v-if="option.img"
@@ -215,6 +245,8 @@
 				:class="errors[parameter.param] ? 'tw-rounded-lg !tw-border-red-500' : ''"
 				:max="parameter.type === 'number' ? parameter.max : null"
 				:min="undefined"
+				:step="parameter.type === 'number' ? parameter.step : null"
+				:pattern="parameter.pattern && parameter.pattern.length > 0 ? parameter.pattern : null"
 				:placeholder="translate(parameter.placeholder)"
 				:id="paramId"
 				v-model="value"
@@ -224,12 +256,15 @@
 				@focusin="clearPassword(parameter)"
 			/>
 
+			<!-- Upload : TODO: use dropzone-->
+			<input v-else-if="parameter.type === 'file'" type="file" @change="onUploadFile" />
+
 			<DatePicker
 				v-else-if="parameter.type === 'datetime' || parameter.type === 'date' || parameter.type === 'time'"
 				:id="paramId"
 				v-model="formattedValue"
 				:keepVisibleOnInput="true"
-				:popover="{ visibility: 'focus', placement: 'right' }"
+				:popover="{ visibility: 'focus', placement: parameter.placement ? parameter.placement : 'right' }"
 				:rules="{ minutes: { interval: 5 } }"
 				:mode="parameter.type ? parameter.type : 'dateTime'"
 				is24hr
@@ -243,6 +278,7 @@
 						:value="formatDateForDisplay(inputValue)"
 						v-on="inputEvents"
 						class="form-control fabrikinput tw-w-full"
+						:class="parameter.classes ? parameter.classes : ''"
 						style="box-shadow: none"
 						:id="paramId + '_input'"
 					/>
@@ -284,7 +320,7 @@
 
 <script>
 import Multiselect from 'vue-multiselect';
-import settingsService from '../../services/settings';
+import settingsService from '@/services/settings.js';
 import Swal from 'sweetalert2';
 
 import { reactive } from 'vue';
@@ -292,10 +328,11 @@ import { DatePicker } from 'v-calendar';
 import { useGlobalStore } from '@/stores/global.js';
 import dayjs from 'dayjs';
 import EventBooking from '@/views/Events/EventBooking.vue';
+import Modal from '@/components/Modal.vue';
 
 export default {
 	name: 'Parameter',
-	components: { DatePicker, Multiselect },
+	components: { DatePicker, Multiselect, Modal },
 	props: {
 		parameterObject: {
 			type: Object,
@@ -591,6 +628,16 @@ export default {
 		bookingSlotIdUpdated(value) {
 			this.$emit('valueUpdated', value);
 		},
+
+		displayModal(modalName) {
+			this.$refs[modalName].open();
+		},
+
+		onAddNewValue(parameter) {
+			// Close the modal
+			this.$refs['addNew' + parameter.param].close();
+			this.$emit('newValueAdded', parameter);
+		},
 		//
 	},
 	watch: {
@@ -670,6 +717,10 @@ export default {
 		formattedValue: {
 			get() {
 				if (this.parameter.type === 'date') {
+					if (this.parameter.allownull && this.value === null) {
+						return null;
+					}
+
 					let today = new Date().toISOString().split('T')[0];
 					let dateValue = typeof this.value === 'string' ? this.value : today;
 					return dateValue && dateValue < today ? today : dateValue;
@@ -709,5 +760,9 @@ export default {
 
 .no-options .multiselect__select {
 	display: none !important;
+}
+
+div > fieldset[data-toggle='radio_buttons'] > div > input.fabrikinput {
+	margin-right: 0 !important;
 }
 </style>

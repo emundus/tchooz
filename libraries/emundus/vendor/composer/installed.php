@@ -3,7 +3,7 @@
         'name' => 'emundus/tchooz',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'ed3a9b2c810d1e406ecf6c3ad6f17cf5ee504353',
+        'reference' => 'e4504c5a5e91bef9659dc60e68cba064a9e9e9d8',
         'type' => 'library',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -69,7 +69,7 @@
         'emundus/tchooz' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'ed3a9b2c810d1e406ecf6c3ad6f17cf5ee504353',
+            'reference' => 'e4504c5a5e91bef9659dc60e68cba064a9e9e9d8',
             'type' => 'library',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),

@@ -7,6 +7,7 @@
         <option value="redirect">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_REDIRECT</option>
         <option value="generate_letter">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_GENERATE_LETTER</option>
         <option value="sign_flow">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGN_FLOW</option>
+        <option value="alter_cart">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_ALTER_CART</option>
     </field>
 
     <field
@@ -202,4 +203,39 @@
 
 
     <!-- End Sign flow fields -->
+
+    <!-- Alter cart fields -->
+    <field
+            showon="action_type:alter_cart"
+            name="alter_cart_action"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ALTER_CART_ACTION_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ALTER_CART_ACTION_DESC"
+            >
+        <option value="add_product">PLG_EMUNDUSCUSTOMACTIONS_FIELD_PRODUCT_ACTION_ADD_PRODUCT</option>
+        <option value="remove_product">PLG_EMUNDUSCUSTOMACTIONS_FIELD_PRODUCT_ACTION_REMOVE_PRODUCT</option>
+        <option value="add_discount">PLG_EMUNDUSCUSTOMACTIONS_FIELD_PRODUCT_ACTION_ADD_DISCOUNT</option>
+        <option value="remove_discount">PLG_EMUNDUSCUSTOMACTIONS_FIELD_PRODUCT_ACTION_REMOVE_DISCOUNT</option>
+    </field>
+    <field
+            showon="action_type:alter_cart[AND]alter_cart_action:add_product,remove_product"
+            name="product_id"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_PRODUCT_ID_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_PRODUCT_ID_DESC"
+            query="SELECT id, label FROM #__emundus_product WHERE published = 1"
+            key_field="id"
+            value_field="label"
+    />
+    <field
+            showon="action_type:alter_cart[AND]alter_cart_action:add_discount,remove_discount"
+            name="discount_id"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_DISCOUNT_ID_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_DISCOUNT_ID_DESC"
+            query="SELECT id, label FROM #__emundus_discount WHERE published = 1"
+            key_field="id"
+            value_field="label"
+    />
+    <!-- End Alter cart fields -->
 </form>

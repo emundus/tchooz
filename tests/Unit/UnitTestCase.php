@@ -16,6 +16,7 @@ use Joomla\Database\DatabaseQuery;
 use Joomla\Database\QueryInterface;
 use PHPUnit\Framework\TestCase;
 use Unit\Helper\Dataset;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 //require_once __DIR__ . '/Helper/Dataset.php';
 

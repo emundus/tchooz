@@ -2234,7 +2234,7 @@ class EmundusControllersettings extends BaseController
 			$app_id = $this->input->getInt('app_id', 0);
 			$setup = $this->input->getRaw('setup', []);
 
-			if(!empty($app_id) && !empty($setup)) {
+			if (!empty($app_id) && !empty($setup)) {
 				$setup = json_decode($setup);
 
 				$response['status'] = $this->m_settings->setupApp($app_id, $setup, $this->user->id);
@@ -2313,6 +2313,8 @@ class EmundusControllersettings extends BaseController
 								$workspaces = $synchronizer->getWorkspaces();
 								$response['status'] = !empty($workspaces['data']->data);
 							}
+							break;
+						case 'sogecommerce':
 							break;
 						default:
 							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
@@ -2566,7 +2568,7 @@ class EmundusControllersettings extends BaseController
 
 		$this->sendJsonResponse($response);
 	}
-	
+
 	public function getfileinfosfromuploadid(): void
 	{
 		$this->checkToken();

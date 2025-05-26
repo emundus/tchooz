@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="[Paiement] Liste des produits">
+        <message>
+            <![CDATA[[Paiement] Liste des produits]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

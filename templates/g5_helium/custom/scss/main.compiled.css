@@ -872,6 +872,33 @@ video {
     border: 1px solid var(--em-coordinator-secondary-color);
     text-decoration: none;
 }
+.tw-btn-red {
+    background-color: var(--red-500);
+    color: var(--neutral-0) !important;
+    border: 1px solid var(--red-500);
+    text-shadow: none;
+    text-transform: math-auto;
+    padding: var(--em-spacing-vertical) var(--em-spacing-horizontal);
+    font-size: 16px;
+    font-family: var(--em-profile-font);
+    line-height: 1.25;
+    border-radius: var(--em-applicant-br);
+    transition: all 0.2s ease-out;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+}
+.tw-btn-red:hover {
+    background-color: var(--neutral-0);
+    color: var(--red-500) !important;
+    border: 1px solid var(--red-500);
+    text-decoration: none;
+}
+.tw-btn-red:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
 .tw-target-blank-links {
     text-decoration: underline;
 }
@@ -907,6 +934,12 @@ video {
         }
 .tw-btn-cancel:hover p,.tw-btn-cancel:hover span,.tw-btn-cancel:focus p,.tw-btn-cancel:focus span,.tw-btn-cancel:active p,.tw-btn-cancel:active span {
                 color: var(--neutral-0);
+            }
+.tw-btn-red p,.tw-btn-red span {
+            color: var(--neutral-0);
+        }
+.tw-btn-red:hover p,.tw-btn-red:hover span,.tw-btn-red:focus p,.tw-btn-red:focus span,.tw-btn-red:active p,.tw-btn-red:active span {
+                color: var(--red-500);
             }
 /** DROPFILES **/
 .dropfiles-page .dropfiles-container .dropfiles_list .\!file a.downloadlink {
@@ -2591,6 +2624,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-right-\[2rem\] {
     right: 2rem;
 }
+.tw-right-\[50px\] {
+    right: 50px;
+}
 .tw-top-0 {
     top: 0px;
 }
@@ -2621,11 +2657,23 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-top-\[3px\] {
     top: 3px;
 }
+.tw-top-\[59px\] {
+    top: 59px;
+}
 .tw-z-0 {
     z-index: 0;
 }
 .tw-z-10 {
     z-index: 10;
+}
+.tw-col-\[1\] {
+    grid-column: 1;
+}
+.tw-col-\[2\] {
+    grid-column: 2;
+}
+.tw-col-span-2 {
+    grid-column: span 2 / span 2;
 }
 .tw-float-right {
     float: right;
@@ -3237,6 +3285,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .\!tw-ml-1 {
     margin-left: var(--em-spacing-1) !important;
+}
+.\!tw-mr-0 {
+    margin-right: 0px !important;
 }
 .\!tw-mt-0 {
     margin-top: 0px !important;
@@ -4172,11 +4223,18 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-h-\[38px\] {
     height: 38px !important;
 }
+.\!tw-h-\[70\%\] {
+    height: 70% !important;
+}
 .\!tw-h-\[calc\(100\%-155px\)\] {
     height: calc(100% - 155px) !important;
 }
 .\!tw-h-auto {
     height: auto !important;
+}
+.\!tw-h-fit {
+    height: -moz-fit-content !important;
+    height: fit-content !important;
 }
 .tw-h-1\/3 {
     height: 33.333333%;
@@ -4205,6 +4263,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-h-\[10rem\] {
     height: 10rem;
 }
+.tw-h-\[140px\] {
+    height: 140px;
+}
 .tw-h-\[16px\] {
     height: 16px;
 }
@@ -4222,6 +4283,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-h-\[40px\] {
     height: 40px;
+}
+.tw-h-\[45rem\] {
+    height: 45rem;
 }
 .tw-h-\[95\%\] {
     height: 95%;
@@ -4481,6 +4545,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-\[10rem\] {
     width: 10rem;
 }
+.tw-w-\[140px\] {
+    width: 140px;
+}
 .tw-w-\[150px\] {
     width: 150px;
 }
@@ -4547,6 +4614,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-w-screen {
     width: 100vw;
 }
+.tw-min-w-\[140px\] {
+    min-width: 140px;
+}
 .tw-min-w-\[15rem\] {
     min-width: 15rem;
 }
@@ -4565,11 +4635,17 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-min-w-\[400px\] {
     min-width: 400px;
 }
+.tw-min-w-\[70vw\] {
+    min-width: 70vw;
+}
 .tw-max-w-0 {
     max-width: 0rem;
 }
 .tw-max-w-\[30vw\] {
     max-width: 30vw;
+}
+.tw-max-w-\[95vw\] {
+    max-width: 95vw;
 }
 .tw-max-w-fit {
     max-width: -moz-fit-content;
@@ -5192,6 +5268,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-grid-cols-9 {
     grid-template-columns: repeat(9, minmax(0, 1fr));
 }
+.tw-grid-cols-\[minmax\(0\,1fr\)_max-content\] {
+    grid-template-columns: minmax(0,1fr) max-content;
+}
 .tw-grid-cols-none {
     grid-template-columns: none;
 }
@@ -5424,6 +5503,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-rounded-xl {
     border-radius: 0.75rem;
 }
+.tw-rounded-b-lg {
+    border-bottom-right-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
 .tw-rounded-e-coordinator {
     border-start-end-radius: var(--em-coordinator-br);
     border-end-end-radius: var(--em-coordinator-br);
@@ -5431,6 +5514,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-rounded-l-lg {
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
+}
+.tw-rounded-r-lg {
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
 }
 .tw-rounded-s-coordinator {
     border-start-start-radius: var(--em-coordinator-br);
@@ -103499,6 +103586,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .\!tw-bg-blue-300 {
     background-color: var(--blue-300) !important;
 }
+.\!tw-bg-main-50 {
+    background-color: var(--main-50) !important;
+}
 .\!tw-bg-neutral-0 {
     background-color: var(--neutral-0) !important;
 }
@@ -113816,8 +113906,8 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     -o-object-fit: cover;
        object-fit: cover;
 }
-.\!tw-p-0 {
-    padding: 0px !important;
+.\!tw-p-3 {
+    padding: var(--em-spacing-3) !important;
 }
 .\!tw-p-6 {
     padding: var(--em-spacing-6) !important;
@@ -113851,6 +113941,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-p-\[0\.5rem\] {
     padding: 0.5rem;
+}
+.tw-p-\[9px\] {
+    padding: 9px;
 }
 .\!tw-px-2 {
     padding-left: var(--em-spacing-2) !important;
@@ -113995,6 +114088,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 .tw-px-96 {
     padding-left: 24rem;
     padding-right: 24rem;
+}
+.tw-px-\[9px\] {
+    padding-left: 9px;
+    padding-right: 9px;
 }
 .tw-px-px {
     padding-left: 1px;
@@ -114255,6 +114352,9 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
 }
 .tw-pb-96 {
     padding-bottom: 24rem;
+}
+.tw-pb-\[184px\] {
+    padding-bottom: 184px;
 }
 .tw-pb-px {
     padding-bottom: 1px;
@@ -114936,6 +115036,10 @@ div[id^='recorder-'] div[id^='pipe-upload-wrap-recorder-'] label {
     --tw-shadow: 0 0px 0px 1px var(--em-profile-color);
     --tw-shadow-colored: 0 0px 0px 1px var(--tw-shadow-color);
     box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+.tw-drop-shadow-lg {
+    --tw-drop-shadow: drop-shadow(0 10px 8px rgb(0 0 0 / 0.04)) drop-shadow(0 4px 3px rgb(0 0 0 / 0.1));
+    filter: var(--tw-blur) var(--tw-brightness) var(--tw-contrast) var(--tw-grayscale) var(--tw-hue-rotate) var(--tw-invert) var(--tw-saturate) var(--tw-sepia) var(--tw-drop-shadow);
 }
 .tw-transition-all {
     transition-property: all;
@@ -116302,6 +116406,9 @@ div.sx__time-grid-event.sx__event {
     --tw-bg-opacity: 1;
     background-color: rgb(229 231 235 / var(--tw-bg-opacity));
 }
+.hover\:tw-bg-neutral-0:hover {
+    background-color: var(--neutral-0);
+}
 .hover\:tw-bg-neutral-100:hover {
     background-color: var(--neutral-100);
 }
@@ -116335,6 +116442,9 @@ div.sx__time-grid-event.sx__event {
 }
 .hover\:tw-text-profile-full:hover {
     color: var(--em-profile-color);
+}
+.hover\:tw-text-red-500:hover {
+    color: var(--red-500);
 }
 .hover\:tw-text-white:hover {
     --tw-text-opacity: 1;

@@ -148,6 +148,48 @@ class WorkflowModelTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers EmundusModelWorkflow::getPaymentStepType()
+	 * @return void
+	 */
+	public function testgetPaymentStepType()
+	{
+		$payment_step_type_id = $this->model->getPaymentStepType();
+		$this->assertGreaterThan(0, $payment_step_type_id);
+	}
+
+	/**
+	 * EmundusModelWorkflow::updateWorkflow
+	 * @return void
+	 */
+	public function testCreateWorkflowWithPaymentStep()
+	{
+		$workflow_id = $this->model->add();
+		$this->assertNotEmpty($workflow_id);
+
+		$workflow = ['id' => $workflow_id, 'label' => 'Test Workflow', 'published' => 1];
+		$steps = [
+			[
+				'id' => 0,
+				'entry_status' => [['id' => 0]],
+				'type' => 1,
+				'profile_id' => '1000',
+				'label' => 'Test Step',
+				'output_status' => 1
+			],
+			[
+				'id' => 0,
+				'entry_status' => [['id' => 0]],
+				'type' => $this->model->getPaymentStepType(),
+				'label' => 'Test Payment Step',
+				'output_status' => 1
+			]
+		];
+
+		$updated = $this->model->updateWorkflow($workflow, $steps, []);
+		$this->assertTrue($updated, 'Create a workflow with an applicant and payment step on same entry status');
+	}
+
+	/**
 	 * @covers EmundusModelWorkflow::updateWorkflow only exception thrown case when adding two steps with same entry status
 	 *
 	 * @return void
