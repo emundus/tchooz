@@ -1,68 +1,44 @@
-const events = ['click'];
+const clickOutside = {
+	mounted(el, binding) {
+		el.clickOutsideEvent = (event) => {
+			const options = typeof binding.value === 'function' ? { handler: binding.value } : binding.value;
+			if (options.disabled) {
+				return;
+			}
 
-function onClickOutside({ event, el, handler, middleware }) {
-	const isClickOutside = event.target !== el && !el.contains(event.target);
+			const excludedElements = options.exclude || [];
+			const clickedOnExcludedElement = excludedElements.some((selector) => {
+				const elements = document.querySelectorAll(selector);
+				return Array.from(elements).some((excludedEl) => {
+					return excludedEl === event.target || excludedEl.contains(event.target);
+				});
+			});
 
-	if (!isClickOutside || !middleware(event, el)) {
-		return null;
-	}
+			if (clickedOnExcludedElement) {
+				return;
+			}
+			const isElementVisible = (el) => {
+				const rect = el.getBoundingClientRect();
+				return (
+					rect.top >= 0 &&
+					rect.left >= 0 &&
+					rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+					rect.right <= (window.innerWidth || document.documentElement.clientWidth) &&
+					getComputedStyle(el).display !== 'none' &&
+					getComputedStyle(el).opacity !== '0' &&
+					getComputedStyle(el).visibility !== 'hidden'
+				);
+			};
 
-	return handler(event, el);
-}
-
-const instances = new Map();
-
-//Requires loop to toggle events for several listeners of an element
-function toggleEventListeners(eventHandlers) {
-	return (action) => {
-		eventHandlers.forEach(({ event, handler }) => {
-			document[`${action}EventListener`](event, handler, true);
-		});
-	};
-}
-
-//Validator function
-function processArgs(value) {
-	const isFunction = typeof value === 'function';
-
-	if (!isFunction && typeof value !== 'object') {
-		throw new Error(`v-click-outside: Binding value should be a function or an object, ${typeof bindingValue} given`);
-	}
-
-	return {
-		handler: isFunction ? value : value.handler,
-		middleware: value.middleware || (() => true),
-	};
-}
-
-//Now need adapter to handle several events for one Map element
-function eventAdapter(events, { el, handler, middleware }) {
-	return events.map((eventName) => ({
-		event: eventName,
-		handler: (event) => onClickOutside({ event, el, handler, middleware }),
-	}));
-}
-
-function bind(el, { value }) {
-	const { handler, middleware } = processArgs(value);
-	const eventHandlers = eventAdapter(events, { el, handler, middleware });
-
-	instances.set(el, eventHandlers);
-
-	toggleEventListeners(eventHandlers)('add');
-}
-
-function unbind(el) {
-	const eventHandlers = instances.get(el);
-
-	toggleEventListeners(eventHandlers)('remove');
-
-	instances.delete(el);
-}
-
-const directive = {
-	bind,
-	unbind,
+			if (!(el === event.target || el.contains(event.target)) && isElementVisible(el)) {
+				options.handler(event);
+			}
+		};
+		document.addEventListener('click', el.clickOutsideEvent);
+	},
+	unmounted(el) {
+		document.removeEventListener('click', el.clickOutsideEvent);
+	},
 };
 
-export default directive;
+export default clickOutside;

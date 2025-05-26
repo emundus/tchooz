@@ -1125,6 +1125,14 @@ class EmundusControllerEvents extends BaseController
 				$registrants = $this->m_events->getRegistrants($filter, $sort, $recherche, $lim, $page, $order_by, $event, $location, $applicant, $assoc_user_filter, 0, [], $this->user->id, $day, $room, $hour);
 				if (!empty($registrants) && $registrants['count'] > 0)
 				{
+					// Search for a files or evaluation view
+					$menu = Factory::getApplication()->getMenu();
+					$emundusUser      = $this->app->getSession()->get('emundusUser');
+					$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+					if(empty($files_menu)) {
+						$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
+					}
+
 					foreach ($registrants['datas'] as $registrant)
 					{
 						$registrant->label = ['fr' => $registrant->label, 'en' => $registrant->label];
@@ -1170,14 +1178,6 @@ class EmundusControllerEvents extends BaseController
 							{
 								$registrant->conference_link = 'https://www.google.com/maps?q=' . urlencode($location->address);
 							}
-						}
-
-						// Search for a files or evaluation view
-						$menu = Factory::getApplication()->getMenu();
-						$emundusUser      = $this->app->getSession()->get('emundusUser');
-						$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
-						if(empty($files_menu)) {
-							$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 						}
 
 						$registrant->additional_columns = [

@@ -30,14 +30,14 @@ class ParcoursupFactory
 			'json'        => json_encode($application)
 		];
 
-		$query->select('id')
+		$query->select('id, json')
 			->from($this->database->quoteName('#__emundus_campaign_candidature_parcoursup'))
 			->where($this->database->quoteName('id_parcoursup') . ' = ' . $this->database->quote($application['id_parcoursup']))
 			->where($this->database->quoteName('campaign_id') . ' = ' . $this->database->quote($application['campaign_id']));
 		$this->database->setQuery($query);
-		$importId = $this->database->loadResult();
-
-		if (empty($importId))
+		$import = $this->database->loadObject();
+		
+		if (empty($import->id))
 		{
 			$importDatas['id_parcoursup'] = $application['id_parcoursup'];
 			$importDatas['created_at']    = date('Y-m-d H:i:s');
@@ -47,7 +47,19 @@ class ParcoursupFactory
 		}
 		else
 		{
-			$importDatas['id']         = $importId;
+			if(!empty($import->json))
+			{
+				$oldJson = json_decode($import->json, true);
+				if (!empty($oldJson))
+				{
+					$oldJson             = array_filter($oldJson);
+					$application         = array_filter($application);
+					$application         = array_merge($oldJson, $application);
+					$importDatas['json'] = json_encode($application);
+				}
+			}
+
+			$importDatas['id']         = $import->id;
 			$importDatas['updated_at'] = date('Y-m-d H:i:s');
 
 			$importDatas = (object) $importDatas;
@@ -66,18 +78,21 @@ class ParcoursupFactory
 			$application->addData($elementId, $value);
 		}
 
-		// Create User object
-		$user = $this->userFactory->buildUser(
-			$application->getApplicationFileKey('name'),
-			$application->getApplicationFileKey('firstname'),
-			$application->getApplicationFileKey('lastname'),
-			$application->getApplicationFileKey('username') ?? $application->getApplicationFileKey('email'),
-			$application->getApplicationFileKey('email'),
-			[2],
-			$skipActivation,
-			1000
-		);
-		$application->setUser($user);
+		if(!empty($application->getApplicationFileKey('name')) && !empty($application->getApplicationFileKey('firstname'))  && !empty($application->getApplicationFileKey('lastname')))
+		{
+			// Create User object
+			$user = $this->userFactory->buildUser(
+				$application->getApplicationFileKey('name'),
+				$application->getApplicationFileKey('firstname'),
+				$application->getApplicationFileKey('lastname'),
+				$application->getApplicationFileKey('username') ?? $application->getApplicationFileKey('email'),
+				$application->getApplicationFileKey('email'),
+				[2],
+				$skipActivation,
+				1000
+			);
+			$application->setUser($user);
+		}
 
 		return $application;
 	}

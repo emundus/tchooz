@@ -7,4 +7,5 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Svrnm\\ExcelDataTables' => array($vendorDir . '/svrnm/exceldatatables/src'),
+    'Smalot\\PdfParser\\' => array($vendorDir . '/smalot/pdfparser/src'),
 );

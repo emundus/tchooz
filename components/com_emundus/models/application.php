@@ -25,6 +25,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\Enums\NumericSign\SignStatus;
 
 /**
  * Emundus Component Application Model
@@ -195,45 +196,89 @@ class EmundusModelApplication extends ListModel
 		return $this->_db->loadObjectList();
 	}
 
-	/**
-	 * @param $fnum
-	 * @param $search
-	 * @param $profile
-	 * @param $user_id
-	 *
-	 * @return array|mixed
-	 */
 	function getUserAttachmentsByFnum($fnum, $search = '', $profile = null, $applicant = false, $user_id = null)
 	{
 		$attachments = [];
+		$app = Factory::getApplication();
 
 		if (!empty($fnum)) {
+			if(empty($user_id))
+			{
+				$user_id = $this->_user->id;
+			}
+
 			if (!class_exists('EmundusHelperAccess')) {
 				require_once JPATH_ROOT . '/components/com_emundus/helpers/access.php';
 			}
+			if(!class_exists('EmundusModelSettings')) {
+				require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
+			}
+			if(!class_exists('EmundusModelSign')) {
+				require_once JPATH_ROOT . '/components/com_emundus/models/sign.php';
+			}
+			$m_sign = new EmundusModelSign();
+			$m_settings = new EmundusModelSettings();
+			$sign_enabled = $m_settings->getAddonStatus('numeric_sign')['enabled'];
+			if($sign_enabled && !$app->isClient('cli'))
+			{
+				$emundusUser      = $app->getSession()->get('emundusUser');
+				$add_sign_url = $app->getMenu()->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=sign&layout=add', $emundusUser->menutype], 'true');
+				if(empty($add_sign_url) && EmundusHelperAccess::asCoordinatorAccessLevel($user_id))
+				{
+					$add_sign_url = $app->getMenu()->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=sign&layout=add', 'onboardingmenu'], 'true');
+				}
+			}
 
-			$eMConfig           = JComponentHelper::getParams('com_emundus');
+			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
 
 			$query = $this->_db->getQuery(true);
-			$query->select('eu.id AS aid, eu.user_id, esa.*, eu.attachment_id, eu.filename, eu.description  AS upload_description, eu.timedate, eu.can_be_deleted, eu.can_be_viewed, eu.is_validated, eu.modified, eu.modified_by, esc.label as campaign_label, esc.year, esc.training')
-				->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'));
+
+			$columns = [
+				$this->_db->quoteName('eu.id','aid'),
+				$this->_db->quoteName('eu.user_id'),
+				$this->_db->quoteName('ecc.applicant_id'),
+				$this->_db->quoteName('ecc.id','ccid'),
+				'esa.*',
+				$this->_db->quoteName('eu.attachment_id'),
+				$this->_db->quoteName('eu.filename'),
+				$this->_db->quoteName('eu.description','upload_description'),
+				$this->_db->quoteName('eu.timedate'),
+				$this->_db->quoteName('eu.can_be_deleted'),
+				$this->_db->quoteName('eu.can_be_viewed'),
+				$this->_db->quoteName('eu.is_validated'),
+				$this->_db->quoteName('eu.modified'),
+				$this->_db->quoteName('eu.modified_by'),
+				$this->_db->quoteName('eu.signed_file'),
+				$this->_db->quoteName('esc.label','campaign_label'),
+				$this->_db->quoteName('esc.year'),
+				$this->_db->quoteName('esc.training'),
+				'CONCAT(u.firstname, " ", u.lastname) AS user_name',
+				'CONCAT(u2.firstname, " ", u2.lastname) AS modified_user_name'
+			];
+
+			$query->from($this->_db->quoteName('#__emundus_uploads', 'eu'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('eu.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_users', 'u') . ' ON ' . $this->_db->quoteName('u.user_id') . ' = ' . $this->_db->quoteName('eu.user_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_users', 'u2') . ' ON ' . $this->_db->quoteName('u2.user_id') . ' = ' . $this->_db->quoteName('eu.modified_by'));
 
 			if (!empty($profile)) {
 				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id') . ' AND ' . $this->_db->quoteName('esap.profile_id') . ' = ' . $this->_db->quote($profile));
 			} else {
 				$query->leftJoin($this->_db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('esap.attachment_id'));
 			}
-			$query->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
+
+			$query->select($columns)
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
 				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
 				->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
 
-			if ((!empty($user_id) && EmundusHelperAccess::isExpert($user_id)) || (!empty($this->_user) && EmundusHelperAccess::isExpert($this->_user->id))) {
+			if (EmundusHelperAccess::isExpert($user_id)) {
 				$query->andWhere($this->_db->quoteName('esa.id') . ' != ' . $expert_document_id);
 			}
 
-			if (isset($search) && !empty($search)) {
+			if (!empty($search)) {
 				$query->andWhere($this->_db->quoteName('esa.value') . ' LIKE ' . $this->_db->quote('%' . $search . '%')
 					. ' OR ' . $this->_db->quoteName('esa.description') . ' LIKE ' . $this->_db->quote('%' . $search . '%')
 					. ' OR ' . $this->_db->quoteName('eu.timedate') . ' LIKE ' . $this->_db->quote('%' . $search . '%'));
@@ -256,7 +301,7 @@ class EmundusModelApplication extends ListModel
 			}
 
 			if (!empty($attachments)) {
-				$allowed_attachments = isset($user_id) ? EmundusHelperAccess::getUserAllowedAttachmentIDs($user_id) : EmundusHelperAccess::getUserAllowedAttachmentIDs($this->_user->id);
+				$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($user_id);
 				if ($allowed_attachments !== true) {
 					foreach ($attachments as $key => $attachment) {
 						if (!in_array($attachment->id, $allowed_attachments)) {
@@ -265,16 +310,8 @@ class EmundusModelApplication extends ListModel
 					}
 				}
 
-				$query->clear()
-					->select('applicant_id')
-					->from($this->_db->quoteName('#__emundus_campaign_candidature'))
-					->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-
-				$this->_db->setQuery($query);
-				$applicant_id = $this->_db->loadResult();
-
 				foreach ($attachments as $attachment) {
-					if (!file_exists(EMUNDUS_PATH_ABS . $applicant_id . '/' . $attachment->filename)) {
+					if (!file_exists(EMUNDUS_PATH_ABS . $attachment->applicant_id . '/' . $attachment->filename)) {
 						$attachment->existsOnServer = false;
 					}
 					else {
@@ -288,6 +325,68 @@ class EmundusModelApplication extends ListModel
 					$this->_db->setQuery($query);
 					$attachment->profiles = $this->_db->loadColumn();
                     $attachment->upload_description = empty($attachment->upload_description)? '' : $attachment->upload_description;
+					$attachment->signers = 0;
+					$attachment->original_upload_id = 0;
+					$attachment->signed_upload_id = 0;
+
+					if($sign_enabled)
+					{
+						$query->clear()
+							->select('esrs.id, esrs.status, esr.signed_upload_id, esr.upload_id')
+							->from($this->_db->quoteName('#__emundus_sign_requests','esr'))
+							->leftJoin($this->_db->quoteName('#__emundus_sign_requests_signers','esrs') . ' ON ' . $this->_db->quoteName('esrs.request_id') . ' = ' . $this->_db->quoteName('esr.id'))
+							->where($this->_db->quoteName('esr.fnum') . ' = ' . $this->_db->quote($fnum))
+							// Remove cancellation requests
+							->where($this->_db->quoteName('esr.status') . ' != ' . $this->_db->quote(SignStatus::CANCELLED->value));
+
+						if($attachment->signed_file === 1)
+						{
+							$query->where($this->_db->quoteName('esr.signed_upload_id') . ' = ' . $this->_db->quote($attachment->aid));
+						}
+						else {
+							$query->where($this->_db->quoteName('esr.upload_id') . ' = ' . $this->_db->quote($attachment->aid));
+						}
+
+						$this->_db->setQuery($query);
+						$signers = $this->_db->loadObjectList();
+
+						if(!empty($signers))
+						{
+							$signers_signed                 = 0;
+							$attachment->original_upload_id = $signers[0]->upload_id;
+							$attachment->signed_upload_id   = $signers[0]->signed_upload_id;
+						}
+
+						if(
+							(empty($attachment->signed_upload_id) || $attachment->signed_file === 1)
+							&& !empty($signers))
+						{
+							foreach ($signers as $signer)
+							{
+								if ($signer->status === SignStatus::SIGNED->value)
+								{
+									$signers_signed++;
+								}
+							}
+
+							$icon       = $signers_signed === count($signers) ? 'check_circle' : 'do_not_disturb_on';
+							$bg_color   = $signers_signed === count($signers) ? 'tw-bg-main-100' : 'tw-bg-blue-100';
+							$text_color = $signers_signed === count($signers) ? 'tw-text-main-600' : 'tw-text-blue-600';
+
+							$attachment->signers = '<div class="' . $bg_color . ' ' . $text_color . ' tw-rounded-full tw-w-fit tw-text-profile-full tw-flex tw-items-center tw-justify-center tw-font-semibold tw-px-2 tw-py-1 tw-gap-2 tw-m-auto"><span class="' . $text_color . ' material-symbols-outlined !tw-text-base">' . $icon . '</span><span class="' . $text_color . '">' . $signers_signed . '/' . count($signers) . '</span></div>';
+						}
+						else {
+							// Display only for pdf files
+							if(!empty($add_sign_url) && pathinfo($attachment->filename, PATHINFO_EXTENSION) === 'pdf' && EmundusHelperAccess::asAccessAction($m_sign->getSignActionId(), 'c', $user_id, $fnum)) {
+								$url = $add_sign_url->route . '?ccid=' . $attachment->ccid . '&attachment=' . $attachment->id . '&upload=' . $attachment->aid;
+								$attachment->signers = '<a href="'.$url.'" target="_blank" class="tw-w-fit tw-btn-primary tw-m-auto"><span class="material-symbols-outlined">stylus_note</span></a>';
+							}
+							else
+							{
+								$attachment->signers = '-';
+							}
+						}
+					}
 				}
 
 				if ($attachments !== array_values($attachments)) {
@@ -2519,7 +2618,7 @@ class EmundusModelApplication extends ListModel
 												$elt .= "</ul>";
 
 											}
-											elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && !empty($element->content)) {
+											elseif (($element->plugin == 'dropdown' || $element->plugin == 'radiobutton') && isset($element->content)) {
 												$params = json_decode($element->params);
 												$index  = array_search($element->content, $params->sub_options->sub_values);
 

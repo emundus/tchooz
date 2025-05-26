@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\Language\Text;
 
 $index_form = 1;
 $index_doc  = 1;
@@ -38,7 +39,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
     <div class="mod_emundus_checklist em-mb-24 ">
         <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
             <div class="em-flex-row">
-                <h3><?php echo JText::_($preliminary_documents_title) ?></h3>
+                <h3><?php echo Text::_($preliminary_documents_title) ?></h3>
             </div>
             <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined"
                   style="transform: rotate(-90deg);">expand_more</span>
@@ -58,7 +59,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 <div class="mod_emundus_checklist tw-border tw-border-neutral-300">
     <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">
         <div class="em-flex-row">
-            <h3> <?php echo JText::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h3>
+            <h3> <?php echo Text::_($forms_title) . ' ' . $index_form . '/' . $pages_no ?></h3>
         </div>
         <span id="mod_emundus_checklist___expand_icon" class="material-symbols-outlined">expand_more</span>
     </div>
@@ -104,7 +105,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                                 </span>
                             </div>
                             <a href="<?php echo $form->link ?>" class="group-hover:!tw-text-blue-900" style="color: <?php echo $title_color; ?>;" <?php if ($form->id == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
-                                <?php echo JText::_($form->label); ?>
+                                <?php echo Text::_($form->label); ?>
                             </a>
                         </div>
 						<?php if ($index != (sizeof($forms) - 1) || ($show_mandatory_documents == 1 && !empty($mandatory_documents)) || ($show_optional_documents == 1 && !empty($optional_documents)) || !empty($checkout_url)) : ?>
@@ -151,7 +152,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                         </span>
                     </div>
                     <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>" class="group-hover:!tw-text-blue-900" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
-                        <?php echo JText::_($mandatory_documents_title) ?>
+                        <?php echo Text::_($mandatory_documents_title) ?>
                     </a>
                 </div>
                 <div class="em-flex-row" style="align-items: stretch">
@@ -214,7 +215,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                         </span>
                     </div>
                     <a href="<?php echo $itemid['link'] . '&Itemid=' . $itemid['id'] ?>#attachment_list_opt" class="group-hover:!tw-text-blue-900" style="color: <?php echo $title_color; ?>;" <?php if ($itemid['id'] == $menuid) : ?>class="tw-font-medium"<?php endif; ?>>
-                        <?php echo JText::_($optional_documents_title) ?>
+                        <?php echo Text::_($optional_documents_title) ?>
                     </a>
                 </div>
 				<?php if (!empty($checkout_url)) : ?>
@@ -222,6 +223,31 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
 				<?php endif ?>
             </div>
 		<?php endif; ?>
+
+        <?php if (!empty($payment_step)) :
+	        if (!$paid) {
+		        $paid_class = 'need_missing';
+	        }
+	        else {
+		        $paid_class = 'need_ok';
+	        }
+            ?>
+            <div class="mod_emundus_checklist___border_item"></div>
+            <div class="<?php if ($view === 'payment') echo 'active' ?> mod_emundus_checklist_<?php echo $paid_class; ?>  mod_emundus_checklist___form_item tw-cursor-pointer">
+                <div class="mod_emundus_checklist___grid tw-group">
+                    <div class="mod_emundus_checklist___step_count group-hover:!tw-bg-blue-100 group-hover:!tw-border-blue-100">
+	                    <?php if ($paid_class == 'need_missing') : ?>
+                            <span class="material-symbols-outlined !tw-text-neutral-900 group-hover:!tw-text-blue-900">shopping_cart</span>
+	                    <?php elseif ($paid_class == 'need_ok') : ?>
+                            <span class="material-symbols-outlined tw-text-white">done</span>
+	                    <?php endif; ?>
+
+                    </div>
+                    <a href="/cart?fnum=<?= $user->fnum ?>" class="group-hover:!tw-text-blue-900"><?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>
+                </div>
+            </div>
+
+        <?php endif; ?>
 
 		<?php if (!empty($checkout_url)) : ?>
 			<?php
@@ -241,7 +267,7 @@ if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
                             <span class="material-symbols-outlined tw-text-white">done</span>
 						<?php endif; ?>
                     </div>
-                    <a href="<?php echo $confirm_form_url; ?>"><?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>
+                    <a href="<?php echo $confirm_form_url; ?>"><?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PAYMENT') ?></a>
                 </div>
             </div>
 		<?php endif; ?>
@@ -255,30 +281,36 @@ $url          = explode('&', $uri->toString());
 if (is_array($url)) {
 	$details_view = in_array('view=details', $url);
 }
-?>
 
-<div class="mod_emundus_checklist___buttons">
-	<?php if ($show_send && $details_view === false && $is_confirm_url === false) : ?>
-        <a class="btn btn-success btn-xs em-w-100"
-			<?php if ((int) ($attachments_progress) >= 100 && (int) ($forms_progress) >= 100 && ((in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $exceptions))) : ?>
-                href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
-			<?php else: ?>
-                style="opacity: 0.6; cursor: not-allowed"
-			<?php endif; ?>
-			<?php if ($application_fee && !$paid) : ?>
-                title="<?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>"
-			<?php else : ?>
-                title="<?php echo JText::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>"
-			<?php endif ?>
-        >
-			<?php if ($application_fee && !$paid) : ?>
-				<?php echo JText::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>
-			<?php else : ?>
-				<?php echo JText::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>
-			<?php endif ?>
-        </a>
-	<?php endif; ?>
-</div>
+$layout = Factory::getApplication()->input->getString('layout');
+if ($layout !== 'cart' || $paid) {
+?>
+    <div class="mod_emundus_checklist___buttons">
+		<?php if ($show_send && $details_view === false && $is_confirm_url === false) : ?>
+            <a class="btn btn-success btn-xs em-w-100"
+				<?php if ((int) ($attachments_progress) >= 100 && (int) ($forms_progress) >= 100 && ((in_array($application->status, $status_for_send) && (!$is_dead_line_passed || ($is_dead_line_passed && $can_edit_after_deadline))) || in_array($user->id, $exceptions))) : ?>
+                    href="<?php echo $confirm_form_url; ?>" style="opacity: 1"
+				<?php else: ?>
+                    style="opacity: 0.6; cursor: not-allowed"
+				<?php endif; ?>
+				<?php if ($application_fee && !$paid) : ?>
+                    title="<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>"
+				<?php else : ?>
+                    title="<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>"
+				<?php endif ?>
+            >
+				<?php if ($application_fee && !$paid) : ?>
+					<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_PROCESS_TO_PAYMENT'); ?>
+				<?php else : ?>
+					<?php echo Text::_('MOD_EMUNDUS_CHECKLIST_SEND_APPLICATION'); ?>
+				<?php endif ?>
+            </a>
+		<?php endif; ?>
+    </div>
+
+<?php
+}
+?>
 
 <script>
     addEventListener("resize", (event) => {

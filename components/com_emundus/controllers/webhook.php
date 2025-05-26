@@ -16,9 +16,16 @@ jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
-
-use GuzzleHttp\Client as GuzzleClient;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Language\Text;
+use GuzzleHttp\Client as GuzzleClient;
+
+use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Synchronizers\Payment\Sogecommerce;
+use Tchooz\Repositories\Payment\TransactionRepository;
+use Tchooz\Traits\TraitResponse;
+use Joomla\Database\DatabaseDriver;
+use Joomla\CMS\Log\Log;
 
 /**
  * eMundus Component Controller
@@ -29,9 +36,13 @@ use Joomla\CMS\MVC\Controller\BaseController;
 class EmundusControllerWebhook extends BaseController
 {
 
+	use TraitResponse;
+
 	protected $app;
 
 	private $m_files;
+
+	private DatabaseDriver $db;
 
 	/**
 	 * Constructor.
@@ -47,6 +58,7 @@ class EmundusControllerWebhook extends BaseController
 
 		$this->m_files = $this->getModel('Files');
 		$this->app     = Factory::getApplication();
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		// Attach logging system.
 		jimport('joomla.log.log');
@@ -982,6 +994,125 @@ class EmundusControllerWebhook extends BaseController
 
 		header('Content-type: application/json');
 		echo json_encode(array('status' => $realstatus, 'msg' => $msg));
+		exit;
+	}
+
+	public function updatePaymentTransaction()
+	{
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		$sync_id = $this->input->getInt('sync_id', 0);
+		$url_transaction_ref = $this->input->getString('transaction_ref', '');
+		$payload = $_POST;
+
+		$transaction_repository = new TransactionRepository();
+		if (!empty($payload) && !empty($sync_id)) {
+			try
+			{
+				Log::addLogger(['text_file' => 'com_emundus.payment.php'], Log::ALL, ['com_emundus.payment']);
+				Log::add('Webhook START: ' . json_encode($payload), Log::INFO, 'com_emundus.payment');
+
+				$query = $this->db->createQuery();
+				$query->select('type')
+					->from('#__emundus_setup_sync')
+					->where('id = ' . $sync_id);
+
+				$this->db->setQuery($query);
+				$type = $this->db->loadResult();
+
+				switch($type) {
+					case 'sogecommerce':
+						Log::add('Sogecommerce transaction update attempt', Log::INFO, 'com_emundus.payment');
+						$sogecommerce = new Sogecommerce();
+						$verified     = $sogecommerce->verifySignature($payload);
+						if ($verified) {
+							Log::add('Sogecommerce signature verified', Log::INFO, 'com_emundus.payment');
+
+							$added_to_queue = $transaction_repository->addTransactionToQueue($payload, $payload['vads_trans_id'], $sync_id);
+
+							if ($added_to_queue) {
+								Log::add('Sogecommerce transaction added to queue', Log::INFO, 'com_emundus.payment');
+								$transaction_id = $transaction_repository->getTransactionIdByExternalReference($payload['vads_trans_id']);
+								$transactions = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
+								$managed = $transaction_repository->manageQueueTransactions($transactions);
+
+								if ($managed) {
+									Log::add('Sogecommerce transaction ' . $payload['vads_trans_id'] . '  managed', Log::INFO, 'com_emundus.payment');
+								} else {
+									Log::add('Sogecommerce transaction ' . $payload['vads_trans_id'] .' not managed', Log::ERROR, 'com_emundus.payment');
+								}
+							} else {
+								Log::add('Sogecommerce transaction not added to queue', Log::ERROR, 'com_emundus.payment');
+							}
+						} else {
+							Log::add('Sogecommerce signature verification failed', Log::ERROR, 'com_emundus.payment');
+							$added_to_queue = false;
+						}
+						break;
+					default:
+						Log::add('Wrong attempt to add transaction to queue, no matching synchronizer found', Log::ERROR, 'com_emundus.payment');
+						$verified = false;
+						$added_to_queue = false;
+						break;
+				}
+
+				if ($verified)
+				{
+					if ($added_to_queue)
+					{
+						$response = ['code' => 200, 'status' => true, 'message' => Text::script('TRANSACTION_ADDED_TO_QUEUE')];
+					}
+					else
+					{
+						$response = ['code' => 500, 'status' => false, 'message' => Text::script('TRANSACTION_NOT_ADDED_TO_QUEUE')];
+					}
+				} else {
+					// TODO: when signature is not verified, we should check IP and blacklist it after 5 wrong attempts
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error processing webhook: ' . $e->getMessage(), Log::ERROR, 'com_emundus.payment');
+				throw new \Exception('Invalid request');
+			}
+		}
+
+		if ($this->app->getIdentity()->guest != 1) {
+			if (!empty($url_transaction_ref))
+			{
+				$transaction_id = $transaction_repository->getTransactionIdByExternalReference($url_transaction_ref);
+				$transaction = $transaction_repository->getById($transaction_id);
+
+				$query = $this->db->createQuery();
+				$query->select('applicant_id')
+					->from('#__emundus_campaign_candidature')
+					->where('fnum LIKE ' . $this->db->quote($transaction->getFnum()));
+
+				$this->db->setQuery($query);
+				$applicant_id = $this->db->loadResult();
+
+				if ($applicant_id === $this->app->getIdentity()->id) {
+					switch ($transaction->getStatus()) {
+						case TransactionStatus::CONFIRMED:
+							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_CONFIRMED_MESASGE'));
+							break;
+						case TransactionStatus::CANCELLED:
+							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_CANCELLED_MESASGE'));
+							break;
+						default:
+							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_PENDING_MESASGE'));
+							break;
+					}
+				}
+			}
+
+			if (!class_exists('EmundusHelperMenu')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+			}
+			$this->app->redirect(EmundusHelperMenu::getHomepageLink());
+		}
+
+		$this->sendJsonResponse($response);
 		exit;
 	}
 

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="[Paiement] Édition ou création d'un produit">
+        <message>
+            <![CDATA[[Paiement] Édition ou création d'un produit]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

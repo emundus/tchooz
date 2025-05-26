@@ -342,9 +342,11 @@ export default {
 		}
 	},
 
-	async getAsyncOptions(route, query, options = {}) {
+	async getAsyncOptions(route, query, options = {}, controller = 'settings') {
+		let asyncClient = new FetchClient(controller);
+
 		try {
-			return await fetchClient.get(route, query, options.signal);
+			return await asyncClient.get(route, query, options.signal);
 		} catch (e) {
 			if (e.name === 'AbortError') {
 				return null;
@@ -479,5 +481,38 @@ export default {
 		} catch (e) {
 			return false;
 		}
+	},
+
+	async checkAddonStatus(addon_type) {
+		try {
+			return await fetchClient.get('checkaddonstatus', {
+				addon_type: addon_type,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getFileInfosFromUploadId(uploadId) {
+		if (typeof uploadId !== 'undefined') {
+			try {
+				return await fetchClient.get('getfileinfosfromuploadid', {
+					upload_id: uploadId,
+				});
+			} catch (e) {
+				return {
+					status: false,
+					msg: e.message,
+				};
+			}
+		}
+
+		return {
+			status: false,
+			msg: 'WRONG_PARAMETERS',
+		};
 	},
 };

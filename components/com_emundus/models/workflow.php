@@ -20,6 +20,10 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Repositories\Payment\TransactionRepository;
+use Tchooz\Repositories\Payment\CartRepository;
+use Tchooz\Entities\Payment\TransactionStatus;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
@@ -28,7 +32,10 @@ class EmundusModelWorkflow extends JModelList
 	private $app;
 	private $db;
 
+	private int $payment_step_type = 0;
+
 	private EmundusHelperCache $h_cache;
+
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -37,7 +44,15 @@ class EmundusModelWorkflow extends JModelList
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->h_cache = new EmundusHelperCache();
 
+		$payment_repository = new PaymentRepository();
+		$this->payment_step_type = $payment_repository->getPaymentStepTypeId();
+
 		Log::addLogger(['text_file' => 'com_emundus.workflow.php'], Log::ALL, array('com_emundus.workflow'));
+	}
+
+	public function getPaymentStepType(): int
+	{
+		return $this->payment_step_type;
 	}
 
 	public function add($label = ''): int
@@ -132,7 +147,7 @@ class EmundusModelWorkflow extends JModelList
 				$already_used_entry_status = [];
 				foreach ($steps as $step) {
 					foreach($step['entry_status'] as $status) {
-						if (!$this->isEvaluationStep($step['type'])) {
+						if ($this->isApplicantStep($step['type'])) {
 							if (in_array($status['id'], $already_used_entry_status)) {
 								$status_label = $status['label'] ?? '';
 
@@ -151,7 +166,11 @@ class EmundusModelWorkflow extends JModelList
 					if ($step['id'] < 1) {
 						unset($step['id']);
 					}
-					if ($this->isEvaluationStep($step['type'])) {
+
+					if ($this->isPaymentStep($step['type'])) {
+						$step['profile_id'] = null;
+						$step['form_id'] = null;
+					} else if ($this->isEvaluationStep($step['type'])) {
 						$step['profile_id'] = null;
 					} else {
 						$step['form_id'] = null;
@@ -169,7 +188,7 @@ class EmundusModelWorkflow extends JModelList
 								$step['id'] = $this->db->insertid();
 							}
 						} else {
-							$fields = ['label', 'type', 'state', 'multiple', 'ordering', 'lock'];
+							$fields = ['label', 'type', 'state', 'multiple', 'ordering', 'lock', 'output_status'];
 
 							$fields_set = [];
 							foreach($fields as $field) {
@@ -188,7 +207,12 @@ class EmundusModelWorkflow extends JModelList
 								->update($this->db->quoteName('#__emundus_setup_workflows_steps'))
 								->set($fields_set);
 
-							if (!$this->isEvaluationStep($step['type']))
+							if ($this->isPaymentStep($step['type']))
+							{
+								$query->set($this->db->quoteName('profile_id') . ' = NULL');
+								$query->set($this->db->quoteName('form_id') . ' = NULL');
+							}
+							else if (!$this->isEvaluationStep($step['type']))
 							{
 								$query->set($this->db->quoteName('profile_id') . ' = ' . $this->db->quote($step['profile_id']));
 								$query->set($this->db->quoteName('form_id') . ' = NULL');
@@ -221,6 +245,7 @@ class EmundusModelWorkflow extends JModelList
 									$entry_status->step_id = $step['id'];
 									$entry_status->status = $status['id'];
 
+									$query->clear();
 									$this->db->insertObject('#__emundus_setup_workflows_steps_entry_status', $entry_status);
 								}
 							}
@@ -533,9 +558,10 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($id)) {
 			$query = $this->db->createQuery();
 			$query->clear()
-				->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status')
+				->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id')
 				->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'payment_rules') . ' ON ' . $this->db->quoteName('payment_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 				->where('esws.id = ' . $id)
 				->group($this->db->quoteName('esws.id'));
 
@@ -1003,6 +1029,7 @@ class EmundusModelWorkflow extends JModelList
 					$query->clear()
 						->update('#__emundus_setup_step_types')
 						->set('label = ' . $this->db->quote($type['label']))
+						->set('class = ' . (!empty($type['class']) ? $this->db->quote($type['class']) : $this->db->quote('blue')))
 						->where('id = ' . $type['id']);
 					$this->db->setQuery($query);
 					$updates[] = $this->db->execute();
@@ -1374,6 +1401,55 @@ class EmundusModelWorkflow extends JModelList
 		return $is_evaluation_step;
 	}
 
+	public function isPaymentStep($type): bool
+	{
+		$is_payment_step = false;
+
+		if (!empty($type)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			if ($type == $this->payment_step_type) {
+				$is_payment_step = true;
+			} else {
+				$query->clear()
+					->select('parent_id')
+					->from($db->quoteName('#__emundus_setup_step_types'))
+					->where('id = ' . $type);
+
+				$db->setQuery($query);
+				$parent_id = $db->loadResult();
+
+				$is_payment_step = $parent_id == $this->payment_step_type;
+			}
+		}
+
+		return $is_payment_step;
+	}
+
+	public function isApplicantStep($type): bool
+	{
+		$is_applicant_step = false;
+
+		if (!empty($type)) {
+			if ($type == 1) {
+				$is_applicant_step = true;
+			} else {
+				$query = $this->db->createQuery();
+				$query->select('parent_id')
+					->from($this->db->quoteName('#__emundus_setup_step_types'))
+					->where('id = ' . $type);
+
+				$this->db->setQuery($query);
+				$parent_id = $this->db->loadResult();
+
+				$is_applicant_step = $parent_id == 1;
+			}
+		}
+
+		return $is_applicant_step;
+	}
+
 	public function getParentStepType($type) {
 		$parent_id = 0;
 
@@ -1540,5 +1616,71 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $data;
+	}
+
+	public function getPaymentStepFromFnum(string $fnum, bool $only_current = false): object|null
+	{
+		$step = null;
+
+		if (!empty($fnum)) {
+			$payment_repository = new PaymentRepository();
+
+			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, $this->payment_step_type);
+
+			if (empty($current_step) && !$only_current) {
+				// TODO: get last applicant payment step
+				// We should determine based on the current step of the applicant what is the last payment step is had accessed
+				$workflow_data = $this->getWorkflowByFnum($fnum);
+
+				if (!empty($workflow_data['steps'])) {
+					foreach($workflow_data['steps'] as $workflow_step) {
+						if ($workflow_step->type === $this->payment_step_type) {
+							$step = $workflow_step;
+							break;
+						}
+					}
+				}
+			} else {
+				$step = $current_step;
+			}
+		}
+
+		return $step;
+	}
+
+	public function isPaymentStepCompleted(string $fnum, object $step): bool
+	{
+		$completed = false;
+
+		$cart_repository = new CartRepository();
+		$cart = $cart_repository->getCartByFnum($fnum, $step->id);
+
+		if (!empty($cart->getId())) {
+			$transaction_repository = new TransactionRepository();
+			$transaction = $transaction_repository->getTransactionByCart($cart);
+
+			if (!empty($transaction) && !empty($transaction->getId())) {
+				if ($transaction->getStatus() === TransactionStatus::CONFIRMED) {
+					$completed = true;
+				}
+			}
+		}
+
+		return $completed;
+	}
+
+	public function getPaymentStepUrl(): string
+	{
+		$url = '';
+		$app = Factory::getApplication();
+		$menu = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=payment&layout=cart', true);
+
+		if (!empty($menu)) {
+			$url = '/' . $menu->route . '?';
+		} else {
+			$url = '/index.php?option=com_emundus&view=payment&layout=cart';
+		}
+
+		return $url;
 	}
 }

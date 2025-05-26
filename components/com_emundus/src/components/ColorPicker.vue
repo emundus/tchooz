@@ -1,15 +1,19 @@
 <template>
 	<div :id="id" class="color-picker-container tw-relative">
 		<div
-			class="tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full"
+			class="tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full tw-border tw-border-neutral-500"
 			:style="selectedSwatchStyle"
 			@click="togglePopover"
 		></div>
-		<div :class="['vue-swatches__wrapper', `tw-grid-cols-${this.rowLength}`]" :style="wrapperStyle" v-show="isOpen">
+		<div
+			:class="['vue-swatches__wrapper', 'position-' + position, `tw-grid-cols-${this.rowLength}`]"
+			:style="wrapperStyle"
+			v-show="isOpen"
+		>
 			<div
 				v-for="(swatchRow, index) in computedSwatches"
 				:key="index"
-				class="vue-swatches__row tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full hover:tw-scale-110"
+				class="vue-swatches__row tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full tw-border tw-border-neutral-500 hover:tw-scale-110"
 				:style="swatchStyle(swatchRow)"
 				@click="updateSwatch(swatchRow)"
 			></div>
@@ -147,6 +151,10 @@ export default {
 					return { bottom: '35px' };
 				case 'bottom':
 					return { top: '35px' };
+				case 'left':
+					return { right: '0px', top: '35px' };
+				case 'right':
+					return { left: '35px' };
 				default:
 					return { bottom: '35px' };
 			}

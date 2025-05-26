@@ -91,9 +91,10 @@ class EmundusViewApplication extends HtmlView
 		$wa->registerAndUseScript('media/jui/js/jquery.min.js');
 
 
-		if ($layout == 'sms') {
+		if ($layout === 'sms' || $layout === 'cart') {
 			parent::display();
-		} else if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $layout !== 'history')
+		}
+		else if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $layout !== 'history')
 		{
 			$this->campaign_id = $this->app->input->get('campaign_id', null, 'GET', 'none', 0);
 			$rowid             = $this->app->input->get('rowid', null, 'GET', 'none', 0);

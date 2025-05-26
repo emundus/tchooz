@@ -17,9 +17,6 @@
 			>
 			<span :title="attachment.value">{{ attachment.value }}</span>
 		</td>
-		<td v-if="columns.includes('date')" class="date">
-			{{ formattedDate(attachment.timedate) }}
-		</td>
 		<td v-if="columns.includes('desc')" class="desc">
 			{{ strippedHtml(attachment.upload_description) }}
 		</td>
@@ -47,15 +44,19 @@
 				</option>
 			</select>
 		</td>
-		<td v-if="canSee && columns.includes('user')">
-			{{ getUserNameById(attachment.user_id) }}
+		<td v-if="columns.includes('date')" class="date">
+			{{ formattedDate(attachment.timedate) }}
 		</td>
-		<td v-if="canSee && columns.includes('modified_by')">
-			{{ getUserNameById(attachment.modified_by) }}
+		<td v-if="canSee && columns.includes('user')">
+			{{ attachment.user_name }}
 		</td>
 		<td class="date" v-if="columns.includes('modified')">
 			{{ formattedDate(attachment.modified) }}
 		</td>
+		<td v-if="canSee && columns.includes('modified_by')">
+			{{ attachment.modified_user_name ?? '' }}
+		</td>
+		<td v-if="sign && columns.includes('sign')" v-html="attachment.signers"></td>
 		<td v-if="columns.includes('permissions')" class="permissions">
 			<span
 				class="material-symbols-outlined visibility-permission tw-cursor-pointer"
@@ -131,6 +132,10 @@ export default {
 			type: Boolean,
 			default: false,
 		},
+		sign: {
+			type: Boolean,
+			default: false,
+		},
 		canSee: {
 			type: Boolean,
 			default: true,
@@ -166,6 +171,9 @@ export default {
 			checkedAttachments: [],
 			synchronizeState: false,
 			syncLoading: false,
+
+			sendedByName: '',
+			modifiedByName: '',
 		};
 	},
 	mounted() {
@@ -226,6 +234,10 @@ export default {
 			}
 
 			return false;
+		},
+		async getUserName(userId) {
+			const user = await this.getUserNameById(userId);
+			return user ? user.name : '';
 		},
 		synchronizeAttachments(aid) {
 			if (aid.length > 0) {

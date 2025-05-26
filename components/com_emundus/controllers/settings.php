@@ -14,10 +14,8 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-use Tchooz\Synchronizers\SMS\OvhSMS;
 use enshrined\svgSanitize\Sanitizer;
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Component\Config\Controller\ApplicationController;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
@@ -25,6 +23,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
+use Tchooz\Synchronizers\SMS\OvhSMS;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * Settings Controller
@@ -35,6 +36,7 @@ use Joomla\CMS\Uri\Uri;
  */
 class EmundusControllersettings extends BaseController
 {
+	use TraitResponse;
 
 	protected $app;
 
@@ -2232,7 +2234,7 @@ class EmundusControllersettings extends BaseController
 			$app_id = $this->input->getInt('app_id', 0);
 			$setup = $this->input->getRaw('setup', []);
 
-			if(!empty($app_id) && !empty($setup)) {
+			if (!empty($app_id) && !empty($setup)) {
 				$setup = json_decode($setup);
 
 				$response['status'] = $this->m_settings->setupApp($app_id, $setup, $this->user->id);
@@ -2254,6 +2256,65 @@ class EmundusControllersettings extends BaseController
 								$response['status'] = false;
 							}
 
+							break;
+						case 'yousign':
+							$synchronizer = new YousignSynchronizer();
+
+							if($setup->mode == 1)
+							{
+								$api_consumptions = $synchronizer->getConsumptionsData();
+								$response['status'] = !empty($api_consumptions['data']);
+								if(!empty($api_consumptions['data']))
+								{
+									$this->m_settings->updateConsumptions('yousign',(array)$api_consumptions['data']);
+								}
+
+								$webhooks = $synchronizer->getWebhookSubscriptions();
+								if($setup->create_webhook == 1)
+								{
+									$webhook_created = false;
+
+									if(!empty($webhooks['data'])) {
+										foreach ($webhooks['data'] as $webhook) {
+											if(strpos($webhook->endpoint, Uri::base()) !== false) {
+												$webhook_created = true;
+
+												if(!$webhook->enabled)
+												{
+													$synchronizer->toggleWebhookSubscription($webhook->id);
+												}
+											}
+										}
+									}
+
+									if (!$webhook_created)
+									{
+										$response = $synchronizer->createWebhookSubscription();
+										if($response['status'] === 201 && !empty($response['data']))
+										{
+											$this->m_settings->updateWebhook('yousign', $response['data']->secret_key);
+										}
+									}
+								}
+								else {
+									$workspaces = $synchronizer->getWorkspaces();
+									$response['status'] = !empty($workspaces['data']->data);
+
+									if(!empty($webhooks['data'])) {
+										foreach ($webhooks['data'] as $webhook) {
+											if(strpos($webhook->endpoint, Uri::base()) !== false) {
+												$synchronizer->toggleWebhookSubscription($webhook->id, false);
+											}
+										}
+									}
+								}
+							}
+							else {
+								$workspaces = $synchronizer->getWorkspaces();
+								$response['status'] = !empty($workspaces['data']->data);
+							}
+							break;
+						case 'sogecommerce':
 							break;
 						default:
 							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
@@ -2454,6 +2515,93 @@ class EmundusControllersettings extends BaseController
 		}
 
 		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function checkaddonstatus(): void
+	{
+		$this->checkToken('get');
+
+		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$addon = $this->input->getString('addon_type');
+
+		if(empty($addon))
+		{
+			$response['code']    = 400;
+			$response['message'] = 'Addon type is required.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		try
+		{
+			$addon_status = $this->m_settings->getAddonStatus($addon);
+
+			if($addon_status)
+			{
+				$response['code']    = 200;
+				$response['status']  = true;
+				$response['message'] = 'Addon status retrieved successfully.';
+				$response['data']    = $addon_status;
+			}
+			else {
+				$response['code']    = 404;
+				$response['message'] = 'Addon not found.';
+			}
+		}
+		catch (Exception $e)
+		{
+			$response['code']    = 500;
+			$response['message'] = 'An error occurred while retrieving the addon status: ' . $e->getMessage();
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getfileinfosfromuploadid(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => ''];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code'] = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$upload_id = $this->input->getInt('upload_id', 0);
+
+			if (!empty($upload_id)) {
+				try
+				{
+					$response['data'] = $this->m_settings->getFileInfosFromUploadId($upload_id);
+
+					if (!empty($response['data'])) {
+						$response['status']  = true;
+						$response['code']    = 200;
+						$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_GENERATE_THUMBNAIL_SUCCESS');
+					}
+				}
+				catch (Exception $e)
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_GENERATE_THUMBNAIL_FAILED') . ': ' . $e->getMessage();
+				}
+			}
+		}
+
+		echo json_encode((object) $response);
 		exit;
 	}
 }

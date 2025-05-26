@@ -172,11 +172,11 @@ $now      = $dateTime->format('Y-m-d H:i:s');
 			}
 			?>
         </div>
-        <div class="tw-flex tw-items-center tw-justify-end mod_emundus_flow___buttons">
+        <div class="tw-flex tw-items-center tw-justify-end tw-gap-2 mod_emundus_flow___buttons">
 			<?php if ($show_back_button == 1) : ?>
                 <a href="<?php echo $home_link ?>"
                    title="<?php echo strip_tags(JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT')) ?>">
-                    <button class="btn btn-primary tw-mr-4"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
+                    <button class="tw-btn-primary"><?php echo JText::_('MOD_EMUNDUS_FLOW_SAVE_AND_EXIT') ?></button>
                 </a>
 			<?php endif; ?>
             <a href="<?php echo JURI::base() ?>component/emundus/?task=pdf&amp;fnum=<?= $current_application->fnum ?>"

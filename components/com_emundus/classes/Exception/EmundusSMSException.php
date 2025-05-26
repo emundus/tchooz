@@ -21,14 +21,14 @@ class EmundusSMSException extends \Exception
 	 * @param   string          $errorType  Type d'erreur
 	 * @param   array           $context    Contexte supplémentaire
 	 * @param   int             $code       Code d'erreur
-	 * @param   Throwable|null  $previous   Exception précédente
+	 * @param   \Throwable|null  $previous   Exception précédente
 	 */
 	public function __construct(
 		string    $message,
 		string    $errorType = 'generic',
 		array     $context = [],
 		int       $code = 0,
-		Throwable $previous = null
+		\Throwable $previous = null
 	)
 	{
 		parent::__construct($message, $code, $previous);

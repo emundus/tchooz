@@ -21,6 +21,11 @@ export const useUserStore = defineStore('user', {
 				});
 			}
 		},
+		addUser(user) {
+			if (user && user.user_id) {
+				this.users[user.user_id] = user;
+			}
+		},
 		setCurrentUser(user) {
 			this.currentUser = user;
 		},

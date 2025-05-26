@@ -1,5 +1,5 @@
 <template>
-	<div id="onboarding_list" class="tw-w-full" :class="{ 'alert-banner-displayed': alertBannerDisplayed }">
+	<div id="onboarding_list" class="tw-mb-4 tw-w-full" :class="{ 'alert-banner-displayed': alertBannerDisplayed }">
 		<skeleton v-if="loading.lists" height="40px" width="100%" class="tw-mb-4 tw-mt-4 tw-rounded-lg"></skeleton>
 
 		<Head
@@ -59,7 +59,7 @@
 			</div>
 
 			<div v-else>
-				<div v-if="displayedItems.length > 0" id="list-items">
+				<div v-if="displayedItems.length > 0" id="list-items" class="tw-overflow-x-auto">
 					<table
 						v-if="viewType !== 'calendar' && viewType !== 'gantt'"
 						id="list-table"
@@ -71,7 +71,7 @@
 								<th id="check-th" class="tw-p-4">
 									<input class="items-check-all" type="checkbox" @change="onCheckAllitems" />
 								</th>
-								<th class="tw-cursor-pointer tw-p-4" @click="orderByColumn('label')">
+								<th class="tw-cursor-pointer tw-p-4" @click="orderByColumn('label')" v-if="displayLabel">
 									<div :class="{ 'tw-flex tw-flex-row': 'label' === orderBy }">
 										<span v-if="'label' === orderBy && order === 'ASC'" class="material-symbols-outlined"
 											>arrow_upward</span
@@ -119,7 +119,7 @@
 								class="tw-group/item-row table-row tw-cursor-pointer tw-rounded-coordinator tw-border"
 								@click="onCheckItem(item.id, $event)"
 								:class="{
-									'tw-flex tw-min-h-[200px] tw-flex-col tw-justify-between tw-rounded-coordinator-cards tw-p-8 tw-shadow-card':
+									'tw-flex tw-min-h-[200px] tw-flex-col tw-justify-between tw-gap-3 tw-rounded-coordinator-cards tw-p-8 tw-shadow-card':
 										viewType === 'blocs',
 									'tw-shadow-table-border-profile': checkedItems.includes(item.id) && viewType === 'table',
 									'tw-shadow-table-border-neutral': !checkedItems.includes(item.id) && viewType === 'table',
@@ -143,6 +143,7 @@
 									/>
 								</td>
 								<td
+									v-if="item.label"
 									class="tw-cursor-pointer tw-p-4"
 									:class="{
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
@@ -157,8 +158,8 @@
 											'hover:tw-underline': editAction,
 										}"
 										:title="item.label[params.shortlang]"
-										>{{ item.label[params.shortlang] }}</span
-									>
+										v-html="item.label[params.shortlang]"
+									></span>
 								</td>
 								<td
 									class="columns tw-p-4"
@@ -186,25 +187,25 @@
 									<div v-else-if="column.hasOwnProperty('long_value')">
 										<span
 											@click="displayLongValue($event, column.long_value)"
-											class="tw-mb-2 tw-mt-2"
+											class="tw-mb-2 tw-mt-2 tw-block tw-w-fit"
 											:class="column.classes"
 											v-html="column.value"
 										></span>
 									</div>
-									<span v-else class="tw-mb-2 tw-mt-2" :class="column.classes" v-html="column.value"></span>
+									<span v-else :class="column.classes" v-html="column.value"></span>
 								</td>
 								<td
-									class="actions tw-rounded-e-coordinator tw-p-4"
+									class="actions tw-gap-6 tw-rounded-e-coordinator tw-p-4"
 									:class="{
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
-										'tw-bg-white group-hover/item-row:tw-bg-neutral-100':
+										'tw-gap-6 tw-bg-white group-hover/item-row:tw-bg-neutral-100':
 											!checkedItems.includes(item.id) && viewType === 'table',
 									}"
 								>
-									<hr v-if="viewType === 'blocs'" class="tw-mb-3 tw-mt-1.5 tw-w-full" />
+									<hr v-if="viewType === 'blocs'" class="!tw-m-0 tw-w-full" />
 									<div
 										:class="{
-											'tw-flex tw-w-full tw-justify-between': viewType === 'blocs',
+											'tw-flex tw-w-full tw-justify-end tw-gap-2': viewType === 'blocs',
 										}"
 									>
 										<a
@@ -229,7 +230,7 @@
 												v-for="action in iconActions"
 												:key="action.name"
 												v-show="action.display"
-												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-p-[0.5rem]"
 												:class="[
 													action.buttonClasses,
 													{
@@ -379,6 +380,7 @@ import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
 import Import from '@/components/Campaigns/Import.vue';
+import SaveRequest from '@/views/Sign/SaveRequest.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -387,6 +389,9 @@ import { FetchClient } from '../services/fetchClient.js';
 
 /* Stores */
 import { useGlobalStore } from '@/stores/global.js';
+
+/* Mixins */
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'List',
@@ -403,10 +408,11 @@ export default {
 		EditSlot,
 		Import,
 		AssociateUser,
+		SaveRequest,
 	},
 	props: {
 		defaultLists: {
-			type: String,
+			type: String | Object,
 			default: null,
 		},
 		defaultType: {
@@ -417,7 +423,12 @@ export default {
 			type: String,
 			default: null,
 		},
+		encoded: {
+			type: Boolean,
+			default: true,
+		},
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			loading: {
@@ -430,6 +441,7 @@ export default {
 				EditSlot,
 				AssociateUser,
 				Import,
+				SaveRequest,
 			},
 
 			lists: {},
@@ -502,7 +514,12 @@ export default {
 
 	methods: {
 		initList() {
-			this.lists = JSON.parse(atob(this.defaultLists));
+			if (this.encoded) {
+				this.lists = JSON.parse(atob(this.defaultLists));
+			} else {
+				this.lists = this.defaultLists;
+			}
+
 			if (typeof this.lists[this.type] === 'undefined') {
 				console.error('List type ' + this.type + ' does not exist');
 				window.location.href = '/';
@@ -842,6 +859,8 @@ export default {
 						icon: 'warning',
 						title: this.translate(action.label),
 						text: this.translate(action.confirm),
+						input: action.input ? action.input : null,
+						inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
 						showCancelButton: true,
 						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
 						cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
@@ -853,7 +872,10 @@ export default {
 							actions: 'em-swal-double-action',
 						},
 					}).then((result) => {
-						if (result.value) {
+						if (result.isConfirmed) {
+							if (action.input) {
+								parameters['input'] = result.value;
+							}
 							this.executeAction(url, parameters, action.method);
 						}
 					});
@@ -983,7 +1005,11 @@ export default {
 				addLoader();
 
 				if (method === 'get') {
-					response = await fetchClient.get(task, data);
+					response = await fetchClient.get(task, data).catch((error) => {
+						console.error(error.message);
+						this.alertError('COM_EMUNDUS_ERROR', error.message);
+						removeLoader();
+					});
 				} else if (method === 'post') {
 					response = await fetchClient.post(task, data);
 				} else if (method === 'delete') {
@@ -1023,10 +1049,10 @@ export default {
 
 						this.getListItems();
 					} else {
-						if (response.msg) {
+						if (response.msg || response.message) {
 							Swal.fire({
 								icon: 'error',
-								title: this.translate(response.msg),
+								title: this.translate(response.msg || response.message),
 								reverseButtons: true,
 								customClass: {
 									title: 'em-swal-title',
@@ -1043,7 +1069,19 @@ export default {
 		},
 
 		onClickPreview(item) {
-			if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
+			if (this.previewAction && this.previewAction.method) {
+				Swal.fire({
+					title: this.translate(this.previewAction.title),
+					html: this.previewAction.method(item),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: 'tw-flex tw-flex-row tw-w-full !tw-justify-center',
+					},
+					confirmButtonText: this.translate('COM_EMUNDUS_LIST_CLOSE_PREVIEW'),
+				});
+			} else if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
 				Swal.fire({
 					title:
 						this.previewAction.title === 'label'
@@ -1054,8 +1092,9 @@ export default {
 					customClass: {
 						title: 'em-swal-title',
 						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
+						actions: 'tw-flex tw-flex-row tw-w-full !tw-justify-center',
 					},
+					confirmButtonText: this.translate('COM_EMUNDUS_LIST_CLOSE_PREVIEW'),
 				});
 			}
 		},
@@ -1294,6 +1333,21 @@ export default {
 			} else {
 				return this.defaultViewsOptions;
 			}
+		},
+
+		displayLabel() {
+			let display = false;
+
+			// at least one of the items columns is a label
+			if (this.displayedItems.length > 0) {
+				this.displayedItems.forEach((item) => {
+					if (item.label) {
+						display = true;
+					}
+				});
+			}
+
+			return display;
 		},
 	},
 	watch: {

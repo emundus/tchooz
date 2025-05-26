@@ -205,7 +205,7 @@ class ApplicationModelTest extends UnitTestCase
 		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $user_id);
 		//
 
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $user_id_coordinator);
 		$this->assertEmpty($attachments);
 
 		// Datasets

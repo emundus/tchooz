@@ -1,8 +1,19 @@
 <?php
 
+
+/**
+ * @package     scripts
+ * @subpackage
+ *
+ * @copyright   A copyright
+ * @license     A "Slug" license name e.g. GPL2
+ */
+
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Language\Text;
 
 class Release2_5_0Installer extends ReleaseInstaller
 {
@@ -163,6 +174,7 @@ class Release2_5_0Installer extends ReleaseInstaller
 
 			return $result;
 		}
+
 
 		return $result;
 	}
