@@ -242,7 +242,24 @@ if (!empty($user->fnum)) {
 		$confirm_form_url = $m_emails->setTagsFabrik($checkout_url, [$user->fnum]);
 	}
 
-	$current_phase        = $m_campaign->getCurrentCampaignWorkflow($user->fnum);
+	if (!class_exists('EmundusModelWorkflow'))
+	{
+		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+	}
+	$m_workflow = new EmundusModelWorkflow();
+	$payment_step = $m_workflow->getPaymentStepFromFnum($user->fnum, true);
+	if (!empty($payment_step) && !empty($payment_step->id))
+	{
+		$application_fee = true;
+		$paid = $m_workflow->isPaymentStepCompleted($user->fnum, $payment_step);
+		if (!$paid)
+		{
+			$confirm_form_url = $m_workflow->getPaymentStepUrl();
+			$confirm_form_url .= '&fnum=' . $user->fnum;
+		}
+	}
+
+	$current_phase        = $m_workflow->getCurrentWorkflowStepFromFile($user->fnum, 1);
 	$current_phase        = !empty($current_phase->id) ? $current_phase : null;
 	$attachments_progress = $m_application->getAttachmentsProgress($user->fnum, null, $use_session);
 	$forms_progress       = $m_application->getFormsProgress($user->fnum, null, $use_session);
@@ -270,7 +287,6 @@ if (!empty($user->fnum)) {
 		$is_app_sent                = !in_array($user->status, $current_phase->entry_status);
 		$status_for_send            = array_merge($status_for_send, $current_phase->entry_status);
 		$show_preliminary_documents = $show_preliminary_documents && $current_phase->display_preliminary_documents;
-
 	}
 	elseif (!empty($user->status)) {
 		$is_app_sent = $user->status != 0;

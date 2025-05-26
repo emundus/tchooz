@@ -338,6 +338,36 @@ module.exports = {
                         cursor: 'not-allowed',
                     },
                 },
+
+                '.btn-red': {
+                    backgroundColor: 'var(--red-500)',
+                    color: 'var(--neutral-0) !important',
+                    border: '1px solid var(--red-500)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s ease-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--red-500) !important',
+                        border: '1px solid var(--red-500)',
+                        textDecoration: 'none',
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    }
+                },
                 '.target-blank-links': {
                     textDecoration: 'underline',
 

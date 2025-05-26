@@ -57,7 +57,7 @@ class EmundusModelSMS extends JModelList
 		$this->h_cache = new EmundusHelperCache();
 		$this->setSmsActionId();
 		$this->setSMSAddon();
-		$this->activated = $this->smsAddon->enabled === 1 && $this->isSMSServiceActivated();
+		$this->activated = $this->smsAddon->enabled && $this->isSMSServiceActivated();
 
 		Log::addLogger(['text_file' => 'com_emundus.sms.php'], Log::ALL, array('com_emundus.sms'));
 	}
@@ -167,23 +167,20 @@ class EmundusModelSMS extends JModelList
 
 	public function isSMSServiceActivated(): bool
 	{
-		$activated = $this->h_cache->get('sms_activated');
+		$activated = false;
 
-		if (is_null($activated)) {
-			try {
-				$query = $this->db->createQuery();
-				$query->select('enabled')
-					->from('#__emundus_setup_sync')
-					->where('type = ' . $this->db->quote('ovh'));
+		try
+		{
+			$query = $this->db->createQuery();
+			$query->select('enabled')
+				->from('#__emundus_setup_sync')
+				->where('type = ' . $this->db->quote('ovh'));
 
-				$activated = (bool)$this->db->setQuery($query)->loadResult();
-
-				$this->h_cache->set('sms_activated', $activated);
-			} catch (\Exception $e) {
-				Log::add('Error on get sms activation : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
-			}
-		} else {
-			$activated = (bool)$activated;
+			$activated = (bool) $this->db->setQuery($query)->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error on get sms activation : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
 		}
 
 		return $activated;

@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 $m_profile = new EmundusModelProfile();
@@ -151,6 +152,11 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$show_tabs                           = $params->get('mod_em_applications_show_tabs', 1);
 	$actions                             = $params->get('mod_emundus_applications_actions', ['rename','documents','history']);
 	$history_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
+
+	$payment_repository = new PaymentRepository();
+	if ($payment_repository->getAddon()->enabled === 1) {
+		$actions[] = 'transactions';
+	}
 
 	// Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
 	if ($layout == '_:ccirs-drh') {

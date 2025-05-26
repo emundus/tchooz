@@ -8,10 +8,11 @@ import DynamicsSetup from '@/components/Settings/Integration/DynamicsSetup.vue';
 import AmmonSetup from '@/components/Settings/Integration/AmmonSetup.vue';
 import OVHSetup from '@/components/Settings/Integration/OVHSetup.vue';
 import YousignSetup from '@/components/Settings/Integration/YousignSetup.vue';
+import SogecommerceSetup from '@/components/Settings/Integration/SogecommerceSetup.vue';
 
 export default {
 	name: 'Integration',
-	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup, YousignSetup },
+	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup, YousignSetup, SogecommerceSetup },
 	data() {
 		return {
 			loading: true,
@@ -129,6 +130,14 @@ export default {
 				v-else-if="currentApp.type === 'yousign'"
 				:app="currentApp"
 				@yousignInstalled="
+					currentApp = null;
+					getApps();
+				"
+			/>
+			<SogecommerceSetup
+				v-else-if="currentApp.type === 'sogecommerce'"
+				:app="currentApp"
+				@sogecommerceInstalled="
 					currentApp = null;
 					getApps();
 				"

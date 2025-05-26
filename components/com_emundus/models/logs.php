@@ -439,27 +439,30 @@ class EmundusModelLogs extends JModelList
 						$value->old     = !empty($value->old) ? $value->old : '';
 						$value->new     = !empty($value->new) ? $value->new : '';
 
-						$value->old = explode('<#>', $value->old);
+						if (!empty($value->old)) {
+							$value->old = explode('<#>', $value->old);
 
-
-						foreach ($value->old as $_old) {
-							if (empty(trim($_old))) {
-								$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
-							}
-							else {
-								$action_details .= '<span class="em-red-600-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+							foreach ($value->old as $_old) {
+								if (empty(trim($_old))) {
+									$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
+								}
+								else {
+									$action_details .= '<span class="em-red-600-color" style="text-decoration: line-through">' . $_old . '</span>&nbsp';
+								}
 							}
 						}
 
-						$action_details .= '<span>' . Text::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
+						if (!empty($value->new)) {
+							$action_details .= '<span>' . Text::_('COM_EMUNDUS_CHANGE_TO') . '</span>&nbsp';
 
-						$value->new = explode('<#>', $value->new);
-						foreach ($value->new as $_new) {
-							if (empty(trim($_new))) {
-								$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
-							}
-							else {
-								$action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+							$value->new = explode('<#>', $value->new);
+							foreach ($value->new as $_new) {
+								if (empty(trim($_new))) {
+									$action_details .= '<span class="em-blue-500-color">' . Text::_('COM_EMUNDUS_EMPTY_OR_NULL_MODIF') . '</span>&nbsp';
+								}
+								else {
+									$action_details .= '<span class="em-main-500-color">' . $_new . '</span>&nbsp';
+								}
 							}
 						}
 

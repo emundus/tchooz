@@ -18,6 +18,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Exception\EmundusException;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 $app = Factory::getApplication();
 
@@ -80,6 +81,7 @@ Text::script('SEND_ON');
 Text::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
 Text::script('COM_EMUNDUS_ONBOARD_OK');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
+Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
 Text::script('COM_EMUNDUS_MAIL_SENDED');
 
 Text::script('COM_EMUNDUS_EX');
@@ -947,6 +949,124 @@ Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_HIERARCHY_LABEL');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_RANKING_FORM_ID');
 Text::script('COM_EMUNDUS_RANKING_EXPORT_RANKING');
 
+# CART / PRODUCT
+$payment_repository = new PaymentRepository();
+if ($payment_repository->activated) {
+	Text::script('COM_EMUNDUS_CART');
+	Text::script('COM_EMUNDUS_CART_RECAP');
+	Text::script('COM_EMUNDUS_PRICE');
+	Text::script('COM_EMUNDUS_TOTAL');
+	Text::script('COM_EMUNDUS_CHECKOUT');
+	Text::script('COM_EMUNDUS_CART_CUSTOMER_ADDRESS');
+	Text::script('COM_EMUNDUS_CART_PAYMENT_METHOD');
+	Text::script('COM_EMUNDUS_CART_NO_PAYMENT_METHODS');
+	Text::script('COM_EMUNDUS_CART_SELECTED_PRODUCTS');
+	Text::script('COM_EMUNDUS_CART_SELECT_PRODUCTS');
+	Text::script('COM_EMUNDUS_CUSTOMER_NAME');
+	Text::script('COM_EMUNDUS_CUSTOMER_FIRSTNAME');
+	Text::script('COM_EMUNDUS_CUSTOMER_LASTNAME');
+	Text::script('COM_EMUNDUS_CUSTOMER_EMAIL');
+	Text::script('COM_EMUNDUS_CUSTOMER_PHONE');
+	Text::script('COM_EMUNDUS_CUSTOMER_ADDRESS');
+	Text::script('COM_EMUNDUS_CUSTOMER_ADDRESS_1');
+	Text::script('COM_EMUNDUS_CUSTOMER_ADDRESS_2');
+	Text::script('COM_EMUNDUS_CUSTOMER_ZIPCODE');
+	Text::script('COM_EMUNDUS_CUSTOMER_CITY');
+	Text::script('COM_EMUNDUS_CUSTOMER_COUNTRY');
+	Text::script('COM_EMUNDUS_SAVE_CUSTOMER_ADDRESS');
+	Text::script('COM_EMUNDUS_EDIT_CUSTOMER_ADDRESS');
+	Text::script('COM_EMUNDUS_CANCEL_CUSTOMER_ADDRESS');
+	Text::script('COM_EMUNDUS_ADD_DISCOUNT');
+	Text::script('COM_EMUNDUS_EDIT_DISCOUNT');
+	Text::script('COM_EMUNDUS_ADD_PRODUCT');
+	Text::script('COM_EMUNDUS_MARKETPLACE_INTRO');
+	Text::script('COM_EMUNDUS_MARKETPLACE_SELECTED');
+	Text::script('COM_EMUNDUS_ADD_TO_CART');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_NUMBER');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_NUMBER_TIMES');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_NUMBER_RECAP');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_RECAP_THEN');
+	Text::script('COM_EMUNDUS_TOTAL_ADVANCE');
+	Text::script('COM_EMUNDUS_CART_PAYMENT_RULES');
+	Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE_OR_TOTAL_LABEL');
+	Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE');
+	Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_TOTAL');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_SELECT_DISCOUNT_LABEL');
+	Text::script('COM_EMUNDUS_CART_EXCEPTIONNAL_DISCOUNT');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_SELECT_PRODUCT_CONCERNED_LABEL');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_SELECT_PRODUCT_CONCERNED_HELPTEXT');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_LABEL');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_DESCRIPTION_LABEL');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_AMOUNT_LABEL');
+	Text::script('COM_EMUNDUS_CART_DISCOUNT_TYPE_LABEL');
+	Text::script('COM_EMUNDUS_CANNOT_UPDATE_INSTALLMENT_MONTHDAY');
+	Text::script('COM_EMUNDUS_PAYMENT_STEP_PAYMENT_ADVANCE_AMOUT_TYPE_FIXED');
+	Text::script('COM_EMUNDUS_PAYMENT_STEP_PAYMENT_ADVANCE_AMOUT_TYPE_PERCENTAGE');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTIONS');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTIONS_INTRO');
+	Text::script('COM_EMUNDUS_CURRENT_CART_STEP');
+	Text::script('COM_EMUNDUS_TRANSACTIONS_TAB_TITLE');
+	Text::script('COM_EMUNDUS_CART_TAB_TITLE');
+	Text::script('COM_EMUNDUS_CART_MANAGER');
+	Text::script('COM_EMUNDUS_CART_MANAGER_RECAP');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_MONTHDAY_WILL_BE');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_DAY_MONTHLY');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_MONTHDAY_LABEL');
+	Text::script('COM_EMUNDUS_CART_INSTALLMENT_WILL_BEGIN');
+	Text::script('COM_EMUNDUS_ONBOARD_NO_TRANSACTIONS');
+	Text::script('COM_EMUNDUS_PRODUCT_CATEGORY_SAVE');
+	Text::script('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE');
+	Text::script('COM_EMUNDUS_ERROR_OCCURED');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_STATUS');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_STATUS_ALL');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_APPLICANT');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_APPLICANT_ALL');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_METHOD');
+	Text::script('COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_METHOD_ALL');
+	Text::script('COM_EMUNDUS_TRANSACTION_DETAILS');
+	Text::script('COM_EMUNDUS_TRANSACTION_PRODUCT_QUANTITY');
+	Text::script('COM_EMUNDUS_TRANSACTION_PRODUCT_LABEL');
+	Text::script('COM_EMUNDUS_TRANSACTION_PRODUCT_PRICE');
+	Text::script('COM_EMUNDUS_TRANSACTION_PRODUCT_DESCRIPTION');
+	Text::script('COM_EMUNDUS_ONBOARD_CONFIRM_TRANSACTION');
+	Text::script('COM_EMUNDUS_ONBOARD_CANCEL_TRANSACTION');
+	Text::script('COM_EMUNDUS_TRANSACTION_ALTERATIONS');
+	Text::script('COM_EMUNDUS_TRANSACTION_ALTERATIONS');
+	Text::script('COM_EMUNDUS_TRANSACTION_ALTERATION_AMOUNT');
+	Text::script('COM_EMUNDUS_TRANSACTION_ALTERATION_DESCRIPTION');
+	Text::script('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE');
+	Text::script('COM_EMUNDUS_TRANSACTION_ALTERATIONS');
+	Text::script('COM_EMUNDUS_TRANSACTION_ALTERATIONS');
+	Text::script('COM_EMUNDUS_ONBOARD_VISUALIZE');
+	Text::script('COM_EMUNDUS_TRANSACTION_INSTALLMENT_NUMBER_DEBIT');
+	Text::script('COM_EMUNDUS_TRANSACTION_INSTALLMENT_MONTHDAY');
+	Text::script('COM_EMUNDUS_TRANSACTION_INSTALLMENT_EFFECT_DATE');
+	Text::script('COM_EMUNDUS_TRANSACTION_INSTALLMENT_ITERATION');
+	Text::script('COM_EMUNDUS_TRANSACTION_INSTALLMENT_AMOUNT');
+	Text::script('COM_EMUNDUS_TRANSACTION_EXTERNAL_REFERENCE');
+	Text::script('COM_EMUNDUS_TRANSACTION_DATE');
+	Text::script('COM_EMUNDUS_TRANSACTION_SAVE');
+	Text::script('COM_EMUNDUS_TRANSACTION_EDIT_SUCCESS');
+	Text::script('COM_EMUNDUS_TRANSACTION_EDIT_ERROR');
+	Text::script('COM_EMUNDUS_TRANSACTION_AMOUNT');
+	Text::script('COM_EMUNDUS_TRANSACTION_STATUS');
+	Text::script('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD');
+	Text::script('COM_EMUNDUS_TRANSACTION_SYNCHRONIZER');
+	Text::script('COM_EMUNDUS_TRANSACTION_FNUM');
+	Text::script('COM_EMUNDUS_LIST_CLOSE_PREVIEW');
+	Text::script('COM_EMUNDUS_TRANSACTION_ID');
+	Text::script('COM_EMUNDUS_ONBOARD_EXPORT_TRANSACTION');
+	Text::script('COM_EMUNDUS_REGISTRANTS_FILE_READY');
+	Text::script('COM_EMUNDUS_CONFIRM_CART');
+	Text::script('COM_EMUNDUS_CART_NOT_CONFIRMED');
+	Text::script('COM_EMUNDUS_CART_CONFIRMED');
+	Text::script('COM_EMUNDUS_CONFIRM_CART_HELPTEXT');
+	Text::script('COM_EMUNDUS_PAYMENT_STEP_DESCRIPTION');
+	Text::script('COM_EMUNDUS_PAYMENT_STEP_DESCRIPTION_HELPTEXT');
+}
+Text::script('COM_EMUNDUS_ONBOARD_EDITOR_UNDO');
+Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
@@ -1027,6 +1147,10 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 	$controller->execute($task);
 }
 elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || $task === 'yousigncallback')) {
+	$controller->execute($task);
+}
+else if ($user->guest && $app->input->getString('controller') === 'webhook' && $task === 'updatePaymentTransaction')
+{
 	$controller->execute($task);
 }
 elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')

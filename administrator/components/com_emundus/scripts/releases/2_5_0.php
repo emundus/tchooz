@@ -13,7 +13,7 @@ namespace scripts;
 
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
-use stdClass;
+use Joomla\CMS\Language\Text;
 
 class Release2_5_0Installer extends ReleaseInstaller
 {

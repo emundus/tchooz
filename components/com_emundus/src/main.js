@@ -20,7 +20,7 @@ import Charts from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
 
 /** DIRECTIVES **/
-import clickOutside from './directives/clickOutside';
+import clickOutside from '@/directives/clickOutside.js';
 
 /** STYLE **/
 import './assets/css/main.scss';
@@ -38,6 +38,7 @@ import SMSEdit from '@/views/SMS/SMSEdit.vue';
 import SMSAppFile from '@/views/SMS/SMSAppFile.vue';
 import SMSSend from '@/views/SMS/SMSSend.vue';
 import Rankings from '@/views/Ranking/rankings.vue';
+import CartAppFile from '@/views/Payment/CartAppFile.vue';
 
 if (document) {
 	let app = null;
@@ -99,6 +100,7 @@ if (document) {
 					'SMS/SMSSend',
 					'Filters',
 					'Ranking/rankings',
+					'Payment/CartAppFile',
 				];
 
 				if (filesElement || componentNames.includes(componentName)) {
@@ -221,12 +223,25 @@ if (document) {
 							readonly: datas.readonly == 1,
 						});
 						break;
+					case 'Payment/CartAppFile':
+						if (el.getAttribute('data')) {
+							datas = JSON.parse(el.getAttribute('data'));
+						}
+
+						app = createApp(CartAppFile, {
+							...datas,
+						});
+						break;
 					default:
 						if (el.getAttribute('data')) {
 							datas = JSON.parse(el.getAttribute('data'));
 						}
 
+						let componentPath = componentName.split('/');
+						const appName = componentPath[componentPath.length - 1];
+
 						app = createApp({
+							name: appName,
 							components: {
 								'lazy-component': defineAsyncComponent(() => {
 									let componentPath = componentName.split('/');

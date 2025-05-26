@@ -33,6 +33,7 @@ use Smalot\PdfParser\Parser;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 class EmundusModelSettings extends ListModel
 {
@@ -2924,6 +2925,9 @@ class EmundusModelSettings extends ListModel
 						case 'ovh':
 							$updated = $this->setupOvh($app, $setup);
 							break;
+						case 'sogecommerce':
+							$updated = $this->setupSogecommerce($app, $setup);
+							break;
 						case 'yousign':
 							$updated = $this->setupYousign($app, $setup);
 						default:
@@ -3272,6 +3276,72 @@ class EmundusModelSettings extends ListModel
 		return $updated;
 	}
 
+	private function setupSogecommerce($app, $setup): bool
+	{
+		$updated = false;
+
+		if (empty($app->config) || $app->config == '{}')
+		{
+			$config = [
+				'authentication' => [
+					'client_id'    => isset($setup->authentication->client_id) ?? '',
+					'client_secret' => isset($setup->authentication->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->client_secret) : '',
+				],
+				'endpoint' => isset($setup->endpoint) ?? '',
+				'mode' => isset($setup->mode) ?? 'TEST',
+				'return_url' => $setup->success_url ?? '',
+			];
+		}
+		else
+		{
+			$config_keys = ['authentication', 'endpoint', 'mode', 'return_url'];
+			$config = json_decode($app->config, true);
+			foreach ($config_keys as $key) {
+				if (isset($setup->$key))
+				{
+					if ($key == 'authentication')
+					{
+						foreach ($setup->$key as $sub_key => $sub_value)
+						{
+							if (isset($config[$key][$sub_key]))
+							{
+								if ($sub_key == 'client_secret')
+								{
+									$config[$key][$sub_key] = EmundusHelperFabrik::encryptDatas($setup->$key->$sub_key);
+								}
+								else
+								{
+									$config[$key][$sub_key] = $setup->$key->$sub_key;
+								}
+							}
+						}
+					}
+					else
+					{
+						$config[$key] = $setup->$key;
+					}
+				}
+			}
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+
+		} catch (Exception $e)
+		{
+			Log::add('Failed to update sogecommerce settings : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
 	public function checkRequirements($app_id)
 	{
 		$checked = true;
@@ -3453,6 +3523,7 @@ class EmundusModelSettings extends ListModel
 			{
 				// todo: add more addons
 				case 'sms':
+				case 'payment':
 					$config = [
 						'enabled'   => $addon['enabled'],
 						'displayed' => $addon['displayed'],
@@ -3637,6 +3708,14 @@ class EmundusModelSettings extends ListModel
 					$addons[] = $rankingAddon;
 				}
 			}
+
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Payment/PaymentRepository.php');
+			$payment_repo = new PaymentRepository();
+			$paymentAddon = $payment_repo->getAddon();
+
+			if ($paymentAddon->displayed == 1) {
+				$addons[] = $paymentAddon;
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3725,9 +3804,10 @@ class EmundusModelSettings extends ListModel
 					$updated = $this->db->execute();
 					break;
 				case 'sms':
+				case 'payment':
 					$query->select('value')
 						->from($this->db->quoteName('#__emundus_setup_config'))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
 
 					$this->db->setQuery($query);
 					$params = json_decode($this->db->loadResult(), true);
@@ -3736,7 +3816,7 @@ class EmundusModelSettings extends ListModel
 					$query->clear()
 						->update($this->db->quoteName('#__emundus_setup_config'))
 						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
-						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('sms'));
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
 
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
@@ -4225,7 +4305,7 @@ class EmundusModelSettings extends ListModel
 				->bind(':upload_id', $upload_id, ParameterType::INTEGER);
 			$this->db->setQuery($query);
 			$file = $this->db->loadObject();
-			
+
 			if(!empty($file->filename))
 			{
 				$file_path = JPATH_ROOT.'/images/emundus/files/'.$file->applicant_id.'/'.$file->filename;

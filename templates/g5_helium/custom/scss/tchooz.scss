@@ -1376,6 +1376,7 @@ input:focus + .em-slider {
   padding: 12px 10px;
   border-bottom: solid 1px var(--transparent);
   color: var(--neutral-600);
+  border-radius: 8px 8px 0 0;
   span, p{
     color: var(--neutral-600);
   }
@@ -1383,18 +1384,22 @@ input:focus + .em-slider {
 .em-light-tabs:hover span,
 .em-light-tabs:hover p,
 .em-light-tabs:hover {
-    color: var(--neutral-900);
+    background: var(--neutral-300);
 }
 .em-light-tabs:hover{
   span, p{
-    color: var(--neutral-700);
+    background: var(--neutral-300);
   }
 }
 .em-light-selected-tab{
   border-bottom: 1px solid var(--em-profile-color);
-  color: var(--neutral-900);
+  color: var(--em-profile-color);
   span, p{
-    color: var(--neutral-900);
+    color: var(--em-profile-color);
+  }
+
+  &:hover {
+    background: none;
   }
 }
 
