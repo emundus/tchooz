@@ -758,6 +758,15 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         </a>
 													<?php endif; ?>
 
+                                                    <?php if (in_array('transactions', $actions) && ($application->applicant_id === $user->id)) : ?>
+                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
+                                                           href="<?= Route::_('/index.php?option=com_emundus&view=payment&layout=transactions&fnum=' . $application->fnum); ?>"
+                                                           id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
+                                                            <span class="material-symbols-outlined tw-mr-2">paid</span>
+		                                                    <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_TRANSACTIONS') ?>
+                                                        </a>
+                                                    <?php endif; ?>
+
 													<?php
 													modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);
 													?>

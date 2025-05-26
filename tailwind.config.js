@@ -10,6 +10,7 @@ module.exports = {
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./plugins/fabrik_list/js/scripts/*.{html,js}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
+        "./components/com_emundus/classes/**/*.php",
         "./components/com_emundus/controllers/**/*.{html,js,php,vue}",
         "./components/com_emundus/models/**/*.{html,js,php,vue}",
         "./components/com_emundus/src/**/*.{html,js,php,vue}",
@@ -40,6 +41,10 @@ module.exports = {
         },
         {
             pattern: /tw-grid-cols-/,
+            variants: ['sm', 'md', 'lg'],
+        },
+        {
+            pattern: /tw-grid-rows-/,
             variants: ['sm', 'md', 'lg'],
         },
         {
@@ -188,6 +193,9 @@ module.exports = {
             },
             height: {
                 'form': 'var(--em-form-height)',
+            },
+            width: {
+                'form': 'var(--em-form-height)',
             }
         },
     },
@@ -329,6 +337,36 @@ module.exports = {
                     '&:hover': {
                         cursor: 'not-allowed',
                     },
+                },
+
+                '.btn-red': {
+                    backgroundColor: 'var(--red-500)',
+                    color: 'var(--neutral-0) !important',
+                    border: '1px solid var(--red-500)',
+                    textShadow: 'none',
+                    textTransform: 'math-auto',
+                    padding: 'var(--em-spacing-vertical) var(--em-spacing-horizontal)',
+                    fontSize: '16px',
+                    fontFamily: 'var(--em-profile-font)',
+                    lineHeight: '1.25',
+                    borderRadius: 'var(--em-applicant-br)',
+                    transition: 'all 0.2s ease-out',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    cursor: 'pointer',
+
+                    '&:hover': {
+                        backgroundColor: 'var(--neutral-0)',
+                        color: 'var(--red-500) !important',
+                        border: '1px solid var(--red-500)',
+                        textDecoration: 'none',
+                    },
+
+                    '&:disabled': {
+                        opacity: '0.6',
+                        cursor: 'not-allowed',
+                    }
                 },
                 '.target-blank-links': {
                     textDecoration: 'underline',

@@ -1341,9 +1341,8 @@ function runAction(action, url = '', option = '') {
                             },
                         });
 
-                        if (moduleFilters) {
-                            window.dispatchEvent(refreshModuleFiltersEvent);
-                        }
+
+                        window.dispatchEvent(refreshModuleFiltersEvent);
 
                         reloadData($('#view').val());
                         reloadActions($('#view').val(), undefined, false);
@@ -4343,7 +4342,7 @@ $(document).ready(function() {
             var name = $(this).attr('id');
             switch (name) {
                 case 'clear-search':
-                    if(moduleFilters) {
+                    if(document.querySelector('#emundus-filters #clear-filters')) {
                         document.querySelector('#emundus-filters #clear-filters').click();
                     } else {
                         lastVal = {};
@@ -4369,7 +4368,7 @@ $(document).ready(function() {
                     break;
 
                 case 'save-filter':
-                    if(moduleFilters) {
+                    if(document.querySelector('#emundus-filters #save-filters')) {
                         document.querySelector('#emundus-filters #save-filters').click();
                     } else {
                         $.ajaxQ.abortAll();

@@ -45,22 +45,13 @@ export default {
 		this.isApplicant = useGlobalStore().getDatas.isApplicant
 			? parseInt(useGlobalStore().getDatas.isApplicant.value)
 			: false;
+		this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
+		this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
+		this.currentTimezone.name = useGlobalStore().getDatas.timezone
+			? useGlobalStore().getDatas.timezone.value
+			: 'Europe/Paris';
 
-		if (this.source !== 'fabrik' || this.isApplicant) {
-			this.name = useGlobalStore().getDatas.name_element ? useGlobalStore().getDatas.name_element.value : null;
-			this.currentTimezone.offset = useGlobalStore().getDatas.offset ? useGlobalStore().getDatas.offset.value : '1';
-			this.currentTimezone.name = useGlobalStore().getDatas.timezone
-				? useGlobalStore().getDatas.timezone.value
-				: 'Europe/Paris';
-
-			// If we want to filter the slots by location
-			let location_filter_elt = useGlobalStore().getDatas.location_filter_elt
-				? useGlobalStore().getDatas.location_filter_elt.value
-				: null;
-			if (location_filter_elt && location_filter_elt !== '' && document.getElementById(location_filter_elt)) {
-				location_filter_elt = document.getElementById(location_filter_elt);
-			}
-
+		if (this.source !== 'fabrik' && !this.isApplicant) {
 			if (!this.$props.componentsProps) {
 				// First check if the user has already booked a slot
 				this.getMyBookings().then((bookings) => {
@@ -70,26 +61,7 @@ export default {
 						this.slotSelected = this.myBookings[0].availability;
 					}
 
-					if (this.myBookings.length === 0 && location_filter_elt) {
-						location_filter_elt.addEventListener('change', (event) => {
-							this.location = event.target.value;
-
-							this.currentStartIndex = 0;
-
-							if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
-								this.getSlots();
-							} else {
-								this.slots = [];
-								this.availableDates = [];
-							}
-						});
-
-						if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
-							this.getSlots();
-						}
-					} else {
-						this.getSlots();
-					}
+					this.getSlots();
 				});
 			} else {
 				this.getSlots();
@@ -103,6 +75,43 @@ export default {
 					this.getRegistrantsLink();
 				});
 			}
+
+			// If we want to filter the slots by location
+			let location_filter_elt = useGlobalStore().getDatas.location_filter_elt
+				? useGlobalStore().getDatas.location_filter_elt.value
+				: null;
+			if (location_filter_elt && location_filter_elt !== '' && document.getElementById(location_filter_elt)) {
+				location_filter_elt = document.getElementById(location_filter_elt);
+			}
+
+			this.getMyBookings().then((bookings) => {
+				this.myBookings = bookings;
+
+				if (this.myBookings.length > 0) {
+					this.slotSelected = this.myBookings[0].availability;
+				}
+
+				if (this.myBookings.length === 0 && location_filter_elt) {
+					location_filter_elt.addEventListener('change', (event) => {
+						this.location = event.target.value;
+
+						this.currentStartIndex = 0;
+
+						if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+							this.getSlots();
+						} else {
+							this.slots = [];
+							this.availableDates = [];
+						}
+					});
+
+					if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+						this.getSlots();
+					}
+				} else {
+					this.getSlots();
+				}
+			});
 		}
 	},
 	methods: {

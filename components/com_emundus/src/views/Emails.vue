@@ -2,9 +2,10 @@
 	<div id="emails-list">
 		<list
 			v-if="smsActivated !== null"
-			:default-lists="configString"
+			:default-lists="config"
 			:default-type="'emails'"
 			:key="renderingKey"
+			:encoded="false"
 		></list>
 	</div>
 </template>
@@ -152,11 +153,6 @@ export default {
 		} else {
 			this.smsActivated = useSmsStore().getActivated;
 		}
-	},
-	computed: {
-		configString() {
-			return btoa(JSON.stringify(this.config));
-		},
 	},
 };
 </script>

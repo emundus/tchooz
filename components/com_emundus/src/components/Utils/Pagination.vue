@@ -5,7 +5,12 @@
 		>
 			<div class="tw-flex tw-items-center tw-gap-2">
 				<label for="pager-select" class="!tw-mb-0">{{ translate('COM_EMUNDUS_PAGINATION_DISPLAY') }}</label>
-				<select name="pager-select" id="pager-select" class="em-select-no-border !tw-py-0" v-model="currentLimit">
+				<select
+					name="pager-select"
+					id="pager-select"
+					class="em-select-no-border !tw-h-[70%] !tw-py-0"
+					v-model="currentLimit"
+				>
 					<option v-for="availableLimit in limits" :value="availableLimit">
 						{{ displayAvailableLimit(availableLimit) }}
 					</option>

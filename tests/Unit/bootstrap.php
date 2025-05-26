@@ -134,6 +134,10 @@ if (!file_exists(JPATH_LIBRARIES . '/vendor/autoload.php') || !is_dir(JPATH_ROOT
 // Create the Composer autoloader
 /** @var \Composer\Autoload\ClassLoader $loader */
 $loader = require JPATH_LIBRARIES . '/vendor/autoload.php';
+if(file_exists(JPATH_LIBRARIES.'/emundus/vendor/autoload.php'))
+{
+	require_once JPATH_LIBRARIES.'/emundus/vendor/autoload.php';
+}
 
 // We need to pull our decorated class loader into memory before unregistering Composer's loader
 class_exists('\\Joomla\\CMS\\Autoload\\ClassLoader');

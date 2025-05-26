@@ -13,15 +13,28 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\NumericSign\RequestRepository;
+use Tchooz\Traits\TraitDispatcher;
+use Tchooz\Entities\Payment\AlterationEntity;
+use Tchooz\Repositories\Payment\CartRepository;
+use Tchooz\Repositories\Payment\ProductRepository;
+use Tchooz\Repositories\Payment\DiscountRepository;
+use Tchooz\Entities\Payment\AlterationType;
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 class plgEmundusCustom_event_handler extends CMSPlugin
 {
+	use TraitDispatcher;
+
 	/**
 	 * @var EmundusHelperEvents
 	 * @since version 1.0.0
@@ -49,7 +62,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/events.php');
 		$this->hEvents = new EmundusHelperEvents();
 
-		$emundus_config = ComponentHelper::getParams('com_emundus');
+		$emundus_config            = ComponentHelper::getParams('com_emundus');
 		$this->automated_task_user = $emundus_config->get('automated_task_user', 1);
 
 		$this->h_cache = new EmundusHelperCache();
@@ -60,11 +73,11 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 	{
 		try
 		{
-			$events = [];
+			$events       = [];
 			$events_types = [];
 			$event_config = [];
-			$codes  = [];
-			$params = json_decode($this->params);
+			$codes        = [];
+			$params       = json_decode($this->params);
 
 			if (!empty($params) && !empty($params->event_handlers))
 			{
@@ -72,8 +85,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				{
 					if ($event_handler->event == $event && $event_handler->published)
 					{
-						$events[] = $event_handler->event;
-						$codes[]  = $event_handler->code;
+						$events[]       = $event_handler->event;
+						$codes[]        = $event_handler->code;
 						$event_config[] = $event_handler;
 					}
 				}
@@ -85,21 +98,30 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			{
 				try
 				{
-					if (!empty($event_config[$index]->type) && $event_config[$index]->type == 'options') {
+					if (!empty($event_config[$index]->type) && $event_config[$index]->type == 'options')
+					{
 						$event_category = $this->getEventCategory($event_config[$index]->event);
 
-						if (in_array($event_category, $this->form_categories)) {
-							if (!empty($args['formModel']->formDataWithTableName)) {
+						if (in_array($event_category, $this->form_categories))
+						{
+							if (!empty($args['formModel']->formDataWithTableName))
+							{
 								$data = $args['formModel']->formDataWithTableName;
-							} else  {
+							}
+							else
+							{
 								$data = $args['formModel']->getData();
 							}
-						} else {
+						}
+						else
+						{
 							$data = $args;
 						}
 
 						$returned_values[$caller_index] = $this->runEventSimpleAction($event_config[$index], $data);
-					} else {
+					}
+					else
+					{
 						$returned_values[$caller_index] = $this->_runPHP($codes[$index], $args);
 					}
 				}
@@ -575,13 +597,19 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					foreach ($event->custom_actions as $custom_action)
 					{
 						$event_category = $this->getEventCategory($event->event);
-						if (in_array($event_category, $this->form_categories)) {
+						if (in_array($event_category, $this->form_categories))
+						{
 							if (empty($event->form_ids))
 							{
 								Log::add('No form_ids found for event ' . $event->event . '. This is a necessary parameter to launch actions on forms.', Log::WARNING, 'com_emundus.custom_event_handler');
 								continue;
-							} else if (!in_array($data['formid'], $event->form_ids)) {
-								continue;
+							}
+							else
+							{
+								if (!in_array($data['formid'], $event->form_ids))
+								{
+									continue;
+								}
 							}
 						}
 
@@ -595,7 +623,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 								foreach ($custom_action->actions as $action)
 								{
-									if (!empty($action->action_conditions)) {
+									if (!empty($action->action_conditions))
+									{
 										$pass = $this->checkEventConditions($action->action_conditions, $fnum);
 
 										if (!$pass)
@@ -617,17 +646,24 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			{
 				$user_id = Factory::getApplication()->getIdentity()->id;
 
-				if (!empty($user_id) && $user_id !== $this->automated_task_user) {
+				if (!empty($user_id) && $user_id !== $this->automated_task_user)
+				{
 					foreach ($event->custom_actions as $custom_action)
 					{
 						$event_category = $this->getEventCategory($event->event);
-						if (in_array($event_category, $this->form_categories)) {
+						if (in_array($event_category, $this->form_categories))
+						{
 							if (empty($event->form_ids))
 							{
 								Log::add('No form_ids found for event ' . $event->event . '. This is a necessary parameter to launch actions on forms.', Log::WARNING, 'com_emundus.custom_event_handler');
 								continue;
-							} else if (!in_array($data['formid'], $event->form_ids)) {
-								continue;
+							}
+							else
+							{
+								if (!in_array($data['formid'], $event->form_ids))
+								{
+									continue;
+								}
 							}
 						}
 
@@ -641,7 +677,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 								foreach ($custom_action->actions as $action)
 								{
-									if (!empty($action->action_conditions)) {
+									if (!empty($action->action_conditions))
+									{
 										$pass = $this->checkEventConditions($action->action_conditions, '', $user_id);
 
 										if (!$pass)
@@ -708,16 +745,20 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			$db                = Factory::getContainer()->get('DatabaseDriver');
 			$query             = $db->createQuery();
 
-			if (!empty($fnum) && empty($user_id)) {
+			if (!empty($fnum) && empty($user_id))
+			{
 				$query->clear()
 					->select('applicant_id')
 					->from($db->quoteName('jos_emundus_campaign_candidature'))
 					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
-				try {
+				try
+				{
 					$db->setQuery($query);
 					$user_id = $db->loadResult();
-				} catch (Exception $e) {
+				}
+				catch (Exception $e)
+				{
 					Log::add('Failed to get applicant_id for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 				}
 			}
@@ -740,7 +781,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					// else it can be an alias
 					$pattern_tag   = '/\[(.*?)\]/';
 					$pattern_table = '/\w+\.\w+/';
-					if ($condition->used_object === 'fnum') {
+					if ($condition->used_object === 'fnum')
+					{
 						if (preg_match($pattern_tag, $condition->targeted_column, $matches))
 						{
 							require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
@@ -791,13 +833,37 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										case 'NOT IN':
 											$values = explode('|', $condition->targeted_value);
 
-											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
 											break;
 										case '=':
-                                            $query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-                                            break;
+											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+											break;
 										case '!=':
 											$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
+											break;
+										case 'inferior':
+											$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+											break;
+										case 'inferior_equal':
+											$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+											break;
+										case 'superior':
+											$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+											break;
+										case 'superior_equal':
+											$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
+											break;
+										case 'inferior':
+											$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+											break;
+										case 'inferior_equal':
+											$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+											break;
+										case 'superior':
+											$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+											break;
+										case 'superior_equal':
+											$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
 											break;
 										default:
 											$conditions_status[] = false;
@@ -837,7 +903,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											case 'IN':
 											case 'NOT IN':
 												$values = explode('|', $condition->targeted_value);
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
+												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
 												break;
 											case '=':
 												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
@@ -895,92 +961,101 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							}
 						}
 					}
-					else if ($condition->used_object === 'user_id') {
-						if (preg_match($pattern_table, $condition->targeted_column, $matches))
+					else
+					{
+						if ($condition->used_object === 'user_id')
 						{
-							list($table, $column) = explode('.', $condition->targeted_column);
-							$table = str_replace('#_', 'jos', $table);
+							if (preg_match($pattern_table, $condition->targeted_column, $matches))
+							{
+								list($table, $column) = explode('.', $condition->targeted_column);
+								$table = str_replace('#_', 'jos', $table);
 
-							if (in_array($table, ['jos_emundus_users', 'jos_users', 'jos_emundus_users_profiles'])) {
-								// if table.column is equal to jos_emundus_users_profiles.profile_id or jos_emundus_users.profile, query will be specific
-								$query->clear()
-									->select('u.id')
-									->from('#__users AS u')
-									->where('1=1');
-
-								$table_alias = 'u';
-
-								if ($table.'.'.$column === 'jos_emundus_users_profiles.profile_id' || $table.'.'.$column === 'jos_emundus_users.profile') {
-									$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id')
-										->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
-
-									switch ($condition->operator) {
-										case '=':
-										case 'IN':
-											$values = explode('|', $condition->targeted_value);
-											$query->andWhere('eup.profile_id IN (' . $db->quote(implode(',', $values)) . ') OR eu.profile IN (' . $db->quote(implode(',', $values)) . ')');
-											break;
-										case '!=':
-										case 'NOT IN':
-											$values = explode('|', $condition->targeted_value);
-											$query->andWhere('eup.profile_id NOT IN (' . $db->quote(implode(',', $values)) . ') AND eu.profile NOT IN (' . $db->quote(implode(',', $values)) . ')');
-											break;
-									}
-								} else {
-									switch ($table)
-									{
-										case 'jos_emundus_users':
-											$query->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
-											$table_alias = 'eu';
-											break;
-										case 'jos_emundus_users_profiles':
-											$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id');
-											$table_alias = 'eup';
-											break;
-									}
-
-									switch ($condition->operator)
-									{
-										case 'IN':
-										case 'NOT IN':
-											$values = explode('|', $condition->targeted_value);
-
-											$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . $db->quote(implode(',', $values)) . ')');
-											break;
-										case '=':
-											$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-											break;
-										case '!=':
-											$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
-											break;
-										default:
-											$conditions_status[] = false;
-											break;
-									}
-								}
-
-								$query->andWhere($db->quoteName('u.id') . ' = ' . $db->quote($user_id));
-
-								try
+								if (in_array($table, ['jos_emundus_users', 'jos_users', 'jos_emundus_users_profiles']))
 								{
-									$db->setQuery($query);
-									$row_id = $db->loadResult();
+									// if table.column is equal to jos_emundus_users_profiles.profile_id or jos_emundus_users.profile, query will be specific
+									$query->clear()
+										->select('u.id')
+										->from('#__users AS u')
+										->where('1=1');
 
-									if (!empty($row_id))
+									$table_alias = 'u';
+
+									if ($table . '.' . $column === 'jos_emundus_users_profiles.profile_id' || $table . '.' . $column === 'jos_emundus_users.profile')
 									{
-										$conditions_status[] = true;
+										$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id')
+											->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
+
+										switch ($condition->operator)
+										{
+											case '=':
+											case 'IN':
+												$values = explode('|', $condition->targeted_value);
+												$query->andWhere('eup.profile_id IN (' . implode(',', $db->quote($values)) . ') OR eu.profile IN (' . implode(',', $db->quote($values)) . ')');
+												break;
+											case '!=':
+											case 'NOT IN':
+												$values = explode('|', $condition->targeted_value);
+												$query->andWhere('eup.profile_id NOT IN (' . implode(',', $db->quote($values)) . ') AND eu.profile NOT IN (' . implode(',', $db->quote($values)) . ')');
+												break;
+										}
 									}
 									else
 									{
+										switch ($table)
+										{
+											case 'jos_emundus_users':
+												$query->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
+												$table_alias = 'eu';
+												break;
+											case 'jos_emundus_users_profiles':
+												$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id');
+												$table_alias = 'eup';
+												break;
+										}
+
+										switch ($condition->operator)
+										{
+											case 'IN':
+											case 'NOT IN':
+												$values = explode('|', $condition->targeted_value);
+
+												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
+												break;
+											case '=':
+												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+												break;
+											case '!=':
+												$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
+												break;
+											default:
+												$conditions_status[] = false;
+												break;
+										}
+									}
+
+									$query->andWhere($db->quoteName('u.id') . ' = ' . $db->quote($user_id));
+
+									try
+									{
+										$db->setQuery($query);
+										$row_id = $db->loadResult();
+
+										if (!empty($row_id))
+										{
+											$conditions_status[] = true;
+										}
+										else
+										{
+											$conditions_status[] = false;
+											break;
+										}
+									}
+									catch (Exception $e)
+									{
+										Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 										$conditions_status[] = false;
 										break;
 									}
-								}
-								catch (Exception $e)
-								{
-									Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
-									$conditions_status[] = false;
-									break;
 								}
 							}
 						}
@@ -999,11 +1074,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		return $pass;
 	}
 
-	private function operateCondition($condition, $value):bool
+	private function operateCondition($condition, $value): bool
 	{
 		$result = false;
 
-		if (!empty($condition) && isset($value)) {
+		if (!empty($condition) && isset($value))
+		{
 			$result = match ($condition->operator)
 			{
 				'=' => $value == $condition->targeted_value,
@@ -1023,15 +1099,15 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		if (!empty($action))
 		{
-			$actions_that_needs_fnum = ['update_file_status', 'update_file_tags', 'generate_letter'];
+			$actions_that_needs_fnum = ['update_file_status', 'update_file_tags', 'generate_letter', 'sign_flow', 'alter_cart'];
 
 			if (in_array($action->action_type, $actions_that_needs_fnum) && empty($fnum))
 			{
 				return false;
 			}
 
-			$db	= Factory::getContainer()->get('DatabaseDriver');
-			$query	= $db->createQuery();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
 			switch ($action->action_type)
 			{
@@ -1067,19 +1143,23 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					}
 					break;
 				case 'send_email':
-					if (!empty($action->email_to_send)) {
+					if (!empty($action->email_to_send))
+					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
 						$m_emails = new EmundusModelEmails();
 
 						$sent_states = [];
-						if ($action->send_to_applicant && !empty($fnum)) {
+						if ($action->send_to_applicant && !empty($fnum))
+						{
 							$sent_states[] = $m_emails->sendEmail($fnum, $action->email_to_send, null, [], false, $this->automated_task_user);
 						}
 
-						if ($action->send_to_triggering_user) {
+						if ($action->send_to_triggering_user)
+						{
 							$current_user_id = Factory::getApplication()->getIdentity()->id;
 
-							if (!empty($current_user_id)) {
+							if (!empty($current_user_id))
+							{
 								$query->clear()
 									->select('email')
 									->from('#__users')
@@ -1089,30 +1169,38 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								$user_email = $db->loadResult();
 
 								$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, [], null, [], null, true, [], $this->automated_task_user);
-							} else {
+							}
+							else
+							{
 								$sent_states[] = false;
 							}
 						}
 
-						if (!empty($action->send_to_users_with_groups)) {
-                            $users_emails = [];
-							$user_ids = EmundusHelperAccess::getUsersFromGroupsThatCanAccessToFile($action->send_to_users_with_groups, $fnum);
+						if (!empty($action->send_to_users_with_groups))
+						{
+							$users_emails = [];
+							$user_ids     = EmundusHelperAccess::getUsersFromGroupsThatCanAccessToFile($action->send_to_users_with_groups, $fnum);
 
-                            if (!empty($user_ids)) {
-                                $query->clear()
-                                    ->select('email')
-                                    ->from('#__users')
-                                    ->where('id IN (' . implode(',', $db->quote($user_ids)) . ')');
+							if (!empty($user_ids))
+							{
+								$query->clear()
+									->select('email')
+									->from('#__users')
+									->where('id IN (' . implode(',', $db->quote($user_ids)) . ')');
 
-                                $db->setQuery($query);
-                                $users_emails = $db->loadColumn();
-                            }
+								$db->setQuery($query);
+								$users_emails = $db->loadColumn();
+							}
 
-							if (!empty($users_emails)) {
-								foreach ($users_emails as $user_email) {
+							if (!empty($users_emails))
+							{
+								foreach ($users_emails as $user_email)
+								{
 									$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, ['fnum' => $fnum], null, [], $fnum, true, [], $this->automated_task_user);
 								}
-							} else {
+							}
+							else
+							{
 								$sent_states[] = false;
 							}
 						}
@@ -1122,20 +1210,23 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					break;
 
 				case 'redirect':
-					if (!empty($action->redirect_url)) {
+					if (!empty($action->redirect_url))
+					{
 						$redirect_url = $action->redirect_url;
 						$redirect_url = !empty($fnum) ? str_replace('{fnum}', $fnum, $redirect_url) : $redirect_url;
 
-						try {
+						try
+						{
 							$app = Factory::getApplication();
 
 							// if we are already on the redirect url, then do not redirect
-							$current_uri = Uri::getInstance();
-							$current_path = $current_uri->getPath();
-							$redirect_uri = Uri::getInstance($redirect_url);
+							$current_uri   = Uri::getInstance();
+							$current_path  = $current_uri->getPath();
+							$redirect_uri  = Uri::getInstance($redirect_url);
 							$redirect_path = $redirect_uri->getPath();
 
-							if ($current_path === $redirect_path) {
+							if ($current_path === $redirect_path)
+							{
 								return true;
 							}
 
@@ -1144,28 +1235,33 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							 * 1 = only selected pages
 							 * 2 = exclude selected pages
 							 */
-							if ($action->redirect_only_on_pages_rule != 0) {
+							if ($action->redirect_only_on_pages_rule != 0)
+							{
 								// get current menu, get the list of selected menus and check if rule is met
-								$menu = $app->getMenu();
+								$menu        = $app->getMenu();
 								$active_menu = $menu->getActive();
 
 								$selected_pages = $action->redirect_only_on_pages;
 
-								switch($action->redirect_only_on_pages_rule) {
+								switch ($action->redirect_only_on_pages_rule)
+								{
 									case 1:
-										if (!in_array($active_menu->id, $selected_pages)) {
+										if (!in_array($active_menu->id, $selected_pages))
+										{
 											return false;
 										}
 										break;
 									case 2:
-										if (in_array($active_menu->id, $selected_pages)) {
+										if (in_array($active_menu->id, $selected_pages))
+										{
 											return false;
 										}
 										break;
 								}
 							}
 
-							if (!empty($action->redirect_message)) {
+							if (!empty($action->redirect_message))
+							{
 								$type = $action->redirect_message_type ?? 'message';
 								$app->enqueueMessage($action->redirect_message, $type);
 							}
@@ -1173,21 +1269,164 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$app->redirect($redirect_url);
 
 							$landed = true;
-						} catch (Exception $e) {
+						}
+						catch (Exception $e)
+						{
 							Log::add('Failed to redirect to ' . $redirect_url . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 						}
 					}
 
 					break;
 				case 'generate_letter':
-					if (!empty($action->letter_template)) {
+					if (!empty($action->letter_template))
+					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 						$m_evaluation = new EmundusModelEvaluation();
-						$res = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0);
+						$res          = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0);
 
-						if ($res && $res->status) {
+						if ($res && $res->status)
+						{
 							$landed = true;
+
+							$this->dispatchEvent('onAfterGenerateLetters', [
+								'letters' => $res
+							]);
 						}
+					}
+					break;
+				case 'sign_flow':
+					if (!empty($action->attachment_type))
+					{
+						try
+						{
+							$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
+							$user           = Factory::getApplication()->getIdentity();
+							if ($user->guest)
+							{
+								$user_id = $this->automated_task_user;
+							}
+							else
+							{
+								$user_id = $user->id;
+							}
+
+							if (empty($user_id))
+							{
+								return false;
+							}
+
+							if (!class_exists('EmundusModelSign'))
+							{
+								require_once(JPATH_ROOT . '/components/com_emundus/models/sign.php');
+							}
+							if (!class_exists('EmundusHelperFiles'))
+							{
+								require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+							}
+							if (!class_exists('EmundusHelperFabrik'))
+							{
+								require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+							}
+							if (!class_exists('EmundusModelFiles'))
+							{
+								require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+							}
+							$m_sign  = new EmundusModelSign([], null, Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
+							$m_files = new EmundusModelFiles();
+
+							$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+
+							$signers = [];
+							$signers_actions = (array) $action->action_signers;
+							foreach ($signers_actions as $signer)
+							{
+								$informations = [
+									'email'     => $signer->signer_email,
+									'firstname' => $signer->signer_firstname,
+									'lastname'  => $signer->signer_lastname,
+								];
+
+								if ($signer->signer_type === 'element')
+								{
+									foreach ($informations as $key => $information)
+									{
+										if (is_int($information))
+										{
+											$fabrik_element = $m_files->getValueFabrikByIds($signer->signer_element);
+											if (!empty($fabrik_element))
+											{
+												$raw_value          = $m_files->getFabrikValue([$fnum], $fabrik_element[0]['db_table_name'], $fabrik_element[0]['name']);
+												$informations[$key] = EmundusHelperFabrik::formatElementValue($fabrik_element[0]['name'], $raw_value);
+											}
+										}
+										elseif (in_array($information, $fabrik_aliases))
+										{
+											$informations[$key] = EmundusHelperFabrik::getValueByAlias($information, $fnum)['value'];
+										}
+									}
+								}
+
+								if($signer->signer_type === 'applicant')
+								{
+									$query->clear()
+										->select('u.email, eu.firstname, eu.lastname')
+										->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
+										->leftJoin($db->quoteName('#__emundus_users','eu') . ' ON eu.user_id = ecc.applicant_id')
+										->leftJoin($db->quoteName('#__users','u') . ' ON u.id = ecc.applicant_id')
+										->where($db->quoteName('ecc.id') . ' = :ccid')
+										->bind(':ccid', $ccid, ParameterType::INTEGER);
+									$db->setQuery($query);
+									$informations = $db->loadAssoc();
+								}
+
+								if(!empty($informations['email'] && !empty($informations['firstname']) && !empty($informations['lastname'])))
+								{
+									$contactRepository = new ContactRepository($db);
+									$contact = $contactRepository->getByEmail($informations['email']);
+									if(empty($contact))
+									{
+										$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
+										$contact->setId($contactRepository->flush($contact));
+									}
+
+									if(!empty($contact))
+									{
+										$signers[] = [
+											'signer' => $contact->getId(),
+										];
+									}
+								}
+							}
+
+							if(!empty($signers))
+							{
+								if ($request_id = $m_sign->saveRequest(0, 'to_sign', $ccid, 0, $fnum, $action->attachment_type, $action->signer_connector, $signers))
+								{
+									$requestRepository = new RequestRepository($db);
+									$requestEntity = $requestRepository->loadRequestById($request_id);
+
+									$this->dispatchEvent('onAfterRequestSaved', [
+										'request_id' => $request_id,
+										'status'     => $requestEntity->getStatus()->value,
+										'ccid'       => $requestEntity->getCcid(),
+										'user_id'    => $requestEntity->getUserId(),
+										'fnum'       => $requestEntity->getFnum(),
+										'attachment' => $requestEntity->getAttachment()->getId(),
+										'connector'  => $requestEntity->getConnector()->value,
+										'signers'    => $signers
+									]);
+								}
+							}
+						}
+						catch (Exception $e)
+						{
+							Log::add('Failed to create sign request for fnum ' . $fnum . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+						}
+					}
+					break;
+				case 'alter_cart':
+					if (!empty($action->alter_cart_action)) {
+						$landed = $this->runCartAction($action, $fnum);
 					}
 					break;
 				default:
@@ -1197,5 +1436,127 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		}
 
 		return $landed;
+	}
+
+	/**
+	 * @param           $action
+	 * @param   string  $fnum
+	 *
+	 * @return bool
+	 */
+	private function runCartAction($action, string $fnum): bool
+	{
+		$ran = false;
+
+		if (!class_exists('EmundusModelWorkflow')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+		}
+		$m_workflow = new EmundusModelWorkflow();
+		$step = $m_workflow->getPaymentStepFromFnum($fnum);
+
+		if (!empty($step->id)) {
+			$cart_repository = new CartRepository();
+			$cart = $cart_repository->getCartByFnum($fnum, $step->id);
+			if (!empty($cart)) {
+				$action->discount_id = (int) $action->discount_id;
+				$action->product_id = (int) $action->product_id;
+				switch ($action->alter_cart_action)
+				{
+					case 'add_product':
+						if (!empty($action->product_id)) {
+							// only add product if it is not already in the cart
+							$already_in_cart = false;
+							foreach ($cart->getProducts() as $product) {
+								if ($product->getId() === $action->product_id) {
+									$already_in_cart = true;
+									break;
+								}
+							}
+
+							if (!$already_in_cart) {
+								$product_repository = new ProductRepository();
+								$product = $product_repository->getProductById($action->product_id);
+
+								if (!empty($product->getId())) {
+									$cart->addProduct($product);
+									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
+								}
+							} else {
+								$ran = true;
+							}
+						}
+						break;
+					case 'remove_product':
+						if (!empty($action->product_id)) {
+							// only remove product if it is in the cart
+							$still_in_cart = false;
+							foreach ($cart->getProducts() as $product) {
+								if ($product->getId() === $action->product_id) {
+									$still_in_cart = true;
+									break;
+								}
+							}
+
+							if ($still_in_cart) {
+								$product_repository = new ProductRepository();
+								$product = $product_repository->getProductById($action->product_id);
+
+								if (!empty($product->getId())) {
+									$cart->removeProduct($product);
+									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
+								}
+							} else {
+								$ran = true;
+							}
+						}
+						break;
+					case 'add_discount':
+						if (!empty($action->discount_id)) {
+							$discount_repository = new DiscountRepository();
+							$discount = $discount_repository->getDiscountById($action->discount_id);
+
+							if (!empty($discount)) {
+								// only add discount if it is not already in the cart
+								$already_in_cart = false;
+								foreach ($cart->getPriceAlterations() as $alteration) {
+									if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id) {
+										$already_in_cart = true;
+										break;
+									}
+								}
+
+								if (!$already_in_cart) {
+									$alteration = new AlterationEntity(0, $cart->getId(), null, $discount, $discount->getDescription(), -$discount->getValue(), AlterationType::from($discount->getType()->value), $this->automated_task_user);
+									$ran = $cart_repository->addAlteration($cart, $alteration, $this->automated_task_user);
+								} else {
+									$ran = true;
+								}
+							}
+						}
+						break;
+					case 'remove_discount':
+						if (!empty($action->discount_id)) {
+							// only remove discount if it is in the cart
+							$still_in_cart = false;
+							$alteration_to_remove = null;
+							foreach ($cart->getPriceAlterations() as $alteration) {
+								if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id) {
+									$alteration_to_remove = $alteration;
+									$still_in_cart = true;
+									break;
+								}
+							}
+							if ($still_in_cart && !empty($alteration_to_remove)) {
+								$ran = $cart_repository->removeAlteration($cart, $alteration_to_remove, $this->automated_task_user);
+							} else {
+								$ran = true;
+							}
+						}
+						break;
+				}
+			}
+		}
+
+		return $ran;
 	}
 }

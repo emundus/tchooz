@@ -83,7 +83,7 @@ class EmundusControllerForm extends BaseController
 					{
 						$tags       = '<div>';
 						$short_tags = $tags;
-						$tags       .= '<h2 class="tw-mb-2">' . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') . '</h2>';
+						$tags       .= '<h2 class="tw-mb-8 tw-text-center">' . Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_ASSOCIATED_TITLE') . '</h2>';
 						$tags       .= '<div class="tw-flex tw-flex-wrap">';
 						foreach ($campaigns as $campaign)
 						{

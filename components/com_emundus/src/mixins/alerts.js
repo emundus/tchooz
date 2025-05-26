@@ -34,6 +34,7 @@ const alerts = {
 				customClass: {
 					title: 'em-swal-title',
 					confirmButton: 'em-swal-confirm-button',
+					actions: 'em-swal-single-action',
 					header: 'tw-flex tw-justify-center tw-items-center tw-w-full',
 				},
 			};

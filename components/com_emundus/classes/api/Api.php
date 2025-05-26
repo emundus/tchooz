@@ -11,7 +11,6 @@ namespace Tchooz\api;
 
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
-use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
@@ -94,13 +93,15 @@ class Api
 	 */
 	public function setClient($client = null): void
 	{
-		if (empty($this->client)) {
+		if (empty($this->client))
+		{
 			$this->client = new GuzzleClient([
 				'base_uri' => $this->baseUrl,
 				'verify'   => false
 			]);
 		}
-		else {
+		else
+		{
 			$this->client = $client;
 		}
 	}
@@ -137,87 +138,129 @@ class Api
 	}
 
 
-	public function get($url, $params = array())
+	public function get(string $url, array $params = [], array $headers = [])
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
-		try {
+		try
+		{
 			$url_params = http_build_query($params);
 			$url        = !empty($url_params) ? $url . '?' . $url_params : $url;
 
-			$request = $this->client->get($this->baseUrl . '/' . $url, ['headers' => $this->getHeaders()]);
+			if (!empty($headers))
+			{
+				$headers = array_merge($this->getHeaders(), $headers);
+			}
+			else
+			{
+				$headers = $this->getHeaders();
+			}
+
+			$request = $this->client->get($this->baseUrl . '/' . $url, ['headers' => $headers]);
 
 			$response['status'] = $request->getStatusCode();
-			$response['data']   = json_decode($request->getBody());
+
+			$contentType = $request->getHeaderLine('Content-Type');
+
+			if (strpos($contentType, 'application/json') !== false)
+			{
+				$response['data'] = json_decode($request->getBody());
+			}
+			else
+			{
+				$response['data']         = $request->getBody()->getContents();
+				$response['headers']      = $request->getHeaders();
+				$response['content_type'] = $contentType;
+				$response['is_file']      = true;
+			}
 		}
-		catch (\Exception $e) {
-			if ($this->getRetry()) {
+		catch (ClientException $e)
+		{
+			if ($this->getRetry())
+			{
 				$this->setRetry(false);
 				$this->get($url, $params);
 			}
 
 			Log::add('[GET] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
 
-			$response['status']  = $e->getCode();
-			$response['message'] = $e->getMessage();
+			$response['status']  = $e->getResponse()->getStatusCode();
+			$response['message'] = $e->getResponse()->getReasonPhrase();
+			$response['headers'] = $e->getResponse()->getHeaders();
+			$response['error_details'] = $e->getResponse()->getBody()->getContents();
 		}
 
 		return $response;
 	}
 
-	public function post($url, $body = null, $headers = array())
+	public function post($url, $body = null, $headers = array(), $asMultipart = false)
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
-		try {
+		try
+		{
 			$params            = array();
 			$params['headers'] = $this->getHeaders();
-			if (is_array($body))
+
+			if (is_array($body) && !$asMultipart)
 			{
 				$params['form_params'] = $body;
 			}
-			else
+			elseif ($asMultipart)
 			{
-				if (!empty($body))
-				{
-					$params['body']                    = $body;
-				}
+				$params['multipart'] = $body;
+			}
+			elseif (!empty($body))
+			{
+				$params['body'] = $body;
 			}
 
 			if (!empty($headers))
 			{
 				$params['headers'] = array_merge($params['headers'], $headers);
-			} else {
+			}
+			elseif (!$asMultipart)
+			{
 				$params['headers']['Content-Type'] = 'application/json';
 				$params['headers']['Accept']       = 'application/json';
+
 				if (is_array($body))
 				{
 					$params['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
 				}
 			}
 
-			if(strpos($url, 'https') !== false)
+			if (strpos($url, 'https') !== false)
 			{
 				$request = $this->client->post($url, $params);
 			}
 			else
 			{
+				if ($asMultipart)
+				{
+					unset($params['headers']['Content-Type']);
+				}
+
 				$request = $this->client->post($this->baseUrl . '/' . $url, $params);
 			}
 
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());
 		}
-		catch (ClientException $e) {
-			if ($this->getRetry()) {
+		catch (ClientException $e)
+		{
+			if ($this->getRetry())
+			{
 				$this->setRetry(false);
-				$this->post($url, $body);
+				$this->post($url, $body, $headers, $asMultipart);
 			}
 
 			Log::add('[POST] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
-			$response['status']  = $e->getCode();
-			$response['message'] = $e->getMessage();
-			$response['data'] = json_decode($e->getResponse()->getBody()->getContents());
+
+			$response['status']  = $e->getResponse()->getStatusCode();
+			$response['message'] = $e->getResponse()->getReasonPhrase();
+			$response['headers'] = $e->getResponse()->getHeaders();
+			$response['error']   = $e->getResponse()->getBody()->getContents();
 		}
 
 		return $response;
@@ -228,7 +271,8 @@ class Api
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
-		try {
+		try
+		{
 			$params            = array();
 			$params['headers'] = $this->getHeaders();
 			if (is_array($body))
@@ -250,15 +294,19 @@ class Api
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());
 		}
-		catch (\Exception $e) {
-			if ($this->getRetry()) {
+		catch (ClientException $e)
+		{
+			if ($this->getRetry())
+			{
 				$this->setRetry(false);
 				$this->patch($url, $body);
 			}
 
 			Log::add('[PATCH] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
-			$response['status']  = $e->getCode();
-			$response['message'] = $e->getMessage();
+
+			$response['status']  = $e->getResponse()->getStatusCode();
+			$response['message'] = $e->getResponse()->getReasonPhrase();
+			$response['headers'] = $e->getResponse()->getHeaders();
 		}
 
 		return $response;
@@ -268,7 +316,8 @@ class Api
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];
 
-		try {
+		try
+		{
 			$url_params = http_build_query($params);
 			$url        = !empty($url_params) ? $url . '?' . $url_params : $url;
 
@@ -276,16 +325,20 @@ class Api
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());
 		}
-		catch (\Exception $e) {
+		catch (ClientException $e)
+		{
 
-			if ($this->getRetry()) {
+			if ($this->getRetry())
+			{
 				$this->setRetry(false);
 				$this->delete($url);
 			}
 
 			Log::add('[DELETE] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
-			$response['status']  = $e->getCode();
-			$response['message'] = $e->getMessage();
+
+			$response['status']  = $e->getResponse()->getStatusCode();
+			$response['message'] = $e->getResponse()->getReasonPhrase();
+			$response['headers'] = $e->getResponse()->getHeaders();
 		}
 
 		return $response;

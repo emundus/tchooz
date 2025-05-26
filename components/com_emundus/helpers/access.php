@@ -17,6 +17,7 @@ use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\NumericSign\RequestRepository;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -622,6 +623,37 @@ class EmundusHelperAccess
 		}
 
 		return $mine;
+	}
+
+	public static function isRequestMine(int $request_id, int $user_id): bool
+	{
+		try
+		{
+			$mine = false;
+			$db = Factory::getContainer()->get('DatabaseDriver');
+
+			$requestRepository = new RequestRepository($db);
+			$request = $requestRepository->loadRequestById($request_id);
+
+			$query = $db->getQuery(true);
+			$query->select('applicant_id')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where('id = ' . $db->quote($request->getCcid()));
+			$db->setQuery($query);
+			$applicant_id = (int)$db->loadResult();
+
+			if ($applicant_id === $user_id)
+			{
+				$mine = true;
+			}
+
+			return $mine;
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error seeing if request is mine. -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			return false;
+		}
 	}
 
 	/**

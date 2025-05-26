@@ -2,7 +2,6 @@
 import settingsService from '@/services/settings';
 import { useGlobalStore } from '@/stores/global.js';
 import Info from '@/components/Utils/Info.vue';
-
 export default {
 	name: 'SMSAddon',
 	components: { Info },

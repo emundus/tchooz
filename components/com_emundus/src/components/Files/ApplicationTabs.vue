@@ -14,6 +14,7 @@
 				:user="user"
 				:columns="['name', 'date', 'category', 'status']"
 				:displayEdit="false"
+				:centerPreview="false"
 			/>
 			<Comments v-if="selected === 'comments'" :fnum="file.fnum" :user="user" :access="access['10']" />
 			<IframeTab v-if="selectedTab && selectedTab.url" :key="selectedTab.name" :url="selectedTab.url" :fnum="file.fnum">

@@ -1356,6 +1356,18 @@ class EmundusHelperEvents
 					$mainframe->redirect('index.php');
 				}
 			}
+
+			// check if we have a new workflow payment step, and if so, check if it is completed
+			$m_workflow = new EmundusModelWorkflow();
+			$payment_step = $m_workflow->getPaymentStepFromFnum($user->fnum, true);
+			if (!empty($payment_step)) {
+				$completed = $m_workflow->isPaymentStepCompleted($user->fnum, $payment_step);
+
+				if (!$completed) {
+					$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_COMPLETED'), 'warning');
+					$mainframe->redirect($m_workflow->getPaymentStepUrl() . '&fnum='. $user->fnum);
+				}
+			}
 		}
 
 		return true;

@@ -15,12 +15,14 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\QueryInterface;
 use Joomla\Plugin\Emundus\Parcoursup\Entity\ParcoursupEntity;
 
-readonly class ParcoursupRepository
+class ParcoursupRepository
 {
 
 	private QueryInterface $query;
 
 	private QueryInterface $subQuery;
+	
+	private array $config = [];
 
 	public function __construct(
 		private DatabaseInterface  $db,
@@ -29,6 +31,8 @@ readonly class ParcoursupRepository
 	{
 		$this->query = $this->db->getQuery(true);
 		$this->subQuery = $this->db->getQuery(true);
+		
+		$this->config = $this->getParcoursupConfig();
 	}
 
 	public function getDatas(): array
@@ -54,53 +58,83 @@ readonly class ParcoursupRepository
 		return $datas;
 	}
 
-	public function flush(ParcoursupEntity $datas): bool
+	public function flush(ParcoursupEntity $datas): bool|string
 	{
 		$flushed = false;
 
+		$fnum = '';
+		$userId = 0;
+
 		try
 		{
-			// User creation
-			$this->query->clear()
-				->select('id')
-				->from($this->db->quoteName('#__users'))
-				->where($this->db->quoteName('email') . ' = ' . $this->db->quote($datas->getUser()->email));
-			$this->db->setQuery($this->query);
-			$userId = $this->db->loadResult();
+			if(!empty($datas->getParcoursupId()) && !empty($this->config['lookupKeys'])) {
+				$element = $this->config['lookupKeys'][0]['elementId'];
+				if(!empty($element))
+				{
+					$table = explode('___', $element)[0];
+					$field = explode('___', $element)[1];
 
-			if (empty($userId))
-			{
-				$userId = $this->userRepository->flushUser($datas->getUser());
+					$this->query->clear()
+						->select('cc.fnum, cc.applicant_id')
+						->from($this->db->quoteName('#__emundus_campaign_candidature', 'cc'))
+						->leftJoin($this->db->quoteName($table, 'd') . ' ON d.fnum = cc.fnum')
+						->where('d.' . $field . ' = ' . $this->db->quote($datas->getParcoursupId()))
+						->where('cc.campaign_id = ' . $datas->getCampaignId());
+					$this->db->setQuery($this->query);
+					$application = $this->db->loadObject();
+
+					if(!empty($application->fnum))
+					{
+						$fnum = $application->fnum;
+						$userId = $application->applicant_id;
+					}
+				}
 			}
 
-			if (empty($userId))
+			if(empty($userId))
 			{
-				return false;
-			}
-			//
+				// User creation
+				$this->query->clear()
+					->select('id')
+					->from($this->db->quoteName('#__users'))
+					->where($this->db->quoteName('email') . ' = ' . $this->db->quote($datas->getUser()->email));
+				$this->db->setQuery($this->query);
+				$userId = $this->db->loadResult();
 
-			// Application creation
-			$this->query->clear()
-				->select('fnum')
-				->from($this->db->quoteName('#__emundus_campaign_candidature'))
-				->where('campaign_id = ' . $datas->getCampaignId())
-				->where('applicant_id = ' . $userId);
-			$this->db->setQuery($this->query);
-			$fnum = $this->db->loadResult();
+				if (empty($userId))
+				{
+					$userId = $this->userRepository->flushUser($datas->getUser());
+				}
+
+				if (empty($userId))
+				{
+					return false;
+				}
+				//
+
+				// Application creation
+				$this->query->clear()
+					->select('fnum')
+					->from($this->db->quoteName('#__emundus_campaign_candidature'))
+					->where('campaign_id = ' . $datas->getCampaignId())
+					->where('applicant_id = ' . $userId);
+				$this->db->setQuery($this->query);
+				$fnum = $this->db->loadResult();
+
+				if (empty($fnum))
+				{
+					$fnum = $this->createFile($datas->getCampaignId(), $userId);
+				}
+			}
 
 			if (empty($fnum))
 			{
-				$fnum = $this->createFile($datas->getCampaignId(), $userId);
-			}
-
-			if (empty($fnum))
-			{
 				return false;
 			}
-			
+
 			if ($this->fillFnum($datas, $fnum, $userId))
 			{
-				$flushed = true;
+				$flushed = $fnum;
 			}
 			//
 
@@ -388,5 +422,24 @@ readonly class ParcoursupRepository
 			->where('campaign_id = ' . $this->db->quote($campaignId));
 		$this->db->setQuery($query);
 		return $this->db->execute();
+	}
+
+	private function getParcoursupConfig(): array
+	{
+		$config = [];
+		$query  = $this->db->getQuery(true);
+
+		$query->select('params')
+			->from('#__emundus_setup_sync')
+			->where('type = ' . $this->db->quote('parcoursup'));
+		$this->db->setQuery($query);
+		$jsonConfig = $this->db->loadResult();
+
+		if (!empty($jsonConfig))
+		{
+			$config = json_decode($jsonConfig, true);
+		}
+
+		return $config;
 	}
 }

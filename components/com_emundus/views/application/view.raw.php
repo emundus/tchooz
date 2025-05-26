@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\MVC\View\HtmlView;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 /**
  * HTML View class for the Emundus Component
@@ -210,10 +211,10 @@ class EmundusViewApplication extends HtmlView
 						$this->nameCategory        = $m_files->getAttachmentCategories();
 						$this->student_id          = $fnumInfos['applicant_id'];
 						$this->is_applicant = $this->_user->applicant;
-						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync'];
+						$this->columns = ['check','name', 'date', 'desc', 'category', 'status', 'user', 'modified_by', 'modified', 'permissions', 'sync', 'sign'];
 						if($this->_user->applicant) {
 							//TODO: Add menu parameters
-							$this->columns = ['name', 'date', 'desc', 'status', 'modified'];
+							$this->columns = ['name', 'date', 'desc', 'status', 'modified', 'sign'];
 						}
 					}
 					else {
@@ -413,6 +414,8 @@ class EmundusViewApplication extends HtmlView
 						foreach ($this->fileLogs as $log) {
 							$log->timestamp = EmundusHelperDate::displayDate($log->timestamp);
 							$log->details   = $m_logs->setActionDetails($log->action_id, $log->verb, $log->params);
+							$log->details['action_name'] = Text::_($log->message);
+							$log->details['action_category'] = Text::_($log->details['action_category']);
 						}
 					}
 					else {
@@ -573,6 +576,18 @@ class EmundusViewApplication extends HtmlView
 					}
 					else {
 						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");
+						exit();
+					}
+					break;
+
+				case 'cart':
+					$payment_repository = new PaymentRepository();
+
+					if (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'r', $this->user->id, $fnum)) {
+						EmundusModelLogs::log($this->user->id, (int) substr($fnum, -7), $fnum, $payment_repository->getActionId(), 'r', 'COM_EMUNDUS_ACCESS_CART_APPLICANT_READ');
+					}
+					else {
+						echo Text::_("ACCESS_DENIED");
 						exit();
 					}
 					break;

@@ -51,6 +51,18 @@
         }
     }
 
+    .tw-btn-red {
+        p,span {
+            color: var(--neutral-0);
+        }
+
+        &:hover, &:focus, &:active {
+            p,span {
+                color: var(--red-500);
+            }
+        }
+    }
+
     /** DROPFILES **/
     .dropfiles-page {
         .dropfiles-content-multi {

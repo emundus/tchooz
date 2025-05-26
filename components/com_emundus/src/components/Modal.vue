@@ -4,10 +4,16 @@
 			v-show="isOpened"
 			:id="'modal___' + name"
 			class="modal___container"
+			:class="classes"
 			ref="modal_container"
-			@focusout="onFocusOut"
+			v-click-outside="{
+				handler: onFocusOut,
+				exclude: ['.not-to-close-modal'],
+				disabled: false,
+			}"
 		>
-			<slot></slot>
+			<h1 v-if="title.length > 0" class="tw-text-center">{{ translate(title) }}</h1>
+			<slot @close="close"> </slot>
 		</div>
 	</transition>
 </template>
@@ -18,6 +24,10 @@ export default {
 		name: {
 			type: String,
 			required: true,
+		},
+		title: {
+			type: String,
+			default: '',
 		},
 		width: {
 			type: String,
@@ -31,6 +41,18 @@ export default {
 			type: String,
 			default: 'fade',
 		},
+		top: {
+			type: String,
+			default: '0',
+		},
+		left: {
+			type: String,
+			default: '0',
+		},
+		center: {
+			type: Boolean,
+			default: true,
+		},
 		delay: {
 			type: Number,
 			default: 0,
@@ -38,6 +60,14 @@ export default {
 		clickToClose: {
 			type: Boolean,
 			default: true,
+		},
+		openOnCreate: {
+			type: Boolean,
+			default: true,
+		},
+		classes: {
+			type: String,
+			default: '',
 		},
 	},
 	emits: ['beforeOpen', 'closed'],
@@ -47,7 +77,9 @@ export default {
 		};
 	},
 	mounted() {
-		this.open();
+		if (this.openOnCreate) {
+			this.open();
+		}
 	},
 	methods: {
 		open() {
@@ -58,6 +90,16 @@ export default {
 			this.$refs.modal_container.style.height = this.height;
 			this.$refs.modal_container.style.zIndex = 999999;
 			this.$refs.modal_container.style.opacity = 1;
+			this.$refs.modal_container.style.top = this.top;
+			this.$refs.modal_container.style.left = this.left;
+
+			if (this.center) {
+				this.$refs.modal_container.style.transform = 'translate(-50%, -50%)';
+				this.$refs.modal_container.style.top = '50%';
+				this.$refs.modal_container.style.left = '50%';
+			} else {
+				this.$refs.modal_container.style.transform = 'none';
+			}
 		},
 		close() {
 			this.$refs.modal_container.style.zIndex = -999999;
@@ -67,6 +109,7 @@ export default {
 		},
 		onFocusOut() {
 			if (this.clickToClose) {
+				this.isOpened = false;
 				this.close();
 			}
 		},

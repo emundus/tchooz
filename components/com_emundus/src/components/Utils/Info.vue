@@ -1,7 +1,34 @@
 <template>
-	<div :class="[bgColor, borderColor]" class="tw-flex tw-items-start tw-gap-2 tw-rounded tw-border tw-px-5 tw-py-6">
-		<span v-if="displayIcon" :class="[iconType, iconColor]">{{ icon }}</span>
-		<div v-html="textValueExtracted" :class="[textColor]"></div>
+	<div :class="[bgColor, borderColor]" class="tw-rounded tw-border tw-px-5 tw-py-4">
+		<div class="tw-flex tw-items-start tw-gap-2">
+			<span v-if="displayIcon" :class="[iconType, iconColor]">{{ icon }}</span>
+			<div class="tw-flex-1">
+				<!-- Titre avec icône cliquable -->
+				<div
+					v-if="title && accordion"
+					class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between"
+					@click="toggle"
+				>
+					<div class="tw-flex tw-w-full tw-items-center tw-justify-between tw-gap-1">
+						<span class="tw-font-semibold" :class="[textColor]">{{ translate(title) }}</span>
+						<span
+							class="material-symbols-outlined tw-transition-transform tw-duration-200"
+							:class="{ 'tw-rotate-90': isOpen }"
+						>
+							chevron_right
+						</span>
+					</div>
+				</div>
+
+				<!-- Titre simple sans accordéon -->
+				<div v-else-if="title" class="tw-font-semibold" :class="[textColor]">
+					{{ translate(title) }}
+				</div>
+
+				<!-- Contenu affiché ou non -->
+				<div v-if="!accordion || isOpen" v-html="textValueExtracted" :class="[textColor, title ? 'tw-mt-2' : '']"></div>
+			</div>
+		</div>
 	</div>
 </template>
 
@@ -13,6 +40,14 @@ export default {
 		text: {
 			type: String,
 			required: true,
+		},
+		title: {
+			type: String,
+			default: '',
+		},
+		accordion: {
+			type: Boolean,
+			default: false,
 		},
 		bgColor: {
 			type: String,
@@ -45,16 +80,19 @@ export default {
 	data() {
 		return {
 			textValueExtracted: '',
-			loading: false,
+
+			isOpen: false,
 		};
 	},
 	created() {
-		this.loading = true;
 		this.textValueExtracted = this.translate(this.text);
-		this.loading = false;
 	},
 	mounted() {},
-	methods: {},
+	methods: {
+		toggle() {
+			this.isOpen = !this.isOpen;
+		},
+	},
 	computed: {
 		borderColor() {
 			return this.iconColor.replace('text', 'border');

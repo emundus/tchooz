@@ -141,7 +141,7 @@ export default {
 			</ul>
 		</nav>
 
-		<section id="actions" class="tw-mb-4 tw-mt-4 tw-flex tw-items-start tw-justify-between">
+		<section id="actions" class="tw-mb-4 tw-mt-4 tw-flex tw-items-start tw-justify-between tw-gap-8">
 			<Filters :filters="filters" :currentTabKey="currentTabKey" @update-filter="onChangeFilter" />
 
 			<Actions
