@@ -46,7 +46,9 @@ class AmmonFactory
 			$values['countryCode'],
 			$values['postcode'],
 			$values['line1'],
-			$values['line2']
+			$values['line2'],
+            $values['Email'] ?? '',
+            $values['Phone'] ?? ''
 		);
 	}
 
