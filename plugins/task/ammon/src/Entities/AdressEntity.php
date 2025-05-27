@@ -27,18 +27,6 @@ class AdressEntity
 			throw new \InvalidArgumentException('The addressee cannot be empty');
 		}
 
-		if (empty($this->city)) {
-			throw new \InvalidArgumentException('The city cannot be empty');
-		}
-
-		if (empty($this->countryCode)) {
-			throw new \InvalidArgumentException('The countryCode cannot be empty');
-		}
-
-		if (empty($this->line1)) {
-			throw new \InvalidArgumentException('The line1 cannot be empty');
-		}
-
 		if (!empty($this->postcode)) {
 			$this->postcode = preg_replace('/[^0-9]/', '', $this->postcode);
 
