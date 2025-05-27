@@ -239,7 +239,7 @@ $user = $this->userid;
         transition: all .3s;
         width: 425px;
         min-width: 425px;
-        z-index: 10;
+        z-index: 9;
 
         #filter-comments {
             flex-direction: column;
