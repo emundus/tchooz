@@ -354,13 +354,16 @@ class CartRepository
 			$payment_step->setProducts($step_mandatory_products);
 
 			if (!empty($data['alterations'])) {
-				$alteration_repository = new AlterationRepository();
+				$discount_repository = new DiscountRepository();
 				foreach ($data['alterations'] as $alteration) {
-					$alteration_entity = $alteration_repository->getAlterationById($alteration['id']);
-
-					if (!empty($alteration_entity)) {
-						$cart_entity->addAlteration($alteration_entity);
+					if (!empty($alteration['discount_id'])) {
+						$discount = $discount_repository->getDiscountById($alteration['discount_id']);
+					} else {
+						$discount = null;
 					}
+
+					$alteration_entity = new AlterationEntity($alteration['id'], $cart_entity->getId(), null, $discount, $alteration['description'], $alteration['amount'], AlterationType::from($alteration['type']));
+					$cart_entity->addAlteration($alteration_entity);
 				}
 			}
 
