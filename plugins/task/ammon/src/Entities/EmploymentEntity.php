@@ -8,7 +8,7 @@ class EmploymentEntity {
 	public function __construct(
 		public string $company, // Company internal reference
 		public string $professionalEmail,
-		public string $professionalPhoneNumber,
+		public string $professionalPhoneNumber = '',
 		public string $professionalPostNumber = '',
 		$context = '',
 	) {
@@ -18,10 +18,6 @@ class EmploymentEntity {
 
 		if (empty($this->professionalEmail)) {
 			throw new \InvalidArgumentException('The professionalEmail cannot be empty for the ' . $context);
-		}
-
-		if (empty($this->professionalPhoneNumber)) {
-			throw new \InvalidArgumentException('The professionalPhoneNumber cannot be empty for the ' . $context);
 		}
 	}
 }
