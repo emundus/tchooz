@@ -59,7 +59,7 @@
 			</div>
 
 			<div v-else>
-				<div v-if="displayedItems.length > 0" id="list-items" class="tw-overflow-x-auto">
+				<div v-if="displayedItems.length > 0" id="list-items">
 					<table
 						v-if="viewType !== 'calendar' && viewType !== 'gantt'"
 						id="list-table"
