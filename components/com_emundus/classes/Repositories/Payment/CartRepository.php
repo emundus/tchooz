@@ -333,6 +333,17 @@ class CartRepository
 
 	public function loadAdjustBalanceStep(CartEntity $cart_entity, int $adjust_balance_step_id): CartEntity
 	{
+		$already_added_adjust_balance = false;
+		foreach ($cart_entity->getPriceAlterations() as $alteration) {
+			if ($alteration->getType() === AlterationType::ADJUST_BALANCE) {
+				$already_added_adjust_balance = true;
+			}
+		}
+
+		if ($already_added_adjust_balance) {
+			return $cart_entity; // already added, no need to load again
+		}
+
 		$transaction_repository = new TransactionRepository();
 		$transaction = $transaction_repository->getTransactionByCartAndStep($cart_entity, $adjust_balance_step_id, TransactionStatus::CONFIRMED);
 
@@ -376,31 +387,22 @@ class CartRepository
 			// create an alteration for the advance amount
 			if (!empty($transaction->getAmount())) {
 				// add it only if not already added
-				$already_added_adjust_balance = false;
-				foreach ($cart_entity->getPriceAlterations() as $alteration) {
-					if ($alteration->getType() === AlterationType::ADJUST_BALANCE) {
-						$already_added_adjust_balance = true;
-						break;
-					}
-				}
+				$already_paid_alteration = new AlterationEntity(
+					0,
+					$cart_entity->getId(),
+					null,
+					null,
+					Text::_('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE'),
+					-$transaction->getAmount(),
+					AlterationType::ADJUST_BALANCE,
+					$transaction->getCreatedBy()
+				);
 
-				if (!$already_added_adjust_balance) {
-					$already_paid_alteration = new AlterationEntity(
-						0,
-						$cart_entity->getId(),
-						null,
-						null,
-						Text::_('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE'),
-						-$transaction->getAmount(),
-						AlterationType::ADJUST_BALANCE,
-						$transaction->getCreatedBy()
-					);
+				$added = $cart_entity->addAlteration($already_paid_alteration);
 
-					$added = $cart_entity->addAlteration($already_paid_alteration);
-
-					if (!$added) {
-						throw new \Exception('Error adding adjust balance alteration');
-					}
+				if (!$added)
+				{
+					throw new \Exception('Error adding adjust balance alteration');
 				}
 			}
 
