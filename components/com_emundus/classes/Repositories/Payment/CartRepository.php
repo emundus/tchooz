@@ -356,13 +356,19 @@ class CartRepository
 			if (!empty($data['alterations'])) {
 				$discount_repository = new DiscountRepository();
 				foreach ($data['alterations'] as $alteration) {
+					if (!empty($alteration['product_id'])) {
+						$product = new ProductEntity($alteration['product_id']);
+					} else {
+						$product = null;
+					}
+
 					if (!empty($alteration['discount_id'])) {
 						$discount = $discount_repository->getDiscountById($alteration['discount_id']);
 					} else {
 						$discount = null;
 					}
 
-					$alteration_entity = new AlterationEntity($alteration['id'], $cart_entity->getId(), null, $discount, $alteration['description'], $alteration['amount'], AlterationType::from($alteration['type']));
+					$alteration_entity = new AlterationEntity($alteration['id'], $cart_entity->getId(), $product, $discount, $alteration['description'], $alteration['amount'], AlterationType::from($alteration['type']));
 					$cart_entity->addAlteration($alteration_entity);
 				}
 			}
