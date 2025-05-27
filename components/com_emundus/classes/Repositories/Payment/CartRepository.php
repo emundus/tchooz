@@ -333,17 +333,6 @@ class CartRepository
 
 	public function loadAdjustBalanceStep(CartEntity $cart_entity, int $adjust_balance_step_id): CartEntity
 	{
-		$already_added_adjust_balance = false;
-		foreach ($cart_entity->getPriceAlterations() as $alteration) {
-			if ($alteration->getType() === AlterationType::ADJUST_BALANCE) {
-				$already_added_adjust_balance = true;
-			}
-		}
-
-		if ($already_added_adjust_balance) {
-			return $cart_entity; // already added, no need to load again
-		}
-
 		$transaction_repository = new TransactionRepository();
 		$transaction = $transaction_repository->getTransactionByCartAndStep($cart_entity, $adjust_balance_step_id, TransactionStatus::CONFIRMED);
 
@@ -363,6 +352,18 @@ class CartRepository
 				$step_mandatory_products[] = $product_entity;
 			}
 			$payment_step->setProducts($step_mandatory_products);
+			$cart_entity->setPaymentStep($payment_step);
+
+			$already_added_adjust_balance = false;
+			foreach ($cart_entity->getPriceAlterations() as $alteration) {
+				if ($alteration->getType() === AlterationType::ADJUST_BALANCE) {
+					$already_added_adjust_balance = true;
+				}
+			}
+
+			if ($already_added_adjust_balance) {
+				return $cart_entity; // already added, no need to load again
+			}
 
 			if (!empty($data['alterations'])) {
 				$discount_repository = new DiscountRepository();
@@ -405,8 +406,6 @@ class CartRepository
 					throw new \Exception('Error adding adjust balance alteration');
 				}
 			}
-
-			$cart_entity->setPaymentStep($payment_step);
 		}
 
 		return $cart_entity;
