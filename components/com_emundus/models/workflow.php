@@ -929,7 +929,7 @@ class EmundusModelWorkflow extends JModelList
 			$query = $this->db->getQuery(true);
 			$query->select('*')
 				->from('#__emundus_setup_step_types')
-				->where('published = 1');
+				->where('published != 0');
 
 			$this->db->setQuery($query);
 			$types = $this->db->loadObjectList();
@@ -1031,6 +1031,7 @@ class EmundusModelWorkflow extends JModelList
 						->update('#__emundus_setup_step_types')
 						->set('label = ' . $this->db->quote($type['label']))
 						->set('class = ' . (!empty($type['class']) ? $this->db->quote($type['class']) : $this->db->quote('blue')))
+						->set('published = 1')
 						->where('id = ' . $type['id']);
 					$this->db->setQuery($query);
 					$updates[] = $this->db->execute();
