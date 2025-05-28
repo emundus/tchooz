@@ -929,7 +929,7 @@ class EmundusModelWorkflow extends JModelList
 			$query = $this->db->getQuery(true);
 			$query->select('*')
 				->from('#__emundus_setup_step_types')
-				->where('published != 0');
+				->where('published = 1 OR published IS NULL');
 
 			$this->db->setQuery($query);
 			$types = $this->db->loadObjectList();
