@@ -167,6 +167,15 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 
 		require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 		EmundusModelLogs::log($user->id, $applicant_id, $fnum, $step_data->action_id, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION', json_encode(array('step_id' => $step_id)));
+
+		if (!empty($fnum) && empty($form_model->getRowId()))
+		{
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+			}
+			EmundusHelperFabrik::fillFormFromAliases($form_model, $db_table_name, $fnum);
+		}
 	}
 
 	public function onBeforeProcess(): void
@@ -214,10 +223,10 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 
 	public function onAfterProcess(): void
 	{
-		$formModel = $this->getModel();
+		$form_model = $this->getModel();
 
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
-		$this->app->triggerEvent('onCallEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $formModel]]);
+		$this->app->triggerEvent('onCallEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $form_model]]);
 
 		echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
 

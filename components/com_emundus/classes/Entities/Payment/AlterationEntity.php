@@ -30,7 +30,7 @@ class AlterationEntity
 		$this->discount = $discount;
 
 		if (!empty($discount)) {
-			$this->description = $discount->getDescription();
+			$this->description = !empty($discount->getDescription()) ? $discount->getDescription() : $discount->getLabel();
 			$this->amount = -$discount->getValue(); // a discount is always a negative value
 			$this->type = AlterationType::from($discount->getType()->value);
 		} else {

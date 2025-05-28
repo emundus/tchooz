@@ -352,50 +352,60 @@ class CartRepository
 				$step_mandatory_products[] = $product_entity;
 			}
 			$payment_step->setProducts($step_mandatory_products);
+			$cart_entity->setPaymentStep($payment_step);
+
+			$already_added_adjust_balance = false;
+			foreach ($cart_entity->getPriceAlterations() as $alteration) {
+				if ($alteration->getType() === AlterationType::ADJUST_BALANCE) {
+					$already_added_adjust_balance = true;
+				}
+			}
+
+			if ($already_added_adjust_balance) {
+				return $cart_entity; // already added, no need to load again
+			}
 
 			if (!empty($data['alterations'])) {
-				$alteration_repository = new AlterationRepository();
+				$discount_repository = new DiscountRepository();
 				foreach ($data['alterations'] as $alteration) {
-					$alteration_entity = $alteration_repository->getAlterationById($alteration['id']);
-
-					if (!empty($alteration_entity)) {
-						$cart_entity->addAlteration($alteration_entity);
+					if (!empty($alteration['product_id'])) {
+						$product = new ProductEntity($alteration['product_id']);
+					} else {
+						$product = null;
 					}
+
+					if (!empty($alteration['discount_id'])) {
+						$discount = $discount_repository->getDiscountById($alteration['discount_id']);
+					} else {
+						$discount = null;
+					}
+
+					$alteration_entity = new AlterationEntity($alteration['id'], $cart_entity->getId(), $product, $discount, $alteration['description'], $alteration['amount'], AlterationType::from($alteration['type']));
+					$cart_entity->addAlteration($alteration_entity);
 				}
 			}
 
 			// create an alteration for the advance amount
 			if (!empty($transaction->getAmount())) {
 				// add it only if not already added
-				$already_added_adjust_balance = false;
-				foreach ($cart_entity->getPriceAlterations() as $alteration) {
-					if ($alteration->getType() === AlterationType::ADJUST_BALANCE) {
-						$already_added_adjust_balance = true;
-						break;
-					}
-				}
+				$already_paid_alteration = new AlterationEntity(
+					0,
+					$cart_entity->getId(),
+					null,
+					null,
+					Text::_('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE'),
+					-$transaction->getAmount(),
+					AlterationType::ADJUST_BALANCE,
+					$transaction->getCreatedBy()
+				);
 
-				if (!$already_added_adjust_balance) {
-					$already_paid_alteration = new AlterationEntity(
-						0,
-						$cart_entity->getId(),
-						null,
-						null,
-						Text::_('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE'),
-						-$transaction->getAmount(),
-						AlterationType::ADJUST_BALANCE,
-						$transaction->getCreatedBy()
-					);
+				$added = $cart_entity->addAlteration($already_paid_alteration);
 
-					$added = $cart_entity->addAlteration($already_paid_alteration);
-
-					if (!$added) {
-						throw new \Exception('Error adding adjust balance alteration');
-					}
+				if (!$added)
+				{
+					throw new \Exception('Error adding adjust balance alteration');
 				}
 			}
-
-			$cart_entity->setPaymentStep($payment_step);
 		}
 
 		return $cart_entity;

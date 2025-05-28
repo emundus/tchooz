@@ -80,7 +80,7 @@ class EmundusViewPayment extends JViewLegacy
 
 				if ($attachments_progress < 100 || $forms_progress < 100) {
 					$app->enqueueMessage(Text::_('COM_EMUNDUS_CART_COMPLETE_FORMS_BEFORE_PAYMENT'), 'error');
-					$app->redirect('/index.php?option=com_emundus&task=openfile&fnum=2025050215340500000360000001');
+					$app->redirect('/index.php?option=com_emundus&task=openfile&fnum=' . $fnum);
 				}
 
 				if (!class_exists('EmundusModelWorkflow')) {

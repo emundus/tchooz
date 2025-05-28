@@ -1742,7 +1742,7 @@ class Release2_6_0Installer extends ReleaseInstaller
 				'params'       => [
 					'menu_image_css' => 'shopping_cart'
 				]
-			]
+			], 1, 0
 		);
 
 		EmundusHelperUpdate::addJoomlaMenu([
@@ -1757,7 +1757,7 @@ class Release2_6_0Installer extends ReleaseInstaller
 				'params'       => [
 					'menu_image_css' => 'payments'
 				]
-			]
+			], 1, 0
 		);
 
 		$query->clear()
@@ -1778,7 +1778,7 @@ class Release2_6_0Installer extends ReleaseInstaller
 			'component_id' => $component_id,
 			'menu_show' => 0,
 			'params'    => ['menu_image_css' => 'shopping_cart']
-		], 1, 1, 'last-child', $module_ids);
+		], 1, 0, 'last-child', $module_ids);
 		$tasks[] = $result['status'];
 
 		$query->clear()
@@ -1850,6 +1850,9 @@ class Release2_6_0Installer extends ReleaseInstaller
 
 		$add_column = EmundusHelperUpdate::addColumn('jos_emundus_setup_workflows_steps', 'description', 'TEXT');
 		$tasks[] = $add_column['status'];
+
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_PAYMENT_STEP_NOT_COMPLETED', 'Veuillez procéder au paiement pour pouvoir soumettre votre dossier.');
+		EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_PAYMENT_STEP_NOT_COMPLETED', 'Please proceed to payment in order to submit your file.', 'override', 0, null, null, 'en-GB');
 
 		return !in_array(false, $tasks);
 	}

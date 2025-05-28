@@ -3821,6 +3821,22 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
+					$payment_repository = new PaymentRepository();
+					$payment_action_id = $payment_repository->getActionId();
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_step_types'));
+
+					if ($enabled) {
+						$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(1));
+					} else {
+						$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(0));
+					}
+
+					$query->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($payment_action_id));
+
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
 					break;
 				case 'ranking':
 					$query->clear()

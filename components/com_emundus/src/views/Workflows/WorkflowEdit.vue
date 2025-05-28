@@ -788,7 +788,7 @@ export default {
 			if (!isApplicantStep) {
 				const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
 
-				if (stepType.parent_id == 1) {
+				if (stepType && stepType.parent_id == 1) {
 					isApplicantStep = true;
 				}
 			}
@@ -801,7 +801,7 @@ export default {
 			if (!isEvaluationStep) {
 				const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
 
-				if (stepType.parent_id == 2) {
+				if (stepType && stepType.parent_id == 2) {
 					isEvaluationStep = true;
 				}
 			}
@@ -824,7 +824,16 @@ export default {
 			return this.steps.find((step) => step.id == stepId).label;
 		},
 		stepTypeLabel(type) {
-			return this.translate(this.stepTypes.find((stepType) => stepType.id === type).label);
+			let label = '';
+			const stepType = this.stepTypes.find((stepType) => stepType.id === type);
+
+			if (stepType) {
+				label = stepType.label;
+			} else {
+				label = 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_UNKNOWN';
+			}
+
+			return this.translate(label);
 		},
 		stepHeaderClass(step) {
 			return 'tw-bg-' + this.stepColor(step) + '-500 tw-border-' + this.stepColor(step) + '-500 tw-border-2';

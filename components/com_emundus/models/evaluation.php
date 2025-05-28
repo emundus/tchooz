@@ -3193,7 +3193,7 @@ class EmundusModelEvaluation extends JModelList
 													$index   = array_search($v, $params->sub_options->sub_values);
 													$val[$k] = JText::_($params->sub_options->sub_labels[$index]);
 												}
-												$fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $val);
+												$fabrikValues[$elt['id']][$fnum]['val'] = implode("\n", $val);
 											}
 											else
 											{
