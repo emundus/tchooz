@@ -14,9 +14,13 @@ class HtmlSanitizerSingleton
 	{
 		if (empty($config)) {
 			$config = (new HtmlSanitizerConfig())
-				->allowSafeElements() // Autorise uniquement les éléments sûrs (sans JS)
-				->allowRelativeLinks() // Autorise les liens relatifs
-				->forceHttpsUrls() // Force les URLs à être en HTTPS
+				->allowSafeElements()
+				->allowRelativeLinks()
+				->forceHttpsUrls()
+				->allowElement('span', ['class', 'id', 'style'])
+				->allowAttribute('span', '*')
+				->allowElement('div', ['class', 'id', 'style', 'data-type', 'data-plugin'])
+				->allowAttribute('div', ['class', 'id', 'style', 'data-type', 'data-plugin'])
 				->allowRelativeMedias(true);
 		}
 

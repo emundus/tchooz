@@ -2386,6 +2386,38 @@ div[id^='current_'] .mod_emundus_campaign__list_content h3 {
   z-index: 10;
 }
 
+.com_emundus div[data-plugin="panel"] {
+  display: flex;
+  padding: var(--em-spacing-5);
+  border-radius: 0.25rem;
+  align-items: start;
+  gap: 0.75rem;
+
+  &[data-type="info"] {
+    background: var(--blue-50);
+
+    span.material-symbols-outlined {
+        color: rgb(82, 91, 133) !important;
+    }
+  }
+
+    &[data-type="warning"] {
+        background: #fff6de;
+
+        span.material-symbols-outlined {
+            color: rgb(179, 132, 5) !important;
+        }
+    }
+
+    &[data-type="error"] {
+        background: var(--red-50);
+
+        span.material-symbols-outlined {
+            color: rgb(166, 14, 21) !important;
+        }
+    }
+}
+
 /****************************
  * Fin peps tuiles et liste *
  ****************************/
