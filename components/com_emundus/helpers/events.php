@@ -113,6 +113,20 @@ class EmundusHelperEvents
 				{
 					$this->isApplicationCompleted($params);
 				}
+			} else {
+				$listModel = $params['formModel']->getListModel();
+				$table = $listModel->getTable();
+
+				if (!class_exists('EmundusHelperFiles')) {
+					require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+				}
+				$h_files = new EmundusHelperFiles();
+				$linked = $h_files->isTableLinkedToCampaignCandidature($table);
+
+				if ($linked && !empty($params['formModel']->data['fnum']) && empty($params['formModel']->getRowId()))
+				{
+					$this->fillFormFromAliases($params['formModel'], $table, $params['formModel']->data['fnum']);
+				}
 			}
 
 			return true;
@@ -122,6 +136,49 @@ class EmundusHelperEvents
 			Log::add('Error when run event onBeforeLoad | ' . $e->getMessage() . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 
 			return false;
+		}
+	}
+
+
+	/**
+	 * Fill form data from aliases
+	 *
+	 * @param           $formModel
+	 * @param   string  $table
+	 * @param   string  $fnum
+	 * @param   int     $user_id
+	 *
+	 * @return void
+	 */
+	private function fillFormFromAliases($formModel, string $table, string $fnum, int $user_id = 0): void
+	{
+		if (!empty($fnum)) {
+			$elements = array();
+			$groups   = $formModel->getGroupsHiarachy();
+			foreach ($groups as $group)
+			{
+				$elements = array_merge($group->getPublishedElements(), $elements);
+			}
+
+			if (!empty($elements)) {
+				$elements = array_filter($elements, function ($element) use ($table) {
+					return $element->getElement()->name !== 'parent_id';
+				});
+
+				foreach ($elements as $elt)
+				{
+					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
+					{
+						$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id);
+
+						if (!empty($alias_value['raw']))
+						{
+							$formModel->data[$elt->getFullName()]          = $alias_value['raw'];
+							$formModel->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
+						}
+					}
+				}
+			}
 		}
 	}
 
