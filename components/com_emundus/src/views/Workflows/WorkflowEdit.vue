@@ -825,7 +825,7 @@ export default {
 		},
 		stepTypeLabel(type) {
 			let label = '';
-			const stepType = this.stepTypes.find((stepType) => stepType.id === type)
+			const stepType = this.stepTypes.find((stepType) => stepType.id === type);
 
 			if (stepType) {
 				label = stepType.label;
