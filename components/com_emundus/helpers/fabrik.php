@@ -2339,4 +2339,46 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		return $aliases;
 	}
+
+	/**
+	 * Fill form data from aliases
+	 *
+	 * @param   FabrikFEModelForm $form_model
+	 * @param   string  $table
+	 * @param   string  $fnum
+	 * @param   int     $user_id
+	 *
+	 * @return void
+	 */
+	public static function fillFormFromAliases(FabrikFEModelForm $form_model, string $table, string $fnum, int $user_id = 0): void
+	{
+		if (!empty($fnum)) {
+			$elements = array();
+			$groups   = $form_model->getGroupsHiarachy();
+			foreach ($groups as $group)
+			{
+				$elements = array_merge($group->getPublishedElements(), $elements);
+			}
+
+			if (!empty($elements)) {
+				$elements = array_filter($elements, function ($element) use ($table) {
+					return $element->getElement()->name !== 'parent_id';
+				});
+
+				foreach ($elements as $elt)
+				{
+					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
+					{
+						$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id);
+
+						if (!empty($alias_value['raw']))
+						{
+							$form_model->data[$elt->getFullName()]          = $alias_value['raw'];
+							$form_model->data[$elt->getFullName() . '_raw'] = $alias_value['raw'];
+						}
+					}
+				}
+			}
+		}
+	}
 }
