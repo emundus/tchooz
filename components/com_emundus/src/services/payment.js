@@ -239,9 +239,9 @@ export default {
 			};
 		}
 	},
-	async confirmCart(cartId) {
+	async confirmCart(cartId, customExternalReference = '') {
 		try {
-			return await client.post('confirmCart&cart_id=' + cartId);
+			return await client.post('confirmCart&cart_id=' + cartId + '&custom_external_reference=' + customExternalReference);
 		} catch (e) {
 			return {
 				status: false,
