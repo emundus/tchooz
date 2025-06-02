@@ -52,10 +52,19 @@ class PlgFabrik_FormEmundusencryptdatas extends plgFabrik_Form
 		foreach ($elements as $element)
 		{
 			$elt_fullname = $element->getFullName();
-			$decrypted_data = EmundusHelperFabrik::decryptDatas($datas[$elt_fullname],null,'aes-128-cbc',$element->getElement()->plugin);
+
+			$data = $datas[$elt_fullname];
+			if(empty($data) || is_array($data) && count(array_filter($data)) === 0)
+			{
+				$data = $datas[$elt_fullname . '_raw'];
+			}
+
+			$decrypted_data = EmundusHelperFabrik::decryptDatas($data, null, 'aes-128-cbc', $element->getElement()->plugin);
+
 			if(!empty($decrypted_data))
 			{
 				$formModel->data[$elt_fullname] = $decrypted_data;
+				$formModel->data[$elt_fullname.'_raw'] = $decrypted_data;
 			}
 		}
 	}
