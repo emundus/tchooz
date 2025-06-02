@@ -4557,6 +4557,7 @@ class EmundusModelFiles extends JModelLegacy
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
 		$query = $this->_db->getQuery(true);
+
 		$query->select($this->_db->quoteName('filename'))
 			->from($this->_db->quoteName('#__emundus_uploads'))
 			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
@@ -4584,6 +4585,28 @@ class EmundusModelFiles extends JModelLegacy
 			}
 
 			closedir($dh);
+		}
+
+		// remove hikashop orders linked to this file
+		$query->clear()
+			->select($this->_db->quoteName('order_id'))
+			->from($this->_db->quoteName('#__emundus_hikashop_orders'))
+			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
+		$this->_db->setQuery($query);
+		$order_ids = $this->_db->loadColumn();
+		if (!empty($order_ids)) {
+			$query->clear()
+				->delete($this->_db->quoteName('#__hikashop_order'))
+				->where($this->_db->quoteName('order_id') . ' IN (' . implode(',', $this->_db->quote($order_ids)) . ')');
+
+			try {
+				$this->_db->setQuery($query);
+				$this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		}
 
 		$query->clear()
