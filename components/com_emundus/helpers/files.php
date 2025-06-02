@@ -6668,7 +6668,7 @@ class EmundusHelperFiles
 	{
 		$table_names = [];
 
-		$db    = JFactory::getDBO();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName('fl.db_table_name'))
