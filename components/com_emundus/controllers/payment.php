@@ -1544,7 +1544,9 @@ class EmundusControllerPayment extends BaseController
 				try {
 					$cart_repository->verifyCart($cart, $this->app->getIdentity()->id);
 
-					$transaction = $cart_repository->createTransaction($cart);
+					$custom_external_reference = $this->input->getString('custom_external_reference', '');
+					$transaction = $cart_repository->createTransaction($cart, $custom_external_reference);
+
 					$transaction->setStatus(TransactionStatus::CONFIRMED);
 					$transaction_repository = new TransactionRepository();
 					$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);

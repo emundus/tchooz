@@ -848,7 +848,7 @@ class CartRepository
 		return $updated;
 	}
 
-	public function createTransaction(CartEntity $cart): TransactionEntity
+	public function createTransaction(CartEntity $cart, string $external_reference = ''): TransactionEntity
 	{
 		$transaction = new TransactionEntity();
 		$transaction->setCartId($cart->getId());
@@ -864,7 +864,13 @@ class CartRepository
 		$transaction->setStatus(TransactionStatus::INITIATED);
 		$payment_step = $this->getCartPaymentStep($cart);
 		$transaction->setSynchronizerId($payment_step->getSynchronizerId());
-		$transaction->generateExternalReference();
+
+		if (!empty($external_reference)) {
+			$transaction->setExternalReference($external_reference);
+		} else {
+			$transaction->generateExternalReference();
+		}
+
 		$transaction->setNumberInstallmentDebit($cart->getNumberInstallmentDebit());
 		$transaction->setStepId($cart->getPaymentStep()->getId());
 		$transaction->setFnum($cart->getFnum());
@@ -929,14 +935,25 @@ class CartRepository
 		return true;
 	}
 
-	public function checkoutCart(CartEntity $cart, int $current_user_id): array
+	/**
+	 * @param   CartEntity  $cart
+	 * @param   int         $current_user_id
+	 * @param   string      $transaction_reference mostly used for manual payment methods to pass a custom reference, like a cheque identifier. In most cases, pass an empty string, it will be generated
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+	public function checkoutCart(CartEntity $cart, int $current_user_id, string $transaction_reference = ''): array
 	{
 		$data = [];
 		$app = Factory::getApplication();
 
+		$payment_repository = new PaymentRepository();
+		$manual_payment_methods = $payment_repository->getManualPaymentMethods();
+
 		try {
 			$transaction_repository = new TransactionRepository();
-			$transaction = $this->createTransaction($cart);
+			$transaction = $this->createTransaction($cart, $transaction_reference);
 			$transaction_repository->saveTransaction($transaction, $current_user_id);
 		} catch (\Exception $e) {
 			Log::add('Error creating transaction: ' . $e->getMessage() . '. Cart ID ' . $cart->getId() . ', fnum ' . $cart->getFnum(), Log::ERROR, 'com_emundus.repository.cart');
@@ -974,13 +991,24 @@ class CartRepository
 			switch ($sync_type) {
 				case 'sogecommerce':
 					$synchronizer = new Sogecommerce();
+
+					if (!in_array($cart->getSelectedPaymentMethod()->getName(), $manual_payment_methods))
+					{
+						// in case of an invalid custom reference passed, replace it with a valid one
+						$valid = $synchronizer->verifyReference($transaction->getExternalReference());
+						if (!$valid) {
+							$transaction->generateExternalReference(6);
+							$transaction_repository->saveTransaction($transaction, $current_user_id);
+						}
+					}
+
 					break;
 				default:
 					break;
 			}
 
 			if (!empty($synchronizer)) {
-				if ($cart->getSelectedPaymentMethod()->getName() === 'cheque' || $cart->getSelectedPaymentMethod()->getName() === 'transfer') {
+				if (in_array($cart->getSelectedPaymentMethod()->getName(), $manual_payment_methods)) {
 					// pass the transaction as waiting, no synchronizer, manual payment
 					$transaction->setStatus(TransactionStatus::WAITING);
 					$saved = $transaction_repository->saveTransaction($transaction, $current_user_id);

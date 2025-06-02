@@ -156,6 +156,28 @@ class Sogecommerce
 		return $iso2;
 	}
 
+	/**
+	 * Sogecommerce needs an alphanumeric string of 6 characters
+	 * @param   string  $external_reference
+	 *
+	 * @return bool
+	 */
+	public function verifyReference(string $external_reference): bool
+	{
+		$valid = false;
+
+		if (!empty($external_reference)) {
+			// must not be longer than 6 characters
+			if (strlen($external_reference) <= 6 && ctype_alnum($external_reference)) {
+				$valid = true;
+			} else {
+				Log::add(Text::_('COM_EMUNDUS_ERROR_INVALID_EXTERNAL_REFERENCE'), Log::WARNING, 'com_emundus.sogecommerce');
+			}
+		}
+
+		return $valid;
+	}
+
 	private function prepareDefaultFields(TransactionEntity $transaction, CartEntity $cart): array
 	{
 		$current_language = Factory::getApplication()->getLanguage()->getTag();
