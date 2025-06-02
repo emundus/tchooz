@@ -5957,6 +5957,11 @@ class EmundusModelApplication extends ListModel
 							}
 						}
 					}
+
+					if($at_least_one_visible)
+					{
+						break;
+					}
 				}
 
 				return $at_least_one_visible;
