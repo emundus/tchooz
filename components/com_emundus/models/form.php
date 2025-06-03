@@ -2127,7 +2127,7 @@ class EmundusModelForm extends JModelList
 
 		$query = $this->db->getQuery(true);
 
-		$query->select(['menu.link', 'menu.rgt'])
+		$query->select(['menu.link', 'menu.rgt', 'menu.id as menu_id'])
 			->from($this->db->quoteName('#__menu', 'menu'))
 			->leftJoin($this->db->quoteName('#__menu_types', 'mt') . ' ON ' . $this->db->quoteName('mt.menutype') . ' = ' . $this->db->quoteName('menu.menutype'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_profiles', 'sp') . ' ON ' . $this->db->quoteName('sp.menutype') . ' = ' . $this->db->quoteName('mt.menutype'))
