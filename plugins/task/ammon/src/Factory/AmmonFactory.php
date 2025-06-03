@@ -66,9 +66,9 @@ class AmmonFactory
 		$mapper         = new \ApiMapper(current($configurations), $this->fnum);
 		$values         = $mapper->setMappingFromFnum();
 
-		if (empty($values['establishmentName']) || empty($values['registrationSIRET']))
+		if (empty($values['establishmentName']))
 		{
-			throw new \InvalidArgumentException('Company fields cannot be empty');
+			throw new \InvalidArgumentException('Company establishmentName cannot be empty');
 		}
 
 		return new CompanyEntity(
