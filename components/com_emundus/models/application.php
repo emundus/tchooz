@@ -7552,7 +7552,7 @@ class EmundusModelApplication extends ListModel
      * @return array
      *
      */
-    public function getFabrikDataByFnum(string $fnum, string $type = 'form'): array
+    public function getFabrikDataByFnum(string $fnum, string $type = 'form', bool $use_evaluation_forms = true): array
     {
         $result = [];
 
@@ -7590,7 +7590,7 @@ class EmundusModelApplication extends ListModel
 
 				if (!empty($workflow_data['steps'])) {
 					foreach($workflow_data['steps'] as $step) {
-						if ($m_workflow->isEvaluationStep($step->type)) {
+						if ($m_workflow->isEvaluationStep($step->type) && $use_evaluation_forms) {
 							if (!in_array($step->form_id, $forms)) {
 								$forms[] = $step->form_id;
 							}
