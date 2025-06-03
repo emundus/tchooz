@@ -8,10 +8,18 @@ defined('_JEXEC') or die;
 
 header('Content-Type: text/html; charset=utf-8');
 
-$menu      = Factory::getApplication()->getMenu();
-$user      = Factory::getApplication()->getIdentity();
-$lang      = JFactory::getLanguage();
+$app       = Factory::getApplication();
+$menu      = $app->getMenu();
+$user      = $app->getIdentity();
+$config    = $app->getConfig();
+$lang      = $app->getLanguage();
 $locallang = $lang->getTag();
+
+if(!class_exists('EmundusHelperMenu'))
+{
+    require_once JPATH_SITE . '/components/com_emundus/helpers/menu.php';
+}
+$base_url = EmundusHelperMenu::getBaseUriWithLang();
 
 if ($locallang == "fr-FR")
 {
@@ -21,7 +29,6 @@ else
 {
 	setlocale(LC_ALL, 'en_GB');
 }
-$config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
 
 $tmp_campaigns    = [];
@@ -52,7 +59,7 @@ if (sizeof($tmp_campaigns) > 0)
         // Change link of campaign only if there is a menu item with the alias and no custom link on the program
         if(!empty($item) && empty($campaign->link))
         {
-            $campaign->link = $campaign->alias;
+            $campaign->link = $base_url.'/'.$campaign->alias;
         }
 
 		if ($campaign->pinned == 1)
