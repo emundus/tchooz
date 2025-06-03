@@ -1794,7 +1794,7 @@ class EmundusControllerFiles extends BaseController
 					}
 
 					if ($fLine->element_name != 'fnum' && $fLine->element_name != 'code' && $fLine->element_label != 'Programme' && $fLine->element_name != 'campaign_id') {
-						if (count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
+						if (!(count($opts) == 1 && in_array("form-csv-only", $opts)) && count($opts) > 0 && $fLine->element_name != "date_time" && $fLine->element_name != "date_submitted") {
 							if (in_array("form-title", $opts) && in_array("form-group", $opts)) {
 								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 								$nbcol++;
@@ -1930,7 +1930,6 @@ class EmundusControllerFiles extends BaseController
                     }
 				}
 			}
-
 
 			//check if evaluator can see others evaluators evaluations
 			if (EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) {
