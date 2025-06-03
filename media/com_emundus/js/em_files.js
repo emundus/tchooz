@@ -2299,6 +2299,8 @@ $(document).ready(function() {
                                 '<label for="form-title" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_TITLE')+'</label></div>' +
                                 '<div class="tw-flex tw-mb-1"><input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
                                 '<label for="form-group" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_GROUP')+'</label></div>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check0" type="checkbox" value="form-csv-only" name="form-csv-only" id="form-csv-only" style="max-height: 20px;"/>' +
+                                '<label for="form-csv-only" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_EXPORT_CSV_FILE_ONLY')+'</label></div>' +
                                 '</div>'+
                                 '</div>'+
                                 '</div></div>' );
