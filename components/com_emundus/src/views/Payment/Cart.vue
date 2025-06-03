@@ -729,8 +729,10 @@ export default {
 					<p v-else>{{ cart.selected_payment_method.label }}</p>
 				</div>
 
-				<div v-if="isManager && manualPaymentMethods.includes(cart.selected_payment_method.name) && !readOnly"
-						 id="override_transaction_reference" class="tw-mt-4"
+				<div
+					v-if="isManager && manualPaymentMethods.includes(cart.selected_payment_method.name) && !readOnly"
+					id="override_transaction_reference"
+					class="tw-mt-4"
 				>
 					<label>{{ translate('COM_EMUNDUS_CART_OVERRIDE_EXTERNAL_REFERENCE') }}</label>
 					<input
