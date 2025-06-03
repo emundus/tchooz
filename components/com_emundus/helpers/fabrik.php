@@ -1968,12 +1968,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	 * @param         $user_id      int    The user id to search the element's value for
      * @param         $load_option  string The query load method to use to retrieve the values
      * @param   null  $step_id      int    The workflow step we want the values from
+	 * @param   bool $use_evaluation_forms
 	 *
 	 * @return mixed|string|null
 	 * @description Return the value of an element according to its alias in a form
 	 *
 	 */
-	static function getValueByAlias(string $alias, ?string $fnum = null, int $user_id = 0, string $load_option = 'result', int $step_id = null): array
+	static function getValueByAlias(string $alias, ?string $fnum = null, int $user_id = 0, string $load_option = 'result', int $step_id = null,  bool $use_evaluation_forms = true): array
 	{
 		$value = ['value' => '', 'raw' => ''];
 
@@ -1991,7 +1992,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					// ! this means that only applicants forms data will be retrieved !
 					require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 					$m_application = new EmundusModelApplication();
-					$fnumElements  = $m_application->getFabrikDataByFnum($fnum, 'element');
+					$fnumElements  = $m_application->getFabrikDataByFnum($fnum, 'element', $use_evaluation_forms);
 
 					$elements = array_filter($elements, function ($element) use ($fnumElements) {
 						return in_array($element->id, $fnumElements);
@@ -2369,7 +2370,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				{
 					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
 					{
-						$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id);
+						$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id, 'result', null, false);
 
 						if (!empty($alias_value['raw']))
 						{
