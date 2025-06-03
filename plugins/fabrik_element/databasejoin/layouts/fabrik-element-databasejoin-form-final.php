@@ -3,9 +3,7 @@ defined('JPATH_BASE') or die;
 
 $d = $displayData;
 
-if (!empty($d->control)) :
-    echo $d->control . "<br />\n";
-endif;
+echo $d->control . "<br />\n";
 
 if (!empty($d->frontEndSelect)) :
     echo $d->frontEndSelect. "<br />\n";
