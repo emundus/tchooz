@@ -13,6 +13,7 @@ namespace Joomla\Plugin\Actionlog\Emundus\Extension;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Installer\Installer;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Factory\MVCFactoryServiceInterface;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\User\UserFactoryAwareTrait;
@@ -194,6 +195,9 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		{
 			$title = 'PLG_ACTIONLOG_EMUNDUS_AMMON_REGISTRATION_ERROR';
 		}
+
+        Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
+        Log::add('Registration successful for fnum ' . $arguments['fnum'] . ' on session ' . $arguments['session_id'] . ' -> ' . $arguments['message'], Log::INFO, 'plugin.emundus.ammon');
 
 		$message = $this->setMessage('ammon', 'create', $title, $arguments['status'], [], $arguments['data'], $more_data);
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
