@@ -662,7 +662,7 @@ class EmundusModelApplication extends ListModel
 
 	}
 
-	public function deleteTag($id_tag, $fnum, $user_id = null)
+	public function deleteTag($id_tag, $fnum, $user_id = null, $user_to_log = null)
 	{
 		$query = $this->_db->getQuery(true);
 
@@ -690,8 +690,9 @@ class EmundusModelApplication extends ListModel
 			$logsStd          = new stdClass();
 			$logsStd->details = $deleted_tag;
 			$logsParams       = array('deleted' => [$logsStd]);
-			$user_id          = JFactory::getUser()->id;
-			$user_id          = empty($user_id) ? 62 : $user_id;
+
+			$user_id          = empty($user_to_log) ? Factory::getApplication()->getIdentity()->id : $user_to_log;
+			$user_id          = empty($user_id) ? ComponentHelper::getParams('com_emundus')->get('automated_task_user', 62) : $user_id;
 
             if (!class_exists('EmundusModelFiles')) {
                 require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
