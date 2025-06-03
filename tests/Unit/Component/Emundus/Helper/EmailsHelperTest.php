@@ -148,6 +148,7 @@ class EmailsHelperTest extends UnitTestCase
 		$this->assertSame(false, $this->helper->correctEmail('jeremy.legendre@wrong.dns'), 'Validate email with wrong dns returns false');
 
 		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@emundus.fr'), 'Validate correct email format returns true');
+		$this->assertSame(true, $this->helper->correctEmail('jeremy.legendre@etudiant.emundus.fr'), 'Validate multiple subdomins email format returns true');
 	}
 
 	public function testGetLogo()
