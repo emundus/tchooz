@@ -31,6 +31,8 @@ class Release2_6_2Installer extends ReleaseInstaller
 		{
 			$tasks[] = EmundusHelperUpdate::addColumn('jos_users', 'usertype', 'TEXT')['status'];
 
+			$tasks[] = EmundusHelperUpdate::addCustomEvents([['label' => 'onBeforeApplicantEnterApplication', 'category' => 'File']])['status'];
+
 			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
