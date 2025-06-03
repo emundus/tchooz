@@ -693,6 +693,7 @@ export default {
 			this.setSectionShown(this.showInSection);
 		},
 		setSectionShown(section) {
+			this.showInRightPanel = 'hierarchy';
 			if (section === 'rules-add') {
 				this.selectTab('rules');
 			} else {
