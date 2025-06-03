@@ -2163,11 +2163,15 @@ class EmundusControllerFiles extends BaseController
 								break;
 
 							case "tags":
-								$tags = "";
+								$tags = '';
 
 								foreach ($colOpt['tags'] as $tag) {
-									if ($tag['fnum'] == $fnum['fnum']) {
-										$tags .= $tag['label'] . ", ";
+									if ($tag['fnum'] == $fnum['fnum'] && (EmundusHelperAccess::asAccessAction(14 ,'r', $current_user->id, $fnum['fnum']) || (EmundusHelperAccess::asAccessAction(14 ,'c', $current_user->id, $fnum['fnum']) && $tag['user_id'] === $current_user->id))) {
+										if(!empty($tags)) {
+											$tags .= ", ";
+										}
+
+										$tags .= $tag['label'];
 									}
 								}
 								$line .= $tags . "\t";
@@ -3564,7 +3568,7 @@ class EmundusControllerFiles extends BaseController
 
 		$hasAccessForm = EmundusHelperAccess::asAccessAction(1, 'r', $user_id);
 		$hasAccessAtt  = EmundusHelperAccess::asAccessAction(4, 'r', $user_id);
-		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id);
+		$hasAccessTags = EmundusHelperAccess::asAccessAction(14, 'r', $user_id) || EmundusHelperAccess::asAccessAction(14, 'c', $user_id);
 
 		$show_form = 0;
 		$show_attachments  = 0;

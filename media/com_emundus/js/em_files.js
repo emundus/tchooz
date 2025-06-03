@@ -3096,7 +3096,6 @@ $(document).ready(function() {
                     '<option  value="aemail" selected>'+Joomla.Text._('COM_EMUNDUS_EMAIL')+'</option>' +
                     '<option  value="aapp-sent" selected>'+Joomla.Text._('COM_EMUNDUS_APPLICATION_SENT_ON')+'</option>' +
                     '<option  value="adoc-print" selected>'+Joomla.Text._('COM_EMUNDUS_APPLICATION_DOCUMENT_PRINTED_ON')+'</option>' +
-                    '<option  value="tags" disabled>'+Joomla.Text._('COM_EMUNDUS_EXPORTS_PDF_TAGS')+'</option>' +
                     '<option  value="status" selected>'+Joomla.Text._('COM_EMUNDUS_EXPORTS_PDF_STATUS')+'</option>' +
                     '<option  value="upload" selected>'+Joomla.Text._('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED')+'</option>' +
                     '</select>'+
@@ -3445,8 +3444,8 @@ $(document).ready(function() {
                                                             $('#att-exists').show();
 
                                                         if (result.tag == 1) {
-                                                            $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
-                                                            $('#em-export-opt').trigger("chosen:updated");
+                                                            $('#em-export-opt').append('<option value="tags" selected="">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_PDF_TAGS')+'</option>');
+                                                            $('#em-export-opt').chosen("destroy").chosen({width: "100%"});
                                                         }
 
                                                         var camp = $("#em-export-camp").val();
