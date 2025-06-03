@@ -2132,6 +2132,10 @@ button.em-swal-delete-button:hover{
   transition: transform .3s;
 }
 
+.mod_emundus_campaign__list_items--line #tile-hover-offset-procedure {
+  transform: rotate(2deg);
+}
+
 /* Peps */
 .hover-and-tile-container .tile-hover-offset-procedure--pinned-and-closed {
   background: var(--neutral-500) !important;
@@ -2149,6 +2153,10 @@ div[id^='current_'] .hover-and-tile-container:hover > #tile-hover-offset-procedu
   transform: rotate(3deg); /* rotation cards épinglées (longues) */
 }
 
+div[id^='current_'].mod_emundus_campaign__list_items--line .hover-and-tile-container:hover > #tile-hover-offset-procedure {
+  transform: rotate(3deg); /* rotation cards épinglées (longues) */
+}
+
 /* Tuile */
 div[id^='current_'] .mod_emundus_campaign__list_content,
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
@@ -2161,7 +2169,7 @@ div[id^='current_'] .mod_emundus_campaign__list_content,
 div[id^='current_'] .mod_emundus_campaign__list_content #background-shapes {
   position: absolute;
   z-index: 2;
-  width: 95%;
+  //width: 95%;
   height: 63%;
   top: 0;
   right: 0;
