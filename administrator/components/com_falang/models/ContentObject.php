@@ -494,6 +494,27 @@ class ContentObject
 	}
 
 
+    /**
+     * @from 5.19
+     *
+     * get the images translations for tag and put them in the param's field
+     */
+    function fetchTagTranslation($field, &$translationFields)
+    {
+
+        if (is_null($translationFields)) return;
+
+            if (array_key_exists("images", $translationFields))
+            {
+                $registry = new Registry;
+                $registry->loadString($translationFields['params']->value);
+                $registry->loadString($translationFields['images']->value);
+                $translationFields['params']->value = $registry->toString();
+            }
+
+    }
+
+
 	/**
 	 * Special post translation handler for content text to split intro and full text
 	 *
@@ -584,6 +605,23 @@ class ContentObject
 			$formArray['origValue_attribs'] = md5($registry->toString());
 		}
 	}
+
+    function saveTagImages(&$introtext, $fields, &$formArray, $prefix, $suffix, $storeOriginalText)
+    {
+        $app     = Factory::getApplication();
+        $jinput = $app->input;
+        //save images in hidden field
+        if (isset($formArray["jform"]['images']))
+        {
+            $imagesValue = $formArray["jform"]['images'];
+            $registry    = new Registry();
+            $registry->loadArray($imagesValue);
+            $translationImagesValue = $registry->toString();
+            $jinput->post->set($prefix . "refField_images" . $suffix, $translationImagesValue);
+        }
+
+    }
+
 
 
 	/** Reads the information out of an existing mosDBTable object into the contentObject.
