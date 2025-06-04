@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Object\CMSObject;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
 
@@ -1260,6 +1261,72 @@ class JFModuleParams extends CMSObject
 
 }
 
+class JFTagsParams extends CMSObject
+{
+
+    protected $form = null;
+    protected $item = null;
+
+    function __construct($form=null, $item=null)
+    {
+        $this->form = $form;
+        $this->item = $item;
+
+    }
+
+    function render($type)
+    {
+
+            //opn the tab
+            echo HTMLHelper::_('uitab.startTabSet', 'myTab', array('active' => 'options'));
+            echo HTMLHelper::_('uitab.addTab', 'myTab', 'options', Text::_('COM_TAGS_FIELDSET_OPTIONS', true));
+
+            $paramsfieldSets = $this->form->getFieldset('options');//not getFieldset"s"
+            if ($paramsfieldSets)
+            {
+                ?>
+                    <fieldset class="options-form" id="fieldset-options">
+                    <legend><?php echo Text::_("COM_TAGS_FIELDSET_OPTIONS")?> </legend>
+                <?php
+                foreach ($paramsfieldSets as $name => $fieldSet)
+                {
+                    ?>
+                        <?php echo $fieldSet->renderField(); ?>
+                    <?php
+                }
+                ?>
+                   </fieldset>
+
+                <?php
+            }
+
+
+        //v2.1 add images in translation
+            $imagesfields = $this->form->getGroup('images');
+            ?> <div class="col-12 col-lg-6"> <?php
+                if ($imagesfields) {
+                    ?>
+                <fieldset id="fieldset-metadata" class="options-form">
+                    <legend><?php echo Text::_("COM_TAGS_FIELD_INTRO_LABEL")?> </legend>
+                        <?php echo $this->form->renderField('images') ?>
+                        <?php foreach ($imagesfields as $field) : ?>
+                            <?php echo $field->renderField(); ?>
+                        <?php endforeach; ?>
+                </fieldset>
+                    <?php
+                }
+                ?> </div> <?php
+            echo HTMLHelper::_('uitab.endTab');
+            echo HTMLHelper::_('uitab.endTabSet');
+
+        //not render assignment menu
+        //depends on the original menu
+        return;
+
+    }
+
+}
+
 class JFFieldsParams extends CMSObject
 {
 
@@ -1350,6 +1417,98 @@ class TranslateParams_modules extends TranslateParams_xml
         $jinput->set("id", $oldid);
 
         $this->transparams = new JFModuleParams($translationModuleModelForm, $this->trans_modelItem->getItem());
+
+    }
+
+    function showOriginal()
+    {
+        parent::showOriginal();
+
+        $output = "";
+        if ($this->origparams->getNumParams('advanced'))
+        {
+            $fieldname = 'orig_' . $this->fieldname;
+            $output .= $this->origparams->render($fieldname, 'advanced');
+        }
+        if ($this->origparams->getNumParams('other'))
+        {
+            $fieldname = 'orig_' . $this->fieldname;
+            $output .= $this->origparams->render($fieldname, 'other');
+        }
+        if ($this->origparams->getNumParams('legacy'))
+        {
+            $fieldname = 'orig_' . $this->fieldname;
+            $output .= $this->origparams->render($fieldname, 'legacy');
+        }
+        echo $output;
+
+    }
+
+
+    function editTranslation()
+    {
+        parent::editTranslation();
+
+    }
+
+}
+
+class TranslateParams_tags extends TranslateParams_xml
+{
+
+    function __construct($original, $translation, $fieldname, $fields=null)
+    {
+        parent::__construct($original, $translation, $fieldname, $fields);
+        $lang = Factory::getLanguage();
+        $lang->load("com_tags", JPATH_ADMINISTRATOR);
+        $jinput = Factory::getApplication()->input;
+
+        $cid = $jinput->get('cid', array(0),'STR');
+        $oldcid = $cid;
+        $translation_id = 0;
+        if (strpos($cid[0], '|') !== false)
+        {
+            list($translation_id, $contentid, $language_id) = explode('|', $cid[0]);
+        }
+
+        // if we have an existing translation then load this directly!
+        // This is important for modules to populate the assignement fields
+
+        //$contentid = $translation_id?$translation_id : $contentid;
+
+        //TODO sbou check this
+        $jinput->set('cid',array($contentid));
+        $jinput->set('edit',true);
+
+        JLoader::import('models.JFTagModelItem', FALANG_ADMINPATH);
+
+        // Get The Original State Data
+        // model's populate state method assumes the id is in the request object!
+        $oldid = $jinput->get('id',0,'INT');
+        $jinput->set('id',$contentid);
+
+        // NOW GET THE TRANSLATION - IF AVAILABLE
+        $this->trans_modelItem = new JFTagModelItem();
+        $this->trans_modelItem->setState('tag.id', $contentid);
+        if ($translation != "")
+        {
+            //for return as associated array and not a stdclass
+            //fix bug with easyblog
+            $translation = json_decode($translation,true);
+        }
+        $translationTagModelForm = $this->trans_modelItem->getForm();
+        if (isset($translation->jfrequest)){
+            $translationTagModelForm->bind(array("params" => $translation,"images" => $translation, "request" => $translation->jfrequest));
+        }
+        else {
+            $translationTagModelForm->bind(array("params" => $translation,"images" => $translation));
+        }
+
+        $cid = $oldcid;
+        $jinput->set('cid', $cid);
+        $jinput->set("id", $oldid);
+
+        $this->transparams = new JFTagsParams($translationTagModelForm, $this->trans_modelItem->getItem());
 
     }
 
