@@ -2,11 +2,16 @@
 import Parameter from '@/components/Utils/Parameter.vue';
 import paymentService from '@/services/payment.js';
 import Modal from '@/components/Modal.vue';
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'CustomerAddress',
 	components: { Modal, Parameter },
 	props: {
+		cartId: {
+			type: Number,
+			required: true,
+		},
 		customer: {
 			type: Object,
 			required: true,
@@ -16,6 +21,7 @@ export default {
 			default: false,
 		},
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			mode: 'preview',
@@ -190,6 +196,16 @@ export default {
 		},
 		saveCustomerAddress() {
 			this.loading = true;
+
+			// verify mandatory fields are filled
+			const mandatoryFields = this.displayedFields.filter((field) => !field.optional);
+			const missingFields = mandatoryFields.filter((field) => !field.value || field.value === '');
+			if (missingFields.length > 0) {
+				this.alertError('COM_EMUNDUS_MANDATORY_FIELDS_MISSING', missingFields.map((field) => field.label).join(', '));
+				this.loading = false;
+				return;
+			}
+
 			const customerData = {
 				...this.customer,
 				...this.fields.reduce((acc, field) => {
@@ -203,7 +219,7 @@ export default {
 			});
 
 			paymentService
-				.saveCustomer(customerData)
+				.saveCustomer(customerData, this.cartId)
 				.then((response) => {
 					if (response.status) {
 						// Update the customer object with the new data
@@ -220,7 +236,7 @@ export default {
 
 						this.mode = 'preview';
 					} else {
-						console.error('Error updating customer address:', response.message);
+						this.alertError('COM_EMUNDUS_ERROR_SAVING_CUSTOMER');
 					}
 				})
 				.catch((error) => {

@@ -65,8 +65,10 @@ export default {
 			};
 		}
 	},
-	async saveCustomer(customer) {
+	async saveCustomer(customer, cartId) {
 		try {
+			customer.cart_id = cartId;
+
 			return await client.post('saveCustomer', customer);
 		} catch (e) {
 			return {
