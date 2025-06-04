@@ -16,6 +16,10 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
 
+use Egulias\EmailValidator\EmailValidator;
+use Egulias\EmailValidator\Validation\DNSCheckValidation;
+use Egulias\EmailValidator\Validation\MultipleValidationWithAnd;
+use Egulias\EmailValidator\Validation\RFCValidation;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Helper\ModuleHelper;
@@ -956,31 +960,17 @@ class EmundusHelperEmails
 	 */
 	function correctEmail($email): bool
 	{
-		$is_correct = true;
-
 		if (empty($email)) {
-			$is_correct = false;
+			return false;
 		}
 		else {
-			if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-				$is_correct = false;
-				JLog::add('Invalid email ' . $email, JLog::INFO, 'com_emundus.email');
-			}
-			else {
-				$emConfig = ComponentHelper::getParams('com_emundus');
-                if ($emConfig->get('email_check_dns', 1) == 1)
-                {
-	                $domain = substr($email, strpos($email, '@') + 1);
-	                if (!checkdnsrr($domain))
-	                {
-		                JLog::add('Invalid email domain ' . $email, JLog::INFO, 'com_emundus.email');
-		                $is_correct = false;
-	                }
-                }
-			}
+			$validator = new EmailValidator();
+			$multipleValidations = new MultipleValidationWithAnd([
+				new RFCValidation(),
+				new DNSCheckValidation()
+			]);
+			return $validator->isValid($email, $multipleValidations);
 		}
-
-		return $is_correct;
 	}
 
 	static function getLogo($only_filename = false, $training = null): string
