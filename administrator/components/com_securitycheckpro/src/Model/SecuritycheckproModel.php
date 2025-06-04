@@ -217,179 +217,93 @@ class SecuritycheckproModel extends BaseModel
     */
     function chequear_vulnerabilidades()
     {
-		
-		
-        /* Extraemos los componentes de 'securitycheck'*/
+        // Extraemos los componentes instalados
         $db = Factory::getDBO();
+		
         $query = $this->_buildQuery();
         $db->setQuery($query);
         $components = $db->loadAssocList();
-        /* Extraemos los componentes vulnerables de 'securitycheck_db'*/
-        $db = Factory::getDBO();
-        $query = "SELECT * FROM #__securitycheckpro_db";
-        $db->setQuery($query);
-        $vuln_components = $db->loadAssocList();   
 		
-        $i = 0;
-        foreach ($components as $indice)
+		// Versión de Joomla instalada
+		$local_joomla_branch = explode(".", JVERSION);
+		if ( (is_array($local_joomla_branch)) && (array_key_exists('0',$local_joomla_branch)) ) {
+			$local_joomla_branch = $local_joomla_branch[0];
+		} else {
+			$local_joomla_branch = 5;
+		}
+		
+        // Extraemos los componentes vulnerables para nuestra versión de Joomla
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__securitycheckpro_db'))
+            ->where($db->quoteName('Joomlaversion').' = '.$db->quote($local_joomla_branch));
+        $db->setQuery($query);
+		$vuln_components = $db->loadAssocList();		
+		
+		foreach ($vuln_components as $vulnerable_product)
         {
-            $nombre = $components[$i]['Product'];
-            $tipo = $components[$i]['sc_type'];
-            $j = 0;
-            $global_vulnerable = "No"; // Indica que el componente es vulnerable. Esta variable sirve para actualizar la BBDD 'securitycheck'
-            $componente_vulnerable = false;  // Indica si la versión de la extensión es vulnerable
-            $actualizar_campo_vulnerable = false;  // Indica si tenemos que actualizar el campo 'Vulnerable' de la extensión porque es vulnerable
-            $valor_campo_vulnerable = "Si"; // Valor que tendrá el campo 'Vulnerable' cuando se actualice. También puede tener el valor 'Indefinido'.
-            foreach ($vuln_components as $indice2)
-            {					
-                $nombre_vuln = $vuln_components[$j]['Product'];
-                $tipo_vuln = $vuln_components[$j]['vuln_type'];
-                if (($nombre == $nombre_vuln) && ($tipo == $tipo_vuln)) {  // La extensión es vulnerable, chequeamos la versión del producto y la de Joomla 
-                    $modvulnversion = $vuln_components[$j]['modvulnversion']; //Modificador sobre la versión de la extensión
-                    $db_version = $components[$i]['Installedversion']; // Versión de la extensión instalada
-                    $vuln_version = $vuln_components[$j]['Vulnerableversion']; // Versión de la extensión vulnerable
+			$valor_campo_vulnerable = "Si"; // Valor que tendrá el campo 'Vulnerable' cuando se actualice. También puede tener el valor 'Indefinido'.
+			$components_key = array_search($vulnerable_product['Product'], array_column($components, 'Product'));
+			
+			if ($components_key === false) {
+				// El producto vulnerable no está instalado
+			} else {
+				if ( $components[$components_key]['sc_type'] == $vulnerable_product['vuln_type'] ) {
+					$modvulnversion = $vulnerable_product['modvulnversion']; //Modificador sobre la versión de la extensión
+                    $db_version = $components[$components_key]['Installedversion']; // Versión de la extensión instalada
+                    $vuln_version = $vulnerable_product['Vulnerableversion']; // Versión de la extensión vulnerable
 					                
                     // Usamos la funcion 'version_compare' de php para comparar las versiones del producto instalado y la del componente vulnerable					
                     $version_compare = version_compare($db_version, $vuln_version, $modvulnversion);
-                    if ($version_compare) {
-                        $componente_vulnerable = true;                    
-                    } else if ($vuln_version == '---') { //No conocemos la versión del producto vulnerable
-                        $componente_vulnerable = true;                        
-                    }
-                
-                    if ($componente_vulnerable) { //La versión de la extensión es vulnerable; chequeamos si lo es para nuestra versión de Joomla
-                        // Inicializamos las variables 
-                        $vuln_joomla_version = ""; // Versión de Joomla para la que es vulnerable la extensión
-                        $modvulnjoomla = ""; // Modificador de la versión de Joomla
-                        $local_joomla_branch = explode(".", JVERSION); // Versión de Joomla instalada
-                        $array_element = 0; // Índice del array de versiones y modificadores						
-                        
-                        /* Array con todas las versiones y modificadores para las que es vulnerable el producto */
-                        $modvulnjoomla_array = explode(",", $vuln_components[$j]['modvulnjoomla']);
-                        $vuln_joomla_version_array = explode(",", $vuln_components[$j]['Joomlaversion']); // Versión de Joomla para la que es vulnerable el componente
+					if ( ($version_compare) || ($vuln_version == '---') ) {
+						// El producto es vulnerable
+						$query = $db->getQuery(true)
+                            ->select(array('id'))
+                            ->from($db->quoteName('#__securitycheckpro_vuln_components'))
+                            ->where($db->quoteName('Product').' = '.$db->quote($vulnerable_product['Product']))
+							->where($db->quoteName('vuln_id').' = '.$db->quote($vulnerable_product['id']));
+                        $db->setQuery($query);
+                        $exists = $db->loadResult();
 						
-                        foreach ($vuln_joomla_version_array as $joomla_version)
+						$valor = (object) array(
+							'Product' => $vulnerable_product['Product'],
+                            'vuln_id' => $vulnerable_product['id'],
+                        );
+                                                                    
+                        try
                         {
-                            $vulnerability_branch = explode(".", $joomla_version);
+							// Añadimos los datos a la tabla 'securitycheck_vuln_components' si no existen ya   
+							if (is_null($exists)) {
+								$result = $db->insertObject('#__securitycheckpro_vuln_components', $valor);        
+							}
 							
-                            if ($vulnerability_branch[0] == $local_joomla_branch[0]) {  								
-                                $vuln_joomla_version = $vuln_joomla_version_array[$array_element];    
-                                if (array_key_exists($array_element, $modvulnjoomla_array)) {
-                                         $modvulnjoomla = $modvulnjoomla_array[$array_element];
-                                } else 
-                                {
-                                           $modvulnjoomla = '>=';
-                                } 
-								$global_vulnerable = "Si";
-                                break;
-                            } else if ($vulnerability_branch[0] == 'Notdefined') {
-                                $vuln_joomla_version = 'Notdefined';
-								$global_vulnerable = "Si";
-                            }
-                            $array_element++;							
-                        }            
-                        
-                        /* Obtenemos y guardamos la versión de Joomla */
-                        $Version = new Version();
-                        $joomla_version = $Version->getShortVersion();
-						// Algo ha ido mal. Salimos del bucle
-						if ( $vuln_joomla_version == "") {														
-							break;
-						}
-                        switch ($vuln_joomla_version)
-                        {
-                        case "Notdefined": // El componente es vulnerable pero no sabemos para qué versión de Joomla.                             
-                            $actualizar_campo_vulnerable = true;
-                            $valor_campo_vulnerable = "Indefinido";
-                            $global_vulnerable = "Indefinido";
-                            break;						
-                        default: // El componente es vulnerable y sabemos para qué versión de Joomla
-                            // Usamos la funcion 'version_compare' de php para comparar las versiones de Joomla							
-                            $joomla_version_compare = version_compare($joomla_version, $vuln_joomla_version, $modvulnjoomla);
-                            if ($joomla_version_compare) {
-                                $actualizar_campo_vulnerable = true;
-                                if ($vuln_version != '---') {
-                                     $version_compare = version_compare($db_version, $vuln_version, $modvulnversion);
-                                    if ($version_compare) {
-                                        $valor_campo_vulnerable = "Si";
-                                    } else 
-                                     {
-                                        $actualizar_campo_vulnerable = false;
-                                        $valor_campo_vulnerable = "No";
-                                        $global_vulnerable = "No";
-                                    }
-                                } else 
-                                {
-                                    // No sabemos qué versión del componente es vulnerable, aunque sí que es para esta rama de Joomla
-                                    $global_vulnerable = "Indefinido";
-                                    $valor_campo_vulnerable = "Indefinido";
-                                }
-                            } else
-                            {
-                                 $global_vulnerable = "No";
-                                 /* Borramos las entradas del producto 'no vulnerable' en la tabla 'securitycheck_vuln_components' */
-                                 $db = Factory::getDBO();
-								 $query = $db->getQuery(true);
-
-								$conditions = array(
-									$db->quoteName('Product') . ' = ' . $db->quote($nombre), 
-									$db->quoteName('vuln_id') . ' = ' . $db->quote($j+1)
-								);
-
-								$query->delete($db->quoteName('#__securitycheckpro_vuln_components'));
-								$query->where($conditions);
-                                // $query = 'DELETE FROM #__securitycheckpro_vuln_components WHERE Product=' .'"' .$nombre .'" and vuln_id=' .($j+1);
-                                 $db->setQuery($query);
-                                 $db->execute();
-                            }
-                        }
-                                    
-                        if ($actualizar_campo_vulnerable) {                        
-                            /* Chequeamos si existe el componente en la BBDD de componentes vulnerables; si no existe, lo insertamos */
-							$buscar_componente = $this->buscar_registro($j+1, 'securitycheckpro_vuln_components', 'vuln_id');
-                            if (!($buscar_componente)) {								
-                                /* Actualizamos la tabla 'securitycheck_vuln_components' */
-                                $valor = (object) array(
-                                'Product' => $nombre,
-                                'vuln_id' => $j+1,
-                                );
-                                $db = Factory::getDBO();
-                                $result = $db->insertObject('#__securitycheckpro_vuln_components', $valor, 'id');                            
-                            }                    
-							$res_actualizar = $this->actualizar_registro($nombre_vuln, 'securitycheckpro', 'Product', $valor_campo_vulnerable, 'Vulnerable');
-                            if ($res_actualizar) { // Se ha actualizado la BBDD correctamente                            
-                            } else {                            
-                                Factory::getApplication()->enqueueMessage('COM_SECURITYCHECKPRO_UPDATE_VULNERABLE_FAILED' ."'" .$nombre_vuln ."'", 'error');
-                            }
-                        }
-                    } else
-                    {
-                        /* Borramos las entradas del producto 'no vulnerable' en la tabla 'securitycheck_vuln_components' */
-                        $db = Factory::getDBO();
-						$query = $db->getQuery(true);
-
+							$res_actualizar = $this->actualizar_registro($vulnerable_product['Product'], 'securitycheckpro', 'Product', $valor_campo_vulnerable, 'Vulnerable');
+							if ( $res_actualizar ) { // Se ha actualizado la BBDD correctamente                            
+							} else {                            
+								Factory::getApplication()->enqueueMessage('COM_SECURITYCHECKPRO_UPDATE_VULNERABLE_FAILED' ."'" . $vulnerable_product['Product'] ."'", 'error');
+							}
+                        } catch (Exception $e)
+                        {    
+                            Factory::getApplication()->enqueueMessage('COM_SECURITYCHECKPRO_UPDATE_VULNERABLE_FAILED' ."'" . $vulnerable_product['Product'] ."'", 'error');                         
+                        }						
+					} else {
+						// El producto NO es vulnerable. Borramos la entrada de la tabla 'securitycheck_vuln_components' si existe
+						$query2 = $db->getQuery(true);
 						$conditions = array(
-							$db->quoteName('Product') . ' = ' . $db->quote($nombre), 
-							$db->quoteName('vuln_id') . ' = ' . $db->quote($j+1)
+							$db->quoteName('Product') . ' = ' . $db->quote($vulnerable_product['Product']), 
+							$db->quoteName('vuln_id') . ' = ' . $db->quote($vulnerable_product['id'])
 						);
 
-						$query->delete($db->quoteName('#__securitycheckpro_vuln_components'));
-						$query->where($conditions);
+						$query2->delete($db->quoteName('#__securitycheckpro_vuln_components'));
+						$query2->where($conditions);
 						
-                        //$query = 'DELETE FROM #__securitycheckpro_vuln_components WHERE "Product"=' .'"' .$nombre .'" and "vuln_id"=' .($j+1);
-                        $db->setQuery($query);						
-                        $db->execute();
-                        /* Nos aseguramos que el componente tiene el valor "No" en el campo "Vulnerable". Esto es útil cuando se cambia la versión    del componente y pasa de 'vulnerable' o 'Notdefined' a 'no vulnerable' */
-                        $valor_campo_vulnerable = "No";
-                        $res_actualizar = $this->actualizar_registro($nombre, 'securitycheckpro', 'Product', $valor_campo_vulnerable, 'Vulnerable');                
-                    }
-                }
-                $j++;
-            }
-            $i++;
-            /* Comprobamos si el componente es vulnerable después de chequear todas las vulnerabilidades existentes en la BBDD 'securitycheck_db'. Según sea el resultado actualizamos el campo 'Vulnerable' de la BBDD 'securitycheck'. Esto es útil cuando se cambia la versión del componente y pasa de 'vulnerable' o 'Notdefined' a 'no vulnerable' o alguna versión del componente deja de ser vulnerable*/
-            $res_actualizar = $this->actualizar_registro($nombre, 'securitycheckpro', 'Product', $global_vulnerable, 'Vulnerable');
-        }
+                        $db->setQuery($query2);						
+                        $db->execute();						
+					}
+					
+				}
+			}
+		}			
     }
 
 

@@ -51,7 +51,9 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','5.2.2','<=','5','>=','Joomla! core','Three vulnerabilities','Jan 08 2025','Joomla 5.0.0 to 5.2.2','update','5.2.3'),
 ('Joomla!','core','5.2.3','<=','5','>=','Joomla! core','One vulnerability','Feb 19 2025','Joomla 5.0.0 to 5.2.3','update','5.2.4'),
 ('com_convertforms','component','4.4.7','<=','4','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
-('com_convertforms','component','4.4.7','<=','5','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9');
+('com_convertforms','component','4.4.7','<=','5','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
+('Joomla!','core','4.4.12','<=','4','>=','Joomla! core','One vulnerability','Apr 08 2025','Joomla 4.0.0 to 4.4.12','update','4.4.13'),
+('Joomla!','core','5.2.5','<=','5','>=','Joomla! core','One vulnerability','Apr 08 2025','Joomla 5.0.0 to 5.2.4','update','5.2.6');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_sessions`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_sessions` (
@@ -70,7 +72,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.27');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.29');
 
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_url_inspector_logs` (
 `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
@@ -142,12 +144,3 @@ INSERT IGNORE INTO `#__securitycheckpro_trackactions_tables_data` (`id`, `type_t
 (16, 'module', 'com_modules.module', 'title', '{"table_type":"Module","table_prefix":"JTable"}'),
 (17, 'access_level', 'com_users.level', 'title', '{"table_type":"Viewlevel","table_prefix":"JTable"}'),
 (18, 'banner_client', 'com_banners.client', 'name', '{"table_type":"Client","table_prefix":"BannersTable"}');
-
-ALTER TABLE `#__securitycheckpro_storage` CHANGE `storage_key` `storage_key` VARCHAR(100); 
-ALTER TABLE `#__securitycheckpro_whitelist` CHANGE `ip` `ip` VARCHAR(100); 
-ALTER TABLE `#__securitycheckpro_blacklist` CHANGE `ip` `ip` VARCHAR(100);
-ALTER TABLE `#__securitycheckpro_dynamic_blacklist` CHANGE `ip` `ip` VARCHAR(100); 
-
-ALTER TABLE `#__securitycheckpro_whitelist` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE `#__securitycheckpro_blacklist` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-ALTER TABLE `#__securitycheckpro_storage` CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

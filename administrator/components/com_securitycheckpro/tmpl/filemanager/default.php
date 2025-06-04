@@ -283,7 +283,7 @@ if (strstr($server, "iis") ) { ?>
             <?php
             if ((!empty($this->items_permissions)) && (!$this->state->get('filter.filemanager_permissions_status')) ) {        
                 ?>
-                                <div id="permissions_buttons" class="btn-toolbar">
+                                <div id="permissions_buttons">
                                     <div class="pull-right">
                                         <button class="btn btn-success margin-right-5" id="add_exception_button" href="#">
                                             <i class="fa fa-plus"> </i>
