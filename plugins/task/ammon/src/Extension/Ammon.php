@@ -171,6 +171,8 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 	{
 		$updated = false;
 
+        Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
+
 		if (!empty($fnum) && !empty($session_id)) {
 			$query = $this->db->createQuery();
 			$query->select('attempts')
@@ -197,6 +199,15 @@ final class Ammon extends CMSPlugin implements SubscriberInterface
 				->andWhere('session_id = ' . $this->db->quote($session_id));
 
 			$updated = $this->db->setQuery($query)->execute();
+
+            if ($updated)
+            {
+                Log::add('Updated queue of fnum ' . $fnum . ' to new status ' . $new_status . '. Number of attempts now at ' . ($attempts + 1), Log::INFO, 'plugin.emundus.ammon');
+            }
+            else
+            {
+                Log::add('Failed to update queue of fnum ' . $fnum . ' to new status ' . $new_status . '. Number of attempts now at ' . ($attempts + 1), Log::ERROR, 'plugin.emundus.ammon');
+            }
 		}
 
 		return $updated;

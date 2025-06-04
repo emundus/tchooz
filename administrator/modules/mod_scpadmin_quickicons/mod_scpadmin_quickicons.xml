@@ -2,12 +2,12 @@
 <extension type="module" client="administrator" method="upgrade">
 	<name>Securitycheck Pro Info Module</name>
 	<author>José A. Luque </author>
-	<creationDate>26-02-2025</creationDate>
+	<creationDate>06-05-2025</creationDate>
 	<copyright>Copyright www.protegetuordenador.com</copyright>
 	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<authorEmail>contacto@protegetuordenador.com</authorEmail>
 	<authorUrl>www.protegetuordenador.com</authorUrl>
-	<version>4.2.3</version>
+	<version>4.2.4</version>
 	<description>MOD_SECURITYCHECKPRO_DESCRIPTION</description>
 	<namespace path="src">Joomla\Module\Scpadmin_quickicons</namespace>
 	

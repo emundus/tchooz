@@ -156,6 +156,28 @@ class Sogecommerce
 		return $iso2;
 	}
 
+	/**
+	 * Sogecommerce needs an alphanumeric string of 6 characters
+	 * @param   string  $external_reference
+	 *
+	 * @return bool
+	 */
+	public function verifyReference(string $external_reference): bool
+	{
+		$valid = false;
+
+		if (!empty($external_reference)) {
+			// must not be longer than 6 characters
+			if (strlen($external_reference) <= 6 && ctype_alnum($external_reference)) {
+				$valid = true;
+			} else {
+				Log::add(Text::_('COM_EMUNDUS_ERROR_INVALID_EXTERNAL_REFERENCE'), Log::WARNING, 'com_emundus.sogecommerce');
+			}
+		}
+
+		return $valid;
+	}
+
 	private function prepareDefaultFields(TransactionEntity $transaction, CartEntity $cart): array
 	{
 		$current_language = Factory::getApplication()->getLanguage()->getTag();
@@ -260,7 +282,13 @@ class Sogecommerce
 		$fields['vads_sub_currency'] = $transaction->getCurrency()->getIso4217();
 
 		if (!empty($cart->getPaymentStep()->getInstallmentEffectDate())) {
-			$fields['vads_sub_effect_date'] = str_replace('-', '', $cart->getPaymentStep()->getInstallmentEffectDate());
+			// if date is in less than 15 days, we set it to today + 15 days to
+			// see https://sogecommerce.societegenerale.eu/doc/fr-FR/error-code/error-10115.html
+			if (strtotime($cart->getPaymentStep()->getInstallmentEffectDate()) < strtotime('+15 days')) {
+				$fields['vads_sub_effect_date'] = date('Ymd', strtotime('+15 days'));
+			} else {
+				$fields['vads_sub_effect_date'] = str_replace('-', '', $cart->getPaymentStep()->getInstallmentEffectDate());
+			}
 		} else {
 			$fields['vads_sub_effect_date'] = date('Ymd', strtotime('+15 days'));
 		}

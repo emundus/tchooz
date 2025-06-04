@@ -4479,11 +4479,11 @@ class EmundusHelperUpdate
 			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
 			$storage_value['check_header_referer']             = 1;
 			$storage_value['check_base_64']                    = 0;
-			$storage_value['base64_exceptions']                = 'com_hikashop,com_emundus,com_fabrik,com_users';
+			$storage_value['base64_exceptions']                = 'com_hikashop,com_emundus,com_fabrik,com_users,com_content';
 			$storage_value['strip_all_tags']                   = 0;
 			$storage_value['tags_to_filter'] = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,ilayer,layer,meta,object,script,xml';
-			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5,com_users';
-			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_users,com_login';
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5,com_users,com_content';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_users,com_login,com_hikashop';
 			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
 			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users,com_login';
 			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users,com_login,com_content';

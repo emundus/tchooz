@@ -15,11 +15,13 @@
 defined('_JEXEC') or die('Restricted access');
 
 
+use Joomla\CMS\Access\Access;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
-use Joomla\CMS\Access\Access;
+use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
 
 class EmundusHelperMenu
 {
@@ -231,6 +233,21 @@ class EmundusHelperMenu
 		}
 
 		return $menu;
+	}
+
+	public static function getBaseUriWithLang()
+	{
+		$currentLang = Factory::getApplication()->getLanguage()->getTag();
+
+		$defaultLang = Multilanguage::isEnabled() ? ComponentHelper::getParams('com_languages')->get('site', 'fr-FR') : $currentLang;
+
+		$base = rtrim(Uri::base(), '/');
+
+		if ($currentLang !== $defaultLang) {
+			$base .= '/' . substr($currentLang, 0, 2);
+		}
+
+		return $base;
 	}
 
 	public static function getLogoutRedirectLink()

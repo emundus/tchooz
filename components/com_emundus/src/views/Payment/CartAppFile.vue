@@ -72,6 +72,7 @@ export default {
 			:is-manager="true"
 			:readOnly="readOnly"
 			:paymentMethods="paymentMethods"
+			:manualPaymentMethods="['cheque', 'transfer']"
 			@updateCart="cartKey++"
 		>
 		</Cart>

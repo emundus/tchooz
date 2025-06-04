@@ -149,5 +149,27 @@ class ContentElementTablefield {
 	}
 	}
 
+
+    /*
+	 * @from 5.19
+     * copy image to param's
+     * usefull for the first translation and copy orignal data
+	*/
+    public function preHandlerTagImages($element){
+            if (!is_null($element))
+            {
+                $params = $element->IndexedFields["params"];
+                $images = $element->IndexedFields["images"];
+
+                $registry = new Registry;
+                $registry->loadString($params->originalValue);
+                if (!empty($images))
+                {
+                    $registry->loadString($images->originalValue);
+                }
+                $this->originalValue = $registry->toString();
+            }
+    }
+
 }
 

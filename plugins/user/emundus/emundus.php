@@ -137,6 +137,22 @@ class plgUserEmundus extends CMSPlugin
 			}
 		}
 
+		// Delete hikashop user even if orders exist
+		$query->clear()
+			->delete($this->db->quoteName('#__hikashop_user'))
+			->where($this->db->quoteName('user_email') . ' = ' . $this->db->quote($user['email']));
+		try
+		{
+			$this->db->setQuery($query);
+			$this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error at line ' . __LINE__ . ' of file ' . __FILE__ . ' : ' . '. Error is : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
+			return false;
+		}
+		//
+
 		$dir = EMUNDUS_PATH_ABS . $user['id'] . DS;
 		$dir = EMUNDUS_PATH_ABS.$user['id'].DS;
 		if(is_dir($dir)) {

@@ -451,7 +451,7 @@ export default {
 					:clickToClose="false"
 					@click.stop
 				>
-					<component :is="'EditSlot'" :slot="this.currentSlot" @close="closePopup()" @update-items="updateItems()" />
+					<component :is="'EditSlot'" :item="this.currentSlot" @close="closePopup()" @update-items="updateItems()" />
 				</modal>
 			</Teleport>
 		</template>

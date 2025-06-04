@@ -283,7 +283,7 @@ class EmundusViewUsers extends HtmlView
 				}
 				break;
 			case 'adduser':
-				if (!EmundusHelperAccess::asAccessAction(12,'c',$this->_user->id)) {
+				if (!EmundusHelperAccess::asAccessAction(12,'c',$this->_user->id) && !EmundusHelperAccess::asAccessAction(12,'u',$this->_user->id)) {
 					throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, true, false, 'raw');
 				}
 

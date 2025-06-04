@@ -768,9 +768,7 @@ class FileMaker
             $emundus_id = !empty($record["id"]) ? $record["id"] : null;
             unset($record["recordId"]);
             unset($record["db_table"]);
-            if (!empty($record["id"])) {
-                unset($record["id"]);
-            }
+            unset($record['id']);
             if (!empty($record["recordId_emundus_element_name"])) {
                 unset($record["recordId_emundus_element_name"]);
             }

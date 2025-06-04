@@ -2299,6 +2299,8 @@ $(document).ready(function() {
                                 '<label for="form-title" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_TITLE')+'</label></div>' +
                                 '<div class="tw-flex tw-mb-1"><input class="em-ex-check0" type="checkbox" value="form-group" name="form-group" id="form-group" style="max-height: 20px;"/>' +
                                 '<label for="form-group" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_GROUP')+'</label></div>' +
+                                '<div class="tw-flex tw-mb-1"><input class="em-ex-check0" type="checkbox" value="form-csv-only" name="form-csv-only" id="form-csv-only" style="max-height: 20px;"/>' +
+                                '<label for="form-csv-only" class="em-mb-0-important">'+Joomla.Text._('COM_EMUNDUS_FORM_EXPORT_CSV_FILE_ONLY')+'</label></div>' +
                                 '</div>'+
                                 '</div>'+
                                 '</div></div>' );
@@ -3096,7 +3098,6 @@ $(document).ready(function() {
                     '<option  value="aemail" selected>'+Joomla.Text._('COM_EMUNDUS_EMAIL')+'</option>' +
                     '<option  value="aapp-sent" selected>'+Joomla.Text._('COM_EMUNDUS_APPLICATION_SENT_ON')+'</option>' +
                     '<option  value="adoc-print" selected>'+Joomla.Text._('COM_EMUNDUS_APPLICATION_DOCUMENT_PRINTED_ON')+'</option>' +
-                    '<option  value="tags" disabled>'+Joomla.Text._('COM_EMUNDUS_EXPORTS_PDF_TAGS')+'</option>' +
                     '<option  value="status" selected>'+Joomla.Text._('COM_EMUNDUS_EXPORTS_PDF_STATUS')+'</option>' +
                     '<option  value="upload" selected>'+Joomla.Text._('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED')+'</option>' +
                     '</select>'+
@@ -3445,8 +3446,8 @@ $(document).ready(function() {
                                                             $('#att-exists').show();
 
                                                         if (result.tag == 1) {
-                                                            $('#em-export-opt option:disabled').removeAttr("disabled").attr("selected", "selected");
-                                                            $('#em-export-opt').trigger("chosen:updated");
+                                                            $('#em-export-opt').append('<option value="tags" selected="">'+Joomla.Text._('COM_EMUNDUS_EXPORTS_PDF_TAGS')+'</option>');
+                                                            $('#em-export-opt').chosen("destroy").chosen({width: "100%"});
                                                         }
 
                                                         var camp = $("#em-export-camp").val();

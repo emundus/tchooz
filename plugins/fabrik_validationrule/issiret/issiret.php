@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin classes
@@ -40,6 +42,24 @@ class PlgFabrik_ValidationruleIssiret extends PlgFabrik_Validationrule
 	 */
 	public function validate($data, $repeatCounter)
 	{
+		// Could be a drop-down with multi-values
+		if (is_array($data))
+		{
+			$data = implode('', $data);
+		}
+
+		$params = $this->getParams();
+		$allow_empty = $params->get('issiret-allow_empty');
+
+		if ($allow_empty == '1' && empty($data))
+		{
+			return true;
+		}
+		elseif (empty($data))
+		{
+			return false;
+		}
+
 		$str = preg_replace('/\s+/', '', $data);
 
 		if (empty($str) || preg_match('/^\d{14}$/', $str))
@@ -68,11 +88,13 @@ class PlgFabrik_ValidationruleIssiret extends PlgFabrik_Validationrule
 			}
 			else
 			{
+				$this->errorMsg = Text::_('PLG_FABRIK_VALIDATIONRULE_ISSIRET_ERROR_MSG');
 				return false;
 			}
 		}
 		else
 		{
+			$this->errorMsg = Text::_('PLG_FABRIK_VALIDATIONRULE_ISSIRET_ERROR_MSG');
 			return false;
 		}
 	}

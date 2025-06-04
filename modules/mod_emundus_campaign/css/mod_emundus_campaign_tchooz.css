@@ -15,6 +15,12 @@
     justify-content: space-between;
 }
 
+.mod_emundus_campaign__list_content_head {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
 .mod_emundus_campaign__list_content_head a.btn {
     line-height: normal;
     letter-spacing: normal;
@@ -26,6 +32,7 @@
     color:var(--neutral-0);
     background:var(--em-primary-color);
     border: 1px solid var(--em-primary-color);
+    height: auto;
 }
 .mod_emundus_campaign__list_content_head a.btn.btn-secondary {
     color: var(--em-secondary-color);
@@ -160,8 +167,13 @@
     box-shadow: var(--em-box-shadow-x-1) var(--em-box-shadow-y-1) var(--em-box-shadow-blur-1) var(--em-box-shadow-color-1), var(--em-box-shadow-x-2) var(--em-box-shadow-y-2) var(--em-box-shadow-blur-2) var(--em-box-shadow-color-2), var(--em-box-shadow-x-3) var(--em-box-shadow-y-3) var(--em-box-shadow-blur-3) var(--em-box-shadow-color-3);
     border-radius: var(--em-applicant-br-cards) !important;
     padding: var(--p-24);
-    height: 345px;
+    min-height: 290px;
     background: var(--neutral-0);
+    height: 100%;
+}
+
+.mod_emundus_campaign__list_content_buttons {
+    margin-top: auto;
 }
 
 .mod_emundus_campaign__list_content--default {
@@ -455,10 +467,10 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
 [id*="mod_emundus_campaign__tchoozy_tabs_"] #background-shapes-tabs {
     position: absolute;
     z-index: 0;
-    width: 100%;
+    width: 43%;
     height: 100%;
     top: 0;
-    right: -365px;
+    right: 0;
     pointer-events: none;
     border-bottom-right-radius: 14px;
     mask-image: url(/modules/mod_emundus_user_dropdown/assets/fond-formes-header.svg);
@@ -601,8 +613,16 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     display: grid;
     align-items: flex-start;
     padding: 0;
-    gap: var(--p-48);
-    grid-template-columns: repeat(3, minmax(354px, 1fr));
+    gap: var(--p-32);
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.mod_emundus_campaign__list_items--line {
+    display: grid;
+    align-items: flex-start;
+    padding: 0;
+    gap: var(--p-32);
+    grid-template-rows: repeat(1, 1fr);
 }
 
 .mod_emundus_campaign__pinned_campaign {
@@ -610,10 +630,6 @@ p[id*="mod_emundus_campaign__tchoozy_tab_desc"] {
     align-items: flex-start;
     padding: 0;
     gap: var(--p-32);
-}
-
-.mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content {
-    height: 330px;
 }
 
 .mod_emundus_campaign__pinned_campaign .mod_emundus_campaign__list_content_resume {

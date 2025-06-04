@@ -2571,20 +2571,29 @@ class EmundusHelperFiles
 		}
 	}
 
-	public static function createTagsList($tags)
+	public static function createTagsList($tags, $user_id = null)
 	{
+		if (empty($user_id))
+		{
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
+
 		$tagsList = array();
 		foreach ($tags as $tag)
 		{
-			$fnum  = $tag['fnum'];
-			$class = str_replace('label-', '', $tag['class']);
-			if (!isset($tagsList[$fnum]))
+			$fnum = $tag['fnum'];
+
+			if (EmundusHelperAccess::asAccessAction(14, 'r', $user_id, $fnum) || (EmundusHelperAccess::asAccessAction(14, 'c', $user_id, $fnum) && $tag['user_id'] === $user_id))
 			{
-				$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
-			}
-			else
-			{
-				$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
+				$class = str_replace('label-', '', $tag['class']);
+				if (!isset($tagsList[$fnum]))
+				{
+					$tagsList[$fnum] = '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
+				}
+				else
+				{
+					$tagsList[$fnum] .= '<div class="tw-flex tw-items-center tw-gap-2 sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
+				}
 			}
 		}
 
@@ -4933,7 +4942,7 @@ class EmundusHelperFiles
 
 										if (!empty($fnums_with_all_tags)) {
 											$where['q'] .= $filter['operator'] === 'NOT IN' ? ' AND jecc.fnum NOT IN (' : ' AND jecc.fnum IN (';
-											$where['q'] .= implode(',', $fnums_with_all_tags) . ')';
+											$where['q'] .= implode(',', $db->quote($fnums_with_all_tags)) . ')';
 										} else {
 											$where['q'] .= ' AND 1=2';
 										}
@@ -6668,7 +6677,7 @@ class EmundusHelperFiles
 	{
 		$table_names = [];
 
-		$db    = JFactory::getDBO();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$query->select($db->quoteName('fl.db_table_name'))

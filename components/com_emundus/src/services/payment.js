@@ -65,8 +65,10 @@ export default {
 			};
 		}
 	},
-	async saveCustomer(customer) {
+	async saveCustomer(customer, cartId) {
 		try {
+			customer.cart_id = cartId;
+
 			return await client.post('saveCustomer', customer);
 		} catch (e) {
 			return {
@@ -151,7 +153,10 @@ export default {
 	},
 	async addProductsToCart(cartId, products) {
 		try {
-			return await client.post('addProductToCart&cart_id=' + cartId + '&product_ids=' + products.join(','));
+			return await client.post('addProductToCart', {
+				cart_id: cartId,
+				product_ids: products.join(','),
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -161,7 +166,10 @@ export default {
 	},
 	async addProductToCart(cartId, productId) {
 		try {
-			return await client.post('addProductToCart&cart_id=' + cartId + '&product_id=' + productId);
+			return await client.post('addProductToCart', {
+				cart_id: cartId,
+				product_id: productId,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -171,7 +179,10 @@ export default {
 	},
 	async removeProductFromCart(cartId, productId) {
 		try {
-			return await client.post('removeProductFromCart&cart_id=' + cartId + '&product_id=' + productId);
+			return await client.post('removeProductFromCart', {
+				cart_id: cartId,
+				product_id: productId,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -181,7 +192,10 @@ export default {
 	},
 	async removeAlterationFromCart(cartId, alterationId) {
 		try {
-			return await client.post('removeAlterationFromCart&cart_id=' + cartId + '&alteration_id=' + alterationId);
+			return await client.post('removeAlterationFromCart', {
+				cart_id: cartId,
+				alteration_id: alterationId,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -191,7 +205,10 @@ export default {
 	},
 	async selectPaymentMethod(cartId, paymentMethodId) {
 		try {
-			return await client.post('selectPaymentMethod&cart_id=' + cartId + '&payment_method_id=' + paymentMethodId);
+			return await client.post('selectPaymentMethod', {
+				cart_id: cartId,
+				payment_method_id: paymentMethodId,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -201,7 +218,10 @@ export default {
 	},
 	async updatePayAdvance(cartId, payAdvance) {
 		try {
-			return await client.post('updatePayAdvance&cart_id=' + cartId + '&pay_advance=' + payAdvance);
+			return await client.post('updatePayAdvance', {
+				cart_id: cartId,
+				pay_advance: payAdvance,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -211,7 +231,10 @@ export default {
 	},
 	async updateInstallmentDebitNumber(cartId, number) {
 		try {
-			return await client.post('updateInstallmentDebitNumber&cart_id=' + cartId + '&number=' + number);
+			return await client.post('updateInstallmentDebitNumber', {
+				cart_id: cartId,
+				number: number,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -221,7 +244,10 @@ export default {
 	},
 	async updateInstallmentMonthday(cartId, monthday) {
 		try {
-			return await client.post('updateInstallmentMonthday&cart_id=' + cartId + '&monthday=' + monthday);
+			return await client.post('updateInstallmentMonthday', {
+				cart_id: cartId,
+				monthday: monthday,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -231,7 +257,9 @@ export default {
 	},
 	async checkoutCart(cartId) {
 		try {
-			return await client.post('checkoutCart&cart_id=' + cartId);
+			return await client.post('checkoutCart', {
+				cart_id: cartId,
+			});
 		} catch (e) {
 			return {
 				status: false,
@@ -239,9 +267,12 @@ export default {
 			};
 		}
 	},
-	async confirmCart(cartId) {
+	async confirmCart(cartId, customExternalReference = '') {
 		try {
-			return await client.post('confirmCart&cart_id=' + cartId);
+			return await client.post('confirmCart', {
+				cart_id: cartId,
+				custom_external_reference: customExternalReference,
+			});
 		} catch (e) {
 			return {
 				status: false,

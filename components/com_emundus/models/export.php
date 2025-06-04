@@ -76,13 +76,11 @@ class EmundusModelExport extends JModelList
 			]);
 		}
 
-
-
 		$res = new stdClass();
 
 		if ($gotenberg_activation != 1) {
 			$res->status = false;
-			$res->msg    = JText::_('COM_EMUNDUS_ERROR_EXPORT_API_DESACTIVATED');
+			$res->msg    = Text::_('COM_EMUNDUS_ERROR_EXPORT_API_DESACTIVATED');
 
 			return json_encode($res);
 		}
@@ -90,54 +88,49 @@ class EmundusModelExport extends JModelList
 		$user_id = !empty($fnum) ? (int) substr($fnum, -7) : null;
 		$em_user = Factory::getApplication()->getSession()->get('emundusUser');
 
-		if (EmundusHelperAccess::asAccessAction(8, 'c', Factory::getApplication()->getIdentity()->id, $fnum) || EmundusHelperAccess::isFnumMine(Factory::getApplication()->getIdentity()->id, $fnum)) {
-			require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
+		require JPATH_LIBRARIES . '/emundus/vendor/autoload.php';
 
-			$src  = $file_src;
-			$file = explode('/', $file_src);
-			$file = end($file);
+		$src  = $file_src;
+		$file = explode('/', $file_src);
+		$file = end($file);
 
-			$dest      = explode('/', $file_dest);
-			$dest_file = array_pop($dest);
-			$dest_path = implode('/', $dest);
+		$dest      = explode('/', $file_dest);
+		$dest_file = array_pop($dest);
+		$dest_path = implode('/', $dest);
 
-			try {
-				if ($file_src_format != 'html') {
-					$request = Gotenberg::libreOffice($gotenberg_url)
-						->outputFilename($dest_file)
-						->convert(
-							Stream::path($file_src)
-						);
+		try
+		{
+			if ($file_src_format != 'html')
+			{
+				$request = Gotenberg::libreOffice($gotenberg_url)
+					->outputFilename($dest_file)
+					->convert(
+						Stream::path($file_src)
+					);
 
-					Gotenberg::save($request, $dest_path .'/', $client);
-				} else {
-					$request = Gotenberg::chromium($gotenberg_url)
-						->pdf()
-						->outputFilename($dest_file)
-						->html(Stream::path($src));
-
-					Gotenberg::save($request, $dest_path .'/', $client);
-				}
-				$res->file = $dest_path . '/' . $dest_file . '.pdf';
+				Gotenberg::save($request, $dest_path . '/', $client);
 			}
-			catch (\Gotenberg\Exceptions\GotenbergApiErroed $e) {
-				$res->status = false;
-				$res->msg    = Text::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN') . ' GOTEMBERG ERROR (' . $e->getCode() . '): ' . $e->getResponse();
-				Log::add($res->msg, Log::ERROR, 'com_emundus.export');
+			else
+			{
+				$request = Gotenberg::chromium($gotenberg_url)
+					->pdf()
+					->outputFilename($dest_file)
+					->html(Stream::path($src));
 
-				return json_encode($res);
+				Gotenberg::save($request, $dest_path . '/', $client);
 			}
-
+			$res->file = $dest_path . '/' . $dest_file . '.pdf';
 			$res->status = true;
-
-			return $res;
 		}
-		else {
+		catch (\Gotenberg\Exceptions\GotenbergApiErroed $e)
+		{
 			$res->status = false;
-			$res->msg    = Text::_('ACCESS_DENIED');
+			$res->msg    = Text::_('COM_EMUNDUS_ERROR_EXPORT_MARGIN') . ' GOTEMBERG ERROR (' . $e->getCode() . '): ' . $e->getResponse();
 			Log::add($res->msg, Log::ERROR, 'com_emundus.export');
 
-			return $res;
+			return json_encode($res);
 		}
+
+		return $res;
 	}
 }

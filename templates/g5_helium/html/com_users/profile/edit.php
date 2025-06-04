@@ -41,6 +41,15 @@ if(!empty($user_module->id)) {
 	}
 }
 
+$user = Factory::getApplication()->getIdentity();
+$external = empty($user->password);
+if(!$external && !empty($user->params)) {
+	$user_params = json_decode($user->params);
+	if (!empty($user_params->OAuth2)) {
+		$external = true;
+	}
+}
+
 ?>
 <div class="com-users-profile__edit profile-edit">
 	<?php if ($this->params->get('show_page_heading')) : ?>
@@ -60,7 +69,7 @@ if(!empty($user_module->id)) {
             </button>
         </div>
 
-		<?php // Iterate through the form fieldsets and display each one. ?>
+		<?php if(!$external) : ?>
 		<?php foreach ($this->form->getFieldsets() as $group => $fieldset) : ?>
 			<?php $fields = $this->form->getFieldset($group); ?>
 			<?php if (count($fields)) : ?>
@@ -81,6 +90,7 @@ if(!empty($user_module->id)) {
                 </fieldset>
 			<?php endif; ?>
 		<?php endforeach; ?>
+        <?php endif; ?>
 
 		<?php if ($this->mfaConfigurationUI) : ?>
             <fieldset class="com-users-profile__multifactor">

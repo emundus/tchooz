@@ -989,9 +989,14 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 
                 if (in_array("tags", $options)) {
                     $tags = $m_files->getTagsByFnum(explode(',', $fnum));
-                    $htmldata .= '<table style="margin-top: 8px"><tr><td> ';
+                    $htmldata .= '<table style="margin-top: 8px" class="tags-table"><tr><td> ';
                     foreach ($tags as $tag) {
-                        $htmldata .= '<span class="label ' . $tag['class'] . '">' . $tag['label'] . '</span>&nbsp;';
+	                    if(EmundusHelperAccess::asAccessAction(14 ,'r', $app->getIdentity()->id, $fnum) || (EmundusHelperAccess::asAccessAction(14 ,'c', $app->getIdentity()->id, $fnum) && $tag['user_id'] === $app->getIdentity()->id))
+	                    {
+		                    $class = str_replace('label-', '', $tag['class']);
+		                    $htmldata .= '<span class="sticker label-' . $class . '">' . $tag['label'] . '</span>&nbsp;';
+		                    //$htmldata .= '<div class="sticker label-' . $class . '"><span class="circle"></span><span class="tw-text-white tw-truncate tw-font-semibold tw-w-[150px] tw-text-sm">' . $tag['label'] . '</span></div>';
+	                    }
                     }
                     $htmldata .= '</td></tr></table>';
                 }
@@ -1035,7 +1040,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
         /*** Applicant   ***/
 	    $htmldata .= "
 			<style>
-					@page { margin: 130px 25px; }
+					@page { 
+						margin: 130px 25px; 
+					}
 					header { position: fixed; top: -120px; left: 0px; right: 0px; }
 					header hr {
 						border: none;
@@ -1137,33 +1144,327 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                         }
                     }
                     .label {color:black;padding: 6px 12px;border-radius: 4px;}
-		            .label-default {background-color:#999999;}
-		            .label-primary {background-color:#337ab7;}
-		            .label-success {background-color:#5cb85c;}
-		            .label-info    {background-color:#033c73;}
-		            .label-warning {background-color:#dd5600;}
-		            .label-danger  {background-color:#c71c22;}
-		            .label-lightpurple { background-color: #DCC6E0 }
-		            .label-purple { background-color: #947CB0 }
-		            .label-darkpurple {background-color: #663399 }
-		            .label-lightblue { background-color: #6bb9F0 }
-		            .label-blue { background-color: #19B5FE }
-		            .label-darkblue { background-color: #013243 }
-		            .label-lightgreen { background-color: #00E640 }
-		            .label-green { background-color: #3FC380 }
-		            .label-darkgreen { background-color: #1E824C }
-		            .label-lightyellow { background-color: #FFFD7E }
-		            .label-yellow { background-color: #FFFD54 }
-		            .label-darkyellow { background-color: #F7CA18 }
-		            .label-lightorange { background-color: #FABE58 }
-		            .label-orange { background-color: #E87E04 }
-		            .label-darkorange {background-color: #D35400 }
-		            .label-lightred { background-color: #EC644B }
-		            .label-red { background-color: #CF000F }
-		            .label-darkred { background-color: #96281B }
-		            .label-lightpink { background-color: #e08283; }
-		            .label-pink { background-color: #d2527f; }
-		            .label-darkpink { background-color: #db0a5b; }
+		            .label-default, .label-null, .label- {
+				        background-color: #b4b4b4 !important;
+				        color: #282828;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-default, .label-text-null {
+				        color: #b4b4b4 !important;
+				    }
+				
+				    .label-default-500, .label-null-500, .label-500 {
+				        background-color: #b4b4b4 !important;
+				    }
+				
+				    .label-red-1 {
+				        background-color: #eb0000;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-red-1 {
+				        color: #eb0000;
+				    }
+				
+				    .label-border-red-1 {
+				        border-color: #eb0000;
+				    }
+				
+				    .label-red-2 {
+				        background-color: #c00016;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-red-2 {
+				        color: #c00016;
+				    }
+				
+				    .label-border-red-2 {
+				        border-color: #c00016;
+				    }
+				
+				    .label-pink-1 {
+				        background-color: #ff78d1;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-pink-1 {
+				        color: #ff78d1;
+				    }
+				
+				    .label-border-pink-1 {
+				        border-color: #ff78d1;
+				    }
+				
+				
+				    .label-pink-2 {
+				        background-color: #e0008a;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-pink-2 {
+				        color: #e0008a;
+				    }
+				
+				    .label-border-pink-2 {
+				        border-color: #e0008a;
+				    }
+				
+				    .label-purple-1 {
+				        background-color: #d292ef;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-purple-1 {
+				        color: #d292ef;
+				    }
+				
+				    .label-border-purple-1 {
+				        border-color: #d292ef;
+				    }
+				
+				    .label-purple-2 {
+				        background-color: #9600c7;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-purple-2 {
+				        color: #9600c7;
+				    }
+				
+				    .label-border-purple-2 {
+				        border-color: #9600c7;
+				    }
+				
+				    .label-light-blue-1 {
+				        background-color: #35d7d2;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-light-blue-1 {
+				        color: #35d7d2;
+				    }
+				
+				    .label-border-light-blue-1 {
+				        border-color: #35d7d2;
+				    }
+				
+				
+				    .label-light-blue-2 {
+				        background-color: #308281;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-light-blue-2 {
+				        color: #308281;
+				    }
+				
+				    .label-border-light-blue-2 {
+				        border-color: #308281;
+				    }
+				
+				    .label-blue-1 {
+				        background-color: #64d8ff;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-blue-1 {
+				        color: #64d8ff;
+				    }
+				
+				    .label-border-blue-1 {
+				        border-color: #64d8ff;
+				    }
+				
+				    .label-blue-2 {
+				        background-color: #0073e5;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-blue-2 {
+				        color: #0073e5;
+				    }
+				
+				    .label-border-blue-2 {
+				        border-color: #0073e5;
+				    }
+				
+				    .label-blue-3 {
+				        background-color: #0644ae;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-blue-3 {
+				        color: #0644ae;
+				    }
+				
+				    .label-border-blue-3 {
+				        border-color: #0644ae;
+				    }
+				
+				    .label-green-1 {
+				        background-color: #98d432;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-green-1 {
+				        color: #98d432;
+				    }
+				
+				    .label-border-green-1 {
+				        border-color: #98d432;
+				    }
+				
+				    .label-green-2 {
+				        background-color: #008a35;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-green-2 {
+				        color: #008a35;
+				    }
+				
+				    .label-border-green-2 {
+				        border-color: #008a35;
+				    }
+				
+				    .label-yellow-1 {
+				        background-color: #ffe014;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-yellow-1 {
+				        color: #ffe014;
+				    }
+				
+				    .label-border-yellow-1 {
+				        border-color: #ffe014;
+				    }
+				
+				    .label-yellow-2 {
+				        background-color: #ffae00;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-yellow-2 {
+				        color: #ffae00;
+				    }
+				
+				    .label-border-yellow-2 {
+				        border-color: #ffae00;
+				    }
+				
+				    .label-orange-1 {
+				        background-color: #ff6900;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-orange-1 {
+				        color: #ff6900;
+				    }
+				
+				    .label-border-orange-1 {
+				        border-color: #ff6900;
+				    }
+				
+				    .label-orange-2 {
+				        background-color: #cc4b00;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-orange-2 {
+				        color: #cc4b00;
+				    }
+				
+				    .label-border-orange-2 {
+				        border-color: #cc4b00;
+				    }
+				
+				    .label-beige {
+				        background-color: #ffc285;
+				        color: var(--neutral-900);
+				        text-shadow: none;
+				    }
+				
+				    .label-text-beige {
+				        color: #ffc285;
+				    }
+				
+				    .label-border-beige {
+				        border-color: #ffc285;
+				    }
+				
+				    .label-brown {
+				        background-color: #8b511f;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-brown {
+				        color: #8b511f;
+				    }
+				
+				    .label-border-brown {
+				        border-color: #8b511f;
+				    }
+				
+				    .label-grey-1 {
+				        background-color: #b4b4b4;
+				        text-shadow: none;
+				        color: var(--neutral-900);
+				    }
+				
+				    .label-text-grey-1 {
+				        color: #b4b4b4;
+				    }
+				
+				    .label-border-grey-1 {
+				        border-color: #b4b4b4;
+				    }
+				
+				    .label-grey-2 {
+				        background-color: #757575;
+				        text-shadow: none;
+				    }
+				
+				    .label-text-grey-2 {
+				        color: #757575;
+				    }
+				
+				    .label-border-grey-2 {
+				        border-color: #757575;
+				    }
+				
+				    .label-black {
+				        background-color: #1e1e1e;
+				        text-shadow: none;
+				        color: var(--neutral-0);
+				    }
+				
+				    .label-text-black {
+				        color: #1e1e1e;
+				    }
+				
+				    .label-border-black {
+				        border-color: #1e1e1e;
+				    }
+		            .sticker {
+			            border-radius: 20px 8px 8px 20px;
+				        padding: 4px 8px;
+				        margin: 4px 0;
+				        font-size: 12px;
+				        max-width: 200px;
+				        white-space: break-spaces;
+				        color: white;
+		            }
 			</style>";
 
 //

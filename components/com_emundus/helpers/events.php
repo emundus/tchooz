@@ -114,18 +114,19 @@ class EmundusHelperEvents
 					$this->isApplicationCompleted($params);
 				}
 			} else {
-				$listModel = $params['formModel']->getListModel();
-				$table = $listModel->getTable();
+				$table = $params['formModel']->getTableName();
 
-				if (!class_exists('EmundusHelperFiles')) {
-					require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
-				}
-				$h_files = new EmundusHelperFiles();
-				$linked = $h_files->isTableLinkedToCampaignCandidature($table);
+				if (!empty($table)) {
+					if (!class_exists('EmundusHelperFiles')) {
+						require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+					}
+					$h_files = new EmundusHelperFiles();
+					$linked = $h_files->isTableLinkedToCampaignCandidature($table);
 
-				if ($linked && !empty($params['formModel']->data['fnum']) && empty($params['formModel']->getRowId()))
-				{
-					$this->fillFormFromAliases($params['formModel'], $table, $params['formModel']->data['fnum']);
+					if ($linked && !empty($params['formModel']->data['fnum']) && empty($params['formModel']->getRowId()))
+					{
+						$this->fillFormFromAliases($params['formModel'], $table, $params['formModel']->data['fnum']);
+					}
 				}
 			}
 

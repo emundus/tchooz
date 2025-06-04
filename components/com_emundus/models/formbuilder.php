@@ -1008,16 +1008,10 @@ class EmundusModelFormbuilder extends JModelList
 		$query = $this->db->getQuery(true);
 
 		try {
-			$query->select('*')
-				->from($this->db->quoteName('#__menu'))
-				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_fabrik&view=form&formid=' . $menu));
-			$this->db->setQuery($query);
-			$jos_menu = $this->db->loadObject();
-
 			$query->clear()
 				->update($this->db->quoteName('#__menu'))
 				->set($this->db->quoteName('published') . ' = -2')
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($jos_menu->id));
+				->where($this->db->quoteName('id') . ' = ' . (int)$menu);
 			$this->db->setQuery($query);
 
 			return $this->db->execute();

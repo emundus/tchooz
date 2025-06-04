@@ -24,6 +24,10 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+		manualPaymentMethods: {
+			type: Array,
+			default: () => [],
+		},
 		isManager: {
 			type: Boolean,
 			default: false,
@@ -40,6 +44,7 @@ export default {
 			loading: false,
 			alterationToEdit: null,
 			discountModalKey: 0,
+			customExternalReference: '',
 		};
 	},
 	mixins: [errors, alerts],
@@ -182,7 +187,8 @@ export default {
 
 		checkoutCart() {
 			this.loading = true;
-			paymentService.checkoutCart(this.cart.id).then((response) => {
+
+			paymentService.checkoutCart(this.cart.id, this.customExternalReference).then((response) => {
 				if (response.status) {
 					if (response.data && response.data.transaction_confirmed) {
 						if (response.data.message) {
@@ -227,9 +233,13 @@ export default {
 		},
 		confirmCart() {
 			if (this.isManager && !this.readOnly) {
+				if (!this.manualPaymentMethods.includes(this.cart.selected_payment_method.name)) {
+					this.customExternalReference = '';
+				}
+
 				this.alertConfirm('COM_EMUNDUS_CONFIRM_CART', 'COM_EMUNDUS_CONFIRM_CART_HELPTEXT').then((result) => {
 					if (result.value) {
-						paymentService.confirmCart(this.cart.id).then((response) => {
+						paymentService.confirmCart(this.cart.id, this.customExternalReference).then((response) => {
 							if (response.status) {
 								this.alertSuccess('COM_EMUNDUS_CART_CONFIRMED');
 								window.location.reload();
@@ -719,6 +729,19 @@ export default {
 					<p v-else>{{ cart.selected_payment_method.label }}</p>
 				</div>
 
+				<div
+					v-if="isManager && manualPaymentMethods.includes(cart.selected_payment_method.name) && !readOnly"
+					id="override_transaction_reference"
+					class="tw-mt-4"
+				>
+					<label>{{ translate('COM_EMUNDUS_CART_OVERRIDE_EXTERNAL_REFERENCE') }}</label>
+					<input
+						type="text"
+						v-model="customExternalReference"
+						:placeholder="translate('COM_EMUNDUS_CART_OVERRIDE_EXTERNAL_REFERENCE_PLACEHOLDER')"
+					/>
+				</div>
+
 				<div v-if="cart.selected_payment_method.name === 'sepa'" class="tw-mt-4">
 					<div class="tw-flex tw-flex-row tw-items-center tw-gap-2">
 						<div class="tw-flex tw-flex-col" v-if="!readOnly">
@@ -780,7 +803,7 @@ export default {
 
 		<div id="customer" class="tw-flex tw-flex-col tw-gap-6">
 			<h2>{{ translate('COM_EMUNDUS_CART_CUSTOMER_ADDRESS') }}</h2>
-			<CustomerAddress :customer="cart.customer" :readOnly="readOnly"></CustomerAddress>
+			<CustomerAddress :cart-id="cart.id" :customer="cart.customer" :readOnly="readOnly"></CustomerAddress>
 		</div>
 
 		<div class="tw-flex tw-justify-end">
