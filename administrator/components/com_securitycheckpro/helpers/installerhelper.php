@@ -46,7 +46,7 @@ class installerhelper {
     'using_integers_exceptions'            => 'com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter',
     'escape_strings_exceptions'            => 'com_kunena,com_jce',
     'lfi_exceptions'            => '',
-    'second_level_exceptions'            => '',    
+    'second_level_exceptions'            => 'com_securitycheckprocontrolcenter',    
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
     );

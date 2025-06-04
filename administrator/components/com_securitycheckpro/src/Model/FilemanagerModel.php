@@ -3123,9 +3123,10 @@ class FileManagerModel extends BaseModel
         // Inicializamos las variables
         $this->analized_keys_array = array();
         $error = false;
+		$mainframe = Factory::getApplication();
     
-        // Config.
-        $api    = 'https://scan.metadefender.com/v2/file';    
+        // Metadefender Cloud API V4
+        $api    = 'https://api.metadefender.com/v4/file';    
     
         // Obtenemos la API key
         $params = ComponentHelper::getParams('com_securitycheckpro');
@@ -3157,11 +3158,11 @@ class FileManagerModel extends BaseModel
                 }, $malwarescan_data
             );
         
-            // Número de archivos escaneados en la última hora
-            $this->analized_files_last_hour = $this->get_online_analyzed_values("files");
-        
-            // Chequeamos si sobrepasamos el límite de archivos a analizar por hora (25)
-            if (($this->analized_files_last_hour) + (count($paths)) <= 25) {
+            // Obtenemos el número de archivos que podemos mandar		
+			$prevention_api_remaining = $mainframe->getUserState("prevention_api_remaining", 100);
+			
+            // Chequeamos si sobrepasamos el límite de archivos que podemos mandar
+            if ( count($paths) <= $prevention_api_remaining) {
                 foreach($paths as $path) 
                 {        
                     // Buscamos la clave del array a modificar
@@ -3178,13 +3179,15 @@ class FileManagerModel extends BaseModel
                          'apikey: '.$apikey,
                          'filename: '.$file
                         );
+						
+						$post = array('file'=> new \CURLFile($file));
 
                         // Build options array.
                         $options = array(
                          CURLOPT_URL     => $api,
                          CURLOPT_HTTPHEADER  => $headers,
                          CURLOPT_POST        => true,
-                         CURLOPT_POSTFIELDS  => file_get_contents($file),
+                         CURLOPT_POSTFIELDS  => $post,
                          CURLOPT_RETURNTRANSFER  => true,
                          CURLOPT_CAINFO    =>    SCP_CACERT_PEM,
                          CURLOPT_SSL_VERIFYHOST    => 2,
@@ -3195,10 +3198,10 @@ class FileManagerModel extends BaseModel
                         $ch = curl_init();
                         curl_setopt_array($ch, $options);
                         $response = json_decode(curl_exec($ch), true);
-                    
+						                   
                         // Obtenemos el resultado de la consulta. Cualquier código devuelto diferente a 200 indicará un error.
                         $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                    
+						                    
                         if ($http_status == 200) {
                                     
                             // Buscamos la clave del array a modificar
@@ -3206,11 +3209,10 @@ class FileManagerModel extends BaseModel
                             // Almacenamos el valor encontrado para utilizarlo posteriormente
                             array_push($this->analized_keys_array, $array_key);
                         
-                            // Y añadimos los campos 'data_id' y 'rest_ip'
+                            // Y añadimos el campo 'data_id'
+							//$data_id = 'bzI1MDIxMjRPNG02MkEyMXU0NG5EMnRYQVMy_mdaas';
                             $data_id = $response['data_id'];
-                            $rest_ip = $response['rest_ip'];
-                            $malwarescan_data[$array_key]['data_id'] = $data_id;
-                            $malwarescan_data[$array_key]['rest_ip'] = $rest_ip;
+                            $malwarescan_data[$array_key]['data_id'] = $data_id;                           
                         
                             // Incrementamos el valor de la variable de archivos analizados
                             $this->analized_files_last_hour++;    
@@ -3229,7 +3231,7 @@ class FileManagerModel extends BaseModel
                 // Actualizamos los valores de los campos relacionados con el analisis online
                 $this->set_campo_filemanager('online_checked_files', $this->analized_files_last_hour);
 				$timestamp = $this->global_model->get_Joomla_timestamp();
-                $this->set_campo_filemanager('last_online_check_malwarescan', $timestamp);        
+                $this->set_campo_filemanager('last_online_check_malwarescan', $timestamp);     
 
                 // Buscamos el resultado de los análisis. Para ello preguntamos al servicio Metadefender Cloud sobre cada 'result_id' devuelto.
                 $this->look_for_results($apikey, $malwarescan_data, "files");    
@@ -3243,6 +3245,10 @@ class FileManagerModel extends BaseModel
             Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'), 'error');    
             $error = true;
         }
+		
+		// Set the "get_apikey_info_and_limits" var to 1 to check for new API limits
+		$mainframe = Factory::getApplication();
+		$mainframe->setUserState("get_apikey_info_and_limits", 1);
     
         return $error;
     
@@ -3255,6 +3261,7 @@ class FileManagerModel extends BaseModel
         // Inicializamos las variables
         $this->analized_keys_array = array();
         $error = false;
+		$mainframe = Factory::getApplication();
     
         // Obtenemos la API key
         $params = ComponentHelper::getParams('com_securitycheckpro');
@@ -3282,11 +3289,11 @@ class FileManagerModel extends BaseModel
                 }, $malwarescan_data
             );
         
-            // Número de archivos escaneados en la última hora
-            $this->analized_hashes_last_hour = $this->get_online_analyzed_values("hashes");
+			// Obtenemos el número de hashes que podemos mandar
+            $reputation_api_remaining = $mainframe->getUserState("reputation_api_remaining", 3000);
         
-            // Chequeamos si sobrepasamos el límite de hashes a analizar por hora (1000)
-            if (($this->analized_hashes_last_hour) + (count($paths)) <= 1000) {
+            // Chequeamos si sobrepasamos el límite de hashes a analizar
+            if ( count($paths) <= $reputation_api_remaining ) {
                 foreach($paths as $path)
                  {        
                     // Buscamos la clave del array a modificar
@@ -3308,57 +3315,72 @@ class FileManagerModel extends BaseModel
             Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_FILES_SELECTED'), 'error');    
             $error = true;
         }
+		
+		// Set the "get_apikey_info_and_limits" var to 1 to check for new API limits
+		$mainframe = Factory::getApplication();
+		$mainframe->setUserState("get_apikey_info_and_limits", 1);
     
         return $error;
         
     }
 
-    /* Función que obtiene el número de archivos o hashes escaneados online durante la última hora */
-    function get_online_analyzed_values($type)
+    	
+	/* Obtiene nuestros límites en OPSWAT */
+    function get_apikey_info_and_limits()
     {
-
-        // Inicializamos las variables
-        $analyzed = 0;
-        
-		$last_check = $this->get_campo_filemanager('last_online_check_malwarescan');
-        $now = $this->global_model->get_Joomla_timestamp();
+        // Obtenemos la API key
+        $params = ComponentHelper::getParams('com_securitycheckpro');
+        $apikey = $params->get('opswat_key', '');
+				
+		$mainframe = Factory::getApplication();
+				
+		$response = null;
 		
-		if (empty($last_check)) {
-			 $last_check = $now;
+		if (!empty($apikey)) {
+			// El escaneo del archivo se está realizando
+				$api = 'https://api.metadefender.com/v4/apikey/limits/status/';
+                                
+                //Build headers array.
+                $headers = array(
+                'apikey: '.$apikey
+                );
+
+                //Build options array.
+                $options = array(                    
+                CURLOPT_URL     => $api,
+                CURLOPT_HTTPHEADER  => $headers,
+                CURLOPT_RETURNTRANSFER  => true,
+                CURLOPT_CAINFO    =>    SCP_CACERT_PEM,
+                CURLOPT_SSL_VERIFYHOST    => 2,
+                CURLOPT_SSL_VERIFYPEER  => true
+                );
+
+                //Init & execute API call.
+                $ch = curl_init();
+                curl_setopt_array($ch, $options);
+                $response = json_decode(curl_exec($ch), true);
+								
+				// Obtenemos el resultado de la consulta. Cualquier código devuelto diferente a 200 indicará un error.
+                $http_status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+				
+                if ($http_status == 200) {
+                    if ( (!empty($response)) && (is_array($response)) ) {
+						$mainframe->setUserState("reputation_api_remaining", $response['reputation_api']);
+						$mainframe->setUserState("prevention_api_remaining", $response['prevention_api']);
+					}                        
+                } else
+                {
+                    Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_ERROR_RETURNED', $http_status), 'error');
+					return;
+                }             
 		}
 		
-		$seconds = strtotime($now) - strtotime($last_check);
-                    
-        // Calculamos las horas que han pasado desde el último chequeo
-        $interval = intval($seconds/3600);	
-        
-        // Si ha pasado una hora o más desde el último escaneo, inicializamos el valor almacenado en la BBDD. De lo contrario devolvemos el valor almacenado en la BBDD.
-        if ($interval >= 1) {
-            switch ($type)
-            {
-            case "files":
-                $this->set_campo_filemanager('online_checked_files', 0);
-                break;
-            case "hashes":
-                $this->set_campo_filemanager('online_checked_hashes', 0);
-                break;
-            }
-        } else 
-        {
-            switch ($type)
-            {
-            case "files":
-                $analyzed = $this->get_campo_filemanager('online_checked_files');
-                break;
-            case "hashes":
-                     $analyzed = $this->get_campo_filemanager('online_checked_hashes');
-                break;
-            }
-        
-        }
-    
-        return $analyzed;
-    }
+		// Set the "get_apikey_info_and_limits" var to 0 to avoid launching this function everytime we visit the malwarescan option		
+		$mainframe->setUserState("get_apikey_info_and_limits", 0);
+				
+		return $response;
+		
+	}
 
     /* Función que obtiene el resultado de cada uno de los archivos o hashes escaneados online */
     private function look_for_results($apikey,$malwarescan_data,$opcion)
@@ -3383,16 +3405,17 @@ class FileManagerModel extends BaseModel
             break;
         }
         $threats_found = 0;
-    
+		
+  
         foreach ($this->analized_keys_array as $array_key)
         {    
             switch ($opcion)
             {
             case "files":
-                //Config.
-                // Cuando el escaneo del archivo se está realizando, hemos de hacer consultas al servidor proporcionado por la clave 'rest_ip'
-                $api        = 'https://' . $malwarescan_data[$array_key]['rest_ip'] . '/file/' .$malwarescan_data[$array_key]['data_id'];
-                
+				
+				// El escaneo del archivo se está realizando
+				$api        = 'https://api.metadefender.com/v4/file/' .$malwarescan_data[$array_key]['data_id'];
+                                
                 //Build headers array.
                 $headers = array(
                 'apikey: '.$apikey
@@ -3417,10 +3440,267 @@ class FileManagerModel extends BaseModel
                 {
                     $response = json_decode(curl_exec($ch), true);
                 }
-                while ($response["scan_results"]["progress_percentage"] != 100);
+							               
+				while ($response["process_info"]["progress_percentage"] != 100);
+				
+				/* We will get something like this:
+				Array
+				(
+					[last_sandbox_id] => Array
+						(
+						)
+
+					[last_start_time] => 2025-02-12T09:45:48.608Z
+					[scan_result_history_length] => 1
+					[votes] => Array
+						(
+							[down] => 0
+							[up] => 0
+						)
+
+					[sandbox] => 
+					[file_id] => bzI1MDIxMjRPNG02MkEyMXU
+					[data_id] => bzI1MDIxMjRPNG02MkEyMXU0NG5EMnRYQVMy_mdaas
+					[process_info] => Array
+						(
+							[progress_percentage] => 100
+							[result] => Allowed
+							[post_processing] => Array
+								(
+									[actions_failed] => 
+									[actions_ran] => 
+									[converted_destination] => 
+									[converted_to] => 
+									[copy_move_destination] => 
+								)
+
+							[verdicts] => Array
+								(
+									[0] => No Threat Detected
+								)
+
+							[blocked_reason] => 
+							[profile] => multiscan
+							[blocked_reasons] => Array
+								(
+								)
+
+						)
+
+					[scan_results] => Array
+						(
+							[scan_details] => Array
+								(
+									[AhnLab] => Array
+										(
+											[scan_time] => 14
+											[def_time] => 2025-02-11T00:00:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Avira] => Array
+										(
+											[scan_time] => 7
+											[def_time] => 2025-02-10T09:55:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Bitdefender] => Array
+										(
+											[scan_time] => 3
+											[def_time] => 2025-02-10T08:52:06.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Bkav Pro] => Array
+										(
+											[scan_time] => 221
+											[def_time] => 2025-02-10T15:30:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[ClamAV] => Array
+										(
+											[scan_time] => 27
+											[def_time] => 2025-02-10T09:19:51.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[CMC] => Array
+										(
+											[scan_time] => 1
+											[def_time] => 2025-02-10T17:43:43.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[CrowdStrike Falcon ML] => Array
+										(
+											[scan_result_i] => 23
+											[scan_time] => 1
+											[def_time] => 2025-02-10T00:00:00.000Z
+											[threat_found] => 
+										)
+
+									[Emsisoft] => Array
+										(
+											[scan_time] => 16
+											[def_time] => 2025-02-10T03:35:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[IKARUS] => Array
+										(
+											[scan_time] => 2
+											[def_time] => 2025-02-10T08:50:16.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[K7] => Array
+										(
+											[scan_time] => 6
+											[def_time] => 2025-02-10T01:20:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[McAfee] => Array
+										(
+											[scan_time] => 19
+											[def_time] => 2025-02-09T00:00:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[NANOAV] => Array
+										(
+											[def_time] => 2025-02-10T04:26:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Quick Heal] => Array
+										(
+											[scan_time] => 4
+											[def_time] => 2025-02-09T22:18:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[RocketCyber] => Array
+										(
+											[scan_result_i] => 23
+											[scan_time] => 3
+											[def_time] => 2025-02-10T00:00:00.000Z
+											[threat_found] => 
+										)
+
+									[Sophos] => Array
+										(
+											[scan_time] => 66
+											[def_time] => 2025-02-10T00:46:24.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[TACHYON] => Array
+										(
+											[scan_time] => 2
+											[def_time] => 2025-02-10T00:00:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Varist] => Array
+										(
+											[scan_time] => 46
+											[def_time] => 2025-02-10T09:49:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Webroot SMD] => Array
+										(
+											[scan_result_i] => 23
+											[scan_time] => 3
+											[def_time] => 2025-02-09T21:00:16.000Z
+											[threat_found] => 
+										)
+
+									[Xvirus Anti-Malware] => Array
+										(
+											[scan_time] => 15
+											[def_time] => 2025-02-09T19:35:03.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Zillya!] => Array
+										(
+											[def_time] => 2025-02-07T21:09:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Vir.IT eXplorer] => Array
+										(
+											[def_time] => 2025-02-07T12:45:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+									[Vir.IT ML] => Array
+										(
+											[def_time] => 2025-02-07T12:45:00.000Z
+											[scan_result_i] => 0
+											[threat_found] => 
+										)
+
+								)
+
+							[scan_all_result_i] => 0
+							[current_av_result_i] => 0
+							[start_time] => 2025-02-12T09:45:48.053Z
+							[total_time] => 221
+							[total_avs] => 22
+							[total_detected_avs] => 0
+							[progress_percentage] => 100
+							[scan_all_result_a] => No Threat Detected
+							[current_av_result_a] => No Threat Detected
+						)
+
+					[file_info] => Array
+						(
+							[file_size] => 340
+							[upload_timestamp] => 2025-02-12T09:45:47.521Z
+							[md5] => 5D279D36F6E4B0EFD571A8277EA8F8A4
+							[sha1] => B0F575938E81919E280738A2A2C0A71664A1CC1F
+							[sha256] => 37CE21C1E59F5AD10155E2E369B3A1C344E34D2C96CEF4CE3C18E8B7F396B78E
+							[file_type_category] => T
+							[file_type_description] => PHP Hypertext Preprocessor
+							[file_type_extension] => php
+							[display_name] => /var/www/cli/thumbnail_92.php.png
+						)
+
+					[share_file] => 1
+					[private_processing] => 0
+					[rest_version] => 4
+					[additional_info] => Array
+						(
+						)
+
+					[stored] => 1
+				)*/
                 
-                // Una vez finalizado el escaneo, hacemos una petición más (esta vez al servicio en scan.metadefender.com) para obtener el resultado
-                $api        = 'https://scan.metadefender.com/v2/file/' .$malwarescan_data[$array_key]['data_id'];
+                // Una vez finalizado el escaneo, hacemos una petición más para obtener el resultado
+                $api        = 'https://api.metadefender.com/v4/file/' .$malwarescan_data[$array_key]['data_id'];
                 
                 //Build headers array.
                 $headers = array(
@@ -3446,7 +3726,7 @@ class FileManagerModel extends BaseModel
                 break;
             case "hashes":
                      // Establecemos el valor del hash en la variable 'api'
-                     $api = 'https://hashlookup.metadefender.com/v2/hash/' . $malwarescan_data[$array_key]['sha1_value'];
+                     $api = 'https://api.metadefender.com/v4/hash/' . $malwarescan_data[$array_key]['sha1_value'];
                             
                      // Build headers array.
                      $headers = array(
@@ -3474,7 +3754,7 @@ class FileManagerModel extends BaseModel
                 
                 break;
             }
-        
+			        
             if (is_array($response)) {                    
                 // Guardamos el resultado del escaneo online
                 $malwarescan_data[$array_key]['online_check'] = $response["scan_results"]["scan_all_result_i"];
@@ -3494,7 +3774,7 @@ class FileManagerModel extends BaseModel
                     if (($response["scan_results"]["scan_all_result_i"] == 1) || ($response["scan_results"]["scan_all_result_i"] == 2)) {
                         $threats_found++;
                     
-                        /* Extraemos sólo el nombre del fichero. Como los valores hash pueden corresponder a ficheros con caracteres de separación (/ y \) de otros sistema operativo, hemos de buscar y reemplazar los que puedan existir por el del sistema operativo que opera (que vendrá dado por DIRECTORY_SEPARATOR) */
+                        // Extraemos sólo el nombre del fichero. Como los valores hash pueden corresponder a ficheros con caracteres de separación (/ y \) de otros sistema operativo, hemos de buscar y reemplazar los que puedan existir por el del sistema operativo que opera (que vendrá dado por DIRECTORY_SEPARATOR)
                         $nombre = $response["file_info"]["display_name"];
                         $to_change = array("/","\\");
                         $nombre = str_replace($to_change, DIRECTORY_SEPARATOR, $nombre);

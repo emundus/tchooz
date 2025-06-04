@@ -65,7 +65,7 @@ $data_dismiss = "data-bs-dismiss";
           
             <div class="alert alert-warning">
                 <?php echo Text::_('COM_SECURITYCHECKPRO_PROFESSIONAL_HELP'); ?>
-                <p>    <a href="https://securitycheck.protegetuordenador.com/index.php/contact-us" target="_blank"  rel="noopener noreferrer" class="btn btn-primary btn-success btn-large">
+                <p>    <a href="https://securitycheck.protegetuordenador.com/index.php/contact-us" target="_blank"  rel="noopener noreferrer" class="btn btn-primary text-white btn-large">
         <?php echo Text::_('COM_SECURITYCHECKPRO_CONTACT_US'); ?></a>
                 </p>
             </div>

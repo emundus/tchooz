@@ -268,7 +268,7 @@ class FilemanagerController extends SecuritycheckproBaseController
     /* Redirecciona a la opción de mostrar las vulnerabilidades */
     function GoToVuln()
     {
-        $this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&'. Session::getFormToken() .'=1');    
+        $this->setRedirect('index.php?option=com_securitycheckpro&controller=securitycheckpro&view=securitycheckpro&'. Session::getFormToken() .'=1');    
     }
 
     /* Redirecciona a la opción de mostrar la integridad de archivos */
@@ -521,7 +521,7 @@ class FilemanagerController extends SecuritycheckproBaseController
         }
     }
 
-    /* Añade ruta(s) a la lista de excepciones */
+    /* Redirige a la página de logs enviados a OPSWAT */
     function manage_online_logs()
     {
         $this->setRedirect('index.php?option=com_securitycheckpro&controller=onlinechecks&view=onlinechecks&'. Session::getFormToken() .'=1');

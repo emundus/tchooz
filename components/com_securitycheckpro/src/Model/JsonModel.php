@@ -505,6 +505,7 @@ class JsonModel extends BaseModel
 		curl_setopt($ch, CURLOPT_AUTOREFERER, true);
 		curl_setopt($ch, CURLOPT_FAILONERROR, true);
 		curl_setopt($ch, CURLOPT_HEADER, true);
+		curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true); // Esto es importante para seguir las redirecciones; si está a false no podremos seguirlas
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);	
@@ -664,7 +665,7 @@ class JsonModel extends BaseModel
 		$this->write_log("Checking vulnerable extensions...");
 		// Vulnerable components
 		$db = Factory::getDBO();
-		$query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE 'Vulnerable'='Si'";
+		$query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Si'";
 		$db->setQuery($query);
 		$db->execute();
 		$vuln_extensions = $db->loadResult();
