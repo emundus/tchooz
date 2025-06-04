@@ -200,13 +200,15 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	<?php endif; ?>
 
 	<?php if (sizeof($applications) > 0) : ?>
-        <span class="em-text-neutral-500">
-            <?php
-            $tags              = $m_email->setTags($user->id, [], '', '', $description, false, true);
-            $description = preg_replace($tags['patterns'], $tags['replacements'], $description);
-            echo $description;
-            ?>
-        </span>
+        <?php if(!empty($description)) : ?>
+            <span class="em-text-neutral-500">
+                <?php
+                $tags              = $m_email->setTags($user->id, [], '', '', $description, false, true);
+                $description = preg_replace($tags['patterns'], $tags['replacements'], $description);
+                echo $description;
+                ?>
+            </span>
+        <?php endif; ?>
         <?php if(!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
             <p>
                 <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
@@ -484,7 +486,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                    style="color: <?php echo $color ?>;margin-bottom: 0">
 																	<?php echo $application->programme; ?>
                                                                 </p>
-                                                                <div class="mod_emundus_applications__container text-xl!">
+                                                                <div class="mod_emundus_applications__container text-xl!" id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
                                                                 <span class="material-symbols-outlined em-text-neutral-600"
                                                                       style="font-size: 24px;"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
@@ -554,7 +556,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																<?php endif; ?>
                                                             </div>
 															<?php if ($mod_emundus_applications_show_programme != 1) : ?>
-                                                                <div class="mod_emundus_applications__container">
+                                                                <div class="mod_emundus_applications__container" id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
                                                                 <span class="material-symbols-outlined em-text-neutral-600"
                                                                       style="font-size: 24px;"
                                                                       id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
@@ -985,7 +987,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div class="mod_emundus_applications__container">
+                                                    <div class="mod_emundus_applications__container" id="actions_button_<?php echo $application->fnum ?>_container_list_tab<?php echo $key ?>">
                                                             <span class="material-symbols-outlined em-text-neutral-600"
                                                                   style="font-size: 24px;"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"

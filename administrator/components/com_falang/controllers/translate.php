@@ -335,6 +335,7 @@ class TranslateController extends AdminController   {
      * @from 1.0
      * @update 4.9 add use_default_params
      *             add skip_params
+     * @update 5.19 trigger event on finder (before only on system)
 	 */
 	function saveTranslation( ) {
 
@@ -360,6 +361,7 @@ class TranslateController extends AdminController   {
 
 			// Get the dispatcher and load the users plugins.
 			PluginHelper::importPlugin('system');
+            PluginHelper::importPlugin('finder');
 
 			Factory::getApplication()->triggerEvent('onBeforeTranslationBind');
 

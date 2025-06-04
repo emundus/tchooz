@@ -127,7 +127,7 @@ export default {
 					},
 				}).then((result) => {
 					if (result.value) {
-						formBuilderService.deletePage(page.id).then((response) => {
+						formBuilderService.deletePage(page.menu_id).then((response) => {
 							if (response.status) {
 								let deletedPage = this.pages.findIndex((p) => p.id === page.id);
 								this.pages.splice(deletedPage, 1);

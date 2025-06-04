@@ -11,6 +11,7 @@ use Tchooz\Entities\Payment\DiscountEntity;
 use Tchooz\Entities\Payment\CurrencyEntity;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
 
 class CartEntity {
 	private int $id = 0;
@@ -424,7 +425,7 @@ class CartEntity {
 			// verify there is not already another one, can only be one
 			foreach ($this->alterations as $existing_alteration) {
 				if ($existing_alteration->getType() === AlterationType::ADJUST_BALANCE) {
-					throw new \InvalidArgumentException('There can only be one adjustment balance alteration');
+					throw new EmundusAdjustBalanceAlreadyAddedException('There can only be one adjustment balance alteration');
 				}
 			}
 		}

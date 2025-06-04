@@ -8,10 +8,18 @@ defined('_JEXEC') or die;
 
 header('Content-Type: text/html; charset=utf-8');
 
-$menu      = Factory::getApplication()->getMenu();
-$user      = Factory::getApplication()->getIdentity();
-$lang      = JFactory::getLanguage();
+$app       = Factory::getApplication();
+$menu      = $app->getMenu();
+$user      = $app->getIdentity();
+$config    = $app->getConfig();
+$lang      = $app->getLanguage();
 $locallang = $lang->getTag();
+
+if(!class_exists('EmundusHelperMenu'))
+{
+    require_once JPATH_SITE . '/components/com_emundus/helpers/menu.php';
+}
+$base_url = EmundusHelperMenu::getBaseUriWithLang();
 
 if ($locallang == "fr-FR")
 {
@@ -21,7 +29,6 @@ else
 {
 	setlocale(LC_ALL, 'en_GB');
 }
-$config      = JFactory::getConfig();
 $site_offset = $config->get('offset');
 
 $tmp_campaigns    = [];
@@ -52,7 +59,7 @@ if (sizeof($tmp_campaigns) > 0)
         // Change link of campaign only if there is a menu item with the alias and no custom link on the program
         if(!empty($item) && empty($campaign->link))
         {
-            $campaign->link = $campaign->alias;
+            $campaign->link = $base_url.'/'.$campaign->alias;
         }
 
 		if ($campaign->pinned == 1)
@@ -419,9 +426,9 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                     </div>
                                 </div>
 
-	                            <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
-                                <div class="mod_emundus_campaign__list_content_buttons mod_emundus_campaign__list_content_buttons--pinned em-mt-8">
-		                            <?php endif; ?>
+	                            <?php if ($mod_em_campaign_show_info_button == 1 || $mod_em_campaign_show_apply_button == 1): ?>
+                                    <div class="mod_emundus_campaign__list_content_buttons mod_emundus_campaign__list_content_buttons--pinned">
+                                <?php endif; ?>
 
 		                            <?php if ($mod_em_campaign_show_info_button == 1) : ?>
                                         <div>
@@ -487,7 +494,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                         <?php endif; ?>
                                     </div>
 								<?php endif; ?>
-	                                <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
+	                                <?php if ($mod_em_campaign_show_info_button == 1 || $mod_em_campaign_show_apply_button == 1): ?>
                                 </div>
                             <?php endif; ?>
                             </div>
@@ -766,7 +773,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 				<?php if($mod_em_campaign_display_tmpl == 1) : ?>
 
                     <button id="mod_emundus_campaign__tchoozy_tabs_<?php echo $key ?>" type="button"
-                            class="em-mb-32 em-mt-32 tw-flex tw-items-center tw-justify-between <?php if (sizeof($campaigns) > 1) : ?>tw-cursor-pointer<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
+                            class="em-mb-32 em-mt-32 tw-flex tw-items-center tw-justify-between <?php if (sizeof($campaigns) > 1) : ?>tw-cursor-pointer <?php endif; ?><?php if ($mod_em_campaign_groupby_closed == 0) : ?>open<?php endif; ?>" <?php if (sizeof($campaigns) > 1) : ?> tabindex="0" aria-expanded="false" onclick="hideTchoozyGroup('<?php echo $key ?>')" <?php endif; ?>>
 						<?php if ($mod_em_campaign_display_svg == 1) : ?>
                             <div id="background-shapes-tabs" alt="<?= JText::_('MOD_EM_CAMPAIGN_IFRAME') ?>"></div>
 						<?php endif; ?>
@@ -1091,8 +1098,8 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                         </div>
                                     </div>
 
-	                                <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
-                                    <div class="mod_emundus_campaign__list_content_buttons em-mt-8">
+	                                <?php if ($mod_em_campaign_show_info_button == 1 || $mod_em_campaign_show_apply_button == 1): ?>
+                                    <div class="mod_emundus_campaign__list_content_buttons">
 		                                <?php endif; ?>
 
 		                                <?php if ($mod_em_campaign_show_info_button == 1) : ?>
@@ -1154,7 +1161,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 	                                        <?php endif; ?>
                                         </div>
 									<?php endif; ?>
-	                                    <?php if ($mod_em_campaign_single_campaign_line == 1 && $mod_em_campaign_show_info_button == 1 && $mod_em_campaign_show_apply_button == 1): ?>
+	                                    <?php if ($mod_em_campaign_show_info_button == 1 || $mod_em_campaign_show_apply_button == 1): ?>
                                     </div>
                                 <?php endif; ?>
                                 </div>

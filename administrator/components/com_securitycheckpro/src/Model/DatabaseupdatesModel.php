@@ -90,7 +90,7 @@ class DatabaseupdatesModel extends BaseModel
                   $vulnerabillity_branch = explode(".", $vulnerability['jversion']);            
             } else
             {
-                $vulnerabillity_branch = "3.0.0";            
+                $vulnerabillity_branch = "5.0.0";            
             }
             $local_joomla_branch = explode(".", JVERSION);
         

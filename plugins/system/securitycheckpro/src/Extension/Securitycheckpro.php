@@ -408,7 +408,7 @@ class Securitycheckpro extends CMSPlugin
 			$string_with_no_spaces = str_replace(' ', '', $string);
 			$string_with_no_spaces_lenght = strlen($string_with_no_spaces);
 												
-			if ( ($string_with_no_spaces_lenght < 30) && ($string_with_no_spaces_lenght <> $number_of_capital_letters) && ($similar >= 4) && ($number_of_capital_letters > 3) ) {
+			if ( ($string_with_no_spaces_lenght < 30) && ($string_with_no_spaces_lenght <> $number_of_capital_letters) && ($similar >= 4) && ($number_of_capital_letters > 5) ) {
 				$this->grabar_log($logs_attacks, $ip, 'ARBITRARY_STRING', '[' .$methods_options .':' .$a .']', 'SPAM_PROTECTION', $request_uri, $string, $username, $pageoption);
 				// Actualizamos la lista negra dinámica
 				$this->actualizar_lista_dinamica($ip);
@@ -2700,7 +2700,7 @@ class Securitycheckpro extends CMSPlugin
 		} catch (\Throwable $e) {  
 			return $name_translated;
 		}
-		
+				
 		$path = $item->client_id ? JPATH_ADMINISTRATOR : JPATH_SITE;
 		
         switch ($type) {

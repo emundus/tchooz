@@ -88,20 +88,21 @@ class OnlineChecksModel extends ListModel
         if (!empty($filenames)) {    
             foreach($filenames as $filename)
             {
-                  $delete_result = File::delete($folder_path.$filename);
-                if ($delete_result) {
-                    $sql = "DELETE FROM #__securitycheckpro_online_checks WHERE filename='{$filename}'";
-                    $db->setQuery($sql);
-                    $result = $db->execute();
-                
-                    if ($result) {
-                        $deleted_elements++;
-                    }
-                }else
-                {
-                    Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_DELETE_FILE_ERROR', $folder_path.$filename), 'error');    
-                }
-            
+				if (file_exists($folder_path.$filename)) {					
+					$delete_result = File::delete($folder_path.$filename);
+					if ($delete_result) {
+						$sql = "DELETE FROM #__securitycheckpro_online_checks WHERE filename='{$filename}'";
+						$db->setQuery($sql);
+						$result = $db->execute();
+					
+						if ($result) {
+							$deleted_elements++;
+						}
+					}else
+					{
+						Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_DELETE_FILE_ERROR', $folder_path.$filename), 'error');    
+					}
+				}
             }
         
             if ($deleted_elements > 0) {
@@ -122,23 +123,24 @@ class OnlineChecksModel extends ListModel
         // Obtenemos los valores de las webs que serán borradas de la BBDD
 		$input = Factory::getApplication()->input;
 		$uids = $input->get('cid', null, 'array');	
-        ArrayHelper::toInteger($uids, array());
-    
-        foreach($uids as $uid)
-        {                
-            $sql = "DELETE FROM #__securitycheckprocontrolcenter_websites WHERE id='{$uid}'";
-            $db->setQuery($sql);
-            $result = $db->execute();
-        
-            if ($result) {
-                $deleted_elements++;
-            }
-        }
-        
-        if ($deleted_elements > 0) {
-            Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_CONTROL_CENTER_DELETED_ELEMENTS', $deleted_elements));
-        }
-        
+		if (!is_null($uids)) {
+			ArrayHelper::toInteger($uids, array());
+		
+			foreach($uids as $uid)
+			{                
+				$sql = "DELETE FROM #__securitycheckprocontrolcenter_websites WHERE id='{$uid}'";
+				$db->setQuery($sql);
+				$result = $db->execute();
+			
+				if ($result) {
+					$deleted_elements++;
+				}
+			}
+			
+			if ($deleted_elements > 0) {
+				Factory::getApplication()->enqueueMessage(Text::sprintf('COM_SECURITYCHECKPRO_CONTROL_CENTER_DELETED_ELEMENTS', $deleted_elements));
+			}
+		}        
     }
 
     /* Extrae los datos de la tabla  '#__securitycheckpro_online_checks' */

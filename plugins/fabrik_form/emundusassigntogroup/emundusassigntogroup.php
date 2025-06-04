@@ -85,7 +85,7 @@ class PlgFabrik_FormEmundusassigntogroup extends plgFabrik_Form {
 
         $db = JFactory::getDBO();
         $jinput = JFactory::getApplication()->input;
-        $fnum = $jinput->get->get('rowid');
+        $fnum = $jinput->get->get('fnum');
 
         $fabrik_elt = str_replace(' ', '', $this->getParam('fabrik_elt'));
         $value = str_replace(' ', '', $this->getParam('value'));

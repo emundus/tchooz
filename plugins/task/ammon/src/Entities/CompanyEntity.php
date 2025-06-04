@@ -7,7 +7,7 @@ class CompanyEntity
 	public function __construct(
 		public string $establishmentName,
 		public string $establishmentType,
-		public string $registrationSIRET,
+		public string $registrationSIRET = '',
 		/** @var AdressEntity[] */
 		public array $addresses,
 		public string $categoriesCodes = '',

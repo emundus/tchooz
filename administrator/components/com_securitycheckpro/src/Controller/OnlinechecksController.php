@@ -24,6 +24,7 @@ class OnlinechecksController extends SecuritycheckproBaseController
         $model->delete_files();    
         $jinput = Factory::getApplication()->input;
         $jinput->set('view', 'onlinechecks');
+		parent::display();
        
     }
 

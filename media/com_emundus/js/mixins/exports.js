@@ -184,73 +184,93 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
                         generate_csv(json, eltJson, objJson, options, objclass, letter);
                     } else {
                         $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.Text._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');
-                        $.ajax(
-                            {
-                                type: 'post',
-                                url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
-                                dataType: 'JSON',
-                                data: {
-                                    csv: file,
-                                    nbcol: nbcol,
-                                    start: json.start,
-                                    excelfilename: result.json.excelfilename
-                                },
-                                success: function (result) {
-                                    if (result.status) {
-                                        //// right here --> I will
-                                        let source = result.link;
+                        let csv_only = false;
+                        if(options) {
+                            const options_array = JSON.parse(options);
+                            if(options_array && Object.values(options_array).includes("form-csv-only")) {
+                                csv_only = true;
+                            }
+                        }
 
-                                        if(typeof letter !== 'undefined' && letter != 0) {
-                                            $.ajax({
-                                                type: 'post',
-                                                url: 'index.php?option=com_emundus&controller=files&task=getexcelletter',
-                                                dataType: 'JSON',
-                                                data: {letter: letter},
-                                                success: function (data) {
-                                                    if (data.status) {
-                                                        let letter = data.letter.file; // get the destination of letters
-                                                        // call ajax to migrate all csv to letter
-                                                        $.ajax({
-                                                            type: 'post',
-                                                            url: 'index.php?option=com_emundus&controller=files&task=export_letter',
-                                                            dataType: 'JSON',
-                                                            data: {
-                                                                source: source,
-                                                                letter: letter,
-                                                            },
-                                                            success: function(reply) {
-                                                                let tmp = reply.link.split('/');
-                                                                let filename = tmp[tmp.length - 1];
-                                                                $('#loadingimg').empty();
-                                                                $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
-                                                                $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
-                                                                const confirmBtn = document.querySelector('.em-swal-confirm-button');
-                                                                if (confirmBtn) {
-                                                                    confirmBtn.style.opacity = '1';
+                        if(!csv_only) {
+                            $.ajax(
+                                {
+                                    type: 'post',
+                                    url: 'index.php?option=com_emundus&controller=files&task=export_xls_from_csv',
+                                    dataType: 'JSON',
+                                    data: {
+                                        csv: file,
+                                        nbcol: nbcol,
+                                        start: json.start,
+                                        excelfilename: result.json.excelfilename
+                                    },
+                                    success: function(result) {
+                                        if (result.status) {
+                                            //// right here --> I will
+                                            let source = result.link;
+
+                                            if (typeof letter !== 'undefined' && letter != 0) {
+                                                $.ajax({
+                                                    type: 'post',
+                                                    url: 'index.php?option=com_emundus&controller=files&task=getexcelletter',
+                                                    dataType: 'JSON',
+                                                    data: { letter: letter },
+                                                    success: function(data) {
+                                                        if (data.status) {
+                                                            let letter = data.letter.file; // get the destination of letters
+                                                            // call ajax to migrate all csv to letter
+                                                            $.ajax({
+                                                                type: 'post',
+                                                                url: 'index.php?option=com_emundus&controller=files&task=export_letter',
+                                                                dataType: 'JSON',
+                                                                data: {
+                                                                    source: source,
+                                                                    letter: letter,
+                                                                },
+                                                                success: function(reply) {
+                                                                    let tmp = reply.link.split('/');
+                                                                    let filename = tmp[tmp.length - 1];
+                                                                    $('#loadingimg').empty();
+                                                                    $('#extractstep').replaceWith('<div><p class="em-main-500-color">' + Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED') + '</p></div>');
+                                                                    $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + filename + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                                                    const confirmBtn = document.querySelector('.em-swal-confirm-button');
+                                                                    if (confirmBtn) {
+                                                                        confirmBtn.style.opacity = '1';
+                                                                    }
+                                                                }, error: function(jqXHR) {
+                                                                    console.log(jqXHR.responseText);
                                                                 }
-                                                            }, error: function(jqXHR) {
-                                                                console.log(jqXHR.responseText);
-                                                            }
-                                                        })
+                                                            })
+                                                        }
+                                                    }, error: function(jqXHR) {
+                                                        console.log(jqXHR.responseText);
                                                     }
-                                                }, error: function (jqXHR) {
-                                                    console.log(jqXHR.responseText);
-                                                }
-                                            });
-                                        } else {
-                                            $('#loadingimg').empty();
-                                            $('#extractstep').replaceWith('<div><p class="em-main-500-color">'+Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED')+'</p></div>');
-                                            $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                                });
+                                            } else {
+                                                $('#loadingimg').empty();
+                                                $('#extractstep').replaceWith('<div><p class="em-main-500-color">' + Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED') + '</p></div>');
+                                                $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=xls&name=' + result.link + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION') + '</span></a>');
+                                            }
                                         }
+                                        else {
+                                            $('#loadingimg').empty();
+                                            $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.Text._('COM_EMUNDUS_ERROR_XLS') + '</div>');
+                                            $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=csv&name=' + file + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV') + '</span></a>');
+                                        }
+                                    },
+                                    error: function(jqXHR, textStatus, errorThrown) {
+                                        $('#loadingimg').empty();
+                                        $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.Text._('COM_EMUNDUS_ERROR_XLS') + '</div>');
+                                        $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=csv&name=' + file + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV') + '</span></a>');
+                                        console.log(jqXHR.responseText);
                                     }
-                                },
-                                error: function (jqXHR, textStatus, errorThrown) {
-                                    $('#loadingimg').empty();
-                                    $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.Text._('COM_EMUNDUS_ERROR_XLS') + '</div>');
-                                    $('#chargement').append('<button type="button" class="btn btn-default" id="back" onclick="back();"><span class="glyphicon glyphicon-arrow-left"></span>&nbsp;&nbsp;' + Joomla.Text._('BACK') + '</button>&nbsp;&nbsp;&nbsp;');
-                                    console.log(jqXHR.responseText);
-                                }
-                            });
+                                });
+                        }
+                        else {
+                            $('#loadingimg').empty();
+                            $('#extractstep').replaceWith('<div><p class="em-main-500-color">' + Joomla.Text._('COM_EMUNDUS_EXPORT_FINISHED') + '</p></div>');
+                            $('.swal2-confirm').replaceWith('<a class="tw-btn-primary em-w-auto" title="' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV') + '" href="index.php?option=com_emundus&controller=' + $('#view').val() + '&task=download&format=csv&name=' + file + '"><span>' + Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV') + '</span></a>');
+                        }
                     }
                 } else {
                     document.querySelector('#extractstep').replaceWith(result.msg);

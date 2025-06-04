@@ -138,6 +138,16 @@ export default {
 			html +=
 				'<div class="tw-grid tw-grid-cols-2">' +
 				'<div><strong>' +
+				this.translate('COM_EMUNDUS_TRANSACTION_EXTERNAL_REFERENCE') +
+				'</strong></div>' +
+				'<div>' +
+				transaction.external_reference +
+				'</div>' +
+				'</div> <hr class="tw-m-0">';
+
+			html +=
+				'<div class="tw-grid tw-grid-cols-2">' +
+				'<div><strong>' +
 				this.translate('COM_EMUNDUS_TRANSACTION_PRODUCT_QUANTITY') +
 				'</strong></div>' +
 				'<div>' +

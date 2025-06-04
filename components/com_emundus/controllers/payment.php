@@ -1408,53 +1408,64 @@ class EmundusControllerPayment extends BaseController
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
 		$user_id = $this->app->getIdentity()->id;
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$cart_id = $this->input->getInt('cart_id', 0);
 
-		$contact_repository = new ContactRepository($db);
-		$contact_entity = $contact_repository->getByUserId($user_id);
+		if (!empty($cart_id)) {
+			$cart_repository = new CartRepository();
+			$cart = $cart_repository->getCartById($cart_id);
 
-		if (!empty($contact_entity->getId()) && $contact_entity->getUserId() === $user_id)
-		{
-			$email = $this->input->getString('email', '');
-			$firstname = $this->input->getString('firstname', '');
-			$lastname = $this->input->getString('lastname', '');
-			$phone = $this->input->getString('phone', '');
-			$address1 = $this->input->getString('address1', '');
-			$address2 = $this->input->getString('address2', '');
-			$zip = $this->input->getString('zip', '');
-			$city = $this->input->getString('city', '');
-			$state = $this->input->getString('state', '');
-			$country = $this->input->getInt('country', 0);
+			if ($cart_repository->canUserUpdateCart($cart, $user_id)) {
 
-			$contact_entity->setEmail($email);
-			$contact_entity->setFirstname($firstname);
-			$contact_entity->setLastname($lastname);
-			$contact_entity->setPhone1($phone);
+				$db = Factory::getContainer()->get('DatabaseDriver');
 
-			$address_entity = $contact_entity->getAddress();
-			if (empty($address_entity)) {
-				$address_entity = new ContactAddressEntity($contact_entity->getId(), $address1, $address2, $city, $state, $zip, $country);
-			} else {
-				$address_entity->setAddress1($address1);
-				$address_entity->setAddress2($address2);
-				$address_entity->setCity($city);
-				$address_entity->setState($state);
-				$address_entity->setZip($zip);
-				$address_entity->setCountry($country);
-			}
+				$contact_repository = new ContactRepository($db);
+				$contact_entity = $contact_repository->getByUserId($cart->getCustomer()->getUserId());
 
-			$contact_entity->setAddress($address_entity);
-			try {
-				$contact_id = $contact_repository->flush($contact_entity);
+				if (!empty($contact_entity->getId()) && $contact_entity->getUserId() === $cart->getCustomer()->getUserId())
+				{
+					$email = $this->input->getString('email', '');
+					$firstname = $this->input->getString('firstname', '');
+					$lastname = $this->input->getString('lastname', '');
+					$phone = $this->input->getString('phone', '');
+					$address1 = $this->input->getString('address1', '');
+					$address2 = $this->input->getString('address2', '');
+					$zip = $this->input->getString('zip', '');
+					$city = $this->input->getString('city', '');
+					$state = $this->input->getString('state', '');
+					$country = $this->input->getInt('country', 0);
 
-				if ($contact_id) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_SAVED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_NOT_SAVED'), 'status' => false];
+					$contact_entity->setEmail($email);
+					$contact_entity->setFirstname($firstname);
+					$contact_entity->setLastname($lastname);
+					$contact_entity->setPhone1($phone);
+
+					$address_entity = $contact_entity->getAddress();
+					if (empty($address_entity)) {
+						$address_entity = new ContactAddressEntity($contact_entity->getId(), $address1, $address2, $city, $state, $zip, $country);
+					} else {
+						$address_entity->setContactId($contact_entity->getId());
+						$address_entity->setAddress1($address1);
+						$address_entity->setAddress2($address2);
+						$address_entity->setCity($city);
+						$address_entity->setState($state);
+						$address_entity->setZip($zip);
+						$address_entity->setCountry($country);
+					}
+
+					$contact_entity->setAddress($address_entity);
+					try {
+						$contact_id = $contact_repository->flush($contact_entity);
+
+						if ($contact_id) {
+							$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_SAVED'), 'status' => true];
+						} else {
+							$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_NOT_SAVED'), 'status' => false];
+						}
+					} catch (Exception $e) {
+						$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
+						Log::add('Error saving customer: ' . $e->getMessage(), Log::ERROR, 'com_emundus.customer');
+					}
 				}
-			} catch (Exception $e) {
-				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
-				Log::add('Error saving customer: ' . $e->getMessage(), Log::ERROR, 'com_emundus.customer');
 			}
 		}
 
@@ -1544,7 +1555,9 @@ class EmundusControllerPayment extends BaseController
 				try {
 					$cart_repository->verifyCart($cart, $this->app->getIdentity()->id);
 
-					$transaction = $cart_repository->createTransaction($cart);
+					$custom_external_reference = $this->input->getString('custom_external_reference', '');
+					$transaction = $cart_repository->createTransaction($cart, $custom_external_reference);
+
 					$transaction->setStatus(TransactionStatus::CONFIRMED);
 					$transaction_repository = new TransactionRepository();
 					$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);

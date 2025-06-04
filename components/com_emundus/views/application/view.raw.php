@@ -426,12 +426,22 @@ class EmundusViewApplication extends HtmlView
 					break;
 
 				case 'tag':
-					if (EmundusHelperAccess::asAccessAction(14, 'r', $this->user->id, $fnum)) {
+					if (EmundusHelperAccess::asAccessAction(14, 'r', $this->user->id, $fnum) || EmundusHelperAccess::asAccessAction(14, 'c', $this->user->id, $fnum)) {
 
 						EmundusModelLogs::log($this->user->id, (int)$fnumInfos['applicant_id'], $fnum, 14, 'r', 'COM_EMUNDUS_ACCESS_TAGS_READ');
 
 						$m_files           = new EmundusModelFiles();
 						$this->tags        = $m_files->getTagsByFnum(array($fnum));
+						if(!EmundusHelperAccess::asAccessAction(14, 'r', $this->user->id, $fnum) && EmundusHelperAccess::asAccessAction(14, 'c', $this->user->id, $fnum))
+						{
+							foreach ($this->tags as $key => $tag) {
+								if ($tag['user_id'] != $this->user->id) {
+									unset($this->tags[$key]);
+								}
+							}
+
+							$this->tags = array_values($this->tags);
+						}
 						$this->groupedTags = [];
 
 						$alltags = $m_files->getAllTags();

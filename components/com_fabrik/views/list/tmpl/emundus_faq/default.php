@@ -12,6 +12,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Language\Text;
+
 $pageClass = $this->params->get('pageclass_sfx', '');
 
 if ($pageClass !== '') :
@@ -19,7 +21,7 @@ if ($pageClass !== '') :
 endif;
 
 if ($this->tablePicker != '') : ?>
-	<div style="text-align:right"><?php echo FText::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
+	<div style="text-align:right"><?php echo Text::_('COM_FABRIK_LIST') ?>: <?php echo $this->tablePicker; ?></div>
 <?php
 endif;
 
@@ -28,12 +30,12 @@ if ($this->params->get('show_page_heading')) :
 endif;
 
 if ($this->showTitle == 1) : ?>
-	<div class="page-header em-flex-column em-flex-space-between emundus-list-page-header">
+	<div class="page-header tw-flex tw-flex-col tw-space-between emundus-list-page-header">
 		<h1><?php echo $this->table->label;?></h1>
 		<?php if ($this->showAdd) :?>
 
             <div><a class="addbutton addRecord tw-btn-primary em-w-max-content" href="<?php echo $this->addRecordLink;?>">
-					<?php echo FText::_($this->addLabel);?>
+					<?php echo Text::_($this->addLabel);?>
                 </a></div>
 		<?php
 		endif; ?>

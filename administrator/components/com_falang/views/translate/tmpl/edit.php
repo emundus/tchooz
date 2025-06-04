@@ -521,7 +521,7 @@ else {
                 <div class="col-md-6">
                     <?php echo Text::_('COM_FALANG_TRANSLATE_PARAMS')?>
                 </div>
-                <?php if ($elementTable->Name == 'modules' || $elementTable->Name == 'menu'  || $elementTable->Name == 'categories'  ) { ?>
+                <?php if ($elementTable->Name == 'modules' || $elementTable->Name == 'menu'  || $elementTable->Name == 'categories' || $elementTable->Name == 'tags'  ) { ?>
                         <div class="form-check form-switch form-switch-reverse col-md-6">
                             <!-- $skip_params is tested in the first loop-->
                             <input class="form-check-input" type="checkbox" id="skip_params" name="skip_params" value="on" <?php echo $skip_params == true ?'checked':''; ?>>

@@ -466,6 +466,11 @@ class PaymentRepository
 		return $countries;
 	}
 
+	public function getManualPaymentMethods(): array
+	{
+		return ['cheque', 'transfer'];
+	}
+
 	public static function generateAmountsByIterations(float $total, int $nb_iterations): array
 	{
 		$iterations = [];
