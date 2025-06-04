@@ -179,9 +179,11 @@ export default {
 
 					if (isSlotIdValid) {
 						const selectedSlot = this.slots.find((slotGroup) => slotGroup.slots.some((slot) => slot.id === slotId));
-						this.currentStartIndex = this.availableDates.findIndex(
+						const selectedIndex = this.availableDates.findIndex(
 							(date) => date === new Date(selectedSlot.start).toISOString().split('T')[0],
 						);
+
+						this.currentStartIndex = Math.floor(selectedIndex / 3) * 3;
 
 						// Wait for the next tick to update the slotSelected value
 						this.$nextTick(() => {
