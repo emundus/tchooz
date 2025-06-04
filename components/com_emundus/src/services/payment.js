@@ -151,7 +151,7 @@ export default {
 	},
 	async addProductsToCart(cartId, products) {
 		try {
-			return await client.post('addProductsToCart', {
+			return await client.post('addProductToCart', {
 				cart_id: cartId,
 				product_ids: products.join(','),
 			});
