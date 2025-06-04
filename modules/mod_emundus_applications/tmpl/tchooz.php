@@ -200,13 +200,15 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	<?php endif; ?>
 
 	<?php if (sizeof($applications) > 0) : ?>
-        <span class="em-text-neutral-500">
-            <?php
-            $tags              = $m_email->setTags($user->id, [], '', '', $description, false, true);
-            $description = preg_replace($tags['patterns'], $tags['replacements'], $description);
-            echo $description;
-            ?>
-        </span>
+        <?php if(!empty($description)) : ?>
+            <span class="em-text-neutral-500">
+                <?php
+                $tags              = $m_email->setTags($user->id, [], '', '', $description, false, true);
+                $description = preg_replace($tags['patterns'], $tags['replacements'], $description);
+                echo $description;
+                ?>
+            </span>
+        <?php endif; ?>
         <?php if(!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
             <p>
                 <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
