@@ -803,7 +803,7 @@ export default {
 
 		<div id="customer" class="tw-flex tw-flex-col tw-gap-6">
 			<h2>{{ translate('COM_EMUNDUS_CART_CUSTOMER_ADDRESS') }}</h2>
-			<CustomerAddress :customer="cart.customer" :readOnly="readOnly"></CustomerAddress>
+			<CustomerAddress :cart-id="cart.id" :customer="cart.customer" :readOnly="readOnly"></CustomerAddress>
 		</div>
 
 		<div class="tw-flex tw-justify-end">

@@ -158,6 +158,7 @@ readonly class ContactRepository
 		$this->db->setQuery($query);
 		$contact = $this->db->loadAssoc();
 
+
 		if (!empty($contact))
 		{
 			$contact_entity = new ContactEntity($contact['email'], $contact['lastname'], $contact['firstname'], $contact['phone_1'], $contact['id'], $contact['user_id']);
