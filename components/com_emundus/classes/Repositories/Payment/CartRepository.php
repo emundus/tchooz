@@ -7,6 +7,7 @@ use Tchooz\Entities\Payment\AlterationType;
 use Tchooz\Entities\Payment\DiscountEntity;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
+use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
 use Tchooz\Repositories\Payment\DiscountRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
@@ -284,7 +285,12 @@ class CartRepository
 				$cart_entity->setPaymentMethods($payment_step->getPaymentMethods());
 
 				if ($payment_step->getAdjustBalance() === 1 && !empty($payment_step->getAdjustBalanceStepId())) {
-					$this->loadAdjustBalanceStep($cart_entity, $payment_step->getAdjustBalanceStepId());
+
+					try {
+						$this->loadAdjustBalanceStep($cart_entity, $payment_step->getAdjustBalanceStepId());
+					} catch (EmundusAdjustBalanceAlreadyAddedException $e) {
+						Log::add('Adjust balance was already in cart : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.cart');
+					}
 				}
 
 				foreach ($payment_step->getProducts() as $product) {
