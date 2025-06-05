@@ -4590,7 +4590,7 @@ class EmundusModelFiles extends JModelLegacy
 		// remove hikashop orders linked to this file
 		$query->clear()
 			->select($this->_db->quoteName('order_id'))
-			->from($this->_db->quoteName('#__emundus_hikashop_orders'))
+			->from($this->_db->quoteName('#__emundus_hikashop'))
 			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 		$this->_db->setQuery($query);
