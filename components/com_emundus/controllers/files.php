@@ -3913,8 +3913,8 @@ class EmundusControllerFiles extends BaseController
 
 				if ($res['data'])
 				{
-					$this->app->triggerEvent('onAfterGenerateLetters', ['letters' => $res['data']]);
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterGenerateLetters', ['letters' => $res['data']]]);
+					$this->app->triggerEvent('onAfterGenerateLetters', ['letters' => $res['data'], 'fnums' => $fnums]);
+					$this->app->triggerEvent('onCallEventHandler', ['onAfterGenerateLetters', ['letters' => $res['data'], 'fnums' => $fnums]]);
 
 					$res['status'] = true;
 				}
