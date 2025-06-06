@@ -2929,7 +2929,7 @@ class EmundusModelEvaluation extends JModelList
 						->andWhere($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
 
 					if (!$force_replace_document) {
-						$query->andWhere('DATE(' . $this->db->quoteName('timedate') . ') = CURRENT_DATE() OR ' . $this->db->quoteName('user_id') . ' <> ' . $this->db->quote($fnumInfo[$fnum]['applicant_id']));
+                        $refreshQuery->andWhere('DATE(' . $this->db->quoteName('timedate') . ') = CURRENT_DATE() OR ' . $this->db->quoteName('user_id') . ' <> ' . $this->db->quote($fnumInfo[$fnum]['applicant_id']));
 					}
 
 					$this->db->setQuery($refreshQuery);
