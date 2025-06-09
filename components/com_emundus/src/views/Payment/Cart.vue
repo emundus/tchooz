@@ -66,12 +66,7 @@ export default {
 	methods: {
 		onAddProductsToCart(products) {
 			this.addProductsToCart(products);
-			this.$refs.modalMarketplace.close();
-		},
-		onCloseDiscountModal() {
-			this.alterationToEdit = null;
-
-			this.$refs.modalDiscount.close();
+			this.onCloseMarketplace();
 		},
 		onAddDiscountToCart(alteration) {
 			paymentService.addAlterationToCart(this.cart.id, alteration).then((response) => {
@@ -348,6 +343,9 @@ export default {
 		openMarketplace() {
 			this.$refs.modalMarketplace.open();
 		},
+		onCloseMarketplace() {
+			this.$refs.modalMarketplace.close();
+		},
 		openDiscountModal(alteration = null) {
 			if (this.isManager) {
 				if (alteration !== null) {
@@ -359,6 +357,10 @@ export default {
 
 				this.$refs.modalDiscount.open();
 			}
+		},
+		onCloseDiscountModal() {
+			this.alterationToEdit = null;
+			this.$refs.modalDiscount.close();
 		},
 	},
 	computed: {
@@ -623,7 +625,12 @@ export default {
 			:height="'80%'"
 			:width="'80%'"
 		>
-			<marketplace :products="nonSelectedProducts" :currency="cart.currency" @addToCart="onAddProductsToCart">
+			<marketplace
+				:products="nonSelectedProducts"
+				:currency="cart.currency"
+				@addToCart="onAddProductsToCart"
+				@close="onCloseMarketplace"
+			>
 			</marketplace>
 		</modal>
 

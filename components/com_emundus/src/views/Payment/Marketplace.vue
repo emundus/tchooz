@@ -32,6 +32,9 @@ export default {
 			this.$emit('addToCart', this.selectedProducts);
 			this.selectedProducts = [];
 		},
+		close() {
+			this.$emit('close');
+		},
 	},
 	computed: {
 		totalAmount() {
@@ -73,7 +76,10 @@ export default {
 				</p>
 			</div>
 
-			<div id="marketplace-actions" class="tw-flex tw-justify-end">
+			<div id="marketplace-actions" class="tw-flex tw-justify-between">
+				<button class="tw-btn-secondary" @click="close">
+					{{ translate('COM_EMUNDUS_ACTIONS_CANCEL') }}
+				</button>
 				<button class="tw-btn-primary" @click="addToCart">
 					{{ translate('COM_EMUNDUS_ADD_TO_CART') }}
 				</button>

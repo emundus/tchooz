@@ -92,21 +92,21 @@ export default {
 					optional: true,
 				},
 				{
-					param: 'city',
-					type: 'text',
-					placeholder: '',
-					value: '',
-					label: 'COM_EMUNDUS_CUSTOMER_CITY',
-					helptext: '',
-					displayed: true,
-				},
-				{
 					param: 'zip',
 					type: 'text',
 					maxlength: 5,
 					placeholder: '',
 					value: '',
 					label: 'COM_EMUNDUS_CUSTOMER_ZIPCODE',
+					helptext: '',
+					displayed: true,
+				},
+				{
+					param: 'city',
+					type: 'text',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_CUSTOMER_CITY',
 					helptext: '',
 					displayed: true,
 				},
@@ -303,14 +303,14 @@ export default {
 						</div>
 
 						<p class="tw-grid tw-grid-cols-2">
-							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_CITY') }}</strong>
-							<span>{{ customer.address.city }}</span>
+							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_ZIPCODE') }}</strong>
+							<span>{{ customer.address.zip }}</span>
 						</p>
 						<hr class="tw-m-0" />
 
 						<p class="tw-grid tw-grid-cols-2">
-							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_ZIPCODE') }}</strong>
-							<span>{{ customer.address.zip }}</span>
+							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_CITY') }}</strong>
+							<span>{{ customer.address.city }}</span>
 						</p>
 						<hr class="tw-m-0" />
 

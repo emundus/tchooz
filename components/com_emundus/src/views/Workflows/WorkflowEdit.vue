@@ -68,7 +68,15 @@
 											<h4 class="tw-line-clamp-2 tw-break-all">
 												<input type="text" v-model="step.label" />
 											</h4>
-											<popover>
+											<popover
+												:iconClass="
+													'tw-btn-primary tw-p-2 tw-border-' +
+													stepColor(step) +
+													'-500 tw-bg-' +
+													stepColor(step) +
+													'-500'
+												"
+											>
 												<ul class="tw-list-none !tw-p-3">
 													<li
 														class="archive-workflow-step tw-cursor-pointer tw-rounded-lg tw-px-3 tw-pb-2 tw-pt-2 hover:tw-bg-neutral-300"
@@ -101,21 +109,22 @@
 										</div>
 									</div>
 
-									<div v-if="step.adjust_balance_step_id > 0" class="tw-mb-4">
-										<span
-											:class="
-												'tw-border-' +
-												stepColor(step) +
-												'-500' +
-												' tw-rounded-full tw-border tw-px-3 tw-pb-2 tw-pt-2' +
-												' tw-text-' +
-												stepColor(step) +
-												'-500' +
-												' tw-whitespace-nowrap'
-											"
-											>{{ translate('COM_EMUNDUS_WORKFLOW_PAYMENT_STEP_RELATED_TO') }}
-											<strong>{{ getStepLabelById(step.adjust_balance_step_id) }}</strong></span
+									<div v-if="relatedStep(step) !== null" class="tw-mb-4">
+										<div
+											class="tw-whitespace-nowrap tw-rounded-full tw-border tw-px-3 tw-pb-2 tw-pt-2"
+											:class="'tw-border-' + stepColor(step) + '-500'"
 										>
+											<div class="tw-w-full tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap">
+												<p
+													class="tw-w-full tw-overflow-hidden tw-text-ellipsis tw-whitespace-nowrap"
+													:class="'tw-text-' + stepColor(step) + '-500'"
+													:title="getStepLabelById(relatedStep(step).id)"
+												>
+													{{ translate('COM_EMUNDUS_WORKFLOW_PAYMENT_STEP_RELATED_TO') }}
+													<strong>{{ getStepLabelById(relatedStep(step).id) }}</strong>
+												</p>
+											</div>
+										</div>
 									</div>
 
 									<div class="workflow-step-content">
@@ -259,11 +268,8 @@
 													stepColor(step) +
 													'-500 tw-bg-' +
 													stepColor(step) +
-													'-500 hover:tw-border-' +
-													stepColor(step) +
-													'-500 hover:!tw-text-' +
-													stepColor(step) +
-													'-500'
+													'-500 hover-style-' +
+													stepColor(step)
 												"
 											>
 												{{ translate('COM_EMUNDUS_WORKFLOW_CONFIGURE_PAYMENT_STEP') }}
@@ -405,6 +411,8 @@ export default {
 					displayed: true,
 				},
 			],
+
+			colorsByStepId: {},
 
 			loading: false,
 		};
@@ -584,6 +592,7 @@ export default {
 				}, 0) - 1;
 
 			this.steps.push(newStep);
+			this.scrollToLastStep();
 		},
 
 		duplicateStep(stepId) {
@@ -601,7 +610,16 @@ export default {
 					}, 0) - 1;
 
 				this.steps.push(newStep);
+				this.scrollToLastStep();
 			}
+		},
+		scrollToLastStep() {
+			this.$nextTick(() => {
+				const stepElement = document.querySelector(`.workflow-step:nth-child(${this.steps.length})`);
+				if (stepElement) {
+					stepElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+				}
+			});
 		},
 		async updateStepState(stepId, state = 0) {
 			let archived = false;
@@ -821,7 +839,25 @@ export default {
 			});
 		},
 		getStepLabelById(stepId) {
-			return this.steps.find((step) => step.id == stepId).label;
+			let label = '';
+
+			const foundStep = this.steps.find((step) => step.id == stepId);
+			if (foundStep) {
+				label = foundStep.label;
+			}
+
+			return label;
+		},
+		relatedStep(currentStep) {
+			let step = null;
+
+			if (currentStep.adjust_balance_step_id && currentStep.adjust_balance_step_id > 0) {
+				step = this.steps.find((s) => s.id === currentStep.adjust_balance_step_id);
+			} else if (this.steps.some((s) => s.adjust_balance_step_id === currentStep.id)) {
+				step = this.steps.find((s) => s.adjust_balance_step_id === currentStep.id);
+			}
+
+			return step;
 		},
 		stepTypeLabel(type) {
 			let label = '';
@@ -840,10 +876,17 @@ export default {
 		},
 		stepColor(step) {
 			let stepColor = 'blue';
-			const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
 
-			if (stepType && stepType.class && stepType.class !== '') {
-				stepColor = stepType.class;
+			if (this.colorsByStepId[step.id]) {
+				stepColor = this.colorsByStepId[step.id];
+			} else {
+				const stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
+
+				if (stepType && stepType.class && stepType.class !== '') {
+					stepColor = stepType.class;
+				}
+
+				this.colorsByStepId[step.id] = stepColor;
 			}
 
 			return stepColor;
@@ -889,5 +932,35 @@ export default {
 <style scoped>
 .workflow-step {
 	min-width: 350px;
+}
+
+.hover-style-main:hover {
+	color: var(--main-500) !important;
+	border: 1px solid var(--main-500);
+}
+
+.hover-style-neutral:hover {
+	color: var(--neutral-500) !important;
+	border: 1px solid var(--neutral-500);
+}
+
+.hover-style-blue:hover {
+	color: var(--blue-500) !important;
+	border: 1px solid var(--blue-500);
+}
+
+.hover-style-orange:hover {
+	color: var(--orange-500) !important;
+	border: 1px solid var(--orange-500);
+}
+
+.hover-style-red:hover {
+	color: var(--red-500) !important;
+	border: 1px solid var(--red-500);
+}
+
+.hover-style-yellow:hover {
+	color: rgb(234 179 8 / var(--tw-bg-opacity, 1)) !important;
+	border: 1px solid rgb(234 179 8 / var(--tw-bg-opacity, 1));
 }
 </style>

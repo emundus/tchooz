@@ -1,19 +1,21 @@
 <template>
 	<transition :name="transition" :duration="delay">
-		<div
-			v-show="isOpened"
-			:id="'modal___' + name"
-			class="modal___container"
-			:class="classes"
-			ref="modal_container"
-			v-click-outside="{
-				handler: onFocusOut,
-				exclude: ['.not-to-close-modal'],
-				disabled: false,
-			}"
-		>
-			<h1 v-if="title.length > 0" class="tw-text-center">{{ translate(title) }}</h1>
-			<slot @close="close"> </slot>
+		<div class="modal___wrapper" v-show="isOpened">
+			<div class="modal___backdrop"></div>
+			<div
+				:id="'modal___' + name"
+				class="modal___container"
+				:class="classes"
+				ref="modal_container"
+				v-click-outside="{
+					handler: onFocusOut,
+					exclude: ['.not-to-close-modal'],
+					disabled: false,
+				}"
+			>
+				<h1 v-if="title.length > 0" class="tw-text-center">{{ translate(title) }}</h1>
+				<slot @close="close"> </slot>
+			</div>
 		</div>
 	</transition>
 </template>
@@ -102,6 +104,7 @@ export default {
 			}
 		},
 		close() {
+			this.isOpened = false;
 			this.$refs.modal_container.style.zIndex = -999999;
 			this.$refs.modal_container.style.opacity = 0;
 
@@ -118,6 +121,34 @@ export default {
 </script>
 
 <style scoped>
+.modal___wrapper {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 999999;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition:
+		opacity 0.3s,
+		visibility 0.3s;
+	overflow-y: auto;
+}
+
+.modal___backdrop {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	z-index: 999998;
+	background: rgba(0, 0, 0, 0.2);
+	backdrop-filter: blur(1px) opacity(1);
+	transition: 0.3s;
+}
+
 .modal___container {
 	position: fixed;
 	top: 0;

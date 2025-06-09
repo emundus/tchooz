@@ -34,7 +34,7 @@ enum TransactionStatus: string {
 		$label = $this->getLabel();
 
 		return sprintf(
-			'<div class="tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold tw-text-sm tw-w-fit %s %s">%s</div>',
+			'<div class="tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold tw-text-sm tw-w-fit tw-h-7 %s %s">%s</div>',
 			$bg,
 			$text,
 			htmlspecialchars($label, ENT_QUOTES, 'UTF-8')

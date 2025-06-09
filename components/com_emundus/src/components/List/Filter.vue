@@ -33,7 +33,7 @@ export default {
 
 <template>
 	<div>
-		<div class="tw-flex tw-items-center tw-justify-between">
+		<div class="tw-mb-2 tw-flex tw-items-center tw-justify-between">
 			<label class="!tw-mb-0 tw-font-medium">
 				{{ translate(filter.label) }}
 			</label>
@@ -54,7 +54,12 @@ export default {
 			</select>
 		</template>
 		<template v-else-if="filter.type === 'date'">
-			<input type="date" v-model="filter.value" @change="onChangeFilter(filter)" />
+			<input
+				type="date"
+				class="tw-cursor-pointer !tw-rounded-coordinator"
+				v-model="filter.value"
+				@change="onChangeFilter(filter)"
+			/>
 		</template>
 		<template v-else-if="filter.type === 'time'">
 			<input type="time" v-model="filter.value" @change="onChangeFilter(filter)" />
