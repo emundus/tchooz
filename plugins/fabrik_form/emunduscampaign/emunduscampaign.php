@@ -126,7 +126,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 			if (!class_exists('EmundusHelperFiles')) {
 				require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 			}
-			if (!EmundusHelperFiles::checkLimitationFilesRules(Factory::getApplication()->getIdentity()->id, $cid)) {
+			if (!empty($this->app->getIdentity()->id) && !EmundusHelperFiles::checkLimitationFilesRules($this->app->getIdentity()->id, $cid)) {
 				$this->app->enqueueMessage(Text::_('COM_EMUNDUS_LIMIT_FILES_BY_CAMPAIGN_BY_STATUS_REACHED'), 'error');
 				$this->app->redirect(EmundusHelperMenu::getHomepageLink());
 			}
