@@ -68,8 +68,14 @@
 }
 
 .em-coordinator .com_emundus_vue div:not(.editor-toolbar) select,
+.em-coordinator .com_emundus_vue div:not(.editor-toolbar) select:focus,
 .em-coordinator .tchooz-widget__selects select, .swal2-html-container div:not(.editor-toolbar) select {
-  border-radius: var(--em-coordinator-form-br);
+  border-radius: var(--em-coordinator-br);
+  outline: none;
+}
+
+.em-coordinator .com_emundus_vue div:not(.editor-toolbar) select:hover {
+  cursor: pointer;
 }
 
 .com_emundus_vue > .campaigns__add-campaign {
@@ -81,7 +87,11 @@
 }
 
 .tchooz-widget__selects .multiselect__tags, .com_emundus_vue .multiselect__tags {
-  border-radius: var(--em-form-br);
+  border-radius: var(--em-coordinator-br);
+}
+
+.tchooz-widget__selects .multiselect__tags, .com_emundus_vue .multiselect__tags:hover {
+  cursor: pointer;
 }
 
 

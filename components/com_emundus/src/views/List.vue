@@ -128,6 +128,7 @@
 								}"
 							>
 								<td
+									v-show="viewType === 'table'"
 									class="tw-rounded-s-coordinator tw-p-4"
 									:class="{
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
