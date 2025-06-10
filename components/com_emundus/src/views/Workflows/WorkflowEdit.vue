@@ -910,10 +910,9 @@ export default {
 
 			return stepClass;
 		},
-		onChangeStepType(step)
-		{
+		onChangeStepType(step) {
 			delete this.colorsByStepId[step.id];
-		}
+		},
 	},
 	computed: {
 		nonApplicantProfiles() {
