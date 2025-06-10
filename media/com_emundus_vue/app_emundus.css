@@ -573,7 +573,7 @@ body ::-webkit-scrollbar-track {
   width: 30px !important;
   height: 30px !important;
 }
-.modal___wrapper[data-v-71398fac] {
+.modal___wrapper[data-v-d8f31e07] {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -588,7 +588,7 @@ body ::-webkit-scrollbar-track {
 		visibility 0.3s;
 	overflow-y: auto;
 }
-.modal___backdrop[data-v-71398fac] {
+.modal___backdrop[data-v-d8f31e07] {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -600,19 +600,17 @@ body ::-webkit-scrollbar-track {
 	        backdrop-filter: blur(1px) opacity(1);
 	transition: 0.3s;
 }
-.modal___container[data-v-71398fac] {
+.modal___container[data-v-d8f31e07] {
 	position: fixed;
 	top: 0;
 	left: 0;
 	z-index: -999999;
 	width: 0;
-	max-height: 80vh;
 	background-color: white;
 	overflow-y: auto;
-	padding: 1rem;
 	opacity: 0;
 }
-.modal-overlay[data-v-71398fac] {
+.modal-overlay[data-v-d8f31e07] {
 	position: fixed;
 	top: 0;
 	left: 0;

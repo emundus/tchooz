@@ -163,10 +163,8 @@ export default {
 	left: 0;
 	z-index: -999999;
 	width: 0;
-	max-height: 80vh;
 	background-color: white;
 	overflow-y: auto;
-	padding: 1rem;
 	opacity: 0;
 }
 
