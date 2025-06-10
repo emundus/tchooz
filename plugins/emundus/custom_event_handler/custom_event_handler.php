@@ -588,6 +588,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		if ($event->type === 'options' && !empty($event->custom_actions))
 		{
+			Log::add('Running custom event handler for event ' . $event->event, Log::DEBUG, 'com_emundus.custom_event_handler');
 			$fnums = $this->retrieveFnumsFromEventData($event, $data);
 
 			if (!empty($fnums))
@@ -629,6 +630,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 										if (!$pass)
 										{
+											Log::add('Conditions not met for custom action on event ' . $event->event . ' with fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
 											continue;
 										}
 									}
@@ -637,6 +639,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								}
 
 								$status = !empty($actions_status) && !in_array(false, $actions_status);
+							} else {
+								Log::add('Conditions not met for custom action on event ' . $event->event . ' with fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
 							}
 						}
 					}
@@ -1109,6 +1113,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
+			Log::add('Before launching action ' . $action->action_type . ' for fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
+
 			switch ($action->action_type)
 			{
 				case 'update_file_status':
@@ -1282,7 +1288,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 						$m_evaluation = new EmundusModelEvaluation();
-						$res          = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0);
+						$res          = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0, false, $this->automated_task_user);
 
 						if ($res && $res->status)
 						{
@@ -1291,6 +1297,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$this->dispatchEvent('onAfterGenerateLetters', [
 								'letters' => $res
 							]);
+						} else {
+							Log::add('Failed to generate letter for fnum ' . $fnum . ' : ' . json_encode($res), Log::ERROR, 'com_emundus.custom_event_handler');
 						}
 					}
 					break;
@@ -1432,6 +1440,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				default:
 					// do nothing
 					break;
+			}
+
+			if ($landed) {
+				Log::add('Action ' . $action->action_type . ' for fnum ' . $fnum . ' has been successfully launched', Log::DEBUG, 'com_emundus.custom_event_handler');
+			} else {
+				Log::add('Action ' . $action->action_type . ' for fnum ' . $fnum . ' has failed', Log::ERROR, 'com_emundus.custom_event_handler');
 			}
 		}
 
