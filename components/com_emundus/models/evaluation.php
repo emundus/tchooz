@@ -3431,13 +3431,13 @@ class EmundusModelEvaluation extends JModelList
 							catch (Exception $e)
 							{
 								$res->status = false;
-								$res->msg    = JText::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
+								$res->msg    = Text::_("AN_ERROR_OCURRED") . ':' . $e->getMessage();
 							}
 						}
 						else
 						{
 							$res->status = false;
-							$res->msg    = JText::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
+							$res->msg    = Text::_('COM_EMUNDUS_LETTERS_ERROR_CANNOT_GENERATE_FILE');
 						}
 						break;
 
