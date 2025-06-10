@@ -3189,12 +3189,15 @@ class EmundusModelEvaluation extends JModelList
                                                     $val = explode(',', $val['val']);
                                                 }
 
-                                                if (count($val) > 0)
+                                                if (is_array($val) && count($val) > 0)
                                                 {
                                                     foreach ($val as $k => $v)
                                                     {
                                                         $index   = array_search($v, $params->sub_options->sub_values);
-                                                        $val[$k] = JText::_($params->sub_options->sub_labels[$index]);
+	                                                    if ($index !== false)
+	                                                    {
+		                                                    $val[$k] = Text::_($params->sub_options->sub_labels[$index]);
+	                                                    }
                                                     }
                                                     $fabrikValues[$elt['id']][$fnum]['val'] = implode("\n", $val);
                                                 }
