@@ -123,20 +123,24 @@ export default {
 		previewTransaction(transaction) {
 			let html = '<div class="tw-flex tw-flex-col tw-gap-2">';
 
-			transaction.additional_columns.forEach((column) => {
-				html +=
-					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
-					'<div><strong>' +
-					column.key +
-					'</strong></div>' +
-					'<div>' +
-					column.value +
-					'</div>' +
-					'</div> <hr class="tw-m-0">';
-			});
+			transaction.additional_columns
+				.filter((column) => {
+					return column.display === 'all' || column.display === 'table';
+				})
+				.forEach((column) => {
+					html +=
+						'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
+						'<div><strong>' +
+						column.key +
+						'</strong></div>' +
+						'<div>' +
+						column.value +
+						'</div>' +
+						'</div> <hr class="tw-m-0">';
+				});
 
 			html +=
-				'<div class="tw-grid tw-grid-cols-2">' +
+				'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 				'<div><strong>' +
 				this.translate('COM_EMUNDUS_TRANSACTION_EXTERNAL_REFERENCE') +
 				'</strong></div>' +
@@ -146,7 +150,7 @@ export default {
 				'</div> <hr class="tw-m-0">';
 
 			html +=
-				'<div class="tw-grid tw-grid-cols-2">' +
+				'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 				'<div><strong>' +
 				this.translate('COM_EMUNDUS_TRANSACTION_PRODUCT_QUANTITY') +
 				'</strong></div>' +
@@ -188,7 +192,7 @@ export default {
 
 			if (transaction.data.alterations.length > 0) {
 				html +=
-					'<div class="tw-grid tw-grid-cols-2">' +
+					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 					'<div><strong>' +
 					this.translate('COM_EMUNDUS_TRANSACTION_ALTERATIONS') +
 					'</strong></div>' +
@@ -229,7 +233,7 @@ export default {
 			if (transaction.data.installment) {
 				// data.installment is an object that contains number_installment_debit, installment_monthday, installment_effect_date and amounts_by_iteration
 				html +=
-					'<div class="tw-grid tw-grid-cols-2">' +
+					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 					'<div><strong>' +
 					this.translate('COM_EMUNDUS_TRANSACTION_INSTALLMENT_NUMBER_DEBIT') +
 					'</strong></div>' +
@@ -238,7 +242,7 @@ export default {
 					'</div>' +
 					'</div> <hr class="tw-m-0">';
 				html +=
-					'<div class="tw-grid tw-grid-cols-2">' +
+					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 					'<div><strong>' +
 					this.translate('COM_EMUNDUS_TRANSACTION_INSTALLMENT_MONTHDAY') +
 					'</strong></div>' +
@@ -247,7 +251,7 @@ export default {
 					'</div>' +
 					'</div> <hr class="tw-m-0">';
 				html +=
-					'<div class="tw-grid tw-grid-cols-2">' +
+					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 					'<div><strong>' +
 					this.translate('COM_EMUNDUS_TRANSACTION_INSTALLMENT_EFFECT_DATE') +
 					'</strong></div>' +
