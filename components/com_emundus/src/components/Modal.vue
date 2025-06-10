@@ -1,4 +1,5 @@
 <template>
+	<div v-if="isOpened" class="modal-overlay"></div>
 	<transition :name="transition" :duration="delay">
 		<div class="modal___wrapper" v-show="isOpened">
 			<div class="modal___backdrop"></div>
@@ -71,6 +72,10 @@ export default {
 			type: String,
 			default: '',
 		},
+		blockScrolling: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ['beforeOpen', 'closed'],
 	data() {
@@ -88,6 +93,9 @@ export default {
 			this.$emit('beforeOpen');
 			this.isOpened = true;
 
+			if (this.blockScrolling) {
+				document.body.style.overflow = 'hidden';
+			}
 			this.$refs.modal_container.style.width = this.width;
 			this.$refs.modal_container.style.height = this.height;
 			this.$refs.modal_container.style.zIndex = 999999;
@@ -155,8 +163,20 @@ export default {
 	left: 0;
 	z-index: -999999;
 	width: 0;
-	height: 0;
+	max-height: 80vh;
 	background-color: white;
+	overflow-y: auto;
+	padding: 1rem;
 	opacity: 0;
+}
+
+.modal-overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(0, 0, 0, 0.5);
+	z-index: 999;
 }
 </style>
