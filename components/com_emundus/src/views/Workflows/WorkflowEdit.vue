@@ -130,7 +130,7 @@
 									<div class="workflow-step-content">
 										<div class="tw-mb-4 tw-flex tw-flex-col">
 											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_TYPE') }}</label>
-											<select v-model="step.type">
+											<select v-model="step.type" @change="onChangeStepType(step)">
 												<option v-for="type in stepTypes" :key="type.id" :value="type.id">
 													<span v-if="type.parent_id > 0"> - </span>
 													{{ translate(type.label) }}
@@ -683,6 +683,10 @@ export default {
 				}
 			}
 
+			if (deleted) {
+				delete this.colorsByStepId[stepId];
+			}
+
 			return deleted;
 		},
 		onBeforeSave() {
@@ -906,6 +910,10 @@ export default {
 
 			return stepClass;
 		},
+		onChangeStepType(step)
+		{
+			delete this.colorsByStepId[step.id];
+		}
 	},
 	computed: {
 		nonApplicantProfiles() {
