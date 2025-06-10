@@ -71,10 +71,10 @@ if (!empty($user->fnum)) {
     $use_session = $eMConfig->get('use_session', 0);
 
 	$checkout_url = null;
+	$fnumInfos = $m_files->getFnumInfos($user->fnum);
 
 	// TODO: this should be refactored to a helper function
 	if ($application_fee) {
-		$fnumInfos = $m_files->getFnumInfos($user->fnum);
 		$order     = $m_application->getHikashopOrder($fnumInfos);
 		$paid      = !empty($order);
 		$cart      = $m_application->getHikashopCartUrl($user->profile);
@@ -302,6 +302,10 @@ if (!empty($user->fnum)) {
 		else {
 			$preliminary_documents = $dropfiles_helper->getFiles(null, $user->campaign_id);
 		}
+	}
+
+	if ($fnumInfos['state'] != 1) {
+		$show_send = false;
 	}
 
 	require(JModuleHelper::getLayoutPath('mod_emundus_checklist'));
