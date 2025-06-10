@@ -35,6 +35,7 @@ export default {
 		:delay="100"
 		:adaptive="true"
 		:clickToClose="false"
+		:blockScrolling="true"
 		@closed="beforeClose"
 		@before-open="beforeOpen"
 	>

@@ -517,6 +517,7 @@ export default {
 		},
 
 		locationPopupClosed(location_id) {
+			document.body.style.overflow = '';
 			this.openedLocationPopup = false;
 			this.getLocations(location_id);
 		},

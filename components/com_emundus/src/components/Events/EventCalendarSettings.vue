@@ -231,6 +231,11 @@ export default {
 			eventsServicePlugin.remove(slot_id);
 		},
 
+		closeSlotPopup() {
+			this.openedSlotPopup = false;
+			document.body.style.overflow = '';
+		},
+
 		updateCellSize() {
 			this.cellWidth = document.querySelector('.sx__time-grid-day').offsetWidth;
 			this.cellHeight = document.querySelector('.sx__week-grid__hour').offsetHeight;
@@ -342,7 +347,7 @@ export default {
 			:break_every="event.slot_break_every"
 			:break_time="event.slot_break_time"
 			:break_time_type="event.slot_break_time_type"
-			@close="openedSlotPopup = false"
+			@close="closeSlotPopup"
 			@slot-saved="updateSlots"
 			@slot-deleted="deleteSlot"
 		/>
