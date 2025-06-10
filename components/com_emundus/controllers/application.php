@@ -795,29 +795,54 @@ class EmundusControllerApplication extends BaseController
 	 */
 	public function updateattachment()
 	{
-		$update = false;
-		$msg    = '';
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
 		$fnum = $this->input->getString('fnum', '');
 
-		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum)) {
+		if (!empty($fnum)) {
 			$data = $this->input->post->getArray();
-
-			if (empty($data['user'])) {
-				$data['user'] = $this->_user->id;
-			}
-			if ($this->input->files->get('file')) {
-				$data['file'] = $this->input->files->get('file');
-			}
-
 			$m_application = $this->getModel('Application');
-			$update = $m_application->updateAttachment($data);
-		}
-		else {
-			$msg = Text::_('ACCESS_DENIED');
+
+			$upload = $m_application->getUploadByID($data['id']);
+
+			if ($upload['fnum'] === $fnum) {
+				if (EmundusHelperAccess::asAccessAction(4, 'u', $this->_user->id, $fnum)) {
+					$data['user'] = $this->_user->id;
+
+					if ($this->input->files->get('file')) {
+						$data['file'] = $this->input->files->get('file');
+					}
+
+					$response['status'] = $m_application->updateAttachment($data);
+				} else if (EmundusHelperAccess::isFnumMine($this->_user->id, $fnum)) {
+					// only if attachment can_be_deleted is set to 1 and state is invalid
+					if ($upload['is_validated'] == 0 && $upload['can_be_deleted'] == 1) {
+						$data = [
+							'id' => $data['id'],
+							'is_validated' => -2, // reset validation state
+							'fnum' => $fnum,
+							'user' => $this->_user->id,
+						];
+						if ($this->input->files->get('file')) {
+							$data['file'] = $this->input->files->get('file');
+						}
+
+						$response['status'] = $m_application->updateAttachment($data);
+					}
+				}
+
+				if ($response['status']['update'] || $response['status']['update_file']) {
+					$response['data'] = $m_application->getUploadByID($data['id']);
+					$response['msg'] = Text::_('COM_EMUNDUS_ATTACHMENTS_UPDATED');
+					$response['code'] = 200;
+				} else {
+					$response['msg'] = Text::_('COM_EMUNDUS_ATTACHMENTS_UPDATE_ERROR');
+					$response['code'] = 500;
+				}
+			}
 		}
 
-		echo json_encode(array('status' => $update, 'msg' => $msg));
+		echo json_encode($response);
 		exit;
 	}
 
@@ -864,18 +889,19 @@ class EmundusControllerApplication extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		$m_application = $this->getModel('Application');
-
 		$upload_id      = $this->input->getInt('upload_id', null);
-		$upload_details = $m_application->getUploadByID($upload_id);
-		$e_user         = $this->app->getSession()->get('emundusUser');
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || (in_array($upload_details['fnum'], array_keys($e_user->fnums)) && $upload_details['can_be_viewed'] == 1)) {
-			$user     = $this->input->getInt('user', 0);
-			$filename = $this->input->getString('filename', '');
+		if (!empty($upload_id)) {
+			$m_application = $this->getModel('Application');
+			$upload_details = $m_application->getUploadByID($upload_id);
 
-			if (!empty($filename) && !empty($upload_details['user_id'])) {
-				$response = $m_application->getAttachmentPreview($user, $filename);
+			if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) || (EmundusHelperAccess::isFnumMine($this->_user->id, $upload_details['fnum']) && $upload_details['can_be_viewed'] == 1)) {
+				$user     = $this->input->getInt('user', 0);
+				$filename = $this->input->getString('filename', '');
+
+				if (!empty($filename) && !empty($upload_details['user_id'])) {
+					$response = $m_application->getAttachmentPreview($user, $filename);
+				}
 			}
 		}
 
