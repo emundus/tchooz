@@ -1970,180 +1970,190 @@ class EmundusModelRanking extends JModelList
         return $response;
     }
 
-	public function prepareDataToExport($user_id, $package_ids, $hierachy_ids, $ordered_columns): array
-	{
-		$lines = [];
+    public function prepareDataToExport($user_id, $package_ids, $hierachy_ids, $ordered_columns): array
+    {
+        $lines = [];
 
-		if (!empty($package_ids))
-		{
-			$export_array = [];
+        if (!empty($package_ids))
+        {
+            $export_array = [];
 
-			$files_by_package = [];
-			foreach ($package_ids as $package_id)
-			{
-				$files_by_package[$package_id] = $this->getFilesUserCanRank($user_id, 1, -1, 'ASC', 'default', $package_id)['data'];
-			}
+            $files_by_package = [];
+            foreach ($package_ids as $package_id)
+            {
+                $files_by_package[$package_id] = $this->getFilesUserCanRank($user_id, 1, -1, 'ASC', 'default', $package_id)['data'];
+            }
 
-			if (!empty($files_by_package))
-			{
-				$query = $this->db->getQuery(true);
-				$query->select('name')
-					->from('#__users')
-					->where('id = ' . $user_id);
+            if (!empty($files_by_package))
+            {
+                $query = $this->db->getQuery(true);
+                $query->select('name')
+                    ->from('#__users')
+                    ->where('id = ' . $user_id);
 
-				$this->db->setQuery($query);
-				$user_name = $this->db->loadResult();
+                $this->db->setQuery($query);
+                $user_name = $this->db->loadResult();
 
-				$user_packages = $this->getUserPackages($user_id);
-				$fnums         = [];
-				$ccids         = [];
+                $user_packages = $this->getUserPackages($user_id);
+                $fnums         = [];
+                $ccids         = [];
 
-				if (!class_exists('EmundusModelFiles'))
-				{
-					require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-				}
-				$m_files = new EmundusModelFiles();
-				$states  = $m_files->getAllStatus($user_id, 'step');
+                if (!class_exists('EmundusModelFiles'))
+                {
+                    require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+                }
+                $m_files = new EmundusModelFiles();
+                $states  = $m_files->getAllStatus($user_id, 'step');
 
-				$ordered_columns_keys = array_map(function ($column) {
-					return $column['id'];
-				}, $ordered_columns);
+                $ordered_columns_keys = array_map(function ($column) {
+                    return $column['id'];
+                }, $ordered_columns);
 
-				foreach ($files_by_package as $package_id => $files)
-				{
-					$package_label = '';
-					foreach ($user_packages as $user_package)
-					{
-						if ($user_package['id'] == $package_id)
-						{
-							$package_label = $user_package['label'];
-							break;
-						}
-					}
+                foreach ($files_by_package as $package_id => $files)
+                {
+                    $package_label = '';
+                    foreach ($user_packages as $user_package)
+                    {
+                        if ($user_package['id'] == $package_id)
+                        {
+                            $package_label = $user_package['label'];
+                            break;
+                        }
+                    }
 
-					if (!empty($files))
-					{
-						$hierarchy_data = $this->getHierarchyData($this->getUserHierarchy($user_id));
-						if (!empty($hierarchy_data['form_id'])) {
+                    if (!empty($files))
+                    {
+                        $hierarchy_data = $this->getHierarchyData($this->getUserHierarchy($user_id));
+                        if (!empty($hierarchy_data['form_id'])) {
 
-							$this->addHierarchyFormDataToFiles($files, $hierarchy_data['form_id'], $ordered_columns_keys, $ordered_columns, $user_id);
-						}
+                            $this->addHierarchyFormDataToFiles($files, $hierarchy_data['form_id'], $ordered_columns_keys, $ordered_columns, $user_id);
+                        }
 
-						if (!empty($hierachy_ids))
-						{
-							$other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
-							foreach ($hierachy_ids as $hierachy_id)
-							{
-								$hierarchy_data = $this->getHierarchyData($hierachy_id);
+                        if (!empty($hierachy_ids))
+                        {
+                            $other_rankings_values = $this->getOtherRankingsRankerCanSee($user_id, $hierachy_ids, $package_id);
+                            foreach ($hierachy_ids as $hierachy_id)
+                            {
+                                $hierarchy_data = $this->getHierarchyData($hierachy_id);
 
-								$ordered_columns[] = [
-									'id' => 'ranking_' . $hierachy_id,
-									'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING') . ' ' . $hierarchy_data['label']
-								];
-								$ordered_columns[] = [
-									'id' => 'ranker_' . $hierachy_id,
-									'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER') . ' - ' . $hierarchy_data['label']
-								];
+                                $ordered_columns[] = [
+                                    'id' => 'ranking_' . $hierachy_id,
+                                    'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKING') . ' ' . $hierarchy_data['label']
+                                ];
+                                $ordered_columns[] = [
+                                    'id' => 'ranker_' . $hierachy_id,
+                                    'label' => Text::_('COM_EMUNDUS_RANKING_EXPORT_RANKER') . ' - ' . $hierarchy_data['label']
+                                ];
 
-								if (!empty($hierarchy_data['form_id'])) {
-									$query->clear()
-										->select('jfe.name, jfl.db_table_name')
-										->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
-										->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
-										->leftJoin($this->db->quoteName('#__fabrik_lists', 'jfl') . ' ON jfl.form_id = jffg.form_id')
-										->where('jffg.form_id = ' . $this->db->quote($hierarchy_data['form_id']))
-										->andWhere('jfe.published = 1')
-										->andWhere('jfe.name NOT IN (' . $this->db->quote('id') . ')');
+                                if (!empty($hierarchy_data['form_id'])) {
+                                    $query->clear()
+                                        ->select('jfe.name, jfl.db_table_name')
+                                        ->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+                                        ->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+                                        ->leftJoin($this->db->quoteName('#__fabrik_lists', 'jfl') . ' ON jfl.form_id = jffg.form_id')
+                                        ->where('jffg.form_id = ' . $this->db->quote($hierarchy_data['form_id']))
+                                        ->andWhere('jfe.published = 1')
+                                        ->andWhere('jfe.name NOT IN (' . $this->db->quote('id') . ')');
 
-									$this->db->setQuery($query);
-									$form_elements = $this->db->loadObjectList();
+                                    $this->db->setQuery($query);
+                                    $form_elements = $this->db->loadObjectList();
 
-									foreach($form_elements as $element) {
-										$ordered_columns_keys[] = $hierarchy_data['form_id'] . '-' . $element->name;
-										$ordered_columns[] = [
-											'id' => $hierarchy_data['form_id'] . '-' . $element->name,
-											'label' => Text::_($element->name)
-										];
-									}
-								}
-							}
-						}
+                                    foreach($form_elements as $element) {
+                                        $ordered_columns_keys[] = $hierarchy_data['form_id'] . '-' . $element->name;
+                                        $ordered_columns[] = [
+                                            'id' => $hierarchy_data['form_id'] . '-' . $element->name,
+                                            'label' => Text::_($element->name)
+                                        ];
+                                    }
+                                }
+                            }
+                        }
 
-						foreach ($files as $index => $file)
-						{
-							$file_data = [];
-							$fnums[]   = $file['fnum'];
-							$ccids[]   = $file['id'];
+                        $ordered_columns_id = [];
+                        $ordered_columns_unique = [];
 
-							if (!empty($hierachy_ids))
-							{
-								foreach ($hierachy_ids as $hierachy_id)
-								{
-									$hierarchy_data = $this->getHierarchyData($hierachy_id);
-									$ranker = '';
-									$rank   = '';
+                        foreach ($ordered_columns as $item) {
+                            if (!in_array($item['id'], $ordered_columns_id)) {
+                                $ordered_columns_id[] = $item['id'];
+                                $ordered_columns_unique[] = $item;
+                            }
+                        }
 
-									foreach ($other_rankings_values as $other_ranking)
-									{
-										if ($other_ranking['fnum'] == $file['fnum'] && $other_ranking['hierarchy_id'] == $hierachy_id)
-										{
-											$ranker = $other_ranking['ranker_name'];
-											$rank   = $other_ranking['rank'];
-											break;
-										}
-									}
+                        foreach ($files as $index => $file)
+                        {
+                            $file_data = [];
+                            $fnums[]   = $file['fnum'];
+                            $ccids[]   = $file['id'];
 
-									$files[$index]['ranking_' . $hierachy_id] = empty($rank) || $rank == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $rank;
-									$files[$index]['ranker_' . $hierachy_id]  = $ranker ?? '';
+                            if (!empty($hierachy_ids))
+                            {
+                                foreach ($hierachy_ids as $hierachy_id)
+                                {
+                                    $hierarchy_data = $this->getHierarchyData($hierachy_id);
+                                    $ranker = '';
+                                    $rank   = '';
 
-									if (!empty($hierarchy_data['form_id'])) {
-										$this->addHierarchyFormDataToFiles($files, $hierarchy_data['form_id']);
-									}
-								}
-							}
+                                    foreach ($other_rankings_values as $other_ranking)
+                                    {
+                                        if ($other_ranking['fnum'] == $file['fnum'] && $other_ranking['hierarchy_id'] == $hierachy_id)
+                                        {
+                                            $ranker = $other_ranking['ranker_name'];
+                                            $rank   = $other_ranking['rank'];
+                                            break;
+                                        }
+                                    }
 
-							foreach ($ordered_columns_keys as $column)
-							{
-								switch ($column)
-								{
-									case 'status':
-										$file_data[] = $states[$file['status']]['value'];
-										break;
-									case 'package':
-										$file_data[] = $package_label;
-										break;
-									case 'ranker':
-										$file_data[] = $user_name;
-										break;
-									case 'rank':
-										$file_data[] = empty($file[$column]) || $file[$column] == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $file[$column];
-										break;
-									default:
-										$file_data[] = $file[$column];
-										break;
-								}
-							}
+                                    $files[$index]['ranking_' . $hierachy_id] = empty($rank) || $rank == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $rank;
+                                    $files[$index]['ranker_' . $hierachy_id]  = $ranker ?? '';
 
-							$export_array[] = $file_data;
-						}
-					}
-				}
+                                    if (!empty($hierarchy_data['form_id'])) {
+                                        $this->addHierarchyFormDataToFiles($files, $hierarchy_data['form_id']);
+                                    }
+                                }
+                            }
 
-				if (!empty($export_array))
-				{
-					$header = array_map(function ($column) {
-						return Text::_($column['label']);
-					}, $ordered_columns);
+                            foreach ($ordered_columns_unique as $column)
+                            {
 
-					$this->helpDispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array, 'fnums' => $fnums, 'ccids' => $ccids, 'columns' => $ordered_columns]);
-					$lines = array_merge([$header], $export_array);
-				}
-			}
-		}
+                                switch ($column['id'])
+                                {
+                                    case 'status':
+                                        $file_data[] = $states[$file['status']]['value'];
+                                        break;
+                                    case 'package':
+                                        $file_data[] = $package_label;
+                                        break;
+                                    case 'ranker':
+                                        $file_data[] = $user_name;
+                                        break;
+                                    case 'rank':
+                                        $file_data[] = empty($file[$column['id']]) || $file[$column['id']] == -1 ? Text::_('COM_EMUNDUS_RANKING_NOT_RANKED') : $file[$column['id']];
+                                        break;
+                                    default:
+                                        $file_data[] = $file[$column['id']];
+                                        break;
+                                }
+                            }
 
+                            $export_array[] = $file_data;
+                        }
+                    }
+                }
 
-		return $lines;
-	}
+                if (!empty($export_array))
+                {
+                    $header = array_map(function ($column) {
+                        return Text::_($column['label']);
+                    }, $ordered_columns_unique);
+
+                    $this->dispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array, 'fnums' => $fnums, 'ccids' => $ccids, 'columns' => $ordered_columns]);
+                    $lines = array_merge([$header], $export_array);
+                }
+            }
+        }
+
+        return $lines;
+    }
 
 
 	public function getHierarchyFormElements(int $form_id, $return_type = 'object'): array
