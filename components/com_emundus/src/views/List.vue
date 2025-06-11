@@ -259,7 +259,7 @@
 													<modal
 														:name="'modal-component'"
 														transition="nice-modal-fade"
-														:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+														:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
 														:width="'600px'"
 														:delay="100"
 														:adaptive="true"
@@ -322,7 +322,7 @@
 						<modal
 							:name="'modal-component-export'"
 							transition="nice-modal-fade"
-							:class="'export-modal placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+							:classes="'export-modal tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-px-4 tw-shadow-modal'"
 							:width="'600px'"
 							:delay="100"
 							:adaptive="true"
@@ -342,7 +342,7 @@
 					<modal
 						:name="'modal-component'"
 						transition="nice-modal-fade"
-						:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+						:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-px-4 tw-shadow-modal'"
 						:width="'600px'"
 						:delay="100"
 						:adaptive="true"

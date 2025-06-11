@@ -1,5 +1,4 @@
 <template>
-	<div v-if="isOpened" class="modal-overlay"></div>
 	<transition :name="transition" :duration="delay">
 		<div class="modal___wrapper" v-show="isOpened">
 			<div class="modal___backdrop"></div>
@@ -104,6 +103,7 @@ export default {
 			this.$refs.modal_container.style.left = this.left;
 
 			if (this.center) {
+				this.$refs.modal_container.style.position = 'fixed';
 				this.$refs.modal_container.style.transform = 'translate(-50%, -50%)';
 				this.$refs.modal_container.style.top = '50%';
 				this.$refs.modal_container.style.left = '50%';
@@ -164,17 +164,6 @@ export default {
 	z-index: -999999;
 	width: 0;
 	background-color: white;
-	overflow-y: auto;
 	opacity: 0;
-}
-
-.modal-overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	height: 100vh;
-	background-color: rgba(0, 0, 0, 0.5);
-	z-index: 999;
 }
 </style>

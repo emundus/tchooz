@@ -191,7 +191,7 @@ export default {
 				<div v-if="cancelPopupOpenForBookingId === booking.id">
 					<modal
 						:name="'add-location-modal'"
-						:class="'placement-center tw-rounded tw-px-6 tw-shadow-modal'"
+						:classes="' tw-rounded tw-px-6 tw-shadow-modal'"
 						transition="nice-modal-fade"
 						:width="'600px'"
 						:delay="100"

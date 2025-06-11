@@ -498,7 +498,7 @@ export default {
 <template>
 	<modal
 		:name="'calendar-slot-modal'"
-		:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-px-4 tw-shadow-modal'"
+		:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-px-4 tw-shadow-modal'"
 		transition="nice-modal-fade"
 		:width="'60%'"
 		:delay="100"

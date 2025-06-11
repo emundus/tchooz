@@ -393,7 +393,7 @@ export default {
 		<div v-if="!loading" class="tw-flex tw-h-full tw-flex-col">
 			<modal
 				:name="'messenger-files-modal'"
-				:class="'placement-center tw-max-h-[80vh] tw-min-w-[400px] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal'"
+				:classes="'tw-max-h-[80vh] tw-min-w-[400px] tw-overflow-y-auto tw-rounded tw-bg-white tw-shadow-modal'"
 				transition="nice-modal-fade"
 				:width="'40%'"
 				:height="'30%'"
