@@ -1080,6 +1080,7 @@ if ($payment_repository->activated) {
 }
 Text::script('COM_EMUNDUS_ONBOARD_EDITOR_UNDO');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
+Text::script('COM_EMUNDUS_ERROR');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
