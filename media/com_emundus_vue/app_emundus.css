@@ -2447,6 +2447,7 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
   align-items: center;
   height: 3rem;
   border-radius: var(--sx-rounding-extra-small);
+  color: var(--sx-internal-color-text);
 }
 
 .sx__month-agenda-day--active {
@@ -2463,6 +2464,10 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
   height: 6px;
   width: 6px;
   border-radius: 50%;
+  filter: brightness(1.6);
+}
+.is-dark .sx__month-agenda-day__event-icon {
+  filter: initial;
 }
 
 .sx__month-agenda-day-names {
