@@ -3,7 +3,7 @@
 		<button
 			v-if="button"
 			@click="onClickToggle"
-			class="tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
+			class="not-to-close-modal tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
 			:class="buttonClass"
 			style="padding: 0.5rem"
 			:title="button"
@@ -11,12 +11,21 @@
 			<template v-if="!hideButtonLabel">
 				{{ button }}
 			</template>
-			<span v-if="icon" class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">
+			<span
+				v-if="icon"
+				class="material-symbols-outlined popover-toggle-btn not-to-close-modal tw-cursor-pointer"
+				:class="iconClass"
+			>
 				{{ icon }}
 			</span>
 		</button>
 
-		<span v-else @click="onClickToggle" class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">
+		<span
+			v-else
+			@click="onClickToggle"
+			class="material-symbols-outlined popover-toggle-btn not-to-close-modal tw-cursor-pointer"
+			:class="iconClass"
+		>
 			{{ icon }}
 		</span>
 
@@ -27,6 +36,11 @@
 				ref="popoverContent"
 				:id="'popover-content-' + id"
 				:style="popoverContentStyle"
+				v-click-outside="{
+					handler: onFocusOut,
+					exclude: ['.not-to-close-modal'],
+					disabled: false,
+				}"
 			>
 				<slot></slot>
 			</div>
@@ -49,6 +63,10 @@ export default {
 		buttonClass: {
 			type: String,
 			default: 'tw-btn-primary',
+		},
+		iconClass: {
+			type: String,
+			default: '',
 		},
 		hideButtonLabel: {
 			type: Boolean,

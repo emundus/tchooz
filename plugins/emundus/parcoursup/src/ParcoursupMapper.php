@@ -122,6 +122,27 @@ class ParcoursupMapper
 						}
 					}
 					break;
+				case 'datetime':
+					if (!empty($value))
+					{
+						if (strpos($value, '/') !== false)
+						{
+							$date = \DateTime::createFromFormat('d/m/Y H:i', $value);
+							if ($date)
+							{
+								$value = $date->format('Y-m-d H:i:s');
+							}
+						}
+						else
+						{
+							$date = strtotime($value);
+							if ($date)
+							{
+								$value = date('Y-m-d H:i:s', $date);
+							}
+						}
+					}
+					break;
 				case 'phonenumber':
 					if (!empty($value))
 					{

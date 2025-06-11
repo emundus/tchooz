@@ -854,7 +854,7 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$file_infos = $this->db->loadAssoc();
 
-			if (!empty($file_infos['program_id']) && $file_infos['published']) {
+			if (!empty($file_infos['program_id'])) {
 				$query->clear()
 					->select('eswp.workflow_id')
 					->from($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp'))

@@ -29,12 +29,13 @@ export default {
 <template>
 	<modal
 		:name="'add-location-modal'"
-		:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+		:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
 		transition="nice-modal-fade"
 		:width="'600px'"
 		:delay="100"
 		:adaptive="true"
 		:clickToClose="false"
+		:blockScrolling="true"
 		@closed="beforeClose"
 		@before-open="beforeOpen"
 	>

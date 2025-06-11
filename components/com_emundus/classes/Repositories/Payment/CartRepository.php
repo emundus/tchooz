@@ -1099,14 +1099,19 @@ class CartRepository
 
 			if ($cart->getCustomer()->getUserId() == $user_id || \EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'u', $user_id, $cart->getFnum())) {
 				$query = $this->db->createQuery();
-				$query->select('status')
+				$query->select('status, published')
 					->from($this->db->quoteName('jos_emundus_campaign_candidature'))
 					->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($cart->getFnum()));
 
 				$this->db->setQuery($query);
-				$current_status = $this->db->loadResult();
+				$file_infos = $this->db->loadAssoc();
 
-				if (!in_array($current_status, $cart->getPaymentStep()->getEntryStatus())) {
+				// applicant's can't update their cart if the candidature is not published
+				if ($cart->getCustomer()->getUserId() == $user_id && $file_infos['published'] != 1) {
+					$can_user_update_cart = false;
+				}
+
+				if (!in_array($file_infos['status'], $cart->getPaymentStep()->getEntryStatus())) {
 					$can_user_update_cart = false;
 				}
 

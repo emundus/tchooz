@@ -498,16 +498,17 @@ export default {
 <template>
 	<modal
 		:name="'calendar-slot-modal'"
-		:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-px-4 tw-shadow-modal'"
+		:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-overflow-x-hidden tw-rounded tw-px-4 tw-shadow-modal'"
 		transition="nice-modal-fade"
 		:width="'60%'"
 		:delay="100"
 		:adaptive="true"
 		:clickToClose="false"
+		:blockScrolling="true"
 		@closed="beforeClose"
 		@before-open="beforeOpen"
 	>
-		<div class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
+		<div class="tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
 			<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 				<h2 v-if="slot">
 					{{ translate('COM_EMUNDUS_ONBOARD_EDIT_SLOT') }}

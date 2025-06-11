@@ -588,6 +588,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		if ($event->type === 'options' && !empty($event->custom_actions))
 		{
+			Log::add('Running custom event handler for event ' . $event->event, Log::DEBUG, 'com_emundus.custom_event_handler');
 			$fnums = $this->retrieveFnumsFromEventData($event, $data);
 
 			if (!empty($fnums))
@@ -615,7 +616,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 						if (!empty($custom_action->conditions))
 						{
-							$pass = $this->checkEventConditions($custom_action->conditions, $fnum);
+							$pass = $this->checkEventConditions($custom_action->conditions, $fnum, 0, $data);
 
 							if ($pass)
 							{
@@ -625,10 +626,11 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								{
 									if (!empty($action->action_conditions))
 									{
-										$pass = $this->checkEventConditions($action->action_conditions, $fnum);
+										$pass = $this->checkEventConditions($action->action_conditions, $fnum, 0, $data);
 
 										if (!$pass)
 										{
+											Log::add('Conditions not met for custom action on event ' . $event->event . ' with fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
 											continue;
 										}
 									}
@@ -637,6 +639,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								}
 
 								$status = !empty($actions_status) && !in_array(false, $actions_status);
+							} else {
+								Log::add('Conditions not met for custom action on event ' . $event->event . ' with fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
 							}
 						}
 					}
@@ -669,7 +673,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 						if (!empty($custom_action->conditions))
 						{
-							$pass = $this->checkEventConditions($custom_action->conditions, '', $user_id);
+							$pass = $this->checkEventConditions($custom_action->conditions, '', $user_id, $data);
 
 							if ($pass)
 							{
@@ -679,7 +683,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								{
 									if (!empty($action->action_conditions))
 									{
-										$pass = $this->checkEventConditions($action->action_conditions, '', $user_id);
+										$pass = $this->checkEventConditions($action->action_conditions, '', $user_id, $data);
 
 										if (!$pass)
 										{
@@ -735,7 +739,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		return $fnums;
 	}
 
-	private function checkEventConditions(object $conditions, string $fnum, int $user_id = 0): bool
+	private function checkEventConditions(object $conditions, string $fnum, int $user_id = 0, ?array $data = []): bool
 	{
 		$pass = false;
 
@@ -781,259 +785,158 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					// else it can be an alias
 					$pattern_tag   = '/\[(.*?)\]/';
 					$pattern_table = '/\w+\.\w+/';
-					if ($condition->used_object === 'fnum')
-					{
-						if (preg_match($pattern_tag, $condition->targeted_column, $matches))
-						{
-							require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
-							$m_emails = new EmundusModelEmails();
-							$tags     = $m_emails->setTags($this->automated_task_user, ['FNUM' => $fnum], $fnum, '', $condition->targeted_column);
+					// $data.<bar>.<foo> etc... means that it is using current event data, there can be multiple dots ( min 1 )
+					$pattern_event_data = '/\.([a-zA-Z0-9_][a-zA-Z0-9_]*)/';
 
-							if (!empty($tags['replacements']))
+					if (str_starts_with($condition->targeted_column, '$data') && preg_match_all($pattern_event_data, $condition->targeted_column, $matches))
+					{
+						if (!empty($matches[1])) {
+							$entries = $matches[1];
+
+							$value = $data;
+							foreach ($entries as $entry) {
+								if (isset($value[$entry])) {
+									$value = $value[$entry];
+								} else {
+									$value = null;
+									break;
+								}
+							}
+
+							$conditions_status[] = $this->operateCondition($condition, $value);
+						} else {
+							$conditions_status[] = false;
+						}
+					} else {
+						if ($condition->used_object === 'fnum')
+						{
+							if (preg_match($pattern_tag, $condition->targeted_column, $matches))
 							{
-								$value               = preg_replace($tags['patterns'], $tags['replacements'], $condition->targeted_column);
-								$conditions_status[] = $this->operateCondition($condition, $value);
+								require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+								$m_emails = new EmundusModelEmails();
+								$tags     = $m_emails->setTags($this->automated_task_user, ['FNUM' => $fnum], $fnum, '', $condition->targeted_column);
+
+								if (!empty($tags['replacements']))
+								{
+									$value               = preg_replace($tags['patterns'], $tags['replacements'], $condition->targeted_column);
+									$conditions_status[] = $this->operateCondition($condition, $value);
+								}
+								else
+								{
+									$conditions_status[] = false;
+								}
+
 							}
 							else
 							{
-								$conditions_status[] = false;
-							}
-
-						}
-						else
-						{
-							if (preg_match($pattern_table, $condition->targeted_column, $matches))
-							{
-								list($table, $column) = explode('.', $condition->targeted_column);
-
-								if ($condition->targeted_value === '{current_user_id}')
+								if (preg_match($pattern_table, $condition->targeted_column, $matches))
 								{
-									$condition->targeted_value = Factory::getApplication()->getIdentity()->id;
-								}
+									list($table, $column) = explode('.', $condition->targeted_column);
 
-								require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
-								$h_files    = new EmundusHelperFiles();
-								$table_name = str_replace('#_', 'jos', $table);
-								$linked     = false;
-								if (!empty($table_name))
-								{
-									$linked = $h_files->isTableLinkedToCampaignCandidature($table_name);
-								}
-
-								if ($linked)
-								{
-									$query->clear()
-										->select('id')
-										->from($db->quoteName($table))
-										->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
-
-									switch ($condition->operator)
+									if ($condition->targeted_value === '{current_user_id}')
 									{
-										case 'IN':
-										case 'NOT IN':
-											$values = explode('|', $condition->targeted_value);
+										$condition->targeted_value = Factory::getApplication()->getIdentity()->id;
+									}
 
-											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
-											break;
-										case '=':
-											$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-											break;
-										case '!=':
-											$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
-											break;
-										case 'inferior':
-											$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
-											break;
-										case 'inferior_equal':
-											$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
-											break;
-										case 'superior':
-											$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
-											break;
-										case 'superior_equal':
-											$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
-											break;
-										case 'inferior':
-											$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
-											break;
-										case 'inferior_equal':
-											$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
-											break;
-										case 'superior':
-											$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
-											break;
-										case 'superior_equal':
-											$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
-											break;
-										default:
+									require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+									$h_files    = new EmundusHelperFiles();
+									$table_name = str_replace('#_', 'jos', $table);
+									$linked     = false;
+									if (!empty($table_name))
+									{
+										$linked = $h_files->isTableLinkedToCampaignCandidature($table_name);
+									}
+
+									if ($linked)
+									{
+										$query->clear()
+											->select('id')
+											->from($db->quoteName($table))
+											->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+										switch ($condition->operator)
+										{
+											case 'IN':
+											case 'NOT IN':
+												$values = explode('|', $condition->targeted_value);
+
+												$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
+												break;
+											case '=':
+												$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+												break;
+											case '!=':
+												$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
+												break;
+											case 'inferior':
+												$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+												break;
+											case 'inferior_equal':
+												$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+												break;
+											case 'superior':
+												$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+												break;
+											case 'superior_equal':
+												$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
+												break;
+											default:
+												$conditions_status[] = false;
+												break;
+										}
+									}
+									else
+									{
+										if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_programmes', 'jos_emundus_users']))
+										{
+											$query->clear();
+
+											$table_alias = 'ecc';
+											switch ($table_name)
+											{
+												case 'jos_emundus_setup_campaigns':
+													$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
+													$table_alias = 'esc';
+													break;
+												case 'jos_emundus_setup_programmes':
+													$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+														->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'));
+													$table_alias = 'esp';
+													break;
+												case 'jos_emundus_users':
+													$query->leftJoin($db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.id') . ' = ' . $db->quoteName('ecc.user_id'));
+													$table_alias = 'eu';
+													break;
+											}
+
+											$query->select($db->quoteName('ecc.id'))
+												->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
+												->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+											switch ($condition->operator)
+											{
+												case 'IN':
+												case 'NOT IN':
+													$values = explode('|', $condition->targeted_value);
+													$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
+													break;
+												case '=':
+													$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+													break;
+												case '!=':
+													$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
+													break;
+												default:
+													$conditions_status[] = false;
+													break;
+											}
+										}
+										else
+										{
 											$conditions_status[] = false;
 											break;
-									}
-								}
-								else
-								{
-									if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_programmes', 'jos_emundus_users']))
-									{
-										$query->clear();
-
-										$table_alias = 'ecc';
-										switch ($table_name)
-										{
-											case 'jos_emundus_setup_campaigns':
-												$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
-												$table_alias = 'esc';
-												break;
-											case 'jos_emundus_setup_programmes':
-												$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-													->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'));
-												$table_alias = 'esp';
-												break;
-											case 'jos_emundus_users':
-												$query->leftJoin($db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.id') . ' = ' . $db->quoteName('ecc.user_id'));
-												$table_alias = 'eu';
-												break;
-										}
-
-										$query->select($db->quoteName('ecc.id'))
-											->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
-											->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
-
-										switch ($condition->operator)
-										{
-											case 'IN':
-											case 'NOT IN':
-												$values = explode('|', $condition->targeted_value);
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
-												break;
-											case '=':
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-												break;
-											case '!=':
-												$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
-												break;
-											default:
-												$conditions_status[] = false;
-												break;
 										}
 									}
-									else
-									{
-										$conditions_status[] = false;
-										break;
-									}
-								}
-
-								try
-								{
-									$db->setQuery($query);
-									$row_id = $db->loadResult();
-
-									if (!empty($row_id))
-									{
-										$conditions_status[] = true;
-									}
-									else
-									{
-										$conditions_status[] = false;
-										break;
-									}
-								}
-								catch (Exception $e)
-								{
-									Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
-									$conditions_status[] = false;
-									break;
-								}
-							}
-							else
-							{
-								$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
-
-								if (isset($value['raw']))
-								{
-									$conditions_status[] = $this->operateCondition($condition, $value['raw']);
-								}
-								else
-								{
-									$conditions_status[] = false;
-									break;
-								}
-							}
-						}
-					}
-					else
-					{
-						if ($condition->used_object === 'user_id')
-						{
-							if (preg_match($pattern_table, $condition->targeted_column, $matches))
-							{
-								list($table, $column) = explode('.', $condition->targeted_column);
-								$table = str_replace('#_', 'jos', $table);
-
-								if (in_array($table, ['jos_emundus_users', 'jos_users', 'jos_emundus_users_profiles']))
-								{
-									// if table.column is equal to jos_emundus_users_profiles.profile_id or jos_emundus_users.profile, query will be specific
-									$query->clear()
-										->select('u.id')
-										->from('#__users AS u')
-										->where('1=1');
-
-									$table_alias = 'u';
-
-									if ($table . '.' . $column === 'jos_emundus_users_profiles.profile_id' || $table . '.' . $column === 'jos_emundus_users.profile')
-									{
-										$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id')
-											->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
-
-										switch ($condition->operator)
-										{
-											case '=':
-											case 'IN':
-												$values = explode('|', $condition->targeted_value);
-												$query->andWhere('eup.profile_id IN (' . implode(',', $db->quote($values)) . ') OR eu.profile IN (' . implode(',', $db->quote($values)) . ')');
-												break;
-											case '!=':
-											case 'NOT IN':
-												$values = explode('|', $condition->targeted_value);
-												$query->andWhere('eup.profile_id NOT IN (' . implode(',', $db->quote($values)) . ') AND eu.profile NOT IN (' . implode(',', $db->quote($values)) . ')');
-												break;
-										}
-									}
-									else
-									{
-										switch ($table)
-										{
-											case 'jos_emundus_users':
-												$query->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
-												$table_alias = 'eu';
-												break;
-											case 'jos_emundus_users_profiles':
-												$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id');
-												$table_alias = 'eup';
-												break;
-										}
-
-										switch ($condition->operator)
-										{
-											case 'IN':
-											case 'NOT IN':
-												$values = explode('|', $condition->targeted_value);
-
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
-												break;
-											case '=':
-												$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-												break;
-											case '!=':
-												$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
-												break;
-											default:
-												$conditions_status[] = false;
-												break;
-										}
-									}
-
-									$query->andWhere($db->quoteName('u.id') . ' = ' . $db->quote($user_id));
 
 									try
 									{
@@ -1055,6 +958,119 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 										$conditions_status[] = false;
 										break;
+									}
+								}
+								else
+								{
+									$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
+
+									if (isset($value['raw']))
+									{
+										$conditions_status[] = $this->operateCondition($condition, $value['raw']);
+									}
+									else
+									{
+										$conditions_status[] = false;
+										break;
+									}
+								}
+							}
+						}
+						else
+						{
+							if ($condition->used_object === 'user_id')
+							{
+								if (preg_match($pattern_table, $condition->targeted_column, $matches))
+								{
+									list($table, $column) = explode('.', $condition->targeted_column);
+									$table = str_replace('#_', 'jos', $table);
+
+									if (in_array($table, ['jos_emundus_users', 'jos_users', 'jos_emundus_users_profiles']))
+									{
+										// if table.column is equal to jos_emundus_users_profiles.profile_id or jos_emundus_users.profile, query will be specific
+										$query->clear()
+											->select('u.id')
+											->from('#__users AS u')
+											->where('1=1');
+
+										$table_alias = 'u';
+
+										if ($table . '.' . $column === 'jos_emundus_users_profiles.profile_id' || $table . '.' . $column === 'jos_emundus_users.profile')
+										{
+											$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id')
+												->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
+
+											switch ($condition->operator)
+											{
+												case '=':
+												case 'IN':
+													$values = explode('|', $condition->targeted_value);
+													$query->andWhere('eup.profile_id IN (' . implode(',', $db->quote($values)) . ') OR eu.profile IN (' . implode(',', $db->quote($values)) . ')');
+													break;
+												case '!=':
+												case 'NOT IN':
+													$values = explode('|', $condition->targeted_value);
+													$query->andWhere('eup.profile_id NOT IN (' . implode(',', $db->quote($values)) . ') AND eu.profile NOT IN (' . implode(',', $db->quote($values)) . ')');
+													break;
+											}
+										}
+										else
+										{
+											switch ($table)
+											{
+												case 'jos_emundus_users':
+													$query->leftJoin('#__emundus_users AS eu ON eu.user_id = u.id');
+													$table_alias = 'eu';
+													break;
+												case 'jos_emundus_users_profiles':
+													$query->leftJoin('#__emundus_users_profiles AS eup ON eup.user_id = u.id');
+													$table_alias = 'eup';
+													break;
+											}
+
+											switch ($condition->operator)
+											{
+												case 'IN':
+												case 'NOT IN':
+													$values = explode('|', $condition->targeted_value);
+
+													$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
+													break;
+												case '=':
+													$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+													break;
+												case '!=':
+													$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
+													break;
+												default:
+													$conditions_status[] = false;
+													break;
+											}
+										}
+
+										$query->andWhere($db->quoteName('u.id') . ' = ' . $db->quote($user_id));
+
+										try
+										{
+											$db->setQuery($query);
+											$row_id = $db->loadResult();
+
+											if (!empty($row_id))
+											{
+												$conditions_status[] = true;
+											}
+											else
+											{
+												$conditions_status[] = false;
+												break;
+											}
+										}
+										catch (Exception $e)
+										{
+											Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+											$conditions_status[] = false;
+											break;
+										}
 									}
 								}
 							}
@@ -1086,6 +1102,11 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				'!=' => $value != $condition->targeted_value,
 				'IN' => in_array($value, explode('|', $condition->targeted_value)),
 				'NOT IN' => !in_array($value, explode('|', $condition->targeted_value)),
+				'inferior' => $value < $condition->targeted_value,
+				'inferior_equal' => $value <= $condition->targeted_value,
+				'superior' => $value > $condition->targeted_value,
+				'superior_equal' => $value >= $condition->targeted_value,
+				'array_includes' => is_array($value) && in_array($condition->targeted_value, $value),
 				default => false,
 			};
 		}
@@ -1108,6 +1129,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
+
+			Log::add('Before launching action ' . $action->action_type . ' for fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
 
 			switch ($action->action_type)
 			{
@@ -1282,7 +1305,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 						$m_evaluation = new EmundusModelEvaluation();
-						$res          = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0);
+						$res          = $m_evaluation->generateLetters($fnum, [$action->letter_template], 1, 0, 0, false, $this->automated_task_user);
 
 						if ($res && $res->status)
 						{
@@ -1291,6 +1314,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$this->dispatchEvent('onAfterGenerateLetters', [
 								'letters' => $res
 							]);
+						} else {
+							Log::add('Failed to generate letter for fnum ' . $fnum . ' : ' . json_encode($res), Log::ERROR, 'com_emundus.custom_event_handler');
 						}
 					}
 					break;
@@ -1432,6 +1457,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				default:
 					// do nothing
 					break;
+			}
+
+			if ($landed) {
+				Log::add('Action ' . $action->action_type . ' for fnum ' . $fnum . ' has been successfully launched', Log::DEBUG, 'com_emundus.custom_event_handler');
+			} else {
+				Log::add('Action ' . $action->action_type . ' for fnum ' . $fnum . ' has failed', Log::ERROR, 'com_emundus.custom_event_handler');
 			}
 		}
 

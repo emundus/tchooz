@@ -5,11 +5,11 @@ import Info from '@/components/Utils/Info.vue';
 
 /* Services */
 import emailService from '@/services/email';
+import eventsService from '@/services/events.js';
 
 /* Stores */
-import { useGlobalStore } from '@/stores/global.js';
-import eventsService from '@/services/events.js';
 import Swal from 'sweetalert2';
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'EventEmailSettings',
@@ -18,6 +18,7 @@ export default {
 	props: {
 		event: Object,
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			loading: true,
@@ -46,7 +47,6 @@ export default {
 					displayedOnValue: 1,
 					options: [],
 					reload: 0,
-					optional: true,
 				},
 				{
 					param: 'ics_event_name',
@@ -275,7 +275,7 @@ export default {
 					Swal.fire({
 						position: 'center',
 						icon: 'success',
-						title: Joomla.JText._('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_SUCCESS'),
+						title: this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_SUCCESS'),
 						showConfirmButton: false,
 						allowOutsideClick: false,
 						reverseButtons: true,
@@ -289,12 +289,7 @@ export default {
 						this.$emit('go-back');
 					});
 				} else {
-					// Handle error
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: response.message,
-					});
+					this.alertError('COM_EMUNDUS_ERROR', JSON.parse(response.error.message).message);
 				}
 			});
 		},

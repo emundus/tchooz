@@ -598,14 +598,39 @@ class EmundusHelperEvents
 				$edit_status     = array_unique(array_merge(['0'], $status_for_send));
 			}
 
+			$fnumInfos = $user->fnums[$fnum];
+			$published = !empty($fnumInfos->published) ? (int)$fnumInfos->published : 0;
+
+			// In case of archived/deleted files
+			if(empty($fnumInfos))
+			{
+				if(!class_exists('EmundusModelFiles'))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+				}
+				$m_files = new EmundusModelFiles();
+				$fnumInfos = $m_files->getFnumInfos($fnum);
+				if(!empty($fnumInfos))
+				{
+					$fnumInfos = (object) $fnumInfos;
+
+					$published = (int)$fnumInfos->state;
+				}
+			}
+
 			$is_app_sent = !in_array($current_status, $edit_status);
 			$can_edit    = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read    = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
-
-			$fnumInfos = $user->fnums[$fnum];
+			
 			if ($fnumInfos->applicant_id == $user->id)
 			{
 				$can_edit = !$is_app_sent && !$is_dead_line_passed || (!$is_app_sent && $is_dead_line_passed && $can_edit_after_deadline);
+				if($published !== 1)
+				{
+					$can_edit = false;
+					$is_dead_line_passed = true;
+				}
+
 				$can_read = true;
 			}
 
@@ -693,7 +718,7 @@ class EmundusHelperEvents
 						}
 						else
 						{
-							if ($fnumDetail['published'] == -1)
+							if ($published !== 1)
 							{
 								$reload_url = false;
 								$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_DELETED_FILE'), 'warning');

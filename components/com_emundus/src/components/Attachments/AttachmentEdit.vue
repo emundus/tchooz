@@ -56,6 +56,7 @@
 							name="can_be_viewed"
 							v-model="attachmentCanBeViewed"
 							:disabled="!canUpdate"
+							@change="saveChanges"
 						/>
 						<strong class="b em-toggle-switch"></strong>
 						<strong class="b em-toggle-track"></strong>
@@ -73,6 +74,7 @@
 							name="can_be_deleted"
 							v-model="attachmentCanBeDeleted"
 							:disabled="!canUpdate"
+							@change="saveChanges"
 						/>
 						<strong class="b em-toggle-switch"></strong>
 						<strong class="b em-toggle-track"></strong>
@@ -143,13 +145,14 @@
 				</span>
 			</div>
 		</div>
-		<div v-if="error" class="error-msg">{{ errorMessage }}</div>
+		<div v-if="error && instanciated" class="error-msg">{{ errorMessage }}</div>
 	</div>
 </template>
 
 <script>
 import attachmentService from '@/services/attachment';
 import mixin from '../../mixins/mixin.js';
+import alerts from '@/mixins/alerts.js';
 
 import { useAttachmentStore } from '@/stores/attachment.js';
 import { useGlobalStore } from '@/stores/global.js';
@@ -196,10 +199,11 @@ export default {
 			},
 		},
 	},
-	mixins: [mixin],
+	mixins: [mixin, alerts],
 	emits: ['change-attachment', 'update-displayed'],
 	data() {
 		return {
+			instanciated: false,
 			displayed: true,
 			attachment: {},
 			categories: {},
@@ -235,6 +239,7 @@ export default {
 	},
 	methods: {
 		setAttachment(attachment) {
+			this.instanciated = false;
 			this.attachment = attachment;
 			this.attachmentCanBeViewed = this.attachment.can_be_viewed == '1';
 			this.attachmentCanBeDeleted = this.attachment.can_be_deleted == '1';
@@ -244,8 +249,17 @@ export default {
 			} else {
 				this.attachmentIsValidated = '-2';
 			}
+
+			if (this.is_applicant == 1 && this.attachment.can_be_deleted == 1 && this.attachmentIsValidated == 0) {
+				this.canUpdate = true;
+			}
+			this.instanciated = true;
 		},
 		async saveChanges() {
+			if (!this.instanciated) {
+				return;
+			}
+
 			let formData = new FormData();
 
 			const canBeViewed = this.attachmentCanBeViewed ? '1' : '0';
@@ -268,23 +282,24 @@ export default {
 			if (response.status.update) {
 				this.attachment.modified_by = useUserStore().currentUser;
 				this.attachment.upload_description = this.attachmentDescription != null ? this.attachmentDescription : '';
-				this.attachment.is_validated = this.attachmentIsValidated;
-				this.attachment.can_be_viewed = this.attachmentCanBeViewed;
-				this.attachment.can_be_deleted = this.attachmentCanBeDeleted;
+				this.attachment.is_validated = response.data.is_validated;
+				this.attachment.can_be_viewed = response.data.can_be_viewed;
+				this.attachment.can_be_deleted = response.data.can_be_deleted;
 
-				useAttachmentStore().updateAttachmentOfFnum({
-					fnum: this.fnum,
-					attachment: this.attachment,
-				});
+				useAttachmentStore().updateAttachmentOfFnum({ fnum: this.fnum, attachment: this.attachment });
 
 				if (response.status.file_update) {
+					await this.alertSuccess('COM_EMUNDUS_ATTACHMENTS_UPDATE_FILE_SUCCESS');
 					// need to update file preview
-					const data = await attachmentService.getPreview(useUserStore().displayedUser, this.attachment.filename);
+					const data = await attachmentService.getPreview(
+						useUserStore().displayedUser,
+						this.attachment.filename,
+						this.attachment.aid,
+					);
 
-					useAttachmentStore().setPreview({
-						preview: data,
-						id: this.attachment.aid,
-					});
+					useAttachmentStore().setPreview({ preview: data, id: this.attachment.aid });
+
+					this.$emit('change-attachment', this.attachment.aid);
 				}
 			} else {
 				this.showError(response.msg);
@@ -321,15 +336,6 @@ export default {
 			}
 
 			return allowed_type;
-		},
-	},
-	watch: {
-		attachmentCanBeViewed() {
-			this.saveChanges();
-		},
-
-		attachmentCanBeDeleted() {
-			this.saveChanges();
 		},
 	},
 };

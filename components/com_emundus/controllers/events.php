@@ -19,6 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Traits\TraitResponse;
 
 class EmundusControllerEvents extends BaseController
 {
@@ -28,6 +29,8 @@ class EmundusControllerEvents extends BaseController
 	private $m_events;
 
 	private $booking_access_id = 0;
+
+	use TraitResponse;
 
 	public function __construct($config = array())
 	{
@@ -834,16 +837,14 @@ class EmundusControllerEvents extends BaseController
 	{
 		$response = [
 			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
+			'message' => Text::_('ACCESS_DENIED'),
+			'data'    => [],
+			'code'   => 403
 		];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
+			$response['code'] = 500;
 			$event_id                   = $this->input->getInt('event_id', 0);
 			$applicant_notify           = $this->input->getInt('applicant_notify', 0);
 			$applicant_notify_email     = $this->input->getInt('applicant_notify_email', null);
@@ -860,35 +861,40 @@ class EmundusControllerEvents extends BaseController
 
 			if (!empty($event_id))
 			{
-				$booking_notifications = [
-					'applicant_notify'           => $applicant_notify,
-					'applicant_notify_email'     => $applicant_notify_email,
-					'applicant_recall'           => $applicant_recall,
-					'applicant_recall_frequency' => $applicant_recall_frequency,
-					'applicant_recall_email'     => $applicant_recall_email,
-					'manager_recall'             => $manager_recall,
-					'manager_recall_frequency'   => $manager_recall_frequency,
-					'manager_recall_email'       => $manager_recall_email,
-					'users_recall'               => $users_recall,
-					'users_recall_frequency'     => $users_recall_frequency,
-					'users_recall_email'         => $users_recall_email,
-					'ics_event_name'             => $ics_event_name
-				];
-				$response['status']    = $this->m_events->saveBookingNotifications($event_id, $booking_notifications, $this->user->id);
 
-				if ($response['status'])
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-				}
-				else
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+				if ($applicant_notify && empty($applicant_notify_email)) {
+					$response['message'] = Text::_('COM_EMUNDUS_ERROR_EVENT_APPLICANT_NOTIFY_EMAIL_EMPTY');
+				} else {
+					$booking_notifications = [
+						'applicant_notify'           => $applicant_notify,
+						'applicant_notify_email'     => $applicant_notify_email,
+						'applicant_recall'           => $applicant_recall,
+						'applicant_recall_frequency' => $applicant_recall_frequency,
+						'applicant_recall_email'     => $applicant_recall_email,
+						'manager_recall'             => $manager_recall,
+						'manager_recall_frequency'   => $manager_recall_frequency,
+						'manager_recall_email'       => $manager_recall_email,
+						'users_recall'               => $users_recall,
+						'users_recall_frequency'     => $users_recall_frequency,
+						'users_recall_email'         => $users_recall_email,
+						'ics_event_name'             => $ics_event_name
+					];
+					$response['status']    = $this->m_events->saveBookingNotifications($event_id, $booking_notifications, $this->user->id);
+
+					if ($response['status'])
+					{
+						$response['code'] = 200;
+						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+					}
+					else
+					{
+						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
+					}
 				}
 			}
 		}
 
-		echo json_encode($response);
-		exit();
+		$this->sendJsonResponse($response);
 	}
 
 	public function getavailabilitiesbycampaignsandprograms()

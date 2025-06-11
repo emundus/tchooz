@@ -863,12 +863,22 @@ class EmundusModelApplication extends ListModel
 		return $this->_db->loadAssoc();
 	}
 
-	public function getUploadByID($id)
+	public function getUploadByID(int $id): array
 	{
-		$query = "SELECT * FROM #__emundus_uploads WHERE id=" . $id;
-		$this->_db->setQuery($query);
+		$upload = [];
 
-		return $this->_db->loadAssoc();
+		try {
+			$query = $this->_db->createQuery();
+			$query->select('*')
+				->from($this->_db->quoteName('#__emundus_uploads'))
+				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
+			$this->_db->setQuery($query);
+			$upload = $this->_db->loadAssoc();
+		} catch (\Exception $e) {
+			Log::add('Error getting upload by ID in model/application at query: ' . $query->__toString() . ' - ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $upload;
 	}
 
 	/**
@@ -6156,8 +6166,8 @@ class EmundusModelApplication extends ListModel
 					}
 
                     PluginHelper::importPlugin('emundus', 'custom_event_handler');
-                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data,$data['fnum']));
-                    Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data,'fnum' => $data['fnum']]]);
+                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data, $data['fnum'], $oldDatan, $applicant_id));
+                    Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data, 'fnum' => $data['fnum'], 'oldData' => $oldData, 'applicant_id' => $applicant_id]]);
 				}
 			}
 			catch (Exception $e) {

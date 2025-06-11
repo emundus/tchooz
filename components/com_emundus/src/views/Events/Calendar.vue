@@ -444,7 +444,7 @@ export default {
 				<modal
 					:name="'modal-component'"
 					transition="nice-modal-fade"
-					:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
+					:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded tw-px-4 tw-shadow-modal'"
 					:width="'600px'"
 					:delay="100"
 					:adaptive="true"

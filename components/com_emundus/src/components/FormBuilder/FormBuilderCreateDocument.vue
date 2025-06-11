@@ -208,7 +208,7 @@ import IncrementalSelect from '@/components/IncrementalSelect.vue';
 
 import globalMixin from '@/mixins/mixin';
 import formBuilderMixin from '@/mixins/formbuilder';
-import errorsMixin from '@/mixins/errors';
+import alerts from '@/mixins/alerts.js';
 
 import Swal from 'sweetalert2';
 import fileTypes from '../../../data/form-builder/form-builder-filetypes.json';
@@ -236,7 +236,7 @@ export default {
 	components: {
 		IncrementalSelect,
 	},
-	mixins: [globalMixin, formBuilderMixin, errorsMixin],
+	mixins: [globalMixin, formBuilderMixin, alerts],
 	data() {
 		return {
 			models: [],
@@ -423,16 +423,8 @@ export default {
 			});
 
 			if (empty_names === true) {
-				Swal.fire({
-					type: 'warning',
-					title: this.translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_TYPE'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
-					},
-				});
+				this.alertError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_TYPE');
+
 				return false;
 			}
 
@@ -448,16 +440,8 @@ export default {
 			});
 
 			if (types.length < 1) {
-				Swal.fire({
-					type: 'warning',
-					title: this.translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_FORMAT'),
-					reverseButtons: true,
-					customClass: {
-						title: 'em-swal-title',
-						confirmButton: 'em-swal-confirm-button',
-						actions: 'em-swal-single-action',
-					},
-				});
+				this.alertError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_PLEASE_FILL_FORMAT');
+
 				return false;
 			}
 
@@ -481,7 +465,7 @@ export default {
 					if (response.status) {
 						this.$emit('documents-updated');
 					} else {
-						this.displayError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
+						this.alertError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
 					}
 				});
 			} else {
@@ -517,7 +501,7 @@ export default {
 								if (response.status) {
 									this.$emit('documents-updated');
 								} else {
-									this.displayError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
+									this.alertError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
 								}
 							});
 						}
@@ -527,7 +511,7 @@ export default {
 						if (response.status) {
 							this.$emit('documents-updated');
 						} else {
-							this.displayError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
+							this.alertError('COM_EMUNDUS_FORM_BUILDER_DOCUMENT_SAVE_ERROR', response.msg);
 						}
 					});
 				}

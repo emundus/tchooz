@@ -156,7 +156,7 @@ export default {
 
 <template>
 	<section id="default-actions" class="tw-flex tw-gap-4">
-		<div class="tw-flex tw-items-center tw-gap-2">
+		<div class="tw-flex tw-h-[72px] tw-items-end tw-gap-2">
 			<div v-if="multipleActionsPopover.length > 0">
 				<label class="!tw-mb-0 tw-font-medium tw-opacity-0">{{ translate('COM_EMUNDUS_ONBOARD_ACTIONS') }}</label>
 				<popover

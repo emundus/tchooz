@@ -4590,7 +4590,7 @@ class EmundusModelFiles extends JModelLegacy
 		// remove hikashop orders linked to this file
 		$query->clear()
 			->select($this->_db->quoteName('order_id'))
-			->from($this->_db->quoteName('#__emundus_hikashop_orders'))
+			->from($this->_db->quoteName('#__emundus_hikashop'))
 			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 		$this->_db->setQuery($query);
@@ -5257,15 +5257,31 @@ class EmundusModelFiles extends JModelLegacy
 		$triggers = $m_emails->getEmailTrigger($state, $codes, '0,1');
 
 		if (!empty($triggers)) {
-			foreach($students as $student) {
-				$emails_sent = $m_emails->sendEmailTrigger($state, [$student->code], '0,1', $student, null, $triggers);
+			// If the trigger does not have the applicant as recipient for a manager action AND has no other recipients, given the context is a manager action,
+			// we therefore remove the trigger from the list.
+			foreach ($triggers as $key => $trigger) {
+				foreach ($trigger as $code => $data) {
+					if ($data['to']['to_applicant'] == 0 && empty($data['to']['recipients'])) {
+						unset($triggers[$key][$code]);
+					}
+				}
 
-				if (empty($emails_sent)) {
-					$msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$student->fnum.'</div>';
-					JLog::add('Email trigger not sent for file ' . $student->fnum . ' on status ' . $state, JLog::ERROR, 'com_emundus.email');
-				} else if (count($emails_sent) > 0) {
-					foreach(array_unique($emails_sent) as $recipient) {
-						$msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$recipient.'<br>';
+				if (empty($triggers[$key])) {
+					unset($triggers[$key]);
+				}
+			}
+
+			if (!empty($triggers)) {
+				foreach($students as $student) {
+					$emails_sent = $m_emails->sendEmailTrigger($state, [$student->code], '0,1', $student, null, $triggers);
+
+					if (empty($emails_sent)) {
+						$msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$student->fnum.'</div>';
+						JLog::add('Email trigger not sent for file ' . $student->fnum . ' on status ' . $state, JLog::ERROR, 'com_emundus.email');
+					} else if (count($emails_sent) > 0) {
+						foreach(array_unique($emails_sent) as $recipient) {
+							$msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$recipient.'<br>';
+						}
 					}
 				}
 			}

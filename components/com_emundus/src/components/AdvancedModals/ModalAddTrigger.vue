@@ -2,7 +2,7 @@
 	<!-- modalC -->
 	<modal
 		:name="'modalAddTrigger' + triggerAction"
-		:class="'placement-' + placement + ' ' + classes"
+		:classes="'placement-' + placement + ' ' + classes"
 		transition="nice-modal-fade"
 		:width="'600px'"
 		:delay="100"

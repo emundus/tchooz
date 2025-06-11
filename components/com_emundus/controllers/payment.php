@@ -461,6 +461,23 @@ class EmundusControllerPayment extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_APPLICANT'),
 							'value'   => $customer->getFullName(),
+							'classes' => 'tw-font-semibold',
+							'display' => 'all'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_SYNCHRONIZER'),
+							'value'   => $service_label,
+							'classes' => 'tw-text-profile-full',
+							'display' => 'blocs'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_SYNCHRONIZER'),
+							'value'   => $service_label,
+							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_DATE'),
+							'value'   => $transaction->getCreatedAt(true),
 							'classes' => '',
 							'display' => 'all'
 						],
@@ -471,32 +488,25 @@ class EmundusControllerPayment extends BaseController
 							'display' => 'all'
 						],
 						[
+							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_AMOUNT_AND_STATUS'),
+							'value'   => '<div class="tw-flex tw-gap-3 tw-items-center"><div class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-border tw-rounded-full tw-px-2 tw-py-1 tw-bg-neutral-300 tw-border-neutral-700 tw-text-neutral-700 !tw-m-0 tw-w-fit"><span class="material-symbols-outlined tw-text-neutral-700">payments</span>' . $transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol() . '</div>' . $transaction->getStatus()->getHtmlBadge() . "</div>",
+							'classes' => '',
+							'display' => 'blocs'
+						],
+						[
 							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_AMOUNT'),
 							'value'   => $transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol(),
-							'classes' => '',
-							'display' => 'all'
-						],
-						[
-							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_DATE'),
-							'value'   => $transaction->getCreatedAt(true),
-							'classes' => '',
-							'display' => 'all'
-						],
-						[
-							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_SYNCHRONIZER'),
-							'value'   => $service_label,
-							'classes' => '',
-							'display' => 'all'
-						],
-						[
-							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'),
-							'value' => $transaction->getPaymentMethod()->getLabel(),
-							'classes' => '',
-							'display' => 'all'
+							'display' => 'table'
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_STATUS'),
 							'value'   => $transaction->getStatus()->getHtmlBadge(),
+							'classes' => '',
+							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'),
+							'value' => $transaction->getPaymentMethod()->getLabel(),
 							'classes' => '',
 							'display' => 'all'
 						],
@@ -786,75 +796,102 @@ class EmundusControllerPayment extends BaseController
 			$step_id = $this->input->getInt('id', 0);
 
 			if (!empty($step_id)) {
-				$adjust_balance = $this->input->getInt('adjustBalance', 0);
-				$adjust_balance_step_id = $this->input->getInt('adjustBalanceStepId', 0);
-				$mandatory_products = $this->input->getString('mandatoryProducts', '');
-				$mandatory_products = !empty($mandatory_products) ? explode(',', $mandatory_products) : [];
-				$optional_products = $this->input->getString('optionalProducts', '');
-				$optional_products = !empty($optional_products) ? explode(',', $optional_products) : [];
-				$payment_methods = $this->input->getString('paymentMethods', '');
-				$payment_methods = !empty($payment_methods) ? explode(',', $payment_methods) : [];
-				$synchronizer_id = $this->input->getInt('synchronizerId', 0);
-				$advance_type = $this->input->getInt('advanceType', 0);
-				$advance_amount_editable = $this->input->getInt('advanceAmountEditableByApplicant', 0);
-				$advance_amount = $this->input->getFloat('advanceAmount', 0);
-				$advance_amount_type = $this->input->getString('advanceAmountType', 'fixed');
-				$installment_rules = $this->input->getString('installmentRules', '');
-				$installment_rules = !empty($installment_rules) ? json_decode($installment_rules) : [];
-				$installment_monthday = $this->input->getInt('installmentMonthday', 0);
-				$installment_effect_date = $this->input->getString('installmentEffectDate', '');
-				$description = $this->input->getString('description', '');
+				try {
+					$adjust_balance = $this->input->getInt('adjustBalance', 0);
+					if ($adjust_balance == 0) {
+						$adjust_balance_step_id = 0;
+					} else {
+						$adjust_balance_step_id = $this->input->getInt('adjustBalanceStepId', 0);
+						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
+					}
 
-				$payment_repository = new PaymentRepository();
-				$payment_step_entity = $payment_repository->getPaymentStepById($step_id);
-				$payment_step_entity->setDescription($description);
-				$payment_step_entity->setAdjustBalance($adjust_balance);
-				if (!empty($adjust_balance_step_id)) {
+					$mandatory_products = $this->input->getString('mandatoryProducts', '');
+					$mandatory_products = !empty($mandatory_products) ? explode(',', $mandatory_products) : [];
+					$optional_products = $this->input->getString('optionalProducts', '');
+					$optional_products = !empty($optional_products) ? explode(',', $optional_products) : [];
+					$payment_methods = $this->input->getString('paymentMethods', '');
+					$payment_methods = !empty($payment_methods) ? explode(',', $payment_methods) : [];
+					$synchronizer_id = $this->input->getInt('synchronizerId', 0);
+					if (empty($synchronizer_id)) {
+						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_ID_REQUIRED'));
+					}
+
+					$advance_type = $this->input->getInt('advanceType', 0);
+					$advance_amount_editable = $this->input->getInt('advanceAmountEditableByApplicant', 0);
+					$advance_amount = $this->input->getFloat('advanceAmount', 0);
+					$advance_amount_type = $this->input->getString('advanceAmountType', 'fixed');
+					$installment_rules = $this->input->getString('installmentRules', '');
+					$installment_rules = !empty($installment_rules) ? json_decode($installment_rules) : [];
+					$installment_monthday = $this->input->getInt('installmentMonthday', 0);
+					$installment_effect_date = $this->input->getString('installmentEffectDate', '');
+					$description = $this->input->getString('description', '');
+
+					$payment_repository = new PaymentRepository();
+					$payment_step_entity = $payment_repository->getPaymentStepById($step_id);
+					$payment_step_entity->setDescription($description);
+					$payment_step_entity->setAdjustBalance($adjust_balance);
 					$payment_step_entity->setAdjustBalanceStepId($adjust_balance_step_id);
-				}
-				$payment_step_entity->setAdvanceType($advance_type);
-				$payment_step_entity->setIsAdvanceAmountEditableByApplicant($advance_amount_editable);
-				$payment_step_entity->setAdvanceAmount($advance_amount);
-				$payment_step_entity->setAdvanceAmountType(DiscountType::getInstance($advance_amount_type));
-				$payment_step_entity->setInstallmentMonthday($installment_monthday);
-				if (!empty($installment_effect_date)) {
-					$payment_step_entity->setInstallmentEffectDate($installment_effect_date);
-				} else {
-					$payment_step_entity->setInstallmentEffectDate(null);
-				}
-
-				$products = [];
-				$product_repository = new ProductRepository();
-				if (!empty($mandatory_products)) {
-					foreach ($mandatory_products as $product) {
-						$product_entity = $product_repository->getProductById($product);
-						$product_entity->setMandatory(1);
-						$products[] = $product_entity;
+					$payment_step_entity->setAdvanceType($advance_type);
+					$payment_step_entity->setIsAdvanceAmountEditableByApplicant($advance_amount_editable);
+					$payment_step_entity->setAdvanceAmount($advance_amount);
+					$payment_step_entity->setAdvanceAmountType(DiscountType::getInstance($advance_amount_type));
+					$payment_step_entity->setInstallmentMonthday($installment_monthday);
+					if (!empty($installment_effect_date)) {
+						$payment_step_entity->setInstallmentEffectDate($installment_effect_date);
+					} else {
+						$payment_step_entity->setInstallmentEffectDate(null);
 					}
-				}
-				if (!empty($optional_products)) {
-					foreach ($optional_products as $product) {
-						$product_entity = $product_repository->getProductById($product);
-						$product_entity->setMandatory(0);
-						$products[] = $product_entity;
+
+					$products = [];
+					$product_repository = new ProductRepository();
+					if (!empty($mandatory_products)) {
+						foreach ($mandatory_products as $product) {
+							$product_entity = $product_repository->getProductById($product);
+							$product_entity->setMandatory(1);
+							$products[] = $product_entity;
+						}
 					}
-				}
-				$payment_step_entity->setProducts($products);
+					if (!empty($optional_products)) {
+						foreach ($optional_products as $product) {
+							$product_entity = $product_repository->getProductById($product);
+							$product_entity->setMandatory(0);
+							$products[] = $product_entity;
+						}
+					}
+					$payment_step_entity->setProducts($products);
 
-				$payment_method_entities = [];
-				foreach($payment_methods as $payment_method_id)
-				{
-					$payment_method_entities[] = new PaymentMethodEntity($payment_method_id);
-				}
-				$payment_step_entity->setPaymentMethods($payment_method_entities);
-				$payment_step_entity->setSynchronizerId($synchronizer_id);
-				$payment_step_entity->setInstallmentRules($installment_rules);
+					$payment_method_entities = [];
+					foreach($payment_methods as $payment_method_id)
+					{
+						$payment_method_entities[] = new PaymentMethodEntity($payment_method_id);
+					}
+					$payment_step_entity->setPaymentMethods($payment_method_entities);
 
-				$saved = $payment_repository->flushPaymentStep($payment_step_entity);
-				if ($saved) {
-					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_SAVED'), 'status' => true];
-				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED'), 'status' => false];
+					$found_service = false;
+					$services = $payment_repository->getPaymentServices();
+					foreach($services as $service)
+					{
+						if ($service->id == $synchronizer_id) {
+							$found_service = true;
+							break;
+						}
+					}
+					if (!$found_service)
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_NOT_FOUND'));
+					}
+
+					$payment_step_entity->setSynchronizerId($synchronizer_id);
+					$payment_step_entity->setInstallmentRules($installment_rules);
+
+					$saved = $payment_repository->flushPaymentStep($payment_step_entity);
+					if ($saved) {
+						$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_SAVED'), 'status' => true];
+					} else {
+						$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED'), 'status' => false];
+					}
+				} catch (\Exception $e) {
+					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED') . ': ' . $e->getMessage(), 'status' => false];
 				}
 			}
 		}
