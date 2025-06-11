@@ -5,6 +5,8 @@ import Info from '@/components/utils/Info.vue';
 import Multiselect from 'vue-multiselect';
 import paymentService from '@/services/payment.js';
 import Parameter from '@/components/Utils/Parameter.vue';
+
+import alerts from '@/mixins/alerts.js';
 export default {
 	name: 'WorkflowPaymentStep',
 	props: {
@@ -21,6 +23,7 @@ export default {
 			required: true,
 		},
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			products: [],
@@ -46,6 +49,7 @@ export default {
 					label: 'COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE',
 					helptext: '',
 					displayed: true,
+					hideLabel: true,
 				},
 				{
 					param: 'adjust_balance_step_id',
@@ -82,6 +86,7 @@ export default {
 					label: 'COM_EMUNDUS_PAYMENT_STEP_PAYMENT_ADVANCE_TYPE_EDITABLE',
 					helptext: '',
 					displayed: true,
+					hideLabel: true,
 				},
 				{
 					param: 'advance_amount',
@@ -230,12 +235,9 @@ export default {
 
 			paymentService.savePaymentStepRules(step).then((response) => {
 				if (response.status) {
-					Swal.fire({
-						icon: 'success',
-						title: this.translate('COM_EMUNDUS_SUCCESS'),
-						showConfirmButton: false,
-						timer: 1500,
-					});
+					this.alertSuccess('COM_EMUNDUS_PAYMENT_STEP_SAVED');
+				} else {
+					this.alertError('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED', response.msg);
 				}
 			});
 		},
@@ -381,7 +383,7 @@ export default {
 					bgColor="tw-bg-orange-100"
 				/>
 
-				<select v-model="step.synchronizer_id">
+				<select v-else v-model="step.synchronizer_id">
 					<option value="0">{{ translate('COM_EMUNDUS_PAYMENT_STEP_SELECT_PAYMENT_SERVICE') }}</option>
 					<option v-for="service in paymentServices" :key="'service-' + service.id" :value="service.id">
 						{{ service.name }}

@@ -1051,7 +1051,20 @@ class EmundusControllerFiles extends BaseController
 				$codes[] = $fnum['training'];
 			}
 
-			$trigger_emails = $m_email->getEmailTrigger($state, $codes, '0,1');
+			$trigger_emails = $m_email->getEmailTrigger($state, $codes, $to_applicant);
+			// If the trigger does not have the applicant as recipient for a manager action AND has no other recipients, given the context is a manager action,
+			// we therefore remove the trigger from the list.
+			foreach ($trigger_emails as $key => $trigger) {
+				foreach ($trigger as $code => $data) {
+					if ($data['to']['to_applicant'] == 0 && empty($data['to']['recipients'])) {
+						unset($trigger_emails[$key][$code]);
+					}
+				}
+
+				if (empty($trigger_emails[$key])) {
+					unset($trigger_emails[$key]);
+				}
+			}
 		}
 
 		echo json_encode((object)(array('status' => !empty($trigger_emails), 'msg' => Text::sprintf('COM_EMUNDUS_APPLICATION_MAIL_CHANGE_STATUT_INFO', sizeof($validFnums)))));
@@ -3913,8 +3926,8 @@ class EmundusControllerFiles extends BaseController
 
 				if ($res['data'])
 				{
-					$this->app->triggerEvent('onAfterGenerateLetters', ['letters' => $res['data']]);
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterGenerateLetters', ['letters' => $res['data']]]);
+					$this->app->triggerEvent('onAfterGenerateLetters', ['letters' => $res['data'], 'fnums' => $fnums]);
+					$this->app->triggerEvent('onCallEventHandler', ['onAfterGenerateLetters', ['letters' => $res['data'], 'fnums' => $fnums]]);
 
 					$res['status'] = true;
 				}

@@ -177,7 +177,7 @@ import elementParams from '../../../data/form-builder/form-builder-elements-para
 import formBuilderService from '@/services/formbuilder.js';
 import FormBuilderElementParams from '@/components/FormBuilder/FormBuilderElements/FormBuilderElementParams.vue';
 import TipTapEditor from 'tip-tap-editor';
-import 'tip-tap-editor/style.css';
+import 'tip-tap-editor/tip-tap-editor.css';
 import '../../../../../templates/g5_helium/css/editor.css';
 
 import { useGlobalStore } from '@/stores/global.js';

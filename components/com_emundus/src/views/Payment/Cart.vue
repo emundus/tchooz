@@ -66,12 +66,7 @@ export default {
 	methods: {
 		onAddProductsToCart(products) {
 			this.addProductsToCart(products);
-			this.$refs.modalMarketplace.close();
-		},
-		onCloseDiscountModal() {
-			this.alterationToEdit = null;
-
-			this.$refs.modalDiscount.close();
+			this.onCloseMarketplace();
 		},
 		onAddDiscountToCart(alteration) {
 			paymentService.addAlterationToCart(this.cart.id, alteration).then((response) => {
@@ -348,6 +343,9 @@ export default {
 		openMarketplace() {
 			this.$refs.modalMarketplace.open();
 		},
+		onCloseMarketplace() {
+			this.$refs.modalMarketplace.close();
+		},
 		openDiscountModal(alteration = null) {
 			if (this.isManager) {
 				if (alteration !== null) {
@@ -359,6 +357,10 @@ export default {
 
 				this.$refs.modalDiscount.open();
 			}
+		},
+		onCloseDiscountModal() {
+			this.alterationToEdit = null;
+			this.$refs.modalDiscount.close();
 		},
 	},
 	computed: {
@@ -599,14 +601,20 @@ export default {
 				</div>
 
 				<div class="tw-flex tw-justify-between tw-border-t tw-border-neutral-500 tw-pt-4">
-					<h3>{{ translate('COM_EMUNDUS_TOTAL') }}</h3>
-					<p>
-						<strong>{{ cart.displayed_total }}</strong>
+					<p :class="{ 'tw-text-base tw-font-bold': step.advance_type !== 2 }">{{ translate('COM_EMUNDUS_TOTAL') }}</p>
+					<p :class="{ 'tw-text-base tw-font-bold': step.advance_type !== 2 }">
+						{{ cart.displayed_total }}
 					</p>
 				</div>
 				<div v-if="step.advance_type !== 0" class="tw-flex tw-justify-between">
-					<p class="tw-text-sm">{{ translate('COM_EMUNDUS_TOTAL_ADVANCE') }}</p>
-					<p class="tw-text-sm">{{ cart.displayed_total_advance }}</p>
+					<p v-if="step.advance_type !== 2" class="tw-text-sm">
+						{{ translate('COM_EMUNDUS_TOTAL_ADVANCE') }}
+					</p>
+					<p v-else class="tw-text-base tw-font-bold">{{ translate('COM_EMUNDUS_TOTAL_ADVANCE_FORCED') }}</p>
+
+					<p :class="{ 'tw-text-sm': step.advance_type === 1, 'tw-text-base tw-font-bold': step.advance_type !== 1 }">
+						{{ cart.displayed_total_advance }}
+					</p>
 				</div>
 			</div>
 		</div>
@@ -623,7 +631,12 @@ export default {
 			:height="'80%'"
 			:width="'80%'"
 		>
-			<marketplace :products="nonSelectedProducts" :currency="cart.currency" @addToCart="onAddProductsToCart">
+			<marketplace
+				:products="nonSelectedProducts"
+				:currency="cart.currency"
+				@addToCart="onAddProductsToCart"
+				@close="onCloseMarketplace"
+			>
 			</marketplace>
 		</modal>
 

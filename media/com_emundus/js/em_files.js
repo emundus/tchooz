@@ -1146,7 +1146,8 @@ function runAction(action, url = '', option = '') {
                 dataType:'json',
                 data:({
                     fnums: checkInput,
-                    state: state
+                    state: state,
+                    to_applicant: '0,1'
                 }),
                 success: function(result) {
                     $('.modal-body').empty();

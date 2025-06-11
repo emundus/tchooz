@@ -67,7 +67,7 @@
 /* COMPONENTS */
 import Multiselect from 'vue-multiselect';
 import TipTapEditor from 'tip-tap-editor';
-import 'tip-tap-editor/style.css';
+import 'tip-tap-editor/tip-tap-editor.css';
 import '../../../../../../templates/g5_helium/css/editor.css';
 
 /* SERVICES */

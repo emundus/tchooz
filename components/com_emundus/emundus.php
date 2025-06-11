@@ -648,6 +648,7 @@ Text::script('COM_EMUNDUS_ACTIONS_SEARCH');
 Text::script('COM_EMUNDUS_TROMBINOSCOPE');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_NEW_DOCUMENT');
 Text::script('COM_EMUNDUS_ATTACHMENTS_SIGNERS');
+Text::script('COM_EMUNDUS_ATTACHMENTS_UPDATE_FILE_SUCCESS');
 
 Text::script('COM_EMUNDUS_VIEW_FORM_SELECT_PROFILE');
 Text::script('COM_EMUNDUS_VIEW_FORM_OTHER_PROFILES');
@@ -989,6 +990,7 @@ if ($payment_repository->activated) {
 	Text::script('COM_EMUNDUS_CART_INSTALLMENT_NUMBER_RECAP');
 	Text::script('COM_EMUNDUS_CART_INSTALLMENT_RECAP_THEN');
 	Text::script('COM_EMUNDUS_TOTAL_ADVANCE');
+	Text::script('COM_EMUNDUS_TOTAL_ADVANCE_FORCED');
 	Text::script('COM_EMUNDUS_CART_PAYMENT_RULES');
 	Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE_OR_TOTAL_LABEL');
 	Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE');
@@ -1016,6 +1018,7 @@ if ($payment_repository->activated) {
 	Text::script('COM_EMUNDUS_CART_INSTALLMENT_MONTHDAY_LABEL');
 	Text::script('COM_EMUNDUS_CART_INSTALLMENT_WILL_BEGIN');
 	Text::script('COM_EMUNDUS_ONBOARD_NO_TRANSACTIONS');
+	Text::script('COM_EMUNDUS_PRODUCT_CATEGORY_LABEL');
 	Text::script('COM_EMUNDUS_PRODUCT_CATEGORY_SAVE');
 	Text::script('COM_EMUNDUS_CART_ADJUST_BALANCE_ADVANCE');
 	Text::script('COM_EMUNDUS_ERROR_OCCURED');
@@ -1072,9 +1075,12 @@ if ($payment_repository->activated) {
 	Text::script('COM_EMUNDUS_MANDATORY_FIELDS_MISSING');
 	Text::script('COM_EMUNDUS_ERROR_SAVING_CUSTOMER');
 	Text::script('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL');
+	Text::script('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED');
+	Text::script('COM_EMUNDUS_PAYMENT_STEP_SAVED');
 }
 Text::script('COM_EMUNDUS_ONBOARD_EDITOR_UNDO');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
+Text::script('COM_EMUNDUS_ERROR');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');

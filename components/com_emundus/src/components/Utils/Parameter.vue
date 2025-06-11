@@ -81,12 +81,14 @@
 						:click-to-close="true"
 						:open-on-create="false"
 						:center="true"
+						:classes="'tw-rounded-2xl'"
 					>
 						<component
 							:is="parameter.addNew.component"
 							v-model="value"
 							:componentsProps="this.$props.componentsProps"
 							@saved="onAddNewValue(parameter)"
+							@close="onCloseAddModal(parameter)"
 						>
 						</component>
 					</modal>
@@ -232,7 +234,7 @@
 					<span v-if="parameter.iconLabel" class="material-symbols-outlined tw-mr-1 tw-text-neutral-900">{{
 						parameter.iconLabel
 					}}</span>
-					{{ translate(parameter.label) }}
+					<span>{{ translate(parameter.label) }}</span>
 				</label>
 			</div>
 
@@ -635,8 +637,12 @@ export default {
 
 		onAddNewValue(parameter) {
 			// Close the modal
-			this.$refs['addNew' + parameter.param].close();
+			this.onCloseAddModal(parameter);
 			this.$emit('newValueAdded', parameter);
+		},
+		onCloseAddModal() {
+			// Close the modal
+			this.$refs['addNew' + this.parameter.param].close();
 		},
 		//
 	},

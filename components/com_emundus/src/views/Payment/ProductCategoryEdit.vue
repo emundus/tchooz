@@ -37,7 +37,13 @@ export default {
 				}
 			});
 		},
+		close() {
+			this.$emit('close');
+		},
 		saveCategory() {
+			if (this.category.label.length === 0) {
+				return;
+			}
 			const data = {
 				id: this.category.id,
 				label: this.category.label,
@@ -63,14 +69,16 @@ export default {
 		class="tw-flex tw-flex-col tw-gap-8 tw-rounded-2xl tw-border-neutral-300 tw-bg-white tw-p-8 tw-shadow-standard"
 	>
 		<h1 class="tw-text-center">{{ translate('COM_EMUNDUS_PRODUCT_CATEGORY_ADD') }}</h1>
-
-		<div class="">
-			<label for="category-label"></label>
+		<div class="tw-flex tw-flex-col tw-gap-2">
+			<label for="category-label" class="tw-font-medium">{{ translate('COM_EMUNDUS_PRODUCT_CATEGORY_LABEL') }}</label>
 			<input id="category-label" type="text" v-model="category.label" />
 		</div>
 
-		<div class="tw-flex tw-justify-end">
-			<button class="tw-btn-primary" @click="saveCategory">
+		<div class="tw-flex tw-justify-between">
+			<button class="tw-btn-secondary" @click="close">
+				{{ translate('COM_EMUNDUS_ACTIONS_CANCEL') }}
+			</button>
+			<button class="tw-btn-primary" @click="saveCategory" :disabled="category.label.length === 0">
 				{{ translate('COM_EMUNDUS_PRODUCT_CATEGORY_SAVE') }}
 			</button>
 		</div>

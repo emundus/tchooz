@@ -291,7 +291,7 @@ export default {
 				'tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-neutral-0 tw-p-6 tw-shadow-card': !isModal,
 			}"
 		>
-			<div v-if="isModal" class="tw-sticky tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
+			<div v-if="isModal" class="tw-top-0 tw-z-10 tw-border-b tw-border-neutral-300 tw-bg-white tw-pt-4">
 				<div class="tw-mb-4 tw-flex tw-items-center tw-justify-between">
 					<h2>
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_LOCATION') }}

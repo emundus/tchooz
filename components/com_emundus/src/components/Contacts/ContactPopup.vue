@@ -29,7 +29,7 @@ export default {
 <template>
 	<modal
 		:name="'add-contact-modal'"
-		:class="'placement-center tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-2xl tw-p-8 tw-shadow-modal'"
+		:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-2xl tw-p-8 tw-shadow-modal'"
 		transition="nice-modal-fade"
 		:width="'600px'"
 		:delay="100"
