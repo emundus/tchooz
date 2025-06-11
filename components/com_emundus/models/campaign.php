@@ -2485,13 +2485,19 @@ class EmundusModelCampaign extends ListModel
 		else
 		{
 			$query          = $this->_db->getQuery(true);
-			$lang           = JFactory::getLanguage();
-			$actualLanguage = substr($lang->getTag(), 0, 2);
+			if (!class_exists('EmundusModelTranslations'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
+			}
+			$m_translations = new EmundusModelTranslations();
+			$default_language = $m_translations->getDefaultLanguage();
+			$default_short_code = substr($default_language->lang_code, 0, 2);
 			$types          = implode(";", array_values($types));
 
-			if (empty($document['name'][$actualLanguage]) || empty($types))
+			if (empty($document['name'][$default_short_code]) || empty($types))
 			{
-				$created['msg'] = 'Missing name or types';
+				// Missing name or types
+				$created['msg'] = Text::_('COM_EMUNDUS_ERROR_MISSING_DOCUMENT_NAME_OR_TYPES');
 			}
 			else
 			{
@@ -2500,8 +2506,8 @@ class EmundusModelCampaign extends ListModel
 
 				$query
 					->set($this->_db->quoteName('lbl') . ' = ' . $this->_db->quote('_em'))
-					->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($document['name'][$actualLanguage]))
-					->set($this->_db->quoteName('description') . ' = ' . $this->_db->quote($document['description'][$actualLanguage]))
+					->set($this->_db->quoteName('value') . ' = ' . $this->_db->quote($document['name'][$default_short_code]))
+					->set($this->_db->quoteName('description') . ' = ' . $this->_db->quote($document['description'][$default_short_code]))
 					->set($this->_db->quoteName('allowed_types') . ' = ' . $this->_db->quote($types))
 					->set($this->_db->quoteName('ordering') . ' = ' . $this->_db->quote(0))
 					->set($this->_db->quoteName('nbmax') . ' = ' . $this->_db->quote($document['nbmax']));
