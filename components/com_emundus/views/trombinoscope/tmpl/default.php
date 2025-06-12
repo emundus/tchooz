@@ -149,6 +149,8 @@ if (!empty($this->htmlLetters)) {
             $('#trombi_tmpl').val(default_tmpl);
             $('#trombi_header').val(header);
             $('#trombi_footer').val(footer);
+            $('#trombi_head').val(header);
+            $('#trombi_foot').val(footer);
 
             tinymce.get('trombi_tmpl').setContent(default_tmpl);
             tinymce.get('trombi_head').setContent(header);
