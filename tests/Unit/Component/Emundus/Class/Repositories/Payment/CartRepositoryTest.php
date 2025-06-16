@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use stdClass;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
+use Tchooz\Entities\Contacts\ContactAddressEntity;
 use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Repositories\Payment\CurrencyRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -215,6 +216,8 @@ class CartRepositoryTest extends UnitTestCase
 		$this->createWorkflowWithPayment();
 		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
 		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+		$fake_adress = new ContactAddressEntity($cart->getCustomer()->getId(), '10 passage du drakkar', '', 'La Rochelle', '', 17000, 1);
+		$cart->getCustomer()->setAddress($fake_adress);
 
 		$verified = $this->model->verifyCart($cart, $this->dataset['coordinator']);
 		$this->assertTrue($verified, 'Cart is successfully verified when payment method is selected.');
@@ -234,12 +237,28 @@ class CartRepositoryTest extends UnitTestCase
 		$this->createWorkflowWithPayment();
 		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
 		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+		$fake_adress = new ContactAddressEntity($cart->getCustomer()->getId(), '10 passage du drakkar', '', 'La Rochelle', '', 17000, 1);
+		$cart->getCustomer()->setAddress($fake_adress);
 
 		$verified = $this->model->verifyCart($cart, $this->dataset['coordinator']);
 		$this->assertTrue($verified, 'Cart is successfully verified with products in it.');
 
 		// Simulate no products in cart
 		$cart->setProducts([]);
+		$this->expectException(\Exception::class);
+		$this->model->verifyCart($cart, $this->dataset['coordinator']);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::verifyCart
+	 * @return void
+	 */
+	public function testVerifyCartThrowsErrorIfNoAddress()
+	{
+		$this->createWorkflowWithPayment();
+		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
+		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+
 		$this->expectException(\Exception::class);
 		$this->model->verifyCart($cart, $this->dataset['coordinator']);
 	}
