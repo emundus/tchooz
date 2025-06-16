@@ -938,6 +938,10 @@ class CartRepository
 			throw new \Exception(Text::_('COM_EMUNDUS_CART_EMPTY'));
 		}
 
+		if (empty($cart->getCustomer()->getAddress())) {
+			throw new \Exception(Text::_('COM_EMUNDUS_CART_CUSTOMER_ADDRESS_NOT_SET'));
+		}
+
 		return true;
 	}
 

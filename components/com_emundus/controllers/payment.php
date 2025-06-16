@@ -802,7 +802,10 @@ class EmundusControllerPayment extends BaseController
 						$adjust_balance_step_id = 0;
 					} else {
 						$adjust_balance_step_id = $this->input->getInt('adjustBalanceStepId', 0);
-						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
+
+						if (empty($adjust_balance_step_id)) {
+							throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
+						}
 					}
 
 					$mandatory_products = $this->input->getString('mandatoryProducts', '');
