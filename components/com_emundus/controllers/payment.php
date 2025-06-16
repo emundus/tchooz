@@ -419,6 +419,19 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	public function getfiltertransactionsfiles()
+	{
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'r', $this->app->getIdentity()->id)) {
+			$transaction_repository = new TransactionRepository();
+			$fnums = $transaction_repository->getTransactionsFileNumbers();
+			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $fnums];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
 	public function gettransactions()
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];

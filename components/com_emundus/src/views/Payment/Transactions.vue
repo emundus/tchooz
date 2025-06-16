@@ -117,6 +117,17 @@ export default {
 				multiselect: true,
 				alwaysDisplay: true,
 			});
+
+			this.config.transactions.tabs[0].filters.push({
+				label: 'COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_FILES',
+				allLabel: 'COM_EMUNDUS_ONBOARD_TRANSACTION_FILTER_FILES_ALL',
+				getter: 'getfiltertransactionsfiles',
+				controller: 'payment',
+				key: 'fnum',
+				values: null,
+				multiselect: true,
+				alwaysDisplay: true,
+			});
 		}
 	},
 	methods: {
@@ -155,11 +166,21 @@ export default {
 				this.translate('COM_EMUNDUS_TRANSACTION_PRODUCT_QUANTITY') +
 				'</strong></div>' +
 				'<div>' +
-				transaction.data.products.length +
+				(transaction.data.products && transaction.data.products.length ? transaction.data.products.length : 0) +
 				'</div>' +
 				'</div> <hr class="tw-m-0">';
 
-			if (transaction.data.products.length > 0) {
+			if (transaction.data.products && transaction.data.products.length > 0) {
+				html +=
+					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
+					'<div><strong>' +
+					this.translate('COM_EMUNDUS_TRANSACTION_PRODUCT_QUANTITY') +
+					'</strong></div>' +
+					'<div>' +
+					transaction.data.products.length +
+					'</div>' +
+					'</div> <hr class="tw-m-0">';
+
 				// set header, label, price and description
 				html +=
 					'<div class="tw-grid tw-grid-cols-3 tw-items-center">' +
@@ -190,7 +211,7 @@ export default {
 				html += '</div>';
 			}
 
-			if (transaction.data.alterations.length > 0) {
+			if (transaction.data.alterations && transaction.data.alterations.length > 0) {
 				html +=
 					'<div class="tw-grid tw-grid-cols-2 tw-items-center tw-gap-3">' +
 					'<div><strong>' +

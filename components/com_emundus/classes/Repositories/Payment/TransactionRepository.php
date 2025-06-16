@@ -667,6 +667,27 @@ class TransactionRepository
 		return $applicants;
 	}
 
+	public function getTransactionsFileNumbers(): array {
+		$fnums = [];
+
+		$query = $this->db->createQuery();
+
+		$query->select('DISTINCT(transaction.fnum) as value, transaction.fnum as label')
+			->from($this->db->quoteName('#__emundus_payment_transaction', 'transaction'))
+			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'candidature') . ' ON candidature.fnum = transaction.fnum')
+			->where($this->db->quoteName('transaction.fnum') . ' IS NOT NULL')
+			->andWhere('candidature.published = 1');
+
+		try {
+			$this->db->setQuery($query);
+			$fnums = $this->db->loadObjectList();
+		} catch (\Exception $e) {
+			Log::add('Failed to get file numbers list: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.transaction');
+		}
+
+		return $fnums;
+	}
+
 	public function prepareExport(array $transactions): array
 	{
 		$lines = [];
@@ -675,6 +696,7 @@ class TransactionRepository
 			$lines[] = [
 				Text::_('COM_EMUNDUS_TRANSACTION_ID'),
 				Text::_('COM_EMUNDUS_TRANSACTION_EXTERNAL_REFERENCE'),
+				Text::_('COM_EMUNDUS_TRANSACTION_FNUM'),
 				Text::_('COM_EMUNDUS_TRANSACTION_APPLICANT'),
 				Text::_('COM_EMUNDUS_TRANSACTION_APPLICANT_ID'),
 				Text::_('COM_EMUNDUS_CAMPAIGN'),
@@ -683,6 +705,7 @@ class TransactionRepository
 				Text::_('COM_EMUNDUS_TRANSACTION_SYNCHRONIZER'),
 				Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'),
 				Text::_('COM_EMUNDUS_TRANSACTION_STATUS'),
+				Text::_('COM_EMUNDUS_TRANSACTION_ITEM_ID'),
 				Text::_('COM_EMUNDUS_TRANSACTION_PRODUCT_LABEL'),
 				Text::_('COM_EMUNDUS_TRANSACTION_PRODUCT_PRICE'),
 				Text::_('COM_EMUNDUS_TRANSACTION_PRODUCT_DESCRIPTION'),
@@ -693,46 +716,47 @@ class TransactionRepository
 				$data = $transaction->getData();
 				$data = json_decode($data);
 				$customer = $this->getTransactionCustomer($transaction);
-
 				$campaign_label = $this->getCampaignLabel($transaction->getFnum());
-				foreach ($data->products as $product) {
-					$lines[] = [
-						$transaction->getId(),
-						$transaction->getExternalReference(),
-						$customer->getFullName(),
-						$customer->getUserId(),
-						$campaign_label,
-						$transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol(),
-						$transaction->getCreatedAt(true),
-						$this->getServiceLabel($transaction->getSynchronizerId()),
-						$transaction->getPaymentMethod()->getLabel(),
-						$transaction->getStatus()->getLabel(),
-						$product->label,
-						$product->displayed_price,
-						$product->description
-					];
+				$default_line_content = [
+					$transaction->getId(),
+					$transaction->getExternalReference(),
+					$transaction->getFnum(),
+					$customer ? $customer->getFullName() : '',
+					$customer ? $customer->getUserId() : '',
+					$campaign_label,
+					$transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol(),
+					$transaction->getCreatedAt(true),
+					$this->getServiceLabel($transaction->getSynchronizerId()),
+					$transaction->getPaymentMethod()->getLabel(),
+					$transaction->getStatus()->getLabel(),
+				];
+
+				if (!empty($data->products)) {
+					foreach ($data->products as $product) {
+						$lines[] = [
+							...$default_line_content,
+							$product->id,
+							$product->label,
+							$product->displayed_price,
+							$product->description
+						];
+					}
 				}
 
-				foreach ($data->alterations as $alteration) {
-					$lines[] = [
-						$transaction->getId(),
-						$transaction->getExternalReference(),
-						$customer->getFullName(),
-						$customer->getUserId(),
-						$campaign_label,
-						$transaction->getAmount() . ' ' . $transaction->getCurrency()->getSymbol(),
-						$transaction->getCreatedAt(true),
-						$this->getServiceLabel($transaction->getSynchronizerId()),
-						$transaction->getPaymentMethod()->getLabel(),
-						$transaction->getStatus()->getLabel(),
-						Text::_('COM_EMUNDUS_DISCOUNT'),
-						$alteration->displayed_amount . ' ' . $transaction->getCurrency()->getSymbol(),
-						$alteration->description
-					];
+				if (!empty($data->alterations)) {
+					foreach ($data->alterations as $alteration) {
+						$lines[] = [
+							...$default_line_content,
+							$alteration->id ?? '',
+							Text::_('COM_EMUNDUS_DISCOUNT'),
+							$alteration->displayed_amount . ' ' . $transaction->getCurrency()->getSymbol(),
+							$alteration->description
+						];
+					}
 				}
 			}
-
 		}
+
 		return $lines;
 	}
 }
