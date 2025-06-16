@@ -110,7 +110,7 @@ class AmmonRepository
 								if (empty($registration_referee)) {
 									throw new \Exception('Failed to create registration different referee in ammon.');
 								} else {
-									Log::add('Registration referee created successfully for ' . $this->fnum);
+									Log::add('Registration referee created successfully for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 								}
 							}
 						} else {
