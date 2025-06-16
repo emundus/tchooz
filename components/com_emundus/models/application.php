@@ -6161,7 +6161,7 @@ class EmundusModelApplication extends ListModel
 					}
 
                     PluginHelper::importPlugin('emundus', 'custom_event_handler');
-                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data, $data['fnum'], $oldDatan, $applicant_id));
+                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data, $data['fnum'], $oldData, $applicant_id));
                     Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data, 'fnum' => $data['fnum'], 'oldData' => $oldData, 'applicant_id' => $applicant_id]]);
 				}
 			}
