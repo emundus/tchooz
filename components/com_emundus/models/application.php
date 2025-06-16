@@ -4230,12 +4230,7 @@ class EmundusModelApplication extends ListModel
 				$query .= " AND eu.id in ($ids)";
 			}
 
-			if (!empty($profile)) {
-				$query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
-			}
-			else {
-				$query .= " ORDER BY sa.category, sa.ordering, sa.value ASC";
-			}
+            $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
 
 			$this->_db->setQuery($query);
 			$docs = $this->_db->loadObjectList();
