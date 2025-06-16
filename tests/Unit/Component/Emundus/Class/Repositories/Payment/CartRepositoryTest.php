@@ -13,6 +13,7 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Joomla\CMS\Factory;
 use stdClass;
 use Tchooz\Entities\Payment\ProductEntity;
+use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Repositories\Payment\CurrencyRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -186,5 +187,60 @@ class CartRepositoryTest extends UnitTestCase
 		$cart = $this->model->getCartByFnum($this->dataset['fnum'], 0, $this->dataset['coordinator']);
 		$this->assertNotEmpty($cart);
 		$this->assertEquals($cart_id, $cart->getId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::createTransaction
+	 * @return void
+	 */
+	public function testCreateTransactionFromCart()
+	{
+		$this->createWorkflowWithPayment();
+		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
+		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+		$transaction = $this->model->createTransaction($cart);
+		$this->assertNotEmpty($transaction, 'La transaction a été créée à partir du panier.');
+		$this->assertContainsOnlyInstancesOf(TransactionEntity::class, [$transaction], 'La transaction est une instance de TransactionEntity.');
+		$this->assertEquals($transaction->getAmount(), $cart->getTotal(), 'Le montant du panier et le montant de la transaction sont équivalents.');
+		$this->assertNotEmpty($transaction->getData(), 'Les données de la transaction sont présentes.');
+		$this->assertEquals($transaction->getPaymentMethod()->getId(), $cart->getSelectedPaymentMethod()->getId(), 'La méthode de paiement de la transaction correspond à la méthode de paiement sélectionnée dans le panier.');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::verifyCart
+	 * @return void
+	 */
+	public function testVerifyCartThrowsErrorIfNoPaymentMethodSelected()
+	{
+		$this->createWorkflowWithPayment();
+		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
+		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+
+		$verified = $this->model->verifyCart($cart, $this->dataset['coordinator']);
+		$this->assertTrue($verified, 'Cart is successfully verified when payment method is selected.');
+
+		// Simulate no payment method selected
+		$cart->setSelectedPaymentMethod(null);
+		$this->expectException(\Exception::class);
+		$this->model->verifyCart($cart, $this->dataset['coordinator']);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::verifyCart
+	 * @return void
+	 */
+	public function testVerifyCartThrowsErrorIfNoProductsInCart()
+	{
+		$this->createWorkflowWithPayment();
+		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
+		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
+
+		$verified = $this->model->verifyCart($cart, $this->dataset['coordinator']);
+		$this->assertTrue($verified, 'Cart is successfully verified with products in it.');
+
+		// Simulate no products in cart
+		$cart->setProducts([]);
+		$this->expectException(\Exception::class);
+		$this->model->verifyCart($cart, $this->dataset['coordinator']);
 	}
 }
