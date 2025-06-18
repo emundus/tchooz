@@ -576,7 +576,7 @@ class EmundusModelSign extends ListModel
 
 			foreach ($uploads as $upload)
 			{
-				$upload->name = $upload->name . ' - ' . EmundusHelperDate::displayDate($upload->timedate);
+				$upload->name = $upload->name . ' - ' . EmundusHelperDate::displayDate($upload->timedate, 'DATE_FORMAT_LC2', 0);
 			}
 		}
 		catch (\Exception $e)

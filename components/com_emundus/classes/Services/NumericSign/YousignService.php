@@ -38,12 +38,25 @@ class YousignService
 	{
 	}
 
-	public function manageRequest(int $request_id, array $yousign_requests = []): bool
+	public function manageRequest(int $request_id, array $yousign_requests = [], object $yousign_api = null): bool
 	{
 		if (empty($request_id))
 		{
 			throw new \Exception('Request ID is empty.', 400);
 		}
+
+		if(empty($yousign_api))
+		{
+			// Get yousign setup
+			if (!class_exists('EmundusModelSync'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/sync.php';
+			}
+			$m_sync = new \EmundusModelSync();
+			$api    = $m_sync->getApi(0, 'yousign');
+		}
+
+		$config = (!empty($api) && !empty($api->config)) ? json_decode($api->config) : null;
 
 		try
 		{
@@ -62,7 +75,8 @@ class YousignService
 			$yousign_request = $this->yousign_repository->loadYousignRequestByRequestId($request);
 			if (empty($yousign_request))
 			{
-				$yousign_request = $this->flushYousignRequest($application_file, $request, $this->user);
+				$expiration_date = (!empty($config) && !empty($config->expiration_date)) ? $config->expiration_date : '';
+				$yousign_request = $this->flushYousignRequest($application_file, $request, $this->user, $expiration_date);
 			}
 
 			if (!empty($yousign_request->getId()))
@@ -159,7 +173,7 @@ class YousignService
 											// Check if we have signers in DB and add them to request
 											if (empty($api_request->signers) && !empty($request->getSigners()))
 											{
-												$this->addSigners($request, $yousign_request);
+												$this->addSigners($request, $yousign_request, $config);
 
 												$this->dispatchEvent('onYousignSignersUpdated', [
 													'status'           => 'success',
@@ -231,7 +245,7 @@ class YousignService
 		return true;
 	}
 
-	private function flushYousignRequest(array $application_file, Request $request, User $user): YousignRequests
+	private function flushYousignRequest(array $application_file, Request $request, User $user, string $expiration_date = ''): YousignRequests
 	{
 		$yousign_request = new YousignRequests($user->id);
 
@@ -242,6 +256,10 @@ class YousignService
 			$yousign_request->setRequest($request);
 			$yousign_request->setApiStatus(ApiStatus::PENDING);
 			$yousign_request->setId($this->yousign_repository->flush($yousign_request));
+			if(!empty($expiration_date))
+			{
+				$yousign_request->setExpirationDate($expiration_date);
+			}
 
 			return $yousign_request;
 		}
@@ -257,7 +275,7 @@ class YousignService
 	{
 		try
 		{
-			$api_request = $this->yousign_synchronizer->initRequest($yousign_request->getName());
+			$api_request = $this->yousign_synchronizer->initRequest($yousign_request->getName(), 'email', $yousign_request->getExpirationDate());
 			if ($api_request['status'] === 201)
 			{
 				$yousign_request->setProcedureId($api_request['data']->id);
@@ -339,7 +357,7 @@ class YousignService
 		return $yousign_request;
 	}
 
-	private function addSigners(Request $request, YousignRequests $yousign_request): YousignRequests
+	private function addSigners(Request $request, YousignRequests $yousign_request, object $config = null): YousignRequests
 	{
 		$api_signers = $this->yousign_synchronizer->getSigners($yousign_request->getProcedureId());
 
@@ -385,7 +403,9 @@ class YousignService
 					}
 				}
 
-				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position);
+				$signature_level = !empty($config) && !empty($config->signature_level) ? $config->signature_level : 'electronic_signature';
+				$signature_authentication_mode = !empty($config) && !empty($config->signature_authentication_mode) ? $config->signature_authentication_mode : 'otp_email';
+				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position, $signature_level, $signature_authentication_mode);
 				if ($api_signer['status'] == 201)
 				{
 					$yousign_request->addSigner($api_signer['data']->id, $signer->id, $api_signer['data']->signature_link, !empty($signature_position) ? json_encode($signature_position) : null);

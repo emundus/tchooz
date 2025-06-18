@@ -41,7 +41,10 @@
 			<transition name="fade" mode="in-out">
 				<ul v-if="displayRecipients">
 					<li v-for="fnum in fnums" :key="fnum">
-						<span v-if="recipients[fnum]">{{ recipients[fnum].username }} - {{ fnum }} - {{ recipients[fnum].tel ? recipients[fnum].tel : translate('COM_EMUNDUS_SMS_RECIPIENT_NO_TEL') }}</span>
+						<span v-if="recipients[fnum]"
+							>{{ recipients[fnum].username }} - {{ fnum }} -
+							{{ recipients[fnum].tel ? recipients[fnum].tel : translate('COM_EMUNDUS_SMS_RECIPIENT_NO_TEL') }}</span
+						>
 						<span v-else>{{ fnum }}</span>
 					</li>
 				</ul>
