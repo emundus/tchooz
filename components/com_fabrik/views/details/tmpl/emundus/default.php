@@ -41,6 +41,14 @@ endif;
 
 
 $this->is_iframe = $app->input->get('iframe', 0);
+$format = $app->input->get('format', 'html');
+
+if($format === 'pdf')
+{
+    // Call emundus method
+    EmundusHelperFabrik::generatePdf($form, $this->groups, $this->params);
+    exit;
+}
 
 ?>
 
