@@ -88,7 +88,7 @@ class PlgFabrik_FormEmundusexpertagreement extends plgFabrik_Form
 		require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
 		$user = Factory::getApplication()->getIdentity();
 
-		if ($this->getParam('onBeforeLoadVerification', 1) == 1 && !EmundusHelperAccess::asPartnerAccessLevel($user->id))
+		if ($this->getParam('onBeforeLoadVerification', 1) == 1)
 		{
 			$app         = Factory::getApplication();
 			$jinput      = $app->input;
