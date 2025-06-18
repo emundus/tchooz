@@ -293,7 +293,7 @@
 					<input
 						:value="formatDateForDisplay(inputValue)"
 						v-on="inputEvents"
-						class="form-control fabrikinput tw-w-full"
+						class="form-control fabrikinput !tw-w-auto"
 						:class="parameter.classes ? parameter.classes : ''"
 						style="box-shadow: none"
 						:id="paramId + '_input'"
@@ -639,7 +639,8 @@ export default {
 			return res.test(email);
 		},
 		formatDateForDisplay(date) {
-			if (!date) return '00:00';
+			if (!date && this.parameter.type === 'datetime') return '00:00';
+			if (!date && this.parameter.type === 'date') return '';
 			return date.split('-').reverse().join('/');
 		},
 		bookingSlotIdUpdated(value) {
