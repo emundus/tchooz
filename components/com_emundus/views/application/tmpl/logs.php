@@ -394,50 +394,6 @@ else {
         }
     });
 
-    function exportLogs(fnum) {
-        xhr = new XMLHttpRequest();
-        xhr.open('POST', 'index.php?option=com_emundus&controller=files&task=exportLogs', true);
-
-        xhr.onreadystatechange = function () {
-            if (xhr.readyState == 4) {
-                if (xhr.status == 200) {
-                    const response = JSON.parse(xhr.response);
-
-                    if (response) {
-                        let file_link = document.createElement('a');
-                        file_link.id = 'file-link';
-                        file_link.href = response;
-                        file_link.download = fnum + '_logs.csv';
-                        file_link.innerText = Joomla.Text._('COM_EMUNDUS_LOGS_DOWNLOAD');
-                        file_link.click();
-                    } else {
-                        $('#log-export-btn').hide();
-                        Swal.fire({
-                            title: Joomla.Text._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
-                            type: 'error',
-                            confirmButtonText: Joomla.Text._('OK')
-                        });
-                    }
-                } else {
-                    alert('Error: ' + xhr.status);
-                }
-            }
-        };
-
-        let body = new FormData();
-
-        const crud = $('#crud-logs').val();
-        const types = $('#type-logs').val();
-        const persons = $('#actors-logs').val();
-
-        body.append('fnum', String(fnum));
-        body.append('crud', JSON.stringify(crud));
-        body.append('types', JSON.stringify(types));
-        body.append('persons', JSON.stringify(persons));
-
-        xhr.send(body);
-    }
-
     document.querySelector('#log-reset-filter-btn').addEventListener('click', function () {
         resetFilters();
     });
@@ -487,6 +443,49 @@ else {
             grid_button.classList.add('em-neutral-600-color','em-border-neutral-600');
             grid_button.classList.remove('em-main-500-color','active','em-border-main-500');
         }
+    }
+
+    function exportLogs(fnum) {
+        let body = new FormData();
+
+        const crud = $('#crud-logs').val();
+        const types = $('#type-logs').val();
+        const persons = $('#actors-logs').val();
+
+        body.append('fnum', fnum);
+        body.append('crud', crud ? crud : ['c', 'r', 'u', 'd']);
+        body.append('types', types ? types : []);
+        body.append('persons', persons ? persons : []);
+
+        fetch('index.php?option=com_emundus&controller=files&task=exportLogs', {
+            method: 'POST',
+            body: body
+        }).then((response) => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        }).then((response) => {
+            if (response.status) {
+                let file_link = document.createElement('a');
+                file_link.style.display = 'none';
+                file_link.href = response.data;
+                file_link.download = fnum + '_logs.csv';
+                document.body.appendChild(file_link);
+                file_link.click();
+                document.body.removeChild(file_link);
+            } else {
+                $('#log-export-btn').hide();
+                Swal.fire({
+                    title: Joomla.Text._('COM_EMUNDUS_LOGS_DOWNLOAD_ERROR'),
+                    icon: 'error',
+                    confirmButtonText: Joomla.Text._('OK')
+                });
+            }
+        }).catch((error) => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
     }
 </script>
 

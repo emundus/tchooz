@@ -973,7 +973,7 @@ class EmundusHelperEmails
 		}
 	}
 
-	static function getLogo($only_filename = false, $training = null): string
+	static function getLogo($only_filename = false, $training = null, $file_path = false): string
 	{
 		$logo = 'images/custom/logo_custom.png';
 
@@ -1026,7 +1026,12 @@ class EmundusHelperEmails
 		// Check if we are on http or https
 		if(Factory::getApplication()->isClient('cli')) {
 			$base_url = Factory::getApplication()->get('live_site');
-		} else
+		}
+		elseif ($file_path)
+		{
+			$base_url = JPATH_BASE . '/';
+		}
+		else
 		{
 			$base_url = Uri::base();
 		}

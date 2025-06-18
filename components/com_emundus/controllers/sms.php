@@ -192,30 +192,37 @@ class EmundusControllerSMS extends JControllerLegacy
 		if (EmundusHelperAccess::asAccessAction($this->sms_action_id, 'c', $this->user->id))
 		{
 			$message = $this->app->input->getString('message', '');
-			$fnums = $this->app->input->getString('fnums', '');
-			$template_id = $this->app->input->getInt('template_id', 0);
-			$fnums = explode(',', $fnums);
-			$valid_fnums = [];
 
-			foreach ($fnums as $fnum) {
-				if (EmundusHelperAccess::asAccessAction($this->sms_action_id, 'r', $this->user->id, $fnum)) {
-					$valid_fnums[] = $fnum;
+			if (!empty($message)) {
+				$fnums = $this->app->input->getString('fnums', '');
+				$template_id = $this->app->input->getInt('template_id', 0);
+				$fnums = explode(',', $fnums);
+				$valid_fnums = [];
+
+				foreach ($fnums as $fnum) {
+					if (EmundusHelperAccess::asAccessAction($this->sms_action_id, 'r', $this->user->id, $fnum)) {
+						$valid_fnums[] = $fnum;
+					}
 				}
-			}
 
-			if (!empty($valid_fnums)) {
-				$receivers = $this->model->createReceiversFromFnums($valid_fnums);
-				if (!empty($message) && !empty($receivers)) {
-					$stored = $this->model->storeSmsToSend($message, $receivers, $template_id, $this->user->id);
+				if (!empty($valid_fnums)) {
+					$receivers = $this->model->createReceiversFromFnums($valid_fnums);
+					if (!empty($receivers)) {
+						$stored = $this->model->storeSmsToSend($message, $receivers, $template_id, $this->user->id);
 
-					if ($stored) {
-						$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_SMS_STORED_IN_QUEUE'), 'status' => true];
+						if ($stored) {
+							$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_SMS_STORED_IN_QUEUE'), 'status' => true];
+						} else {
+							$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_SMS_NOT_SENT_FAILED_TO_STORE_IT_IN_QUEUE'), 'status' => false];
+						}
 					} else {
-						$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_SMS_NOT_SENT'), 'status' => false];
+						$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_SMS_NOT_SENT_NO_VALID_RECEIVERS'), 'status' => false];
 					}
 				} else {
-					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_SMS_NOT_SENT'), 'status' => false];
+					$response = ['code' => 403, 'message' => Text::_('ACCESS_DENIED'), 'status' => false];
 				}
+			} else {
+				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_SMS_NOT_SENT_EMPTY_MESSAGE'), 'status' => false];
 			}
 		}
 

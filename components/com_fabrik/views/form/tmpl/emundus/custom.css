@@ -25,7 +25,7 @@ form .fabrikGroupColumns.fabrikGroup .row .fabrikElementContainer {
     height: calc(100vh - 72px);
     transition: all .3s;
     width: 425px;
-    z-index: 9999;
+    z-index: 10;
 }
 
 #aside-comment-section #comments {

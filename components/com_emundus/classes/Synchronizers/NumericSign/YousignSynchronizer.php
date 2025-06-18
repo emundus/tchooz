@@ -12,6 +12,8 @@ namespace Tchooz\Synchronizers\NumericSign;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use Smalot\PdfParser\Parser;
 use Tchooz\api\Api;
 use Tchooz\Traits\TraitDispatcher;
@@ -50,12 +52,17 @@ class YousignSynchronizer extends Api
 		}
 	}
 
-	public function initRequest(string $name, string $delivery_mode = 'email'): array
+	public function initRequest(string $name, string $delivery_mode = 'email', string $expiration_date = ''): array
 	{
 		$payload = [
 			'name'          => $name,
-			'delivery_mode' => $delivery_mode,
+			'delivery_mode' => $delivery_mode
 		];
+		
+		if(!empty($expiration_date))
+		{
+			$payload['expiration_date'] = $expiration_date;
+		}
 
 		try
 		{
@@ -375,7 +382,7 @@ class YousignSynchronizer extends Api
 		return $signers;
 	}
 
-	public function addSigner(string $procedure_id, \stdClass $signer, string $document_id, object|string|null $signature_position = ''): array
+	public function addSigner(string $procedure_id, \stdClass $signer, string $document_id, object|string|null $signature_position = '', string $signature_level = 'electronic_signature', string $signature_authentication_mode = 'otp_email'): array
 	{
 		$payload = [
 			'info'                          => [
@@ -384,9 +391,28 @@ class YousignSynchronizer extends Api
 				'last_name'  => $signer->lastname,
 				'locale'     => 'fr',
 			],
-			'signature_level'               => 'electronic_signature',
-			'signature_authentication_mode' => 'otp_email'
+			'signature_level'               => $signature_level,
+			'signature_authentication_mode' => $signature_authentication_mode
 		];
+
+		if($signature_authentication_mode == 'otp_sms')
+		{
+			$phoneUtil = PhoneNumberUtil::getInstance();
+
+			$phone_number = $signer->phone_1;
+			if (preg_match('/^\w{2}/', $phone_number)) {
+				$region     = substr($phone_number, 0, 2);
+				$phone_number = substr($phone_number, 2);
+
+				$phone_number = $phoneUtil->parse($phone_number, $region);
+			}
+
+			if ($phoneUtil->isValidNumber($phone_number)) {
+				$phone_number = $phoneUtil->format($phone_number, PhoneNumberFormat::E164);
+
+				$payload['info']['phone_number'] = $phone_number;
+			}
+		}
 
 		if (!empty($signature_position))
 		{

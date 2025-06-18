@@ -269,8 +269,26 @@ foreach ($mod_em_campaign_show_registration_steps as $step)
 					}
 					else
 					{
-						$register_url = $redirect_url . "?course=" . $currentCampaign->code . "&cid=" . $currentCampaign->id;
-					}
+                        // Parse redirect URL to ensure it is correct
+						$parsedUrl = parse_url($redirect_url);
+						parse_str($parsedUrl['query'] ?? '', $params);
+                        $params['course'] = $currentCampaign->code;
+                        $params['cid'] = $currentCampaign->id;
+						$newQuery = http_build_query($params);
+
+                        if($parsedUrl['scheme'])
+                        {
+	                        $register_url =
+		                        ($parsedUrl['scheme'] ?? 'http') . '://' .
+		                        ($parsedUrl['host'] ?? '') .
+		                        (isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '') .
+		                        ($parsedUrl['path'] ?? '') .
+		                        '?' . $newQuery;
+                        }
+                        else {
+                            $register_url = $redirect_url . '?' . $newQuery;
+                        }
+                    }
 					if (!empty($mod_em_campaign_itemid))
 					{
 						$register_url .= "&Itemid=" . $mod_em_campaign_itemid;

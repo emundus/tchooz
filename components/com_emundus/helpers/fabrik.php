@@ -15,6 +15,8 @@ require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
 include_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -2381,5 +2383,251 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 			}
 		}
+	}
+
+    /**
+     * Extract numeric value from currency fields
+     *
+     * @param   mixed $value
+     *
+     * @return float
+     */
+    public static function extractNumericValue(mixed $value): float
+    {
+        // Step 1: Extract the first number-like segment (with digits and optional commas/dots)
+        if (!preg_match('/-?\d(?:[\s00A0]?\d|[.,])*/', $el, $matches)) {
+            return 0.0; // No valid number found
+        }
+
+        $number = $matches[0];
+
+        // Step 2: Normalize separators (dots and commas)
+        $commaPos = strrpos($number, ',');
+        $dotPos   = strrpos($number, '.');
+
+        if ($commaPos !== false && $dotPos !== false) {
+            if ($commaPos > $dotPos) {
+                // European: "1.234,56"
+                $number = str_replace(['.',','], ['','.'], $number); // remove thousand dots and convert decimal comma
+            } else {
+                // US: "1,234.56"
+                $number = str_replace(',', '', $number);     // remove thousand commas
+            }
+        } elseif ($commaPos !== false) {
+            // Assume comma is decimal separator
+            $number = str_replace(',', '.', $number);
+        } else {
+            // Only dot or plain digits
+            if (substr_count($number, '.') > 1) {
+                // Too many dots? Likely thousand separators → remove all
+                $number = str_replace('.', '', $number);
+            }
+        }
+
+        // Finally, remove spaces used as thousand separators
+        $number = str_replace(' ', '', $number);
+
+        return (float)$number;
+    }
+
+	public static function generatePdf($form, $groups, $params)
+	{
+		/* GET LOGO */
+		if(!class_exists('EmundusHelperEmails')) {
+			require_once JPATH_SITE . '/components/com_emundus/helpers/emails.php';
+		}
+		$logo = EmundusHelperEmails::getLogo(false, null, true);
+
+		$type = pathinfo($logo, PATHINFO_EXTENSION);
+		$data = file_get_contents($logo);
+		$logo_base64 = 'data:image/' . $type . ';base64,' . base64_encode($data);
+		/* END LOGO */
+
+		$htmldata = '<html>
+				<head>
+				<title>'.$form->label.'</title>
+				  <meta name="author" content="eMundus">
+				</head>
+				<body>';
+		$htmldata .= '<header><table style="width: 100%"><tr><td><img src="'. $logo_base64 .'" width="auto" height="60"/><hr/></td></tr></table></header>';
+
+		$htmldata .= '<h2 class="pdf-page-title">' . $form->label . '</h2>';
+		foreach ($groups as $group) {
+			if (str_contains($group->css, 'display:none')) {
+				continue;
+			}
+
+			$htmldata .= '<h3 class="group">' . $group->title . '</h3>';
+
+			$htmldata .= '<table class="pdf-forms">';
+
+			foreach ($group->elements as $element) {
+				if(!$element->hidden)
+				{
+					if($element->plugin === 'textarea') {
+						$htmldata .= '</table>';
+						$htmldata .= '<div style="width: 93.5%;padding: 8px 16px;">';
+						$htmldata .= '<div style="width: 100%; padding: 4px 8px;background-color: #F3F3F3;color: #000000;border: solid 1px #A4A4A4;border-bottom: unset;font-size: 12px">' .  (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '')  . '</div>';
+						$htmldata .= '<div style="width: 100%; padding: 4px 8px;color: #000000;border: solid 1px #A4A4A4;font-size: 12px;word-break:break-word; hyphens:auto;">' . $element->element  . '</div>';
+						$htmldata .= '</div>';
+						$htmldata .= '<table class="pdf-forms">';
+					}
+					else
+					{
+						$htmldata .= '<tr>';
+						$htmldata .= '<td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td>';
+
+						if (!empty($element->element))
+						{
+							// Remove img tags from the element value
+							$element->element = preg_replace('/<img[^>]+\>/i', '', $element->element);
+
+							$htmldata .= '<td> ' . $element->element . '</td>';
+						}
+
+						$htmldata .= '</tr>';
+					}
+				}
+			}
+
+			$htmldata .= '</table>';
+		}
+
+		$htmldata .= "
+			<style>
+					@page { 
+						margin: 130px 25px; 
+						font-family: Helvetica, Arial, sans-serif;
+					}
+					header { position: fixed; top: -120px; left: 0px; right: 0px; }
+					header hr {
+						border: none;
+						height: 1px;
+						background-color: #A4A4A4;
+						margin-top: 12px;
+					}
+					.page-break { page-break-before: always; }
+					hr {
+						border: solid 1px black;
+					}
+					h2 {
+						font-size: 18px;
+						line-height: 16px;
+						margin-top: 4px;
+						margin-bottom: 0;
+					}
+					h2.pdf-page-title{
+					    background-color: #EAEAEA;
+					    padding: 10px 12px;
+					    border-radius: 2px;
+					    margin-right: 16px;
+					}
+					h3 {
+					  font-style: normal;
+					  font-weight: 600;
+					  font-size: 16px;
+					  line-height: 14px;
+					  margin-bottom: 8px;
+                    }
+                    h3.group{
+                      padding-left: 16px;
+                    }
+                    td{
+                    	font-size: 12px;
+                    }
+                    .pdf-forms{
+                   	   border-spacing: 0;
+                    }
+                    .pdf-repeat-count{
+                       margin-top: 12px;
+                       margin-bottom: 6px;
+                       padding-left: 16px; 
+                    }
+                    .pdf-forms th{
+                       font-size: 12px;
+                       font-weight: 400;
+                    }
+                    .pdf-forms th.background{
+                       background-color: #EDEDED;
+                       border-top: solid 1px #A4A4A4;
+                       border-left: solid 1px #A4A4A4;
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    table.pdf-forms{
+                       width: 100%;
+                       page-break-inside:auto;
+                       padding: 0 16px;
+                    }
+                    .pdf-forms tr{
+                       page-break-inside:avoid; 
+                       page-break-after:auto
+                    }
+                    .pdf-forms td{
+                       border-collapse: collapse;
+                       padding: 8px;
+                       width: 100%;
+                       border-left: solid 1px #A4A4A4;
+  					   border-top: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr td:first-child {
+  					   width: 30%;
+					}
+                    .pdf-forms tr td:nth-child(2){
+                       width:70%; 
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms td.background-light{
+                       width: auto;
+                    }
+                    .pdf-forms tr td[colspan='2']{
+                       border-right: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr:last-child td{
+                       border-bottom: solid 1px #A4A4A4;
+                    }
+                    .pdf-forms tr:last-child td.background-light{
+                       border-right: solid 1px #A4A4A4 !important;
+                    }
+                    .pdf-attachments{
+                       font-size: 14px;
+                    }
+                    .pdf-attachments li {
+                       margin-bottom: 6px;
+                    }
+                    @media print {
+                        .breaker{
+                            page-break-before: always;
+                        }
+                    }
+			</style>";
+
+		$htmldata .= '<script type="text/php">
+			        if ( isset($pdf) ) {
+			            $x = 570;
+			            $y = 760;
+			            $text = "{PAGE_NUM} / {PAGE_COUNT}";
+			            $font = $fontMetrics->get_font("helvetica", "bold");
+			            $size = 8;
+			            $color = array(0,0,0);
+			            $word_space = 0.0;  //  default
+			            $char_space = 0.0;  //  default
+			            $angle = 0.0;   //  default
+			            $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+			        }
+    			</script>';
+		$htmldata .= '</body></html>';
+
+		$filename = JPATH_BASE . '/tmp/test.pdf';
+
+		/** DOMPDF */
+		$options = new Options();
+		$options->set('defaultFont', 'helvetica');
+		$options->set('isPhpEnabled', true);
+		$dompdf = new Dompdf($options);
+
+		$dompdf->loadHtml($htmldata);
+		$dompdf->render();
+
+		return $dompdf->stream($filename, array("Attachment" => false));
 	}
 }

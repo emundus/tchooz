@@ -201,7 +201,10 @@ export default {
 			const mandatoryFields = this.displayedFields.filter((field) => !field.optional);
 			const missingFields = mandatoryFields.filter((field) => !field.value || field.value === '');
 			if (missingFields.length > 0) {
-				this.alertError('COM_EMUNDUS_MANDATORY_FIELDS_MISSING', missingFields.map((field) => field.label).join(', '));
+				this.alertError(
+					'COM_EMUNDUS_MANDATORY_FIELDS_MISSING',
+					missingFields.map((field) => this.translate(field.label)).join(', '),
+				);
 				this.loading = false;
 				return;
 			}

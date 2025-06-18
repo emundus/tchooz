@@ -3284,19 +3284,20 @@ class EmundusModelSettings extends ListModel
 		{
 			$config = [
 				'authentication' => [
-					'client_id'    => isset($setup->authentication->client_id) ?? '',
+					'client_id'     => isset($setup->authentication->client_id) ?? '',
 					'client_secret' => isset($setup->authentication->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->client_secret) : '',
 				],
-				'endpoint' => isset($setup->endpoint) ?? '',
-				'mode' => isset($setup->mode) ?? 'TEST',
-				'return_url' => $setup->success_url ?? '',
+				'endpoint'       => isset($setup->endpoint) ?? '',
+				'mode'           => isset($setup->mode) ?? 'TEST',
+				'return_url'     => $setup->success_url ?? '',
 			];
 		}
 		else
 		{
 			$config_keys = ['authentication', 'endpoint', 'mode', 'return_url'];
-			$config = json_decode($app->config, true);
-			foreach ($config_keys as $key) {
+			$config      = json_decode($app->config, true);
+			foreach ($config_keys as $key)
+			{
 				if (isset($setup->$key))
 				{
 					if ($key == 'authentication')
@@ -3334,7 +3335,8 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$updated = $this->db->execute();
 
-		} catch (Exception $e)
+		}
+		catch (Exception $e)
 		{
 			Log::add('Failed to update sogecommerce settings : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
@@ -3693,9 +3695,11 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$params = $this->db->loadResult();
 
-			if (!empty($params)) {
+			if (!empty($params))
+			{
 				$params = json_decode($params, true);
-				if ($params['displayed']) {
+				if ($params['displayed'])
+				{
 					$rankingAddon = new AddonEntity(
 						Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_RANKING'),
 						'ranking',
@@ -3713,7 +3717,8 @@ class EmundusModelSettings extends ListModel
 			$payment_repo = new PaymentRepository();
 			$paymentAddon = $payment_repo->getAddon();
 
-			if ($paymentAddon->displayed == 1) {
+			if ($paymentAddon->displayed == 1)
+			{
 				$addons[] = $paymentAddon;
 			}
 		}
@@ -3822,13 +3827,16 @@ class EmundusModelSettings extends ListModel
 					$updated = $this->db->execute();
 
 					$payment_repository = new PaymentRepository();
-					$payment_action_id = $payment_repository->getActionId();
+					$payment_action_id  = $payment_repository->getActionId();
 					$query->clear()
 						->update($this->db->quoteName('#__emundus_setup_step_types'));
 
-					if ($enabled) {
+					if ($enabled)
+					{
 						$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(1));
-					} else {
+					}
+					else
+					{
 						$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(0));
 					}
 
@@ -4176,15 +4184,26 @@ class EmundusModelSettings extends ListModel
 		if (empty($app->config) || $app->config == '{}')
 		{
 			$config = [
-				'base_url'       => $base_url,
-				'mode'           => $setup->mode,
-				'create_webhook' => $setup->create_webhook,
-				'authentication' => [
+				'base_url'                      => $base_url,
+				'mode'                          => $setup->mode,
+				'create_webhook'                => $setup->create_webhook,
+				'signature_level'               => $setup->signature_level,
+				'signature_authentication_mode' => $setup->signature_authentication_mode,
+				'authentication'                => [
 					'type'          => 'bearer',
 					'token_storage' => 'database',
 					'token'         => EmundusHelperFabrik::encryptDatas($setup->token)
 				]
 			];
+
+			if (!empty($setup->expiration_date) && $setup->expiration_date != 'Invalid Date')
+			{
+				$config['expiration_date'] = $setup->expiration_date;
+			}
+			else
+			{
+				$config['expiration_date'] = null;
+			}
 		}
 		else
 		{
@@ -4201,10 +4220,21 @@ class EmundusModelSettings extends ListModel
 				$token = EmundusHelperFabrik::encryptDatas($token);
 			}
 
-			$config['base_url']                = $base_url;
-			$config['authentication']['token'] = $token;
-			$config['create_webhook']          = $setup->create_webhook;
-			$config['mode']                    = $setup->mode;
+			$config['base_url']                      = $base_url;
+			$config['authentication']['token']       = $token;
+			$config['create_webhook']                = $setup->create_webhook;
+			$config['signature_level']               = $setup->signature_level;
+			$config['signature_authentication_mode'] = $setup->signature_authentication_mode;
+			$config['mode']                          = $setup->mode;
+
+			if (!empty($setup->expiration_date) && $setup->expiration_date != 'Invalid Date')
+			{
+				$config['expiration_date'] = $setup->expiration_date;
+			}
+			else
+			{
+				$config['expiration_date'] = null;
+			}
 		}
 
 		try
@@ -4315,21 +4345,21 @@ class EmundusModelSettings extends ListModel
 			$query = $this->db->getQuery(true);
 
 			$query->select('eu.id, eu.filename, ecc.applicant_id, eu.thumbnail')
-				->from($this->db->quoteName('#__emundus_uploads','eu'))
-				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature','ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('eu.fnum'))
+				->from($this->db->quoteName('#__emundus_uploads', 'eu'))
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('eu.fnum'))
 				->where($this->db->quoteName('eu.id') . ' = :upload_id')
 				->bind(':upload_id', $upload_id, ParameterType::INTEGER);
 			$this->db->setQuery($query);
 			$file = $this->db->loadObject();
 
-			if(!empty($file->filename))
+			if (!empty($file->filename))
 			{
-				$file_path = JPATH_ROOT.'/images/emundus/files/'.$file->applicant_id.'/'.$file->filename;
+				$file_path = JPATH_ROOT . '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
 
 				// Check if file exists
-				if(file_exists($file_path))
+				if (file_exists($file_path))
 				{
-					if(empty($file->thumbnail))
+					if (empty($file->thumbnail))
 					{
 						try
 						{
@@ -4362,7 +4392,8 @@ class EmundusModelSettings extends ListModel
 						}
 
 					}
-					else {
+					else
+					{
 						$base64Thumbnail = $file->thumbnail;
 					}
 
@@ -4371,19 +4402,21 @@ class EmundusModelSettings extends ListModel
 					// If pdf, get text content
 					if (pathinfo($file->filename, PATHINFO_EXTENSION) === 'pdf')
 					{
-						$parser = new Parser();
-						$pdf = $parser->parseFile($file_path);
+						$parser                = new Parser();
+						$pdf                   = $parser->parseFile($file_path);
 						$infos['pages_length'] = count($pdf->getPages());
-						$infos['text'] = $pdf->getText();
+						$infos['text']         = $pdf->getText();
 					}
 
 					return $infos;
 				}
-				else {
+				else
+				{
 					throw new Exception('File not found: ' . $file_path);
 				}
 			}
-			else {
+			else
+			{
 				throw new Exception('File not found for upload ID: ' . $upload_id);
 			}
 		}
@@ -4407,15 +4440,16 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$sync = $this->db->loadObject();
 
-			if(!empty($sync->id))
+			if (!empty($sync->id))
 			{
-				$config = json_decode($sync->config, true);
+				$config               = json_decode($sync->config, true);
 				$config['secret_key'] = EmundusHelperFabrik::encryptDatas($secret_key);
-				$sync->config = json_encode($config);
+				$sync->config         = json_encode($config);
 
 				return $this->db->updateObject('#__emundus_setup_sync', $sync, 'id');
 			}
-			else {
+			else
+			{
 				throw new Exception('Sync not found for type: ' . $type);
 			}
 		}

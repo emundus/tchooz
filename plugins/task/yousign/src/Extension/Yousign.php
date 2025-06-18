@@ -139,7 +139,7 @@ class Yousign extends CMSPlugin implements SubscriberInterface
 
 					foreach ($not_signed_requests as $not_signed_request)
 					{
-						$failed = !$yousign_service->manageRequest($not_signed_request->getId(), $yousign_requests);
+						$failed = !$yousign_service->manageRequest($not_signed_request->getId(), $yousign_requests, $api);
 					}
 				}
 			}

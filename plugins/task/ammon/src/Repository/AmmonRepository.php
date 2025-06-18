@@ -110,7 +110,7 @@ class AmmonRepository
 								if (empty($registration_referee)) {
 									throw new \Exception('Failed to create registration different referee in ammon.');
 								} else {
-									Log::add('Registration referee created successfully for ' . $this->fnum);
+									Log::add('Registration referee created successfully for ' . $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 								}
 							}
 						} else {
@@ -477,7 +477,7 @@ class AmmonRepository
 			$query->select('u.email')
 				->from($this->db->quoteName('#__users', 'u'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes_repeat_sales_referents', 'sales'), 'sales.sales_referents = u.id')
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp'), 'esp.id = sales.programme_id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp'), 'esp.id = sales.parent_id')
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc'), 'esc.training = esp.code')
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'), 'ecc.campaign_id = esc.id')
 				->where('ecc.fnum = ' . $this->db->quote($fnum));
