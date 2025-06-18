@@ -79,6 +79,60 @@ export default {
 					helptext: '',
 					displayed: true,
 				},
+				{
+					param: 'expiration_date',
+					type: 'date',
+					placeholder: '',
+					value: null,
+					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_EXPIRATION_DATE',
+					helptext: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_EXPIRATION_DATE_HELP',
+					displayed: true,
+					optional: true,
+					placement: 'bottom',
+					allownull: true,
+				},
+				{
+					param: 'signature_level',
+					type: 'select',
+					placeholder: '',
+					value: 'electronic_signature',
+					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_LEVEL',
+					displayed: true,
+					options: [
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_LEVEL_ELECTRONIC',
+							value: 'electronic_signature',
+						},
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_LEVEL_ADVANCED',
+							value: 'advanced_electronic_signature',
+						},
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_LEVEL_QUALIFIED',
+							value: 'qualified_electronic_signature',
+						},
+					],
+					optional: true,
+				},
+				{
+					param: 'signature_authentication_mode',
+					type: 'select',
+					placeholder: '',
+					value: 'otp_email',
+					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_AUTHENTICATION_MODE',
+					displayed: true,
+					options: [
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_AUTHENTICATION_MODE_EMAIL',
+							value: 'otp_email',
+						},
+						{
+							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_AUTHENTICATION_MODE_SMS',
+							value: 'otp_sms',
+						},
+					],
+					optional: true,
+				},
 			],
 		};
 	},
@@ -194,13 +248,34 @@ export default {
 				</div>
 
 				<div v-for="field in fields" :key="field.param" class="tw-w-full" v-show="field.displayed">
-					<Parameter :ref="'yousign_' + field.param" :parameter-object="field" @valueUpdated="checkConditional" />
+					<Parameter
+						:ref="'yousign_' + field.param"
+						:parameter-object="field"
+						@valueUpdated="checkConditional"
+						:help-text-type="'above'"
+					/>
 
 					<Info
 						class="tw-mt-3"
 						v-if="field.param === 'create_webhook'"
 						title="COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_CREATE_WEBHOOK_HELP_TITLE"
 						text="COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_CREATE_WEBHOOK_HELP"
+						:accordion="true"
+					/>
+
+					<Info
+						class="tw-mt-3"
+						v-if="field.param === 'signature_level'"
+						title="COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_LEVEL_HELP_TITLE"
+						text="COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_LEVEL_HELP"
+						:accordion="true"
+					/>
+
+					<Info
+						class="tw-mt-3"
+						v-if="field.param === 'signature_authentication_mode'"
+						title="COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_AUTHENTICATION_MODE_HELP_TITLE"
+						text="COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_SIGNATURE_AUTHENTICATION_MODE_HELP"
 						:accordion="true"
 					/>
 				</div>

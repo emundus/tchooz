@@ -589,7 +589,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function setConstants($user_id, $post = null, $passwd = '', $fnum = null)
+	public function setConstants(int $user_id, ?array $post = null, string $passwd = '', ?string $fnum = null, string $content = ''): array
 	{
 		$patterns = array();
 		$replacements = array();
@@ -633,6 +633,7 @@ class EmundusModelEmails extends JModelList
 			);
 
 			if (!empty($fnum)) {
+				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 				$patterns[] = '/\[FNUM\]/';
 				$replacements[] = $fnum;
 
@@ -725,6 +726,34 @@ class EmundusModelEmails extends JModelList
 				{
 					Log::add('Error when try to set constants for bookin module',Log::ERROR,'com_emundus.email');
 				}
+
+				if (!empty($content) && (str_contains($content, '[LAST_COMMENT]') || str_contains($content, '[LAST_COMMENT_DATE]') || str_contains($content, '[LAST_COMMENT_AUTHOR]') || str_contains($content, '[LAST_COMMENT_TARGET]')))
+				{
+					$patterns[] = '/\[LAST_COMMENT\]/';
+					$patterns[] = '/\[LAST_COMMENT_DATE\]/';
+					$patterns[] = '/\[LAST_COMMENT_AUTHOR\]/';
+					$patterns[] = '/\[LAST_COMMENT_TARGET\]/';
+					if (!class_exists('EmundusModelComments'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/comments.php');
+					}
+					$m_comments   = new EmundusModelComments();
+					$last_comment = $m_comments->getComments($ccid, $current_user, false, [], null, null, 1);
+					if (!empty($last_comment[0]))
+					{
+						$replacements[] = $last_comment[0]['comment_body'];
+						$replacements[] = $last_comment[0]['date'];
+						$replacements[] = $last_comment[0]['username'];
+						$replacements[] = $m_comments->getCommentTarget($last_comment[0]);
+					}
+					else
+					{
+						$replacements[] = '';
+						$replacements[] = '';
+						$replacements[] = '';
+						$replacements[] = '';
+					}
+				}
 			}
 		}
 
@@ -791,7 +820,7 @@ class EmundusModelEmails extends JModelList
 			return array('patterns' => array(), 'replacements' => array());
 		}
 
-		$constants = $this->setConstants($user_id, $post, $passwd, $fnum);
+		$constants = $this->setConstants($user_id, $post, $passwd, $fnum, $content);
 
 		$patterns     = $constants['patterns'];
 		$replacements = $constants['replacements'];
@@ -801,7 +830,7 @@ class EmundusModelEmails extends JModelList
 			$patterns[] = '/\[' . $tag['tag'] . '\]/';
 			$value      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
 
-			if (strpos($value, 'php|') === false) {
+			if (!str_contains($value, 'php|')) {
 				$request = explode('|', $value);
 
 				if (count($request) === 3) {

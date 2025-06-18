@@ -4052,34 +4052,30 @@ class EmundusControllerFiles extends BaseController
 
 	public function exportLogs()
 	{
-		$user = JFactory::getUser();
-
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+		$user = $this->_user;
 		$fnum = $this->input->getString('fnum', '');
 
-		// get crud, types, persons
-		$crud    = json_decode($this->input->getString('crud', ''));
-		$types   = json_decode($this->input->getString('types', ''));
-		$persons = json_decode($this->input->getString('persons', ''));
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum))
+		{
+			// get crud, types, persons
+			$crud    = json_decode($this->input->getString('crud', ''));
+			$types   = json_decode($this->input->getString('types', ''));
+			$persons = json_decode($this->input->getString('persons', ''));
 
-		if (!empty($fnum)) {
-			if (EmundusHelperAccess::asAccessAction(37, 'r', $user->id, $fnum)) {
-				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-				$m_logs = $this->getModel('Logs');
-				$res    = $m_logs->exportLogs($fnum, $persons, $types, $crud);
-			}
-			else {
-				$res = array(
-					'status' => false,
-					'msg'    => ''
-				);
-			}
-		}
-		else {
-			$res = array('status' => false, 'msg' => Text::_('INVALID_PARAMETERS'));
+			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+			$m_logs = $this->getModel('Logs');
+			$data    = $m_logs->exportLogs($fnum, $persons, $types, $crud);
+
+			$response = [
+				'status' => true,
+				'code'   => 200,
+				'msg'    => Text::_('COM_EMUNDUS_LOGS_EXPORT_SUCCESS'),
+				'data'   => $data
+			];
 		}
 
-		echo json_encode($res);
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	public function checkIfSomeoneElseIsEditing()

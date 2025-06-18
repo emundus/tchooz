@@ -419,6 +419,19 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
+	public function getfiltertransactionsfiles()
+	{
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'r', $this->app->getIdentity()->id)) {
+			$transaction_repository = new TransactionRepository();
+			$fnums = $transaction_repository->getTransactionsFileNumbers();
+			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $fnums];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
 	public function gettransactions()
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
@@ -802,7 +815,10 @@ class EmundusControllerPayment extends BaseController
 						$adjust_balance_step_id = 0;
 					} else {
 						$adjust_balance_step_id = $this->input->getInt('adjustBalanceStepId', 0);
-						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
+
+						if (empty($adjust_balance_step_id)) {
+							throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_ADJUST_BALANCE_STEP_ID_REQUIRED'));
+						}
 					}
 
 					$mandatory_products = $this->input->getString('mandatoryProducts', '');
@@ -824,7 +840,7 @@ class EmundusControllerPayment extends BaseController
 					$installment_rules = !empty($installment_rules) ? json_decode($installment_rules) : [];
 					$installment_monthday = $this->input->getInt('installmentMonthday', 0);
 					$installment_effect_date = $this->input->getString('installmentEffectDate', '');
-					$description = $this->input->getString('description', '');
+					$description = $this->input->getRaw('description', '');
 
 					$payment_repository = new PaymentRepository();
 					$payment_step_entity = $payment_repository->getPaymentStepById($step_id);

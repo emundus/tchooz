@@ -1562,7 +1562,7 @@ class EmundusModelApplication extends ListModel
 							if (!empty($element->label) && $element->label != ' ') {
 
 								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
-									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00')) {
+									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
 										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
 									}
 									else {
@@ -1705,7 +1705,7 @@ class EmundusModelApplication extends ListModel
 									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
 										if (in_array($elements[$j]->plugin,['date','jdate'])) {
-											if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00')) {
+											if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
 												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
 											}
 											else {
@@ -1832,7 +1832,7 @@ class EmundusModelApplication extends ListModel
 									continue;
 								}
 								if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
-									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00')) {
+									if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
 										$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
 									}
 									else {
@@ -2219,7 +2219,7 @@ class EmundusModelApplication extends ListModel
 												if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
 													if (in_array($elements[$j]->plugin,['date','jdate'])) {
-														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00')) {
+														if (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
 															$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j], 'date_form_format'), strtotime($r_elt));
 														}
 														else {
@@ -2518,7 +2518,7 @@ class EmundusModelApplication extends ListModel
 											//
 
 											if (in_array($element->plugin,['date','jdate']) && !empty($element->content)) {
-												if ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00') {
+												if ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00') {
 													$elt = date(EmundusHelperFabrik::getFabrikDateParam($element, 'date_form_format'), strtotime($element->content));
 												}
 												else {
@@ -3000,7 +3000,7 @@ class EmundusModelApplication extends ListModel
 
 												$params = json_decode($elements[$j]->params);
 
-												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00'))) {
+												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00'))) {
 													$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_table_format'), (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_store_as_local'));
 												}
 												elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
@@ -3210,7 +3210,7 @@ class EmundusModelApplication extends ListModel
 
 											if ((!empty($r_elt) || $r_elt == 0) && $key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
 
-												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00'))) {
+												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00'))) {
 													$elt = EmundusHelperDate::displayDate($r_elt, EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_table_format'), (int) EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_store_as_local'));
 												}
 												elseif (($elements[$j]->plugin == 'birthday' || $elements[$j]->plugin == 'birthday_remove_slashes') && $r_elt > 0) {
@@ -3452,7 +3452,7 @@ class EmundusModelApplication extends ListModel
 												if ($show_empty_fields == 0 && ($element->content == '0000-00-00 00:00:00' || empty($element->content))) {
 													continue;
 												}
-												elseif (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00')) {
+												elseif (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
 													$elt = EmundusHelperDate::displayDate($element->content, EmundusHelperFabrik::getFabrikDateParam($element,'date_table_format'), (int) EmundusHelperFabrik::getFabrikDateParam($element,'date_store_as_local'));
 												}
 												else {
@@ -3824,7 +3824,7 @@ class EmundusModelApplication extends ListModel
 									if ($key != 'id' && $key != 'parent_id' && isset($elements[$j]) && $elements[$j]->plugin != 'display') {
 
 										if (in_array($elements[$j]->plugin,['date','jdate'])) {
-											if (!empty($elements[$j]->content) && ($r_elt != '0000-00-00 00:00:00' || $r_elt != '0000-00-00')) {
+											if (!empty($elements[$j]->content) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00')) {
 												$elt = date(EmundusHelperFabrik::getFabrikDateParam($elements[$j],'date_form_format'), strtotime($r_elt));
 											}
 											else {
@@ -3925,7 +3925,7 @@ class EmundusModelApplication extends ListModel
 								if (!empty($element->label) && $element->label != ' ' && $element->plugin != 'display') {
 
 									if (in_array($element->plugin,['date','jdate']) && $element->content > 0) {
-										if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' || $element->content != '0000-00-00')) {
+										if (!empty($element->content) && ($element->content != '0000-00-00 00:00:00' && $element->content != '0000-00-00')) {
 											$elt = date(EmundusHelperFabrik::getFabrikDateParam($element,'date_form_format'), strtotime($element->content));
 										}
 										else {
@@ -4230,12 +4230,7 @@ class EmundusModelApplication extends ListModel
 				$query .= " AND eu.id in ($ids)";
 			}
 
-			if (!empty($profile)) {
-				$query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
-			}
-			else {
-				$query .= " ORDER BY sa.category, sa.ordering, sa.value ASC";
-			}
+            $query .= " ORDER BY sap.mandatory DESC,sap.ordering,sa.value ASC";
 
 			$this->_db->setQuery($query);
 			$docs = $this->_db->loadObjectList();
@@ -6166,7 +6161,7 @@ class EmundusModelApplication extends ListModel
 					}
 
                     PluginHelper::importPlugin('emundus', 'custom_event_handler');
-                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data, $data['fnum'], $oldDatan, $applicant_id));
+                    Factory::getApplication()->triggerEvent('onAfterUpdateAttachment', array($data, $data['fnum'], $oldData, $applicant_id));
                     Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterUpdateAttachment', ['attachment' => $data, 'fnum' => $data['fnum'], 'oldData' => $oldData, 'applicant_id' => $applicant_id]]);
 				}
 			}

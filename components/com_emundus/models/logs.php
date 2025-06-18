@@ -540,7 +540,7 @@ class EmundusModelLogs extends JModelList
 				fwrite($fp, $csv_file);
 				fclose($fp);
 
-				return Uri::base() . 'tmp/' . $fnum . '_logs.csv';
+				return Uri::base() . 'index.php?option=com_emundus&task=getfile&u=tmp/' . $fnum . '_logs.csv';
 			}
 			else {
 				Log::add('Could not create csv file in model logs', Log::ERROR, 'com_emundus');

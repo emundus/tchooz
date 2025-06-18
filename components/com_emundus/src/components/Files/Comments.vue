@@ -116,7 +116,7 @@
 								</button>
 							</div>
 						</div>
-						<p class="comment-body" v-else>{{ comment.comment_body }}</p>
+						<p class="comment-body" v-else v-html="comment.comment_body"></p>
 					</div>
 					<div
 						v-if="editable != comment.id"
@@ -197,7 +197,7 @@
 											</button>
 										</div>
 									</div>
-									<p class="comment-body" v-else>{{ child.comment_body }}</p>
+									<p class="comment-body" v-else v-html="child.comment_body"></p>
 								</div>
 								<div v-if="editable != child.id" class="tw-flex tw-flex-row tw-items-center">
 									<span
