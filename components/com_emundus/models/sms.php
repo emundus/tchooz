@@ -449,7 +449,11 @@ class EmundusModelSMS extends JModelList
 					$user_infos = $this->db->loadAssoc();
 
 					if (!empty($user_infos)) {
-						$receivers[] = new ReceiverEntity($user_infos['tel'], $ccid, $user_infos['user_id']);
+						if (!empty($user_infos['tel'])) {
+							$receivers[] = new ReceiverEntity($user_infos['tel'], $ccid, $user_infos['user_id']);
+						} else {
+							Log::add('No phone number found for fnum ' . $fnum, Log::ERROR, 'com_emundus.sms');
+						}
 					} else {
 						Log::add('No user found for fnum ' . $fnum, Log::ERROR, 'com_emundus.sms');
 					}
