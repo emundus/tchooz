@@ -11,6 +11,7 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Joomla\CMS\Component\ComponentHelper;
 
 class Release2_6_4Installer extends ReleaseInstaller
 {
@@ -52,6 +53,47 @@ class Release2_6_4Installer extends ReleaseInstaller
 
 			$tasks[] = EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACTIONS_DELETE', 'Supprimer');
 			$tasks[] = EmundusHelperUpdate::insertTranslationsTag('COM_EMUNDUS_ACTIONS_DELETE', 'Delete', 'override', 0, null, null, 'en-GB');
+
+			$query->clear()
+				->select('id, published, params')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=application&layout=history'))
+				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('applicantmenu'));
+			$menuItem = $this->db->setQuery($query)->loadAssoc();
+
+			if(empty($menuItem)){
+				$datas       = [
+					'menutype'     => 'applicantmenu',
+					'title'        => 'Voir mon dossier',
+					'alias'        => 'applicantmenu-voir-mon-dossier',
+					'link'         => 'index.php?option=com_emundus&view=application&layout=history',
+					'type'         => 'component',
+					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'params' => [
+						'menu_show' => 0,
+						'tabs'      => ['history', 'forms', 'attachments']
+					]
+				];
+				$history_menu = EmundusHelperUpdate::addJoomlaMenu($datas);
+				$tasks[] = $history_menu['status'];
+			}
+			else
+			{
+				$menuParams = json_decode($menuItem['params'], true);
+				if ($menuItem['published'] == 0 || $menuParams['menu_show'] == 1)
+				{
+					$menuParams['menu_show'] = 0;
+					if (empty($menuParams['tabs']))
+					{
+						$menuParams['tabs'] = ['history', 'forms', 'attachments'];
+					}
+					$menuItem['params']    = json_encode($menuParams);
+					$menuItem['published'] = 1;
+
+					$menuItem = (object) $menuItem;
+					$tasks[]  = $this->db->updateObject('#__menu', $menuItem, 'id');
+				}
+			}
 
 			$result['status']  = !in_array(false, $tasks);
 		}
