@@ -14,6 +14,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\Database\DatabaseDriver;
+use Joomla\CMS\Language\Text;
 
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
@@ -28,7 +30,7 @@ require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 class EmundusModelComments extends BaseDatabaseModel
 {
 	/**
-	 * @var JDatabaseDriver|\Joomla\Database\DatabaseDriver|null
+	 * @var DatabaseDriver|null
 	 * @since version 1.40.0
 	 */
     private $db;
@@ -52,7 +54,7 @@ class EmundusModelComments extends BaseDatabaseModel
     {
         parent::__construct($config);
 
-        $this->db = $this->getDatabase();
+        $this->db = Factory::getContainer()->get('DatabaseDriver');
         $this->logger = new EmundusModelLogs();
 
 		if (!class_exists('HtmlSanitizerSingleton')) {
@@ -312,11 +314,11 @@ class EmundusModelComments extends BaseDatabaseModel
 	/**
 	 * Get comments
 	 *
-	 * @param          $file_id
+	 * @param   int    $file_id
 	 * @param          $current_user
 	 * @param   bool   $is_applicant
 	 * @param   array  $comment_ids
-	 * @param   null   $parent_id
+	 * @param   ?int   $parent_id
 	 * @param   null   $opened
 	 *
 	 * @return array
@@ -324,7 +326,7 @@ class EmundusModelComments extends BaseDatabaseModel
 	 * @throws Exception
 	 * @since version 1.40.0
 	 */
-    public function getComments($file_id, $current_user, $is_applicant = false, $comment_ids = [], $parent_id = null, $opened = null): array
+    public function getComments(int $file_id, $current_user, bool $is_applicant = false, array $comment_ids = [], $parent_id = null, $opened = null, ?int $limit = null, string $order_by = 'ec.id', string $order = 'DESC'): array
     {
         $comments = [];
 
@@ -332,25 +334,31 @@ class EmundusModelComments extends BaseDatabaseModel
             $query = $this->db->getQuery(true);
             $query->select('ec.*')
                 ->from($this->db->quoteName('#__emundus_comments', 'ec'))
-                ->where('ec.ccid = ' . $this->db->quote($file_id));
+                ->where($this->db->quoteName('ec.ccid') . ' = ' . $this->db->quote($file_id));
 
             if ($is_applicant) {
-                $query->andWhere('ec.visible_to_applicant = 1');
+                $query->andWhere($this->db->quoteName('ec.visible_to_applicant') . ' = 1');
             }
 
             if (!empty($comment_ids)) {
-                $query->andWhere('ec.id IN (' . implode(',', $comment_ids) . ')');
+                $query->andWhere($this->db->quoteName('ec.id' ) . ' IN (' . implode(',', $comment_ids) . ')');
             }
 
             if ($parent_id !== null) {
-                $query->andWhere('ec.parent_id = ' . $this->db->quote($parent_id));
+                $query->andWhere($this->db->quoteName('ec.parent_id') . ' = ' . $this->db->quote($parent_id));
             }
 
             if (isset($opened)) {
-                $query->andWhere('ec.opened = ' . $this->db->quote($opened));
+                $query->andWhere($this->db->quoteName('ec.opened') . ' = ' . $this->db->quote($opened));
             }
 
             try {
+				if (!empty($limit)) {
+					$query->setLimit($limit);
+				}
+
+				$query->order($this->db->quoteName($order_by) . ' ' . $order);
+
                 $this->db->setQuery($query);
                 $comments = $this->db->loadAssocList();
             } catch (Exception $e) {
@@ -366,7 +374,7 @@ class EmundusModelComments extends BaseDatabaseModel
                     ->select('u.id, eu.firstname, eu.lastname, CONCAT(eu.firstname, " ", eu.lastname) as name, eu.profile_picture')
                     ->from($this->db->quoteName('#__users', 'u'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = u.id')
-                    ->where('u.id IN (' . implode(',', $user_ids) . ')');
+                    ->where($this->db->quoteName('u.id' ) . ' IN (' . implode(',', $user_ids) . ')');
 
                 try {
                     $this->db->setQuery($query);
@@ -389,6 +397,88 @@ class EmundusModelComments extends BaseDatabaseModel
 
         return $comments;
     }
+
+	/**
+	 * Get the target of a comment
+	 * @param array $comment
+	 * @return string
+	 */
+	public function getCommentTarget(array $comment): string
+	{
+		$target = '';
+
+		if (!empty($comment) && !empty($comment['target_id']) && !empty($comment['target_type'])) {
+			$query = $this->db->createQuery();
+
+			$form_name = '';
+			$group_name = '';
+			$element_name = '';
+			switch ($comment['target_type']) {
+				case 'elements':
+					$query->select('jfe.id as element_id, jfe.label as element_label, jfg.id as group_id, jfg.label as group_label, jff.id as form_id, jff.label as form_label')
+						->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
+						->leftJoin($this->db->quoteName('#__fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
+						->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+						->leftJoin($this->db->quoteName('#__fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+						->where('jfe.id = ' . $this->db->quote($comment['target_id']));
+
+					$this->db->setQuery($query);
+					$element = $this->db->loadAssoc();
+
+					if (!empty($element)) {
+						$element_name = Text::_($element['element_label']);
+						$group_name = Text::_($element['group_label']);
+						$form_name = Text::_($element['form_label']);
+					}
+					break;
+				case 'groups':
+					$query->select('jfg.label as group_label, jff.label as form_label')
+						->from($this->db->quoteName('#__fabrik_groups', 'jfg'))
+						->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+						->leftJoin($this->db->quoteName('#__fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+						->where('jfg.id = ' . $this->db->quote($comment['target_id']));
+
+					$this->db->setQuery($query);
+					$group = $this->db->loadAssoc();
+					if (!empty($group)) {
+						$group_name = Text::_($group['group_label']);
+						$form_name = Text::_($group['form_label']);
+					}
+					break;
+				case 'forms':
+					$query->select('jff.label')
+						->from($this->db->quoteName('#__fabrik_forms', 'jff'))
+						->where('jff.id = ' . $this->db->quote($comment['target_id']));
+
+					$this->db->setQuery($query);
+					$form_name = Text::_($this->db->loadResult());
+					break;
+				default:
+			}
+
+			if (!empty($form_name)) {
+				$target .= $form_name;
+			}
+
+			if (!empty($group_name)) {
+				if (!empty($form_name))
+				{
+					$target .= ' - ';
+				}
+
+				$target .= $group_name;
+			}
+
+			if (!empty($element_name)) {
+				if (!empty($group_name) || !empty($form_name)) {
+					$target .= ' - ';
+				}
+				$target .= $element_name;
+			}
+		}
+
+		return $target;
+	}
 
 	/**
 	 * Get elements available for comments via an application file

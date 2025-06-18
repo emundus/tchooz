@@ -145,6 +145,20 @@
 			>
 			</textarea>
 
+			<!-- EDITOR -->
+			<tip-tap-editor
+				v-else-if="parameter.type === 'wysiwig'"
+				v-model="value"
+				:editor-content-height="'20em'"
+				:class="'tw-mt-1 tw-w-full'"
+				:locale="actualLanguage"
+				:preset="'basic'"
+				:toolbar-classes="['tw-bg-white']"
+				:editor-content-classes="['tw-bg-white']"
+				@focusout="checkValue(parameter)"
+			>
+			</tip-tap-editor>
+
 			<!-- YESNO -->
 			<div v-else-if="parameter.type === 'yesno'">
 				<fieldset data-toggle="buttons" class="tw-flex tw-items-center tw-gap-2">
@@ -331,10 +345,11 @@ import { useGlobalStore } from '@/stores/global.js';
 import dayjs from 'dayjs';
 import EventBooking from '@/views/Events/EventBooking.vue';
 import Modal from '@/components/Modal.vue';
+import TipTapEditor from 'tip-tap-editor';
 
 export default {
 	name: 'Parameter',
-	components: { DatePicker, Multiselect, Modal },
+	components: { DatePicker, Multiselect, Modal, TipTapEditor },
 	props: {
 		parameterObject: {
 			type: Object,

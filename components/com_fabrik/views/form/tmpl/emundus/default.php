@@ -128,6 +128,7 @@ Text::script('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TITLE');
 Text::script('COM_EMUNDUS_ONBOARD_EVALUATION_LOCK_TEXT');
 Text::script('COM_EMUNDUS_ONBOARD_OK');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
+Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 
 if ($pageClass !== '') :
 	echo '<div class="' . $pageClass . '">';
