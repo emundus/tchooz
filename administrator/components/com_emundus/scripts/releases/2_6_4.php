@@ -95,6 +95,9 @@ class Release2_6_4Installer extends ReleaseInstaller
 				}
 			}
 
+			EmundusHelperUpdate::alterColumn('jos_emundus_setup_sms', 'message', 'TEXT', null, 0);
+			EmundusHelperUpdate::alterColumn('jos_emundus_sms_queue', 'message', 'TEXT', null, 0);
+
 			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)

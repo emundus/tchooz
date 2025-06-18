@@ -41,7 +41,7 @@
 			<transition name="fade" mode="in-out">
 				<ul v-if="displayRecipients">
 					<li v-for="fnum in fnums" :key="fnum">
-						<span v-if="recipients[fnum]">{{ recipients[fnum].username }} - {{ fnum }}</span>
+						<span v-if="recipients[fnum]">{{ recipients[fnum].username }} - {{ fnum }} - {{ recipients[fnum].tel ? recipients[fnum].tel : translate('COM_EMUNDUS_SMS_RECIPIENT_NO_TEL') }}</span>
 						<span v-else>{{ fnum }}</span>
 					</li>
 				</ul>
@@ -64,6 +64,7 @@
 <script>
 import smsService from '@/services/sms';
 import { useGlobalStore } from '../../stores/global.js';
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'SMSSend',
@@ -73,6 +74,7 @@ export default {
 			required: true,
 		},
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			templates: [],
@@ -107,8 +109,6 @@ export default {
 		},
 		getRecipients() {
 			smsService.getRecipientsData(this.fnums).then((response) => {
-				console.log(response.data);
-
 				this.recipients = response.data;
 			});
 		},
@@ -153,19 +153,7 @@ export default {
 
 					this.reset();
 				} else {
-					Swal.fire({
-						icon: 'error',
-						title: this.translate('COM_EMUNDUS_SMS_NOT_SENT'),
-						showCancelButton: false,
-						showConfirmButton: false,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-							htmlContainer: '!tw-text-center',
-						},
-						timer: 3000,
-					});
+					this.alertError(this.translate('COM_EMUNDUS_SMS_NOT_SENT'), response.msg);
 				}
 			});
 		},
