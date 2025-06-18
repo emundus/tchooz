@@ -34,7 +34,7 @@ export default {
 			adjustBalanceFields: [
 				{
 					param: 'description',
-					type: 'textarea',
+					type: 'wysiwig',
 					placeholder: '',
 					value: this.step.description,
 					label: 'COM_EMUNDUS_PAYMENT_STEP_DESCRIPTION',

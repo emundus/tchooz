@@ -840,7 +840,7 @@ class EmundusControllerPayment extends BaseController
 					$installment_rules = !empty($installment_rules) ? json_decode($installment_rules) : [];
 					$installment_monthday = $this->input->getInt('installmentMonthday', 0);
 					$installment_effect_date = $this->input->getString('installmentEffectDate', '');
-					$description = $this->input->getString('description', '');
+					$description = $this->input->getRaw('description', '');
 
 					$payment_repository = new PaymentRepository();
 					$payment_step_entity = $payment_repository->getPaymentStepById($step_id);
