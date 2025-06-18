@@ -128,9 +128,60 @@ class PlgSystemEmundus extends CMSPlugin
 	public function onAfterRender()
 	{
 		$app = Factory::getApplication();
+		$user = $app->getIdentity();
 
 		if ($app->isClient('site'))
 		{
+			// If samlredirect plugin is active and we're coming from saml login page we can try to update user informations
+			$userParams = (!empty($user->params) && json_validate($user->params)) ? json_decode($user->params) : [];
+			if(!$user->guest && PluginHelper::isEnabled('system', 'samlredirect') && !empty($userParams) && $userParams->saml == 1)
+			{
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				$query->select('single_signon_service_url')
+					->from($db->quoteName('#__miniorange_saml_config'));
+				$db->setQuery($query);
+				$singleSignOnServiceUrl = $db->loadResult();
+
+				if(!empty($singleSignOnServiceUrl))
+				{
+					$parsedUrl = parse_url($singleSignOnServiceUrl);
+					$httpReferer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+
+					if(!empty($httpReferer) && $httpReferer == ($parsedUrl['scheme'].'://'.$parsedUrl['host'].'/'))
+					{
+						$query->select('profile_key,profile_value')
+							->from($db->quoteName('#__user_profiles'))
+							->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+						$db->setQuery($query);
+						$profileDatas = $db->loadAssocList('profile_key', 'profile_value');
+
+						foreach ($profileDatas as $profileKey => $profileValue)
+						{
+							$profileKeyParts = explode('.', $profileKey);
+							if(!empty($profileKeyParts[1]) && !empty($profileKeyParts[2]))
+							{
+								$query = 'SHOW COLUMNS FROM ' . $db->quoteName('#__'.$profileKeyParts[1]) . ' LIKE ' . $db->quote($profileKeyParts[2]);
+								$db->setQuery($query);
+								$columnExists = $db->loadResult();
+
+								if(!empty($columnExists))
+								{
+									// Update the user profile field in the users table
+									$query = $db->getQuery(true);
+									$query->update($db->quoteName('#__'.$profileKeyParts[1]))
+										->set($db->quoteName($profileKeyParts[2]) . ' = ' . $db->quote($profileValue))
+										->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+									$db->setQuery($query);
+									$db->execute();
+								}
+							}
+						}
+					}
+				}
+			}
+
 			$body = $app->getBody();
 
 			$e_session = $app->getSession()->get('emundusUser');
