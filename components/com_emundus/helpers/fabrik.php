@@ -2382,4 +2382,49 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 		}
 	}
+
+    /**
+     * Extract numeric value from currency fields
+     *
+     * @param   mixed $value
+     *
+     * @return float
+     */
+    public static function extractNumericValue(mixed $value): float
+    {
+        // Step 1: Extract the first number-like segment (with digits and optional commas/dots)
+        if (!preg_match('/-?\d(?:[\s00A0]?\d|[.,])*/', $el, $matches)) {
+            return 0.0; // No valid number found
+        }
+
+        $number = $matches[0];
+
+        // Step 2: Normalize separators (dots and commas)
+        $commaPos = strrpos($number, ',');
+        $dotPos   = strrpos($number, '.');
+
+        if ($commaPos !== false && $dotPos !== false) {
+            if ($commaPos > $dotPos) {
+                // European: "1.234,56"
+                $number = str_replace(['.',','], ['','.'], $number); // remove thousand dots and convert decimal comma
+            } else {
+                // US: "1,234.56"
+                $number = str_replace(',', '', $number);     // remove thousand commas
+            }
+        } elseif ($commaPos !== false) {
+            // Assume comma is decimal separator
+            $number = str_replace(',', '.', $number);
+        } else {
+            // Only dot or plain digits
+            if (substr_count($number, '.') > 1) {
+                // Too many dots? Likely thousand separators → remove all
+                $number = str_replace('.', '', $number);
+            }
+        }
+
+        // Finally, remove spaces used as thousand separators
+        $number = str_replace(' ', '', $number);
+
+        return (float)$number;
+    }
 }
