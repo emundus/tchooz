@@ -187,9 +187,13 @@ class Sogecommerce
 		$contact = $cart->getCustomer();
 		$address = $contact->getAddress();
 
+		if (!isset($this->config['mode']) || !in_array($this->config['mode'], ['TEST', 'PRODUCTION'])) {
+			$this->config['mode'] = 'PRODUCTION';
+		}
+
 		$fields = [
 			'vads_site_id' => $this->config['authentication']['client_id'],
-			'vads_ctx_mode' => $this->config['mode'] ?? 'TEST',
+			'vads_ctx_mode' => $this->config['mode'] ?? 'PRODUCTION',
 			'vads_trans_id' => $transaction->getExternalReference(),
 			'vads_trans_date' => date('YmdHis'),
 			'vads_amount' => $transaction->getAmount() * 100,
