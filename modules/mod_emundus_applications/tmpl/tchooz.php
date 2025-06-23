@@ -544,7 +544,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																	}
 																} ?>
 
-																<?php if ($application->show_shared_users): ?>
+																<?php if ($application->show_shared_users && $application->applicant_id === $user->id): ?>
                                                                     <div id="actions_button_collaborate"
                                                                          class="tw-flex tw-flex-row collaborators-icon-wrapper tw-bg-main-500"
                                                                          onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')">
