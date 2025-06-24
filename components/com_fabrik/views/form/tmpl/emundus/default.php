@@ -16,6 +16,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 
 $form      = $this->form;
 $model     = $this->getModel();
@@ -144,6 +145,18 @@ endif;
 
 <div class="btn-group">
 	<?php
+    if(str_contains($_SERVER['HTTP_REFERER'], 'apply'))
+    {
+        // Replace onclick action of $form->gobackButton
+	    $replacement = 'onclick="parent.location=\''.Uri::base().'\'"';
+
+	    $form->gobackButton = preg_replace(
+		    '/onclick="[^"]*"/',
+		    $replacement,
+		    $form->gobackButton
+	    );
+    }
+
 	if($form->gobackButton)
 	{
 		echo '<div class="back-button-link tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-mb-4 tw-mt-2"><span class="material-symbols-outlined tw-text-link-regular tw-mr-1">navigate_before</span>';
