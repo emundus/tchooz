@@ -84,6 +84,7 @@ class Emundusmessenger extends CMSPlugin implements SubscriberInterface
 		$emConfig                    = ComponentHelper::getParams('com_emundus');
 		$send_notifications          = $emConfig->get('messenger_notifications_on_send', 1);
 		$messenger_add_message_notif = $emConfig->get('messenger_add_message_notif', 1);
+		$automated_task_user         = (int) $emConfig->get('automated_task_user', 1);
 
 		if ($send_notifications == 1)
 		{
@@ -92,7 +93,7 @@ class Emundusmessenger extends CMSPlugin implements SubscriberInterface
 				->from($db->quoteName('#__emundus_chatroom_notifications', 'ecn'))
 				->leftJoin($db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $db->quoteName('ecn.chatroom_id') . ' = ' . $db->quoteName('ec.id'))
 				->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecn.user_id') . ' = ' . $db->quoteName('u.id'))
-				->where($db->quoteName('last_notification') . ' IS NULL')
+				->where($db->quoteName('ecn.last_notification') . ' IS NULL')
 				->group($db->quoteName('ecn.user_id'))
 				->order('ecn.user_id, ecn.chatroom_id');
 			$db->setQuery($query);
@@ -117,7 +118,7 @@ class Emundusmessenger extends CMSPlugin implements SubscriberInterface
 					{
 						$email_tmpl = 'messenger_reminder';
 					}
-					
+
 					$fnums = [];
 					if (!empty($notification->fnums))
 					{
@@ -131,7 +132,7 @@ class Emundusmessenger extends CMSPlugin implements SubscriberInterface
 						'SITE_URL'  => Uri::base(),
 					);
 
-					$sent = $m_emails->sendEmailNoFnum($notification->email, $email_tmpl, $post, $notification->user_id);
+					$sent = $m_emails->sendEmailNoFnum($notification->email, $email_tmpl, $post, $notification->user_id, [], null, true, [], $automated_task_user);
 
 					if ($sent)
 					{
