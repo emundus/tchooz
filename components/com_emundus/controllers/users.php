@@ -131,6 +131,7 @@ class EmundusControllerUsers extends BaseController
 		$ldap            = $this->input->getInt('ldap', 0);
 		$auth_provider   = $this->input->getInt('auth_provider', 0);
 		$testing_account = $this->input->getInt('testing_account', 0);
+		$do_not_notify   = $this->input->getInt('do_not_notify', 0);
 
 		$user = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
 
@@ -211,7 +212,11 @@ class EmundusControllerUsers extends BaseController
 		{
 			$email_tmpl = 'new_account_sso';
 		}
-		$m_users->passwordReset($data, '', '', true, $email_tmpl);
+
+		if($do_not_notify != 1)
+		{
+			$m_users->passwordReset($data, '', '', true, $email_tmpl);
+		}
 
 		// If index.html does not exist, create the file otherwise the process will stop with the next step
 		if (!file_exists(EMUNDUS_PATH_ABS . 'index.html'))
