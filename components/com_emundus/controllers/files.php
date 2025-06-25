@@ -3921,6 +3921,8 @@ class EmundusControllerFiles extends BaseController
 				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 				$_mEval = $this->getModel('Evaluation');
 
+				// TODO: Add event onBeforeGenerateLetters
+
 				$res['data'] = $_mEval->generateLetters($fnums, $templates, $canSee, $showMode, $mergeMode, $force_replace_document);
 				ob_clean();
 

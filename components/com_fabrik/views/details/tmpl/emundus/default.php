@@ -84,7 +84,7 @@ if($format === 'pdf')
 		$this->group = $group;
 		?>
 
-        <div class="em-mt-16 <?php echo $group->class; ?>" id="group<?php echo $group->id; ?>"
+        <div class="tw-rounded-form-block tw-bg-neutral-0 tw-p-6 tw-border tw-flex tw-flex-col tw-gap-3 tw-shadow-card tw-mb-4 <?= $this->is_iframe ? 'tw-p-2 tw-mb-4' : '' ?><?php echo $group->class; ?>" id="group<?php echo $group->id; ?>"
              style="<?php echo $group->css; ?>">
 
 			<?php

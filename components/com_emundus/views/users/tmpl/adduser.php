@@ -220,6 +220,15 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                        class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_SSO_ACCOUNT'); ?></label>
             </div>
 	    <?php endif; ?>
+
+        <?php if ($this->edit != 1) : ?>
+        <div class="form-group em-addUser-detail-info-do-not-notify tw-flex tw-items-center tw-mt-4">
+            <input type="checkbox" id="do_not_notify" name="do_not_notify"
+                   style="margin-bottom: 5px; outline-offset: 1px;" <?= $this->user['do_not_notify'] ? 'checked' : ''; ?>>
+            <label for="do_not_notify"
+                   class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_DO_NOT_NOTIFY'); ?></label>
+        </div>
+        <?php endif; ?>
     </fieldset>
 </form>
 <script type="text/javascript">

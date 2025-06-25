@@ -6698,7 +6698,7 @@ class EmundusHelperFiles
 		return $table_names;
 	}
 
-	public function getApplicantFnums(int $aid, $submitted = null, $start_date = null, $end_date = null)
+	public function getApplicantFnums(int $aid, $submitted = null, $start_date = null, $end_date = null, ?array $published = null): array
 	{
 		$fnums = [];
 
@@ -6710,7 +6710,6 @@ class EmundusHelperFiles
 			$query->select('ecc.*, esc.label, esc.start_date, esc.end_date, esc.admission_start_date, esc.admission_end_date, esc.training, esc.year, esc.profile_id')
 				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
-				->where('ecc.published = 1')
 				->where('ecc.applicant_id = ' . $aid);
 
 			if ($submitted !== null)
@@ -6726,6 +6725,11 @@ class EmundusHelperFiles
 			if ($end_date !== null)
 			{
 				$query->where('esc.end_date >= ' . $db->quote($end_date));
+			}
+
+			if ($published !== null)
+			{
+				$query->where('ecc.published IN (' . implode(',', $db->quote($published)) . ')');
 			}
 
 			try

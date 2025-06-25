@@ -343,10 +343,12 @@ class EmundusModelEmails extends JModelList
 				'COURSE_NAME' => $campaign['label']
 			);
 
+			require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
 			$h_access = new EmundusHelperAccess();
 			$h_emails = new EmundusHelperEmails();
+			$m_files = new EmundusModelFiles();
 
 			foreach ($trigger_emails as $trigger_id => $trigger_email) {
 				// Add applicant if e-mail is to be sent to the applicant
@@ -450,8 +452,18 @@ class EmundusModelEmails extends JModelList
 						// echo 'Error sending email: ' . $sent;
 						JLog::add($sent, JLog::ERROR, 'com_emundus.email');
 					} else {
-						$emails_sent[] = $to;
 						$from_id = !empty(JFactory::getUser()->id) ? JFactory::getUser()->id : 62;
+
+						if(!empty($trigger_email[$student->code]['tmpl']['tags'])) {
+							$tags = array_filter(explode(',',$trigger_email[$student->code]['tmpl']['tags']));
+
+							if(!empty($tags))
+							{
+								$m_files->tagFile([$student->fnum], $tags, $from_id);
+							}
+						}
+
+						$emails_sent[] = $to;
 						$message = array(
 							'user_id_from' => $from_id,
 							'user_id_to' => $to_id,
@@ -589,7 +601,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function setConstants(int $user_id, ?array $post = null, string $passwd = '', ?string $fnum = null, string $content = ''): array
+	public function setConstants(?int $user_id, ?array $post = null, string $passwd = '', ?string $fnum = null, string $content = ''): array
 	{
 		$patterns = array();
 		$replacements = array();

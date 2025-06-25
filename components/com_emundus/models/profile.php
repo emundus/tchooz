@@ -1376,7 +1376,7 @@ class EmundusModelProfile extends ListModel
 		require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 		$h_files = new EmundusHelperFiles;
 
-		return $h_files->getApplicantFnums($aid, $submitted, $start_date, $end_date);
+		return $h_files->getApplicantFnums($aid, $submitted, $start_date, $end_date, [1]);
 	}
 
 	/**

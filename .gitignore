@@ -90,7 +90,6 @@ LICENSE.txt
 /components/com_fabrik/js/table_*.js
 /components/com_fabrik/js/viz_*.js
 /components/com_fabrik/js/details_*.js
-components/com_fabrik/views/details/tmpl/celsa/*
 plugins/fabrik_form/email/tmpl/*
 ## EMUNDUS CUSTOM
 /components/com_emundus/controllers/custom.php

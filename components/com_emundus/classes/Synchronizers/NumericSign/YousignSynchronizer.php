@@ -55,7 +55,7 @@ class YousignSynchronizer extends Api
 	public function initRequest(string $name, string $delivery_mode = 'email', string $expiration_date = ''): array
 	{
 		$payload = [
-			'name'          => $name,
+			'name'          => trim($name),
 			'delivery_mode' => $delivery_mode
 		];
 		

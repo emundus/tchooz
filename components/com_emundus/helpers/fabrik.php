@@ -2395,7 +2395,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
     public static function extractNumericValue(mixed $value): float
     {
         // Step 1: Extract the first number-like segment (with digits and optional commas/dots)
-        if (!preg_match('/-?\d(?:[\s00A0]?\d|[.,])*/', $el, $matches)) {
+        if (!preg_match('/-?\d(?:[\s00A0]?\d|[.,])*/', $value, $matches)) {
             return 0.0; // No valid number found
         }
 

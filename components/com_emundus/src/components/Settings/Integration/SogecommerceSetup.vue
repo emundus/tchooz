@@ -65,7 +65,7 @@ export default {
 							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_SOGECOMMERCE_SETUP_MODE_TEST',
 						},
 						{
-							value: 'PROD',
+							value: 'PRODUCTION',
 							label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_SOGECOMMERCE_SETUP_MODE_PROD',
 						},
 					],
