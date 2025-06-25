@@ -13,7 +13,6 @@
 defined('_JEXEC') or die('Restricted access');
 
 ?>
-<div class="tw-rounded-form-block tw-bg-neutral-0 tw-p-6 tw-border tw-flex tw-flex-col tw-gap-3 tw-shadow-card tw-mb-4 <?= $this->is_iframe ? 'tw-p-2 tw-mb-4' : '' ?>">
 <?php
 $rowStarted = false;
 foreach ($this->elements as $element) :
@@ -63,4 +62,3 @@ endforeach;
 if ($rowStarted === true) :?>
 </div><!-- end row-fluid for open row -->
 <?php endif;?>
-</div>

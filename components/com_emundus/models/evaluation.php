@@ -16,6 +16,8 @@ use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Joomla\CMS\Language\Text;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 defined('_JEXEC') or die('Restricted access');
 define('R_MD5_MATCH', '/^[a-f0-9]{32}$/i');
@@ -3039,16 +3041,39 @@ class EmundusModelEvaluation extends JModelList
 
 							$htmldata .= $_mEmail->setTagsFabrik($letter->body, array($fnum));
 							$htmldata = preg_replace($tags['patterns'], $tags['replacements'], preg_replace("/<span[^>]+\>/i", "", preg_replace("/<\/span\>/i", "", preg_replace("/<br[^>]+\>/i", "<br>", $htmldata))));
-							$htmldata = preg_replace_callback('#(<img\s(?>(?!src=)[^>])*?src=")data:image/(gif|png|jpeg);base64,([\w=+/]++)("[^>]*>)#', function ($match) {
-								list(, $img, $type, $base64, $end) = $match;
 
-								$bin = base64_decode($base64);
-								$md5 = md5($bin);   // generate a new temporary filename
-								$fn  = "tmp/$md5.$type";
-								file_exists($fn) or file_put_contents($fn, $bin);
+							$wrappedHtml = '<?xml encoding="UTF-8">' . $htmldata; // Force encoding
+							$doc = new DOMDocument();
+							$doc->loadHTML($wrappedHtml, LIBXML_HTML_NODEFDTD | LIBXML_HTML_NOIMPLIED);
 
-								return "$img$fn$end";  // new <img> tag
-							}, $htmldata);
+							$images = $doc->getElementsByTagName('img');
+
+							foreach ($images as $img) {
+								$src = $img->getAttribute('src');
+
+								// Only process if it's not already base64
+								if (strpos($src, 'data:image') === false) {
+									// Step 3: Get image data
+									if (filter_var($src, FILTER_VALIDATE_URL)) {
+										$imageData = @file_get_contents($src); // Remote image
+									} else {
+										$path = JPATH_SITE . '/' . ltrim($src, '/'); // Local image path
+										$imageData = @file_get_contents($path);
+									}
+
+									if ($imageData !== false) {
+										$finfo = new finfo(FILEINFO_MIME_TYPE);
+										$mime = $finfo->buffer($imageData);
+
+										$base64 = 'data:' . $mime . ';base64,' . base64_encode($imageData);
+										$img->setAttribute('src', $base64);
+									}
+								}
+							}
+
+							$htmldata = $doc->saveHTML();
+							$htmldata = html_entity_decode($htmldata, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
 							$htmldata = preg_replace('/(<[^>]+) style=".*?"/i', '$1', $htmldata);
 
 							if ($display_footer == 1)
@@ -3068,10 +3093,22 @@ class EmundusModelEvaluation extends JModelList
 
 							try
 							{
-								$gotenberg_results = $m_Export->toPdf($html_tmp, $dest_tmp, 'html', $fnum);
-								if ($gotenberg_results->status)
+								if($gotenberg_activation == 1)
 								{
-									copy($gotenberg_results->file, $dest);
+									$gotenberg_results = $m_Export->toPdf($html_tmp, $dest_tmp, 'html', $fnum);
+									if ($gotenberg_results->status)
+									{
+										copy($gotenberg_results->file, $dest);
+									}
+								}
+								else {
+									$options = new Options();
+									//$options->set('defaultFont', 'helvetica');
+									$options->set('isPhpEnabled', true);
+									$dompdf = new Dompdf($options);
+									$dompdf->loadHtml($htmldata);
+									$dompdf->render();
+									file_put_contents($dest, $dompdf->output());
 								}
 							}
 							catch (Exception $e)

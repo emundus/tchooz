@@ -869,16 +869,36 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 												$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
 												break;
 											case 'inferior':
-												$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+												if(is_numeric($condition->targeted_value)){
+													$query->andWhere($db->quoteName($column) . ' < ' . (int)$condition->targeted_value);
+												}
+												else {
+													$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+												}
 												break;
 											case 'inferior_equal':
-												$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+												if(is_numeric($condition->targeted_value)){
+													$query->andWhere($db->quoteName($column) . ' <= ' . (int)$condition->targeted_value);
+												}
+												else {
+													$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+												}
 												break;
 											case 'superior':
-												$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+												if(is_numeric($condition->targeted_value)){
+													$query->andWhere($db->quoteName($column) . ' > ' . (int)$condition->targeted_value);
+												}
+												else {
+													$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+												}
 												break;
 											case 'superior_equal':
-												$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
+												if(is_numeric($condition->targeted_value)){
+													$query->andWhere($db->quoteName($column) . ' >= ' . (int)$condition->targeted_value);
+												}
+												else {
+													$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
+												}
 												break;
 											default:
 												$conditions_status[] = false;

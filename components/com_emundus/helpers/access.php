@@ -720,13 +720,13 @@ class EmundusHelperAccess
 								$respect_dates = true;
 								if ($step_data->infinite != 1)
 								{
-									if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d'))
+									if (!empty($step_data->start_date) && $step_data->start_date > date('Y-m-d H:i:s'))
 									{
 										$respect_dates = false;
 										$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_NOT_STARTED';
 									}
 
-									if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d'))
+									if (!empty($step_data->end_date) && $step_data->end_date < date('Y-m-d H:i:s'))
 									{
 										$respect_dates = false;
 										$reason_cannot_edit = 'COM_EMUNDUS_WORKFLOW_STEP_ACCESS_DENIED_BECAUSE_ENDED';

@@ -667,12 +667,15 @@ class EmundusHelperEvents
 			$details_url = Route::_("index.php?option=com_fabrik&view=details&formid=" . $jinput->get('formid') . "&Itemid=" . $itemid . "&rowid=" . $rowid . "&r=" . $reload . $url_parameters) . '&fnum=' . $fnum;
 
 			$session = $this->getFormSession($fnum, $params['formModel']->id);
-			if (!empty($session->id) && $session->user_id != $user->id && $can_read)
-			{
-				if ($reload < 3)
-				{
-					$mainframe->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_CURRENT_EDITING'), 'warning');
-					$mainframe->redirect($details_url);
+			if (!empty($session->id) && $session->user_id != $user->id) {
+				if (!$can_read) {
+					Factory::getApplication()->enqueueMessage(Text::_('ACCESS_DENIED'), 'warning');
+					Factory::getApplication()->redirect('/');
+				}
+
+				if ($reload < 3) {
+					Factory::getApplication()->enqueueMessage(Text::_('COM_EMUNDUS_EVENTS_APPLICATION_CURRENT_EDITING'), 'warning');
+					Factory::getApplication()->redirect($details_url);
 				}
 
 				return true;

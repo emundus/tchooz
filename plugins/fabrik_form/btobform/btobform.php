@@ -327,6 +327,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					$financement_organisme = str_replace(' ', '', $financement_organisme);
 				}
 
+				// TODO: Fill acces_cycles (1)
 				$alias_to_fills = [
 					'registration_civility' => $data['jos_emundus_btob_1237_repeat___civility_raw'][$key],
 					'registration_common_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
@@ -409,6 +410,8 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 				$attachment_id = $this->getParams()->get('btob_attachment_to_generate', 43);
 				$m_evaluation->generateLetters($fnum, [$attachment_id], 1, 2, 0);
+
+				// TODO: Add event onAfterCreateBtoBFile
 			}
 		}
 
