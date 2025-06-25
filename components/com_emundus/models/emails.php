@@ -3190,7 +3190,7 @@ class EmundusModelEmails extends JModelList
 		if (!empty($email_address) && !empty($email)) {
 			$e_config   = JComponentHelper::getParams('com_emundus');
 
-
+			
 			if (empty($user_id_from)) {
 				if (!empty($this->_user->id)) {
 					$user_id_from = $this->_user->id;
@@ -3265,22 +3265,24 @@ class EmundusModelEmails extends JModelList
 					}
 
 					$password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-					$post = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
+					$post_tags = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
 
-					$mail_from_name = preg_replace($post['patterns'], $post['replacements'], $mail_from_name);
-					$mail_from = preg_replace($post['patterns'], $post['replacements'], $mail_from);
-					$subject = preg_replace($post['patterns'], $post['replacements'], $subject);
-					$body = preg_replace($post['patterns'], $post['replacements'], $body);
-				}
-				else
-				{
-					foreach (array_keys($post) as $key) {
-						$keys[] = '/\['.$key.'\]/';
+					if(!empty($post_tags))
+					{
+						// TODO: override $post_tags replacements by $post tags if a value is set for the pattern
+
+						$mail_from_name = preg_replace($post_tags['patterns'], $post_tags['replacements'], $mail_from_name);
+						$mail_from      = preg_replace($post_tags['patterns'], $post_tags['replacements'], $mail_from);
+						$subject        = preg_replace($post_tags['patterns'], $post_tags['replacements'], $subject);
+						$body           = preg_replace($post_tags['patterns'], $post_tags['replacements'], $body);
 					}
-
-					$subject = preg_replace($keys, $post, $subject);
-					$body = preg_replace($keys, $post, $body);
 				}
+
+				foreach (array_keys($post) as $key) {
+					$keys[] = '/\['.$key.'\]/';
+				}
+				$subject = preg_replace($keys, $post, $subject);
+				$body = preg_replace($keys, $post, $body);
 
 				if($fnum != null) {
 					$body = $this->setTagsFabrik($body, array($fnum));
@@ -3291,11 +3293,10 @@ class EmundusModelEmails extends JModelList
 				if (isset($template->Template)) {
 					$body = preg_replace(["/\[EMAIL_SUBJECT\]/", "/\[EMAIL_BODY\]/"], [$subject, $body], $template->Template);
 
-					if($user_id != null) {
-						$body = preg_replace($post['patterns'], $post['replacements'], $body);
-					} else {
-						$body = preg_replace($keys, $post, $body);
+					if($user_id != null && !empty($post_tags)) {
+						$body = preg_replace($post_tags['patterns'], $post_tags['replacements'], $body);
 					}
+					$body = preg_replace($keys, $post, $body);
 				}
 
 				$mailer = JFactory::getMailer();

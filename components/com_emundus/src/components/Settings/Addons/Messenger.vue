@@ -301,7 +301,7 @@ export default {
 
 				<div>
 					<button class="tw-btn-primary tw-float-right tw-w-fit" :disabled="disabledSubmit" @click="setupMessenger()">
-						<span>{{ translate('COM_EMUNDUS_SETTINGS_INTEGRATION_UPDATE') }}</span>
+						<span>{{ translate('COM_EMUNDUS_SETTINGS_INTEGRATION_UPDATE_BUTTON') }}</span>
 					</button>
 				</div>
 			</div>
