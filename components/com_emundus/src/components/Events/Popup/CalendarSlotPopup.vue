@@ -11,6 +11,7 @@ import { DatePicker } from 'v-calendar';
 import { useGlobalStore } from '@/stores/global.js';
 import Popover from '@/components/Popover.vue';
 import Info from '@/components/Utils/Info.vue';
+import settingsService from '@/services/settings.js';
 
 export default {
 	name: 'CalendarSlotPopup',
@@ -60,6 +61,7 @@ export default {
 			showRepeat: false,
 			displayPopover: false,
 			durationSlotInfo: '',
+			registrantsLink: '',
 
 			actualLanguage: 'fr-FR',
 
@@ -209,6 +211,8 @@ export default {
 			);
 		}
 
+		this.getRegistrantsLink();
+
 		// fetch rooms
 		this.getRooms();
 	},
@@ -218,6 +222,20 @@ export default {
 		},
 		beforeOpen() {
 			this.$emit('open');
+		},
+		getRegistrantsLink() {
+			settingsService
+				.getSEFLink('index.php?option=com_emundus&view=events&layout=registrants', useGlobalStore().getCurrentLang)
+				.then((response) => {
+					if (response.status) {
+						this.registrantsLink = '/' + response.data + '?event=' + this.$props.eventId;
+						if (this.$props.slot) {
+							if (this.$props.slot.start) {
+								this.registrantsLink += '&day=' + this.$props.slot.start.split(' ')[0];
+							}
+						}
+					}
+				});
 		},
 		getRooms() {
 			eventsService.getRooms(this.locationId).then((response) => {
@@ -317,6 +335,104 @@ export default {
 				return;
 			}
 
+			// Check if registrants already exixts on this slot
+			if (this.$props.slot && this.$props.slot.booked_count > 0) {
+				if (this.$props.slot.slot_capacity > this.fields.find((field) => field.param === 'slot_capacity').value) {
+					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_UPDATE_CAPACITY_ERROR');
+					errorMessage = errorMessage.replace('{{booked_count}}', this.$props.slot.slot_capacity);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				} else if (
+					new Date(slot['start_date']).getTime() !== new Date(this.$props.slot.start).getTime() &&
+					new Date(slot['start_date']) > new Date(this.$props.slot.start)
+				) {
+					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_GREATER_ERROR');
+					const date = new Date(this.$props.slot.start);
+					const hours = date.toTimeString().slice(0, 5);
+					errorMessage = errorMessage.replace('{{start_date}}', hours);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				} else if (
+					new Date(slot['start_date']).getTime() !== new Date(this.$props.slot.start).getTime() &&
+					!this.canANewAvailabilityBeCreated(slot['start_date'])
+				) {
+					let errorMessage = '';
+					const dates = this.exampleDatesPossible(slot['start_date']);
+					if (Array.isArray(dates)) {
+						if (dates.length >= 2) {
+							errorMessage = this.translate(
+								'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_TWO_EXAMPLES_CONDITIONS_ERROR',
+							);
+							errorMessage = errorMessage
+								.replace('{{example_start_date_1}}', dates[0].toLocaleString())
+								.replace('{{example_start_date_2}}', dates[1].toLocaleString());
+						} else if (dates.length === 1) {
+							errorMessage = this.translate(
+								'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_ONE_EXAMPLE_CONDITIONS_ERROR',
+							);
+							errorMessage = errorMessage.replace('{{example_start_date_1}}', dates[0].toLocaleString());
+						} else {
+							errorMessage = this.translate(
+								'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_NO_EXAMPLE_CONDITIONS_ERROR',
+							);
+						}
+					}
+					const date = new Date(this.$props.slot.start);
+					const hours = date.toTimeString().slice(0, 5);
+					errorMessage = errorMessage.replace('{{start_date}}', hours);
+
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				} else if (new Date(slot['end_date']) < new Date(this.$props.slot.end)) {
+					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_END_DATE_ERROR');
+					const date = new Date(this.$props.slot.end);
+					const hours = date.toTimeString().slice(0, 5);
+					errorMessage = errorMessage.replace('{{end_date}}', hours);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				}
+			}
+
 			slot.event_id = this.eventId;
 			slot.duration = this.duration;
 			slot.duration_type = this.duration_type;
@@ -354,6 +470,35 @@ export default {
 					});
 				} else {
 					// Handle error
+					if (response.message === 'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_CONDITIONS_ERROR') {
+						const dates = this.exampleDatesPossible(slot['start_date']);
+						if (Array.isArray(dates)) {
+							if (dates.length >= 2) {
+								response.message = this.translate(
+									'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_TWO_EXAMPLES_CONDITIONS_ERROR',
+								);
+								response.message = response.message
+									.replace('{{example_start_date_1}}', dates[0].toLocaleString())
+									.replace('{{example_start_date_2}}', dates[1].toLocaleString());
+							} else if (dates.length === 1) {
+								response.message = this.translate(
+									'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_ONE_EXAMPLE_CONDITIONS_ERROR',
+								);
+								response.message = response.message.replace('{{example_start_date_1}}', dates[0].toLocaleString());
+							} else {
+								response.message = this.translate(
+									'COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_NO_EXAMPLE_CONDITIONS_ERROR',
+								);
+							}
+						}
+					}
+					const start_date = new Date(this.$props.slot.start);
+					const start_hours = start_date.toTimeString().slice(0, 5);
+					const end_date = new Date(this.$props.slot.end);
+					const end_hours = end_date.toTimeString().slice(0, 5);
+					response.message = response.message.replace('{{start_date}}', start_hours);
+					response.message = response.message.replace('{{end_date}}', end_hours);
+					response.message = response.message.replace('{{booked_count}}', this.$props.slot.slot_capacity);
 					Swal.fire({
 						icon: 'error',
 						title: 'Oops...',
@@ -465,6 +610,143 @@ export default {
 				this.repeat_dates.splice(idx, 1);
 			}
 		},
+		canANewAvailabilityBeCreated(date) {
+			if (this.$props.slot && this.$props.slot.start && this.$props.slot.end) {
+				const startDate = new Date(date);
+				const slotStart = new Date(this.$props.slot.start);
+				const slotEnd = new Date(this.$props.slot.end);
+				const duration = parseInt(this.$props.duration, 10);
+
+				let durationInMs = 0;
+				if (this.$props.duration_type === 'minutes') {
+					durationInMs = duration * 60 * 1000;
+				} else if (this.$props.duration_type === 'hours') {
+					durationInMs = duration * 60 * 60 * 1000;
+				} else {
+					return false;
+				}
+
+				let diffBetweenStarts = slotStart.getTime() - startDate.getTime();
+
+				const breakEvery = this.$props.break_every;
+				const breakTime = this.$props.break_time;
+				const breakType = this.$props.break_time_type;
+
+				let breakTimeInMs = 0;
+				if (breakTime && breakEvery > 0) {
+					if (breakType === 'minutes') {
+						breakTimeInMs = breakTime * 60 * 1000;
+					} else if (breakType === 'hours') {
+						breakTimeInMs = breakTime * 60 * 60 * 1000;
+					}
+				}
+
+				/// Check if the slot duration is less than a cycle of reservations and break time
+				/// And if the new start date allows to create at least one new availability
+				if (
+					breakTimeInMs > 0 &&
+					slotEnd.getTime() - startDate.getTime() < durationInMs * breakEvery + breakTimeInMs &&
+					diffBetweenStarts % durationInMs === 0
+				) {
+					return true;
+				}
+
+				let dateTemporary = new Date(slotStart);
+
+				/// At this moment, we know that at least one cycle of availabilities and break time will be needed
+				/// So if we want to see if the new date proposed can be accepted, we have to set the started date point at the beginning of one cycle
+				/// The while loop here allow to go at this started date point, allowing us to see if the date can be accepted next.
+				while (slotEnd.getTime() - dateTemporary.getTime() + durationInMs < durationInMs * breakEvery + breakTimeInMs) {
+					dateTemporary = new Date(dateTemporary.getTime() - durationInMs);
+				}
+				diffBetweenStarts = dateTemporary.getTime() - startDate.getTime();
+
+				for (let slots = 1; ; slots++) {
+					let totalTime = 0;
+					if (breakEvery > 0) {
+						totalTime = slots * durationInMs * breakEvery + slots * breakTimeInMs;
+					} else {
+						totalTime = slots * durationInMs;
+					}
+					if (totalTime === diffBetweenStarts) return true;
+					if (totalTime > diffBetweenStarts) return false;
+				}
+			}
+			return false;
+		},
+		exampleDatesPossible(date) {
+			if (!this.$props.slot || !this.$props.slot.start || !this.$props.slot.end) return false;
+
+			const startDate = new Date(date);
+			const slotStart = new Date(this.$props.slot.start);
+			const slotEnd = new Date(this.$props.slot.end);
+			const duration = parseInt(this.$props.duration, 10);
+			if (isNaN(duration)) return false;
+
+			let durationInMs = 0;
+			if (this.$props.duration_type === 'minutes') {
+				durationInMs = duration * 60 * 1000;
+			} else if (this.$props.duration_type === 'hours') {
+				durationInMs = duration * 60 * 60 * 1000;
+			} else {
+				return false;
+			}
+
+			const diffBetweenStartDates = slotStart.getTime() - startDate.getTime();
+
+			const breakEvery = this.$props.break_every;
+			const breakTime = this.$props.break_time;
+			const breakType = this.$props.break_time_type;
+
+			let breakTimeInMs = 0;
+			if (breakTime && breakEvery > 0) {
+				if (breakType === 'minutes') {
+					breakTimeInMs = breakTime * 60 * 1000;
+				} else if (breakType === 'hours') {
+					breakTimeInMs = breakTime * 60 * 60 * 1000;
+				}
+			}
+
+			const results = [];
+
+			const todayStart = new Date(slotStart);
+			todayStart.setHours(0, 0, 0, 0);
+
+			let previousDate = slotStart;
+			if (
+				breakTimeInMs > 0 &&
+				slotEnd.getTime() - slotStart.getTime() < durationInMs * breakEvery + breakTimeInMs &&
+				diffBetweenStartDates % durationInMs !== 0
+			) {
+				for (let i = 0; i < 2 && results.length < 2; i++) {
+					const previous = new Date(previousDate.getTime() - durationInMs);
+					if (
+						previous >= todayStart &&
+						slotEnd.getTime() - previous.getTime() < durationInMs * breakEvery + breakTimeInMs
+					) {
+						previousDate = previous;
+						results.push(previous);
+					}
+				}
+			}
+			if (!breakEvery || !breakTime || !breakType) {
+				for (let i = 0; i < 2 && results.length < 2; i++) {
+					previousDate = new Date(previousDate.getTime() - durationInMs);
+					if (previousDate >= todayStart) {
+						results.push(previousDate);
+					}
+				}
+			} else {
+				for (let i = 0; i < 2 && results.length < 2; i++) {
+					previousDate = new Date(previousDate.getTime() - (durationInMs * breakEvery + breakTimeInMs));
+					if (previousDate >= todayStart) {
+						results.push(previousDate);
+					}
+				}
+			}
+
+			return results.map((d) => d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false }));
+		},
 	},
 	computed: {
 		disabledSubmit: function () {
@@ -490,6 +772,12 @@ export default {
 				highlight: true,
 				dates: date,
 			}));
+		},
+		editSlotWarningText: function () {
+			let text = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_WARNING_REGISTRANTS');
+			text = text.replace('{{registrantsLink}}', this.registrantsLink);
+
+			return text;
 		},
 	},
 };
@@ -523,6 +811,16 @@ export default {
 		</div>
 
 		<Info class="tw-w-full" :text="this.durationSlotInfo" />
+
+		<Info
+			v-if="this.$props.slot && this.$props.slot.booked_count > 0"
+			:text="this.editSlotWarningText"
+			class="tw-mt-4 tw-w-full tw-text-left"
+			:icon="'warning'"
+			:bg-color="'tw-bg-orange-100'"
+			:icon-type="'material-icons'"
+			:icon-color="'tw-text-orange-600'"
+		/>
 
 		<div class="tw-mt-7 tw-flex tw-flex-col tw-gap-6">
 			<div

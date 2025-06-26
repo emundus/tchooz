@@ -63,7 +63,7 @@ export default {
 
 				if (urlParams.has(filter.key)) {
 					const value = urlParams.get(filter.key);
-					if (filter.options.find((option) => option.value == value)) {
+					if (filter.options.find((option) => option.value == value) || filter.type === 'date') {
 						filter.value = value;
 						// Check if filter is already displayed
 						if (!this.displayedFilters.find((f) => f.key === filter.key)) {
