@@ -283,6 +283,80 @@ export default {
 
 			if (slotValidationFailed) return;
 
+			if (this.$props.event && this.$props.event.slots.some((slot) => slot.booked_count > 0)) {
+				let slot_break_every_defined = parseInt(
+					this.break_fields.find((field) => field.param === 'slot_break_every').value,
+				);
+				slot_break_every_defined = isNaN(slot_break_every_defined) ? 0 : slot_break_every_defined;
+				let breakField = this.break_fields.find((field) => field.param === 'slot_break_time');
+				let slot_break_time_concat_value = breakField.concatValue;
+
+				if (slot_break_time_concat_value.trimStart().match(/^(minutes|heures)/)) {
+					slot_break_time_concat_value = '0 ' + slot_break_time_concat_value.trimStart();
+				}
+
+				if (
+					this.$props.event.slot_duration + ' ' + this.$props.event.slot_duration_type !==
+					this.duration_fields.find((field) => field.param === 'slot_duration').concatValue
+				) {
+					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_DURATION_ERROR');
+					errorMessage = errorMessage.replace(
+						'{{duration}}',
+						this.$props.event.slot_duration + ' ' + this.translate(this.$props.event.slot_duration_type),
+					);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				}
+				if (parseInt(this.$props.event.slot_break_every) !== slot_break_every_defined) {
+					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_BREAK_EVERY_ERROR');
+					errorMessage = errorMessage.replace('{{break_every}}', this.$props.event.slot_break_every);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				}
+				if (
+					this.$props.event.slot_break_time + ' ' + this.$props.event.slot_break_time_type !==
+					slot_break_time_concat_value
+				) {
+					let errorMessage = this.translate('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_BREAK_TIME_ERROR');
+					errorMessage = errorMessage.replace(
+						'{{break_time}}',
+						this.$props.event.slot_break_time + ' ' + this.translate(this.$props.event.slot_break_time_type),
+					);
+					Swal.fire({
+						icon: 'error',
+						title: 'Oops...',
+						text: Joomla.JText._(errorMessage),
+						reverseButtons: true,
+						customClass: {
+							title: 'em-swal-title',
+							confirmButton: 'em-swal-confirm-button',
+							actions: 'em-swal-single-action',
+						},
+					});
+					return;
+				}
+			}
+
 			slot.event_id = this.event.id;
 
 			eventsService.setupSlot(slot).then((response) => {
@@ -304,6 +378,15 @@ export default {
 						this.$emit('reload-event', this.event.id, 3);
 					});
 				} else {
+					response.message = response.message.replace(
+						'{{duration}}',
+						this.$props.event.slot_duration + ' ' + this.$props.event.slot_duration_type,
+					);
+					response.message = response.message.replace('{{break_every}}', this.$props.event.slot_break_every);
+					response.message = response.message.replace(
+						'{{break_time}}',
+						this.$props.event.slot_break_time + ' ' + this.$props.event.slot_break_time_type,
+					);
 					// Handle error
 					Swal.fire({
 						icon: 'error',

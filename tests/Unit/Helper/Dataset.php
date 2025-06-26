@@ -830,7 +830,7 @@ class Dataset
 		return $this->db->execute();
 	}
 
-	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [], $users = [])
+	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [], $users = [], $slot_duration = '30 minutes', $slot_break_every = 0, $slot_break_time = '0 minutes')
 	{
 		$m_events = new \EmundusModelEvents();
 
@@ -853,9 +853,9 @@ class Dataset
 
 		$setup_slot = [
 			'event_id' => $event_id,
-			'slot_duration' => '30 minutes',
-			'slot_break_every' => 0,
-			'slot_break_time' => '0 minutes',
+			'slot_duration' => $slot_duration,
+			'slot_break_every' => $slot_break_every,
+			'slot_break_time' => $slot_break_time,
 			'slots_availables_to_show' => 0,
 			'slot_can_book_until' => '3 days',
 			'slot_can_cancel' => 1,
