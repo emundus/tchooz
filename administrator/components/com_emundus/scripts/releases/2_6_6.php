@@ -62,6 +62,15 @@ class Release2_6_6Installer extends ReleaseInstaller
 				$tasks[] = $this->db->updateObject('#__extensions', $extension, ['extension_id']);
 			}
 
+			// Disable Editors-xtd - Dropfiles
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('dropfilesbtn'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('editors-xtd'));
+			$tasks[] = $this->db->setQuery($query)->execute();
+
 			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
