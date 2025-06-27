@@ -587,7 +587,13 @@ class EmundusModelMessenger extends ListModel
 			{
 				if ($applicant)
 				{
-					$notifications = $h_cache->get('notifications_'.$user_id);
+					if($h_cache->isEnabled())
+					{
+						$notifications = $h_cache->get('notifications_' . $user_id);
+					}
+					else {
+						$notifications = false;
+					}
 
 					if($notifications === false)
 					{
@@ -601,7 +607,10 @@ class EmundusModelMessenger extends ListModel
 						$this->db->setQuery($query);
 						$notifications = $this->db->loadAssocList();
 
-						$h_cache->set('notifications_' . $user_id, $notifications);
+						if($h_cache->isEnabled())
+						{
+							$h_cache->set('notifications_' . $user_id, $notifications);
+						}
 					}
 				}
 				else
@@ -611,7 +620,13 @@ class EmundusModelMessenger extends ListModel
 						require_once JPATH_SITE . '/components/com_emundus/helpers/date.php';
 					}
 
-					$notifications = $h_cache->get('notifications_no_applicant');
+					if($h_cache->isEnabled())
+					{
+						$notifications = $h_cache->get('notifications_no_applicant');
+					}
+					else {
+						$notifications = false;
+					}
 
 					if($notifications === false)
 					{
@@ -629,7 +644,10 @@ class EmundusModelMessenger extends ListModel
 						$this->_db->setQuery($query);
 						$notifications = $this->_db->loadAssocList();
 
-						$h_cache->set('notifications_no_applicant', $notifications);
+						if($h_cache->isEnabled())
+						{
+							$h_cache->set('notifications_no_applicant', $notifications);
+						}
 					}
 
 					if (!empty($notifications) && $messages_content)
