@@ -2508,9 +2508,6 @@ class EmundusHelperEvents
 					'last_update' => $db->quote(time())
 				];
 
-				$db->setQuery($query);
-				$db->execute();
-
 				$query->clear()
 					->insert($db->quoteName('#__fabrik_form_sessions'))
 					->columns($db->quoteName(array_keys($insert)))
