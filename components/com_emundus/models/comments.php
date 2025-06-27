@@ -90,7 +90,7 @@ class EmundusModelComments extends BaseDatabaseModel
             $allowed_targets = ['forms', 'groups', 'elements'];
 
             $target_type = !empty($target) && isset($target['type']) && in_array($target['type'], $allowed_targets) ? $target['type'] : '';
-            $target_id = !empty($target) && isset($target['id']) ? $target['id'] : '';
+            $target_id = !empty($target) && isset($target['id']) ? $target['id'] : 0;
 
             $query = $this->db->getQuery(true);
 
