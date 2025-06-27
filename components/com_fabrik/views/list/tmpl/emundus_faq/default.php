@@ -28,25 +28,28 @@ endif;
 if ($this->params->get('show_page_heading')) :
 	echo '<h1>' . $this->params->get('page_heading') . '</h1>';
 endif;
+?>
+<div class="page-header-container">
+	<?php
+	if ($this->params->get('show-title')) : ?>
+        <div class="page-header em-flex-row em-flex-space-between emundus-list-page-header">
+            <h1><?php echo $this->table->label;?></h1>
+			<?php if ($this->showAdd) :?>
 
-if ($this->showTitle == 1) : ?>
-	<div class="page-header tw-flex tw-flex-col tw-space-between emundus-list-page-header">
-		<h1><?php echo $this->table->label;?></h1>
-		<?php if ($this->showAdd) :?>
-
-            <div><a class="addbutton addRecord tw-btn-primary em-w-max-content" href="<?php echo $this->addRecordLink;?>">
-					<?php echo Text::_($this->addLabel);?>
-                </a></div>
-		<?php
-		endif; ?>
-	</div>
-<?php
-endif;
+                <div><a class="addbutton addRecord tw-btn-primary em-w-max-content tw-rounded-coordinator" href="<?php echo $this->addRecordLink;?>">
+						<?php echo Text::_($this->addLabel);?>
+                    </a></div>
+			<?php
+			endif; ?>
+        </div>
+	<?php
+	endif;
 
 // Intro outside of form to allow for other lists/forms to be injected.
 ?>
 <div class="page-intro <?php if ($this->showTitle != 1) : ?>em-mt-32<?php endif; ?>">
     <?php echo $this->table->intro; ?>
+</div>
 </div>
 
 <form class="fabrikForm form-search" action="<?php echo $this->table->action;?>" method="post" id="<?php echo $this->formid;?>" name="fabrikList">
@@ -72,61 +75,49 @@ echo $this->loadTemplate('tabs');
 	echo $c;
 endforeach;
 ?>
-	<table class="<?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
-        <colgroup>
-            <?php foreach ($this->headings as $key => $heading) : ?>
-				<col class="col-<?php echo $key; ?>">
-            <?php endforeach; ?>
-        </colgroup>
-		 <tfoot>
-			<tr class="fabrik___heading">
-				<td colspan="<?php echo count($this->headings);?>">
-					<?php echo $this->nav;?>
-				</td>
-			</tr>
-		 </tfoot>
+	<div class="<?php echo $this->list->class;?>" id="list_<?php echo $this->table->renderid;?>" >
 		<?php
 		if ($this->isGrouped && empty($this->rows)) :
 			?>
-			<tbody style="<?php echo $this->emptyStyle?>">
-				<tr class="groupDataMsg">
-					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
+			<div style="<?php echo $this->emptyStyle?>">
+				<div class="groupDataMsg">
+					<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 							<?php echo $this->emptyDataMessage; ?>
 						</div>
-					</td>
-				</tr>
-			</tbody>
+					</div>
+				</div>
+			</div>
 			<?php
 		endif;
 		$gCounter = 0;
 		foreach ($this->rows as $groupedBy => $group) :
 			if ($this->isGrouped) : ?>
-			<tbody>
-				<tr class="fabrik_groupheading info">
-					<td colspan="<?php echo $this->colCount;?>">
+			<div class="border-t border-neutral-300 pt-6">
+				<div class="fabrik_groupheading info mb-4 px-2">
+					<div colspan="<?php echo $this->colCount;?>">
 						<?php echo $this->layoutGroupHeading($groupedBy, $group); ?>
-					</td>
-				</tr>
-			</tbody>
+					</div>
+				</div>
+			</div>
 			<?php endif ?>
-			<tbody class="fabrik_groupdata">
-				<tr class="groupDataMsg" style="<?php echo $this->emptyStyle?>">
-					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
+			<div class="fabrik_groupdata">
+				<div class="groupDataMsg" style="<?php echo $this->emptyStyle?>">
+					<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
 							<?php echo $this->emptyDataMessage; ?>
 						</div>
-					</td>
-				</tr>
+					</div>
+				</div>
 			<?php
 			foreach ($group as $this->_row) :
 				echo $this->loadTemplate('row');
 		 	endforeach
 		 	?>
-		 	</tbody>
+		 	</div>
 			<?php if ($this->hasCalculations) : ?>
-			<tfoot>
-				<tr class="fabrik_calculations">
+			<div>
+				<div class="fabrik_calculations">
 
 				<?php
 				foreach ($this->headings as $key => $heading) :
@@ -142,13 +133,20 @@ endforeach;
 				endforeach;
 				?>
 
-				</tr>
-			</tfoot>
+				</div>
+			</div>
 			<?php endif ?>
 		<?php
 		$gCounter++;
 		endforeach?>
-	</table>
+        <table style="border: unset">
+            <tr class="fabrik___heading bg-transparent">
+                <td colspan="<?php echo count($this->headings);?>">
+					<?php echo $this->nav;?>
+                </td>
+            </tr>
+        </table>
+	</div>
 	<?php print_r($this->hiddenFields);?>
 </div>
 </form>
@@ -160,7 +158,6 @@ endif;
 ?>
 
 <script>
-
     class Accordion {
         constructor(el) {
             this.el = el;
@@ -241,6 +238,30 @@ endif;
 
     document.querySelectorAll('details').forEach((el) => {
         new Accordion(el);
-    });x
+    });
+
+    /* descendre le titre en fonction de la hauteur de l'intro intro */
+    let blocIntro = document.querySelector('.page-header-container');
+    let blocBody = document.querySelector('.fabrikForm');
+
+    let hauteurIntro = blocIntro.offsetHeight;
+    blocBody.style.marginTop = hauteurIntro + 'px';
+
+    /* descendre le titre en fonction de la hauteur de la bannière alerte */
+    let blocBanniere = document.querySelector('.alerte-message-container');
+    let hauteurBanniere = blocBanniere.offsetHeight;
+
+    if (blocBanniere) {
+        blocIntro.style.marginTop = hauteurBanniere + 'px';
+    }
+
+    let croixBanniere = document.querySelector('#close-preprod-alerte-container');
+
+    croixBanniere.addEventListener('click', function () {
+            let hauteurBanniereSansPx = parseInt(blocIntro.style.marginTop, 10);
+            let hauteurSansBanniere = hauteurBanniereSansPx - hauteurBanniere;
+            blocIntro.style.marginTop = hauteurSansBanniere + 'px';
+        }
+    );
 
 </script>
