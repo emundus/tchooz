@@ -39,6 +39,16 @@ class Release2_6_4Installer extends ReleaseInstaller
 			// add new default tags
 			foreach ($tags as $tag) {
 				$query->clear()
+					->select('COUNT(id)')
+					->from($this->db->quoteName('#__emundus_setup_tags'))
+					->where($this->db->quoteName('tag') . ' = ' . $this->db->quote($tag['tag']));
+
+				$count = $this->db->setQuery($query)->loadResult();
+				if ($count > 0) {
+					continue; // Tag already exists, skip to the next one
+				}
+
+				$query->clear()
 					->insert($this->db->quoteName('#__emundus_setup_tags'))
 					->columns($this->db->quoteName(['tag', 'request', 'description', 'published']))
 					->values(
