@@ -1591,7 +1591,7 @@ class EmundusModelEmails extends JModelList
 								$query->clear()
 									->select($this->_db->quoteName(['id', 'fnum', 'student_id']))
 									->from($this->_db->quoteName('#__emundus_files_request'))
-									->where($this->_db->quoteName('email') . ' LIKE ' . $this->_db->Quote($m_to) . ' AND ' . $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum['fnum']));
+									->where($this->_db->quoteName('email') . ' LIKE ' . $this->_db->Quote($m_to) . ' AND ' . $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->Quote($fnum['fnum']) . ' AND ' . $this->_db->quoteName('keyid') . ' LIKE ' . $this->_db->Quote($key1));
 								$this->_db->setQuery($query);
 								$files_request = $this->_db->loadObject();
 
