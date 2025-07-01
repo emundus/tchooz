@@ -55,6 +55,9 @@ class TrackingHelper
 						unset($personal_details['city_other']);
 
 						$details = array_merge($details, $personal_details);
+
+                        // Add trackad id so that all systems can sync their data
+                        $details['identifiant_trackad'] = md5($details['email_address']);
 					}
 				} catch (\Exception $e) {
 					Log::add('Error while fetching personal details for user ' . $user_id, Log::ERROR, 'com_emundus.error');

@@ -6,6 +6,7 @@ use Joomla\CMS\Factory;
 $google_tag_manager_iframe = '<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=' . $params->get('gtm_id','') . '" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>';
 
 $dataForEvent = [
+    'identifiant_trackad' => '',
 	'email_address' => '',
 	'phone_number' => '',
 	'first_name' => '',
