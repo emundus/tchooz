@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-emundusverifymandatoryfields" label="PLG_FABRIK_FORM_EMUNDUS_VERIFY_MANDATORY_FIELDS">
+            <field name="fabrik_element_ids"
+                   type="text"
+                   default=""
+                   label="PLG_FABRIK_FORM_EMUNDUS_VERIFY_MANDATORY_FIELDS_FABRIK_EL_ID"
+            >
+            </field>
+        </fieldset>
+    </fields>
+</form>
