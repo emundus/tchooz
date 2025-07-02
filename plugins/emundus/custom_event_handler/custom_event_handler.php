@@ -543,10 +543,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 		if (!empty($event_label))
 		{
-			if ($this->h_cache->isEnabled()) {
+			if ($this->h_cache->isEnabled())
+			{
 				$categories = $this->h_cache->get('ceh_categories');
 
-				if (!empty($categories) && isset($categories[$event_label])) {
+				if (!empty($categories) && isset($categories[$event_label]))
+				{
 					return $categories[$event_label];
 				}
 
@@ -568,7 +570,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				$db->setQuery($query);
 				$category = $db->loadResult();
 
-				if ($this->h_cache->isEnabled()) {
+				if ($this->h_cache->isEnabled())
+				{
 					$categories[$event_label] = $category;
 					$this->h_cache->set('ceh_categories', $categories);
 				}
@@ -639,7 +642,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								}
 
 								$status = !empty($actions_status) && !in_array(false, $actions_status);
-							} else {
+							}
+							else
+							{
 								Log::add('Conditions not met for custom action on event ' . $event->event . ' with fnum ' . $fnum, Log::DEBUG, 'com_emundus.custom_event_handler');
 							}
 						}
@@ -790,24 +795,33 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 					if (str_starts_with($condition->targeted_column, '$data') && preg_match_all($pattern_event_data, $condition->targeted_column, $matches))
 					{
-						if (!empty($matches[1])) {
+						if (!empty($matches[1]))
+						{
 							$entries = $matches[1];
 
 							$value = $data;
-							foreach ($entries as $entry) {
-								if (isset($value[$entry])) {
+							foreach ($entries as $entry)
+							{
+								if (isset($value[$entry]))
+								{
 									$value = $value[$entry];
-								} else {
+								}
+								else
+								{
 									$value = null;
 									break;
 								}
 							}
 
 							$conditions_status[] = $this->operateCondition($condition, $value);
-						} else {
+						}
+						else
+						{
 							$conditions_status[] = false;
 						}
-					} else {
+					}
+					else
+					{
 						if ($condition->used_object === 'fnum')
 						{
 							if (preg_match($pattern_tag, $condition->targeted_column, $matches))
@@ -1334,7 +1348,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$this->dispatchEvent('onAfterGenerateLetters', [
 								'letters' => $res
 							]);
-						} else {
+						}
+						else
+						{
 							Log::add('Failed to generate letter for fnum ' . $fnum . ' : ' . json_encode($res), Log::ERROR, 'com_emundus.custom_event_handler');
 						}
 					}
@@ -1381,7 +1397,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 							$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 
-							$signers = [];
+							$signers         = [];
 							$signers_actions = (array) $action->action_signers;
 							foreach ($signers_actions as $signer)
 							{
@@ -1411,44 +1427,45 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									}
 								}
 
-								if($signer->signer_type === 'applicant')
+								if ($signer->signer_type === 'applicant')
 								{
 									$query->clear()
 										->select('u.email, eu.firstname, eu.lastname')
-										->from($db->quoteName('#__emundus_campaign_candidature','ecc'))
-										->leftJoin($db->quoteName('#__emundus_users','eu') . ' ON eu.user_id = ecc.applicant_id')
-										->leftJoin($db->quoteName('#__users','u') . ' ON u.id = ecc.applicant_id')
+										->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+										->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = ecc.applicant_id')
+										->leftJoin($db->quoteName('#__users', 'u') . ' ON u.id = ecc.applicant_id')
 										->where($db->quoteName('ecc.id') . ' = :ccid')
 										->bind(':ccid', $ccid, ParameterType::INTEGER);
 									$db->setQuery($query);
 									$informations = $db->loadAssoc();
 								}
 
-								if(!empty($informations['email'] && !empty($informations['firstname']) && !empty($informations['lastname'])))
+								if (!empty($informations['email'] && !empty($informations['firstname']) && !empty($informations['lastname'])))
 								{
 									$contactRepository = new ContactRepository($db);
-									$contact = $contactRepository->getByEmail($informations['email']);
-									if(empty($contact))
+									$contact           = $contactRepository->getByEmail($informations['email']);
+									if (empty($contact))
 									{
 										$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
 										$contact->setId($contactRepository->flush($contact));
 									}
 
-									if(!empty($contact))
+									if (!empty($contact))
 									{
 										$signers[] = [
-											'signer' => $contact->getId(),
+											'signer'               => $contact->getId(),
+											'authentication_level' => $signer->signer_authentication_level ?? 0,
 										];
 									}
 								}
 							}
 
-							if(!empty($signers))
+							if (!empty($signers))
 							{
 								if ($request_id = $m_sign->saveRequest(0, 'to_sign', $ccid, 0, $fnum, $action->attachment_type, $action->signer_connector, $signers))
 								{
 									$requestRepository = new RequestRepository($db);
-									$requestEntity = $requestRepository->loadRequestById($request_id);
+									$requestEntity     = $requestRepository->loadRequestById($request_id);
 
 									$this->dispatchEvent('onAfterRequestSaved', [
 										'request_id' => $request_id,
@@ -1470,7 +1487,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					}
 					break;
 				case 'alter_cart':
-					if (!empty($action->alter_cart_action)) {
+					if (!empty($action->alter_cart_action))
+					{
 						$landed = $this->runCartAction($action, $fnum);
 					}
 					break;
@@ -1479,9 +1497,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					break;
 			}
 
-			if ($landed) {
+			if ($landed)
+			{
 				Log::add('Action ' . $action->action_type . ' for fnum ' . $fnum . ' has been successfully launched', Log::DEBUG, 'com_emundus.custom_event_handler');
-			} else {
+			}
+			else
+			{
 				Log::add('Action ' . $action->action_type . ' for fnum ' . $fnum . ' has failed', Log::ERROR, 'com_emundus.custom_event_handler');
 			}
 		}
@@ -1499,107 +1520,137 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 	{
 		$ran = false;
 
-		if (!class_exists('EmundusModelWorkflow')) {
+		if (!class_exists('EmundusModelWorkflow'))
+		{
 			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 		}
 		$m_workflow = new EmundusModelWorkflow();
-		$step = $m_workflow->getPaymentStepFromFnum($fnum);
+		$step       = $m_workflow->getPaymentStepFromFnum($fnum);
 
-		if (!empty($step->id)) {
+		if (!empty($step->id))
+		{
 			$cart_repository = new CartRepository();
-			$cart = $cart_repository->getCartByFnum($fnum, $step->id);
-			if (!empty($cart)) {
+			$cart            = $cart_repository->getCartByFnum($fnum, $step->id);
+			if (!empty($cart))
+			{
 				$action->discount_id = (int) $action->discount_id;
-				$action->product_id = (int) $action->product_id;
+				$action->product_id  = (int) $action->product_id;
 				switch ($action->alter_cart_action)
 				{
 					case 'add_product':
-						if (!empty($action->product_id)) {
+						if (!empty($action->product_id))
+						{
 							// only add product if it is not already in the cart
 							$already_in_cart = false;
-							foreach ($cart->getProducts() as $product) {
-								if ($product->getId() === $action->product_id) {
+							foreach ($cart->getProducts() as $product)
+							{
+								if ($product->getId() === $action->product_id)
+								{
 									$already_in_cart = true;
 									break;
 								}
 							}
 
-							if (!$already_in_cart) {
+							if (!$already_in_cart)
+							{
 								$product_repository = new ProductRepository();
-								$product = $product_repository->getProductById($action->product_id);
+								$product            = $product_repository->getProductById($action->product_id);
 
-								if (!empty($product->getId())) {
+								if (!empty($product->getId()))
+								{
 									$cart->addProduct($product);
 									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
 								}
-							} else {
+							}
+							else
+							{
 								$ran = true;
 							}
 						}
 						break;
 					case 'remove_product':
-						if (!empty($action->product_id)) {
+						if (!empty($action->product_id))
+						{
 							// only remove product if it is in the cart
 							$still_in_cart = false;
-							foreach ($cart->getProducts() as $product) {
-								if ($product->getId() === $action->product_id) {
+							foreach ($cart->getProducts() as $product)
+							{
+								if ($product->getId() === $action->product_id)
+								{
 									$still_in_cart = true;
 									break;
 								}
 							}
 
-							if ($still_in_cart) {
+							if ($still_in_cart)
+							{
 								$product_repository = new ProductRepository();
-								$product = $product_repository->getProductById($action->product_id);
+								$product            = $product_repository->getProductById($action->product_id);
 
-								if (!empty($product->getId())) {
+								if (!empty($product->getId()))
+								{
 									$cart->removeProduct($product);
 									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
 								}
-							} else {
+							}
+							else
+							{
 								$ran = true;
 							}
 						}
 						break;
 					case 'add_discount':
-						if (!empty($action->discount_id)) {
+						if (!empty($action->discount_id))
+						{
 							$discount_repository = new DiscountRepository();
-							$discount = $discount_repository->getDiscountById($action->discount_id);
+							$discount            = $discount_repository->getDiscountById($action->discount_id);
 
-							if (!empty($discount)) {
+							if (!empty($discount))
+							{
 								// only add discount if it is not already in the cart
 								$already_in_cart = false;
-								foreach ($cart->getPriceAlterations() as $alteration) {
-									if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id) {
+								foreach ($cart->getPriceAlterations() as $alteration)
+								{
+									if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id)
+									{
 										$already_in_cart = true;
 										break;
 									}
 								}
 
-								if (!$already_in_cart) {
+								if (!$already_in_cart)
+								{
 									$alteration = new AlterationEntity(0, $cart->getId(), null, $discount, $discount->getDescription(), -$discount->getValue(), AlterationType::from($discount->getType()->value), $this->automated_task_user);
-									$ran = $cart_repository->addAlteration($cart, $alteration, $this->automated_task_user);
-								} else {
+									$ran        = $cart_repository->addAlteration($cart, $alteration, $this->automated_task_user);
+								}
+								else
+								{
 									$ran = true;
 								}
 							}
 						}
 						break;
 					case 'remove_discount':
-						if (!empty($action->discount_id)) {
+						if (!empty($action->discount_id))
+						{
 							// only remove discount if it is in the cart
-							$still_in_cart = false;
+							$still_in_cart        = false;
 							$alteration_to_remove = null;
-							foreach ($cart->getPriceAlterations() as $alteration) {
-								if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id) {
+							foreach ($cart->getPriceAlterations() as $alteration)
+							{
+								if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id)
+								{
 									$alteration_to_remove = $alteration;
-									$still_in_cart = true;
+									$still_in_cart        = true;
 									break;
 								}
 							}
-							if ($still_in_cart && !empty($alteration_to_remove)) {
+							if ($still_in_cart && !empty($alteration_to_remove))
+							{
 								$ran = $cart_repository->removeAlteration($cart, $alteration_to_remove, $this->automated_task_user);
-							} else {
+							}
+							else
+							{
 								$ran = true;
 							}
 						}

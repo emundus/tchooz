@@ -79,6 +79,8 @@ class Release2_6_5Installer extends ReleaseInstaller
 			EmundusHelperUpdate::insertTranslationsTag('WARNING', 'Attention !');
 			EmundusHelperUpdate::insertTranslationsTag('WELCOME_PROJECT', 'Bienvenue dans votre espace de gestion de projet');
 
+			$tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_sign_requests_signers', 'authentication_level')['status'];
+
 			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)

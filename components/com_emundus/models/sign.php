@@ -16,6 +16,7 @@ use Joomla\CMS\User\User;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
+use Tchooz\Enums\NumericSign\SignAuthenticationLevel;
 use Tchooz\Enums\NumericSign\SignStatus;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
@@ -190,7 +191,7 @@ class EmundusModelSign extends ListModel
 
 						if(!empty($contact))
 						{
-							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '');
+							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevel::STANDARD->value);
 						}
 					}
 				}
@@ -210,7 +211,7 @@ class EmundusModelSign extends ListModel
 		}
 	}
 
-	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = ''): int
+	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevel::STANDARD->value): int
 	{
 		try
 		{
@@ -253,6 +254,11 @@ class EmundusModelSign extends ListModel
 				if(!empty($position))
 				{
 					$signer->setPosition($position);
+				}
+
+				if(!empty($authentication_level))
+				{
+					$signer->setAuthenticationLevel($authentication_level);
 				}
 
 				return $signerRepository->flush($signer);

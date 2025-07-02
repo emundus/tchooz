@@ -2714,6 +2714,14 @@ class EmundusHelperUpdate
 				{
 					$query .= ' (' . $length . ')';
 				}
+				elseif ($type == 'VARCHAR')
+				{
+					$query .= ' (255)';
+				}
+				elseif ($type == 'INT')
+				{
+					$query .= ' (11)';
+				}
 
 				if ($default !== null)
 				{
