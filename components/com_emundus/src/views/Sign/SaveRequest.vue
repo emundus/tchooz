@@ -409,6 +409,27 @@ export default {
 					displayed: true,
 					reload: 0,
 				},
+				{
+					param: 'authentication_level',
+					type: 'select',
+					label: this.translate('COM_EMUNDUS_ONBOARD_REQUEST_SIGNER_AUTHENTICATION_LEVEL_LABEL'),
+					value: 'electronic_signature',
+					options: [
+						{
+							value: 'electronic_signature',
+							label: this.translate('COM_EMUNDUS_ONBOARD_REQUEST_SIGNER_AUTHENTICATION_LEVEL_STANDARD'),
+						},
+						{
+							value: 'advanced_electronic_signature',
+							label: this.translate('COM_EMUNDUS_ONBOARD_REQUEST_SIGNER_AUTHENTICATION_LEVEL_AES'),
+						},
+						{
+							value: 'qualified_electronic_signature',
+							label: this.translate('COM_EMUNDUS_ONBOARD_REQUEST_SIGNER_AUTHENTICATION_LEVEL_QES'),
+						},
+					],
+					displayed: true,
+				},
 			];
 
 			if (this.tagsFound === 0 && this.noPages !== 0) {

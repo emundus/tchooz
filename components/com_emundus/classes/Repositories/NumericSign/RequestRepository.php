@@ -204,6 +204,7 @@ class RequestRepository
 				$this->db->quoteName('esrs.step'),
 				$this->db->quoteName('esrs.page'),
 				$this->db->quoteName('esrs.position'),
+				$this->db->quoteName('esrs.authentication_level'),
 				$this->db->quoteName('ec.lastname'),
 				$this->db->quoteName('ec.firstname'),
 				$this->db->quoteName('ec.email'),
