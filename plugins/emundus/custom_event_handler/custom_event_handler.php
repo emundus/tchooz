@@ -27,6 +27,7 @@ use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Repositories\Payment\ProductRepository;
 use Tchooz\Repositories\Payment\DiscountRepository;
 use Tchooz\Entities\Payment\AlterationType;
+use Tchooz\Entities\Payment\PaymentStepEntity;
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
@@ -638,7 +639,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										}
 									}
 
-									$actions_status[] = $this->launchEventAction($action, $fnum);
+									$actions_status[] = $this->launchEventAction($action, $fnum, $data);
 								}
 
 								$status = !empty($actions_status) && !in_array(false, $actions_status);
@@ -696,7 +697,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										}
 									}
 
-									$actions_status[] = $this->launchEventAction($action, '');
+									$actions_status[] = $this->launchEventAction($action, '', $data);
 								}
 
 								$status = !empty($actions_status) && !in_array(false, $actions_status);
@@ -1148,7 +1149,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 		return $result;
 	}
 
-	private function launchEventAction($action, string $fnum): bool
+	private function launchEventAction($action, string $fnum, $data = null): bool
 	{
 		$landed = false;
 
@@ -1489,7 +1490,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 				case 'alter_cart':
 					if (!empty($action->alter_cart_action))
 					{
-						$landed = $this->runCartAction($action, $fnum);
+						$landed = $this->runCartAction($action, $fnum, $data);
 					}
 					break;
 				default:
@@ -1516,102 +1517,45 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 	 *
 	 * @return bool
 	 */
-	private function runCartAction($action, string $fnum): bool
+	private function runCartAction($action, string $fnum, $data): bool
 	{
 		$ran = false;
 
-		if (!class_exists('EmundusModelWorkflow'))
+		if ($action->alter_cart_action === 'alter_advance')
 		{
-			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-		}
-		$m_workflow = new EmundusModelWorkflow();
-		$step       = $m_workflow->getPaymentStepFromFnum($fnum);
-
-		if (!empty($step->id))
-		{
-			$cart_repository = new CartRepository();
-			$cart            = $cart_repository->getCartByFnum($fnum, $step->id);
-			if (!empty($cart))
+			if (!empty($data['payment_step']) && $data['payment_step'] instanceof PaymentStepEntity)
 			{
-				$action->discount_id = (int) $action->discount_id;
-				$action->product_id  = (int) $action->product_id;
-				switch ($action->alter_cart_action)
+				$data['payment_step']->setAdvanceAmount($action->advance_amount);
+			}
+		}
+		else
+		{
+			if (!class_exists('EmundusModelWorkflow'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+			$step       = $m_workflow->getPaymentStepFromFnum($fnum);
+
+			if (!empty($step->id))
+			{
+
+				$cart_repository = new CartRepository();
+				$cart            = $cart_repository->getCartByFnum($fnum, $step->id);
+				if (!empty($cart))
 				{
-					case 'add_product':
-						if (!empty($action->product_id))
-						{
-							// only add product if it is not already in the cart
-							$already_in_cart = false;
-							foreach ($cart->getProducts() as $product)
+					$action->discount_id = (int) $action->discount_id;
+					$action->product_id  = (int) $action->product_id;
+					switch ($action->alter_cart_action)
+					{
+						case 'add_product':
+							if (!empty($action->product_id))
 							{
-								if ($product->getId() === $action->product_id)
-								{
-									$already_in_cart = true;
-									break;
-								}
-							}
-
-							if (!$already_in_cart)
-							{
-								$product_repository = new ProductRepository();
-								$product            = $product_repository->getProductById($action->product_id);
-
-								if (!empty($product->getId()))
-								{
-									$cart->addProduct($product);
-									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
-								}
-							}
-							else
-							{
-								$ran = true;
-							}
-						}
-						break;
-					case 'remove_product':
-						if (!empty($action->product_id))
-						{
-							// only remove product if it is in the cart
-							$still_in_cart = false;
-							foreach ($cart->getProducts() as $product)
-							{
-								if ($product->getId() === $action->product_id)
-								{
-									$still_in_cart = true;
-									break;
-								}
-							}
-
-							if ($still_in_cart)
-							{
-								$product_repository = new ProductRepository();
-								$product            = $product_repository->getProductById($action->product_id);
-
-								if (!empty($product->getId()))
-								{
-									$cart->removeProduct($product);
-									$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
-								}
-							}
-							else
-							{
-								$ran = true;
-							}
-						}
-						break;
-					case 'add_discount':
-						if (!empty($action->discount_id))
-						{
-							$discount_repository = new DiscountRepository();
-							$discount            = $discount_repository->getDiscountById($action->discount_id);
-
-							if (!empty($discount))
-							{
-								// only add discount if it is not already in the cart
+								// only add product if it is not already in the cart
 								$already_in_cart = false;
-								foreach ($cart->getPriceAlterations() as $alteration)
+								foreach ($cart->getProducts() as $product)
 								{
-									if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id)
+									if ($product->getId() === $action->product_id)
 									{
 										$already_in_cart = true;
 										break;
@@ -1620,41 +1564,109 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 								if (!$already_in_cart)
 								{
-									$alteration = new AlterationEntity(0, $cart->getId(), null, $discount, $discount->getDescription(), -$discount->getValue(), AlterationType::from($discount->getType()->value), $this->automated_task_user);
-									$ran        = $cart_repository->addAlteration($cart, $alteration, $this->automated_task_user);
+									$product_repository = new ProductRepository();
+									$product            = $product_repository->getProductById($action->product_id);
+
+									if (!empty($product->getId()))
+									{
+										$cart->addProduct($product);
+										$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
+									}
 								}
 								else
 								{
 									$ran = true;
 								}
 							}
-						}
-						break;
-					case 'remove_discount':
-						if (!empty($action->discount_id))
-						{
-							// only remove discount if it is in the cart
-							$still_in_cart        = false;
-							$alteration_to_remove = null;
-							foreach ($cart->getPriceAlterations() as $alteration)
+							break;
+						case 'remove_product':
+							if (!empty($action->product_id))
 							{
-								if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id)
+								// only remove product if it is in the cart
+								$still_in_cart = false;
+								foreach ($cart->getProducts() as $product)
 								{
-									$alteration_to_remove = $alteration;
-									$still_in_cart        = true;
-									break;
+									if ($product->getId() === $action->product_id)
+									{
+										$still_in_cart = true;
+										break;
+									}
+								}
+
+								if ($still_in_cart)
+								{
+									$product_repository = new ProductRepository();
+									$product            = $product_repository->getProductById($action->product_id);
+
+									if (!empty($product->getId()))
+									{
+										$cart->removeProduct($product);
+										$ran = $cart_repository->saveCart($cart, $this->automated_task_user);
+									}
+								}
+								else
+								{
+									$ran = true;
 								}
 							}
-							if ($still_in_cart && !empty($alteration_to_remove))
+							break;
+						case 'add_discount':
+							if (!empty($action->discount_id))
 							{
-								$ran = $cart_repository->removeAlteration($cart, $alteration_to_remove, $this->automated_task_user);
+								$discount_repository = new DiscountRepository();
+								$discount            = $discount_repository->getDiscountById($action->discount_id);
+
+								if (!empty($discount))
+								{
+									// only add discount if it is not already in the cart
+									$already_in_cart = false;
+									foreach ($cart->getPriceAlterations() as $alteration)
+									{
+										if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id)
+										{
+											$already_in_cart = true;
+											break;
+										}
+									}
+
+									if (!$already_in_cart)
+									{
+										$alteration = new AlterationEntity(0, $cart->getId(), null, $discount, $discount->getDescription(), -$discount->getValue(), AlterationType::from($discount->getType()->value), $this->automated_task_user);
+										$ran        = $cart_repository->addAlteration($cart, $alteration, $this->automated_task_user);
+									}
+									else
+									{
+										$ran = true;
+									}
+								}
 							}
-							else
+							break;
+						case 'remove_discount':
+							if (!empty($action->discount_id))
 							{
-								$ran = true;
+								// only remove discount if it is in the cart
+								$still_in_cart        = false;
+								$alteration_to_remove = null;
+								foreach ($cart->getPriceAlterations() as $alteration)
+								{
+									if (!empty($alteration->getDiscount()) && $alteration->getDiscount()->getId() === $action->discount_id)
+									{
+										$alteration_to_remove = $alteration;
+										$still_in_cart        = true;
+										break;
+									}
+								}
+								if ($still_in_cart && !empty($alteration_to_remove))
+								{
+									$ran = $cart_repository->removeAlteration($cart, $alteration_to_remove, $this->automated_task_user);
+								}
+								else
+								{
+									$ran = true;
+								}
 							}
-						}
-						break;
+							break;
+					}
 				}
 			}
 		}

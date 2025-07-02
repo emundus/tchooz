@@ -3,6 +3,8 @@
 namespace Tchooz\Repositories\Payment;
 
 use EmundusHelperCache;
+use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Plugin\PluginHelper;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\ProductEntity;
@@ -127,7 +129,14 @@ class PaymentRepository
 		return $this->payment_step_type;
 	}
 
-	public function getPaymentStepById(int $step_id): ?PaymentStepEntity
+	/**
+	 * @param   int          $step_id
+	 * @param   string|null  $fnum
+	 *
+	 * @return PaymentStepEntity|null
+	 * @throws \Exception
+	 */
+	public function getPaymentStepById(int $step_id, ?string $fnum = null): ?PaymentStepEntity
 	{
 		$payment_step = null;
 
@@ -221,6 +230,13 @@ class PaymentRepository
 					$payment_step->setInstallmentRules($installment_rules);
 				}
 			}
+		}
+
+		if (!empty($payment_step) && !empty($fnum)) {
+			PluginHelper::importPlugin('emundus');
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onAfterLoadEmundusPaymentStep = new GenericEvent('onCallEventHandler', ['onAfterLoadEmundusPaymentStep', ['payment_step' => $payment_step, 'rules' => $rules, 'fnum' => $fnum]]);
+			$dispatcher->dispatch('onCallEventHandler', $onAfterLoadEmundusPaymentStep);
 		}
 
 		return $payment_step;
