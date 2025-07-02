@@ -193,7 +193,7 @@ class Createcampaigns extends CMSPlugin implements SubscriberInterface
 									->update('#__emundus_setup_programmes')
 									->set('id = ' . $db->quote($program_id));
 
-								if (!empty($label))
+								if (!empty($label) && $this->params->program_label_update == 1)
 								{
 									$query->set('label = ' . $db->quote($label));
 								}
