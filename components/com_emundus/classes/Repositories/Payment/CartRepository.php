@@ -56,7 +56,7 @@ class CartRepository
 
 			if (!empty($step)) {
 				$payment_repository = new PaymentRepository();
-				$payment_step = $payment_repository->getPaymentStepById($step->id);
+				$payment_step = $payment_repository->getPaymentStepById($step->id, $cart->getFnum());
 			}
 		}
 
@@ -93,7 +93,7 @@ class CartRepository
 
 		if (!empty($step_id)) {
 			$payment_repository = new PaymentRepository();
-			$payment_step = $payment_repository->getPaymentStepById($step_id);
+			$payment_step = $payment_repository->getPaymentStepById($step_id, $fnum);
 			if (!empty($payment_step)) {
 				$cart->setPaymentMethods($payment_step->getPaymentMethods());
 				$cart->setSelectedPaymentMethod($payment_step->getPaymentMethods()[0]);
@@ -277,7 +277,7 @@ class CartRepository
 		}
 
 		if (!empty($step_id)) {
-			$payment_step = $payment_repository->getPaymentStepById($step_id);
+			$payment_step = $payment_repository->getPaymentStepById($step_id, $cart_entity->getFnum());
 
 			if (!empty($payment_step)) {
 				$file_campaign_id = $this->getCampaignIdFromCart($cart_entity);

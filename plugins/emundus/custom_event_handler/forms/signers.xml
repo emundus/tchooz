@@ -37,4 +37,16 @@
             type="text"
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_LASTNAME_LABEL"
     />
+
+    <field
+            showon="signer_connector:yousign"
+            name="signer_authentication_level"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_AUTHENTICATION_LEVEL_LABEL"
+            default="electronic_signature"
+    >
+        <option value="electronic_signature">Standard</option>
+        <option value="advanced_electronic_signature">AES</option>
+        <option value="qualified_electronic_signature">QES</option>
+    </field>
 </form>

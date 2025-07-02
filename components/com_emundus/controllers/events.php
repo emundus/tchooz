@@ -732,6 +732,7 @@ class EmundusControllerEvents extends BaseController
 
 			if (!empty($event_id) && !empty($start_date) && !empty($end_date))
 			{
+
 				$availability_config = [
 					'slot_duration'        => $duration,
 					'slot_duration_type'   => $duration_type,
@@ -742,13 +743,9 @@ class EmundusControllerEvents extends BaseController
 				$users               = explode(',', $users);
 				$slots               = $this->m_events->saveEventSlot($start_date, $end_date, $room, $slot_capacity, $more_infos, $users, $event_id, $repeat_dates, $id, $parent_slot_id, $mode, $availability_config, $this->user->id);
 
-				if (!empty($slots))
-				{
-					$response['data'] = $slots;
-
-					$response['status']  = true;
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-				}
+				$response['data'] = $slots['slots'];
+				$response['status']  = $slots['status'];
+				$response['message'] = $slots['message'];
 			}
 		}
 
@@ -816,16 +813,7 @@ class EmundusControllerEvents extends BaseController
 
 			if (!empty($event_id) && !empty($slot_duration))
 			{
-				$response['status'] = $this->m_events->setupSlot($event_id, $slot_duration, $slot_break_every, $slot_break_time, $slots_availables_to_show, $slot_can_book_until, $slot_can_cancel, $slot_can_cancel_until, $this->user->id);
-
-				if ($response['status'])
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
-				}
-				else
-				{
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
-				}
+				$response = $this->m_events->setupSlot($event_id, $slot_duration, $slot_break_every, $slot_break_time, $slots_availables_to_show, $slot_can_book_until, $slot_can_cancel, $slot_can_cancel_until, $this->user->id);
 			}
 		}
 

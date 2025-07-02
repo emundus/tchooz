@@ -707,7 +707,7 @@ class EmundusModelApplication extends ListModel
 
 	/**
 	 * Add a new comment
-	 * 
+	 *
 	 * @param $row
 	 * @return int new comment id
 	 * @throws Exception
@@ -2149,27 +2149,6 @@ class EmundusModelApplication extends ListModel
 
 									$forms .= '<table class="em-mt-8 em-mb-16 table table-bordered table-striped em-personalDetail-table-multiplleLine tw-p-6 tw-shadow-card !tw-rounded-coordinator-cards tw-border-separate !tw-border tw-border-neutral-400 tw-bg-neutral-0"><thead><tr class="!tw-border-0"> ';
 
-									foreach ($elements as &$element) {
-										if (!in_array($element->plugin, ['id', 'panel'])) {
-											$forms .= '<th scope="col" class="!tw-border-b !tw-border-b-neutral-400 !tw-h-auto">';
-
-											$forms .= '<div class="tw-flex tw-flex-row tw-items-center tw-w-full"><span class="tw-font-bold tw-text-ellipsis tw-overflow-hidden tw-whitespace-nowrap">' . Text::_($element->label) . '</span>';
-
-											if ($can_comment) {
-												$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit tw-ml-2';
-												foreach ($file_comments as $comment) {
-													if ($comment['target_id'] == $element->id && $comment['target_type'] == 'elements') {
-														$comment_classes .= ' has-comments tw-bg-main-500 tw-text-neutral-300 tw-rounded-full';
-													}
-												}
-
-												$forms .= '<span class="' . $comment_classes . '" title="' . Text::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
-											}
-
-											$forms .= '</div></th>';
-										}
-									}
-
 									$repeated_elements = [];
 
 									if ($itemg->group_id == 174) {
@@ -2194,19 +2173,81 @@ class EmundusModelApplication extends ListModel
 										Log::Add('ERROR getting repeated elements in model/application at query: ' . $query, Log::ERROR, 'com_emundus');
 									}
 
+									$visible_elements = [];
+
+									foreach ($elements as $element)
+									{
+										if (in_array($element->plugin, ['id', 'panel'])) continue;
+
+										if ($show_empty_fields == 1)
+										{
+											$visible_elements[] = $element;
+										}
+										else
+										{
+											$hasValue = false;
+											foreach ($repeated_elements as $row)
+											{
+												if (isset($row->{$element->name}) && $row->{$element->name} !== '' && $row->{$element->name} !== null)
+												{
+													$hasValue = true;
+													break;
+												}
+											}
+
+											if ($hasValue)
+											{
+												$visible_elements[] = $element;
+											}
+										}
+									}
+
+									foreach ($visible_elements as $element) {
+										$forms .= '<th scope="col" class="!tw-border-b !tw-border-b-neutral-400 !tw-h-auto">';
+										$forms .= '<div class="tw-flex tw-flex-row tw-items-center tw-w-full"><span class="tw-font-bold tw-text-ellipsis tw-overflow-hidden tw-whitespace-nowrap">' . Text::_($element->label) . '</span>';
+										if ($can_comment) {
+											$comment_classes = 'comment-icon material-symbols-outlined tw-cursor-pointer tw-p-1 tw-h-fit tw-ml-2';
+											foreach ($file_comments as $comment) {
+												if ($comment['target_id'] == $element->id && $comment['target_type'] == 'elements') {
+													$comment_classes .= ' has-comments tw-bg-main-500 tw-text-neutral-300 tw-rounded-full';
+												}
+											}
+											$forms .= '<span class="' . $comment_classes . '" title="' . Text::_('COM_EMUNDUS_COMMENTS_ADD_COMMENT') . '" data-target-type="elements" data-target-id="' . $element->id . '">comment</span>';
+										}
+										$forms .= '</div></th>';
+									}
+
 									unset($t_elt);
 
 									$forms .= '</tr></thead>';
+
 									// -- Ligne du tableau --
 									if (count($repeated_elements) > 0) {
 										$forms .= '<tbody class="tw-border-0">';
+
+										$visible_names = array_map(function($el) { return $el->name; }, $visible_elements);
+
 										foreach ($repeated_elements as $r_element) {
 											$forms .= '<tr class="!tw-bg-neutral-0 !tw-border-0">';
 											$j     = 0;
 											foreach ($r_element as $key => $r_elt) {
+												if (!in_array($key, $visible_names)) {
+													$j++;
+													continue;
+												}
 
-												if (!empty($elements[$j])) {
-													$params = json_decode($elements[$j]->params);
+												$element = null;
+												foreach ($visible_elements as $el) {
+													if ($el->name === $key) {
+														$element = $el;
+														break;
+													}
+												}
+
+												if ($element) {
+													$params = json_decode($element->params);
+												} else {
+													$params = null;
 												}
 
 												// Do not display elements with no value inside them.
@@ -4171,7 +4212,7 @@ class EmundusModelApplication extends ListModel
 				if(!class_exists('HtmlSanitizerSingleton')) {
 					require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'html.php');
 				}
-				
+
 				$sanitizer = HtmlSanitizerSingleton::getInstance();
 				$synthesis->synthesis = $sanitizer->sanitize($synthesis->synthesis);
 			}

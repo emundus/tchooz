@@ -1315,7 +1315,8 @@ class EmundusModelProfile extends ListModel
 		}
 		catch (Exception $e)
 		{
-			$query->select('ecc.id as ccid, ecc.*, esc.*, ess.*')
+			$query->clear()
+				->select('ecc.id as ccid, ecc.*, esc.*, ess.*')
 				->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . '=' . $this->_db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_status', 'ess') . ' ON ' . $this->_db->quoteName('ess.step') . '=' . $this->_db->quoteName('ecc.status'))
