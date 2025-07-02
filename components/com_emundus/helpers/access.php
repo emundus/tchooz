@@ -665,7 +665,7 @@ class EmundusHelperAccess
 	 * @return bool[] (can_see, can_edit)
 	 * @throws Exception
 	 */
-	public static function getUserEvaluationStepAccess($ccid, $step_data, $user_id, $verify_campaign_infos = true): array
+	public static function getUserEvaluationStepAccess(int $ccid, object $step_data, ?int $user_id, bool $verify_campaign_infos = true): array
 	{
 		$can_see = false;
 		$can_edit = false;

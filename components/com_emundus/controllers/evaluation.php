@@ -1247,7 +1247,7 @@ class EmundusControllerEvaluation extends BaseController
 
 		$fnum = $this->input->getString('fnum', null);
 
-		if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 			$readonly =  $this->input->getString('readonly', 0);
 
 			$db = Factory::getContainer()->get('DatabaseDriver');
