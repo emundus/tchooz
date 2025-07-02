@@ -593,14 +593,11 @@ class EmundusModelWorkflow extends JModelList
 
 					if (!empty($data->type)) {
 						$found_from_cache = false;
-						if ($this->h_cache->isEnabled()) {
-							$action_ids_by_types = $this->h_cache->get('action_ids_by_types');
-							$action_ids_by_types = empty($action_ids_by_types) ? [] : $action_ids_by_types;
-
-							if (isset($action_ids_by_types[$data->type])) {
-								$found_from_cache = true;
-								$data->action_id = $action_ids_by_types[$data->type];
-							}
+						$action_ids_by_types = $this->h_cache->get('action_ids_by_types');
+						$action_ids_by_types = empty($action_ids_by_types) ? [] : $action_ids_by_types;
+						if (!empty($action_ids_by_types[$data->type])) {
+							$found_from_cache = true;
+							$data->action_id = $action_ids_by_types[$data->type];
 						}
 
 						if (!$found_from_cache) {
@@ -612,10 +609,8 @@ class EmundusModelWorkflow extends JModelList
 							$this->db->setQuery($query);
 							$data->action_id = $this->db->loadResult();
 
-							if ($this->h_cache->isEnabled()) {
-								$action_ids_by_types[$data->type] = $data->action_id;
-								$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
-							}
+							$action_ids_by_types[$data->type] = $data->action_id;
+							$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
 						}
 					}
 
@@ -629,16 +624,17 @@ class EmundusModelWorkflow extends JModelList
 
 					if (!empty($cid)) {
 						$query->clear()
-							->select('start_date, end_date, infinite')
-							->from('#__emundus_setup_campaigns_step_dates')
-							->where('campaign_id = ' . $cid)
-							->where('step_id = ' . $id);
+							->select('step_dates.start_date, step_dates.end_date, step_dates.infinite, esc.start_date as campaign_start_date, esc.end_date as campaign_end_date')
+							->from($this->db->quoteName('#__emundus_setup_campaigns_step_dates', 'step_dates'))
+							->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = step_dates.campaign_id')
+							->where('step_dates.campaign_id = ' . $cid)
+							->where('step_dates.step_id = ' . $id);
 
 						$this->db->setQuery($query);
 						$dates = $this->db->loadAssoc();
 
-						$data->start_date = $dates['start_date'];
-						$data->end_date = $dates['end_date'];
+						$data->start_date = !empty($dates['start_date']) && $dates['start_date'] !== '0000-00-00 00:00:00' ? $dates['start_date'] : $dates['campaign_start_date'];
+						$data->end_date = !empty($dates['end_date']) && $dates['end_date'] !== '0000-00-00 00:00:00' ? $dates['end_date'] : $dates['campaign_end_date'];
 						$data->infinite = $dates['infinite'];
 					}
 				} else {
