@@ -391,9 +391,9 @@ class YousignSynchronizer extends Api
 
 		$payload = [
 			'info'                          => [
-				'email'      => $signer->email,
-				'first_name' => $signer->firstname,
-				'last_name'  => $signer->lastname,
+				'email'      => trim($signer->email),
+				'first_name' => trim($signer->firstname),
+				'last_name'  => trim($signer->lastname),
 				'locale'     => 'fr',
 			],
 			'signature_level'               => $signature_level,
