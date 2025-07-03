@@ -10,6 +10,7 @@
 namespace Tchooz\Entities\NumericSign;
 
 use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Enums\NumericSign\SignAuthenticationLevel;
 use Tchooz\Enums\NumericSign\SignStatus;
 
 class RequestSigners
@@ -30,11 +31,13 @@ class RequestSigners
 
 	private string $position = '';
 
+	private SignAuthenticationLevel $authenticationLevel = SignAuthenticationLevel::STANDARD;
+
 	public function __construct(Request $request, ContactEntity $contact, SignStatus|string $status = null)
 	{
 		$this->request = $request;
 		$this->contact = $contact;
-		if(!empty($status))
+		if (!empty($status))
 		{
 			$this->status = $status instanceof SignStatus ? $status : SignStatus::from($status);
 		}
@@ -131,17 +134,39 @@ class RequestSigners
 		$this->position = $position;
 	}
 
+	public function getAuthenticationLevel(): SignAuthenticationLevel
+	{
+		return $this->authenticationLevel;
+	}
+
+	public function setAuthenticationLevel(SignAuthenticationLevel|string $authenticationLevel): self
+	{
+		if (is_string($authenticationLevel))
+		{
+			$authenticationLevel = SignAuthenticationLevel::from($authenticationLevel);
+		}
+		elseif (!($authenticationLevel instanceof SignAuthenticationLevel))
+		{
+			throw new \InvalidArgumentException('Invalid authentication level type');
+		}
+
+		$this->authenticationLevel = $authenticationLevel;
+
+		return $this;
+	}
+
 	public function __serialize(): array
 	{
 		return [
-			'id'         => $this->id,
-			'request_id' => $this->request->getId(),
-			'status'     => $this->status->value,
-			'signed_at'  => $this->signedAt ?: null,
-			'contact_id' => $this->contact->getId(),
-			'step'       => $this->step,
-			'page'       => $this->page,
-			'position'   => $this->position,
+			'id'                   => $this->id,
+			'request_id'           => $this->request->getId(),
+			'status'               => $this->status->value,
+			'signed_at'            => $this->signedAt ?: null,
+			'contact_id'           => $this->contact->getId(),
+			'step'                 => $this->step,
+			'page'                 => $this->page,
+			'position'             => $this->position,
+			'authentication_level' => $this->authenticationLevel->value,
 		];
 	}
 }

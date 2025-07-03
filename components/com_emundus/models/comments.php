@@ -90,7 +90,7 @@ class EmundusModelComments extends BaseDatabaseModel
             $allowed_targets = ['forms', 'groups', 'elements'];
 
             $target_type = !empty($target) && isset($target['type']) && in_array($target['type'], $allowed_targets) ? $target['type'] : '';
-            $target_id = !empty($target) && isset($target['id']) ? $target['id'] : '';
+            $target_id = !empty($target) && isset($target['id']) ? $target['id'] : 0;
 
             $query = $this->db->getQuery(true);
 
@@ -296,8 +296,9 @@ class EmundusModelComments extends BaseDatabaseModel
 
         if (!empty($comment_id)) {
             $query = $this->db->getQuery(true);
-            $query->select('ec.*')
+            $query->select('ec.*, CONCAT(eu.firstname, " ", eu.lastname) as username')
                 ->from($this->db->quoteName('#__emundus_comments', 'ec'))
+	            ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = ec.user_id')
                 ->where('ec.id = ' . $this->db->quote($comment_id));
 
             try {

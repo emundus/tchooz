@@ -217,7 +217,9 @@ export default {
 			this.openedSlotPopup = true;
 		},
 		updateSlots(slots) {
-			for (const slot of slots) {
+			const normalizedSlots = Array.isArray(slots) ? slots : [slots];
+
+			for (const slot of normalizedSlots) {
 				let existingSlot = eventsServicePlugin.get(slot.id);
 
 				if (existingSlot) {

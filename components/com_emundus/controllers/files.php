@@ -652,12 +652,17 @@ class EmundusControllerFiles extends BaseController
 							'status_to' => -1
 						);
 
+						if(!empty($title))
+						{
+							$comment = $title . ' ' . $comment;
+						}
+
 						PluginHelper::importPlugin('emundus', 'custom_event_handler');
 						$this->app->triggerEvent('onBeforeCommentAdd', [$comment_content]);
 						$this->app->triggerEvent('onCallEventHandler', ['onBeforeCommentAdd', ['comment' => $comment_content]]);
 
 						$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
-						$new_comment_id = $m_comments->addComment($ccid, $comment_content, [], 0, 0, $this->_user->id);
+						$new_comment_id = $m_comments->addComment($ccid, $comment, [], 0, 0, $this->_user->id);
 						if (empty($new_comment_id)) {
 							$fnumErrorList[] = $fnum;
 						}

@@ -20,9 +20,13 @@ $layoutData = (object) array(
 	'name' => 'filter',
 	'label' => FabrikHelperHTML::icon('icon-filter', Text::_('COM_FABRIK_GO'))
 );
+$multipleActions = $this->params->get('hidecheckbox', 0) == 0 ? true : false;
 ?>
 	<tr class="fabrik___heading">
 		<?php foreach ($this->headings as $key => $heading) :
+			if(($key == 'fabrik_actions' || $key == 'fabrik_select') && !$multipleActions) {
+				continue;
+			}
 			$h = $this->headingClass[$key];
 			$style = empty($h['style']) ? '' : 'style="' . $h['style'] . '"'; ?>
 			<th class="heading <?php echo $h['class'] ?>" <?php echo $style ?>>

@@ -938,6 +938,7 @@ class EmundusHelperEvents
 					{
 						if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
 						{
+							//TODO: Manage alias from evaluation forms
 							$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), null, $user->id);
 
 							if (!empty($alias_value['raw']))
@@ -2507,9 +2508,6 @@ class EmundusHelperEvents
 					'fnum'        => $db->quote($fnum),
 					'last_update' => $db->quote(time())
 				];
-
-				$db->setQuery($query);
-				$db->execute();
 
 				$query->clear()
 					->insert($db->quoteName('#__fabrik_form_sessions'))

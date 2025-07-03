@@ -263,7 +263,7 @@ if ($user != null)
                      onclick="manageHeight()">
                     <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
-                            <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
+                            <p id="current_user_fullname" class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
 						<?php endif; ?>
 						<?php if (!empty($profile_label)) : ?>
                             <p class="em-profile-color em-text-italic"
@@ -280,7 +280,7 @@ if ($user != null)
                 <div class="em-flex-row em-flex-end em-profile-container">
                     <div class="tw-mr-4">
 						<?php if (!empty($user)) : ?>
-                            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . $user->lastname[0] . '.'; ?></p>
+                            <p class="em-text-neutral-900 em-font-weight-500"><?= $user->firstname . ' ' . mb_substr($user->lastname, 0, 1) . '.'; ?></p>
 						<?php endif; ?>
 						<?php if (!empty($profile_label)) : ?>
                             <p class="em-profile-color em-text-italic"><?= $profile_label; ?></p>
@@ -288,7 +288,7 @@ if ($user != null)
                     </div>
                     <div class="em-user-dropdown-button" aria-haspopup="true" aria-expanded="false">
                         <span class="em-user-dropdown-icon"
-                              data-initials="<?php echo strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1)); ?>"
+                              data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
                     </div>
 
@@ -312,7 +312,7 @@ if ($user != null)
                         </div>
 					<?php else : ?>
                         <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
-                              data-initials="<?php echo strtoupper(substr($user->firstname, 0, 1) . substr($user->lastname, 0, 1)); ?>"
+                              data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
                               alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
 					<?php endif; ?>
                     <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>

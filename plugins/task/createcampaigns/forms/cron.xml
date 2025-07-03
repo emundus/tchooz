@@ -9,6 +9,10 @@
             <field type="text" name="program_json_array_entry" label="COM_SCHEDULER_FIELDSET_PROGRAM_JSON_ARRAY_ENTRY" />
 
             <field type="text" name="program_label_mapping" label="COM_SCHEDULER_FIELDSET_PROGRAM_LABEL_MAPPING" />
+            <field type="list" name="program_label_update" default="1" label="COM_SCHEDULER_FIELDSET_PROGRAM_LABEL_UPDATE" description="COM_SCHEDULER_FIELDSET_PROGRAM_LABEL_UPDATE_DESC">
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
             <field type="text" name="program_code_mapping" label="COM_SCHEDULER_FIELDSET_PROGRAM_CODE_MAPPING" />
             <field
                     name="program_fields_mapping"

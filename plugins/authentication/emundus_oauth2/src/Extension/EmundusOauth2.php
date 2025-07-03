@@ -125,10 +125,22 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 					}
 				}
 			} else {
+				$finalConfiguration = $configurations[0];
+				$iss = filter_input(INPUT_GET, 'iss', FILTER_SANITIZE_STRING);
+				if(!empty($iss))
+				{
+					foreach ($configurations as $configuration) {
+						if($configuration->source == 0 && str_contains($configuration->well_known_url, $iss))
+						{
+							$finalConfiguration = $configuration;
+						}
+					}
+				}
+
 				$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode', 'attribute_mapping','mapping'];
 
 				foreach ($parameters as $parameter) {
-					$this->params->set($parameter, $configurations['configurations0']->{$parameter});
+					$this->params->set($parameter, $finalConfiguration->{$parameter});
 				}
 			}
 		}

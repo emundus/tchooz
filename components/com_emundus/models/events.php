@@ -583,7 +583,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 	public function getAllEventsAvailabilities($start = '', $end = '', $events_ids = '')
 	{
-		$events_slots = [];
+		$availabilities = [];
 
 		try
 		{
@@ -635,18 +635,18 @@ class EmundusModelEvents extends BaseDatabaseModel
 			}
 			$query->group('esa.id');
 			$this->_db->setQuery($query);
-			$events_slots = $this->_db->loadObjectList();
+			$availabilities = $this->_db->loadObjectList();
 
-			foreach ($events_slots as $slot)
+			foreach ($availabilities as $availability)
 			{
 				// Convert UTC dates to platform timezone ($timezone)
-				$slot->start = EmundusHelperDate::displayDate($slot->start, 'Y-m-d H:i', 0);
-				$slot->end   = EmundusHelperDate::displayDate($slot->end, 'Y-m-d H:i', 0);
+				$availability->start = EmundusHelperDate::displayDate($availability->start, 'Y-m-d H:i', 0);
+				$availability->end   = EmundusHelperDate::displayDate($availability->end, 'Y-m-d H:i', 0);
 
 				// Get details of registrant
-				if ($slot->booked_count > 0)
+				if ($availability->booked_count > 0)
 				{
-					$slot->registrants = $this->getRegistrants('', 'DESC', '', 'all', 0, '', 0, 0, 0, 0, $slot->id);
+					$availability->registrants = $this->getRegistrants('', 'DESC', '', 'all', 0, '', 0, 0, 0, 0, $availability->id);
 				}
 			}
 
@@ -656,7 +656,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 			Log::add('Error while getting events slots: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
 		}
 
-		return $events_slots;
+		return $availabilities;
 	}
 
 	/**
@@ -1003,269 +1003,387 @@ class EmundusModelEvents extends BaseDatabaseModel
 		$query = $this->db->getQuery(true);
 
 		$slots_ids = [];
-		$slots     = [];
+		$slots     = ['slots' => [], 'message' => 'COM_EMUNDUS_ONBOARD_ERROR', 'status' => false];
 
 		if (empty($user_id))
 		{
 			$user_id = $this->app->getIdentity()->id;
 		}
 
-		try
+		$conditions_filled = true;
+
+		if($id)
 		{
-			if (!empty($start_date) && !empty($end_date) && !empty($event_id))
+			$registrants = $this->getRegistrants('', 'DESC', '', 25, 0, '', 0, 0, 0, '', 0, [], $user_id, '', 0, '', $id);
+			$slot = $this->getEventSlot($id);
+			if($registrants['count'] > 0)
 			{
-				$slot_capacity = empty($slot_capacity) ? 1 : $slot_capacity;
-
-				$slots_linked = [];
-
-				if ($mode == 1)
+				if($slot_capacity < $slot->slot_capacity)
 				{
-					$parent_slot_id = 0;
+					$slots['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_UPDATE_CAPACITY_ERROR');
+					$conditions_filled = false;
+				}
+				else if(strtotime($end_date) < strtotime($slot->end))
+				{
+					$slots['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_END_DATE_ERROR');
+					$conditions_filled = false;
+				}
+				else if (strtotime($start_date) > strtotime($slot->start)) {
+					$slots['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_GREATER_ERROR');
+					$conditions_filled = false;
 				}
 
-				$timezone = $this->app->get('offset', 'Europe/Paris');
-
-				$save_slot_event = [
-					'event'          => $event_id,
-					'parent_slot_id' => $parent_slot_id,
-					'start_date'     => Factory::getDate($start_date, $timezone)->toSql(),
-					'end_date'       => Factory::getDate($end_date, $timezone)->toSql(),
-					'room'           => $room == 0 ? null : $room,
-					'slot_capacity'  => $slot_capacity,
-					'more_infos'     => $more_infos,
-				];
-
-				if (!empty($id))
+				else if(strtotime($start_date) !== strtotime($slot->start))
 				{
-					$save_slot_event['id'] = $id;
-				}
-				$save_slot_event = (object) $save_slot_event;
+					$slotStart = $slot->start;
+					$slotEnd   = $slot->end;
 
-				if (!empty($id))
-				{
-					if ($mode == 1)
+					$durationInMs = 0;
+					if ($availability_config['slot_duration_type'] === 'minutes')
 					{
-						$repeat_dates = '';
+						$durationInMs = $availability_config['slot_duration'] * 60 * 1000;
+					}
+					elseif ($availability_config['slot_duration_type'] === 'hours')
+					{
+						$durationInMs = $availability_config['slot_duration'] * 60 * 60 * 1000;
 					}
 
-					if ($this->db->updateObject('jos_emundus_setup_event_slots', $save_slot_event, 'id'))
+					$start_date_format_date = new DateTime($start_date);
+					$slot_start_format_date = new DateTime($slotStart);
+					$slot_end_format_date = new DateTime($slotEnd);
+
+					$diffBetweenSlotAndStartDate = $slot_start_format_date->getTimestamp() - $start_date_format_date->getTimestamp();
+					$diffBetweenSlotAndStartDate *= 1000;
+
+					$breakTimeInMs = 0;
+					if ($availability_config['slot_break_time'] && $availability_config['slot_break_every'] > 0)
 					{
-						if (empty($parent_slot_id))
+						if ($availability_config['slot_break_time_type'] === 'minutes')
 						{
-							$query->clear()
-								->select('*')
-								->from($this->db->quoteName('#__emundus_setup_event_slots'))
-								->where($this->db->quoteName('parent_slot_id') . ' = ' . $id);
-							$this->db->setQuery($query);
-							$slots_linked = $this->db->loadObjectList();
+							$breakTimeInMs = $availability_config['slot_break_time'] * 60 * 1000;
+						}
+						elseif ($availability_config['slot_break_time_type'] === 'hours')
+						{
+							$breakTimeInMs = $availability_config['slot_break_time_type'] * 60 * 60 * 1000;
+						}
+					}
 
-							if (!empty($slots_linked) && $mode == 1)
-							{
-								$first_child_id = $slots_linked[0]->id;
+					$new_availability_possible = false;
 
-								// We dissociate the parent to other slot so first child slot become parent
-								$query->clear()
-									->update($this->db->quoteName('#__emundus_setup_event_slots'))
-									->set($this->db->quoteName('parent_slot_id') . ' = 0')
-									->where($this->db->quoteName('id') . ' = ' . $first_child_id);
-								$this->db->setQuery($query);
-								$this->db->execute();
+					// Check if the slot duration is less than a cycle of availabilities and break time
+					// And if the new start date allows creating at least one new availability
+					if ($breakTimeInMs > 0 && ($slot_end_format_date->getTimestamp() * 1000) - ($start_date_format_date->getTimestamp() * 1000) <  $durationInMs * $availability_config['slot_break_every'] + $breakTimeInMs && $diffBetweenSlotAndStartDate % $durationInMs === 0)
+					{
+						$new_availability_possible = true;
+					}
 
-								// We link future slots to the first child slot
-								$query->clear()
-									->update($this->db->quoteName('#__emundus_setup_event_slots'))
-									->set($this->db->quoteName('parent_slot_id') . ' = ' . $first_child_id)
-									->where($this->db->quoteName('parent_slot_id') . ' = ' . $id);
-								$this->db->setQuery($query);
-								$this->db->execute();
-							}
+					if(!$new_availability_possible)
+					{
+						if($availability_config['slot_break_every'] > 0)
+						{
+							$cycle_time = $durationInMs * $availability_config['slot_break_every'];
 						}
 						else
 						{
-							$parent_slots = [];
-							if ($mode != 2)
-							{
-								$query->clear()
-									->select('*')
-									->from($this->db->quoteName('#__emundus_setup_event_slots'))
-									->where($this->db->quoteName('id') . ' = ' . $parent_slot_id);
-								$this->db->setQuery($query);
-								$parent_slots = $this->db->loadObjectList();
-							}
-
-							$query->clear()
-								->select('*')
-								->from($this->db->quoteName('#__emundus_setup_event_slots'))
-								->where($this->db->quoteName('parent_slot_id') . ' = ' . $parent_slot_id);
-							if ($mode == 2)
-							{
-								// Get only childs in the future of the current slot saved
-								$query->where($this->db->quoteName('start_date') . ' >= ' . $this->db->quote($start_date));
-							}
-							$this->db->setQuery($query);
-							$childs = $this->db->loadObjectList();
-
-							if ($mode == 2)
-							{
-								// current slot became parent and we link future slots to it
-								$query->clear()
-									->update($this->db->quoteName('#__emundus_setup_event_slots'))
-									->set($this->db->quoteName('parent_slot_id') . ' = ' . $id)
-									->where($this->db->quoteName('parent_slot_id') . ' = ' . $parent_slot_id)
-									->where($this->db->quoteName('start_date') . ' >= ' . $this->db->quote($start_date));
-								$this->db->setQuery($query);
-								$this->db->execute();
-
-								$query->clear()
-									->update($this->db->quoteName('#__emundus_setup_event_slots'))
-									->set($this->db->quoteName('parent_slot_id') . ' = 0')
-									->where($this->db->quoteName('id') . ' = ' . $id);
-								$this->db->setQuery($query);
-								$this->db->execute();
-
-								$repeat_dates = [];
-								// Set repeat dates only for future slots
-								foreach ($childs as $child)
-								{
-									$repeat_dates[] = date('Y-m-d', strtotime($child->start_date));
-								}
-							}
-
-							$slots_linked = array_merge($parent_slots, $childs);
-						}
-					}
-				}
-				else
-				{
-					if ($this->db->insertObject('jos_emundus_setup_event_slots', $save_slot_event))
-					{
-						$id = $this->db->insertid();
-					}
-				}
-
-				// Check if values of users are not empty
-				$users = array_filter($users);
-
-				// Extract hours from start_date and end_date
-				$start_hours = date('H:i:s', strtotime($start_date));
-				$end_hours   = date('H:i:s', strtotime($end_date));
-
-				if (!empty($id))
-				{
-					$slots_ids[] = $id;
-
-					// Manage users
-					$query->clear()
-						->delete($this->db->quoteName('#__emundus_setup_slot_users'))
-						->where($this->db->quoteName('slot') . ' = ' . $id);
-					$this->db->setQuery($query);
-					if ($this->db->execute())
-					{
-						foreach ($users as $user)
-						{
-							$insert_user = [
-								'slot' => $id,
-								'user' => $user
-							];
-							$insert_user = (object) $insert_user;
-							$this->db->insertObject('jos_emundus_setup_slot_users', $insert_user);
-						}
-					}
-					//
-
-					// Insert new linked slot if repeat_dates is not empty
-					if (!is_array($repeat_dates))
-					{
-						$repeat_dates = explode(',', $repeat_dates);
-						$repeat_dates = array_filter($repeat_dates);
-					}
-
-					foreach ($repeat_dates as $repeatDate)
-					{
-						// Check if repeatDate is not current slot
-						if (date('Y-m-d', strtotime($repeatDate)) === date('Y-m-d', strtotime($start_date)))
-						{
-							continue;
+							$cycle_time = $durationInMs;
 						}
 
-						$link_slot_id = 0;
-						foreach ($slots_linked as $slot_linked)
+						$temporary_date = $slot_start_format_date->getTimestamp() * 1000;
+
+						/// At this moment, we know that at least one cycle of availabilities and break time will be needed
+						/// So if we want to see if the new date proposed can be accepted, we have to set the started date point at the beginning of one cycle
+						/// The while loop here allow to go at this started date point, allowing us to see if the date can be accepted next.
+						while (($slot_end_format_date->getTimestamp() * 1000) - $temporary_date + $durationInMs < $durationInMs * $availability_config['slot_break_every'] + $breakTimeInMs) {
+							$temporary_date = $temporary_date - $durationInMs;
+						}
+
+						$diffBetweenSlotAndStartDate = $temporary_date - ($start_date_format_date->getTimestamp() * 1000);
+
+						for ($availabilities_addable = 1; ; $availabilities_addable++)
 						{
-							$link_start_date = date('Y-m-d', strtotime($slot_linked->start_date));
-							if ($link_start_date === $repeatDate)
+							$totalTime = $availabilities_addable * $cycle_time + $availabilities_addable * $breakTimeInMs;
+
+							if ($totalTime === $diffBetweenSlotAndStartDate)
 							{
-								$link_slot_id = $slot_linked->id;
+								break;
+							}
+							if ($totalTime > $diffBetweenSlotAndStartDate)
+							{
+								$slots['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_CONDITIONS_ERROR');
+								$conditions_filled = false;
 								break;
 							}
 						}
-
-						$start_date = date('Y-m-d', strtotime($repeatDate));
-						$start_date = $start_date . ' ' . $start_hours;
-
-						$end_date = date('Y-m-d', strtotime($repeatDate));
-						$end_date = $end_date . ' ' . $end_hours;
-
-						if (empty($link_slot_id))
-						{
-							$save_slot_event = [
-								'event'          => $event_id,
-								'start_date'     => Factory::getDate($start_date, $timezone)->toSql(),
-								'end_date'       => Factory::getDate($end_date, $timezone)->toSql(),
-								'room'           => $room == 0 ? null : $room,
-								'slot_capacity'  => $slot_capacity,
-								'more_infos'     => $more_infos,
-								'parent_slot_id' => $id
-							];
-							$save_slot_event = (object) $save_slot_event;
-							if ($this->db->insertObject('jos_emundus_setup_event_slots', $save_slot_event))
-							{
-								$slots_ids[] = $this->db->insertid();
-							}
-						}
-					}
-					//
-
-					// Update all slots already linked
-					foreach ($slots_linked as $slot_linked)
-					{
-						$start_date = date('Y-m-d', strtotime($slot_linked->start_date));
-						$start_date = $start_date . ' ' . $start_hours;
-
-						$end_date = date('Y-m-d', strtotime($slot_linked->end_date));
-						$end_date = $end_date . ' ' . $end_hours;
-
-						$save_slot_event = [
-							'id'            => $slot_linked->id,
-							'start_date'    => Factory::getDate($start_date, $timezone)->toSql(),
-							'end_date'      => Factory::getDate($end_date, $timezone)->toSql(),
-							'room'          => $room == 0 ? null : $room,
-							'slot_capacity' => $slot_capacity,
-							'more_infos'    => $more_infos
-						];
-						$save_slot_event = (object) $save_slot_event;
-						if ($this->db->updateObject('jos_emundus_setup_event_slots', $save_slot_event, 'id'))
-						{
-							$slots_ids[] = $slot_linked->id;
-						}
-
-						// TODO: Update assoc users too
-					}
-					//
-
-					$this->setupAvailabilities($event_id, $availability_config);
-
-					foreach ($slots_ids as $slotsId)
-					{
-						$slots[] = $this->getEventSlot($slotsId);
 					}
 				}
 			}
 		}
-		catch (Exception $e)
-		{
-			Log::add('Error while creating event slot: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
-		}
 
+		if($conditions_filled)
+		{
+			try
+			{
+				if (!empty($start_date) && !empty($end_date) && !empty($event_id))
+				{
+					$slot_capacity = empty($slot_capacity) ? 1 : $slot_capacity;
+
+					$slots_linked = [];
+
+					if ($mode == 1)
+					{
+						$parent_slot_id = 0;
+					}
+
+					$timezone = $this->app->get('offset', 'Europe/Paris');
+
+					$save_slot_event = [
+						'event'          => $event_id,
+						'parent_slot_id' => $parent_slot_id,
+						'start_date'     => Factory::getDate($start_date, $timezone)->toSql(),
+						'end_date'       => Factory::getDate($end_date, $timezone)->toSql(),
+						'room'           => $room == 0 ? null : $room,
+						'slot_capacity'  => $slot_capacity,
+						'more_infos'     => $more_infos,
+					];
+
+					if (!empty($id))
+					{
+						$save_slot_event['id'] = $id;
+					}
+					$save_slot_event = (object) $save_slot_event;
+
+					if (!empty($id))
+					{
+						if ($mode == 1)
+						{
+							$repeat_dates = '';
+						}
+
+						if ($this->db->updateObject('jos_emundus_setup_event_slots', $save_slot_event, 'id'))
+						{
+							if (empty($parent_slot_id))
+							{
+								$query->clear()
+									->select('*')
+									->from($this->db->quoteName('#__emundus_setup_event_slots'))
+									->where($this->db->quoteName('parent_slot_id') . ' = ' . $id);
+								$this->db->setQuery($query);
+								$slots_linked = $this->db->loadObjectList();
+
+								if (!empty($slots_linked) && $mode == 1)
+								{
+									$first_child_id = $slots_linked[0]->id;
+
+									// We dissociate the parent to other slot so first child slot become parent
+									$query->clear()
+										->update($this->db->quoteName('#__emundus_setup_event_slots'))
+										->set($this->db->quoteName('parent_slot_id') . ' = 0')
+										->where($this->db->quoteName('id') . ' = ' . $first_child_id);
+									$this->db->setQuery($query);
+									$this->db->execute();
+
+									// We link future slots to the first child slot
+									$query->clear()
+										->update($this->db->quoteName('#__emundus_setup_event_slots'))
+										->set($this->db->quoteName('parent_slot_id') . ' = ' . $first_child_id)
+										->where($this->db->quoteName('parent_slot_id') . ' = ' . $id);
+									$this->db->setQuery($query);
+									$this->db->execute();
+								}
+							}
+							else
+							{
+								$parent_slots = [];
+								if ($mode != 2)
+								{
+									$query->clear()
+										->select('*')
+										->from($this->db->quoteName('#__emundus_setup_event_slots'))
+										->where($this->db->quoteName('id') . ' = ' . $parent_slot_id);
+									$this->db->setQuery($query);
+									$parent_slots = $this->db->loadObjectList();
+								}
+
+								$query->clear()
+									->select('*')
+									->from($this->db->quoteName('#__emundus_setup_event_slots'))
+									->where($this->db->quoteName('parent_slot_id') . ' = ' . $parent_slot_id);
+								if ($mode == 2)
+								{
+									// Get only childs in the future of the current slot saved
+									$query->where($this->db->quoteName('start_date') . ' >= ' . $this->db->quote($start_date));
+								}
+								$this->db->setQuery($query);
+								$childs = $this->db->loadObjectList();
+
+								if ($mode == 2)
+								{
+									// current slot became parent and we link future slots to it
+									$query->clear()
+										->update($this->db->quoteName('#__emundus_setup_event_slots'))
+										->set($this->db->quoteName('parent_slot_id') . ' = ' . $id)
+										->where($this->db->quoteName('parent_slot_id') . ' = ' . $parent_slot_id)
+										->where($this->db->quoteName('start_date') . ' >= ' . $this->db->quote($start_date));
+									$this->db->setQuery($query);
+									$this->db->execute();
+
+									$query->clear()
+										->update($this->db->quoteName('#__emundus_setup_event_slots'))
+										->set($this->db->quoteName('parent_slot_id') . ' = 0')
+										->where($this->db->quoteName('id') . ' = ' . $id);
+									$this->db->setQuery($query);
+									$this->db->execute();
+
+									$repeat_dates = [];
+									// Set repeat dates only for future slots
+									foreach ($childs as $child)
+									{
+										$repeat_dates[] = date('Y-m-d', strtotime($child->start_date));
+									}
+								}
+
+								$slots_linked = array_merge($parent_slots, $childs);
+							}
+						}
+					}
+					else
+					{
+						if ($this->db->insertObject('jos_emundus_setup_event_slots', $save_slot_event))
+						{
+							$id = $this->db->insertid();
+						}
+					}
+
+					// Check if values of users are not empty
+					$users = array_filter($users);
+
+					// Extract hours from start_date and end_date
+					$start_hours = date('H:i:s', strtotime($start_date));
+					$end_hours   = date('H:i:s', strtotime($end_date));
+
+					if (!empty($id))
+					{
+						$slots_ids[] = $id;
+
+						// Manage users
+						$query->clear()
+							->delete($this->db->quoteName('#__emundus_setup_slot_users'))
+							->where($this->db->quoteName('slot') . ' = ' . $id);
+						$this->db->setQuery($query);
+						if ($this->db->execute())
+						{
+							foreach ($users as $user)
+							{
+								$insert_user = [
+									'slot' => $id,
+									'user' => $user
+								];
+								$insert_user = (object) $insert_user;
+								$this->db->insertObject('jos_emundus_setup_slot_users', $insert_user);
+							}
+						}
+						//
+
+						// Insert new linked slot if repeat_dates is not empty
+						if (!is_array($repeat_dates))
+						{
+							$repeat_dates = explode(',', $repeat_dates);
+							$repeat_dates = array_filter($repeat_dates);
+						}
+
+						foreach ($repeat_dates as $repeatDate)
+						{
+							// Check if repeatDate is not current slot
+							if (date('Y-m-d', strtotime($repeatDate)) === date('Y-m-d', strtotime($start_date)))
+							{
+								continue;
+							}
+
+							$link_slot_id = 0;
+							foreach ($slots_linked as $slot_linked)
+							{
+								$link_start_date = date('Y-m-d', strtotime($slot_linked->start_date));
+								if ($link_start_date === $repeatDate)
+								{
+									$link_slot_id = $slot_linked->id;
+									break;
+								}
+							}
+
+							$start_date = date('Y-m-d', strtotime($repeatDate));
+							$start_date = $start_date . ' ' . $start_hours;
+
+							$end_date = date('Y-m-d', strtotime($repeatDate));
+							$end_date = $end_date . ' ' . $end_hours;
+
+							if (empty($link_slot_id))
+							{
+								$save_slot_event = [
+									'event'          => $event_id,
+									'start_date'     => Factory::getDate($start_date, $timezone)->toSql(),
+									'end_date'       => Factory::getDate($end_date, $timezone)->toSql(),
+									'room'           => $room == 0 ? null : $room,
+									'slot_capacity'  => $slot_capacity,
+									'more_infos'     => $more_infos,
+									'parent_slot_id' => $id
+								];
+								$save_slot_event = (object) $save_slot_event;
+								if ($this->db->insertObject('jos_emundus_setup_event_slots', $save_slot_event))
+								{
+									$slots_ids[] = $this->db->insertid();
+								}
+							}
+						}
+						//
+
+						// Update all slots already linked
+						foreach ($slots_linked as $slot_linked)
+						{
+							$start_date = date('Y-m-d', strtotime($slot_linked->start_date));
+							$start_date = $start_date . ' ' . $start_hours;
+
+							$end_date = date('Y-m-d', strtotime($slot_linked->end_date));
+							$end_date = $end_date . ' ' . $end_hours;
+
+							$save_slot_event = [
+								'id'            => $slot_linked->id,
+								'start_date'    => Factory::getDate($start_date, $timezone)->toSql(),
+								'end_date'      => Factory::getDate($end_date, $timezone)->toSql(),
+								'room'          => $room == 0 ? null : $room,
+								'slot_capacity' => $slot_capacity,
+								'more_infos'    => $more_infos
+							];
+							$save_slot_event = (object) $save_slot_event;
+							if ($this->db->updateObject('jos_emundus_setup_event_slots', $save_slot_event, 'id'))
+							{
+								$slots_ids[] = $slot_linked->id;
+							}
+
+							// TODO: Update assoc users too
+						}
+						//
+
+						$this->setupAvailabilities($event_id, $availability_config);
+
+						foreach ($slots_ids as $slotsId)
+						{
+							$slots['slots'][] = $this->getEventSlot($slotsId);
+						}
+						if(!empty($slots['slots']))
+						{
+							$slots['status'] = true;
+							$slots['message'] = 'COM_EMUNDUS_ONBOARD_SUCCESS';
+						}
+					}
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error while creating event slot: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+			}
+
+		}
+		
 		return $slots;
 	}
 
@@ -1325,78 +1443,107 @@ class EmundusModelEvents extends BaseDatabaseModel
 	 * @param $slot_can_cancel_until
 	 * @param $user_id
 	 *
-	 * @return bool
+	 * @return array
 	 *
 	 * @since version 2.2.0
 	 */
 	public function setupSlot($event_id, $slot_duration, $slot_break_every, $slot_break_time, $slots_availables_to_show, $slot_can_book_until, $slot_can_cancel, $slot_can_cancel_until, $user_id)
 	{
-		$status = false;
+		$setup_slot = ['status' => false, 'message' => 'COM_EMUNDUS_ONBOARD_ERROR'];
 
 		if (empty($user_id))
 		{
 			$user_id = $this->app->getIdentity()->id;
 		}
 
-		try
+		$canUpdateSlot = true;
+		$event         = $this->getEvent($event_id);
+		$registrants   = $this->getRegistrants('', 'DESC', '', 25, 0, '', $event_id, 0, 0, '', 0, [], $user_id);
+		if ($registrants['count'] > 0)
 		{
-			if (!empty($event_id) && !empty($slot_duration))
+			list($slot_duration_value, $slot_duration_type) = explode(' ', $slot_duration);
+			list($slot_break_time_value, $slot_break_time_type) = explode(' ', $slot_break_time);
+
+			if ((int) $slot_duration_value !== (int) $event->slot_duration || $slot_duration_type !== $event->slot_duration_type)
 			{
-				$slot_duration_type = 'minutes';
-				if (strpos($slot_duration, 'hours'))
-				{
-					$slot_duration_type = 'hours';
-				}
-
-				$slot_break_time_type = 'minutes';
-				if (strpos($slot_break_time, 'hours'))
-				{
-					$slot_break_time_type = 'hours';
-				}
-
-				$slot_can_book_until_type = 'days';
-				if (strpos($slot_can_book_until, 'date'))
-				{
-					$slot_can_book_until_type = 'date';
-				}
-
-				$slot_can_cancel_until_type = 'days';
-				if (!empty($slot_can_cancel_until) && strpos($slot_can_cancel_until, 'date'))
-				{
-					$slot_can_cancel_until_type = 'date';
-				}
-
-				$slot_config = [
-					'id'                         => $event_id,
-					// Store slot_duration in minutes
-					'slot_duration'              => (int) $slot_duration,
-					'slot_duration_type'         => $slot_duration_type,
-					'slot_break_every'           => $slot_break_every,
-					// Store slot_break_time in minutes
-					'slot_break_time'            => (int) $slot_break_time,
-					'slot_break_time_type'       => $slot_break_time_type,
-					'slots_availables_to_show'   => $slots_availables_to_show,
-					'slot_can_book_until_days'   => ($slot_can_book_until_type == 'days' && !empty(explode(" ", $slot_can_book_until)[0])) ? explode(" ", $slot_can_book_until)[0] : 0,
-					'slot_can_book_until_date'   => ($slot_can_book_until_type == 'date' && !empty(explode(" ", $slot_can_book_until)[0])) ? (new DateTime(explode(" ", $slot_can_book_until)[0]))->format('Y-m-d') : null,
-					'slot_can_cancel_until_days' => ($slot_can_cancel_until_type == 'days' && !empty(explode(" ", $slot_can_cancel_until)[0])) ? explode(" ", $slot_can_cancel_until)[0] : 0,
-					'slot_can_cancel_until_date' => ($slot_can_cancel_until_type == 'date' && !empty(explode(" ", $slot_can_cancel_until)[0])) ? (new DateTime(explode(" ", $slot_can_cancel_until)[0]))->format('Y-m-d') : null,
-					'slot_can_cancel'            => $slot_can_cancel,
-					'updated_by'                 => $user_id,
-					'updated'                    => date('Y-m-d H:i:s')
-				];
-				$slot_config = (object) $slot_config;
-				if ($status = $this->db->updateObject('jos_emundus_setup_events', $slot_config, 'id'))
-				{
-					$this->setupAvailabilities($event_id);
-				}
+				$setup_slot['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_DURATION_ERROR');
+				$canUpdateSlot         = false;
+			}
+			else if ((int) $slot_break_every !== (int) $event->slot_break_every)
+			{
+				$setup_slot['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_BREAK_EVERY_ERROR');
+				$canUpdateSlot         = false;
+			}
+			else if ((int) $slot_break_time_value !== (int) $event->slot_break_time || $slot_break_time_type !== $event->slot_break_time_type)
+			{
+				$setup_slot['message'] = Text::_('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_BREAK_TIME_ERROR');
+				$canUpdateSlot         = false;
 			}
 		}
-		catch (Exception $e)
+
+		if($canUpdateSlot)
 		{
-			Log::add('Error while setting up slot: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+			try
+			{
+				if (!empty($event_id) && !empty($slot_duration))
+				{
+					$slot_duration_type = 'minutes';
+					if (strpos($slot_duration, 'hours'))
+					{
+						$slot_duration_type = 'hours';
+					}
+
+					$slot_break_time_type = 'minutes';
+					if (strpos($slot_break_time, 'hours'))
+					{
+						$slot_break_time_type = 'hours';
+					}
+
+					$slot_can_book_until_type = 'days';
+					if (strpos($slot_can_book_until, 'date'))
+					{
+						$slot_can_book_until_type = 'date';
+					}
+
+					$slot_can_cancel_until_type = 'days';
+					if (!empty($slot_can_cancel_until) && strpos($slot_can_cancel_until, 'date'))
+					{
+						$slot_can_cancel_until_type = 'date';
+					}
+
+					$slot_config = [
+						'id'                         => $event_id,
+						// Store slot_duration in minutes
+						'slot_duration'              => (int) $slot_duration,
+						'slot_duration_type'         => $slot_duration_type,
+						'slot_break_every'           => $slot_break_every,
+						// Store slot_break_time in minutes
+						'slot_break_time'            => (int) $slot_break_time,
+						'slot_break_time_type'       => $slot_break_time_type,
+						'slots_availables_to_show'   => $slots_availables_to_show,
+						'slot_can_book_until_days'   => ($slot_can_book_until_type == 'days' && !empty(explode(" ", $slot_can_book_until)[0])) ? explode(" ", $slot_can_book_until)[0] : 0,
+						'slot_can_book_until_date'   => ($slot_can_book_until_type == 'date' && !empty(explode(" ", $slot_can_book_until)[0])) ? (new DateTime(explode(" ", $slot_can_book_until)[0]))->format('Y-m-d') : null,
+						'slot_can_cancel_until_days' => ($slot_can_cancel_until_type == 'days' && !empty(explode(" ", $slot_can_cancel_until)[0])) ? explode(" ", $slot_can_cancel_until)[0] : 0,
+						'slot_can_cancel_until_date' => ($slot_can_cancel_until_type == 'date' && !empty(explode(" ", $slot_can_cancel_until)[0])) ? (new DateTime(explode(" ", $slot_can_cancel_until)[0]))->format('Y-m-d') : null,
+						'slot_can_cancel'            => $slot_can_cancel,
+						'updated_by'                 => $user_id,
+						'updated'                    => date('Y-m-d H:i:s')
+					];
+					$slot_config = (object) $slot_config;
+					if ($this->db->updateObject('jos_emundus_setup_events', $slot_config, 'id'))
+					{
+						$this->setupAvailabilities($event_id);
+						$setup_slot = ['status' => true, 'message' => 'COM_EMUNDUS_ONBOARD_SUCCESS'];
+					}
+				}
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error while setting up slot: ' . $e->getMessage(), Log::ERROR, 'com_emundus.events');
+			}
 		}
 
-		return $status;
+		return $setup_slot;
 	}
 
 	public function saveBookingNotifications($event_id, $booking_notifications, $user_id = 0)
@@ -2711,12 +2858,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 		int|string $location = 0,
 		int        $applicant = 0,
 		string     $assoc_user = '',
-		int        $slot = 0,
+		int        $availability = 0,
 		array      $ids = [],
 		int        $user_id = 0,
 		?string    $day = '',
 		int        $room = 0,
-		?string    $hour = ''
+		?string    $hour = '',
+		int        $slot = 0
 	): array
 	{
 		$registrants = ['datas' => [], 'count' => 0];
@@ -2728,7 +2876,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		try
 		{
-			$booking_acl = EmundusHelperAccess::getActionIdFromActionName('booking');
+			// $booking_acl = EmundusHelperAccess::getActionIdFromActionName('booking');
 
 			require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
 			$m_programme = new EmundusModelProgramme;
@@ -2800,9 +2948,9 @@ class EmundusModelEvents extends BaseDatabaseModel
 			{
 				$query->where('ese.location = ' . $location);
 			}
-			if (!empty($slot))
+			if (!empty($availability))
 			{
-				$query->where('er.availability = ' . $slot);
+				$query->where('er.availability = ' . $availability);
 			}
 			if (!empty($applicant))
 			{
@@ -2833,6 +2981,10 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$utcHour = $localDate->format('H:i:s');
 
 				$query->where('TIME(esa.start_date) = ' . $this->db->quote($utcHour));
+			}
+			if(!empty($slot))
+			{
+				$query->where('er.slot = ' . $slot);
 			}
 
 			$this->_db->setQuery($query);

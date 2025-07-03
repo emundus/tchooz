@@ -26,6 +26,10 @@ class YousignService
 {
 	use TraitDispatcher;
 
+	private string $global_signature_level = 'electronic_signature';
+
+	private string $global_signature_authentication_mode = 'otp_email';
+
 	public function __construct(
 		private readonly YousignSynchronizer       $yousign_synchronizer,
 		private readonly YousignRequestsRepository $yousign_repository,
@@ -57,6 +61,14 @@ class YousignService
 		}
 
 		$config = (!empty($api) && !empty($api->config)) ? json_decode($api->config) : null;
+		if(!empty($config) && !empty($config->signature_level))
+		{
+			$this->global_signature_level = $config->signature_level;
+		}
+		if(!empty($config) && !empty($config->signature_authentication_mode))
+		{
+			$this->global_signature_authentication_mode = $config->signature_authentication_mode;
+		}
 
 		try
 		{
@@ -403,8 +415,9 @@ class YousignService
 					}
 				}
 
-				$signature_level = !empty($config) && !empty($config->signature_level) ? $config->signature_level : 'electronic_signature';
-				$signature_authentication_mode = !empty($config) && !empty($config->signature_authentication_mode) ? $config->signature_authentication_mode : 'otp_email';
+				$signature_level = !empty($signer->authentication_level) ? $signer->authentication_level : $this->global_signature_level;
+				$signature_authentication_mode = !empty($signer->authentication_mode) ? $signer->authentication_mode : $this->global_signature_authentication_mode;
+
 				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position, $signature_level, $signature_authentication_mode);
 				if ($api_signer['status'] == 201)
 				{
