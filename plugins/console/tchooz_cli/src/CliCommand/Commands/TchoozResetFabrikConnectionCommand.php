@@ -2,8 +2,6 @@
 
 namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
-defined('_JEXEC') or die;
-
 use FabrikWorker;
 use Joomla\CMS\Factory;
 use Joomla\Console\Command\AbstractCommand;

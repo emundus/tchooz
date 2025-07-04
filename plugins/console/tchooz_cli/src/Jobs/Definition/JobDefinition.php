@@ -7,7 +7,9 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Emundus\Plugin\Console\Tchooz\Jobs;
+namespace Emundus\Plugin\Console\Tchooz\Jobs\Definition;
+
+use Symfony\Component\Console\Output\OutputInterface;
 
 class JobDefinition
 {
@@ -46,6 +48,11 @@ class JobDefinition
 	public function getAttributes(): array
 	{
 		return $this->attributes;
+	}
+
+	public function getOutput(): OutputInterface
+	{
+		return $this->output;
 	}
 
 	public function toArray(): array

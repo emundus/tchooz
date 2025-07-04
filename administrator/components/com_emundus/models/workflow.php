@@ -260,7 +260,7 @@ class EmundusModelAdministratorWorkflow extends JModelList
 			$query->clear()
 				->select('id')
 				->from('#__menu')
-				->where('alias = ' . $this->db->quote('campaigns'))
+				->where('link LIKE ' . $this->db->quote('index.php?option=com_emundus&view=campaigns'))
 				->andWhere('menutype = ' . $this->db->quote('onboardingmenu'));
 			$this->db->setQuery($query);
 			$parent_id = $this->db->loadResult();

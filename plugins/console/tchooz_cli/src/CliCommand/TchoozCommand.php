@@ -2,7 +2,7 @@
 
 namespace Emundus\Plugin\Console\Tchooz\CliCommand;
 
-use Emundus\Plugin\Console\Tchooz\Jobs\JobDefinition;
+use Emundus\Plugin\Console\Tchooz\Jobs\Definition\JobDefinition;
 use Joomla\CMS\Log\Log;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -23,7 +23,17 @@ class TchoozCommand extends AbstractCommand
 
 	protected DatabaseInterface $db;
 
+	protected \EmundusHelperCache $hCache;
+
 	protected array $jobs;
+
+	private array $colors = [
+		'blue'   => "\e[34m",
+		'green'  => "\e[32m",
+		'red'    => "\e[31m",
+		'yellow' => "\e[33m",
+		'reset'  => "\e[0m"
+	];
 
 	public function __construct(
 		DatabaseInterface $db
@@ -33,6 +43,9 @@ class TchoozCommand extends AbstractCommand
 
 		$this->setDatabase($db);
 		$this->db = $this->getDatabase();
+
+		require_once(JPATH_BASE . '/components/com_emundus/helpers/cache.php');
+		$this->hCache = new \EmundusHelperCache();
 	}
 
 	protected function configureIO(InputInterface $input, OutputInterface $output): void
@@ -46,26 +59,36 @@ class TchoozCommand extends AbstractCommand
 		return Command::SUCCESS;
 	}
 
-	protected function getStringFromOption($option, $question, $required = true): string
+	protected function getStringFromOption(string $option, string $question, bool $required = true, bool $saveValue = false, ?string $defaultValue = null): string
 	{
 		$answer = (string) $this->cliInput->getOption($option);
 
 		if ($this->cliInput->getOption('no-interaction') === false)
 		{
+			if(empty($defaultValue))
+			{
+				$defaultValue = $this->hCache->get($option);
+			}
+
 			if ($required)
 			{
 				while (!$answer)
 				{
-					$answer = (string) $this->ioStyle->ask($question);
+					$answer = (string) $this->ioStyle->ask($question, $defaultValue);
 				}
 			}
 			else
 			{
 				if (!$answer)
 				{
-					$answer = (string) $this->ioStyle->ask($question);
+					$answer = (string) $this->ioStyle->ask($question, $defaultValue);
 				}
 			}
+		}
+
+		if ($saveValue)
+		{
+			$this->hCache->set($option, $answer);
 		}
 
 		return $answer;
@@ -85,26 +108,27 @@ class TchoozCommand extends AbstractCommand
 	protected function askJobsToExecute(?array $defaultJobs = [], ?bool $multiselect = true): array
 	{
 		$question = new ChoiceQuestion(
-			'Please select the jobs you want to perform (separate multiple choices with a comma):',
-			$this->getIoJobs(),
-			implode(',', $defaultJobs) // Valeurs par défaut
+			'Please select the jobs you want to perform (separate multiple choices with a comma)',
+			$this->getIoJobs()
 		);
 		$question->setMultiselect($multiselect);
 
 		return $this->ioStyle->askQuestion($question);
 	}
 
-	protected function executeJob(string $job): void
+	protected function executeJob(string $job, OutputInterface $output): void
 	{
 		$jobDefinition = $this->getJob($job);
 
-		$this->ioStyle->section('Starting job: ' . $job);
+		$this->ioStyle->writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
+		$this->ioStyle->writeln('🚀 ' . $this->colors['blue'] . 'Starting job: ' . $job . $this->colors['reset']);
+		$this->ioStyle->writeln('━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 
 		$jobInstance = $jobDefinition->instantiate($this->getLogger(strtolower($job)));
 
 		try
 		{
-			$jobInstance->execute();
+			$jobInstance->execute($output);
 		}
 		catch (\Exception $e)
 		{
@@ -114,6 +138,8 @@ class TchoozCommand extends AbstractCommand
 			}
 
 			Log::add($e->getMessage(), Log::ERROR, $job);
+
+			$this->ioStyle->warning('Job ' . $job . ' generate some logs available in logs/migration.cli.log');
 		}
 
 		$this->ioStyle->success('Job ' . $job . ' executed successfully!');

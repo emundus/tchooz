@@ -135,6 +135,11 @@ class Com_FabrikInstallerScript
 
 			if (isset($params->plugins))
 			{
+				if(is_object($params->plugins)) {
+					$params->plugins = (array) $params->plugins;
+					$params->plugins = array_values($params->plugins);
+				}
+
 				for ($i = 0; $i < count($params->plugins); $i++)
 				{
 					if (in_array($params->plugins[$i], $plugins['fabrik_form']))

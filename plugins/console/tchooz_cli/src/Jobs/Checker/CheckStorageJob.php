@@ -7,12 +7,11 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Emundus\Plugin\Console\Tchooz\Jobs;
+namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Log\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckStorageJob extends TchoozJob
@@ -25,7 +24,15 @@ class CheckStorageJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute() {
+	public function execute(OutputInterface $output): void
+	{
+		// Only if database is in local storage
+		if (!$this->storageService->isLocalStorage()) {
+			$output->writeln('<info>Skipping storage check, database is not in local storage.</info>');
+			Log::add('Skipping storage check, database is not in local storage.', Log::INFO, self::getJobName());
+			return;
+		}
+
 		$sqlPartition = $this->storageService->getSqlPartitionPath();
 		Log::add('SQL partition path: ' . $sqlPartition, Log::INFO, self::getJobName());
 

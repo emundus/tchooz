@@ -7,13 +7,11 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Emundus\Plugin\Console\Tchooz\Jobs;
+namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
-use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Log\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckMiddlewareJob extends TchoozJob
@@ -28,7 +26,8 @@ class CheckMiddlewareJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute() {
+	public function execute(OutputInterface $output): void
+	{
 		$phpVersion = phpversion();
 		Log::add('PHP version: ' . $phpVersion, Log::INFO, self::getJobName());
 		if(version_compare($phpVersion, '8.2', '<')) {
