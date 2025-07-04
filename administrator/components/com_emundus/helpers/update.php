@@ -2083,6 +2083,10 @@ class EmundusHelperUpdate
 			$params['params'] = [];
 		}
 
+		if(is_string($params['params'])) {
+			$params['params'] = json_decode($params['params'], true);
+		}
+
 		// Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
 		Factory::$database = null;
 
@@ -2148,7 +2152,7 @@ class EmundusHelperUpdate
 					'params'            => json_encode($params['params']),
 					'client_id'         => $params['client_id'] ?: 0,
 					'img'               => $params['img'] ?: '',
-					'menu_show'         => $params['menu_show'] ?: 1,
+					'menu_show'         => isset($params['params']['menu_show']) ? $params['params']['menu_show'] : 1,
 				);
 
 				if ($parent_id <= 0 || empty($parent_id))
@@ -2162,8 +2166,11 @@ class EmundusHelperUpdate
 				{
 					$result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
 
-					$db->setQuery('UNLOCK TABLES');
-					$db->execute();
+					if(!Factory::getApplication()->isClient('cli'))
+					{
+						$db->setQuery('UNLOCK TABLES');
+						$db->execute();
+					}
 
 					return $result;
 				}
@@ -2211,7 +2218,10 @@ class EmundusHelperUpdate
 			$result['status']  = false;
 			$result['message'] = 'INSERTING MENU : ' . $e->getMessage();
 
-			$db->unlockTables();
+			if(!Factory::getApplication()->isClient('cli'))
+			{
+				$db->unlockTables();
+			}
 		}
 
 		return $result;

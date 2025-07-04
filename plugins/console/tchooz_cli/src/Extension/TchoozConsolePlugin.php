@@ -3,9 +3,9 @@ namespace Emundus\Plugin\Console\Tchooz\Extension;
 
 \defined('_JEXEC') or die;
 
+use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
-use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Factory;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozConfigCommand;
@@ -22,7 +22,7 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            \Joomla\Application\ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
+            ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
         ];
     }
 

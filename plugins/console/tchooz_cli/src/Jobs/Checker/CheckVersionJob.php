@@ -7,13 +7,11 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Emundus\Plugin\Console\Tchooz\Jobs;
+namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
-use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Log\Logger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckVersionJob extends TchoozJob
@@ -29,9 +27,9 @@ class CheckVersionJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute()
+	public function execute(OutputInterface $output): void
 	{
-		$diffs = exec('git status --porcelain');
+		$diffs = exec('git -C '.$this->projectToMigrate.' status --porcelain');
 		if(!empty($diffs)) {
 			file_put_contents(JPATH_SITE.'/logs/migration.git.log', $diffs);
 			throw new \Exception('You have uncommitted changes in your project. Please commit them before migrating to Tchooz v2.');
@@ -51,7 +49,7 @@ class CheckVersionJob extends TchoozJob
 		}
 		Log::add('File version: ' . $version, Log::INFO, self::getJobName());
 
-		if (version_compare($schema_version, $version, '<'))
+		if (version_compare($schema_version, $version, '<') && $version !== '1.40.0')
 		{
 			throw new \Exception('You have to update the database schema to the latest version before migrating to Tchooz v2.');
 		}

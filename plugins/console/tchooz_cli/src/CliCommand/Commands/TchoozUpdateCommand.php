@@ -2,8 +2,6 @@
 
 namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
-defined('_JEXEC') or die;
-
 use Joomla\CMS\Installer\Installer;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -98,7 +96,7 @@ class TchoozUpdateCommand extends AbstractCommand
 		$this->configureIO($input, $output);
 		$this->ioStyle->title('Update Tchooz');
 
-		$this->components = explode(',',$this->getApplication()->getConsoleInput()->getOption('component'));
+		$this->components = explode(',',$input->getOption('component'));
 
 		if(empty($components)) {
 			$availableComponents = array('all', 'com_emundus', 'com_fabrik', 'com_hikashop', 'com_dropfiles');
