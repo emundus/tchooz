@@ -276,6 +276,7 @@
                 </field>
                 <field type="list" name="mod_em_campaign_orderby" default="start_date" label="MOD_EM_CAMPAIGN_ORDER"
                        description="MOD_EM_CAMPAIGN_ORDER_DESC">
+                    <option value="label">MOD_EM_CAMPAIGN_LIST_LABEL</option>
                     <option value="start_date">MOD_EM_CAMPAIGN_LIST_DATE_START</option>
                     <option value="end_date">MOD_EM_CAMPAIGN_LIST_DATE_END</option>
                     <option showon="mod_em_campaign_layout:nantes" value="formation_start">

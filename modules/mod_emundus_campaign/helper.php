@@ -156,6 +156,13 @@ class modEmundusCampaignHelper
 			$this->app->enqueueMessage(Text::_('MOD_EMUNDUS_CAMPAIGN_ERROR_GETTING_CAMPAIGNS') . $query->__toString(), 'error');
 		}
 
+		if(str_contains($order, 'label'))
+		{
+			usort($campaigns, function ($a, $b) use ($order) {
+				return strnatcmp($a->label, $b->label);
+			});
+		}
+
 		return $campaigns;
 	}
 

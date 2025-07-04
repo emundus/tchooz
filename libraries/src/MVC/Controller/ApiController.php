@@ -198,7 +198,7 @@ class ApiController extends BaseController
      */
     public function displayList()
     {
-        // Assemble pagination information (using recommended JsonApi pagination notation for offset strategy)
+	    // Assemble pagination information (using recommended JsonApi pagination notation for offset strategy)
         $paginationInfo = $this->input->get('page', [], 'array');
         $limit          = null;
         $offset         = null;
@@ -228,7 +228,7 @@ class ApiController extends BaseController
                 ['base_path' => $this->basePath, 'layout' => $viewLayout, 'contentType' => $this->contentType]
             );
         } catch (\Exception $e) {
-            throw new \RuntimeException($e->getMessage());
+	        throw new \RuntimeException($e->getMessage());
         }
 
         $modelName = $this->input->get('model', $this->contentType);
