@@ -449,6 +449,34 @@ class PaymentRepository
 	}
 
 	/**
+	 * @param   int  $service_id
+	 *
+	 * @return \stdClass|null
+	 */
+	public function getPaymentServiceById(int $service_id): ?\stdClass
+	{
+		$payment_service = null;
+
+		if (!empty($service_id)) {
+			try {
+				$query = $this->db->createQuery();
+				$query->select('id, name, description')
+					->from('jos_emundus_setup_sync')
+					->where('id = ' . $this->db->quote($service_id))
+					->andWhere('published = 1')
+					->andWhere('enabled = 1');
+
+				$this->db->setQuery($query);
+				$payment_service = $this->db->loadObject();
+			} catch (\Exception $e) {
+				Log::add('Error loading payment service: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.payment');
+			}
+		}
+
+		return $payment_service;
+	}
+
+	/**
 	 * Used for the customer address form
 	 *
 	 * @param string $lang

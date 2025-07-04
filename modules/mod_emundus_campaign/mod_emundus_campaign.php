@@ -146,7 +146,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof))
 	$reseaux_filt    = $app->input->getString('reseau', null);
 
 	// this verification is used to prevent SQL injection
-	if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end']))
+	if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end', 'label']))
 	{
 		$session->set('order_date', $order_date);
 	}
