@@ -131,7 +131,7 @@ class EmundusControllerContacts extends BaseController
 				$response['message'] = 'Contact saved successfully.';
 				$response['data']    = $contact_id;
 
-				$this->dispatchEvent('onAfterContactSaved', [
+				$this->dispatchJoomlaEvent('onAfterContactSaved', [
 					'contact_id' => $contact_id,
 					'lastname'   => $lastname,
 					'firstname'  => $firstname,

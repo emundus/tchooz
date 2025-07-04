@@ -11,7 +11,9 @@
 // No direct access
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -29,6 +31,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
 use Joomla\CMS\Factory;
+use Tchooz\Traits\TraitDispatcher;
 
 class EmundusModelEvaluation extends JModelList
 {
@@ -46,6 +49,8 @@ class EmundusModelEvaluation extends JModelList
 	public $code;
 
 	private $use_module_filters = false;
+
+	use TraitDispatcher;
 
 	/**
 	 * Constructor
@@ -2891,6 +2896,23 @@ class EmundusModelEvaluation extends JModelList
 		foreach ($fnum_array as $fnum)
 		{
 			$generated_letters = $_mEval->getLetterTemplateForFnum($fnum, $templates);
+
+			PluginHelper::importPlugin('emundus');
+			PluginHelper::importPlugin('actionlog');
+
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onCallEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				[
+					'onBeforeGenerateLetters',
+					[
+						'letters' => &$generated_letters,
+						'fnum' => $fnum,
+					]
+				]
+			);
+			$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
+
 			$fnumInfo          = $_mFile->getFnumsTagsInfos([$fnum]);
 
 			$applicant_path     = EMUNDUS_PATH_ABS . $fnumInfo[$fnum]['applicant_id'];
