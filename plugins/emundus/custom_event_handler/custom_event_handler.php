@@ -1346,7 +1346,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						{
 							$landed = true;
 
-							$this->dispatchEvent('onAfterGenerateLetters', [
+							$this->dispatchJoomlaEvent('onAfterGenerateLetters', [
 								'letters' => $res
 							]);
 						}
@@ -1356,6 +1356,16 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						}
 					}
 					break;
+				case 'letter_choice':
+					if(!empty($action->letter_id))
+					{
+						if(!empty($data['letters']))
+						{
+							$data['letters'] = array_filter($data['letters'], function ($letter) use ($action) {
+								return $action->letter_id == $letter->id;
+							});
+						}
+					}
 				case 'sign_flow':
 					if (!empty($action->attachment_type))
 					{
@@ -1468,7 +1478,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									$requestRepository = new RequestRepository($db);
 									$requestEntity     = $requestRepository->loadRequestById($request_id);
 
-									$this->dispatchEvent('onAfterRequestSaved', [
+									$this->dispatchJoomlaEvent('onAfterRequestSaved', [
 										'request_id' => $request_id,
 										'status'     => $requestEntity->getStatus()->value,
 										'ccid'       => $requestEntity->getCcid(),
