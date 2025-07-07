@@ -23,6 +23,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Component\Users\Administrator\Helper\Mfa;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -234,8 +235,8 @@ class EmundusControllersettings extends BaseController
 			$label = $this->input->getString('label');
 			$color = $this->input->getString('color');
 
-			$result = $this->m_settings->updateTags($tag, $label, $color);
-			$msg = $result ? JText::_('SUCCESS') : JText::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS');
+			$result         = $this->m_settings->updateTags($tag, $label, $color);
+			$msg            = $result ? JText::_('SUCCESS') : JText::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS');
 			$changeresponse = array('status' => $result, 'msg' => $msg);
 		}
 		echo json_encode((object) $changeresponse);
@@ -1155,7 +1156,7 @@ class EmundusControllersettings extends BaseController
 					}
 					else
 					{
-						$response['msg']   .= Text::_('PARAM_NOT_UPDATED') . ' for ' . $param->param . '. ';
+						$response['msg']    .= Text::_('PARAM_NOT_UPDATED') . ' for ' . $param->param . '. ';
 						$response['status'] = false;
 					}
 				}
@@ -1205,14 +1206,14 @@ class EmundusControllersettings extends BaseController
 			if ($custom_email_config != 1)
 			{
 				// We get default email configuration
-				$config['smtpauth']   = $emConfig->get('default_email_smtpauth',$this->app->get('smtpauth', 0));
-				$config['smtphost']   = $emConfig->get('default_email_smtphost',$this->app->get('smtphost', ''));
-				$config['smtpuser']   = $emConfig->get('default_email_smtpuser',$this->app->get('smtpuser', ''));
-				$config['smtppass']   = $emConfig->get('default_email_smtppass',$this->app->get('smtppass', ''));
-				$config['smtpsecure'] = $emConfig->get('default_email_smtpsecure',$this->app->get('smtpsecure', ''));
-				$config['smtpport']   = $emConfig->get('default_email_smtpport',$this->app->get('smtpport', ''));
-				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport',$this->app->get('mailfrom', '')));
-				$config['fromname']   = $emConfig->get('default_email_fromname',$this->app->get('fromname', ''));
+				$config['smtpauth']   = $emConfig->get('default_email_smtpauth', $this->app->get('smtpauth', 0));
+				$config['smtphost']   = $emConfig->get('default_email_smtphost', $this->app->get('smtphost', ''));
+				$config['smtpuser']   = $emConfig->get('default_email_smtpuser', $this->app->get('smtpuser', ''));
+				$config['smtppass']   = $emConfig->get('default_email_smtppass', $this->app->get('smtppass', ''));
+				$config['smtpsecure'] = $emConfig->get('default_email_smtpsecure', $this->app->get('smtpsecure', ''));
+				$config['smtpport']   = $emConfig->get('default_email_smtpport', $this->app->get('smtpport', ''));
+				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport', $this->app->get('mailfrom', '')));
+				$config['fromname']   = $emConfig->get('default_email_fromname', $this->app->get('fromname', ''));
 			}
 			else
 			{
@@ -1226,8 +1227,9 @@ class EmundusControllersettings extends BaseController
 				$config['mailfrom']   = $this->input->getString('custom_email_mailfrom', '');
 				$config['fromname']   = $this->app->get('fromname', '');
 
-				if(empty($config['smtppass']) || $config['smtppass'] == '************') {
-					$config['smtppass'] = $emConfig->get('custom_email_smtppass',$this->app->get('smtppass', ''));
+				if (empty($config['smtppass']) || $config['smtppass'] == '************')
+				{
+					$config['smtppass'] = $emConfig->get('custom_email_smtppass', $this->app->get('smtppass', ''));
 				}
 
 				if (empty($config['smtphost']))
@@ -1265,18 +1267,18 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$config = [];
+			$config    = [];
 			$oldConfig = [
-				'smtpauth'   => $this->app->get('smtpauth', 0),
-				'smtphost'   => $this->app->get('smtphost', ''),
-				'smtpuser'   => $this->app->get('smtpuser', ''),
-				'smtpsecure' => $this->app->get('smtpsecure', ''),
-				'smtpport'   => $this->app->get('smtpport', ''),
-				'mailfrom'   => $this->app->get('mailfrom', ''),
-				'fromname'   => $this->app->get('fromname', ''),
-				'replyto'    => $this->app->get('replyto', ''),
-				'replytoname'=> $this->app->get('replytoname', ''),
-				'mailer'     => $this->app->get('mailer', 'smtp')
+				'smtpauth'    => $this->app->get('smtpauth', 0),
+				'smtphost'    => $this->app->get('smtphost', ''),
+				'smtpuser'    => $this->app->get('smtpuser', ''),
+				'smtpsecure'  => $this->app->get('smtpsecure', ''),
+				'smtpport'    => $this->app->get('smtpport', ''),
+				'mailfrom'    => $this->app->get('mailfrom', ''),
+				'fromname'    => $this->app->get('fromname', ''),
+				'replyto'     => $this->app->get('replyto', ''),
+				'replytoname' => $this->app->get('replytoname', ''),
+				'mailer'      => $this->app->get('mailer', 'smtp')
 			];
 
 			$custom_email_config = $this->input->get('custom_email_conf', 0);
@@ -1284,14 +1286,14 @@ class EmundusControllersettings extends BaseController
 			{
 				$emConfig = ComponentHelper::getParams('com_emundus');
 				// We get default email configuration
-				$config['smtpauth']   = $emConfig->get('default_email_smtpauth',$this->app->get('smtpauth', 0));
-				$config['smtphost']   = $emConfig->get('default_email_smtphost',$this->app->get('smtphost', ''));
-				$config['smtpuser']   = $emConfig->get('default_email_smtpuser',$this->app->get('smtpuser', ''));
-				$config['smtppass']   = $emConfig->get('default_email_smtppass',$this->app->get('smtppass', ''));
-				$config['smtpsecure'] = $emConfig->get('default_email_smtpsecure',$this->app->get('smtpsecure', ''));
-				$config['smtpport']   = $emConfig->get('default_email_smtpport',$this->app->get('smtpport', ''));
-				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport',$this->app->get('mailfrom', '')));
-				$config['fromname']   = $emConfig->get('default_email_fromname',$this->app->get('fromname', ''));
+				$config['smtpauth']   = $emConfig->get('default_email_smtpauth', $this->app->get('smtpauth', 0));
+				$config['smtphost']   = $emConfig->get('default_email_smtphost', $this->app->get('smtphost', ''));
+				$config['smtpuser']   = $emConfig->get('default_email_smtpuser', $this->app->get('smtpuser', ''));
+				$config['smtppass']   = $emConfig->get('default_email_smtppass', $this->app->get('smtppass', ''));
+				$config['smtpsecure'] = $emConfig->get('default_email_smtpsecure', $this->app->get('smtpsecure', ''));
+				$config['smtpport']   = $emConfig->get('default_email_smtpport', $this->app->get('smtpport', ''));
+				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport', $this->app->get('mailfrom', '')));
+				$config['fromname']   = $emConfig->get('default_email_fromname', $this->app->get('fromname', ''));
 			}
 			else
 			{
@@ -1327,17 +1329,18 @@ class EmundusControllersettings extends BaseController
 			$config['mailer']      = $this->app->get('mailer', 'smtp');
 			$config['mailonline']  = $this->input->getInt('mailonline', 1);
 
-			$model    = $this->getModel('settings', 'EmundusModel');
+			$model              = $this->getModel('settings', 'EmundusModel');
 			$response['status'] = $model->saveEmailParameters($config, $custom_email_config);
-			if($response['status']) {
-				$response['msg'] = Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_UPDATED');
+			if ($response['status'])
+			{
+				$response['msg']  = Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_UPDATED');
 				$response['desc'] = Text::_('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_UPDATED_DESC');
 
 				unset($config['smtppass']);
 
 				PluginHelper::importPlugin('actionlog'); // si event call event handler
-				$dispatcher = Factory::getApplication()->getDispatcher();
-				$onAfterUpdateConfiguration             = new GenericEvent(
+				$dispatcher                 = Factory::getApplication()->getDispatcher();
+				$onAfterUpdateConfiguration = new GenericEvent(
 					'onAfterUpdateConfiguration',
 					// Datas to pass to the event
 					['data' => $config, 'old_data' => $oldConfig, 'config' => $config, 'type' => 'email_updated', 'status' => 'done', 'context' => 'com_emundus.settings.email']
@@ -1902,13 +1905,13 @@ class EmundusControllersettings extends BaseController
 				$dispatcher = Factory::getApplication()->getDispatcher();
 
 				// Log events
-				if($update_web_address == 1)
+				if ($update_web_address == 1)
 				{
 					$data = [
-						'new_address'      => $new_address,
+						'new_address' => $new_address,
 					];
 
-					$onAfterUpdateConfiguration             = new GenericEvent(
+					$onAfterUpdateConfiguration = new GenericEvent(
 						'onAfterUpdateConfiguration',
 						// Datas to pass to the event
 						['data' => $data, 'old_data' => [], 'type' => 'update_web_address', 'status' => 'pending', 'context' => 'com_emundus.settings.web_security']
@@ -1916,9 +1919,9 @@ class EmundusControllersettings extends BaseController
 					$dispatcher->dispatch('onAfterUpdateConfiguration', $onAfterUpdateConfiguration);
 				}
 
-				if($use_own_ssl_certificate == 1)
+				if ($use_own_ssl_certificate == 1)
 				{
-					$onAfterUpdateConfiguration             = new GenericEvent(
+					$onAfterUpdateConfiguration = new GenericEvent(
 						'onAfterUpdateConfiguration',
 						// Datas to pass to the event
 						['data' => [], 'old_data' => [], 'type' => 'use_own_ssl_certificate', 'status' => 'pending', 'context' => 'com_emundus.settings.web_security']
@@ -1970,7 +1973,7 @@ class EmundusControllersettings extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
-	
+
 	public function gethistory()
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
@@ -1979,31 +1982,32 @@ class EmundusControllersettings extends BaseController
 		{
 			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
-			
-			$extension = $this->input->getString('extension', '');
+
+			$extension    = $this->input->getString('extension', '');
 			$only_pending = $this->input->getString('only_pending', false);
 			$only_pending = filter_var($only_pending, FILTER_VALIDATE_BOOLEAN);
-			$page = $this->input->getInt('page', 1);
-			$limit = $this->input->getInt('limit', 10);
-			$item_id = $this->input->getInt('item_id', 0);
+			$page         = $this->input->getInt('page', 1);
+			$limit        = $this->input->getInt('limit', 10);
+			$item_id      = $this->input->getInt('item_id', 0);
 
-			$length = $this->m_settings->getHistoryLength($extension, $item_id);
+			$length   = $this->m_settings->getHistoryLength($extension, $item_id);
 			$requests = $this->m_settings->getHistory($extension, $only_pending, $page, $limit, $item_id);
 
 			// Search for a files or evaluation view
-			$menu = $this->app->getMenu();
-			$emundusUser      = $this->app->getSession()->get('emundusUser');
-			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
-			if(empty($files_menu)) {
+			$menu        = $this->app->getMenu();
+			$emundusUser = $this->app->getSession()->get('emundusUser');
+			$files_menu  = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+			if (empty($files_menu))
+			{
 				$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 			}
 
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('REQUESTS_FOUND');
-			$response['data']    = $requests;
-			$response['length']    = $length;
-			$response['files_menu'] = '/'.$files_menu->route;
+			$response['status']     = true;
+			$response['code']       = 200;
+			$response['message']    = Text::_('REQUESTS_FOUND');
+			$response['data']       = $requests;
+			$response['length']     = $length;
+			$response['files_menu'] = '/' . $files_menu->route;
 		}
 
 		echo json_encode((object) $response);
@@ -2016,15 +2020,17 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
-			$action_log_id = $this->input->getInt('id', 0);
+			$action_log_id     = $this->input->getInt('id', 0);
 			$action_log_status = $this->input->getString('status', 'done');
 
-			if(!empty($action_log_id)) {
-				$response['status'] = $this->m_settings->updateHistoryStatus($action_log_id,$action_log_status);
-				if($response['status']) {
+			if (!empty($action_log_id))
+			{
+				$response['status'] = $this->m_settings->updateHistoryStatus($action_log_id, $action_log_status);
+				if ($response['status'])
+				{
 					$response['code']    = 200;
 					$response['message'] = Text::_('STATUS_UPDATED');
 				}
@@ -2042,15 +2048,15 @@ class EmundusControllersettings extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$search_query = $this->input->getString('search_query', '');
-			$limit = $this->input->getInt('limit', 100);
-			$properties = $this->input->getString('properties', '');
+			$limit        = $this->input->getInt('limit', 100);
+			$properties   = $this->input->getString('properties', '');
 
-			if(!empty($properties))
+			if (!empty($properties))
 			{
 				$properties = explode(',', $properties);
 			}
 
-			$event_id = $properties[0] ?? null;
+			$event_id             = $properties[0] ?? null;
 			$applicantsExceptions = isset($properties[1]) ? [$properties[1]] : [];
 
 			$applicants = $this->m_settings->getApplicants($search_query, $limit, $event_id, $applicantsExceptions);
@@ -2072,7 +2078,7 @@ class EmundusControllersettings extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$search_query = $this->input->getString('search_query', '');
-			$limit = $this->input->getInt('limit', 100);
+			$limit        = $this->input->getInt('limit', 100);
 
 			$managers = $this->m_settings->getAvailableManagers($search_query, $limit);
 
@@ -2095,7 +2101,7 @@ class EmundusControllersettings extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$search_query = $this->input->getString('search_query', '');
-			$limit = $this->input->getInt('limit', 100);
+			$limit        = $this->input->getInt('limit', 100);
 
 			$profiles = $this->m_settings->getAvailableGroups($search_query, $limit);
 
@@ -2116,7 +2122,7 @@ class EmundusControllersettings extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$search_query = $this->input->getString('search_query', '');
-			$limit = $this->input->getInt('limit', 100);
+			$limit        = $this->input->getInt('limit', 100);
 
 			$campaigns = $this->m_settings->getAvailableCampaigns($search_query, $limit);
 
@@ -2137,7 +2143,7 @@ class EmundusControllersettings extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$search_query = $this->input->getString('search_query', '');
-			$limit = $this->input->getInt('limit', 100);
+			$limit        = $this->input->getInt('limit', 100);
 
 			$programs = $this->m_settings->getAvailablePrograms($search_query, $limit);
 
@@ -2145,6 +2151,27 @@ class EmundusControllersettings extends BaseController
 			$response['code']    = 200;
 			$response['message'] = Text::_('PROGRAMS_FOUND');
 			$response['data']    = $programs;
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getavailableprofiles(): void
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$search_query = $this->input->getString('search_query', '');
+			$limit        = $this->input->getInt('limit', 100);
+
+			$profiles = $this->m_settings->getAvailableProfiles($search_query, $limit);
+
+			$response['status']  = true;
+			$response['code']    = 200;
+			$response['message'] = Text::_('PROFILES_FOUND');
+			$response['data']    = $profiles;
 		}
 
 		echo json_encode((object) $response);
@@ -2166,7 +2193,7 @@ class EmundusControllersettings extends BaseController
 		else
 		{
 			$search_query = $this->input->getString('search_query', '');
-			$limit = $this->input->getInt('limit', 100);
+			$limit        = $this->input->getInt('limit', 100);
 
 			$events = $this->m_settings->getEvents($search_query, $limit);
 
@@ -2205,10 +2232,11 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$app_id = $this->input->getInt('app_id', 0);
+			$app_id   = $this->input->getInt('app_id', 0);
 			$app_type = $this->input->getString('app_type', '');
 
-			if(!empty($app_id) || !empty($app_type)) {
+			if (!empty($app_id) || !empty($app_type))
+			{
 				$app = $this->m_settings->getApp($app_id, $app_type);
 
 				$response['status']  = true;
@@ -2228,31 +2256,38 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$app_id = $this->input->getInt('app_id', 0);
-			$setup = $this->input->getRaw('setup', []);
+			$setup  = $this->input->getRaw('setup', []);
 
-			if (!empty($app_id) && !empty($setup)) {
+			if (!empty($app_id) && !empty($setup))
+			{
 				$setup = json_decode($setup);
 
 				$response['status'] = $this->m_settings->setupApp($app_id, $setup, $this->user->id);
-				if ($response['status']) {
+				if ($response['status'])
+				{
 					$app = $this->m_settings->getApp($app_id);
 
 					// Test authentication
-					switch($app->type) {
+					switch ($app->type)
+					{
 						case 'ovh':
-							if (!class_exists('OvhSMS')) {
+							if (!class_exists('OvhSMS'))
+							{
 								require_once(JPATH_ROOT . '/components/com_emundus/classes/Synchronizers/SMS/OvhSMS.php');
 							}
 							$synchronizer = new OvhSMS();
 							$sms_services = $synchronizer->getSmsServices();
 
-							if (!empty($sms_services)) {
+							if (!empty($sms_services))
+							{
 								$response['status'] = true;
-							} else {
+							}
+							else
+							{
 								$response['status'] = false;
 							}
 
@@ -2260,26 +2295,29 @@ class EmundusControllersettings extends BaseController
 						case 'yousign':
 							$synchronizer = new YousignSynchronizer();
 
-							if($setup->mode == 1)
+							if ($setup->mode == 1)
 							{
-								$api_consumptions = $synchronizer->getConsumptionsData();
+								$api_consumptions   = $synchronizer->getConsumptionsData();
 								$response['status'] = !empty($api_consumptions['data']);
-								if(!empty($api_consumptions['data']))
+								if (!empty($api_consumptions['data']))
 								{
-									$this->m_settings->updateConsumptions('yousign',(array)$api_consumptions['data']);
+									$this->m_settings->updateConsumptions('yousign', (array) $api_consumptions['data']);
 								}
 
 								$webhooks = $synchronizer->getWebhookSubscriptions();
-								if($setup->create_webhook == 1)
+								if ($setup->create_webhook == 1)
 								{
 									$webhook_created = false;
 
-									if(!empty($webhooks['data'])) {
-										foreach ($webhooks['data'] as $webhook) {
-											if(strpos($webhook->endpoint, Uri::base()) !== false) {
+									if (!empty($webhooks['data']))
+									{
+										foreach ($webhooks['data'] as $webhook)
+										{
+											if (strpos($webhook->endpoint, Uri::base()) !== false)
+											{
 												$webhook_created = true;
 
-												if(!$webhook->enabled)
+												if (!$webhook->enabled)
 												{
 													$synchronizer->toggleWebhookSubscription($webhook->id);
 												}
@@ -2290,27 +2328,32 @@ class EmundusControllersettings extends BaseController
 									if (!$webhook_created)
 									{
 										$response = $synchronizer->createWebhookSubscription();
-										if($response['status'] === 201 && !empty($response['data']))
+										if ($response['status'] === 201 && !empty($response['data']))
 										{
 											$this->m_settings->updateWebhook('yousign', $response['data']->secret_key);
 										}
 									}
 								}
-								else {
-									$workspaces = $synchronizer->getWorkspaces();
+								else
+								{
+									$workspaces         = $synchronizer->getWorkspaces();
 									$response['status'] = !empty($workspaces['data']->data);
 
-									if(!empty($webhooks['data'])) {
-										foreach ($webhooks['data'] as $webhook) {
-											if(strpos($webhook->endpoint, Uri::base()) !== false) {
+									if (!empty($webhooks['data']))
+									{
+										foreach ($webhooks['data'] as $webhook)
+										{
+											if (strpos($webhook->endpoint, Uri::base()) !== false)
+											{
 												$synchronizer->toggleWebhookSubscription($webhook->id, false);
 											}
 										}
 									}
 								}
 							}
-							else {
-								$workspaces = $synchronizer->getWorkspaces();
+							else
+							{
+								$workspaces         = $synchronizer->getWorkspaces();
 								$response['status'] = !empty($workspaces['data']->data);
 							}
 							break;
@@ -2318,21 +2361,25 @@ class EmundusControllersettings extends BaseController
 							break;
 						default:
 							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';
-							$m_sync = new EmundusModelSync();
+							$m_sync             = new EmundusModelSync();
 							$response['status'] = $m_sync->testAuthentication($app_id);
 							break;
 					}
 
-					if($response['status'])
+					if ($response['status'])
 					{
-						if($this->m_settings->checkRequirements($app_id))
+						if ($this->m_settings->checkRequirements($app_id))
 						{
 							$response['code']    = 200;
 							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_SUCCESS');
-						} else {
+						}
+						else
+						{
 							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_REQUIREMENTS_FAILED');
 						}
-					} else {
+					}
+					else
+					{
 						$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_SETUP_FAILED');
 					}
 				}
@@ -2349,15 +2396,17 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
-			$app_id = $this->input->getInt('app_id', 0);
+			$app_id  = $this->input->getInt('app_id', 0);
 			$enabled = $this->input->getInt('enabled', 1);
 
-			if(!empty($app_id)) {
-				$response['status'] = $this->m_settings->toggleEnable($app_id,$enabled);
-				if($response['status']) {
+			if (!empty($app_id))
+			{
+				$response['status'] = $this->m_settings->toggleEnable($app_id, $enabled);
+				if ($response['status'])
+				{
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
 				}
@@ -2374,14 +2423,16 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$action_log_row_id = $this->input->getInt('action_log_row_id', 0);
 
-			if (!empty($action_log_row_id)) {
+			if (!empty($action_log_row_id))
+			{
 				$response['status'] = $this->m_settings->historyRetryEvent($action_log_row_id);
-				if($response['status']) {
+				if ($response['status'])
+				{
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
 				}
@@ -2420,17 +2471,21 @@ class EmundusControllersettings extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$response['code'] = 200;
-			$addon = $this->input->getRaw('addon', '{}');
-			$addon = json_decode($addon, true);
+			$addon            = $this->input->getRaw('addon', '{}');
+			$addon            = json_decode($addon, true);
 
-			if (!empty($addon)) {
+			if (!empty($addon))
+			{
 				$saved = $this->m_settings->saveAddon($addon);
 
-				if ($saved) {
+				if ($saved)
+				{
 					$response['status']  = true;
 					$response['code']    = 200;
 					$response['message'] = Text::_('ADDON_SAVED');
-				} else  {
+				}
+				else
+				{
 					$response['message'] = Text::_('ADDON_NOT_SAVED');
 				}
 			}
@@ -2448,15 +2503,17 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$addon_type = $this->input->getString('addon_type', 0);
-			$enabled = $this->input->getInt('enabled', 1);
+			$enabled    = $this->input->getInt('enabled', 1);
 
-			if(!empty($addon_type)) {
+			if (!empty($addon_type))
+			{
 				$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
-				if($response['status']) {
+				if ($response['status'])
+				{
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
 				}
@@ -2475,16 +2532,18 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$setup = $this->input->getRaw('setup', '{}');
 
-			if(!empty($setup)) {
+			if (!empty($setup))
+			{
 				$setup = json_decode($setup);
 
-				$response['status'] = $this->m_settings->setupMessenger($setup,$this->user->id);
-				if($response['status']) {
+				$response['status'] = $this->m_settings->setupMessenger($setup, $this->user->id);
+				if ($response['status'])
+				{
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MESSENGER_SETUP_SUCCESS');
 				}
@@ -2499,22 +2558,25 @@ class EmundusControllersettings extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel(Factory::getApplication()->getIdentity()->id)) {
-			$response['code'] = 200;
+		if (EmundusHelperAccess::asCoordinatorAccessLevel(Factory::getApplication()->getIdentity()->id))
+		{
+			$response['code']   = 200;
 			$response['status'] = true;
-			$response['msg'] = Text::_('FABRIK_FORMS_LIST');
+			$response['msg']    = Text::_('FABRIK_FORMS_LIST');
 
-			if (!class_exists('EmundusHelperFabrik')) {
-				require_once (JPATH_ROOT.'/components/com_emundus/helpers/fabrik.php');
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 			}
 			$response['data'] = EmundusHelperFabrik::getFabrikFormsList();
 		}
 
-		if ($response['code'] === 403) {
+		if ($response['code'] === 403)
+		{
 			header('HTTP/1.1 403 Forbidden');
 		}
 
-		echo json_encode((object)$response);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -2535,7 +2597,7 @@ class EmundusControllersettings extends BaseController
 
 		$addon = $this->input->getString('addon_type');
 
-		if(empty($addon))
+		if (empty($addon))
 		{
 			$response['code']    = 400;
 			$response['message'] = 'Addon type is required.';
@@ -2548,14 +2610,15 @@ class EmundusControllersettings extends BaseController
 		{
 			$addon_status = $this->m_settings->getAddonStatus($addon);
 
-			if($addon_status)
+			if ($addon_status)
 			{
 				$response['code']    = 200;
 				$response['status']  = true;
 				$response['message'] = 'Addon status retrieved successfully.';
 				$response['data']    = $addon_status;
 			}
-			else {
+			else
+			{
 				$response['code']    = 404;
 				$response['message'] = 'Addon not found.';
 			}
@@ -2577,17 +2640,19 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']    = 500;
 			$response['message'] = Text::_('MISSING_PARAMS');
 
 			$upload_id = $this->input->getInt('upload_id', 0);
 
-			if (!empty($upload_id)) {
+			if (!empty($upload_id))
+			{
 				try
 				{
 					$response['data'] = $this->m_settings->getFileInfosFromUploadId($upload_id);
 
-					if (!empty($response['data'])) {
+					if (!empty($response['data']))
+					{
 						$response['status']  = true;
 						$response['code']    = 200;
 						$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_GENERATE_THUMBNAIL_SUCCESS');
@@ -2598,6 +2663,98 @@ class EmundusControllersettings extends BaseController
 					$response['code']    = 500;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_GENERATE_THUMBNAIL_FAILED') . ': ' . $e->getMessage();
 				}
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function get2faenablemethods(): void
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_ENABLE_METHODS');
+
+			$mfa_methods      = Mfa::getMfaMethods();
+			$response['data'] = !empty($mfa_methods) ? array_keys($mfa_methods) : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function get2faparameters(): void
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_PARAMETERS');
+
+			try
+			{
+				$plugin   = PluginHelper::getPlugin('system', 'emundus');
+				$params   = new JRegistry($plugin->params);
+				$profiles = $params->get('2faForceForProfiles', []);
+				$profiles = array_filter($profiles);
+
+				foreach ($profiles as $key => $profile)
+				{
+					if($profile !== 'applicant')
+					{
+						$profiles[$key] = (int) $profile;
+					}
+				}
+
+				$response['data'] = ['profiles' => $profiles];
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_PARAMETERS_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function save2faconfig(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$methods  = $this->input->getString('2fa_available_methods');
+				$methods = explode(',', $methods);
+
+				$response['status'] = $this->m_settings->swith2faMethods($methods);
+
+				$force    = $this->input->getInt('2fa_force_for_profiles', 0);
+				$profiles = $this->input->getString('2fa_mandatory_profiles');
+				$profiles = explode(',', $profiles);
+				$response['status'] = $this->m_settings->update2faConfig($force, $profiles);
+
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_CONFIG_SAVED');
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_CONFIG_SAVE_FAILED') . ': ' . $e->getMessage();
 			}
 		}
 

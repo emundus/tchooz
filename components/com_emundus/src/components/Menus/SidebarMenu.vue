@@ -66,10 +66,6 @@
 				</template>
 			</ul>
 		</div>
-
-		<div
-			class="tchoozy-corner-bottom-left-bakground-mask-image tw-absolute tw-bottom-0 tw-h-1/3 tw-w-full tw-bg-profile-full"
-		></div>
 	</aside>
 </template>
 

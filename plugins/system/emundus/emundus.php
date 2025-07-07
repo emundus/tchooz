@@ -18,8 +18,11 @@ use Tchooz\Entities\Emails\Modifiers\LettersModifier;
 use Tchooz\Entities\Emails\Modifiers\LowercaseModifier;
 use Tchooz\Entities\Emails\Modifiers\TrimModifier;
 use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
-use Tchooz\Entities\Emails\TagModifierAutoloader;
 use Tchooz\Entities\Emails\TagModifierRegistry;
+use Joomla\CMS\Router\Route;
+use Joomla\CMS\User\User;
+use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
+use Joomla\Database\ParameterType;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -35,27 +38,28 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 class PlgSystemEmundus extends CMSPlugin
 {
 	private $label_colors = [
-        'lightpurple' => '--em-purple-2',
-        'purple'=> '--em-purple-2',
-        'darkpurple'=> '--em-purple-2',
-        'lightblue'=> '--em-light-blue-2',
-        'blue'=> '--em-blue-2',
-        'darkblue'=> '--em-blue-3',
-        'lightgreen'=> '--em-green-2',
-        'green'=> '--em-green-2',
-        'darkgreen'=> '--em-green-2',
-        'lightyellow'=> '--em-yellow-2',
-        'yellow'=> '--em-yellow-2',
-        'darkyellow'=> '--em-yellow-2',
-        'lightorange'=> '--em-orange-2',
-        'orange'=> '--em-orange-2',
-        'darkorange'=> '--em-orange-2',
-        'lightred'=> '--em-red-1',
-        'red'=> '--em-red-2',
-        'darkred'=> '--em-red-2',
-        'pink'=> '--em-pink-2',
-        'default'=> '--neutral-600',
-    ];
+		'lightpurple' => '--em-purple-2',
+		'purple'      => '--em-purple-2',
+		'darkpurple'  => '--em-purple-2',
+		'lightblue'   => '--em-light-blue-2',
+		'blue'        => '--em-blue-2',
+		'darkblue'    => '--em-blue-3',
+		'lightgreen'  => '--em-green-2',
+		'green'       => '--em-green-2',
+		'darkgreen'   => '--em-green-2',
+		'lightyellow' => '--em-yellow-2',
+		'yellow'      => '--em-yellow-2',
+		'darkyellow'  => '--em-yellow-2',
+		'lightorange' => '--em-orange-2',
+		'orange'      => '--em-orange-2',
+		'darkorange'  => '--em-orange-2',
+		'lightred'    => '--em-red-1',
+		'red'         => '--em-red-2',
+		'darkred'     => '--em-red-2',
+		'pink'        => '--em-pink-2',
+		'default'     => '--neutral-600',
+	];
+
 	/**
 	 * Constructor
 	 *
@@ -64,13 +68,15 @@ class PlgSystemEmundus extends CMSPlugin
 	 *
 	 * @since    1.0
 	 */
-	public function __construct(&$subject, $config)
+	public function __construct($config = [])
 	{
 		// Could be component was uninstalled but not the plugin
 		if (!File::exists(JPATH_SITE . '/components/com_emundus/emundus.php'))
 		{
 			return;
 		}
+
+		parent::__construct($config);
 	}
 
 	public function onBeforeCompileHead()
@@ -84,7 +90,9 @@ class PlgSystemEmundus extends CMSPlugin
 		if ($app->isClient('administrator'))
 		{
 			if (empty($_REQUEST['option']) || $_REQUEST['option'] != 'com_emundus')
+			{
 				return;
+			}
 		}
 
 		$doc  = $app->getDocument();
@@ -103,15 +111,16 @@ class PlgSystemEmundus extends CMSPlugin
 
 				$profile_details = $m_users->getProfileDetails($e_session->profile);
 
-				if(strpos($profile_details->class, 'label-') !== false)
+				if (strpos($profile_details->class, 'label-') !== false)
 				{
-					$profile_details->class = str_replace('label-','--em-',$profile_details->class);
+					$profile_details->class = str_replace('label-', '--em-', $profile_details->class);
 				}
-				elseif(!empty($this->label_colors[$profile_details->class])) {
+				elseif (!empty($this->label_colors[$profile_details->class]))
+				{
 					$profile_details->class = $this->label_colors[$profile_details->class];
 				}
 
-				$profile_font = $profile_details->published !== 1 ? '--em-coordinator-font' : '--em-applicant-font';
+				$profile_font       = $profile_details->published !== 1 ? '--em-coordinator-font' : '--em-applicant-font';
 				$profile_font_title = $profile_details->published !== 1 ? '--em-coordinator-font-title' : '--em-applicant-font-title';
 
 				$style = ':root {
@@ -216,18 +225,249 @@ class PlgSystemEmundus extends CMSPlugin
 			$app->setBody($body);
 
 			PluginHelper::importPlugin('emundus');
-			$dispatcher = $app->getDispatcher();
+			$dispatcher    = $app->getDispatcher();
 			$onAfterRender = new GenericEvent('onCallEventHandler', ['onAfterRender', ['session' => $e_session]]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterRender);
+
+
+			// Manage 2fa
+			$user = $app->getIdentity();
+			if ($user instanceof User && !$user->guest)
+			{
+				$plugin   = PluginHelper::getPlugin('system', 'emundus');
+				$params   = new JRegistry($plugin->params);
+				$profiles = $params->get('2faForceForProfiles', []);
+
+				if (!empty($profiles))
+				{
+					$mfaRequired   = false;
+					$user_profiles = $this->getUserProfiles($user->id);
+
+					foreach ($user_profiles as $user_profile)
+					{
+						if ($user_profile->published == 1 && in_array('applicant', $profiles))
+						{
+							$mfaRequired = true;
+							break;
+						}
+						elseif (in_array($user_profile->id, $profiles))
+						{
+							$mfaRequired = true;
+							break;
+						}
+					}
+
+					if ($mfaRequired && $this->needsMultiFactorAuthenticationRedirection())
+					{
+						$session      = $app->getSession();
+						$isMFAPending = $this->isMultiFactorAuthenticationPending();
+
+						if (!$isMFAPending)
+						{
+							// First unset the flag to make sure the redirection will apply until they conform to the mandatory MFA
+							$session->set('com_users.mfa_checked', 0);
+
+							// Now set a flag which forces rechecking MFA for this user
+							$session->set('com_users.mandatory_mfa_setup', 1);
+
+							if (!$this->isMultiFactorAuthenticationPage())
+							{
+								$url = Route::_('index.php?option=com_users&view=methods', false);
+								$app->redirect($url, 307);
+							}
+						}
+					}
+				}
+			}
 		}
+	}
+
+	private function getUserProfiles(int $user_id): array
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select('p.id,p.published,p.status')
+				->from($db->quoteName('#__emundus_users', 'eu'))
+				->leftJoin($db->quoteName('#__emundus_users_profiles', 'eup') . ' ON eu.user_id = eup.user_id')
+				->leftJoin($db->quoteName('#__emundus_setup_profiles', 'p') . ' ON eu.profile = p.id OR eup.profile_id = p.id');
+			$query->where($db->quoteName('eu.user_id') . ' = :user_id')
+				->bind(':user_id', $user_id, ParameterType::INTEGER);
+			$db->setQuery($query);
+
+			return $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			// Handle exception
+			Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
+
+			return [];
+		}
+	}
+
+	private function needsMultiFactorAuthenticationRedirection(): bool
+	{
+		$app     = Factory::getApplication();
+		$isAdmin = $app->isClient('administrator');
+
+		/**
+		 * We only kick in if the session flag is not set AND the user is not flagged for monitoring of their MFA status
+		 *
+		 * In case a user belongs to a group which requires MFA to be always enabled and they logged in without having
+		 * MFA enabled we have the recheck flag. This prevents the user from enabling and immediately disabling MFA,
+		 * circumventing the requirement for MFA.
+		 */
+		// Make sure we are logged in
+		try
+		{
+			$user = $app->getIdentity();
+		}
+		catch (\Exception)
+		{
+			// This would happen if we are in CLI or under an old Joomla! version. Either case is not supported.
+			return false;
+		}
+
+		// The plugin only needs to kick in when you have logged in
+		if (empty($user) || $user->guest)
+		{
+			return false;
+		}
+
+		// If we are in the administrator section we only kick in when the user has backend access privileges
+		if ($isAdmin && !$user->authorise('core.login.admin'))
+		{
+			// @todo How exactly did you end up here if you didn't have the core.login.admin privilege to begin with?!
+			return false;
+		}
+
+		$option = strtolower($app->input->getCmd('option', ''));
+		$task   = strtolower($app->input->getCmd('task', ''));
+
+		// Allow the frontend user to log out (in case they forgot their MFA code or something)
+		if (!$isAdmin && ($option == 'com_users') && \in_array($task, ['user.logout', 'user.menulogout']))
+		{
+			return false;
+		}
+
+		// Allow the backend user to log out (in case they forgot their MFA code or something)
+		if ($isAdmin && ($option == 'com_login') && ($task == 'logout'))
+		{
+			return false;
+		}
+
+		// Allow the Joomla update finalisation to run
+		if ($isAdmin && $option === 'com_joomlaupdate' && \in_array($task, ['update.finalise', 'update.cleanup', 'update.finaliseconfirm']))
+		{
+			return false;
+		}
+
+		// Do not redirect if we are already in a MFA management or captive page
+		$onlyCaptive = $this->isMultiFactorAuthenticationPending();
+
+		if ($this->isMultiFactorAuthenticationPage($onlyCaptive))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
+	private function isMultiFactorAuthenticationPage(bool $onlyCaptive = false): bool
+	{
+		$input  = Factory::getApplication()->input;
+		$option = $input->get('option');
+		$task   = $input->get('task');
+		$view   = $input->get('view');
+
+		if ($option !== 'com_users')
+		{
+			return false;
+		}
+
+		$allowedViews = ['captive', 'method', 'methods', 'callback'];
+		$allowedTasks = [
+			'captive.display', 'captive.captive', 'captive.validate',
+			'methods.display',
+		];
+
+		if (!$onlyCaptive)
+		{
+			$allowedTasks = array_merge(
+				$allowedTasks,
+				[
+					'method.display', 'method.add', 'method.edit', 'method.regenerateBackupCodes',
+					'method.delete', 'method.save', 'methods.disable', 'methods.doNotShowThisAgain',
+				]
+			);
+		}
+
+		return \in_array($view, $allowedViews) || \in_array($task, $allowedTasks);
+	}
+
+	private function isMultiFactorAuthenticationPending(): bool
+	{
+		$app  = Factory::getApplication();
+		$user = $app->getIdentity();
+
+		if (empty($user) || $user->guest)
+		{
+			return false;
+		}
+
+		// Get the user's MFA records
+		$records = MfaHelper::getUserMfaRecords($user->id);
+
+		// No MFA Methods? Then we obviously don't need to display a Captive login page.
+		if (\count($records) < 1)
+		{
+			return false;
+		}
+
+		// Let's get a list of all currently active MFA Methods
+		$mfaMethods = MfaHelper::getMfaMethods();
+
+		// If no MFA Method is active we can't really display a Captive login page.
+		if (empty($mfaMethods))
+		{
+			return false;
+		}
+
+		// Get a list of just the Method names
+		$methodNames = [];
+
+		foreach ($mfaMethods as $mfaMethod)
+		{
+			$methodNames[] = $mfaMethod['name'];
+		}
+
+		// Filter the records based on currently active MFA Methods
+		foreach ($records as $record)
+		{
+			if (\in_array($record->method, $methodNames))
+			{
+				// We found an active Method. Show the Captive page.
+				return true;
+			}
+		}
+
+		// No viable MFA Method found. We won't show the Captive page.
+		return false;
 	}
 
 	public function onAfterInitialise()
 	{
-		TagModifierRegistry::register(new UppercaseModifier());
-		TagModifierRegistry::register(new LowercaseModifier());
-		TagModifierRegistry::register(new CapitalizeModifier());
-		TagModifierRegistry::register(new TrimModifier());
-		TagModifierRegistry::register(new LettersModifier());
+		if(!Factory::getApplication()->isClient('administrator'))
+		{
+			TagModifierRegistry::register(new UppercaseModifier());
+			TagModifierRegistry::register(new LowercaseModifier());
+			TagModifierRegistry::register(new CapitalizeModifier());
+			TagModifierRegistry::register(new TrimModifier());
+			TagModifierRegistry::register(new LettersModifier());
+		}
 	}
 }
