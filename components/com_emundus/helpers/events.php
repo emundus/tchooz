@@ -202,7 +202,11 @@ class EmundusHelperEvents
 		{
 			$save        = false;
 			$emundusUser = $app->getSession()->get('emundusUser');
-			$fnum        = $emundusUser->fnum;
+			$fnum = $app->input->getString('fnum', '');
+			if (empty($fnum))
+			{
+				$fnum = $emundusUser->fnum;
+			}
 
 			$form_session = $this->getFormSession($fnum, $params['formModel']->id);
 			if (!empty($form_session->id) && $form_session->user_id == $emundusUser->id)
