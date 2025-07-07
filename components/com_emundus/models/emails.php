@@ -968,8 +968,15 @@ class EmundusModelEmails extends JModelList
 
 		$tags = $m_files->getVariables($str);
 
-		$idFabrik = array();
-		$fabrikTags = array();
+		if(!class_exists('EmundusHelperFabrik'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+		}
+		$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
+
+		$idFabrik = [];
+		$fabrikTags = [];
+		$aliasFabrik  = [];
 
 		if (count($tags) > 0) {
 			foreach ($tags as $val) {
@@ -978,6 +985,17 @@ class EmundusModelEmails extends JModelList
 				if (!empty($tag->getName()) && is_numeric($tag->getName())) {
 					$idFabrik[] = $tag->getName();
 					$fabrikTags[] = $tag;
+				}
+				elseif (in_array($tag->getName(), $fabrik_aliases))
+				{
+					$elt = EmundusHelperFabrik::getElementsByAlias($tag->getName());
+
+					if(!empty($elt[0]))
+					{
+						$idFabrik[] = $elt[0]->id;
+						$aliasFabrik[$tag->getName()] = $elt[0]->id;
+						$fabrikTags[] = $tag;
+					}
 				}
 			}
 		}
@@ -1078,18 +1096,28 @@ class EmundusModelEmails extends JModelList
 						$preg['replacements'][] = '';
 					}
 				}
-			}
-			
-			foreach ($fabrikTags as $fabrikTag) {
-				if(!empty($fabrikTag->getModifiers()))
-				{
-					$patternKey = array_search($fabrikTag->getPatternName(), $preg['patterns']);
-					if($patternKey !== false && !empty($preg['replacements'][$patternKey]))
+				
+				foreach ($aliasFabrik as $alias => $id) {
+					$preg['patterns'][] = '/\$\{' . $alias . '\}/';
+					if (isset($fabrikValues[$id][$fnum])) {
+						$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+					}
+					else {
+						$preg['replacements'][] = '';
+					}
+				}
+				
+				foreach ($fabrikTags as $fabrikTag) {
+					if(!empty($fabrikTag->getModifiers()))
 					{
-						$fabrikTag->setValue($preg['replacements'][$patternKey]);
+						$patternKey = array_search($fabrikTag->getPatternName(), $preg['patterns']);
+						if($patternKey !== false && !empty($preg['replacements'][$patternKey]))
+						{
+							$fabrikTag->setValue($preg['replacements'][$patternKey]);
 
-						$preg['patterns'][] = $fabrikTag->getFullPatternName();
-						$preg['replacements'][] = $fabrikTag->getValueModified();
+							$preg['patterns'][] = $fabrikTag->getFullPatternName();
+							$preg['replacements'][] = $fabrikTag->getValueModified();
+						}
 					}
 				}
 			}
