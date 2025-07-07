@@ -515,4 +515,37 @@ export default {
 			msg: 'WRONG_PARAMETERS',
 		};
 	},
+
+	async get2faEnableMethods() {
+		try {
+			return await fetchClient.get('get2faenablemethods');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async get2faParameters() {
+		try {
+			return await fetchClient.get('get2faparameters');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async save2faConfig(data) {
+		try {
+			return await fetchClient.post('save2faconfig', data);
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };
