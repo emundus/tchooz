@@ -23,8 +23,11 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Registry\Registry;
+use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Entities\Messages\TriggerEntity;
+use Tchooz\Enums\Emails\TagType;
 
 class EmundusModelEmails extends JModelList
 {
@@ -330,14 +333,14 @@ class EmundusModelEmails extends JModelList
 			$campaign = $m_campaign->getCampaignByID($student->campaign_id);
 			$post = array(
 				'APPLICANT_ID' => $student->id,
-				'DEADLINE' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_LC2'), null),
+				'DEADLINE' => JHTML::_('date', $campaign['end_date'], Text::_('DATE_FORMAT_LC2'), null),
 				'APPLICANTS_LIST' => '',
 				'EVAL_CRITERIAS' => '',
 				'EVAL_PERIOD' => '',
 				'CAMPAIGN_LABEL' => $campaign['label'],
 				'CAMPAIGN_YEAR' => $campaign['year'],
-				'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], JText::_('DATE_FORMAT_LC2'), null),
-				'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], JText::_('DATE_FORMAT_LC2'), null),
+				'CAMPAIGN_START' => JHTML::_('date', $campaign['start_date'], Text::_('DATE_FORMAT_LC2'), null),
+				'CAMPAIGN_END' => JHTML::_('date', $campaign['end_date'], Text::_('DATE_FORMAT_LC2'), null),
 				'CAMPAIGN_CODE' => $campaign['training'],
 				'FNUM' => $student->fnum,
 				'COURSE_NAME' => $campaign['label']
@@ -613,10 +616,10 @@ class EmundusModelEmails extends JModelList
 
 		$current_user = $app->getIdentity();
 		if (!empty($current_user)) {
-			$user = $current_user->id == $user_id ? $current_user : JFactory::getUser($user_id);
+			$user = $current_user->id == $user_id ? $current_user : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 		}
 		else {
-			$user = JFactory::getUser($user_id);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 		}
 		$config = $app->getConfig();
 
@@ -626,9 +629,9 @@ class EmundusModelEmails extends JModelList
 			$sitename = $config->get('sitename');
 			$siteurl = $config->get('live_site');
 
-			$base_url = JURI::base();
+			$base_url = Uri::base();
 			if ($app->isClient('administrator')) {
-				$base_url = JURI::root();
+				$base_url = Uri::root();
 			}
 
 			$activation = $user->get('activation');
@@ -641,7 +644,7 @@ class EmundusModelEmails extends JModelList
 			$replacements = array(
 				$user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
 				$base_url . "index.php?option=com_users&task=registration.activate&token=" . $activation, "index.php?option=com_users&task=registration.activate&token=" . $activation, $base_url, $sitename,
-				$user->id, $user->name, $user->email, $user->username, Factory::getDate('now')->format(JText::_('DATE_FORMAT_LC3')), $logo
+				$user->id, $user->name, $user->email, $user->username, Factory::getDate('now')->format(Text::_('DATE_FORMAT_LC3')), $logo
 			);
 
 			if (!empty($fnum)) {
@@ -806,7 +809,7 @@ class EmundusModelEmails extends JModelList
 		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$query = $db->getQuery(true);
-		$query->select('tag, request')
+		$query->select('tag, description, request')
 			->from($db->quoteName('#__emundus_setup_tags', 't'))
 			->where($db->quoteName('t.published') . ' = 1');
 
@@ -838,117 +841,87 @@ class EmundusModelEmails extends JModelList
 		$replacements = $constants['replacements'];
 
 		foreach ($tags as $tag) {
+			$tagEntity = new TagEntity($tag['tag'], $tag['description']);
+			$request      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
 
-			$patterns[] = '/\[' . $tag['tag'] . '\]/';
-			$value      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
+			// If fnum is set, we call setTagsFabrik to replace tags like {fabrik_element_id} by the application form value
+			if(str_contains($request, 'php|') && !empty($fnum))
+			{
+				$request = str_replace('php|', '', $request);
+				$request     = $this->setTagsFabrik($request, array($fnum));
 
-			if (!str_contains($value, 'php|')) {
-				$request = explode('|', $value);
-
-				if (count($request) === 3) {
-					try {
-						$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
-						$db->setQuery($query);
-						$result = $db->loadResult();
-
-					}
-					catch (Exception $e) {
-						error_log($query);
-						$error = JUri::getInstance() . ' :: USER ID : ' . $user_id . '\n -> ' . $query;
-						Log::add($error, Log::ERROR, 'com_emundus');
-						$result = "";
-
-					}
-
-					$replacements[] = $result;
-				}
-				elseif ($tag['tag'] == 'PHOTO') {
-					if (empty($result)) {
-						$result = 'media/com_emundus/images/icones/personal.png';
-					}
-					else {
-						if (file_exists(EMUNDUS_PATH_REL . $user_id . '/tn_' . $result)) {
-							$result = EMUNDUS_PATH_REL . $user_id . '/tn_' . $result;
-						}
-						else {
-							$result = EMUNDUS_PATH_REL . $user_id . '/' . $result;
-						}
-
-						if ($base64) {
-							$type   = pathinfo($result, PATHINFO_EXTENSION);
-							$data   = file_get_contents($result);
-							$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
-						}
-					}
-
-					$replacements[] = $result;
-				}
-				else {
-					$replacements[] = $value;
-				}
-			}
-			elseif (!empty($fnum)) {
-				$request = str_replace('php|', '', $value);
-				$val     = $this->setTagsFabrik($request, array($fnum));
-
-				$result = "";
-				try {
-
-					$result = eval("$val");
-				}
-				catch (Exception $e) {
-					Log::add('Error setTags for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-					$result = "";
-				}
-
-				if (!empty($result)) {
-					$replacements[] = $result;
-				}
-				else {
-					$replacements[] = "";
-				}
-			}
-			else {
-				$request = str_replace('php|', '', $value);
-
-				try {
-					$result = eval("$request");
-				}
-				catch (Exception $e) {
-					Log::add('Error setTags for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-					$result = "";
-				}
-
-				if (!empty($result)) {
-					$replacements[] = $result;
-				}
-				else {
-					$replacements[] = "";
-				}
+				$request = 'php|' . $request;
 			}
 
+			$tagEntity->setRequest($request);
+			$tagEntity->calculateValue($user_id, $base64);
+
+			$patterns[] = $tagEntity->getFullPatternName();
+			$replacements[] = $tagEntity->getValue();
+		}
+		
+		// Check modifiers tags
+		if(!empty($content)) {
+			foreach ($tags_content as $tag)
+			{
+				$tagEntity = new TagEntity($tag);
+
+				if(!empty($tagEntity->getModifiers()))
+				{
+					// Search value of base tag in replacements to avoid to call the database again
+					$patternKey = array_search($tagEntity->getPatternName(), $patterns);
+					if($patternKey !== false && !empty($replacements[$patternKey]))
+					{
+						$tagEntity->setValue($replacements[$patternKey]);
+					}
+					else
+					{
+						$query->clear()
+							->select('request')
+							->from($db->quoteName('#__emundus_setup_tags'))
+							->where($db->quoteName('tag') . ' = ' . $db->quote($tagEntity->getName()));
+						try {
+							$db->setQuery($query);
+							$request = $db->loadResult();
+						}
+						catch (Exception $e) {
+							Log::add('Error getting tag request for tag : ' . $tagEntity->getName() . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+							$request = '';
+						}
+
+						$request      = preg_replace($constants['patterns'], $constants['replacements'], $request);
+
+						// If fnum is set, we call setTagsFabrik to replace tags like {fabrik_element_id} by the application form value
+						if(str_contains($request, 'php|') && !empty($fnum))
+						{
+							$request = str_replace('php|', '', $request);
+							$request     = $this->setTagsFabrik($request, array($fnum));
+
+							$request = 'php|' . $request;
+						}
+
+						$tagEntity->setRequest($request);
+						$tagEntity->calculateValue($user_id, $base64);
+					}
+
+					// Add tag with modifier to patterns and replacements
+					$patterns[] = $tagEntity->getFullPatternName();
+					$replacements[] = $tagEntity->getValueModified();
+				}
+			}
 		}
 
 		return array('patterns' => $patterns, 'replacements' => $replacements);
 	}
 
-
-	/**
-	 * @param $user_id
-	 * @param $post
-	 * @param $fnum
-	 * @param $passwd
-	 *
-	 * @return array[]
-	 *
-	 * @throws Exception
-	 * @since version v6
-	 */
-	public function setTagsWord($user_id, $post = null, $fnum = null, $passwd = '')
+	
+	public function setTagsWord(?int $user_id, ?array $post = null, ?string $fnum = null, ?string $passwd = ''): array
 	{
-		$db = JFactory::getDBO();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
-		$query = "SELECT tag, request FROM #__emundus_setup_tags";
+		$query = $db->getQuery(true);
+		$query->select('tag, request')
+			->from($db->quoteName('#__emundus_setup_tags'));
 		$db->setQuery($query);
 		$tags = $db->loadAssocList();
 
@@ -957,60 +930,33 @@ class EmundusModelEmails extends JModelList
 		$patterns     = array();
 		$replacements = array();
 		foreach ($tags as $tag) {
-			$patterns[] = $tag['tag'];
-			$value      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
-			$value      = $this->setTagsFabrik($value, array($fnum));
+			$tagEntity = new TagEntity($tag['tag'], $tag['description']);
 
-			if (strpos($value, 'php|') === false) {
-				$request = explode('|', $value);
-				if (count($request) === 3) {
-					$query = 'SELECT ' . $request[0] . ' FROM ' . $request[1] . ' WHERE ' . $request[2];
-					try
-					{
-						$db->setQuery($query);
-						$replacements[] = $db->loadResult();
-					}
-					catch (Exception $e)
-					{
-						Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-						$replacements[] = "";
-					}
-				}
-				else {
-					$replacements[] = $value;
-				}
+			// If fnum is set, we call setTagsFabrik to replace tags like {fabrik_element_id} by the application form value
+			$request      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
+			if(str_contains($request, 'php|') && !empty($fnum))
+			{
+				$request = str_replace('php|', '', $request);
+				$request     = $this->setTagsFabrik($request, array($fnum));
+
+				$request = 'php|' . $request;
 			}
-			else {
-				$request        = explode('php|', $value);
-				$val            = $this->setTagsFabrik($request[1], array($fnum));
-				try {
-					$replacements[] = eval("$val");
-				}
-				catch (Exception $e) {
-					Log::add('Error setTagsWord for tag : ' . $tag['tag'] . '. Message : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-					$replacements[] = "";
-				}
-			}
+			$tagEntity->setRequest($request);
+			$tagEntity->calculateValue($user_id);
+
+			$patterns[] = $tagEntity->getFullName();
+			$replacements[] = $tagEntity->getValue();
 		}
 
 		return array('patterns' => $patterns, 'replacements' => $replacements);
 	}
 
-	/**
-	 * @param $str
-	 * @param $fnums
-	 *
-	 * @return array|string|string[]|null
-	 *
-	 * @throws Exception
-	 * @since version v6
-	 */
-	public function setTagsFabrik($str, $fnums = array(), $raw = false)
+	public function setTagsFabrik(string $str, array $fnums = array(), bool $raw = false)
 	{
 		require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
 		$m_files = new EmundusModelFiles();
 
-		$jinput = JFactory::getApplication()->input;
+		$jinput = Factory::getApplication()->input;
 
 		if (count($fnums) == 0) {
 			$fnums      = $jinput->get('fnums', null, 'RAW');
@@ -1023,12 +969,15 @@ class EmundusModelEmails extends JModelList
 		$tags = $m_files->getVariables($str);
 
 		$idFabrik = array();
-		if (count($tags) > 0) {
+		$fabrikTags = array();
 
+		if (count($tags) > 0) {
 			foreach ($tags as $val) {
-				$tag = strip_tags($val);
-				if (is_numeric($tag)) {
-					$idFabrik[] = $tag;
+				$tag = new TagEntity($val, '', [], TagType::FABRIK);
+
+				if (!empty($tag->getName()) && is_numeric($tag->getName())) {
+					$idFabrik[] = $tag->getName();
+					$fabrikTags[] = $tag;
 				}
 			}
 		}
@@ -1036,14 +985,14 @@ class EmundusModelEmails extends JModelList
 		if (!empty($idFabrik)) {
 			$fabrikElts   = $m_files->getValueFabrikByIds($idFabrik);
 			$fabrikValues = array();
-			foreach ($fabrikElts as $elt) {
 
+			foreach ($fabrikElts as $elt) {
 				$params         = json_decode($elt['params']);
 				$groupParams    = json_decode($elt['group_params']);
 				$isDate         = (in_array($elt['plugin'],['date','jdate']));
 				$isDatabaseJoin = ($elt['plugin'] === 'databasejoin');
 
-				if (@$groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
+				if ($groupParams->repeat_group_button == 1 || $isDatabaseJoin) {
 					$fabrikValues[$elt['id']] = $m_files->getFabrikValueRepeat($elt, $fnumsArray, $params, @$groupParams->repeat_group_button == 1);
 
 
@@ -1078,7 +1027,7 @@ class EmundusModelEmails extends JModelList
 						}
 						foreach ($index as $value) {
 							$key   = array_search($value, $params->sub_options->sub_values);
-							$elm[] = !$raw ? JText::_($params->sub_options->sub_labels[$key]) : $value;
+							$elm[] = !$raw ? Text::_($params->sub_options->sub_labels[$key]) : $value;
 						}
 						$fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $elm);
 					}
@@ -1116,15 +1065,31 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 			}
+			
 			$preg = array('patterns' => array(), 'replacements' => array());
+			
 			foreach ($fnumsArray as $fnum) {
 				foreach ($idFabrik as $id) {
 					$preg['patterns'][] = '/\$\{' . $id . '\}/';
 					if (isset($fabrikValues[$id][$fnum])) {
-						$preg['replacements'][] = JText::_($fabrikValues[$id][$fnum]['val']);
+						$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
 					}
 					else {
 						$preg['replacements'][] = '';
+					}
+				}
+			}
+			
+			foreach ($fabrikTags as $fabrikTag) {
+				if(!empty($fabrikTag->getModifiers()))
+				{
+					$patternKey = array_search($fabrikTag->getPatternName(), $preg['patterns']);
+					if($patternKey !== false && !empty($preg['replacements'][$patternKey]))
+					{
+						$fabrikTag->setValue($preg['replacements'][$patternKey]);
+
+						$preg['patterns'][] = $fabrikTag->getFullPatternName();
+						$preg['replacements'][] = $fabrikTag->getValueModified();
 					}
 				}
 			}
@@ -1396,8 +1361,8 @@ class EmundusModelEmails extends JModelList
 					$row           = [
 						'applicant_id' => $student_id,
 						'user_id'      => $this->_em_user->id,
-						'reason'       => JText::_('COM_EMUNDUS_EXPERTS_INFORM_EXPERTS'),
-						'comment_body' => JText::_('ERROR') . ' ' . JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_NOT_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $m_to,
+						'reason'       => Text::_('COM_EMUNDUS_EXPERTS_INFORM_EXPERTS'),
+						'comment_body' => Text::_('ERROR') . ' ' . Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_NOT_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $m_to,
 						'fnum'         => $fnum
 					];
 					$print_message .= '<hr>Error sending email: ' . $send->__toString();
@@ -1408,8 +1373,8 @@ class EmundusModelEmails extends JModelList
 					$row    = [
 						'applicant_id' => $student_id,
 						'user_id'      => $this->_em_user->id,
-						'reason'       => JText::_('COM_EMUNDUS_EXPERTS_INFORM_EXPERTS'),
-						'comment_body' => JText::_('MESSAGE') . ' ' . JText::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . JText::_('COM_EMUNDUS_TO') . ' ' . $m_to,
+						'reason'       => Text::_('COM_EMUNDUS_EXPERTS_INFORM_EXPERTS'),
+						'comment_body' => Text::_('MESSAGE') . ' ' . Text::_('COM_EMUNDUS_APPLICATION_SENT') . ' ' . Text::_('COM_EMUNDUS_TO') . ' ' . $m_to,
 						'fnum'         => $fnum
 					];
 
@@ -1428,8 +1393,8 @@ class EmundusModelEmails extends JModelList
 						$this->logEmail($message);
 					}
 
-					$print_message .= '<hr>' . JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $m_to;
-					$print_message .= '<hr>' . JText::_('COM_EMUNDUS_EMAILS_SUBJECT') . ' : ' . $mail_subject;
+					$print_message .= '<hr>' . Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $m_to;
+					$print_message .= '<hr>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . ' : ' . $mail_subject;
 					$print_message .= '<hr>' . $body;
 				}
 
@@ -1462,7 +1427,7 @@ class EmundusModelEmails extends JModelList
 			return false;
 		}
 
-		JFactory::getApplication()->enqueueMessage(JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT'), 'message');
+		JFactory::getApplication()->enqueueMessage(Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT'), 'message');
 
 		return true;
 	}
@@ -1718,8 +1683,8 @@ class EmundusModelEmails extends JModelList
 							Log::add('Could not get user by email : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 						}
 
-						$print_message .= '<hr>' . JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $m_to;
-						$print_message .= '<hr>' . JText::_('COM_EMUNDUS_EMAILS_SUBJECT') . ' : ' . $mail_subject;
+						$print_message .= '<hr>' . Text::_('COM_EMUNDUS_MAILS_EMAIL_SENT') . ' : ' . $m_to;
+						$print_message .= '<hr>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . ' : ' . $mail_subject;
 						$print_message .= '<hr>' . $body;
 					}
 
@@ -2091,7 +2056,7 @@ class EmundusModelEmails extends JModelList
 					if (!empty($email->category)) {
 						$email->additional_columns = [
 							[
-								'key'     => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
+								'key'     => Text::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
 								'value'   => $email->category,
 								'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
 								'display' => 'all'
@@ -2099,7 +2064,7 @@ class EmundusModelEmails extends JModelList
 						];
 					}
 					else {
-						$email->additional_columns = [['key' => JText::_('COM_EMUNDUS_ONBOARD_CATEGORY'), 'value' => '', 'classes' => '', 'display' => 'all']];
+						$email->additional_columns = [['key' => Text::_('COM_EMUNDUS_ONBOARD_CATEGORY'), 'value' => '', 'classes' => '', 'display' => 'all']];
 					}
 
 					$emails[$key] = $email;
