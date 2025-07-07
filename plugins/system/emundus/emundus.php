@@ -13,6 +13,13 @@ use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Tchooz\Entities\Emails\Modifiers\CapitalizeModifier;
+use Tchooz\Entities\Emails\Modifiers\LettersModifier;
+use Tchooz\Entities\Emails\Modifiers\LowercaseModifier;
+use Tchooz\Entities\Emails\Modifiers\TrimModifier;
+use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
+use Tchooz\Entities\Emails\TagModifierAutoloader;
+use Tchooz\Entities\Emails\TagModifierRegistry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -213,5 +220,14 @@ class PlgSystemEmundus extends CMSPlugin
 			$onAfterRender = new GenericEvent('onCallEventHandler', ['onAfterRender', ['session' => $e_session]]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterRender);
 		}
+	}
+
+	public function onAfterInitialise()
+	{
+		TagModifierRegistry::register(new UppercaseModifier());
+		TagModifierRegistry::register(new LowercaseModifier());
+		TagModifierRegistry::register(new CapitalizeModifier());
+		TagModifierRegistry::register(new TrimModifier());
+		TagModifierRegistry::register(new LettersModifier());
 	}
 }

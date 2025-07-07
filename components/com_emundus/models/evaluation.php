@@ -16,6 +16,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
 use Joomla\CMS\Language\Text;
 use Dompdf\Dompdf;
@@ -31,6 +33,8 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
 use Joomla\CMS\Factory;
+use Tchooz\Entities\Emails\TagEntity;
+use Tchooz\Enums\Emails\TagType;
 use Tchooz\Traits\TraitDispatcher;
 
 class EmundusModelEvaluation extends JModelList
@@ -3154,44 +3158,49 @@ class EmundusModelEvaluation extends JModelList
 
 							try
 							{
-								$phpWord = new \PhpOffice\PhpWord\PhpWord();
+								$phpWord = new PhpWord();
 								if ($escape_ampersand)
 								{
-									\PhpOffice\PhpWord\Settings::setOutputEscapingEnabled(true);
+									Settings::setOutputEscapingEnabled(true);
 								}
-								$preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
+								$preprocess = new TemplateProcessor($letter_file);
 								$tags       = $preprocess->getVariables();
 
 								$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
 
 								$idFabrik  = [];
+								$fabrikTags = array();
 								$aliasFabrik  = [];
 								$setupTags = [];
 								foreach ($tags as $i => $val)
 								{
-									$tag = strip_tags($val);
-									if (is_numeric($tag))
+									$tag = new TagEntity($val, null, [], TagType::FABRIK);
+									if(!empty($tag->getName()))
 									{
-										$idFabrik[] = $tag;
-									}
-									elseif(in_array($tag, $fabrik_aliases))
-									{
-										$elt = EmundusHelperFabrik::getElementsByAlias($tag);
-
-										if(!empty($elt[0]))
-										{
-											$idFabrik[] = $elt[0]->id;
-											$aliasFabrik[$tag] = $elt[0]->id;
+										if (is_numeric($tag->getName())) {
+											$idFabrik[] = $tag->getName();
+											$fabrikTags[] = $tag;
 										}
-									}
-									else
-									{
-										if (strpos($tag, 'IMG_') !== false)
+										elseif(in_array($tag->getName(), $fabrik_aliases))
 										{
-											$setupTags[] = trim(explode(":", $tag)[0]);
+											$elt = EmundusHelperFabrik::getElementsByAlias($tag->getName());
+
+											if(!empty($elt[0]))
+											{
+												$idFabrik[] = $elt[0]->id;
+												$aliasFabrik[$tag->getName()] = $elt[0]->id;
+												$fabrikTags[] = $tag;
+											}
 										}
 										else
 										{
+											if (str_contains($tag->getName(), 'IMG_'))
+											{
+												// If the tag is an image, we need to extract the image name
+												$imgName = explode(':', $tag->getName());
+												$tag->setName($imgName[0]);
+											}
+
 											$setupTags[] = $tag;
 										}
 									}
@@ -3346,56 +3355,70 @@ class EmundusModelEvaluation extends JModelList
                                     }
                                 }
 
-                                $preprocess = new \PhpOffice\PhpWord\TemplateProcessor($letter_file);
+                                $preprocess = new TemplateProcessor($letter_file);
                                 if (isset($fnumInfo[$fnum]))
                                 {
-                                    foreach ($idFabrik as $id) {
-                                        if (isset($fabrikValues[$id][$fnum])) {
-                                            if (in_array($id, $textarea_elements)) {
-                                                $html = $fabrikValues[$id][$fnum]['val'];
+	                                foreach ($fabrikTags as $fabrikTag) {
+		                                if(!empty($fabrikTag->getModifiers()))
+		                                {
+			                                $patternKey = array_search($fabrikTag->getName(), $fabrikValues);
+			                                if(isset($fabrikValues[$fabrikTag->getName()][$fnum]['val']))
+			                                {
+				                                $fabrikTag->setValue($fabrikValues[$fabrikTag->getName()][$fnum]['val']);
+
+				                                $fabrikValues[$fabrikTag->getFullName()][$fnum]['val'] = $fabrikTag->getValueModified();
+			                                }
+		                                }
+
+										$fabrikTagFullName = $fabrikTag->getFullName();
+
+                                        if (isset($fabrikValues[$fabrikTagFullName][$fnum])) {
+                                            if (in_array($fabrikTagFullName, $textarea_elements)) {
+                                                $html = $fabrikValues[$fabrikTagFullName][$fnum]['val'];
                                                 $section = $phpWord->addSection();
                                                 \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
                                                 $containers = $section->getElements();
-                                                $clone = $preprocess->cloneBlock('textarea_' . $id, count($containers), true, true);
+                                                $clone = $preprocess->cloneBlock('textarea_' . $fabrikTagFullName, count($containers), true, true);
 
                                                 for($i = 0; $i < count($containers); $i++) {
-                                                    $complex_block = $preprocess->setComplexBlock($id . '#' . ($i+1), $containers[$i]);
+                                                    $complex_block = $preprocess->setComplexBlock($fabrikTagFullName . '#' . ($i+1), $containers[$i]);
                                                 }
 
-                                            } else if($fabrikValues[$id][$fnum]['complex_data']){
-                                                $preprocess->setComplexValue($id, $fabrikValues[$id][$fnum]['val']);
+                                            } else if($fabrikValues[$fabrikTagFullName][$fnum]['complex_data']){
+                                                $preprocess->setComplexValue($fabrikTagFullName, $fabrikValues[$fabrikTagFullName][$fnum]['val']);
                                             } else {
-                                                $value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+                                                $value = str_replace('\n', ', ', $fabrikValues[$fabrikTagFullName][$fnum]['val']);
 
-                                                if(in_array($id, $aliasFabrik))
+                                                if(in_array($fabrikTagFullName, $aliasFabrik))
                                                 {
-                                                    $alias = array_search($id, $aliasFabrik);
+                                                    $alias = array_search($fabrikTagFullName, $aliasFabrik);
                                                     $preprocess->setValue($alias, $value);
                                                 } else {
-                                                    $preprocess->setValue($id, $value);
+                                                    $preprocess->setValue($fabrikTagFullName, $value);
                                                 }
                                             }
                                         }
                                         else {
-                                            $preprocess->setValue($id, '');
+                                            $preprocess->setValue($fabrikTagFullName, '');
                                         }
                                     }
 
-                                    $tags = $_mEmail->setTagsWord(@$fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
+                                    $tags = $_mEmail->setTagsWord($fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 
                                     foreach ($setupTags as $tag)
                                     {
-                                        $val      = '';
-                                        $lowerTag = strtolower($tag);
+                                        $lowerTag = strtolower($tag->getName());
 
-                                        if (str_starts_with($tag, 'CONTAINER_')) // this is used for html blocks later
+                                        if (str_starts_with($tag->getName(), 'CONTAINER_')) // this is used for html blocks later
                                         {
                                             continue;
                                         }
 
                                         if (array_key_exists($lowerTag, $const))
                                         {
-                                            $preprocess->setValue($tag, $const[$lowerTag]);
+											$tag->setValue($const[$lowerTag]);
+
+	                                        $preprocess->setValue($tag->getFullName(), $tag->getValueModified());
                                         }
                                         elseif (in_array($lowerTag, $special))
                                         {
@@ -3405,54 +3428,58 @@ class EmundusModelEvaluation extends JModelList
                                                 // dd-mm-YYYY (YY)
                                                 case 'user_dob_age':
                                                     $birthday = $_mFile->getBirthdate($fnum, 'd/m/Y', true);
-                                                    $preprocess->setValue($tag, $birthday->date . ' (' . $birthday->age . ')');
+													$tag->setValue($birthday->date . ' (' . $birthday->age . ')');
                                                     break;
 
                                                 default:
-                                                    $preprocess->setValue($tag, '');
+													$tag->setValue('');
                                                     break;
                                             }
+
+	                                        $preprocess->setValue($tag->getFullName(), $tag->getValueModified());
                                         }
-                                        elseif (!empty(@$fnumInfo[$fnum][$lowerTag]))
+                                        elseif (!empty($fnumInfo[$fnum][$lowerTag]))
                                         {
-                                            $preprocess->setValue($tag, @$fnumInfo[$fnum][$lowerTag]);
+											$tag->setValue($fnumInfo[$fnum][$lowerTag]);
+
+											$preprocess->setValue($tag->getFullName(), $tag->getValueModified());
                                         }
                                         else
                                         {
                                             $i = 0;
                                             foreach ($tags['patterns'] as $value)
                                             {
-                                                if ($value == $tag)
+                                                if ($value == $tag->getName())
                                                 {
-                                                    $val = $tags['replacements'][$i];
+                                                    $tag->setValue($tags['replacements'][$i]);
                                                     break;
                                                 }
                                                 $i++;
                                             }
 
-                                            if (str_ends_with($tag, '_BLOCK'))
+                                            if (str_ends_with($tag->getName(), '_BLOCK'))
                                             {
-                                                $html    = $val;
+                                                $html    = $tag->getValue();
                                                 $section = $phpWord->addSection();
 
                                                 \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
                                                 $containers = $section->getElements();
-                                                $clone      = $preprocess->cloneBlock('CONTAINER_' . $tag, count($containers), true, true);
+                                                $clone      = $preprocess->cloneBlock('CONTAINER_' . $tag->getName(), count($containers), true, true);
 
                                                 for ($j = 0; $j < count($containers); $j++)
                                                 {
-                                                    $preprocess->setComplexBlock($tag . '#' . ($j + 1), $containers[$j]);
+                                                    $preprocess->setComplexBlock($tag->getName() . '#' . ($j + 1), $containers[$j]);
                                                 }
                                             }
                                             else
                                             {
-                                                if (strpos($tag, 'IMG_') !== false)
+                                                if (str_contains($tag->getName(), 'IMG_'))
                                                 {
-                                                    $preprocess->setImageValue($tag, $val);
+                                                    $preprocess->setImageValue($tag->getName(), $tag->getValue());
                                                 }
                                                 else
                                                 {
-                                                    $preprocess->setValue($tag, $val);
+                                                    $preprocess->setValue($tag->getFullName(), $tag->getValueModified());
                                                 }
                                             }
                                         }
