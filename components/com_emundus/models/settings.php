@@ -2754,7 +2754,7 @@ class EmundusModelSettings extends ListModel
 
 			$query->order($this->db->quoteName('c.label') . ' ASC');
 
-			$this->db->setQuery($query, 0, $limit);
+			$this->db->setQuery($query);
 			$campaigns = $this->db->loadObjectList();
 		}
 		catch (Exception $e)
@@ -2805,7 +2805,7 @@ class EmundusModelSettings extends ListModel
 
 			$query->order($this->db->quoteName('esp.label') . ' ASC');
 
-			$this->db->setQuery($query, 0, $limit);
+			$this->db->setQuery($query);
 			$programs = $this->db->loadObjectList();
 
 			$programs = array_map(function ($program) {
@@ -3601,7 +3601,7 @@ class EmundusModelSettings extends ListModel
 				$query->where('label LIKE ' . $this->db->quote('%' . $search_query . '%'));
 			}
 			$query->order('label ASC');
-			$this->db->setQuery($query, 0, $limit);
+			$this->db->setQuery($query);
 			$profiles = $this->db->loadObjectList();
 		}
 		catch (Exception $e)
