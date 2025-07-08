@@ -1,7 +1,6 @@
 <?php
 namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
-defined('_JEXEC') or die;
 
 use Joomla\CMS\User\User;
 use Joomla\Console\Command\AbstractCommand;

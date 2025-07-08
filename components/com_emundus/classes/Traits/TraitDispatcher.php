@@ -15,7 +15,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 
 trait TraitDispatcher
 {
-	public function dispatchEvent(string $event, array $arguments = [], bool $dispatch_event_handler = true, $plugin_folder = 'emundus'): void
+	public function dispatchJoomlaEvent(string $event, array $arguments = [], bool $dispatch_event_handler = true, $plugin_folder = 'emundus'): void
 	{
 		PluginHelper::importPlugin('emundus');
 		PluginHelper::importPlugin('actionlog');

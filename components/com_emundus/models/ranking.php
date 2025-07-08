@@ -2146,7 +2146,7 @@ class EmundusModelRanking extends JModelList
                         return Text::_($column['label']);
                     }, $ordered_columns_unique);
 
-                    $this->dispatchEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array, 'fnums' => $fnums, 'ccids' => $ccids, 'columns' => $ordered_columns]);
+                    $this->dispatchJoomlaEvent('onBeforeExportRanking', ['header' => &$header, 'lines' => &$export_array, 'fnums' => $fnums, 'ccids' => $ccids, 'columns' => $ordered_columns]);
                     $lines = array_merge([$header], $export_array);
                 }
             }

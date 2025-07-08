@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="module" client="site" method="upgrade">
+    <name>MOD_EMUNDUS_APPLICATIONS_LIST</name>
+    <author>Joomla! Project</author>
+    <creationDate>2025-06</creationDate>
+    <copyright>(C) 2025 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.7.0</version>
+    <description>MOD_EMUNDUS_APPLICATIONS_LIST_XML_DESCRIPTION</description>
+    <files>
+        <folder module="mod_emundus_applications_list">services</folder>
+        <folder>src</folder>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+    <languages>
+        <language tag="en-GB">en-GB.mod_emundus_btob.ini</language>
+        <language tag="en-GB">en-GB.mod_emundus_btob.sys.ini</language>
+        <language tag="fr-FR">mod_emundus_applications_list.ini</language>
+        <language tag="fr-FR">mod_emundus_applications_list.sys.ini</language>
+    </languages>
+    <namespace path="src">Emundus\Module\ApplicationsList</namespace>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        type="sql"
+                        name="statuses"
+                        label="MOD_EMUNDUS_APPLICATIONS_LIST_STATUSES"
+                        multiple="multiple"
+                        query="SELECT step, value FROM jos_emundus_setup_status"
+                        key_field="step"
+                        value_field="value"
+                        layout="joomla.form.field.list-fancy-select"
+                />
+
+                <field type="subform"
+                       name="content"
+                    label="MOD_EMUNDUS_APPLICATIONS_LIST_CONTENT"
+                    multiple="multiple"
+                       layout="joomla.form.field.subform.repeatable-table"
+                    >
+                    <form>
+                        <field
+                                name="label"
+                                label="MOD_EMUNDUS_APPLICATIONS_LIST_CONTENT_COLUMN_LABEL"
+                                type="text"
+                        />
+                        <field
+                                name="column"
+                                label="MOD_EMUNDUS_APPLICATIONS_LIST_CONTENT_COLUMN"
+                                type="text"
+                        />
+                    </form>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

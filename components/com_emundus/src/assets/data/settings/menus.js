@@ -78,4 +78,12 @@ export default [
 		published: true,
 		props: {},
 	},
+	{
+		label: 'COM_EMUNDUS_GLOBAL_PARAMS_MENUS_USERS',
+		name: 'users',
+		icon: 'manage_accounts',
+		type: 'JSON',
+		source: 'manage-users.js',
+		published: true,
+	},
 ];

@@ -878,14 +878,11 @@ class Com_EmundusInstallerScript
 		$query = $this->db->getQuery(true);
 
 		$query->select('id')
-			->from('#__users');
+			->from('#__users')
+			->where('email = ' . $this->db->quote('automatedtask@emundus.fr'));
 		if (!empty($automated_user_id))
 		{
-			$query->where('id = ' . $automated_user_id);
-		}
-		else
-		{
-			$query->where('email = ' . $this->db->quote('automatedtask@emundus.fr'));
+			$query->orWhere('id = ' . $automated_user_id);
 		}
 		$this->db->setQuery($query);
 		$automated_user_id = $this->db->loadResult();

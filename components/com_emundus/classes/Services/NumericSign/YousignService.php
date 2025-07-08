@@ -101,7 +101,7 @@ class YousignService
 						$api_request = json_decode($yousign_request->getResponsePayload());
 					}
 
-					$this->dispatchEvent('onYousignRequestInitiated', [
+					$this->dispatchJoomlaEvent('onYousignRequestInitiated', [
 						'status'           => 'success',
 						'yousign_request'  => $yousign_request,
 						'request'          => $request,
@@ -144,7 +144,7 @@ class YousignService
 							{
 								$this->yousign_synchronizer->cancelRequest($yousign_request->getProcedureId());
 
-								$this->dispatchEvent('onYousignRequestCancelled', [
+								$this->dispatchJoomlaEvent('onYousignRequestCancelled', [
 									'status'           => 'success',
 									'yousign_request'  => $yousign_request,
 									'request'          => $request,
@@ -172,7 +172,7 @@ class YousignService
 										{
 											$yousign_request = $this->addDocument($yousign_request, $application_file, $request);
 
-											$this->dispatchEvent('onYousignDocumentAdded', [
+											$this->dispatchJoomlaEvent('onYousignDocumentAdded', [
 												'status'           => 'success',
 												'yousign_request'  => $yousign_request,
 												'request'          => $request,
@@ -187,7 +187,7 @@ class YousignService
 											{
 												$this->addSigners($request, $yousign_request, $config);
 
-												$this->dispatchEvent('onYousignSignersUpdated', [
+												$this->dispatchJoomlaEvent('onYousignSignersUpdated', [
 													'status'           => 'success',
 													'yousign_request'  => $yousign_request,
 													'request'          => $request,
@@ -203,7 +203,7 @@ class YousignService
 											{
 												$this->yousign_synchronizer->activateRequest($yousign_request->getProcedureId());
 
-												$this->dispatchEvent('onYousignRequestActivated', [
+												$this->dispatchJoomlaEvent('onYousignRequestActivated', [
 													'status'           => 'success',
 													'yousign_request'  => $yousign_request,
 													'request'          => $request,
@@ -462,7 +462,7 @@ class YousignService
 									$this->yousign_synchronizer->sendReminder($yousign_request->getProcedureId(), $api_signer->id);
 									$this->request_signers_repository->updateStatus($request_signer->id, SignStatus::REMINDER_SENT);
 
-									$this->dispatchEvent('onYousignSendReminder', [
+									$this->dispatchJoomlaEvent('onYousignSendReminder', [
 										'status'           => 'success',
 										'yousign_request'  => $yousign_request,
 										'request'          => $request,
@@ -538,7 +538,7 @@ class YousignService
 								}
 							}
 
-							$this->dispatchEvent('onYousignRequestCompleted', [
+							$this->dispatchJoomlaEvent('onYousignRequestCompleted', [
 								'status'           => 'success',
 								'yousign_request'  => $yousign_request,
 								'request'          => $request,
@@ -546,7 +546,7 @@ class YousignService
 								'fnum'             => $application_file['fnum']
 							]);
 
-							$this->dispatchEvent('onAfterSignRequestCompleted', [
+							$this->dispatchJoomlaEvent('onAfterSignRequestCompleted', [
 								'api_request'      => $yousign_request,
 								'request'          => $request,
 								'application_file' => $application_file,

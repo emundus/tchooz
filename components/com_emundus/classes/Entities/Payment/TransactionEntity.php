@@ -3,7 +3,6 @@
 namespace Tchooz\Entities\Payment;
 
 use Joomla\Database\DatabaseDriver;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Entities\Payment\CurrencyEntity;

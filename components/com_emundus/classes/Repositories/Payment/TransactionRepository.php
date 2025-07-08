@@ -759,4 +759,70 @@ class TransactionRepository
 
 		return $lines;
 	}
+
+	public function apiRender(TransactionEntity $transaction_entity): array
+	{
+		$transaction = [];
+		$payment_repository = new PaymentRepository();
+		$contact_repository = new ContactRepository($this->db);
+
+		if(!class_exists('EmundusHelperFiles')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
+
+		$transaction = [
+			'id' => $transaction_entity->getId(),
+			'fnum' => $transaction_entity->getFnum(),
+			'contact' => $contact_repository->getByUserId(\EmundusHelperFiles::getApplicantIdFromFnum($transaction_entity->getFnum()))?->__serialize(),
+			'external_reference' => $transaction_entity->getExternalReference(),
+			'status' => $transaction_entity->getStatus()->value,
+			'amount' => $transaction_entity->getAmount(),
+			'currency' => $transaction_entity->getCurrency()->serialize(),
+			'payment_method' => $transaction_entity->getPaymentMethod()->serialize(),
+			'created_at' => $transaction_entity->getCreatedAt(),
+			'created_by' => $transaction_entity->getCreatedBy(),
+			'updated_at' => $transaction_entity->getUpdatedAt(),
+			'updated_by' => $transaction_entity->getUpdatedBy(),
+			'synchronizer' => $payment_repository->getPaymentServiceById($transaction_entity->getSynchronizerId()),
+			'step_id' => $transaction_entity->getStepId(),
+		];
+
+		$data = json_decode($transaction_entity->getData(), true);
+		if (!empty($data)) {
+			if (!empty($data['products'])) {
+				$transaction['products'] = array_map(function($product) {
+					unset($product['campaigns']);
+					unset($product['displayed_price']);
+					unset($product['available_to']);
+					unset($product['available_from']);
+					unset($product['illimited']);
+					unset($product['mandatory']);
+					unset($product['quantity']);
+					unset($product['published']);
+					return $product;
+				}, $data['products']);
+			} else {
+				$transaction['products'] = [];
+			}
+
+			if (!empty($data['alterations'])) {
+				$transaction['alterations'] = array_map(function($alteration) {
+					unset($alteration['id']);
+					unset($alteration['cart_id']);
+					unset($alteration['displayed_amount']);
+					return $alteration;
+				}, $data['alterations']);
+			} else {
+				$transaction['alterations'] = [];
+			}
+
+			if (!empty($data['installment'])) {
+				$transaction['installment'] = $data['installment'];
+			} else {
+				$transaction['installment'] = null;
+			}
+		}
+
+		return $transaction;
+	}
 }

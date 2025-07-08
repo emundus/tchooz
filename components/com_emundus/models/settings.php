@@ -2822,6 +2822,36 @@ class EmundusModelSettings extends ListModel
 		return $programs;
 	}
 
+	public function getAvailableProfiles($search_query, $limit = 100)
+	{
+		$profiles = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('id as value, label as name')
+				->from($this->db->quoteName('#__emundus_setup_profiles'))
+				->where($this->db->quoteName('published') . ' = 0');
+
+			if (!empty($search_query))
+			{
+				$query->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+			}
+
+			$query->order($this->db->quoteName('label') . ' ASC');
+
+			$this->db->setQuery($query, 0, $limit);
+			$profiles = $this->db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $profiles;
+	}
+
 	public function getApps()
 	{
 		$apps = [];
@@ -4457,6 +4487,87 @@ class EmundusModelSettings extends ListModel
 		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			throw $e;
+		}
+	}
+	
+	public function swith2faMethods($methods): bool
+	{
+		try
+		{
+			$available_methods = [$this->db->quote('email'), $this->db->quote('totp')];
+			$query = $this->db->getQuery(true);
+
+			$query->select('extension_id, element, enabled')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('multifactorauth'))
+				->where($this->db->quoteName('element') . ' IN ('.implode(',',$available_methods).')');
+			$this->db->setQuery($query);
+			$methods_db = $this->db->loadObjectList('element');
+
+			foreach ($methods_db as $method)
+			{
+				if(in_array($method->element, $methods) && $method->enabled == 0)
+				{
+					$method->enabled = 1;
+
+					$this->db->updateObject('#__extensions', $method, 'extension_id');
+				}
+				elseif(!in_array($method->element, $methods) && $method->enabled == 1)
+				{
+					$method->enabled = 0;
+
+					$this->db->updateObject('#__extensions', $method, 'extension_id');
+				}
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
+			return false;
+		}
+	}
+
+	public function update2faConfig(int $force, array $profiles): bool
+	{
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->select('extension_id, element, params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('emundus'));
+			$this->db->setQuery($query);
+			$emundus_plugin = $this->db->loadObject();
+
+			if($force === 1)
+			{
+				$params = json_decode($emundus_plugin->params, true);
+
+				$params['2faForceForProfiles'] = $profiles;
+				$emundus_plugin->params = json_encode($params);
+
+				$this->db->updateObject('#__extensions', $emundus_plugin, 'extension_id');
+			}
+			else {
+				$params = json_decode($emundus_plugin->params, true);
+
+				$params['2faForceForProfiles'] = ['0'];
+				$emundus_plugin->params = json_encode($params);
+
+				$this->db->updateObject('#__extensions', $emundus_plugin, 'extension_id');
+			}
+
+			return true;
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			return false;
 		}
 	}
 }

@@ -151,7 +151,7 @@ final class Yousign extends CMSPlugin implements SubscriberInterface
 					$m_files = new \EmundusModelFiles();
 
 					$application_file = $m_files->getFnumInfos($request->getFnum());
-					$this->dispatchEvent('onYousignRequestCancelled', [
+					$this->dispatchJoomlaEvent('onYousignRequestCancelled', [
 						'status'           => 'success',
 						'yousign_request'  => $yousign_request,
 						'request'          => $request,
