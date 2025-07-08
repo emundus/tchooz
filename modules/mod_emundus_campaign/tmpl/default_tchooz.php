@@ -57,9 +57,13 @@ if (sizeof($tmp_campaigns) > 0)
 	{
         $item = $menu->getItems('alias', $campaign->alias, true);
         // Change link of campaign only if there is a menu item with the alias and no custom link on the program
-        if(!empty($item) && empty($campaign->link))
+        if(!empty($item) && empty($campaign->link) && empty($mod_em_campaign_custom_link))
         {
             $campaign->link = $base_url.'/'.$campaign->alias;
+        }
+        elseif(!empty($mod_em_campaign_custom_link))
+        {
+            $campaign->link = $base_url.'/'.str_replace('{campaign_id}',$campaign->id,$mod_em_campaign_custom_link);
         }
 
 		if ($campaign->pinned == 1)

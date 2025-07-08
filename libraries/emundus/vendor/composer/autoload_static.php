@@ -89,6 +89,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             'Ovh\\' => 4,
         ),
+        'N' => 
+        array (
+            'NumberToWords\\' => 14,
+        ),
         'M' => 
         array (
             'Matrix\\' => 7,
@@ -231,6 +235,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Ovh\\' => 
         array (
             0 => __DIR__ . '/..' . '/ovh/ovh/src',
+        ),
+        'NumberToWords\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/kwn/number-to-words/src',
         ),
         'Matrix\\' => 
         array (

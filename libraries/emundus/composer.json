@@ -41,7 +41,8 @@
         "symfony/html-sanitizer": "^7.2",
         "ovh/ovh": "^3.5",
         "smalot/pdfparser": "^2.12",
-        "egulias/email-validator": "^4.0"
+        "egulias/email-validator": "^4.0",
+        "kwn/number-to-words": "^2.12"
     },
     "autoload": {
         "psr-4": {"Tchooz\\": "../../components/com_emundus/classes"}

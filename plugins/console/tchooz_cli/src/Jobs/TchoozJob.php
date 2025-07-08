@@ -10,16 +10,26 @@
 namespace Emundus\Plugin\Console\Tchooz\Jobs;
 
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class TchoozJob
 {
 	protected bool $allowFailure = false;
 
+	protected array $colors = [
+		'blue' => "\e[34m",
+		'green' => "\e[32m",
+		'red' => "\e[31m",
+		'yellow' => "\e[33m",
+		'reset' => "\e[0m",
+		'bold' => "\e[1m"
+	];
+
 	public function __construct(object $logger) {
 		Log::addLogger($logger->options,Log::ALL, [$logger->jobName]);
 	}
 
-	public function execute() {
+	public function execute(OutputInterface $output): void {
 		//return;
 	}
 

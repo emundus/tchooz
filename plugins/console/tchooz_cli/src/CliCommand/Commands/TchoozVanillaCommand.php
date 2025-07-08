@@ -1,11 +1,8 @@
 <?php
 namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
-defined('_JEXEC') or die;
 
 use Exception;
-use Joomla\Archive\Archive;
-use Joomla\Archive\Zip;
 use Joomla\CMS\Factory;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;

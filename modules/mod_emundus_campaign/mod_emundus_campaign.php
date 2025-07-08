@@ -58,6 +58,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof))
 	$mod_em_campaign_display_svg           = $params->get('mod_em_campaign_display_svg', 1);
 	$mod_em_campaign_display_hover_offset  = $params->get('mod_em_campaign_display_hover_offset', 1);
 	$mod_em_campaign_show_timezone         = $params->get('mod_em_campaign_show_timezone', 1);
+	$mod_em_campaign_custom_link           = $params->get('mod_em_campaign_custom_link', '');
 	$mod_em_campaign_list_sections         = $params->get('mod_em_campaign_list_sections', []);
 	$mod_em_campaign_display_program_label = $params->get('mod_em_campaign_display_program_label', 0);
 	$mod_em_campaign_click_to_details      = $params->get('mod_em_campaign_click_to_details', 1);
@@ -145,7 +146,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof))
 	$reseaux_filt    = $app->input->getString('reseau', null);
 
 	// this verification is used to prevent SQL injection
-	if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end']))
+	if (!empty($order_date) && in_array($order_date, ['start_date', 'end_date', 'formation_start', 'formation_end', 'label']))
 	{
 		$session->set('order_date', $order_date);
 	}

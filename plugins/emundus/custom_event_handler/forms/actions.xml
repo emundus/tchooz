@@ -6,6 +6,7 @@
         <option value="send_email">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SEND_EMAIL</option>
         <option value="redirect">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_REDIRECT</option>
         <option value="generate_letter">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_GENERATE_LETTER</option>
+        <option value="letter_choice">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_LETTER_CHOICE</option>
         <option value="sign_flow">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGN_FLOW</option>
         <option value="alter_cart">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_ALTER_CART</option>
     </field>
@@ -166,6 +167,17 @@
             description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_DESC"
             query="SELECT attachment_id, title FROM #__emundus_setup_letters"
             key_field="attachment_id"
+            value_field="title"
+    />
+
+    <field
+            showon="action_type:letter_choice"
+            name="letter_id"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_DESC"
+            query="SELECT id, concat(title, ' (', id, ')') as title FROM #__emundus_setup_letters"
+            key_field="id"
             value_field="title"
     />
     <!-- End Generate letter fields -->

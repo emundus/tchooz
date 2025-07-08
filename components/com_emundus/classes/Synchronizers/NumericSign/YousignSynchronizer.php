@@ -649,7 +649,7 @@ class YousignSynchronizer extends Api
 				$throwException = true;
 				Log::add('Error on Yousign api : ' . $response['message'], Log::ERROR, 'com_emundus.yousign');
 
-				$this->dispatchEvent('onYousignError', [
+				$this->dispatchJoomlaEvent('onYousignError', [
 					'status'  => $response['status'],
 					'message' => $response['message'],
 					'data'    => $response['data']

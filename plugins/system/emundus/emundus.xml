@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <extension group="system" method="upgrade" type="plugin" version="2">
-	<name>plg_emundus_system</name>
-	<author>eMundus</author>
-	<creationDate>May 2024</creationDate>
-	<copyright>Copyright (C) 2005-2024 eMundus - All rights reserved.</copyright>
-	<license>GNU General Public License version 3 or later; see software_license.txt</license>
-	<authorEmail>dev@emunudus.io</authorEmail>
-	<authorUrl>https://www.emundus.fr</authorUrl>
-	<version>2.0.0</version>
-	<description>PLG_EMUNDUS_SYSTEM_DESCRIPTION</description>
-	<files>
-		<filename plugin="emundus">emundus.php</filename>
-		<folder>language</folder>
-	</files>
-	<config>
-	</config>
+    <name>plg_emundus_system</name>
+    <author>eMundus</author>
+    <creationDate>May 2024</creationDate>
+    <copyright>Copyright (C) 2005-2024 eMundus - All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see software_license.txt</license>
+    <authorEmail>dev@emunudus.io</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>PLG_EMUNDUS_SYSTEM_DESCRIPTION</description>
+    <files>
+        <filename plugin="emundus">emundus.php</filename>
+        <folder>language</folder>
+    </files>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field
+                        name="2faForceForProfiles"
+                        type="sql"
+                        label="COM_EMUNDUS_CONFIG_FORCEMFAUSERPROFILES_LABEL"
+                        description="COM_EMUNDUS_CONFIG_FORCEMFAUSERPROFILES_DESC"
+                        layout="joomla.form.field.list-fancy-select"
+                        multiple="1"
+                        query="SELECT id, label FROM #__emundus_setup_profiles WHERE published = 0 ORDER BY id"
+                        key_field="id"
+                        value_field="label"
+                        default="0"
+                >
+                    <option value="0">Aucun</option>
+                    <option value="applicant">COM_EMUNDUS_CONFIG_FORCEMFAUSERPROFILES_APPLICANT</option>
+                </field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>

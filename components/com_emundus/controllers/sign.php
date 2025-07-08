@@ -203,7 +203,7 @@ class EmundusControllerSign extends BaseController
 					];
 				}
 
-				$this->dispatchEvent('onBeforeDisplaySignRequest', [
+				$this->dispatchJoomlaEvent('onBeforeDisplaySignRequest', [
 					'requests'  => &$requests,
 					'order_by'  => $order_by,
 					'sort'      => $sort,
@@ -272,7 +272,7 @@ class EmundusControllerSign extends BaseController
 				$response['message'] = 'Request saved successfully.';
 				$response['data']    = $request_id;
 
-				$this->dispatchEvent('onAfterRequestSaved', [
+				$this->dispatchJoomlaEvent('onAfterRequestSaved', [
 					'request_id' => $request_id,
 					'status'     => $status,
 					'ccid'       => $ccid,
@@ -335,7 +335,7 @@ class EmundusControllerSign extends BaseController
 				$response['message'] = 'Signer added successfully.';
 				$response['data']    = $signer_id;
 
-				$this->dispatchEvent('onAfterAddSignerToRequest', [
+				$this->dispatchJoomlaEvent('onAfterAddSignerToRequest', [
 					'request_id' => $request_id,
 					'signer_id'  => $signer_id,
 					'email'      => $email,
@@ -407,7 +407,7 @@ class EmundusControllerSign extends BaseController
 					$response['message'] = 'Request cancelled successfully.';
 					$response['data']    = $request_id;
 
-					$this->dispatchEvent('onAfterRequestCancelled', [
+					$this->dispatchJoomlaEvent('onAfterRequestCancelled', [
 						'request_id'    => $request_id,
 						'cancel_reason' => $cancel_reason
 					]);
@@ -475,7 +475,7 @@ class EmundusControllerSign extends BaseController
 					$response['message'] = 'Reminder sent successfully.';
 					$response['data']    = $request_id;
 
-					$this->dispatchEvent('onAfterRequestReminderSent', [
+					$this->dispatchJoomlaEvent('onAfterRequestReminderSent', [
 						'request_id' => $request_id
 					]);
 				}
@@ -526,7 +526,7 @@ class EmundusControllerSign extends BaseController
 				$response['message']       = 'Documents downloaded successfully.';
 				$response['download_file'] = $signed_file;
 
-				$this->dispatchEvent('onAfterDocumentsDownloaded', [
+				$this->dispatchJoomlaEvent('onAfterDocumentsDownloaded', [
 					'request_id' => $request_id
 				]);
 			}
