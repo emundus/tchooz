@@ -3372,35 +3372,32 @@ class EmundusModelEvaluation extends JModelList
 
 										$fabrikTagFullName = $fabrikTag->getFullName();
 
-                                        if (isset($fabrikValues[$fabrikTagFullName][$fnum])) {
-                                            if (in_array($fabrikTagFullName, $textarea_elements)) {
-                                                $html = $fabrikValues[$fabrikTagFullName][$fnum]['val'];
-                                                $section = $phpWord->addSection();
-                                                \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
-                                                $containers = $section->getElements();
-                                                $clone = $preprocess->cloneBlock('textarea_' . $fabrikTagFullName, count($containers), true, true);
+										if (in_array($fabrikTagFullName, $textarea_elements) && isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
+											$html = $fabrikValues[$fabrikTagFullName][$fnum]['val'];
+											$section = $phpWord->addSection();
+											\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
+											$containers = $section->getElements();
+											$clone = $preprocess->cloneBlock('textarea_' . $fabrikTagFullName, count($containers), true, true);
 
-                                                for($i = 0; $i < count($containers); $i++) {
-                                                    $complex_block = $preprocess->setComplexBlock($fabrikTagFullName . '#' . ($i+1), $containers[$i]);
-                                                }
+											for($i = 0; $i < count($containers); $i++) {
+												$complex_block = $preprocess->setComplexBlock($fabrikTagFullName . '#' . ($i+1), $containers[$i]);
+											}
+										} else if(isset($fabrikValues[$fabrikTagFullName][$fnum]['complex_data'])) {
+											$preprocess->setComplexValue($fabrikTagFullName, $fabrikValues[$fabrikTagFullName][$fnum]['val']);
+										} else {
+											if(in_array($fabrikTagFullName, array_keys($aliasFabrik)) && isset($fabrikValues[$aliasFabrik[$fabrikTagFullName]][$fnum]['val']))
+											{
+												$value = str_replace('\n', ', ', $fabrikValues[$aliasFabrik[$fabrikTagFullName]][$fnum]['val']);
+											}
+											else if(isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
+												$value = str_replace('\n', ', ', $fabrikValues[$fabrikTagFullName][$fnum]['val']);
+											}
+											else {
+												$value = '';
+											}
 
-                                            } else if($fabrikValues[$fabrikTagFullName][$fnum]['complex_data']){
-                                                $preprocess->setComplexValue($fabrikTagFullName, $fabrikValues[$fabrikTagFullName][$fnum]['val']);
-                                            } else {
-                                                $value = str_replace('\n', ', ', $fabrikValues[$fabrikTagFullName][$fnum]['val']);
-
-                                                if(in_array($fabrikTagFullName, $aliasFabrik))
-                                                {
-                                                    $alias = array_search($fabrikTagFullName, $aliasFabrik);
-                                                    $preprocess->setValue($alias, $value);
-                                                } else {
-                                                    $preprocess->setValue($fabrikTagFullName, $value);
-                                                }
-                                            }
-                                        }
-                                        else {
-                                            $preprocess->setValue($fabrikTagFullName, '');
-                                        }
+											$preprocess->setValue($fabrikTagFullName, $value);
+										}
                                     }
 
                                     $tags = $_mEmail->setTagsWord($fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
