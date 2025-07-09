@@ -2335,8 +2335,10 @@ class EmundusModelApplication extends ListModel
 														$from                    = $r2[0];
 
 														// Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
-														if ($params->cdd_display_type == 'checkbox') {
+														if ($params->cdd_display_type == 'checkbox' || $params->cdd_display_type == 'multilist') {
 															$select = !empty($params->cascadingdropdown_label_concat) ? " CONCAT(" . $params->cascadingdropdown_label_concat . ")" : 'GROUP_CONCAT(' . $r2[1] . ')';
+
+                                                            $load_type = 'column';
 
 															// Load the Fabrik join for the element to it's respective repeat_repeat table.
 															$query = $this->_db->getQuery(true);
@@ -2353,6 +2355,7 @@ class EmundusModelApplication extends ListModel
 	                                                    WHERE ' . $this->_db->quoteName($f_join->table_join . '.' . $f_join->table_join_key) . ' = ' . $r_element->id . ')';
 														}
 														else {
+                                                            $load_type = 'result';
 															$where = $r1[1] . '=' . $this->_db->quote($r_elt);
 														}
 														$query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
@@ -2361,11 +2364,25 @@ class EmundusModelApplication extends ListModel
 														$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 														$this->_db->setQuery($query);
-														$ret = $this->_db->loadResult();
-														if (empty($ret)) {
-															$ret = $r_elt;
-														}
-														$elt = Text::_($ret);
+                                                        if ($load_type == 'column') {
+                                                            $ret = $this->_db->loadColumn();
+                                                        } else {
+                                                            $ret = $this->_db->loadResult();
+                                                        }
+
+                                                        if (empty($ret)) {
+                                                            $ret = $r_elt;
+                                                        }
+
+                                                        if ($load_type == 'column') {
+                                                            $elt   = '<ul>';
+                                                            foreach ($ret as $val) {
+                                                                $elt .= '<li>' . Text::_($val) . '</li>';
+                                                            }
+                                                            $elt .= "</ul>";
+                                                        } else {
+                                                            $elt = Text::_($ret);
+                                                        }
 													}
 													elseif ($elements[$j]->plugin == 'checkbox') {
 														$elm = array();
@@ -3098,8 +3115,10 @@ class EmundusModelApplication extends ListModel
 													$select                  = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
 
 													// Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
-													if ($params->cdd_display_type == 'checkbox') {
+													if ($params->cdd_display_type == 'checkbox' || $params->cdd_display_type == 'multilist') {
 														$select = !empty($params->cascadingdropdown_label_concat) ? " CONCAT(" . $params->cascadingdropdown_label_concat . ")" : 'GROUP_CONCAT(' . $r2[1] . ')';
+
+                                                        $load_type = 'column';
 
 														// Load the Fabrik join for the element to it's respective repeat_repeat table.
 														$query = $this->_db->getQuery(true);
@@ -3116,6 +3135,7 @@ class EmundusModelApplication extends ListModel
                                                     WHERE ' . $this->_db->quoteName($f_join->table_join . '.' . $f_join->table_join_key) . ' = ' . $r_element->id . ')';
 													}
 													else {
+                                                        $load_type = 'result';
 														$where = $r1[1] . '=' . $this->_db->Quote($r_elt);
 													}
 
@@ -3126,7 +3146,25 @@ class EmundusModelApplication extends ListModel
 													$query = preg_replace('#{shortlang}#', $this->locales, $query);
 
 													$this->_db->setQuery($query);
-													$elt = Text::_($this->_db->loadResult());
+                                                    if ($load_type == 'column') {
+                                                        $ret = $this->_db->loadColumn();
+                                                    } else {
+                                                        $ret = $this->_db->loadResult();
+                                                    }
+
+                                                    if (empty($ret)) {
+                                                        $ret = $r_elt;
+                                                    }
+
+                                                    if ($load_type == 'column') {
+                                                        $elt = '<ul>';
+                                                        foreach ($ret as $val) {
+                                                            $elt .= '<li>' . Text::_($val) . '</li>';
+                                                        }
+                                                        $elt .= '</ul>';
+                                                    } else {
+                                                        $elt = Text::_($ret);
+                                                    }
 												}
 												elseif ($elements[$j]->plugin == 'checkbox') {
 													$elt = "<ul><li>" . implode("</li><li>", json_decode(@$r_elt)) . "</li></ul>";
@@ -3302,21 +3340,62 @@ class EmundusModelApplication extends ListModel
 													}
 												}
 												elseif (@$elements[$j]->plugin == 'cascadingdropdown') {
-													$params                  = json_decode($elements[$j]->params);
-													$cascadingdropdown_id    = $params->cascadingdropdown_id;
-													$r1                      = explode('___', $cascadingdropdown_id);
-													$cascadingdropdown_label = $params->cascadingdropdown_label;
-													$r2                      = explode('___', $cascadingdropdown_label);
-													$select                  = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
-													$from                    = $r2[0];
-													$where                   = $r1[1] . '=' . $this->_db->Quote($elements[$j]->content);
-													$query                   = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
-													$query                   = preg_replace('#{thistable}#', $from, $query);
-													$query                   = preg_replace('#{my->id}#', $aid, $query);
-													$query                   = preg_replace('#{shortlang}#', $this->locales, $query);
+                                                    $cascadingdropdown_id    = $params->cascadingdropdown_id;
+                                                    $r1                      = explode('___', $cascadingdropdown_id);
+                                                    $cascadingdropdown_label = $params->cascadingdropdown_label;
+                                                    $r2                      = explode('___', $cascadingdropdown_label);
+                                                    $select                  = !empty($params->cascadingdropdown_label_concat) ? "CONCAT(" . $params->cascadingdropdown_label_concat . ")" : $r2[1];
 
-													$this->_db->setQuery($query);
-													$elt = Text::_($this->_db->loadResult());
+                                                    // Checkboxes behave like repeat groups and therefore need to be handled a second level of depth.
+                                                    if ($params->cdd_display_type == 'checkbox' || $params->cdd_display_type == 'multilist') {
+                                                        $select = !empty($params->cascadingdropdown_label_concat) ? " CONCAT(" . $params->cascadingdropdown_label_concat . ")" : 'GROUP_CONCAT(' . $r2[1] . ')';
+
+                                                        $load_type = 'column';
+
+                                                        // Load the Fabrik join for the element to it's respective repeat_repeat table.
+                                                        $query = $this->_db->getQuery(true);
+                                                        $query
+                                                            ->select([$this->_db->quoteName('join_from_table'), $this->_db->quoteName('table_key'), $this->_db->quoteName('table_join'), $this->_db->quoteName('table_join_key')])
+                                                            ->from($this->_db->quoteName('#__fabrik_joins'))
+                                                            ->where($this->_db->quoteName('element_id') . ' = ' . $elements[$j]->id);
+                                                        $this->_db->setQuery($query);
+                                                        $f_join = $this->_db->loadObject();
+
+                                                        $where = $r1[1] . ' IN (
+                                                    SELECT ' . $this->_db->quoteName($f_join->table_join . '.' . $f_join->table_key) . '
+                                                    FROM ' . $this->_db->quoteName($f_join->table_join) . '
+                                                    WHERE ' . $this->_db->quoteName($f_join->table_join . '.' . $f_join->table_join_key) . ' = ' . $r_element->id . ')';
+                                                    }
+                                                    else {
+                                                        $load_type = 'result';
+                                                        $where = $r1[1] . '=' . $this->_db->Quote($r_elt);
+                                                    }
+
+                                                    $from  = $r2[0];
+                                                    $query = "SELECT " . $select . " FROM " . $from . " WHERE " . $where;
+                                                    $query = preg_replace('#{thistable}#', $from, $query);
+                                                    $query = preg_replace('#{my->id}#', $aid, $query);
+                                                    $query = preg_replace('#{shortlang}#', $this->locales, $query);
+
+                                                    $this->_db->setQuery($query);
+                                                    if ($load_type == 'column') {
+                                                        $ret = $this->_db->loadColumn();
+                                                    } else {
+                                                        $ret = $this->_db->loadResult();
+                                                    }
+
+                                                    if (empty($ret)) {
+                                                        $ret = $r_elt;
+                                                    }
+
+                                                    if ($load_type == 'column') {
+                                                        $elt = '';
+                                                        foreach ($ret as $val) {
+                                                            $elt .= Text::_($val) . '<br/>';
+                                                        }
+                                                    } else {
+                                                        $elt = Text::_($ret);
+                                                    }
 												}
 												elseif ($elements[$j]->plugin == 'textarea') {
 													$elt = Text::_($r_elt);
