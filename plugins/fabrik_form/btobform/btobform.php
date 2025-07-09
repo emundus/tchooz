@@ -327,7 +327,6 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					$financement_organisme = str_replace(' ', '', $financement_organisme);
 				}
 
-				// TODO: Fill acces_cycles (1)
 				$alias_to_fills = [
 					'registration_civility' => $data['jos_emundus_btob_1237_repeat___civility_raw'][$key],
 					'registration_common_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
@@ -369,7 +368,8 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'manager_additional_address' => $profile->complement_adresse_responsable,
 					'manager_postal_code' => $profile->code_postal_manager,
 					'manager_city' => $profile->ville_responsable,
-					'different_admin' => !empty($profile->charge_gestion_admin) ? 1 : 0
+					'different_admin' => !empty($profile->charge_gestion_admin) ? 1 : 0,
+                    'access_cycles' => 1
 				];
 
 				if ($alias_to_fills['different_admin'] != 0) {

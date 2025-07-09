@@ -7,7 +7,7 @@ header('Content-Type: text/html; charset=utf-8');
 ?>
 
 <?php if (!$compatible) : ?>
-    <div class="alerte-message-container text-center w-full bg-red-500" style="padding: 8px 24px;">
+    <div class="alerte-message-container tw-text-center tw-w-full tw-bg-red-500" style="padding: 8px 24px;">
         <p style="font-weight: 500; color: #fff;">
         <span style="font-size: 16pt;">
             <?php echo Text::_($message); ?>
@@ -19,7 +19,7 @@ header('Content-Type: text/html; charset=utf-8');
     </div>
 <?php else : ?>
     <noscript>
-        <div class="alerte-message-container text-center w-full bg-red-500" style="padding: 8px 24px;">
+        <div class="alerte-message-container tw-text-center tw-w-full tw-bg-red-500" style="padding: 8px 24px;">
             <p style="font-weight: 500; color: #fff;">
                 <span style="font-size: 16pt;">
                     <?php echo Text::_('ENABLE_JAVASCRIPT'); ?>

@@ -103,7 +103,7 @@ catch (Exception $e)
     </div>-->
 
     <div class="tw-w-full tw-flex tw-justify-end tw-mt-4">
-        <a class="tw-btn tw-btn-secondary tw-w-fit"
+        <a class="tw-btn tw-btn-primary tw-w-fit"
            href="<?php echo Route::_('index.php?option=com_users&view=profile&layout=edit') ?>">
 			<?php echo Text::_('COM_USERS_MFA_VALIDATE'); ?>
         </a>

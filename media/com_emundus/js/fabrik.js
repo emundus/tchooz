@@ -714,3 +714,8 @@ function beforeSubmitEvaluation(formId)
         console.log('⚠️ Formulaire non trouvé !');
     }
 }
+function capitalizeCompoundName(str) {
+    return str
+        .toLowerCase()
+        .replace(/(^|[\s-])(\w)/g, (match, sep, letter) => sep + letter.toUpperCase());
+}

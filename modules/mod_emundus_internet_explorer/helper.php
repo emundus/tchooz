@@ -106,11 +106,11 @@ class modEmundusInternetExplorerHelper
 
 		$browser = self::getBrowser();
 		$min_versions = [
-			'Chrome' => 88,
-			'Firefox' => 85,
-			'Edge' => 88,
-			'Opera' => 74,
-			'Safari' => 15
+			'Chrome' => 117,
+			'Firefox' => 116,
+			'Edge' => 117,
+			'Opera' => 102,
+			'Safari' => 17
 		];
 
 		if((!empty($min_versions[$browser['name']]) && $browser['version'] < $min_versions[$browser['name']]) || $browser['name'] == 'Internet Explorer') {
