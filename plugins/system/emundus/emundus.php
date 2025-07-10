@@ -461,13 +461,20 @@ class PlgSystemEmundus extends CMSPlugin
 
 	public function onAfterInitialise()
 	{
-		if(!Factory::getApplication()->isClient('administrator'))
-		{
-			TagModifierRegistry::register(new UppercaseModifier());
-			TagModifierRegistry::register(new LowercaseModifier());
-			TagModifierRegistry::register(new CapitalizeModifier());
-			TagModifierRegistry::register(new TrimModifier());
-			TagModifierRegistry::register(new LettersModifier());
+		if(!class_exists('TagModifierRegistry')) {
+			require_once JPATH_SITE . '/components/com_emundus/classes/Interfaces/TagModifierInterface.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/TagModifierRegistry.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/UppercaseModifier.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/LowercaseModifier.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/CapitalizeModifier.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/TrimModifier.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/LettersModifier.php';
 		}
+
+		TagModifierRegistry::register(new UppercaseModifier());
+		TagModifierRegistry::register(new LowercaseModifier());
+		TagModifierRegistry::register(new CapitalizeModifier());
+		TagModifierRegistry::register(new TrimModifier());
+		TagModifierRegistry::register(new LettersModifier());
 	}
 }
