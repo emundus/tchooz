@@ -6067,8 +6067,6 @@ class EmundusModelFiles extends JModelLegacy
 
 			if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
 			{
-				error_log(print_r($fabrik_element, true));
-
 				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, true, $row_id);
 			}
 			else if ($fabrik_element['plugin'] === 'databasejoin')
