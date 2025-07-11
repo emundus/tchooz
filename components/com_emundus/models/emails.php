@@ -616,10 +616,16 @@ class EmundusModelEmails extends JModelList
 
 		$current_user = $app->getIdentity();
 		if (!empty($current_user)) {
-			$user = $current_user->id == $user_id ? $current_user : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+			if(!empty($user_id))
+			{
+				$user = $current_user->id == $user_id ? $current_user : Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+			}
+			else {
+				$user = $current_user;
+			}
 		}
 		else {
-			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
+			$user = !empty($user) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id) : null;
 		}
 		$config = $app->getConfig();
 

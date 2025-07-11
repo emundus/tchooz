@@ -182,7 +182,7 @@ class TagEntity
 		$this->request = $request;
 	}
 
-	public function calculateValue(int $user_id = 0, bool $base64 = false): void
+	public function calculateValue(?int $user_id = 0, bool $base64 = false): void
 	{
 		$result = '';
 		$db = Factory::getContainer()->get('DatabaseDriver');

@@ -86,12 +86,18 @@ export class FetchClient {
 
 		parameters.headers = headers;
 
+		let timeoutId = null;
 		if (timeout) {
-			parameters.signal = AbortSignal.timeout(timeout);
+			const controller = new AbortController();
+			timeoutId = setTimeout(() => controller.abort(), timeout);
+			parameters.signal = controller.signal;
 		}
 
 		return fetch(url, parameters)
 			.then(async (response) => {
+				if (timeout && timeoutId) {
+					clearTimeout(timeoutId);
+				}
 				if (response.ok) {
 					return response.json();
 				} else {
@@ -103,6 +109,9 @@ export class FetchClient {
 				return data;
 			})
 			.catch((error) => {
+				if (timeout && timeoutId) {
+					clearTimeout(timeoutId);
+				}
 				if (error.name === 'TimeoutError') {
 					throw new Error('The request timed out. ' + error.message + '.');
 				} else {

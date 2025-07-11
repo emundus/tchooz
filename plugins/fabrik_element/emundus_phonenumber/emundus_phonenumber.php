@@ -74,7 +74,9 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$bits = $this->inputProperties($repeatCounter);
+        JHTML::stylesheet('plugins/fabrik_element/emundus_phonenumber/css/emundus_phonenumber.css');
+
+        $bits = $this->inputProperties($repeatCounter);
 
 		$value = $this->getValue($data, $repeatCounter);
 
