@@ -3492,7 +3492,7 @@ class EmundusModelApplication extends ListModel
 														$forms .= '<table class="pdf-forms">';
 													}
 													else {
-														$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($elements[$j]->label)) ? Text::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</td></tr>';
+														$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($elements[$j]->label)) ? Text::_($elements[$j]->label) : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</td></tr>';
 													}
 												}
 											}
@@ -3786,7 +3786,7 @@ class EmundusModelApplication extends ListModel
 												$forms .= '<table class="pdf-forms">';
 											}
 											else {
-												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (!in_array($element->plugin,['field','textarea','calc']) ? Text::_($elt) : $elt) . '</td></tr>';
+												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) : '') . '</span></td> <td> ' . (!in_array($element->plugin,['field','textarea','calc']) ? Text::_($elt) : $elt) . '</td></tr>';
 											}
 										}
 									}
