@@ -600,8 +600,10 @@ class EmundusModelMessenger extends ListModel
 						$query->select('ec.fnum, ecn.chatroom_id as page, COUNT(ecn.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(ecn.message_id) as messages')
 							->from($this->db->quoteName('#__emundus_chatroom_notifications', 'ecn'))
 							->leftJoin($this->db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->db->quoteName('ec.id') . ' = ' . $this->db->quoteName('ecn.chatroom_id'))
+							->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.id') . ' = ' . $this->db->quoteName('ec.ccid'))
 							->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecn.user_id'))
 							->where($this->db->quoteName('ecn.user_id') . ' = ' . $this->db->quote($user_id))
+							->where($this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quote($user_id))
 							->andWhere($this->db->quoteName('ec.status') . ' = 1')
 							->group('ecn.chatroom_id');
 						$this->db->setQuery($query);
