@@ -308,6 +308,8 @@
                     background-color: var(--transparent) !important;
                     color: var(--neutral-900);
                     text-decoration: none;
+                    display: flex;
+                    width: 100%;
                 }
 
                 &:hover {
