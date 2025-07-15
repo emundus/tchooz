@@ -2703,10 +2703,17 @@ class EmundusControllersettings extends BaseController
 
 			try
 			{
-				$plugin   = PluginHelper::getPlugin('system', 'emundus');
-				$params   = new JRegistry($plugin->params);
-				$profiles = $params->get('2faForceForProfiles', []);
-				$profiles = array_filter($profiles);
+				$profiles = [];
+				$parameters = $this->m_settings->get2faparameters();
+				if(!empty($parameters))
+				{
+					$profiles = $parameters['2faForceForProfiles'];
+					$profiles = array_filter($profiles);
+				}
+
+				// Clear cache of com_plugins
+				$cache = Factory::getCache('com_plugins');
+				$cache->clean('com_plugins');
 
 				foreach ($profiles as $key => $profile)
 				{
