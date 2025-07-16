@@ -1337,7 +1337,7 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $actions
 	 * @param $fnums
 	 *
-	 * @return bool|mixed
+	 * @return bool
 	 */
 	public function shareGroups($groups, $actions, $fnums)
 	{
