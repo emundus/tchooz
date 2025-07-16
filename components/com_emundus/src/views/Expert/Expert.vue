@@ -149,7 +149,7 @@ export default {
 		},
 
 		addOption(newOption) {
-			let res = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
+			let res = /^[\w.+-]+@([\w-]+\.)+[\w-]{2,}$/;
 			if (res.test(newOption)) {
 				let expert = {
 					email: newOption,

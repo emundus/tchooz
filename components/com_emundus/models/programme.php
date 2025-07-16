@@ -2114,6 +2114,41 @@ class EmundusModelProgramme extends ListModel
 	}
 
 	/**
+	 * @param $user_id
+	 *
+	 * @return array
+	 */
+	public function getUserProgramIds($user_id): array
+	{
+		$program_ids = [];
+
+		if (!empty($user_id))
+		{
+
+			$query = $this->_db->getQuery(true);
+
+			$query->select('distinct sp.id')
+				->from($this->_db->quoteName('#__emundus_groups', 'g'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'sg') . ' ON ' . $this->_db->quoteName('g.group_id') . ' = ' . $this->_db->quoteName('sg.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->_db->quoteName('sg.id') . ' = ' . $this->_db->quoteName('sgr.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->_db->quoteName('sgr.course') . ' = ' . $this->_db->quoteName('sp.code'))
+				->where($this->_db->quoteName('g.user_id') . ' = ' . $this->_db->quote($user_id));
+
+			try
+			{
+				$this->_db->setQuery($query);
+				$program_ids = $this->_db->loadColumn();
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $program_ids;
+	}
+
+	/**
 	 * @param $programs
 	 *
 	 * @return array|false

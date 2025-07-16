@@ -9,6 +9,7 @@
         <option value="letter_choice">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_LETTER_CHOICE</option>
         <option value="sign_flow">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGN_FLOW</option>
         <option value="alter_cart">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_ALTER_CART</option>
+        <option value="assoc">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_ASSOC</option>
     </field>
 
     <field
@@ -256,4 +257,41 @@
            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ADVANCE_AMOUNT"
     />
     <!-- End Alter cart fields -->
+
+    <field
+            showon="action_type:assoc"
+            name="assoc_action"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ASSOC_ACTION_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ASSOC_ACTION_DESCRIPTION"
+    >
+        <option value="share_groups">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ASSOC_GROUPS</option>
+        <option value="unshare_groups">PLG_EMUNDUSCUSTOMACTIONS_FIELD_UNASSOC_GROUPS</option>
+        <option value="share_users">PLG_EMUNDUSCUSTOMACTIONS_FIELD_ASSOC_USERS</option>
+        <option value="unshare_users">PLG_EMUNDUSCUSTOMACTIONS_FIELD_UNASSOC_USERS</option>
+    </field>
+    <field
+            showon="action_type:assoc[AND]assoc_action:share_groups,unshare_groups"
+            name="assoc_action_groups"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_GROUPS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_GROUPS_DESC"
+            query="SELECT id, label FROM #__emundus_setup_groups"
+            key_field="id"
+            value_field="label"
+            multiple="multiple"
+            layout="joomla.form.field.list-fancy-select"
+    />
+    <field
+            showon="action_type:assoc[AND]assoc_action:share_users,unshare_users"
+            name="assoc_action_users"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_USERS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_USERS_DESC"
+            query="SELECT user_id, CONCAT(firstname, ' ', lastname) as name FROM #__emundus_users"
+            key_field="user_id"
+            value_field="name"
+            multiple="multiple"
+            layout="joomla.form.field.list-fancy-select"
+    />
 </form>

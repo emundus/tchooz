@@ -361,7 +361,7 @@ class EmundusControllerProgramme extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::isCoordinator($this->_user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
 			$data = $this->input->getRaw('body');
 			$data = json_decode($data, true);
 

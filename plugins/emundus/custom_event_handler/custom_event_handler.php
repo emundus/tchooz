@@ -1503,6 +1503,52 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						$landed = $this->runCartAction($action, $fnum, $data);
 					}
 					break;
+
+				case 'assoc':
+					if (!empty($action->assoc_action))
+					{
+						$current_user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->automated_task_user);
+						$actions = [['id' => 1, 'c' => 0, 'r' => 1, 'u' => 0, 'd' => 0]];
+
+						if (!empty($action->assoc_action_groups) && !is_array($action->assoc_action_groups)) {
+							$action->assoc_action_groups = [$action->assoc_action_groups];
+						}
+						if (!empty($action->assoc_action_users) && !is_array($action->assoc_action_users)) {
+							$action->assoc_action_users = [$action->assoc_action_users];
+						}
+
+						switch($action->assoc_action) {
+							case 'share_groups':
+								if (!empty($action->assoc_action_groups)) {
+									$m_files = new EmundusModelFiles();
+									$landed = $m_files->shareGroups($action->assoc_action_groups, $actions, [$fnum]);
+								}
+								break;
+							case 'unshare_groups':
+								if (!empty($action->assoc_action_groups)) {
+									$m_application = new EmundusModelApplication();
+
+									foreach ($action->assoc_action_groups as $group_id)
+									{
+										$landed = $m_application->deleteGroupAccess($fnum, $group_id, $current_user);
+									}
+								}
+								break;
+							case 'share_users':
+								if (!empty($action->assoc_action_users)) {
+									$m_files = new EmundusModelFiles();
+									$landed = $m_files->shareUsers($action->assoc_action_users, $actions, [$fnum], $current_user);
+								}
+								break;
+							case 'unshare_users':
+								if (!empty($action->assoc_action_users)) {
+									$m_files = new EmundusModelFiles();
+									$landed = $m_files->unshareUsers($action->assoc_action_users, [$fnum], $current_user);
+								}
+								break;
+						}
+					}
+					break;
 				default:
 					// do nothing
 					break;
