@@ -4570,4 +4570,32 @@ class EmundusModelSettings extends ListModel
 			return false;
 		}
 	}
+
+	public function get2faParameters(): array
+	{
+		$parameters = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->select('params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('emundus'));
+			$this->db->setQuery($query);
+			$emundus_plugin = $this->db->loadResult();
+
+			if (!empty($emundus_plugin))
+			{
+				$parameters = json_decode($emundus_plugin, true);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $parameters;
+	}
 }

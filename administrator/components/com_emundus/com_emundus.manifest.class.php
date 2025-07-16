@@ -270,6 +270,11 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la tâche planifié Session GC', 'error');
 		}
 
+		if (!$this->disableDropfilesEditorPlugin())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de désactivation du plugin Dropfiles - Editor', 'error');
+		}
+
 		EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;
@@ -1031,5 +1036,18 @@ class Com_EmundusInstallerScript
 		}
 
 		return $checked;
+	}
+
+	private function disableDropfilesEditorPlugin(): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->clear()
+			->update($this->db->quoteName('#__extensions'))
+			->set($this->db->quoteName('enabled') . ' = 0')
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote('dropfilesbtn'))
+			->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+			->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('editors-xtd'));
+		return $this->db->setQuery($query)->execute();
 	}
 }

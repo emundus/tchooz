@@ -60,16 +60,16 @@ class Dispatcher extends AbstractModuleDispatcher
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
-			$query->select('ecc.*')
-				->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-				->where($db->quoteName('ecc.published') . ' = 1');
+			$query->select('jos_emundus_campaign_candidature.*')
+				->from($db->quoteName('#__emundus_campaign_candidature'))
+				->where($db->quoteName('jos_emundus_campaign_candidature.published') . ' = 1');
 
 			if (!empty($campaign_id)) {
-				$query->where($db->quoteName('ecc.campaign_id') . ' = ' . $db->quote($campaign_id));
+				$query->where($db->quoteName('jos_emundus_campaign_candidature.campaign_id') . ' = ' . $db->quote($campaign_id));
 			}
 
 			if (!empty($statuses)) {
-				$query->andWhere($db->quoteName('ecc.status') . ' IN (' . implode(',', array_map([$db, 'quote'], $statuses)) . ')');
+				$query->andWhere($db->quoteName('jos_emundus_campaign_candidature.status') . ' IN (' . implode(',', array_map([$db, 'quote'], $statuses)) . ')');
 			}
 
 			$pattern_table = '/\w+\.\w+/';
@@ -79,8 +79,10 @@ class Dispatcher extends AbstractModuleDispatcher
 			];
 
 			$already_joined_tables = [
-				'ecc' => 'jos_emundus_campaign_candidature',
+				'jos_emundus_campaign_candidature' => 'jos_emundus_campaign_candidature',
 			];
+
+			$fabrik_elements_by_column = [];
 
 			foreach ($columns as $column) {
 				if (preg_match($pattern_table, $column->column)) {
@@ -93,14 +95,14 @@ class Dispatcher extends AbstractModuleDispatcher
 							if (!in_array($table, $already_joined_tables)) {
 								switch ($table) {
 									case 'jos_emundus_setup_campaigns':
-										$query->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'campaign') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('campaign.id'));
-										$alias = 'campaign';
-										$already_joined_tables['campaign'] = 'jos_emundus_setup_campaigns';
+										$query->leftJoin($db->quoteName('#__emundus_setup_campaigns') . ' ON ' . $db->quoteName('jos_emundus_campaign_candidature.campaign_id') . ' = ' . $db->quoteName('jos_emundus_setup_campaigns.id'));
+										$alias = 'jos_emundus_setup_status';
+										$already_joined_tables['jos_emundus_setup_campaigns'] = 'jos_emundus_setup_campaigns';
 										break;
 									case 'jos_emundus_setup_status':
-										$query->leftJoin($db->quoteName('#__emundus_setup_status', 'status') . ' ON ' . $db->quoteName('ecc.status') . ' = ' . $db->quoteName('status.step'));
-										$alias = 'status';
-										$already_joined_tables['status'] = 'jos_emundus_setup_status';
+										$query->leftJoin($db->quoteName('#__emundus_setup_status') . ' ON ' . $db->quoteName('jos_emundus_campaign_candidature.status') . ' = ' . $db->quoteName('jos_emundus_setup_status.step'));
+										$alias = 'jos_emundus_setup_status';
+										$already_joined_tables['jos_emundus_setup_status'] = 'jos_emundus_setup_status';
 										break;
 								}
 							}
@@ -114,12 +116,31 @@ class Dispatcher extends AbstractModuleDispatcher
 
 							if ($linked) {
 								if (!in_array($table, $already_joined_tables)) {
-									$query->leftJoin($db->quoteName($table) . ' AS ' . $db->quoteName($table) . ' ON ' . $db->quoteName('ecc.fnum') . ' = ' . $db->quoteName($table . '.fnum'));
+									$query->leftJoin($db->quoteName($table) . ' AS ' . $db->quoteName($table) . ' ON ' . $db->quoteName('jos_emundus_campaign_candidature.fnum') . ' = ' . $db->quoteName($table . '.fnum'));
 									$already_joined_tables[$table] = $table;
 								}
 
 								$query->select($db->quoteName($table . '.' . $field) . ' AS ' . $db->quote($column->column));
 							}
+						}
+
+						$sub_query = $db->createQuery();
+						$sub_query->clear()
+							->select('jfe.*, jfg.params as group_params, jfl.db_table_name')
+							->from($db->quoteName('#__fabrik_elements', 'jfe'))
+							->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
+							->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jffg.group_id'))
+							->leftJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jffg.form_id') . ' = ' . $db->quoteName('jfl.form_id'))
+							->where($db->quoteName('jfe.name') . ' = ' . $db->quote($field))
+							->andWhere($db->quoteName('jfl.db_table_name') . ' = ' . $db->quote($table));
+
+						$db->setQuery($sub_query);
+						$fabrik_element = $db->loadAssoc();
+
+						if (!empty($fabrik_element)) {
+							$fabrik_elements_by_column[$field] = $fabrik_element;
+						} else {
+							$fabrik_elements_by_column[$field] = null;
 						}
 					}
 				}
@@ -127,6 +148,26 @@ class Dispatcher extends AbstractModuleDispatcher
 
 			$db->setQuery($query);
 			$applications = $db->loadObjectList();
+
+			if (!empty($applications)) {
+				if (!class_exists('EmundusModelFiles')) {
+					require_once( JPATH_SITE . '/components/com_emundus/models/files.php');
+				}
+				$m_files = new \EmundusModelFiles();
+				foreach ($applications as $application) {
+					foreach ($columns as $column) {
+						list($table, $field) = explode('.', $column->column);
+
+						if (!empty($fabrik_elements_by_column[$field])) {
+
+							$value = $m_files->getFabrikElementValue($fabrik_elements_by_column[$field], $application->fnum);
+							if (isset($value[$fabrik_elements_by_column[$field]['id']])) {
+								$application->{$column->column} = $value[$fabrik_elements_by_column[$field]['id']][$application->fnum]['val'];
+							}
+						}
+					}
+				}
+			}
 		} catch (\Exception $e)
 		{
 			Log::add('Error fetching applications: ' . $e->getMessage(), Log::ERROR, 'module.emundus_applications_list');

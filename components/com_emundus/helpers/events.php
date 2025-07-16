@@ -450,6 +450,10 @@ class EmundusHelperEvents
 			$form_id   = $formModel->id;
 
 			$emundusUser = $mainframe->getSession()->get('emundusUser');
+			if (!isset($emundusUser->applicant))
+			{
+				$emundusUser->applicant = 1;
+			}
 			$user        = $emundusUser;
 
 			if (empty($user))
@@ -625,8 +629,8 @@ class EmundusHelperEvents
 			$is_app_sent = !in_array($current_status, $edit_status);
 			$can_edit    = EmundusHelperAccess::asAccessAction(1, 'u', $user->id, $fnum);
 			$can_read    = EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum);
-			
-			if ($fnumInfos->applicant_id == $user->id)
+
+			if ($fnumInfos->applicant_id == $user->id && $emundusUser->applicant)
 			{
 				$can_edit = !$is_app_sent && !$is_dead_line_passed || (!$is_app_sent && $is_dead_line_passed && $can_edit_after_deadline);
 				if($published !== 1)
@@ -695,7 +699,7 @@ class EmundusHelperEvents
 
 				$isLimitObtained = $m_campaign->isLimitObtained($user->fnums[$fnum]->campaign_id, $fnum);
 
-				if ($fnumInfos->applicant_id == $user->id)
+				if ($fnumInfos->applicant_id == $user->id && $emundusUser->applicant)
 				{
 					//try to access edit view
 					if ($view == 'form')
@@ -791,7 +795,7 @@ class EmundusHelperEvents
 				}
 			}
 
-			if ($fnumInfos->applicant_id == $user->id)
+			if ($fnumInfos->applicant_id == $user->id && $emundusUser->applicant)
 			{
 
 				if (in_array($user->id, $applicants))

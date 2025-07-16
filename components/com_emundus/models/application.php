@@ -15,6 +15,7 @@
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models'); // call com_emundus model
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
@@ -3492,7 +3493,7 @@ class EmundusModelApplication extends ListModel
 														$forms .= '<table class="pdf-forms">';
 													}
 													else {
-														$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($elements[$j]->label)) ? Text::_($elements[$j]->label) . ' : ' : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</td></tr>';
+														$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($elements[$j]->label)) ? Text::_($elements[$j]->label) : '') . '</span></td> <td> ' . (($elements[$j]->plugin != 'field') ? Text::_($elt) : $elt) . '</td></tr>';
 													}
 												}
 											}
@@ -3786,7 +3787,7 @@ class EmundusModelApplication extends ListModel
 												$forms .= '<table class="pdf-forms">';
 											}
 											else {
-												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) . ' : ' : '') . '</span></td> <td> ' . (!in_array($element->plugin,['field','textarea','calc']) ? Text::_($elt) : $elt) . '</td></tr>';
+												$forms .= '<tr><td colspan="1" style="background-color: var(--neutral-200);"><span style="color: #000000;">' . (!empty(Text::_($element->label)) ? Text::_($element->label) : '') . '</span></td> <td> ' . (!in_array($element->plugin,['field','textarea','calc']) ? Text::_($elt) : $elt) . '</td></tr>';
 											}
 										}
 									}
@@ -7297,10 +7298,10 @@ class EmundusModelApplication extends ListModel
 	 *
 	 * @since version 1.40.0
 	 */
-	public function removeSharedUser($request_id,$ccid,$user_id)
+	public function removeSharedUser(int $request_id, int $ccid, int $user_id): bool
 	{
 		$removed = false;
-		if(empty($user_id)) {
+		if (empty($user_id)) {
 			$user_id = $this->_user->id;
 		}
 
@@ -7313,7 +7314,24 @@ class EmundusModelApplication extends ListModel
 			$this->_db->setQuery($query);
 			$removed = $this->_db->execute();
 
-			//TODO: Log this action
+			if ($removed) {
+				if (!class_exists('EmundusHelperFiles')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+				}
+				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+				$query->clear()
+					->delete($this->_db->quoteName('#__emundus_users_assoc', 'assoc'))
+					->where($this->_db->quoteName('assoc.user_id') . ' = ' . $user_id)
+					->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+				$this->_db->setQuery($query);
+				$this->_db->execute();
+
+				PluginHelper::importPlugin('emundus');
+				$dispatcher = Factory::getApplication()->getDispatcher();
+				$onAfterRemoveSharedUser = new GenericEvent('onCallEventHandler', ['onAfterRemoveSharedUser', ['request_id' => $request_id, 'ccid' => $ccid, 'user_id' => $user_id]]);
+				$dispatcher->dispatch('onCallEventHandler', $onAfterRemoveSharedUser);
+			}
 		}
 		catch (Exception $e) {
 			Log::add('Failed to remove shared user via request_id ' . $request_id . ' with error ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');

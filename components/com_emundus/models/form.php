@@ -147,7 +147,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	function getAllGrilleEval($filter, $sort, $recherche, $lim, $page): array
+	function getAllGrilleEval(string $filter, string $sort, string $recherche, int $lim, int $page, int $user_id = 0): array
 	{
 		$data     = ['datas' => [], 'count' => 0];
 
@@ -155,15 +155,52 @@ class EmundusModelForm extends JModelList
 
 		try {
 			// We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
-			$query->clear();
-			$query
+			// we must only keep forms that current user has access to
+			$query->clear()
 				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type'])
 				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
 				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
 				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations_%'));
 			$this->db->setQuery($query);
-
 			$evaluation_forms = $this->db->loadObjectList();
+
+			if (!empty($evaluation_forms)) {
+				if (!class_exists('EmundusModelProgramme')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
+				}
+				$m_programs = new EmundusModelProgramme();
+				$user_programs = $m_programs->getUserProgramIds($user_id);
+
+				if (!empty($user_programs)) {
+					$query->clear()
+						->select('DISTINCT jesws.form_id')
+						->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'jesws'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'jeswp') . ' ON ' . $this->db->quoteName('jeswp.workflow_id') . ' = ' . $this->db->quoteName('jesws.workflow_id'))
+						->where('jeswp.program_id IN (' . implode(',', $this->db->quote($user_programs)) . ')');
+
+					$steps_form_ids = $this->db->setQuery($query)->loadColumn();
+				} else {
+					$steps_form_ids = [];
+				}
+
+				$evaluation_form_ids = array_map(function ($form) {
+					return $form->id;
+				}, $evaluation_forms);
+
+				$query->clear()
+					->select('ff.id')
+					->from($this->db->quoteName('#__fabrik_forms', 'ff'))
+					->where('ff.id IN (' . implode(',', $evaluation_form_ids) . ')')
+					->andWhere($this->db->quoteName('ff.created_by') . ' = ' . $user_id .
+						(!empty($steps_form_ids) ? ' OR ff.id IN (' . implode(',', $steps_form_ids) . ')' : ''));
+
+				$this->db->setQuery($query);
+				$evaluation_forms_user_can_access_to = $this->db->loadColumn();
+
+				$evaluation_forms = array_filter($evaluation_forms, function ($form) use ($evaluation_forms_user_can_access_to) {
+					return in_array($form->id, $evaluation_forms_user_can_access_to);
+				});
+			}
 
 			if (!empty($evaluation_forms)) {
 				require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
