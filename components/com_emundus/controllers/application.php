@@ -1342,6 +1342,12 @@ class EmundusControllerApplication extends BaseController
 
 				$m_application      = $this->getModel('Application');
 				$response['status'] = $m_application->removeSharedUser($request_id, $ccid, $this->_user->id);
+
+				if ($response['status']) {
+					$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_USER_REMOVED_SUCCESFULLY');
+				} else {
+					$response['msg'] = Text::_('COM_EMUNDUS_APPLICATIONS_COLLABORATE_USER_REMOVE_FAILED');
+				}
 			}
 		}
 
