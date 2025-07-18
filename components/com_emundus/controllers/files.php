@@ -1831,21 +1831,20 @@ class EmundusControllerFiles extends BaseController
 						}
 						else {
 
-							if (in_array($fLine->element_plugin,['date','jdate'])) {
+							if (in_array($fLine->element_plugin, ['date','jdate'])) {
 								$params                                                         = json_decode($fLine->element_attribs);
 								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
 								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
 									$elt_name = $fLine->table_join.'___'.$fLine->element_name;
 								}
-								if($fLine->element_plugin == 'jdate') {
+								if($fLine->element_plugin === 'jdate') {
 									$date_elements[$elt_name] = $params->jdate_form_format;
 								} else {
 									$date_elements[$elt_name] = $params->date_form_format;
 								}
-
 							}
 
-							if ($fLine->element_plugin == 'textarea') {
+							if ($fLine->element_plugin === 'textarea') {
 								$params = json_decode($fLine->element_attribs);
 								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
 								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
@@ -1854,7 +1853,7 @@ class EmundusControllerFiles extends BaseController
 								$textarea_elements[$elt_name] = $params->use_wysiwyg;
 							}
 
-							if ($fLine->element_plugin == 'iban') {
+							if ($fLine->element_plugin === 'iban') {
 								$params = json_decode($fLine->element_attribs);
 								$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
 								if(!empty($fLine->table_join) && $fLine->table_join_key == 'parent_id') {
@@ -1862,9 +1861,14 @@ class EmundusControllerFiles extends BaseController
 								}
 								$iban_elements[$elt_name] = $params->encrypt_datas;
 							}
-                            if ($fLine->element_plugin == 'calc') {
+                            if ($fLine->element_plugin === 'calc') {
                                 $calc_elements[] = $fLine->tab_name.'___'.$fLine->element_name;
                             }
+
+							if ($fLine->element_plugin === 'currency')
+							{
+								$currency_elements[] =  $fLine->tab_name.'___'.$fLine->element_name;
+							}
 
 							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
@@ -1947,6 +1951,11 @@ class EmundusControllerFiles extends BaseController
                     if ($fLine->element_plugin == 'calc') {
                         $calc_elements[] = $fLine->tab_name.'___'.$fLine->element_name;
                     }
+
+					if ($fLine->element_plugin === 'currency')
+					{
+						$currency_elements[] =  $fLine->tab_name.'___'.$fLine->element_name;
+					}
 				}
 			}
 
@@ -2119,6 +2128,10 @@ class EmundusControllerFiles extends BaseController
                                             $v = strip_tags($v);
                                             $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
                                         }
+										else if (in_array($k, $currency_elements)) {
+											$v = EmundusHelperFabrik::extractNumericValue($v);
+											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+										}
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {
 											$line .= Text::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
 										}
