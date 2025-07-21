@@ -44,6 +44,8 @@ class PlgFabrik_FormEmundusCopyFile extends plgFabrik_Form
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
 		$m_files = new EmundusModelFiles;
 
+		$fichePosteColumn = $this->_db->setQuery('SHOW COLUMNS FROM jos_emundus_campaign_candidature WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('fiche_poste'))->loadResult();
+
 		$formModel             = $this->getModel();
 		$fnums_from            = explode(',', $formModel->getElementData('jos_emundus_campaign_candidature___fnum', true));
 		$campaign_id           = $formModel->getElementData('jos_emundus_campaign_candidature___campaign_id', true);
@@ -63,6 +65,8 @@ class PlgFabrik_FormEmundusCopyFile extends plgFabrik_Form
 
 		foreach ($fnums_from as $fnum_from)
 		{
+			$success = false;
+
 			$fnum_infos   = $m_files->getFnumInfos($fnum_from);
 			$applicant_id = $fnum_infos['applicant_id'];
 
@@ -115,7 +119,7 @@ class PlgFabrik_FormEmundusCopyFile extends plgFabrik_Form
 
 					$fnumInfos = $profiles->getFnumDetails($fnum_from);
 
-					$result = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file, array(), $copyUsersAssoc, $copyGroupsAssoc);
+					$success = $m_application->copyApplication($fnum_from, $fnum_to, null, $copy_attachment, $fnumInfos['campaign_id'], $copy_tag, $move_hikashop_command, $delete_from_file, array(), $copyUsersAssoc, $copyGroupsAssoc);
 				}
 				catch (Exception $e)
 				{
@@ -128,7 +132,7 @@ class PlgFabrik_FormEmundusCopyFile extends plgFabrik_Form
 				include_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 				$m_application = new EmundusModelApplication;
 
-				$m_application->moveApplication($fnum_from, $fnum_to, $campaign_id, $status);
+				$success = $m_application->moveApplication($fnum_from, $fnum_to, $campaign_id, $status);
 			}
 			else
 			{
@@ -147,12 +151,26 @@ class PlgFabrik_FormEmundusCopyFile extends plgFabrik_Form
 						'copied'         => 0
 					];
 					$insert = (object) $insert;
-					$this->_db->insertObject('#__emundus_campaign_candidature', $insert);
+					$success = $this->_db->insertObject('#__emundus_campaign_candidature', $insert);
 				}
 				catch (Exception $e)
 				{
 					$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> ' . $query;
 					Log::add($error, Log::ERROR, 'com_emundus');
+				}
+			}
+
+			if($success && !empty($fichePosteColumn))
+			{
+				$fichePoste = $formModel->getElementData('jos_emundus_campaign_candidature___fiche_poste', 0);
+				if(!empty($fichePoste))
+				{
+					$updateFnum = [
+						'fiche_poste' => $fichePoste,
+						'fnum' => $fnum_to
+					];
+					$updateFnum = (object) $updateFnum;
+					$this->_db->updateObject('#__emundus_campaign_candidature', $updateFnum, 'fnum');
 				}
 			}
 		}
