@@ -2354,7 +2354,8 @@ class EmundusModelEmails extends JModelList
 				->from($this->_db->quoteName('#__emundus_setup_attachments', 'esa'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_letters', 'esl') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('esa.id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'eslr') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('eslr.letter_attachment'))
-				->where($this->_db->quoteName('eslr.parent_id') . ' = ' . (int) $id);
+				->where($this->_db->quoteName('eslr.parent_id') . ' = ' . (int) $id)
+				->group('esa.id');
 			$this->_db->setQuery($query);
 			$letter_Info = $this->_db->loadObjectList();         /// get attachment info
 
@@ -3429,10 +3430,9 @@ class EmundusModelEmails extends JModelList
 
 			$mail_from_address = $mail_from_sys;
 
-			if (!empty($attachments) && is_array($attachments)) {
-				$toAttach = $attachments;
-			} else {
-				$toAttach[] = $attachments;
+			$toAttach = [];
+			if (!empty($attachments)) {
+				$toAttach = is_array($attachments) ? $attachments : [$attachments];
 			}
 
 			$message = $this->setTagsFabrik($template->message, [$fnum['fnum']]);
@@ -3495,55 +3495,17 @@ class EmundusModelEmails extends JModelList
 				}
 			}
 
-			// Files generated using the Letters system. Requires attachment creation and doc generation rights.
-			// Get from DB and generate using the tags.
-			if (!empty($template->setup_letters)) {
-				foreach ($template->setup_letters as $setup_letter) {
+			if (!empty($template->letter_attachments)) {
+				if (!class_exists('EmundusModelEvaluation')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
+				}
+				$m_evaluation = new EmundusModelEvaluation();
+				$attachments = explode(',', $template->letter_attachments);
+				$generatedLetters = $m_evaluation->generateLetters($fnum['fnum'], $attachments, 1);
 
-					$letter = $m_messages->get_letter($setup_letter);
-
-					// We only get the letters if they are for that particular programme.
-					if ($letter && in_array($fnum['training'], explode('","', $letter->training))) {
-
-						// Some letters are only for files of a certain status, this is where we check for that.
-						if ($letter->status != null && !in_array($fnum['step'], explode(',', $letter->status))) {
-							continue;
-						}
-
-						// A different file is to be generated depending on the template type.
-						switch ($letter->template_type) {
-
-							case '1':
-								// This is a static file, we just need to find its path add it as an attachment.
-								if (file_exists(JPATH_SITE.$letter->file)) {
-									$toAttach[] = JPATH_SITE.$letter->file;
-								}
-								break;
-
-							case '2':
-								// This is a PDF to be generated from HTML.
-								require_once (JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php');
-
-								$path = generateLetterFromHtml($letter, $fnum['fnum'], $fnum['applicant_id'], $fnum['training']);
-
-								if ($path && file_exists($path)) {
-									$toAttach[] = $path;
-								}
-								break;
-
-							case '3':
-								// This is a DOC template to be completed with applicant information.
-								$path = $m_messages->generateLetterDoc($letter, $fnum['fnum']);
-
-								if ($path && file_exists($path)) {
-									$toAttach[] = $path;
-								}
-								break;
-
-							default:
-								break;
-
-						}
+				if ($generatedLetters->status && !empty($generatedLetters->files)) {
+					foreach($generatedLetters->files as $file) {
+						$toAttach[] = EMUNDUS_PATH_ABS . $fnum['applicant_id'] . DS . $file['filename'];
 					}
 				}
 			}
