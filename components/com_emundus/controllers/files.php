@@ -1803,6 +1803,7 @@ class EmundusControllerFiles extends BaseController
 				$textarea_elements = [];
 				$iban_elements = [];
                 $calc_elements = [];
+				$currency_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine === 'step_id') {
 						$line .= Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . "\t";
@@ -2128,7 +2129,7 @@ class EmundusControllerFiles extends BaseController
                                             $v = strip_tags($v);
                                             $line .= preg_replace("/\r|\n|\t/", "", $v)."\t";
                                         }
-										else if (in_array($k, $currency_elements)) {
+										else if (!empty($currency_elements) && in_array($k, $currency_elements)) {
 											$v = EmundusHelperFabrik::extractNumericValue($v);
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
