@@ -176,7 +176,8 @@ class EmundusModelForm extends JModelList
 						->select('DISTINCT jesws.form_id')
 						->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'jesws'))
 						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'jeswp') . ' ON ' . $this->db->quoteName('jeswp.workflow_id') . ' = ' . $this->db->quoteName('jesws.workflow_id'))
-						->where('jeswp.program_id IN (' . implode(',', $this->db->quote($user_programs)) . ')');
+						->where('jeswp.program_id IN (' . implode(',', $this->db->quote($user_programs)) . ')')
+						->andWhere($this->db->quoteName('jesws.form_id') . ' IS NOT NULL');
 
 					$steps_form_ids = $this->db->setQuery($query)->loadColumn();
 				} else {
@@ -200,6 +201,7 @@ class EmundusModelForm extends JModelList
 				$evaluation_forms = array_filter($evaluation_forms, function ($form) use ($evaluation_forms_user_can_access_to) {
 					return in_array($form->id, $evaluation_forms_user_can_access_to);
 				});
+				$evaluation_forms = array_values($evaluation_forms);
 			}
 
 			if (!empty($evaluation_forms)) {

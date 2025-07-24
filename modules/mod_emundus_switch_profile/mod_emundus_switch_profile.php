@@ -10,6 +10,7 @@
 defined('_JEXEC') or die;
 $document = JFactory::getDocument();
 
+require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'profile.php');
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
 
 $user = JFactory::getSession()->get('emundusUser');

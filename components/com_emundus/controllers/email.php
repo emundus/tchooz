@@ -389,6 +389,7 @@ class EmundusControllerEmail extends BaseController
 						$letter_list[] = $value['id'];
 					}
 				}
+				$letter_list = array_unique($letter_list);
 			}
 
 			// get candidate attachments from $candidate_attachments

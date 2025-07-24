@@ -166,7 +166,7 @@
             type="sql"
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_LABEL"
             description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_LETTER_DESC"
-            query="SELECT attachment_id, title FROM #__emundus_setup_letters"
+            query="SELECT esl.attachment_id, esa.value as title FROM #__emundus_setup_letters as esl LEFT JOIN #__emundus_setup_attachments AS esa ON esa.id = esl.attachment_id GROUP BY esl.attachment_id"
             key_field="attachment_id"
             value_field="title"
     />

@@ -617,13 +617,13 @@ class EmundusModelEvaluation extends JModelList
 							$group_ids = $this->db->loadColumn();
 
 							if (!empty($group_ids)) {
-								$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden, ['panel', 'display']);								
+								$group_elements = $this->getElementsByGroups(implode(',', $group_ids), $show_in_list_summary, $hidden, ['panel', 'display']);
 
 								foreach ($group_elements as $group_element)
 								{
 									if (!empty($group_element->element_id))
 									{
-										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];		
+										$step_element = $h_list->getElementsDetailsByID($group_element->element_id)[0];
 										if(in_array($step_element->element_plugin, ['panel', 'display'])) {
 											continue;
 										}
@@ -3382,7 +3382,7 @@ class EmundusModelEvaluation extends JModelList
 											for($i = 0; $i < count($containers); $i++) {
 												$complex_block = $preprocess->setComplexBlock($fabrikTagFullName . '#' . ($i+1), $containers[$i]);
 											}
-										} else if(isset($fabrikValues[$fabrikTagFullName][$fnum]['complex_data'])) {
+										} else if(!empty($fabrikValues[$fabrikTagFullName][$fnum]['complex_data'])) {
 											$preprocess->setComplexValue($fabrikTagFullName, $fabrikValues[$fabrikTagFullName][$fnum]['val']);
 										} else {
 											if(in_array($fabrikTagFullName, array_keys($aliasFabrik)) && isset($fabrikValues[$aliasFabrik[$fabrikTagFullName]][$fnum]['val']))

@@ -847,152 +847,187 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								if (preg_match($pattern_table, $condition->targeted_column, $matches))
 								{
 									list($table, $column) = explode('.', $condition->targeted_column);
-
+									$table_name = str_replace('#_', 'jos', $table);
 									if ($condition->targeted_value === '{current_user_id}')
 									{
 										$condition->targeted_value = Factory::getApplication()->getIdentity()->id;
 									}
 
+									$query->clear()
+										->select('jfe.plugin')
+										->from($db->quoteName('#__fabrik_elements', 'jfe'))
+										->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jffg.group_id') . ' = ' . $db->quoteName('jfe.group_id'))
+										->leftJoin($db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jffg.form_id'))
+										->where($db->quoteName('jfl.db_table_name') . ' = ' . $db->quote($table_name))
+										->andWhere($db->quoteName('jfe.name') . ' = ' . $db->quote($column));
+
+									$db->setQuery($query);
+									$plugin = $db->loadResult();
+
 									require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 									$h_files    = new EmundusHelperFiles();
-									$table_name = str_replace('#_', 'jos', $table);
 									$linked     = false;
 									if (!empty($table_name))
 									{
 										$linked = $h_files->isTableLinkedToCampaignCandidature($table_name);
 									}
 
-									if ($linked)
+									// currency plugin is a special case, as it needs to extract the numeric value from the currency string
+									if ($plugin === 'currency')
 									{
-										$query->clear()
-											->select('id')
-											->from($db->quoteName($table))
-											->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+										if ($linked) {
+											$query->clear()
+												->select($column)
+												->from($db->quoteName($table_name))
+												->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
-										switch ($condition->operator)
-										{
-											case 'IN':
-											case 'NOT IN':
-												$values = explode('|', $condition->targeted_value);
-
-												$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
-												break;
-											case '=':
-												$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
-												break;
-											case '!=':
-												$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
-												break;
-											case 'inferior':
-												if(is_numeric($condition->targeted_value)){
-													$query->andWhere($db->quoteName($column) . ' < ' . (int)$condition->targeted_value);
-												}
-												else {
-													$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
-												}
-												break;
-											case 'inferior_equal':
-												if(is_numeric($condition->targeted_value)){
-													$query->andWhere($db->quoteName($column) . ' <= ' . (int)$condition->targeted_value);
-												}
-												else {
-													$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
-												}
-												break;
-											case 'superior':
-												if(is_numeric($condition->targeted_value)){
-													$query->andWhere($db->quoteName($column) . ' > ' . (int)$condition->targeted_value);
-												}
-												else {
-													$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
-												}
-												break;
-											case 'superior_equal':
-												if(is_numeric($condition->targeted_value)){
-													$query->andWhere($db->quoteName($column) . ' >= ' . (int)$condition->targeted_value);
-												}
-												else {
-													$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
-												}
-												break;
-											default:
-												$conditions_status[] = false;
-												break;
+											$db->setQuery($query);
+											$value = $db->loadResult();
+											$value = EmundusHelperFabrik::extractNumericValue($value);
+											$conditions_status[] = $this->operateCondition($condition, $value);
 										}
-									}
-									else
-									{
-										if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_programmes', 'jos_emundus_users']))
+									} else {
+										if ($linked)
 										{
-											$query->clear();
-
-											$table_alias = 'ecc';
-											switch ($table_name)
-											{
-												case 'jos_emundus_setup_campaigns':
-													$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
-													$table_alias = 'esc';
-													break;
-												case 'jos_emundus_setup_programmes':
-													$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
-														->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'));
-													$table_alias = 'esp';
-													break;
-												case 'jos_emundus_users':
-													$query->leftJoin($db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.id') . ' = ' . $db->quoteName('ecc.user_id'));
-													$table_alias = 'eu';
-													break;
-											}
-
-											$query->select($db->quoteName('ecc.id'))
-												->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
-												->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+											$query->clear()
+												->select('id')
+												->from($db->quoteName($table))
+												->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
 
 											switch ($condition->operator)
 											{
 												case 'IN':
 												case 'NOT IN':
 													$values = explode('|', $condition->targeted_value);
-													$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
+
+													$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
 													break;
 												case '=':
-													$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+													$query->andWhere($db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
 													break;
 												case '!=':
-													$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
+													$query->andWhere('(' . $db->quoteName($column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($column) . ' IS NULL )');
+													break;
+												case 'inferior':
+													if (is_numeric($condition->targeted_value))
+													{
+														$query->andWhere($db->quoteName($column) . ' < ' . (int) $condition->targeted_value);
+													}
+													else
+													{
+														$query->andWhere($db->quoteName($column) . ' < ' . $db->quote($condition->targeted_value));
+													}
+													break;
+												case 'inferior_equal':
+													if (is_numeric($condition->targeted_value))
+													{
+														$query->andWhere($db->quoteName($column) . ' <= ' . (int) $condition->targeted_value);
+													}
+													else
+													{
+														$query->andWhere($db->quoteName($column) . ' <= ' . $db->quote($condition->targeted_value));
+													}
+													break;
+												case 'superior':
+													if (is_numeric($condition->targeted_value))
+													{
+														$query->andWhere($db->quoteName($column) . ' > ' . (int) $condition->targeted_value);
+													}
+													else
+													{
+														$query->andWhere($db->quoteName($column) . ' > ' . $db->quote($condition->targeted_value));
+													}
+													break;
+												case 'superior_equal':
+													if (is_numeric($condition->targeted_value))
+													{
+														$query->andWhere($db->quoteName($column) . ' >= ' . (int) $condition->targeted_value);
+													}
+													else
+													{
+														$query->andWhere($db->quoteName($column) . ' >= ' . $db->quote($condition->targeted_value));
+													}
 													break;
 												default:
 													$conditions_status[] = false;
 													break;
 											}
+
 										}
 										else
 										{
+											if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_programmes', 'jos_emundus_users']))
+											{
+												$query->clear();
+
+												$table_alias = 'ecc';
+												switch ($table_name)
+												{
+													case 'jos_emundus_setup_campaigns':
+														$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
+														$table_alias = 'esc';
+														break;
+													case 'jos_emundus_setup_programmes':
+														$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
+															->leftJoin($db->quoteName('jos_emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'));
+														$table_alias = 'esp';
+														break;
+													case 'jos_emundus_users':
+														$query->leftJoin($db->quoteName('jos_emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.id') . ' = ' . $db->quoteName('ecc.user_id'));
+														$table_alias = 'eu';
+														break;
+												}
+
+												$query->select($db->quoteName('ecc.id'))
+													->from($db->quoteName('jos_emundus_campaign_candidature', 'ecc'))
+													->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
+
+												switch ($condition->operator)
+												{
+													case 'IN':
+													case 'NOT IN':
+														$values = explode('|', $condition->targeted_value);
+														$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' (' . implode(',', $db->quote($values)) . ')');
+														break;
+													case '=':
+														$query->andWhere($db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value));
+														break;
+													case '!=':
+														$query->andWhere('(' . $db->quoteName($table_alias . '.' . $column) . ' ' . $condition->operator . ' ' . $db->quote($condition->targeted_value) . ' OR ' . $db->quoteName($table_alias . '.' . $column) . ' IS NULL )');
+														break;
+													default:
+														$conditions_status[] = false;
+														break;
+												}
+											}
+											else
+											{
+												$conditions_status[] = false;
+												break;
+											}
+										}
+
+										try
+										{
+											$db->setQuery($query);
+											$row_id = $db->loadResult();
+
+											if (!empty($row_id))
+											{
+												$conditions_status[] = true;
+											}
+											else
+											{
+												$conditions_status[] = false;
+												break;
+											}
+										}
+										catch (Exception $e)
+										{
+											Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
 											$conditions_status[] = false;
 											break;
 										}
-									}
-
-									try
-									{
-										$db->setQuery($query);
-										$row_id = $db->loadResult();
-
-										if (!empty($row_id))
-										{
-											$conditions_status[] = true;
-										}
-										else
-										{
-											$conditions_status[] = false;
-											break;
-										}
-									}
-									catch (Exception $e)
-									{
-										Log::add('Failed to get value for condition ' . $condition->targeted_column . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
-										$conditions_status[] = false;
-										break;
 									}
 								}
 								else
