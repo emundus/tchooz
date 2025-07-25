@@ -7308,7 +7308,16 @@ class EmundusModelApplication extends ListModel
 		try {
 			$query = $this->_db->getQuery(true);
 
-			$query->delete($this->_db->quoteName('#__emundus_files_request'))
+			$query->select('efr.email, u.id as user_id')
+				->from($this->_db->quoteName('#__emundus_files_request', 'efr'))
+				->leftJoin($this->_db->quoteName('#__users', 'u') . ' ON ' . $this->_db->quoteName('u.email') . ' = ' . $this->_db->quoteName('efr.email'))
+				->where($this->_db->quoteName('efr.id') . ' = ' . $request_id)
+				->where($this->_db->quoteName('efr.ccid') . ' = ' . $ccid);
+			$this->_db->setQuery($query);
+			$sharedUser = $this->_db->loadAssoc();
+
+			$query->clear()
+				->delete($this->_db->quoteName('#__emundus_files_request'))
 				->where($this->_db->quoteName('id') . ' = ' . $request_id)
 				->where($this->_db->quoteName('ccid') . ' = ' . $ccid);
 			$this->_db->setQuery($query);
@@ -7320,8 +7329,8 @@ class EmundusModelApplication extends ListModel
 				}
 				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 				$query->clear()
-					->delete($this->_db->quoteName('#__emundus_users_assoc', 'assoc'))
-					->where($this->_db->quoteName('assoc.user_id') . ' = ' . $user_id)
+					->delete($this->_db->quoteName('#__emundus_users_assoc'))
+					->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['id'])
 					->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 
 				$this->_db->setQuery($query);
@@ -7329,7 +7338,7 @@ class EmundusModelApplication extends ListModel
 
 				PluginHelper::importPlugin('emundus');
 				$dispatcher = Factory::getApplication()->getDispatcher();
-				$onAfterRemoveSharedUser = new GenericEvent('onCallEventHandler', ['onAfterRemoveSharedUser', ['request_id' => $request_id, 'ccid' => $ccid, 'user_id' => $user_id]]);
+				$onAfterRemoveSharedUser = new GenericEvent('onCallEventHandler', ['onAfterRemoveSharedUser', ['request_id' => $request_id, 'ccid' => $ccid, 'email' => $sharedUser['email']]]);
 				$dispatcher->dispatch('onCallEventHandler', $onAfterRemoveSharedUser);
 			}
 		}
