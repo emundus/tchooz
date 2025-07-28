@@ -1040,20 +1040,34 @@ class EmundusModelEmails extends JModelList
 				}
 
 				if ($elt['plugin'] == "checkbox" || $elt['plugin'] == "dropdown" || $elt['plugin'] == "radiobutton") {
+					$params = json_decode($elt['params']);
+
 					foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
-						$params = json_decode($elt['params']);
-						$elm    = array();
-						if ($elt['plugin'] == "checkbox") {
-							$index = array_intersect(json_decode($val["val"]), $params->sub_options->sub_values);
+						$elm    = [];
+
+						if(!empty($val['val']))
+						{
+							$index = [];
+							if ($elt['plugin'] == "checkbox")
+							{
+								$value_decoded = json_decode($val['val'], true);
+								if(!empty($value_decoded) && is_array($value_decoded)) {
+									$index         = array_intersect($value_decoded, $params->sub_options->sub_values);
+								}
+							}
+							else
+							{
+								$index = array_intersect((array) $val['val'], $params->sub_options->sub_values);
+							}
+
+							foreach ($index as $value)
+							{
+								$key   = array_search($value, $params->sub_options->sub_values);
+								$elm[] = !$raw ? Text::_($params->sub_options->sub_labels[$key]) : $value;
+							}
 						}
-						else {
-							$index = array_intersect((array) $val["val"], $params->sub_options->sub_values);
-						}
-						foreach ($index as $value) {
-							$key   = array_search($value, $params->sub_options->sub_values);
-							$elm[] = !$raw ? Text::_($params->sub_options->sub_labels[$key]) : $value;
-						}
-						$fabrikValues[$elt['id']][$fnum]['val'] = implode(", ", $elm);
+
+						$fabrikValues[$elt['id']][$fnum]['val'] = implode(', ', $elm);
 					}
 				}
 
