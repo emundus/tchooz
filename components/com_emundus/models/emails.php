@@ -3478,8 +3478,13 @@ class EmundusModelEmails extends JModelList
 
 
 			// Get any candidate files included in the message.
-			if (!empty($template->candidate_file)) {
-				foreach ($template->candidate_file as $candidate_file) {
+			if (!empty($template->candidate_attachments)) {
+				if(!is_array($template->candidate_attachments))
+				{
+					$template->candidate_attachments = explode(',', $template->candidate_attachments);
+				}
+
+				foreach ($template->candidate_attachments as $candidate_file) {
 
 					$filename = $m_messages->get_upload($fnum['fnum'], $candidate_file);
 
