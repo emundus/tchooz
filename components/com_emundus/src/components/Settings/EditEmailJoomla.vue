@@ -29,7 +29,7 @@
 
 			<template v-if="displayEmailParameters">
 				<!-- REPLYTO -->
-				<div class="tw-mt-7 tw-flex tw-gap-7">
+				<div class="tw-mt-7 tw-grid tw-grid-cols-2 tw-gap-7">
 					<div
 						v-for="parameter in reply_to_parameters"
 						:key="parameter.param"
@@ -208,6 +208,16 @@ export default {
 					displayed: true,
 					optional: true,
 				},
+				{
+					param: 'fromname',
+					type: 'text',
+					placeholder: 'Tchooz',
+					value: '',
+					label: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER_NAME',
+					helptext: 'COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SENDER_NAME_HELPTEXT',
+					displayed: true,
+					optional: false,
+				},
 			],
 			custom_enable_parameter: {
 				param: 'custom_email_conf',
@@ -325,6 +335,7 @@ export default {
 					this.mailonline_parameter.value = response.data.mailonline ? 1 : 0;
 					this.reply_to_parameters[0].value = response.data.replyto;
 					this.reply_to_parameters[1].value = response.data.replytoname;
+					this.reply_to_parameters[2].value = response.data.fromname;
 					this.custom_enable_parameter.value = response.data.custom_email_conf;
 					this.email_sender_param.value = response.data.custom_email_mailfrom;
 					this.smtp_parameters[0].value = response.data.custom_email_smtphost;
@@ -454,6 +465,7 @@ export default {
 				mailonline: this.mailonline_parameter.value,
 				replyto: this.reply_to_parameters[0].value,
 				replytoname: this.reply_to_parameters[1].value,
+				fromname: this.reply_to_parameters[2].value,
 				custom_email_conf: this.custom_enable_parameter.value,
 				custom_email_mailfrom: this.email_sender_param.value,
 				custom_email_smtphost: this.smtp_parameters[0].value,
