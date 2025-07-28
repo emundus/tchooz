@@ -133,6 +133,26 @@ export default {
 					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS',
 					value: '!=',
 				},
+				{
+					id: 3,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_GREATER_THAN',
+					value: '>',
+				},
+				{
+					id: 4,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_GREATER_THAN_OR_EQUALS',
+					value: '>=',
+				},
+				{
+					id: 5,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_LESS_THAN',
+					value: '<',
+				},
+				{
+					id: 6,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_LESS_THAN_OR_EQUALS',
+					value: '<=',
+				},
 			],
 			options: [],
 			options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
