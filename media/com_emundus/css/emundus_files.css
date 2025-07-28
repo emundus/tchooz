@@ -2592,6 +2592,7 @@ footer#g-footer {
 
 .list-group a.list-group-item.active, .list-group a.list-group-item.active:hover, .list-group a.list-group-item.active:focus {
     color: var(--neutral-900);
+    background-color: var(--neutral-300);
 }
 
 div#em-assoc-files .panel.panel-primary, div#em-assoc-files .panel.panel-default {
