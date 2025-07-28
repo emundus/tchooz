@@ -5,7 +5,7 @@
 			:style="selectedSwatchStyle"
 			@click="togglePopover"
 		></div>
-		<div :class="['vue-swatches__wrapper', 'position-' + position, 'tw-flex']" :style="wrapperStyle" v-show="isOpen">
+		<div :class="['vue-swatches__wrapper', 'position-' + position, 'tw-grid']" :style="wrapperStyle" v-show="isOpen">
 			<div
 				v-for="(swatchRow, index) in computedSwatches"
 				:key="index"
