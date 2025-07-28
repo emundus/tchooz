@@ -25,6 +25,53 @@ requirejs(['fab/fabrik'], function () {
         return !a.includes(b);
       }
     },
+    '>' : function (a, b, plugin) {
+        if (!Array.isArray(a)) {
+            if (typeof a === 'string' && typeof b === 'string') {
+            a = a.toLowerCase();
+            b = b.toLowerCase();
+            }
+
+            // TODO: cast types to number ? check if values are numeric ?
+
+            return a > b;
+        } else {
+            return false; // Not applicable for arrays
+        }
+    },
+    '<' : function (a, b, plugin) {
+      if (!Array.isArray(a)) {
+        if (typeof a === 'string' && typeof b === 'string') {
+          a = a.toLowerCase();
+          b = b.toLowerCase();
+        }
+        return a < b;
+      } else {
+        return false; // Not applicable for arrays
+      }
+    },
+    '>=': function (a, b, plugin) {
+        if (!Array.isArray(a)) {
+            if (typeof a === 'string' && typeof b === 'string') {
+            a = a.toLowerCase();
+            b = b.toLowerCase();
+            }
+            return a >= b;
+        } else {
+            return false; // Not applicable for arrays
+        }
+    },
+    '<=': function (a, b, plugin) {
+        if (!Array.isArray(a)) {
+            if (typeof a === 'string' && typeof b === 'string') {
+            a = a.toLowerCase();
+            b = b.toLowerCase();
+            }
+            return a <= b;
+        } else {
+            return false; // Not applicable for arrays
+        }
+    }
     // ...
   };
 
