@@ -16,6 +16,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Tchooz\Entities\Emails\Modifiers\CapitalizeModifier;
 use Tchooz\Entities\Emails\Modifiers\LettersModifier;
 use Tchooz\Entities\Emails\Modifiers\LowercaseModifier;
+use Tchooz\Entities\Emails\Modifiers\NumberModifier;
 use Tchooz\Entities\Emails\Modifiers\TrimModifier;
 use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
 use Tchooz\Entities\Emails\TagModifierRegistry;
@@ -469,6 +470,7 @@ class PlgSystemEmundus extends CMSPlugin
 			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/CapitalizeModifier.php';
 			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/TrimModifier.php';
 			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/LettersModifier.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/NumberModifier.php';
 		}
 
 		TagModifierRegistry::register(new UppercaseModifier());
@@ -476,5 +478,6 @@ class PlgSystemEmundus extends CMSPlugin
 		TagModifierRegistry::register(new CapitalizeModifier());
 		TagModifierRegistry::register(new TrimModifier());
 		TagModifierRegistry::register(new LettersModifier());
+		TagModifierRegistry::register(new NumberModifier());
 	}
 }
