@@ -9,6 +9,14 @@ defined('_JEXEC') or die('Restricted access');
 // Require the abstract plugin class
 require_once COM_FABRIK_FRONTEND . '/models/plugin-form.php';
 
+class Budget
+{
+	public int|float $formation_price = 0;
+	public int|float $financement_entreprise = 0;
+	public int|float $financement_organisme = 0;
+	public int|float $financement_total = 0;
+}
+
 /**
  * Manage BtoB profile form
  *
@@ -28,52 +36,55 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 		$cid = Factory::getApplication()->getInput()->getInt('cid', 0);
 
-        $query->clear()
-            ->select('esp.opened_to_btob')
-            ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-            ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
-            ->where('esc.id = :cid')
-            ->bind(':cid', $cid, ParameterType::INTEGER);
-        $db->setQuery($query);
-        $opened_to_btob = $db->loadResult();
+		$query->clear()
+			->select('esp.opened_to_btob')
+			->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+			->where('esc.id = :cid')
+			->bind(':cid', $cid, ParameterType::INTEGER);
+		$db->setQuery($query);
+		$opened_to_btob = $db->loadResult();
 
-        if ($opened_to_btob == 1) {
-            $query->clear()
-                ->select('esp.btob_max_applicants')
-                ->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
-                ->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
-                ->where('esc.id = :cid')
-                ->bind(':cid', $cid, ParameterType::INTEGER);
-            $db->setQuery($query);
-            $max_files_per_session = $db->loadResult();
-            if (empty($max_files_per_session))
-            {
-                $max_files_per_session = $this->getParams()->get('btob_form_max_file_per_session', 4);
-            }
+		if ($opened_to_btob == 1)
+		{
+			$query->clear()
+				->select('esp.btob_max_applicants')
+				->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+				->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+				->where('esc.id = :cid')
+				->bind(':cid', $cid, ParameterType::INTEGER);
+			$db->setQuery($query);
+			$max_files_per_session = $db->loadResult();
+			if (empty($max_files_per_session))
+			{
+				$max_files_per_session = $this->getParams()->get('btob_form_max_file_per_session', 4);
+			}
 
-            $nb_dossiers          = 0;
-            $nb_dossiers_possible = $max_files_per_session;
-            if (!empty($user->id))
-            {
-                $query->clear()
-                    ->select('count(id)')
-                    ->from('#__emundus_campaign_candidature')
-                    ->where('applicant_id = :id')
-                    ->where('campaign_id = :cid')
-                    ->bind(':cid', $cid, ParameterType::INTEGER)
-                    ->bind(':id', $user->id, ParameterType::INTEGER);
-                $db->setQuery($query);
-                $nb_dossiers = $db->loadResult();
+			$nb_dossiers          = 0;
+			$nb_dossiers_possible = $max_files_per_session;
+			if (!empty($user->id))
+			{
+				$query->clear()
+					->select('count(id)')
+					->from('#__emundus_campaign_candidature')
+					->where('applicant_id = :id')
+					->where('campaign_id = :cid')
+					->bind(':cid', $cid, ParameterType::INTEGER)
+					->bind(':id', $user->id, ParameterType::INTEGER);
+				$db->setQuery($query);
+				$nb_dossiers = $db->loadResult();
 
-                $nb_dossiers_possible = $max_files_per_session - $nb_dossiers;
-            }
+				$nb_dossiers_possible = $max_files_per_session - $nb_dossiers;
+			}
 
-            $formModel->data['jos_emundus_btob___nb_dossiers'] = Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_AVAILABLE', $nb_dossiers, $nb_dossiers_possible);
-        } else {
-            $app = Factory::getApplication();
-            $app->enqueueMessage(Text::_('PLG_FABRIK_FORM_BTOBFORM_CAMPAIGN_NOT_OPEN_TO_BTOB'), 'error');
-            $app->redirect('index.php');
-        }
+			$formModel->data['jos_emundus_btob___nb_dossiers'] = Text::sprintf('PLG_FABRIK_FORM_BTOBFORM_MAX_FILES_AVAILABLE', $nb_dossiers, $nb_dossiers_possible);
+		}
+		else
+		{
+			$app = Factory::getApplication();
+			$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_BTOBFORM_CAMPAIGN_NOT_OPEN_TO_BTOB'), 'error');
+			$app->redirect('index.php');
+		}
 	}
 
 	public function onBeforeProcess()
@@ -131,38 +142,9 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 
 		foreach ($applicants as $key => $applicant)
 		{
-			// Check balance with price
-			$formation_price = $data['jos_emundus_btob___prix_participant_raw'];
-			// Remove € sign
-			$formation_price = str_replace('€', '', $formation_price);
-			$formation_price = str_replace(' ', '', $formation_price);
-			$formation_price = (float) $formation_price;
+			$budget = $this->extractBudget($data, $key);
 
-			$financement_entreprise = $data['jos_emundus_btob_1237_repeat___financement_entreprise_raw'][$key];
-			if (is_array($financement_entreprise))
-			{
-				$financement_entreprise = $financement_entreprise['rowInputValueFront'];
-			}
-			else
-			{
-				$financement_entreprise = str_replace('€', '', $financement_entreprise);
-				$financement_entreprise = str_replace(' ', '', $financement_entreprise);
-			}
-			$financement_entreprise = (float) $financement_entreprise;
-
-			$financement_organisme = $data['jos_emundus_btob_1237_repeat___financement_organisme_raw'][$key];
-			if (is_array($financement_organisme))
-			{
-				$financement_organisme = $financement_organisme['rowInputValueFront'];
-			}
-			else
-			{
-				$financement_organisme = str_replace('€', '', $financement_organisme);
-				$financement_organisme = str_replace(' ', '', $financement_organisme);
-			}
-
-			$financement_total = $financement_entreprise + $financement_organisme;
-			if ($financement_total != $formation_price)
+			if ($budget->financement_total != $budget->formation_price)
 			{
 				$app->enqueueMessage(Text::_('PLG_FABRIK_FORM_BTOBFORM_BALANCE_NOT_OK'), 'error');
 				$formModel->errors['jos_emundus_btob_1237_repeat___financement_entreprise'][$key][] = Text::_('PLG_FABRIK_FORM_BTOBFORM_BALANCE_NOT_OK');
@@ -190,12 +172,12 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 		require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 		require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
 		require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
-		$m_workflow = new EmundusModelWorkflow();
+		$m_workflow   = new EmundusModelWorkflow();
 		$m_files      = new EmundusModelFiles();
 		$m_evaluation = new EmundusModelEvaluation();
 
-		$id         = $data['jos_emundus_btob___id'];
-		$applicants = $data['jos_emundus_btob_1237_repeat___id'];
+		$id          = $data['jos_emundus_btob___id'];
+		$applicants  = $data['jos_emundus_btob_1237_repeat___id'];
 		$campaign_id = $data['jos_emundus_btob___campaign_id_raw'];
 		if (is_array($campaign_id))
 		{
@@ -223,17 +205,19 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 			}
 		}
 
-		$forms = [];
+		$forms     = [];
 		$forms_ids = [];
 		foreach ($profiles as $profile_id)
 		{
 			$forms_by_profile = EmundusHelperMenu::buildMenuQuery($profile_id);
-			foreach ($forms_by_profile as $form) {
-				if(in_array($form->form_id, $forms_ids)) {
+			foreach ($forms_by_profile as $form)
+			{
+				if (in_array($form->form_id, $forms_ids))
+				{
 					continue;
 				}
 				$forms_ids[] = $form->form_id;
-				$forms[] = $form;
+				$forms[]     = $form;
 			}
 		}
 
@@ -304,90 +288,92 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				$db->setQuery($query);
 				$profile = $db->loadObject();
 
-				$financement_entreprise = $data['jos_emundus_btob_1237_repeat___financement_entreprise_raw'][$key];
-				if (is_array($financement_entreprise))
-				{
-					$financement_entreprise = $financement_entreprise['rowInputValueFront'];
-				}
-				else
-				{
-					$financement_entreprise = str_replace('€', '', $financement_entreprise);
-					$financement_entreprise = str_replace(' ', '', $financement_entreprise);
-				}
-				$financement_entreprise = (float) $financement_entreprise;
+				$budget = $this->extractBudget($data, $key);
 
-				$financement_organisme = $data['jos_emundus_btob_1237_repeat___financement_organisme_raw'][$key];
-				if (is_array($financement_organisme))
+				$registration_organism_name = $data['jos_emundus_btob_1237_repeat___financement_nom_organisme_raw'][$key];
+				if (is_array($registration_organism_name))
 				{
-					$financement_organisme = $financement_organisme['rowInputValueFront'];
+					$registration_organism_name = $registration_organism_name[0];
 				}
-				else
+				$registration_organism_address = $data['jos_emundus_btob_1237_repeat___financement_adresse_organisme_raw'][$key];
+				if (is_array($registration_organism_address))
 				{
-					$financement_organisme = str_replace('€', '', $financement_organisme);
-					$financement_organisme = str_replace(' ', '', $financement_organisme);
+					$registration_organism_address = $registration_organism_address[0];
+				}
+				$registration_organism_siret = $data['jos_emundus_btob_1237_repeat___financement_siret_organisme_raw'][$key];
+				if (is_array($registration_organism_siret))
+				{
+					$registration_organism_siret = $registration_organism_siret[0];
 				}
 
 				$alias_to_fills = [
-					'registration_civility' => $data['jos_emundus_btob_1237_repeat___civility_raw'][$key],
-					'registration_common_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
-					'registration_birth_name' => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
-					'registration_first_name' => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
-					'registration_function' => $data['jos_emundus_btob_1237_repeat___registration_function_raw'][$key],
-					'accomodation_yesno' => !empty($data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key]) ? 1 : 0,
-					'accomodation_specify' => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
-					'registration_email' => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'registration_civility'            => $data['jos_emundus_btob_1237_repeat___civility_raw'][$key],
+					'registration_common_name'         => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
+					'registration_birth_name'          => $data['jos_emundus_btob_1237_repeat___lastname'][$key],
+					'registration_first_name'          => $data['jos_emundus_btob_1237_repeat___firstname'][$key],
+					'registration_function'            => $data['jos_emundus_btob_1237_repeat___registration_function_raw'][$key],
+					'accomodation_yesno'               => !empty($data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key]) ? 1 : 0,
+					'accomodation_specify'             => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
+					'registration_email'               => $data['jos_emundus_btob_1237_repeat___email'][$key],
 					'correspondence_different_contact' => 0,
-					'correspondence_different_email' => '',
-					'correspondence_phone' => '',
-					'correspondence_different_phone' => '',
-					'registration_company_price' => $financement_entreprise . '€',
-					'registration_organism_price' => $financement_organisme . '€',
-					'registration_candidate_price' => '0€',
-					'company_country' => $profile->pays_profil,
-					'company_siret' => $profile->siret,
-					'registration_company_name' => $profile->raison_sociale,
-					'company_address' => $profile->adresse_postale_ligne_1_profil,
-					'company_additional_address' => $profile->adresse_postale_ligne_2_profil,
-					'company_postal_code' => $profile->code_postal_profil,
-					'company_city' => $profile->ville,
-					'meme_adresse_facturation' => $profile->adresse_facturation,
-					'pays_facturation' => $profile->pays_facturation,
-					'adresse_postale_facturation' => $profile->field_adresse_facturation,
-					'complement_facturation' => $profile->complement_adresse_facturation,
-					'code_postal_facturation' => $profile->code_postal_facturation,
-					'ville_facturation' => $profile->ville_facturation,
-					'manager_civility' => $profile->civilite_responsable,
-					'manager_last_name' => $profile->nom_responsable,
-					'manager_first_name' => $profile->prenom_manager,
-					'manager_function' => $profile->fonction_responsable,
-					'manager_email' => $profile->adresse_e_mail_responsable,
-					'manager_phone' => $profile->telephone_responsable,
-					'same_company_address' => !empty($profile->meme_adresse_entreprise) ? 1 : 0,
-					'manager_country' => $profile->pays_responsable,
-					'manager_address' => $profile->adresse_postale_responsable,
-					'manager_additional_address' => $profile->complement_adresse_responsable,
-					'manager_postal_code' => $profile->code_postal_manager,
-					'manager_city' => $profile->ville_responsable,
-					'different_admin' => !empty($profile->charge_gestion_admin) ? 1 : 0,
-                    'access_cycles' => 1
+					'correspondence_different_email'   => '',
+					'correspondence_phone'             => '',
+					'correspondence_different_phone'   => '',
+					'registration_company_price'       => number_format($budget->financement_entreprise, 2, ',', ' ') . ' € (EUR)',
+					'registration_organism_price'      => number_format($budget->financement_organisme, 2, ',', ' ') . ' € (EUR)',
+					'registration_candidate_price'     => '0 € (EUR)',
+					'registration_organism_name'       => $registration_organism_name,
+					'registration_organism_address'    => $registration_organism_address,
+					'registration_organism_siret'      => $registration_organism_siret,
+					'company_country'                  => $profile->pays_profil,
+					'company_siret'                    => $profile->siret,
+					'registration_company_name'        => $profile->raison_sociale,
+					'company_address'                  => $profile->adresse_postale_ligne_1_profil,
+					'company_additional_address'       => $profile->adresse_postale_ligne_2_profil,
+					'company_postal_code'              => $profile->code_postal_profil,
+					'company_city'                     => $profile->ville,
+					'meme_adresse_facturation'         => $profile->adresse_facturation,
+					'pays_facturation'                 => $profile->pays_facturation,
+					'adresse_postale_facturation'      => $profile->field_adresse_facturation,
+					'complement_facturation'           => $profile->complement_adresse_facturation,
+					'code_postal_facturation'          => $profile->code_postal_facturation,
+					'ville_facturation'                => $profile->ville_facturation,
+					'manager_civility'                 => $profile->civilite_responsable,
+					'manager_last_name'                => $profile->nom_responsable,
+					'manager_first_name'               => $profile->prenom_manager,
+					'manager_function'                 => $profile->fonction_responsable,
+					'manager_email'                    => $profile->adresse_e_mail_responsable,
+					'manager_phone'                    => $profile->telephone_responsable,
+					'same_company_address'             => !empty($profile->meme_adresse_entreprise) ? 1 : 0,
+					'manager_country'                  => $profile->pays_responsable,
+					'manager_address'                  => $profile->adresse_postale_responsable,
+					'manager_additional_address'       => $profile->complement_adresse_responsable,
+					'manager_postal_code'              => $profile->code_postal_manager,
+					'manager_city'                     => $profile->ville_responsable,
+					'different_admin'                  => !empty($profile->charge_gestion_admin) ? 1 : 0,
+					'access_cycles'                    => 1
 				];
 
-				if ($alias_to_fills['different_admin'] != 0) {
-					$alias_to_fills['admin_civility'] = $profile->civilite_admin;
-					$alias_to_fills['admin_last_name'] = $profile->nom_admin;
-					$alias_to_fills['admin_first_name'] = $profile->prenom_admin;
-					$alias_to_fills['admin_function'] = $profile->fonction_admin;
-					$alias_to_fills['admin_email'] = $profile->adresse_e_mail;
+				if ($alias_to_fills['different_admin'] != 0)
+				{
+					$alias_to_fills['admin_civility']     = $profile->civilite_admin;
+					$alias_to_fills['admin_last_name']    = $profile->nom_admin;
+					$alias_to_fills['admin_first_name']   = $profile->prenom_admin;
+					$alias_to_fills['admin_function']     = $profile->fonction_admin;
+					$alias_to_fills['admin_email']        = $profile->adresse_e_mail;
 					$alias_to_fills['admin_phone_number'] = $profile->telephone_admin;
 				}
 
 				$datas_to_fills = [];
 				foreach ($alias_to_fills as $alias => $value)
 				{
-					foreach ($forms as $form) {
+					foreach ($forms as $form)
+					{
 						$element = EmundusHelperFabrik::getElementsByAlias($alias, $form->form_id);
-						if (!empty($element)) {
-							if(empty($datas_to_fills[$element[0]->db_table_name])) {
+						if (!empty($element))
+						{
+							if (empty($datas_to_fills[$element[0]->db_table_name]))
+							{
 								$datas_to_fills[$element[0]->db_table_name] = [];
 							}
 							$datas_to_fills[$element[0]->db_table_name][$element[0]->name] = $value;
@@ -395,12 +381,14 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					}
 				}
 
-				foreach ($datas_to_fills as $table => $fields) {
-					$insert_fields = [];
-					$insert_fields['fnum'] = $fnum;
-					$insert_fields['user'] = $user->id;
+				foreach ($datas_to_fills as $table => $fields)
+				{
+					$insert_fields              = [];
+					$insert_fields['fnum']      = $fnum;
+					$insert_fields['user']      = $user->id;
 					$insert_fields['time_date'] = date('Y-m-d H:i:s');
-					foreach ($fields as $key => $value) {
+					foreach ($fields as $key => $value)
+					{
 						$insert_fields[$key] = $value;
 					}
 
@@ -416,5 +404,44 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 		}
 
 		$app->redirect('/bulletin-dinscription?btob=' . $id . '&rowid=0');
+	}
+
+	private function extractBudget(array $data, int $key): Budget
+	{
+		$budget = new Budget();
+
+		if (!empty($data))
+		{
+			$formation_price         = $data['jos_emundus_btob___prix_participant_raw'];
+			$budget->formation_price = EmundusHelperFabrik::extractNumericValue($formation_price);
+
+			$financement_entreprise = $data['jos_emundus_btob_1237_repeat___financement_entreprise_raw'][$key];
+			if (is_array($financement_entreprise))
+			{
+				$financement_entreprise = $financement_entreprise['rowInputValueFront'];
+				$financement_entreprise = (float) $financement_entreprise;
+			}
+			else
+			{
+				$financement_entreprise = EmundusHelperFabrik::extractNumericValue($financement_entreprise);
+			}
+			$budget->financement_entreprise = $financement_entreprise;
+
+			$financement_organisme = $data['jos_emundus_btob_1237_repeat___financement_organisme_raw'][$key];
+			if (is_array($financement_organisme))
+			{
+				$financement_organisme = $financement_organisme['rowInputValueFront'];
+				$financement_organisme = (float) $financement_organisme;
+			}
+			else
+			{
+				$financement_organisme = EmundusHelperFabrik::extractNumericValue($financement_organisme);
+			}
+			$budget->financement_organisme = $financement_organisme;
+
+			$budget->financement_total = $financement_entreprise + $financement_organisme;
+		}
+
+		return $budget;
 	}
 }
