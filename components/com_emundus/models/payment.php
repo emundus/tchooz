@@ -762,7 +762,13 @@ class EmundusModelPayment extends JModelList
 
 		if (!empty($extended_config)) {
 			foreach ($extended_config[0] as $extend) {
-				$config = array_merge($config, $extend);
+				if(is_array($extend))
+				{
+					$config = array_merge($config, $extend[0]);
+				}
+				else {
+					$config = array_merge($config, $extend);
+				}
 			}
 		}
 
