@@ -220,11 +220,14 @@ if ($download) {
 
 	$objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
 
+    // Remove whitespaces and ambiguous characters to prevent error in filename when trying to open it as a PDF
+    $formation_document_name = trim(preg_replace('/-+/', '-', trim(preg_replace('/[^a-zA-Z0-9]+/u', '-', trim(iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $formation))))),'-');
+
 	if ($file_type == 2) {
 		// download file
 		header('Content-Description: File Transfer');
 		header('Content-Type: application/octet-stream');
-		header('Content-Disposition: attachment; filename="' . $template . '-' . $campaign_year . '-' . $formation . '.docx"');
+		header('Content-Disposition: attachment; filename="' . $template . '-' . $campaign_year . '-' . $formation_document_name . '.docx"');
 		header('Content-Transfer-Encoding: binary');
 		header('Expires: 0');
 		header('Cache-Control: must-revalidate, post-check=0, pre-check=0');
@@ -236,9 +239,9 @@ if ($download) {
 		exit;
 	} else {
 		// convert to PDF
-		$file_src = JPATH_ROOT . '/tmp/' . $template . '-' . $campaign_year . '-' . $formation . '.docx';
+		$file_src = JPATH_ROOT . '/tmp/' . $template . '-' . $campaign_year . '-' . $formation_document_name . '.docx';
 		$phpWord->save($file_src, 'Word2007');
-		$file_dest = JPATH_ROOT . '/tmp/' . $template . '-' . $campaign_year . '-' . $formation;
+		$file_dest = JPATH_ROOT . '/tmp/' . $template . '-' . $campaign_year . '-' . $formation_document_name;
 
 		if (!class_exists('EmundusModelExport')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/export.php');
@@ -250,7 +253,7 @@ if ($download) {
 			// download pdf file
 			header('Content-Description: File Transfer');
 			header('Content-Type: application/pdf');
-			header('Content-Disposition: attachment; filename="' . $template . '-' . $campaign_year . '-' . $formation . '.pdf"');
+			header('Content-Disposition: attachment; filename="' . $template . '-' . $campaign_year . '-' . $formation_document_name . '.pdf"');
 			header('Content-Transfer-Encoding: binary');
 			header('Expires: 0');
 			header('Cache-Control: must-revalidate, post-check=0, pre-check=0');

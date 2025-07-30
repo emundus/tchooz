@@ -443,7 +443,7 @@ class PlgHikashopEmundus_hikashop extends CMSPlugin {
 
 	public function onHikashopAfterDisplayView($view)
 	{
-		if ($view->getName() === 'checkout' && $view->getLayout() === 'after_end') {
+		if (($view->getName() === 'checkout' && $view->getLayout() === 'after_end') || ($view->getName() === 'category' && $view->getLayout() === 'listing')) {
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 			$homepage = EmundusHelperMenu::getHomepageLink();
 

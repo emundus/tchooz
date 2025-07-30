@@ -2072,6 +2072,7 @@ class EmundusModelSettings extends ListModel
 		$params['mailonline']              = $this->app->get('mailonline');
 		$params['replyto']                 = $this->app->get('replyto', '');
 		$params['replytoname']             = $this->app->get('replytoname', '');
+		$params['fromname']                = $this->app->get('fromname', '');
 		$params['custom_email_conf']       = $emConfig->get('custom_email_conf', 0);
 		$params['custom_email_mailfrom']   = $emConfig->get('custom_email_mailfrom', '');
 		$params['custom_email_smtphost']   = $emConfig->get('custom_email_smtphost', '');

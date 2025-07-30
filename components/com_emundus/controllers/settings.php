@@ -1213,7 +1213,7 @@ class EmundusControllersettings extends BaseController
 				$config['smtpsecure'] = $emConfig->get('default_email_smtpsecure', $this->app->get('smtpsecure', ''));
 				$config['smtpport']   = $emConfig->get('default_email_smtpport', $this->app->get('smtpport', ''));
 				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport', $this->app->get('mailfrom', '')));
-				$config['fromname']   = $emConfig->get('default_email_fromname', $this->app->get('fromname', ''));
+				$config['fromname']   = $this->input->getString('fromname', $emConfig->get('default_email_fromname', $this->app->get('fromname', '')));
 			}
 			else
 			{
@@ -1225,7 +1225,7 @@ class EmundusControllersettings extends BaseController
 				$config['smtpsecure'] = $this->input->getString('custom_email_smtpsecure', '');
 				$config['smtpport']   = $this->input->getInt('custom_email_smtpport', '');
 				$config['mailfrom']   = $this->input->getString('custom_email_mailfrom', '');
-				$config['fromname']   = $this->app->get('fromname', '');
+				$config['fromname']   = $this->input->getString('fromname', $this->app->get('fromname', ''));
 
 				if (empty($config['smtppass']) || $config['smtppass'] == '************')
 				{
@@ -1293,7 +1293,7 @@ class EmundusControllersettings extends BaseController
 				$config['smtpsecure'] = $emConfig->get('default_email_smtpsecure', $this->app->get('smtpsecure', ''));
 				$config['smtpport']   = $emConfig->get('default_email_smtpport', $this->app->get('smtpport', ''));
 				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport', $this->app->get('mailfrom', '')));
-				$config['fromname']   = $emConfig->get('default_email_fromname', $this->app->get('fromname', ''));
+				$config['fromname']   = $this->input->getString('fromname', $emConfig->get('default_email_fromname', $this->app->get('fromname', '')));
 			}
 			else
 			{
@@ -1305,7 +1305,7 @@ class EmundusControllersettings extends BaseController
 				$config['smtpsecure'] = $this->input->getString('custom_email_smtpsecure', '');
 				$config['smtpport']   = $this->input->getInt('custom_email_smtpport', '');
 				$config['mailfrom']   = $this->input->getString('custom_email_mailfrom', '');
-				$config['fromname']   = $this->app->get('fromname', '');
+				$config['fromname']   = $this->input->getString('fromname', $this->app->get('fromname', ''));
 
 				if (empty($config['smtphost']))
 				{
