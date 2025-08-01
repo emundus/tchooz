@@ -144,8 +144,8 @@ class ApplicationFileRepository
 					$parent_id = $this->db->insertid();
 				}
 			}
-			
-			if(!empty($parent_id)) {
+
+			if(!empty($parent_id) && !empty($datas) && !empty($datas[array_key_first($datas)]) && is_array($datas[array_key_first($datas)])) {
 				//TODO: Check if the iteration of repeat table does not already exist
 				$repeat_iterations = count($datas[array_key_first($datas)]);
 				
