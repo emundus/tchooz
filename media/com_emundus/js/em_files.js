@@ -618,6 +618,12 @@ function openFiles(fnum, page = 0, vue = false) {
                             }
                             menuListGroup.append(menuList);
                             $('#em-appli-menu').show();
+
+                            // Apply active to the first menu
+                            $('#em-appli-menu .list-group-item').removeClass('active');
+                            if ($('#em-appli-menu .list-group-item:eq(0)')) {
+                                $('#em-appli-menu .list-group-item:eq(0)').addClass('active');
+                            }
                         } else {
                             $('#em-appli-menu').hide();
                         }
@@ -4788,6 +4794,10 @@ $(document).ready(function() {
         e.preventDefault();
         var id = $(this).attr('id');
         var url = $(this).attr('href');
+
+        // Add active class to the clicked item
+        $('#em-appli-menu .list-group-item').removeClass('active');
+        $(this).addClass('active');
 
         $.ajax({
             type: "get",

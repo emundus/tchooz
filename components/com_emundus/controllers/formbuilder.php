@@ -1389,7 +1389,7 @@ class EmundusControllerFormbuilder extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 
-			$model_ids = $this->input->getString('model_ids');
+			$model_ids = $this->input->getString('id');
 			$model_ids = json_decode($model_ids, true);
 
 			if (!empty($model_ids)) {

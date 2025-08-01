@@ -82,7 +82,6 @@ export default {
 									action: 'deleteformmodelfromids',
 									label: 'COM_EMUNDUS_ACTIONS_DELETE',
 									controller: 'formbuilder',
-									parameters: '&model_ids=%id%',
 									name: 'delete',
 									method: 'delete',
 								},

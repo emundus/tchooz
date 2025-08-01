@@ -173,6 +173,7 @@ body ::-webkit-scrollbar-track {
 
 .vue-swatches__wrapper {
 	display: grid;
+	grid-template-columns: repeat(6, 1fr);
 	position: absolute;
 	border: solid 2px #cecece;
 	background: #cecece;

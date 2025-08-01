@@ -238,10 +238,16 @@ class EmundusViewChecklist extends JViewLegacy
 				// Check campaign limit, if the limit is obtained, then we set the deadline to true
 				$m_workflow = new EmundusModelWorkflow;
 				$this->current_phase = $m_workflow->getCurrentWorkflowStepFromFile($this->_user->fnum);
+				$infinite_step = false;
 
-				if (!empty($this->current_phase) && !empty($this->current_phase->end_date)) {
-					$current_end_date   = $this->current_phase->end_date;
-					$current_start_date = $this->current_phase->start_date;
+				if (!empty($this->current_phase) && !empty($this->current_phase->id) && !empty($this->current_phase->end_date)) {
+					if ($this->current_phase->infinite)
+					{
+						$infinite_step = true;
+					}
+
+					$current_end_date   = !empty($this->current_phase->end_date) ? $this->current_phase->end_date : (!empty($this->_user->fnums[$this->_user->fnum]->end_date) ? $this->_user->fnums[$this->_user->fnum]->end_date : $this->_user->end_date);
+					$current_start_date = !empty($this->current_phase->start_date) ? $this->current_phase->start_date : $this->_user->fnums[$this->_user->fnum]->start_date;
 				}
 				else if (!empty($this->is_admission)) {
 					$current_end_date   = $this->_user->fnums[$this->_user->fnum]->admission_end_date;
@@ -255,7 +261,7 @@ class EmundusViewChecklist extends JViewLegacy
 				$m_campaign          = new EmundusModelCampaign;
 				$this->isLimitObtained     = $m_campaign->isLimitObtained($this->_user->fnums[$this->_user->fnum]->campaign_id, $this->_user->fnum);
 				$this->is_campaign_started = $now > $current_start_date;
-				$this->is_dead_line_passed = $current_end_date < $now;
+				$this->is_dead_line_passed = !$infinite_step && $current_end_date < $now;
 
 				if (($this->is_dead_line_passed || $this->isLimitObtained === true) && $eMConfig->get('can_edit_after_deadline', 0) == 0) {
 					$m_checklist->setDelete(0, $this->_user);
