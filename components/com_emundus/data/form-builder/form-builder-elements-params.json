@@ -546,6 +546,25 @@
       "sysadmin_only": false
     },
     {
+      "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_CLOSED",
+      "name": "accordion_closed",
+      "type": "dropdown",
+      "options": [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
       "label": "COM_EMUNDUS_FORM_BUILDER_PANEL_ACCORDION_TITLE",
       "name": "title",
       "type": "text",
