@@ -591,7 +591,7 @@ if (!empty($this->custom_title)) :?>
                               this.removeFile(file);
                               Swal.fire({
                                     icon: "warning",
-                                    text: responseText,
+                                    title: "' . Text::_('COM_EMUNDUS_ATTACHMENTS_ERROR') . '",
                                     confirmButtonText: "' . Text::_("COM_EMUNDUS_SWAL_OK_BUTTON") . '",
                                     showCancelButton: false,
                                     customClass: {
