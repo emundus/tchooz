@@ -47,7 +47,7 @@ class EmundusHelperUpdate
 		}
 	}
 
-	public static function clearJoomlaCache()
+	public static function clearJoomlaCache(?array $groups = [])
 	{
 		require_once(JPATH_BASE . '/administrator/components/com_cache/src/Model/CacheModel.php');
 		$m_cache = new CacheModel();
@@ -59,6 +59,11 @@ class EmundusHelperUpdate
 
 			foreach ($mCache->getAll() as $cache)
 			{
+				if (!empty($groups) && !in_array($cache->group, $groups))
+				{
+					continue;
+				}
+
 				if ($mCache->clean($cache->group) === false)
 				{
 					return false;
