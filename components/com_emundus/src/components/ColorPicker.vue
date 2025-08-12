@@ -1,7 +1,7 @@
 <template>
 	<div :id="id" class="color-picker-container tw-relative">
 		<div
-			class="tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full"
+			class="tw-h-[24px] tw-w-[24px] tw-cursor-pointer tw-rounded-full tw-border"
 			:style="selectedSwatchStyle"
 			@click="togglePopover"
 		></div>

@@ -154,6 +154,16 @@ class EmundusModelWorkflow extends JModelList
 								throw new Exception(sprintf(Text::_('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS_ALREADY_USED'), $status_label));
 							}
 							$already_used_entry_status[] = $status['id'];
+							
+							if (empty($step['profile_id']))
+							{
+								throw new Exception(sprintf(Text::_('COM_EMUNDUS_WORKFLOW_STEP_APPLICANT_PROFILE_NOT_SET'), $step['label']));
+							}
+						} else if ($this->isEvaluationStep($step['type'])) {
+							if (empty($step['form_id']))
+							{
+								throw new Exception(sprintf(Text::_('COM_EMUNDUS_WORKFLOW_STEP_EVALUATION_FORM_NOT_SET'), $step['label']));
+							}
 						}
 					}
 				}
