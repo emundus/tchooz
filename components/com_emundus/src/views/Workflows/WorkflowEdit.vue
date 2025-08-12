@@ -46,7 +46,7 @@
 							handle=".handle"
 							@end="onDragStepEnd"
 						>
-							<div v-for="step in steps" :key="step.id" class="workflow-step">
+							<div v-for="step in steps" :key="step.id" class="workflow-step tw-max-w-sm">
 								<div
 									class="tw-flex tw-w-fit tw-flex-row tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-3 tw-pb-1 tw-pt-2"
 									:class="stepHeaderClass(step)"

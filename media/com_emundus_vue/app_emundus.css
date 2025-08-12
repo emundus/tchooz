@@ -955,30 +955,30 @@ body ::-webkit-scrollbar-track {
 	opacity: 0;
 }
 
-.workflow-step[data-v-efc93f42] {
+.workflow-step[data-v-b6fbe928] {
 	min-width: 350px;
 }
-.hover-style-main[data-v-efc93f42]:hover {
+.hover-style-main[data-v-b6fbe928]:hover {
 	color: var(--main-500) !important;
 	border: 1px solid var(--main-500);
 }
-.hover-style-neutral[data-v-efc93f42]:hover {
+.hover-style-neutral[data-v-b6fbe928]:hover {
 	color: var(--neutral-500) !important;
 	border: 1px solid var(--neutral-500);
 }
-.hover-style-blue[data-v-efc93f42]:hover {
+.hover-style-blue[data-v-b6fbe928]:hover {
 	color: var(--blue-500) !important;
 	border: 1px solid var(--blue-500);
 }
-.hover-style-orange[data-v-efc93f42]:hover {
+.hover-style-orange[data-v-b6fbe928]:hover {
 	color: var(--orange-500) !important;
 	border: 1px solid var(--orange-500);
 }
-.hover-style-red[data-v-efc93f42]:hover {
+.hover-style-red[data-v-b6fbe928]:hover {
 	color: var(--red-500) !important;
 	border: 1px solid var(--red-500);
 }
-.hover-style-yellow[data-v-efc93f42]:hover {
+.hover-style-yellow[data-v-b6fbe928]:hover {
 	color: rgb(234 179 8 / var(--tw-bg-opacity, 1)) !important;
 	border: 1px solid rgb(234 179 8 / var(--tw-bg-opacity, 1));
 }
