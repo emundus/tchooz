@@ -1,0 +1,9 @@
+secrets:
+  - id: private-key
+    paths:
+      - ".docker/data/mysql/server-key.pem"
+      - ".docker/data/mysql/private_key.pem"
+      - ".docker/data/mysql/client-key.pem"
+      - ".docker/data/mysql/ca-key.pem"
+      - ".docker/apache/certs/localhost-key.pem"
+    statement: It's default necessary to have a private key in the repository, but it should not be used in production. It is only used for dev and testing purposes.

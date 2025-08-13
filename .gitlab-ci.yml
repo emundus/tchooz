@@ -91,6 +91,41 @@ phpunit-job:
   only:
     - merge_request
 
+repo_scanning:
+  stage: test
+  image:
+    name: docker.io/aquasec/trivy:latest
+    entrypoint: [""]
+  variables:
+    TRIVY_NO_PROGRESS: "true"
+    TRIVY_CACHE_DIR: ".trivycache/"
+  script:
+    - trivy --version
+    # cache cleanup is needed when scanning images with the same tags, it does not remove the database
+    - trivy clean --all
+    # update vulnerabilities db
+    - trivy image --download-db-only
+    # Builds report and puts it in the default workdir $CI_PROJECT_DIR, so `artifacts:` can take it from there
+    - trivy repo --scanners vuln,license,secret,misconfig . --exit-code 0 --format template --template "@/contrib/gitlab.tpl"
+        --output "$CI_PROJECT_DIR/gl-repo-scanning-report.json"
+    # Prints full report
+    - trivy repo --scanners vuln,license,secret,misconfig . --exit-code 0
+    # Fail on critical vulnerabilities
+    - trivy repo --scanners vuln,license,secret,misconfig . --exit-code 1 --severity CRITICAL --ignore-unfixed --ignorefile ./.trivyignore.yaml
+  cache:
+    paths:
+      - .trivycache/
+  artifacts:
+    when: always
+    reports:
+      container_scanning: gl-repo-scanning-report.json
+  dependencies: []
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && $CI_DEFAULT_BRANCH == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && "hotfix" == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event" && "dev" == $CI_MERGE_REQUEST_TARGET_BRANCH_NAME
+
 release-patch:
   extends: .release-template
   variables:
