@@ -911,7 +911,7 @@ function generate_letter() {
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
-                        })
+                        });
                     } else {
                         letters.forEach(letter => {
                             table +=
@@ -922,7 +922,7 @@ function generate_letter() {
                                 "</a>" +
                                 "</td>" +
                                 "</tr>";
-                        })
+                        });
                     }
 
                     table += "</tbody></table>";
@@ -954,16 +954,14 @@ function generate_letter() {
                                 '</a>' +
                                 '</td>' +
                                 '</tr>';
-                        })
+                        });
 
                         table += "</tbody></table>";
 
                         var urls = [];
                         files.forEach(file => {
                             urls.push(file.upload);
-                        })
-                        console.log(urls);
-
+                        });
                         $('#em-download-all').attr('href', zipUrl + urls.toString());
                     }
                 }
