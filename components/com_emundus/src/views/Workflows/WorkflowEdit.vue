@@ -46,7 +46,7 @@
 							handle=".handle"
 							@end="onDragStepEnd"
 						>
-							<div v-for="step in steps" :key="step.id" class="workflow-step">
+							<div v-for="step in steps" :key="step.id" class="workflow-step tw-max-w-sm">
 								<div
 									class="tw-flex tw-w-fit tw-flex-row tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-3 tw-pb-1 tw-pt-2"
 									:class="stepHeaderClass(step)"
@@ -387,6 +387,11 @@ export default {
 			evaluationForms: [],
 			programsOptions: [],
 			stepMandatoryFields: ['label', 'type', 'entry_status'],
+			mandatoryFieldsByTypes: {
+				evaluation: ['form_id'],
+				applicant: ['profile_id'],
+				payment: ['output_status'],
+			},
 			fieldsInError: {},
 			displayErrors: false,
 
@@ -689,6 +694,27 @@ export default {
 
 			return deleted;
 		},
+
+		isFieldEmpty(step, field) {
+			let emptyField = true;
+
+			if (!step[field]) {
+				return true;
+			}
+
+			switch (typeof step[field]) {
+				case 'string':
+					emptyField = step[field].trim() === '';
+					break;
+				case 'object':
+					emptyField = step[field].length < 1;
+					break;
+				default:
+					emptyField = step[field] === '' || step[field] === null || step[field] === undefined || step[field] < 0;
+			}
+
+			return emptyField;
+		},
 		onBeforeSave() {
 			let check = false;
 
@@ -700,20 +726,35 @@ export default {
 
 				stepsCheck.push(
 					this.stepMandatoryFields.every((field) => {
-						let emptyField = true;
-						switch (typeof step[field]) {
-							case 'string':
-								emptyField = step[field].trim() === '';
-								break;
-							case 'object':
-								emptyField = step[field].length < 1;
-								break;
-							default:
-								emptyField = step[field] === '';
-						}
+						let emptyField = this.isFieldEmpty(step, field);
 
 						if (emptyField) {
 							this.fieldsInError[step.id].push(field);
+						} else {
+							if (this.isApplicantStep(step)) {
+								this.mandatoryFieldsByTypes.applicant.forEach((field) => {
+									emptyField = this.isFieldEmpty(step, field);
+									if (emptyField) {
+										this.fieldsInError[step.id].push(field);
+									}
+								});
+							} else if (this.isEvaluationStep(step)) {
+								this.mandatoryFieldsByTypes.evaluation.forEach((field) => {
+									emptyField = this.isFieldEmpty(step, field);
+
+									if (emptyField) {
+										this.fieldsInError[step.id].push(field);
+									}
+								});
+							} else if (this.isPaymentStep(step)) {
+								this.mandatoryFieldsByTypes.payment.forEach((field) => {
+									emptyField = this.isFieldEmpty(step, field);
+
+									if (emptyField) {
+										this.fieldsInError[step.id].push(field);
+									}
+								});
+							}
 						}
 
 						return !emptyField;
@@ -786,7 +827,7 @@ export default {
 
 							this.getWorkflow();
 						} else {
-							this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.message);
+							this.displayError('COM_EMUNDUS_WORKFLOW_SAVE_FAILED', response.msg);
 						}
 					})
 					.catch((e) => {

@@ -49,6 +49,18 @@
 				<option value="1">JYES</option>
 			</field>
 
+			<field
+				showon="accordion:1"
+				name="accordion_closed"
+				type="radio"
+				default="1"
+				class="btn-group"
+				label="PLG_ELEMENT_PANEL_ACCORDION_CLOSED_LABEL">
+
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
 			<field name="title"
 				   type="text"
 				   label="PLG_ELEMENT_PANEL_ACCORDION_TITLE_LABEL" />

@@ -95,7 +95,7 @@ export default {
 
 			if (result.status) {
 				if (redirect) {
-					window.location.href = window.location.origin + '/' + result.data;
+					window.location.href = window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data;
 				}
 				return result.data;
 			}

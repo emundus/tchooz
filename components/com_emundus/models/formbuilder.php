@@ -2776,7 +2776,7 @@ class EmundusModelFormbuilder extends JModelList
 		$updated = false;
 
 		if (!empty($profile)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			try {
@@ -2964,7 +2964,7 @@ class EmundusModelFormbuilder extends JModelList
 			$eMConfig = JComponentHelper::getParams('com_emundus');
 			$modules  = $eMConfig->get('form_builder_page_creation_modules', [93, 102, 103, 104, 168, 170]);
 
-			
+
 			$query = $this->db->getQuery(true);
 
 			// Get the profile
@@ -3144,9 +3144,8 @@ class EmundusModelFormbuilder extends JModelList
 											$this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels, 'fabrik_groups', $newgroupid, 'label');
 										}
 										else {
-											$labels_to_duplicate = array();
+											$labels_to_duplicate = $this->getLabelsFromTranslationKeyForLanguages($group_model->label, $languages, $model_prefix);
 											foreach ($languages as $language) {
-												$labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($group_model->label, $language->lang_code));
 												if ($label[$language->sef] == '') {
 													$label[$language->sef] = $group_model->label;
 												}
@@ -3169,6 +3168,23 @@ class EmundusModelFormbuilder extends JModelList
 										];
 										$insert = (object) $insert;
 										$this->db->insertObject('#__fabrik_formgroup', $insert);
+
+
+										$params = json_decode($group_model->params);
+										$intro_key = $params->intro ?? '';
+										$intro_to_duplicate = $this->getLabelsFromTranslationKeyForLanguages($intro_key, $languages, $model_prefix);
+										$group_intro_key = 'FORM_' . $newformid . '_GROUP_' . $newgroupid . '_INTRO';
+
+										$this->translate($group_intro_key, $intro_to_duplicate, 'fabrik_groups', $newgroupid, 'intro');
+
+										$params->intro = $group_intro_key;
+
+										$update = [
+											'id' => $newgroupid,
+											'params' => json_encode($params)
+										];
+										$updateObj = (object)$update;
+										$this->db->updateObject('#__fabrik_groups', $updateObj, 'id');
 
 										foreach ($elements as $element) {
 											try {
@@ -3315,13 +3331,36 @@ class EmundusModelFormbuilder extends JModelList
 		return $response;
 	}
 
+	/**
+	 * @param   string       $key
+	 * @param   array        $languages
+	 * @param   string|null  $replace
+	 *
+	 * @return array
+	 */
+	public function getLabelsFromTranslationKeyForLanguages(string $key, array $languages, ?string $replace = null): array
+	{
+		$translations = [];
+
+		foreach ($languages as $language) {
+			$translated = $this->getTranslation($key, $language->lang_code);
+
+			if (empty($translated) || $translated === $key) {
+				$translated = $key;
+			}
+
+			$translations[$language->sef] = !empty($replace) ? str_replace($replace, '', $translated) : $translated;
+		}
+
+		return $translations;
+	}
 
 	function checkIfModelTableIsUsedInForm($model_id, $profile_id)
 	{
 		$used = false;
 
 		if (!empty($model_id) && !empty($profile_id)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
@@ -3371,7 +3410,7 @@ class EmundusModelFormbuilder extends JModelList
 		$new_table = '';
 
 		if (!empty($template_table_name)) {
-			
+
 			$query = 'SHOW CREATE TABLE ' . $this->db->quoteName($template_table_name);
 
 			try {
@@ -4720,7 +4759,7 @@ class EmundusModelFormbuilder extends JModelList
 		$document = [];
 
 		if (!empty($attachment_id) && !empty($profile_id)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->select('has_sample, sample_filepath')
