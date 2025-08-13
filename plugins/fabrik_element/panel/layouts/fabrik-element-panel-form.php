@@ -15,11 +15,13 @@ $d = $displayData;
                 <h3>
                     <?php echo Text::_($d->title) ?>
                 </h3>
-                <span class="material-symbols-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">expand_more</span>
+                <span class="material-symbols-outlined tw-transition-transform tw-duration-300" id="<?php echo $d->id; ?>-icon">
+                    <?php echo $d->accordion_closed ? 'expand_more' : 'expand_less'; ?>
+                </span>
             </div>
 	    <?php endif; ?>
 
-        <div <?php if ($d->accordion == 1) : ?>class="show collapse"<?php endif ?>
+        <div <?php if ($d->accordion == 1) : ?>class="collapse <?= !$d->accordion_closed ? 'show' : '' ?>"<?php endif ?>
              id="<?php echo $d->id; ?>-content"
              data-te-collapse-item>
 		    <?php if (!empty($d->title) && $d->accordion == 0) : ?>

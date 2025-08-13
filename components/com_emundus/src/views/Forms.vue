@@ -33,6 +33,14 @@ export default {
 									name: 'duplicate',
 								},
 								{
+									action: 'unpublishform',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH',
+									controller: 'form',
+									method: 'post',
+									name: 'unpublish',
+									confirm: 'COM_EMUNDUS_ONBOARD_ACTION_CONFIRM_UNPUBLISH',
+								},
+								{
 									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%',
 									label: 'COM_EMUNDUS_ONBOARD_MODIFY',
 									controller: 'form',

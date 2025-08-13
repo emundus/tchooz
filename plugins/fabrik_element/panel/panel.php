@@ -118,6 +118,7 @@ class PlgFabrik_ElementPanel extends PlgFabrik_Element
 		$displayData->name = $this->getHTMLName($repeatCounter);
 		$displayData->type = $params->get('type', 0);
 		$displayData->accordion = $params->get('accordion', '');
+		$displayData->accordion_closed = $params->get('accordion_closed', 1);
 		$displayData->title = $params->get('title', '');
 		$displayData->iconType = $params->get('panel_icon_type', '-outlined');
 
