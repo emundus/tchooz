@@ -3541,36 +3541,39 @@ class EmundusModelFormbuilder extends JModelList
 		}
 	}
 
-	function hiddenUnhiddenElement($element)
+	function hiddenUnhiddenElement(int $element_id): bool
 	{
+		$toggled = false;
 
-		$query = $this->db->getQuery(true);
+		if (!empty($element_id)) {
+			$query = $this->db->getQuery(true);
 
-		try {
-			$query->select('hidden')
-				->from($this->db->quoteName('#__fabrik_elements'))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element));
-			$this->db->setQuery($query);
-			$old_hidden = $this->db->loadResult();
+			try {
+				$query->select('hidden')
+					->from($this->db->quoteName('#__fabrik_elements'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element_id));
+				$this->db->setQuery($query);
+				$old_hidden = $this->db->loadResult();
 
-			$hidden = 1;
-			if ($old_hidden == 1) {
-				$hidden = 0;
+				$hidden = 1;
+				if ($old_hidden == 1) {
+					$hidden = 0;
+				}
+
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_elements'))
+					->set($this->db->quoteName('hidden') . ' = ' . $this->db->quote($hidden))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element_id));
+				$this->db->setQuery($query);
+
+				$toggled = $this->db->execute();
 			}
-
-			$query->clear()
-				->update($this->db->quoteName('#__fabrik_elements'))
-				->set($this->db->quoteName('hidden') . ' = ' . $this->db->quote($hidden))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element));
-			$this->db->setQuery($query);
-
-			return $this->db->execute();
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/formbuilder | Error at publish/unpublish element ' . $element_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e) {
-			Log::add('component/com_emundus/models/formbuilder | Error at publish/unpublish element ' . $element . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
-			return false;
-		}
+		return $toggled;
 	}
 
 	function getDatabasesJoin()
