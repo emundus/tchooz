@@ -908,7 +908,7 @@ class EmundusControllerUsers extends BaseController
 		try
 		{
 			require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
-			EmundusHelperUpdate::clearJoomlaCache('mod_menu');
+			EmundusHelperUpdate::clearJoomlaCache();
 		}
 		catch (Exception $e)
 		{

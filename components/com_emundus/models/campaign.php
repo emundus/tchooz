@@ -1988,6 +1988,12 @@ class EmundusModelCampaign extends ListModel
 								->where($this->_db->quoteName('id') . ' = ' . $details_menu->id);
 							$this->_db->setQuery($query);
 							$this->_db->execute();
+
+							if (!class_exists('EmundusHelperUpdate'))
+							{
+								require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+							}
+							EmundusHelperUpdate::clearJoomlaCache(['com_menus']);
 						}
 						else
 						{
