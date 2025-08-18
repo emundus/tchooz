@@ -4056,7 +4056,7 @@ class EmundusModelCampaign extends ListModel
 							$dispatcher->dispatch('onAfterImportRow', $onAfterImportRow);
 						}
 
-						sleep(1);
+						sleep(0.5);
 					}
 
 					$onAfterImportCSVEventHandler = new GenericEvent(

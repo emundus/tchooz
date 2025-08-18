@@ -1469,6 +1469,7 @@ class EmundusControllerCampaign extends BaseController
 			{
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$mtype = finfo_file($finfo, $file['tmp_name']);
+				finfo_close($finfo);
 
 				$valid_types = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv', 'application/vnd.oasis.opendocument.spreadsheet'];
 				if (!in_array($mtype, $valid_types) || !in_array($file['type'], $valid_types))
@@ -1524,6 +1525,7 @@ class EmundusControllerCampaign extends BaseController
 			{
 				$finfo = finfo_open(FILEINFO_MIME_TYPE);
 				$mtype = finfo_file($finfo, $file['tmp_name']);
+				finfo_close($finfo);
 
 				$valid_types = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv', 'application/vnd.oasis.opendocument.spreadsheet'];
 				if (!in_array($mtype, $valid_types) || !in_array($file['type'], $valid_types))
