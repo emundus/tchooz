@@ -12,6 +12,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckExtensionsJob extends TchoozJob
@@ -53,7 +54,7 @@ class CheckExtensionsJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		// Get creation date of the project
 		$output->writeln('🔄'.$this->colors['yellow'].'Following extensions are deprecated, if some enabled please be sure of these usages before migrate platform : '.$this->colors['reset']);

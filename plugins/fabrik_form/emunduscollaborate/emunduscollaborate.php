@@ -118,6 +118,14 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 				$accepted = $this->acceptCollaboration($shared_user_id,$key);
 
 				if($accepted) {
+					/*$query->clear()
+						->update($this->_db->quoteName('#__users'))
+						->set('activation = 1')
+						->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($shared_user_id));
+
+					$this->_db->setQuery($query);
+					$this->_db->execute();*/
+
 					PluginHelper::importPlugin('emundus','custom_event_handler');
 					$this->app->triggerEvent('onAfterAcceptCollaboration', [$shared_user_id, $key]);
 					$this->app->triggerEvent('onCallEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
@@ -173,7 +181,12 @@ class PlgFabrik_FormEmundusCollaborate extends plgFabrik_Form
 			$this->app->triggerEvent('onCallEventHandler', ['onAfterAcceptCollaboration', ['user' => $shared_user_id, 'key' => $key]]);
 
 			$this->app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_SUCCESS'),'success');
-			$this->app->login(array('username' => $datas['jos_emundus_users___email'], 'password' => $datas['jos_emundus_users___password']));
+
+			if (!class_exists('EmundusModelUsers')) {
+				require_once( JPATH_SITE . '/components/com_emundus/models/users.php');
+			}
+			$m_users = new EmundusModelUsers();
+			$m_users->login($shared_user_id);
 		} else {
 			$this->app->enqueueMessage(Text::_('PLG_FABRIK_FORM_EMUNDUSCOLLABORATE_ERROR_OCCURED'), 'error');
 			$this->app->redirect('index.php');

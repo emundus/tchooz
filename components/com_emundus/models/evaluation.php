@@ -2317,47 +2317,91 @@ class EmundusModelEvaluation extends JModelList
 		return $form;
 	}
 
-	/*
-* 	Get Decision form ID By programme code
-*	@param code 		code of the programme
-* 	@return int
-*/
-	function getDecisionFormByProgramme($code = null)
+	/**
+	 * @param   code        code of the programme
+	 *
+	 * @return int
+	 * Get Old Decision form ID By programme code
+	 */
+	function getDecisionFormByProgramme(?string $code = null): int
 	{
 		$decision_form = 0;
 
-		if ($code === null)
-		{
+		if ($code === NULL) {
 			$session = $this->app->getSession();
-			if ($session->has('filt_params'))
-			{
+			if ($session->has('filt_params')) {
 				$filt_params = $session->get('filt_params');
-				if (!empty($filt_params['programme']))
-				{
+				if (!empty($filt_params['programme'])) {
 					$code = $filt_params['programme'][0];
 				}
 			}
 		}
 
-		if (!empty($code))
-		{
-			try
-			{
-				$query = 'SELECT ff.form_id
-                    FROM #__fabrik_formgroup ff
-                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-					$this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
+		if (!empty($code)) {
+			try {
+				$query = $this->db->createQuery();
+				$query->select('ff.form_id')
+					->from('#__fabrik_formgroup ff')
+					->where('ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' . $this->_db->quote($code) . ')')
+					->where('ff.group_id <> \'\'');
 
-				$this->_db->setQuery($query);
-				$decision_form = $this->_db->loadResult();
-			}
-			catch (Exception $e)
-			{
+				$this->db->setQuery($query);
+				$decision_form = (int)$this->db->loadResult();
+			} catch (Exception $e) {
 				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
 		}
 
 		return $decision_form;
+	}
+
+	/**
+	 * Get evaluations form ID By programme code
+	 *
+	 * @param   code        code of the programme
+	 *
+	 * @return int        The fabrik ID for the admission form
+	 */
+	function getAdmissionFormByProgramme(?string $code = null): int
+	{
+		$admission_form_id = 0;
+
+		if ($code === null) {
+			$session = $this->app->getSession();
+			if ($session->has('filt_params')) {
+				$filt_params = $session->get('filt_params', []);
+				if (!empty($filt_params['programme'])) {
+					$code = $filt_params['programme'][0];
+				}
+			}
+		}
+
+		try {
+			$query = $this->db->getQuery(true);
+
+			$query->select('fabrik_admission_group_id')
+				->from('#__emundus_setup_programmes')
+				->where('code LIKE ' . $this->db->quote($code));
+
+			$this->db->setQuery($query);
+			$group_ids = $this->db->loadResult();
+
+			if (!empty($group_ids)) {
+				$group_ids = explode(',', $group_ids);
+				$query->clear()
+					->select($this->db->quoteName('ff.form_id'))
+					->from($this->db->quoteName('#__fabrik_formgroup', 'ff'))
+					->leftJoin($this->db->quoteName('jos_fabrik_lists', 'l') . ' ON ' . $this->db->quoteName('l.form_id') . ' = ' . $this->db->quoteName('ff.form_id'))
+					->where('ff.group_id IN (' . $group_ids[0] . ')');
+
+				$this->db->setQuery($query);
+				$admission_form_id = (int)$this->db->loadResult();
+			}
+		} catch (Exception $e) {
+			Log::add(JUri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $admission_form_id;
 	}
 
 	/**

@@ -1,0 +1,18 @@
+parameters:
+  bootstrapFiles:
+    - phpstanbootstrap.php
+  scanDirectories:
+    - ../../components/com_emundus/models
+    - ../../components/com_emundus/helpers
+    - ../../components/com_emundus/controllers
+  ignoreErrors:
+  	- '#Cannot access offset .* on mixed#'
+  	- '#Cannot call method .* on mixed#'
+  	- '#Cannot access property .* on mixed#'
+  	- '#Binary operation .* between .* and mixed results in an error#'
+  	- '#Binary operation .* between mixed and .* results in an error#'
+  	- '#Access to an undefined property .*#'
+  	- '#Variable \$data might not be defined.#'
+  	- '#.*, mixed given.#'
+  	- '#Call to an undefined method Joomla\\CMS\\Application\\CMSApplicationInterface::redirect\(\).#'
+  level: 5

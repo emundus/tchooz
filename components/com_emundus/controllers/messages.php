@@ -1018,14 +1018,16 @@ class EmundusControllerMessages extends BaseController
 		return $sent;
 	}
 
-	/** The generic function used for sending emails outside of emundus.
+	/**
+	 * @deprecated
+	 * The generic function used for sending emails outside of emundus.
 	 *
-	 * @param   String  $email_address
-	 * @param   Mixed   $email  If a numeric ID is provided, use that, if a string is provided, get the email with that label.
-	 * @param   null    $post
-	 * @param   null    $user_id
-	 * @param   array   $attachments
-	 * @param   array   $fnum   If we need to replace fabrik tags
+	 * @param   string      $email_address
+	 * @param   string|int   $email  If a numeric ID is provided, use that, if a string is provided, get the email with that label.
+	 * @param   ?array      $post
+	 * @param   ?int        $user_id
+	 * @param   array       $attachments
+	 * @param   string      $fnum   If we need to replace fabrik tags
 	 *
 	 * @return bool
 	 */
