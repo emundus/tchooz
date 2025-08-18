@@ -56,7 +56,7 @@ class TchoozMigrateCheckReqsCommand extends TchoozCommand
 	{
 		$this->configureIO($input, $output);
 		$this->ioStyle->title('Checking prerequisites for migration to Tchooz v2');
-		
+
 		$pathV1 = $this->getApplication()->get('path_v1', '');
 
 		$projectPath = $this->getStringFromOption('project_to_migrate', 'Absolute path to the v1 project', true, true, $pathV1);
@@ -111,7 +111,7 @@ class TchoozMigrateCheckReqsCommand extends TchoozCommand
 
 		foreach ($selectedJobs as $job)
 		{
-			$this->executeJob($job, $output);
+			$this->executeJob($job, $input, $output);
 		}
 
 		return Command::SUCCESS;

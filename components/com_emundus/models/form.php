@@ -1345,13 +1345,13 @@ class EmundusModelForm extends JModelList
 	 * @return int
 	 * @throws Exception
 	 */
-	public function createFormEval($user = null)
+	public function createFormEval($user = null, $label = ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], $intro =  ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'])
 	{
 		$new_form_id = 0;
 		require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 		$m_formbuilder = new EmundusModelFormbuilder();
 
-		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'], 'eval', $user);
+		$form_id = $m_formbuilder->createFabrikForm('EVALUATION', $label, $intro, 'eval', $user);
 		if (!empty($form_id))
 		{
 			$new_form_id = $form_id;

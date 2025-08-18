@@ -11,6 +11,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckInformationsJob extends TchoozJob
@@ -82,7 +83,7 @@ class CheckInformationsJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		// Get creation date of the project
 		$output->writeln('🔄'.$this->colors['yellow'].'Creation date of the project...'.$this->colors['reset']);
@@ -107,6 +108,11 @@ class CheckInformationsJob extends TchoozJob
 		// Programs count
 		$output->writeln('🔄'.$this->colors['yellow'].'Checking programmes count...'.$this->colors['reset']);
 		$this->checkProgramsCount($output);
+		$output->writeln('');
+
+		// Workflows count
+		$output->writeln('🔄'.$this->colors['yellow'].'Checking workflows count...'.$this->colors['reset']);
+		$this->checkWorkflowsCount($output);
 		$output->writeln('');
 
 		// Check custom css
@@ -211,6 +217,44 @@ class CheckInformationsJob extends TchoozJob
 		$programmesCount = $this->databaseService->getDatabase()->loadResult();
 
 		$output->writeln('Programmes count : '.$this->colors['bold'].$programmesCount.$this->colors['reset']);
+	}
+
+	private function checkWorkflowsCount(OutputInterface $output): void
+	{
+		$query = $this->databaseService->getDatabase()->getQuery(true);
+
+		try {
+			$query->clear()
+				->select('COUNT(id)')
+				->from( $this->databaseService->getDatabase()->quoteName('jos_emundus_campaign_workflow'));
+
+			$this->databaseService->getDatabase()->setQuery($query);
+			$workflowsCount = $this->databaseService->getDatabase()->loadResult();
+
+			$output->writeln('Workflows count : '.$this->colors['bold'].$workflowsCount.$this->colors['reset']);
+
+			$query->clear()
+				->select('COUNT(DISTINCT ecw.id)')
+				->from( $this->databaseService->getDatabase()->quoteName('jos_emundus_campaign_workflow', 'ecw'))
+				->innerJoin('jos_emundus_campaign_workflow_repeat_programs AS jecwrp ON jecwrp.parent_id = ecw.id');
+
+			$this->databaseService->getDatabase()->setQuery($query);
+			$workflowsCount = $this->databaseService->getDatabase()->loadResult();
+
+			$output->writeln('Workflows related to programs count : '.$this->colors['bold'].$workflowsCount.$this->colors['reset']);
+
+			$query->clear()
+				->select('COUNT(DISTINCT ecw.id)')
+				->from( $this->databaseService->getDatabase()->quoteName('jos_emundus_campaign_workflow', 'ecw'))
+				->leftJoin('jos_emundus_campaign_workflow_repeat_campaign as ecwrc ON ecwrc.parent_id = ecw.id');
+
+			$this->databaseService->getDatabase()->setQuery($query);
+			$workflowsCount = $this->databaseService->getDatabase()->loadResult();
+
+			$output->writeln('Workflows related to campaigns count : '.$this->colors['bold'].$workflowsCount.$this->colors['reset']);
+		} catch (\Exception $e) {
+			$output->writeln($this->colors['red'].'🚫'.$this->colors['reset'].'Error while fetching workflows count '  . $e->getMessage());
+		}
 	}
 
 	private function checkCustomCss(OutputInterface $output): void

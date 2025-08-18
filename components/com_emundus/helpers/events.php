@@ -2503,7 +2503,7 @@ class EmundusHelperEvents
 			$user = Factory::getApplication()->getIdentity();
 		}
 
-		if (empty($existing_session->id))
+		if (empty($existing_session) || empty($existing_session->id))
 		{
 			try
 			{

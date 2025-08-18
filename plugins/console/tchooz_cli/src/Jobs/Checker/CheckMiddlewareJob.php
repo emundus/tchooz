@@ -12,6 +12,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckMiddlewareJob extends TchoozJob
@@ -26,7 +27,7 @@ class CheckMiddlewareJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		$phpVersion = phpversion();
 		Log::add('PHP version: ' . $phpVersion, Log::INFO, self::getJobName());

@@ -12,6 +12,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckVersionJob extends TchoozJob
@@ -27,7 +28,7 @@ class CheckVersionJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		$diffs = exec('git -C '.$this->projectToMigrate.' status --porcelain');
 		if(!empty($diffs)) {

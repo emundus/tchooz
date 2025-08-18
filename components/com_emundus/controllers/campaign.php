@@ -217,19 +217,19 @@ class EmundusControllerCampaign extends BaseController
 					if ($now < $start_date)
 					{
 						$campaign_time_state_label = Text::_('COM_EMUNDUS_CAMPAIGN_YET_TO_COME');
-						$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label';
+						$campaign_time_state_class = 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-bg-neutral-300 tw-text-neutral-700 tw-text-sm tw-font-medium';
 					}
 					else
 					{
 						if ($now > $end_date)
 						{
 							$campaign_time_state_label = Text::_('COM_EMUNDUS_ONBOARD_FILTER_CLOSE');
-							$campaign_time_state_class = 'label label-black em-p-5-12 em-font-weight-600';
+							$campaign_time_state_class = 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-bg-neutral-950 tw-text-white tw-text-sm tw-font-medium';
 						}
 						else
 						{
 							$campaign_time_state_label = Text::_('COM_EMUNDUS_CAMPAIGN_ONGOING');
-							$campaign_time_state_class = 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label';
+							$campaign_time_state_class = 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-bg-neutral-300 tw-text-neutral-700 tw-text-sm tw-font-medium';
 						}
 					}
 
@@ -244,7 +244,7 @@ class EmundusControllerCampaign extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'value'   => $campaign->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-							'classes' => $campaign->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 label' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
+							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm' . ($campaign->published ? ' em-bg-main-500 tw-text-white' : ' tw-bg-neutral-300 tw-text-neutral-700'),
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_TIME_STATE'),
@@ -290,7 +290,7 @@ class EmundusControllerCampaign extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM'),
 							'value'   => $campaign->program_label,
-							'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
+							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-bg-neutral-300 tw-text-neutral-700 tw-font-medium tw-text-sm',
 							'display' => 'blocs'
 						],
 						[

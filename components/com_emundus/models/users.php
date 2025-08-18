@@ -16,10 +16,10 @@
 \defined('_JEXEC') or die;
 // phpcs:enable PSR1.Files.SideEffects
 
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/filters.php');
+require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;

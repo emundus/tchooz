@@ -13,6 +13,7 @@ use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateFabrikJob extends TchoozJob
@@ -62,7 +63,7 @@ class MigrateFabrikJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		$section = $output->section();
 
@@ -220,6 +221,24 @@ class MigrateFabrikJob extends TchoozJob
 						$this->databaseService->getDatabase()->setQuery($query);
 
 						$results['fabrik_elements'][$element['id']]['status'] = $this->databaseService->getDatabase()->execute();
+					}
+
+					if ($element['plugin'] === 'emundus_fileupload')
+					{
+						$query = 'SELECT COLUMN_TYPE
+							FROM INFORMATION_SCHEMA.COLUMNS
+							WHERE TABLE_NAME = ' . $element['db_table_name'] . '
+							  AND COLUMN_NAME = ' . $element['name'];
+
+						$this->databaseService->getDatabase()->setQuery($query);
+						$columnType = $this->databaseService->getDatabase()->loadResult();
+
+						if (in_array($columnType, ['INT', 'int', 'int(11)'])) {
+							if (!class_exists('EmundusHelperUpdate')) {
+								require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+							}
+							\EmundusHelperUpdate::alterColumn($element['db_table_name'], $element['name'], 'VARCHAR', 255);
+						}
 					}
 				}
 				break;

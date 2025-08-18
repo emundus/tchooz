@@ -1436,11 +1436,11 @@ class EmundusModelDecision extends JModelList
 			$query = 'SELECT ff.form_id
 					FROM #__fabrik_formgroup ff
 					WHERE ff.group_id IN (SELECT fabrik_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-				$this->_db->Quote($code) . ')';
+				$this->db->Quote($code) . ')';
 //die(str_replace('#_', 'jos', $query));
-			$this->_db->setQuery($query);
+			$this->db->setQuery($query);
 
-			return $this->_db->loadResult();
+			return $this->db->loadResult();
 		}
 		catch (Exception $e) {
 			echo $e->getMessage();
@@ -1448,35 +1448,16 @@ class EmundusModelDecision extends JModelList
 		}
 	}
 
-	function getDecisionFormByProgramme($code = null)
+	/*
+	 * @deprecated
+	 */
+	function getDecisionFormByProgramme($code = null): int
 	{
-		$decision_form = 0;
-
-		if ($code === NULL) {
-			$session = $this->app->getSession();
-			if ($session->has('filt_params')) {
-				$filt_params = $session->get('filt_params');
-				if (!empty($filt_params['programme'])) {
-					$code = $filt_params['programme'][0];
-				}
-			}
+		if (!class_exists('EmundusModelEvaluation')) {
+			require_once JPATH_ROOT . '/components/com_emundus/models/evaluation.php';
 		}
-
-		if (!empty($code)) {
-			try {
-				$query = 'SELECT ff.form_id
-                    FROM #__fabrik_formgroup ff
-                    WHERE ff.group_id IN (SELECT fabrik_decision_group_id FROM #__emundus_setup_programmes WHERE code like ' .
-					$this->_db->Quote($code) . ') AND ff.group_id <> \'\'';
-
-				$this->_db->setQuery($query);
-				$decision_form = $this->_db->loadResult();
-			} catch (Exception $e) {
-				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-			}
-		}
-
-		return $decision_form;
+		$m_evaluation = new EmundusModelEvaluation();
+		return $m_evaluation->getDecisionFormByProgramme($code);
 	}
 
 	public function getDecisionUrl($fnum, $formid, $rowid = 0, $student_id = 0, $redirect = 0, $view = 'form')

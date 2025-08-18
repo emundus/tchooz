@@ -10,6 +10,7 @@
 namespace Emundus\Plugin\Console\Tchooz\Jobs;
 
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 abstract class TchoozJob
@@ -29,7 +30,7 @@ abstract class TchoozJob
 		Log::addLogger($logger->options,Log::ALL, [$logger->jobName]);
 	}
 
-	public function execute(OutputInterface $output): void {
+	public function execute(InputInterface $input, OutputInterface $output): void {
 		//return;
 	}
 

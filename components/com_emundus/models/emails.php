@@ -2106,7 +2106,7 @@ class EmundusModelEmails extends JModelList
 							[
 								'key'     => Text::_('COM_EMUNDUS_ONBOARD_CATEGORY'),
 								'value'   => $email->category,
-								'classes' => 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
+								'classes' => 'tw-flex tw-flex-row tw-items-center tw-text-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-text-sm tw-font-medium tw-w-fit tw-bg-neutral-300 tw-text-neutral-700',
 								'display' => 'all'
 							],
 						];
@@ -3197,7 +3197,22 @@ class EmundusModelEmails extends JModelList
 		return $tags;
 	}
 
-	public function sendEmailNoFnum($email_address, $email, $post = null, $user_id = null, $attachments = [], $fnum = null, $log_email = true, $emails_cc = [], $user_id_from = null)
+
+	/**
+	 * @param   string       $email_address
+	 * @param   int|string   $email
+	 * @param   array|null   $post
+	 * @param   int|null     $user_id
+	 * @param   array        $attachments
+	 * @param   string|null  $fnum
+	 * @param   int|bool     $log_email
+	 * @param   array        $emails_cc
+	 * @param   int|null     $user_id_from
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, array $attachments = [], ?string $fnum = null, int|bool $log_email = true, array $emails_cc = [], ?int $user_id_from = null)
 	{
 		$sent = false;
 
