@@ -263,7 +263,22 @@ class DatabaseService
 		$primaryKey = $this->db->loadResult();
 		// Some old tables does not have primary key :/
 		if(empty($primaryKey)) {
-			$primaryKey = 'id';
+			// Check if we have an id column
+			$this->query->clear()
+				->select('COLUMN_NAME')
+				->from('information_schema.COLUMNS')
+				->where('TABLE_NAME' . ' = ' . $this->db->quote($table))
+				->where('COLUMN_NAME' . ' = ' . $this->db->quote('id'));
+			$this->db->setQuery($this->query);
+			$primaryKey = $this->db->loadResult();
+
+			// If we still don't have a primary key, we use '*' as default
+			if (empty($primaryKey))
+			{
+				// This is not a good practice, but we have to do it for old tables
+				$primaryKey = '*';
+			}
+			
 		}
 
 		return $primaryKey;
