@@ -281,12 +281,15 @@ class DatabaseService
 		return $this->db->loadResult();
 	}
 
-	public function getDatas(string $table, ?int $limit = 1000, ?int $offset = 0): array
+	public function getDatas(string $table, ?int $limit = null, ?int $offset = 0): array
 	{
 		$this->query->clear()
 			->select('*')
-			->from($this->db->quoteName($table))
-			->setLimit($limit, $offset);
+			->from($this->db->quoteName($table));
+		if (!empty($limit))
+		{
+			$this->query->setLimit($limit, $offset);
+		}
 		$this->db->setQuery($this->query);
 		return $this->db->loadAssocList();
 	}
