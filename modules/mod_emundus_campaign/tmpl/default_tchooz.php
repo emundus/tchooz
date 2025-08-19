@@ -238,6 +238,8 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 						<?php else : ?>
                         <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
 	                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                role="button"
+                                tabindex="0"
                              onclick="window.location.href='<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                             <?php endif; ?>
                         >
@@ -275,7 +277,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 									<?php if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') : ?>
                                         <div class="mod_emundus_campaign__programme_properties tw-min-h-[38px]">
                                             <p class="em-programme-tag"
-                                               title="<?php echo $campaign_pinned->programme ?>"
+                                               title="<?php echo Text::_('MOD_EM_CAMPAIGN_PROGRAMME_LABEL'); ?>"
                                                style="color: <?php echo $color ?>;">
 												<?php echo $campaign_pinned->programme; ?>
                                             </p>
@@ -292,12 +294,12 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                             </a>
                                         <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
-                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                         <?php endif; ?>
 
 									<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
                                         <div class="tw-min-h-[38px]">
-                                            <p class="em-programme-tag" title="<?php echo $campaign_pinned->programme ?>"
+                                            <p class="em-programme-tag" title="<?php echo Text::_('MOD_EM_CAMPAIGN_PROGRAMME_LABEL'); ?>"
                                                style="color: <?php echo $color ?>;">
                                                 <?php echo $campaign_pinned->programme; ?>
                                             </p>
@@ -306,11 +308,11 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                         <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                 <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                    title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                             </a>
                                         <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
-                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                         <?php endif; ?>
 
 									<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
@@ -318,11 +320,11 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 	                                        <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                 <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                    title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                             </a>
                                             <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                    title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                             <?php endif; ?>
 
 											<?php if (!empty($campaign_pinned->logo)) : ?>
@@ -334,11 +336,11 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                         <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                             <a href="<?php echo !empty($campaign_pinned->link) ? $campaign_pinned->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $campaign_pinned->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                 <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                    title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                             </a>
                                         <?php else : ?>
                                             <h3 class="mod_emundus_campaign__campaign_title"
-                                                title="<?php echo $campaign_pinned->label; ?>"><?php echo $campaign_pinned->label; ?></h3>
+                                                title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $campaign_pinned->label; ?></h3>
                                         <?php endif; ?>
 									<?php endif; ?>
 
@@ -424,7 +426,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                     $textcamp = $campaign_pinned->short_description;
 									?>
 
-                                    <div title="<?php echo strip_tags($textcamp); ?>"
+                                    <div title="<?php echo Text::_('MOD_EM_CAMPAIGN_RESUME'); ?>"
                                          class="mod_emundus_campaign__list_content_resume em-text-neutral-600">
 										<?php echo $textcamp; ?>
                                     </div>
@@ -866,6 +868,8 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 					<?php endif; ?>
                         <div class="mod_emundus_campaign__list_content--closed mod_emundus_campaign__list_content em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
                              <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                 role="button"
+                                 tabindex="0"
                              onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                              <?php endif; ?>
                         >
@@ -880,6 +884,8 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 							<?php endif; ?>
                             <div class="mod_emundus_campaign__list_content <?php echo ($mod_em_campaign_single_campaign_line == 1) ? 'mod_emundus_campaign__list_content--fc' : '' ; ?> em-border-neutral-300 <?= $mod_em_campaign_click_to_details == 1 ? 'tw-cursor-pointer' : '' ?>"
 	                            <?php if($mod_em_campaign_click_to_details == 1) : ?>
+                                    role="button"
+                                    tabindex="0"
                                  onclick="window.location.href='<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>'"
                                 <?php endif; ?>
                             >
@@ -915,7 +921,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 
 										<?php if ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '1') : ?>
                                             <div class="mod_emundus_campaign__programme_properties tw-min-h-[38px]">
-                                                <p class="em-programme-tag" title="<?php echo $result->programme ?>"
+                                                <p class="em-programme-tag" title="<?php echo Text::_('MOD_EM_CAMPAIGN_PROGRAMME_LABEL'); ?>"
                                                    style="color: <?php echo $color ?>;">
 													<?php echo $result->programme; ?>
                                                 </p>
@@ -927,15 +933,15 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 
                                             <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                                 <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
-                                                    <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
+                                                    <h3 class="mod_emundus_campaign__campaign_title" title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                                 </a>
                                             <?php else : ?>
-                                                <h3 class="mod_emundus_campaign__campaign_title"><?php echo $result->label; ?></h3>
+                                                <h3 class="mod_emundus_campaign__campaign_title" title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                             <?php endif; ?>
 
 										<?php elseif ($mod_em_campaign_list_show_programme == '1' && $mod_em_campaign_show_programme_logo == '0') : ?>
                                             <div class="tw-min-h-[38px]">
-                                                <p class="em-programme-tag" title="<?php echo $result->programme ?>"
+                                                <p class="em-programme-tag" title="<?php echo Text::_('MOD_EM_CAMPAIGN_PROGRAMME_LABEL'); ?>"
                                                    style="color: <?php echo $color ?>;">
                                                     <?php echo $result->programme; ?>
                                                 </p>
@@ -944,11 +950,11 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                             <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                                 <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                     <h3 class="mod_emundus_campaign__campaign_title"
-                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                        title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                                 </a>
                                             <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                    title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                             <?php endif; ?>
 
 										<?php elseif ($mod_em_campaign_list_show_programme == '0' && $mod_em_campaign_show_programme_logo == '1') : ?>
@@ -956,11 +962,11 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 	                                            <?php if ($mod_em_campaign_click_to_details == 1) : ?>
                                                     <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                         <h3 class="mod_emundus_campaign__campaign_title"
-                                                            title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                            title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                                     </a>
 	                                            <?php else : ?>
                                                     <h3 class="mod_emundus_campaign__campaign_title"
-                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                        title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
 	                                            <?php endif; ?>
 
 												<?php if (!empty($result->logo)) : ?>
@@ -972,11 +978,11 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                             <?php if($mod_em_campaign_click_to_details == 1) : ?>
                                                 <a href="<?php echo !empty($result->link) ? $result->link : JRoute::_("index.php?option=com_emundus&view=programme&cid=" . $result->id . "&Itemid=" . $mod_em_campaign_itemid2); ?>">
                                                     <h3 class="mod_emundus_campaign__campaign_title"
-                                                        title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                        title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                                 </a>
                                             <?php else : ?>
                                                 <h3 class="mod_emundus_campaign__campaign_title"
-                                                    title="<?php echo $result->label; ?>"><?php echo $result->label; ?></h3>
+                                                    title="<?php echo Text::_('MOD_EM_CAMPAIGN_LABEL'); ?>"><?php echo $result->label; ?></h3>
                                             <?php endif; ?>
 										<?php endif; ?>
 
@@ -1094,7 +1100,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                                         $textcamp = $result->short_description;
 										?>
 
-                                        <div title="<?php echo strip_tags($textcamp); ?>"
+                                        <div title="<?php echo Text::_('MOD_EM_CAMPAIGN_RESUME'); ?>"
                                              class="mod_emundus_campaign__list_content_resume em-text-neutral-600"
 											<?php if (empty($mod_em_campaign_show_timezone) || (strtotime($now) > strtotime($result->end_date))) : ?> style="-webkit-line-clamp: 4;" <?php endif; ?>
                                         >
