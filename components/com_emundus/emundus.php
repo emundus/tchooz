@@ -580,6 +580,10 @@ Text::script('EXPORT_SET_TAG');
 Text::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
 Text::script('EVALUATION_PERIOD_NOT_STARTED');
 Text::script('EVALUATION_PERIOD_PASSED');
+Text::script('COM_EMUNDUS_ACCESS_PAYMENT');
+Text::script('COM_EMUNDUS_ACCESS_PAYMENT_DESC');
+Text::script('COM_EMUNDUS_ACL_IMPORT');
+Text::script('COM_EMUNDUS_ACL_IMPORT_DESC');
 
 
 // EXPORT EXCEL MODEL
@@ -1182,7 +1186,7 @@ else if ($user->guest && $app->input->getString('controller') === 'webhook' && $
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
+elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
 {
 	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
 	{
@@ -1194,6 +1198,12 @@ elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name !
 	}
 	else
 	{
+		if($task === 'openfile')
+		{
+			$app->setUserState('users.openfile.return', base64_encode(Uri::getInstance()->toString()));
+			$app->redirect(Route::_('index.php?option=com_users&view=login'));
+		}
+
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
 		$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 

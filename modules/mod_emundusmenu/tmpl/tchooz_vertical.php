@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 
 <style type='text/css'>
     hr {
-        z-index: 999;
+        z-index: 10;
     }
 
     .edge .g-active {

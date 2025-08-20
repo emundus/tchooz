@@ -312,6 +312,7 @@ class EmundusModelEmails extends JModelList
 	public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null, $trigger_emails = null): array
 	{
 		$emails_sent = [];
+		$recipient_access = true;
 		$app = Factory::getApplication();
 		$config = $app->getConfig();
 
@@ -380,6 +381,7 @@ class EmundusModelEmails extends JModelList
 				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
 					// Check if the user has access to the file
 					if (!$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id'])) {
+						$recipient_access = false;
 						continue;
 					}
 
@@ -479,6 +481,10 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 			}
+		}
+
+		if (empty($emails_sent) && $recipient_access === false) {
+			$emails_sent[] = false;
 		}
 
 		return $emails_sent;
@@ -974,17 +980,29 @@ class EmundusModelEmails extends JModelList
 
 		$tags = $m_files->getVariables($str);
 
-		if(!class_exists('EmundusHelperFabrik'))
-		{
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
-		}
-		$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
-
 		$idFabrik = [];
 		$fabrikTags = [];
 		$aliasFabrik  = [];
 
 		if (count($tags) > 0) {
+			$fabrik_aliases = [];
+			$lookForFabrikAlias = false;
+
+			foreach ($tags as $val) {
+				if (!is_numeric($val)) {
+					$lookForFabrikAlias = true;
+					break;
+				}
+			}
+
+			if ($lookForFabrikAlias) {
+				if(!class_exists('EmundusHelperFabrik'))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+				}
+				$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
+			}
+
 			foreach ($tags as $val) {
 				$tag = new TagEntity($val, '', [], TagType::FABRIK);
 
@@ -3283,6 +3301,25 @@ class EmundusModelEmails extends JModelList
 				$cc = [];
 				$keys = [];
 
+                $user_id_to = !empty($user_id) ? $user_id : null;
+
+                if ($user_id_to === null) {
+                    $db = Factory::getContainer()->get('DatabaseDriver');
+                    $query = $db->createQuery();
+
+                    $query->select('id')
+                        ->from($db->quoteName('#__users'))
+                        ->where($db->quoteName('email') . ' LIKE ' . $db->quote($email_address));
+
+                    try {
+                        $db->setQuery($query);
+                        $user_id_to = $db->loadResult();
+                        $user_id = $user_id_to;
+                    } catch (Exception $e) {
+                        Log::add('error trying to find user_id_to ' . $e->getMessage(), Log::ERROR);
+                    }
+                }
+
 				if ($user_id != null) {
 					include_once(JPATH_ROOT.'/components/com_emundus/models/users.php');
 					$m_users = new EmundusModelUsers();
@@ -3361,24 +3398,6 @@ class EmundusModelEmails extends JModelList
 						Log::add($send->getMessage(), Log::ERROR, 'com_emundus');
 					}
 				} else {
-					$user_id_to = !empty($user_id) ? $user_id : null;
-
-					if ($user_id_to === null) {
-						$db = JFactory::getDbo();
-						$query = $db->getQuery(true);
-
-						$query->select('id')
-							->from($db->quoteName('#__users'))
-							->where($db->quoteName('email') . ' LIKE ' . $db->quote($email_address));
-
-						try {
-							$db->setQuery($query);
-							$user_id_to = $db->loadResult();
-						} catch (Exception $e) {
-							Log::add('error trying to find user_id_to ' . $e->getMessage(), Log::ERROR);
-						}
-					}
-
 					if (!empty($user_id_to) && $log_email) {
 						$log = [
 							'user_id_from'  => $user_id_from,

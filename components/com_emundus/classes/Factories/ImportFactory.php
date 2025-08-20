@@ -39,6 +39,8 @@ class ImportFactory
 
 	private string $delimiter = ',';
 
+	private string $encoding = 'UTF-8';
+
 	private array $columns = [];
 
 	private array $orig_columns = [];
@@ -65,9 +67,22 @@ class ImportFactory
 			}
 			else
 			{
-				$this->csv_filename = $file['tmp_name'];
+				// copy the file to the tmp directory
+				$this->csv_filename = $tmp_directory . preg_replace('/[\/\\\\:*?"<>|]/', '_', $file['name']);
+				if (!copy($file['tmp_name'], $this->csv_filename))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ERROR_COPY_FILE'));
+				}
 			}
+
+			$this->setEncoding();
 		}
+	}
+
+	private function setEncoding(): void
+	{
+		$content = file_get_contents($this->csv_filename);
+		$this->encoding = mb_detect_encoding($content, ['UTF-8', 'ISO-8859-1', 'Windows-1252', 'ASCII'], true);
 	}
 
 	public function getCsvFilename(): string
@@ -270,7 +285,22 @@ class ImportFactory
 			}
 		}
 
+		$datas = $this->sanitizeData($datas);
+
 		return $datas;
+	}
+
+	private function sanitizeData(array $data): array
+	{
+		foreach ($data as $key => $value) {
+			if (is_array($value)) {
+				$data[$key] = $this->sanitizeData($value);
+			} elseif (is_string($value)) {
+				$data[$key] = mb_convert_encoding($value, 'UTF-8', $this->encoding);
+			}
+		}
+
+		return $data;
 	}
 
 	private function saveSheetAsCsv(Worksheet $sheet, string $filename): bool

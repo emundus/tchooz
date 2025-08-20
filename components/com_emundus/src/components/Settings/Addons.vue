@@ -70,7 +70,7 @@ export default {
 					{{ translate(addon.description) }}
 				</p>
 
-				<div>
+				<div v-if="addon.configuration && Object.keys(JSON.parse(addon.configuration)).length > 0">
 					<button class="tw-btn-tertiary tw-w-full" @click="currentAddon = addon">
 						<span>{{ translate('COM_EMUNDUS_SETTINGS_ADDONS_UPDATE') }}</span>
 					</button>

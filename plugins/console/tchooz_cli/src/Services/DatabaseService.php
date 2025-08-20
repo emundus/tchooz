@@ -263,7 +263,22 @@ class DatabaseService
 		$primaryKey = $this->db->loadResult();
 		// Some old tables does not have primary key :/
 		if(empty($primaryKey)) {
-			$primaryKey = 'id';
+			// Check if we have an id column
+			$this->query->clear()
+				->select('COLUMN_NAME')
+				->from('information_schema.COLUMNS')
+				->where('TABLE_NAME' . ' = ' . $this->db->quote($table))
+				->where('COLUMN_NAME' . ' = ' . $this->db->quote('id'));
+			$this->db->setQuery($this->query);
+			$primaryKey = $this->db->loadResult();
+
+			// If we still don't have a primary key, we use '*' as default
+			if (empty($primaryKey))
+			{
+				// This is not a good practice, but we have to do it for old tables
+				$primaryKey = '*';
+			}
+			
 		}
 
 		return $primaryKey;
@@ -281,12 +296,15 @@ class DatabaseService
 		return $this->db->loadResult();
 	}
 
-	public function getDatas(string $table, ?int $limit = 1000, ?int $offset = 0): array
+	public function getDatas(string $table, ?int $limit = null, ?int $offset = 0): array
 	{
 		$this->query->clear()
 			->select('*')
-			->from($this->db->quoteName($table))
-			->setLimit($limit, $offset);
+			->from($this->db->quoteName($table));
+		if (!empty($limit))
+		{
+			$this->query->setLimit($limit, $offset);
+		}
 		$this->db->setQuery($this->query);
 		return $this->db->loadAssocList();
 	}

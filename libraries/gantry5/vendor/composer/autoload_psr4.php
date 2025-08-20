@@ -8,7 +8,10 @@ $baseDir = dirname($vendorDir);
 return array(
     'Whoops\\' => array($vendorDir . '/filp/whoops/src/Whoops'),
     'Twig\\' => array($vendorDir . '/twig/twig/src'),
+    'Symfony\\Polyfill\\Php80\\' => array($vendorDir . '/symfony/polyfill-php80'),
+    'Symfony\\Polyfill\\Mbstring\\' => array($vendorDir . '/symfony/polyfill-mbstring'),
     'Symfony\\Polyfill\\Ctype\\' => array($vendorDir . '/symfony/polyfill-ctype'),
+    'Symfony\\Contracts\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher-contracts'),
     'Symfony\\Component\\Yaml\\' => array($vendorDir . '/symfony/yaml'),
     'Symfony\\Component\\EventDispatcher\\' => array($vendorDir . '/symfony/event-dispatcher'),
     'ScssPhp\\ScssPhp\\' => array($vendorDir . '/scssphp/scssphp/src'),
@@ -21,8 +24,7 @@ return array(
     'RocketTheme\\Toolbox\\Compat\\' => array($vendorDir . '/rockettheme/toolbox/Compat/src'),
     'RocketTheme\\Toolbox\\Blueprints\\' => array($vendorDir . '/rockettheme/toolbox/Blueprints/src'),
     'RocketTheme\\Toolbox\\ArrayTraits\\' => array($vendorDir . '/rockettheme/toolbox/ArrayTraits/src'),
-    'Psr\\Log\\' => array($vendorDir . '/psr/log/Psr/Log'),
+    'Psr\\Log\\' => array($vendorDir . '/psr/log/src'),
     'Psr\\Container\\' => array($vendorDir . '/psr/container/src'),
-    'Leafo\\ScssPhp\\' => array($vendorDir . '/leafo/scssphp/src'),
     'Gantry\\' => array($baseDir . '/src/classes/Gantry'),
 );

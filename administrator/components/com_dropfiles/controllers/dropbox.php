@@ -108,11 +108,13 @@ class DropfilesControllerDropbox extends JControllerAdmin
     /**
      * Sync dropbox files
      *
-     * @throws \Exception Throw when application can not start
+     * @param boolean $cron Run this sync via crontab or not
+     *
      * @return void
+     * @throws \Exception Throw when application can not start
      * @since  1.0
      */
-    public function sync()
+    public function sync($cron = false)
     {
         JLoader::register('DropfilesDropbox', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesDropbox.php');
         $params = JComponentHelper::getParams('com_dropfiles');
@@ -271,9 +273,33 @@ class DropfilesControllerDropbox extends JControllerAdmin
             );
             $clsDropfilesHelper = new DropfilesComponentHelper();
             $clsDropfilesHelper->setParams(array('dropbox_last_log' => date('Y-m-d H:i:s')));
-            echo json_encode(array('status' => true));
-            JFactory::getApplication()->close();
+            if (!$cron) {
+                echo json_encode(array('status' => true));
+                JFactory::getApplication()->close();
+            }
         }
+    }
+
+    /**
+     * Sync Dropbox on crontask
+     *
+     * @return void
+     * @throws \Exception Application can not start
+     * @since  version
+     */
+    public function synccron()
+    {
+        $this->sync(true);
+
+        require_once JPATH_BASE . '/components/com_dropfiles/controllers/frontdropbox.php';
+        $frontDropbox = new DropfilesControllerFrontdropbox();
+        $step = 0;
+        while ($frontDropbox->syncFiles(true, $step)) {
+            $step++;
+        }
+
+        echo json_encode(array('success' => true));
+        JFactory::getApplication()->close();
     }
 
     /**

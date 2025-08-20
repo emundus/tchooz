@@ -427,7 +427,6 @@ class Release2_8_0Installer extends ReleaseInstaller
 						'label'                => 'COM_EMUNDUS_FORM_TOKEN_REGISTRATION_TOKEN_LABEL',
 						'show_in_list_summary' => 0,
 						'hidden'               => 0,
-						'readonly'             => 1
 					],
 					[
 						'name'                 => 'email',
@@ -466,7 +465,11 @@ class Release2_8_0Installer extends ReleaseInstaller
 				];
 
 				foreach ($elements as $element) {
-					$result = EmundusHelperUpdate::addFabrikElement($element);
+					if ($element['name'] === 'token') {
+						$result = EmundusHelperUpdate::addFabrikElement($element, ['readonly' => 1]);
+					} else {
+						$result = EmundusHelperUpdate::addFabrikElement($element);
+					}
 					$tasks[] = $result['status'];
 
 					if ($element['name'] === 'token') {

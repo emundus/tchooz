@@ -33,6 +33,7 @@ export default {
 				type: 'radiobutton',
 				value: 0,
 				label: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_EXISITING_FNUM',
+				helptext: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_EXISITING_FNUM_HELP',
 				displayed: true,
 				optional: true,
 				options: [
@@ -47,6 +48,24 @@ export default {
 					{
 						value: 2,
 						label: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_EXISITING_FNUM_DO_NOTHING',
+					},
+				],
+			},
+			{
+				param: 'send_email',
+				type: 'radiobutton',
+				value: 0,
+				label: 'COM_EMUNDUS_ONBOARD_ACTION_IMPORT_SEND_EMAIL',
+				displayed: true,
+				optional: true,
+				options: [
+					{
+						value: 0,
+						label: 'JNO',
+					},
+					{
+						value: 1,
+						label: 'JYES',
 					},
 				],
 			},
@@ -311,7 +330,7 @@ export default {
 						v-if="field.displayed"
 						:ref="'import_' + field.param"
 						:parameter-object="field"
-						:help-text-type="'above'"
+						:help-text-type="'icon'"
 					/>
 				</div>
 			</div>

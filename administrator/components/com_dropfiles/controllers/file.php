@@ -486,6 +486,7 @@ class DropfilesControllerFile extends JControllerForm
                 break;
             case 'dropbox':
                 $dropCate = new DropfilesDropbox();
+
                 $rev      = JFactory::getApplication()->input->getString('vid', '');
                 if ($rev !== '') {
                     $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
@@ -495,11 +496,16 @@ class DropfilesControllerFile extends JControllerForm
                     }
                     $dropCate->downloadVersion($id, $rev);
                 } else {
-                    $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
-                    if ($temporaryDirectLink) {
-                        header('Location: ' . $temporaryDirectLink);
-                        break;
+                    $modelDropboxFiles = $this->getModel('dropboxfiles');
+                    $file = $modelDropboxFiles->getFile($id);
+                    if ($file->ext !== 'pdf') {
+                        $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
+                        if ($temporaryDirectLink) {
+                            header('Location: ' . $temporaryDirectLink);
+                            jexit();
+                        }
                     }
+
                     list($file, $fMeta) = $dropCate->downloadDropbox($id);
 
                     ob_end_clean();

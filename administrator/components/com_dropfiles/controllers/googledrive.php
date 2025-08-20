@@ -71,7 +71,7 @@ class DropfilesControllerGoogledrive extends JControllerAdmin
             //Check if dropfiles folder exists and create if not
             $params = JComponentHelper::getParams('com_dropfiles');
             if (!$google->folderExists($params->get('google_base_folder', null))) {
-                $folder = $google->createFolder('Dropfiles - ' . JFactory::getApplication()->getCfg('sitename'));
+                $folder = $google->createFolder('Dropfiles - ' . JFactory::getApplication()->get('sitename'));
                 if ($folder === false) {
                     $redirectDropfiles = 'index.php?option=com_dropfiles&view=dropfiles';
                     $this->setRedirect($redirectDropfiles, JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED'));

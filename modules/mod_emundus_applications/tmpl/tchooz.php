@@ -140,7 +140,7 @@ ksort($applications);
 
 $current_tab = 0;
 
-if (!empty($applications) && !empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override)))))
+if (!empty($applications))
 {
 	if (!isset($m_email))
 	{
@@ -155,8 +155,20 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	{
 		foreach ($sub_applications as $a_key => $application)
 		{
-			$title_override_display = $title_override;
-			$post                   = array(
+			$applications[0]['all']['applications'][$key][$a_key]->is_admission = false;
+			if (!empty($admission_status))
+			{
+				$applications[0]['all']['applications'][$key][$a_key]->is_admission = in_array($application->status, $admission_status);
+			}
+			$applications[0]['all']['applications'][$key][$a_key]->display_app = true;
+			if (!empty($show_status) && !in_array($application->status, $show_status))
+			{
+				$applications[0]['all']['applications'][$key][$a_key]->display_app = false;
+			}
+
+			$applications[0]['all']['applications'][$key][$a_key]->first_page_url = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+
+			$post = array(
 				'APPLICANT_ID'   => $user->id,
 				'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
 				'CAMPAIGN_LABEL' => $application->label,
@@ -167,11 +179,27 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 				'FNUM'           => $application->fnum
 			);
 
-			$tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display, false, true);
-			$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
-			$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+			if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override)))))
+			{
+				$title_override_display = $title_override;
 
-			$applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
+				$tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display, false, true);
+				$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+				$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+
+				$applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
+			}
+
+			if ($file_tags != '')
+			{
+				$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
+				$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+				$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
+
+				$applications[0]['all']['applications'][$key][$a_key]->file_tags_display = $file_tags_display;
+			}
+
+			$applications[0]['all']['applications'][$key][$a_key]->current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
 		}
 	}
 }
@@ -200,39 +228,41 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 	<?php endif; ?>
 
 	<?php if (sizeof($applications) > 0) : ?>
-        <?php if(!empty($description)) : ?>
+		<?php if (!empty($description)) : ?>
             <span class="em-text-neutral-500">
                 <?php
-                $tags              = $m_email->setTags($user->id, [], '', '', $description, false, true);
+                $tags        = $m_email->setTags($user->id, [], '', '', $description, false, true);
                 $description = preg_replace($tags['patterns'], $tags['replacements'], $description);
                 echo $description;
                 ?>
             </span>
-        <?php endif; ?>
-        <?php if(!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
+		<?php endif; ?>
+		<?php if (!empty(Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'))) : ?>
             <p>
-                <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
-                <?php if(!empty($actions)) : ?>
-                    <?php echo '(';
-                    foreach ($actions as $key => $action) {
-                        if ($key == 0)
-                        {
-                            echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_'.strtoupper($action));
-                        }
-                        else
-                        {
-                            echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_'.strtoupper($action));
-                        }
-                    }
-                    if($show_tabs == 1) {
-                        echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_TABS');
-                    }
-                    echo ').'; ?>
-                <?php else : ?>
-                    <?php echo '. '; ?>
-                <?php endif; ?>
+				<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_HELP_INTRO'); ?>
+				<?php if (!empty($actions)) : ?>
+					<?php echo '(';
+					foreach ($actions as $key => $action)
+					{
+						if ($key == 0)
+						{
+							echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_' . strtoupper($action));
+						}
+						else
+						{
+							echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_' . strtoupper($action));
+						}
+					}
+					if ($show_tabs == 1)
+					{
+						echo ', ' . Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_SHORT_TABS');
+					}
+					echo ').'; ?>
+				<?php else : ?>
+					<?php echo '. '; ?>
+				<?php endif; ?>
             </p>
-        <?php endif; ?>
+		<?php endif; ?>
 
 		<?php if ($show_add_application && ($position_add_application == 0 || $position_add_application == 2) && $applicant_can_renew) : ?>
             <a id="add-application" class="btn btn-success em-mt-24" style="width: auto" href="<?= $cc_list_url; ?>">
@@ -259,7 +289,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
         <div id="tab_adding_link" onclick="createTab()"
              class="em-light-tabs em-flex-row em-pointer <?php if (count($tabs) > 1) : ?>em-display-none<?php endif; ?>">
             <a class="em-flex-row em-no-hover-underline em-font-size-14 em-pointer" style="white-space: nowrap"><span
-                        class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
+                    class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>
             </a>
         </div>
         <div id="tab_manage_links" onclick="manageTabs()"
@@ -330,13 +360,15 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         <div id="button_switch_card"
                              class="em-pointer mod_emundus_application___buttons_switch_view mod_emundus_application___buttons_enable"
                              onclick="updateView('card')">
-                            <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
+                            <span
+                                class="material-symbols-outlined mod_emundus_application___buttons_switch_view_enable">grid_view</span>
                         </div>
 					<?php endif; ?>
 					<?php if (in_array('list', $available_views)) : ?>
                         <div id="button_switch_list" class="em-pointer mod_emundus_application___buttons_switch_view"
                              onclick="updateView('list')">
-                            <span class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
+                            <span
+                                class="material-symbols-outlined mod_emundus_application___buttons_switch_view_disabled">menu</span>
                         </div>
 					<?php endif; ?>
                 </div>
@@ -381,11 +413,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 				<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                     <div id="tile-hover-offset-request"></div>
 				<?php endif; ?>
-                <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
-                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                       <div id="background-shapes"
-                            alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-                    <?php endif; ?>
+                <div
+                    class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+					<?php if ($mod_em_campaign_display_svg == 1) : ?>
+                        <div id="background-shapes"
+                             alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+					<?php endif; ?>
                     <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                     <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                 </div>
@@ -397,11 +430,14 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             </div>
 		<?php endif; ?>
 	<?php else : ?>
-        <p id="no_file_tab_message_view" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></p>
+        <p id="no_file_tab_message_view"
+           class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></p>
         <div class="em-display-none no_file_search_message_view">
-            <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+            <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list"
+                 style="width: 10vw; height: 10vw; margin: 0 auto;">
             <p style="width: fit-content; margin: 0 auto;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
-            <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="<?php echo $campaigns_list_url; ?>"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH_LINK') ?></a>
+            <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center"
+               href="<?php echo $campaigns_list_url; ?>"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH_LINK') ?></a>
         </div>
 		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
@@ -410,71 +446,36 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                          class="em-mb-44 <?php if ($key != $current_tab) : ?>em-display-none<?php endif; ?>">
 						<?php if (isset($sub_group['label'])) : ?>
                             <h3 class="em-ml-8"><?php echo $sub_group['label'] ?></h3>
-                            <hr/>
+                            <hr />
 						<?php endif; ?>
 						<?php foreach ($sub_group['applications'] as $f_key => $files) : ?>
 							<?php if ($order_by_session == 'years') : ?>
                                 <h3 class="em-ml-8"><?php echo $f_key ?></h3>
-                                <hr/>
+                                <hr />
 							<?php endif; ?>
                             <div class="<?= $moduleclass_sfx ?> mod_emundus_applications___content em-mb-32">
 								<?php foreach ($files as $application) : ?>
 
 									<?php
-									$is_admission = false;
-									if (!empty($admission_status))
+									if ($application->display_app)
 									{
-										$is_admission = in_array($application->status, $admission_status);
-									}
-									$display_app = true;
-									if (!empty($show_status) && !in_array($application->status, $show_status))
-									{
-										$display_app = false;
-									}
-
-									if ($display_app)
-									{
-										$state          = $application->published;
-										$confirm_url    = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
-										$first_page_url = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
-										if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0') : ?>
-											<?php
-											if ($file_tags != '')
-											{
-
-												$post = array(
-													'APPLICANT_ID'   => $user->id,
-													'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-													'CAMPAIGN_LABEL' => $application->label,
-													'CAMPAIGN_YEAR'  => $application->year,
-													'CAMPAIGN_START' => $application->start_date,
-													'CAMPAIGN_END'   => $application->end_date,
-													'CAMPAIGN_CODE'  => $application->training,
-													'FNUM'           => $application->fnum
-												);
-
-												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
-												$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
-												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
-											}
-
-											$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
-
-											?>
+										if ($application->published == '1' || $show_remove_files == 1 && $application->published == '-1' || $show_archive_files == 1 && $application->published == '0') : ?>
                                             <div class="hover-and-tile-container"
                                                  id="application_content<?php echo $application->fnum ?>">
 												<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                                     <div id="tile-hover-offset-request"></div>
 												<?php endif; ?>
-                                                <div class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
-                                                     onclick="openFile(event,'<?php echo $first_page_url ?>')">
+                                                <div
+                                                    class="row em-border-neutral-300 mod_emundus_applications___content_app em-pointer"
+                                                    onclick="openFile(event,'<?php echo $application->first_page_url ?>')">
 													<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                         <div id="background-shapes"
                                                              alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 													<?php endif; ?>
                                                     <div class="em-w-100">
 														<?php if ($mod_emundus_applications_show_programme == 1) : ?>
-                                                            <div class="tw-flex tw-justify-between tw-items-start tw-h-fit">
+                                                            <div
+                                                                class="tw-flex tw-justify-between tw-items-start tw-h-fit">
 																<?php
 																$color = '#0A53CC';
 																if (!empty($application->tag_color))
@@ -486,16 +487,20 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                    style="color: <?php echo $color ?>;margin-bottom: 0">
 																	<?php echo $application->programme; ?>
                                                                 </p>
-                                                                <div class="mod_emundus_applications__container text-xl!" id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
-                                                                <span class="material-symbols-outlined em-text-neutral-600"
-                                                                      style="font-size: 24px;"
-                                                                      id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                                <div
+                                                                    class="mod_emundus_applications__container text-xl!"
+                                                                    id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
+                                                                <span
+                                                                    class="material-symbols-outlined em-text-neutral-600"
+                                                                    style="font-size: 24px;"
+                                                                    id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                                 </div>
                                                             </div>
 														<?php endif; ?>
                                                         <div class="em-flex-row em-flex-space-between em-mb-12">
-                                                            <div class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-justify-center">
+                                                            <div
+                                                                class="tw-flex tw-flex-row tw-items-center tw-gap-2 tw-justify-center">
 																<?php
 																if (empty($application->class))
 																{
@@ -503,26 +508,33 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																}
 																?>
 																<?php if (empty($visible_status)) : ?>
-                                                                    <div class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
-                                                                         id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                    <div
+                                                                        class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
+                                                                        id="application_status_<?php echo $application->fnum ?>">
+                                                                        <span
+                                                                            class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 																		<?php if ($application->applicant_id !== $user->id) : ?>
-                                                                            <span class="material-symbols-outlined tw-ml-3">people</span>
+                                                                            <span
+                                                                                class="material-symbols-outlined tw-ml-3">people</span>
 																		<?php endif; ?>
                                                                     </div>
 																<?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                                    <div class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
-                                                                         id="application_status_<?php echo $application->fnum ?>">
-                                                                        <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                                    <div
+                                                                        class="tw-flex tw-items-center mod_emundus_applications___status_<?= $application->class; ?> flex"
+                                                                        id="application_status_<?php echo $application->fnum ?>">
+                                                                        <span
+                                                                            class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 																		<?php if ($application->applicant_id !== $user->id) : ?>
-                                                                            <span class="material-symbols-outlined tw-ml-3">people</span>
+                                                                            <span
+                                                                                class="material-symbols-outlined tw-ml-3">people</span>
 																		<?php endif; ?>
                                                                     </div>
 																<?php endif; ?>
 																<?php if (!empty($application->order_status)): ?>
                                                                     <br>
                                                                     <p><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?>
-                                                                        <span style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span>
+                                                                        <span
+                                                                            style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span>
                                                                     </p>
 																<?php endif; ?>
 
@@ -556,22 +568,24 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																<?php endif; ?>
                                                             </div>
 															<?php if ($mod_emundus_applications_show_programme != 1) : ?>
-                                                                <div class="mod_emundus_applications__container" id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
-                                                                <span class="material-symbols-outlined em-text-neutral-600"
-                                                                      style="font-size: 24px;"
-                                                                      id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                                <div class="mod_emundus_applications__container"
+                                                                     id="actions_button_<?php echo $application->fnum ?>_container_card_tab<?php echo $key ?>">
+                                                                <span
+                                                                    class="material-symbols-outlined em-text-neutral-600"
+                                                                    style="font-size: 24px;"
+                                                                    id="actions_button_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
                                                                 >more_vert</span>
                                                                 </div>
 															<?php endif; ?>
                                                         </div>
 														<?php if (empty($application->name)) : ?>
-                                                            <a href="<?= JRoute::_($first_page_url); ?>"
+                                                            <a href="<?= JRoute::_($application->first_page_url); ?>"
                                                                class="mod_emundus_applications___title"
                                                                id="application_title_<?php echo $application->fnum ?>">
-                                                                <h5><?= ($is_admission && $add_admission_prefix) ? Text::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
+                                                                <h5><?= ($application->is_admission && $add_admission_prefix) ? Text::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></h5>
                                                             </a>
 														<?php else : ?>
-                                                            <a href="<?= JRoute::_($first_page_url); ?>"
+                                                            <a href="<?= JRoute::_($application->first_page_url); ?>"
                                                                class="mod_emundus_applications___title"
                                                                id="application_title_<?php echo $application->fnum ?>">
                                                                 <h5><?= $application->name; ?></h5>
@@ -579,13 +593,14 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 														<?php endif; ?>
 														<?php if ($show_fnum) : ?>
                                                             <div class="em-mb-8">
-                                                                <span class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
+                                                                <span
+                                                                    class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
                                                             </div>
 														<?php endif; ?>
-														<?php if (!empty($file_tags_display)) : ?>
+														<?php if (!empty($application->file_tags_display)) : ?>
                                                             <div class="em-mt-8">
                                                             <span class="em-tags-display em-text-neutral-900">
-                                                                <?= $file_tags_display; ?>
+                                                                <?= $application->file_tags_display; ?>
                                                             </span>
                                                             </div>
 														<?php endif; ?>
@@ -597,9 +612,9 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 															$closed          = false;
 															$displayInterval = false;
 															$end_date        = $application->end_date;
-															if (!empty($current_phase))
+															if (!empty($application->current_phase))
 															{
-																$end_date = $current_phase->end_date;
+																$end_date = $application->current_phase->end_date;
 															}
 															if ($now < $end_date)
 															{
@@ -616,10 +631,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 															?>
                                                             <div class="mod_emundus_applications___date em-mt-8">
 																<?php if (!$displayInterval && !$closed) : ?>
-                                                                    <span class="material-symbols-outlined  em-text-neutral-600 em-mr-8">schedule</span>
+                                                                    <span
+                                                                        class="material-symbols-outlined  em-text-neutral-600 em-mr-8">schedule</span>
                                                                     <p class="em-text-neutral-600 em-applicant-default-font"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_END_DATE'); ?><?php echo JFactory::getDate(new JDate($end_date, $site_offset))->format($date_format); ?></p>
 																<?php elseif ($displayInterval && !$closed) : ?>
-                                                                    <span class="material-symbols-outlined em-text-neutral-600 em-red-600-color em-mr-8">schedule</span>
+                                                                    <span
+                                                                        class="material-symbols-outlined em-text-neutral-600 em-red-600-color em-mr-8">schedule</span>
                                                                     <p class="em-red-600-color"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_DAY'); ?>
 																		<?php if ($interval->h > 0)
 																		{
@@ -631,19 +648,21 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 																		} ?>
                                                                     </p>
 																<?php elseif ($closed) : ?>
-                                                                    <span class="material-symbols-outlined em-mr-8 em-red-600-color">schedule</span>
+                                                                    <span
+                                                                        class="material-symbols-outlined em-mr-8 em-red-600-color">schedule</span>
                                                                     <p class="em-applicant-default-font em-red-600-color"> <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CLOSED'); ?></p>
 																<?php endif; ?>
                                                             </div>
 														<?php endif; ?>
                                                     </div>
 
-                                                    <hr/>
+                                                    <hr />
 
                                                     <div class="mod_emundus_applications___informations">
 														<?php if ($show_progress == 1) : ?>
                                                             <div>
-                                                                <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
+                                                                <label
+                                                                    class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_COMPLETED'); ?>
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900"><?php echo(($progress['forms'][$application->fnum] + $progress['attachments'][$application->fnum]) / 2) ?>
                                                                     %</p>
@@ -652,7 +671,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 
 														<?php if (!empty($application->updated) || !empty($application->submitted_date)) : ?>
                                                             <div>
-                                                                <label class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
+                                                                <label
+                                                                    class="em-text-neutral-600 em-applicant-default-font em-font-size-14"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_LAST_UPDATE'); ?>
                                                                     :</label>
                                                                 <p class="em-applicant-default-font em-text-neutral-900">
 																	<?php if (empty($application->updated)) : ?>
@@ -669,10 +689,10 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <div class="">
                                                             <div class="">
                                                                 <strong><?= Text::_('MOD_EMUNDUS_STATE'); ?></strong>
-																<?php if ($state == 1) : ?>
+																<?php if ($application->published == 1) : ?>
                                                                     <span class="label alert-success"
                                                                           role="alert"> <?= Text::_('MOD_EMUNDUS_PUBLISH'); ?></span>
-																<?php elseif ($state == 0) : ?>
+																<?php elseif ($application->published == 0) : ?>
                                                                     <span class="label alert-secondary"
                                                                           role="alert"> <?= Text::_('MOD_EMUNDUS_ARCHIVE'); ?></span>
 																<?php else : ?>
@@ -685,15 +705,17 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                 </div>
 
                                                 <!-- ACTIONS BLOCK -->
-                                                <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
-                                                     id="actions_block_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
-                                                     style="display: none"
-                                                     data-mid="<?= $module->id ?>"
+                                                <div
+                                                    class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
+                                                    id="actions_block_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>"
+                                                    style="display: none"
+                                                    data-mid="<?= $module->id ?>"
                                                 >
                                                     <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                       href="<?= JRoute::_($first_page_url); ?>"
+                                                       href="<?= JRoute::_($application->first_page_url); ?>"
                                                        id="actions_block_open_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                        <span class="material-symbols-outlined em-mr-8">open_in_new</span>
+                                                        <span
+                                                            class="material-symbols-outlined em-mr-8">open_in_new</span>
 														<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
                                                     </a>
 
@@ -710,7 +732,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <a class="em-text-neutral-900 em-pointer em-flex-row"
                                                            onclick="copyApplication('<?php echo $application->fnum ?>')"
                                                            id="actions_button_copy_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined em-mr-8">file_copy</span>
+                                                            <span
+                                                                class="material-symbols-outlined em-mr-8">file_copy</span>
 															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_APPLICATION') ?>
                                                         </a>
 													<?php endif; ?>
@@ -719,7 +742,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                            onclick="shareApplication('<?php echo $application->fnum ?>','<?php echo $application->application_id ?>')"
                                                            id="actions_button_collaborate_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined tw-mr-2">people</span>
+                                                            <span
+                                                                class="material-symbols-outlined tw-mr-2">people</span>
 															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ACTIONS_COLLABORATE') ?>
                                                         </a>
 													<?php endif; ?>
@@ -733,11 +757,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         </a>
 													<?php endif; ?>
 
-                                                    <?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
+													<?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
                                                         <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                            href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum . '&tab=attachments'); ?>"
                                                            id="actions_button_documents_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined tw-mr-2">description</span>
+                                                            <span
+                                                                class="material-symbols-outlined tw-mr-2">description</span>
 															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
                                                         </a>
 													<?php endif; ?>
@@ -746,7 +771,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                            href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum); ?>"
                                                            id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined tw-mr-2">history</span>
+                                                            <span
+                                                                class="material-symbols-outlined tw-mr-2">history</span>
 															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_HISTORY') ?>
                                                         </a>
 													<?php endif; ?>
@@ -755,19 +781,20 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                         <a class="em-red-600-color em-flex-row em-pointer"
                                                            onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                            id="actions_block_delete_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
-                                                            <span class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
+                                                            <span
+                                                                class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
 															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                         </a>
 													<?php endif; ?>
 
-                                                    <?php if (in_array('transactions', $actions) && ($application->applicant_id === $user->id)) : ?>
+													<?php if (in_array('transactions', $actions) && ($application->applicant_id === $user->id)) : ?>
                                                         <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                            href="<?= Route::_('/index.php?option=com_emundus&view=payment&layout=transactions&fnum=' . $application->fnum); ?>"
                                                            id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
                                                             <span class="material-symbols-outlined tw-mr-2">paid</span>
-		                                                    <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_TRANSACTIONS') ?>
+															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_TRANSACTIONS') ?>
                                                         </a>
-                                                    <?php endif; ?>
+													<?php endif; ?>
 
 													<?php
 													modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);
@@ -778,16 +805,18 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 										<?php endif; ?>
 									<?php } ?>
 								<?php endforeach; ?>
-	                            <?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
-                                    <div class="hover-and-tile-container  hover-and-tile-container-add" style="height: 300px;">
+								<?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
+                                    <div class="hover-and-tile-container  hover-and-tile-container-add"
+                                         style="height: 300px;">
 										<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                                             <div id="tile-hover-offset-request"></div>
 										<?php endif; ?>
-                                        <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
-                                           <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                               <div id="background-shapes"
-                                                    alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-                                           <?php endif; ?>
+                                        <div
+                                            class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+											<?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                <div id="background-shapes"
+                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+											<?php endif; ?>
                                             <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                                             <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                                         </div>
@@ -813,15 +842,16 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 		<?php endif; ?>
 
 		<?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
-            <div class="hover-and-tile-container hover-and-tile-container-add"  style="height: 300px;">
+            <div class="hover-and-tile-container hover-and-tile-container-add" style="height: 300px;">
 				<?php if ($mod_em_campaign_display_hover_offset == 1) : ?>
                     <div id="tile-hover-offset-request"></div>
 				<?php endif; ?>
-                <div class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
-                    <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                       <div id="background-shapes"
-                            alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-                    <?php endif; ?>
+                <div
+                    class="row em-pointer mod_emundus_applications___content_app tw-flex tw-flex-col tw-justify-center tw-items-center">
+					<?php if ($mod_em_campaign_display_svg == 1) : ?>
+                        <div id="background-shapes"
+                             alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+					<?php endif; ?>
                     <span class="material-symbols-outlined tw-w-fit">add_circle</span>
                     <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
                 </div>
@@ -833,14 +863,17 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             </div>
 		<?php endif; ?>
 	<?php else : ?>
-        <h4 id="no_file_tab_message_list" class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
+        <h4 id="no_file_tab_message_list"
+            class="em-display-none"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_TAB') ?></h4>
         <div class="em-display-none no_file_search_message_view">
-            <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+            <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list"
+                 style="width: 10vw; height: 10vw; margin: 0 auto;">
             <p style="width: fit-content; margin: 0 auto;"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH') ?></p>
-            <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center" href="<?php echo $campaigns_list_url; ?>"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH_LINK') ?></a>
+            <a class="em-font-size-16 em-profile-color em-text-underline tw-w-full tw-block tw-text-center"
+               href="<?php echo $campaigns_list_url; ?>"><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH_LINK') ?></a>
         </div>
 
-        <?php foreach ($applications as $key => $group) : ?>
+		<?php foreach ($applications as $key => $group) : ?>
 			<?php foreach ($group as $g_key => $sub_group) : ?>
 				<?php if ((!empty($order_by_session) && !empty($sub_group['applications'])) || !empty($sub_group['applications'][0])) : ?>
                     <div id="group_application_tab_<?php echo $key ?>"
@@ -848,7 +881,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 
 						<?php if (isset($sub_group['label'])) : ?>
                             <h3 class="em-ml-8"><?php echo $sub_group['label'] ?></h3>
-                            <hr/>
+                            <hr />
 						<?php endif; ?>
                         <table class="em-mb-12 applications_list_view--tables">
                             <thead>
@@ -876,58 +909,25 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 								<?php foreach ($files as $application) : ?>
 
 									<?php
-									$is_admission = in_array($application->status, $admission_status);
-									$display_app  = true;
-									if (!empty($show_status) && !in_array($application->status, $show_status))
+									if ($application->display_app)
 									{
-										$display_app = false;
-									}
-
-									if ($display_app)
-									{
-										$state          = $application->published;
-										$confirm_url    = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum . '&confirm=1';
-										$first_page_url = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
-										if ($state == '1' || $show_remove_files == 1 && $state == '-1' || $show_archive_files == 1 && $state == '0') : ?>
-											<?php
-											if ($file_tags != '')
-											{
-
-												$post = array(
-													'APPLICANT_ID'   => $user->id,
-													'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-													'CAMPAIGN_LABEL' => $application->label,
-													'CAMPAIGN_YEAR'  => $application->year,
-													'CAMPAIGN_START' => $application->start_date,
-													'CAMPAIGN_END'   => $application->end_date,
-													'CAMPAIGN_CODE'  => $application->training,
-													'FNUM'           => $application->fnum
-												);
-
-												$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
-												$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
-												$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
-											}
-
-											$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
-
-											?>
+										if ($application->published == '1' || $show_remove_files == 1 && $application->published == '-1' || $show_archive_files == 1 && $application->published == '0') : ?>
                                             <tr class="em-pointer"
                                                 id="application_content<?php echo $application->fnum ?>"
-                                                onclick="openFile(event,'<?php echo $first_page_url ?>')">
+                                                onclick="openFile(event,'<?php echo $application->first_page_url ?>')">
                                                 <td style="width: 23.75%;">
 													<?php if ($mod_em_campaign_display_svg == 1) : ?>
                                                         <div id="background-shapes"
                                                              alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
 													<?php endif; ?>
 													<?php if (empty($application->name)) : ?>
-                                                        <a href="<?= JRoute::_($first_page_url); ?>"
+                                                        <a href="<?= JRoute::_($application->first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
                                                            id="application_title_<?php echo $application->fnum ?>">
-                                                            <span><?= ($is_admission && $add_admission_prefix) ? Text::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
+                                                            <span><?= ($application->is_admission && $add_admission_prefix) ? Text::_('COM_EMUNDUS_INSCRIPTION') . ' - ' . $application->label : $application->label; ?></span>
                                                         </a>
 													<?php else : ?>
-                                                        <a href="<?= JRoute::_($first_page_url); ?>"
+                                                        <a href="<?= JRoute::_($application->first_page_url); ?>"
                                                            class="mod_emundus_applications___title em-font-size-14"
                                                            id="application_title_<?php echo $application->fnum ?>">
                                                             <span><?= $application->name; ?></span>
@@ -962,17 +962,21 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 														}
 														?>
 														<?php if (empty($visible_status)) : ?>
-                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
-                                                                 id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                            <div
+                                                                class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
+                                                                id="application_status_<?php echo $application->fnum ?>">
+                                                                <span
+                                                                    class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 																<?php if ($application->applicant_id !== $user->id) : ?>
                                                                     <span class="material-symbols-outlined tw-ml-3">people</span>
 																<?php endif; ?>
                                                             </div>
 														<?php elseif (in_array($application->status, $visible_status)) : ?>
-                                                            <div class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
-                                                                 id="application_status_<?php echo $application->fnum ?>">
-                                                                <span class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
+                                                            <div
+                                                                class="mod_emundus_applications___status_<?= $application->class; ?> tw-flex tw-items-center"
+                                                                id="application_status_<?php echo $application->fnum ?>">
+                                                                <span
+                                                                    class="mod_emundus_applications___status_label label label-<?= $application->class; ?>"><?= $application->value; ?></span>
 																<?php if ($application->applicant_id !== $user->id) : ?>
                                                                     <span class="material-symbols-outlined tw-ml-3">people</span>
 																<?php endif; ?>
@@ -981,26 +985,29 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 														<?php if (!empty($application->order_status)): ?>
                                                             <br>
                                                             <p><?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_ORDER_STATUS') ?>
-                                                                <span style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span>
+                                                                <span
+                                                                    style="color: <?= $application->order_color; ?>"><?= Text::_(strtoupper($application->order_status)); ?></span>
                                                             </p>
 														<?php endif; ?>
                                                     </div>
                                                 </td>
                                                 <td style="width: 5%;">
-                                                    <div class="mod_emundus_applications__container" id="actions_button_<?php echo $application->fnum ?>_container_list_tab<?php echo $key ?>">
+                                                    <div class="mod_emundus_applications__container"
+                                                         id="actions_button_<?php echo $application->fnum ?>_container_list_tab<?php echo $key ?>">
                                                             <span class="material-symbols-outlined em-text-neutral-600"
                                                                   style="font-size: 24px;"
                                                                   id="actions_button_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
                                                             >more_vert</span>
 
                                                         <!-- ACTIONS BLOCK -->
-                                                        <div class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
-                                                             id="actions_block_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
-                                                             style="display: none"
-                                                             data-mid="<?= $module->id ?>"
+                                                        <div
+                                                            class="mod_emundus_applications__actions em-border-neutral-400 em-neutral-800-color"
+                                                            id="actions_block_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>"
+                                                            style="display: none"
+                                                            data-mid="<?= $module->id ?>"
                                                         >
                                                             <a class="em-text-neutral-900 em-pointer em-flex-row"
-                                                               href="<?= JRoute::_($first_page_url); ?>"
+                                                               href="<?= JRoute::_($application->first_page_url); ?>"
                                                                id="actions_block_open_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
                                                                 <span class="material-symbols-outlined em-mr-8">open_in_new</span>
 																<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_OPEN_APPLICATION') ?>
@@ -1042,14 +1049,14 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                 </a>
 															<?php endif; ?>
 
-                                                            <?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
+															<?php if (in_array('documents', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
                                                                 <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
                                                                    href="<?= Route::_($history_link->route . '?ccid=' . $application->application_id . '&fnum=' . $application->fnum . '&tab=attachments'); ?>"
                                                                    id="actions_button_documents_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
                                                                     <span class="material-symbols-outlined tw-mr-2">description</span>
-                                                                    <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
+																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_CONSULT_DOCUMENTS') ?>
                                                                 </a>
-                                                            <?php endif; ?>
+															<?php endif; ?>
 
 															<?php if (in_array('history', $actions) && ($application->applicant_id === $user->id || $application->show_history == 1)) : ?>
                                                                 <a class="em-text-neutral-900 em-pointer em-flex-row"
@@ -1064,7 +1071,8 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                                                 <a class="em-red-600-color em-flex-row em-pointer"
                                                                    onclick="deletefile('<?php echo $application->fnum; ?>');"
                                                                    id="actions_block_delete_<?php echo $application->fnum ?>_list_tab<?php echo $key ?>">
-                                                                    <span class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
+                                                                    <span
+                                                                        class="material-symbols-outlined em-red-600-color em-mr-8">delete</span>
 																	<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_DELETE_APPLICATION_FILE') ?>
                                                                 </a>
 															<?php endif; ?>
@@ -1079,22 +1087,23 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 										<?php endif; ?>
 									<?php } ?>
 								<?php endforeach; ?>
-						        <?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
-                                <tr class="em-pointer list-application-add">
-                                    <td>
-                                        <?php if ($mod_em_campaign_display_svg == 1) : ?>
-                                            <div id="background-shapes" alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
-                                        <?php endif; ?>
-                                        <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
-                                    </td>
-                                    <td></td>
-                                    <td>
-                                        <span class="material-symbols-outlined tw-w-fit">add_circle</span>
-                                    </td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                                <?php endif; ?>
+								<?php if (($show_show_campaigns && $applicant_can_renew) || ($show_add_application && $applicant_can_renew)) : ?>
+                                    <tr class="em-pointer list-application-add">
+                                        <td>
+											<?php if ($mod_em_campaign_display_svg == 1) : ?>
+                                                <div id="background-shapes"
+                                                     alt="<?= Text::_('MOD_EM_APPLICATION_IFRAME') ?>"></div>
+											<?php endif; ?>
+                                            <p class="tw-w-fit"><?= Text::_('MOD_EMUNDUS_APPLICATIONS_CREATE_APPLICATION_FILE'); ?></p>
+                                        </td>
+                                        <td></td>
+                                        <td>
+                                            <span class="material-symbols-outlined tw-w-fit">add_circle</span>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+								<?php endif; ?>
                                 </tbody>
                             </table>
 						<?php endforeach; ?>
@@ -1116,7 +1125,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 <?php if ($show_add_application && ($position_add_application == 1 || $position_add_application == 2 || $position_add_application == 4) && $applicant_can_renew) : ?>
     <div class="mod_emundus_applications___footer">
         <a class="btn btn-success" href="<?= $cc_list_url; ?>"><span
-                    class="icon-plus-sign"> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
+                class="icon-plus-sign"> <?= Text::_('MOD_EMUNDUS_APPLICATIONS_ADD_APPLICATION_FILE'); ?></span></a>
     </div>
 <?php endif; ?>
 
@@ -1137,12 +1146,12 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
     </div>
 
     <script type="text/javascript">
-        var poll_url = "<?= $poll_url; ?>";
-        if ($poll_url !== "") {
-            jQuery(".modal-body").html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>');
-            setTimeout(function () {
-                jQuery('#em-modal-form').modal({backdrop: true, keyboard: true}, 'toggle');
-            }, 1000);
+        var poll_url = "<?= $poll_url; ?>"
+        if ($poll_url !== '') {
+            jQuery('.modal-body').html('<iframe src="' + poll_url + '" style="width:' + window.getWidth() * 0.8 + 'px; height:' + window.getHeight() * 0.8 + 'px; border:none"></iframe>')
+            setTimeout(function() {
+                jQuery('#em-modal-form').modal({ backdrop: true, keyboard: true }, 'toggle')
+            }, 1000)
         }
     </script>
 
@@ -1152,29 +1161,29 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
 
 <script type="text/javascript">
-    var $ = jQuery.noConflict();
+    var $ = jQuery.noConflict()
 
     window.addEventListener('DOMContentLoaded', (event) => {
-        let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
-        let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view');
+        let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab')
+        let selected_view = sessionStorage.getItem('mod_emundus_applications___selected_view')
         if (selected_tab_session !== null) {
-            this.updateTab(selected_tab_session);
+            this.updateTab(selected_tab_session)
         }
         if (selected_view !== null) {
-            this.updateView(selected_view);
+            this.updateView(selected_view)
         }
 
-        const emptyTiles = document.querySelectorAll('.hover-and-tile-container-add, .list-application-add');
+        const emptyTiles = document.querySelectorAll('.hover-and-tile-container-add, .list-application-add')
 
         emptyTiles.forEach((tile) => {
             tile.addEventListener('click', (event) => {
-                <?php if($show_add_application && $applicant_can_renew) : ?>
-                window.location.href = "<?php echo $cc_list_url; ?>";
-                <?php else : ?>
-                window.location.href = "<?php echo $campaigns_list_url; ?>";
-                <?php endif; ?>
-            });
-        });
+				<?php if($show_add_application && $applicant_can_renew) : ?>
+                window.location.href = "<?php echo $cc_list_url; ?>"
+				<?php else : ?>
+                window.location.href = "<?php echo $campaigns_list_url; ?>"
+				<?php endif; ?>
+            })
+        })
         /*document.querySelector(".hover-and-tile-container-add").addEventListener('click', (event) => {
             console.log('here')
 		    <?php if($show_add_application && $applicant_can_renew) : ?>
@@ -1183,199 +1192,199 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             window.location.href = "<?php echo $campaigns_list_url; ?>";
 		    <?php endif; ?>
         });*/
-    });
+    })
 
     function deletefile(fnum) {
         Swal.fire({
             title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_CONFIRM_DELETE_FILE'); ?>",
-            text: "",
-            type: "warning",
+            text: '',
+            type: 'warning',
             showCancelButton: true,
-            confirmButtonColor: "#28a745",
-            cancelButtonColor: "#dc3545",
+            confirmButtonColor: '#28a745',
+            cancelButtonColor: '#dc3545',
             reverseButtons: true,
             confirmButtonText: "<?php echo Text::_('JYES');?>",
             cancelButtonText: "<?php echo Text::_('JNO');?>"
         }).then((confirm) => {
             if (confirm.value) {
-                document.location.href = "/index.php?option=com_emundus&task=deletefile&fnum=" + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>";
+                document.location.href = '/index.php?option=com_emundus&task=deletefile&fnum=' + fnum + "&redirect=<?php echo base64_encode(JUri::getInstance()->getPath()); ?>"
             }
-        });
+        })
     }
 
     function delay(callback, ms) {
-        var timer = 0;
-        return function () {
-            var context = this, args = arguments;
-            clearTimeout(timer);
-            timer = setTimeout(function () {
-                callback.apply(context, args);
-            }, ms || 0);
-        };
+        var timer = 0
+        return function() {
+            var context = this, args = arguments
+            clearTimeout(timer)
+            timer = setTimeout(function() {
+                callback.apply(context, args)
+            }, ms || 0)
+        }
     }
 
-    jQuery(function () {
+    jQuery(function() {
         jQuery('[data-toggle="tooltip"]').tooltip()
     })
 
-    document.addEventListener('click', function (e) {
-        let target = e.target.id;
-        let actions = document.querySelectorAll("[id^='actions_block_']");
-        let modal = document.querySelector('.swal2-container');
+    document.addEventListener('click', function(e) {
+        let target = e.target.id
+        let actions = document.querySelectorAll('[id^=\'actions_block_\']')
+        let modal = document.querySelector('.swal2-container')
 
         if (typeof actions !== 'undefined') {
             actions.forEach((action) => {
                 if (action.style.display === 'flex') {
-                    action.style.display = 'none';
+                    action.style.display = 'none'
                 }
-            });
+            })
 
             if (target.indexOf('actions_button_') !== -1) {
-                let url = target.split('_');
-                let fnum = url[url.length - 3];
-                let tab = url[url.length - 1];
-                let view = url[url.length - 2];
+                let url = target.split('_')
+                let fnum = url[url.length - 3]
+                let tab = url[url.length - 1]
+                let view = url[url.length - 2]
 
-                actions = document.getElementById('actions_block_' + fnum + '_' + view + '_' + tab);
+                actions = document.getElementById('actions_block_' + fnum + '_' + view + '_' + tab)
                 if (actions) {
                     if (modal !== null) {
-                        actions.style.display = 'none';
+                        actions.style.display = 'none'
                     } else if (actions.style.display === 'none') {
-                        actions.style.display = 'flex';
+                        actions.style.display = 'flex'
                     } else {
-                        actions.style.display = 'none';
+                        actions.style.display = 'none'
                     }
                 }
             }
         }
-    });
+    })
 
     function openFile(e, url) {
-        let target = e.target.id;
+        let target = e.target.id
 
         if (target.indexOf('actions_button_') !== -1 || target.indexOf('actions_block_delete_') !== -1) {
             //do nothing
         } else {
-            window.location.href = '/' + url;
+            window.location.href = '/' + url
         }
     }
 
-    jQuery('#applications_searchbar').keyup(delay(function (e) {
-        let search = e.target.value;
+    jQuery('#applications_searchbar').keyup(delay(function(e) {
+        let search = e.target.value
 
         if (search !== '') {
-            let campaigns = document.querySelectorAll('.mod_emundus_applications___title span');
-            let status = document.querySelectorAll('.mod_emundus_applications___status_label');
-            let fnums_to_hide = [];
-            let fnums_to_show = [];
+            let campaigns = document.querySelectorAll('.mod_emundus_applications___title span')
+            let status = document.querySelectorAll('.mod_emundus_applications___status_label')
+            let fnums_to_hide = []
+            let fnums_to_show = []
 
             for (let campaign of campaigns) {
-                let fnum = campaign.parentElement.id.split('_');
-                fnum = fnum[fnum.length - 1];
+                let fnum = campaign.parentElement.id.split('_')
+                fnum = fnum[fnum.length - 1]
 
-                if (campaign.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase().includes(search.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase()) === false) {
-                    fnums_to_hide.push(fnum);
+                if (campaign.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().includes(search.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()) === false) {
+                    fnums_to_hide.push(fnum)
                 } else {
-                    fnums_to_show.push(fnum);
+                    fnums_to_show.push(fnum)
                 }
             }
 
             for (let step of status) {
-                let fnum = step.parentElement.id.split('_');
-                fnum = fnum[fnum.length - 1];
+                let fnum = step.parentElement.id.split('_')
+                fnum = fnum[fnum.length - 1]
 
-                if (step.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase().includes(search.normalize('NFD').replace(/\p{Diacritic}/gu, "").toLowerCase()) === false) {
+                if (step.textContent.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().includes(search.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase()) === false) {
                     if (fnums_to_show.indexOf(fnum) !== -1) {
-                        fnums_to_hide.push(fnum);
+                        fnums_to_hide.push(fnum)
                     }
                 } else {
-                    fnums_to_show.push(fnum);
+                    fnums_to_show.push(fnum)
                     if (fnums_to_hide.indexOf(fnum) !== -1) {
-                        fnums_to_hide.splice(fnums_to_hide.indexOf(fnum), 1);
+                        fnums_to_hide.splice(fnums_to_hide.indexOf(fnum), 1)
                     }
                 }
             }
 
             fnums_to_hide.forEach((fnum) => {
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
-                    block.style.display = 'none';
+                    block.style.display = 'none'
                 })
             })
             fnums_to_show.forEach((fnum) => {
                 document.querySelectorAll('#application_content' + fnum).forEach((block) => {
                     if (block.nodeName === 'TR') {
-                        block.style.display = 'flex';
+                        block.style.display = 'flex'
                     } else {
-                        block.style.display = 'block';
+                        block.style.display = 'block'
                     }
                 })
-            });
+            })
 
             if (fnums_to_show.length === 0) {
                 document.getElementsByClassName('no_file_search_message_view').forEach((elt) => {
-                    elt.style.display = 'block';
+                    elt.style.display = 'block'
                 })
                 document.getElementsByClassName('applications_list_view--tables').forEach((elt) => {
-                    elt.style.display = 'none';
+                    elt.style.display = 'none'
                 })
-                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH'); ?>";
+                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_NO_FILE_SEARCH'); ?>"
             } else {
                 document.getElementsByClassName('no_file_search_message_view').forEach((elt) => {
-                    elt.style.display = 'none';
+                    elt.style.display = 'none'
                 })
                 document.getElementsByClassName('applications_list_view--tables').forEach((elt) => {
-                    elt.style.display = 'block';
+                    elt.style.display = 'block'
                 })
-                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_FILE_SEARCH_RESET'); ?>";
+                document.title = "<?php echo JText::_('MOD_EMUNDUS_APPLICATIONS_FILE_SEARCH_RESET'); ?>"
             }
         } else {
-            for (let application of document.querySelectorAll("div[id^='application_content'],tr[id^='application_content']")) {
+            for (let application of document.querySelectorAll('div[id^=\'application_content\'],tr[id^=\'application_content\']')) {
                 if (application.nodeName === 'TR') {
-                    application.style.display = 'flex';
+                    application.style.display = 'flex'
                 } else {
-                    application.style.display = 'block';
+                    application.style.display = 'block'
                 }
             }
 
             document.getElementsByClassName('no_file_search_message_view').forEach((elt) => {
-                elt.style.display = 'none';
+                elt.style.display = 'none'
             })
             document.getElementsByClassName('applications_list_view--tables').forEach((elt) => {
-                elt.style.display = 'block';
+                elt.style.display = 'block'
             })
         }
 
-    }, 500));
+    }, 500))
 
 
     /** VIEWS **/
     function updateView(view) {
-        sessionStorage.setItem("mod_emundus_applications___selected_view", view);
+        sessionStorage.setItem('mod_emundus_applications___selected_view', view)
         if (view === 'list') {
-            document.querySelector('#applications_card_view').style.display = 'none';
-            document.querySelector('#applications_list_view').style.display = 'block';
-            if(document.querySelector('#button_switch_card')) {
-                document.querySelector('#button_switch_card').classList.remove('mod_emundus_application___buttons_enable');
-                document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_enable');
-                document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_disabled');
+            document.querySelector('#applications_card_view').style.display = 'none'
+            document.querySelector('#applications_list_view').style.display = 'block'
+            if (document.querySelector('#button_switch_card')) {
+                document.querySelector('#button_switch_card').classList.remove('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_enable')
+                document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_disabled')
             }
-            if(document.querySelector('#button_switch_list')) {
-                document.querySelector('#button_switch_list').classList.add('mod_emundus_application___buttons_enable');
-                document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_disabled');
-                document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_enable');
+            if (document.querySelector('#button_switch_list')) {
+                document.querySelector('#button_switch_list').classList.add('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_disabled')
+                document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_enable')
             }
         } else {
-            document.querySelector('#applications_list_view').style.display = 'none';
-            document.querySelector('#applications_card_view').style.display = 'block';
-            if(document.querySelector('#button_switch_list')) {
-                document.querySelector('#button_switch_list').classList.remove('mod_emundus_application___buttons_enable');
-                document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_enable');
-                document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_disabled');
+            document.querySelector('#applications_list_view').style.display = 'none'
+            document.querySelector('#applications_card_view').style.display = 'block'
+            if (document.querySelector('#button_switch_list')) {
+                document.querySelector('#button_switch_list').classList.remove('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_list span').classList.remove('mod_emundus_application___buttons_switch_view_enable')
+                document.querySelector('#button_switch_list span').classList.add('mod_emundus_application___buttons_switch_view_disabled')
             }
-            if(document.querySelector('#button_switch_card')) {
-                document.querySelector('#button_switch_card').classList.add('mod_emundus_application___buttons_enable');
-                document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_disabled');
-                document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_enable');
+            if (document.querySelector('#button_switch_card')) {
+                document.querySelector('#button_switch_card').classList.add('mod_emundus_application___buttons_enable')
+                document.querySelector('#button_switch_card span').classList.remove('mod_emundus_application___buttons_switch_view_disabled')
+                document.querySelector('#button_switch_card span').classList.add('mod_emundus_application___buttons_switch_view_enable')
             }
         }
 
@@ -1383,25 +1392,25 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
 
     /** TABS **/
     function updateTab(tab) {
-        document.getElementById('applications_header_filter_sort').style.display = 'flex';
+        document.getElementById('applications_header_filter_sort').style.display = 'flex'
         document.querySelectorAll('h4[id*="no_file_tab_message_"]').forEach((elt) => {
             elt.style.display = 'none'
         })
 
-        sessionStorage.setItem("mod_emundus_applications___selected_tab", tab);
+        sessionStorage.setItem('mod_emundus_applications___selected_tab', tab)
         document.querySelectorAll('div[id*="tab_link_"]').forEach((elt) => {
             if (elt.id !== 'tab_link_' + tab) {
-                elt.classList.remove('em-light-selected-tab');
+                elt.classList.remove('em-light-selected-tab')
             } else {
-                elt.classList.add('em-light-selected-tab');
+                elt.classList.add('em-light-selected-tab')
             }
         })
 
         document.querySelectorAll('div[id*="group_application_tab_"]').forEach((elt) => {
             if (elt.id !== 'group_application_tab_' + tab) {
-                elt.classList.add('em-display-none');
+                elt.classList.add('em-display-none')
             } else {
-                elt.classList.remove('em-display-none');
+                elt.classList.remove('em-display-none')
             }
         })
 
@@ -1410,16 +1419,16 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 elt.style.display = 'block'
             })
 
-            document.getElementById('applications_header_filter_sort').style.display = 'none';
+            document.getElementById('applications_header_filter_sort').style.display = 'none'
         }
     }
 
     async function createTab() {
-        const {value: tabName} = await Swal.fire({
+        const { value: tabName } = await Swal.fire({
             title: "<?= Text::_('MOD_EM_APPLICATION_TABS_CREATE_TAB_SWAL'); ?>",
             input: 'text',
             inputAttributes: {
-                maxlength: 30,
+                maxlength: 30
             },
             text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME'); ?>",
             showCancelButton: true,
@@ -1433,85 +1442,85 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
                 confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
                 cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                actions: 'mod_emundus_application_swal_manage_tabs_actions'
             },
             inputValidator: (value) => {
-                const regex = /^[\d\s\p{L}'"\-]{3,255}$/u;
+                const regex = /^[\d\s\p{L}'"\-]{3,255}$/u
 
                 if (!value) {
-                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_FILL_NAME');?>";
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_FILL_NAME');?>"
                 }
                 if (value.length < 3) {
-                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_TOO_SHORT');?>";
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_TOO_SHORT');?>"
                 }
                 if (value.length > 30) {
-                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_TOO_LONG');?>";
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_TOO_LONG');?>"
                 }
                 if (!regex.exec(value)) {
-                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_INVALID');?>";
+                    return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_NAME_INVALID');?>"
                 }
             }
-        });
+        })
 
         if (tabName) {
-            let formData = new FormData();
-            formData.append('name', tabName);
+            let formData = new FormData()
+            formData.append('name', tabName)
 
             fetch('/index.php?option=com_emundus&controller=application&task=createtab', {
                 body: formData,
-                method: 'post',
+                method: 'post'
             }).then((response) => {
                 if (response.ok) {
-                    return response.json();
+                    return response.json()
                 }
             }).then((res) => {
                 if (res.tab != 0) {
-                    let html = '<div id="tab_link_' + res.tab + '" onclick="updateTab(' + res.tab + ')" class="em-flex-row em-light-tabs em-pointer"><p class="em-font-size-14 em-text-neutral-600" style="white-space: nowrap">' + tabName + '</p><span class="mod_emundus_applications_badge">0</span></div>';
-                    document.getElementById('tab_adding_link').insertAdjacentHTML('beforebegin', html);
-                    document.getElementById('tab_adding_link').style.display = 'none';
-                    document.getElementById('tab_manage_links').style.display = 'flex';
+                    let html = '<div id="tab_link_' + res.tab + '" onclick="updateTab(' + res.tab + ')" class="em-flex-row em-light-tabs em-pointer"><p class="em-font-size-14 em-text-neutral-600" style="white-space: nowrap">' + tabName + '</p><span class="mod_emundus_applications_badge">0</span></div>'
+                    document.getElementById('tab_adding_link').insertAdjacentHTML('beforebegin', html)
+                    document.getElementById('tab_adding_link').style.display = 'none'
+                    document.getElementById('tab_manage_links').style.display = 'flex'
                 } else {
                     Swal.fire({
                         title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
-                        text: "",
-                        type: "error",
+                        text: '',
+                        type: 'error',
                         reverseButtons: true,
                         confirmButtonText: "<?php echo Text::_('JYES');?>",
                         timer: 3000
-                    });
+                    })
                 }
             })
         }
     }
 
     async function manageTabs() {
-        document.getElementById('items').innerHTML = '';
+        document.getElementById('items').innerHTML = ''
         if (document.getElementById('add_link_manage') != null) {
-            document.getElementById('add_link_manage').remove();
+            document.getElementById('add_link_manage').remove()
         }
         fetch('/index.php?option=com_emundus&controller=application&task=gettabs', {
-            method: 'get',
+            method: 'get'
         }).then((response) => {
             if (response.ok) {
-                return response.json();
+                return response.json()
             }
         }).then((res) => {
             res.tabs.forEach((tab) => {
-                let item = document.createElement('li');
-                item.classList.add('em-flex-row', 'em-mb-12', 'em-grab', 'em-flex-space-between');
-                item.id = 'tab_li_' + tab.id;
-                item.innerHTML = '<div class="em-flex-row"><span class="material-symbols-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-symbols-outlined em-mr-4 em-pointer em-red-600-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name + '\')">close</span>';
-                document.getElementById('items').appendChild(item);
-            });
-            let link_to_add = document.createElement('a');
-            link_to_add.classList.add('em-flex-row', 'em-no-hover-underline', 'em-font-size-14', 'em-pointer');
-            link_to_add.setAttribute('onclick', 'createTab()');
+                let item = document.createElement('li')
+                item.classList.add('em-flex-row', 'em-mb-12', 'em-grab', 'em-flex-space-between')
+                item.id = 'tab_li_' + tab.id
+                item.innerHTML = '<div class="em-flex-row"><span class="material-symbols-outlined em-font-size-14 em-mr-4">drag_indicator</span><span contenteditable="true" class="em-cursor-text" id="' + tab.id + '">' + tab.name + '</span></div><span class="material-symbols-outlined em-mr-4 em-pointer em-red-600-color" onclick="deleteTab(' + tab.id + ',\'' + tab.name + '\')">close</span>'
+                document.getElementById('items').appendChild(item)
+            })
+            let link_to_add = document.createElement('a')
+            link_to_add.classList.add('em-flex-row', 'em-no-hover-underline', 'em-font-size-14', 'em-pointer')
+            link_to_add.setAttribute('onclick', 'createTab()')
             link_to_add.id = 'add_link_manage'
-            link_to_add.innerHTML = '<span class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>';
-            document.getElementById('swal_manage').appendChild(link_to_add);
+            link_to_add.innerHTML = '<span class="material-symbols-outlined em-font-size-14 em-mr-4">add</span><?php echo Text::_('MOD_EM_APPLICATION_TABS_ADD_TAB') ?>'
+            document.getElementById('swal_manage').appendChild(link_to_add)
 
-            let el = document.getElementById('swal_manage').cloneNode(true);
-            Sortable.create(el.childNodes[1]);
+            let el = document.getElementById('swal_manage').cloneNode(true)
+            Sortable.create(el.childNodes[1])
 
             Swal.fire({
                 title: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_SWAL'); ?>",
@@ -1527,11 +1536,11 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
                     confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
                     cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                    actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                    actions: 'mod_emundus_application_swal_manage_tabs_actions'
                 }
             }).then((confirm) => {
                 if (confirm.value) {
-                    let new_tabs = document.querySelectorAll('#items li');
+                    let new_tabs = document.querySelectorAll('#items li')
                     let tabs_to_post = []
                     new_tabs.forEach((tab, index) => {
                         const tab_to_post = {
@@ -1539,42 +1548,42 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                             ordering: (index + 1),
                             id: tab.firstChild.lastChild.id
                         }
-                        tabs_to_post.push(tab_to_post);
-                    });
+                        tabs_to_post.push(tab_to_post)
+                    })
 
-                    let formData = new FormData();
-                    formData.append('tabs', JSON.stringify(tabs_to_post));
+                    let formData = new FormData()
+                    formData.append('tabs', JSON.stringify(tabs_to_post))
 
                     fetch('/index.php?option=com_emundus&controller=application&task=updatetabs', {
                         body: formData,
-                        method: 'post',
+                        method: 'post'
                     }).then((updating_response) => {
                         if (updating_response.ok) {
-                            return updating_response.json();
+                            return updating_response.json()
                         }
                     }).then((updating_res) => {
                         if (updating_res.updated) {
-                            window.location.reload();
+                            window.location.reload()
                         } else {
                             Swal.fire({
                                 title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
-                                text: "",
-                                type: "error",
+                                text: '',
+                                type: 'error',
                                 reverseButtons: true,
                                 confirmButtonText: "<?php echo Text::_('JYES');?>",
                                 timer: 3000
-                            });
+                            })
                         }
                     })
                 }
-            });
+            })
         })
     }
 
     function deleteTab(tab, name) {
         Swal.fire({
             title: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL'); ?>",
-            text: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_CONFIRM_DELETE_SWAL'); ?> " + name + " ?",
+            text: "<?= Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_CONFIRM_DELETE_SWAL'); ?> " + name + ' ?',
             showCancelButton: true,
             reverseButtons: true,
             confirmButtonText: "<?php echo Text::_('MOD_EM_APPLICATION_TABS_MANAGE_TABS_DELETE_SWAL_BUTTON');?>",
@@ -1586,7 +1595,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
                 confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
                 cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                actions: 'mod_emundus_application_swal_manage_tabs_actions'
             }
         }).then((confirm) => {
             if (confirm.value) {
@@ -1594,48 +1603,48 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     method: 'get'
                 }).then((response) => {
                     if (response.ok) {
-                        return response.json();
+                        return response.json()
                     }
                 }).then((res) => {
                     if (res.deleted == true) {
-                        document.querySelector('#tab_link_' + tab).remove();
-                        let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab');
+                        document.querySelector('#tab_link_' + tab).remove()
+                        let selected_tab_session = sessionStorage.getItem('mod_emundus_applications___selected_tab')
                         if (selected_tab_session !== null && selected_tab_session == tab) {
-                            sessionStorage.removeItem('mod_emundus_applications___selected_tab');
-                            this.updateTab(0);
+                            sessionStorage.removeItem('mod_emundus_applications___selected_tab')
+                            this.updateTab(0)
                         }
 
-                        let tabs = document.querySelectorAll('div[id^="tab_link_"]');
+                        let tabs = document.querySelectorAll('div[id^="tab_link_"]')
                         if (tabs.length <= 1) {
-                            document.getElementById('tab_manage_links').style.display = 'none';
-                            document.getElementById('tab_adding_link').style.display = 'flex';
+                            document.getElementById('tab_manage_links').style.display = 'none'
+                            document.getElementById('tab_adding_link').style.display = 'flex'
                         }
                     }
-                });
+                })
             }
-        });
+        })
     }
 
     async function moveToTab(fnum, tab, view) {
-        let tabs = {};
+        let tabs = {}
 
         fetch('/index.php?option=com_emundus&controller=application&task=gettabs', {
-            method: 'get',
+            method: 'get'
         }).then((response) => {
             if (response.ok) {
-                return response.json();
+                return response.json()
             }
         }).then(async (res) => {
-            document.querySelector('#actions_block_' + fnum + '_' + view + '_' + tab).style.display = 'none';
+            document.querySelector('#actions_block_' + fnum + '_' + view + '_' + tab).style.display = 'none'
             if (res.tabs.length === 0) {
-                await this.createTab();
+                await this.createTab()
             } else {
                 tabs[0] = "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_PLEASE_SELECT'); ?>"
                 res.tabs.forEach((tab) => {
-                    tabs[tab.id] = tab.name;
-                });
+                    tabs[tab.id] = tab.name
+                })
 
-                const {value: tab} = await Swal.fire({
+                const { value: tab } = await Swal.fire({
                     title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_MOVE_TO_TAB_SWAL'); ?>",
                     text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_SELECT'); ?>",
                     input: 'select',
@@ -1651,61 +1660,61 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
                         confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
                         cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                        actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                        actions: 'mod_emundus_application_swal_manage_tabs_actions'
                     },
                     inputValidator: (value) => {
                         if (value == 0) {
-                            return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_TAB');?>";
+                            return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_TAB');?>"
                         }
                     }
-                });
+                })
 
                 if (tab) {
-                    let formData = new FormData();
-                    formData.append('fnum', fnum);
-                    formData.append('tab', tab);
+                    let formData = new FormData()
+                    formData.append('fnum', fnum)
+                    formData.append('tab', tab)
 
                     fetch('/index.php?option=com_emundus&controller=application&task=movetotab', {
                         body: formData,
-                        method: 'post',
+                        method: 'post'
                     }).then((response) => {
                         if (response.ok) {
-                            return response.json();
+                            return response.json()
                         }
                     }).then((res) => {
                         if (res.status == true) {
-                            window.location.reload();
+                            window.location.reload()
                         } else {
                             Swal.fire({
                                 title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                                 text: res.msg,
-                                type: "error",
+                                type: 'error',
                                 reverseButtons: true,
                                 confirmButtonText: "<?php echo Text::_('JYES');?>",
                                 timer: 3000
-                            });
+                            })
                         }
-                    });
+                    })
                 }
             }
-        });
+        })
     }
 
     /** END **/
 
     async function copyApplication(fnum) {
         fetch('/index.php?option=com_emundus&controller=application&task=getcampaignsavailableforcopy&' + new URLSearchParams({
-            fnum: fnum,
+            fnum: fnum
         }), {
-            method: 'get',
+            method: 'get'
         }).then((response) => {
             if (response.ok) {
-                return response.json();
+                return response.json()
             }
         }).then(async (res) => {
-            document.querySelector('.mod_emundus_applications__actions').style.display = 'none';
+            document.querySelector('.mod_emundus_applications__actions').style.display = 'none'
 
-            const {value: campaign} = await Swal.fire({
+            const { value: campaign } = await Swal.fire({
                 title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE'); ?>",
                 text: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COPY_FILE_CAMPAIGN'); ?>",
                 input: 'select',
@@ -1721,48 +1730,48 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
                     confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
                     cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                    actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                    actions: 'mod_emundus_application_swal_manage_tabs_actions'
                 },
                 inputValidator: (value) => {
                     if (!value) {
-                        return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>";
+                        return "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_TAB_PLEASE_SELECT_A_CAMPAIGN');?>"
                     }
                 }
-            });
+            })
 
             if (campaign) {
-                let formData = new FormData();
-                formData.append('fnum', fnum);
-                formData.append('campaign', campaign);
+                let formData = new FormData()
+                formData.append('fnum', fnum)
+                formData.append('campaign', campaign)
 
                 fetch('/index.php?option=com_emundus&controller=application&task=copyfile', {
                     body: formData,
-                    method: 'post',
+                    method: 'post'
                 }).then((response) => {
                     if (response.ok) {
-                        return response.json();
+                        return response.json()
                     }
                 }).then((res) => {
                     if (res.status == true) {
-                        window.location.href = res.first_page;
+                        window.location.href = res.first_page
                     } else {
                         Swal.fire({
                             title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                             text: res.msg,
-                            type: "error",
+                            type: 'error',
                             reverseButtons: true,
                             confirmButtonText: "<?php echo Text::_('JYES');?>",
                             timer: 3000
-                        });
+                        })
                     }
-                });
+                })
             }
-        });
+        })
     }
 
     async function renameApplication(fnum, name, campaign_label) {
         if (name === '') {
-            name = campaign_label;
+            name = campaign_label
         }
         await Swal.fire({
             title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_RENAME_APPLICATION'); ?>",
@@ -1770,7 +1779,7 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
             input: 'text',
             inputValue: name,
             inputAttributes: {
-                maxlength: 80,
+                maxlength: 80
             },
             showCancelButton: true,
             reverseButtons: true,
@@ -1783,59 +1792,59 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                 htmlContainer: 'mod_emundus_application_swal_manage_tabs_content',
                 confirmButton: 'mod_emundus_application_swal_manage_tabs_confirm',
                 cancelButton: 'mod_emundus_application_swal_manage_tabs_cancel',
-                actions: 'mod_emundus_application_swal_manage_tabs_actions',
+                actions: 'mod_emundus_application_swal_manage_tabs_actions'
             }
         }).then((result) => {
             if (result.value) {
-                let formData = new FormData();
-                formData.append('fnum', fnum);
-                formData.append('new_name', result.value);
+                let formData = new FormData()
+                formData.append('fnum', fnum)
+                formData.append('new_name', result.value)
 
                 fetch('/index.php?option=com_emundus&controller=application&task=renamefile', {
                     body: formData,
-                    method: 'post',
+                    method: 'post'
                 }).then((response) => {
                     if (response.ok) {
-                        return response.json();
+                        return response.json()
                     }
                 }).then((res) => {
                     if (res.status == true) {
-                        window.location.reload();
+                        window.location.reload()
                     } else {
                         Swal.fire({
                             title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                             text: res.msg,
-                            type: "error",
+                            type: 'error',
                             reverseButtons: true,
                             confirmButtonText: "<?php echo Text::_('JYES');?>",
                             timer: 3000
-                        });
+                        })
                     }
-                });
+                })
             }
-        });
+        })
     }
 
     async function shareApplication(fnum, ccid) {
-        document.querySelector('.em-page-loader').style.display = 'block';
+        document.querySelector('.em-page-loader').style.display = 'block'
 
         fetch('index.php?option=com_emundus&view=application&layout=collaborate&format=raw&fnum=' + fnum + '&ccid=' + ccid, {
-            method: 'get',
+            method: 'get'
         }).then((response) => {
             if (response.ok) {
-                return response.text();
+                return response.text()
             }
         }).then((res) => {
-            document.querySelector('.em-page-loader').style.display = 'none';
+            document.querySelector('.em-page-loader').style.display = 'none'
 
-            let actions = document.querySelectorAll("div[id^='actions_block_']");
+            let actions = document.querySelectorAll('div[id^=\'actions_block_\']')
 
             if (typeof actions !== 'undefined') {
                 actions.forEach((action) => {
                     if (action.style.display === 'flex') {
-                        action.style.display = 'none';
+                        action.style.display = 'none'
                     }
-                });
+                })
             }
 
             Swal.fire({
@@ -1850,16 +1859,16 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     cancelButton: 'em-swal-cancel-button',
                     confirmButton: 'em-swal-confirm-button',
                     popup: '!w-3/6',
-                    validationMessage: 'em-swal-validation-message',
+                    validationMessage: 'em-swal-validation-message'
                 },
                 didOpen: (toast) => {
-                    var tag = document.createElement("script");
-                    tag.src = "media/com_emundus/js/collaborate.js";
-                    document.getElementsByTagName("head")[0].appendChild(tag);
+                    var tag = document.createElement('script')
+                    tag.src = 'media/com_emundus/js/collaborate.js'
+                    document.getElementsByTagName('head')[0].appendChild(tag)
 
-                    jQuery("#collab_emails").selectize({
-                        plugins: ["remove_button"],
-                        delimiter: ",",
+                    jQuery('#collab_emails').selectize({
+                        plugins: ['remove_button'],
+                        delimiter: ',',
                         persist: false,
                         createOnBlur: true,
                         create: true,
@@ -1867,62 +1876,62 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                         maxItems: null,
                         placeholder: '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAILPLACEHOLDER'); ?>',
                         render: {
-                            create: function (input) {
+                            create: function(input) {
                                 return {
                                     value: input,
-                                    text: input,
-                                };
+                                    text: input
+                                }
                             },
-                            item: function (data, escape) {
-                                const val = data.value;
+                            item: function(data, escape) {
+                                const val = data.value
                                 return '<div>' +
                                     '<span class="title">' +
-                                    '<span class="name">' + escape(val.substring(val.indexOf(":") + 1)) + '</span>' +
+                                    '<span class="name">' + escape(val.substring(val.indexOf(':') + 1)) + '</span>' +
                                     '</span>' +
-                                    '</div>';
+                                    '</div>'
                             },
-                            option_create: function (data, escape) {
-                                const addString = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAIL'); ?>';
-                                return '<div class="create">' + addString + ' <strong>' + escape(data.input) + '</strong>&hellip;</div>';
+                            option_create: function(data, escape) {
+                                const addString = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ADD_EMAIL'); ?>'
+                                return '<div class="create">' + addString + ' <strong>' + escape(data.input) + '</strong>&hellip;</div>'
                             }
                         },
-                        onItemAdd: function (value, $item) {
+                        onItemAdd: function(value, $item) {
                             if (document.querySelector('#collab_error')) {
-                                document.querySelector('#collab_error').remove();
+                                document.querySelector('#collab_error').remove()
                             }
 
-                            var email = value.substring(value.indexOf(":") + 1);
-                            email = email.trim();
+                            var email = value.substring(value.indexOf(':') + 1)
+                            email = email.trim()
 
-                            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/;
+                            const regex = /^\S{1,64}@\S{1,255}\.\S{1,255}$/
                             if (!regex.test(email) || '<?php echo $user->email?>' === email) {
-                                this.removeItem(value);
-                                let p = document.createElement('p');
-                                p.classList.add('tw-text-red-500');
-                                p.id = 'collab_error';
+                                this.removeItem(value)
+                                let p = document.createElement('p')
+                                p.classList.add('tw-text-red-500')
+                                p.id = 'collab_error'
                                 if ('<?php echo $user->email?>' === email) {
-                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>';
+                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_NOT_YOUR_OWN'); ?>'
                                 }
                                 if (!regex.test(email)) {
-                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_INVALID_EMAIL'); ?>';
+                                    p.innerText = '<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_INVALID_EMAIL'); ?>'
                                 }
-                                document.querySelector('#collab_emails_block').append(p);
+                                document.querySelector('#collab_emails_block').append(p)
                             }
                         }
-                    });
+                    })
                 },
                 preConfirm: () => {
-                    if (document.querySelector("#collab_emails").value === '') {
+                    if (document.querySelector('#collab_emails').value === '') {
                         Swal.showValidationMessage('<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_FILL_EMAILS'); ?>')
                     }
                 }
             }).then((result) => {
                 if (result.value) {
-                    let formData = new FormData();
+                    let formData = new FormData()
 
-                    formData.append('fnum', fnum);
-                    formData.append('ccid', ccid);
-                    formData.append('emails', document.querySelector('#collab_emails').value);
+                    formData.append('fnum', fnum)
+                    formData.append('ccid', ccid)
+                    formData.append('emails', document.querySelector('#collab_emails').value)
 
                     Swal.fire({
                         title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_SUCCESS'); ?>",
@@ -1934,29 +1943,29 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                             title: 'em-swal-title !tw-text-center',
                             cancelButton: 'em-swal-cancel-button',
                             confirmButton: 'em-swal-confirm-button',
-                            icon: 'em-swal-icon',
+                            icon: 'em-swal-icon'
                         },
                         timer: 3000
-                    });
+                    })
 
                     fetch('index.php?option=com_emundus&controller=application&task=sharefilewith', {
                         body: formData,
-                        method: 'post',
+                        method: 'post'
                     }).then((response) => {
                         if (response.ok) {
-                            return response.json();
+                            return response.json()
                         } else {
                             return response.text().then((text) => {
-                                throw new Error(text);
-                            });
+                                throw new Error(text)
+                            })
                         }
                     }).then((res) => {
                         if (res.status != true) {
-                            throw new Error(res.msg);
+                            throw new Error(res.msg)
                         } else {
                             if (res.data.failed_emails.length > 0) {
-                                let failed_emails = res.data.failed_emails.join(', ');
-                                throw new Error("<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> " + failed_emails);
+                                let failed_emails = res.data.failed_emails.join(', ')
+                                throw new Error("<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_ERROR_EMAILS'); ?> " + failed_emails)
                             } else {
                                 Swal.fire({
                                     title: "<?= Text::_('MOD_EMUNDUS_APPLICATIONS_COLLABORATE_FINISH_SUCCESS'); ?>",
@@ -1968,72 +1977,72 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                                         title: 'em-swal-title !tw-text-center',
                                         cancelButton: 'em-swal-cancel-button',
                                         confirmButton: 'em-swal-confirm-button',
-                                        icon: 'em-swal-icon',
+                                        icon: 'em-swal-icon'
                                     },
                                     timer: 3000
-                                });
+                                })
                             }
                         }
                     }).catch((error) => {
                         Swal.fire({
-                            title: "Une erreur est survenue",
+                            title: 'Une erreur est survenue',
                             text: error,
-                            type: "error",
+                            type: 'error',
                             reverseButtons: true,
                             confirmButtonText: "<?php echo Text::_('JYES');?>"
-                        });
-                    });
+                        })
+                    })
                 }
-            });
-        });
+            })
+        })
     }
 
     function displaySort() {
-        let sort = document.getElementById('sort_block');
+        let sort = document.getElementById('sort_block')
         if (sort.style.display === 'none') {
-            sort.style.display = 'flex';
+            sort.style.display = 'flex'
         } else {
-            sort.style.display = 'none';
+            sort.style.display = 'none'
         }
     }
 
     function filterApplications(type, value) {
-        let formData = new FormData();
-        formData.append('type', type);
-        formData.append('value', value);
+        let formData = new FormData()
+        formData.append('type', type)
+        formData.append('value', value)
 
         fetch('/index.php?option=com_emundus&controller=application&task=filterapplications', {
             body: formData,
-            method: 'post',
+            method: 'post'
         }).then((response) => {
             if (response.ok) {
-                return response.json();
+                return response.json()
             }
         }).then((res) => {
             if (res.status == true) {
-                window.location.reload();
+                window.location.reload()
             } else {
                 Swal.fire({
                     title: "<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_AN_ERROR_OCCURED');?>",
                     text: res.msg,
-                    type: "error",
+                    type: 'error',
                     reverseButtons: true,
                     confirmButtonText: "<?php echo Text::_('JYES');?>",
                     timer: 3000
-                });
+                })
             }
-        });
+        })
     }
 </script>
 
 <script>
-    const customActions = document.querySelectorAll('.em-custom-action-launch-action');
+    const customActions = document.querySelectorAll('.em-custom-action-launch-action')
 
     if (customActions.length > 0) {
         customActions.forEach((customAction) => {
-            const action = customAction.id.replace('actions_button_custom_', '');
+            const action = customAction.id.replace('actions_button_custom_', '')
 
-            customAction.addEventListener('click', function () {
+            customAction.addEventListener('click', function() {
                 Swal.fire({
                     title: customAction.innerText,
                     text: customAction.dataset.text,
@@ -2046,29 +2055,29 @@ if (!empty($applications) && !empty($title_override) && !empty(str_replace(array
                     cancelButtonText: "<?php echo Text::_('JNO');?>"
                 }).then((confirm) => {
                     if (confirm.value) {
-                        const actions = customAction.closest('.mod_emundus_applications__actions');
-                        const module_id = actions.dataset.mid;
-                        const fnum = customAction.dataset.fnum;
+                        const actions = customAction.closest('.mod_emundus_applications__actions')
+                        const module_id = actions.dataset.mid
+                        const fnum = customAction.dataset.fnum
 
                         fetch('/index.php?option=com_emundus&controller=application&task=applicantcustomaction&action=' + action + '&fnum=' + fnum + '&module_id=' + module_id)
                             .then((response) => {
                                 if (response.ok) {
-                                    return response.json();
+                                    return response.json()
                                 } else {
-                                    throw new Error(response.statusText);
+                                    throw new Error(response.statusText)
                                 }
                             })
                             .then((json) => {
                                 if (json.status) {
-                                    window.location.reload();
+                                    window.location.reload()
                                 } else {
-                                    console.error(json.msg);
+                                    console.error(json.msg)
                                 }
-                            });
+                            })
                     }
                 })
-            });
-        });
+            })
+        })
     }
 
 </script>

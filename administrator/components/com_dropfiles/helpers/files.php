@@ -324,13 +324,17 @@ class DropfilesFilesHelper
                         if ($pos !== false) {
                             $item->custom_icon =  substr($item->custom_icon, 0, $pos);
                         }
-                        $image = new JImage(JPath::clean(JPATH_SITE . '/' . $item->custom_icon));
-                        $result = $image->createThumbs(array('50x70'));
-                        if (JPATH_SITE === '/') {
-                            $item->custom_icon_thumb = JUri::root() . $result[0]->getPath();
+                        if (file_exists(JPath::clean(JPATH_SITE . '/' . $item->custom_icon))) {
+                            $image = new JImage(JPath::clean(JPATH_SITE . '/' . $item->custom_icon));
+                            $result = $image->createThumbs(array('50x70'));
+                            if (JPATH_SITE === '/') {
+                                $item->custom_icon_thumb = JUri::root() . $result[0]->getPath();
+                            } else {
+                                $pat_replace = str_replace(JPATH_SITE, JUri::root(), $result[0]->getPath());
+                                $item->custom_icon_thumb = str_replace('/\\', '/', $pat_replace);
+                            }
                         } else {
-                            $pat_replace = str_replace(JPATH_SITE, JUri::root(), $result[0]->getPath());
-                            $item->custom_icon_thumb = str_replace('/\\', '/', $pat_replace);
+                            $item->custom_icon = '';
                         }
                     }
 

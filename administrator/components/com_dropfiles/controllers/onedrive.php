@@ -133,7 +133,7 @@ class DropfilesControllerOneDrive extends JControllerAdmin
      */
     public function newEntryOnedrive($onedrive)
     {
-        $newentry = $onedrive->addFolderRoot('Dropfiles - ' . JFactory::getApplication()->getCfg('sitename'));
+        $newentry = $onedrive->addFolderRoot('Dropfiles - ' . JFactory::getApplication()->get('sitename'));
         $decoded = json_decode($newentry['responsebody'], true);
         return new OneDrive_Service_Drive_Item($decoded);
     }

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="2.5.0" method="upgrade">
     <name>Dropfiles</name>
-    <creationDate>2024-09-06 02:57:33</creationDate>
+    <creationDate>2025-08-06 08:29:50</creationDate>
     <author>JoomUnited</author>
     <authorEmail>contact@joomunited.com</authorEmail>
     <authorUrl>http://www.joomunited.com</authorUrl>
     <copyright/>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-    <version>6.4.1</version>
+    <version>6.4.6</version>
     <description>Dropfiles files manager</description>
     <scriptfile>install.php</scriptfile>
 

@@ -47,51 +47,23 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 {
 	use DatabaseAwareTrait;
 	use UserFactoryAwareTrait;
-	
-	/**
-	 * @var  string  The authorisation url.
-	 */
-	protected $authUrl;
 
-	/**
-	 * @var  string  The access token url.
-	 */
-	protected $tokenUrl;
+	private ?string $authUrl;
 
-	/**
-	 * @var  string  The REST request domain.
-	 */
-	protected $domain;
+	private ?string $tokenUrl;
 
-	/**
-	 * @var  string[]  Scopes available based on mode settings.
-	 */
-	protected $scopes;
+	private ?string $domain;
 
-	/**
-	 * @var  string  The authorisation url.
-	 */
-	protected $logoutUrl;
+	private ?array $scopes;
 
-	/**
-	 * @var  object  OpenID attributes.
-	 */
-	protected $attributes;
+	private ?string $logoutUrl;
 
-	/**
-	 * @var object  Mapping attributes.
-	 *
-	 * @since version 2.0.0
-	 */
-	protected $mapping;
+	private object|array|null $attributes;
 
-	/**
-	 * Returns an array of events this subscriber will listen to.
-	 *
-	 * @return  array
-	 *
-	 * @since   5.0.0
-	 */
+	private object|array|null $mapping;
+
+	private const PARAMETERS = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode', 'attribute_mapping','mapping'];
+
 	public static function getSubscribedEvents(): array
 	{
 		return [
@@ -107,64 +79,13 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 	public function __construct(DispatcherInterface $dispatcher, array $config = [])
 	{
 		parent::__construct($dispatcher, $config);
-		
+
 		$this->loadLanguage();
-
-		$configurations = (array)$this->params->get('configurations', null);
-		if(!empty($configurations)) {
-			$google_domain = filter_input(INPUT_GET, 'hd', FILTER_SANITIZE_STRING);
-
-			if (!empty($google_domain)) {
-				foreach ($configurations as $configuration) {
-					if ($configuration->type === 'google') {
-						$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode'];
-
-						foreach ($parameters as $parameter) {
-							$this->params->set($parameter, $configuration->{$parameter});
-						}
-					}
-				}
-			} else {
-				$finalConfiguration = $configurations[0];
-				$iss = filter_input(INPUT_GET, 'iss', FILTER_SANITIZE_STRING);
-				if(!empty($iss))
-				{
-					foreach ($configurations as $configuration) {
-						if($configuration->source == 0 && str_contains($configuration->well_known_url, $iss))
-						{
-							$finalConfiguration = $configuration;
-						}
-					}
-				}
-
-				$parameters = ['client_id', 'client_secret', 'scopes', 'auth_url', 'token_url', 'redirect_url', 'sso_account_url', 'emundus_profile', 'email_id', 'logout_url', 'platform_redirect_url', 'attributes', 'debug_mode', 'attribute_mapping','mapping'];
-
-				foreach ($parameters as $parameter) {
-					$this->params->set($parameter, $finalConfiguration->{$parameter});
-				}
-			}
-		}
-
-		$this->scopes = explode(',', $this->params->get('scopes', 'openid'));
-		$this->authUrl = $this->params->get('auth_url');
-		$this->domain = $this->params->get('domain');
-		$this->tokenUrl = $this->params->get('token_url');
-		$this->logoutUrl = $this->params->get('logout_url');
 
 		jimport('joomla.log.log');
 		Log::addLogger(array('text_file' => 'com_emundus.oauth2.php'), Log::ALL, array('com_emundus'));
 	}
 
-	/**
-	 * Handles authentication via the OAuth2 client.
-	 *
-	 * @param array $credentials Array holding the user credentials
-	 * @param array $options Array of extra options
-	 * @param object &$response Authentication response object
-	 *
-	 * @return  boolean
-	 * @throws \Exception
-	 */
 	public function onUserAuthenticate(AuthenticationEvent $event)
 	{
 		$db = $this->getDatabase();
@@ -172,7 +93,7 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 		$credentials = $event->getCredentials();
 		$options = $event->getOptions();
 		$response    = $event->getAuthenticationResponse();
-		
+
 		$authenticate = false;
 		if(is_string($this->params->get('attributes'))) {
 			$this->attributes = json_decode($this->params->get('attributes'));
@@ -385,10 +306,6 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 		return $authenticate;
 	}
 
-	/**
-	 * Authenticate the user via the oAuth2 login and authorise access to the
-	 * appropriate REST API end-points.
-	 */
 	public function onOauth2Authenticate()
 	{
 		$app = $this->getApplication();
@@ -410,47 +327,52 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 		}
 	}
 
-	/**
-	 * Swap the authorisation code for a persistent token and authorise access
-	 * to Joomla!.
-	 *
-	 * @return  bool  True if the authorisation is successful, false otherwise.
-	 * @throws \Exception
-	 */
 	public function onOauth2Authorise()
 	{
 		$app = $this->getApplication();
 
-		$oauth2 = new OAuth2\Client();
-		$oauth2->setOption('tokenurl', $this->tokenUrl);
-		$oauth2->setOption('clientid', $this->params->get('client_id'));
-		$oauth2->setOption('clientsecret', $this->params->get('client_secret'));
-		$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
+		$configurations = (array) $this->params->get('configurations', null);
+		foreach ($configurations as $config)
+		{
+			$this->setParams($config);
 
-		try {
-			$result = $oauth2->authenticate();
-		} catch (\Exception $e) {
-			Log::add('Error when try to connect with oauth2 : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			$oauth2 = new OAuth2\Client();
+			$oauth2->setOption('tokenurl', $this->tokenUrl);
+			$oauth2->setOption('clientid', $this->params->get('client_id'));
+			$oauth2->setOption('clientsecret', $this->params->get('client_secret'));
+			$oauth2->setOption('redirecturi', $this->params->get('redirect_url'));
 
-			$app->enqueueMessage(Text::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
+			try
+			{
+				$result = $oauth2->authenticate();
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error when try to connect with oauth2 : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				continue;
+			}
 
-			//TODO: Get login url from menu helper
-			$app->redirect(Route::_('connexion'));
+			// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
+			$credentials = ['username' => 'temporary_username'];
+
+			// Adding the token to the login options allows Joomla to use it for logging in.
+			$options = [
+				'token'    => $result,
+				'provider' => 'openid',
+				'redirect' => $this->params->get('platform_redirect_url'),
+				'remember' => true
+			];
+
+			// Perform the log in.
+			return ($app->login($credentials, $options) === true);
 		}
 
-		// We insert a temporary username, it will be replaced by the username retrieved from the OAuth system.
-		$credentials = ['username' => 'temporary_username'];
+		$app->enqueueMessage(Text::_('PLG_AUTHENTICATION_EMUNDUS_OAUTH2_CONNECT_DOWN'), 'error');
 
-		// Adding the token to the login options allows Joomla to use it for logging in.
-		$options = [
-			'token' => $result,
-			'provider' => 'openid',
-			'redirect' => $this->params->get('platform_redirect_url'),
-			'remember' => true
-		];
+		//TODO: Get login url from menu helper
+		$app->redirect(Route::_('connexion'));
 
-		// Perform the log in.
-		return ($app->login($credentials, $options) === true);
+		return false;
 	}
 
 	// After the login has been executed, we need to send the user an email.
@@ -518,11 +440,24 @@ class EmundusOauth2 extends CMSPlugin implements SubscriberInterface
 		if ($app->isClient('administrator')) {
 			return false;
 		}
-		
+
 		if(!empty($this->logoutUrl)) {
 			$app->redirect($this->logoutUrl);
 		}
-		
+
 		return true;
+	}
+
+	private function setParams($configuration): void
+	{
+		foreach (self::PARAMETERS as $parameter) {
+			$this->params->set($parameter, $configuration->{$parameter});
+		}
+
+		$this->scopes = explode(',', $this->params->get('scopes', 'openid'));
+		$this->authUrl = $this->params->get('auth_url');
+		$this->domain = $this->params->get('domain');
+		$this->tokenUrl = $this->params->get('token_url');
+		$this->logoutUrl = $this->params->get('logout_url');
 	}
 }

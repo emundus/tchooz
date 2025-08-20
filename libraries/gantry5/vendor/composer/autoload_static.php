@@ -4,11 +4,13 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95
+class ComposerStaticInit114cdbdf12ee5c5fae784e371eef39f6
 {
     public static $files = array (
         '320cde22f66dd4f5d3fd621d3e88b98f' => __DIR__ . '/..' . '/symfony/polyfill-ctype/bootstrap.php',
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
+        'a4a119a56e50fbb293281d9a48007e0e' => __DIR__ . '/..' . '/symfony/polyfill-php80/bootstrap.php',
+        '0e6d7bf4a5811bfa5cf40c5ccd6fae6a' => __DIR__ . '/..' . '/symfony/polyfill-mbstring/bootstrap.php',
     );
 
     public static $prefixLengthsPsr4 = array (
@@ -22,7 +24,10 @@ class ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95
         ),
         'S' => 
         array (
+            'Symfony\\Polyfill\\Php80\\' => 23,
+            'Symfony\\Polyfill\\Mbstring\\' => 26,
             'Symfony\\Polyfill\\Ctype\\' => 23,
+            'Symfony\\Contracts\\EventDispatcher\\' => 34,
             'Symfony\\Component\\Yaml\\' => 23,
             'Symfony\\Component\\EventDispatcher\\' => 34,
             'ScssPhp\\ScssPhp\\' => 16,
@@ -44,10 +49,6 @@ class ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95
             'Psr\\Log\\' => 8,
             'Psr\\Container\\' => 14,
         ),
-        'L' => 
-        array (
-            'Leafo\\ScssPhp\\' => 14,
-        ),
         'G' => 
         array (
             'Gantry\\' => 7,
@@ -63,9 +64,21 @@ class ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
         ),
+        'Symfony\\Polyfill\\Php80\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-php80',
+        ),
+        'Symfony\\Polyfill\\Mbstring\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/polyfill-mbstring',
+        ),
         'Symfony\\Polyfill\\Ctype\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/polyfill-ctype',
+        ),
+        'Symfony\\Contracts\\EventDispatcher\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/event-dispatcher-contracts',
         ),
         'Symfony\\Component\\Yaml\\' => 
         array (
@@ -117,15 +130,11 @@ class ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95
         ),
         'Psr\\Log\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/log/Psr/Log',
+            0 => __DIR__ . '/..' . '/psr/log/src',
         ),
         'Psr\\Container\\' => 
         array (
             0 => __DIR__ . '/..' . '/psr/container/src',
-        ),
-        'Leafo\\ScssPhp\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/leafo/scssphp/src',
         ),
         'Gantry\\' => 
         array (
@@ -159,16 +168,21 @@ class ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95
     );
 
     public static $classMap = array (
+        'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Composer\\InstalledVersions' => __DIR__ . '/..' . '/composer/InstalledVersions.php',
+        'PhpToken' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/PhpToken.php',
+        'Stringable' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Stringable.php',
+        'UnhandledMatchError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/UnhandledMatchError.php',
+        'ValueError' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/ValueError.php',
     );
 
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95::$prefixDirsPsr4;
-            $loader->prefixesPsr0 = ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95::$prefixesPsr0;
-            $loader->classMap = ComposerStaticInitadf5a720abaf5488a6fec033c5fcff95::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit114cdbdf12ee5c5fae784e371eef39f6::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit114cdbdf12ee5c5fae784e371eef39f6::$prefixDirsPsr4;
+            $loader->prefixesPsr0 = ComposerStaticInit114cdbdf12ee5c5fae784e371eef39f6::$prefixesPsr0;
+            $loader->classMap = ComposerStaticInit114cdbdf12ee5c5fae784e371eef39f6::$classMap;
 
         }, null, ClassLoader::class);
     }

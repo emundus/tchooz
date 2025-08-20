@@ -196,4 +196,30 @@ class FabrikHelperTest extends UnitTestCase
 		$this->assertNotEmpty($decrypted_data, 'The decrypted data should not be empty');
 		$this->assertEquals('test', $decrypted_data, 'The decrypted data should be equal to the original data');
 	}
+
+	public function testgetAllFabrikAliases()
+	{
+		$start_time = microtime(true);
+		$fabrik_aliases = $this->helper::getAllFabrikAliases();
+		$end_time = microtime(true);
+		$execution_time = $end_time - $start_time;
+
+		// Old method for comparison
+		$start_time = microtime(true);
+		$query = $this->db->getQuery(true);
+		$query->select("replace(json_extract(params,'$.alias'),'\"', '')")
+			->from($this->db->quoteName('#__fabrik_elements'))
+			->where($this->db->quoteName('published') . ' = 1')
+			->where("json_extract(params,'$.alias') <> '' and json_extract(params,'$.alias') is not null");
+		$query->group('json_extract(params,"$.alias")');
+		$this->db->setQuery($query);
+		$old_method_aliases = $this->db->loadColumn();
+		$end_time = microtime(true);
+		$old_execution_time = $end_time - $start_time;
+		//
+
+		$this->assertSame($fabrik_aliases, $old_method_aliases);
+		$this->assertLessThan($old_execution_time, $execution_time, 'The time taken to retrieve aliases should be less than the older method');
+		$this->assertIsArray($fabrik_aliases, 'The aliases should be returned as an array');
+	}
 }

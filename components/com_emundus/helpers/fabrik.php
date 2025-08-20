@@ -2322,22 +2322,41 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	{
 		$aliases = [];
 
-		try
-		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
+		$h_cache = new EmundusHelperCache();
+		$cached_aliases = $h_cache->get('fabrik_aliases');
 
-			$query->select("replace(json_extract(params,'$.alias'),'\"', '')")
-				->from($db->quoteName('#__fabrik_elements'))
-				->where($db->quoteName('published') . ' = 1')
-				->where("json_extract(params,'$.alias') <> '' and json_extract(params,'$.alias') is not null");
-			$query->group('json_extract(params,"$.alias")');
-			$db->setQuery($query);
-			$aliases = $db->loadColumn();
-		}
-		catch (Exception $e)
-		{
-			Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		if (!empty($cached_aliases)) {
+			$aliases = $cached_aliases;
+		} else {
+			try
+			{
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				$query->select('params')
+					->from($db->quoteName('#__fabrik_elements'))
+					->where($db->quoteName('published') . ' = 1');
+				$db->setQuery($query);
+				$elements = $db->loadColumn();
+
+				// Extract aliases from element params
+				$aliases = array_map(function($params) {
+					$params = json_decode($params, true);
+					return !empty($params['alias']) ? $params['alias'] : '';
+				}, $elements);
+				// Filter out empty aliases
+				$aliases = array_filter($aliases, function($alias) {
+					return !empty($alias);
+				});
+				// Remove duplicates
+				$aliases = array_values(array_unique($aliases));
+
+				$h_cache->set('fabrik_aliases', $aliases);
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
 		}
 
 		return $aliases;

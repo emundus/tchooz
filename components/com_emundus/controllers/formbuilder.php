@@ -17,6 +17,7 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use \Tchooz\Traits\TraitResponse;
 
 require_once(JPATH_ROOT  . '/components/com_emundus/models/formbuilder.php');
 
@@ -29,6 +30,8 @@ require_once(JPATH_ROOT  . '/components/com_emundus/models/formbuilder.php');
  */
 class EmundusControllerFormbuilder extends BaseController
 {
+
+	use TraitResponse;
 
 	protected $app;
 
@@ -172,21 +175,26 @@ class EmundusControllerFormbuilder extends BaseController
 
 	public function hiddenunhiddenelement()
 	{
+		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$result = 0;
-			$update = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else {
-
-
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
 			$element = $this->input->getInt('element');
+			$updated = $this->m_formbuilder->hiddenUnhiddenElement($element);
 
-			$update = $this->m_formbuilder->hiddenUnhiddenElement($element);
+			if ($updated) {
+				$response = [
+					'code' => 200,
+					'status' => true,
+					'msg' => Text::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_UPDATED')
+				];
+			} else {
+				$response['code'] = 500;
+				$response['msg'] = Text::_('COM_EMUNDUS_FORMBUILDER_ELEMENT_NOT_UPDATED');
+			}
 		}
-		echo json_encode((object) $update);
-		exit;
+
+		$this->sendJsonResponse($response);
 	}
 
 
