@@ -121,9 +121,13 @@ if ($show_profile_picture) {
 }
 
 // Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
-$eMConfig           = JComponentHelper::getParams('com_emundus');
 $is_anonym_user     = $user->anonym;
-$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+if (!class_exists('EmundusModelSettings')) {
+	require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
+}
+$m_settings = new EmundusModelSettings();
+$addon_status = $m_settings->getAddonStatus('anonymous');
+$allow_anonym_files = $addon_status['enabled'];
 if ($is_anonym_user && !$allow_anonym_files) {
 	return;
 }

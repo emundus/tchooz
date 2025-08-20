@@ -1097,7 +1097,7 @@ class EmundusModelUsers extends ListModel
 
 		try {
 			if (!$user->save()) {
-				$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
+				$this->app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<BR />' . $user->getError(), 'error');
 				Log::add('Failed to create user ' . $user->getError(), Log::ERROR, 'com_emundus.error');
 			}
 			else {
@@ -1130,7 +1130,7 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 		catch (Exception $e) {
-			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
 			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$new_user_id = 0;
 		}
@@ -1334,9 +1334,6 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 		catch (Exception $e) {
-			error_log($e->getMessage());
-
-
 			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
 			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
@@ -4019,17 +4016,21 @@ class EmundusModelUsers extends ListModel
 	}
 
 	/**
-	 * @param $data must give user_id, email, is_anonym and token
+	 * @param $data array must give user_id, email, is_anonym and token
 	 * @param $campaign_id
 	 *
 	 * @return array
 	 * @throws Exception
 	 */
-	public function onAfterAnonymUserMapping($data, $campaign_id = 0, $program_code = ''): array
+	public function onAfterAnonymUserMapping(array $data, int $campaign_id = 0, string $program_code = ''): array
 	{
 		$message            = '';
-		$eMConfig           = JComponentHelper::getParams('com_emundus');
-		$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+		if (!class_exists('EmundusModelSettings')) {
+			require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
+		}
+		$m_settings = new EmundusModelSettings();
+		$addon_status = $m_settings->getAddonStatus('anonymous');
+		$allow_anonym_files = $addon_status['enabled'];
 
 		if ($allow_anonym_files) {
 			$app     = $this->app;
@@ -4037,7 +4038,6 @@ class EmundusModelUsers extends ListModel
 
 			if (!empty($user_id)) {
 				$profile_id = !empty($data['profile_id']) ? $data['profile_id'] : 1000;
-
 
 				$query = $this->db->getQuery(true);
 				$query->update($this->db->quoteName('#__emundus_users'))
@@ -4065,7 +4065,6 @@ class EmundusModelUsers extends ListModel
 						$this->db->execute();
 					}
 					catch (Exception $e) {
-						// catch any database errors.
 						Log::add('Failed to update user joomla group ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
@@ -4073,7 +4072,6 @@ class EmundusModelUsers extends ListModel
 						->update('#__users')
 						->set('activation = ' . $this->db->quote(''))
 						->set('block = 0')
-						->set('params = ' . $this->db->quote(json_encode(array('send_mail' => false))))
 						->where('id = ' . $user_id);
 
 					try {
@@ -4081,7 +4079,6 @@ class EmundusModelUsers extends ListModel
 						$this->db->execute();
 					}
 					catch (Exception $e) {
-						// catch any database errors.
 						Log::add('Failed to update user ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
@@ -4115,7 +4112,7 @@ class EmundusModelUsers extends ListModel
 						catch (Exception $e) {
 							$campaign_id = 0;
 							Log::add('Failed to get campaign ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-							$message = JText::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
+							$message = Text::_('COM_EMUNDUS_ANONYM_USERS_ERROR_TRYING_TO_FIND_CAMPAIGN');
 						}
 					}
 					else {
@@ -4126,6 +4123,7 @@ class EmundusModelUsers extends ListModel
 							->andWhere('published = 1');
 
 						try {
+							$this->db->setQuery($query);
 							$campaign_id = $this->db->loadResult();
 						}
 						catch (Exception $e) {
@@ -4142,66 +4140,25 @@ class EmundusModelUsers extends ListModel
 						if (!empty($fnum)) {
 							$email = $data['email'];
 
-							if (!$data['is_anonym'] && !empty($data['token']) && !empty($email)) {
-								$template = $this->app->getTemplate(true);
-								$params   = $template->params;
-								$config   = JFactory::getConfig();
-
-								if (!empty($params->get('logo')->custom->image)) {
-									$logo = json_decode(str_replace("'", "\"", $params->get('logo')->custom->image), true);
-									$logo = !empty($logo['path']) ? JURI::base() . $logo['path'] : "";
-								}
-								else {
-									$logo_module = JModuleHelper::getModuleById('90');
-									preg_match('#src="(.*?)"#i', $logo_module->content, $tab);
-									$pattern = "/^(?:ftp|https?|feed)?:?\/\/(?:(?:(?:[\w\.\-\+!$&'\(\)*\+,;=]|%[0-9a-f]{2})+:)*
-                                        (?:[\w\.\-\+%!$&'\(\)*\+,;=]|%[0-9a-f]{2})+@)?(?:
-                                        (?:[a-z0-9\-\.]|%[0-9a-f]{2})+|(?:\[(?:[0-9a-f]{0,4}:)*(?:[0-9a-f]{0,4})\]))(?::[0-9]+)?(?:[\/|\?]
-                                        (?:[\w#!:\.\?\+\|=&@$'~*,;\/\(\)\[\]\-]|%[0-9a-f]{2})*)?$/xi";
-
-									if ((bool) preg_match($pattern, $tab[1])) {
-										$tab[1] = parse_url($tab[1], PHP_URL_PATH);
-									}
-
-									$logo = JURI::base() . $tab[1];
-								}
-
-								require_once(JPATH_ROOT . '/components/com_emundus/controllers/messages.php');
-								$c_messages = new EmundusControllerMessages();
-								$sent       = $c_messages->sendEmailNoFnum($email, 'anonym_token_email', [
-									'SITE_URL'              => JURI::base(),
+							if (!empty($data['token']) && !empty($email)) {
+								require_once(JPATH_ROOT . '/components/com_emundus/models/emails.php');
+								$m_emails = new EmundusModelEmails();
+								$sent = $m_emails->sendEmailNoFnum($email, 'anonym_token_email', [
 									'ACTIVATION_ANONYM_URL' => JURI::base() . 'index.php?option=com_emundus&controller=users&task=activation_anonym_user&token=' . $data['token'] . '&user_id=' . $user_id,
 									'TOKEN'                 => $data['token'],
-									'LOGO'                  => $logo,
 									'USER_ID'               => $user_id,
-									'PASSWORD'              => $data['password'],
-									'SITE_NAME'             => JFactory::getConfig()->get('sitename')
-								]);
+								], null, [], null, false);
 
 								if (!$sent) {
 									Log::add('Failed to send email to anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
 								}
 							}
 
-							$this->login($user_id);
-							$user_session         = JFactory::getSession()->get('emundusUser');
-							$user_session->id     = $user_id;
-							$user_session->anonym = true;
-							JFactory::getSession()->set('emundusUser', $user_session);
-
-							if (!empty($user_session->id)) {
-								return [
-									'status' => true,
-									'data'   => [
-										'redirect_url' => '/component/emundus/?task=openfile&fnum=' . $fnum,
-										'fnum'         => $fnum
-									]
-								];
+							if(!class_exists('EmundusModelUsers')) {
+								require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
 							}
-							else {
-								Log::add('Failed to open session for anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
-								$message = JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
-							}
+							$m_users = new EmundusModelUsers();
+							$m_users->connectUserFromToken($data['token'], $app->input->server->get('REMOTE_ADDR'));
 						}
 						else {
 							Log::add('Failed to create file for anonym user' . $user_id . ' campaign id :' . $campaign_id, Log::WARNING, 'com_emundus.error');
@@ -4210,16 +4167,16 @@ class EmundusModelUsers extends ListModel
 					}
 					else {
 						Log::add('Failed to retrieve campaign for anonym user' . $user_id, Log::WARNING, 'com_emundus.error');
-						$message = JText::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
+						$message = Text::_('COM_EMUNDUS_ANONYM_USERS_NO_CAMPAIGN_FOUND');
 					}
 				}
 				else {
-					$message = JText::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
+					$message = Text::_('COM_EMUNDUS_ANONYM_USERS_CREATE_ANONYM_SESSION_ERROR');
 				}
 			}
 		}
 		else {
-			$message = JText::_('ANONYM_FILES_ARE_FORBIDDEN');
+			$message = Text::_('ANONYM_FILES_ARE_FORBIDDEN');
 			Log::add('Attempt to deposit an anonym file but emundus configuration forbid it.', Log::INFO, 'com_emundus.users');
 		}
 
@@ -4234,45 +4191,73 @@ class EmundusModelUsers extends ListModel
 	 * Login user from token
 	 * Rule: token must have an expiration date
 	 *
-	 * @param $token
-	 *
+	 * @param string $token
+	 * @param string $ip
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function connectUserFromToken($token): bool
+	public function connectUserFromToken(string $token, string $ip): bool
 	{
 		$connected = false;
 		$app       = $this->app;
 		$message   = 'COM_EMUNDUS_USERS_ANONYM_INVALID_KEY';
 
 		if (!empty($token)) {
-
+			$anonym_user = null;
 			$query = $this->db->getQuery(true);
 
-			$query->select('ju.*, jeu.token_expiration')
+			$query->select('ju.*, jeu.token, jeu.token_expiration')
 				->from('#__emundus_users AS jeu')
 				->leftJoin('#__users AS ju ON ju.id = jeu.user_id')
-				->where('jeu.token = ' . $this->db->quote($token));
+				->where('jeu.token IS NOT NULL')
+				->andWhere('jeu.is_anonym = 1');
 
 			try {
 				$this->db->setQuery($query);
-				$result = $this->db->loadObject();
+				$results = $this->db->loadObjectList();
+
+				foreach ($results as $result) {
+					if (password_verify($token, $result->token)) {
+						$anonym_user = $result;
+						break;
+					}
+				}
 			}
 			catch (Exception $e) {
 				Log::add('Failed to get key from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 				$message = 'COM_EMUNDUS_USERS_ANONYM_FAILED_TO_FOUND_KEY';
 			}
 
-			if (!empty($result) && !empty($result->id)) {
-				$date = strtotime($result->token_expiration);
+			if (!empty($anonym_user) && !empty($anonym_user->id)) {
+				// check if anonym user is activated
+				$anonym_user->params = json_decode($anonym_user->params);
+				if ($anonym_user->params->anonym_activation != 1) {
+					$message = 'COM_EMUNDUS_USERS_ANONYM_USER_NOT_ACTIVATED';
+					$app->enqueueMessage(Text::_($message), 'warning');
+					$app->redirect('/connect-from-token');
+				}
+
+				$date = strtotime($anonym_user->token_expiration);
 				if (time() > $date) {
 					$message = 'COM_EMUNDUS_USERS_ANONYM_OUTDATED_KEY ' . date('d/m/Y H/hs', $date);
 				}
-				else {
-					$connected = $this->connectUserFromId($result->id);
+				else
+				{
+					$connected = $this->connectUserFromId($anonym_user->id);
 
 					if (!$connected) {
 						$message = 'COM_EMUNDUS_USERS_ANONYM_USER_CONNECTION_FAILED';
+					} else {
+						$query->clear()
+							->update('jos_emundus_token_auth_attempts')
+							->set('succeed = 1')
+							->where('token = ' . $this->db->quote($token))
+							->andWhere('ip = ' . $this->db->quote($ip))
+							->order('id DESC')
+							->setLimit(1);
+
+						$this->db->setQuery($query);
+						$this->db->execute();
 					}
 				}
 			}
@@ -4283,7 +4268,7 @@ class EmundusModelUsers extends ListModel
 		}
 
 		if (!$connected && !empty($message)) {
-			$app->enqueueMessage(JText::_($message), 'error');
+			$app->enqueueMessage(Text::_($message), 'error');
 		}
 
 		return $connected;
@@ -4296,9 +4281,9 @@ class EmundusModelUsers extends ListModel
 
 		$query = $this->db->getQuery(true);
 
-		$jUser    = JFactory::getUser($user_id);
+		$jUser    = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 		$instance = $jUser;
-		$session  = JFactory::getSession();
+		$session  = $app->getSession();
 		$session->set('user', $jUser);
 		$app->checkSession();
 
@@ -4341,34 +4326,95 @@ class EmundusModelUsers extends ListModel
 		$correspond = false;
 
 		if (!empty($token) && !empty($user_id)) {
-
 			$query = $this->db->getQuery(true);
 
-			$query->select('id')
+			$query->select('token')
 				->from('#__emundus_users')
-				->where('token = ' . $this->db->quote($token))
-				->andWhere('user_id = ' . $user_id)
-				->andWhere('token_expiration > NOW()');
+				->where('user_id = ' . $user_id)
+				->andWhere('token_expiration > ' . $this->db->quote(date('Y-m-d H:i:s')));
 
 			try {
 				$this->db->setQuery($query);
-				$result = $this->db->loadResult();
+				$userToken = $this->db->loadResult();
+				$correspond = password_verify($token, $userToken);
+
+				if (!$correspond) {
+					$ip = $_SERVER['REMOTE_ADDR'];
+					$query->clear()
+						->insert('jos_emundus_token_auth_attempts')
+						->set('token = ' . $this->db->quote($token))
+						->set('ip = ' . $this->db->quote($ip))
+						->set('succeed = 0')
+						->set('date_time = ' . $this->db->quote(date('Y-m-d H:i:s')));
+
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					$this->assertNotMaliciousAttemptsUsingConnectViaToken();
+				}
 			}
 			catch (Exception $e) {
-				$result = 0;
 				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-			}
-
-			if (!empty($result)) {
-				$correspond = true;
 			}
 		}
 
 		return $correspond;
 	}
 
+
 	/**
 	 * Activate anonym user
+	 * @param string $token
+	 * @param int $user_id
+	 * @return bool activated
+	 */
+	public function activateAnonymUser(string $token, int $user_id): bool
+	{
+		$activated = false;
+
+		if (!empty($token) && !empty($user_id)) {
+			$query = $this->db->getQuery(true);
+
+			$query->select('token')
+				->from('#__emundus_users')
+				->where('user_id = ' . $user_id)
+				->andWhere('token_expiration > ' . $this->db->quote(date('Y-m-d H:i:s')));
+
+			try {
+				$this->db->setQuery($query);
+				$tokenFound = $this->db->loadResult();
+
+				if (password_verify($token, $tokenFound)) {
+					$query->clear()
+						->select('params')
+						->from('#__users')
+						->where('id = ' . $user_id);
+
+					$this->db->setQuery($query);
+					$params =  $this->db->loadResult();
+
+					$params = json_decode($params);
+					$params->anonym_activation = 1;
+					$params = json_encode($params);
+
+					$query->clear()
+						->update('#__users')
+						->set('params = ' . $this->db->quote($params))
+						->where('id = ' . $user_id);
+
+					$this->db->setQuery($query);
+					$activated = $this->db->execute();
+				}
+			}
+			catch (Exception $e) {
+				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $activated;
+	}
+
+	/**
 	 * Use email_anonym column from emundus_users found from token and user_id
 	 * If user with this email already exists, bind files to this existing user
 	 * Else update current user anonym infos
@@ -4383,14 +4429,12 @@ class EmundusModelUsers extends ListModel
 		$updated = false;
 
 		if (!empty($token) && !empty($user_id)) {
-
 			$query = $this->db->getQuery(true);
 
 			$query->select('*')
 				->from('#__emundus_users')
-				->where('token = ' . $this->db->quote($token))
-				->andWhere('user_id = ' . $user_id)
-				->andWhere('token_expiration > NOW()');
+				->where('user_id = ' . $user_id)
+				->andWhere('token_expiration > ' . $this->db->quote(date('Y-m-d H:i:s')));
 
 			try {
 				$this->db->setQuery($query);
@@ -4400,7 +4444,7 @@ class EmundusModelUsers extends ListModel
 				Log::add('Failed to retrieve emundus user from token ' . $token . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
-			if (!empty($emundusUser) && !empty($emundusUser->user_id)) {
+			if (!empty($emundusUser) && !empty($emundusUser->user_id) && password_verify($token, $emundusUser->token)) {
 				if ($emundusUser->is_anonym == 0) {
 					$query->clear()
 						->select('id')
@@ -4417,7 +4461,7 @@ class EmundusModelUsers extends ListModel
 
 					if (!empty($existing_user)) {
 						if ($existing_user == $user_id) {
-							$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_UPDATE'));
+							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_UPDATE'));
 						}
 						else {
 							// Copy files to existing user, log to this user and block current anonym user
@@ -4449,7 +4493,7 @@ class EmundusModelUsers extends ListModel
 								}
 							}
 							else {
-								$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_BIND'));
+								$this->app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_ANONYM_NOTHING_TO_BIND'));
 							}
 						}
 					}
@@ -4490,13 +4534,13 @@ class EmundusModelUsers extends ListModel
 							if ($emundus_user_updated) {
 								$updated = true;
 
-								if (JFactory::getUser()->id == $user_id) {
+								if (Factory::getApplication()->getIdentity()->id == $user_id) {
 									include_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
 									$m_profile = new EmundusModelProfile;
 									$m_profile->initEmundusSession();
 								}
-								else if (JFactory::getUser()->guest == 1) {
-									$connected = $this->connectUserFromId($user_id);
+								else if (Factory::getApplication()->getIdentity()->guest == 1) {
+									$this->connectUserFromId($user_id);
 								}
 							}
 						}
@@ -4588,12 +4632,11 @@ class EmundusModelUsers extends ListModel
 				$this->db->setQuery($query);
 				$this->db->execute();
 
-				$app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_TOO_MANY_WRONG_ATTEMPTS'), 'error');
+				$app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_TOO_MANY_WRONG_ATTEMPTS'), 'error');
 				$app->redirect('/');
 			}
 			else {
-
-				$app->enqueueMessage(JText::_('COM_EMUNDUS_ANONYM_USERS_ATTEMPTS_BEGIN') . (5 - sizeof($failed_attempts)) . JText::_('COM_EMUNDUS_ANONYM_USERS_ATTEMPTS_END'), 'error');
+				$app->enqueueMessage(sprintf(Text::_('COM_EMUNDUS_ANONYM_USERS_ATTEMPTS'), (5 - sizeof($failed_attempts))), 'error');
 			}
 		}
 	}
@@ -4602,34 +4645,53 @@ class EmundusModelUsers extends ListModel
 	 * Generate a new token for current user
 	 * @return string the new token generated, or empty string if failed
 	 */
-	public function generateUserToken(): string
+	public function generateUserToken(int $user_id): string
 	{
 		$new_token = '';
 
 		require_once(JPATH_ROOT . '/components/com_emundus/helpers/users.php');
-		$h_users = new EmundusHelperUsers();
-		$token   = $h_users->generateToken();
-		$user_id = JFactory::getUser()->id;
+		$token   = EmundusHelperUsers::generateToken();
 
 		if (!empty($token)) {
-
 			$query = $this->db->getQuery(true);
+			$token_duration_validity = 1; // Default to 1 week
+			$token_duration_validity_unit = 'week'; // Default to week
 
-			$query->update('#__emundus_users')
-				->set('token = ' . $this->db->quote($token))
-				->set('token_expiration = ' . $this->db->quote(date('Y-m-d H:i:s', strtotime("+1 week"))))
+			$query->clear()
+				->select('value')
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('anonymous'));
+			$this->db->setQuery($query);
+			$anonym_params = $this->db->loadResult();
+			if(!empty($anonym_params))
+			{
+				$anonym_params = json_decode($anonym_params);
+				if (!empty($anonym_params->token_duration_validity)) {
+					$token_duration_validity = $anonym_params->token_duration_validity;
+				}
+
+				if (!empty($anonym_params->token_duration_validity_unit)) {
+					$token_duration_validity_unit = $anonym_params->token_duration_validity_unit;
+				}
+			}
+			$hashtoken = password_hash($token, PASSWORD_BCRYPT);
+
+			$query->clear()
+				->update('#__emundus_users')
+				->set('token = ' . $this->db->quote($hashtoken))
+				->set('token_expiration = ' . $this->db->quote(date('Y-m-d H:i:s', strtotime('+' . $token_duration_validity . ' ' . $token_duration_validity_unit))))
 				->where('user_id = ' . $user_id);
 
 			$this->db->setQuery($query);
 			try {
 				$updated = $this->db->execute();
+
+				if ($updated) {
+					$new_token = $token;
+				}
 			}
 			catch (Exception $e) {
 				Log::add('Failed to generate new token for user ' . $user_id . ' ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-			}
-
-			if ($updated) {
-				$new_token = $token;
 			}
 		}
 
@@ -5219,20 +5281,21 @@ class EmundusModelUsers extends ListModel
 		return $groups_mapping;
 	}
 
-	public function addUserFromParams($params, $current_user, $send_email = 1) {
+	public function addUserFromParams(array $params, $send_email = true): bool
+	{
 		$created = false;
 
 		if (!empty($params['username']) && !empty($params['email'])) {
-			$user = clone(JFactory::getUser(0));
+			$user = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
 
 			if (preg_match('/^[0-9a-zA-Z\_\@\+\-\.]+$/', $params['username']) !== 1) {
-				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD'));
+				throw new Exception(Text::_('COM_EMUNDUS_USERS_ERROR_USERNAME_NOT_GOOD'));
 			}
 
 			require_once JPATH_ROOT . '/components/com_emundus/helpers/emails.php';
 			$h_emails = new EmundusHelperEmails();
 			if (!$h_emails->correctEmail($params['email'])) {
-				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL'));
+				throw new Exception(Text::_('COM_EMUNDUS_USERS_ERROR_NOT_A_VALID_EMAIL'));
 			}
 
 			$user->name = $params['name'];
@@ -5250,6 +5313,11 @@ class EmundusModelUsers extends ListModel
 			$user->lastvisitDate = null;
 			$user->groups = array($params['jgr']);
 			$user->block = 0;
+			if (isset($params['params'])) {
+				foreach ($params['params'] as $param => $value) {
+					$user->setParam($param, $value);
+				}
+			}
 
 			$other_param['firstname'] 		= $params['firstname'];
 			$other_param['lastname'] 		= $params['lastname'];
@@ -5269,7 +5337,7 @@ class EmundusModelUsers extends ListModel
 			$uid = $this->adduser($user, $other_param);
 
 			if (is_array($uid)) {
-				throw new Exception(JText::_('COM_EMUNDUS_USERS_ERROR'));
+				throw new Exception(Text::_('COM_EMUNDUS_USERS_ERROR'));
 			} else if (empty($uid)) {
 				throw new Exception($user->getError());
 			}
@@ -5283,7 +5351,7 @@ class EmundusModelUsers extends ListModel
 			}
 
 			if (!mkdir(EMUNDUS_PATH_ABS.$uid, 0755) || !copy(EMUNDUS_PATH_ABS.'index.html', EMUNDUS_PATH_ABS.$uid.DS.'index.html')) {
-				throw new Exception(JText::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN'));
+				throw new Exception(Text::_('COM_EMUNDUS_USERS_CANT_CREATE_USER_FOLDER_CONTACT_ADMIN'));
 			}
 
 			if ($send_email) {
@@ -5300,7 +5368,7 @@ class EmundusModelUsers extends ListModel
 				$sent = $m_emails->sendEmailNoFnum($user->email, $email, $post, $user->id, [], null, false);
 
 				if (!$sent) {
-					throw new Exception(JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT'));
+					throw new Exception(Text::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT'));
 				}
 			}
 

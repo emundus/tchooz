@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-anonymregistration" label="PLG_FABRIK_FORM_ANONYMREGISTRATION_FIELDS">
+            <field name="profile_id"
+                   type="sql"
+                   label="PLG_FABRIK_FORM_ANONYMREGISTRATION_PROFILE_ID"
+                   query="SELECT id, label FROM #__emundus_setup_profiles"
+                   key_field="id"
+                   value_field="label"
+                   default="1000"
+                   multiple="false"
+            />
+            <field name="email_field"
+                     type="listfields"
+                     label="PLG_FABRIK_FORM_ANONYMREGISTRATION_EMAIL_FIELD_LABEL"
+                     description=""
+                     onlytablefields="0"
+                     repeat="true" />
+            <field name="campaign_field"
+                   type="listfields"
+                   label="PLG_FABRIK_FORM_ANONYMREGISTRATION_CAMPAIGN_FIELD_LABEL"
+                   description=""
+                   onlytablefields="0"
+                   repeat="true" />
+            <field name="token_field"
+                        type="listfields"
+                        label="PLG_FABRIK_FORM_ANONYMREGISTRATION_TOKEN_FIELD_LABEL"
+                        description=""
+                        onlytablefields="0"
+                        repeat="true" />
+        </fieldset>
+    </fields>
+</form>

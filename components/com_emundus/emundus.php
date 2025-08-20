@@ -880,7 +880,6 @@ Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_AND_PROGRAMS');
 
 Text::script('COM_EMUNDUS_ACL_BOOKING');
 Text::script('COM_EMUNDUS_ACL_BOOKING_DESC');
-
 Text::script('COM_USERS_MFA_METHODS_DISABLED');
 
 Text::script('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER');
@@ -1081,9 +1080,21 @@ if ($payment_repository->activated) {
 	Text::script('COM_EMUNDUS_PAYMENT_STEP_NOT_SAVED');
 	Text::script('COM_EMUNDUS_PAYMENT_STEP_SAVED');
 }
+
 Text::script('COM_EMUNDUS_ONBOARD_EDITOR_UNDO');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 Text::script('COM_EMUNDUS_ERROR');
+
+Text::script('COM_EMUNDUS_ADDONS_ANONYMOUS');
+Text::script('COM_EMUNDUS_ADDONS_ANONYMOUS_DESC');
+Text::script('COM_EMUNDUS_ANONYM_ADDON_CONFIGURATION');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_MONTH');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_WEEK');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_DAY');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_HOUR');
+Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_MINUTE');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
@@ -1171,7 +1182,7 @@ else if ($user->guest && $app->input->getString('controller') === 'webhook' && $
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity')
+elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
 {
 	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
 	{
