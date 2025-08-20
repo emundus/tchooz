@@ -2,13 +2,13 @@
 
 <extension type="plugin" version="2.5" group="dropfilesthemes" method="upgrade">
     <name>Dropfiles themes - ggd</name>
-    <creationDate>2024-09-06 02:57:33</creationDate>
+    <creationDate>2025-08-06 08:29:50</creationDate>
     <author>JoomUnited</author>
     <authorEmail>contact@joomunited.com</authorEmail>
     <authorUrl>http://www.joomunited.com</authorUrl>
     <copyright/>
     <license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
-    <version>6.4.1</version>
+    <version>6.4.6</version>
     <description>Ggd theme for Dropfiles</description>
     <files>
         <filename plugin="ggd">ggd.php</filename>

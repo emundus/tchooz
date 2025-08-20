@@ -114,6 +114,7 @@ JFactory::getDocument()->addScriptDeclaration("
         </div>
         <div class="ju-left-panel">
             <div class="ju-logo">
+                <h1>Dropfiles</h1>
                 <a href="https://www.joomunited.com/products/dropfiles" target="_blank">
                     <img src="<?php echo JUri::root(true) . '/administrator/components/com_dropfiles/assets/joomla-css-framework/images/logo-joomUnited-white.png' ?>"
                          srcset="<?php echo JUri::root(true) . '/administrator/components/com_dropfiles/assets/joomla-css-framework/images/logo-joomUnited-white.png' ?>"
@@ -126,7 +127,7 @@ JFactory::getDocument()->addScriptDeclaration("
             </div>
             <ul class="tabs ju-menu-tabs">
                 <li class="tab main-settings-list-tab parent-tabs">
-                    <a href="#main" class="link-tab white-text waves-effect waves-light" id="mainparentlink">
+                    <a href="#main" class="link-tab white-text " id="mainparentlink">
                         <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/icon-main-settings.svg'?>"  title="" />
                         <span class="name tab-title"><?php echo JText::sprintf('COM_DROPFILES_CONFIG_MAIN_LABEL') ?></span>
                     </a>
@@ -134,7 +135,7 @@ JFactory::getDocument()->addScriptDeclaration("
                         <?php foreach ($settings as $k => $v) : ?>
                             <?php if (in_array($k, array('main', 'main_frontend', 'main_advanced'))) : ?>
                                 <li class="tab main-tab" data-tab-title="<?php echo $v['nav_name'] ?>">
-                                    <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                                    <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                         <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                                     </a>
                                 </li>
@@ -146,7 +147,7 @@ JFactory::getDocument()->addScriptDeclaration("
                 <?php foreach ($settings as $k => $v) : ?>
                     <?php if (in_array($k, array('search'))) : ?>
                         <li class="tab main-tab" data-tab-title="<?php echo $v['nav_name'] ?>">
-                            <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                            <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                 <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/'. $v['icon']?>"  title="" />
                                 <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                             </a>
@@ -155,7 +156,7 @@ JFactory::getDocument()->addScriptDeclaration("
                 <?php endforeach; ?>
 
                 <li class="tab theme-list-tab parent-tabs">
-                    <a href="#default_theme" class="link-tab white-text waves-effect waves-light" id="themeparentlink">
+                    <a href="#default_theme" class="link-tab white-text " id="themeparentlink">
                         <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/icon-themes.svg'?>"  title="" />
                         <span class="name tab-title"><?php echo JText::sprintf('COM_DROPFILES_CONFIGURATION_THEMES_GROUP_NAME') ?></span>
                     </a>
@@ -163,7 +164,7 @@ JFactory::getDocument()->addScriptDeclaration("
                     <?php foreach ($settings as $k => $v) : ?>
                         <?php if (in_array($k, array('default_theme', 'ggd_theme', 'theme_table', 'tree_theme', 'preview_theme'))) : ?>
                                     <li class="tab main-tab theme-item" data-tab-title="<?php echo $v['nav_name'] ?>">
-                                        <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                                        <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                             <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                                         </a>
                                     </li>
@@ -175,7 +176,7 @@ JFactory::getDocument()->addScriptDeclaration("
                 <?php foreach ($settings as $k => $v) : ?>
                     <?php if (in_array($k, array('clonetheme', 'single_file'))) : ?>
                         <li class="tab main-tab" data-tab-title="<?php echo $v['nav_name'] ?>">
-                            <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                            <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                 <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/'. $v['icon']?>"  title="" />
                                 <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                             </a>
@@ -184,7 +185,7 @@ JFactory::getDocument()->addScriptDeclaration("
                 <?php endforeach; ?>
 
                 <li class="tab cloud-connection-tab parent-tabs">
-                    <a href="#cloud_connection" class="link-tab white-text waves-effect waves-light" id="cloudparentlink">
+                    <a href="#cloud_connection" class="link-tab white-text " id="cloudparentlink">
                         <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/icon-cloud-config.svg'?>"  title="" />
                         <span class="name tab-title"><?php echo JText::sprintf('COM_DROPFILES_CONFIG_CLOUD_CONNECTION_LABEL') ?></span>
                     </a>
@@ -192,7 +193,7 @@ JFactory::getDocument()->addScriptDeclaration("
                         <?php foreach ($settings as $k => $v) : ?>
                             <?php if (in_array($k, array('cloud_connection','cloud_dropbox', 'cloud_onedrive', 'cloud_onedrive_business'))) : ?>
                                 <li class="tab main-tab theme-item" data-tab-title="<?php echo $v['nav_name'] ?>">
-                                    <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                                    <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                         <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                                     </a>
                                 </li>
@@ -202,7 +203,7 @@ JFactory::getDocument()->addScriptDeclaration("
                 </li>
 
                 <li class="tab importer-tab parent-tabs">
-                    <a href="#importexport" class="link-tab white-text waves-effect waves-light" id="importexportparentlink">
+                    <a href="#importexport" class="link-tab white-text " id="importexportparentlink">
                         <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/icon-export.svg'?>"/>
                         <span class="name tab-title"><?php echo JText::sprintf('COM_DROPFILES_CONFIG_IMPORT_ROOT_MENU_LABEL') ?></span>
                     </a>
@@ -210,7 +211,7 @@ JFactory::getDocument()->addScriptDeclaration("
                         <?php foreach ($settings as $k => $v) : ?>
                             <?php if (in_array($k, array('importer','importexport','docmanimport'))) : ?>
                                 <li class="tab main-tab theme-item" data-tab-title="<?php echo $v['nav_name'] ?>">
-                                    <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                                    <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                         <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                                     </a>
                                 </li>
@@ -222,7 +223,7 @@ JFactory::getDocument()->addScriptDeclaration("
                 <?php foreach ($settings as $k => $v) : ?>
                     <?php if (!in_array($k, array('main', 'main_frontend', 'main_advanced', 'default_theme', 'ggd_theme', 'theme_table', 'tree_theme', 'preview_theme', 'search', 'clonetheme', 'single_file', 'cloud_connection', 'cloud_dropbox', 'cloud_onedrive', 'cloud_onedrive_business', 'docmanimport', 'importer', 'importexport'))) : ?>
                         <li class="tab main-tab" data-tab-title="<?php echo $v['nav_name'] ?>">
-                            <a href="#<?php echo $k; ?>" class="link-tab white-text waves-effect waves-light" id="<?php echo $k; ?>linktab">
+                            <a href="#<?php echo $k; ?>" class="link-tab white-text " id="<?php echo $k; ?>linktab">
                                 <img class="menu-icons" src="<?php echo JURI::root() . 'administrator/components/com_dropfiles/assets/images/configuration/'. $v['icon']?>"  title="" />
                                 <span class="name tab-title"><?php echo $v['nav_name']; ?></span>
                             </a>

@@ -140,7 +140,9 @@ class JFormFieldUpdaterstatus extends JFormField
                             background-color: #5cb85c;
                             border-color: #4cae4c;
                         }
-
+                        #ju-btn-connect .modal-dialog.modal-lg { 
+                            width: 450px;
+                        }
                         .ju-btn-connect:hover{
                             background-color: #4cae4c;
                         }
@@ -174,7 +176,7 @@ class JFormFieldUpdaterstatus extends JFormField
             $html[] = '<a style="text-decoration:none;" data-toggle="modal" data-target="#ju-btn-connect" data-bs-toggle="modal" data-bs-target="#ju-btn-connect" class="btn btn-primary" ';
             $html[] = ' title="Link my joomunited account" ';
             $html[] = '>Link my joomunited account</a>';
-            $html[] = JHtmlBootstrap::renderModal('ju-btn-connect', array('url' => $link, 'title' => 'Link my joomunited account', 'width' => '800px', 'height' => '450px'));
+            $html[] = JHtmlBootstrap::renderModal('ju-btn-connect', array('url' => $link, 'title' => 'Link my joomunited account', 'width' => '600px', 'height' => '550px'));
         } else {
             $html[] = '<p>Live update are enabled click here if you want to disable it</p>';
             $html[] = '<a style="text-decoration:none;" class="btn button ju-btn ju-btn-disconnect"';

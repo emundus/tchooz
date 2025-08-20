@@ -2,8 +2,10 @@
 
 /**
  * @package   Gantry5
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @author    Tiger12 http://tiger12.com
+ * @originalCreator  RocketTheme (Gantry Framework) 
+ * @currentDeveloper  Tiger12, LLC 
+ * @copyright Copyright (C) 2007 - 2022 Tiger12, LLC
  * @license   Dual License: MIT or GNU/GPLv2 and later
  *
  * http://opensource.org/licenses/MIT
@@ -49,8 +51,8 @@ abstract class RealLoader
             throw new \LogicException(self::$errorMessageGantryLoaded);
         }
 
-        define('GANTRY5_VERSION', '5.5.19');
-        define('GANTRY5_VERSION_DATE', 'May 24, 2024');
+        define('GANTRY5_VERSION', '5.5.23');
+        define('GANTRY5_VERSION_DATE', 'August 11, 2025');
 
         if (!defined('DS')) {
             define('DS', DIRECTORY_SEPARATOR);

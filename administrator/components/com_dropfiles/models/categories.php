@@ -211,7 +211,7 @@ class DropfilesModelCategories extends JModelList
             if ($dropfiles_params->get('categoryrestriction', 'accesslevel') === 'accesslevel') {
                 if (isset($params->access) && intval($params->access) === -1) {
                     // Get parent access
-                    $item->access = $this->getTopParentAccess($item);
+                    $item->access = $this->inheritParentAccess($item, $items);
                 }
             } else {
                 $item->params = $this->getTopParentGroup($item);
@@ -220,6 +220,32 @@ class DropfilesModelCategories extends JModelList
         return $items;
     }
 
+
+    /**
+     * Inherit parent access
+     *
+     * @param object $category   Category object
+     * @param array  $categories Categories
+     *
+     * @return string
+     */
+    public function inheritParentAccess($category, $categories)
+    {
+        $access = isset($category->access) ? $category->access : 1;
+        // Always return top category access
+        if (!isset($category->level) || intval($category->level) <= 1) {
+            return (string) $access;
+        }
+
+        $categoriesClone = array_combine(array_column($categories, 'id'), $categories);
+        if (isset($categoriesClone[$category->parent_id])) {
+            $parent = $categoriesClone[$category->parent_id];
+            $access = isset($parent->access) ? $parent->access : 1;
+        }
+
+        return (string) $access;
+    }
+    
     /**
      * Get top parent group
      *

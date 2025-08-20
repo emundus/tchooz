@@ -247,6 +247,7 @@ if (dropfilesBase::isJoomla40()) {
     </div>
     <div id="pwrapper">
         <div id="wpreview">
+            <div class="toolbar-wrapper">
             <div class="dropfiles-btn-toolbar" id="dropfiles-toolbar">
                 <?php if ($this->canDo->get('core.delete')) : ?>
                     <div class="btn-wrapper">
@@ -278,6 +279,7 @@ if (dropfilesBase::isJoomla40()) {
                 </div>
             </div>
             <div class="dropfiles-flip-btn" ><i class="material-icons dropfiles-flip">arrow_right_alt</i></div>
+            </div>
             <div id="preview"></div>
         </div>
         <input type="hidden" name="id_category" value=""/>

@@ -56,6 +56,8 @@ class Client
     /** @var null|string */
     private $userLocale;
 
+    /** @var null|string */
+    private $host;
     /**
      * The {@link Host} object that determines the hostnames we make requests to.
      *

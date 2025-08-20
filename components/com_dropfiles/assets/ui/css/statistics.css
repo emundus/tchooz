@@ -302,8 +302,8 @@
   -moz-box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
-#dropfiles-statistics *:not(.material-icons):not(.dashicons):not(.fa) {
-  font-family: "Nunito Sans", sans-serif !important;
+#dropfiles-statistics *:not(.material-icons):not(.dashicons):not(.fa):not([class^=icon-]) {
+  font-family: "Nunito Sans", sans-serif ;
 }
 #dropfiles-statistics > h2 {
   color: #23282d;
@@ -619,8 +619,8 @@
   text-align: left;
   max-width: 200px;
   margin-right: 0;
-  min-height: 72px;
-  max-height: 72px;
+  height: 72px;
+  padding: 10px 0 !important;
   box-sizing: border-box;
 }
 @media screen and (min-width: 420px) and (max-width: 768px) {
@@ -727,9 +727,7 @@
 }
 #dropfiles-statistics .dropfiles-statistics--table .ju-table {
   width: 100%;
-  border-collapse: separate;
-  border-spacing: 0 8px;
-  margin-bottom: 0;
+
 }
 #dropfiles-statistics .dropfiles-statistics--table .ju-table thead th {
   text-align: left;
@@ -737,8 +735,7 @@
   color: #568095;
   background-color: #fff;
   font-size: 0.9375rem;
-  padding-left: 0;
-  border-bottom-width: 0px;
+  padding-left: 10px;
 }
 #dropfiles-statistics .dropfiles-statistics--table .ju-table thead th a {
   text-decoration: none;
@@ -748,6 +745,9 @@
   -webkit-box-shadow: unset;
   -moz-box-shadow: unset;
   box-shadow: unset;
+}
+#dropfiles-statistics .dropfiles-statistics--table .ju-table thead th  [class^=icon-] {
+  margin-left: 5px;
 }
 #dropfiles-statistics .dropfiles-statistics--table .ju-table thead th a .dashicons {
   line-height: 2.0625rem;

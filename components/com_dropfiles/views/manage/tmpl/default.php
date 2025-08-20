@@ -158,7 +158,7 @@ if (DropfilesBase::isJoomla40()) {
 <div id="mybootstrap" class="<?php echo $joomla_ver; ?> managebootstrap">
     <?php echo $this->loadTemplate('cats'); ?>
     <div id="pwrapper">
-        <div id="wpreview">
+        <div id="wpreview"><div class="toolbar-wrapper">
             <div class="dropfiles-btn-toolbar" id="dropfiles-toolbar">
                 <div class="btn-wrapper">
                     <button onclick="Joomla.submitbutton('files.movefile');" class="btn btn-small" id="dropfiles-cut">
@@ -192,6 +192,7 @@ if (DropfilesBase::isJoomla40()) {
                         <?php echo JText::_('COM_DROPFILES_UNCHECK'); ?></button>
                 </div>
             </div>
+            <?php if ($this->canDo->get('core.manage')) :?>
             <div class="dropfiles-filter-file">
                 <div class="dropfiles-search-file hide">
                     <select id="dropfiles_filter_catid" class="chzn-select" name="catid">
@@ -218,7 +219,9 @@ if (DropfilesBase::isJoomla40()) {
 
                 <i class="material-icons dropfiles-iconsearch restablesearch">search</i>
             </div>
+            <?php endif; ?>
             <div class="dropfiles-flip-btn" ><i class="material-icons dropfiles-flip">arrow_right_alt</i></div>
+            </div>
             <div id="preview"></div>
         </div>
         <input type="hidden" name="id_category" value=""/>

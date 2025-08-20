@@ -2,14 +2,17 @@
 
 /**
  * @package   Gantry 5
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @author    Tiger12 http://tiger12.com
+ * @originalCreator  RocketTheme (Gantry Framework) 
+ * @currentDeveloper  Tiger12, LLC 
+ * @copyright Copyright (C) 2007 - 2021 Tiger12, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
  */
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Installer\InstallerAdapter;
 use Joomla\CMS\Factory;
@@ -30,12 +33,12 @@ class Pkg_Gantry5InstallerScript
      */
     protected $versions = array(
         'PHP' => array (
-            '5.6' => '5.6.20',
-            '0' => '7.4.28' // Preferred version
+            '8.1' => '8.1.0',
+            '0' => '8.2.0' // Preferred version
         ),
         'Joomla!' => array (
-            '3.9' => '3.9.0',
-            '0' => '3.10.8' // Preferred version
+            '4.0' => '4.0.0',
+            '0' => '4.4.0' // Preferred version
         )
     );
     /**
@@ -204,7 +207,7 @@ class Pkg_Gantry5InstallerScript
 
             $clientName = (string) $attributes->client;
             if (!empty($clientName)) {
-                $client = JApplicationHelper::getClientInfo($clientName, true);
+                $client = ApplicationHelper::getClientInfo($clientName, true);
                 $search +=  array('client_id' => $client->id);
             }
 

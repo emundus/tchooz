@@ -23,7 +23,7 @@ JLoader::register('DropfilesDropbox', JPATH_ADMINISTRATOR . '/components/com_dro
 
 $config = array();
 
-$view = JFactory::getApplication()->input->get('view', null);
+$view = JFactory::getApplication()->input->get('view', '');
 $task = JFactory::getApplication()->input->get('task', null);
 header('Access-Control-Allow-Origin: *');
 if (($task &&preg_match('/^front.*/', $task)) ||
@@ -44,7 +44,7 @@ if (($task &&preg_match('/^front.*/', $task)) ||
     DropfilesBase::initComponent();
 
     // Execute the task.
-    if ($view === 'dropfiles' || $view === 'users' || $view === null) {
+    if ($view === 'dropfiles' || $view === 'users' || $view === '') {
         $config['base_path'] = JPATH_ADMINISTRATOR . '/components/com_dropfiles';
     } elseif ($task && (strpos($task, 'googledrive.') === 0 || strpos($task, 'dropbox.') === 0
             || strpos($task, 'onedrive.') === 0 || strpos($task, 'onedrivebusiness.') === 0)) {

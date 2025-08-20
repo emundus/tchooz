@@ -140,6 +140,22 @@ class DropfilesControllerFrontdropbox extends JControllerLegacy
             $step = $app->input->getInt('step');
         }
 
+        $debug = false;
+        if ($debug) {
+            JLog::addLogger(
+                array(
+                    // Sets file name
+                    'text_file' => 'com_dropfiles.php',
+                    // Sets the format of each line
+                    'text_entry_format' => '{DATETIME} {MESSAGE}'
+                ),
+                // Sets all but DEBUG log level messages to be sent to the file
+                JLog::ALL & ~JLog::DEBUG,
+                // The log category which should be recorded in this file
+                array('com_dropfiles')
+            );
+        }
+
         $path_dropfilesDropbox = JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesDropbox.php';
         JLoader::register('DropfilesDropbox', $path_dropfilesDropbox);
         $dropbox = new DropfilesDropbox();
@@ -195,8 +211,19 @@ class DropfilesControllerFrontdropbox extends JControllerLegacy
                         $data['size'] = $file['size'];
                         $data['title'] = $file['name'];
                         $data['catid'] = $dropboxCat->cloud_id;
-                        $data['modified_time'] = $file['server_modified'];
-                        $model->save($data);
+                        // Convert time value 2025-01-04T13:39:25Z to mysql format
+                        $modified_time = str_replace('T', ' ', $file['server_modified']) ;
+                        $modified_time = str_replace('Z', '', $modified_time) ;
+                        $data['modified_time'] = $modified_time ;
+                        $result  = $model->save($data);
+                        if ($debug) {
+                            JLog::add('file update: '.json_encode($file).'<br />', JLog::INFO, 'com_dropfiles');
+                            JLog::add('save result: '. $result .'<br />', JLog::INFO, 'com_dropfiles');
+                            if (!$result) {
+                                $errors = $model->getErrors();
+                                JLog::add('save error: '.json_encode($errors).'<br />', JLog::INFO, 'com_dropfiles');
+                            }
+                        }
                     }
                 }
             }
