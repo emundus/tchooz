@@ -3557,6 +3557,7 @@ class EmundusModelSettings extends ListModel
 				// todo: add more addons
 				case 'sms':
 				case 'payment':
+				case 'anonymous':
 					$config = [
 						'enabled'   => $addon['enabled'],
 						'displayed' => $addon['displayed'],
@@ -3752,6 +3753,26 @@ class EmundusModelSettings extends ListModel
 			{
 				$addons[] = $paymentAddon;
 			}
+
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('anonymous'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+
+			if ($params['displayed']) {
+				$addons[] = new AddonEntity(
+					'COM_EMUNDUS_ADDONS_ANONYMOUS',
+					'anonymous',
+					'domino_mask',
+					'COM_EMUNDUS_ADDONS_ANONYMOUS_DESC',
+					json_encode($params['params']),
+					$params['enabled'] ?? 0,
+					1
+				);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3839,12 +3860,12 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 					break;
+				case 'anonymous':
 				case 'sms':
 				case 'payment':
 					$query->select('value')
 						->from($this->db->quoteName('#__emundus_setup_config'))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
-
 					$this->db->setQuery($query);
 					$params = json_decode($this->db->loadResult(), true);
 
@@ -3853,28 +3874,39 @@ class EmundusModelSettings extends ListModel
 						->update($this->db->quoteName('#__emundus_setup_config'))
 						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
-
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
-					$payment_repository = new PaymentRepository();
-					$payment_action_id  = $payment_repository->getActionId();
-					$query->clear()
-						->update($this->db->quoteName('#__emundus_setup_step_types'));
-
-					if ($enabled)
+				if ($type === 'payment')
 					{
-						$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(1));
-					}
-					else
+						$payment_repository = new PaymentRepository();
+						$payment_action_id  = $payment_repository->getActionId();
+						$query->clear()
+							->update($this->db->quoteName('#__emundus_setup_step_types'));
+
+						if ($enabled)
+						{
+							$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(1));
+						}
+						else
+						{
+							$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(0));
+						}
+
+						$query->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($payment_action_id));
+
+						$this->db->setQuery($query);
+						$updated = $this->db->execute();
+					} else if ($type === 'anonymous')
 					{
-						$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(0));
+						$query->clear()
+							->update($this->db->quoteName('#__menu'))
+							->set('published = ' . $this->db->quote($enabled ? 1 : 0))
+							->where('alias IN (' . $this->db->quote('connect-from-token') . ', ' . $this->db->quote('anonym-registration') . ')');
+
+						$this->db->setQuery($query);
+						$this->db->execute();
 					}
-
-					$query->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($payment_action_id));
-
-					$this->db->setQuery($query);
-					$updated = $this->db->execute();
 
 					break;
 				case 'ranking':
@@ -3909,6 +3941,8 @@ class EmundusModelSettings extends ListModel
 
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
+
+					break;
 			}
 		}
 		catch (Exception $e)
@@ -4490,7 +4524,7 @@ class EmundusModelSettings extends ListModel
 			throw $e;
 		}
 	}
-	
+
 	public function swith2faMethods($methods): bool
 	{
 		try

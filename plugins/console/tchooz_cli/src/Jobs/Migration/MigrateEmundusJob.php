@@ -13,6 +13,7 @@ use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateEmundusJob extends TchoozJob
@@ -27,7 +28,7 @@ class MigrateEmundusJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		$section1 = $output->section();
 		$section2 = $output->section();

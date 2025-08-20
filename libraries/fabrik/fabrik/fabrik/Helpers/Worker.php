@@ -2491,7 +2491,7 @@ class Worker
 
 		$app = Factory::getApplication();
 
-		if (!$app->isClient('administrator'))
+		if (!$app->isClient('administrator') && !$app->isCli())
 		{
 			// Attempt to get Itemid from possible list menu item.
 			if (!is_null($listId))
@@ -2566,7 +2566,7 @@ class Worker
 
             $val = $input->get($name, $val, 'string');
 
-            if (!$app->isClient('administrator'))
+            if (!$app->isClient('administrator') && !$app->isCli())
             {
                 if (!$mambot)
                 {
@@ -2598,7 +2598,7 @@ class Worker
         }
         else
         {
-            if (!$app->isClient('administrator'))
+            if (!$app->isClient('administrator')  && !$app->isCli())
             {
                 $menus = $app->getMenu();
                 $menu  = $menus->getActive();

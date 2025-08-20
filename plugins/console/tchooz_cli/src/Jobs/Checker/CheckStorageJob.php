@@ -12,6 +12,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Checker;
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CheckStorageJob extends TchoozJob
@@ -24,7 +25,7 @@ class CheckStorageJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		// Only if database is in local storage
 		if (!$this->storageService->isLocalStorage()) {

@@ -192,9 +192,7 @@ class plgUserEmundus_registration_email extends CMSPlugin
 		}
 
 		if ($result && !$error) {
-			// for anonym sessions
-			$allow_anonym_files = $eMConfig->get('allow_anonym_files', 0);
-			if (($allow_anonym_files && preg_match('/^fake.*@emundus\.io$/', $user->email)) || $user->getParam('saml') == 1) {
+			if ($user->getParam('saml') == 1) {
 				$user->setParam('skip_activation', true);
 				$user->setParam('send_mail', false);
 			}

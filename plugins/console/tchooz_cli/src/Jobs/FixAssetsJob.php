@@ -12,6 +12,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Table\Table;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class FixAssetsJob extends TchoozJob
@@ -25,7 +26,7 @@ class FixAssetsJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		if (!$this->fixAssets())
 		{

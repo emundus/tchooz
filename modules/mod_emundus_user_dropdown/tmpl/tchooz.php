@@ -297,30 +297,26 @@ if ($user != null)
 		<?php endif; ?>
         <input type="hidden" value="<?= $switch_profile_redirect; ?>" id="switch_profile_redirect">
         <ul class="dropdown-menu dropdown-menu-right" id="userDropdownMenu" aria-labelledby="userDropdownLabel">
-			<?php if ($is_anonym_user): ?>
-                <p><?= JText::_('ANONYM_SESSION') ?></p>
-                <div class=" em-w-100">
-                    <label for="anonym_token"><?= JText::_('TOKEN') ?></label>
-                    <input onclick="copyTokenToClipBoard()" style="cursor:copy;" class="em-w-100" name="anonym_token"
-                           type="text" value="<?= $user->anonym_token; ?>">
-                </div>
-			<?php else: ?>
-                <div class="em-flex-column-default em-w-100">
-					<?php if (!empty($profile_picture)): ?>
-                        <div class="em-profile-picture-modal"
-                             style="background-image:url('<?php echo $profile_picture ?>');">
-                        </div>
-					<?php else : ?>
-                        <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
-                              data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
-                              alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
-					<?php endif; ?>
-                    <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
-                    <li class="dropdown-header em-text-align-center em-text-neutral-600"
-                        title="<?= $user->email; ?>"><?= $user->email; ?></li>
-                </div>
-			<?php endif; ?>
+            <div class="em-flex-column-default em-w-100">
+		        <?php if (!empty($profile_picture)): ?>
+                    <div class="em-profile-picture-modal"
+                         style="background-image:url('<?php echo $profile_picture ?>');">
+                    </div>
+		        <?php else : ?>
+                    <span class="em-user-dropdown-icon em-user-dropdown-icon-big"
+                          data-initials="<?php echo mb_strtoupper(mb_substr($user->firstname, 0, 1) . mb_substr($user->lastname, 0, 1)); ?>"
+                          alt="<?php echo JText::_('PROFILE_ICON_ALT') ?>"></span>
+		        <?php endif; ?>
+                <li class="dropdown-header em-text-align-center em-font-weight-500 em-text-neutral-900"><?= $user->firstname . ' ' . $user->lastname; ?></li>
+                <li class="dropdown-header em-text-align-center em-text-neutral-600"
+                    title="<?= $user->email; ?>"><?= $user->email; ?></li>
 
+	            <?php if ($is_anonym_user): ?>
+                    <p class="tw-w-full em-text-align-center"><?= Text::_('ANONYM_SESSION') ?></p>
+                    <!-- TODO: add access to generate a new token -->
+	            <?php endif; ?>
+
+            </div>
             <hr style="width: 100%" aria-hidden="true">
 
 			<?php
@@ -354,7 +350,7 @@ if ($user != null)
 			}
 			?>
 
-			<?php if ($show_update == '1' && !$is_anonym_user) : ?>
+			<?php if ($show_update == '1') : ?>
                 <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
                        href="<?= $link_edit_profile ?>" style="margin-top: 0"><span
                                 class="material-symbols-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>

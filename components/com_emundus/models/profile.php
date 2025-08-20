@@ -1505,12 +1505,15 @@ class EmundusModelProfile extends ListModel
 			$emundusSession->code                   = $campaign["training"];
 			$emundusSession->campaign_name          = $campaign["campaign_label"];
 
-			$eMConfig           = ComponentHelper::getParams('com_emundus');
-			$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+			if (!class_exists('EmundusModelSettings')) {
+				require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
+			}
+			$m_settings = new EmundusModelSettings();
+			$addon_status = $m_settings->getAddonStatus('anonymous');
+			$allow_anonym_files = $addon_status['enabled'];
 			if ($allow_anonym_files)
 			{
 				$emundusSession->anonym       = $this->checkIsAnonymUser($current_user->id);
-				$emundusSession->anonym_token = $this->getAnonymSessionToken($current_user->id);
 			}
 		}
 		else
@@ -1601,12 +1604,15 @@ class EmundusModelProfile extends ListModel
 			$emundus_user->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
 			$emundus_user->status                 = @$campaign["status"];
 
-			$eMConfig           = JComponentHelper::getParams('com_emundus');
-			$allow_anonym_files = $eMConfig->get('allow_anonym_files', false);
+			if (!class_exists('EmundusModelSettings')) {
+				require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
+			}
+			$m_settings = new EmundusModelSettings();
+			$addon_status = $m_settings->getAddonStatus('anonymous');
+			$allow_anonym_files = $addon_status['enabled'];
 			if ($allow_anonym_files)
 			{
 				$emundus_user->anonym       = $this->checkIsAnonymUser($current_user->id);
-				$emundus_user->anonym_token = $this->getAnonymSessionToken($current_user->id);
 			}
 		}
 		else
@@ -1689,7 +1695,7 @@ class EmundusModelProfile extends ListModel
 
 			$query = $this->_db->getQuery(true);
 
-			$query->select('anonym_user')
+			$query->select('is_anonym')
 				->from('#__emundus_users')
 				->where('user_id = ' . $user_id);
 
@@ -1705,32 +1711,5 @@ class EmundusModelProfile extends ListModel
 		}
 
 		return $anonym;
-	}
-
-	private function getAnonymSessionToken($user_id)
-	{
-		$token = false;
-
-		if (!empty($user_id))
-		{
-
-			$query = $this->_db->getQuery(true);
-
-			$query->select('token')
-				->from('#__emundus_users')
-				->where('user_id = ' . $user_id);
-
-			try
-			{
-				$this->_db->setQuery($query);
-				$token = $this->_db->loadResult();
-			}
-			catch (Exception $e)
-			{
-				Log::add('Failed to get path of files view from profile', Log::ERROR, 'com_emundus.error');
-			}
-		}
-
-		return $token;
 	}
 }

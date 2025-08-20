@@ -15,6 +15,7 @@ use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use ReflectionClass;
 
@@ -31,7 +32,7 @@ class CheckHealthJob extends TchoozJob
 		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		$section1 = $output->section();
 
@@ -930,6 +931,153 @@ include(\'index.php\');
 		}
 
 		return count($columns) === count($updated);
+	}
+
+	#[CheckAttribute(description: "Replace emundus_fileupload_new by emundus_fileupload")]
+	private function checkEmundusFileuploadNew(): bool
+	{
+		$query = $this->databaseService->getDatabase()->createQuery();
+
+		$query->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements'))
+			->set($this->databaseService->getDatabase()->quoteName('plugin') . ' = ' . $this->databaseService->getDatabase()->quote('emundus_fileupload'))
+			->where($this->databaseService->getDatabase()->quoteName('plugin') . ' = ' . $this->databaseService->getDatabase()->quote('emundus_fileupload_new'));
+		$this->databaseService->getDatabase()->setQuery($query);
+		return $this->databaseService->getDatabase()->execute();
+	}
+
+	#[CheckAttribute(description: "Set a default value for status field in form 102 if not set")]
+	private function checkStatusFieldNewApplication(): bool
+	{
+		$query = $this->databaseService->getDatabase()->createQuery();
+
+		$query->update($this->databaseService->getDatabase()->quoteName('#__fabrik_elements','fe'))
+			->set($this->databaseService->getDatabase()->quoteName('fe.default') . ' = 0')
+			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ffg.group_id') . ' = ' . $this->databaseService->getDatabase()->quoteName('fe.group_id'))
+			->leftJoin($this->databaseService->getDatabase()->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $this->databaseService->getDatabase()->quoteName('ff.id') . ' = ' . $this->databaseService->getDatabase()->quoteName('ffg.form_id'))
+			->where($this->databaseService->getDatabase()->quoteName('fe.name') . ' = ' . $this->databaseService->getDatabase()->quote('status'))
+			->where($this->databaseService->getDatabase()->quoteName('ff.label') . ' = ' . $this->databaseService->getDatabase()->quote('SETUP_FILL_A_NEW_APPLICATION_FORM'));
+		$this->databaseService->getDatabase()->setQuery($query);
+		return $this->databaseService->getDatabase()->execute();
+	}
+
+	#[CheckAttribute(description: "Replace old Swal version by new one in G5 template")]
+	private function replaceSwalVersion(): bool
+	{
+		$replaced = true;
+
+		$gantry_assets = JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml';
+		if(file_exists($gantry_assets))
+		{
+			$yaml_content = file_get_contents($gantry_assets);
+			$yaml_content = str_replace('https://cdn.jsdelivr.net/npm/sweetalert2@8', 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js', $yaml_content);
+			$replaced = !empty(file_put_contents($gantry_assets, $yaml_content));
+		}
+
+		return $replaced;
+	}
+
+	#[CheckAttribute(description: "Rebuild menu filters for files and evaluations")]
+	private function rebuildMenuFilters()
+	{
+		$rebuilded = true;
+
+		$query = $this->databaseService->getDatabase()->createQuery();
+
+		// Get all files and evaluations menu items
+		$query->select('id,params')
+			->from($this->databaseService->getDatabase()->quoteName('#__menu'))
+			->where($this->databaseService->getDatabase()->quoteName('link') . ' LIKE ' . $this->databaseService->getDatabase()->quote('index.php?option=com_emundus&view=files'))
+			->orWhere($this->databaseService->getDatabase()->quoteName('link') . ' LIKE ' . $this->databaseService->getDatabase()->quote('index.php?option=com_emundus&view=evaluation'));
+		$this->databaseService->getDatabase()->setQuery($query);
+		$menu_items = $this->databaseService->getDatabase()->loadObjectList();
+
+		foreach ($menu_items as $menu_item)
+		{
+			$params = json_decode($menu_item->params, true);
+
+			if(!empty($params['em_filters_names']))
+			{
+				$filters_to_keep = explode(',', $params['em_filters_names']);
+
+				foreach ($filters_to_keep as $filter)
+				{
+					if($filter === 'tag' && $params['filter_tags'] == 0)
+					{
+						$params['filter_tags'] = 1;
+					}
+
+					if($filter === 'published' && $params['filter_published'] == 0)
+					{
+						$params['filter_published'] = 1;
+					}
+
+					if($filter === 'schoolyear' && $params['filter_years'] == 0)
+					{
+						$params['filter_years'] = 1;
+					}
+
+					if($filter === 'programme' && $params['filter_programs'] == 0)
+					{
+						$params['filter_programs'] = 1;
+					}
+
+					if($filter === 'campaign' && $params['filter_campaign'] == 0)
+					{
+						$params['filter_campaign'] = 1;
+					}
+
+					if($filter === 'status' && $params['filter_status'] == 0)
+					{
+						$params['filter_status'] = 1;
+					}
+
+					if($filter === 'adv_filter' && $params['allow_add_filter'] == 0)
+					{
+						$params['allow_add_filter'] = 1;
+					}
+
+					$menu_item->params = json_encode($params);
+					if (!$this->databaseService->getDatabase()->updateObject('#__menu', $menu_item, 'id'))
+					{
+						$rebuilded = false;
+					}
+				}
+			}
+		}
+
+		return $rebuilded;
+	}
+
+	#[CheckAttribute(description: "Check if menus are correctly configured")]
+	private function checkMenu()
+	{
+		$checks = [];
+		$db = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+
+		// check that the submenu in application menu for 12|r (profile edition) is using the correct link
+		$query->clear()
+			->select('id, link')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('menutype') . ' = ' . $db->quote('application'))
+			->andWhere($db->quoteName('note') . ' = ' . $db->quote('12|r'));
+
+		$db->setQuery($query);
+		$menu = $db->loadObject();
+
+		if ($menu->link !== 'index.php?option=com_emundus&view=application&format=raw&layout=account') {
+			$menu->link = 'index.php?option=com_emundus&view=application&format=raw&layout=account';
+
+			$query->clear()
+				->update($db->quoteName('#__menu'))
+				->set($db->quoteName('link') . ' = ' . $db->quote($menu->link))
+				->where($db->quoteName('id') . ' = ' . $db->quote($menu->id));
+
+			$db->setQuery($query);
+			$checks[] = $db->execute();
+		}
+
+		return !in_array(false, $checks);
 	}
 
 	public static function getJobName(): string

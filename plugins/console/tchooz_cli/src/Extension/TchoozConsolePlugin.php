@@ -16,6 +16,7 @@ use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozResetFabrikConnectio
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozUpdateCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozVanillaCommand;
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozUserAddCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozMigrateChecklistCommand;
 
 class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 {
@@ -33,11 +34,12 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 
         $app->addCommand(new TchoozUserAddCommand($db));
         $app->addCommand(new TchoozUpdateCommand($db));
-        $app->addCommand(new TchoozMigrateCommand($db));
+	    $app->addCommand(new TchoozMigrateCommand($db));
 		$app->addCommand(new TchoozResetFabrikConnectionCommand($db));
 		$app->addCommand(new TchoozVanillaCommand($db));
 		$app->addCommand(new TchoozConfigCommand($db));
 		$app->addCommand(new TchoozKeycloakCommand($db));
 		$app->addCommand(new TchoozMigrateCheckReqsCommand($db));
+	    $app->addCommand(new TchoozMigrateChecklistCommand($db));
     }
 }

@@ -361,25 +361,32 @@ class EmundusModelCampaign extends ListModel
 	/**
 	 * @param $campaign_id
 	 *
-	 * @return mixed
+	 * @return array
 	 *
 	 * @since version v6
 	 */
-	function getProgrammeByCampaignID($campaign_id)
+	function getProgrammeByCampaignID($campaign_id): array
 	{
 		$program = [];
 
-		if (!empty($campaign_id))
-		{
-			$campaign = $this->getCampaignByID($campaign_id);
+		if (!empty($campaign_id)) {
+			$query = $this->_db->getQuery(true);
+			$query->select('esp.*')
+				->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.training') . ' = ' . $this->_db->quoteName('esp.code'))
+				->where($this->_db->quoteName('esc.id') . ' = ' . $this->_db->quote($campaign_id));
 
-			if (!empty($campaign))
-			{
-				$query = 'SELECT esp.*
-					FROM #__emundus_setup_programmes AS esp
-					WHERE esp.code like "' . $campaign['training'] . '"';
+			try {
 				$this->_db->setQuery($query);
 				$program = $this->_db->loadAssoc();
+
+				if (empty($program)) {
+					error_log('No program found for campaign id ' . $campaign_id);
+					$program = [];
+				}
+			}
+			catch (Exception $e) {
+				Log::add('Error getting program by campaign id ' . $campaign_id . ' at model/campaign at query :' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
@@ -1988,6 +1995,12 @@ class EmundusModelCampaign extends ListModel
 								->where($this->_db->quoteName('id') . ' = ' . $details_menu->id);
 							$this->_db->setQuery($query);
 							$this->_db->execute();
+
+							if (!class_exists('EmundusHelperUpdate'))
+							{
+								require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
+							}
+							EmundusHelperUpdate::clearJoomlaCache(['com_menus']);
 						}
 						else
 						{

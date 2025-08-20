@@ -5061,14 +5061,13 @@ class FabrikFEModelForm extends FabModelForm
 	{
 		$input = $this->app->getInput();
 
-		if (!$this->app->isClient('administrator'))
+		if (!$this->app->isClient('administrator') && !$this->app->isCli())
 		{
 			// Load the menu item / component parameters.
 			$params = $this->app->getParams();
 			$this->setState('params', $params);
 
-			// Load state from the request.
-			$pk = $input->getInt('formid', $params->get('formid'));
+			$pk = $input->getInt('formid', $params->get('formid', 0));
 		}
 		else
 		{

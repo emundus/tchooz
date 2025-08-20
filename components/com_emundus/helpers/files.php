@@ -5372,7 +5372,7 @@ class EmundusHelperFiles
 			{
 				$query->select('*')
 					->from('#__fabrik_joins')
-					->where('element_id = ' . $element_id);
+					->where('element_id = ' . $db->quote($element_id));
 
 				try
 				{

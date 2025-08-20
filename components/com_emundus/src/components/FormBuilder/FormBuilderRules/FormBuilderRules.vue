@@ -283,6 +283,14 @@ export default {
 					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EQUALS');
 				case '!=':
 					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EQUALS');
+				case '>':
+					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_GREATER_THAN');
+				case '<':
+					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_LESS_THAN');
+				case '>=':
+					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_GREATER_THAN_OR_EQUALS');
+				case '<=':
+					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_LESS_THAN_OR_EQUALS');
 			}
 		},
 
