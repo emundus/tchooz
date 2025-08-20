@@ -510,14 +510,24 @@ class plgUserEmundus extends CMSPlugin
 		}
 
 		if (empty($redirect)) {
-			parse_str($input->server->getVar('HTTP_REFERER'), $return_url);
-			$previous_url = base64_decode($return_url['return']);
-			if (empty($previous_url)) {
-				$previous_url = base64_decode($input->POST->getVar('return'));
+			$previous_url = base64_decode($this->app->getUserState('users.openfile.return', ''));
+
+			if(empty($previous_url))
+			{
+				parse_str($input->server->getVar('HTTP_REFERER'), $return_url);
+				$previous_url = base64_decode($return_url['return']);
+				if (empty($previous_url))
+				{
+					$previous_url = base64_decode($input->POST->getVar('return'));
+				}
+				if (empty($previous_url))
+				{
+					$previous_url = base64_decode($return_url['redirect']);
+				}
 			}
-			if (empty($previous_url)) {
-				$previous_url = base64_decode($return_url['redirect']);
-			}
+
+			// Clear user state for openfile return
+			$this->app->setUserState('users.openfile.return', '');
 		}
 		else {
 			$previous_url = base64_decode($redirect);

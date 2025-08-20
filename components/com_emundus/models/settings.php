@@ -3754,6 +3754,28 @@ class EmundusModelSettings extends ListModel
 				$addons[] = $paymentAddon;
 			}
 
+			$importAddon = new AddonEntity(
+				'COM_EMUNDUS_ADDONS_IMPORT',
+				'import',
+				'csv',
+				'COM_EMUNDUS_ADDONS_IMPORT_DESC'
+			);
+
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+			if ($params['displayed'])
+			{
+				$importAddon->setEnabled($params['enabled'] ?? 0);
+				$importAddon->setDisplayed(true);
+				$importAddon->setConfiguration($params['params'] ?? []);
+				$addons[] = $importAddon;
+			}
+
 			$query->clear()
 				->select($this->db->quoteName('value'))
 				->from($this->db->quoteName('#__emundus_setup_config'))
@@ -3938,6 +3960,39 @@ class EmundusModelSettings extends ListModel
 						->update($this->db->quoteName('#__emundus_setup_config'))
 						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('ranking'));
+
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+				case 'import':
+					// (Un)Publish emails
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_emails'))
+						->set('published = ' . $this->db->quote($enabled))
+						->where('lbl IN (' . $this->db->quote('import_account_created') . ', ' . $this->db->quote('import_file_created')  . ', ' . $this->db->quote('import_file_updated') . ')');
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					// (Un)Publish import action
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_actions'))
+						->set($this->db->quoteName('status') . ' = ' . $this->db->quote($enabled))
+						->where($this->db->quoteName('name') . ' = ' . $this->db->quote('import'));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->select('value')
+						->from($this->db->quoteName('#__emundus_setup_config'))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
+
+					$this->db->setQuery($query);
+					$params = json_decode($this->db->loadResult(), true);
+
+					$params['enabled'] = $enabled;
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_config'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
 
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();

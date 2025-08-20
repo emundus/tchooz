@@ -580,6 +580,10 @@ Text::script('EXPORT_SET_TAG');
 Text::script('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS');
 Text::script('EVALUATION_PERIOD_NOT_STARTED');
 Text::script('EVALUATION_PERIOD_PASSED');
+Text::script('COM_EMUNDUS_ACCESS_PAYMENT');
+Text::script('COM_EMUNDUS_ACCESS_PAYMENT_DESC');
+Text::script('COM_EMUNDUS_ACL_IMPORT');
+Text::script('COM_EMUNDUS_ACL_IMPORT_DESC');
 
 
 // EXPORT EXCEL MODEL
@@ -1194,6 +1198,12 @@ elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $n
 	}
 	else
 	{
+		if($task === 'openfile')
+		{
+			$app->setUserState('users.openfile.return', base64_encode(Uri::getInstance()->toString()));
+			$app->redirect(Route::_('index.php?option=com_users&view=login'));
+		}
+
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
 		$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
 
