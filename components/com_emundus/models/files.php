@@ -3549,7 +3549,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query->select('fu.*')
 				->from($this->_db->quoteName('#__emundus_uploads', 'fu'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('fu.attachment_id'))
-				->where($this->_db->quoteName('fu.fnum') . ' IN (' . implode(',', $fnums) . ')');
+				->where($this->_db->quoteName('fu.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 
 			if (!empty($attachment_ids)) {
 				$query->andWhere($this->_db->quoteName('fu.attachment_id') . ' IN (' . implode(',', $attachment_ids) . ')');
