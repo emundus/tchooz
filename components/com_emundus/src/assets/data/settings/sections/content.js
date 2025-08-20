@@ -82,17 +82,4 @@ export default [
 			},
 		],
 	},
-	{
-		label: 'COM_EMUNDUS_ONBOARD_CONTENT_TOOL_ACCESSIBILITY',
-		name: 'accessibility',
-		component: 'EditArticle',
-		props: {
-			name: 'text_accessibility',
-			article_id: 1044,
-			article_alias: 'accessibilite',
-			field: 'introtext',
-			published: 1,
-			displayPublishedToggle: true,
-		},
-	},
 ];
