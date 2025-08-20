@@ -1182,7 +1182,7 @@ else if ($user->guest && $app->input->getString('controller') === 'webhook' && $
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
+elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
 {
 	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
 	{
