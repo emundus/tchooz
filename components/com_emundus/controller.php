@@ -729,6 +729,9 @@ class EmundusController extends JControllerLegacy
 		}, $my_shared_files);
 
 		if ($aid->id != $infos['applicant_id'] && !in_array($fnum, $fnums_shared)) {
+			// Redirect to homepage
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE'), 'error');
+			$this->app->redirect('index.php');
 			return;
 		}
 

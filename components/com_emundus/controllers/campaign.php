@@ -18,6 +18,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use \Tchooz\Traits\TraitResponse;
 
 /**
  * Emundus Campaign Controller
@@ -25,6 +26,8 @@ use Joomla\CMS\Uri\Uri;
  */
 class EmundusControllerCampaign extends BaseController
 {
+	use TraitResponse;
+
 	/**
 	 * User object.
 	 *
@@ -1453,14 +1456,11 @@ class EmundusControllerCampaign extends BaseController
 		$response = [
 			'status'  => false,
 			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
+			'data'    => [],
+			'code'   => 403
 		];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 		{
 			$file = $this->input->files->get('file');
 
@@ -1472,31 +1472,34 @@ class EmundusControllerCampaign extends BaseController
 				finfo_close($finfo);
 
 				$valid_types = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv', 'application/vnd.oasis.opendocument.spreadsheet'];
-				if (!in_array($mtype, $valid_types) || !in_array($file['type'], $valid_types))
+				if (in_array($mtype, $valid_types) || in_array($file['type'], $valid_types))
 				{
-					header('HTTP/1.1 400 Bad Request');
-					echo json_encode(['status' => false, 'message' => Text::_('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE')]);
-					exit();
-				}
+					$m_campaign     = $this->getModel('Campaign');
+					$rows_to_import = $m_campaign->scanImportFile($file);
 
-				$m_campaign     = $this->getModel('Campaign');
-				$rows_to_import = $m_campaign->scanImportFile($file);
-
-				if (!empty($rows_to_import))
+					if (!empty($rows_to_import))
+					{
+						$response['data']    = $rows_to_import;
+						$response['status']  = true;
+						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+						$response['code']    = 200;
+					} else {
+						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_NO_ROWS_TO_IMPORT');
+						$response['code']    = 204;
+					}
+				} else
 				{
-					$response['data']    = $rows_to_import;
-					$response['status']  = true;
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE');
+					$response['code']    = 400;
 				}
 			}
 			else
 			{
-				header('HTTP/1.1 400 Bad Request');
+				$response['code'] = 400;
 			}
 		}
 
-		echo json_encode($response);
-		exit();
+		$this->sendJsonResponse($response);
 	}
 
 	public function importfiles()
@@ -1506,14 +1509,11 @@ class EmundusControllerCampaign extends BaseController
 		$response = [
 			'status'  => false,
 			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
+			'data'    => [],
+			'code'    => 403
 		];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 		{
 			$campaign_id     = $this->input->getInt('campaign_id', 0);
 			$send_email      = $this->input->getInt('send_email', 0);
@@ -1528,31 +1528,33 @@ class EmundusControllerCampaign extends BaseController
 				finfo_close($finfo);
 
 				$valid_types = ['application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/vnd.ms-excel', 'text/csv', 'application/vnd.oasis.opendocument.spreadsheet'];
-				if (!in_array($mtype, $valid_types) || !in_array($file['type'], $valid_types))
+
+				if (in_array($mtype, $valid_types) || in_array($file['type'], $valid_types))
 				{
-					header('HTTP/1.1 400 Bad Request');
-					echo json_encode(['status' => false, 'message' => Text::_('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE')]);
-					exit();
+					$m_campaign     = $this->getModel('Campaign');
+					$result = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
+
+					if (!empty($result))
+					{
+						$response['data']    = $result;
+						$response['status']  = true;
+						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+						$response['code']    = 200;
+					}
 				}
-
-				$m_campaign     = $this->getModel('Campaign');
-				$result = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
-
-				if (!empty($result))
+				else
 				{
-					$response['data']    = $result;
-					$response['status']  = true;
-					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE');
+					$response['code']    = 400;
 				}
 			}
 			else
 			{
-				header('HTTP/1.1 400 Bad Request');
+				$response['code'] = 400;
 			}
 		}
 
-		echo json_encode($response);
-		exit();
+		$this->sendJsonResponse($response);
 	}
 
 	public function isimportactivated()
@@ -1562,11 +1564,10 @@ class EmundusControllerCampaign extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
 			$m_campaign     = new EmundusModelCampaign();
-			$response = ['code' => 200, 'message' => Text::_('IMPORT_ACTIVATED'), 'status' => true,  'data' => $m_campaign->getImportAddon()->enabled];
+			$response = ['code' => 200, 'message' => Text::_('IMPORT_ACTIVATED'), 'status' => true,  'data' => $m_campaign->getImportAddon()->enabled && EmundusHelperAccess::asAccessAction($m_campaign->getImportActionId(), 'c', $this->_user->id)];
 		}
 
-		echo json_encode($response);
-		exit();
+		$this->sendJsonResponse($response);
 	}
 
 	public function getuseridfromfnum()

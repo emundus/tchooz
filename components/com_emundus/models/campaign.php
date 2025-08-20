@@ -74,6 +74,8 @@ class EmundusModelCampaign extends ListModel
 
 	private ?AddonEntity $importAddon = null;
 
+	private ?int $importActionId = null;
+
 	function __construct()
 	{
 		parent::__construct();
@@ -3826,6 +3828,7 @@ class EmundusModelCampaign extends ListModel
 		$files_not_imported = [];
 
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
+		PluginHelper::importPlugin('emundus', 'emails');
 		$dispatcher = Factory::getApplication()->getDispatcher();
 
 		$query = $this->_db->getQuery(true);
@@ -3910,8 +3913,12 @@ class EmundusModelCampaign extends ListModel
 							$username = !empty($row['username']) ? $row['username'] : $row['email'];
 							$user     = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($username);
 
+							$is_new_user = false;
+							$is_new_file = true;
+
 							if (empty($user->id))
 							{
+								$is_new_user = true;
 								$now      = EmundusHelperDate::getNow();
 								$password = UserHelper::genRandomPassword();
 
@@ -3988,6 +3995,7 @@ class EmundusModelCampaign extends ListModel
 							if (!empty($row['fnum']))
 							{
 								$importApplicationEntity->setFnum($row['fnum']);
+								$is_new_file = false;
 							}
 							else
 							{
@@ -4016,6 +4024,7 @@ class EmundusModelCampaign extends ListModel
 										continue;
 									}
 									$importApplicationEntity->setFnum($fnum);
+									$is_new_file = false;
 								}
 							}
 
@@ -4051,18 +4060,26 @@ class EmundusModelCampaign extends ListModel
 								'onCallEventHandler',
 								['onAfterImportRow',
 									[
+										'email' => $user->email,
 										'fnum'   => $fnum,
 										'status' => $status ? 'success' : 'error',
-										'data' => $origin_datas
+										'data' => $origin_datas,
+										'is_new_user' => $is_new_user,
+										'is_new_file' => $is_new_file,
+										'send_email' => $send_email,
 									]
 								]
 							);
 							$onAfterImportRow             = new GenericEvent(
 								'onAfterImportRow',
 								[
+									'email' => $user->email,
 									'fnum'   => $fnum,
 									'status' => $status ? 'success' : 'error',
-									'data' =>  $origin_datas
+									'data' =>  $origin_datas,
+									'is_new_user' => $is_new_user,
+									'is_new_file' => $is_new_file,
+									'send_email' => $send_email,
 								]
 							);
 							$dispatcher->dispatch('onCallEventHandler', $onAfterImportRowEventHandler);
@@ -4159,6 +4176,13 @@ class EmundusModelCampaign extends ListModel
 						false
 					);
 				}
+
+				$query->clear()
+					->select('id')
+					->from($this->_db->quoteName('#__emundus_setup_actions'))
+					->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('import'));
+				$this->_db->setQuery($query);
+				$this->importActionId = $this->_db->loadResult();
 			} catch (\Exception $e) {
 				Log::add('Error on load import addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
 			}
@@ -4168,6 +4192,11 @@ class EmundusModelCampaign extends ListModel
 	public function getImportAddon(): AddonEntity
 	{
 		return $this->importAddon;
+	}
+
+	public function getImportActionId(): int
+	{
+		return $this->importActionId;
 	}
 
 	public function getAllCampaignElements(): array
