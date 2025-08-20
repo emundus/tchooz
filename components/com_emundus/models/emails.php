@@ -974,17 +974,29 @@ class EmundusModelEmails extends JModelList
 
 		$tags = $m_files->getVariables($str);
 
-		if(!class_exists('EmundusHelperFabrik'))
-		{
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
-		}
-		$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
-
 		$idFabrik = [];
 		$fabrikTags = [];
 		$aliasFabrik  = [];
 
 		if (count($tags) > 0) {
+			$fabrik_aliases = [];
+			$lookForFabrikAlias = false;
+
+			foreach ($tags as $val) {
+				if (!is_numeric($val)) {
+					$lookForFabrikAlias = true;
+					break;
+				}
+			}
+
+			if ($lookForFabrikAlias) {
+				if(!class_exists('EmundusHelperFabrik'))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+				}
+				$fabrik_aliases = EmundusHelperFabrik::getAllFabrikAliases();
+			}
+
 			foreach ($tags as $val) {
 				$tag = new TagEntity($val, '', [], TagType::FABRIK);
 
