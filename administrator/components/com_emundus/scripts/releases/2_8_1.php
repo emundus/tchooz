@@ -178,13 +178,29 @@ class Release2_8_1Installer extends ReleaseInstaller
 				$tasks[] = $this->db->insertObject('#__emundus_setup_emails', $import_file_updated_email);
 			}
 
-			$query->update('#__menu')
+			$query->clear()
+				->update('#__menu')
 				->set('link = ' . $this->db->quote('index.php?option=com_emundus&view=accessibility'))
 				->set('component_id = ' . ComponentHelper::getComponent('com_emundus')->id)
 				->where('alias = ' . $this->db->quote('accessibilite'));
 			$this->db->setQuery($query);
 			$tasks[] = $this->db->execute();
 
+			$query->clear()
+				->select('id,params')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=evaluation'));
+			$this->db->setQuery($query);
+			$menuItems = $this->db->loadObjectList();
+
+			foreach ($menuItems as $menuItem)
+			{
+				$params = json_decode($menuItem->params);
+				$params->filter_evaluators = 1;
+
+				$menuItem->params = json_encode($params);
+				$tasks[] = $this->db->updateObject('#__menu', $menuItem, 'id');
+			}
 
 			$result['status']  = !in_array(false, $tasks);
 		}
