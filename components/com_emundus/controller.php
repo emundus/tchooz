@@ -1091,9 +1091,7 @@ class EmundusController extends JControllerLegacy
 				$file_ext   = end($file_array);
 				$pos        = strpos($attachment['allowed_types'], strtoupper($file_ext));
 
-				$finfo = finfo_open(FILEINFO_MIME_TYPE);
-				$mtype = finfo_file($finfo, $file['tmp_name']);
-				finfo_close($finfo);
+                $mtype = $this->get_mime_type($file['name']);
 
 				if (!empty($mtype)) {
 					if($mtype == 'application/zip') {
