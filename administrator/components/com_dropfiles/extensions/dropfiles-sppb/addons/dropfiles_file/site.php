@@ -30,7 +30,8 @@ class SppagebuilderAddonDropfiles_file extends SppagebuilderAddons
      */
     public function render()
     {
-
+        JLoader::register('DropfilesBase', JPATH_ADMINISTRATOR . '/components/com_dropfiles/classes/dropfilesBase.php');
+        DropfilesBase::loadLanguage();
         $class = (isset($this->addon->settings->class) && $this->addon->settings->class) ? ' ' . $this->addon->settings->class : '';
         $fileUrl = (isset($this->addon->settings->fileUrl) && $this->addon->settings->fileUrl) ? $this->addon->settings->fileUrl : '';
 
@@ -77,7 +78,7 @@ class SppagebuilderAddonDropfiles_file extends SppagebuilderAddons
                 }
                 $output .= $html;
             } else {
-                $output .= 'Empty content';
+                $output .= JText::_('COM_DROPFILES_SPPAGEBUILDER_EMPTY_CONTENT');
             }
             $output .= '</div>';
         } else {

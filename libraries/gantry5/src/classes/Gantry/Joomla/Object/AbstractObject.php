@@ -2,8 +2,10 @@
 
 /**
  * @package   Gantry5
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @author    Tiger12 http://tiger12.com
+ * @originalCreator  RocketTheme (Gantry Framework) 
+ * @currentDeveloper  Tiger12, LLC 
+ * @copyright Copyright (C) 2007 - 2022 Tiger12, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -13,6 +15,7 @@ namespace Gantry\Joomla\Object;
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Object\CMSObject;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\Database\DatabaseQuery;
@@ -20,7 +23,7 @@ use Joomla\Database\DatabaseQuery;
 /**
  * Abstract base class for database objects.
  */
-abstract class AbstractObject extends \JObject
+abstract class AbstractObject extends \Joomla\CMS\Object\CMSObject
 {
     /** @var array If you don't have global instance ids, override this in extending class. */
     static protected $instances = [];
@@ -519,7 +522,7 @@ abstract class AbstractObject extends \JObject
     }
 
     /**
-     * @return \JDatabaseQuery
+     * @return \Joomla\Database\DatabaseQuery
      */
     static protected function getQuery()
     {

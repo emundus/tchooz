@@ -128,14 +128,14 @@ class DropfilesViewConfiguration extends JViewLegacy
 
         // Generate html for toolbar button
         $html = array();
-        $html[] = '<button onclick="Joomla.submitbutton(\'configuration.saveParams\');"  class="ju-button orange-button waves-effect waves-light">';
-        $html[] = '<span class="icon-apply ju-icon orange-icon" aria-hidden="true"></span>' . JText::_('COM_DROPFILES_CONFIGURATION_SAVE_BUTTON_NAME');
+        $html[] = '<button onclick="Joomla.submitbutton(\'configuration.saveParams\');"  class="ju-button button-apply btn btn-success">';
+        $html[] = '<span class="icon-apply ju-icon " aria-hidden="true"></span>' . JText::_('COM_DROPFILES_CONFIGURATION_SAVE_BUTTON_NAME');
         $html[] = '</button>';
-        $html[] = '<button onclick="Joomla.submitbutton(\'configuration.saveParamsAndClose\');"  class="ju-button orange-outline-button orange-border waves-effect waves-light">';
-        $html[] = '<span class="icon-save ju-icon orange-outline-icon" aria-hidden="true"></span>' . JText::_('COM_DROPFILES_CONFIGURATION_SAVE_AND_CLOSE_BUTTON_NAME');
+        $html[] = '<button onclick="Joomla.submitbutton(\'configuration.saveParamsAndClose\');"  class="ju-button button-save btn btn-success">';
+        $html[] = '<span class="icon-save ju-icon " aria-hidden="true"></span>' . JText::_('COM_DROPFILES_CONFIGURATION_SAVE_AND_CLOSE_BUTTON_NAME');
         $html[] = '</button>';
-        $html[] = '<button onclick="Joomla.submitbutton(\'configuration.closeConfiguration\');"  class="ju-button black-outline-button waves-effect waves-light">';
-        $html[] = '<span class="icon-cancel ju-icon black-outline-icon" aria-hidden="true"></span>' . JText::_('COM_DROPFILES_CONFIGURATION_CANCEL_BUTTON_NAME');
+        $html[] = '<button onclick="Joomla.submitbutton(\'configuration.closeConfiguration\');"  class="ju-button button-cancel btn btn-danger">';
+        $html[] = '<span class="icon-cancel ju-icon" aria-hidden="true"></span>' . JText::_('COM_DROPFILES_CONFIGURATION_CANCEL_BUTTON_NAME');
         $html[] = '</button>';
         $toolbar = JToolBar::getInstance('toolbar');
         $toolbar->appendButton('Custom', implode('', $html));

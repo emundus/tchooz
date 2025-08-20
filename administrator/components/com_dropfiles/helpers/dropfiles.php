@@ -737,7 +737,7 @@ class DropfilesHelper
                 if (isset($params->params->ordering) && isset($params->params->orderingdir)) {
                     $ordering   = $params->params->ordering;
                     $direction  = $params->params->orderingdir;
-                    $files      = self::orderingMultiCategoryFiles($files, $ordering, $direction);
+                    $files      = self::orderingMultiCategoryFiles($files, $ordering, $direction, $category->id);
                 }
             }
         }

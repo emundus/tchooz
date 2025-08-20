@@ -156,11 +156,10 @@ class DropfilesViewFrontfiles extends JViewLegacy
                 require_once $optionModelPath;
                 $modelOption = new DropfilesModelOptions();
 
-                $fileView = '';
-                $imgExists = false;
-                $viewClass = '';
-                $fileList = DropfilesFilesHelper::addInfosToFile($files, $category);
-                foreach ($fileList as $file) {
+                foreach ($files as $file) {
+                    $fileView = '';
+                    $imgExists = false;
+                    $viewClass = '';
                     if ($useGeneratedPreview) {
                         $viewFileDirPath = $modelOption->get_option('_dropfiles_thumbnail_image_file_path_' . $file->id);
                         if (isset($viewFileDirPath) && $viewFileDirPath !== '') {
@@ -170,10 +169,6 @@ class DropfilesViewFrontfiles extends JViewLegacy
                             $fileView  = JUri::base() . $viewFileDirPath;
                             $imgExists = true;
                             $viewClass = 'dropfiles-view-image-thumbnail';
-                        } else {
-                            $fileView  = '';
-                            $imgExists = false;
-                            $viewClass = '';
                         }
 
                         $previewFile = array('id' => $file->id, 'view' => $imgExists, 'link' => $fileView, 'view_class' => $viewClass);

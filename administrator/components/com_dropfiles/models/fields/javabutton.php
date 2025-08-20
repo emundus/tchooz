@@ -64,7 +64,7 @@ class JFormFieldJavaButton extends JFormField
         $html[] = '<div class="button2-left">';
         $html[] = '  <div class="blank">';
 
-        $html[] = '<a id="'.$this->id.'" style="text-decoration:none;" class="btn button ju-btn ju-btn-connect"';
+        $html[] = '<a id="'.$this->id.'" style="text-decoration:none;" class="btn-primary ju-btn"';
         $html[] = ' title="Clone">Clone</a>';
 
         $html[] = '  </div>';

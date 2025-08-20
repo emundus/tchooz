@@ -1,6 +1,6 @@
 MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
-helper.php	bb4f353b3f16cebc1fc7bc0617b78aab
+helper.php	4fca346364b0c1490baebaabb57cda76
 language/en-GB/en-GB.mod_gantry5_particle.ini	36768f6c44ba3fe3f5fea7e9d68b7ad7
 language/en-GB/en-GB.mod_gantry5_particle.sys.ini	ac2c79d2f58a93ff1e39cb596e1ef2ad
-mod_gantry5_particle.php	995659f13a316da00b12adbab95f61b9
-mod_gantry5_particle.xml	8033c62dac771e8a229b5446c3595bb4
+mod_gantry5_particle.php	f72f9c32482d3fe61c2eccb6bc3d6ae0
+mod_gantry5_particle.xml	dc8806bffb5110b3f1e440e736f097d1

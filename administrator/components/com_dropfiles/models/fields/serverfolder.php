@@ -59,7 +59,7 @@ class JFormFieldServerfolder extends JFormField
         $class = $this->element['class'] ? ' ' . (string)$this->element['class'] . '' : '';
         $content  = '<div id="import-server-folders" class="ju-settings-option full-width import-server">';
         $content .= '<p class="description" style="padding: 10px 0">'. JText::sprintf('COM_DROPFILES_CONFIG_IMPORT_SERVER_FOLDER_DESC') .'</p>';
-        $content .= '<span class="text-orange" style="word-break: break-all;">'. $allowed_ext .'</span>';
+        $content .= '<div class="alert alert-info" style="word-break: break-all;">'. $allowed_ext .'</div>';
         $content .= '<div class="dropfiles_row_full">';
         $content .= '<div id="dropfiles_foldertree" class="dropfiles-no-padding"></div>';
         $content .= '<div class="dropfiles-process-bar-full process_import_ftp_full" style=""><div class="dropfiles-process-bar process_import_ftp" data-w="0"></div></div>';

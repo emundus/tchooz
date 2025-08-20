@@ -197,7 +197,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                     $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
                     if ($temporaryDirectLink) {
                         header('Location: ' . $temporaryDirectLink);
-                        break;
+                        jexit();
                     }
                     $dropCate->downloadVersion($id, $rev);
                 } else {
@@ -205,10 +205,12 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                     $modelDropbox->incrHits($id);
                     $model->addCountChart($id, $userId);
                     $file = $modelDropbox->getFile($id);
-                    $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
-                    if ($temporaryDirectLink) {
-                        header('Location: ' . $temporaryDirectLink);
-                        break;
+                    if ($file->ext !== 'pdf') {
+                        $temporaryDirectLink = $dropCate->getTemporaryDirectLink($id);
+                        if ($temporaryDirectLink) {
+                            header('Location: ' . $temporaryDirectLink);
+                            jexit();
+                        }
                     }
 
                     list($tempfile, $fMeta) = $dropCate->downloadDropbox($id);
@@ -762,7 +764,7 @@ class DropfilesControllerFrontfile extends JControllerLegacy
                         return false;
                     }
                 } else {
-                    $range = '';
+                    $range = '-';
                 }
                 // figure out download piece from range (if set)
                 list($seekStart, $seekEnd) = explode('-', $range, 2);

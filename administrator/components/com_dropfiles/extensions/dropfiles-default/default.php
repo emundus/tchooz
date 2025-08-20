@@ -113,6 +113,8 @@ class PlgDropfilesthemesDefault extends DropfilesPluginBase
             $this->user_id = null;
             if ((int)$canDo->get('core.edit')) {
                 $this->user_id = JFactory::getUser()->id;
+            } elseif ($canDo->get('core.edit.own') && ((int) $this->category->created_user_id === JFactory::getUser()->id)) {
+                $this->user_id = JFactory::getUser()->id;
             }
             $this->urlmanage = JURI::root() . 'index.php?option=com_dropfiles&view=manage';
 

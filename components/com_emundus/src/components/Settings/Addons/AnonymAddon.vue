@@ -24,7 +24,7 @@ export default defineComponent({
 					label: 'COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY',
 					helptext: '',
 					displayed: true,
-					reload: 0
+					reload: 0,
 				},
 				{
 					param: 'token_duration_validity_unit',
@@ -42,8 +42,8 @@ export default defineComponent({
 						{ label: 'COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_MINUTE', value: 'minute' },
 					],
 				},
-			]
-		}
+			],
+		};
 	},
 	created() {
 		this.addon.configuration =
@@ -103,14 +103,14 @@ export default defineComponent({
 	>
 		<h3>{{ translate('COM_EMUNDUS_ANONYM_ADDON_CONFIGURATION') }}</h3>
 
-		<div class="tw-flex tw-flex-row tw-gap-4 tw-w-full tw-justify-between">
+		<div class="tw-flex tw-w-full tw-flex-row tw-justify-between tw-gap-4">
 			<div
 				v-for="field in displayedFields"
 				:key="field.param"
 				:class="{
-				'tw-w-3/4': field.param === 'token_duration_validity',
-				'tw-w-1/4': field.param !== 'token_duration_validity',
-			}"
+					'tw-w-3/4': field.param === 'token_duration_validity',
+					'tw-w-1/4': field.param !== 'token_duration_validity',
+				}"
 			>
 				<Parameter
 					:class="{ 'tw-w-full': field.param === 'name' }"

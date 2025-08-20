@@ -482,7 +482,7 @@ class DropfilesControllerFiles extends JControllerForm
                             $email_title = $params->get('add_event_subject', '');
                         }
 
-                        if ((int) $params->get('file_owner', 0) === 1 && (int) $params->get('add_event', 1) === 1) {
+                        if ((int) $params->get('file_owner', 0) === 1 && (int) $params->get('add_event', 1) === 1 && !empty($currentUser->email)) {
                             $email_body = str_replace('{receiver}', $currentUser->name, $email_body);
                             DropfilesHelper::sendMail($user->email, $email_title, $email_body);
                         }
@@ -996,9 +996,10 @@ class DropfilesControllerFiles extends JControllerForm
         } elseif ($active_category->type === 'dropbox' && $target_category->type === 'dropbox') {
             $dropbox = new DropfilesDropbox();
             $file    = $dropbox->getDropboxFileInfos($id_file);
-            $result  = $dropbox->moveFile($file['path_lower'], $target_category->path . '/' . strtolower($file['name']));
+            $result  = $dropbox->moveFile($file['path_display'], $target_category->path . '/' .($file['name']));
             if ($result) {
                 $modelDropbox = $this->getModel('dropboxfiles');
+                $oldFileInfo = $modelDropbox->getFile($id_file);
                 $modelDropbox->deleteFile($id_file);
 
                 if ($result) {
@@ -1010,6 +1011,10 @@ class DropfilesControllerFiles extends JControllerForm
                     $file_data['size']          = $result['size'];
                     $file_data['catid']         = $target_category->cloud_id;
                     $file_data['path']          = $result['path_lower'];
+                    $file_data['hits']          = $oldFileInfo->hits;
+                    $file_data['version']       = $oldFileInfo->version;
+                    $file_data['file_tags']       = $oldFileInfo->file_tags;
+                    $file_data['custom_icon']       = $oldFileInfo->custom_icon;
                     $file_data['created_time']  = date('Y-m-d H:i:s', strtotime($result['client_modified']));
                     $file_data['modified_time'] = date('Y-m-d H:i:s', strtotime($result['server_modified']));
                     $modelDropbox->save($file_data);

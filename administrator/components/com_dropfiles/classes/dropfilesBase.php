@@ -408,7 +408,7 @@ class DropfilesBase
         if ($db->execute()) {
             $manifest = $db->loadResult();
             $json = json_decode($manifest);
-            if (property_exists($json, 'version')) {
+            if ($json && property_exists($json, 'version')) {
                 return $json->version;
             }
         }

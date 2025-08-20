@@ -153,6 +153,7 @@ if (DropfilesBase::isJoomla30()) {
     <?php echo $this->loadTemplate('cats'); ?>
     <div id="pwrapper">
         <div id="wpreview">
+            <div class="toolbar-wrapper">
             <div class="dropfiles-btn-toolbar" id="dropfiles-toolbar">
                 <div class="btn-wrapper">
                     <button onclick="Joomla.submitbutton('files.movefile');" class="btn btn-small" id="dropfiles-cut">
@@ -221,6 +222,7 @@ if (DropfilesBase::isJoomla30()) {
                 <i class="material-icons dropfiles-iconsearch restablesearch">search</i>
             </div>
             <div class="dropfiles-flip-btn" ><i class="material-icons dropfiles-flip">arrow_right_alt</i></div>
+            </div>
             <div id="preview"></div>
         </div>
         <input type="hidden" name="id_category" value=""/>

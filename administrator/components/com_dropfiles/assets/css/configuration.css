@@ -46,15 +46,13 @@ body.view-configuration::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
 body.view-configuration #toolbar button > span {
-  line-height: 18px !important;
   vertical-align: middle !important;
+  margin-inline-end: .5rem;
 }
-body.view-configuration #toolbar button > span.icon-apply {
-  margin-top: -1px !important;
-}
-body.view-configuration #toolbar button > span:before {
+
+/* body.view-configuration #toolbar button > span:before {
   vertical-align: unset !important;
-}
+} */
 
 .subhead-collapse {
   margin: 0 !important;
@@ -129,14 +127,14 @@ body.view-configuration #toolbar button > span:before {
   z-index: 999;
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab.parent-tabs.expanded > .link-tab {
-  background-color: #4c79ca !important;
+  /*background-color: #199ED8 !important;*/
   opacity: 1;
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab.parent-tabs.expanded > .link-tab:after {
   background: transparent url("../images/configuration/menu-arrow-up.svg") center no-repeat;
 }
 .ju-main-wrapper .ju-left-panel .tabs.ju-menu-tabs li.tab.parent-tabs.expanded > ul {
-  background-color: #4c79ca;
+  background-color: #263C59;
   opacity: 1;
   display: block;
 }
@@ -153,7 +151,7 @@ body.view-configuration #toolbar button > span:before {
   color: #394857;
   opacity: 0.5;
   background-color: #fff !important;
-  font-weight: bold;
+  font-weight: 700;
   padding: 1.25rem;
 }
 @media screen and (max-width: 420px) {
@@ -162,18 +160,15 @@ body.view-configuration #toolbar button > span:before {
   }
 }
 .ju-main-wrapper .ju-right-panel .tabs.ju-top-tabs li.tab a.link-tab:hover, .ju-main-wrapper .ju-right-panel .tabs.ju-top-tabs li.tab a.link-tab:focus {
-  color: #ff8726;
+  color: var(--template-bg-dark-60);
   opacity: 1;
 }
 .ju-main-wrapper .ju-right-panel .tabs.ju-top-tabs li.tab a.link-tab.active {
-  color: #ff8726;
+  color: var(--template-bg-dark-60);;
   opacity: 1;
 }
 .ju-main-wrapper .ju-right-panel .tabs.ju-top-tabs li.tab a.link-tab.active:before {
-  content: "";
-  background-image: url("../images/configuration/checked_tab.svg");
-  background-position: center;
-  background-repeat: no-repeat;
+
   display: inline-block;
   width: 16px;
   height: 16px;
@@ -601,8 +596,8 @@ body.view-configuration #toolbar button > span:before {
 }
 .ju-content-wrapper#importer #import-server-folders-btn, .ju-content-wrapper#importexport #import-server-folders-btn {
   background-color: #fff;
-  color: #ff8726;
-  border-color: #ff8726;
+  color: #3D618F;
+  border-color: #3D618F;
   padding: 10px 30px;
   min-width: 180px;
   text-transform: uppercase;
@@ -625,7 +620,7 @@ body.view-configuration #toolbar button > span:before {
 }
 .ju-content-wrapper#importer #import-server-folders-btn label, .ju-content-wrapper#importexport #import-server-folders-btn label {
   line-height: 20px;
-  color: #ff8726;
+
 }
 .ju-content-wrapper#importer #import-server-folders-btn label:hover, .ju-content-wrapper#importer #import-server-folders-btn label:focus, .ju-content-wrapper#importexport #import-server-folders-btn label:hover, .ju-content-wrapper#importexport #import-server-folders-btn label:focus {
   cursor: pointer;
@@ -963,7 +958,6 @@ body.view-configuration #toolbar button > span:before {
 .ju-content-wrapper .block-list .ju-settings-option.cloud-full-width .btn-google-changes {
   padding: 0.625rem 0.9375rem;
   min-width: 9.375rem;
-  border: 1px solid #ff8726 !important;
   text-transform: uppercase;
   display: inline-block;
   text-decoration: none;
@@ -978,7 +972,7 @@ body.view-configuration #toolbar button > span:before {
   font-size: 14px;
   font-size: 0.875rem;
   background-color: #fff !important;
-  color: #ff8726 !important;
+
 }
 .ju-content-wrapper .block-list .ju-settings-option.jform_google_document, .ju-content-wrapper .block-list .ju-settings-option.jform_onedrive_document, .ju-content-wrapper .block-list .ju-settings-option.jform_dropbox_document, .ju-content-wrapper .block-list .ju-settings-option.jform_onedrive_business_document {
   background-color: transparent;
@@ -1216,8 +1210,8 @@ body.view-configuration #toolbar button > span:before {
 .ju-content-wrapper .block-list .ju-settings-option.jform_importexport .ju-custom-block #dropfiles-run-export,
 .ju-content-wrapper .block-list .ju-settings-option.jform_importexport .ju-custom-block #dropfiles_import_folder_btn {
   float: right;
-  color: #ff8726;
-  border-color: #ff8726;
+  color: #3D618F;
+  border-color:#3D618F;
   margin: 5px 0;
 }
 @media screen and (max-width: 768px) {
@@ -1740,7 +1734,7 @@ body.view-configuration #toolbar button > span:before {
 .ju-content-wrapper .block-list.clone-theme-list .ju-settings-option #jform_createtheme {
   padding: 0.625rem 0.9375rem;
   min-width: 9.375rem;
-  border: 1px solid #ff8726 !important;
+
   text-transform: uppercase;
   display: inline-block;
   text-decoration: none;
@@ -1754,8 +1748,7 @@ body.view-configuration #toolbar button > span:before {
   border-radius: 40px;
   font-size: 14px;
   font-size: 0.875rem;
-  background-color: #ff8726 !important;
-  color: #fff !important;
+
   font-weight: 400;
   text-shadow: none;
 }

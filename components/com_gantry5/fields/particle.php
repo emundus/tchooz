@@ -2,8 +2,10 @@
 
 /**
  * @package   Gantry 5
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2022 RocketTheme, LLC
+ * @author    Tiger12 http://tiger12.com
+ * @originalCreator  RocketTheme (Gantry Framework) 
+ * @currentDeveloper  Tiger12, LLC 
+ * @copyright Copyright (C) 2007 - 2022 Tiger12, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -22,6 +24,11 @@ use Joomla\CMS\Form\FormField;
 /**
  * Class JFormFieldParticle
  */
+// Compatibility alias for Joomla 4
+// if (!class_exists('JFormFieldParticle') && version_compare(JVERSION, '5.0', '<')) {
+//     class_alias('ParticleField', 'JFormFieldParticle');
+// }
+
 class JFormFieldParticle extends FormField
 {
     protected $type = 'Particle';
