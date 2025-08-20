@@ -250,7 +250,7 @@ class EmundusControllerProgramme extends BaseController
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 							'value'   => $program->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-							'classes' => $program->published ? 'em-p-5-12 em-bg-main-100 em-text-neutral-900 em-font-size-14 em-border-radius' : 'em-p-5-12 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 em-border-radius',
+							'classes' => 'tw-w-fit tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm ' . ($program->published ? ' em-bg-main-500 tw-text-white' : ' tw-bg-neutral-300 tw-text-neutral-700'),
 							'display' => 'table',
 							'order_by' => 'p.published'
 						],
@@ -268,12 +268,12 @@ class EmundusControllerProgramme extends BaseController
 								[
 									'key'     => Text::_('COM_EMUNDUS_ONBOARD_STATE'),
 									'value'   => $program->published ? Text::_('PUBLISHED') : Text::_('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH'),
-									'classes' => $program->published ? 'em-p-5-12 em-font-weight-600 em-bg-main-100 em-text-neutral-900 em-font-size-14 label' : 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label',
+									'classes' => 'tw-w-fit tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm ' . ($program->published ? ' em-bg-main-500 tw-text-white' : ' tw-bg-neutral-300 tw-text-neutral-700'),
 								],
 								[
 									'key'     => Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE'),
 									'value'   => $program->apply_online ? Text::_('COM_EMUNDUS_ONBOARD_PROGRAM_APPLY_ONLINE') : '',
-									'classes' => $program->apply_online ? 'em-p-5-12 em-font-weight-600 em-bg-neutral-200 em-text-neutral-900 em-font-size-14 label' : 'hidden',
+									'classes' => $program->apply_online ? 'tw-w-fit tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-neutral-300 tw-text-neutral-700' : 'hidden',
 								]
 							],
 							'display' => 'blocs',

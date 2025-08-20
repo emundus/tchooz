@@ -3,6 +3,7 @@
 namespace Emundus\Plugin\Console\Tchooz\CliCommand;
 
 use Emundus\Plugin\Console\Tchooz\Jobs\Definition\JobDefinition;
+use Emundus\Plugin\Console\Tchooz\Jobs\Enum\JobStatus;
 use Joomla\CMS\Log\Log;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -116,7 +117,7 @@ class TchoozCommand extends AbstractCommand
 		return $this->ioStyle->askQuestion($question);
 	}
 
-	protected function executeJob(string $job, OutputInterface $output): void
+	protected function executeJob(string $job, InputInterface $input, OutputInterface $output): void
 	{
 		$jobDefinition = $this->getJob($job);
 
@@ -128,7 +129,7 @@ class TchoozCommand extends AbstractCommand
 
 		try
 		{
-			$jobInstance->execute($output);
+			$jobInstance->execute($input, $output);
 		}
 		catch (\Exception $e)
 		{
@@ -171,5 +172,68 @@ class TchoozCommand extends AbstractCommand
 		$logger->jobName = $jobName;
 
 		return $logger;
+	}
+
+	protected function getReport(string $commandName): array
+	{
+		$report = [];
+
+		if (!is_dir(JPATH_BASE . '/plugins/console/tchooz_cli/src/Report')) {
+			mkdir(JPATH_BASE . '/plugins/console/tchooz_cli/src/Report');
+		}
+
+		// get content of Report/$commandName.json
+		$reportFile = JPATH_BASE . '/plugins/console/tchooz_cli/src/Report/' . $commandName . '.json';
+
+		if (file_exists($reportFile))
+		{
+			$reportContent = file_get_contents($reportFile);
+			if ($reportContent !== false)
+			{
+				$report = json_decode($reportContent, true);
+				if (json_last_error() !== JSON_ERROR_NONE)
+				{
+					Log::add('Error decoding JSON report: ' . json_last_error_msg(), Log::ERROR, 'tchooz');
+				}
+			}
+			else
+			{
+				Log::add('Error reading report file: ' . $reportFile, Log::ERROR, 'tchooz');
+			}
+		}
+		else
+		{
+			$report = [
+				'command' => $commandName,
+				'status'  => JobStatus::PENDING,
+				'last_execution' => null,
+				'jobs' => []
+			];
+
+			foreach ($this->jobs as $jobName => $job)
+			{
+				$report['jobs'][$jobName] = [
+					'status' => JobStatus::PENDING,
+					'last_execution' => null,
+					'last_information' => null,
+					'description' => $job->getDescription(),
+					'note' => ''
+				];
+			}
+
+			$report_created = file_put_contents($reportFile, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+			if ($report_created === false)
+			{
+				$this->ioStyle->warning('Error writing to file: ' . $reportFile);
+			}
+		}
+
+		return $report;
+	}
+
+	protected function updateReport(array $report): void
+	{
+		$reportFile = JPATH_BASE . '/plugins/console/tchooz_cli/src/Report/' . $report['command'] . '.json';
+		file_put_contents($reportFile, json_encode($report, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
 	}
 }

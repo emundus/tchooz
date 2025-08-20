@@ -908,7 +908,7 @@ class EmundusControllerUsers extends BaseController
 		try
 		{
 			require_once(JPATH_ROOT . '/administrator/components/com_emundus/helpers/update.php');
-			EmundusHelperUpdate::clearJoomlaCache('mod_menu');
+			EmundusHelperUpdate::clearJoomlaCache();
 		}
 		catch (Exception $e)
 		{
@@ -1603,7 +1603,6 @@ class EmundusControllerUsers extends BaseController
 	public function activation_anonym_user()
 	{
 		$app = $this->app;
-
 		$user_id = $this->input->getInt('user_id', 0);
 		$token   = $this->input->getString('token', '');
 
@@ -1614,17 +1613,18 @@ class EmundusControllerUsers extends BaseController
 
 			if ($valid)
 			{
-				$updated = $m_users->updateAnonymUserAccount($token, $user_id);
+				$activated = $m_users->activateAnonymUser($token, $user_id);
 
-				if ($updated)
-				{
+				if ($activated) {
 					$app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_ANONYM_USER_ACTIVATION_SUCCESS'), 'success');
+					$ip = $app->input->server->get('REMOTE_ADDR');
+					$m_users->connectUserFromToken($token, $ip);
 				}
 				else
 				{
 					$app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_FAILED_TO_ACTIVATE_USER'), 'warning');
 				}
-				$app->redirect('/');
+				$app->redirect(EmundusHelperMenu::getHomepageLink());
 			}
 			else
 			{

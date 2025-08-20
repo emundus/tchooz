@@ -1228,9 +1228,22 @@ class Release2_2_0Installer extends ReleaseInstaller
 				$this->db->updateObject('#__fabrik_forms', $setup_program_form, 'id');
 			}
 
-			$queryString = 'WITH CTE AS (SELECT id, parent_id, emundus_groups, ROW_NUMBER() OVER (PARTITION BY parent_id, emundus_groups ORDER BY id) AS rn FROM jos_emundus_setup_profiles_repeat_emundus_groups) DELETE FROM jos_emundus_setup_profiles_repeat_emundus_groups WHERE id IN (SELECT id FROM CTE WHERE rn > 1);';
-			$this->db->setQuery($queryString);
-			$this->db->execute();
+			$sql_engine = $this->db->setQuery("SHOW VARIABLES LIKE 'version_comment'")->loadAssoc();
+			if (empty($sql_engine))
+			{
+				$sql_engine = [
+					'Value' => 'MySQL'
+				];
+			}
+
+			$sql_engine = $sql_engine['Value'];
+
+			if(str_contains($sql_engine,'MySQL'))
+			{
+				$queryString = 'WITH CTE AS (SELECT id, parent_id, emundus_groups, ROW_NUMBER() OVER (PARTITION BY parent_id, emundus_groups ORDER BY id) AS rn FROM jos_emundus_setup_profiles_repeat_emundus_groups) DELETE FROM jos_emundus_setup_profiles_repeat_emundus_groups WHERE id IN (SELECT id FROM CTE WHERE rn > 1);';
+				$this->db->setQuery($queryString);
+				$this->db->execute();
+			}
 
 			$query->clear()
 				->select('id,params')

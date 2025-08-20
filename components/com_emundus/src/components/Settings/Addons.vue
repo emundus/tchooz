@@ -5,12 +5,13 @@ import Messenger from '@/components/Settings/Addons/Messenger.vue';
 import SMSAddon from '@/components/Settings/Addons/SMSAddon.vue';
 import RankingTool from '@/components/Settings/Addons/RankingTool.vue';
 import PaymentAddon from '@/components/Settings/Addons/PaymentAddon.vue';
+import AnonymAddon from '@/components/Settings/Addons/AnonymAddon.vue';
 
 /* Components */
 
 export default {
 	name: 'Addons',
-	components: { Messenger, SMSAddon, RankingTool, PaymentAddon },
+	components: { Messenger, SMSAddon, RankingTool, PaymentAddon, AnonymAddon },
 	data() {
 		return {
 			loading: true,
@@ -116,6 +117,15 @@ export default {
 					getAddons();
 				"
 			></PaymentAddon>
+
+			<AnonymAddon
+				v-if="currentAddon.type === 'anonymous'"
+				:addon="currentAddon"
+				@addonSaved="
+					currentAddon = null;
+					getAddons();
+				"
+			></AnonymAddon>
 		</div>
 
 		<div class="em-page-loader" v-if="loading"></div>

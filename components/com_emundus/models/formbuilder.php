@@ -20,6 +20,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Emundus\Indexer\Entities\IndexEntity;
 
 class EmundusModelFormbuilder extends JModelList
 {
@@ -600,10 +601,10 @@ class EmundusModelFormbuilder extends JModelList
 					$this->db->execute();
 
 					// Add translation to translation files
-					$this->translate('FORM_' . $prid . '_' . $form_id, $label, 'fabrik_forms', $form_id, 'label');
+					$this->translate('FORM_' . $prid . '_' . $form_id, $label, 'fabrik_forms', $form_id, 'label', $user->id);
 
 					if (!empty($intro) && is_array($intro)) {
-						$this->translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro, 'fabrik_forms', $form_id, 'intro');
+						$this->translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro, 'fabrik_forms', $form_id, 'intro', $user->id);
 					}
 				}
 			}
@@ -4590,7 +4591,7 @@ class EmundusModelFormbuilder extends JModelList
 		return $list;
 	}
 
-	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '', $user = null)
+	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '', $user = null, array $elements_to_exclude = []): bool
 	{
 		$copied = false;
 
@@ -4599,6 +4600,9 @@ class EmundusModelFormbuilder extends JModelList
 		}
 
 		if (!empty($form_id_to_copy) && !empty($new_form_id) && !empty($new_list_id)) {
+			if (!class_exists('IndexEntity')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/indexer/Entities/IndexEntity.php');
+			}
 			$label = [];
 
 			$query = $this->db->getQuery(true);
@@ -4677,14 +4681,14 @@ class EmundusModelFormbuilder extends JModelList
 								'fr' => $label_prefix . 'Confirmation d\'envoi de dossier',
 								'en' => $label_prefix . 'Confirmation of file sending',
 							);
-							$this->translate('GROUP_MODEL_' . $new_form_id . '_' . $new_group_id, $labels, 'fabrik_groups', $new_group_id, 'label');
+							$this->translate('GROUP_MODEL_' . $new_form_id . '_' . $new_group_id, $labels, 'fabrik_groups', $new_group_id, 'label', $user->id);
 						}
 						else {
 							$labels_to_duplicate = array();
 							foreach ($languages as $language) {
 								$labels_to_duplicate[$language->sef] = $label_prefix . $this->getTranslation($group_model->label, $language->lang_code);
 							}
-							$this->translate('GROUP_MODEL_' . $new_form_id . '_' . $new_group_id, $labels_to_duplicate, 'fabrik_groups', $new_group_id, 'label');
+							$this->translate('GROUP_MODEL_' . $new_form_id . '_' . $new_group_id, $labels_to_duplicate, 'fabrik_groups', $new_group_id, 'label', $user->id);
 						}
 
 						$query->set('label = ' . $this->db->quote('GROUP_MODEL_' . $new_form_id . '_' . $new_group_id));
@@ -4703,6 +4707,10 @@ class EmundusModelFormbuilder extends JModelList
 
 						$elements = $group->getMyElements();
 						foreach ($elements as $element) {
+							if (in_array($element->element->id, $elements_to_exclude)) {
+								continue;
+							}
+
 							try {
 								$new_element    = $element->copyRow($element->element->id, 'Copy of %s', $new_group_id);
 								$new_element_id = $new_element->id;
@@ -4717,7 +4725,7 @@ class EmundusModelFormbuilder extends JModelList
 										foreach ($languages as $language) {
 											$labels_to_duplicate[$language->sef] = $label_prefix . $this->getTranslation($sub_label, $language->lang_code);
 										}
-										$this->translate('SUBLABEL_MODEL_' . $new_group_id . '_' . $new_element_id . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $new_element_id, 'sub_labels');
+										$this->translate('SUBLABEL_MODEL_' . $new_group_id . '_' . $new_element_id . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $new_element_id, 'sub_labels', $user->id);
 										$sub_labels[] = 'SUBLABEL_MODEL_' . $new_group_id . '_' . $new_element_id . '_' . $index;
 									}
 									$el_params->sub_options->sub_labels = $sub_labels;
@@ -4729,7 +4737,7 @@ class EmundusModelFormbuilder extends JModelList
 								foreach ($languages as $language) {
 									$labels_to_duplicate[$language->sef] = $label_prefix . $this->getTranslation($element->element->label, $language->lang_code);
 								}
-								$this->translate('ELEMENT_MODEL_' . $new_group_id . '_' . $new_element_id, $labels_to_duplicate, 'fabrik_elements', $new_element_id, 'label');
+								$this->translate('ELEMENT_MODEL_' . $new_group_id . '_' . $new_element_id, $labels_to_duplicate, 'fabrik_elements', $new_element_id, 'label', $user->id);
 
 								$query->set('label = ' . $this->db->quote('ELEMENT_MODEL_' . $new_group_id . '_' . $new_element_id));
 								$query->set('published = ' . $element->element->published);
@@ -4737,6 +4745,9 @@ class EmundusModelFormbuilder extends JModelList
 								$query->where('id =' . $new_element_id);
 								$this->db->setQuery($query);
 								$this->db->execute();
+
+								$element_index = new IndexEntity(0, 'fabrik_element_id', $element->element->id, $new_element_id, ['new_form_id' => $new_form_id]);
+								$element_index->save();
 							}
 							catch (Exception $e) {
 								Log::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $form_id_to_copy . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
@@ -4744,6 +4755,13 @@ class EmundusModelFormbuilder extends JModelList
 						}
 
 						$groups_copied[$g_index] = true;
+
+						try {
+							$group_index = new IndexEntity(0, 'fabrik_group_id', $group->id, $new_group_id, ['new_form_id' => $new_form_id]);
+							$group_index->save();
+						} catch (Exception $e) {
+							Log::add('Failed to save group mapping of indexes', Log::ERROR, 'com_emundus');
+						}
 					}
 				}
 			}

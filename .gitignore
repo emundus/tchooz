@@ -96,6 +96,7 @@ plugins/fabrik_form/email/tmpl/*
 /components/com_emundus/models/custom.php
 libraries/emundus/custom/*
 !libraries/emundus/custom/.gitkeep
+plugins/console/tchooz_cli/src/Report
 
 # MEDIA FOLDER
 /media/cache/*

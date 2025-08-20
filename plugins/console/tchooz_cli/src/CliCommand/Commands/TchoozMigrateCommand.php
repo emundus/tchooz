@@ -9,6 +9,7 @@ use Emundus\Plugin\Console\Tchooz\Jobs\Checker\CheckHealthJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\FixAssetsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Definition\JobDefinition;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateEmundusJob;
+use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateEvaluationsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateExtensionsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateFabrikJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateFilesJob;
@@ -16,6 +17,7 @@ use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateJoomlaJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateOtherTablesJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateSQLViewsJob;
 use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateTemplatesJob;
+use Emundus\Plugin\Console\Tchooz\Jobs\Migration\MigrateWorkflowsJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Joomla\Database\DatabaseAwareTrait;
@@ -151,7 +153,7 @@ class TchoozMigrateCommand extends TchoozCommand
 		{
 			try
 			{
-				$this->executeJob($job, $output);
+				$this->executeJob($job, $input, $output);
 			}
 			catch (\Exception $e)
 			{

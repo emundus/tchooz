@@ -47,7 +47,7 @@ class EmundusHelperUpdate
 		}
 	}
 
-	public static function clearJoomlaCache()
+	public static function clearJoomlaCache(?array $groups = [])
 	{
 		require_once(JPATH_BASE . '/administrator/components/com_cache/src/Model/CacheModel.php');
 		$m_cache = new CacheModel();
@@ -59,6 +59,11 @@ class EmundusHelperUpdate
 
 			foreach ($mCache->getAll() as $cache)
 			{
+				if (!empty($groups) && !in_array($cache->group, $groups))
+				{
+					continue;
+				}
+
 				if ($mCache->clean($cache->group) === false)
 				{
 					return false;
@@ -456,7 +461,7 @@ class EmundusHelperUpdate
 					$params = json_decode($row->params, true);
 					foreach ($param as $k => $par)
 					{
-						$params[$par] = $valuesToSet[$k];
+						$params[$par] = $valuesToSet[$k] ?? $params[$par];
 					}
 
 					$query->clear()
@@ -2152,7 +2157,7 @@ class EmundusHelperUpdate
 					'params'            => json_encode($params['params']),
 					'client_id'         => $params['client_id'] ?: 0,
 					'img'               => $params['img'] ?: '',
-					'menu_show'         => isset($params['params']['menu_show']) ? $params['params']['menu_show'] : 1,
+					'menu_show'         => $params['params']['menu_show'] ?? 1,
 				);
 
 				if ($parent_id <= 0 || empty($parent_id))
@@ -2936,6 +2941,7 @@ class EmundusHelperUpdate
 					'access'               => $datas['access'] ?: 1,
 					'use_in_page_title'    => $datas['use_in_page_title'] ?: 0,
 					'parent_id'            => $datas['parent_id'] ?: 0,
+					'readonly'			   => $datas['readonly'] ?: 0,
 					'params'               => json_encode($params)
 				];
 

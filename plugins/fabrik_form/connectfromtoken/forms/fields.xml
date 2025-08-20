@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-form-connectfromtoken" label="PLG_FABRIK_FORM_CONNECT_FROM_TOKEN_FIELDS">
+            <field name="token_field"
+                        type="listfields"
+                        label="PLG_FABRIK_FORM_CONNECT_FROM_TOKEN_TOKEN_FIELD_LABEL"
+                        description=""
+                        onlytablefields="0"
+                        repeat="true" />
+        </fieldset>
+    </fields>
+</form>

@@ -74,6 +74,15 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
         JDEBUG ? $profiler->mark("renderListData: {$this->element->plugin}: start: {$this->element->name}") : null;
 
         $data              = FabrikWorker::JSONtoData($data, true);
+	    $colors = $this->getColors();
+	    // assert that the colors in the data are valid
+	    foreach ($data as $index => $class_color) {
+			$class_color = str_replace('label-', '', $data[0]);
+			if (!array_key_exists($class_color, $colors)) {
+				$data[$index] = 'label-grey-1';
+			}
+		}
+
         $layout            = $this->getLayout('list');
         $displayData       = new stdClass;
         $displayData->data = $data;
@@ -122,5 +131,17 @@ class PlgFabrik_ElementEmundus_colorpicker extends PlgFabrik_Element
 		}
 
 		return $val;
+	}
+
+	private function getColors(): array
+	{
+		$colors = [];
+
+		$yaml = Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+		if (!empty($yaml)) {
+			$colors = $yaml['accent'];
+		}
+
+		return $colors;
 	}
 }

@@ -14,6 +14,7 @@ use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Services\StorageService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
 use Joomla\CMS\Log\Log;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class MigrateTemplatesJob extends TchoozJob
@@ -29,7 +30,7 @@ class MigrateTemplatesJob extends TchoozJob
 		parent::__construct($logger);
 	}
 
-	public function execute(OutputInterface $output): void
+	public function execute(InputInterface $input, OutputInterface $output): void
 	{
 		$this->databaseService->getDatabase()->transactionStart();
 		$this->databaseService->getDatabase()->setQuery('SET AUTOCOMMIT = 0')->execute();

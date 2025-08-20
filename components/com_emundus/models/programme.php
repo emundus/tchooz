@@ -1503,32 +1503,37 @@ class EmundusModelProgramme extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	function getEvaluationGrid($pid)
+	function getEvaluationGrid($pid): int
 	{
+		$evaluation_grid = 0;
 
 		$query = $this->_db->getQuery(true);
 
 		try {
-			$query->select('fabrik_group_id')
+			$query->select('fabrik_group_id, evaluation_form')
 				->from($this->_db->quoteName('#__emundus_setup_programmes'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($pid));
 			$this->_db->setQuery($query);
-			$fabrik_groups = explode(',', $this->_db->loadResult());
+			$program_data = $this->_db->loadAssoc();
 
-			$query->clear()
-				->select('form_id')
-				->from($this->_db->quoteName('#__fabrik_formgroup'))
-				->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($fabrik_groups[0]));
-			$this->_db->setQuery($query);
+			if (!empty($program_data['evaluation_form'])) {
+				$evaluation_grid = $program_data['evaluation_form'];
+			} else if (!empty($program_data['fabrik_group_id'])) {
+				$fabrik_groups = explode(',', $program_data['fabrik_group_id']);
 
-			return $this->_db->loadResult();
-
+				$query->clear()
+					->select('form_id')
+					->from($this->_db->quoteName('#__fabrik_formgroup'))
+					->where($this->_db->quoteName('group_id') . ' = ' . $this->_db->quote($fabrik_groups[0]));
+				$this->_db->setQuery($query);
+				$evaluation_grid = $this->_db->loadResult();
+			}
 		}
 		catch (Exception $e) {
 			Log::add('component/com_emundus/models/program | Error at getting evaluation grid of the program ' . $pid . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $evaluation_grid;
 	}
 
 	/**
