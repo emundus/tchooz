@@ -1,0 +1,25 @@
+secrets:
+  - id: private-key
+    paths:
+      - ".docker/data/mysql/server-key.pem"
+      - ".docker/data/mysql/private_key.pem"
+      - ".docker/data/mysql/client-key.pem"
+      - ".docker/data/mysql/ca-key.pem"
+      - ".docker/apache/certs/localhost-key.pem"
+    statement: It's default necessary to have a private key in the repository, but it should not be used in production. It is only used for dev and testing purposes.
+
+vulnerabilities:
+  - id: CVE-2021-46743
+    paths:
+      - "administrator/components/com_dropfiles/classes/composer.lock"
+    statement: The editor does not support the latest version of the library, so we have to use an older version. This is not used in production.
+  - id: CVE-2021-42740
+  - id: GHSA-vjh7-7g9h-fjfh
+  - id: CVE-2025-7783
+  - id: CVE-2021-3918
+  - id: CVE-2021-44906
+  - id: CVE-2025-6545
+  - id: CVE-2025-6547
+    paths:
+      - "media/gantry5/engines/nucleus/yarn.lock"
+    statement: It's dev dependency and not used in production. The library is used for development purposes only, so it is not a security risk. (cf. https://github.com/gantry/gantry5/blob/master/package.json)

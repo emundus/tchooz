@@ -37,9 +37,9 @@ class NumberModifier implements TagModifierInterface
 	private function formatAmount(float $value): string
 	{
 		if (fmod($value, 1) === 0.0) {
-			return number_format($value, 0, ',', '.');
+			return number_format($value, 0, ',', '');
 		}
 
-		return number_format($value, 2, ',', '.');
+		return number_format($value, 2, ',', '');
 	}
 }

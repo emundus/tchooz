@@ -88,7 +88,8 @@ class MigrateJoomlaJob extends TchoozJob
 	public function __construct(
 		private readonly object            $logger,
 		private readonly DatabaseService   $databaseServiceSource,
-		private readonly DatabaseService   $databaseService
+		private readonly DatabaseService   $databaseService,
+		private readonly int $limit = 1000
 	)
 	{
 		parent::__construct($logger);
@@ -181,14 +182,40 @@ class MigrateJoomlaJob extends TchoozJob
 							throw new \RuntimeException('Error while merging columns in table ' . $table);
 						}
 
-						$datas = $this->databaseServiceSource->getDatas($table);
-						if (!$this->databaseService->insertDatas($datas, $table))
+						$count = $this->databaseServiceSource->getDatasCount($table);
+
+						// If datas are too many, we have to split the insertions
+						if ($count > $this->limit)
 						{
-							Log::add('Error while inserting datas in table ' . $table, Log::ERROR, self::getJobName());
+							$limit = $this->limit;
+							$offset = 0;
+							$datas = $this->databaseServiceSource->getDatas($table, $limit, $offset);
+							while (!empty($datas))
+							{
+								if (!$this->databaseService->insertDatas($datas, $table))
+								{
+									Log::add('Error while inserting datas in table ' . $table, Log::ERROR, self::getJobName());
 
-							$this->databaseService->getDatabase()->transactionRollback();
+									$this->databaseService->rollbackTransaction();
 
-							throw new \RuntimeException('Error while inserting datas in table ' . $table);
+									throw new \RuntimeException('Error while inserting datas in table ' . $table);
+								}
+
+								$offset += $limit;
+								$datas = $this->databaseServiceSource->getDatas($table, $limit, $offset);
+							}
+						}
+						else
+						{
+							$datas = $this->databaseServiceSource->getDatas($table);
+							if (!$this->databaseService->insertDatas($datas, $table))
+							{
+								Log::add('Error while inserting datas in table ' . $table, Log::ERROR, self::getJobName());
+
+								$this->databaseService->rollbackTransaction();
+
+								throw new \RuntimeException('Error while inserting datas in table ' . $table);
+							}
 						}
 
 						if ($table == 'jos_content')

@@ -150,13 +150,13 @@
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 .ju-button.orange-button, #toolbar-sc-clearcache .orange-button.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-connect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-connect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-connect.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-export, .ju-custom-block #toolbar-sc-clearcache .ju-btn-export.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-export.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-import, .ju-custom-block #toolbar-sc-clearcache .ju-btn-import.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-import.sc_clearcache_link, .ju-custom-block a.orange-button.btn, .ju-custom-block a.btn.ju-btn-connect, .ju-custom-block a.btn.ju-btn-export, .ju-custom-block a.btn.ju-btn-import {
-  background-color: #ff8726;
+  background-color: #3D618F;
   color: #fff;
-  border-color: #ff8726;
+  border-color: #3D618F;
 }
 .ju-button.orange-outline-button, #toolbar-sc-clearcache .orange-outline-button.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-disconnect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-disconnect.sc_clearcache_link, .ju-custom-block a.orange-outline-button.btn, .ju-custom-block a.btn.ju-btn-disconnect {
   background-color: #fff;
-  color: #ff8726;
+  color: #3D618F;
   border-color: #fff;
 }
 .ju-button.green-button, #toolbar-sc-clearcache .green-button.sc_clearcache_link, .ju-custom-block a.green-button.btn {
@@ -165,7 +165,7 @@
   border-color: #49bf88;
 }
 .ju-button.orange-border, #toolbar-sc-clearcache .orange-border.sc_clearcache_link, .ju-custom-block .ju-button.ju-btn-disconnect, .ju-custom-block #toolbar-sc-clearcache .ju-btn-disconnect.sc_clearcache_link, #toolbar-sc-clearcache .ju-custom-block .ju-btn-disconnect.sc_clearcache_link, .ju-custom-block a.orange-border.btn, .ju-custom-block a.btn.ju-btn-disconnect {
-  border-color: #ff8726;
+  border-color: #3D618F;
 }
 .ju-button.black-outline-button, #toolbar-sc-clearcache .black-outline-button.sc_clearcache_link, .ju-custom-block a.black-outline-button.btn {
   background-color: #fff;
@@ -433,22 +433,29 @@
   width: 300px;
   height: 100%;
   padding: 20px 0;
-  background-image: linear-gradient(to right top, #1a3868, #16408a, #2545aa, #4347c9, #6943e4);
+  background: #1F3047;
   position: fixed;
   overflow: auto;
   z-index: 15;
-  -webkit-box-shadow: 10px 20px 20px 0 rgba(186, 192, 213, 0.1);
-  -moz-box-shadow: 10px 20px 20px 0 rgba(186, 192, 213, 0.1);
-  box-shadow: 10px 20px 20px 0 rgba(186, 192, 213, 0.1);
+
 }
 .ju-main-wrapper .ju-left-panel .ju-logo a {
   display: block;
   width: 230px;
-  height: 90px;
+  height: 40px;
   margin: auto;
   color: #fff;
   text-decoration: none;
   text-align: center;
+}
+.ju-logo h1{
+  font-size: 28px;
+  color: #ffffff;
+  text-align: center;
+  text-transform: none;
+}
+.ju-logo img {
+  width: 100px;
 }
 .ju-main-wrapper .ju-left-panel .ju-logo a p {
   font-family: "Nunito Sans", sans-serif;
@@ -612,7 +619,7 @@
   background-color: #fff;
 }
 .ju-main-wrapper .ju-right-panel .tabs.ju-top-tabs li.tab a.link-tab {
-  color: #ff8726;
+  color: var(--template-bg-dark-60);
   background-color: #fff;
   font-weight: bold;
   padding: 20px;
@@ -627,7 +634,7 @@
   box-shadow: none;
 }
 .ju-main-wrapper .ju-right-panel .tabs.ju-top-tabs .indicator {
-  background-color: #ff8726;
+  background-color: var(--btn-primary-bg);
   z-index: 10;
 }
 .ju-main-wrapper .ju-left-panel-toggle {
@@ -709,9 +716,7 @@ ul.field .field-item {
   text-shadow: none;
   text-transform: capitalize;
   font-weight: bold;
-  background-color: #FFF3E9 !important;
-  color: #ff8726 !important;
-  border-color: #FFF3E9 !important;
+
 }
 .ju-custom-block a.btn.token_reset, .ju-custom-block a.btn.modal_jform_include_minify_folders {
   border-color: #ddd !important;

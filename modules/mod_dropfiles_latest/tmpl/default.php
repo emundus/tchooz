@@ -86,20 +86,14 @@ $usegoogleviewer      = ((int) $dropfileConfig->get('usegoogleviewer', 1) === 1)
                                 <?php if ($display_date_added === 1) : ?>
                                     <div class="mod_file-dated"><span>
                                         <?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_SHOWDATEADD'); ?>: </span>
-                                        <?php echo date(
-                                            $dropfileConfig->get('date_format', 'Y-m-d'),
-                                            strtotime($file->created_time)
-                                        ); ?>
+                                        <?php echo $file->created_time; ?>
                                     </div>
                                 <?php endif; ?>
                                 <?php if ($display_date_updated === 1) : ?>
                                     <div class="mod_file-modified">
                                         <span><?php echo JText::_('COM_DROPFILES_DEFAULT_FRONT_DATEMODIFIED'); ?>
                                             : </span>
-                                        <?php echo date(
-                                            $dropfileConfig->get('date_format', 'Y-m-d'),
-                                            strtotime($file->modified_time)
-                                        ); ?>
+                                        <?php echo $file->modified_time; ?>
                                     </div>
                                 <?php endif; ?>
                             </div>

@@ -8,7 +8,6 @@
                   addfieldpath="/administrator/components/com_dropfiles/models/fields"
         >
             <field name="catid" type="dropcat"
-                   description="JGLOBAL_FIELD_CATEGORIES_CHOOSE_CATEGORY_DESC"
                    extension="com_dropfiles"
                    label="JGLOBAL_FIELD_CATEGORIES_CHOOSE_CATEGORY_LABEL"
                    multiple="true"

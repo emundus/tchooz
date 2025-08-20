@@ -32,6 +32,11 @@ Class AddonEntity
 
 	public function setConfiguration(array $configuration): void
 	{
+		if(empty($configuration)) {
+			$this->configuration = '{}';
+			return;
+		}
+
 		$this->configuration = json_encode($configuration);
 	}
 

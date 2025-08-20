@@ -62,7 +62,7 @@
 }
 #mybootstrap #rightcol select.dropfilesinput:not(.ju-multiselect):focus,
 #mybootstrap #rightcol .fileblock .ju-settings-option .paraminput select:focus {
-  background-image: linear-gradient(45deg, #ff8726 50%, transparent 55%), linear-gradient(135deg, transparent 55%, #ff8726 50%), linear-gradient(to right, #ff8726, #ff8726);
+  background-image: linear-gradient(45deg, #3D618F 50%, transparent 55%), linear-gradient(135deg, transparent 55%, #3D618F 50%), linear-gradient(to right, #3D618F, #3D618F);
   background-position: calc(100% - 0.8125rem) calc(1rem + 0.3125rem), calc(100% - 1.125rem) calc(1rem + 0.3125rem), calc(100% - 2.5rem) 0.5rem;
   background-size: 0.3125rem 0.3125rem, 0.3125rem 0.3125rem, 0.0625rem 70%;
   background-repeat: no-repeat;
@@ -159,7 +159,7 @@
 #mybootstrap #rightcol #jform_publish:focus,
 #mybootstrap #rightcol #jform_publish_down:focus,
 #mybootstrap #rightcol #jform_custom_icon:focus {
-  border-color: #ff8726;
+  border-color: #3D618F;
   box-shadow: none;
   outline: none;
 }
@@ -631,11 +631,11 @@
   cursor: pointer;
 }
 #mybootstrap #rightcol .control-group .controls select.inline:focus {
-  background-image: linear-gradient(45deg, #ff8726 50%, transparent 55%), linear-gradient(135deg, transparent 55%, #ff8726 50%), linear-gradient(to right, #ff8726, #ff8726);
+  background-image: linear-gradient(45deg, #3D618F 50%, transparent 55%), linear-gradient(135deg, transparent 55%, #3D618F 50%), linear-gradient(to right, #3D618F, #3D618F);
   background-position: calc(100% - 13px) calc(1em + 5px), calc(100% - 18px) calc(1em + 5px), calc(100% - 2.5em) 0.5em;
   background-size: 5px 5px, 5px 5px, 1px 70%;
   background-repeat: no-repeat;
-  border-color: #ff8726;
+  border-color: #3D618F;
   outline: none;
 }
 #mybootstrap #rightcol .control-group .controls .minicolors .inputbox {
@@ -714,7 +714,7 @@
   min-width: 80px;
 }
 #mybootstrap #rightcol .ju-settings-option .ju-settings-toolbox .ju-button.orange-outline-button {
-  border-color: #ff8726;
+  border-color: #3D618F;
 }
 #mybootstrap #rightcol .ju-settings-option .ju-settings-toolbox .material-icons {
   font-size: 10px;
@@ -741,7 +741,7 @@
   box-shadow: none;
 }
 #mybootstrap #rightcol .ju-settings-option .chzn-container .chzn-choices:focus {
-  border-color: #ff8726;
+  border-color: #3D618F;
   box-shadow: none;
   outline: none;
 }
@@ -827,7 +827,7 @@
   box-shadow: 0 10px 30px 0 rgba(160, 166, 190, 0.08);
 }
 #mybootstrap #rightcol .inputbox:focus {
-  border-color: #ff8726;
+  border-color: #3D618F;
 }
 #mybootstrap #rightcol .inputbox:disabled, #mybootstrap #rightcol .inputbox:read-only {
   background-color: #ffffff;
@@ -845,6 +845,15 @@
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
+#mybootstrap #rightcol .input-block-level {
+  display: block;
+  width: 100%;
+  min-height: 30px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
 #mybootstrap #rightcol #fileparams .ju-switch-button {
   margin-right: 0;
 }
@@ -1032,10 +1041,10 @@
   letter-spacing: 0.125rem;
   transition: all ease 0.5s;
   vertical-align: middle;
-  -webkit-border-radius: 40px;
-  -moz-border-radius: 40px;
-  border-radius: 40px !important;
-  background-color: #ff8726 !important;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px !important;
+  background-color: #3D618F !important;
   color: #fff;
   width: 100%;
   margin: 20px 0;
@@ -1250,8 +1259,8 @@
   overflow: hidden;
   white-space: nowrap;
   background-color: #fff;
-  color: #ff8726;
-  border: 1px solid #ff8726;
+  color: #3D618F;
+  border: 1px solid #3D618F;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -1313,8 +1322,8 @@
   overflow: hidden;
   white-space: nowrap;
   background-color: #fff;
-  color: #ff8726;
-  border: 1px solid #ff8726;
+  color: #3D618F;
+  border: 1px solid #3D618F;
   text-transform: uppercase;
   text-decoration: none;
   cursor: pointer;
@@ -1368,7 +1377,7 @@
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
   background: rgba(255, 135, 38, 0.1);
-  color: #ff8726;
+  color: #3D618F;
   text-shadow: none;
   box-shadow: none;
   border: 0;
@@ -1662,7 +1671,6 @@ div#mybootstrap {
   -webkit-flex-flow: row wrap;
   overflow: hidden;
   margin: 0;
-  background: #ffffff;
   padding: 0;
   position: relative;
 }
@@ -1686,7 +1694,7 @@ div#mybootstrap .nested .trash .icon-trash:before {
   background-position: center;
   background-size: 16px;
   background-repeat: no-repeat;
-  color: #2291f0;
+  color: #2A69B8;
 }
 div#mybootstrap .nested .edit .icon-edit {
   background-image: none;
@@ -1703,7 +1711,7 @@ div#mybootstrap .nested .edit .icon-edit:before {
   background-position: center;
   background-size: 16px;
   background-repeat: no-repeat;
-  color: #2291f0;
+  color: #2A69B8;
 }
 div#mybootstrap .nested .dd-content .icon-syncing {
   background-image: none;
@@ -1720,7 +1728,7 @@ div#mybootstrap .nested .dd-content .icon-syncing:before {
   background-position: center;
   background-size: 16px;
   background-repeat: no-repeat;
-  color: #2291f0;
+  color: #2A69B8;
 }
 div#mybootstrap .nested .sync .icon-sync {
   background-image: none;
@@ -1737,16 +1745,16 @@ div#mybootstrap .nested .sync .icon-sync:before {
   background-position: center;
   background-size: 16px;
   background-repeat: no-repeat;
-  color: #2291f0;
+  color: #2A69B8;
 }
 div#mybootstrap .nested .dd-collapse:before {
-  content: "";
+  font: normal normal normal 14px/1 'Material-Design-Iconic-Font';
+  content: "\f2f2";
   display: block;
-  background-image: url("../images/admin_icon/keyboard_arrow_down.svg");
   background-position: center;
   width: 20px;
   height: 20px;
-  font-size: 15px;
+  font-size: 18px;
   text-decoration: inherit;
   font-weight: 400;
   font-style: normal;
@@ -1758,13 +1766,13 @@ div#mybootstrap .nested .dd-collapse:before {
   margin-top: -0.5px;
 }
 div#mybootstrap .nested .dd-expand:before {
-  content: "";
+  font: normal normal normal 14px/1 'Material-Design-Iconic-Font';
+  content: "\f2f6";
   display: block;
-  background-image: url("../images/admin_icon/keyboard_arrow_right.svg");
   background-position: center;
   width: 20px;
   height: 20px;
-  font-size: 15px;
+  font-size: 18px;
   text-decoration: inherit;
   font-weight: 400;
   font-style: normal;
@@ -1779,13 +1787,13 @@ div#mybootstrap .nested .dd-item.active > .dd3-handle .dropfiles-folder,
 div#mybootstrap .nested .dd-item.active > .dd3-handle .dropfiles-folder:before,
 div#mybootstrap .nested .dd-item:hover > .dd3-handle .dropfiles-folder,
 div#mybootstrap .nested .dd-item:hover > .dd3-handle .dropfiles-folder:before {
-  color: #2291f0;
+  color: #2A69B8;
 }
 div#mybootstrap .nested .dd-item.active > .dd-collapse:before {
-  background-image: url("../images/admin_icon/keyboard_arrow_down_active.svg");
+  color: #2A69B8;
 }
 div#mybootstrap .nested .dd-item.active > .dd-expand:before {
-  background-image: url("../images/admin_icon/keyboard_arrow_right_active.svg");
+  color: #2A69B8;
 }
 div#mybootstrap .icon-eye {
   background-position: -96px -120px;
@@ -1896,7 +1904,7 @@ div#mybootstrap div#rightcol div#fileversion #versions_content a:hover {
   text-decoration: none;
 }
 div#mybootstrap div#rightcol div#fileversion #upload_button_version {
-  border: 1px solid #ff8726;
+  border: 1px solid #3D618F;
   text-transform: uppercase;
   display: inline-block;
   text-decoration: none;
@@ -1910,7 +1918,7 @@ div#mybootstrap div#rightcol div#fileversion #upload_button_version {
   font-size: 14px;
   font-size: 0.875rem;
   background-color: #fff;
-  color: #ff8726;
+  color: #3D618F;
   font-size: 9px;
   margin-bottom: 0;
   padding: 5px 0;
@@ -1940,7 +1948,7 @@ div#mybootstrap div#rightcol select {
   border: 1px solid #7e8993;
 }
 div#mybootstrap div#rightcol select:focus {
-  border-color: #ff8726;
+  border-color: #3D618F;
 }
 div#mybootstrap .show {
   display: block;
@@ -2037,7 +2045,7 @@ div#mybootstrap .modal-body select, div#mybootstrap .modal-body input {
   box-shadow: unset;
 }
 div#mybootstrap .modal-body select:focus, div#mybootstrap .modal-body input:focus {
-  border: 1px solid #ff8726;
+  border: 1px solid #3D618F;
   -webkit-box-shadow: unset;
   -moz-box-shadow: unset;
   box-shadow: unset;
@@ -2078,7 +2086,7 @@ div#mybootstrap .modal-body .dropfiles-remote-form div.controls input, div#myboo
   box-sizing: border-box;
 }
 div#mybootstrap .modal-body .dropfiles-remote-form div.controls input:focus, div#mybootstrap .modal-body .dropfiles-remote-form div.controls select:focus {
-  border: 1px solid #ff8726;
+  border: 1px solid #3D618F;
   -webkit-box-shadow: unset;
   -moz-box-shadow: unset;
   box-shadow: unset;
@@ -2519,9 +2527,8 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 #mycategories {
   flex: 1 100%;
   vertical-align: top;
-  padding: 15px 15px 0;
+  padding: 15px 15px 0 0;
   width: 300px;
-  background: #fff;
   height: calc(100vh - 162px);
   max-height: calc(100vh - 162px);
   position: relative;
@@ -2537,7 +2544,6 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   min-height: 80px;
   width: 100%;
   overflow: auto;
-  background: #fff;
   overflow-x: hidden;
   /* Track */
   /* Handle */
@@ -2600,9 +2606,9 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   letter-spacing: 0.125rem;
   transition: all ease 0.5s;
   vertical-align: middle;
-  -webkit-border-radius: 40px;
-  -moz-border-radius: 40px;
-  border-radius: 40px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
   font-size: 14px;
   font-size: 0.875rem;
   margin: 0 5px 5px 0;
@@ -2679,7 +2685,7 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 #dropfiles-hamburger {
   display: none;
   background: white;
-  color: #ff8726;
+  color: #3D618F;
   border: 1px solid #eaeaea;
   width: 50px;
   border-left: 0;
@@ -2785,40 +2791,34 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 #newcategory.button-primary {
   position: relative;
   display: block;
-  background-color: #fff;
   padding: 0 0 10px 0;
 }
 
 #newcategory.btn-categories > a:first-child,
 #newcategory.centpc > a:first-child {
-  background-color: #fff;
-  border: 1px solid #ff8726;
+  background-color: #3D618F;
+  background-image: none;
   cursor: pointer;
   padding: 10px 15px;
   display: block;
+  margin: 0 auto;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px !important;
   position: relative;
   text-decoration: none;
   font-size: 15px;
-  color: #ff8726;
-  margin: 0 auto;
-  -webkit-border-radius: 100px;
-  -moz-border-radius: 100px;
-  border-radius: 100px !important;
-  -webkit-transition: unset;
-  -moz-transition: unset;
-  -ms-transition: unset;
-  -o-transition: unset;
-  transition: unset;
-  text-align: center;
+  font-weight: bold;
+  color: #FFF;
+  text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.125rem;
   left: 0;
   top: 0;
   right: 0;
   max-width: 100%;
-  background-color: #fff;
-  background: #fff;
   z-index: 99;
+  transition: all ease 0.2s;
 }
 #newcategory.btn-categories > a:first-child:hover,
 #newcategory.centpc > a:first-child:hover {
@@ -2829,7 +2829,7 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 
 /* mobile first */
 #pwrapper {
-  background: #fff;
+
   position: relative;
 }
 @media only screen and (min-device-width: 1366px) {
@@ -2843,15 +2843,15 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   width: 100%;
   height: 230px;
   text-align: center;
-  margin: 20px 0 0 0;
+  margin: 0;
   padding: 10px 0;
-  background-color: transparent;
+  background: #ffffff;
   font-size: 13px;
 }
 #pwrapper #dropbox .message {
   font-weight: bold;
   color: #6a8ba5;
-  margin-bottom: 25px;
+  margin-bottom: 20px;
   padding-top: 80px;
   font-size: 1em;
 }
@@ -2867,7 +2867,6 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 #pwrapper #dropbox #upload_button.btn-primary {
   padding: 0.625rem 0.9375rem;
   min-width: 9.375rem;
-  border: 1px solid #6a8ba5;
   text-transform: uppercase;
   display: inline-block;
   text-decoration: none;
@@ -2876,12 +2875,12 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   letter-spacing: 0.125rem;
   transition: all ease 0.5s;
   vertical-align: middle;
-  -webkit-border-radius: 40px;
-  -moz-border-radius: 40px;
-  border-radius: 40px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
   font-size: 14px;
-  background-color: #f3f6fa;
-  color: #6a8ba5;
+  background-color: #3D618F;
+  color: #ffffff;
   -webkit-box-shadow: unset;
   -moz-box-shadow: unset;
   box-shadow: unset;
@@ -2892,8 +2891,14 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 #pwrapper #wpreview {
-  padding: 70px 0 0 0;
+  padding: 0px 0 0 0;
   position: relative;
+}
+#pwrapper .toolbar-wrapper {
+  position: relative;
+  height: 70px;
+  margin-right: 25px;
+  background: #ffffff;
 }
 #pwrapper #preview {
   position: unset;
@@ -2902,7 +2907,7 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   height: calc(100vh - 232px);
   max-height: calc(100vh - 232px);
   overflow: auto;
-  background-color: #f3f6fa;
+
   /* Track */
   /* Handle */
   /* Handle on hover */
@@ -2925,7 +2930,7 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   background: #555;
 }
 #pwrapper #preview .restableMenu {
-  margin-right: 15px;
+  margin-right: 40px;
   position: absolute;
   top: 0;
   right: 0;
@@ -2992,14 +2997,17 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   background-color: transparent;
   border-spacing: 0 8px;
   margin: 0;
-  padding: 0 25px;
+  padding: 0;
   font-size: 12px;
   border: 0;
   border-collapse: separate;
 }
+#pwrapper #preview table.restable thead tr{
+  background: #fff;
+}
 #pwrapper #preview table.restable thead th {
   vertical-align: bottom;
-  line-height: 50px;
+  line-height: 32px;
   border-top: 0;
   font-weight: bold;
   background: transparent;
@@ -3014,7 +3022,7 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   width: 1%;
 }
 #pwrapper #preview table.restable tbody tr {
-  background-color: #fff;
+  background-color: #f6f7f7;
   -webkit-box-shadow: 0 0 0 1px #f3f6fa;
   -moz-box-shadow: 0 0 0 1px #f3f6fa;
   box-shadow: 0 0 0 1px #f3f6fa;
@@ -3022,6 +3030,14 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   -moz-border-radius: 4px;
   border-radius: 4px;
 }
+
+/*#pwrapper #preview table.restable tbody > :nth-child(odd) {*/
+/*    background-color: #f6f7f7;*/
+/*}*/
+#pwrapper #preview table.restable tbody > tr.selected:nth-child(odd) {
+  background-color: transparent;
+}
+
 #pwrapper #preview table.restable th, #pwrapper #preview table.restable td {
   padding: 5px 4px;
   line-height: 30px;
@@ -3029,7 +3045,6 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
   border: 0;
 }
 #pwrapper #preview table.restable td {
-  background-color: #ffffff;
   font-family: inherit;
   font-size: inherit;
   border-color: transparent;
@@ -3073,15 +3088,15 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 }
 #pwrapper #preview tr.file:hover, #pwrapper #preview tr.file:focus {
   cursor: pointer;
-  -webkit-box-shadow: 0 0 0 1px #ff8726;
-  -moz-box-shadow: 0 0 0 1px #ff8726;
-  box-shadow: 0 0 0 1px #ff8726;
+  -webkit-box-shadow: 0 0 0 1px #3D618F;
+  -moz-box-shadow: 0 0 0 1px #3D618F;
+  box-shadow: 0 0 0 1px #3D618F;
 }
 #pwrapper #preview tr.file.selected {
   background-color: transparent;
-  -webkit-box-shadow: 0 0 0 1px #ff8726;
-  -moz-box-shadow: 0 0 0 1px #ff8726;
-  box-shadow: 0 0 0 1px #ff8726;
+  -webkit-box-shadow: 0 0 0 1px #3D618F;
+  -moz-box-shadow: 0 0 0 1px #3D618F;
+  box-shadow: 0 0 0 1px #3D618F;
 }
 #pwrapper #preview tr.file.is_pending > .title {
   position: relative;
@@ -3140,528 +3155,229 @@ body.modal-open .bootbox.dropfiles-upload-remote .control-label {
 }
 #pwrapper #preview tr.file .ext.doc {
   background: #00d2ff;
-  background: -moz-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: -webkit-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: linear-gradient(149deg, #928dab 0%, #00d2ff 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#928dab", endColorstr="#00d2ff",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.docx {
   background: #00d2ff;
-  background: -moz-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: -webkit-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: linear-gradient(149deg, #928dab 0%, #00d2ff 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#928dab", endColorstr="#00d2ff",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.odt {
   background: #00d2ff;
-  background: -moz-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: -webkit-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: linear-gradient(149deg, #928dab 0%, #00d2ff 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#928dab", endColorstr="#00d2ff",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.pages {
   background: #00d2ff;
-  background: -moz-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: -webkit-linear-gradient(-45deg, #928dab 0%, #00d2ff 100%);
-  background: linear-gradient(149deg, #928dab 0%, #00d2ff 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#928dab", endColorstr="#00d2ff",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ace {
   background: #11998e;
-  background: -moz-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: -webkit-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: linear-gradient(149deg, #38ef7d 0%, #11998e 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#38ef7d", endColorstr="#11998e",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.bz2 {
   background: #11998e;
-  background: -moz-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: -webkit-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: linear-gradient(149deg, #38ef7d 0%, #11998e 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#38ef7d", endColorstr="#11998e",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.gz {
   background: #11998e;
-  background: -moz-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: -webkit-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: linear-gradient(149deg, #38ef7d 0%, #11998e 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#38ef7d", endColorstr="#11998e",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.rar {
   background: #11998e;
-  background: -moz-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: -webkit-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: linear-gradient(149deg, #38ef7d 0%, #11998e 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#38ef7d", endColorstr="#11998e",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.tgz {
   background: #11998e;
-  background: -moz-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: -webkit-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: linear-gradient(149deg, #38ef7d 0%, #11998e 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#38ef7d", endColorstr="#11998e",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.zip {
   background: #11998e;
-  background: -moz-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: -webkit-linear-gradient(-45deg, #38ef7d 0%, #11998e 100%);
-  background: linear-gradient(149deg, #38ef7d 0%, #11998e 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#38ef7d", endColorstr="#11998e",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.dmg {
   background: #c21500;
-  background: -moz-linear-gradient(-45deg, #ffc500 0%, #c21500 100%);
-  background: -webkit-linear-gradient(-45deg, #ffc500 0%, #c21500 100%);
-  background: linear-gradient(149deg, #ffc500 0%, #c21500 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#ffc500", endColorstr="#c21500",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.html {
-  background: #ffe000;
-  background: -moz-linear-gradient(-45deg, #799f0c 0%, #ffe000 100%);
-  background: -webkit-linear-gradient(-45deg, #799f0c 0%, #ffe000 100%);
-  background: linear-gradient(149deg, #799f0c 0%, #ffe000 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#799f0c", endColorstr="#ffe000",GradientType=1 );
+  background: #799f0c;
 }
 #pwrapper #preview tr.file .ext.key {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.keynote {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.odp {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.pps {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ppt {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.pptx {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ppt {
   background: #ff00cc;
-  background: -moz-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: -webkit-linear-gradient(-45deg, #333399 0%, #ff00cc 100%);
-  background: linear-gradient(149deg, #333399 0%, #ff00cc 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#333399", endColorstr="#ff00cc",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ods {
   background: #3ca55c;
-  background: -moz-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: -webkit-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: linear-gradient(149deg, #b5ac49 0%, #3ca55c 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#b5ac49", endColorstr="#3ca55c",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.xls {
   background: #3ca55c;
-  background: -moz-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: -webkit-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: linear-gradient(149deg, #b5ac49 0%, #3ca55c 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#b5ac49", endColorstr="#3ca55c",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.xlsx {
   background: #3ca55c;
-  background: -moz-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: -webkit-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: linear-gradient(149deg, #b5ac49 0%, #3ca55c 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#b5ac49", endColorstr="#3ca55c",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.csv {
   background: #3ca55c;
-  background: -moz-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: -webkit-linear-gradient(-45deg, #b5ac49 0%, #3ca55c 100%);
-  background: linear-gradient(149deg, #b5ac49 0%, #3ca55c 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#b5ac49", endColorstr="#3ca55c",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.txt {
   background: #3E5151;
-  background: -moz-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: -webkit-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: linear-gradient(149deg, #DECBA4 0%, #3E5151 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#DECBA4", endColorstr="#3E5151",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.rtf {
   background: #3E5151;
-  background: -moz-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: -webkit-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: linear-gradient(149deg, #DECBA4 0%, #3E5151 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#DECBA4", endColorstr="#3E5151",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.tex {
   background: #3E5151;
-  background: -moz-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: -webkit-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: linear-gradient(149deg, #DECBA4 0%, #3E5151 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#DECBA4", endColorstr="#3E5151",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ttf {
   background: #3E5151;
-  background: -moz-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: -webkit-linear-gradient(-45deg, #DECBA4 0%, #3E5151 100%);
-  background: linear-gradient(149deg, #DECBA4 0%, #3E5151 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#DECBA4", endColorstr="#3E5151",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.xml {
   background: #606c88;
-  background: -moz-linear-gradient(-45deg, #3f4c6b 0%, #606c88 100%);
-  background: -webkit-linear-gradient(-45deg, #3f4c6b 0%, #606c88 100%);
-  background: linear-gradient(149deg, #3f4c6b 0%, #606c88 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#3f4c6b", endColorstr="#606c88",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.css {
   background: #606c88;
-  background: -moz-linear-gradient(-45deg, #3f4c6b 0%, #606c88 100%);
-  background: -webkit-linear-gradient(-45deg, #3f4c6b 0%, #606c88 100%);
-  background: linear-gradient(149deg, #3f4c6b 0%, #606c88 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#3f4c6b", endColorstr="#606c88",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.pdf {
-  background: #333333;
-  background: -moz-linear-gradient(-45deg, #dd1818 0%, #333333 100%);
-  background: -webkit-linear-gradient(-45deg, #dd1818 0%, #333333 100%);
-  background: linear-gradient(149deg, #dd1818 0%, #333333 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#dd1818", endColorstr="#333333",GradientType=1 );
+  background: #dd1818;
 }
 #pwrapper #preview tr.file .ext.bmp {
   background: #4e54c8;
-  background: -moz-linear-gradient(-45deg, #8f94fb 0%, #4e54c8 100%);
-  background: -webkit-linear-gradient(-45deg, #8f94fb 0%, #4e54c8 100%);
-  background: linear-gradient(149deg, #8f94fb 0%, #4e54c8 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#8f94fb", endColorstr="#4e54c8",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.png {
   background: #4e54c8;
-  background: -moz-linear-gradient(-45deg, #8f94fb 0%, #4e54c8 100%);
-  background: -webkit-linear-gradient(-45deg, #8f94fb 0%, #4e54c8 100%);
-  background: linear-gradient(149deg, #8f94fb 0%, #4e54c8 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#8f94fb", endColorstr="#4e54c8",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.gif {
   background: #4e54c8;
-  background: -moz-linear-gradient(-45deg, #8f94fb 0%, #4e54c8 100%);
-  background: -webkit-linear-gradient(-45deg, #8f94fb 0%, #4e54c8 100%);
-  background: linear-gradient(149deg, #8f94fb 0%, #4e54c8 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#8f94fb", endColorstr="#4e54c8",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.exif {
   background: #355C7D;
-  background: -moz-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: linear-gradient(149deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#C06C84", endColorstr="#355C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.tif {
   background: #355C7D;
-  background: -moz-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: linear-gradient(149deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#C06C84", endColorstr="#355C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.tiff {
   background: #355C7D;
-  background: -moz-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: linear-gradient(149deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#C06C84", endColorstr="#355C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ico {
-  background: #355C7D;
-  background: -moz-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: linear-gradient(149deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#C06C84", endColorstr="#355C7D",GradientType=1 );
+  background: #C06C84;
 }
 #pwrapper #preview tr.file .ext.svg {
   background: #355C7D;
-  background: -moz-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  background: linear-gradient(149deg, #C06C84 0%, #6C5B7B 50%, #355C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#C06C84", endColorstr="#355C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.jpeg {
   background: #108dc7;
-  background: -moz-linear-gradient(-45deg, #ef8e38 0%, #108dc7 100%);
-  background: -webkit-linear-gradient(-45deg, #ef8e38 0%, #108dc7 100%);
-  background: linear-gradient(149deg, #ef8e38 0%, #108dc7 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#ef8e38", endColorstr="#108dc7",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.jpg {
   background: #108dc7;
-  background: -moz-linear-gradient(-45deg, #ef8e38 0%, #108dc7 100%);
-  background: -webkit-linear-gradient(-45deg, #ef8e38 0%, #108dc7 100%);
-  background: linear-gradient(149deg, #ef8e38 0%, #108dc7 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#ef8e38", endColorstr="#108dc7",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.psd {
   background: #FC5C7D;
-  background: -moz-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: linear-gradient(149deg, #6A82FB 0%, #FC5C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#6A82FB", endColorstr="#FC5C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.img {
   background: #FC5C7D;
-  background: -moz-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: linear-gradient(149deg, #6A82FB 0%, #FC5C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#6A82FB", endColorstr="#FC5C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ai {
   background: #FC5C7D;
-  background: -moz-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: linear-gradient(149deg, #6A82FB 0%, #FC5C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#6A82FB", endColorstr="#FC5C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.dxf {
   background: #FC5C7D;
-  background: -moz-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: -webkit-linear-gradient(-45deg, #6A82FB 0%, #FC5C7D 100%);
-  background: linear-gradient(149deg, #6A82FB 0%, #FC5C7D 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#6A82FB", endColorstr="#FC5C7D",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.avi {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.flv {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mov {
-  background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
+  background: #4b134f;
 }
 #pwrapper #preview tr.file .ext.mpeg {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.m4v {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mkv {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mpg {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mp4 {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.swf {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.wmv {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.rm {
   background: #c94b4b;
-  background: -moz-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: -webkit-linear-gradient(-45deg, #4b134f 0%, #c94b4b 100%);
-  background: linear-gradient(149deg, #4b134f 0%, #c94b4b 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#4b134f", endColorstr="#c94b4b",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mp3 {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mpa {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ogg {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.aac {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.flac {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.mid {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.aiff {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.alac {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.amr {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.au {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.cdda {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
+
 }
 #pwrapper #preview tr.file .ext.m3u {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.m4a {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.m4p {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.pac {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.ra {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.wav {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.wma {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.asf {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 #pwrapper #preview tr.file .ext.vob {
   background: #22c1c3;
-  background: -moz-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: -webkit-linear-gradient(-45deg, #fdbb2d 0%, #22c1c3 100%);
-  background: linear-gradient(149deg, #fdbb2d 0%, #22c1c3 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr="#fdbb2d", endColorstr="#22c1c3",GradientType=1 );
 }
 
 /* Tablet (medium) screens */
@@ -3711,22 +3427,14 @@ div#mycategories #newcategory.withSyncCloud:hover {
   -webkit-box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
-  -webkit-border-radius: 4px 4px 0 0;
-  -moz-border-radius: 4px 4px 0 0;
-  border-radius: 4px 4px 0 0 !important;
 }
 div#mycategories #newcategory.withSyncCloud:hover a.btn-default {
-  border: 1px solid white;
-  -webkit-border-radius: 4px 4px 0 0;
-  -moz-border-radius: 4px 4px 0 0;
-  border-radius: 4px 4px 0 0 !important;
   -webkit-box-shadow: none;
   -moz-box-shadow: none;
   box-shadow: none;
-  border-bottom: 1px solid #eee;
 }
 div#mycategories #newcategory.withSyncCloud:hover a.btn-default:hover {
-  background: rgba(0, 0, 0, 0.05);
+
 }
 div#mycategories #newcategory.withSyncCloud:hover ul.dropdown-menu.pull-right {
   display: block;
@@ -3766,13 +3474,13 @@ div#mycategories #newcategory ul.dropdown-menu.pull-right li a {
   width: 100%;
   text-align: left;
   padding: 0 30px;
-  color: #0071a1;
+  color: #2A69B8;
   max-width: 100%;
   box-sizing: border-box;
   display: inline-block;
 }
 div#mycategories #newcategory ul.dropdown-menu.pull-right li a:hover {
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(34, 145, 240, 0.1);
   -webkit-border-radius: 0;
   -moz-border-radius: 0;
   border-radius: 0;
@@ -3931,8 +3639,8 @@ div#rightcol textarea {
 }
 
 #preview {
-  margin: 0 auto;
-  background: #FFF;
+  margin: 0 25px 0 auto;
+
   /*border: 3px dashed #BBB;*/
   min-height: 200px;
   overflow: hidden;
@@ -4198,18 +3906,18 @@ ul li input#toggle-col-MediaTable-0-0 {
   border-top-right-radius: 4px;
 }
 
-#preview .restable tbody > tr:nth-child(odd) > td,
-#preview .restable tbody > tr:nth-child(odd) > th {
-  background-color: #f9f9f9;
-}
+/*#preview .restable tbody > tr:nth-child(odd) > td,*/
+/*#preview .restable tbody > tr:nth-child(odd) > th {*/
+/*  background-color: #f9f9f9;*/
+/*}*/
 
 #preview .restable tbody tr:hover > td,
 #preview .restable tbody tr:hover > th {
-  background-color: #f5f5f5;
+  /*background-color: #f5f5f5;*/
 }
 
 #preview .restable tr.file.selected td {
-  background-color: #0073aa;
+  /*background-color: #0073aa;*/
 }
 
 #preview .restable tr.file.selected td.actions [class^=icon-] {
@@ -4539,9 +4247,9 @@ a#add_remote_file.btn.btn-large.btn-primary {
   letter-spacing: 0.125rem;
   transition: all ease 0.5s;
   vertical-align: middle;
-  -webkit-border-radius: 40px;
-  -moz-border-radius: 40px;
-  border-radius: 40px;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
   font-size: 14px;
   background-color: #f3f6fa;
   color: #6a8ba5;
@@ -4627,13 +4335,13 @@ table.restable tbody tr.file td.type {
 #mybootstrap .bs-docs-sidenav2 > li .dd-content:hover a.trash {
   display: inherit;
   opacity: 1;
-  color: #2291f0;
+  color: #2A69B8;
 }
 #mybootstrap .bs-docs-sidenav2 > li .dd-content a.edit:hover,
 #mybootstrap .bs-docs-sidenav2 > li .dd-content a.sync:hover,
 #mybootstrap .bs-docs-sidenav2 > li .dd-content a.trash:hover {
   opacity: 1;
-  color: #2291f0;
+  color: #2A69B8;
 }
 #mybootstrap .bs-docs-sidenav2 > li:hover .dd-content .icon-chevron-right {
   display: none;
@@ -4751,7 +4459,7 @@ table.restable tbody tr.file td.type {
 
 .dd-item.active > .dd-content a.t,
 .dd-item.active > .dd-content a.t span {
-  color: #2291f0;
+  color: #2A69B8;
 }
 
 .dd-handle {
@@ -4788,7 +4496,7 @@ table.restable tbody tr.file td.type {
   cursor: pointer;
   float: left;
   width: 20px;
-  height: 30px;
+  height: 35px;
   margin: 0;
   padding: 0;
   text-indent: 100%;
@@ -4816,10 +4524,10 @@ table.restable tbody tr.file td.type {
   width: 100%;
   text-align: center;
   text-indent: 0;
-  color: #888888;
+  color: #333333;
 }
 .dd-item > button[data-action=collapse]:before {
-  color: #888888;
+  color: #333333;
   font-size: 12px;
 }
 
@@ -4864,7 +4572,7 @@ table.restable tbody tr.file td.type {
   border: none;
 }
 .dd-dragel .dd-item.active > .dd3-handle .dropfiles-folder {
-  color: #2291f0;
+  color: #2A69B8;
 }
 .dd-dragel .dd-item.active > .dd-collapse:before {
   background-image: url(../images/admin_icon/keyboard_arrow_down_active.svg);
@@ -4977,7 +4685,7 @@ table.restable tbody tr.file td.type {
   box-shadow: none !important;
 }
 .dd3-content:hover a.t, .dd3-content:hover span {
-  color: #2291f0;
+  color: #2A69B8;
 }
 .dd3-content:hover .trash, .dd3-content:hover .icon-edit {
   opacity: 1 !important;
@@ -4989,7 +4697,7 @@ table.restable tbody tr.file td.type {
   white-space: nowrap;
   text-decoration: none;
   text-align: left;
-  color: #404852;
+  color: #222222;
   outline: none;
   line-height: 1.3;
   position: relative;
@@ -5008,7 +4716,7 @@ table.restable tbody tr.file td.type {
 
 .dd3-item.active > div.dd-content.dd3-content > a.t span.title,
 .dd3-item.active > div.dd-content.dd3-content > a.t span.title {
-  color: #2291f0;
+  color: #2A69B8;
 }
 
 .dd3-item .title.editable {
@@ -5019,7 +4727,7 @@ table.restable tbody tr.file td.type {
 .dd-item.active > .dd-content {
   background: rgba(34, 145, 240, 0.1);
   border: medium none;
-  color: #2291f0;
+  color: #2A69B8;
   box-shadow: none !important;
 }
 
@@ -5055,7 +4763,7 @@ table.restable tbody tr.file td.type {
   top: 3px;
   width: 20px;
   text-indent: 0;
-  color: #888888;
+  color: #333333;
   font-size: 20px;
   font-weight: normal;
   vertical-align: middle;
@@ -5120,17 +4828,17 @@ table.restable tbody tr.file td.type {
 #toolbar-config-options button {
   background: #fff;
   background-color: #fff;
-  border: 1px solid #ff8726;
-  color: #ff8726;
+  border: 1px solid #3D618F;
+  color: #3D618F;
 }
 
 #toolbar-chart-options {
   float: right;
 }
 #toolbar-chart-options button {
-  background: #ff8726;
-  background-color: #ff8726;
-  border: 1px solid #ff8726;
+  background: #3D618F;
+  background-color: #3D618F;
+  border: 1px solid #3D618F;
   color: #fff;
 }
 
@@ -5176,7 +4884,7 @@ table.restable tbody tr.file td.type {
 }
 
 .icon-config-options:before {
-  content: url("../images/admin_icon/toolbar-settings.svg");
+  content:"";
 }
 
 .icon-chart-options:before {
@@ -5277,7 +4985,7 @@ body.modal {
   display: flex;
   align-items: center;
   max-height: 80px;
-  background: #ff8726;
+  background: #3D618F;
   border: unset;
   padding: 5px 25px;
 }
@@ -5302,13 +5010,13 @@ body.modal {
   right: 0;
   bottom: 0;
   font-size: 6px;
-  color: #ff8726;
+  color: #3D618F;
 }
 #file-handle.dropfiles_draged_file .fCount {
   position: absolute;
   top: -10px;
   right: -10px;
-  background: #ff8726;
+  background: #3D618F;
   width: 20px;
   height: 20px;
   text-align: center;
@@ -5585,9 +5293,10 @@ html[dir=rtl] #rightcol {
 }
 
 #pwrapper .restableHideCols {
-  padding: 0;
+  padding: 0 10px;
   position: unset;
   min-height: 200px;
+  background: #fff;
 }
 
 #mybootstrap .dropfiles-number-files {
@@ -5598,7 +5307,7 @@ html[dir=rtl] #rightcol {
   width: 15px;
   z-index: 54;
   height: 15px;
-  background-color: #ff8726;
+  background-color: #3D618F;
   font-size: 10px;
   color: white;
   align-content: center;
@@ -5665,12 +5374,12 @@ html[dir=rtl] #rightcol {
   background-image: none;
 }
 #mybootstrap a.dropfiles-btn-search {
-  color: #ff8726;
-  border: 1px solid #ff8726;
+  color: #3D618F;
+  border: 1px solid #3D618F;
 }
 #mybootstrap a.dropfiles-btn-search:hover, #mybootstrap a.dropfiles-btn-search:focus {
-  color: #ff8726;
-  border: 1px solid #ff8726;
+  color: #3D618F;
+  border: 1px solid #3D618F;
 }
 #mybootstrap a.dropfiles-btn-exit-search {
   border: 1px solid #9fabba;
@@ -5706,7 +5415,7 @@ html[dir=rtl] #rightcol {
   padding-right: 2.8125rem !important;
 }
 .dropfiles-search-file #dropfiles_filter_catid:focus {
-  background-image: linear-gradient(45deg, #ff8726 50%, transparent 55%), linear-gradient(135deg, transparent 55%, #ff8726 50%), linear-gradient(to right, #ff8726, #ff8726);
+  background-image: linear-gradient(45deg, #3D618F 50%, transparent 55%), linear-gradient(135deg, transparent 55%, #3D618F 50%), linear-gradient(to right, #3D618F, #3D618F);
   background-position: calc(100% - 0.8125rem) 1.3125rem, calc(100% - 1.125rem) 1.3125rem, calc(100% - 2.5rem) 0.5rem;
   background-size: 0.3125rem 0.3125rem, 0.3125rem 0.3125rem, 0.0625rem 70%;
   background-repeat: no-repeat;
@@ -5742,7 +5451,7 @@ html[dir=rtl] #rightcol {
   box-shadow: none !important;
 }
 .dropfiles-search-file-input:focus {
-  border-color: #ff8726 !important;
+  border-color: #3D618F !important;
   outline: none;
 }
 
@@ -6030,14 +5739,14 @@ body.dropfileseditpopupbody div#mybootstrap div#rightcol .ju-button:hover {
   box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
 }
 body.dropfileseditpopupbody div#mybootstrap div#rightcol .ju-button.orange-button {
-  background-color: #ff8726;
+  background-color: #3D618F;
   color: #fff;
-  border-color: #ff8726;
+  border-color: #3D618F;
 }
 body.dropfileseditpopupbody div#mybootstrap div#rightcol .ju-button.orange-outline-button {
   background-color: #fff;
-  color: #ff8726;
-  border-color: #ff8726;
+  color: #3D618F;
+  border-color: #3D618F;
 }
 body.dropfileseditpopupbody div#mybootstrap div#rightcol .ju-button.gray-outline-button {
   background-color: #f3f6fa;
@@ -6049,8 +5758,8 @@ body.dropfileseditpopupbody div#mybootstrap div#rightcol .ju-button.gray-outline
 }
 body.dropfileseditpopupbody div#mybootstrap div#rightcol .ju-rect-button {
   background-color: #fff;
-  border: 1px solid #ff8726;
-  color: #ff8726;
+  border: 1px solid #3D618F;
+  color: #3D618F;
   cursor: pointer;
   padding: 0.625rem 0.9375rem;
   -webkit-border-radius: 4px;
@@ -6156,7 +5865,7 @@ body.dropfileseditpopupbody .modal-body select, body.dropfileseditpopupbody .mod
   box-shadow: unset;
 }
 body.dropfileseditpopupbody .modal-body select:focus, body.dropfileseditpopupbody .modal-body input:focus {
-  border: 1px solid #ff8726;
+  border: 1px solid #3D618F;
   -webkit-box-shadow: unset;
   -moz-box-shadow: unset;
   box-shadow: unset;
@@ -6197,7 +5906,7 @@ body.dropfileseditpopupbody .modal-body .dropfiles-remote-form div.controls inpu
   box-sizing: border-box;
 }
 body.dropfileseditpopupbody .modal-body .dropfiles-remote-form div.controls input:focus, body.dropfileseditpopupbody .modal-body .dropfiles-remote-form div.controls select:focus {
-  border: 1px solid #ff8726;
+  border: 1px solid #3D618F;
   -webkit-box-shadow: unset;
   -moz-box-shadow: unset;
   box-shadow: unset;
@@ -6566,14 +6275,12 @@ body.com_dropfiles .d-flex.wrapper .container-fluid.fluid-toolbar {
   width: 26px;
 }
 
-#toolbar-config-options.btn span {
-  color: #ff8726;
-}
+
 
 joomla-toolbar-button #toolbar-chart-options {
-  background: #ff8726;
-  background-color: #ff8726;
-  border: 1px solid #ff8726;
+  background: #3D618F;
+  background-color: #3D618F;
+  border: 1px solid #3D618F;
   color: #fff;
 }
 
@@ -6601,13 +6308,13 @@ joomla-toolbar-button #toolbar-chart-options span {
 @media not all and (min-resolution: 0.001dpcm) {
   @supports (-webkit-appearance: none) {
     tr.selected td:first-child {
-      box-shadow: -1px -1px 0px 0px #ff8726, -1px 1px 0px 0px #ff8726;
+      box-shadow: -1px -1px 0px 0px #3D618F, -1px 1px 0px 0px #3D618F;
     }
     tr.selected td {
-      box-shadow: 1px 1px 0px 0px #ff8726, 0px -1px 0px 0px #ff8726;
+      box-shadow: 1px 1px 0px 0px #3D618F, 0px -1px 0px 0px #3D618F;
     }
     tr.selected td:last-child {
-      box-shadow: 1px 1px 0px 0px #ff8726, 0px -1px 0px 0px #ff8726;
+      box-shadow: 1px 1px 0px 0px #3D618F, 0px -1px 0px 0px #3D618F;
     }
   }
 }

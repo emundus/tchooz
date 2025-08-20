@@ -119,7 +119,7 @@ $modelStatistics = JModelLegacy::getInstance('Statistics', 'dropfilesModel');
                 </div>
             </div>
             <div class="dropfiles-statistics--submit dropfiles-statistics--form-col">
-                <button class="btn dropfiles-search-btn ju-button orange-button" type="submit">
+                <button class="btn dropfiles-search-btn ju-button" type="submit">
                     <?php echo JText::_('COM_DROPFILES_APPLY_FILTER'); ?>
                 </button>
             </div>
@@ -142,7 +142,7 @@ $modelStatistics = JModelLegacy::getInstance('Statistics', 'dropfilesModel');
                     </div>
                 </div>
                 <div class="dropfiles-statistics--form-col dropfiles-statistics--reset">
-                    <button class="btn btn-reset ju-button orange-outline-button" type="reset">
+                    <button class="btn btn-reset ju-button" type="reset">
                         <?php echo JText::_('COM_DROPFILES_RESET'); ?>
                     </button>
                 </div>

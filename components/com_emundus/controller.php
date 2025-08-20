@@ -729,6 +729,9 @@ class EmundusController extends JControllerLegacy
 		}, $my_shared_files);
 
 		if ($aid->id != $infos['applicant_id'] && !in_array($fnum, $fnums_shared)) {
+			// Redirect to homepage
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE'), 'error');
+			$this->app->redirect('index.php');
 			return;
 		}
 
@@ -1091,9 +1094,7 @@ class EmundusController extends JControllerLegacy
 				$file_ext   = end($file_array);
 				$pos        = strpos($attachment['allowed_types'], strtoupper($file_ext));
 
-				$finfo = finfo_open(FILEINFO_MIME_TYPE);
-				$mtype = finfo_file($finfo, $file['tmp_name']);
-				finfo_close($finfo);
+                $mtype = $this->get_mime_type($file['name']);
 
 				if (!empty($mtype)) {
 					if($mtype == 'application/zip') {

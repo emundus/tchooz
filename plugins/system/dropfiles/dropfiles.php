@@ -36,6 +36,10 @@ class PlgSystemDropfiles extends JPlugin
         $app = JFactory::getApplication();
         // get the router
         if ($app->isClient('site')) {
+            if (!class_exists('JRouterSite')) {
+                JLoader::registerAlias('JRouterSite', '\\Joomla\\CMS\\Router\\SiteRouter', '6.0');
+                require_once(JPATH_SITE . '/libraries/src/Router/SiteRouter.php') ;
+            }
             $router = $app->getRouter();
             $router->attachParseRule(array($this, 'replaceRoute'), Router::PROCESS_BEFORE);
         }

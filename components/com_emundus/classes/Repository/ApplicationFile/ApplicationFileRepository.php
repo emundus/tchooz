@@ -23,6 +23,8 @@ class ApplicationFileRepository
 
 	public function flush(ApplicationFileEntity $applicationFileEntity): bool
 	{
+		$flushed = false;
+
 		try
 		{
 			// Check if the user is valid
@@ -50,15 +52,15 @@ class ApplicationFileRepository
 				}
 			}
 
-			return true;
+			$flushed = true;
 		}
 		catch (\Exception $e)
 		{
 			// Handle exception
 			Log::add('Error when try to flush an application file: ' . $e->getMessage(), Log::ERROR, 'com_emundus.applicationrepository');
-
-			return false;
 		}
+
+		return $flushed;
 	}
 
 	private function createCampaignCandidature(ApplicationFileEntity $applicationFileEntity): int

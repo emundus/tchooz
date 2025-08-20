@@ -2941,7 +2941,6 @@ class EmundusHelperUpdate
 					'access'               => $datas['access'] ?: 1,
 					'use_in_page_title'    => $datas['use_in_page_title'] ?: 0,
 					'parent_id'            => $datas['parent_id'] ?: 0,
-					'readonly'			   => $datas['readonly'] ?: 0,
 					'params'               => json_encode($params)
 				];
 

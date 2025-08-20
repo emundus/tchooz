@@ -5279,9 +5279,13 @@ class EmundusModelFiles extends JModelLegacy
 						$msg .= '<div class="alert alert-dismissable alert-danger">'.JText::_('COM_EMUNDUS_MAILS_EMAIL_NOT_SENT').' : '.$student->fnum.'</div>';
 						JLog::add('Email trigger not sent for file ' . $student->fnum . ' on status ' . $state, JLog::ERROR, 'com_emundus.email');
 					} else if (count($emails_sent) > 0) {
-						foreach(array_unique($emails_sent) as $recipient) {
-							$msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$recipient.'<br>';
-						}
+                        if ($emails_sent[0] === false) {
+                            continue;
+                        } else {
+                            foreach(array_unique($emails_sent) as $recipient) {
+                                $msg .= JText::_('COM_EMUNDUS_MAILS_EMAIL_SENT').' : '.$recipient.'<br>';
+                            }
+                        }
 					}
 				}
 			}

@@ -400,12 +400,12 @@
 
 .choices__list--multiple .choices__item {
   color: var(--choices-list-multiple-item);
-  background-color: var(--choices-list-multiple-item-bg);
   margin: 2px;
   border: 0;
   border-radius: .25rem;
   margin-inline-end: 2px;
   position: relative;
+  background-color: var(--choices-list-multiple-item-bg) !important;
 }
 
 .choices__list--multiple .choices__item.is-highlighted {

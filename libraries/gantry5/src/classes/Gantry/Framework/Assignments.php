@@ -2,8 +2,10 @@
 
 /**
  * @package   Gantry5
- * @author    RocketTheme http://www.rockettheme.com
- * @copyright Copyright (C) 2007 - 2021 RocketTheme, LLC
+ * @author    Tiger12 http://tiger12.com
+ * @originalCreator  RocketTheme (Gantry Framework) 
+ * @currentDeveloper  Tiger12, LLC 
+ * @copyright Copyright (C) 2007 - 2021 Tiger12, LLC
  * @license   GNU/GPLv2 and later
  *
  * http://www.gnu.org/licenses/gpl-2.0.html
@@ -44,16 +46,23 @@ class Assignments extends AbstractAssignments
             return [];
         }
 
-        // Get current template, style id and rules.
-        $template = $application->getTemplate();
-        $menu = $application->getMenu();
-        $active = $menu ? $menu->getActive() : null;
-        if ($active) {
-            $style = (int) $active->template_style_id;
-            $rules = [$active->menutype => [$active->id => true]];
-        } else {
+        try {
+            // Get current template, style id and rules.
+            $template = $application->getTemplate();
+            $menu = $application->getMenu();
+            $active = $menu ? $menu->getActive() : null;
+            if ($active) {
+                $style = (int) $active->template_style_id;
+                $rules = [$active->menutype => [$active->id => true]];
+            } else {
+                $style = 0;
+                $rules = [];
+            }
+        } catch (\Exception $e) {
+            // Catch errors when trying to get site properties from admin
             $style = 0;
             $rules = [];
+            $template = '';
         }
 
         // Load saved assignments.

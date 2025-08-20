@@ -685,6 +685,11 @@ function export_zip(fnums){
         forms = 0;
     });
 
+    $('#aelts input:checked').each(function() {
+        attach_checked.push($(this).val());
+        attachment = 0;
+    });
+
     if ($('#em-ex-forms').is(":checked"))
         forms = 1;
     if ($('#em-ex-attachment').is(":checked"))
@@ -734,6 +739,8 @@ function export_zip(fnums){
         },
     });
     document.querySelector('.em-swal-confirm-button').style.opacity = '0';
+
+    console.log(attach_checked);
 
     var url = 'index.php?option=com_emundus&controller=files&task=zip&Itemid='+itemId;
     $.ajax({

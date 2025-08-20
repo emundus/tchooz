@@ -13773,8 +13773,8 @@ span.minicolors-swatch-color {
 }
 
 .btn-secondary:hover {
-  color: var(--btn-secondary-color-hvr);
-  background: var(--btn-secondary-bg-hvr);
+  color: var(--btn-secondary-color-hvr, var(--btn-secondary-color));
+  background: var(--btn-secondary-bg-hvr, var(--template-bg-dark-70));
 }
 
 .btn-light {
@@ -17598,6 +17598,8 @@ joomla-editor-codemirror.fullscreen .cm-editor {
   --btn-secondary-bg: var(--template-bg-dark-60);
   --btn-secondary-border: 1px solid var(--template-bg-dark-60);
   --btn-secondary-color: var(--template-text-light);
+  --btn-secondary-bg-hvr: var(--template-bg-dark-70);
+  --btn-secondary-color-hvr: var(--template-text-light);
   --btn-info-color: var(--template-text-light);
   --btn-info-bg: #2a69b8;
   --btn-info-border: 1px solid #2a69b8;
@@ -17730,8 +17732,8 @@ joomla-editor-codemirror.fullscreen .cm-editor {
   --atum-calendar-disabled-color: #999;
   --atum-calendar-disabled-bg: #fff;
   --atum-calendar-select-bg: var(--template-bg-light);
-  --atum-calendar-select-bg-url: url("../../images/select-bg.svg?v=175120");
-  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-rtl.svg?v=175120");
+  --atum-calendar-select-bg-url: url("../../images/select-bg.svg?v=175507");
+  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-rtl.svg?v=175507");
   --permissions-sliders-oddCol-bg: var(--template-bg-light);
   --respTable-border-bottom: 1em solid var(--template-bg-dark-80);
   --treeselect-line-color: hsl(var(--hue), 40%, 93%);
@@ -17952,6 +17954,7 @@ joomla-editor-codemirror.fullscreen .cm-editor {
   --btn-secondary-bg: #33383f;
   --btn-secondary-border: 1px solid #4a515b;
   --btn-secondary-bg-hvr: #1c1f23;
+  --btn-secondary-color-hvr: var(--template-text-light);
   --btn-secondary-border-hvr: 1px solid #4a515b;
   --btn-dark-border: 1px solid #000000d9;
   --btn-dark-bg: #000000e6;
@@ -18077,8 +18080,8 @@ joomla-editor-codemirror.fullscreen .cm-editor {
   --atum-calendar-disabled-color: #4b4b4b;
   --atum-calendar-disabled-bg: #00000080;
   --atum-calendar-select-bg: #007db0;
-  --atum-calendar-select-bg-url: url("../../images/select-bg-dark.svg?v=175120");
-  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-dark-rtl.svg?v=175120");
+  --atum-calendar-select-bg-url: url("../../images/select-bg-dark.svg?v=175507");
+  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-dark-rtl.svg?v=175507");
   --permissions-sliders-oddCol-bg: var(--template-bg-dark);
   --respTable-border-bottom: 1em solid #007db0;
   --treeselect-line-color: #fff6;

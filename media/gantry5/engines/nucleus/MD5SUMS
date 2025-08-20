@@ -19,9 +19,9 @@ blueprints/page/body.yaml	7f6fc9e8368dbfcdb7ca1846d3394839
 blueprints/page/fontawesome.yaml	2f9294310bc4a536e0e20d19e760b051
 blueprints/page/head.yaml	da69f501e6c1adbf91e2e14d12ee62fe
 css-compiled/bootstrap5-rtl.css	ef9800f64c5ac65eaa9f974636adaf96
-css-compiled/bootstrap5.css	7607268074c08a998c78d888e8be02ac
-css-compiled/joomla.css	0beeb71afad57bbb183394dfebd635ff
-css-compiled/nucleus.css	d14cf7a40a014e6d48c2b04e974c24bd
+css-compiled/bootstrap5.css	6c4addd2c34263930147a3a5a792bebe
+css-compiled/joomla.css	3b3362706270401610035bd459827f8f
+css-compiled/nucleus.css	036ef7501b3971c107e4bc6e9d933be5
 images/select-bg-active-rtl.svg	fba1f6dc1ef5cbf28e00351ea1d311c1
 images/select-bg-active.svg	86a33e7b1e2b0c4ed98ca9630a66b9a4
 images/select-bg-rtl.svg	e50af231567cd9e4934ca50e2abcfb98
@@ -72,10 +72,11 @@ scss/configuration/nucleus/_fontawesome.scss	3119af6235c8d83c669f4db4a7dad98f
 scss/configuration/nucleus/_layout.scss	7a5f928e5c019d1dcd4ead9a5d6882b3
 scss/configuration/nucleus/_typography.scss	1fb446977cb1416aff2aea59f116e34b
 scss/custom.scss	d41d8cd98f00b204e9800998ecf8427e
-scss/joomla.scss	8c3ed5d71c3224c0f5e2dc38fe4220fc
+scss/joomla.scss	dcabb632075e0289a84267dc2bcae9a1
 scss/joomla/_buttons.scss	b9f324281f66fa1398d145fad2324359
 scss/joomla/_forms.scss	cddc2ea3cd7183aa98baf0b9f5ccf1f1
 scss/joomla/_offline.scss	e6f93cb4e9ce3eaaf9cd9164357307b7
+scss/joomla/_svg-fixes.scss	085f6348406c19f9bdcbc9876029637d
 scss/joomla/_tabs.scss	2159bdcaeabca8f7597483b0a5461310
 scss/joomla/_typography.scss	ba7fbc2e5b974bf4cfa4af5d425656dc
 scss/joomla/_utilities.scss	6d46080b17aaeb7d91e14f931e8d0271
@@ -87,7 +88,7 @@ scss/joomla/theme/breakpoints/_bootstrap.scss	f145ceb9ec850ef724c3bee5af0cfd68
 scss/joomla/theme/breakpoints/_forms.scss	2bf1f1d323170fd2691d015a457075b2
 scss/joomla/theme/breakpoints/_utilities.scss	2de421570df339229e101a75762ed818
 scss/nucleus.scss	df2f0a99e82ce9b5e60a2a2bbc9b677d
-scss/nucleus/_core.scss	8c780db2f1dea1f823c3accabc9d142e
+scss/nucleus/_core.scss	c35e9c5e42ec1f38c04d6b955aae6502
 scss/nucleus/_flex.scss	71ecd5c612c9053e5b737cbf766d32bd
 scss/nucleus/_forms.scss	f18766ef3b73ccc25678bd32622bba60
 scss/nucleus/_nav.scss	d54b6e574acdd1eda2f55d63ae07ce4d
@@ -317,7 +318,7 @@ templates/layout/grid.html.twig	0511ef6713b74470a657202b2ea187bc
 templates/layout/offcanvas.html.twig	04001d9f6b7c5573236c14b9a28cfa7a
 templates/layout/section.html.twig	9fbd8525cbb293ea652d74bbf1aec361
 templates/layout/wrapper.html.twig	80575cb54b77a5b88b8299c99fda28e1
-templates/page.html.twig	d72c3386374c413acba5ea7ba499a755
+templates/page.html.twig	d50a3745a0cf930987dc9ce6878ac085
 templates/page_head.html.twig	078952395209583b1784dc2ba1a2978f
 templates/partials/particle.html.twig	07935cff8475093e4c5e315985b39b99
 twig/component.html.twig	abdb4071d7588181a6c4c196436b3e5d
