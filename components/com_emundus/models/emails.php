@@ -312,6 +312,7 @@ class EmundusModelEmails extends JModelList
 	public function sendEmailTrigger($step, $code, $to_applicant = 0, $student = null, $to_current_user = null, $trigger_emails = null): array
 	{
 		$emails_sent = [];
+		$recipient_access = true;
 		$app = Factory::getApplication();
 		$config = $app->getConfig();
 
@@ -380,6 +381,7 @@ class EmundusModelEmails extends JModelList
 				foreach ($trigger_email[$student->code]['to']['recipients'] as $recipient) {
 					// Check if the user has access to the file
 					if (!$h_access->isUserAllowedToAccessFnum($recipient['id'],$student->fnum) || !$h_emails->assertCanSendMailToUser($recipient['id'])) {
+						$recipient_access = false;
 						continue;
 					}
 
@@ -479,6 +481,10 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 			}
+		}
+
+		if (empty($emails_sent) && $recipient_access === false) {
+			$emails_sent[] = false;
 		}
 
 		return $emails_sent;
