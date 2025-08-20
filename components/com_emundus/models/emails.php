@@ -3301,6 +3301,25 @@ class EmundusModelEmails extends JModelList
 				$cc = [];
 				$keys = [];
 
+                $user_id_to = !empty($user_id) ? $user_id : null;
+
+                if ($user_id_to === null) {
+                    $db = Factory::getContainer()->get('DatabaseDriver');
+                    $query = $db->createQuery();
+
+                    $query->select('id')
+                        ->from($db->quoteName('#__users'))
+                        ->where($db->quoteName('email') . ' LIKE ' . $db->quote($email_address));
+
+                    try {
+                        $db->setQuery($query);
+                        $user_id_to = $db->loadResult();
+                        $user_id = $user_id_to;
+                    } catch (Exception $e) {
+                        Log::add('error trying to find user_id_to ' . $e->getMessage(), Log::ERROR);
+                    }
+                }
+
 				if ($user_id != null) {
 					include_once(JPATH_ROOT.'/components/com_emundus/models/users.php');
 					$m_users = new EmundusModelUsers();
@@ -3379,24 +3398,6 @@ class EmundusModelEmails extends JModelList
 						Log::add($send->getMessage(), Log::ERROR, 'com_emundus');
 					}
 				} else {
-					$user_id_to = !empty($user_id) ? $user_id : null;
-
-					if ($user_id_to === null) {
-						$db = JFactory::getDbo();
-						$query = $db->getQuery(true);
-
-						$query->select('id')
-							->from($db->quoteName('#__users'))
-							->where($db->quoteName('email') . ' LIKE ' . $db->quote($email_address));
-
-						try {
-							$db->setQuery($query);
-							$user_id_to = $db->loadResult();
-						} catch (Exception $e) {
-							Log::add('error trying to find user_id_to ' . $e->getMessage(), Log::ERROR);
-						}
-					}
-
 					if (!empty($user_id_to) && $log_email) {
 						$log = [
 							'user_id_from'  => $user_id_from,
