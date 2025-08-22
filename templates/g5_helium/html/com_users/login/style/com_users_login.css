@@ -61,7 +61,7 @@ button.btn-primary:hover{
 
 
 #g-container-main div.login {
-    display: flex !important;
+    display: flex;
     flex-direction: column;
     align-items: center;
     background: var(--neutral-0);

@@ -1,5 +1,7 @@
 /* Module CAS */
-#g-container-main .span12 .login.em-formRegistrationCenter {
+#g-container-main .span12 .login.em-formRegistrationCenter,
+.em-formRegistrationCenter .com-users-login.login
+{
     display: none !important;
 }
 
