@@ -40,11 +40,11 @@ JHtml::_('bootstrap.tooltip');
                     </div>
 				<?php else: ?>
                     <div class="btn-cas">
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-10 tw-r-none">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-10 tw-rounded-r-none">
 
                             <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
                         </a>
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-full tw-l-none">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-full tw-rounded-l-none">
 							<?= $mod_emundus_cas_btn1; ?>
                         </a>
                     </div>
