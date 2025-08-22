@@ -7328,17 +7328,20 @@ class EmundusModelApplication extends ListModel
 					require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
 				}
 				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
-				$query->clear()
-					->delete($this->_db->quoteName('#__emundus_users_assoc'))
-					->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['id'])
-					->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
 
-				$this->_db->setQuery($query);
-				$this->_db->execute();
+				if (!empty($sharedUser['id'])) {
+					$query->clear()
+						->delete($this->_db->quoteName('#__emundus_users_assoc'))
+						->where($this->_db->quoteName('user_id') . ' = ' . $sharedUser['id'])
+						->andWhere($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+					$this->_db->setQuery($query);
+					$this->_db->execute();
+				}
 
 				PluginHelper::importPlugin('emundus');
 				$dispatcher = Factory::getApplication()->getDispatcher();
-				$onAfterRemoveSharedUser = new GenericEvent('onCallEventHandler', ['onAfterRemoveSharedUser', ['request_id' => $request_id, 'ccid' => $ccid, 'email' => $sharedUser['email']]]);
+				$onAfterRemoveSharedUser = new GenericEvent('onCallEventHandler', ['onAfterRemoveSharedUser', ['fnum' => $fnum, 'request_id' => $request_id, 'ccid' => $ccid, 'email' => $sharedUser['email']]]);
 				$dispatcher->dispatch('onCallEventHandler', $onAfterRemoveSharedUser);
 			}
 		}
