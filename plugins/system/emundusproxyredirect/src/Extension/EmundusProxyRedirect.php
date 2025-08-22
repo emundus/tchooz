@@ -134,6 +134,10 @@ final class EmundusProxyRedirect extends CMSPlugin
 				if (!empty($fullname) && !empty($lastname) && empty($firstname)) {
 					$firstname = trim(str_replace($lastname, '', $fullname));
 				}
+				elseif(empty($fullname) && !empty($firstname) && !empty($lastname))
+				{
+					$fullname = $lastname . ' ' . $firstname;
+				}
 
 				$groups_map = $this->getGroupMapping($groups);
 				//TODO: Map more attributes to define custom fields
