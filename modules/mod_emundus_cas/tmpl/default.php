@@ -32,23 +32,21 @@ JHtml::_('bootstrap.tooltip');
                 <p><?= $mod_emundus_cas_url1_desc; ?></p>
                 <br/>
 
-				<?php if (empty($mod_emundus_cas_logo)) : ?>
+	            <?php if (empty($mod_emundus_cas_logo)) : ?>
                     <div class="tw-w-full tw-flex tw-flex-row">
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary rounded">
-							<?= $mod_emundus_cas_btn1; ?>
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary">
+				            <?= $mod_emundus_cas_btn1; ?>
                         </a>
                     </div>
-				<?php else: ?>
-                    <div class="btn-cas">
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-10 tw-rounded-r-none">
-
-                            <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
-                        </a>
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-full tw-rounded-l-none">
-							<?= $mod_emundus_cas_btn1; ?>
+	            <?php else: ?>
+                    <div class="tw-w-full tw-flex tw-flex-row">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-full">
+                            <img src="<?= $mod_emundus_cas_logo; ?>" class="tw-w-30px tw-mr-4"
+                                 alt="Icône du système de connexion" />
+                            <span><?= $mod_emundus_cas_btn1; ?></span>
                         </a>
                     </div>
-				<?php endif; ?>
+	            <?php endif; ?>
 
             </div>
         </div>
