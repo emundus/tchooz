@@ -19,7 +19,7 @@ JHtml::_('bootstrap.tooltip');
 <div class="container-module-cas">
     <div class="sous-container-module-cas">
 		<?php if ($mod_emundus_cas_tab2_display == 1): ?>
-            <ul>
+            <ul class="tw-p-0">
                 <li id="onglet-connexion" class="tw-cursor-pointer" onclick="Connexion()"><?= Text::_('MOD_EM_CAS_SUBMENU1') ?></li>
                 <li id="onglet-inscription" class="couleurFoncee tw-cursor-pointer"
                     onclick="Inscription()"><?= Text::_('MOD_EM_CAS_SUBMENU2') ?></li>
