@@ -3174,14 +3174,14 @@ class EmundusModelForm extends JModelList
 
 	private function addCondition($rule_id, $condition)
 	{
-
+		$operators = ['=', '!=', '<', '>', '<=', '>='];
 
 		try
 		{
 			$insert = [
 				'parent_id' => $rule_id,
 				'field'     => $condition->field,
-				'state'     => $condition->state,
+				'state'     => in_array($condition->state, $operators) ? $condition->state : '=',
 				'values'    => $condition->values,
 				'group'     => !empty($condition->group) ? $condition->group : null
 			];
