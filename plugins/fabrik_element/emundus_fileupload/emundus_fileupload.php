@@ -351,6 +351,11 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 					}
 				}
 			}
+			
+			if(empty($uploadResult)) {
+				// Check if attachment was previously uploaded and saved to database
+				$uploadResult = $this->getUploadsByAttachmentId($attachment_id, $fnum);
+			}
 
 			$attachmentResult = $this->getAttachment($attachment_id);
 			$nbMaxFile        = (int) $attachmentResult->nbmax;
@@ -536,7 +541,7 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 		if (!empty($aid) && !empty($fnum)) {
 			$query = $this->_db->getQuery(true);
 
-			$query->select(array($this->_db->quoteName('id'), $this->_db->quoteName('filename'), $this->_db->quoteName('local_filename'), $this->_db->quoteName('can_be_deleted'), $this->_db->quoteName('can_be_viewed')))
+			$query->select(array($this->_db->quoteName('id'), $this->_db->quoteName('filename'), $this->_db->quoteName('local_filename'), $this->_db->quoteName('can_be_deleted'), $this->_db->quoteName('can_be_viewed'), $this->_db->quoteName('description')))
 				->from($this->_db->quoteName('#__emundus_uploads'))
 				->where($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($aid) . ' AND ' . $this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 			$this->_db->setQuery($query);
