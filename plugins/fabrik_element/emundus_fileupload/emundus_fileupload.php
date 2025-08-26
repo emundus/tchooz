@@ -751,91 +751,106 @@ class PlgFabrik_ElementEmundus_fileupload extends PlgFabrik_Element
 	{
 		$value_to_store = [];
 
-		$input   = Factory::getApplication()->input;
-		$fnumElt = array_filter($input->getArray(), function ($key) {
-			return strpos($key, '___fnum_raw') !== false;
-		}, ARRAY_FILTER_USE_KEY);
-		$fnum    = reset($fnumElt);
+		$task = $this->app->input->get('task', '');
+		if($task === 'form.process' || $task == 'process')
+		{
+			$input   = Factory::getApplication()->input;
+			$fnumElt = array_filter($input->getArray(), function ($key) {
+				return strpos($key, '___fnum_raw') !== false;
+			}, ARRAY_FILTER_USE_KEY);
+			$fnum    = reset($fnumElt);
 
-		$params = $this->getParams();
+			$params = $this->getParams();
 
-		if (!empty($fnum)) {
-			if (!class_exists('EmundusModelFiles')) {
-				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-			}
-			$m_files   = new EmundusModelFiles();
-			$fnumInfos = $m_files->getFnumInfos($fnum);
+			if (!empty($fnum))
+			{
+				if (!class_exists('EmundusModelFiles'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+				}
+				$m_files   = new EmundusModelFiles();
+				$fnumInfos = $m_files->getFnumInfos($fnum);
 
-			if (is_string($val)) {
-				$val = explode(',', $val);
-			}
+				if (is_string($val))
+				{
+					$val = explode(',', $val);
+				}
 
-			if (!empty($val)) {
-				$cid = $this->getCampaignId($fnum);
+				if (!empty($val))
+				{
+					$cid = $this->getCampaignId($fnum);
 
-				$query = $this->_db->getQuery(true);
+					$query = $this->_db->getQuery(true);
 
-				$session      = $this->getFormSession($fnum, $this->getFormModel()->id);
-				$session_data = !empty($session->data) ? $session->data : [];
-				$files_data   = $session_data[str_replace('[]', '', $this->getFullName())];
+					$session      = $this->getFormSession($fnum, $this->getFormModel()->id);
+					$session_data = !empty($session->data) ? $session->data : [];
+					$files_data   = $session_data[str_replace('[]', '', $this->getFullName())];
 
-				foreach ($val as $file) {
-					if (!empty($files_data[$file])) {
+					foreach ($val as $file)
+					{
+						if (!empty($files_data[$file]))
+						{
 
-						if (!empty($files_data[$file]['filename'])) {
-							require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
-							$now  = EmundusHelperDate::getNow();
-							$user = Factory::getUser();
+							if (!empty($files_data[$file]['filename']))
+							{
+								require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
+								$now  = EmundusHelperDate::getNow();
+								$user = Factory::getUser();
 
-							$values = [
-								$this->_db->quote($now),
-								$this->_db->quote($user->id),
-								$this->_db->quote($fnum),
-								$this->_db->quote($cid),
-								$this->_db->quote($files_data[$file]['attachment_id']),
-								$this->_db->quote($files_data[$file]['filename']),
-								$this->_db->quote(1),
-								$this->_db->quote(1),
-								$this->_db->quote($now),
-								$this->_db->quote($files_data[$file]['local_filename']),
-								$this->_db->quote($files_data[$file]['file_size']),
-								$this->_db->quote($files_data[$file]['description'])
-							];
+								$values = [
+									$this->_db->quote($now),
+									$this->_db->quote($user->id),
+									$this->_db->quote($fnum),
+									$this->_db->quote($cid),
+									$this->_db->quote($files_data[$file]['attachment_id']),
+									$this->_db->quote($files_data[$file]['filename']),
+									$this->_db->quote(1),
+									$this->_db->quote(1),
+									$this->_db->quote($now),
+									$this->_db->quote($files_data[$file]['local_filename']),
+									$this->_db->quote($files_data[$file]['file_size']),
+									$this->_db->quote($files_data[$file]['description'])
+								];
 
-							$upload_id = $this->insertFile(implode(',', $values));
+								$upload_id = $this->insertFile(implode(',', $values));
 
-							if (!empty($upload_id)) {
-								$value_to_store[] = $upload_id;
+								if (!empty($upload_id))
+								{
+									$value_to_store[] = $upload_id;
 
-								unset($files_data[$file]);
+									unset($files_data[$file]);
 
-								$session_data[str_replace('[]', '', $this->getFullName())] = $files_data;
+									$session_data[str_replace('[]', '', $this->getFullName())] = $files_data;
 
-								$query->clear()
-									->update($this->_db->quoteName('#__fabrik_form_sessions'))
-									->set($this->_db->quoteName('data') . ' = ' . $this->_db->quote(json_encode($session_data)))
-									->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($session->id));
-								$this->_db->setQuery($query);
-								$this->_db->execute();
+									$query->clear()
+										->update($this->_db->quoteName('#__fabrik_form_sessions'))
+										->set($this->_db->quoteName('data') . ' = ' . $this->_db->quote(json_encode($session_data)))
+										->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($session->id));
+									$this->_db->setQuery($query);
+									$this->_db->execute();
+								}
 							}
 						}
-					}
-					else {
-						$query->clear()
-							->select($this->_db->quoteName('id'))
-							->from($this->_db->quoteName('#__emundus_uploads'))
-							->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($file))
-							->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $cid)
-							->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $params->get('attachmentId'))
-							->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-						$this->_db->setQuery($query);
-						$upload_id = $this->_db->loadResult();
-
-						if(!empty($upload_id)) {
-							$value_to_store[] = $upload_id;
-						} else
+						else
 						{
-							$value_to_store[] = $file;
+							$query->clear()
+								->select($this->_db->quoteName('id'))
+								->from($this->_db->quoteName('#__emundus_uploads'))
+								->where($this->_db->quoteName('filename') . ' LIKE ' . $this->_db->quote($file))
+								->andWhere($this->_db->quoteName('campaign_id') . ' = ' . $cid)
+								->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $params->get('attachmentId'))
+								->andWhere($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+							$this->_db->setQuery($query);
+							$upload_id = $this->_db->loadResult();
+
+							if (!empty($upload_id))
+							{
+								$value_to_store[] = $upload_id;
+							}
+							else
+							{
+								$value_to_store[] = $file;
+							}
 						}
 					}
 				}
