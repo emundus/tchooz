@@ -275,6 +275,11 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de désactivation du plugin Dropfiles - Editor', 'error');
 		}
 
+		if (!$this->checkHistoryMenu())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu Voir mon dossier', 'error');
+		}
+
 		EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;
@@ -1049,5 +1054,58 @@ class Com_EmundusInstallerScript
 			->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
 			->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('editors-xtd'));
 		return $this->db->setQuery($query)->execute();
+	}
+
+	private function checkHistoryMenu(): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->clear()
+			->select('id,params,published')
+			->from($this->db->quoteName('#__menu'))
+			->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=application&layout=history'))
+			->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('applicantmenu'));
+		$this->db->setQuery($query);
+		$history_menu = $this->db->loadObject();
+
+		if(!empty($history_menu) && !empty($history_menu->id))
+		{
+			$params = json_decode($history_menu->params, true);
+			$params['menu_show'] = 0;
+
+			$history_menu->params = json_encode($params);
+			$history_menu->published = 1;
+
+			return $this->db->updateObject('#__menu', $history_menu, 'id');
+		}
+		else {
+			$modules = [];
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__modules'))
+				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundusflow'));
+			$this->db->setQuery($query);
+			$emundusflow_module = $this->db->loadResult();
+			if(!empty($emundusflow_module))
+			{
+				$modules[] = $emundusflow_module;
+			}
+
+			$datas = [
+				'menutype'     => 'applicantmenu',
+				'title'        => 'Voir mon dossier',
+				'alias'        => 'applicant-history',
+				'path'         => 'applicant-history',
+				'link'         => 'index.php?option=com_emundus&view=application&layout=history',
+				'type'         => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params'       => [
+					'menu_show' => 0,
+					'tabs' => ['history','forms','attachments']
+				]
+			];
+
+			return EmundusHelperUpdate::addJoomlaMenu($datas,1,1,'last-child',$modules)['status'];
+		}
 	}
 }
