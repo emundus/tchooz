@@ -1761,7 +1761,7 @@ class EmundusModelCampaign extends ListModel
 					}
 					if ($key == 'profile_id' && empty($data['profile_id']))
 					{
-						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC);
+						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC, [1]);
 
 						if (!empty($forms))
 						{
