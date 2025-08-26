@@ -351,7 +351,7 @@ $uids       = array();
     function getTemplate(select) {
 
         if (select.value !== '%') {
-            fetch('index.php?option=com_emundus&controller=email&task=getemailbyid&id=' + select.value)
+            fetch('/index.php?option=com_emundus&controller=email&task=getemailbyid&id=' + select.value)
                 .then(response => response.json())
                 .then(function (data) {
                     if (data.status) {
