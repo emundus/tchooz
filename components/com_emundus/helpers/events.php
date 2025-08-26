@@ -939,7 +939,7 @@ class EmundusHelperEvents
 					}
 				}
 
-				if (empty($formModel->getRowId()))
+				if (empty($formModel->getRowId()) && ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked))))
 				{
 					// Check if we fill an other alias element
 					foreach ($elements as $elt)

@@ -431,7 +431,7 @@ class FabrikAdminModelElement extends FabModelAdmin
 		$listModel = $elementModel->getListModel();
 		$isView = (bool)$listModel->isView();
 
-		if ($data['id'] == '')
+		if (empty($data['id']))
 		{
 			// Have to forcefully set group id otherwise listmodel id is blank
 			$elementModel->getElement()->group_id = $data['group_id'];

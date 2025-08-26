@@ -147,7 +147,27 @@
       "sysadmin_only": false
     }
   ],
-  "dropdown": [],
+  "dropdown": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_ADVANCED_BEHAVIOR",
+      "name": "advanced_behavior",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "0",
+          "label": "JNO"
+        },
+        {
+          "value": "1",
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
+  ],
   "checkbox": [
     {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_CHECKBOX_OPTIONS_PER_ROW",
@@ -304,6 +324,25 @@
         {
           "value": "auto-complete",
           "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_DISPLAY_TYPE_AUTOCOMPLETE"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_DATABASEJOIN_ADVANCED_BEHAVIOR",
+      "name": "advanced_behavior",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": "0",
+          "label": "JNO"
+        },
+        {
+          "value": "1",
+          "label": "JYES"
         }
       ],
       "helptext": "",
