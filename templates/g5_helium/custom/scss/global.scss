@@ -8235,7 +8235,8 @@ tbody .el-table__row:nth-child(odd) {
   left: 50%;
   transform: translate(-50%, 0);
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 
   #system-message {
     .alert {
