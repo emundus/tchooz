@@ -9,7 +9,7 @@
 	<license>GNU, GPLv3</license>
 	<version>2.8.2</version>
 	<description><![CDATA[COM_TCHOOZ_COMPONENT_DESCRIPTION]]></description>
-	<namespace>Joomla\Component\Emundus</namespace>
+	<namespace path="src">Joomla\Component\Emundus</namespace>
 
 	<scriptfile>com_emundus.manifest.class.php</scriptfile>
 
