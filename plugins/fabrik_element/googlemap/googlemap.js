@@ -415,7 +415,7 @@ define(['jquery', 'fab/element', 'lib/debounce/jquery.ba-throttle-debounce', 'fa
                     if (this.options.radius_unit === 'm') {
                         distance = distance / 1.609344;
                     }
-                    $(this.options.radius_write_element).value = parseFloat(distance).toFixed(2);
+                    document.id(this.options.radius_write_element).value = parseFloat(distance).toFixed(2);
                     //$(this.options.radius_write_element).fireEvent('change', new Event.Mock($(this.options.radius_write_element), 'change'));
 
                 }
@@ -427,6 +427,12 @@ define(['jquery', 'fab/element', 'lib/debounce/jquery.ba-throttle-debounce', 'fa
                 // as it'll keep firing as they drag.  We don't want to fire 'change' until the changing is finished
                 if (this.options.radius_write_element) {
                     if (!this.distanceWidget.get('active')) {
+                        var distance = this.distanceWidget.get('distance');
+                        if (this.options.radius_unit === 'm') {
+                            distance = distance / 1.609344;
+                        }
+                    //$(this.options.radius_write_element).fireEvent('change', new Event.Mock($(this.options.radius_write_element), 'change'));
+                        document.id(this.options.radius_write_element).value = parseFloat(distance).toFixed(2);
                         document.id(this.options.radius_write_element).fireEvent('change', new Event.Mock(document.id(this.options.radius_write_element), 'change'));
                     }
                 }
@@ -435,9 +441,10 @@ define(['jquery', 'fab/element', 'lib/debounce/jquery.ba-throttle-debounce', 'fa
             radiusSetDistance: function () {
                 if (this.options.radius_read_element) {
                     var distance = document.id(this.options.radius_read_element).value;
+					if (isNaN(parseFloat(distance))) distance = this.options.radius_default;
                     if (this.options.radius_unit === 'm') {
                         distance = distance * 1.609344;
-                    }
+                    };
                     var pos = this.distanceWidget.get('sizer_position');
                     this.distanceWidget.set('distance', distance);
                     var center = this.distanceWidget.get('center');

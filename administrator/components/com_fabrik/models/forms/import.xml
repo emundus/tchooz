@@ -60,7 +60,7 @@
 		
 		<field name="tabdelimited" 
 			type="checkbox"
-			default="0"
+			default=""
 			description="COM_FABRIK_FIELD_CSV_IMPORT_TAB_DELIMITER_DESC"
 			label="COM_FABRIK_FIELD_CSV_IMPORT_TAB_DELIMITER_LABEL" />
 			

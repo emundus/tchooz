@@ -184,7 +184,18 @@ class FabrikAdminModelList extends FabModelAdmin
 		{
 			$data = $this->getItem();
 		}
-
+		//Set original table collation into params, warn if mismatch
+		if (!empty($data->db_table_name)) {
+			$db            = $this->getFEModel()->getDb();
+			$origCollation = $this->getOriginalCollation($data->params, $db, $data->db_table_name);
+			
+			if (array_key_exists('collation',$data->params) && $origCollation != $data->params['collation']) {
+				$message = Text::sprintf('COM_FABRIK_WARNING_COLLATION_MISMATCH', $origCollation ,$data->db_table_name ,$data->params['collation']);
+				Factory::getApplication()->enqueueMessage($message,'warning');
+			}
+			$data->params['collation']=$origCollation;
+		}
+		
 		return $data;
 	}
 
@@ -1019,15 +1030,20 @@ class FabrikAdminModelList extends FabModelAdmin
 
 		$params       = new Registry($row->get('params'));
 		$newCollation = $params->get('collation');
+		
+		if ($newCollation == 'none' || empty($newCollation)) {
+			return false;
+		}
 
-		if ($newCollation !== $origCollation)
-		{
+		if ($newCollation !== $origCollation) {
 			$db   = $feModel->getDb();
 			$item = $feModel->getTable();
 			$db->setQuery('ALTER TABLE ' . $item->db_table_name . ' COLLATE  ' . $newCollation);
 			$db->execute();
+			$message = Text::sprintf('COM_FABRIK_COLLATION_CHANGE_MSG', $origCollation ,$item->db_table_name ,$newCollation);
+			Factory::getApplication()->enqueueMessage($message,'notice');
 		}
-
+		
 		return true;
 	}
 

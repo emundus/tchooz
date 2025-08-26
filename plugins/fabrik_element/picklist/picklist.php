@@ -60,8 +60,8 @@ class PlgFabrik_ElementPicklist extends PlgFabrik_ElementList
 
 	public function render($data, $repeatCounter = 0)
 	{
-		$values   = $this->getSubOptionValues();
-		$labels   = $this->getSubOptionLabels();
+		$values   = $this->getSubOptionValues($data);
+		$labels   = $this->getSubOptionLabels($data);
 		$selected = (array) $this->getValue($data, $repeatCounter);
 		$i        = 0;
 		$to       = array();

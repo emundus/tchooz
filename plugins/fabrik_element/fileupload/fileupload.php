@@ -598,7 +598,25 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		// $$$ hugh - have to run through rendering even if data is empty, in case default image is being used.
 		if (FArrayHelper::emptyIsh($data))
 		{
-			$data[0] = $this->_renderListData('', $thisRow, 0);
+			if ($params->get('fu_show_image_in_table', '0') == '2')
+			{
+				$defaultImage = $params->get('default_image', '');
+				if (!empty($defaultImage))
+				{
+					$data = array($defaultImage);
+					$id = $this->getHTMLId($id_num) . '_' . $id_num;
+					$id_num++;
+					$rendered = $this->buildCarousel($id, $data, $thisRow, false);
+				}
+				else
+				{
+					$rendered = '';
+				}
+			}
+			else
+			{
+				$data[0] = $this->_renderListData('', $thisRow, 0);
+			}
 		}
 		else
 		{
@@ -1602,8 +1620,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 					{
 						if (!$storage->createFolder($cropPath))
 						{
-							$this->setError(21, "Could not make dir $cropPath ");
-							continue;
+							\Joomla\CMS\Factory::getApplication()->enqueueMessage("Could not make dir $cropPath ", 'error');
 						}
 					}
 				}
@@ -2212,7 +2229,7 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 
 		if (!Uploader::canUpload($file, $err, $params))
 		{
-			$this->setError($file['name'] . ': ' . Text::_($err));
+			\Joomla\CMS\Factory::getApplication()->enqueueMessage($file['name'] . ': ' . Text::_($err), 'error');
 		}
 
 		if ($storage->exists($filePath))
@@ -2567,8 +2584,22 @@ class PlgFabrik_ElementFileupload extends PlgFabrik_Element
 		 */
 		if ($params->get('fu_show_image') === '3' && !$this->isEditable())
 		{
+			// Handle empty values with default image fallback
+			if (FArrayHelper::emptyIsh($values))
+			{
+				$defaultImage = $params->get('default_image', '');
+				if (!empty($defaultImage))
+				{
+					$storage = $this->getStorage();
+					$defaultURL = $storage->getFileUrl(str_replace(COM_FABRIK_BASE, '', $defaultImage));
+					return '<div class="fabrikSubElementContainer"><img class="fabrikDefaultImage" src="' . $defaultURL . '" alt="default image" style="max-width: 100%; height: auto;" /></div>';
+				}
+				else
+				{
+					return '';
+				}
+			}
 			$rendered = $this->buildCarousel($id, $values, $data, true);
-
 			return $rendered;
 		}
 
