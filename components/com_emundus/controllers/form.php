@@ -311,7 +311,7 @@ class EmundusControllerForm extends BaseController
 
 			if ($result)
 			{
-				$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'forms/formbuilder?prid=' . $result);
+				$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $result);
 			}
 			else
 			{
