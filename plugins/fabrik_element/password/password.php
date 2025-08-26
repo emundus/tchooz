@@ -213,6 +213,8 @@ class PlgFabrik_ElementPassword extends PlgFabrik_Element
 		{
 			if (!$this->validateJRule('password', $value, JPATH_LIBRARIES . '/cms/form/rule'))
 			{
+				//Make sure to have something as error message
+				$this->validationError = Text::_('ERROR') . ': ' . $this->validationError;
 				return false;
 			}
 		}

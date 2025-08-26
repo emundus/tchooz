@@ -6618,23 +6618,23 @@ a.tw-cursor-pointer:nth-child(2):hover .material-symbols-outlined[data-v-8ab8b30
 .add-button-div:hover span[class*=material][data-v-4ff80b68] {
   color: var(--em-profile-color);
 }
-.status-field[data-v-814c3d63] {
+.status-field[data-v-c14d1c5c] {
 	border-radius: 5px;
 	width: 100%;
 	margin-right: 1em;
 	display: flex;
 }
-.status-item[data-v-814c3d63] {
+.status-item[data-v-c14d1c5c] {
 	display: flex;
 	align-items: center;
 	justify-content: center;
 	max-width: 95%;
 	width: 100%;
 }
-.add-button-div span[class*='material'][data-v-814c3d63] {
+.add-button-div span[class*='material'][data-v-c14d1c5c] {
 	color: var(--neutral-0);
 }
-.add-button-div:hover span[class*='material'][data-v-814c3d63] {
+.add-button-div:hover span[class*='material'][data-v-c14d1c5c] {
 	color: var(--em-profile-color);
 }
 

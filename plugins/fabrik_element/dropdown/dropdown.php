@@ -59,8 +59,8 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$name = $this->getHTMLName($repeatCounter);
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		$values = $this->getSubOptionValues();
-		$labels = $this->getSubOptionLabels();
+		$values = $this->getSubOptionValues($data);
+		$labels = $this->getSubOptionLabels($data);
 		$endIs = $this->getSubOptionEnDis();
 		$multiple = $params->get('multiple', 0);
 		$multiSize = $params->get('dropdown_multisize', 3);
@@ -192,8 +192,8 @@ class PlgFabrik_ElementDropdown extends PlgFabrik_ElementList
 		$id = $this->getHTMLId($repeatCounter);
 		$data = $this->getFormModel()->data;
 		$arSelected = $this->getValue($data, $repeatCounter);
-		$values = $this->getSubOptionValues();
-		$labels = $this->getSubOptionLabels();
+		$values = $this->getSubOptionValues($data);
+		$labels = $this->getSubOptionLabels($data);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->allowadd = $params->get('allow_frontend_addtodropdown', false) ? true : false;
 		$opts->value = $arSelected;

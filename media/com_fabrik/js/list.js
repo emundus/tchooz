@@ -1557,7 +1557,8 @@ define(['jquery', 'fab/fabrik', 'fab/list-toggle', 'fab/list-grouped-toggler', '
                                 'loadMethod': loadMethod,
                                 'contentURL': url,
                                 'width'     : self.options.popup_width,
-                                'height'    : self.options.popup_height
+                                'height'    : self.options.popup_height,
+								'modalId'	: 'ajax_links'
                             };
                             if (self.options.popup_offset_x !== null) {
                                 winOpts.offset_x = self.options.popup_offset_x;

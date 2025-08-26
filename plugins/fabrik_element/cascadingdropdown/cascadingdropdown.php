@@ -562,7 +562,8 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 		if ($filterView == 'table')
 		{
-			array_unshift($this->optionVals[$sqlKey], HTMLHelper::_('select.option', $params->get('cascadingdropdown_noselectionvalue', 0), $this->filterSelectLabel()));
+			// Set "noselectionvalue" (= All option) in filter always to ''
+			array_unshift($this->optionVals[$sqlKey], HTMLHelper::_('select.option', '', $this->filterSelectLabel()));
 		}
 		else
 		{
@@ -1053,6 +1054,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 	/**
 	 * If used as a filter add in some JS code to watch observed filter element's changes
 	 * when it changes update the contents of this elements dd filter's options
+	 * Set "noselectionvalue" (= All option) in filter always to ''
 	 *
 	 * @param   bool    $normal     is the filter a normal (true) or advanced filter
 	 * @param   string  $container  container
@@ -1075,7 +1077,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 
 			if ($default === '')
 			{
-				$default = $params->get('cascadingdropdown_noselectionvalue', 0);
+				//$default = $params->get('cascadingdropdown_noselectionvalue', 0);
 			}
 
 			$filterId = $this->getHTMLId() . 'value';
@@ -1086,7 +1088,7 @@ class PlgFabrik_ElementCascadingdropdown extends PlgFabrik_ElementDatabasejoin
 			$opts->elid = $this->getId();
 			$opts->def = $default;
 			$opts->advanced = $this->getAdvancedSelectClass();
-			$opts->noselectionvalue = $params->get('cascadingdropdown_noselectionvalue', 0);
+			$opts->noselectionvalue = '';
 			$opts->filterobj = 'Fabrik.filter_' . $container;
 			$opts->lang           = FabrikWorker::getMultiLangURLCode();
 			$opts = json_encode($opts);
