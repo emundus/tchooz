@@ -491,6 +491,10 @@ class EmundusModelFiles extends JModelLegacy
 			$can_be_ordering[] = 'commentaire';
 		}
 
+		if($filter_order === 'fnum') {
+			$filter_order = 'name';
+		}
+
 		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
 			if (in_array($filter_order, $campaign_candidature_columns)) {
 				$filter_order = 'jecc.' . $filter_order;
