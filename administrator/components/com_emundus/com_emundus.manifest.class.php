@@ -951,6 +951,19 @@ class Com_EmundusInstallerScript
 			{
 				$m_users->addEmundusUser($automated_user_id, $other_param);
 			}
+
+			// Update password
+			$query->clear()
+				->select('id,password')
+				->from('#__users')
+				->where('id = ' . $automated_user_id);
+			$this->db->setQuery($query);
+			$user = $this->db->loadObject();
+
+			$user->password       = $h_users->generateStrongPassword(30);
+			$user->password = UserHelper::hashPassword($user->password);
+
+			$this->db->updateObject('#__users', $user, 'id');
 		}
 
 		// We update it in case of change
