@@ -137,10 +137,11 @@ class FabrikFEModelCSVExport extends FabModel
 		else {
 			$end_of_line = "\n";
 		}
+		
+		//get headings for all steps to check the keys, write it on start=0 only
+		$headings = $this->getHeadings();
 		if ($start === 0)
 		{
-			$headings = $this->getHeadings();
-
 			if (empty($headings))
 			{
 				$url = $input->server->get('HTTP_REFERER', '');
@@ -150,8 +151,7 @@ class FabrikFEModelCSVExport extends FabModel
 				return;
 			}
 
-			//Add heading string only after heading elements have been unset
-			//$str .= implode($this->delimiter, $headings) . $end_of_line;
+			$str .= implode($this->delimiter, $headings) . $end_of_line;
 		}
 
 		$incRaw       = $input->get('incraw', true);
@@ -160,9 +160,6 @@ class FabrikFEModelCSVExport extends FabModel
 		$exportFormat = $this->model->getParams()->get('csvfullname');
 		$shortKey     = FabrikString::shortColName($table->db_primary_key);
 		$a            = array();
-		$data_string  = '';
-		$headings_flip = array_flip($headings??[]);
-		$doubleQuote  = $this->model->getParams()->get('csv_double_quote', '1') === '1';
 
 		foreach ($data as $group)
 		{
@@ -170,77 +167,19 @@ class FabrikFEModelCSVExport extends FabModel
 			{
 				$a = ArrayHelper::fromObject($row);
 
-				if ($exportFormat == 1)
-				{
-					unset($a[$shortKey]);
-				}
-
-				if (!$incRaw)
-				{
-					foreach ($a as $key => $val)
-					{
-						if (substr($key, StringHelper::strlen($key) - 4, StringHelper::strlen($key)) == '_raw')
-						{
-							unset($a[$key]);
+				// Remove all row data which doesn't have a matching key in headings
+				foreach ($a as $aKey => $aValue) {
+					if (!array_key_exists($aKey, $headings)) {
+							unset($a[$aKey]);
 						}
-					}
-				}
-
-				if (!$incData)
-				{
-					foreach ($a as $key => $val)
-					{
-						if (substr($key, StringHelper::strlen($key) - 4, StringHelper::strlen($key)) != '_raw')
-						{
-							unset($a[$key]);
-						}
-					}
 				}
 				
+				//Prepend an empty column for calculation layout
 				if ($input->get('inccalcs') == 1)
 				{
-					array_unshift($a, ' ');
+					array_unshift($a, ' ');	 
 				}
-
-				// Remove Un-needed repeat join element values.
-				/* Also remove the corresondending headers, which are not keyed :( 
-				 * _id and ___params are always full-element-name_id resp. ___params without _raw, 
-				 * depending on the header type they may or may not be there
-				 */
-				if ($incData || $incRaw) {
-					
-					foreach ($a as $key => $val) {
-						
-						$ix_name = str_replace('_raw', '', $key) . '___params';
-
-						if (array_key_exists($ix_name, $a)) {
-							unset($a[$ix_name]);
-						}
-						
-						//Unset header if there is one, headers may be quoted
-						$qix_name = $doubleQuote ? '"' . $ix_name . '"' : $ix_name;
-						if (array_key_exists($qix_name,$headings_flip)) {
-							unset($headings[$headings_flip[$qix_name]]);
-							$headings = array_values($headings);
-							$headings_flip = array_flip($headings);
-						}
-
-						$ix_name = str_replace('_raw', '', $key) . '_id';
-
-						if (array_key_exists($ix_name, $a)) {			
-							unset($a[$ix_name]);
-						}
-						
-						//Unset header if there is one, headers may be quoted
-						$qix_name = $doubleQuote ? '"' . $ix_name . '"' : $ix_name;
-						if (array_key_exists($qix_name,$headings_flip)) {								
-							unset($headings[$headings_flip[$qix_name]]);
-							$headings = array_values($headings);
-							$headings_flip = array_flip($headings);
-						}
-					}
-				}
-
+			
 				$this->carriageReturnFix($a);
 
 				if ($params->get('csv_format_json', '1') === '1')
@@ -259,17 +198,11 @@ class FabrikFEModelCSVExport extends FabModel
 					$a = $this->model->csvExportRow;
 				}
 
-				$data_str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
-				$data_str .= $end_of_line;
+				$str .= implode($this->delimiter, array_map(array($this, 'quote'), array_values($a)));
+				$str .= $end_of_line;
 			}
 		}
 
-		//Add headings string
-		if ($start === 0) {
-			$str .= implode($this->delimiter, $headings) . $end_of_line;
-		}
-		
-		$str             .= $data_str;
 		$res              = new stdClass;
 		$res->total       = $total;
 		$res->count       = $start + $this->getStep();
@@ -647,7 +580,7 @@ class FabrikFEModelCSVExport extends FabModel
 	}
 
 	/**
-	 * Get the headings for the csv file
+	 * Get the keyed headings for the csv file
 	 *
 	 * @return  array    heading labels
 	 */
@@ -693,7 +626,7 @@ class FabrikFEModelCSVExport extends FabModel
 				{
 					$element  = $elementModel->getElement();
 					$fullName = $elementModel->getFullName(true, false);
-
+					
 					if ($fullName == $heading || $fullName . '_raw' == $heading)
 					{
 						$found = true;
@@ -728,11 +661,11 @@ class FabrikFEModelCSVExport extends FabModel
 							if (!in_array($n, $h))
 							{
 								// Only add heading once
-								$h[] = $n;
+								$h[$heading] = $n;
 							}
 							else
 							{
-								$h[] = $this->uniqueHeading($n, $h);
+								$h[$heading] = $this->uniqueHeading($n, $h);
 							}
 						}
 
@@ -741,17 +674,26 @@ class FabrikFEModelCSVExport extends FabModel
 							if (!in_array($n, $h))
 							{
 								// Only add heading once
-								$h[] = $n;
+								$h[$heading] = $n;
 							}
 							else
 							{
-								$h[] = $this->uniqueHeading($n, $h);
+								$h[$heading] = $this->uniqueHeading($n, $h);
 							}
 						}
+					}
+					/* $$$trob: $fullName +_id  and $fullName +___params are coming from repeat elements like fileupload-ajax or dbjoin-multi, so belonging to an element and "found".
+					They were added to the headings in "not found" below and then removed in writeFile(), mixing up the structure of headings and data depending on settings of "Heading format" and "Include Data" and "Indlcude Raw".
+					Now that the headings are keyed don't include them (although fileupload-ajax-params contain the crop data)
+					*/
+					if ($fullName . '_id' == $heading || $fullName . '___params' == $heading) {
+						$found = true;
 					}
 				}
 			}
 
+			/* $$$trob: No idea what could be "not found" (beside fullname_id or fullname___params now handled above) and what this logic is about, so keep this (very old) code
+			*/		
 			if (!$found)
 			{
 				if (!(StringHelper::substr($heading, StringHelper::strlen($heading) - 4, StringHelper::strlen($heading)) == '_raw' && !$incRaw))
@@ -759,12 +701,13 @@ class FabrikFEModelCSVExport extends FabModel
 					// Stop id getting added to tables when exported with full element name key
 					if ($headingFormat != 1 && $heading != $shortKey)
 					{
-						$h[] = $heading;
+						$h[$heading] = $heading;
 					}
 				}
 			}
 		}
 
+		//Prepend a heading column for calculations
 		if ($input->get('inccalcs') == 1)
 		{
 			array_unshift($h, Text::_('Calculation'));

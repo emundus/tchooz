@@ -11211,6 +11211,7 @@ class FabrikFEModelList extends FormModel
 
 		if (!$this->app->isClient('administrator') && !$this->app->isCli())
 		{
+			// Load the menu item / component parameters.
 			$params = $this->app->getParams();
 			$this->setState('params', $params);
 

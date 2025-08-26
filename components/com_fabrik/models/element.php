@@ -1636,6 +1636,7 @@ class PlgFabrik_Element extends FabrikPlugin
 					$values = (array) $values;
 				}
 
+				$values = array_values($values);
 				$values = FArrayHelper::getValue($values, $repeatCounter, '');
 			}
 
@@ -2149,7 +2150,7 @@ class PlgFabrik_Element extends FabrikPlugin
 	 * Copy an element table row
 	 *
 	 * @param   int    $id       Element id to copy
-	 * @param   string $copyText Feedback msg
+	 * @param   string $copyText Feedback msg; called from group model it's the element label
 	 * @param   int    $groupId  Group model id
 	 * @param   string $name     New element name
 	 *
@@ -2162,7 +2163,8 @@ class PlgFabrik_Element extends FabrikPlugin
 
 		$rule->load((int) $id);
 		$rule->id    = null;
-		$rule->label = sprintf($copyText, $rule->label);
+
+		if ($copyText != $rule->label) $rule->label = sprintf($copyText, $rule->label);
 
 		if (!is_null($groupId))
 		{
@@ -8137,12 +8139,12 @@ class PlgFabrik_Element extends FabrikPlugin
 
 			foreach ($this->app->getMessageQueue() as $i => $msg)
 			{
-				if ($msg['type'] === 'warning')
+				if ($msg['type'] === 'error')
 				{
 					$this->validationError .= $msg['message'] . '<br />';
 				}
 			}
-			\FabrikWorker::killMessage($this->app, 'warning');
+			\FabrikWorker::killMessage($this->app, 'error');
 
 			return false;
 		}

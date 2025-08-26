@@ -325,43 +325,25 @@ class FabrikFEModelPluginmanager extends FabModel
 		$result = PluginHelper::importPlugin('fabrik_' . $group, $className);
 		$dispatcher = Factory::getApplication()->getDispatcher();
 
-		if ($className != '') 
-		{
-			$file = JPATH_PLUGINS . '/fabrik_' . $group . '/' . $className . '/' . $className . '.php';
-
-			if (File::exists($file))
-			{
-				require_once $file;
-			}
-			else
-			{
-				$file = JPATH_PLUGINS . '/fabrik_' . $group . '/' . $className . '/models/' . $className . '.php';
-
-				if (File::exists($file))
-				{
-					require_once $file;
-				}
-				else
-				{
-					throw new RuntimeException('plugin manager: did not load ' . $file);
-				}
-			}
-		}
 		$class = 'plgFabrik_' . (!empty($group) ? StringHelper::ucfirst($group) : '') . (!empty($className) ? StringHelper::ucfirst($className) : '');
 		if (class_exists($class)) {
 			$plugin = new $class($dispatcher, [
 				'name' => !empty($className) ? StringHelper::strtolower($className) : '',
 				'type' => StringHelper::strtolower('fabrik_' . $group),
 			]);
-			$plugin->setStructure(PluginStructure::J4);
+			$plugin->setStructure(PluginStructure::J3);
 		} else {
 			// Allow for J4 namespaced plugins
 			$class = "Fabrik\Plugin\Fabrik_" . $group . "\\" . ucfirst($className) . "\\Extension\\" . ucfirst($className);
+			if (class_exists($class)) {
 				$plugin = new $class($dispatcher, [
 					'name' => !empty($className) ? StringHelper::strtolower($className) : '',
 					'type' => StringHelper::strtolower('fabrik_' . $group)
 				]);
-			$plugin->setStructure(PluginStructure::J3);
+				$plugin->setStructure(PluginStructure::J4);
+			} else {
+				throw new RuntimeException('plugin manager: did not load ' . $className);
+			}
 		}
 		// Needed for viz
 		$client = ApplicationHelper::getClientInfo(0);

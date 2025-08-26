@@ -20,6 +20,42 @@ for ($i = 1; $i <= 12; $i++) {
 $start = $divClass === '' ? '' : '<div class="' . $divClass . '">';
 $end = $divClass === '' ? '' : '</div>';
 echo $start;
+if ($d->scanQR) :
+    $d->attributes['class'] .= ' qrcode-text';
+	?>
+    <style>
+        .qrcode-text-btn {
+            display: inline-block;
+            height: 1em;
+            width: 1em;
+            background: url(<?php echo COM_FABRIK_LIVESITE; ?>media/com_fabrik/images/qr_icon.svg) 50% 50% no-repeat;
+            cursor: pointer!important;
+        }
+
+        .qrcode-text-btn > input[type=file] {
+            position: absolute;
+            overflow: hidden;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+        }
+
+        .qrcode-text {
+            padding-right: 1.7em;
+            margin-right: 0;
+            vertical-align: middle;
+			float:left;
+        }
+
+        .qrcode-text + .qrcode-text-btn {
+            width: 1.7em;
+            margin-left: -1.7em;
+            vertical-align: middle;
+        }
+    </style>
+<?php
+endif;
+
 ?>
 
 <input
@@ -27,4 +63,17 @@ echo $start;
     echo $key . '="' . $value . '" ';
 endforeach;
     ?> />
-<?php echo $end;?>
+<?php 
+
+if ($d->scanQR) :
+?><label class=qrcode-text-btn>
+		<input type=file
+		       accept="image/*"
+		       capture=environment
+		       tabindex=-1
+		       id="<?php echo $d->attributes['id'] . '_qr_upload'; ?>"
+		>
+	</label>
+<?php
+	endif;
+echo $end;?>

@@ -790,7 +790,7 @@ class PlgFabrik_ListEmail extends PlgFabrik_List
 			$params = $this->getParams();
 			$php = $params->get('emailtable_to_eval');
 			FabrikWorker::clearEval();
-			$to = Php::Eval(['code' => $php]);
+			$to = Php::Eval(['code' => $php,'vars'=>['row'=>$row]]);
 			FabrikWorker::logEval($to, 'Eval exception : listEmail::_evalTo() : %s');
 		}
 

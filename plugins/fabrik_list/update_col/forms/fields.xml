@@ -189,7 +189,7 @@
 
 			<field name="update_email_to_eval"
 				   type="checkbox"
-				   default="0"
+				   default=""
 				   description="PLG_LIST_UPDATE_COL_UPDATE_EMAIL_TO_EVAL_DESC"
 				   label="PLG_LIST_UPDATE_COL_UPDATE_EMAIL_TO_EVAL_LABEL"
 				   repeat="true"/>
@@ -210,7 +210,7 @@
 				
 			<field name="eval"
 			 	type="checkbox"
-				default="0"
+				default=""
 				description="PLG_LIST_UPDATE_COL_EVAL_DESC"
 				label="COM_FABRIK_EVAL"
 				repeat="true"/>
