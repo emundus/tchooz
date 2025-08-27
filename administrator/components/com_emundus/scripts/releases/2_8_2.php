@@ -54,6 +54,8 @@ class Release2_8_2Installer extends ReleaseInstaller
 				$tasks[] = $this->db->updateObject('#__fabrik_forms', $setup_letters_form, 'id');
 			}
 
+			$tasks[] = EmundusHelperUpdate::installExtension('plg_emundus_system', 'emundus', null, 'plugin', 1, 'system');
+
 			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
