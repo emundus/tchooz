@@ -636,7 +636,7 @@ if ($allowed_attachments !== true) {
         $('#em-select_attachment_type option:selected').removeAttr('selected');
 
         if (select.value !== '%') {
-            fetch('index.php?option=com_emundus&controller=email&task=getemailbyid&id=' + select.value)
+            fetch('/index.php?option=com_emundus&controller=email&task=getemailbyid&id=' + select.value)
                 .then(response => response.json())
                 .then(data => {
                     if (data.status) {

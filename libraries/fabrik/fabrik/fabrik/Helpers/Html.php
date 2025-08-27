@@ -1419,7 +1419,7 @@ EOD;
 	 * @param   array    $paths      Additional layout paths
 	 * @param   array    $options    Options
 	 */
-	public static function jLayoutJs($name, $layoutName, object $data = null, $paths = array(), $options = array())
+	public static function jLayoutJs($name, $layoutName, $data = null, $paths = array(), $options = array())
 	{
 		if (!array_key_exists($name, self::$jLayoutsJs))
 		{

@@ -615,16 +615,17 @@ requirejs(['fab/fabrik'], function () {
 
   function removeOption(field, params) {
     params = JSON.parse(params);
+
     const options = field.element.options;
     const values = params.map((param) => {
       return param.primary_key.toString();
     });
 
-    [...options].map((option, i) => {
-      if (values.includes(option.value)) {
+    for (let i = options.length - 1; i >= 0; i--) {
+      if (values.includes(options[i].value)) {
         field.element.remove(i);
       }
-    });
+    }
   }
 
   function sortSelect(selElem) {

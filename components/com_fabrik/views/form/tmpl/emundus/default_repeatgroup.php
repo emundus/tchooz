@@ -39,7 +39,7 @@ foreach ($group->subgroups as $key => $subgroup) :
     $index = !empty($subgroup['id']->value) ? $subgroup['id']->value : $key;
 	?>
     <span class="fabrik-anchor" id="<?php echo 'fabrikSubGroup_'.$index; ?>"></span>
-	<div class="fabrikSubGroup <?php if (!$can_edit) : ?> hidden<?php endif; ?>">
+    <div class="fabrikSubGroup <?php if (!$can_see) : ?> hidden<?php endif; ?>">
         <?php if(!empty($group->repeatIntro)) : ?>
             <div data-role="group-repeat-intro">
                 <?php echo $w->parseMessageForPlaceHolder($group->repeatIntro, $introData);?>

@@ -134,6 +134,10 @@ final class EmundusProxyRedirect extends CMSPlugin
 				if (!empty($fullname) && !empty($lastname) && empty($firstname)) {
 					$firstname = trim(str_replace($lastname, '', $fullname));
 				}
+				elseif(empty($fullname) && !empty($firstname) && !empty($lastname))
+				{
+					$fullname = $lastname . ' ' . $firstname;
+				}
 
 				$groups_map = $this->getGroupMapping($groups);
 				//TODO: Map more attributes to define custom fields
@@ -183,6 +187,27 @@ final class EmundusProxyRedirect extends CMSPlugin
 					//$user->groups        = $groups_map['j_groups'];
 
 					if ($user->save()) {
+						// Update emundus user if we have firstname or lastname
+						if(!empty($lastname) || !empty($firstname))
+						{
+							$query->clear()
+								->update($this->db->quoteName('#__emundus_users'))
+								->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user->id));
+							if(!empty($lastname)) {
+								$query->set($this->db->quoteName('lastname') . ' = ' . $this->db->quote($lastname));
+							}
+							if(!empty($firstname)) {
+								$query->set($this->db->quoteName('firstname') . ' = ' . $this->db->quote($firstname));
+							}
+							$this->db->setQuery($query);
+							try {
+								$this->db->execute();
+							}
+							catch (Exception $e) {
+								Log::add('Failed to update emundus user with firstname or lastname ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+							}
+						}
+
 						$m_users->login($user->id);
 
 						$this->app->redirect('index.php');

@@ -58,6 +58,8 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 		return json_encode($data);
 	}
 
+
+
 	/**
 	 * Will the element allow for multiple selections
 	 *
@@ -106,13 +108,22 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	{
 		$params  = $this->getParams();
 		$element = $this->getElement();
+		$value   = FArrayHelper::getValue($data, $element->name, '');
 
-		$value = FArrayHelper::getValue($data, $element->name, '');
-
-		if ($value === '')
+		if ($value === '' || (is_array($value) && empty($value)))
 		{
-			$data[$element->name]          = $params->get('sub_default_value');
-			$data[$element->name . '_raw'] = array($params->get('sub_default_value'));
+			$defaultValue = $params->get('sub_default_value', '');
+			
+			if ($defaultValue !== '')
+			{
+				$data[$element->name] = json_encode(array($defaultValue));
+				$data[$element->name . '_raw'] = array($defaultValue);
+			}
+			else
+			{
+				$data[$element->name]          = '';
+				$data[$element->name . '_raw'] = array();
+			}
 		}
 	}
 
@@ -162,6 +173,21 @@ class PlgFabrik_ElementCheckbox extends PlgFabrik_ElementList
 	 */
 	public function storeDatabaseFormat($val, $data)
 	{
+		// Handle empty values - apply default if configured
+		if (empty($val) || $val === '' || $val === null || 
+			(is_array($val) && (empty($val) || (count($val) === 1 && $val[0] === ''))))
+		{
+			$params = $this->getParams();
+			$defaultValue = $params->get('sub_default_value', '');
+			
+			if ($defaultValue !== '')
+			{
+				return json_encode(array($defaultValue));
+			}
+			
+			return json_encode(array());
+		}
+
 		if (is_array($val))
 		{
 			// Ensure that array is incremental numeric key -otherwise json_encode turns it into an object

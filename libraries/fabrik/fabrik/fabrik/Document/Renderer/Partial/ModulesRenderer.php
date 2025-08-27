@@ -12,6 +12,7 @@ namespace Fabrik\Document\Renderer\Partial;
 
 defined('JPATH_PLATFORM') or die;
 
+use Joomla\CMS\Event\Module;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Document\DocumentRenderer;
 use Joomla\CMS\Helper\ModuleHelper;
@@ -58,8 +59,12 @@ class ModulesRenderer extends DocumentRenderer
 			$buffer .= $moduleHtml;
 		}
 
-		Factory::getApplication()->getDispatcher()->dispatch('onAfterRenderModules', array(&$buffer, &$params));
+        $event = new Module\AfterRenderModulesEvent('onAfterRenderModules', [
+            'content'    => $buffer, 
+            'attributes' => $params,
+        ]);
+        $app->getDispatcher()->dispatch('onAfterRenderModules', $event);
 
-		return $buffer;
+        return $event->getArgument('content', $content);
 	}
 }

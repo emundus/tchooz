@@ -66,7 +66,7 @@ export default {
 		areMandatoryFieldsFilled() {
 			let filled = true;
 
-			let mandatoryFields = ['description', 'amount', 'type'];
+			let mandatoryFields = ['amount', 'type'];
 
 			mandatoryFields.forEach((field) => {
 				if (this.alteration[field] === '' || this.alteration[field] === 0) {

@@ -19,7 +19,7 @@
 			<iframe
 				v-if="ccid > 0 && selectedEvaluation && selectedEvaluation.form_id"
 				v-show="!loading"
-				:src="selectedEvaluation.url"
+				:src="'/' + currentLang + selectedEvaluation.url"
 				class="iframe-evaluation-list tw-w-full tw-grow tw-bg-coordinator-bg tw-p-6"
 				:key="selectedTab"
 				@load="iframeLoaded($event)"
@@ -41,6 +41,7 @@
 <script>
 import evaluationService from '@/services/evaluation.js';
 import fileService from '@/services/file.js';
+import { useGlobalStore } from '@/stores/global.js';
 
 export default {
 	name: 'Evaluations',
@@ -65,6 +66,7 @@ export default {
 			ccid: 0,
 
 			loading: false,
+			currentLang: useGlobalStore().getShortLang,
 		};
 	},
 	mounted() {

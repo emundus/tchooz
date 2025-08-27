@@ -107,6 +107,7 @@ Text::script('COM_EMUNDUS_FORM_DELETE_MODEL_FAILURE');
 
 Text::script('COM_EMUNDUS_ONBOARD_NO_PAGE_MODELS');
 Text::script('COM_EMUNDUS_PAGINATION_DISPLAY');
+Text::script('COM_EMUNDUS_ONBOARD_FORMS_FILTER_PUBLISH');
 
 $app = Factory::getApplication();
 $lang         = $app->getLanguage();

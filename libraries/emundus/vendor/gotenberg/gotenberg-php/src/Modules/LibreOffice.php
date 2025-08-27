@@ -66,6 +66,17 @@ class LibreOffice
     }
 
     /**
+     * Specifies whether to update the indexes before conversion, keeping in
+     * mind that doing so might result in missing links in the final PDF.
+     */
+    public function updateIndexes(bool $update = true): self
+    {
+        $this->formValue('updateIndexes', $update ?: '0');
+
+        return $this;
+    }
+
+    /**
      * Specifies whether form fields are exported as widgets or only their fixed
      * print representation is exported.
      */

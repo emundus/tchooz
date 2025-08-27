@@ -491,6 +491,10 @@ class EmundusModelFiles extends JModelLegacy
 			$can_be_ordering[] = 'commentaire';
 		}
 
+		if($filter_order === 'fnum') {
+			$filter_order = 'name';
+		}
+
 		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
 			if (in_array($filter_order, $campaign_candidature_columns)) {
 				$filter_order = 'jecc.' . $filter_order;
@@ -3549,7 +3553,7 @@ class EmundusModelFiles extends JModelLegacy
 			$query->select('fu.*')
 				->from($this->_db->quoteName('#__emundus_uploads', 'fu'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('fu.attachment_id'))
-				->where($this->_db->quoteName('fu.fnum') . ' IN (' . implode(',', $fnums) . ')');
+				->where($this->_db->quoteName('fu.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
 
 			if (!empty($attachment_ids)) {
 				$query->andWhere($this->_db->quoteName('fu.attachment_id') . ' IN (' . implode(',', $attachment_ids) . ')');
@@ -4946,7 +4950,8 @@ class EmundusModelFiles extends JModelLegacy
 				->from($this->_db->quoteName('#__emundus_campaign_candidature','ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_chatroom','ec').' ON '.$this->_db->quoteName('ec.fnum').' = '.$this->_db->quoteName('ecc.fnum'))
 				->leftJoin($this->_db->quoteName('#__messages','m').' ON '.$this->_db->quoteName('m.page').' = '.$this->_db->quoteName('ec.id'))
-				->where($this->_db->quoteName('m.user_id_from').' = '.$this->_db->quoteName('ecc.applicant_id'))
+				->where($this->_db->quoteName('ec.status') . ' <> 0')
+				->andWhere($this->_db->quoteName('m.user_id_from').' = '.$this->_db->quoteName('ecc.applicant_id'))
 				->andWhere($this->_db->quoteName('m.date_time') . ' > COALESCE((SELECT MAX(date_time) FROM jos_messages WHERE page = ec.id AND user_id_from <> ecc.applicant_id),"1970-01-01 00:00:00")')
 				->andWhere($this->_db->quoteName('m.date_time') . ' <= NOW()')
 				->group('ecc.fnum');

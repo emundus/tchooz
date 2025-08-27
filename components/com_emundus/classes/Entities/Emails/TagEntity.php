@@ -43,9 +43,12 @@ class TagEntity
 			unset($parts[0]);
 
 			foreach ($parts as $part) {
-				$modifier = TagModifierRegistry::get($part);
-				if (!empty($modifier) && !in_array($modifier, $modifiers, true)) {
-					$modifiers[] = $modifier;
+				$modifierWithParams = $this->parseModifierWithParams($part);
+				if (!empty($modifierWithParams['modifier'])) {
+					$modifiers[] = [
+						'modifier' => $modifierWithParams['modifier'],
+						'params' => $modifierWithParams['params']
+					];
 				}
 			}
 		}
@@ -56,6 +59,29 @@ class TagEntity
 		$this->type = $type;
 	}
 
+	private function parseModifierWithParams(string $part): array
+	{
+		$modifierName = $part;
+		$params = [];
+
+		if (str_contains($part, '(') && str_contains($part, ')')) {
+			$modifierName = substr($part, 0, strpos($part, '('));
+
+			$paramsStr = substr($part, strpos($part, '(') + 1, -1);
+
+			preg_match_all('/"([^"]*)"/', $paramsStr, $matches);
+			$params = $matches[1];
+		}
+
+		$modifier = TagModifierRegistry::get($modifierName);
+		if ($modifier) {
+			$modifier->setParams($params);
+		}
+
+		return ['modifier' => $modifier, 'params' => $params];
+	}
+
+
 	public function getName(): string|int
 	{
 		return $this->name;
@@ -63,13 +89,17 @@ class TagEntity
 
 	public function getFullName(): string
 	{
-		if(!empty($this->modifiers)) {
-			$modifiers = array_map(fn($modifier) => $modifier->getName(), $this->modifiers);
+		if (!empty($this->modifiers)) {
+			$modifiers = array_map(
+				fn($m) => $m['modifier']->getName() .
+					(!empty($m['params']) ?
+						'("' . implode('","', $m['params']) . '")' : ''),
+				$this->modifiers
+			);
 			$modifiers = ':' . implode(':', $modifiers);
 		} else {
 			$modifiers = '';
 		}
-
 		return $this->name . $modifiers;
 	}
 
@@ -84,14 +114,16 @@ class TagEntity
 
 	public function getFullPatternName(): string
 	{
-		if(!empty($this->modifiers)) {
-			$modifiers = array_map(fn($modifier) => $modifier->getName(), $this->modifiers);
+		if (!empty($this->modifiers)) {
+			$modifiers = array_map(
+				fn($m) => $m['modifier']->getName() . (!empty($m['params']) ? '\([^)]*\)' : ''),
+				$this->modifiers
+			);
 			$modifiers = ':' . implode(':', $modifiers);
 		} else {
 			$modifiers = '';
 		}
-
-		if($this->type === TagType::FABRIK) {
+		if ($this->type === TagType::FABRIK) {
 			return '/\$\{' . $this->name . $modifiers . '\}/';
 		}
 
@@ -110,20 +142,15 @@ class TagEntity
 
 	public function getValueModified(): ?string
 	{
-		if(empty($this->value)) {
+		if (empty($this->value)) {
 			return null;
 		}
 
 		$modified_value = $this->value;
 
-		if(!empty($this->modifiers))
-		{
-			// Apply all modifiers to the value
-			foreach ($this->modifiers as $modifier) {
-				if(!($modifier instanceof TagModifierInterface)) {
-					continue;
-				}
-				$modified_value = $modifier->transform($modified_value);
+		if (!empty($this->modifiers)) {
+			foreach ($this->modifiers as $m) {
+				$modified_value = $m['modifier']->transform($modified_value, $m['params']);
 			}
 		}
 
@@ -145,11 +172,9 @@ class TagEntity
 		$this->modifiers = $modifiers;
 	}
 
-	public function addModifier(TagModifierInterface $modifier): void
+	public function addModifier(TagModifierInterface $modifier, array $params = []): void
 	{
-		if (!in_array($modifier, $this->modifiers, true)) {
-			$this->modifiers[] = $modifier;
-		}
+		$this->modifiers[] = ['modifier' => $modifier, 'params' => $params];
 	}
 
 	public function getType(): ?TagType

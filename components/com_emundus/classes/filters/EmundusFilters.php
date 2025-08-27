@@ -89,6 +89,7 @@ class EmundusFilters
 					case 'checkbox':
 					case 'radiobutton':
 					case 'databasejoin':
+                    case 'cascadingdropdown':
 						$filter['type'] = 'select';
 						$filter['values'] = [];
 						$filter['operator'] = 'IN';
@@ -294,6 +295,20 @@ class EmundusFilters
 		$query = $db->getQuery(true);
 
 		switch ($element['plugin']) {
+            case 'cascadingdropdown': // cascading dropdown is really similar to databasejoin. We just need to rewrite parameters entries to match those of databasejoin
+                $params = json_decode($element['params'], true);
+
+                list($table, $column) = explode('___', $params['cascadingdropdown_id']);
+                $params['join_db_name'] = $table;
+                $params['join_key_column'] = $column;
+                list($table, $column) = explode('___', $params['cascadingdropdown_label']);
+                $params['join_val_column'] = $column;
+                $params['join_val_column_concat'] = $params['cascadingdropdown_label_concat'];
+                $params['database_join_display_type'] = $params['cdd_display_type'];
+                $element['params'] = json_encode($params);
+
+            // we don't break here, we want to execute the code of databasejoin
+            // ! DON'T ADD A BREAK HERE AND DON'T PUT ANYTHING BETWEEN THIS CASE AND DATABASEJOIN CASE ! //
 			case 'databasejoin':
 				if (!empty($element['params'])) {
 					$params = json_decode($element['params'], true);

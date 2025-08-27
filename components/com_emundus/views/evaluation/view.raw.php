@@ -261,6 +261,22 @@ class EmundusViewEvaluation extends JViewLegacy
 							case 'photos':
 								$displayPhoto = true;
 								break;
+							case 'form_progress':
+								$this->datas[0]['form_progress'] = Text::_('COM_EMUNDUS_FORM_PROGRESS');
+								$this->colsSup['form_progress'] = array();
+								break;
+							case 'attachment_progress':
+								$this->datas[0]['attachment_progress'] = Text::_('COM_EMUNDUS_ATTACHMENT_PROGRESS');
+								$this->colsSup['attachment_progress'] = array();
+								break;
+							case 'unread_messages':
+								$this->datas[0]['unread_messages'] = Text::_('COM_EMUNDUS_UNREAD_MESSAGES');
+								$this->colsSup['unread_messages'] = array();
+								break;
+							case 'commentaire':
+								$this->datas[0]['commentaire'] = Text::_('COM_EMUNDUS_COMMENTAIRE');
+								$this->colsSup['commentaire'] = array();
+								break;
 							case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -282,6 +298,20 @@ class EmundusViewEvaluation extends JViewLegacy
 					$i = 0;
 
 					$m_workflow = new EmundusModelWorkflow();
+
+					$unread_messages   = array();
+					if(!class_exists(JPATH_SITE.'/components/com_emundus/models/messenger.php'))
+					{
+						require_once JPATH_SITE . '/components/com_emundus/models/messenger.php';
+					}
+					$m_messenger = new EmundusModelMessenger();
+					if($m_messenger->checkMessengerState())
+					{
+						$unread_messages[] = $m_files->getUnreadMessages($this->_user->id);
+						$unread_messages   = $h_files->createUnreadMessageList($unread_messages[0]);
+						$keys              = array_keys($unread_messages);
+						natsort($keys);
+					}
 
 					foreach ($this->users as $user)
 					{
@@ -363,10 +393,12 @@ class EmundusViewEvaluation extends JViewLegacy
 								}
 								$userObj->user       = JFactory::getUser((int) substr($value, -7));
 								$userObj->user->name = $user['name'];
+								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
+
 								$line['fnum']        = $userObj;
 
 							}
-							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code')
+							elseif ($key == 'name' || $key == 'status_class' || $key == 'step' || $key == 'code' || $key == 'applicant_id' || $key == 'campaign_id' || $key == 'unread_messages' || $key == 'commentaire')
 							{
 								continue;
 							}
@@ -501,6 +533,27 @@ class EmundusViewEvaluation extends JViewLegacy
 					if (isset($this->colsSup['access']))
 					{
 						$this->accessObj = $m_files->getAccessorByFnums($fnumArray);
+					}
+
+					if (isset($this->colsSup['form_progress']))
+					{
+						$forms_progress           = $m_files->getFormProgress($fnumArray);
+						$this->colsSup['form_progress'] = $h_files->createFormProgressList($forms_progress);
+					}
+
+					if (isset($this->colsSup['attachment_progress']))
+					{
+						$attachments_progress           = $m_files->getAttachmentProgress($fnumArray);
+						$this->colsSup['attachment_progress'] = $h_files->createAttachmentProgressList($attachments_progress);
+					}
+
+					if (isset($this->colsSup['commentaire']))
+					{
+						foreach ($fnumArray as $fnum)
+						{
+							$notifications_comments        = sizeof($m_files->getCommentsByFnum([$fnum]));
+							$this->colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">' . $notifications_comments . '</p> ';
+						}
 					}
 
 					if (!empty($mod_emundus_custom))

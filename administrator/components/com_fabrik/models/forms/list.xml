@@ -1305,12 +1305,16 @@
 			</field>
 
 			<field name="hidecheckbox"
-			       type="checkbox"
-			       id="hidecheckbox"
-			       label="COM_FABRIK_FIELD_CHECKBOX_HIDE_LABEL"
-			       description="COM_FABRIK_FIELD_CHECKBOX_HIDE_DESC"
-			       default="0"
-			/>
+                   type="radio"
+                   default="0"
+                   layout="joomla.form.field.radio.switcher"
+                   id="hidecheckbox"
+                   label="COM_FABRIK_FIELD_CHECKBOX_HIDE_LABEL"
+                   description="COM_FABRIK_FIELD_CHECKBOX_HIDE_DESC"
+            >
+                <option value="0">JNO</option>
+                <option value="1">JYES</option>
+            </field>
 
 			<field name="addurl"
 			       type="text"
@@ -1545,14 +1549,16 @@
 
 			<field name="collation"
 			       type="collation"
+				   show_none="1"
+				   default_to_dbcollation="1"
 			       description="COM_FABRIK_FIELD_COLLATION_DESC"
 			       label="COM_FABRIK_FIELD_COLLATION_LABEL"
 			/>
 
 			<field name="force_collate"
 			       type="collation"
-			       show_none="true"
-			       default_to_table="false"
+			       show_none="1"
+			       default_to_dbcollation="0"
 			       description="COM_FABRIK_FIELD_FORCE_COLLATION_DESC"
 			       label="COM_FABRIK_FIELD_FORCE_COLLATION_LABEL">
 			</field>

@@ -416,9 +416,9 @@ class EmundusControllerMessenger extends BaseController
 			$current_profile = $m_profile->getProfileById($this->app->getSession()->get('emundusUser')->profile);
 
 			$menu  = $this->app->getMenu();
-			$items = $menu->getItems('link', 'index.php?option=com_emundus&view=files', true);
+			$items = $menu->getItems(['link','menutype'], ['index.php?option=com_emundus&view=files',$current_profile['menutype']], true);
 			if(empty($items)) {
-				$items = $menu->getItems('link', 'index.php?option=com_emundus&view=evaluation', true);
+				$items = $menu->getItems(['link','menutype'], ['index.php?option=com_emundus&view=evaluation',$current_profile['menutype']], true);
 			}
 
 			if (is_array($items))

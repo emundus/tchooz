@@ -39,6 +39,11 @@ export default {
 									method: 'post',
 									name: 'unpublish',
 									confirm: 'COM_EMUNDUS_ONBOARD_ACTION_CONFIRM_UNPUBLISH',
+									showon: {
+										key: 'status',
+										operator: '=',
+										value: '1',
+									},
 								},
 								{
 									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%',
@@ -54,7 +59,27 @@ export default {
 									name: 'add',
 								},
 							],
-							filters: [],
+							filters: [
+								{
+									label: 'COM_EMUNDUS_ONBOARD_FORMS_FILTER_PUBLISH',
+									allLabel: 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH',
+									alwaysDisplay: true,
+									getter: '',
+									controller: 'form',
+									key: 'filter',
+									values: [
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH',
+											value: 'Publish',
+										},
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH',
+											value: 'Unpublish',
+										},
+									],
+									default: 'Publish',
+								},
+							],
 						},
 						{
 							title: 'COM_EMUNDUS_FORM_MY_EVAL_FORMS',

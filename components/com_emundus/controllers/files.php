@@ -72,6 +72,7 @@ class EmundusControllerFiles extends BaseController
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'admission.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'evaluation.php');
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
+        require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
@@ -4330,16 +4331,9 @@ class EmundusControllerFiles extends BaseController
 					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
 				}
 
-				$validFnums = [];
 				if(!empty($action) && !empty($verb))
 				{
-					foreach ($fnums as $fnum)
-					{
-						if (EmundusHelperAccess::asAccessAction($action, $verb, $this->_user->id, $fnum))
-						{
-							$validFnums[] = $fnum;
-						}
-					}
+                    $validFnums = EmundusHelperAccess::asAccessActionOnFnums($action, $verb, $this->_user->id, $fnums);
 				} else {
 					$validFnums = $fnums;
 				}

@@ -311,7 +311,7 @@ class EmundusControllerForm extends BaseController
 
 			if ($result)
 			{
-				$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'forms/formbuilder?prid=' . $result);
+				$response = array('status' => true, 'msg' => Text::_('FORM_ADDED'), 'data' => $result, 'redirect' => 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=' . $result);
 			}
 			else
 			{
@@ -1214,7 +1214,7 @@ class EmundusControllerForm extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
 			$rule_id    = $this->input->getInt('rule_id');
-			$conditions = $this->input->getString('conditions');
+			$conditions = $this->input->getRaw('conditions');
 			$actions    = $this->input->getString('actions');
 			$group      = $this->input->getString('group');
 			$label      = $this->input->getString('label');

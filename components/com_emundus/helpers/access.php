@@ -888,4 +888,58 @@ class EmundusHelperAccess
 
 		return $action_id;
 	}
+
+    /**
+     * Get action access right for a certain user for multiple files at once
+     *
+     * @param   int     $action_id  Id of the action.
+     * @param   string  $crud       create/read/update/delete.
+     * @param   null    $user_id    The user id.
+     * @param   array   $fnums      File numbers
+     *
+     * @return  array   Files on which the user can do the action
+     * @since   2.8.1
+     */
+    static function asAccessActionOnFnums($action_id, $crud, $user_id, array $fnums) {
+        $authorized_fnums = [];
+
+        if (!empty($user_id) && !empty($fnums)) {
+            require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
+            require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
+            $m_files = new EmundusModelFiles();
+            $m_programme = new EmundusModelProgramme();
+
+            $fnumsInfos = $m_files->getFnumsInfos($fnums);
+            $user_programs = $m_programme->getUserPrograms($user_id);
+
+            $user_access_action = EmundusHelperAccess::asAccessAction($action_id, $crud, $user_id);
+
+            $db = Factory::getContainer()->get('DatabaseDriver');
+            $query = $db->getQuery(true);
+
+            $query->clear()
+                ->select($db->quoteName('fnum'))
+                ->from($db->quoteName('#__emundus_users_assoc', 'eua'))
+                ->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')')
+                ->andWhere($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+                ->andWhere($db->quoteName('action_id') . ' = ' . $db->quote($action_id))
+                ->andWhere($db->quoteName($crud) . ' = ' . $db->quote('-2'));
+            $db->setQuery($query);
+            $unauthorized_fnums = $db->loadColumn();
+
+            foreach($fnumsInfos as $fnumInfos) {
+                if (in_array($fnumInfos['fnum'], $unauthorized_fnums)) {
+                    continue;
+                } else if (in_array($fnumInfos['training'], $user_programs) && $user_access_action) {
+                    $authorized_fnums[] = $fnumInfos['fnum'];
+                } else {
+                    if (EmundusHelperAccess::asAccessAction($action_id, $crud, $user_id, $fnumInfos['fnum'])) {
+                        $authorized_fnums[] = $fnumInfos['fnum'];
+                    }
+                }
+            }
+        }
+
+        return $authorized_fnums;
+    }
 }

@@ -394,7 +394,7 @@ class FabrikFEModelConnection extends FabModel
 	}
 
 	/**
-	 * Get the tables names in the loaded connection
+	 * Get the table and view names in the loaded connection
 	 *
 	 * @param   bool  $addBlank  add an empty record to the beginning of the list
 	 *
@@ -404,7 +404,12 @@ class FabrikFEModelConnection extends FabModel
 	{
 		$this->getConnection();
 		$fabrikDb = $this->getDb();
-		$tables = $fabrikDb->getTableList();
+		//$tables = $fabrikDb->getTableList(); 
+		//J!5 won't return views, so do it manually
+		$query = "SHOW TABLES";
+		$fabrikDb->setQuery($query);
+		$tables     = $fabrikDb->loadColumn();
+
 		if (is_array($tables))
 		{
 			if ($addBlank)

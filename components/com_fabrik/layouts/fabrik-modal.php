@@ -26,7 +26,7 @@ $footer = isset($d->footer) ? $d->footer : '';
 
 <div id="<?php echo $d->id; ?>" class="<?php echo $windowClass;?>" style="<?php echo $templateStyle; ?>">
 	<div class="modal-header">
-		<h3 class="<?php echo $handleClass; ?>" data-role="title">
+		<h3 class="w-100 <?php echo $handleClass; ?>" data-role="title">
 			<?php echo $d->title; ?>
 		</h3>
 		<?php if (!$d->modal && $d->expandable !== false) : ?>

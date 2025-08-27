@@ -335,11 +335,12 @@ function fabrikParseRoute(&$segments)
 /* //Henk removed this for J!4
     $config = ComponentHelper::getParams('com_fabrik');
     $home404 = $config->get('fabrik_home_404', '0') === '1';
-
-	if (!$home404 && !$viewFound)
+*/
+	if (!$viewFound)
 	{
 		$app   = Factory::getApplication();
-		$app->enqueueMessage(Text::_('JGLOBAL_RESOURCE_NOT_FOUND'));
+		//$app->enqueueMessage(Text::_('JGLOBAL_RESOURCE_NOT_FOUND'));
+		FabrikWorker::logError(Text::_('JGLOBAL_RESOURCE_NOT_FOUND') . ' Get view and params via menu', 'info');
 		$menus = AbstractMenu::getInstance('site');
 		$menu  = $menus->getActive();
 		$link  = parse_url($menu->link);
@@ -385,7 +386,7 @@ function fabrikParseRoute(&$segments)
 			}
 		}
 	}
-*/
+/**/
 	if (!$viewFound)
 	{
 		//JError::raiseError(404, Text::_('JGLOBAL_RESOURCE_NOT_FOUND'));
@@ -395,7 +396,8 @@ function fabrikParseRoute(&$segments)
 	//J!4 Router will fail if there are unprocessed segments. So create warning/log and reset segments
 	if (count($segments) >0)
 	{
-		FabrikWorker::logError('Incomplete Fabrik routing. vars: ' . implode(',',$vars) . '; ignored segments: '. implode(',',$segments), 'warning');
+		$vars['additionalSegments'] = implode(',',$segments);
+		FabrikWorker::logError('Fabrik routing. vars: ' . implode(',',$vars) . '; additional segments: '. $vars['additionalSegments'], 'info');
 		$segments = [];
 	}
 

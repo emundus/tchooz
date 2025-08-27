@@ -74,7 +74,7 @@ abstract class StringHelper
 
         // Check if we are incrementing an existing pattern, or appending a new one.
         if (preg_match($rxSearch, $string, $matches)) {
-            $n      = empty($n) ? ($matches[1] + 1) : $n;
+            $n      = empty($n) ? (1 + (int) $matches[1]) : $n;
             $string = preg_replace($rxReplace, sprintf($oldFormat, $n), $string);
         } else {
             $n = empty($n) ? 2 : $n;
@@ -324,7 +324,7 @@ abstract class StringHelper
      * @param   string          $str2    string 2 to compare
      * @param   string|boolean  $locale  The locale used by strcoll or false to use classical comparison
      *
-     * @return  integer   < 0 if str1 is less than str2; > 0 if str1 is greater than str2, and 0 if they are equal.
+     * @return  integer   Either < 0 if str1 is less than str2; > 0 if str1 is greater than str2, and 0 if they are equal.
      *
      * @link    https://www.php.net/strcasecmp
      * @link    https://www.php.net/strcoll
@@ -338,7 +338,7 @@ abstract class StringHelper
         }
 
         // Get current locale
-        $locale0 = setlocale(LC_COLLATE, 0);
+        $locale0 = setlocale(LC_COLLATE, '0');
 
         if (!$locale = setlocale(LC_COLLATE, $locale)) {
             $locale = $locale0;
@@ -373,7 +373,7 @@ abstract class StringHelper
      * @param   string  $str2    string 2 to compare
      * @param   mixed   $locale  The locale used by strcoll or false to use classical comparison
      *
-     * @return  integer  < 0 if str1 is less than str2; > 0 if str1 is greater than str2, and 0 if they are equal.
+     * @return  integer  Either < 0 if str1 is less than str2; > 0 if str1 is greater than str2, and 0 if they are equal.
      *
      * @link    https://www.php.net/strcmp
      * @link    https://www.php.net/strcoll
@@ -384,7 +384,7 @@ abstract class StringHelper
     {
         if ($locale) {
             // Get current locale
-            $locale0 = setlocale(LC_COLLATE, 0);
+            $locale0 = setlocale(LC_COLLATE, '0');
 
             if (!$locale = setlocale(LC_COLLATE, $locale)) {
                 $locale = $locale0;
