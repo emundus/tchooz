@@ -9,9 +9,10 @@
     <authorUrl>https://www.emundus.fr</authorUrl>
     <version>2.0.0</version>
     <description>PLG_EMUNDUS_SYSTEM_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\System\Emundus</namespace>
     <files>
-        <filename plugin="emundus">emundus.php</filename>
-        <folder>language</folder>
+        <folder plugin="emundus">services</folder>
+        <folder>src</folder>
     </files>
     <config>
         <fields name="params">

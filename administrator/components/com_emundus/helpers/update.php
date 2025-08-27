@@ -377,11 +377,18 @@ class EmundusHelperUpdate
 					}
 					else
 					{
+						// Update manifest cache
+						$query->clear()
+							->update($db->quoteName('#__extensions'))
+							->set($db->quoteName('manifest_cache') . ' = ' . $db->quote($manifest_cache))
+							->where($db->quoteName('extension_id') . ' = ' . $db->quote($is_existing));
+						$db->setQuery($query);
+						$installed = $db->execute();
+
 						if($message)
 						{
 							self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
 						}
-						$installed = true;
 					}
 				}
 				catch (Exception $e)

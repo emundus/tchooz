@@ -270,14 +270,27 @@ if (document) {
 				app.use(createPinia());
 				app.mixin(translate);
 
-				const coordinatorAccess = el.getAttribute('coordinatorAccess') || 0;
-				const sysadminAccess = el.getAttribute('sysadminAccess') || 0;
-				const currentLanguage = el.getAttribute('currentLanguage') || 'fr-FR';
-				const shortLang = el.getAttribute('shortLang') || 'fr';
-				const manyLanguages = el.getAttribute('manyLanguages') || 0;
-				const defaultLang = el.getAttribute('defaultLang') || currentLanguage;
-				const timezone = el.getAttribute('timezone') || 'Europe/Paris';
-				const offset = el.getAttribute('offset') || 1;
+				let coordinatorAccess = el.getAttribute('coordinatorAccess') || 0;
+				let sysadminAccess = el.getAttribute('sysadminAccess') || 0;
+				let currentLanguage = el.getAttribute('currentLanguage') || 'fr-FR';
+				let shortLang = el.getAttribute('shortLang') || 'fr';
+				let manyLanguages = el.getAttribute('manyLanguages') || 0;
+				let defaultLang = el.getAttribute('defaultLang') || currentLanguage;
+				let timezone = el.getAttribute('timezone') || 'Europe/Paris';
+				let offset = el.getAttribute('offset') || 1;
+
+				if (el.getAttribute('data')) {
+					datas = JSON.parse(el.getAttribute('data'));
+
+					coordinatorAccess = datas.coordinatorAccess || 0;
+					sysadminAccess = datas.sysadminAccess || 0;
+					currentLanguage = datas.currentLanguage || 'fr-FR';
+					shortLang = datas.shortLang || 'fr';
+					manyLanguages = datas.manyLanguages || 0;
+					defaultLang = datas.defaultLang || currentLanguage;
+					timezone = datas.timezone || 'Europe/Paris';
+					offset = datas.offset || 1;
+				}
 
 				if (componentName !== 'Attachments' && !filesElement && componentName !== 'Comments') {
 					datas = el.attributes;

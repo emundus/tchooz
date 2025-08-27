@@ -196,7 +196,8 @@ if ($this->open_file_in_modal)
 				'ratio'     => $this->modal_ratio,
 				'tabs'      => $this->modal_tabs,
 				'type'      => 'evaluation',
-				'base'      => Uri::base()
+				'base'      => Uri::base(),
+                'shortLang' => substr(Factory::getLanguage()->getTag(), 0, 2),
 			];
 			?>
             <div id="em-files"
