@@ -461,7 +461,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array with workflow, steps and programs
 	 */
-	public function getWorkflow($id = 0, array $program_ids = []): array
+	public function getWorkflow($id = 0, array $program_ids = [], bool $displayed_archived = false): array
 	{
 		$workflowData = [];
 
@@ -507,8 +507,11 @@ class EmundusModelWorkflow extends JModelList
 						->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $program_ids) . ')');
 				}
 
-				$query->andWhere($this->db->quoteName('esws.state') . ' = 1')
-					->order('esws.ordering ASC');
+				if(!$displayed_archived)
+				{
+					$query->andWhere($this->db->quoteName('esws.state') . ' = 1');
+				}
+				$query->order('esws.ordering ASC');
 
 				try {
 					$this->db->setQuery($query);
