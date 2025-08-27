@@ -38,15 +38,22 @@
 						{{ translate('COM_EMUNDUS_WORKFLOW_ADD_STEP') }}
 					</a>
 
-					<div id="workflow-steps">
+					<!-- checkbox to show archived steps -->
+					<div class="tw-mb-4 tw-flex tw-cursor-pointer tw-items-center tw-gap-2">
+						<input id="show-archived-steps" type="checkbox" class="tw-cursor-pointer" v-model="showArchivedSteps" />
+						<label for="show-archived-steps" class="!tw-mb-0 tw-cursor-pointer">{{
+							translate('COM_EMUNDUS_WORKFLOW_SHOW_ARCHIVED_STEPS')
+						}}</label>
+					</div>
+
+					<div id="workflow-steps" v-if="this.displayedSteps.length > 0">
 						<draggable
-							v-model="steps"
+							v-model="displayedSteps"
 							:sort="true"
 							class="draggables-list tw-flex tw-flex-row tw-gap-3 tw-overflow-auto"
 							handle=".handle"
-							@end="onDragStepEnd"
 						>
-							<div v-for="step in steps" :key="step.id" class="workflow-step tw-max-w-sm">
+							<div v-for="step in displayedSteps" :key="step.id" class="workflow-step tw-max-w-sm">
 								<div
 									class="tw-flex tw-w-fit tw-flex-row tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-3 tw-pb-1 tw-pt-2"
 									:class="stepHeaderClass(step)"
@@ -420,6 +427,7 @@ export default {
 			colorsByStepId: {},
 
 			loading: false,
+			showArchivedSteps: false,
 		};
 	},
 	mounted() {
@@ -585,6 +593,7 @@ export default {
 				profile_id: 9,
 				entry_status: [],
 				output_status: 0,
+				state: 1,
 			};
 
 			// set a new id inferior to 0 to be able to delete it without calling the API
@@ -877,12 +886,6 @@ export default {
 		isProgramAssociatedToAnotherWorkflow(program) {
 			return program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);
 		},
-		onDragStepEnd() {
-			this.steps = this.steps.map((step, index) => {
-				step.ordering = index + 1;
-				return step;
-			});
-		},
 		getStepLabelById(stepId) {
 			let label = '';
 
@@ -972,6 +975,28 @@ export default {
 			return this.programsOptions.filter((program) => {
 				return program.label.toLowerCase().includes(this.searchThroughPrograms.toLowerCase());
 			});
+		},
+		displayedSteps: {
+			get: function () {
+				if (this.showArchivedSteps) {
+					return this.steps;
+				}
+
+				return this.steps.filter((step) => step.state === 1);
+			},
+			set: function (value) {
+				// Update the original steps array based on the displayedSteps changes but keep archived steps
+				let newSteps = value;
+				if (!this.showArchivedSteps) {
+					const archivedSteps = this.steps.filter((step) => step.state !== 1);
+					newSteps = [...value, ...archivedSteps];
+				}
+
+				this.steps = newSteps.map((step, index) => {
+					step.ordering = index + 1;
+					return step;
+				});
+			},
 		},
 	},
 };

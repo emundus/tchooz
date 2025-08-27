@@ -148,7 +148,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		{
 			$id = $this->app->input->getInt('id', 0);
 
-			$workflow = $this->model->getWorkflow($id);
+			$workflow = $this->model->getWorkflow($id, [], true);
 
 			if ($workflow)
 			{
