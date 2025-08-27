@@ -8,11 +8,14 @@ jimport('joomla.user.helper');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Traits\TraitResponse;
 
 require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 
 class EmundusControllerWorkflow extends JControllerLegacy
 {
+	use TraitResponse;
+
 	private $user = null;
 	protected $app = null;
 
@@ -26,28 +29,6 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 		$this->model = new EmundusModelWorkflow();
-	}
-
-	private function sendJsonResponse($response)
-	{
-		if ($response['code'] === 403)
-		{
-			header('HTTP/1.1 403 Forbidden');
-			echo $response['message'];
-			exit;
-		}
-		else
-		{
-			if ($response['code'] === 500)
-			{
-				header('HTTP/1.1 500 Internal Server Error');
-				echo $response['message'];
-				exit;
-			}
-		}
-
-		echo json_encode($response);
-		exit;
 	}
 
 	public function getworkflows()
@@ -216,12 +197,22 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 			if (!empty($step_id))
 			{
-				$deleted = $this->model->deleteWorkflowStep($step_id);
+				$can_delete = $this->model->canDeleteWorkflowStep($step_id);
 
-				if ($deleted)
+				if($can_delete)
 				{
-					$response['code']   = 200;
-					$response['status'] = true;
+					$deleted = $this->model->deleteWorkflowStep($step_id);
+
+					if ($deleted)
+					{
+						$response['code']   = 200;
+						$response['status'] = true;
+					}
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_WORKFLOW_STEP_CANNOT_BE_DELETED');
 				}
 			}
 		}

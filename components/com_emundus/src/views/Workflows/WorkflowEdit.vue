@@ -687,13 +687,18 @@ export default {
 				});
 				deleted = true;
 			} else {
-				const response = await workflowService.deleteWorkflowStep(stepId);
+				try {
+					const response = await workflowService.deleteWorkflowStep(stepId);
 
-				if (response.status) {
-					this.steps = this.steps.filter((step) => {
-						return step.id != stepId;
-					});
-					deleted = true;
+					if (response.status) {
+						this.steps = this.steps.filter((step) => {
+							return step.id != stepId;
+						});
+						deleted = true;
+					}
+				} catch (e) {
+					const error = JSON.parse(e.message);
+					await this.displayError('COM_EMUNDUS_WORKFLOW_DELETE_STEP_FAILED', error.message);
 				}
 			}
 
