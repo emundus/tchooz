@@ -13,6 +13,8 @@ use Tchooz\Interfaces\TagModifierInterface;
 
 class UppercaseModifier implements TagModifierInterface
 {
+	private array $params = [];
+
 
 	public function getName(): string
 	{
@@ -24,8 +26,18 @@ class UppercaseModifier implements TagModifierInterface
 		return 'Uppercase';
 	}
 
-	public function transform(string $value): string
+	public function transform(string $value, array $params = []): string
 	{
 		return strtoupper($value);
+	}
+
+	public function setParams(array $params): void
+	{
+		$this->params = $params;
+	}
+
+	public function getParams(): array
+	{
+		return $this->params;
 	}
 }

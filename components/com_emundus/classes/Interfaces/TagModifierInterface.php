@@ -13,5 +13,7 @@ interface TagModifierInterface
 {
 	public function getName(): string;
 	public function getLabel(): string;
-	public function transform(string $value): string;
+	public function transform(string $value, array $params = []): string;
+	public function setParams(array $params): void;
+	public function getParams(): array;
 }

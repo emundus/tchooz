@@ -13,6 +13,7 @@ use Tchooz\Interfaces\TagModifierInterface;
 
 class CapitalizeModifier implements TagModifierInterface
 {
+	private array $params = [];
 
 	public function getName(): string
 	{
@@ -24,8 +25,18 @@ class CapitalizeModifier implements TagModifierInterface
 		return 'Capitalize';
 	}
 
-	public function transform(string $value): string
+	public function transform(string $value, array $params = []): string
 	{
 		return ucwords(strtolower($value));
+	}
+
+	public function setParams(array $params): void
+	{
+		$this->params = $params;
+	}
+
+	public function getParams(): array
+	{
+		return $this->params;
 	}
 }
