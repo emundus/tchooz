@@ -1,3 +1,0 @@
-# URI package
-
-TODO
