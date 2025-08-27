@@ -427,14 +427,20 @@ export default {
 						this.element.params['join_val_column_concat'] = '{thistable}.' + database.join_column_val + '_{shortlang}';
 					}
 
-					this.element.params['database_join_where_sql'] = '';
-					let publishedColumn = this.params[index].options.find((option) => option.COLUMN_NAME === 'published');
-					if (typeof publishedColumn !== 'undefined') {
-						this.element.params['database_join_where_sql'] = 'WHERE {thistable}.published = 1 ';
-					}
+					if (
+						this.element.params['database_join_where_sql'] === '' ||
+						this.element.params['database_join_where_sql'] === null ||
+						typeof this.element.params['database_join_where_sql'] === 'undefined'
+					) {
+						this.element.params['database_join_where_sql'] = '';
+						let publishedColumn = this.params[index].options.find((option) => option.COLUMN_NAME === 'published');
+						if (typeof publishedColumn !== 'undefined') {
+							this.element.params['database_join_where_sql'] = 'WHERE {thistable}.published = 1 ';
+						}
 
-					this.element.params['database_join_where_sql'] +=
-						'ORDER BY {thistable}.' + this.element.params['join_key_column'];
+						this.element.params['database_join_where_sql'] +=
+							'ORDER BY {thistable}.' + this.element.params['join_key_column'];
+					}
 
 					this.reloadOptionsCascade += 1;
 				});

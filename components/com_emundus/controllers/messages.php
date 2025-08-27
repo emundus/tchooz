@@ -271,6 +271,8 @@ class EmundusControllerMessages extends BaseController
 		// Get default mail sender info
 		$mail_from_sys      = $config->get('mailfrom');
 		$mail_from_sys_name = $config->get('fromname');
+		$reply_to = $config->get('replyto', $mail_from_sys);
+		$reply_to_name = $config->get('replytoname', $mail_from_sys_name);;
 
 		$fnums         = explode(',', $this->input->post->get('recipients', null, null));
 		$nb_recipients = count($fnums);
@@ -279,6 +281,10 @@ class EmundusControllerMessages extends BaseController
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
 		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
+		if(empty($reply_to_from))
+		{
+			$reply_to_from = $reply_to;
+		}
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
 		$template_id  = $this->input->post->getInt('template', null);
@@ -558,6 +564,8 @@ class EmundusControllerMessages extends BaseController
 		// Get default mail sender info
 		$mail_from_sys      = $this->app->get('mailfrom');
 		$mail_from_sys_name = $this->app->get('fromname');
+		$reply_to = $this->app->get('replyto', $mail_from_sys);
+		$reply_to_name = $this->app->get('replytoname', $mail_from_sys_name);
 
 		$fnums = explode(',', $this->input->post->get('recipients', null, null));
 
@@ -565,6 +573,10 @@ class EmundusControllerMessages extends BaseController
 		$mail_from_name = $this->input->post->getString('mail_from_name', $mail_from_sys_name);
 		$mail_from      = $this->input->post->getString('mail_from', $mail_from_sys);
 		$reply_to_from  = $this->input->post->getString('reply_to_from', '');
+		if(empty($reply_to_from))
+		{
+			$reply_to_from = $reply_to;
+		}
 
 		$mail_subject = $this->input->post->getString('mail_subject', 'No Subject');
 		$template_id  = $this->input->post->getInt('template', null);

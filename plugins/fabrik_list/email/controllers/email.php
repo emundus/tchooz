@@ -65,7 +65,8 @@ class FabrikControllerListemail extends BaseController
 
 		$listModel = $this->getModel('List', 'FabrikFEModel');
 		// if SEF'ed, router will have changed 'id' to 'listid'
-		$listModel->setId($input->getInt('id', $input->getInt('listid')));
+		// look for 'listid' first, if SEF'ed also an 'id' param may be added by other plugins
+		$listModel->setId($input->getInt('listid', $input->getInt('id')));
 		$formModel = $listModel->getFormModel();
 
 		// Push a model into the view

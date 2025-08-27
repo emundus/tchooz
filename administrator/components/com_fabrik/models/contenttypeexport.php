@@ -291,7 +291,7 @@ class FabrikAdminModelContentTypeExport extends FabModelAdmin
 
 		$group = FabrikContentTypHelper::buildExportNode($this->doc, 'group', $data);
 
-		if ($data['is_join'] === '1')
+		if ($data['is_join'] == '1')
 		{
 			$join = \FabTable::getInstance('Join', 'FabrikTable');
 			$join->load($data['join_id']);

@@ -46,18 +46,17 @@ class JFormFieldCollation extends FolderlistField
 	{
 		$return = parent::setup($element, $value, $group);
 
-		$defaultToTableValue = $this->element->attributes()->default_to_table;
-		//Trying to access array offset on value of type null on line 47
-		if ($defaultToTableValue)
+		//If default_to_dbcollation is set, use value
+		if ($this->element->attributes()->default_to_dbcollation)
 		{
-			$defaultToTableValue = (bool) $this->element->attributes()->{$defaultToTableValue[0]};
+			$defaultToDB_Collation = (bool)(string) $this->element->attributes()->default_to_dbcollation[0];
 		}
 		else
 		{
-			$defaultToTableValue = true;
+			$defaultToDB_Collation = true;
 		}
 
-		if ($this->value == '' && $return && $defaultToTableValue)
+		if ($this->value == '' && $return && $defaultToDB_Collation)
 		{
 			$db = Factory::getDbo();
 
@@ -98,7 +97,7 @@ class JFormFieldCollation extends FolderlistField
 		sort($rows);
 		$opts = array();
 
-		if ($this->element->attributes()->show_none && (bool) $this->element->attributes()->show_none[0])
+		if ($this->element->attributes()->show_none && (bool)(string) $this->element->attributes()->show_none[0])
 		{
 			$opts[] = HTMLHelper::_('select.option', '', Text::_('COM_FABRIK_NONE'));
 		}

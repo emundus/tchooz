@@ -534,6 +534,16 @@ class EmundusModelSettings extends ListModel
 
 				return $this->db->execute();
 			}
+			else {
+				// Update only color
+				$query->clear()
+					->update('#__emundus_setup_action_tag')
+					->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
+				$this->db->setQuery($query);
+
+				return $this->db->execute();
+			}
 
 			return false;
 		}

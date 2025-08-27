@@ -321,7 +321,7 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
 
         // Iterate through the encodings and attempt to compress the data using any found supported encodings.
         foreach ($encodings as $encoding) {
-            if (($supported[$encoding] == 'gz') || ($supported[$encoding] == 'deflate')) {
+            if (in_array($supported[$encoding], ['gz', 'deflate'])) {
                 // Verify that the server supports gzip compression before we attempt to gzip encode the data.
                 // @codeCoverageIgnoreStart
                 if (!\extension_loaded('zlib') || \ini_get('zlib.output_compression')) {
@@ -817,7 +817,11 @@ abstract class AbstractWebApplication extends AbstractApplication implements Web
         } else {
             // If not in "Apache Mode" we will assume that we are in an IIS environment and proceed.
             // IIS uses the SCRIPT_NAME variable instead of a REQUEST_URI variable... thanks, MS
-            $uri .= $this->input->server->getString('SCRIPT_NAME');
+            $scriptname = $this->input->server->getString('SCRIPT_NAME');
+            if (!str_starts_with($scriptname, '/') && !str_ends_with($uri, '/')) {
+                $uri .= '/';
+            }
+            $uri .= $scriptname;
             $queryHost = $this->input->server->getString('QUERY_STRING', '');
 
             // If the QUERY_STRING variable exists append it to the URI string.

@@ -293,7 +293,7 @@ define(['jquery', 'fab/loader', 'fab/requestqueue'], function (jQuery, Loader, R
     Fabrik.loadGoogleMap = function (k, cb, language) {
 
         var prefix = document.location.protocol === 'https:' ? 'https:' : 'http:';
-        var src = prefix + '//maps.googleapis.com/maps/api/js?libraries=places,visualization&callback=Fabrik.mapCb';
+        var src = prefix + '//maps.googleapis.com/maps/api/js?libraries=places,visualization&callback=Fabrik.mapCb&loading=async';
         
         if (k !== false) {
             src += '&key=' + k;

@@ -9,6 +9,8 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
+
 JLoader::register('UsersHelperRoute', JPATH_SITE . '/components/com_users/helpers/route.php');
 
 JHtml::_('behavior.keepalive');
@@ -17,10 +19,10 @@ JHtml::_('bootstrap.tooltip');
 <div class="container-module-cas">
     <div class="sous-container-module-cas">
 		<?php if ($mod_emundus_cas_tab2_display == 1): ?>
-            <ul>
-                <li id="onglet-connexion" onclick="Connexion()"><?= JText::_('MOD_EM_CAS_SUBMENU1') ?></li>
-                <li id="onglet-inscription" class="couleurFoncee"
-                    onclick="Inscription()"><?= JText::_('MOD_EM_CAS_SUBMENU2') ?></li>
+            <ul class="tw-p-0">
+                <li id="onglet-connexion" class="tw-cursor-pointer" onclick="Connexion()"><?= Text::_('MOD_EM_CAS_SUBMENU1') ?></li>
+                <li id="onglet-inscription" class="couleurFoncee tw-cursor-pointer"
+                    onclick="Inscription()"><?= Text::_('MOD_EM_CAS_SUBMENU2') ?></li>
             </ul>
 		<?php endif; ?>
 
@@ -30,34 +32,30 @@ JHtml::_('bootstrap.tooltip');
                 <p><?= $mod_emundus_cas_url1_desc; ?></p>
                 <br/>
 
-				<?php if (empty($mod_emundus_cas_logo)) : ?>
-                    <div class="btn-cas">
-
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary rounded">
-							<?= $mod_emundus_cas_btn1; ?>
+	            <?php if (empty($mod_emundus_cas_logo)) : ?>
+                    <div class="tw-w-full tw-flex tw-flex-row">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary">
+				            <?= $mod_emundus_cas_btn1; ?>
                         </a>
                     </div>
-				<?php else: ?>
-                    <div class="btn-cas">
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary logo">
-
-                            <img src="<?= $mod_emundus_cas_logo; ?>" alt="Icône du système de connexion"/>
-                        </a>
-                        <a href="<?= $mod_emundus_cas_url1; ?>" class="btn btn-primary">
-							<?= $mod_emundus_cas_btn1; ?>
+	            <?php else: ?>
+                    <div class="tw-w-full tw-flex tw-flex-row">
+                        <a href="<?= $mod_emundus_cas_url1; ?>" class="tw-btn-primary tw-w-full">
+                            <img src="<?= $mod_emundus_cas_logo; ?>" class="tw-w-[30px] tw-mr-4"
+                                 alt="Icône du système de connexion" />
+                            <span><?= $mod_emundus_cas_btn1; ?></span>
                         </a>
                     </div>
-				<?php endif; ?>
+	            <?php endif; ?>
 
             </div>
         </div>
 
         <div id="inscription" class="invisible">
 			<?php if (!empty($mod_emundus_cas_url2_desc) || !empty($mod_emundus_cas_url2)) : ?>
-                <div class="container em-grid-2">
+                <div class="tw-flex tw-flex-col tw-items-center tw-gap-2 tw-w-full">
                     <p><?= $mod_emundus_cas_url2_desc; ?></p>
-                    <p><a href="<?= $mod_emundus_cas_url2; ?>" class="btn btn-primary"><?= $mod_emundus_cas_btn2; ?></a>
-                    </p>
+                    <a href="<?= $mod_emundus_cas_url2; ?>" class="tw-btn-primary tw-w-full"><?= $mod_emundus_cas_btn2; ?></a>
                 </div>
 			<?php endif; ?>
 
@@ -76,24 +74,24 @@ JHtml::_('bootstrap.tooltip');
                                     <div class="input-prepend">
 						<span class="add-on">
 							<span class="icon-user hasTooltip"
-                                  title="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"></span>
+                                  title="<?php echo Text::_('MOD_LOGIN_VALUE_USERNAME'); ?>"></span>
 							<label for="modlgn-username"
-                                   class="element-invisible"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
+                                   class="element-invisible"><?php echo Text::_('MOD_LOGIN_VALUE_USERNAME'); ?>
                                   <i data-isicon="true" class="icon-star small "></i>
                             </label>
 						</span>
                                         <input id="modlgn-username" type="text" name="username" class="input-small"
                                                tabindex="0"
                                                size="18"
-                                               placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
+                                               placeholder="<?php echo Text::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
                                     </div>
 								<?php else : ?>
-                                    <label for="modlgn-username"><?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>
+                                    <label for="modlgn-username"><?php echo Text::_('MOD_LOGIN_VALUE_USERNAME'); ?>
                                         <i data-isicon="true" class="icon-star small "></i>
                                     </label>
                                     <input id="modlgn-username" type="text" name="username" class="input-small"
                                            tabindex="0"
-                                           size="18" placeholder="<?php echo JText::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
+                                           size="18" placeholder="<?php echo Text::_('MOD_LOGIN_VALUE_USERNAME'); ?>"/>
 								<?php endif; ?>
                             </div>
                         </div>
@@ -102,24 +100,24 @@ JHtml::_('bootstrap.tooltip');
 								<?php if (!$params->get('usetext', 0)) : ?>
                                     <div class="input-prepend">
 						<span class="add-on">
-							<span class="icon-lock hasTooltip" title="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>">
+							<span class="icon-lock hasTooltip" title="<?php echo Text::_('JGLOBAL_PASSWORD'); ?>">
 							</span>
 								<label for="modlgn-passwd"
-                                       class="element-invisible"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
+                                       class="element-invisible"><?php echo Text::_('JGLOBAL_PASSWORD'); ?>
                                        <i data-isicon="true" class="icon-star small "></i>
 							</label>
 						</span>
                                         <input id="modlgn-passwd" type="password" name="password" class="input-small"
                                                tabindex="0" size="18"
-                                               placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>"/>
+                                               placeholder="<?php echo Text::_('JGLOBAL_PASSWORD'); ?>"/>
                                     </div>
 								<?php else : ?>
-                                    <label for="modlgn-passwd"><?php echo JText::_('JGLOBAL_PASSWORD'); ?>
+                                    <label for="modlgn-passwd"><?php echo Text::_('JGLOBAL_PASSWORD'); ?>
                                         <i data-isicon="true" class="icon-star small "></i>
                                     </label>
                                     <input id="modlgn-passwd" type="password" name="password" class="input-small"
                                            tabindex="0"
-                                           size="18" placeholder="<?php echo JText::_('JGLOBAL_PASSWORD'); ?>"/>
+                                           size="18" placeholder="<?php echo Text::_('JGLOBAL_PASSWORD'); ?>"/>
 								<?php endif; ?>
                             </div>
                         </div>
@@ -129,28 +127,28 @@ JHtml::_('bootstrap.tooltip');
 									<?php if (!$params->get('usetext', 0)) : ?>
                                         <div class="input-prepend input-append">
 						<span class="add-on">
-							<span class="icon-star hasTooltip" title="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>">
+							<span class="icon-star hasTooltip" title="<?php echo Text::_('JGLOBAL_SECRETKEY'); ?>">
 							</span>
 								<label for="modlgn-secretkey"
-                                       class="element-invisible"><?php echo JText::_('JGLOBAL_SECRETKEY'); ?>
+                                       class="element-invisible"><?php echo Text::_('JGLOBAL_SECRETKEY'); ?>
 							</label>
 						</span>
                                             <input id="modlgn-secretkey" autocomplete="one-time-code" type="text"
                                                    name="secretkey" class="input-small" tabindex="0" size="18"
-                                                   placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>"/>
+                                                   placeholder="<?php echo Text::_('JGLOBAL_SECRETKEY'); ?>"/>
                                             <span class="btn width-auto hasTooltip"
-                                                  title="<?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?>">
+                                                  title="<?php echo Text::_('JGLOBAL_SECRETKEY_HELP'); ?>">
 							<span class="icon-help"></span>
 						</span>
                                         </div>
 									<?php else : ?>
-                                        <label for="modlgn-secretkey"><?php echo JText::_('JGLOBAL_SECRETKEY'); ?></label>
+                                        <label for="modlgn-secretkey"><?php echo Text::_('JGLOBAL_SECRETKEY'); ?></label>
                                         <input id="modlgn-secretkey" autocomplete="one-time-code" type="text"
                                                name="secretkey"
                                                class="input-small" tabindex="0" size="18"
-                                               placeholder="<?php echo JText::_('JGLOBAL_SECRETKEY'); ?>"/>
+                                               placeholder="<?php echo Text::_('JGLOBAL_SECRETKEY'); ?>"/>
                                         <span class="btn width-auto hasTooltip"
-                                              title="<?php echo JText::_('JGLOBAL_SECRETKEY_HELP'); ?>">
+                                              title="<?php echo Text::_('JGLOBAL_SECRETKEY_HELP'); ?>">
 						<span class="icon-help"></span>
 					</span>
 									<?php endif; ?>
@@ -161,7 +159,7 @@ JHtml::_('bootstrap.tooltip');
 						<?php if (JPluginHelper::isEnabled('system', 'remember')) : ?>
                             <div id="form-login-remember" class="control-group checkbox">
                                 <label for="modlgn-remember"
-                                       class="control-label"><?php echo JText::_('MOD_LOGIN_REMEMBER_ME'); ?></label>
+                                       class="control-label"><?php echo Text::_('MOD_LOGIN_REMEMBER_ME'); ?></label>
                                 <input
                                         id="modlgn-remember" type="checkbox" name="remember" class="inputbox"
                                         value="yes"/>
@@ -170,13 +168,13 @@ JHtml::_('bootstrap.tooltip');
                         <div id="form-login-submit" class="control-group">
                             <div class="controls">
                                 <button type="submit" tabindex="0" name="Submit"
-                                        class="btn btn-primary login-button"><?php echo JText::_('JLOGIN'); ?></button>
+                                        class="tw-btn-primary login-button"><?php echo Text::_('JLOGIN'); ?></button>
                             </div>
                         </div>
                         <div class="control-group em-float-right">
                             <div class="control-label">
                                 <a class="hover:tw-underline" href="<?php echo JRoute::_($forgottenLink); ?>">
-				                    <?php echo JText::_('COM_USERS_LOGIN_RESET'); ?>
+				                    <?php echo Text::_('COM_USERS_LOGIN_RESET'); ?>
                                 </a>
                             </div>
                         </div>

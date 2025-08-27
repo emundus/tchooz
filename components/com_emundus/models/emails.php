@@ -1530,6 +1530,9 @@ class EmundusModelEmails extends JModelList
 
 			$app            = Factory::getApplication();
 			$email_from_sys = $app->getConfig()->get('mailfrom');
+			$mail_from_sys_name = $app->getConfig()->get('fromname');
+			$reply_to = $app->getConfig()->get('replyto', $email_from_sys);
+			$reply_to_name = $app->getConfig()->get('replytoname', $mail_from_sys_name);
 
 			// We are using the first fnum for things like setting tags and getting campaign info.
 			// ! This means that we should NOT PUT TAGS RELATING TO PERSONAL INFO IN THE EMAIL.
@@ -1692,7 +1695,12 @@ class EmundusModelEmails extends JModelList
 					// If the email sender has the same domain as the system sender address.
 					$mail_from_address = $email_from_sys;
 					if(empty($mail_from)) {
-						$mail_from = $email_from_sys;
+						$mail_from = $reply_to;
+					}
+					if(empty($mail_from_name)) {
+						$mail_from_name = $mail_from_sys_name;
+					} else {
+						$reply_to_name = $mail_from_name;
 					}
 
 					// Set sender
@@ -1703,7 +1711,7 @@ class EmundusModelEmails extends JModelList
 
 					$mailer = JFactory::getMailer();
 					$mailer->setSender($sender);
-					$mailer->addReplyTo($mail_from, $mail_from_name);
+					$mailer->addReplyTo($mail_from, $reply_to_name);
 					$mailer->addRecipient($m_to);
 					$mailer->setSubject($mail_subject);
 					$mailer->isHTML(true);
@@ -3263,12 +3271,15 @@ class EmundusModelEmails extends JModelList
 				// Get default mail sender info
 				$mail_from_sys = $config->get('mailfrom');
 				$mail_from_sys_name = $config->get('fromname');
+				$reply_to = $config->get('replyto', $mail_from_sys);
+				$reply_to_name = $config->get('replytoname', $mail_from_sys_name);
 
 				// If no mail sender info is provided, we use the system global config.
-				$mail_from = $mail_from_sys;
 				if(!empty($template->emailfrom)){
-					$mail_from = $template->emailfrom;
+					$reply_to = $template->emailfrom;
+					$reply_to_name = '';
 				}
+
 				$mail_from_name = $mail_from_sys_name;
 				if(!empty($template->name)){
 					$mail_from_name = $template->name;
@@ -3331,14 +3342,14 @@ class EmundusModelEmails extends JModelList
 					}
 
 					$password = !empty($post['PASSWORD']) ? $post['PASSWORD'] : "";
-					$post_tags = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$mail_from.$template->subject.$template->message);
+					$post_tags = $this->setTags($user_id, $post, $fnum, $password, $mail_from_name.$reply_to.$template->subject.$template->message);
 
 					if(!empty($post_tags))
 					{
 						// TODO: override $post_tags replacements by $post tags if a value is set for the pattern
 
 						$mail_from_name = preg_replace($post_tags['patterns'], $post_tags['replacements'], $mail_from_name);
-						$mail_from      = preg_replace($post_tags['patterns'], $post_tags['replacements'], $mail_from);
+						$reply_to      = preg_replace($post_tags['patterns'], $post_tags['replacements'], $reply_to);
 						$subject        = preg_replace($post_tags['patterns'], $post_tags['replacements'], $subject);
 						$body           = preg_replace($post_tags['patterns'], $post_tags['replacements'], $body);
 					}
@@ -3367,7 +3378,7 @@ class EmundusModelEmails extends JModelList
 
 				$mailer = JFactory::getMailer();
 				$mailer->setSender([$mail_from_address, $mail_from_name]);
-				$mailer->addReplyTo($mail_from, $mail_from_name);
+				$mailer->addReplyTo($reply_to, $reply_to_name);
 				$mailer->addRecipient($email_address);
 				$mailer->setSubject($subject);
 				$mailer->isHTML(true);
@@ -3462,14 +3473,15 @@ class EmundusModelEmails extends JModelList
 
 			// Get default mail sender info
 			$mail_from_sys = $config->get('mailfrom');
-			$mail_from_sys_name = $config->get('fromname');
+			$reply_to = $config->get('replyto', $mail_from_sys);
+			$reply_to_name = $config->get('replytoname', $mail_from_sys_name);
 
 			// If no mail sender info is provided, we use the system global config.
 			if(!empty($template->emailfrom)) {
-				$mail_from = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
-			} else {
-				$mail_from = $mail_from_sys;
+				$reply_to = preg_replace($tags['patterns'], $tags['replacements'], $template->emailfrom);
+				$reply_to_name = '';
 			}
+
 			if(!empty($template->name)){
 				$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $template->name);
 			} else {
@@ -3516,7 +3528,7 @@ class EmundusModelEmails extends JModelList
 				$mailer->addBCC($user->email);
 			}
 			$mailer->setSender([$mail_from_address, $mail_from_name]);
-			$mailer->addReplyTo($mail_from, $mail_from_name);
+			$mailer->addReplyTo($reply_to, $reply_to_name);
 			$mailer->addRecipient($fnum['email']);
 			$mailer->setSubject($subject);
 			$mailer->isHTML(true);

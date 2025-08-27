@@ -875,6 +875,10 @@ class EmundusModelEvaluation extends JModelList
 		$can_be_ordering[] = 'eta.id_tag';
 		$can_be_ordering[] = 'overall';
 
+		if($filter_order === 'fnum') {
+			$filter_order = 'name';
+		}
+
 		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
 			return ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
 

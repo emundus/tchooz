@@ -78,8 +78,8 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 	public function getTitlePart($data, $repeatCounter = 0, $opts = array())
 	{
 		$val = $this->getValue($data, $repeatCounter, $opts);
-		$labels = $this->getSubOptionLabels();
-		$values = $this->getSubOptionValues();
+		$labels = $this->getSubOptionLabels($data);
+		$values = $this->getSubOptionValues($data);
 		$str = '';
 
 		if (is_array($val))
@@ -790,8 +790,8 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 		$input = $this->app->getInput();
 		$id = $this->getHTMLId($repeatCounter);
 		$params = $this->getParams();
-		$values = $this->getSubOptionValues();
-		$labels = $this->getSubOptionLabels();
+		$values = $this->getSubOptionValues($data);
+		$labels = $this->getSubOptionLabels($data);
 
 		/**
 		 * $$$ hugh -- working on issue with radio and checkbox, where extra blank subitem gets added
@@ -1015,8 +1015,8 @@ class PlgFabrik_ElementList extends PlgFabrik_Element
 			}
 
 			$added = json_decode($added);
-			$values = $this->getSubOptionValues();
-			$labels = $this->getSubOptionLabels();
+			$values = $this->getSubOptionValues($data);
+			$labels = $this->getSubOptionLabels($data);
 			$found = false;
 
 			foreach ($added as $obj)

@@ -38,6 +38,7 @@ docker-compose-*.yml
 workspace.xml
 
 # ADMINISTRATOR
+!/administrator/cache/autoload_psr4.php
 /administrator/cache/*
 /administrator/language/overrides/*
 ## LOGS

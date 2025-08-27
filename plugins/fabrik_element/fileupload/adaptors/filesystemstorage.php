@@ -113,12 +113,7 @@ class Filesystemstorage extends FabrikStorageAdaptor
 
 	public function createFolder($path, $mode = 0755)
 	{
-		if (Folder::create($path, $mode))
-		{
-			return $this->createIndexFile($path);
-		}
-
-		return false;
+		return Folder::create($path, $mode);
 	}
 
 	/**

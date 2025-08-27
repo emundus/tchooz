@@ -1761,7 +1761,7 @@ class EmundusModelCampaign extends ListModel
 					}
 					if ($key == 'profile_id' && empty($data['profile_id']))
 					{
-						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC);
+						$forms = $m_form->getAllFormsPublished($user_id, 'id', SORT_DESC, [1]);
 
 						if (!empty($forms))
 						{
@@ -4138,9 +4138,9 @@ class EmundusModelCampaign extends ListModel
 			);
 		}
 
-		if (empty($this->importAddon)) {
-			$query = $this->_db->createQuery();
+		$query = $this->_db->createQuery();
 
+		if (empty($this->importAddon)) {
 			$query->select($this->_db->quoteName('value'))
 				->from($this->_db->quoteName('#__emundus_setup_config'))
 				->where($this->_db->quoteName('namekey') . ' = ' . $this->_db->quote('import'));
@@ -4176,17 +4176,17 @@ class EmundusModelCampaign extends ListModel
 						false
 					);
 				}
-
-				$query->clear()
-					->select('id')
-					->from($this->_db->quoteName('#__emundus_setup_actions'))
-					->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('import'));
-				$this->_db->setQuery($query);
-				$this->importActionId = $this->_db->loadResult();
 			} catch (\Exception $e) {
 				Log::add('Error on load import addon : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
 			}
 		}
+
+		$query->clear()
+			->select('id')
+			->from($this->_db->quoteName('#__emundus_setup_actions'))
+			->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote('import'));
+		$this->_db->setQuery($query);
+		$this->importActionId = $this->_db->loadResult();
 	}
 
 	public function getImportAddon(): AddonEntity

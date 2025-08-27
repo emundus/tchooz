@@ -25,7 +25,7 @@
     "require": {
         "php": ">=8.2",
         "phpoffice/phpspreadsheet": "4.*",
-        "phpoffice/phpword": "1.*",
+        "phpoffice/phpword": "^1.4",
         "setasign/fpdf": "1.8.*",
         "setasign/fpdi": "^2.3",
         "tecnickcom/tcpdf": "^6.8.2",

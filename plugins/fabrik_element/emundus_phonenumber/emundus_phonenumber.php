@@ -161,7 +161,6 @@ class PlgFabrik_ElementEmundus_phonenumber extends PlgFabrik_Element
 	{
 		if(is_array($val))
 		{
-
 			return $val['country'] . $val['country_code'] . $val['num_tel']; // ZZ concat with +XXYYYY to ZZ+XXYYYY format DB
 		} else {
 			return $val;

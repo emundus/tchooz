@@ -61,8 +61,8 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 			return '';
 		}
 
-		$labels = $this->getSubOptionLabels();
-		$values = $this->getSubOptionValues();
+		$labels = $this->getSubOptionLabels($data);
+		$values = $this->getSubOptionValues($data);
 		$key = array_search($value[0], $values);
 		$val = ($key === false) ? $value[0] : $labels[$key];
 
@@ -82,8 +82,8 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 		$params = $this->getParams();
 		$id = $this->getHTMLId($repeatCounter);
 		$data = $this->getFormModel()->data;
-		$arVals = $this->getSubOptionValues();
-		$arTxt = $this->getSubOptionLabels();
+		$arVals = $this->getSubOptionValues($data);
+		$arTxt = $this->getSubOptionLabels($data);
 		$opts = $this->getElementJSOptions($repeatCounter);
 		$opts->value = $this->getValue($data, $repeatCounter);
 		$opts->defaultVal = $this->getDefaultValue($data);
@@ -158,7 +158,7 @@ class PlgFabrik_ElementRadiobutton extends PlgFabrik_ElementList
 		{
 			$sel = $this->getSubInitialSelection();
 			$sel = FArrayHelper::getValue($sel, 0, '');
-			$arVals = $this->getSubOptionValues();
+			$arVals = $this->getSubOptionValues($data);
 			$data[$element->name] = array(FArrayHelper::getValue($arVals, $sel, ''));
 		}
 	}

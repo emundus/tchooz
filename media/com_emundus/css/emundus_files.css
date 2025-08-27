@@ -1259,7 +1259,7 @@ label[for='clear-search']{
 }
 
 .main-panel select#pager-select {
-    width: 55px;
+    max-width: 70px;
     color: #353544;
 }
 

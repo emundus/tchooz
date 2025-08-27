@@ -83,7 +83,7 @@ class EmundusModelForm extends JModelList
 		$fullRecherche = empty($recherche) ? 1 : $this->db->quoteName('sp.label') . ' LIKE ' . $this->db->quote('%' . $recherche . '%');
 
 		$m_user           = new EmundusModelUsers();
-		$allowed_profiles = $this->getAllFormsPublished($user_id);
+		$allowed_profiles = $this->getAllFormsPublished($user_id, 'form_label', SORT_ASC, [0,1]);
 		$allowed_profile_ids = array_map(function ($profile) {
 			return $profile->id;
 		}, $allowed_profiles);
@@ -97,6 +97,7 @@ class EmundusModelForm extends JModelList
 			->andWhere($fullRecherche)
 			->andWhere($filterId)
 			->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')')
+			->andWhere($this->db->quoteName('sp.label') . ' != ' . $this->db->quote('noprofile'))
 			->group($this->db->quoteName('sp.id'))
 			->order('id ' . $sort);
 
@@ -244,7 +245,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	function getAllFormsPublished(int $user_id = 0, string $sort = 'form_label', int $sort_order = SORT_ASC): array
+	function getAllFormsPublished(int $user_id = 0, string $sort = 'form_label', int $sort_order = SORT_ASC, array $status = [1]): array
 	{
 		$profiles = [];
 
@@ -263,9 +264,8 @@ class EmundusModelForm extends JModelList
 		$allowed_programs = $m_user->getUserGroupsProgramme($user_id);
 
 		try {
-			$profiles_not_associated = $this->getUnassociatedProfiles();
-			$profiles_associated = $this->getAssociatedProfiles($allowed_programs);
-
+			$profiles_not_associated = $this->getUnassociatedProfiles($status);
+			$profiles_associated = $this->getAssociatedProfiles($allowed_programs, $status);
 			$profiles = array_merge($profiles_not_associated, $profiles_associated);
 
 			// Sort profiles by sort argument
@@ -288,7 +288,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	private function getUnassociatedProfiles(): array
+	private function getUnassociatedProfiles(array $status = [1]): array
 	{
 		$profiles = [];
 
@@ -299,12 +299,11 @@ class EmundusModelForm extends JModelList
 				->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.profile_id') . ' = ' . $this->db->quoteName('sp.id'))
 				->where($this->db->quoteName('esc.profile_id') . ' IS NULL')
-				->andWhere($this->db->quoteName('sp.status') . ' = 1')
+				->andWhere($this->db->quoteName('sp.status') . ' IN (' . implode(',', $status) . ')')
 				->andWhere($this->db->quoteName('sp.published') . ' = 1')
 				->group($this->db->quoteName('sp.id'));
 
 			$potentially_non_associated_profiles = $this->db->setQuery($query)->loadObjectList();
-
 			if (!empty($potentially_non_associated_profiles)) {
 				$potentially_non_associated_profile_ids = array_map(function ($profile) {
 					return $profile->id;
@@ -322,6 +321,7 @@ class EmundusModelForm extends JModelList
 				$profiles = array_filter($potentially_non_associated_profiles, function ($profile) use ($associated_profile_ids) {
 					return !in_array($profile->id, $associated_profile_ids);
 				});
+				$profiles = array_values($profiles);
 			}
 		} catch (Exception $e) {
 			Log::add('Cannot get the unassociated profiles : ' . $e->getMessage(), Log::ERROR, 'com_emundus.form');
@@ -336,7 +336,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	private function getAssociatedProfiles(array $program_codes = []): array
+	private function getAssociatedProfiles(array $program_codes = [], array $status = [1]): array
 	{
 		$profiles = [];
 
@@ -347,7 +347,7 @@ class EmundusModelForm extends JModelList
 					->from($this->db->quoteName('#__emundus_setup_profiles', 'sp'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.profile_id') . ' = ' . $this->db->quoteName('sp.id'))
 					->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->db->quote($program_codes)) . ')')
-					->andWhere($this->db->quoteName('sp.status') . ' = 1')
+					->andWhere($this->db->quoteName('sp.status') . ' IN (' . implode(',', $status) . ')')
 					->andWhere($this->db->quoteName('sp.published') . ' = 1')
 					->group($this->db->quoteName('sp.id'));
 				$this->db->setQuery($query);
@@ -3174,14 +3174,14 @@ class EmundusModelForm extends JModelList
 
 	private function addCondition($rule_id, $condition)
 	{
-
+		$operators = ['=', '!=', '<', '>', '<=', '>='];
 
 		try
 		{
 			$insert = [
 				'parent_id' => $rule_id,
 				'field'     => $condition->field,
-				'state'     => $condition->state,
+				'state'     => in_array($condition->state, $operators) ? $condition->state : '=',
 				'values'    => $condition->values,
 				'group'     => !empty($condition->group) ? $condition->group : null
 			];

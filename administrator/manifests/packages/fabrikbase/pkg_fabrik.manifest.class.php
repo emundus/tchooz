@@ -59,7 +59,7 @@ return new class () implements ServiceProviderInterface {
 			{
 				$jversion = new Version();
 
-				if (version_compare($jversion->getShortVersion(), '5.0', '<')) {
+				if (version_compare($jversion->getShortVersion(), '4.2', '<')) {
 					throw new RuntimeException('Fabrik can not be installed on versions of Joomla older than 4.2');
 					return false;
 				}

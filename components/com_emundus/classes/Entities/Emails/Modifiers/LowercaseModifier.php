@@ -13,6 +13,8 @@ use Tchooz\Interfaces\TagModifierInterface;
 
 class LowercaseModifier implements TagModifierInterface
 {
+	private array $params = [];
+
 
 	public function getName(): string
 	{
@@ -24,8 +26,18 @@ class LowercaseModifier implements TagModifierInterface
 		return 'Lowercase';
 	}
 
-	public function transform(string $value): string
+	public function transform(string $value, array $params = []): string
 	{
 		return strtolower($value);
+	}
+
+	public function setParams(array $params): void
+	{
+		$this->params = $params;
+	}
+
+	public function getParams(): array
+	{
+		return $this->params;
 	}
 }

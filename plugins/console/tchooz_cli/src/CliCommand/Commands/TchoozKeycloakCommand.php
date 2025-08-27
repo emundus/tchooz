@@ -604,6 +604,9 @@ class TchoozKeycloakCommand extends AbstractCommand
 		if (!empty($plugin) && !empty($well_known_config))
 		{
 			$params                 = json_decode($plugin->params);
+			if(is_array($params) && !isset($params->configurations)) {
+				$params = new \stdClass();
+			}
 			$params->configurations = (array) $params->configurations;
 
 			if (!empty($params->configurations))

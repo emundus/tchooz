@@ -365,6 +365,42 @@ class EmundusModelWorkflow extends JModelList
 		return $deleted;
 	}
 
+	public function canDeleteWorkflowStep(int $stepId): bool
+	{
+		$can_delete = true;
+
+		if (!empty($stepId)) {
+			// If step is a payment step, check if there are transactions linked to it
+			$query = $this->db->getQuery(true);
+
+			$query->select('type')
+				->from($this->db->quoteName('#__emundus_setup_workflows_steps'))
+				->where($this->db->quoteName('id') . ' = ' . $stepId);
+			try {
+				$this->db->setQuery($query);
+				$step_type = (int)$this->db->loadResult();
+
+				if ($this->isPaymentStep($step_type)) {
+					$query->clear()
+						->select('COUNT(id)')
+						->from($this->db->quoteName('#__emundus_cart'))
+						->where($this->db->quoteName('step_id') . ' = ' . $stepId);
+					$this->db->setQuery($query);
+					$nb_carts = (int)$this->db->loadResult();
+
+					if($nb_carts > 0) {
+						$can_delete = false;
+					}
+				}
+			} catch (Exception $e) {
+				Log::add('Error while checking if workflow step can be deleted: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$can_delete = false;
+			}
+		}
+
+		return $can_delete;
+	}
+
 	public function countWorkflows($ids = []): int
 	{
 		$nb_workflows = 0;
@@ -461,7 +497,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array with workflow, steps and programs
 	 */
-	public function getWorkflow($id = 0, array $program_ids = []): array
+	public function getWorkflow($id = 0, array $program_ids = [], bool $displayed_archived = false): array
 	{
 		$workflowData = [];
 
@@ -507,8 +543,11 @@ class EmundusModelWorkflow extends JModelList
 						->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $program_ids) . ')');
 				}
 
-				$query->andWhere($this->db->quoteName('esws.state') . ' = 1')
-					->order('esws.ordering ASC');
+				if(!$displayed_archived)
+				{
+					$query->andWhere($this->db->quoteName('esws.state') . ' = 1');
+				}
+				$query->order('esws.ordering ASC');
 
 				try {
 					$this->db->setQuery($query);

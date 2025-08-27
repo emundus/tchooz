@@ -12,6 +12,9 @@ var loading;
 var moduleFilters = null;
 var refreshModuleFiltersEvent = new Event('refresh-emundus-module-filters');
 
+var emundusLanguageOptions = Joomla.getOptions('plg_system_emundus.language', {});
+var langPath = emundusLanguageOptions && emundusLanguageOptions.currentPath ? emundusLanguageOptions.currentPath : '';
+
 // if $ is not already defined, create it
 if (typeof $ === 'undefined') {
     var $ = jQuery.noConflict();
@@ -153,7 +156,7 @@ function clearchosen(target){
 function reloadData(view = 'files', fnums = null) {
     addLoader();
 
-    const url = "/index.php?option=com_emundus&view="+view+"&layout=data&format=raw&Itemid="+itemId+"&cfnum="+cfnum;
+    const url = langPath+"/index.php?option=com_emundus&view="+view+"&layout=data&format=raw&Itemid="+itemId+"&cfnum="+cfnum;
 
     fetch(url, {
         method: 'GET',
@@ -232,7 +235,7 @@ function reloadActions(view, fnum, onCheck, async, display = 'none') {
     $.ajax({
         type: 'GET',
         async: async,
-        url: '/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
+        url: langPath+'/index.php?option=com_emundus&view=files&layout=menuactions&format=raw&Itemid=' + itemId + '&display=' + display + '&fnum=' + fnum + '&multi=' + multi,
         dataType: 'html',
         success: function(data) {
             let navbar = $('.navbar.navbar-inverse');

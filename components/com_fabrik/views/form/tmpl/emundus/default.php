@@ -67,6 +67,7 @@ $applicant_profiles_ids = array_map(function ($profile) {
 }, $applicant_profiles);
 
 $is_applicant = in_array($current_user_profile, $applicant_profiles_ids) ? 1 : 0;
+$this->is_applicant = $is_applicant;
 
 if (($allow_to_comment || $is_applicant === 0) && !$is_preview)
 {
