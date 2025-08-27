@@ -174,8 +174,11 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
 															<?php if ($anonymize_data) : ?>
                                                                 <div class="em_list_fnum"><?= $value->val; ?></div>
 															<?php else : ?>
-                                                                <span class="em_list_text" title="<?= $value->val; ?>">
+                                                                <span class="em_list_text tw-flex tw-items-center tw-justify-between" title="<?= $value->val; ?>">
                                                                     <strong> <?= $value->user->name; ?></strong>
+                                                                    <?php if ($value->unread_messages) : ?>
+	                                                                    <?php echo $value->unread_messages; ?>
+                                                                    <?php endif; ?>
                                                                 </span>
                                                                 <div class="em_list_email"><?= $value->user->email; ?></div>
                                                                 <div class="em_list_email"><?= $value->user->id; ?></div>

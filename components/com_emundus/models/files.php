@@ -4950,7 +4950,8 @@ class EmundusModelFiles extends JModelLegacy
 				->from($this->_db->quoteName('#__emundus_campaign_candidature','ecc'))
 				->leftJoin($this->_db->quoteName('#__emundus_chatroom','ec').' ON '.$this->_db->quoteName('ec.fnum').' = '.$this->_db->quoteName('ecc.fnum'))
 				->leftJoin($this->_db->quoteName('#__messages','m').' ON '.$this->_db->quoteName('m.page').' = '.$this->_db->quoteName('ec.id'))
-				->where($this->_db->quoteName('m.user_id_from').' = '.$this->_db->quoteName('ecc.applicant_id'))
+				->where($this->_db->quoteName('ec.status') . ' <> 0')
+				->andWhere($this->_db->quoteName('m.user_id_from').' = '.$this->_db->quoteName('ecc.applicant_id'))
 				->andWhere($this->_db->quoteName('m.date_time') . ' > COALESCE((SELECT MAX(date_time) FROM jos_messages WHERE page = ec.id AND user_id_from <> ecc.applicant_id),"1970-01-01 00:00:00")')
 				->andWhere($this->_db->quoteName('m.date_time') . ' <= NOW()')
 				->group('ecc.fnum');
