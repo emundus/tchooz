@@ -46,6 +46,7 @@
                                label="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_LABEL"
                                description="PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_EVENT_DESC"
                                class="sql_event_handler__event"
+                               layout="joomla.form.field.list-fancy-select"
                                size="1"
                         />
                         <field name="description"
