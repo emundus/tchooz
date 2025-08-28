@@ -26,7 +26,7 @@ defined('_JEXEC') or die('RESTRICTED');
   </tr>
 </table>
 </body></html>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+<script src="/media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>
 <script>
     function install(module){
         jQuery.ajax({

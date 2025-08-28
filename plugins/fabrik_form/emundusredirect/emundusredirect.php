@@ -535,7 +535,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
             $mFile = new EmundusModelFiles();
             $applicant_id = ($mFile->getFnumInfos($fnum))['applicant_id'];
 
-            echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+            echo '<script src="/media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
             echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
             die("<script>
               $(document).ready(function () {
@@ -567,7 +567,7 @@ class PlgFabrik_FormEmundusRedirect extends plgFabrik_Form
 
 			if ($attachments >= 100 && $forms >= 100) {
 
-				echo '<script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>';
+				echo '<script src="/media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
 				echo '<script src="https://code.jquery.com/jquery-3.3.1.slim.js" integrity="sha256-fNXJFIlca05BIO2Y5zh1xrShK3ME+/lYZ0j+ChxX2DA=" crossorigin="anonymous"></script>';
 				die("<script>
 				    	$(document).ready(() => {
