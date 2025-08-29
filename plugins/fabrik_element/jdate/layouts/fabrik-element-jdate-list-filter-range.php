@@ -22,18 +22,18 @@ if ($d->filterType === 'range-hidden') :
 <?php
 else :
 	?>
-<div class="fabrikDateListFilterRange" >
+<div class="fabrikDateListFilterRange tw-flex tw-flex-col tw-gap-2" >
 	<div class="row">
-		<div class="col-2 text-end">
+		<div class="tw-w-1/4 tw-p-0 tw-flex tw-items-center">
 		<label for="<?php echo $from->id; ?>"><?php echo Text::_('COM_FABRIK_DATE_RANGE_BETWEEN') . ' '; ?>
 		</label></div>
-		<div class="w-auto"><?php echo $d->jCalFrom; ?></div>
+		<div class="tw-w-3/4 tw-p-0"><?php echo $d->jCalFrom; ?></div>
 	</div>
 	<div class="row">
-		<div class="col-2 text-end">
+		<div class="tw-w-1/4 tw-p-0 tw-flex tw-items-center">
 		<label for="<?php echo $to->id; ?>">	<?php echo Text::_('COM_FABRIK_DATE_RANGE_AND') . ' '; ?>
 		</label></div>
-		<div class="w-auto"><?php echo $d->jCalTo; ?></div>
+		<div class="tw-w-3/4 tw-p-0"><?php echo $d->jCalTo; ?></div>
 	</div>
 </div>
 <?php
