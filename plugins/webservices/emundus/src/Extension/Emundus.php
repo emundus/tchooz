@@ -59,6 +59,8 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		    new Route(['GET'], 'v1/emundus/transactions/:id', 'transactions.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
 		    new Route(['GET'], 'v1/emundus/files', 'files.displayList', [], ['component' => 'com_emundus']),
 		    new Route(['GET'], 'v1/emundus/files/:fnum', 'files.displayItem', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus']),
+		    new Route(['GET'], 'v1/emundus/fileuploads', 'fileuploads.displayList', [], ['component' => 'com_emundus']),
+		    new Route(['GET'], 'v1/emundus/fileuploads/:id', 'fileuploads.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
 		];
 
 	    $router->addRoutes($routes);
