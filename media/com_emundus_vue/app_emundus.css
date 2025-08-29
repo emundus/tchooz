@@ -2194,7 +2194,7 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
 .sx__forward-backward-navigation {
   height: 45px;
 }
-.sx__is-calendar-small .sx__forward-backward-navigation, .is-list-view .sx__forward-backward-navigation {
+.sx__is-calendar-small .sx__forward-backward-navigation {
   display: none;
 }
 
@@ -2215,9 +2215,6 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
 }
 .sx__is-calendar-small .sx__range-heading {
   font-size: 16px;
-}
-.is-list-view .sx__range-heading {
-  display: none;
 }
 
 .sx__today-button {
@@ -2563,117 +2560,6 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
   border-left: 250px solid transparent;
 }
 
-.sx__list-wrapper {
-  padding: 0;
-  background-color: var(--sx-color-background);
-  height: 100%;
-  overflow-y: auto;
-  position: relative;
-  scroll-behavior: smooth;
-}
-
-.sx__list-day {
-  padding: 0;
-  background-color: var(--sx-color-background);
-  will-change: opacity;
-  transform: translateZ(0);
-}
-
-.sx__list-day-header {
-  padding: var(--sx-spacing-padding2) var(--sx-spacing-padding4);
-  background-color: var(--sx-color-surface-container-low);
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-.sx__list-day-date {
-  font-size: var(--sx-font-extra-small);
-  font-weight: 600;
-  color: var(--sx-color-neutral);
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-}
-
-.sx__list-day-events {
-  padding: 0 16px;
-  background: var(--sx-color-background);
-}
-
-.sx__list-event {
-  padding: 0.75rem 0;
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-}
-
-.sx__list-event:not(:first-child) {
-  border-top: var(--sx-border);
-}
-
-.sx__list-event-color-line {
-  width: 3px;
-  height: 24px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-
-.sx__list-event-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  width: 100%;
-}
-
-.sx__list-event-title {
-  font-size: 1em;
-  color: var(--sx-color-on-background);
-  flex: 1;
-}
-
-.sx__list-event-times {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  min-width: 80px;
-  gap: 2px;
-}
-
-.sx__list-event-start-time {
-  font-size: 0.85em;
-  color: var(--sx-color-on-background);
-}
-
-.sx__list-event-end-time {
-  font-size: 0.85em;
-  color: var(--sx-color-neutral);
-}
-
-.sx__list-event-arrow {
-  font-size: 0.85em;
-  color: var(--sx-color-neutral);
-  line-height: 1;
-}
-
-.sx__list-event-all-day {
-  font-size: 0.85em;
-  color: var(--sx-color-neutral);
-}
-
-.sx__list-day-margin {
-  height: 16px;
-}
-
-.sx__list-no-events {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: var(--sx-color-neutral);
-  font-size: var(--sx-font-extra-small);
-  text-align: center;
-}
-
 .sx__week-grid__time-axis {
   display: flex;
   flex-flow: column;
@@ -2796,15 +2682,20 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
 }
 
 .sx__time-grid-event-resize-handle {
-  display: block;
-  position: absolute;
-  width: 100%;
-  bottom: 0;
-  cursor: ns-resize;
-  height: clamp(10px, 20px, 50%);
-  touch-action: none;
+  display: none;
 }
 
+/** Only display the resize handle on non-touch devices */
+@media (hover: hover) {
+  .sx__time-grid-event-resize-handle {
+    display: block;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    cursor: ns-resize;
+    height: clamp(10px, 20px, 50%);
+  }
+}
 .sx__time-grid-event-title {
   font-weight: 600;
 }
@@ -2921,7 +2812,6 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-1f0ac766],
   width: clamp(10px, 15px, 50%);
   cursor: ew-resize;
   z-index: 1;
-  touch-action: none;
 }
 [dir=rtl] .sx__date-grid-event-resize-handle {
   left: 0;
