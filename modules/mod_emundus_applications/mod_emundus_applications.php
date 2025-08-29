@@ -253,7 +253,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	}
 
 
-	if ($display_poll == 1 && $display_poll_id > 0 && isset($user->fnum) && !empty($user->fnum)) {
+	if ($display_poll == 1 && $display_poll_id > 0 && !empty($user->fnum)) {
 		$filled_poll_id = modemundusApplicationsHelper::getPoll();
 		$poll_url       = 'index.php?option=com_fabrik&view=form&formid=' . $display_poll_id . '&usekey=fnum&rowid=' . $user->fnum . '&tmpl=component';
 	}
