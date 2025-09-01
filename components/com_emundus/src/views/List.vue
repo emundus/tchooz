@@ -313,8 +313,10 @@
 						<Calendar
 							:items="items"
 							:edit-week-action="editWeekAction"
+							:last-item-selected="lastItemSelected"
 							@on-click-action="onClickAction"
 							@update-items="getListItems()"
+							@calendar-created="resetLastItemSelected"
 						/>
 					</div>
 
@@ -471,6 +473,7 @@ export default {
 
 			currentComponent: null,
 			currentComponentElementId: null,
+			lastItemSelected: null,
 			showModal: false,
 			showExportModal: false,
 			exportClicked: null,
@@ -819,6 +822,15 @@ export default {
 				return;
 			}
 
+			if (action.type === 'changetab') {
+				this.viewType = action.tab;
+				if (action.tab === 'calendar') {
+					sessionStorage.setItem('tchooz_calendar_view/' + document.location.hostname, action.view);
+				}
+				this.lastItemSelected = this.displayedItems.find((item) => item.id === itemId);
+				return;
+			}
+
 			if (action.type === 'redirect') {
 				let url = action.action;
 				if (item !== null) {
@@ -890,6 +902,9 @@ export default {
 			this.showModal = false;
 			this.showExportModal = false;
 			this.currentComponentElementId = null;
+		},
+		resetLastItemSelected() {
+			this.lastItemSelected = null;
 		},
 		onClickExport(exp, event = null) {
 			if (event !== null) {

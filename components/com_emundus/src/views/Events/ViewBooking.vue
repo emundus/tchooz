@@ -3,10 +3,11 @@ import eventsService from '@/services/events.js';
 import Modal from '@/components/Modal.vue';
 import Info from '@/components/Utils/Info.vue';
 import { useGlobalStore } from '@/stores/global.js';
+import CancelReservation from '@/views/Events/CancelReservation.vue';
 
 export default {
 	name: 'ViewBooking',
-	components: { Info, Modal },
+	components: { CancelReservation, Info, Modal },
 	data: () => ({
 		actualLanguage: 'fr-FR',
 
@@ -43,53 +44,26 @@ export default {
 				});
 			});
 		},
-		deleteBooking(booking_id) {
-			eventsService.deleteBooking(booking_id).then((response) => {
-				if (response.status === true) {
-					Swal.fire({
-						position: 'center',
-						icon: 'success',
-						title: Joomla.JText._('COM_EMUNDUS_EVENTS_RESERVATION_DELETED'),
-						showConfirmButton: false,
-						allowOutsideClick: false,
-						reverseButtons: true,
-						timer: 1500,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							actions: 'em-swal-single-action',
-						},
-					}).then(() => {
-						this.myBookings = this.myBookings.filter((booking) => booking.id !== booking_id);
-						this.$emit('close');
-					});
-				} else {
-					// Handle error
-					Swal.fire({
-						icon: 'error',
-						title: 'Oops...',
-						text: response.message,
-					});
-				}
-				this.changePopUpCancelState();
-			});
-		},
 		canShowCancelButton(booking) {
 			if (!booking.can_cancel) {
 				return false;
 			}
 
-			//TODO: Compare without hours
 			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+
 			const startDate = new Date(booking.start);
+			startDate.setHours(0, 0, 0, 0);
 
 			if (booking.can_cancel_until_date) {
 				const cancelUntilDate = new Date(booking.can_cancel_until_date);
+				cancelUntilDate.setHours(0, 0, 0, 0);
 				return today <= cancelUntilDate;
 			} else if (booking.can_cancel_until_days !== null) {
 				const cancelUntilCalculatedDate = new Date();
-				cancelUntilCalculatedDate.setDate(today.getDate() + booking.can_cancel_until_days);
-				return cancelUntilCalculatedDate <= startDate;
+				cancelUntilCalculatedDate.setDate(startDate.getDate() - booking.can_cancel_until_days);
+				cancelUntilCalculatedDate.setHours(0, 0, 0, 0);
+				return today <= cancelUntilCalculatedDate;
 			}
 
 			return true;
@@ -125,53 +99,6 @@ export default {
 
 			return `${formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1)} (${formattedStartTime} - ${formattedEndTime})`;
 		},
-		applicantTextBeforeCancel(booking) {
-			const formatDate = (date) => {
-				const options = {
-					weekday: 'long',
-					day: 'numeric',
-					month: 'long',
-					year: 'numeric',
-				};
-
-				if (this.actualLanguage === 'fr-FR') {
-					return date.toLocaleDateString('fr-FR', options);
-				} else if (this.actualLanguage === 'en-GB') {
-					return date.toLocaleDateString('en-GB', options);
-				}
-
-				return date.toLocaleDateString(options);
-			};
-
-			let text = '';
-
-			if (booking.can_book_until_days !== null) {
-				const currentDate = new Date();
-				const futureDate = new Date(currentDate);
-				futureDate.setDate(currentDate.getDate() + booking.can_book_until_days);
-
-				text = this.translate('COM_EMUNDUS_EVENT_CANT_BOOK_UNTIL_DATE');
-				text = text.replace('{{date}}', formatDate(futureDate));
-			}
-
-			if (booking.can_book_until_date !== null) {
-				const today = new Date();
-				today.setHours(0, 0, 0, 0);
-
-				// Add a day to be consistent with the date defined in event configuration
-				const canBookUntilDate = new Date(booking.can_book_until_date);
-				canBookUntilDate.setDate(canBookUntilDate.getDate() + 1);
-
-				if (canBookUntilDate < today) {
-					return this.translate('COM_EMUNDUS_EVENT_CANT_BOOK_NOW');
-				}
-
-				text = this.translate('COM_EMUNDUS_EVENT_CANT_BOOK_FROM_DATE');
-				text = text.replace('{{date}}', formatDate(canBookUntilDate));
-			}
-
-			return text;
-		},
 	},
 };
 </script>
@@ -189,50 +116,7 @@ export default {
 				class="tw-mb-4 tw-mr-36 tw-flex tw-items-center tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-sm"
 			>
 				<div v-if="cancelPopupOpenForBookingId === booking.id">
-					<modal
-						:name="'add-location-modal'"
-						:classes="' tw-rounded tw-px-6 tw-shadow-modal'"
-						transition="nice-modal-fade"
-						:width="'600px'"
-						:delay="100"
-						:adaptive="true"
-						:clickToClose="false"
-					>
-						<h1 class="tw-mb-4 tw-mt-8 tw-text-center">
-							{{ translate('COM_EMUNDUS_EVENTS_CANCEL_RESERVATION') }}
-						</h1>
-
-						<div class="tw-mb-5 tw-flex tw-flex-col tw-text-center">
-							<p>
-								{{ translate('COM_EMUNDUS_EVENTS_ARE_YOU_SURE_CANCEL_RESERVATION') }}
-							</p>
-							<p class="tw-mb-1 tw-font-bold tw-leading-6">
-								{{ booking.event_name }}
-							</p>
-							<p class="tw-mb-1 tw-font-bold tw-leading-6">
-								{{ booking.booking_date }}
-							</p>
-						</div>
-
-						<Info
-							v-if="applicantTextBeforeCancel(booking)"
-							:text="applicantTextBeforeCancel(booking)"
-							class="tw-mt-4 tw-w-full tw-text-left"
-							:icon="'warning'"
-							:bg-color="'tw-bg-orange-100'"
-							:icon-type="'material-icons'"
-							:icon-color="'tw-text-orange-600'"
-						/>
-
-						<div class="tw-mb-8 tw-mt-5 tw-flex tw-justify-between">
-							<button class="tw-btn-primary" @click="changePopUpCancelState(booking.id)">
-								{{ translate('BACK') }}
-							</button>
-							<button class="tw-btn-secondary" @click="deleteBooking(booking.id)">
-								{{ translate('COM_EMUNDUS_EVENTS_CANCEL_RESERVATION') }}
-							</button>
-						</div>
-					</modal>
+					<CancelReservation :slot-selected="booking" @close="changePopUpCancelState(booking.id)" />
 				</div>
 
 				<div class="tw-flex-1">

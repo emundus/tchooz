@@ -66,7 +66,11 @@ const createCalendarConfig = (vm) => ({
 				}
 			}
 
-			calendarControls.setDate(startString);
+			if (vm.startDate) {
+				calendarControls.setDate(vm.startDate.split(' ')[0]);
+			} else {
+				calendarControls.setDate(startString);
+			}
 
 			// If startString is between range dispatch onRangeUpdate event
 			if (
@@ -121,9 +125,13 @@ export default {
 			type: String,
 			required: true,
 		},
+		lastItemSelected: {
+			type: Object,
+			required: false,
+		},
 	},
 	mixins: [colors],
-	emits: ['valueUpdated', 'update-items'],
+	emits: ['valueUpdated', 'update-items', 'calendarCreated'],
 	data() {
 		return {
 			actualLanguage: 'fr',
@@ -138,6 +146,7 @@ export default {
 		};
 	},
 	created() {
+		this.$emit('calendarCreated');
 		const globalStore = useGlobalStore();
 		this.actualLanguage = globalStore.getShortLang;
 
@@ -167,6 +176,7 @@ export default {
 				normalizeDate: this.normalizeDate,
 				items: this.items,
 				defaultView: view ? view : 'week',
+				startDate: this.lastItemSelected?.start_date,
 			};
 
 			// Initialize calendarApp with shallowRef

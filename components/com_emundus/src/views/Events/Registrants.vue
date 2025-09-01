@@ -49,6 +49,12 @@ export default {
 									calendarView: 'week',
 								},
 								{
+									type: 'changetab',
+									tab: 'calendar',
+									view: 'day',
+									icon: 'calendar_today',
+								},
+								{
 									action: 'editslot',
 									type: 'modal',
 									component: 'EditSlot',
