@@ -63,6 +63,16 @@ export default {
 					helptext: '',
 					displayed: true,
 				},
+				{
+					param: 'phone_1',
+					type: 'phonenumber',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_ONBOARD_ADD_CONTACT_PHONENUMBER',
+					helptext: '',
+					displayed: true,
+					optional: true,
+				},
 			],
 		};
 	},

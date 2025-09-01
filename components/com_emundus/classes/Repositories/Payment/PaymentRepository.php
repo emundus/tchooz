@@ -492,7 +492,7 @@ class PaymentRepository
 		if (empty($cache_countries)) {
 			try {
 				$query = $this->db->createQuery();
-				$query->select('id, label_' . $lang . ' AS label')
+				$query->select('id, label_' . $lang . ' AS label, iso2, flag, flag_img')
 					->from($this->db->quoteName('data_country'))
 					->order('label_' . $lang . ' ASC');
 

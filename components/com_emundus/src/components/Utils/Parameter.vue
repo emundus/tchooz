@@ -310,6 +310,51 @@
 			>
 			</component>
 
+			<!-- Phonenumber input -->
+			<div v-else-if="parameter.type === 'phonenumber'" class="tw-relative tw-flex tw-w-full tw-items-center tw-gap-2">
+				<multiselect
+					:id="paramId"
+					:key="paramId"
+					v-model="country"
+					:class="['country-phonenumber tw-cursor-pointer']"
+					:label="'label'"
+					:track-by="'iso2'"
+					:options="countries"
+					:multiple="false"
+					:taggable="false"
+					:searchable="true"
+					:selectLabel="''"
+					:selectGroupLabel="''"
+					:selectedLabel="''"
+					:deselect-label="''"
+					:deselectGroupLabel="''"
+					:preserve-search="true"
+					:internal-search="true"
+					:loading="isLoading"
+				>
+					<template #noOptions>{{ translate(multiselectOptions.noOptionsText) }}</template>
+					<template #noResult>{{ translate(multiselectOptions.noResultsText) }}</template>
+					<template #singleLabel="props">
+						<img class="tw-w-6" :src="'/images/emundus/flags/' + props.option.flag_img" :alt="props.option.flag" />
+					</template>
+					<template #option="props">
+						<div class="tw-flex tw-items-center tw-gap-2">
+							<img class="tw-w-6" :src="'/images/emundus/flags/' + props.option.flag_img" :alt="props.option.flag" />
+							<span class="option__title">{{ props.option.label }}</span>
+						</div>
+					</template>
+				</multiselect>
+
+				<input v-model="countryCode" type="text" class="country-code form-control !tw-mb-0 tw-w-[30px]" readonly />
+				<input
+					autocomplete="tel"
+					v-maska="mask"
+					v-model="value"
+					style="padding-left: 68px"
+					class="form-control !tw-mb-0 tw-min-w-[30%]"
+				/>
+			</div>
+
 			<!-- INPUT IN CASE OF SPLIT -->
 			<span v-if="parameter.splitField">{{ parameter.splitChar }}</span>
 			<span v-if="parameter.endText" class="tw-ml-2">{{ translate(parameter.endText) }}</span>
@@ -337,6 +382,7 @@
 <script>
 import Multiselect from 'vue-multiselect';
 import settingsService from '@/services/settings.js';
+import paymentService from '@/services/payment.js';
 import Swal from 'sweetalert2';
 
 import { reactive } from 'vue';
@@ -346,10 +392,16 @@ import dayjs from 'dayjs';
 import EventBooking from '@/views/Events/EventBooking.vue';
 import Modal from '@/components/Modal.vue';
 import TipTapEditor from 'tip-tap-editor';
+import { AsYouType, getExampleNumber, parsePhoneNumber } from 'libphonenumber-js';
+import examples from 'libphonenumber-js/mobile/examples';
+import { vMaska } from 'maska/vue';
 
 export default {
 	name: 'Parameter',
 	components: { DatePicker, Multiselect, Modal, TipTapEditor },
+	directives: {
+		maska: vMaska,
+	},
 	props: {
 		parameterObject: {
 			type: Object,
@@ -415,6 +467,12 @@ export default {
 			debounceTimeout: null,
 
 			actualLanguage: 'fr-FR',
+
+			// Phonenumber countries
+			country: {},
+			countryCode: '',
+			countries: [],
+			mask: '',
 		};
 	},
 	async created() {
@@ -447,6 +505,21 @@ export default {
 			if (!this.value) {
 				this.value = [];
 			}
+		} else if (this.parameter.type === 'phonenumber') {
+			// Load country list
+			const response = await paymentService.getCountries();
+			this.countries = response.data;
+			// Set default value
+			const phoneNumber = this.parameter.value ? parsePhoneNumber(this.parameter.value || '00') : null;
+			if (phoneNumber) {
+				this.country =
+					this.countries.find((option) => option.iso2 == phoneNumber.country) ||
+					this.countries.find((option) => option.iso2 == 'FR');
+			} else {
+				this.country = this.countries.find((option) => option.iso2 == 'FR');
+			}
+
+			this.value = phoneNumber ? phoneNumber.nationalNumber : '';
 		} else if (this.parameter) {
 			this.value = this.parameter.value;
 		}
@@ -665,6 +738,15 @@ export default {
 	watch: {
 		value: {
 			handler: function (val, oldVal) {
+				if (this.parameter.type === 'phonenumber') {
+					if (this.country.iso2 === 'FR' && val.startsWith('0')) {
+						val = val.slice(1);
+						this.value = val;
+					}
+
+					val = this.countryCode + (val ? val.replace(/\s+/g, '') : '');
+				}
+
 				this.parameter.value = val;
 
 				if (this.parameter.splitField) {
@@ -717,6 +799,28 @@ export default {
 				}
 			},
 			deep: true,
+		},
+		country: {
+			handler: function (val, oldVal) {
+				if (val && val.iso2) {
+					const phoneNumber = parsePhoneNumber('00', val.iso2);
+
+					this.countryCode = phoneNumber ? '+' + phoneNumber.countryCallingCode : '';
+
+					const options = {
+						mask: '',
+						eager: true,
+					};
+
+					const example = getExampleNumber(val.iso2, examples);
+					if (example) {
+						const formatted = new AsYouType(val.iso2).input(example.nationalNumber);
+						options.mask = formatted.replace(/\d/g, '#');
+					}
+
+					this.mask = options;
+				}
+			},
 		},
 	},
 	computed: {
@@ -786,5 +890,22 @@ export default {
 
 div > fieldset[data-toggle='radio_buttons'] > div > input.fabrikinput {
 	margin-right: 0 !important;
+}
+
+.country-phonenumber {
+	max-width: 20%;
+}
+.country-phonenumber .multiselect__content-wrapper {
+	min-width: 300px;
+}
+
+.country-code {
+	border: unset !important;
+	box-shadow: unset;
+	width: 60px !important;
+	min-width: unset !important;
+	position: absolute;
+	left: 23%;
+	height: 10px !important;
 }
 </style>

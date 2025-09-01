@@ -30,7 +30,7 @@ class EmundusControllerContacts extends BaseController
 	private DatabaseInterface $db;
 
 	private EmundusModelContacts $model;
-	
+
 	public function __construct($config = array(), MVCFactoryInterface $factory = null)
 	{
 		parent::__construct($config, $factory);
@@ -45,7 +45,7 @@ class EmundusControllerContacts extends BaseController
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/contacts.php';
 		}
-		$this->model          = new EmundusModelContacts([], null, $this->user);
+		$this->model = new EmundusModelContacts([], null, $this->user);
 	}
 
 	public function getcontact(): void
@@ -94,7 +94,7 @@ class EmundusControllerContacts extends BaseController
 
 		$this->sendJsonResponse($response);
 	}
-	
+
 	public function savecontact(): void
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
@@ -108,10 +108,11 @@ class EmundusControllerContacts extends BaseController
 			return;
 		}
 
-		$id         = $this->input->getInt('id', 0);
-		$lastname     = $this->input->getString('lastname', '');
-		$firstname       = $this->input->getString('firstname', '');
-		$email    = $this->input->getString('email', '');
+		$id        = $this->input->getInt('id', 0);
+		$lastname  = $this->input->getString('lastname', '');
+		$firstname = $this->input->getString('firstname', '');
+		$email     = $this->input->getString('email', '');
+		$phone_1   = $this->input->getString('phone_1', '');
 
 		if (empty($lastname) || empty($firstname) || empty($email))
 		{
@@ -124,7 +125,7 @@ class EmundusControllerContacts extends BaseController
 
 		try
 		{
-			if ($contact_id = $this->model->saveContact($id, $lastname, $firstname, $email))
+			if ($contact_id = $this->model->saveContact($id, $lastname, $firstname, $email, $phone_1))
 			{
 				$response['code']    = 200;
 				$response['status']  = true;
