@@ -61,9 +61,27 @@ if (sizeof($tmp_campaigns) > 0)
         {
             $campaign->link = $base_url.'/'.$campaign->alias;
         }
-        elseif(!empty($mod_em_campaign_custom_link))
+        elseif(!empty($mod_em_campaign_custom_link) && is_array($mod_em_campaign_custom_link))
         {
-            $campaign->link = $base_url.'/'.str_replace('{campaign_id}',$campaign->id,$mod_em_campaign_custom_link);
+            foreach ($mod_em_campaign_custom_link as $customLink)
+            {
+                if(!empty($customLink->mod_em_campaign_custom_link_link) && $customLink->mod_em_campaign_custom_link_program === $campaign->training) {
+                    if(!str_contains($customLink->mod_em_campaign_custom_link_link, 'https'))
+                    {
+	                    $campaign->link = $base_url . '/' . str_replace('{campaign_id}', $campaign->id, $customLink->mod_em_campaign_custom_link_link);
+                    }
+                    else
+                    {
+                        $campaign->link = str_replace('{campaign_id}', $campaign->id, $customLink->mod_em_campaign_custom_link_link);
+                    }
+                }
+            }
+
+            if(empty($campaign->link))
+            {
+	            $campaign->link = $base_url.'/'.$campaign->alias;
+            }
+            //
         }
 
 		if ($campaign->pinned == 1)
