@@ -8,6 +8,7 @@
  */
 
 // No direct access
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -37,6 +38,16 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		$current_lang = $language->getTag();
 
 		$language->load('com_emundus', JPATH_SITE . '/components/com_emundus', $current_lang, true);
+
+		$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
+		if ($current_lang !== $defaultLanguage)
+		{
+			$currentLangPath = '/' . substr($current_lang, 0, 2);
+		}
+		else
+		{
+			$currentLangPath = '';
+		}
 
 		$user          = $this->app->getIdentity();
 		$form_model    = $this->getModel();
@@ -82,7 +93,7 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			$this->app->redirect('/');
 		}
 
-		$current_url = '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
+		$current_url = $currentLangPath.'/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
 		$final_url   = $current_url;
 
         if (!empty($step_data)) {
