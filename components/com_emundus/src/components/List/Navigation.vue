@@ -59,7 +59,6 @@ export default {
 	emits: ['update:views', 'update:searches', 'update:tab', 'update:tabKey', 'update:numberOfItemsToDisplay'],
 	data() {
 		return {
-			currentView: this.view,
 			currentSearches: this.searches,
 			currentTab: this.tab,
 			currentTabKey: this.tabKey,
@@ -92,7 +91,9 @@ export default {
 		onClickExport(exp) {
 			this.$emit('exp', exp);
 		},
-
+		onChangeCurrentView(view) {
+			this.$emit('update:view', view);
+		},
 		updateItems(page, tabKey) {
 			this.$emit('updateItems', page, tabKey);
 		},
@@ -103,9 +104,6 @@ export default {
 		},
 	},
 	watch: {
-		currentView() {
-			this.$emit('update:view', this.currentView);
-		},
 		currentSearches() {
 			this.$emit('update:searches', this.currentSearches);
 		},
@@ -150,11 +148,12 @@ export default {
 				:views="views"
 				:tab="currentTab"
 				:tab-key="currentTabKey"
-				v-model:view="currentView"
+				:view="view"
 				v-model:searches="currentSearches"
 				@action="onClickAction"
 				@exp="onClickExport"
 				@update-items="updateItems"
+				@update:view="onChangeCurrentView"
 			/>
 		</section>
 
