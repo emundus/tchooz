@@ -5958,6 +5958,11 @@ a.tw-cursor-pointer:nth-child(2):hover .material-symbols-outlined[data-v-8ab8b30
 	height: 50vh;
 }
 
+.relative_end_date_value_input[data-v-c44906ed] {
+	width: -moz-fit-content !important;
+	width: fit-content !important;
+}
+
 .context #onboarding_list .head {
 	background-color: white !important;
 }

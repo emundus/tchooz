@@ -1,8 +1,7 @@
 <template>
 	<div :class="classes">
-		<div v-for="tab in currentTabs" :key="tab.id">
+		<div v-for="tab in displayedTabs" :key="tab.id">
 			<div
-				v-show="tab.displayed"
 				@click="changeTab(tab.id)"
 				class="tw-flex tw-cursor-pointer tw-items-center tw-rounded-t-lg tw-border-x tw-border-t tw-px-4 tw-py-2 tw-transition-colors tw-duration-300"
 				:class="{
@@ -84,6 +83,11 @@ export default {
 					this.$emit('click-disabled-tab', tab);
 				}
 			}
+		},
+	},
+	computed: {
+		displayedTabs() {
+			return this.currentTabs.filter((tab) => tab.displayed);
 		},
 	},
 };
