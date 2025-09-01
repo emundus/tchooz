@@ -1432,6 +1432,21 @@ label[data-v-40bc4916] {
 div > fieldset[data-toggle='radio_buttons'] > div > input.fabrikinput {
 	margin-right: 0 !important;
 }
+.country-phonenumber {
+	max-width: 20%;
+}
+.country-phonenumber .multiselect__content-wrapper {
+	min-width: 300px;
+}
+.country-code {
+	border: unset !important;
+	box-shadow: unset;
+	width: 60px !important;
+	min-width: unset !important;
+	position: absolute;
+	left: 23%;
+	height: 10px !important;
+}
 
 #cart-discount[data-v-27ffff3c] {
 	height: 100%;
