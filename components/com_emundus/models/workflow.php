@@ -20,10 +20,12 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
 use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Enums\Workflow\WorkflowStepDateRelativeToEnum;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
@@ -691,7 +693,7 @@ class EmundusModelWorkflow extends JModelList
 
 					if (!empty($cid)) {
 						$query->clear()
-							->select('step_dates.start_date, step_dates.end_date, step_dates.infinite, esc.start_date as campaign_start_date, esc.end_date as campaign_end_date')
+							->select('step_dates.start_date, step_dates.end_date, step_dates.infinite, step_dates.relative_date, step_dates.relative_to, step_dates.relative_start_date_value, step_dates.relative_start_date_unit,  esc.start_date as campaign_start_date, esc.end_date as campaign_end_date')
 							->from($this->db->quoteName('#__emundus_setup_campaigns_step_dates', 'step_dates'))
 							->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = step_dates.campaign_id')
 							->where('step_dates.campaign_id = ' . $cid)
@@ -908,7 +910,7 @@ class EmundusModelWorkflow extends JModelList
 		if (!empty($file_identifier) && in_array($column, ['fnum', 'id'])) {
 			$query = $this->db->createQuery();
 
-			$query->select('ecc.status, esp.id as program_id, ecc.published, ecc.campaign_id')
+			$query->select('ecc.fnum, ecc.status, esp.id as program_id, ecc.published, ecc.campaign_id')
 				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
@@ -957,15 +959,7 @@ class EmundusModelWorkflow extends JModelList
 						$this->db->setQuery($query);
 						$step->entry_status = $this->db->loadColumn();
 
-						$query->clear()
-							->select('start_date, end_date, infinite')
-							->from('#__emundus_setup_campaigns_step_dates')
-							->where('campaign_id = ' . $file_infos['campaign_id'])
-							->where('step_id = ' . $step->id);
-
-						$this->db->setQuery($query);
-						$dates = $this->db->loadAssoc();
-
+						$dates = $this->calculateStartAndEndDates($step, $file_infos['fnum'], (int)$file_infos['campaign_id']);
 						if (!empty($dates)) {
 							$step->start_date = $dates['start_date'];
 							$step->end_date = $dates['end_date'];
@@ -980,6 +974,112 @@ class EmundusModelWorkflow extends JModelList
 
 		return $step;
 	}
+
+	/**
+	 * @param   object  $step
+	 * @param   int     $campaign_id
+	 *
+	 * @return array
+	 */
+	private function calculateStartAndEndDates(object $step, string $fnum, int $campaign_id): array
+	{
+		$dates = [];
+
+		$query = $this->db->createQuery();
+
+		$query->clear()
+			->select('start_date, end_date')
+			->from('#__emundus_setup_campaigns')
+			->where('id = ' . $campaign_id);
+
+		$this->db->setQuery($query);
+		$campaign_dates = $this->db->loadAssoc();
+
+		$dates['infinite'] = false;
+		$dates['start_date'] = $campaign_dates['start_date'];
+		$dates['end_date'] = $campaign_dates['end_date'];
+
+		$query->clear()
+			->select('*')
+			->from('#__emundus_setup_campaigns_step_dates')
+			->where('campaign_id = ' . $campaign_id)
+			->where('step_id = ' . $step->id);
+
+		$this->db->setQuery($query);
+		$step_date_config = $this->db->loadObject();
+		$dates['relative_date'] = !empty($step_date_config) && $step_date_config->relative_date == 1;
+
+		if (!empty($step_date_config))
+		{
+			$dates['infinite'] = $step_date_config->infinite;
+
+			if (!$dates['infinite']) {
+				if ($step_date_config->relative_date == 1)
+				{
+					$relative_date_value = $this->getRelativeDate($fnum, $step, WorkflowStepDateRelativeToEnum::from($step_date_config->relative_to), $campaign_dates);
+
+					if (!empty($relative_date_value) && $relative_date_value !== '0000-00-00 00:00:00')
+					{
+						$start_date = new DateTime($relative_date_value);
+						if (!empty($step_date_config->relative_start_date_value) ) {
+							$start_date->modify('+' . $step_date_config->relative_start_date_value . ' ' . $step_date_config->relative_start_date_unit);
+						}
+
+						$end_date = new DateTime($relative_date_value);
+						if (!empty($step_date_config->relative_end_date_value)) {
+							$end_date->modify('+' . $step_date_config->relative_end_date_value . ' ' . $step_date_config->relative_end_date_unit);
+						}
+
+						$dates['start_date'] = $start_date->format('Y-m-d H:i:s');
+						$dates['end_date'] = $end_date->format('Y-m-d H:i:s');
+					}
+				}
+				else
+				{
+					$dates['start_date'] = !empty($step_date_config->start_date) && $step_date_config->start_date !== '0000-00-00 00:00:00' ? $step_date_config->start_date : $campaign_dates['start_date'];
+					$dates['end_date'] = !empty($step_date_config->end_date) && $step_date_config->end_date !== '0000-00-00 00:00:00' ? $step_date_config->end_date : $campaign_dates['end_date'];
+				}
+			}
+		}
+
+		return $dates;
+	}
+
+	public function getRelativeDate(string $fnum, object $step, WorkflowStepDateRelativeToEnum $relativeToEnum, array $campaign_dates = []): ?string
+	{
+		$relativeDate = null;
+
+		$query = $this->db->createQuery();
+
+		switch ($relativeToEnum) {
+			case WorkflowStepDateRelativeToEnum::STATUS:
+				$query->clear()
+					->select('MAX(date_time)')
+					->from('#__emundus_fnums_status_date')
+					->where('fnum = ' . $this->db->quote($fnum))
+					->andWhere('status IN (' . implode(',', $step->entry_status) . ')');
+
+				try {
+					$this->db->setQuery($query);
+					$relativeDate = $this->db->loadResult();
+				} catch (\Exception $e) {
+					Log::add('Error while fetching relative date for status: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				}
+				break;
+			case WorkflowStepDateRelativeToEnum::CAMPAIGN_START_DATE:
+				$relativeDate = !empty($campaign_dates['start_date']) ? $campaign_dates['start_date'] : null;
+				break;
+			case WorkflowStepDateRelativeToEnum::CAMPAIGN_END_DATE:
+				$relativeDate = !empty($campaign_dates['end_date']) ? $campaign_dates['end_date'] : null;
+				break;
+			default:
+				throw new \InvalidArgumentException('Invalid relative date type: ' . $relativeToEnum->value);
+
+		}
+
+		return $relativeDate;
+	}
+
 
 	/**
 	 * @return array of step types
@@ -1290,7 +1390,7 @@ class EmundusModelWorkflow extends JModelList
 					foreach ($workflow_data['steps'] as $step)
 					{
 						$query->clear()
-							->select('id, start_date, end_date, infinite')
+							->select('*')
 							->from('#__emundus_setup_campaigns_step_dates')
 							->where('campaign_id = ' . $campaign_id)
 							->where('step_id = ' . $step->id);
@@ -1299,13 +1399,19 @@ class EmundusModelWorkflow extends JModelList
 						$dates = $this->db->loadAssoc();
 
 						if (empty($dates['id'])) {
-							// create the dates
 							$row = new stdClass();
 							$row->campaign_id = $campaign_id;
 							$row->step_id = $step->id;
 							$row->start_date = null;
 							$row->end_date = null;
 							$row->infinite = 0;
+							$row->relative_date = 0;
+							$row->relative_to = WorkflowStepDateRelativeToEnum::STATUS->value;
+							$row->relative_start_date_value = null;
+							$row->relative_start_date_unit = WorkflowStepDatesRelativeUnitsEnum::DAY->value;
+							$row->relative_end_date_value = null;
+							$row->relative_end_date_unit = WorkflowStepDatesRelativeUnitsEnum::DAY->value;
+
 							$this->db->insertObject('#__emundus_setup_campaigns_step_dates', $row);
 
 							$this->db->setQuery($query);
@@ -1315,6 +1421,25 @@ class EmundusModelWorkflow extends JModelList
 						$step->start_date = $dates['start_date'];
 						$step->end_date = $dates['end_date'];
 						$step->infinite = $dates['infinite'];
+						$step->relative_date = $dates['relative_date'];
+						$step->relative_to = $dates['relative_to'];
+						$step->relative_start_date_value = $dates['relative_start_date_value'];
+						$step->relative_start_date_unit = $dates['relative_start_date_unit'];
+						$step->relative_end_date_value = $dates['relative_end_date_value'];
+						$step->relative_end_date_unit = $dates['relative_end_date_unit'];
+
+						if ($this->isApplicantStep($step->type))
+						{
+							$step->readable_type = Text::_('COM_EMUNDUS_WORKFLOW_STEP_TYPE_APPLICANT');
+						}
+						else if ($this->isEvaluationStep($step->type))
+						{
+							$step->readable_type = Text::_('COM_EMUNDUS_WORKFLOW_STEP_TYPE_EVALUATOR');
+						}
+						else if ($this->isPaymentStep($step->type))
+						{
+							$step->readable_type = Text::_('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PAYMENT');
+						}
 
 						$steps[] = $step;
 					}
@@ -1330,6 +1455,8 @@ class EmundusModelWorkflow extends JModelList
 		$saved = false;
 
 		if (!empty($campaign_id) && !empty($steps)) {
+			// todo: verify values are in enums
+
 			$query = $this->db->createQuery();
 
 			$saves = [];
@@ -1340,6 +1467,12 @@ class EmundusModelWorkflow extends JModelList
 						->set('start_date = ' . $this->db->quote($step['start_date']))
 						->set('end_date = ' . $this->db->quote($step['end_date']))
 						->set('infinite = ' . $this->db->quote($step['infinite']))
+						->set('relative_date = ' . $this->db->quote($step['relative_date']))
+						->set('relative_to = ' . (!empty($step['relative_to']) ? $this->db->quote($step['relative_to']) : WorkflowStepDateRelativeToEnum::STATUS->value))
+						->set('relative_start_date_value = ' . (!empty($step['relative_start_date_value']) ? $this->db->quote($step['relative_start_date_value']) : 'NULL'))
+						->set('relative_start_date_unit = ' . (!empty($step['relative_start_date_unit']) ? $this->db->quote($step['relative_start_date_unit']) : WorkflowStepDatesRelativeUnitsEnum::DAY->value))
+						->set('relative_end_date_value = ' . (!empty($step['relative_end_date_value']) ? $this->db->quote($step['relative_end_date_value']) : 'NULL'))
+						->set('relative_end_date_unit = ' . (!empty($step['relative_end_date_unit']) ? $this->db->quote($step['relative_end_date_unit']) : WorkflowStepDatesRelativeUnitsEnum::DAY->value))
 						->where('step_id = ' . $step['id'])
 						->andwhere('campaign_id = ' . $campaign_id);
 

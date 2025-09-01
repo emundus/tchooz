@@ -1866,7 +1866,6 @@ class EmundusModelFiles extends JModelLegacy
 					$this->_db->setQuery($query);
 					$profile = $this->_db->loadResult();
 
-
 					$this->app->triggerEvent('onBeforeMultipleStatusChange', [$fnums, $state]);
 					$trigger = $this->app->triggerEvent('onCallEventHandler', ['onBeforeMultipleStatusChange', ['fnums' => $fnums, 'state' => $state]]);
 					foreach ($trigger as $responses) {
@@ -1909,6 +1908,14 @@ class EmundusModelFiles extends JModelLegacy
 
 						$fnumInfos = $this->getFnumInfos($fnum);
 						if ($res) {
+							$query->clear()
+								->insert('#__emundus_fnums_status_date')
+								->columns(['fnum', 'status', 'date_time'])
+								->values($this->_db->quote($fnum) . ', ' . $this->_db->quote($state) . ', ' . $this->_db->quote(date('Y-m-d H:i:s')));
+
+							$this->_db->setQuery($query);
+							$this->_db->execute();
+
 							$students[$fnum] = new stdClass();
 							$students[$fnum]->id = $fnumInfos['applicant_id'];
 							$students[$fnum]->name = $fnumInfos['name'];

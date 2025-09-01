@@ -20,7 +20,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Emundus\Indexer\Entities\IndexEntity;
+use Tchooz\Entities\Indexer\IndexEntity;
 
 class EmundusModelFormbuilder extends JModelList
 {
