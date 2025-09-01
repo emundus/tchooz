@@ -4224,8 +4224,13 @@ class EmundusModelApplication extends ListModel
 
 				if (!empty($program_id)) {
 					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+					if(!class_exists('EmundusHelperMenu')) {
+						require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+					}
 					$m_workflow = new EmundusModelWorkflow();
 					$workflows = $m_workflow->getWorkflows([], 0, 0, [$program_id]);
+
+					$evaluator_link = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=workflows&layout=evaluatorstep');
 
 					$workflow_menus = [];
 					foreach($workflows as $workflow) {
@@ -4243,7 +4248,7 @@ class EmundusModelApplication extends ListModel
 										$workflow_menus[] = [
 											'id' => $workflow->id . $step->id,
 											'title' => $step->label,
-											'link' => 'evaluator-step?format=raw&step_id=' . $step->id,
+											'link' => $evaluator_link.'?format=raw&step_id=' . $step->id,
 											'lft' => 9998,
 											'rgt' => 9999,
 											'note' => '1|r',
