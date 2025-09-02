@@ -2358,6 +2358,7 @@ class EmundusControllersettings extends BaseController
 							}
 							break;
 						case 'sogecommerce':
+						case 'stripe':
 							break;
 						default:
 							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';

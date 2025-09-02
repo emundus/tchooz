@@ -430,7 +430,7 @@ class PaymentRepository
 		$payment_services = [];
 
 		try {
-			$types = ['sogecommerce'];
+			$types = ['sogecommerce', 'stripe'];
 
 			$query = $this->db->createQuery();
 			$query->select('id, name, description')

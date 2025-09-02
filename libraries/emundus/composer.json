@@ -42,6 +42,7 @@
         "ovh/ovh": "^3.5",
         "smalot/pdfparser": "^2.12",
         "egulias/email-validator": "^4.0",
+        "stripe/stripe-php": "^17.5",
         "kwn/number-to-words": "^2.12"
     },
     "autoload": {

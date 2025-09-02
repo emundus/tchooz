@@ -1211,7 +1211,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						$m_files = new EmundusModelFiles();
 						$res     = $m_files->updateState([$fnum], $action->new_file_status, $this->automated_task_user);
 
-						if ($res && $res['status'])
+						// $res is mixed, either a boolean or an array with status and message
+						if ((is_bool($res) && $res) || (is_array($res) && $res['status']))
 						{
 							$landed = true;
 						}

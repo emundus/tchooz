@@ -134,32 +134,38 @@ class CustomEventHandlerTest extends UnitTestCase
 	 * @return void
 	 */
 	public function testlaunchEventAction() {
+		$fnum = $this->dataset['fnum'];
+		if (empty($fnum))
+		{
+			$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		}
+
 		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [null, '']);
 		$this->assertFalse($landed, 'If no action and no fnum is set, the action should not be launched');
 
-		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [null, $this->dataset['fnum']]);
+		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [null, $fnum]);
 		$this->assertFalse($landed, 'If no action is set, the action should not be launched');
 
 		$action = new \stdClass();
 		$action->action_type = 'test';
 
-		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [$action, $this->dataset['fnum']]);
+		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [$action, $fnum]);
 		$this->assertFalse($landed, 'If action does not exist, the action should not be launched');
 
 		$action->action_type = 'update_file_status';
 		$action->new_file_status = '0';
-		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [$action, $this->dataset['fnum']]);
+		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [$action, $fnum]);
 		$this->assertTrue($landed, 'If action exists and is well configured, the action should be launched');
 
 		$action->new_file_status = '1';
-		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [$action, $this->dataset['fnum']]);
+		$landed = self::callPrivateMethod($this->model, 'launchEventAction', [$action, $fnum]);
 		$this->assertTrue($landed, 'If action exists and is well configured, the action should be launched');
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
 		$query->select('status')
 			->from('#__emundus_campaign_candidature')
-			->where('fnum = ' . $db->quote($this->dataset['fnum']));
+			->where('fnum = ' . $db->quote($fnum));
 
 		$status = $db->setQuery($query)->loadResult();
 		$this->assertEquals('1', $status, 'The status of the file should have been updated');
@@ -179,7 +185,14 @@ class CustomEventHandlerTest extends UnitTestCase
 		$status = self::callPrivateMethod($this->model, 'runEventSimpleAction', [$event, $data]);
 		$this->assertFalse($status, 'If event is not options or no action is set or no fnum is passed, the action should not be launched');
 
-		$data['fnum'] = $this->dataset['fnum'];
+
+		$fnum = $this->dataset['fnum'];
+		if (empty($fnum))
+		{
+			$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		}
+
+		$data['fnum'] = $fnum;
 		$event->type = 'options';
 		$custom_action = new \stdClass();
 		$event->event = 'onAfterProcess';
@@ -197,7 +210,7 @@ class CustomEventHandlerTest extends UnitTestCase
 		$conditions = new \stdClass();
 		$condition = new \stdClass();
 		$condition->targeted_column = 'jos_emundus_campaign_candidature.fnum';
-		$condition->targeted_value = $this->dataset['fnum'];
+		$condition->targeted_value = $fnum;
 		$conditions->condition_1 = $condition;
 		$custom_action->conditions = $conditions;
 

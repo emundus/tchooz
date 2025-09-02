@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Synchronizers\Payment\Sogecommerce;
+use Tchooz\Synchronizers\Payment\Stripe;
 
 class TransactionRepository
 {
@@ -592,28 +593,34 @@ class TransactionRepository
 			$updates = [];
 			foreach ($rows as $row) {
 				if (!empty($row->sync_type)) {
+					$data = json_decode($row->data, true);
+
 					switch($row->sync_type) {
 						case 'sogecommerce':
-							$data = json_decode($row->data, true);
 							$sogecommerce = new Sogecommerce();
-
 							$updated = $sogecommerce->updateTransactionFromCallback($data, $row->transaction_id, $automated_task_user);
-
-							if ($updated) {
-								$query->update($this->db->quoteName('#__emundus_payment_queue', 'queue'))
-									->set('status = ' . $this->db->quote('updated'))
-									->where($this->db->quoteName('queue.id') . ' = ' . $this->db->quote($row->id));
-
-								$this->db->setQuery($query);
-								$updated = $this->db->execute();
-							}
-
-							$updates[] = $updated;
+							break;
+						case 'stripe':
+							$stripe = new Stripe();
+							$updated = $stripe->updateTransactionFromCallback($data, $row->transaction_id, $automated_task_user);
 							break;
 						default:
 							Log::add('Unknown sync type: ' . $row->sync_type, Log::ERROR, 'com_emundus.repository.transaction');
 							continue 2;
 					}
+
+					if ($updated) {
+						$query->update($this->db->quoteName('#__emundus_payment_queue', 'queue'))
+							->set('status = ' . $this->db->quote('updated'))
+							->where($this->db->quoteName('queue.id') . ' = ' . $this->db->quote($row->id));
+
+						$this->db->setQuery($query);
+						$updated = $this->db->execute();
+					} else {
+						Log::add('Failed to update transaction from queue id ' . $row->id, Log::ERROR, 'com_emundus.repository.transaction');
+					}
+
+					$updates[] = $updated;
 				}
 			}
 

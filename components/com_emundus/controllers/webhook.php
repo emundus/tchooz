@@ -23,6 +23,7 @@ use GuzzleHttp\Client as GuzzleClient;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Synchronizers\Payment\Sogecommerce;
 use Tchooz\Repositories\Payment\TransactionRepository;
+use Tchooz\Synchronizers\Payment\Stripe;
 use Tchooz\Traits\TraitResponse;
 use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Log\Log;
@@ -1003,15 +1004,14 @@ class EmundusControllerWebhook extends BaseController
 
 		$sync_id = $this->input->getInt('sync_id', 0);
 		$url_transaction_ref = $this->input->getString('transaction_ref', '');
-		$payload = $_POST;
+		$raw_payload = $this->input->json->getRaw();
+		$payload = !empty($_POST) ? $_POST : $raw_payload;
+		Log::addLogger(['text_file' => 'com_emundus.payment.php'], Log::ALL, ['com_emundus.payment']);
 
 		$transaction_repository = new TransactionRepository();
 		if (!empty($payload) && !empty($sync_id)) {
 			try
 			{
-				Log::addLogger(['text_file' => 'com_emundus.payment.php'], Log::ALL, ['com_emundus.payment']);
-				Log::add('Webhook START: ' . json_encode($payload), Log::INFO, 'com_emundus.payment');
-
 				$query = $this->db->createQuery();
 				$query->select('type')
 					->from('#__emundus_setup_sync')
@@ -1047,6 +1047,41 @@ class EmundusControllerWebhook extends BaseController
 						} else {
 							Log::add('Sogecommerce signature verification failed', Log::ERROR, 'com_emundus.payment');
 							$added_to_queue = false;
+						}
+						break;
+					case 'stripe':
+						Log::add('Stripe transaction update attempt ', Log::INFO, 'com_emundus.payment');
+						$added_to_queue = false;
+						$stripe = new Stripe();
+						$verified = $stripe->verifySignature($raw_payload);
+
+						if ($verified) {
+							Log::add('Stripe signature verified', Log::INFO, 'com_emundus.payment');
+							$payload = json_decode($raw_payload, true);
+
+							if (in_array($payload['type'], $stripe::HANDLED_EVENTS) && !empty($payload['data']['object']['client_reference_id'])) {
+								Log::add('Stripe webhook received for checkout.session.completed event', Log::INFO, 'com_emundus.payment');
+								$added_to_queue = $transaction_repository->addTransactionToQueue($payload, $payload['data']['object']['client_reference_id'], $sync_id);
+
+								if ($added_to_queue) {
+									Log::add('Stripe transaction added to queue', Log::INFO, 'com_emundus.payment');
+									$transaction_id = $transaction_repository->getTransactionIdByExternalReference($payload['data']['object']['client_reference_id']);
+									$transactions = $transaction_repository->getTransactionsInQueue(['pending'], [$transaction_id]);
+									$managed = $transaction_repository->manageQueueTransactions($transactions);
+
+									if ($managed) {
+										Log::add('Stripe transaction ' . $payload['data']['object']['client_reference_id'] . '  managed', Log::INFO, 'com_emundus.payment');
+									} else {
+										Log::add('Stripe transaction ' . $payload['data']['object']['client_reference_id'] .' not managed', Log::ERROR, 'com_emundus.payment');
+									}
+								} else {
+									Log::add('Stripe transaction not added to queue', Log::ERROR, 'com_emundus.payment');
+								}
+							} else {
+								Log::add('Stripe webhook received but not a checkout.session.completed event or missing client_reference_id', Log::WARNING, 'com_emundus.payment');
+							}
+						} else {
+							Log::add('Stripe signature verification failed', Log::ERROR, 'com_emundus.payment');
 						}
 						break;
 					default:
@@ -1098,6 +1133,9 @@ class EmundusControllerWebhook extends BaseController
 							break;
 						case TransactionStatus::CANCELLED:
 							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_CANCELLED_MESASGE'));
+							break;
+						case TransactionStatus::WAITING:
+							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_WAITING_MESSAGE'));
 							break;
 						default:
 							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_PENDING_MESASGE'));
