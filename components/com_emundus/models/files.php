@@ -2979,7 +2979,7 @@ class EmundusModelFiles extends JModelLegacy
 			$leftJoin = ' LEFT JOIN #__emundus_setup_campaigns as esc ON esc.id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_campaigns_more as escm ON escm.campaign_id = jecc.campaign_id ';
 			$leftJoin .= ' LEFT JOIN #__emundus_setup_programmes as sp ON sp.code = esc.training ';
-			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training ';
+			$leftJoin .= ' LEFT JOIN #__emundus_setup_teaching_unity as estu ON estu.code = esc.training and estu.schoolyear = esc.year ';
 			$leftJoin .= ' LEFT JOIN #__users as u ON u.id = jecc.applicant_id ';
 
 			$elements_as = [];
