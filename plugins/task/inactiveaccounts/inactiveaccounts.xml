@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" group="task" method="upgrade">
+	<name>plg_task_inactive_accounts</name>
+	<author>eMundus</author>
+	<creationDate>2025-08</creationDate>
+	<copyright>(C) 2021 Open Source Matters, Inc.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>dev@emundus.fr</authorEmail>
+	<authorUrl>www.emundus.fr</authorUrl>
+	<version>4.1</version>
+	<description>PLG_TASK_INACTIVE_ACCOUNTS_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\Task\Inactiveaccounts</namespace>
+	<files>
+		<folder plugin="inactiveaccounts">services</folder>
+		<folder>src</folder>
+		<folder>forms</folder>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/plg_task_inactiveaccounts.ini</language>
+		<language tag="en-GB">language/en-GB/plg_task_inactiveaccounts.sys.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_task_inactiveaccounts.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_task_inactiveaccounts.sys.ini</language>
+	</languages>
+</extension>

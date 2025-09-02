@@ -81,6 +81,7 @@ import EditTheme from '@/components/Settings/Style/EditTheme.vue';
 import EditStatus from '@/components/Settings/Files/EditStatus.vue';
 import EditTags from '@/components/Settings/Files/EditTags.vue';
 import MultifactorAuthentication from '@/components/Settings/Users/MultifactorAuthentication.vue';
+import SecurityRules from '@/components/Settings/Users/SecurityRules.vue';
 import General from '@/components/Settings/Style/General.vue';
 import Orphelins from '@/components/Settings/TranslationTool/Orphelins.vue';
 import Translations from '@/components/Settings/TranslationTool/Translations.vue';
@@ -113,6 +114,7 @@ export default {
 		SubSection,
 		Tile,
 		MultifactorAuthentication,
+		SecurityRules,
 	},
 
 	props: {

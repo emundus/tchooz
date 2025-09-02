@@ -1994,6 +1994,10 @@ class EmundusModelSettings extends ListModel
 
 		$emundus_parameters = ComponentHelper::getParams('com_emundus');
 
+		// Users params
+		$params['emundus']['disable_inactive_accounts_after_delay'] = $emundus_parameters->get('disable_inactive_accounts_after_delay', 12);
+		$params['emundus']['delete_testing_accounts_after_delay']   = $emundus_parameters->get('delete_testing_accounts_after_delay', 12);
+
 		foreach ($settings_applicants as $settings_applicant)
 		{
 			if ($settings_applicant['component'] === 'emundus')

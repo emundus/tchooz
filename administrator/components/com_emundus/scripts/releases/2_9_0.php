@@ -11,6 +11,7 @@
 namespace scripts;
 
 use EmundusHelperUpdate;
+use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Enums\Workflow\WorkflowStepDateRelativeToEnum;
 
 class Release2_9_0Installer extends ReleaseInstaller
@@ -142,6 +143,59 @@ class Release2_9_0Installer extends ReleaseInstaller
 				$this->db->setQuery($query);
 				$tasks[] = $this->db->execute();
 			}
+
+			$query->clear()
+				->select('id')
+				->from('#__emundus_setup_emails')
+				->where('lbl = ' . $this->db->quote('enable_inactive_account'));
+			$this->db->setQuery($query);
+			$enable_inactive_account = $this->db->loadResult();
+
+			if (empty($enable_inactive_account))
+			{
+				$query->clear()
+					->select('id')
+					->from('#__emundus_email_templates')
+					->where('lbl = ' . $this->db->quote('registration'));
+				$this->db->setQuery($query);
+				$registration_template = $this->db->loadResult();
+
+				$enable_inactive_account = [
+					'lbl'        => 'enable_inactive_account',
+					'subject'    => 'Réactivez votre compte dès maintenant / Reactivate Your Account Now',
+					'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/enable_inactive_account.html'),
+					'type'       => 1,
+					'published'  => 1,
+					'email_tmpl' => $registration_template,
+					'category'   => 'Système',
+					'button'     => 'Activer mon compte / Activate my account'
+				];
+				$enable_inactive_account = (object) $enable_inactive_account;
+				$tasks[] = $this->db->insertObject('#__emundus_setup_emails', $enable_inactive_account);
+			}
+
+			// Enable inactive task plugin
+			EmundusHelperUpdate::installExtension('plg_task_inactive_accounts', 'inactiveaccounts', null, 'plugin', 1, 'task');
+
+			// Create scheduler task for sending sms
+			$execution_rules = [
+				'rule-type'     => 'cron-expression',
+				'exec-day'      => date('d'),
+				'exec-time'     => '12:00',
+				'cron-expression' => [
+					'minutes' => [0],
+					'hours'   => [8,10,12,14,16,18,20],
+					'days_month' => [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31],
+					'months' => [1,2,3,4,5,6,7,8,9,10,11,12],
+					'days_week' => [0,1,2,3,4,5,6,7]
+				]
+			];
+			$cron_rules      = [
+				'type' => 'cron-expression',
+				'exp'  => '0 8,10,12,14,16,18,20 * * *',
+			];
+			EmundusHelperUpdate::createSchedulerTask('Checking inactive accounts', 'plg_task_inactiveaccounts_task_get', $execution_rules, $cron_rules);
+			//
 
 			$result['status']  = !in_array(false, $tasks);
 		}
