@@ -280,6 +280,11 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu Voir mon dossier', 'error');
 		}
 
+		if (!$this->secureAPI())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la sécurisation de l\'API Tchooz v2', 'error');
+		}
+
 		EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;
@@ -1120,5 +1125,233 @@ class Com_EmundusInstallerScript
 
 			return EmundusHelperUpdate::addJoomlaMenu($datas,1,1,'last-child',$modules)['status'];
 		}
+	}
+
+	private function secureAPI(): bool
+	{
+		$query  = $this->db->createQuery();
+		$tasks = [];
+
+		try
+		{
+			$query->clear()
+				->select('id, rgt')
+				->from($this->db->quoteName('#__usergroups'))
+				->where('title = ' . $this->db->quote('Public'));
+			$this->db->setQuery($query);
+			$publicGroup = $this->db->loadObject();
+
+			$query->clear()
+				->select('id, rules')
+				->from($this->db->quoteName('#__viewlevels'))
+				->where('title = ' . $this->db->quote('Special'));
+			$this->db->setQuery($query);
+			$specialViewLevel = $this->db->loadObject();
+
+			// Create API v2 group and view levels if they do not exist
+			$query->clear()
+				->select('id, rules')
+				->from($this->db->quoteName('#__viewlevels'))
+				->where($this->db->quoteName('title') . ' = ' . $this->db->quote('API v2'));
+			$this->db->setQuery($query);
+			$apiV2ViewLevel = $this->db->loadObject();
+
+			if(empty($apiV2ViewLevel->id))
+			{
+				if(!empty($publicGroup))
+				{
+					$usergroup = [
+						'parent_id' => $publicGroup->id,
+						'lft'       => $publicGroup->rgt,
+						'rgt'       => $publicGroup->rgt + 1,
+						'title'     => 'API v2'
+					];
+					$usergroup = (object) $usergroup;
+
+					if($tasks[] = $this->db->insertObject('#__usergroups', $usergroup))
+					{
+						$apiV2GroupId = $this->db->insertid();
+
+						// Create the view level
+						$viewLevel = [
+							'title' => 'API v2',
+							'ordering' => 0,
+							'rules' => '[' . $apiV2GroupId . ']'
+						];
+						$viewLevel = (object) $viewLevel;
+
+						$tasks[] = $this->db->insertObject('#__viewlevels', $viewLevel);
+					}
+
+					// Update the lft and rgt values of the parent group
+					$publicGroup->rgt += 2;
+					$this->db->updateObject('#__usergroups', $publicGroup, 'id');
+				}
+			}
+			else {
+				$apiV2GroupId = str_replace(['[', ']'], '', $apiV2ViewLevel->rules);
+			}
+			//
+
+			// Create API v3 group and view levels if they do not exist
+			$query->clear()
+				->select('id, rules')
+				->from($this->db->quoteName('#__viewlevels'))
+				->where($this->db->quoteName('title') . ' = ' . $this->db->quote('API v3'));
+			$this->db->setQuery($query);
+			$apiV3ViewLevel = $this->db->loadObject();
+
+			if(empty($apiV3ViewLevel->id))
+			{
+				if(!empty($publicGroup))
+				{
+					$usergroup = [
+						'parent_id' => $publicGroup->id,
+						'lft'       => $publicGroup->rgt,
+						'rgt'       => $publicGroup->rgt + 1,
+						'title'     => 'API v3'
+					];
+					$usergroup = (object) $usergroup;
+
+					if($tasks[] = $this->db->insertObject('#__usergroups', $usergroup))
+					{
+						$apiV3GroupId = $this->db->insertid();
+
+						// Create the view level
+						$viewLevel = [
+							'title' => 'API v3',
+							'ordering' => 0,
+							'rules' => '[' . $apiV3GroupId . ']'
+						];
+						$viewLevel = (object) $viewLevel;
+
+						$tasks[] = $this->db->insertObject('#__viewlevels', $viewLevel);
+					}
+
+					// Update the lft and rgt values of the parent group
+					$publicGroup->rgt += 2;
+					$tasks[] = $this->db->updateObject('#__usergroups', $publicGroup, 'id');
+				}
+			}
+			else {
+				$apiV3GroupId = str_replace(['[', ']'], '', $apiV3ViewLevel->rules);
+			}
+			//
+
+			// Disable all webservices except emundus
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 0')
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('webservices'))
+				->where($this->db->quoteName('element') . ' != ' . $this->db->quote('emundus'));
+			$this->db->setQuery($query);
+			$tasks[] = $this->db->execute();
+			//
+
+			// Only allow api v2 and api v3 view levels to generate a token
+			$query->clear()
+				->select('extension_id, params, enabled, access')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('user'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('token'));
+			$this->db->setQuery($query);
+			$tokenPlugin = $this->db->loadObject();
+
+			if(!empty($tokenPlugin->extension_id) && !empty($apiV2GroupId) && !empty($apiV3GroupId))
+			{
+				$params = json_decode($tokenPlugin->params, true);
+				$params['allowedUserGroups'] = [$apiV2GroupId, $apiV3GroupId];
+
+				$tokenPlugin->enabled = 1;
+				$tokenPlugin->access = $specialViewLevel->id;
+				$tokenPlugin->params = json_encode($params);
+
+				$tasks[] = $this->db->updateObject('#__extensions', $tokenPlugin, 'extension_id');
+			}
+			//
+
+			// For those 2 view levels, only allow access to the API component
+			$query->clear()
+				->select('id, rules')
+				->from($this->db->quoteName('#__assets'))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('root.1'));
+			$this->db->setQuery($query);
+			$rootAsset = $this->db->loadObject();
+
+			if(!empty($rootAsset->rules) && !empty($apiV2GroupId) && !empty($apiV3GroupId))
+			{
+				$rules = json_decode($rootAsset->rules, true);
+				$rules['core.login.api'] = [
+					$publicGroup->id => 1,
+				];
+				$rules['core.login.admin'][$apiV2GroupId] = 1;
+				$rules['core.login.admin'][$apiV3GroupId] = 1;
+				$rootAsset->rules = json_encode($rules);
+				$tasks[] = $this->db->updateObject('#__assets', $rootAsset, 'id');
+			}
+			//
+
+			// Allow api v2 and api v3 groups in special view level
+			if(!empty($specialViewLevel->id) && !empty($apiV2GroupId) && !empty($apiV3GroupId))
+			{
+				$rules = json_decode($specialViewLevel->rules, true);
+				if(!in_array($apiV2GroupId, $rules))
+				{
+					$rules[] = (int) $apiV2GroupId;
+				}
+				if(!in_array($apiV3GroupId, $rules))
+				{
+					$rules[] = (int) $apiV3GroupId;
+				}
+				sort($rules);
+				$specialViewLevel->rules = json_encode($rules);
+				$tasks[] = $this->db->updateObject('#__viewlevels', $specialViewLevel, 'id');
+			}
+			//
+
+			// Add com_emundus to action logs extension
+			$query->clear()
+				->select('extension')
+				->from($this->db->quoteName('#__action_logs_extensions'))
+				->where($this->db->quoteName('extension') . ' = ' . $this->db->quote('com_emundus'));
+			$this->db->setQuery($query);
+			$actionLog = $this->db->loadResult();
+
+			if(empty($actionLog))
+			{
+				$actionLogInsert = [
+					'extension' => 'com_emundus'
+				];
+				$actionLogInsert = (object) $actionLogInsert;
+				$tasks[] = $this->db->insertObject('#__action_logs_extensions', $actionLogInsert);
+			}
+
+			$query->clear()
+				->select('extension_id, params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('com_actionlogs'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('component'));
+			$this->db->setQuery($query);
+			$actionLogsComponent = $this->db->loadObject();
+
+			if(!empty($actionLogsComponent->extension_id))
+			{
+				$params = json_decode($actionLogsComponent->params, true);
+				$params['loggable_extensions'][] = 'com_emundus';
+				$params['loggable_api'] = 1;
+				$params['loggable_verbs'] = ['GET', 'POST', 'PUT', 'DELETE'];
+				$actionLogsComponent->params = json_encode($params);
+				$tasks[] = $this->db->updateObject('#__extensions', $actionLogsComponent, 'extension_id');
+			}
+		}
+		catch (\Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			return false;
+		}
+
+		return !in_array(false, $tasks);
 	}
 }
