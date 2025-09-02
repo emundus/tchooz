@@ -223,7 +223,7 @@ $uids       = array();
                     </div>
 
                     <div class="tw-flex tw-items-center tw-gap-2 tw-flex-wrap" style="max-height: 150px; overflow-y: auto;">
-						<?php foreach ($this->users as $user) : ?>
+						<?php foreach ($this->users as $user) :?>
 
 							<?php if (!empty($user->email)) : ?>
 								<?php $email_list[] = $user->email; ?>

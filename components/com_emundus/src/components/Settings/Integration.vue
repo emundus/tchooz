@@ -9,10 +9,11 @@ import AmmonSetup from '@/components/Settings/Integration/AmmonSetup.vue';
 import OVHSetup from '@/components/Settings/Integration/OVHSetup.vue';
 import YousignSetup from '@/components/Settings/Integration/YousignSetup.vue';
 import SogecommerceSetup from '@/components/Settings/Integration/SogecommerceSetup.vue';
+import StripeSetup from '@/components/Settings/Integration/StripeSetup.vue';
 
 export default {
 	name: 'Integration',
-	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup, YousignSetup, SogecommerceSetup },
+	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup, YousignSetup, SogecommerceSetup, StripeSetup },
 	data() {
 		return {
 			loading: true,
@@ -138,6 +139,15 @@ export default {
 				v-else-if="currentApp.type === 'sogecommerce'"
 				:app="currentApp"
 				@sogecommerceInstalled="
+					currentApp = null;
+					getApps();
+				"
+			/>
+
+			<StripeSetup
+				v-else-if="currentApp.type === 'stripe'"
+				:app="currentApp"
+				@stripeInstalled="
 					currentApp = null;
 					getApps();
 				"

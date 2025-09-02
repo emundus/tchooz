@@ -65,7 +65,7 @@ class EmundusModelContacts extends ListModel
 		}
 	}
 
-	public function saveContact(int $id, string $lastname, string $firstname, string $email): int
+	public function saveContact(int $id, string $lastname, string $firstname, string $email, string $phone_1 = ''): int
 	{
 		try
 		{
@@ -76,9 +76,10 @@ class EmundusModelContacts extends ListModel
 				$contactEntity->setLastname($lastname);
 				$contactEntity->setFirstname($firstname);
 				$contactEntity->setEmail($email);
+				$contactEntity->setPhone1($phone_1);
 			}
 			else {
-				$contactEntity = new ContactEntity($email, $lastname, $firstname);
+				$contactEntity = new ContactEntity($email, $lastname, $firstname, $phone_1);
 			}
 
 			return $contactRepository->flush($contactEntity);

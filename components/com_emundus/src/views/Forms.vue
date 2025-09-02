@@ -46,6 +46,18 @@ export default {
 									},
 								},
 								{
+									action: 'publishform',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_PUBLISH',
+									controller: 'form',
+									method: 'post',
+									name: 'publish',
+									showon: {
+										key: 'status',
+										operator: '=',
+										value: '0',
+									},
+								},
+								{
 									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%',
 									label: 'COM_EMUNDUS_ONBOARD_MODIFY',
 									controller: 'form',

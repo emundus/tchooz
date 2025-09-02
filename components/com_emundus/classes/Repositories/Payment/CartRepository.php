@@ -26,6 +26,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Tchooz\Synchronizers\Payment\Stripe;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
 
@@ -1013,6 +1014,8 @@ class CartRepository
 					}
 
 					break;
+				case 'stripe':
+					$synchronizer = new Stripe();
 				default:
 					break;
 			}

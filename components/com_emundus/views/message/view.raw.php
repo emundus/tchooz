@@ -86,6 +86,17 @@ class EmundusViewMessage extends JViewLegacy
 				}
 
 				$this->users = $m_users->getUsersByIds($this->users);
+
+				foreach($this->users as $key => $user)
+				{
+					if ($user->is_anonym = 1)
+					{
+						$user->name  = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user->id;
+						$user->email = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
+						$this->users[$key] = $user;
+					}
+				}
+
 				break;
 
 
@@ -128,12 +139,17 @@ class EmundusViewMessage extends JViewLegacy
 
 				$fnum_array = [];
 
-				$tables = array('u.name', 'u.username', 'u.email', 'u.id');
+				$tables = array('u.name', 'u.username', 'u.email', 'u.id', 'eu.is_anonym');
 				foreach ($fnums as $fnum) {
 					if (EmundusHelperAccess::asAccessAction(9, 'c', $current_user->id, $fnum->fnum) && !empty($fnum->sid)) {
 						$user                = $m_application->getApplicantInfos($fnum->sid, $tables);
 						$user['campaign_id'] = $fnum->cid;
 						$fnum_array[]        = $fnum->fnum;
+						if ($user['is_anonym'] == 1) {
+							$user['name'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user['id'];
+							$user['email'] = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
+						}
+
 						$this->users[]       = $user;
 					}
 				}

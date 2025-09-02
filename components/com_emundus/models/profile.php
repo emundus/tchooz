@@ -1613,6 +1613,7 @@ class EmundusModelProfile extends ListModel
 			if ($allow_anonym_files)
 			{
 				$emundus_user->anonym       = $this->checkIsAnonymUser($current_user->id);
+				$emundus_user->is_anonym = $emundus_user->anonym;
 			}
 		}
 		else

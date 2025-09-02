@@ -1994,6 +1994,10 @@ class EmundusModelSettings extends ListModel
 
 		$emundus_parameters = ComponentHelper::getParams('com_emundus');
 
+		// Users params
+		$params['emundus']['disable_inactive_accounts_after_delay'] = $emundus_parameters->get('disable_inactive_accounts_after_delay', 12);
+		$params['emundus']['delete_testing_accounts_after_delay']   = $emundus_parameters->get('delete_testing_accounts_after_delay', 12);
+
 		foreach ($settings_applicants as $settings_applicant)
 		{
 			if ($settings_applicant['component'] === 'emundus')
@@ -2969,6 +2973,9 @@ class EmundusModelSettings extends ListModel
 						case 'sogecommerce':
 							$updated = $this->setupSogecommerce($app, $setup);
 							break;
+						case 'stripe':
+							$updated = $this->setupStripe($app, $setup);
+							break;
 						case 'yousign':
 							$updated = $this->setupYousign($app, $setup);
 						default:
@@ -3380,6 +3387,50 @@ class EmundusModelSettings extends ListModel
 		catch (Exception $e)
 		{
 			Log::add('Failed to update sogecommerce settings : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	private function setupStripe($app, $setup): bool
+	{
+		$updated = false;
+
+		if (empty($app->config) || $app->config == '{}')
+		{
+			$config = [
+				'authentication' => [
+					'client_secret' => isset($setup->authentication->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->client_secret) : '',
+					'webhook_secret' => isset($setup->authentication->webhook_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->webhook_secret) : '',
+				]
+			];
+		} else {
+			$config = json_decode($app->config, true);
+
+			if (isset($setup->authentication->client_secret))
+			{
+				$config['authentication']['client_secret'] = EmundusHelperFabrik::encryptDatas($setup->authentication->client_secret);
+			}
+
+			if (isset($setup->authentication->webhook_secret))
+			{
+				$config['authentication']['webhook_secret'] = EmundusHelperFabrik::encryptDatas($setup->authentication->webhook_secret);
+			}
+		}
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->update($this->db->quoteName('#__emundus_setup_sync'))
+				->set($this->db->quoteName('config') . ' = ' . $this->db->quote(json_encode($config)))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($app->id));
+			$this->db->setQuery($query);
+			$updated = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to update stripe settings : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
 		return $updated;

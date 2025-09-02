@@ -108,6 +108,7 @@ class ApplicationFileRepository
 		$parent_table = $this->getRepeatJoin($table);
 
 		if(empty($parent_table)) {
+			$date_columns = $this->getDateColumns($table);
 			$row_id = $this->getRowId($table, $fnum);
 
 			$datas['time_date'] = date('Y-m-d H:i:s');
@@ -116,6 +117,23 @@ class ApplicationFileRepository
 			if($this->haveCcidColumn($table)) {
 				$datas['ccid'] = $ccid;
 			}
+
+			foreach ($datas as $key => $value) {
+				if(in_array($key, $date_columns)) {
+					if(empty($value)) {
+						$datas[$key] = null;
+						continue;
+					}
+
+					$timestamp = strtotime($value);
+					if($timestamp !== false) {
+						$datas[$key] = date('Y-m-d H:i:s', $timestamp);
+					} else {
+						$datas[$key] = null;
+					}
+				}
+			}
+
 			$datas = (object)$datas;
 
 			if(empty($row_id))
@@ -198,5 +216,20 @@ class ApplicationFileRepository
 		$columns = $this->db->loadColumn();
 
 		return in_array('ccid', $columns);
+	}
+
+	private function getDateColumns(string $table): array
+	{
+		$this->db->setQuery('SHOW COLUMNS FROM ' . $table);
+		$columns = $this->db->loadObjectList();
+
+		$date_columns = [];
+		foreach ($columns as $column) {
+			if (str_contains($column->Type, 'date') || str_contains($column->Type, 'time')) {
+				$date_columns[] = $column->Field;
+			}
+		}
+
+		return $date_columns;
 	}
 }

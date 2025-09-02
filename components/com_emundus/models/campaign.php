@@ -1919,7 +1919,7 @@ class EmundusModelCampaign extends ListModel
 				return $updated;
 			}
 
-			$query = $this->_db->getQuery(true);
+			$query = $this->_db->createQuery();
 
 			require_once(JPATH_ROOT . '/components/com_emundus/models/falang.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
@@ -1937,7 +1937,7 @@ class EmundusModelCampaign extends ListModel
 			$limit_status  = [];
 			$fields        = [];
 			$columns       = [];
-			$keys_to_unset = ['limit_status', 'profileLabel', 'progid', 'status', 'languages'];
+			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages'];
 			$labels        = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
@@ -2076,14 +2076,14 @@ class EmundusModelCampaign extends ListModel
 
 					if ($data['is_limited'] == 1)
 					{
-						foreach ($limit_status as $key => $limit_statu)
+						foreach ($limit_status as $limit_statu)
 						{
-							if ($limit_statu == 'true')
+							if ($limit_statu)
 							{
 								$query->clear()
 									->insert($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
 									->set($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($cid))
-									->set($this->_db->quoteName('limit_status') . ' = ' . $this->_db->quote($key));
+									->set($this->_db->quoteName('limit_status') . ' = ' . $this->_db->quote($limit_statu));
 
 								$this->_db->setQuery($query);
 								$this->_db->execute();
@@ -2269,7 +2269,7 @@ class EmundusModelCampaign extends ListModel
 					->from($this->_db->quoteName('#__emundus_setup_campaigns_repeat_limit_status'))
 					->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($results->campaign->id));
 				$this->_db->setQuery($query);
-				$results->campaign->status = $this->_db->loadObjectList();
+				$results->campaign->limit_status = $this->_db->loadColumn();
 			}
 
 			$query->clear()

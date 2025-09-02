@@ -372,7 +372,7 @@ class EmundusModelComments extends BaseDatabaseModel
                 $user_ids = array_unique($user_ids);
 
                 $query->clear()
-                    ->select('u.id, eu.firstname, eu.lastname, CONCAT(eu.firstname, " ", eu.lastname) as name, eu.profile_picture')
+                    ->select('u.id, eu.firstname, eu.lastname, CONCAT(eu.firstname, " ", eu.lastname) as name, eu.profile_picture, eu.is_anonym')
                     ->from($this->db->quoteName('#__users', 'u'))
                     ->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = u.id')
                     ->where($this->db->quoteName('u.id' ) . ' IN (' . implode(',', $user_ids) . ')');
@@ -385,11 +385,18 @@ class EmundusModelComments extends BaseDatabaseModel
                 }
 
                 foreach ($comments as $key => $comment) {
-                    $comments[$key]['username'] = $users[$comment['user_id']]['name'];
-                    $comments[$key]['profile_picture'] = $users[$comment['user_id']]['profile_picture'];
-                    $comments[$key]['firstname'] = $users[$comment['user_id']]['firstname'];
-                    $comments[$key]['lastname'] = $users[$comment['user_id']]['lastname'];
-                    $comments[$key]['date_time'] = strtotime($comment['date']);
+					if ($users[$comment['user_id']]['is_anonym'] == 1) {
+						$comments[$key]['username'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						$comments[$key]['profile_picture'] = '';
+						$comments[$key]['firstname'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						$comments[$key]['lastname'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+					} else {
+						$comments[$key]['username'] = $users[$comment['user_id']]['name'];
+						$comments[$key]['profile_picture'] = $users[$comment['user_id']]['profile_picture'];
+						$comments[$key]['firstname'] = $users[$comment['user_id']]['firstname'];
+						$comments[$key]['lastname'] = $users[$comment['user_id']]['lastname'];
+					}
+					$comments[$key]['date_time'] = strtotime($comment['date']);
                     $comments[$key]['date'] = EmundusHelperDate::displayDate($comment['date'], 'DATE_FORMAT_LC2', 0);
                     $comments[$key]['updated'] = EmundusHelperDate::displayDate($comment['updated'], 'DATE_FORMAT_LC2', 0);
                 }

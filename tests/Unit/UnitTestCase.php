@@ -48,7 +48,7 @@ abstract class UnitTestCase extends TestCase
 	 * @var    array
 	 * @since  4.0.0
 	 */
-	protected $dataset = [];
+	protected array $dataset = [];
 
 	public function __construct(?string $name = null, array $data = [], $dataName = '', $className = null, $directory = '', $construct_args = [])
 	{

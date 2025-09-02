@@ -9,22 +9,20 @@
 
 namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
-use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
-use Emundus\Workflow\StepEntity;
-use Emundus\Workflow\StepTypeEntity;
 use Gantry\Framework\Exception;
+use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Emundus\Workflow\WorkflowEntity;
-use Emundus\Indexer\Entities\IndexEntity;
-use Joomla\CMS\Language\Text;
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
-use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\Indexer\IndexEntity;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Entities\Workflow\WorkflowEntity;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');

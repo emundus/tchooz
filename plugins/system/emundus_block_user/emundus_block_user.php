@@ -12,18 +12,15 @@
  */
 
 // no direct access
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die('Restricted access');
 
-jimport( 'joomla.plugin.plugin' );
+jimport('joomla.plugin.plugin');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Uri\Uri;
 
-/**
- * emundus_period candidature periode check
- *
- * @package     Joomla
- * @subpackage  System
- */
 class plgSystemEmundus_block_user extends CMSPlugin
 {
 	/**
@@ -40,78 +37,138 @@ class plgSystemEmundus_block_user extends CMSPlugin
 	 */
 	protected $db;
 
-    /**
-     * Constructor
-     *
-     * For php4 compatability we must not use the __constructor as a constructor for plugins
-     * because func_get_args ( void ) returns a copy of all passed arguments NOT references.
-     * This causes problems with cross-referencing necessary for the observer design pattern.
-     *
-     * @since   1.0
-     */
-    function __construct(& $subject, $config)
-    {
-        parent::__construct($subject, $config);
-        $this->loadLanguage();
-    }
+	function __construct(&$subject, $config)
+	{
+		parent::__construct($subject, $config);
 
-    function onAfterInitialise() {
-        include_once(JPATH_SITE.'/components/com_emundus/helpers/access.php');
+		$this->loadLanguage();
+	}
 
-        $user   =  $this->app->getSession()->get('emundusUser');
-        $input = $this->app->input;
-		$uri = JUri::getInstance();
+	function onAfterInitialise()
+	{
+		if(!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+		}
+		if(!class_exists('EmundusHelperMenu'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
+		}
 
-        if (
+
+		$user  = $this->app->getIdentity();
+		$input = $this->app->input;
+		$uri   = Uri::getInstance();
+
+		if (
 			!$this->app->isClient('administrator') &&
 			!empty($user->id) &&
 			EmundusHelperAccess::isApplicant($user->id) &&
 			($input->get('option', '') != 'com_emundus' && $input->get('view', '') != 'user') &&
-			strpos($uri->toString(), 'logout') === false
-        ) {
+			!str_contains($uri->toString(), 'logout')
+		)
+		{
 			$activationUri = $this->app->getUserState('users.login.activation.return');
-			if (!empty($activationUri)) {
+			if (!empty($activationUri))
+			{
 				$this->app->setUserState('users.login.activation.return', null);
 				$this->app->redirect($activationUri);
 			}
 
-	        $table = JTable::getInstance('user', 'JTable');
+			$token = $user->getParam('emailactivation_token', '');
+			$token = md5($token);
 
-	        $table->load($user->id);
-	        $params = new JRegistry($table->params);
+			if (!empty($token) && strlen($token) === 32 && $this->app->input->getInt($token, 0) === 1 && $input->getInt('emailactivation', 0) == 1)
+			{
+				$user->activation = 1;
+				$user->setParam('emailactivation_token', null);
 
-	        $token = $params->get('emailactivation_token');
-	        $token = md5($token);
-	        require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
-	        if (!empty($token) && strlen($token) === 32 && $this->app->input->getInt($token, 0, 'get') === 1 && $input->getInt('emailactivation',0) == 1) {
-		        $table->activation = 1;
-		        $params->set('emailactivation_token', null);
-		        $table->params = $params->toString();
+				if (!$user->save())
+				{
+					$this->app->enqueueMessage(Text::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATION_ERROR'), 'error');
+					return;
+				}
 
-		        // save user data
-		        if ($table->store()) {
-			        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'), 'success');
+				$this->app->enqueueMessage(Text::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'), 'success');
 
-			        $redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect', 'index.php'));
-			        if (!empty($redirect)) {
-				        $this->app->redirect($redirect);
-			        }
-		        }
-		        else {
-			        throw new RuntimeException($table->getError());
-		        }
-	        }
-	        elseif (($table->activation == 1 || $table->activation == 0) && $input->getInt('emailactivation',0) == 1) {
-		        $this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
-
-		        $redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect', 'index.php'));
-		        if (!empty($redirect)) {
-			        $this->app->redirect($redirect);
-		        }
+				$redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect', 'index.php'));
+				if (!empty($redirect))
+				{
+					$this->app->redirect($redirect);
+				}
 			}
-	        else if ((int) $table->activation == -1 && strpos($uri->toString(), 'activation') === false) {
-				$this->app->redirect('activation');
+			elseif (($user->activation == 1 || $user->activation == 0) && $input->getInt('emailactivation', 0) == 1)
+			{
+				$this->app->enqueueMessage(JText::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ALREADY_ACTIVATED'), 'warning');
+
+				$redirect = EmundusHelperMenu::getHomepageLink($this->params->get('activation_redirect', 'index.php'));
+				if (!empty($redirect))
+				{
+					$this->app->redirect($redirect);
+				}
 			}
-        }
-    }
+			else
+			{
+				if (((int) $user->activation == -1 || $user->activation == -2) && !str_contains($uri->toString(), 'activation'))
+				{
+					if (empty($user->getParam('emailactivation_token')))
+					{
+						$activation = md5(mt_rand());
+						$user->setParam('emailactivation_token', $activation);
+						if($user->save())
+						{
+							$this->sendReActivationEmail($user, $activation);
+						}
+					}
+
+					$this->app->redirect('activation');
+				}
+			}
+		}
+	}
+
+	private function sendReActivationEmail($user, $token)
+	{
+		define('JPATH_COMPONENT', 'com_emundus');
+
+		if ($user->getParam('skip_activation', false)) {
+			return false;
+		}
+
+		if(!class_exists('EmundusModelEmails'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+		}
+		$m_emails = new EmundusModelEmails();
+
+		$baseURL  = rtrim(Uri::root(), '/');
+		$md5Token = md5($token);
+
+		if ($this->app->get('sef') == 0) {
+			$activation_url_rel = '/index.php?option=com_users&task=edit&emailactivation=1&u=' . $user->id . '&' . $md5Token . '=1';
+		}
+		else {
+			$activation_url_rel = '/activation?emailactivation=1&u=' . $user->ud . '&' . $md5Token . '=1';
+		}
+		$activation_url = $baseURL . $activation_url_rel;
+
+		if(!class_exists('EmundusHelperEmails'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/emails.php');
+		}
+		$logo = EmundusHelperEmails::getLogo(true);
+
+		$post = [
+			'USER_NAME'          => $user->name,
+			'USER_EMAIL'         => $user->email,
+			'SITE_NAME'          => $this->app->get('sitename'),
+			'ACTIVATION_URL'     => $activation_url,
+			'ACTIVATION_URL_REL' => $activation_url_rel,
+			'BASE_URL'           => $baseURL,
+			'USER_LOGIN'         => $user->username,
+			'LOGO'               => Uri::base().'images/custom/'.$logo
+		];
+
+		return $m_emails->sendEmailNoFnum($user->email, 'enable_inactive_account', $post, $user->id);
+	}
 }

@@ -193,6 +193,22 @@ Text::script('COM_EMUNDUS_CAMPAIGN_STEPS_DESC');
 Text::script('COM_EMUNDUS_CAMPAIGN_STEP_START_DATE');
 Text::script('COM_EMUNDUS_CAMPAIGN_STEP_END_DATE');
 Text::script('COM_EMUNDUS_CAMPAIGNS_INFINITE_STEP');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_FIXED_DATES');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_RELATIVE_DATE');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_RELATIVE_END');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_RELATIVE_END_2');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_ENTRY_STATUS');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_DATE_INFO_TITLE');
+Text::script('COM_EMUNDUS_CAMPAIGN_STEP_DATE_INFO');
+Text::script('COM_EMUNDUS_DAY');
+Text::script('COM_EMUNDUS_DAYS');
+Text::script('COM_EMUNDUS_WEEK');
+Text::script('COM_EMUNDUS_WEEKS');
+Text::script('COM_EMUNDUS_MONTH');
+Text::script('COM_EMUNDUS_MONTHS');
+Text::script('COM_EMUNDUS_YEAR');
+Text::script('COM_EMUNDUS_YEARS');
 
 Text::script('USERNAME_Q');
 Text::script('ID_Q');
@@ -1167,8 +1183,6 @@ if (!in_array($name, ['settings', 'campaigns', 'emails', 'form']))
 }
 
 $wa->registerAndUseStyle('com_emundus_app', 'media/com_emundus_vue/app_emundus.css', ['version' => $hash]);
-
-$wa->registerAndUseScript('lottie', 'media/com_emundus/js/lib/@lottiefiles/lottie-player/dist/lottie-player.js');
 
 // The task 'getproductpdf' can be executed as public (when not signed in and form any view).
 if ($task == 'getproductpdf')

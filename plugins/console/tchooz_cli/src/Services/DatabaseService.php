@@ -278,6 +278,9 @@ class DatabaseService
 				// This is not a good practice, but we have to do it for old tables
 				$primaryKey = '*';
 			}
+			else {
+				$primaryKey = $this->db->quoteName($primaryKey);
+			}
 			
 		}
 
@@ -289,7 +292,7 @@ class DatabaseService
 		$primaryKey = $this->getPrimaryKey($table);
 
 		$this->query->clear()
-			->select('count('.$this->db->quoteName($primaryKey).')')
+			->select('count('.$primaryKey.')')
 			->from($this->db->quoteName($table));
 		$this->db->setQuery($this->query);
 

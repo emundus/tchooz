@@ -658,12 +658,9 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	public function getcampaignbyid()
 	{
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 		{
 			$id = $this->input->getInt('id', 0);
 
@@ -671,16 +668,15 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($campaign))
 			{
-				$tab = array('status' => 1, 'msg' => Text::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);
+				$response = array('status' => 1, 'code' => 200, 'msg' => Text::_('CAMPAIGN_RETRIEVED'), 'data' => $campaign);
 			}
 			else
 			{
-				$tab = array('status' => 0, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $campaign);
+				$response = array('status' => 0, 'code' => 404, 'msg' => Text::_('ERROR_CANNOT_RETRIEVE_CAMPAIGN'), 'data' => $campaign);
 			}
 		}
 
-		echo json_encode((object) $tab);
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	/**

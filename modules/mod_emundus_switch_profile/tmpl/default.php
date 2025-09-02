@@ -114,7 +114,7 @@ if ($just_logged && !$only_applicant) {
             grid-column-end: 5;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
+    <script src="/media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>
     <script>
 
         const current_profile = "<?= $user->profile . '.'; ?>";

@@ -2622,6 +2622,8 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 			//$calOpts['readonly'] = 'readonly';
 		}
 
+		$calOpts['weekNumbers'] = $params->get('jdate_show_week_numbers', '0') === '1';
+
 		return $calOpts;
 	}
 

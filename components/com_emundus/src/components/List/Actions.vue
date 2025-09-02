@@ -115,9 +115,9 @@ export default {
 			}, 500);
 		},
 
-		changeViewType(currentView) {
-			this.currentView = currentView.value;
-			localStorage.setItem('tchooz_view_type/' + document.location.hostname, currentView.value);
+		changeViewType(view) {
+			this.$emit('update:view', view.value);
+			localStorage.setItem('tchooz_view_type/' + document.location.hostname, view.value);
 		},
 
 		onClickAction(action) {
@@ -144,9 +144,6 @@ export default {
 		},
 	},
 	watch: {
-		currentView() {
-			this.$emit('update:view', this.currentView);
-		},
 		currentSearches() {
 			this.$emit('update:searches', this.currentSearches);
 		},
@@ -228,8 +225,8 @@ export default {
 				:key="viewTypeOption.value"
 				class="material-symbols-outlined !tw-flex tw-h-form tw-w-form tw-cursor-pointer tw-items-center tw-justify-center tw-rounded-coordinator tw-border tw-bg-neutral-0 tw-p-4"
 				:class="{
-					'active tw-border-main-500 tw-text-main-500': viewTypeOption.value === currentView,
-					'tw-border-neutral-600 tw-text-neutral-600': viewTypeOption.value !== currentView,
+					'active tw-border-main-500 tw-text-main-500': viewTypeOption.value === view,
+					'tw-border-neutral-600 tw-text-neutral-600': viewTypeOption.value !== view,
 				}"
 				@click="changeViewType(viewTypeOption)"
 				>{{ viewTypeOption.icon }}</span

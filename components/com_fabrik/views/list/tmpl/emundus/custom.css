@@ -275,10 +275,14 @@ font-size: 16px;
 /** **/
 
 /** FILTRES **/
+.view-list .fabrikForm .fabrikFilterContainer table {
+	border: unset;
+	box-shadow: unset;
+}
 .view-list .fabrikForm .fabrikFilterContainer .row-fluid .filtertable{
 	padding-left: 4px;
 }
-.view-list .fabrikForm .fabrikFilterContainer table.filtertable tbody tr td:nth-child(2n){
+.view-list .fabrikForm .fabrikFilterContainer table.filtertable tbody tr td:not(.day-name):not(.day):nth-child(2n){
 	padding-top: 0;
 }
 .view-list .fabrikForm .fabrikFilterContainer table.filtertable .fabrik___heading th{
@@ -289,6 +293,14 @@ font-size: 16px;
 	color: var(--red-500);
 	margin-top: 8px;
 	font-weight: 500;
+}
+.view-list .fabrikForm .fabrikFilterContainer .calendar-container .buttons-wrapper {
+	gap: 6px;
+}
+.view-list .fabrikForm .fabrikFilterContainer .calendar-container .buttons-wrapper button {
+	background: transparent;
+	border: solid 1px black;
+	box-shadow: unset;
 }
 /** **/
 

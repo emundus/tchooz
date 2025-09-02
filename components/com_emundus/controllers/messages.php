@@ -428,11 +428,21 @@ class EmundusControllerMessages extends BaseController
 			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_REPLY_TO') . '</strong> ' . $reply_to_from . ' </br>';
 		}
 
-		$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . $fnum->email . ' </br>' .
-			'<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
-			'<strong>' . Text::_('COM_EMUNDUS_EMAILS_BODY') . '</strong>
+
+		if ($fnum->is_anonym == 1) {
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . Text::_('COM_EMUNDUS_ANONYM_EMAIL') . ' </br>';
+
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
+				'<strong>' . Text::_('COM_EMUNDUS_EMAILS_BODY') . '</strong>
+			</div>
+			<div class="well">' . Text::_('COM_EMUNDUS_ANONYM_EMAIL_MESSAGE') . '</div>';
+		} else {
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_TO') . '</strong> ' . $fnum->email . ' </br>';
+			$html .= '<strong>' . Text::_('COM_EMUNDUS_EMAILS_SUBJECT') . '</strong> ' . $subject . ' </br>' .
+				'<strong>' . Text::_('COM_EMUNDUS_EMAILS_BODY') . '</strong>
 			</div>
 			<div class="well">' . $body . '</div>';
+		}
 
 
 		// Retrieve and build a list of the files that will be attached to the mail.
@@ -980,12 +990,12 @@ class EmundusControllerMessages extends BaseController
 			$send = $mailer->Send();
 
 			if ($send !== true) {
-				$failed[] = $user->email;
+				$failed[] = $user->is_anonym != 1 ? $user->email : Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user->id;
 				echo 'Error sending email: ' . $send->__toString();
 				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
 			else {
-				$sent[] = $user->email;
+				$sent[] = $user->is_anonym != 1 ? $user->email : Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user->id;
 				$log    = [
 					'user_id_from' => $current_user->id,
 					'user_id_to'   => $user->id,

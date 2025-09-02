@@ -324,7 +324,8 @@ class Sogecommerce
 		return [
 			'action' => $this->getEndpoint(),
 			'method' => 'POST',
-			'fields' => $fields
+			'fields' => $fields,
+			'type' => 'form'
 		];
 	}
 

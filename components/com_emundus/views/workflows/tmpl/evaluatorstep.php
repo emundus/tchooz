@@ -2,11 +2,23 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 $m_workflow = new EmundusModelWorkflow();
+
+$currentLanguage = Factory::getApplication()->getLanguage()->getTag();
+$defaultLanguage = ComponentHelper::getParams('com_languages')->get('site', 'fr-FR');
+if ($currentLanguage !== $defaultLanguage)
+{
+	$currentLangPath = '/' . substr($currentLanguage, 0, 2);
+}
+else
+{
+	$currentLangPath = '';
+}
 ?>
 
 <div class="panel panel-default widget em-container-evaluator-step tw-h-full">
@@ -51,7 +63,7 @@ $m_workflow = new EmundusModelWorkflow();
         </div>
 
         <div class="tw-px-4" style="height: calc(100% - 52px);">
-			<?php if (!EmundusHelperAccess::isDataAnonymized($this->user->id)) : ?>
+			<?php if (!EmundusHelperAccess::isDataAnonymized($this->user->id) && $this->applicant->is_anonym != 1) : ?>
                 <div class="tw-flex tw-flex-row tw-items-center em-mt-16">
                     <div class="tw-flex tw-flex-row em-small-flex-column em-small-align-items-start">
                         <div class="em-profile-picture-big no-hover"
@@ -72,7 +84,7 @@ $m_workflow = new EmundusModelWorkflow();
                 </div>
 			<?php endif; ?>
             <iframe id="evaluation-step-iframe" class="tw-mt-4 !tw-h-[calc(100%-155px)]" width="100%" loading="lazy"
-                    src="evaluation-step-form?view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->table ?>___ccid=<?= $this->ccid ?>&<?= $this->step->table ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
+                    src="<?php echo $currentLangPath; ?>/evaluation-step-form?view=form&formid=<?= $this->step->form_id ?>&<?= $this->step->table ?>___ccid=<?= $this->ccid ?>&<?= $this->step->table ?>___step_id=<?= $this->step->id ?>&tmpl=component&iframe=1"></iframe>
         </div>
 		<?php
 

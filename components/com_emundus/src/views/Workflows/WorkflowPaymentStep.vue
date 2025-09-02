@@ -186,7 +186,7 @@ export default {
 			paymentService.getPaymentMethods().then((response) => {
 				if (response.status) {
 					this.paymentMethods = response.data.map((method) => {
-						return { id: method.id, label: method.label, name: method.name };
+						return { id: method.id, label: method.label, name: method.name, services: method.services };
 					});
 				} else {
 				}
@@ -266,6 +266,17 @@ export default {
 		},
 	},
 	computed: {
+		displayedPaymentMethods() {
+			return this.paymentMethods.filter((method) => {
+				// if a service is selected, check that is id appears in payment methods.services array
+				if (this.step.synchronizer_id && this.step.synchronizer_id != 0) {
+					return method.services.includes(this.step.synchronizer_id);
+				} else {
+					return true;
+				}
+			});
+		},
+
 		displayedAdjustBalanceFields() {
 			return this.adjustBalanceFields.filter((field) => {
 				if (field.param === 'adjust_balance_step_id') {
@@ -398,7 +409,7 @@ export default {
 				</label>
 				<Multiselect
 					v-model="step.payment_methods"
-					:options="paymentMethods"
+					:options="displayedPaymentMethods"
 					:multiple="true"
 					:close-on-select="false"
 					:show-labels="false"

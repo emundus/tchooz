@@ -740,6 +740,7 @@
                description="GOOGLE_MAPS_API_DESC"
         />
     </fieldset>
+
     <fieldset name="users" label="COM_EMUNDUS_USERS_LABEL" description="COM_EMUNDUS_USERS_DESC">
         <field name="showUniversities" type="list" menu="hide" default="1" label="COM_EMUNDUS_SHOW_UNIVERSITIES"
                description="COM_EMUNDUS_SHOW_UNIVERSITIES_DESC">
@@ -794,6 +795,12 @@
                multiple="false"
                default=""
         />
+        <field name="disable_inactive_accounts_after_delay" type="text" menu="hide" default="18" label="COM_EMUNDUS_DISABLE_INACTIVE_ACCOUNTS_AFTER_DELAY" />
+        <field name="delete_inactive_accounts" type="list" menu="hide" default="0" label="COM_EMUNDUS_DELETE_INACTIVE_ACCOUNTS" >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field showon="delete_inactive_accounts:1" name="delete_inactive_accounts_after_delay" type="text" menu="hide" default="72" label="COM_EMUNDUS_DELETE_INACTIVE_ACCOUNTS_AFTER_DELAY" />
     </fieldset>
 
     <fieldset label="COM_EMUNDUS_INTEGRATION" name="integration" description="COM_EMUNDUS_INTEGRATION_DESC">

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_list" method="upgrade" type="plugin" version="4">
+    <name>plg_fabrik_list_emailhistory</name>
+    <author>eMundus</author>
+    <creationDate>2025-08-20</creationDate>
+    <copyright>Copyright (C) 2005-2025 Fabrikar - All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see software_license.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>https://www.emundus.fr</authorUrl>
+    <version>2.9.0</version>
+    <description>PLG_LIST_EMAIL_HISTORY_DATA_DESCRIPTION</description>
+    <files>
+        <filename plugin="emailhistory">emailhistory.php</filename>
+        <filename>index.html</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
+    </files>
+</extension>

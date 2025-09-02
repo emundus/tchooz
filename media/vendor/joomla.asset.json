@@ -180,8 +180,7 @@
       "name": "jquery",
       "type": "script",
       "uri": "vendor/jquery/jquery.min.js",
-      "package": "jquery",
-      "version": "3.7.1"
+      "package": "jquery"
     },
     {
       "name": "hotkeysjs",

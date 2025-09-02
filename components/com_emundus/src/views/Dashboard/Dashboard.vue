@@ -128,7 +128,7 @@ export default {
 					: this.translate('COM_EMUNDUS_DASHBOARD_AREA') + ' ' + this.translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL');
 			} else {
 				return this.profile_name !== ''
-					? this.profile_name.toUpperCase() + ' ' + this.translate('COM_EMUNDUS_DASHBOARD_AREA').toLowerCase()
+					? this.profile_name + ' ' + this.translate('COM_EMUNDUS_DASHBOARD_AREA').toLowerCase()
 					: this.translate('COM_EMUNDUS_DASHBOARD_EMPTY_LABEL') + ' ' + this.translate('COM_EMUNDUS_DASHBOARD_AREA');
 			}
 		},

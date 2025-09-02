@@ -4,10 +4,12 @@ import settingsService from '@/services/settings.js';
 import campaignService from '@/services/campaign.js';
 import { useGlobalStore } from '@/stores/global.js';
 import Info from '@/components/Utils/Info.vue';
+import Modal from '@/components/Modal.vue';
+import CancelReservation from '@/views/Events/CancelReservation.vue';
 
 export default {
 	name: 'EventBooking',
-	components: { Info },
+	components: { CancelReservation, Modal, Info },
 	props: {
 		componentsProps: {
 			type: Object,
@@ -17,6 +19,7 @@ export default {
 	emits: ['valueUpdated'],
 	data() {
 		return {
+			actualLanguage: 'fr-FR',
 			loading: false,
 
 			myBookings: [],
@@ -26,6 +29,7 @@ export default {
 
 			slots: [],
 			slotSelected: null,
+			completeSlot: null,
 
 			name: null,
 			currentTimezone: {
@@ -38,9 +42,11 @@ export default {
 			registrantsLink: '',
 			isApplicant: false,
 			userId: 0,
+			cancelReservation: false,
 		};
 	},
 	created() {
+		this.actualLanguage = useGlobalStore().getCurrentLang;
 		this.source = useGlobalStore().getDatas.source ? useGlobalStore().getDatas.source.value : null;
 		this.isApplicant = useGlobalStore().getDatas.isApplicant
 			? parseInt(useGlobalStore().getDatas.isApplicant.value)
@@ -88,6 +94,7 @@ export default {
 				this.myBookings = bookings;
 
 				if (this.myBookings.length > 0) {
+					this.completeSlot = this.myBookings[0];
 					this.slotSelected = this.myBookings[0].availability;
 				}
 
@@ -292,6 +299,34 @@ export default {
 					}
 				});
 		},
+		canShowCancelButton() {
+			if (!this.completeSlot?.can_cancel) {
+				return false;
+			}
+
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+
+			const startDate = new Date(this.completeSlot.start);
+			startDate.setHours(0, 0, 0, 0);
+
+			if (this.completeSlot.can_cancel_until_date) {
+				const cancelUntilDate = new Date(this.completeSlot.can_cancel_until_date);
+				cancelUntilDate.setHours(0, 0, 0, 0);
+				return today <= cancelUntilDate;
+			} else if (this.completeSlot.can_cancel_until_days !== null) {
+				const cancelUntilCalculatedDate = new Date(startDate);
+				cancelUntilCalculatedDate.setDate(startDate.getDate() - this.completeSlot.can_cancel_until_days);
+				cancelUntilCalculatedDate.setHours(0, 0, 0, 0);
+				return today <= cancelUntilCalculatedDate;
+			}
+
+			return true;
+		},
+
+		changePopUpCancelState() {
+			this.cancelReservation = !this.cancelReservation;
+		},
 	},
 	computed: {
 		visibleDates: function () {
@@ -457,8 +492,26 @@ export default {
 
 		<Info v-if="slotSelected && this.slots.length > 0" class="tw-w-full" :text="selectedSlotInfo" />
 
+		<div v-if="this.source === 'fabrik' && this.isApplicant && completeSlot && canShowCancelButton()">
+			<button v-if="canShowCancelButton()" class="tw-btn-secondary" @click="changePopUpCancelState()">
+				<span class="material-symbols-outlined">delete</span>
+				Annuler la réservation
+			</button>
+		</div>
+
+		<CancelReservation v-if="cancelReservation" :slot-selected="this.completeSlot" @close="changePopUpCancelState" />
+
 		<input type="text" class="hidden fabrikinput" :id="name" :name="name" :value="slotSelected" />
 	</div>
 </template>
 
-<style scoped></style>
+<style scoped>
+@import '../../assets/css/modal.scss';
+
+.placement-center {
+	position: fixed;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	top: 50%;
+}
+</style>
