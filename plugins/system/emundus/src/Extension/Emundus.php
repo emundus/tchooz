@@ -191,7 +191,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$user = $app->getIdentity();
 
 		// If samlredirect plugin is active and we're coming from saml login page we can try to update user informations
-		$userParams = (!empty($user->params) && json_validate($user->params)) ? json_decode($user->params) : [];
+		$userParams = (!empty($user->params)) ? json_decode($user->params) : [];
 		if (!$user->guest && PluginHelper::isEnabled('system', 'samlredirect') && !empty($userParams) && $userParams->saml == 1)
 		{
 			$db    = Factory::getContainer()->get('DatabaseDriver');
