@@ -748,11 +748,25 @@ class EmundusControllerUsers extends BaseController
 		}
 
 		$newuser['id']               = $this->input->getInt('id', 0);
-		$newuser['firstname']        = $this->input->getString('firstname');
-		$newuser['lastname']         = $this->input->getString('lastname');
-		$newuser['username']         = $this->input->getString('login');
+
+
+		// if is anonym, do not update firstname, lastname, username, login
+		$m_users = $this->getModel('Users');
+		$current_user = $m_users->getUserInfos($newuser['id']);
+		if ($current_user['is_anonym'] == 1)
+		{
+			$newuser['firstname']        = $current_user['firstname'];
+			$newuser['lastname']         = $current_user['lastname'];
+			$newuser['username']         = $current_user['login'];
+			$newuser['email']            = $current_user['email'];
+		} else {
+			$newuser['firstname']        = $this->input->getString('firstname');
+			$newuser['lastname']         = $this->input->getString('lastname');
+			$newuser['username']         = $this->input->getString('login');
+			$newuser['email']            = $this->input->getString('email');
+		}
+
 		$newuser['name']             = $newuser['firstname'] . ' ' . $newuser['lastname'];
-		$newuser['email']            = $this->input->getString('email');
 		$newuser['same_login_email'] = $this->input->getInt('sameLoginEmail', 1);
 		$newuser['testing_account']  = $this->input->getInt('testingAccount', 0);
 		$newuser['authProvider']     = $this->input->getInt('authProvider', 0);
@@ -775,7 +789,6 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 
-		$m_users = $this->getModel('Users');
 		$res     = $m_users->editUser($newuser);
 
 		if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', $current_user->id) && !empty($newuser['profile']))

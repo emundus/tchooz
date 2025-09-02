@@ -1315,7 +1315,7 @@ class EmundusModelEvaluation extends JModelList
 			$user_id = $this->app->getIdentity()->id;
 		}
 
-		$query    = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) AS name, ss.class as status_class, sp.code';
+		$query = 'select jecc.fnum, ss.step, ss.value as status, concat(upper(trim(eu.lastname))," ",eu.firstname) as name, ss.class as status_class, sp.code, eu.is_anonym';
 		$group_by = 'GROUP BY jecc.fnum ';
 
 		$already_joined_tables = [

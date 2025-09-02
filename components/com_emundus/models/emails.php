@@ -1904,13 +1904,28 @@ class EmundusModelEmails extends JModelList
 						$messages_fnums_by_id[$params->message_id] = $message;
 					}
 
+
+					$query->clear()
+						->select('is_anonym')
+						->from($this->_db->quoteName('#__emundus_users'))
+						->where($this->_db->quoteName('user_id') . ' = ' . $user_id);
+					$this->_db->setQuery($query);
+					$is_anonym = $this->_db->loadResult();
+
 					// Finally we filter the messages to add the fnum_to field
-					foreach ($messages as $message)
+					foreach ($messages as $key => $message)
 					{
 						$message->fnum_to = '';
 						if (in_array($message->message_id, array_keys($messages_fnums_by_id)))
 						{
 							$message->fnum_to = $messages_fnums_by_id[$message->message_id]->fnum_to;
+						}
+
+						// if the user is anonym, we hide the email_to field and the content, cause it could contains personal data
+						if ($is_anonym == 1)
+						{
+							$message->email_to = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+							$message->message  = Text::_('COM_EMUNDUS_ANONYM_EMAIL_MESSAGE');
 						}
 					}
 				}
@@ -3457,7 +3472,7 @@ class EmundusModelEmails extends JModelList
 			$config = JFactory::getConfig();
 
 			// Get additional info for the fnums such as the user email.
-			$fnum = $m_files->getFnumInfos($fnum);
+			$fnum = $m_files->getFnumInfos($fnum, 0, false);
 			$template = $m_messages->getEmail($email_id);
 			$programme = $m_campaign->getProgrammeByTraining($fnum['training']);
 

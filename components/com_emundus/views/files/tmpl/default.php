@@ -310,7 +310,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
                                                         <?php endif; ?>
                                                     </span>
                                                                 <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                                <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                                <div class="em_list_user_id"><?= $value->user->id; ?></div>
 													        <?php endif; ?>
                                                         </div>
                                                     </a>

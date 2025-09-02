@@ -111,6 +111,14 @@ class EmundusViewUsers extends HtmlView
 				$user->o_profiles = array_unique($user->o_profiles);
 				$user->o_profiles = implode('<br>', $user->o_profiles);
 			}
+
+			if ($user->is_anonym)
+			{
+				$user->username =  Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+				$user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+				$user->lastname = '';
+				$user->firstname = '';
+			}
 		}
 
 		$this->users      = $users;

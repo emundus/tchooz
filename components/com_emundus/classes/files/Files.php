@@ -4,6 +4,7 @@ namespace Tchooz\files;
 
 use JFactory;
 use JLog;
+use Joomla\CMS\Language\Text;
 use Throwable;
 
 use Joomla\CMS\Factory;
@@ -193,7 +194,7 @@ class Files
 
 			if ($params->display_filter_steps) {
 				$status = [];
-				$db     = JFactory::getDbo();
+				$db     = Factory::getContainer()->get('DatabaseDriver');
 				$query  = $db->getQuery(true);
 
 				$query->select('step as value, value as label')
@@ -297,7 +298,7 @@ class Files
 	private function getCampaigns(): array
 	{
 		if (empty($this->campaigns)) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('DISTINCT esc.id as value, esc.label')
@@ -393,7 +394,12 @@ class Files
 
 	public function buildSelect($params, $status_access = false): array
 	{
-		$select = ['DISTINCT ecc.fnum', 'ecc.applicant_id', 'ecc.campaign_id as campaign', 'u.name as applicant_name'];
+		$select = [
+			'DISTINCT ecc.fnum',
+			'ecc.applicant_id',
+			'ecc.campaign_id as campaign',
+			'CASE WHEN eu.is_anonym != 1 THEN u.name ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END as applicant_name',
+		];
 
 		if ($status_access) {
 			$select[] = 'ess.value as status,ess.class as status_color';
@@ -418,10 +424,10 @@ class Files
 
 	public function buildLeftJoin($params, $status_access): array
 	{
-		$db = JFactory::getDbo();
-
+		$db = Factory::getContainer()->get('DatabaseDriver');
 		$left_joins = [
 			$db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('ecc.applicant_id') . ' = ' . $db->quoteName('u.id'),
+			$db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('u.id'),
 			$db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('ecc.campaign_id') . ' = ' . $db->quoteName('esc.id')
 		];
 		if ($status_access) {
@@ -441,7 +447,7 @@ class Files
 
 	public function buildWhere($params): array
 	{
-		$db = JFactory::getDbo();
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$wheres = [
 			$db->quoteName('esc.published') . ' = 1'
@@ -484,7 +490,7 @@ class Files
 		$em_session = JFactory::getSession()->get('emundusUser');
 		$user       = JFactory::getUser();
 
-		$db                              = JFactory::getDbo();
+		$db                              = Factory::getContainer()->get('DatabaseDriver');
 		$query_groups_allowed            = $db->getQuery(true);
 		$query_users_associated          = $db->getQuery(true);
 		$query_groups_associated         = $db->getQuery(true);
@@ -627,7 +633,7 @@ class Files
 
 	public function buildAssocGroups($files)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -694,7 +700,7 @@ class Files
 
 	public function buildAssocTags($files)
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try {
@@ -764,7 +770,7 @@ class Files
 		$values = [];
 
 		if ($type === 'select') {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			switch ($element_plugin) {
@@ -869,7 +875,7 @@ class Files
 			$filters = $this->getFilters();
 
 			if (!empty($filters['applied_filters'])) {
-				$db    = JFactory::getDBO();
+				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
 				$left_joins_already_used = [];
@@ -1013,7 +1019,7 @@ class Files
 	 */
 	public function getComments($fnum): array
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$comments = [];
@@ -1038,7 +1044,7 @@ class Files
 		$comment = new \stdClass();
 
 		if (!empty($cid)) {
-			$db    = JFactory::getDbo();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('ec.id, ec.reason, ec.comment_body,ec.date,concat(eu.lastname," ",eu.firstname) as user')
@@ -1060,7 +1066,7 @@ class Files
 
 	public function saveComment($fnum, $reason, $comment_body): object
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$comment = new \stdClass();
@@ -1099,7 +1105,7 @@ class Files
 
 	public function deleteComment($cid): bool
 	{
-		$db    = JFactory::getDbo();
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		$result = false;

@@ -127,7 +127,9 @@ class EmundusViewApplication extends HtmlView
 
 			switch ($layout) {
 				case 'synthesis':
-					if(EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+					$m_user     = new EmundusModelUsers;
+					$applicant  = $m_user->getUserById($fnumInfos['applicant_id']);
+					if(EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) && $applicant[0]->is_anonym != 1)
 					{
 						$this->synthesis = new stdClass();
 						$program         = $m_application->getProgramSynthesis($fnumInfos['campaign_id']);

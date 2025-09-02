@@ -2036,8 +2036,14 @@ class EmundusControllerFiles extends BaseController
 								$uid  = intval(substr($v, 21, 7));
 								if (!$anonymize_data) {
 									$userProfil = $m_users->getUserById($uid)[0];
-									$line       .= $userProfil->lastname . "\t";
-									$line       .= $userProfil->firstname . "\t";
+
+									if ($userProfil->is_anonym != 1) {
+										$line       .= $userProfil->lastname . "\t";
+										$line       .= $userProfil->firstname . "\t";
+									} else {
+										$line       .= Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . "\t" ;
+										$line       .= Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . "\t" ;
+									}
 								}
 							}
 							else {
@@ -4127,29 +4133,24 @@ class EmundusControllerFiles extends BaseController
 
 	public function getuserslogbyfnum()
 	{
+		$response = ['status' => false, 'code' => 403, 'data' => [], 'msg' => Text::_('ACCESS_DENIED')];
 		$fnum = $this->input->getString('fnum', '');
 
-		if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum)) {
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
-			$m_logs = $this->getModel('Logs');
-
-			if (!empty($fnum)) {
+		if (!empty($fnum)) {
+			if (EmundusHelperAccess::asAccessAction(37, 'r', $this->_user->id, $fnum)) {
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'logs.php');
+				$m_logs = $this->getModel('Logs');
 				$users = $m_logs->getUsersLogsByFnum($fnum);
-				if (!empty($users)) {
-					echo json_encode((['status' => true, 'data' => $users]));
-				}
-				else {
-					echo json_encode((['status' => false, 'data' => []]));
-				}
-			}
-			else {
-				echo json_encode((['status' => false, 'data' => []]));
+				$response = [
+					'status' => true,
+					'code'   => 200,
+					'data'   => $users,
+					'msg'    => Text::_('SUCCESS')
+				];
 			}
 		}
-		else {
-			echo json_encode((['status' => false, 'data' => [], 'msg' => Text::_('ACCESS_DENIED')]));
-		}
-		exit;
+
+		$this->sendJsonResponse($response);
 	}
 
 	public function checkmenufilterparams()

@@ -299,7 +299,9 @@ class EmundusModelLogs extends JModelList
 		if (!empty($crud))
 			$where .= ' AND ' . $this->db->quoteName('verb') . ' IN ( ' . $crud . ')';
 
-		$query->select('lg.*, us.firstname, us.lastname')
+		$query->select('lg.*,
+			CASE WHEN us.is_anonym = 1 THEN ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' ELSE us.firstname END as firstname,
+			CASE WHEN us.is_anonym = 1 THEN us.user_id ELSE us.lastname END as lastname')
 			->from($this->db->quoteName('#__emundus_logs', 'lg'))
 			->leftJoin($this->db->quoteName('#__emundus_users', 'us') . ' ON ' . $this->db->QuoteName('us.user_id') . ' = ' . $this->db->QuoteName('lg.user_id_from'))
 			->where($where)
@@ -557,8 +559,9 @@ class EmundusModelLogs extends JModelList
 
 		if (!empty($fnum)) {
 			$query->clear()
-				->select('distinct(ju.id) as uid, ju.name')
+				->select('distinct(ju.id) as uid, CASE WHEN jeu.is_anonym = 1 THEN ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' ELSE ju.name END as name')
 				->from($this->db->quoteName('jos_users', 'ju'))
+				->leftJoin($this->db->quoteName('#__emundus_users', 'jeu') . ' ON ' . $this->db->quoteName('jeu.user_id') . ' = ' . $this->db->quoteName('ju.id'))
 				->leftJoin($this->db->quoteName('#__emundus_logs', 'jel') . ' ON ' . $this->db->quoteName('jel.user_id_from') . ' = ' . $this->db->quoteName('ju.id'))
 				->where($this->db->quoteName('jel.fnum_to') . ' = ' . $this->db->quote($fnum));
 
