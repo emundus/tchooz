@@ -57,8 +57,6 @@ class Release2_9_0Installer extends ReleaseInstaller
 					'type' => 'DATETIME',
 					'null' => 0,
 				],
-			];
-			$foreignKeys = [
 				[
 					'name' => 'status',
 					'type' => 'INT(11) NOT NULL',
