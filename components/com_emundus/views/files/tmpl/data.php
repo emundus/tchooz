@@ -159,8 +159,10 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                 </thead>
 
                 <tbody>
-				<?php foreach ($this->datas as $key => $line): ?>
-					<?php if ($key != 0): ?>
+				<?php foreach ($this->datas as $key => $line):
+                    ?>
+					<?php if ($key != 0):
+					?>
 
 						<tr>
 
@@ -208,7 +210,7 @@ $fix_header = $eMConfig->get('fix_file_header', 0);
                                                         <?php endif; ?>
                                                     </span>
                                                     <div class="em_list_email"><?= $value->user->email; ?></div>
-                                                    <div class="em_list_email"><?= $value->user->id; ?></div>
+                                                    <div class="em_list_user_id"><?= $value->user->id; ?></div>
 												<?php endif; ?>
                                             </div>
                                         </a>

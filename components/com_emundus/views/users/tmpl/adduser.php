@@ -26,6 +26,14 @@ $applicant_option_others = false;
 require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
+if ($this->user['is_anonym'] == 1)
+{
+	$this->user['lastname'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+	$this->user['firstname'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+	$this->user['email'] = "anonymemail@emundus.fr";
+	$this->user['login'] = "anonymemail@emundus.fr";
+}
+
 ?>
 <style>
     form {
@@ -66,23 +74,30 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
                 <div class="form-group em-addUser-detail-info-lastname">
                     <label class="control-label" for="lname"><?= Text::_('COM_EMUNDUS_FORM_LAST_NAME'); ?></label>
                     <input type="text" class="em-w-100" id="lname"
-                           name="lastname" <?= ($this->edit == 1) ? 'value="' . $this->user['lastname'] . '"' : ''; ?>/>
+                           name="lastname" <?= ($this->edit == 1) ? 'value="' . $this->user['lastname'] . '"' : ''; ?>
+	                    <?= $this->user['is_anonym'] == 1 ? "disabled" : ''; ?>
+                    />
                 </div>
                 <div class="form-group em-addUser-detail-info-firstname">
                     <label class="control-label" for="fname"><?= Text::_('COM_EMUNDUS_FORM_FIRST_NAME'); ?></label>
                     <input type="text" class="em-w-100" id="fname"
-                           name="firstname" <?= ($this->edit == 1) ? 'value="' . $this->user['firstname'] . '"' : ''; ?>/>
+                           name="firstname" <?= ($this->edit == 1) ? 'value="' . $this->user['firstname'] . '"' : ''; ?>
+	                    <?= $this->user['is_anonym'] == 1 ? "disabled" : ''; ?>
+                    />
                 </div>
             </div>
 
             <div class="form-group em-addUser-detail-info-mail">
                 <label class="control-label" for="mail"><?= Text::_('COM_EMUNDUS_EMAIL'); ?></label>
                 <input type="text" class="em-w-100" id="mail"
-                       name="email" <?= $this->edit == 1 ? 'value="' . $this->user['email'] . '"' : ''; ?>/>
+                       name="email" <?= $this->edit == 1 ? 'value="' . $this->user['email'] . '"' : ''; ?>
+                    <?= $this->user['is_anonym'] == 1 ? "disabled" : ''; ?>
+                />
             </div>
             <div class="form-group em-addUser-detail-info-same-login tw-flex tw-items-center">
                 <input type="checkbox" id="same_login_email" name="same_login_email"
-                       style="margin-bottom: 5px; outline-offset: 1px;" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>>
+                       style="margin-bottom: 5px; outline-offset: 1px;" <?= ($this->user['email'] == $this->user['login']) ? 'checked' : ''; ?>
+	                <?= $this->user['is_anonym'] == 1 ? "disabled" : ''; ?>>
                 <label for="same_login_email"
                        class="mb-0"><?= Text::_('COM_EMUNDUS_USERS_LOGIN_SAME_EMAIL'); ?></label>
             </div>

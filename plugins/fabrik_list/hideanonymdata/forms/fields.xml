@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields addfieldpath="/administrator/components/com_fabrik/models/fields" name="params">
+        <fieldset name="plg-list-hideanonymdata">
+            <field name="user_id_field"
+                   type="listfields"
+                   description="PLG_LIST_USER_ID_FIELD_ELEMENT_DESC"
+                   label="PLG_LIST_USER_ID_FIELD_ELEMENT_LABEL"
+            />
+
+
+            <field name="fields_to_hide"
+                   type="text"
+                   description="PLG_LIST_FIELDS_TO_HIDE_ELEMENT_DESC"
+                   label="PLG_LIST_FIELDS_TO_HIDE_ELEMENT_LABEL"
+            />
+        </fieldset>
+    </fields>
+</form>

@@ -99,8 +99,8 @@ class EmundusModelSMS extends JModelList
 						'send_to_mobile',
 						'COM_EMUNDUS_ADDONS_SMS_DESC',
 						'',
-						(bool)$config['enabled'],
-						(bool)$config['displayed']
+						$config['enabled'] == 1,
+						$config['displayed'] == 1
 					);
 
 					$configuration = [
@@ -676,7 +676,7 @@ class EmundusModelSMS extends JModelList
 
 		$query = $this->db->getQuery(true);
 
-		$query->select('esq.*, eu.firstname, eu.lastname')
+		$query->select('esq.*, eu.firstname, eu.lastname, eu.is_anonym')
 			->from($this->db->quoteName('#__emundus_sms_queue', 'esq'))
 			->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON esq.created_by = eu.user_id')
 			->where('1 = 1');
@@ -970,13 +970,18 @@ class EmundusModelSMS extends JModelList
 
 			foreach ($fnums as $fnum) {
 				$query->clear()
-					->select('CONCAT(eu.firstname, " ", eu.lastname) as username, eu.tel')
+					->select('CONCAT(eu.firstname, " ", eu.lastname) as username, eu.tel, eu.is_anonym')
 					->from('#__emundus_users eu')
 					->leftJoin('#__emundus_campaign_candidature ecc ON eu.user_id = ecc.applicant_id')
 					->where('ecc.fnum = ' . $this->db->quote($fnum));
 
 				try {
 					$data[$fnum] = $this->db->setQuery($query)->loadAssoc();
+
+					if (!empty($data[$fnum]) && $data[$fnum]['is_anonym']) {
+						$data[$fnum]['tel'] = Text::_('COM_EMUNDUS_ANONYM_PHONE_NUMBER');
+						$data[$fnum]['username'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+					}
 				} catch (\Exception $e) {
 					Log::add('Error on get recipients data : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
 				}

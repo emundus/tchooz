@@ -31,6 +31,8 @@ class EmundusViewWorkflows extends JViewLegacy
 
 	public int $evaluation_row_id = 0;
 
+	public ?object $applicant = null;
+
 	function display($tpl = null)
 	{
 		$app = Factory::getApplication();
@@ -61,7 +63,7 @@ class EmundusViewWorkflows extends JViewLegacy
 				$this->ccid = (int)$data['id'];
 				$this->fnum = EmundusHelperFiles::getFnumFromId($this->ccid);
 				$this->applicant  = $m_user->getUserById($data['applicant_id'])[0];
-				if (!isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
+				if (!$this->applicant->is_anonym && !isset($this->applicant->profile_picture) || empty($this->applicant->profile_picture)) {
 					$this->applicant->profile_picture = $m_user->getIdentityPhoto($this->fnum, $data['applicant_id']);
 				}
 

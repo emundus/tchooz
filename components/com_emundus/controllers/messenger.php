@@ -16,6 +16,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * Emundus Messenger Controller
@@ -23,6 +24,8 @@ use Joomla\CMS\MVC\Controller\BaseController;
  */
 class EmundusControllerMessenger extends BaseController
 {
+	use TraitResponse;
+
 	/**
 	 * @var EmundusModelMessenger
 	 * @since version 1.0.0
@@ -185,8 +188,7 @@ class EmundusControllerMessenger extends BaseController
 			}
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	public function sendmessage()

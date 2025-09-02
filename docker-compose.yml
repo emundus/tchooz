@@ -1,4 +1,4 @@
-# docker-compose.yml for local development environment setup
+#docker-compose.yml for local development environment setup
 services:
   joomla:
     container_name: joomla5

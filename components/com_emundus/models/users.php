@@ -239,7 +239,7 @@ class EmundusModelUsers extends ListModel
 		$showJoomlagroups = $eMConfig->get('showJoomlagroups', 0);
 		$showNewsletter   = $eMConfig->get('showNewsletter');
 
-        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile,group_concat(DISTINCT eup.profile_id) as o_profiles, espr.published as is_applicant_profile, ';
+        $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile,group_concat(DISTINCT eup.profile_id) as o_profiles, espr.published as is_applicant_profile, e.is_anonym, ';
 
 		if ($showNewsletter == 1)
 			$query .= 'up.profile_value as newsletter, ';
@@ -1982,7 +1982,8 @@ class EmundusModelUsers extends ListModel
 				'eu.university_id',
 				'up.profile_value as newsletter',
 				'IF(JSON_VALID(u.params), json_extract(u.params,"$.testing_account"),0) as testing_account',
-				'u.authProvider'
+				'u.authProvider',
+				'eu.is_anonym'
 			];
 
 			$query->select($columns)
@@ -3320,9 +3321,10 @@ class EmundusModelUsers extends ListModel
 		if (!empty($ids)) {
 			$query = $this->db->getQuery(true);
 
-			$query->select('*')
-				->from('#__users')
-				->where('id IN (' . implode(',', $ids) . ')');
+			$query->select('u.*, eu.is_anonym')
+				->from($this->db->quoteName('#__users', 'u'))
+				->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('u.id'))
+				->where('u.id IN (' . implode(',', $ids) . ')');
 
 			try {
 				$this->db->setQuery($query);

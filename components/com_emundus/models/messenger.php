@@ -18,6 +18,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -297,7 +298,7 @@ class EmundusModelMessenger extends ListModel
 		return $files;
 	}
 
-	function getMessagesByFnum($fnum, $offset = 0, $user_id = null)
+	function getMessagesByFnum($fnum, $offset = 0, $user_id = null): object
 	{
 		$messages = [];
 
@@ -335,10 +336,11 @@ class EmundusModelMessenger extends ListModel
 				}
 
 				$query->clear()
-					->select('m.*,u.name')
+					->select('m.*, CASE WHEN eu.is_anonym != 1 THEN u.name ELSE ' . $this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as name')
 					->from($this->db->quoteName('#__messages', 'm'))
 					->leftJoin($this->db->quoteName('#__emundus_chatroom', 'c') . ' ON ' . $this->db->quoteName('c.id') . ' = ' . $this->db->quoteName('m.page'))
 					->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('m.user_id_from'))
+					->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('u.id'))
 					->where($this->db->quoteName('c.fnum') . ' LIKE ' . $this->db->quote($fnum))
 					->order('m.date_time DESC');
 				$this->db->setQuery($query, $offset);
@@ -633,7 +635,7 @@ class EmundusModelMessenger extends ListModel
 					if($notifications === false)
 					{
 						// Get count of messages since last reply from an other user that applicant
-						$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, concat(eu.lastname, " ", eu.firstname) as fullname, group_concat(m.message_id) as messages')
+						$query->select('ecc.fnum, m.page, COUNT(m.message_id) as notifications, CASE WHEN eu.is_anonym != 1 THEN concat(eu.lastname, " ", eu.firstname) ELSE '.$this->db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')).' END as fullname, group_concat(m.message_id) as messages')
 							->from($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 							->leftJoin($this->_db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->_db->quoteName('eu.user_id') . ' LIKE ' . $this->_db->quoteName('ecc.applicant_id'))
 							->leftJoin($this->_db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->_db->quoteName('ec.fnum') . ' LIKE ' . $this->_db->quoteName('ecc.fnum'))
