@@ -1,13 +1,26 @@
 <?php
+
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Session\Session;
+use Joomla\CMS\Uri\Uri;
+
 defined('_JEXEC') or die('Restricted access');
 
 $email        = $this->user;
-$current_user = JFactory::getUser();
+$current_user = Factory::getApplication()->getIdentity();
+
+$title = 'COM_EMUNDUS_MAIL_SEND';
+$body = 'COM_EMUNDUS_ACCESS_PLATFORM';
+if($current_user->activation == -2) {
+	$title = 'COM_EMUNDUS_MAIL_RESEND';
+    $body = 'COM_EMUNDUS_ACCESS_PLATFORM_REENABLE';
+}
 ?>
 <div class="em-activation-header">
     <p><a class="em-back-button em-pointer em-w-auto em-float-left" style="text-decoration: unset"
-          href="<?php echo JUri::base() ?>index.php?option=com_users&task=user.logout&<?php echo JSession::getFormToken() ?>=1"><span
-                    class="material-symbols-outlined em-mr-4 tw-text-neutral-600">navigate_before</span><?= JText::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?>
+          href="<?php echo Uri::base() ?>index.php?option=com_users&task=user.logout&<?php echo Session::getFormToken() ?>=1"><span
+                    class="material-symbols-outlined em-mr-4 tw-text-neutral-600">navigate_before</span><?= Text::_('COM_EMUNDUS_MAIL_GB_BUTTON'); ?>
         </a></p>
 </div>
 
@@ -21,16 +34,16 @@ $current_user = JFactory::getUser();
                     </div>
                 </div>
             </div>
-            <h3 class="em-mb-32 em-mt-24"><?= JText::_('COM_EMUNDUS_MAIL_SEND') ?></h3>
-            <p class="instructions"><?= JText::sprintf('COM_EMUNDUS_ACCESS_PLATFORM', $this->user_email); ?></p>
+            <h3 class="em-mb-32 em-mt-24"><?= Text::_($title) ?></h3>
+            <p class="instructions"><?= Text::sprintf($body, $this->user_email); ?></p>
             <div class="resend em-mt-48">
-                <p><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC'); ?>
-                    <!--<span onclick="activation(<?= $this->user->id; ?>)" class="em-pointer"><?= JText::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC_2'); ?></span>-->
+                <p><?= Text::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC'); ?>
+                    <!--<span onclick="activation(<?= $this->user->id; ?>)" class="em-pointer"><?= Text::_('COM_EMUNDUS_MAIL_NOT_RECEIVE_DESC_2'); ?></span>-->
                 </p>
                 <div class="containerButtons">
                     <input id="email" type="text" name="email" value="<?= $this->user_email ?>" class="mail">
                     <input type="button" onclick="activation()" class="btn btn-primary btn-resend"
-                           value="<?= JText::_('COM_EMUNDUS_MAIL_SEND_NEW'); ?>">
+                           value="<?= Text::_('COM_EMUNDUS_MAIL_SEND_NEW'); ?>">
                 </div>
             </div>
         </div>
