@@ -12,6 +12,7 @@ class PaymentMethodEntity
 	public string $label;
 	public ?string $description;
 	public int $published;
+	private array $services = [];
 	// TODO: define if the method is manual or handled by a payment gateway
 	private DatabaseDriver $db;
 
@@ -59,6 +60,13 @@ class PaymentMethodEntity
 				$this->label       = $paymentMethod->label;
 				$this->description = $paymentMethod->description;
 				$this->published   = $paymentMethod->published;
+
+				$query->clear()
+					->select('distinct ' . $this->db->quoteName('service_id'))
+					->from($this->db->quoteName('jos_emundus_setup_payment_method_sync'))
+					->where($this->db->quoteName('payment_method_id') . ' = ' . $this->db->quote($this->id));
+				$this->db->setQuery($query);
+				$this->services = $this->db->loadColumn();
 			}
 			else
 			{
@@ -79,6 +87,17 @@ class PaymentMethodEntity
 			'label'       => $this->label,
 			'description' => $this->description,
 			'published'   => $this->published,
+			'services'    => $this->services,
 		];
+	}
+
+	public function getServices(): array
+	{
+		return $this->services;
+	}
+
+	public function isServiceAvailable(int $service_id): bool
+	{
+		return in_array($service_id, $this->services);
 	}
 }

@@ -13,6 +13,7 @@ namespace scripts;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Enums\Workflow\WorkflowStepDateRelativeToEnum;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 class Release2_9_0Installer extends ReleaseInstaller
 {
@@ -49,12 +50,15 @@ class Release2_9_0Installer extends ReleaseInstaller
 			$result = EmundusHelperUpdate::addColumn('#__emundus_setup_campaigns_step_dates', 'relative_end_date_unit', 'VARCHAR(55) NOT NULL DEFAULT \'day\'');
 			$tasks[] = $result['status'];
 
+			// a table to store the payment method sync state which payment methods are available for which services
 			$columns = [
 				[
 					'name' => 'date_time',
 					'type' => 'DATETIME',
 					'null' => 0,
 				],
+			];
+			$foreignKeys = [
 				[
 					'name' => 'status',
 					'type' => 'INT(11) NOT NULL',
@@ -197,6 +201,49 @@ class Release2_9_0Installer extends ReleaseInstaller
 			EmundusHelperUpdate::createSchedulerTask('Checking inactive accounts', 'plg_task_inactiveaccounts_task_get', $execution_rules, $cron_rules);
 			//
 
+			$tasks[] = EmundusHelperUpdate::addNewAddonSync('stripe', 'Stripe', 'Paiement via le service Stripe', 'stripe.png', ['authentication' => ['client_secret' => '', 'webhook_secret' => '']]);
+
+			// a table to store the payment method sync state which payment methods are available for which services
+			$columns = [
+				[
+					'name' => 'payment_method_id',
+					'type' => 'INT',
+					'length' => 11,
+					'null' => false,
+					'default' => null,
+				],
+				[
+					'name' => 'service_id',
+					'type' => 'INT',
+					'length' => 11,
+					'null' => false,
+					'default' => null,
+				],
+			];
+			$foreignKeys = [
+				[
+					'name'           => 'emundus_setup_payment_method_sync_pmi_fk',
+					'from_column'    => 'payment_method_id',
+					'ref_table'      => 'jos_emundus_setup_payment_method',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+				[
+					'name'           => 'emundus_setup_payment_method_sync_si_fk',
+					'from_column'    => 'service_id',
+					'ref_table'      => 'jos_emundus_setup_sync',
+					'ref_column'     => 'id',
+					'update_cascade' => true,
+					'delete_cascade' => true
+				],
+			];
+			$tasks[] = EmundusHelperUpdate::createTable('jos_emundus_setup_payment_method_sync', $columns, $foreignKeys)['status'];
+
+			// update the sync table, sogecommerce service has all payment methods available
+			// stripe has only cb
+			$this->installPaymentMethodSync();
+
 			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
@@ -206,5 +253,52 @@ class Release2_9_0Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function installPaymentMethodSync()
+	{
+		$payment_repository = new PaymentRepository();
+		$payment_methods = $payment_repository->getPaymentMethods();
+
+		$sogecommerce_id = 0;
+		$query = $this->db->getQuery(true)
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_sync'))
+			->where($this->db->quoteName('type') . ' = ' . $this->db->quote('sogecommerce'));
+
+		$this->db->setQuery($query);
+		$sogecommerce_id = (int) $this->db->loadResult();
+
+		$stripe_id = 0;
+		$query = $this->db->getQuery(true)
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_sync'))
+			->where($this->db->quoteName('type') . ' = ' . $this->db->quote('stripe'));
+
+		$this->db->setQuery($query);
+		$stripe_id = (int) $this->db->loadResult();
+
+
+		foreach ($payment_methods as $payment_method)
+		{
+			if (!$payment_method->isServiceAvailable($sogecommerce_id)) {
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_setup_payment_method_sync'))
+					->columns($this->db->quoteName(['payment_method_id', 'service_id']))
+					->values($payment_method->getId() . ', ' . $sogecommerce_id);
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			if ($payment_method->getName() === 'CB' && !$payment_method->isServiceAvailable($stripe_id))
+			{
+				$query = $this->db->getQuery(true)
+					->insert($this->db->quoteName('#__emundus_setup_payment_method_sync'))
+					->columns($this->db->quoteName(['payment_method_id', 'service_id']))
+					->values($payment_method->getId() . ', ' . $stripe_id);
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+		}
 	}
 }

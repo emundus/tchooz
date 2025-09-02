@@ -201,23 +201,26 @@ export default {
 						// data contains form, with the action, the method and the fields
 						const form = response.data;
 						const formElement = document.createElement('form');
-						formElement.setAttribute('method', form.method);
-						formElement.setAttribute('action', form.action);
-						formElement.setAttribute('target', '_self');
-						formElement.setAttribute('id', 'checkout-form');
-						formElement.setAttribute('style', 'display: none;');
 
-						for (const [key, value] of Object.entries(form.fields)) {
-							const input = document.createElement('input');
-							input.setAttribute('type', 'hidden');
-							input.setAttribute('name', key);
-							input.setAttribute('value', value);
-							formElement.appendChild(input);
+						if (form.type === 'form') {
+							formElement.setAttribute('method', form.method);
+							formElement.setAttribute('action', form.action);
+							formElement.setAttribute('target', '_self');
+							formElement.setAttribute('id', 'checkout-form');
+							formElement.setAttribute('style', 'display: none;');
+
+							if (form.fields && typeof form.fields === 'object') {
+								for (const [key, value] of Object.entries(form.fields)) {
+									const input = document.createElement('input');
+									input.setAttribute('type', 'hidden');
+									input.setAttribute('name', key);
+									input.setAttribute('value', value);
+									formElement.appendChild(input);
+								}
+							}
+						} else if (form.type === 'redirect') {
+							window.location.href = form.action;
 						}
-
-						document.body.appendChild(formElement);
-						formElement.submit();
-						document.body.removeChild(formElement);
 					}
 					this.loading = false;
 				} else {

@@ -74,6 +74,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
             'Symfony\\Component\\VarDumper\\' => 28,
             'Symfony\\Component\\HtmlSanitizer\\' => 32,
             'Svg\\' => 4,
+            'Stripe\\' => 7,
             'Sabberworm\\CSS\\' => 15,
         ),
         'P' => 
@@ -199,6 +200,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Svg\\' => 
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',
+        ),
+        'Stripe\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/stripe/stripe-php/lib',
         ),
         'Sabberworm\\CSS\\' => 
         array (

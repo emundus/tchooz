@@ -4850,4 +4850,59 @@ class EmundusHelperUpdate
 
 		return $task_created;
 	}
+
+	public static function addNewAddonSync(string $type, string $name, string $description = '', string $icon = '', array $config = [], int $published = 0, int $enabled = 0): bool
+	{
+		$added = false;
+
+		if (!empty($type) && !empty($name))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('id')
+				->from($db->quoteName('#__emundus_setup_sync'))
+				->where($db->quoteName('type') . ' = ' . $db->quote($type));
+
+			$db->setQuery($query);
+			$exists = $db->loadResult();
+
+			if (empty($exists))
+			{
+				$columns = [
+					$db->quoteName('type'),
+					$db->quoteName('name'),
+					$db->quoteName('description'),
+					$db->quoteName('icon'),
+					$db->quoteName('config'),
+					$db->quoteName('published'),
+					$db->quoteName('enabled'),
+				];
+
+				$values = [
+					$db->quote($type),
+					$db->quote($name),
+					$db->quote($description),
+					$db->quote($icon),
+					$db->quote(json_encode($config)),
+					$db->quote($published),
+					$db->quote($enabled),
+				];
+
+				$query->clear()
+					->insert($db->quoteName('#__emundus_setup_sync'))
+					->columns($columns)
+					->values(implode(',', $values));
+
+				$db->setQuery($query);
+				$added = $db->execute();
+			}
+			else
+			{
+				$added = true;
+			}
+		}
+
+		return $added;
+	}
 }
