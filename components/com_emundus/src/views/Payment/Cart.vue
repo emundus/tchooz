@@ -216,6 +216,10 @@ export default {
 									input.setAttribute('name', key);
 									input.setAttribute('value', value);
 									formElement.appendChild(input);
+
+									document.body.appendChild(formElement);
+									formElement.submit();
+									document.body.removeChild(formElement);
 								}
 							}
 						} else if (form.type === 'redirect') {
