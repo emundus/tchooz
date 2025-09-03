@@ -5074,8 +5074,27 @@ class EmundusModelUsers extends ListModel
 			{
 				$user = $user[0];
 
+				$anonym_fields = [
+					'email',
+					'firstname',
+					'lastname',
+					'username',
+				];
+
+				if ($user->is_anonym == 1) {
+					foreach ($anonym_fields as $field) {
+						if (isset($user->{$field})) {
+							$user->{$field} = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						}
+					}
+				}
+
 				foreach ($columns['j_columns'] as $field)
 				{
+					if ($user->is_anonym == 1 && in_array($field->name, $anonym_fields)) {
+						$field->value = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+					}
+
 					$user_details[$field->label] = $field->value;
 				}
 
@@ -5088,6 +5107,7 @@ class EmundusModelUsers extends ListModel
 				}
 			}
 		}
+
 		return $user_details;
 	}
 
