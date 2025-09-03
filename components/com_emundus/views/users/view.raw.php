@@ -119,6 +119,8 @@ class EmundusViewUsers extends HtmlView
 				$user->lastname = '';
 				$user->firstname = '';
 			}
+
+			$user->is_anonym = $user->is_anonym == 1 ? Text::_('JYES') : Text::_('JNO');
 		}
 
 		$this->users      = $users;
