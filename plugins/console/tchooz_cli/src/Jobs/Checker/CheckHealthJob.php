@@ -355,7 +355,7 @@ class CheckHealthJob extends TchoozJob
 		foreach ($lists as $list)
 		{
 			$params         = json_decode($list->params, true);
-			$inlineedit_key = array_search('inlineedit', array_column($params['plugins'], 'name'));
+			$inlineedit_key = array_search('inlineedit', $params['plugins']);
 			// Remove inlineedit plugin
 			if ($inlineedit_key !== false)
 			{
