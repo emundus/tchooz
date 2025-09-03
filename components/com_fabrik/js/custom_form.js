@@ -26,18 +26,22 @@ requirejs(['fab/fabrik'], function () {
       }
     },
     '>' : function (a, b, plugin) {
-        if (!Array.isArray(a)) {
-            if (typeof a === 'string' && typeof b === 'string') {
-            a = a.toLowerCase();
-            b = b.toLowerCase();
-            }
-
-            // TODO: cast types to number ? check if values are numeric ?
-
-            return a > b;
-        } else {
-            return false; // Not applicable for arrays
+      if (!Array.isArray(a)) {
+        if (typeof a === 'string' && typeof b === 'string') {
+          a = a.toLowerCase();
+          b = b.toLowerCase();
         }
+
+        // check if values are numeric
+        if (!isNaN(a) && !isNaN(b)) {
+          a = parseFloat(a);
+          b = parseFloat(b);
+        }
+
+        return a > b;
+      } else {
+        return false; // Not applicable for arrays
+      }
     },
     '<' : function (a, b, plugin) {
       if (!Array.isArray(a)) {
@@ -45,32 +49,50 @@ requirejs(['fab/fabrik'], function () {
           a = a.toLowerCase();
           b = b.toLowerCase();
         }
+
+        if (!isNaN(a) && !isNaN(b)) {
+            a = parseFloat(a);
+            b = parseFloat(b);
+        }
+
         return a < b;
       } else {
         return false; // Not applicable for arrays
       }
     },
     '>=': function (a, b, plugin) {
-        if (!Array.isArray(a)) {
-            if (typeof a === 'string' && typeof b === 'string') {
-            a = a.toLowerCase();
-            b = b.toLowerCase();
-            }
-            return a >= b;
-        } else {
-            return false; // Not applicable for arrays
+      if (!Array.isArray(a)) {
+        if (typeof a === 'string' && typeof b === 'string') {
+          a = a.toLowerCase();
+          b = b.toLowerCase();
         }
+
+        if (!isNaN(a) && !isNaN(b)) {
+            a = parseFloat(a);
+            b = parseFloat(b);
+        }
+
+        return a >= b;
+      } else {
+        return false; // Not applicable for arrays
+      }
     },
     '<=': function (a, b, plugin) {
-        if (!Array.isArray(a)) {
-            if (typeof a === 'string' && typeof b === 'string') {
-            a = a.toLowerCase();
-            b = b.toLowerCase();
-            }
-            return a <= b;
-        } else {
-            return false; // Not applicable for arrays
+      if (!Array.isArray(a)) {
+        if (typeof a === 'string' && typeof b === 'string') {
+          a = a.toLowerCase();
+          b = b.toLowerCase();
         }
+
+        if (!isNaN(a) && !isNaN(b)) {
+            a = parseFloat(a);
+            b = parseFloat(b);
+        }
+
+        return a <= b;
+      } else {
+        return false; // Not applicable for arrays
+      }
     }
     // ...
   };
