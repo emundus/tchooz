@@ -20,8 +20,7 @@ foreach ($this->elements as $element) :
 		endif;
 		?>
 
-		<div class="<?php echo $element->span;?>">
-            div class="row-fluid mb-3">
+		<div class="<?php echo $element->span;?> tw-mb-4">
             <div>
 				<?php echo $element->label; ?>
             </div>
