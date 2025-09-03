@@ -1032,6 +1032,8 @@ class EmundusModelWorkflow extends JModelList
 
 						$dates['start_date'] = $start_date->format('Y-m-d H:i:s');
 						$dates['end_date'] = $end_date->format('Y-m-d H:i:s');
+					} else {
+						// TODO: if we cannot calculate the relative date, we should not be able to start the step
 					}
 				}
 				else
@@ -1062,6 +1064,10 @@ class EmundusModelWorkflow extends JModelList
 				try {
 					$this->db->setQuery($query);
 					$relativeDate = $this->db->loadResult();
+
+					if (!empty($relativeDate)) {
+						$relativeDate = EmundusHelperDate::displayDate($relativeDate, 'Y-m-d H:i:s', 0);
+					}
 				} catch (\Exception $e) {
 					Log::add('Error while fetching relative date for status: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
