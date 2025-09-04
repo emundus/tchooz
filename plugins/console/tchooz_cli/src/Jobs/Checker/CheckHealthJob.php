@@ -199,7 +199,17 @@ class CheckHealthJob extends TchoozJob
 
 		$query = $this->databaseServiceSource->getDatabase()->createQuery();
 
-		$query->select('params')
+		$query->clear()
+			->update($this->databaseService->getDatabase()->quoteName('jos_extensions'))
+			->set($this->databaseService->getDatabase()->quoteName('enabled') . ' = 1')
+			->where($this->databaseService->getDatabase()->quoteName('element') . ' LIKE ' . $this->databaseService->getDatabase()->quote('oauth2'))
+			->where($this->databaseService->getDatabase()->quoteName('type') . ' LIKE ' . $this->databaseService->getDatabase()->quote('plugin'))
+			->where($this->databaseService->getDatabase()->quoteName('folder') . ' LIKE ' . $this->databaseService->getDatabase()->quote('system'));
+		$this->databaseService->getDatabase()->setQuery($query);
+		$checked = $this->databaseService->getDatabase()->execute();
+
+		$query->clear()
+			->select('params')
 			->from($this->databaseServiceSource->getDatabase()->quoteName('jos_extensions'))
 			->where($this->databaseServiceSource->getDatabase()->quoteName('element') . ' LIKE ' . $this->databaseServiceSource->getDatabase()->quote('emundus_oauth2'));
 		$this->databaseServiceSource->getDatabase()->setQuery($query);
