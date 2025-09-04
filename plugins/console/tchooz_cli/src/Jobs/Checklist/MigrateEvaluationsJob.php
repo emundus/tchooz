@@ -56,16 +56,16 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 
 		if (!class_exists('IndexEntity')) {
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/indexer/Entities/IndexEntity.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Indexer/IndexEntity.php');
 		}
 		if (!class_exists('StepTypeEntity')) {
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/workflow/StepTypeEntity.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Workflow/StepTypeEntity.php');
 		}
 		if (!class_exists('StepEntity')) {
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/workflow/StepEntity.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Workflow/StepEntity.php');
 		}
 		if (!class_exists('WorkflowEntity')) {
-			require_once(JPATH_ROOT . '/components/com_emundus/classes/workflow/WorkflowEntity.php');
+			require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Workflow/WorkflowEntity.php');
 		}
 
 		parent::__construct($logger);
