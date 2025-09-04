@@ -52,6 +52,7 @@ class EmundusViewUsers extends HtmlView
 	protected $progs = null;
 	protected $items = null;
 	protected $display = null;
+	protected $display_anonym = false;
 
 	function __construct($config = array())
 	{
@@ -122,6 +123,25 @@ class EmundusViewUsers extends HtmlView
 
 			$user->is_anonym = $user->is_anonym == 1 ? Text::_('JYES') : Text::_('JNO');
 		}
+
+		$query = $this->_db->getQuery(true);
+		$query->clear()
+			->select('value')
+			->from($this->_db->quoteName('#__emundus_setup_config'))
+			->where($this->_db->quoteName('namekey') . ' = ' . $this->_db->quote('anonymous'));
+
+		try {
+			$this->_db->setQuery($query);
+			$anonym_params = $this->_db->loadResult();
+			if (!empty($anonym_params))
+			{
+				$params = json_decode($anonym_params);
+				$this->display_anonym = $params->enabled == 1;
+			}
+		} catch (Exception $e) {
+			// Do nothing
+		}
+
 
 		$this->users      = $users;
 		$this->pagination       = $m_users->getPagination();

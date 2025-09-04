@@ -117,6 +117,26 @@ $timezone      = new DateTimeZone($offset);
                                     <span>#</span>
                                 </p>
                             </th>
+
+                        <?php elseif ($key === 'is_anonym') : ?>
+                            <?php if ($this->display_anonym) : ?>
+                                <th id="<?php echo $key ?>">
+                                    <?php if ($this->lists['order'] == $key) : ?>
+                                        <p class="em-cell">
+                                            <?php if ($this->lists['order_dir'] == 'desc') : ?>
+                                                <span class="glyphicon glyphicon-sort-by-attributes-alt"></span>
+                                            <?php else : ?>
+                                                <span class="glyphicon glyphicon-sort-by-attributes"></span>
+                                            <?php endif; ?>
+                                            <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key)) ?></strong>
+                                        </p>
+                                    <?php else : ?>
+                                        <p class="em-cell">
+                                            <strong><?php echo JText::_('COM_EMUNDUS_' . strtoupper($key)) ?></strong>
+                                        </p>
+                                    <?php endif; ?>
+                                </th>
+                            <?php endif; ?>
                         <?php else : ?>
                             <?php if (!in_array($key, ['active', 'is_applicant_profile'])) : ?>
                                 <th id="<?php echo $key ?>">
@@ -243,6 +263,14 @@ $timezone      = new DateTimeZone($offset);
                                     </div>
                                 </td>
                             <?php endif; ?>
+				        <?php elseif ($k == 'is_anonym') : ?>
+        	                <?php if ($this->display_anonym) : ?>
+                                <td>
+                                    <div class="em-cell">
+		                                <?php echo $value; ?>
+                                    </div>
+                                </td>
+        					<?php endif; ?>
                         <?php else: ?>
                             <td <?php if ($k == 'groupe') {
                                 echo 'class="em-cell-scroll"';
