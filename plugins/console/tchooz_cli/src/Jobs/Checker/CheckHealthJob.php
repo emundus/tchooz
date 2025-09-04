@@ -661,6 +661,18 @@ include(\'index.php\');
 		return $installed;
 	}
 
+	#[CheckAttribute(description: "Check if emundus system plugin is enabled")]
+	private function checkEmundusSystemPlugin(): bool
+	{
+		$installed = \EmundusHelperUpdate::installExtension('plg_emundus_system', 'emundus', null, 'plugin', 1, 'system');
+		if ($installed)
+		{
+			\EmundusHelperUpdate::enableEmundusPlugins('emundus', 'system');
+		}
+
+		return $installed;
+	}
+
 	#[CheckAttribute(description: "Rebuild fnum elements now initialized by forms plugins")]
 	private function rebuildFnumElements(): bool
 	{
