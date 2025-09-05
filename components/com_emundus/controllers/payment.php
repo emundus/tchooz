@@ -1775,6 +1775,7 @@ class EmundusControllerPayment extends BaseController
 			if (!empty($transaction) && EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'u', $this->app->getIdentity()->id, $transaction->getFnum())) {
 				$transaction_reference = $this->input->getString('reference', '');
 				$transaction_status = $this->input->getString('status', '');
+				$transaction_amount = $this->input->getFloat('amount', 0);
 
 				try {
 					if (!empty($transaction_reference)) {
@@ -1787,6 +1788,10 @@ class EmundusControllerPayment extends BaseController
 						$transaction->setStatus(TransactionStatus::from($transaction_status));
 					} else {
 						throw new Exception(Text::_('COM_EMUNDUS_TRANSACTION_STATUS_REQUIRED'));
+					}
+
+					if (!empty($transaction_amount)) {
+						$transaction->setAmount($transaction_amount);
 					}
 
 					$saved = $transaction_repository->saveTransaction($transaction, $this->app->getIdentity()->id);

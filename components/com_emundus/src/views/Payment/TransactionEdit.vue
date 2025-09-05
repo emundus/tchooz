@@ -89,7 +89,7 @@ export default {
 					<div>
 						<strong>{{ translate('COM_EMUNDUS_TRANSACTION_AMOUNT') }}</strong>
 					</div>
-					<div>{{ transaction.amount }}</div>
+					<input type="number" v-model="transaction.amount" name="amount" />
 				</div>
 				<hr class="tw-m-0" />
 

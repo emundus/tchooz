@@ -216,11 +216,13 @@ export default {
 									input.setAttribute('name', key);
 									input.setAttribute('value', value);
 									formElement.appendChild(input);
-
-									document.body.appendChild(formElement);
-									formElement.submit();
-									document.body.removeChild(formElement);
 								}
+
+								document.body.appendChild(formElement);
+								formElement.submit();
+								document.body.removeChild(formElement);
+							} else {
+								this.displayError('COM_EMUNDUS_ERROR_OCCURED', 'COM_EMUNDUS_CART_FAILED_TO_PROCESS_PAYMENT');
 							}
 						} else if (form.type === 'redirect') {
 							window.location.href = form.action;
