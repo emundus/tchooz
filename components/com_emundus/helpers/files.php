@@ -4763,6 +4763,33 @@ class EmundusHelperFiles
 										{
 											$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
 
+											// if element is in a repeat group, try to find the parent table and check if it is linked to fnum
+											if ($fabrik_element_data['group_params']['repeat_group_button'] == 1)
+											{
+												$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
+
+												if (!empty($join_informations))
+												{
+													$parent_table = $join_informations['join_from_table'];
+													if ($this->isTableLinkedToCampaignCandidature($parent_table))
+													{
+														if (!in_array($parent_table, $already_joined))
+														{
+															$already_joined[] = $parent_table;
+															$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
+														}
+
+														if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
+														{
+															$already_joined[] = $fabrik_element_data['db_table_name'];
+															$where['join']    .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name']) . ' ON ' . $fabrik_element_data['db_table_name'] . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table . '.' . $join_informations['table_key'];
+														}
+														$mapped_to_fnum = true;
+														break;
+													}
+												}
+											}
+
 											if ($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checklist', 'multilist']))
 											{
 												$query->clear()
