@@ -305,10 +305,19 @@ class TransactionRepository
 					}
 				}
 
-				$details = ['updated' => [
-					['old' => $old_data['status'], 'new' => $transaction->getStatus()->value],
-					['old' => !empty($old_data['external_reference']) ? $old_data['external_reference'] : '' , 'new' => $transaction->getExternalReference()],
-				]];
+				$details = ['updated' => []];
+
+				if ($old_data['status'] != $transaction->getStatus()->value) {
+					$details['updated'][] = ['old' => $old_data['status'], 'new' => $transaction->getStatus()->value];
+				}
+
+				if ($old_data['external_reference'] != $transaction->getExternalReference()) {
+					$details['updated'][] = ['old' => !empty($old_data['external_reference']) ? $old_data['external_reference'] : '' , 'new' => $transaction->getExternalReference()];
+				}
+
+				if ($old_data['amount'] != $transaction->getAmount()) {
+					$details['updated'][] = ['old' => $old_data['amount'], 'new' => $transaction->getAmount()];
+				}
 			} else {
 				$details = [];
 			}
