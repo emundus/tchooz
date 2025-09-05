@@ -89,7 +89,7 @@ class EmundusViewMessage extends JViewLegacy
 
 				foreach($this->users as $key => $user)
 				{
-					if ($user->is_anonym = 1)
+					if ($user->is_anonym == 1)
 					{
 						$user->name  = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user->id;
 						$user->email = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
