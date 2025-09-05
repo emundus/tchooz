@@ -399,6 +399,7 @@ class Files
 			'ecc.applicant_id',
 			'ecc.campaign_id as campaign',
 			'CASE WHEN eu.is_anonym != 1 THEN u.name ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END as applicant_name',
+			'eu.is_anonym'
 		];
 
 		if ($status_access) {

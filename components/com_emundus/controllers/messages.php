@@ -807,7 +807,7 @@ class EmundusControllerMessages extends BaseController
 			// Send and log the email.
 			$send = $mailer->Send();
 			if ($send !== true) {
-				$failed[] = $fnum->email;
+				$failed[] = $fnum->is_anonym  == 1 ? $fnum->fnum : $fnum->email;
 				echo 'Error sending email: ' . $send->__toString();
 				Log::add($send->__toString(), Log::ERROR, 'com_emundus');
 			}
@@ -823,7 +823,7 @@ class EmundusControllerMessages extends BaseController
 				}
 
 				// Log email
-				$sent[] = $fnum->email;
+				$sent[] = $fnum->is_anonym  == 1 ? $fnum->fnum : $fnum->email;
 				$log    = [
 					'user_id_from' => $user->id,
 					'user_id_to'   => $fnum->applicant_id,

@@ -2,10 +2,11 @@
 import { defineComponent } from 'vue';
 import Parameter from '@/components/Utils/Parameter.vue';
 import settingsService from '@/services/settings.js';
+import Info from '@/components/Utils/Info.vue';
 
 export default defineComponent({
 	name: 'AnonymAddon',
-	components: { Parameter },
+	components: { Parameter, Info },
 	props: {
 		addon: {
 			type: Object,
@@ -102,7 +103,10 @@ export default defineComponent({
 		class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-3 tw-rounded-[15px] tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
 	>
 		<h3>{{ translate('COM_EMUNDUS_ANONYM_ADDON_CONFIGURATION') }}</h3>
-
+		<Info
+			text="COM_EMUNDUS_ANONYM_ADDON_CONFIGURATION_INFO_TEXT"
+			title="COM_EMUNDUS_ANONYM_ADDON_CONFIGURATION_INFO_TITLE"
+		/>
 		<div class="tw-flex tw-w-full tw-flex-row tw-justify-between tw-gap-4">
 			<div
 				v-for="field in displayedFields"

@@ -35,6 +35,29 @@ export default {
 			let value = event.target.checked ? 1 : 0;
 			settingsService.toggleAddonEnabled(addon.type, value);
 		},
+		addonHasConfiguration(addon) {
+			let hasConfig = false;
+
+			const configuration = addon.configuration;
+
+			if (configuration) {
+				if (typeof configuration === 'string') {
+					try {
+						const configObj = JSON.parse(configuration);
+						hasConfig = Object.keys(configObj).length > 0;
+					} catch (e) {
+						hasConfig = false;
+					}
+				} else if (typeof configuration === 'object') {
+					hasConfig = Object.keys(configuration).length > 0;
+				}
+			}
+
+			return hasConfig;
+		},
+		backToAddons() {
+			this.currentAddon = null;
+		}
 	},
 };
 </script>
@@ -70,7 +93,7 @@ export default {
 					{{ translate(addon.description) }}
 				</p>
 
-				<div v-if="addon.configuration && Object.keys(JSON.parse(addon.configuration)).length > 0">
+				<div v-if="addonHasConfiguration(addon)" class="tw-mt-2">
 					<button class="tw-btn-tertiary tw-w-full" @click="currentAddon = addon">
 						<span>{{ translate('COM_EMUNDUS_SETTINGS_ADDONS_UPDATE') }}</span>
 					</button>
@@ -79,7 +102,7 @@ export default {
 		</div>
 
 		<div v-if="currentAddon">
-			<div class="tw-mb-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1" @click="currentAddon = null">
+			<div class="tw-mb-2 tw-flex tw-cursor-pointer tw-items-center tw-gap-1" @click="backToAddons">
 				<span class="material-symbols-outlined tw-text-neutral-900">arrow_back</span>
 				<span>{{ translate('COM_EMUNDUS_ONBOARD_ADD_RETOUR') }}</span>
 			</div>
