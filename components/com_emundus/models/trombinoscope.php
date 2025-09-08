@@ -11,6 +11,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Dompdf\Dompdf;
+use Dompdf\Options;
+
 class EmundusModelTrombinoscope extends JModelLegacy
 {
 
@@ -140,22 +143,19 @@ class EmundusModelTrombinoscope extends JModelLegacy
 
 		set_time_limit(0);
 
-		require_once(JPATH_LIBRARIES . DS . 'dompdf' . DS . 'dompdf_config.inc.php');
+		//require_once(JPATH_LIBRARIES . DS . 'dompdf' . DS . 'dompdf_config.inc.php');
 		$lbl = $this->selectLabelSetupAttachments($format);
 
 		$fileName = $lbl['lbl'] . "_" . time() . ".pdf";
 		$tmpName  = JPATH_SITE . DS . 'tmp' . DS . $fileName;
 
-		$pdf = new DOMPDF();
-		$pdf->set_paper("A4", "portrait");
-		$pdf->set_option('enable_remote', true);
-		$pdf->set_option('enable_css_float', true);
-		$pdf->set_option('enable_html5_parser', true);
+		$options = new Options();
+		$options->set('isPhpEnabled', true);
+		$dompdf = new Dompdf($options);
+		$dompdf->loadHtml($html_value);
+		$dompdf->render();
 
-		$pdf->load_html($html_value);
-		$pdf->render();
-
-		$output = $pdf->output();
+		$output = $dompdf->output();
 		file_put_contents($tmpName, $output);
 
 		return JURI::base() . 'tmp' . DS . $fileName;
