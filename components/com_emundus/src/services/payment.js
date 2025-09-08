@@ -341,6 +341,7 @@ export default {
 				id: transaction.id,
 				reference: transaction.external_reference,
 				status: transaction.status,
+				amount: transaction.amount,
 			});
 		} catch (e) {
 			return {

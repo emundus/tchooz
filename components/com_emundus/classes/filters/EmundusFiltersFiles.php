@@ -254,6 +254,52 @@ class EmundusFiltersFiles extends EmundusFilters
 		return $profile_ids;
 	}
 
+
+	private function getEvaluationFormIdsFromCampaignId(array $campaign_ids): array
+	{
+		$form_ids = [];
+
+		if (!empty($campaign_ids)) {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->getQuery(true);
+
+			$query->clear()
+				->select('esp.id')
+				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
+				->where('esc.id IN (' . implode(',', $campaign_ids) . ')');
+
+			try {
+				$db->setQuery($query);
+				$programs = $db->loadColumn();
+			} catch (Exception $e) {
+				Log::add('Failed to get programmes associated to campaign ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+			}
+
+			if (!empty($programs)) {
+				// profiles from workflows
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+				$m_workflow = new EmundusModelWorkflow();
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $programs);
+
+				foreach ($workflows as $workflow) {
+					$data = $m_workflow->getWorkflow($workflow->id);
+
+					foreach ($data['steps'] as $step) {
+						if ($m_workflow->isEvaluationStep($step->type))
+						{
+							if (!empty($step->form_id) && !in_array($step->form_id, $form_ids)) {
+								$form_ids[] = $step->form_id;
+							}
+						}
+					}
+				}
+			}
+		}
+
+		return $form_ids;
+	}
+
 	private function getProfiles()
 	{
 		return $this->profiles;
@@ -272,11 +318,11 @@ class EmundusFiltersFiles extends EmundusFilters
         $profile_form_ids = [];
         $config_form_ids = [];
 		$more_campaign_form_ids = [];
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
 		if (!empty($profiles)) {
 			// get all forms associated to the user's profiles
-			$db    = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
 
 			$query->select('menu.link')
 				->from($db->quoteName('#__menu', 'menu'))
@@ -310,7 +356,14 @@ class EmundusFiltersFiles extends EmundusFilters
 			$this->config['more_fabrik_forms'][] = $more_campaign_form['form_id'];
 		}
 
-        $form_ids = array_merge($profile_form_ids, $config_form_ids, $more_campaign_form_ids);
+		$query->clear()
+			->select('DISTINCT form_id')
+			->from('#__emundus_setup_workflows_steps')
+			->where('form_id > 0');
+
+		$db->setQuery($query);
+		$workflow_form_ids = $db->loadColumn();
+		$form_ids = array_merge($profile_form_ids, $config_form_ids, $more_campaign_form_ids, $workflow_form_ids);
 
 		$unsorted_elements = $this->getElementsFromFabrikForms($form_ids);
 
@@ -1124,14 +1177,21 @@ class EmundusFiltersFiles extends EmundusFilters
 		    if (!empty($filtered_profiles)) {
 			    $element_ids_available = $this->getElementIdsAssociatedToProfile($filtered_profiles);
 
-					$config_more_fabrik_forms = $this->config['more_fabrik_forms'];
-					$config_more_fabrik_forms = empty($config_more_fabrik_forms) ? [] : $config_more_fabrik_forms;
+			    $config_more_fabrik_forms = $this->config['more_fabrik_forms'];
+			    $config_more_fabrik_forms = empty($config_more_fabrik_forms) ? [] : $config_more_fabrik_forms;
+				$evaluation_form_ids = $this->getEvaluationFormIdsFromCampaignId($campaign_availables);
 
-					foreach($this->filters as $key => $filter) {
-						if (!in_array($filter['id'], $element_ids_available) && !in_array($filter['group_id'], $config_more_fabrik_forms)  && !in_array($filter['form_id'], $config_more_fabrik_forms)) {
-							$this->filters[$key]['available'] = false;
-						}
-					}
+			    foreach ($this->filters as $key => $filter)
+			    {
+					if (!in_array($filter['id'], $element_ids_available)
+						&& !in_array($filter['group_id'], $config_more_fabrik_forms)
+						&& !in_array($filter['form_id'], $config_more_fabrik_forms)
+						&& !in_array($filter['form_id'], $evaluation_form_ids)
+					)
+				    {
+					    $this->filters[$key]['available'] = false;
+				    }
+			    }
 		    }
 	    }
     }

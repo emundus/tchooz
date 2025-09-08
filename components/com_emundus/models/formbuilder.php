@@ -4604,7 +4604,7 @@ class EmundusModelFormbuilder extends JModelList
 
 		if (!empty($form_id_to_copy) && !empty($new_form_id) && !empty($new_list_id)) {
 			if (!class_exists('IndexEntity')) {
-				require_once(JPATH_ROOT . '/components/com_emundus/classes/indexer/Entities/IndexEntity.php');
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/Indexer/IndexEntity.php');
 			}
 			$label = [];
 

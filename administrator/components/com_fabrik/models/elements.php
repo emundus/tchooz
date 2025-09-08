@@ -236,7 +236,7 @@ class FabrikAdminModelElements extends FabModelList
 			$v           = array();
 
 			// $$$ hugh - make sure the element has validations, if not it could return null or 0 length array
-			if (is_object($validations) && property_exists($validations,'plugin'))
+			if (is_object($validations) && property_exists($validations,'plugin') && is_array($validations->plugin))
 			{
 				for ($i = 0; $i < count($validations->plugin); $i++)
 				{

@@ -65,7 +65,11 @@
 					</div>
 
 					<div v-if="!loading">
-						<div class="tw-fixed tw-mt-4 tw-flex" style="z-index: 20; left: 0">
+						<div
+							v-if="selectedFile && selectedFile.is_anonym != 1"
+							class="tw-fixed tw-mt-4 tw-flex"
+							style="z-index: 20; left: 0"
+						>
 							<Synthesis v-if="openSynthesis" :fnum="selectedFile.fnum" :content="filesSynthesis[selectedFile.fnum]">
 							</Synthesis>
 

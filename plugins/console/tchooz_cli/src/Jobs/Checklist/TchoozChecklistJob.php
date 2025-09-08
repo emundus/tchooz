@@ -113,7 +113,10 @@ class TchoozChecklistJob extends TchoozJob
 			} elseif (str_contains($outputStan, ' [ERROR] ')) {
 				$output->writeln('<error>PHPStan errors detected for this code:</error>');
 			}
-			$output->writeln($outputStan);
+
+			if (!empty($outputStan)) {
+				$output->writeln($outputStan);
+			}
 		} catch (\Exception $e) {
 			$output->writeln('<error>Error executing PHPStan: ' . $e->getMessage() . '</error>');
 		}
