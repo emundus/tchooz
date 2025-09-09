@@ -9,6 +9,8 @@
  */
 
 // No direct access
+use Joomla\CMS\Language\Text;
+
 defined('_JEXEC') or die('Restricted access');
 
 // Require the abstract plugin class
@@ -51,7 +53,7 @@ class PlgFabrik_ListRuncron extends PlgFabrik_List
 	 */
 	protected function buttonLabel()
 	{
-		return FText::_($this->getParams()->get('runcron_button_label', parent::buttonLabel()));
+		return Text::_($this->getParams()->get('runcron_button_label', parent::buttonLabel()));
 	}
 
 	/**
@@ -64,14 +66,7 @@ class PlgFabrik_ListRuncron extends PlgFabrik_List
 
 	protected function getImageName()
 	{
-		$img = parent::getImageName();
-
-		if (FabrikWorker::j3() && $img === 'play.png')
-		{
-			$img = 'play';
-		}
-
-		return $img;
+		return 'play_circle';
 	}
 
 	/**
@@ -134,7 +129,7 @@ class PlgFabrik_ListRuncron extends PlgFabrik_List
 	{
 		$ids = $this->app->input->get('ids', array(), 'array');
 
-		return JText::sprintf('PLG_LIST_ROWS_RUNNED', count($ids));
+		return Text::sprintf('PLG_LIST_ROWS_RUNNED', count($ids));
 	}
 
 	/**
