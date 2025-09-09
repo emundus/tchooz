@@ -63,7 +63,7 @@ var shareModalClick = function(event) {
         }
     } else if (event.target.id === 'specific-user-choice') {
         let specificDiv = document.getElementById('specific-div');
-        let notifyUsers = document.getElementById('evaluator-email');
+        let notifyUsers = document.getElementById('evaluator-email-block');
         if (event.target.checked) {
             specificDiv.classList.remove('hidden');
             notifyUsers.classList.remove('hidden');
