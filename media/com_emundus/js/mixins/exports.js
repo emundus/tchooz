@@ -986,8 +986,8 @@ function generate_letter() {
 
 function generate_trombinoscope(fnums, data)
 {
-    tinyMCE.execCommand('mceToggleEditor', false, 'trombi_head');
-    tinyMCE.execCommand('mceToggleEditor', false, 'trombi_foot');
+    //tinyMCE.execCommand('mceToggleEditor', false, 'trombi_head');
+    //tinyMCE.execCommand('mceToggleEditor', false, 'trombi_foot');
 
     let string_fnums;
     if (fnums === 'all') {

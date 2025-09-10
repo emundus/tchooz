@@ -58,6 +58,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onAfterCampaignUpdate'          => 'onAfterCampaignUpdate',
 			'onAfterCampaignCreate'          => 'onAfterCampaignCreate',
 			'onAfterUpdateConfiguration'     => 'onAfterUpdateConfiguration',
+			'onAfterUpdate2fa'               => 'onAfterUpdate2fa',
 			'onAfterMicrosoftDynamicsCreate' => 'onAfterMicrosoftDynamicsCreate',
 			'onAfterMicrosoftDynamicsUpdate' => 'onAfterMicrosoftDynamicsUpdate',
 			'onAfterAmmonApplicantCreate'    => 'onAfterAmmonApplicantCreate',
@@ -133,6 +134,32 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 
 		$id    = ComponentHelper::getComponent('com_emundus')->id;
 		$title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE';
+		if (!empty($type))
+		{
+			$title .= '_' . strtoupper($type);
+		}
+		$message = $this->setMessage($id, 'update', $title, $status, $old_data, $data);
+
+		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterUpdate2fa(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+
+		$data     = $arguments['data'];
+		$old_data = $arguments['old_data'];
+		$status   = $arguments['status'];
+		$context  = $arguments['context'] ?: 'com_emundus.configuration';
+
+		$jUser = $this->getApplication()->getIdentity();
+
+		$messageLanguageKey = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_2FA';
+
+		$this->setDiffData($data, $old_data);
+
+		$id    = ComponentHelper::getComponent('com_emundus')->id;
+		$title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_2FA_TITLE';
 		if (!empty($type))
 		{
 			$title .= '_' . strtoupper($type);

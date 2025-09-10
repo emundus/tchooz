@@ -2705,11 +2705,13 @@ class EmundusControllersettings extends BaseController
 			try
 			{
 				$profiles = [];
+				$mfaForSso = 0;
 				$parameters = $this->m_settings->get2faparameters();
 				if(!empty($parameters))
 				{
 					$profiles = $parameters['2faForceForProfiles'];
 					$profiles = array_filter($profiles);
+					$mfaForSso = $parameters['2faforSSO'] ?? 0;
 				}
 
 				// Clear cache of com_plugins
@@ -2724,7 +2726,7 @@ class EmundusControllersettings extends BaseController
 					}
 				}
 
-				$response['data'] = ['profiles' => $profiles];
+				$response['data'] = ['profiles' => $profiles, 'mfaForSso' => $mfaForSso];
 			}
 			catch (Exception $e)
 			{
@@ -2749,12 +2751,24 @@ class EmundusControllersettings extends BaseController
 				$methods  = $this->input->getString('2fa_available_methods');
 				$methods = explode(',', $methods);
 
-				$response['status'] = $this->m_settings->swith2faMethods($methods);
+				$response['status'] = $this->m_settings->switch2faMethods($methods);
 
 				$force    = $this->input->getInt('2fa_force_for_profiles', 0);
 				$profiles = $this->input->getString('2fa_mandatory_profiles');
+				$mfaForSso = $this->input->getInt('2fa_for_sso', 0);
 				$profiles = explode(',', $profiles);
-				$response['status'] = $this->m_settings->update2faConfig($force, $profiles);
+				$response['status'] = $this->m_settings->update2faConfig($force, $profiles, $mfaForSso);
+
+				// Log actions
+				PluginHelper::importPlugin('actionlog');
+				$dispatcher                 = Factory::getApplication()->getDispatcher();
+				$onAfterUpdate2fa = new GenericEvent(
+					'onAfterUpdate2fa',
+					// Datas to pass to the event
+					['data' => ['2fa_force_for_profiles' => $force, '2fa_mandatory_profiles' => $profiles], 'old_data' => [], 'type' => '2fa_updated', 'status' => 'done', 'context' => 'com_emundus.settings.2fa']
+				);
+				$dispatcher->dispatch('onAfterUpdate2fa', $onAfterUpdate2fa);
+				//
 
 				$response['code']    = 200;
 				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_CONFIG_SAVED');
