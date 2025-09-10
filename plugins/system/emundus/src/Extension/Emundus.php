@@ -277,16 +277,22 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$user = $app->getIdentity();
 		if ($user instanceof User && !$user->guest)
 		{
-			if(!empty($userParams) && ($userParams->saml == 1 || $userParams->OAuth2 === 'openid'))
+			$plugin   = PluginHelper::getPlugin('system', 'emundus');
+			$params   = new Registry($plugin->params);
+			$mfaSso   = $params->get('2faforSSO', 0);
+
+			if($mfaSso == 0 && !empty($userParams) && ($userParams->saml == 1 || $userParams->OAuth2 === 'openid'))
 			{
 				// If user logged in via SAML or OIDC we skip the 2FA enforcement
 				return;
 			}
+			// If 2fa for SSO is enabled but user email is @emundus.fr we skip the 2FA enforcement
+			elseif ($mfaSso == 1  && !empty($userParams) && ($userParams->saml == 1 || $userParams->OAuth2 === 'openid') && str_ends_with($user->email, '@emundus.fr'))
+			{
+				return;
+			}
 
-			$plugin   = PluginHelper::getPlugin('system', 'emundus');
-			$params   = new Registry($plugin->params);
 			$profiles = $params->get('2faForceForProfiles', []);
-
 			if (!empty($profiles))
 			{
 				$mfaRequired   = false;

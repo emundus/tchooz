@@ -32,6 +32,14 @@
                     <option value="0">Aucun</option>
                     <option value="applicant">COM_EMUNDUS_CONFIG_FORCEMFAUSERPROFILES_APPLICANT</option>
                 </field>
+                <field
+                    name="2faforSSO"
+                    type="list"
+                    label="COM_EMUNDUS_CONFIG_MFA_SSO_LABEL"
+                    default="0">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
             </fieldset>
         </fields>
     </config>
