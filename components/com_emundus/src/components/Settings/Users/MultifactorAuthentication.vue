@@ -88,6 +88,19 @@ export default {
 					displayedOnValue: 1,
 					optional: true,
 				},
+				{
+					param: '2fa_for_sso',
+					type: 'toggle',
+					placeholder: '',
+					value: false,
+					label: 'COM_EMUNDUS_SETTINGS_2FA_FOR_SSO',
+					displayed: true,
+					hideLabel: true,
+					optional: true,
+					displayedOn: '2fa_force_for_profiles',
+					displayedOnValue: 1,
+					reload: 0,
+				},
 			],
 
 			profiles: [],
@@ -109,6 +122,7 @@ export default {
 					settingsService.get2faParameters().then((paramsResponse) => {
 						if (paramsResponse.status) {
 							this.profiles = paramsResponse.data.profiles;
+							this.fields[2].value = paramsResponse.data.mfaForSso;
 
 							this.loading = false;
 						}

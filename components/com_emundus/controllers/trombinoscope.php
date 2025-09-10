@@ -317,6 +317,29 @@ footer {
 
 				return '<img src="' . JURI::base() . $src;
 			}, $templFooter);
+
+			$body = preg_replace_callback('/< *img[^>]*src *= *["\']?([^"\']*)/i', function ($match) {
+				$src = $match[1];
+
+				$path = parse_url($src, PHP_URL_PATH);
+				$fullPath = JPATH_BASE . $path;
+
+				// Vérifie si le fichier existe
+				if (!file_exists($fullPath)) {
+					return $match[0]; // Ne rien modifier si l’image n'existe pas
+				}
+
+				// Lire et encoder l’image
+				$mimeType = mime_content_type($fullPath);
+				$allowedMimeTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/svg+xml'];
+				if (!in_array($mimeType, $allowedMimeTypes)) {
+					return $match[0]; // Ne rien modifier si le type MIME n'est pas autor
+				}
+
+				$imageData = base64_encode(file_get_contents($fullPath));
+				$base64Src = 'data:' . $mimeType . ';base64,' . $imageData;
+				return '<img src="' . $base64Src . '"';
+			}, $body);
 		if ($checkHeader == 1) {
 			return $head . '<body class="em-body"><header>' . $header . '</header><footer>' . $footer . '</footer><main>' . $body . '</main></body></html>';
 		}

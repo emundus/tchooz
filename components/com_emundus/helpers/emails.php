@@ -978,7 +978,7 @@ class EmundusHelperEmails
 		$logo = 'images/custom/logo_custom.png';
 
 		if (!empty($training) && file_exists(JPATH_ROOT . '/images/custom/' . $training . '.png')) {
-			$logo = JPATH_ROOT . '/images/custom/' . $training . '.png';
+			$logo = 'images/custom/' . $training . '.png';
 		}
 		else if(file_exists(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml')) {
 			$yaml = Yaml::parse(file_get_contents(JPATH_ROOT . '/templates/g5_helium/custom/config/default/particles/logo.yaml'));

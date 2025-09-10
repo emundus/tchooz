@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
 use Joomla\Database\ParameterType;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -820,10 +821,9 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function share()
 	{
-
-		$actions = $this->input->getString('actions', null);
-		$groups  = $this->input->getString('groups', null);
-		$evals   = $this->input->getString('evals', null);
+		$actions = $this->input->getString('actions', '');
+		$groups  = $this->input->getString('groups', '');
+		$evals   = $this->input->getString('evals', '');
 		$notify  = $this->input->getVar('notify', 'false');
 		$itemId  = $this->input->getInt('Itemid', 0);
 
@@ -871,11 +871,11 @@ class EmundusControllerFiles extends BaseController
 				$fnums = $validFnums;
 			}
 
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . 'messages.php');
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
 
-			$c_messages = new EmundusControllerMessages();
+			$m_emails = new EmundusModelEmails();
 			$m_users    = $this->getModel('Users');
 			$m_profile  = $this->getModel('Profile');
 
@@ -895,26 +895,10 @@ class EmundusControllerFiles extends BaseController
 					exit;
 				}
 
-				// We're getting the first link in the user's menu that's from com_emundus, which is PROBABLY a files/evaluation view, but this does not guarantee it.
-				/* this methode does not word at all, it get a random link from invited evaluator
-                $index = 0;
-                foreach ($items as $k => $item) {
-                    if ($item->component === 'com_emundus') {
-                        $index = $k;
-                        break;
-                    }
-                }
-
-                if (JFactory::getConfig()->get('sef') == 1) {
-                    $userLink = $items[$index]->alias;
-                } else {
-                    $userLink = $items[$index]->link.'&Itemid='.$items[0]->id;
-                }
-                */
 				$fnumList = '<ul>';
 				foreach ($fnums as $fnum) {
 					//$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
-					$fnumList            .= '<li><a href="' . JURI::base() . '#' . $fnum['fnum'] . '|open">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
+					$fnumList            .= '<li><a href="' . Uri::base() . '#' . $fnum['fnum'] . '|open">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
 					$campaign_label      = $fnums[$fnum['fnum']]['label'];
 					$campaign_start_date = $fnums[$fnum['fnum']]['start_date'];
 					$campaign_end_date   = $fnums[$fnum['fnum']]['end_date'];
@@ -925,13 +909,15 @@ class EmundusControllerFiles extends BaseController
 				$post = [
 					'FNUMS'          => $fnumList,
 					'NAME'           => $eval->name,
-					'SITE_URL'       => JURI::base(),
-					'CAMPAIGN_LABEL' => $campaign_label,
-					'CAMPAIGN_YEAR'  => $campaign_year,
-					'CAMPAIGN_START' => $campaign_start_date,
-					'CAMPAIGN_END'   => $campaign_end_date
+					'SITE_URL'       => Uri::base(),
+					'CAMPAIGN_LABEL' => $campaign_label ?? '',
+					'CAMPAIGN_YEAR'  => $campaign_year ?? '',
+					'CAMPAIGN_START' => $campaign_start_date ?? '',
+					'CAMPAIGN_END'   => $campaign_end_date ?? '',
 				];
-				$c_messages->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id, null, $fnum['fnum']);
+
+				$fnum = array_key_first($fnums);
+				$m_emails->sendEmailNoFnum($eval->email, 'share_with_evaluator', $post, $eval->id, [], $fnum);
 			}
 		}
 

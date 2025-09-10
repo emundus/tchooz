@@ -274,7 +274,7 @@
             visibility: hidden;
         }
 
-        .popover:not(.clockpicker-popover) {
+        .popover:not(.clockpicker-popover):not(.help-popover) {
             display: none !important;
         }
 

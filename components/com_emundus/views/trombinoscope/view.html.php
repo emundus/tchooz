@@ -9,9 +9,28 @@
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.view');
 
+use \Joomla\CMS\Editor\Editor;
+use Joomla\CMS\Factory;
+
 class EmundusViewTrombinoscope extends JViewLegacy
 {
 	protected $actions;
+	
+	public $string_fnums = ''; 
+	public $trombi_checked = '';
+	public $badge_checked = '';
+	public $selected_format = '';
+	public $default_margin = '';
+	public $default_header_height = '';
+	public $wysiwyg = '';
+	public $wysiwyg_header = '';
+	public $wysiwyg_footer = '';
+	public $form_elements_id_list = '';
+	public $htmlLetters = array();
+	public $templ = array();
+	
+	
+	
 
 	public function __construct($config = array())
 	{
@@ -48,29 +67,30 @@ class EmundusViewTrombinoscope extends JViewLegacy
 
 		// SET EDITOR PARAMS
 		$params = array('mode' => 'simple');
-		$editor = JFactory::getEditor();
+		$editor = new Editor();
+
 
 		// COM_EMUNDUS_DISPLAY THE EDITOR (name, html, width, height, columns, rows, bottom buttons, id, asset, author, params)
 		$wysiwyg        = $editor->display('trombi_tmpl', $templ[$htmlLetters[0]['attachment_id']]['body'], '100%', '250', '20', '20', true, 'trombi_tmpl', null, null, $params);
 		$wysiwyg_header = $editor->display('trombi_head', $templ[$htmlLetters[0]['attachment_id']]['header'], '100%', '250', '20', '20', true, 'trombi_head', null, null, $params);
 		$wysiwyg_footer = $editor->display('trombi_foot', $templ[$htmlLetters[0]['attachment_id']]['footer'], '100%', '250', '20', '20', true, 'trombi_foot', null, null, $params);
 
-		$this->assign('string_fnums', $fnums);
+		$this->string_fnums = $fnums;
 
 		// Option trombinoscope cochée par défaut
-		$this->assign('trombi_checked', 'checked');
-		$this->assign('badge_checked', '');
-		$this->assign('selected_format', $templ[$htmlLetters[0]['attachment_id']]['attachment_id']);
+		$this->trombi_checked = 'checked';
+		$this->badge_checked = '';
+		$this->selected_format = $templ[$htmlLetters[0]['attachment_id']]['attachment_id'];
 
 		// Autres options
-		$this->assign('default_margin', $m_trombi->default_margin);
-		$this->assign('default_header_height', $m_trombi->default_header_height);
-		$this->assign('wysiwyg', $wysiwyg);
-		$this->assign('wysiwyg_header', $wysiwyg_header);
-		$this->assign('wysiwyg_footer', $wysiwyg_footer);
-		$this->assign('form_elements_id_list', $form_elements_id_list);
-		$this->assign('htmlLetters', $htmlLetters);
-		$this->assign('templ', $templ);
+		$this->default_margin = $m_trombi->default_margin;
+		$this->default_header_height = $m_trombi->default_header_height;
+		$this->wysiwyg = $wysiwyg;
+		$this->wysiwyg_header = $wysiwyg_header;
+		$this->wysiwyg_footer = $wysiwyg_footer;
+		$this->form_elements_id_list = $form_elements_id_list;
+		$this->htmlLetters = $htmlLetters;
+		$this->templ = $templ;
 
 		parent::display($tpl);
 	}
