@@ -1,0 +1,15 @@
+{
+  "name": "emundus_phonenumber",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "emundus_phonenumber.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.12.15"
+  }
+}

@@ -59,23 +59,25 @@ class ValidatorJS {
 
     inputValidation(e)
     {
+        // Trim spaces
+        this.input.value = this.input.value.replace(/\s+/g, '');
         const countryCode = this.countrySelected.country_code;
 
         if (countryCode !== '+')
         {
             const number = this.renderCountryCode.value + this.input.value;
-            let format;
+            let parsed;
 
             if(this.input.value.length > 0) {
                 try // test number.lengh > 1
                 {
-                    format = libphonenumber.parsePhoneNumber(number.substring(countryCode.length, number.length), this.countrySelected.iso2).format('E.164')
+                    parsed = libphonenumber.parsePhoneNumberFromString(number.substring(countryCode.length, number.length), this.countrySelected.iso2);
                 } catch (e) {
                     // too short, meh
                 }
 
-                if (format && libphonenumber.isValidNumber(format)) {
-                    this.input.value = format.substring(this.renderCountryCode.value.length, format.length);
+                if (parsed && parsed.isValid()) {
+                    this.input.value = parsed.nationalNumber ? parsed.nationalNumber : this.input.value;
                     this.frontMessage('valid');
                 } else {
                     this.frontMessage('invalid');
@@ -127,7 +129,7 @@ class ValidatorJS {
         this.countrySelected.country_code = '+';
         try
         {
-            this.countrySelected.country_code += libphonenumber.parsePhoneNumber("00", this.countrySelected.iso2).countryCallingCode; // +XX format
+            this.countrySelected.country_code += libphonenumber.getCountryCallingCode(this.countrySelected.iso2);
         }
         catch (e)
         {
@@ -149,26 +151,7 @@ class ValidatorJS {
         else if (this.countrySelected.country_code) {
 
             this.renderCountryCode.value = this.countrySelected.country_code;
-            this.setMaskToInput();
         }
-    }
-
-    setMaskToInput()
-    {
-        if(this.mask) {
-            this.mask.destroy();
-        }
-
-        this.mask = IMask(
-            this.input,
-            {
-                mask: 'num',
-                blocks: {
-                    num: {
-                        mask: Number,
-                    }
-                },
-            });
     }
 
     frontMessage(message)
