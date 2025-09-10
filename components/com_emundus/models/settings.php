@@ -4641,7 +4641,7 @@ class EmundusModelSettings extends ListModel
 		}
 	}
 
-	public function swith2faMethods($methods): bool
+	public function switch2faMethods($methods): bool
 	{
 		try
 		{
@@ -4682,7 +4682,7 @@ class EmundusModelSettings extends ListModel
 		}
 	}
 
-	public function update2faConfig(int $force, array $profiles): bool
+	public function update2faConfig(int $force, array $profiles, int $mfaForSso): bool
 	{
 		try
 		{
@@ -4695,25 +4695,20 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$emundus_plugin = $this->db->loadObject();
 
+			$params = json_decode($emundus_plugin->params, true);
 			if($force === 1)
 			{
-				$params = json_decode($emundus_plugin->params, true);
-
 				$params['2faForceForProfiles'] = $profiles;
-				$emundus_plugin->params = json_encode($params);
-
-				$this->db->updateObject('#__extensions', $emundus_plugin, 'extension_id');
 			}
-			else {
-				$params = json_decode($emundus_plugin->params, true);
-
+			else
+			{
 				$params['2faForceForProfiles'] = ['0'];
-				$emundus_plugin->params = json_encode($params);
-
-				$this->db->updateObject('#__extensions', $emundus_plugin, 'extension_id');
 			}
 
-			return true;
+			$params['2faforSSO'] = $mfaForSso;
+			$emundus_plugin->params = json_encode($params);
+
+			return $this->db->updateObject('#__extensions', $emundus_plugin, 'extension_id');
 		}
 		catch (Exception $e)
 		{
