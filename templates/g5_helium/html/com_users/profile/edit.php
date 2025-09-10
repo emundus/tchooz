@@ -45,7 +45,7 @@ $user = Factory::getApplication()->getIdentity();
 $external = empty($user->password);
 if(!$external && !empty($user->params)) {
 	$user_params = json_decode($user->params);
-	if (!empty($user_params->OAuth2)) {
+	if (!empty($user_params->OAuth2) || !empty($user_params->saml)) {
 		$external = true;
 	}
 }
