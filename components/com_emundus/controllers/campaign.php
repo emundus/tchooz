@@ -1527,6 +1527,9 @@ class EmundusControllerCampaign extends BaseController
 
 				if (in_array($mtype, $valid_types) || in_array($file['type'], $valid_types))
 				{
+					flush();
+					ob_flush();
+
 					$m_campaign     = $this->getModel('Campaign');
 					$result = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
 
