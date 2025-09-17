@@ -187,6 +187,17 @@ export default {
 						},
 					}).then((result) => {
 						if (result.value) {
+							Swal.fire({
+								title: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_IN_PROGRESS'),
+								text: this.translate('COM_EMUNDUS_ONBOARD_ACTION_IMPORT_PLEASE_WAIT'),
+								allowOutsideClick: false,
+								customClass: {
+									title: 'em-swal-title',
+									confirmButton: 'em-swal-confirm-button',
+									actions: 'em-swal-single-action',
+								},
+							});
+
 							campaignsService.importFiles(csv_import).then((response) => {
 								if (response.status) {
 									Swal.fire({

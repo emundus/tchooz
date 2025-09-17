@@ -99,6 +99,8 @@ class ApplicationFileRepository
 	
 	private function insertDatas(array $datas, string $table, string $fnum, int $ccid): bool
 	{
+		$result = false;
+
 		// If all datas are empty, skip the table
 		$skip = empty(array_filter($datas, fn($data) => !empty($data)));
 		if($skip) {
@@ -118,7 +120,16 @@ class ApplicationFileRepository
 				$datas['ccid'] = $ccid;
 			}
 
+			$multiple_inserts = [];
 			foreach ($datas as $key => $value) {
+				$multiple_table_join = $this->getMultipleTableJoin($table, $key);
+				if(!empty($multiple_table_join))
+				{
+					// If the key is a join to another table, insert after the parent table is inserted
+					$multiple_inserts[$multiple_table_join][$key] = $value;
+					unset($datas[$key]);
+				}
+
 				if(in_array($key, $date_columns)) {
 					if(empty($value)) {
 						$datas[$key] = null;
@@ -138,12 +149,62 @@ class ApplicationFileRepository
 
 			if(empty($row_id))
 			{
-				return $this->db->insertObject($table, $datas);
+				if($result = $this->db->insertObject($table, $datas))
+				{
+					$row_id = $this->db->insertid();
+				}
 			}
 			else {
 				$datas->id = $row_id;
-				return $this->db->updateObject($table, $datas, 'id');
+				$result = $this->db->updateObject($table, $datas, 'id');
 			}
+
+			if(!empty($row_id) && !empty($multiple_inserts))
+			{
+				foreach ($multiple_inserts as $repeat_table => $rows) {
+					$existing_multiple_rows = $this->getMultipleRows($repeat_table, $row_id);
+					foreach ($rows as $column => $row)
+					{
+						if(is_array($row)) {
+							foreach ($row as $iteration => $multiple_value) {
+								$insert = [
+									'parent_id' => $row_id,
+									$column => $multiple_value,
+								];
+
+								if(in_array($iteration, array_keys($existing_multiple_rows))) {
+									$insert['id'] = $existing_multiple_rows[$iteration]->id;
+									$insert = (object)$insert;
+									$this->db->updateObject($repeat_table, $insert, 'id');
+								}
+								else {
+									$insert = (object)$insert;
+									$this->db->insertObject($repeat_table, $insert);
+								}
+							}
+						}
+						else if(!empty($row)) {
+							$insert = [
+								'parent_id' => $row_id,
+								$column => $row,
+							];
+
+							if(!empty($existing_multiple_rows))
+							{
+								$insert['id'] = $existing_multiple_rows[0]->id;
+								$insert = (object)$insert;
+								$this->db->updateObject($repeat_table, $insert, 'id');
+							}
+							else {
+								$insert = (object)$insert;
+								$this->db->insertObject($repeat_table, $insert);
+							}
+						}
+					}
+				}
+			}
+
+			return $result;
 		}
 		else {
 			$repeat_inserts = [];
@@ -166,9 +227,10 @@ class ApplicationFileRepository
 			}
 
 			if(!empty($parent_id) && !empty($datas) && !empty($datas[array_key_first($datas)]) && is_array($datas[array_key_first($datas)])) {
-				//TODO: Check if the iteration of repeat table does not already exist
 				$repeat_iterations = count($datas[array_key_first($datas)]);
-				
+
+				$existing_repeat_rows = $this->getRepeatRows($table, $parent_id);
+
 				for($i = 0; $i < $repeat_iterations; $i++) {
 					$repeat_datas = [];
 					foreach ($datas as $key => $value) {
@@ -178,7 +240,16 @@ class ApplicationFileRepository
 					}
 
 					$repeat_datas['parent_id'] = $parent_id;
+					if(in_array($i, array_keys($existing_repeat_rows))) {
+						$repeat_datas['id'] = $existing_repeat_rows[$i]->id;
+					}
 					$repeat_datas = (object)$repeat_datas;
+
+					if(!empty($repeat_datas->id))
+					{
+						$repeat_inserts[] = $this->db->updateObject($table, $repeat_datas, 'id');
+						continue;
+					}
 
 					$repeat_inserts[] = $this->db->insertObject($table, $repeat_datas);
 				}
@@ -194,6 +265,18 @@ class ApplicationFileRepository
 			->select('join_from_table')
 			->from($this->db->quoteName('#__fabrik_joins'))
 			->where($this->db->quoteName('table_join') . ' = '. $this->db->quote($table))
+			->where($this->db->quoteName('table_join_key') . ' = '. $this->db->quote('parent_id'));
+		$this->db->setQuery($this->query);
+		return $this->db->loadResult();
+	}
+
+	private function getMultipleTableJoin($table, $key): ?string
+	{
+		$this->query->clear()
+			->select('table_join')
+			->from($this->db->quoteName('#__fabrik_joins'))
+			->where($this->db->quoteName('join_from_table') . ' = '. $this->db->quote($table))
+			->where($this->db->quoteName('table_key') . ' = '. $this->db->quote($key))
 			->where($this->db->quoteName('table_join_key') . ' = '. $this->db->quote('parent_id'));
 		$this->db->setQuery($this->query);
 		return $this->db->loadResult();
@@ -231,5 +314,27 @@ class ApplicationFileRepository
 		}
 
 		return $date_columns;
+	}
+
+	private function getRepeatRows(string $table, int $parent_id): array
+	{
+		$this->query->clear()
+			->select('*')
+			->from($this->db->quoteName($table))
+			->where($this->db->quoteName('parent_id') . ' = :parent_id')
+			->bind(':parent_id', $parent_id, ParameterType::INTEGER);
+		$this->db->setQuery($this->query);
+		return $this->db->loadObjectList();
+	}
+
+	private function getMultipleRows(string $table, int $parent_id): array
+	{
+		$this->query->clear()
+			->select('*')
+			->from($this->db->quoteName($table))
+			->where($this->db->quoteName('parent_id') . ' = :parent_id')
+			->bind(':parent_id', $parent_id, ParameterType::INTEGER);
+		$this->db->setQuery($this->query);
+		return $this->db->loadObjectList();
 	}
 }
