@@ -404,4 +404,107 @@ class WorkflowModelTest extends UnitTestCase
 		$data = $this->model->getEvaluationStepDataForFnum($this->dataset['fnum'], $step->id, $element_ids);
 		$this->assertNotEmpty($data, 'Data should be returned for an evaluation step, even if there is no data yet');
 	}
+
+	/**
+	 * @covers EmundusModelWorkflow::getStepAssocActionId
+	 * @return void
+	 */
+	public function testGetStepAssocActionId()
+	{
+		$actionId = $this->model->getStepAssocActionId(999999);
+		$this->assertEmpty($actionId, 'No action id should be returned for a non-existing step');
+
+		$workflow_data = $this->createSampleWorkflow(2);
+		$this->assertNotEmpty($workflow_data['steps']);
+		$step = $workflow_data['steps'][0];
+		$this->assertNotEmpty($step->id);
+
+		$actionId = $this->model->getStepAssocActionId($step->id);
+		$this->assertNotEmpty($actionId, 'Action id should be returned for step');
+		$this->assertEquals(5, (int) $actionId, 'The action id for evaluation step should be 5 for default evaluation step');
+	}
+
+	/**
+	 * @covers EmundusModelWorkflow::getStepData
+	 * @return void
+	 */
+	public function testGetStepData(): void
+	{
+		$workflow_data = $this->createSampleWorkflow(1);
+		$this->assertNotEmpty($workflow_data['steps']);
+		$step = $workflow_data['steps'][0];
+		$this->assertNotEmpty($step->id);
+
+		$foundStep = $this->model->getStepData($step->id);
+		$this->assertNotEmpty($foundStep, 'Step should be returned');
+		$this->assertEquals($foundStep->id, $step->id, 'The returned step id should be the same as the requested one');
+		$this->assertEquals($foundStep->type, $step->type, 'The returned step type should be the same as the requested one');
+		$this->assertEquals(1, $foundStep->action_id, 'The action id for applicant step should be 1 for default applicant step');
+	}
+
+	private function createSampleWorkflow(int $type = 1): array
+	{
+		$workflow_id = $this->model->add();
+		$workflow = [
+			'id' => $workflow_id,
+			'label' => 'Test Workflow',
+			'published' => 1
+		];
+		if ($this->model->isApplicantStep($type))
+		{
+			$steps = [[
+				'id' => 0,
+				'entry_status' => [['id' => 0]],
+				'type' => 1,
+				'profile_id' => '1000',
+				'label' => 'Test Step',
+				'output_status' => 1
+				]
+			];
+		}
+		else if ($this->model->isEvaluationStep($type))
+		{
+			if (!class_exists('EmundusModelForm'))
+			{
+				require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+			}
+			$m_form = new \EmundusModelForm();
+			$eval_form_id = $m_form->createFormEval(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']));
+
+			$steps = [[
+				'id'           => 0,
+				'entry_status' => [['id' => 1]],
+				'type'         => 2,
+				'form_id'      => $eval_form_id,
+				'label'        => 'Test Evaluation Step',
+				'output_status' => 0
+			]];
+		}
+		else if ($this->model->isPaymentStep($type))
+		{
+			$steps = [
+				[
+					'id' => 0,
+					'entry_status' => [['id' => 0]],
+					'type' => 1,
+					'profile_id' => '1000',
+					'label' => 'Test Step',
+					'output_status' => 1
+				],
+				[
+					'id' => 0,
+					'entry_status' => [['id' => 0]],
+					'type' => $this->model->getPaymentStepType(),
+					'label' => 'Test Payment Step',
+					'output_status' => 1
+				]
+			];
+		}
+
+		$this->model->updateWorkflow($workflow, $steps, [[
+			'id' =>	$this->dataset['program']['programme_id']]
+		]);
+
+		return $this->model->getWorkflow($workflow_id);
+	}
 }
