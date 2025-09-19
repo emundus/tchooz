@@ -109,6 +109,8 @@ class Com_EmundusInstallerScript
 		$query = $this->db->getQuery(true);
 
 		$releases_available = scandir($releases_path);
+		// Sort naturally
+		natcasesort($releases_available);
 
 		if ($this->manifest_cache)
 		{
