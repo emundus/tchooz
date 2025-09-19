@@ -678,8 +678,10 @@ class EmundusModelWorkflow extends JModelList
 							$this->db->setQuery($query);
 							$data->action_id = $this->db->loadResult();
 
-							$action_ids_by_types[$data->type] = $data->action_id;
-							$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
+							if (!empty($data->action_id)) {
+								$action_ids_by_types[$data->type] = $data->action_id;
+								$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
+							}
 						}
 					}
 
@@ -1355,8 +1357,7 @@ class EmundusModelWorkflow extends JModelList
 					$action_ids_by_type = $this->h_cache->get('action_ids_by_types');
 					$action_ids_by_type = empty($action_ids_by_type) ? [] : $action_ids_by_type;
 					$action_ids_by_type[$step_types['type']] = $action_id;
-					$this->h_cache->set('action_ids_by_types', $action_ids_by_steps);
-
+					$this->h_cache->set('action_ids_by_types', $action_ids_by_type);
 
 					$action_ids_by_steps[$step_id] = $action_id;
 					$this->h_cache->set('action_ids_by_steps', $action_ids_by_steps);

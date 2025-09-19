@@ -854,15 +854,32 @@ class Files
 		return $values;
 	}
 
-	public function getFile($fnum)
+	public function getFile($fnum, $user_id = 0)
 	{
+		if(empty($user_id))
+		{
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
+
 		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$select     = $this->buildSelect(false);
 		$left_joins = $this->buildLeftJoin(null, false);
 		$wheres[]   = $db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum);
 
-		return $this->getFilesQuery($select, $left_joins, $wheres, '', 0, 0, 'single_object');
+		$file = $this->getFilesQuery($select, $left_joins, $wheres, '', 0, 0, 'single_object');
+
+		if(!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		}
+		if(\EmundusHelperAccess::isDataAnonymized($user_id))
+		{
+			$file->is_anonym = 1;
+			$file->applicant_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+		}
+
+		return $file;
 	}
 
 
