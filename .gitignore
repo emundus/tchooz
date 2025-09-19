@@ -141,9 +141,6 @@ plugins/console/tchooz_cli/src/Report
 /.htaccess
 /.htaccess.bak
 
-# WAITING QUEUE
-waiting-queue.html
-
 # PAYMENT
 paybox_*.php
 stripeconnect_*.php
