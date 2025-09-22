@@ -11,19 +11,19 @@ $fnum = JFactory::getApplication()->input->getString('fnum', 0);
 <style>
     .em-container-mail-content {
         border: solid 1px var(--neutral-400);
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
     }
 
     div#em-appli-block div.em-container-mail-content div.em-container-mail-content-heading.panel-heading {
-        border-top-left-radius: var(--em-coordinator-br);
-        border-top-right-radius: var(--em-coordinator-br);
+        border-top-left-radius: var(--em-coordinator-form-br);
+        border-top-right-radius: var(--em-coordinator-form-br);
         margin-top: 0;
         align-items: start;
         background: var(--neutral-300);
     }
 
     .em-container-mail-content-body {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
     }
 
     .em-container-mail-content-body img {

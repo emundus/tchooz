@@ -93,7 +93,7 @@ if ($allowed_attachments !== true) {
     }
 
     div#mail_from_name, div#mail_subject {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
         border: solid 2px transparent;
     }
 
@@ -102,12 +102,12 @@ if ($allowed_attachments !== true) {
     }
 
     div#mail_from_name:hover, div#mail_subject:hover {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
         border: solid 2px var(--em-coordinator-bc);
     }
 
     #cc-box-label, #bcc-box-label, #replyto-box-label {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
         width: fit-content;
         padding: var(--p-4) var(--p-4) var(--p-4) 0;
         margin-left: 0;

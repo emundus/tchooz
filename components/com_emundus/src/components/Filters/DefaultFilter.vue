@@ -26,7 +26,7 @@
 			</div>
 		</div>
 		<div
-			class="default-filter-card em-mt-4 tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-p-2 tw-shadow-standard"
+			class="default-filter-card em-mt-4 tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-bg-white tw-p-2 tw-shadow-standard"
 		>
 			<section class="recap" :class="{ hidden: opened }">
 				<div v-if="filter.value" class="tw-flex tw-flex-wrap tw-items-center tw-gap-2">

@@ -116,7 +116,7 @@
 								v-for="item in displayedItems"
 								:key="item.id"
 								:id="'item-' + currentTab.key + '-' + item.id"
-								class="tw-group/item-row table-row tw-cursor-pointer tw-rounded-coordinator tw-border"
+								class="tw-group/item-row table-row tw-cursor-pointer tw-rounded-coordinator-cards tw-border"
 								@click="onCheckItem(item.id, $event)"
 								:class="{
 									'tw-flex tw-min-h-[200px] tw-flex-col tw-justify-between tw-gap-3 tw-rounded-coordinator-cards tw-p-8 tw-shadow-card':
@@ -129,7 +129,7 @@
 							>
 								<td
 									v-show="viewType === 'table'"
-									class="tw-rounded-s-coordinator tw-p-4"
+									class="tw-rounded-s-coordinator-cards tw-p-4"
 									:class="{
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
 										'tw-bg-white group-hover/item-row:tw-bg-neutral-100':
@@ -196,7 +196,7 @@
 									<span v-else :class="column.classes" v-html="column.value"></span>
 								</td>
 								<td
-									class="actions tw-gap-6 tw-rounded-e-coordinator tw-p-4"
+									class="actions tw-gap-6 tw-rounded-e-coordinator-cards tw-p-4"
 									:class="{
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
 										'tw-gap-6 tw-bg-white group-hover/item-row:tw-bg-neutral-100':
@@ -220,7 +220,7 @@
 											<button
 												v-if="editAction && viewType === 'table'"
 												@click="onClickAction(editAction, item.id)"
-												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
 												style="padding: 0.5rem"
 												:title="translate(editAction.label)"
 											>
@@ -231,7 +231,7 @@
 												v-for="action in iconActions"
 												:key="action.name"
 												v-show="action.display"
-												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-p-[0.5rem]"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator tw-p-[0.5rem]"
 												:class="[
 													action.buttonClasses,
 													{

@@ -20,7 +20,11 @@
 			</div>
 
 			<div class="tw-flex tw-justify-end">
-				<button type="button" @click="addGroupedCondition()" class="tw-btn-tertiary tw-mt-2 tw-w-auto">
+				<button
+					type="button"
+					@click="addGroupedCondition()"
+					class="tw-btn-tertiary tw-mt-2 tw-w-auto tw-rounded-coordinator"
+				>
 					{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION_GROUP') }}
 				</button>
 			</div>
@@ -56,14 +60,14 @@
 			</div>
 
 			<div class="tw-flex tw-justify-end">
-				<button type="button" @click="addAction()" class="tw-btn-tertiary tw-mt-2 tw-w-auto">
+				<button type="button" @click="addAction()" class="tw-btn-tertiary tw-mt-2 tw-w-auto tw-rounded-coordinator">
 					{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_ACTION') }}
 				</button>
 			</div>
 		</div>
 
 		<hr />
-		<button class="tw-btn-primary tw-float-right tw-mt-4 tw-w-auto" @click="saveRule">
+		<button class="tw-btn-primary tw-float-right tw-mt-4 tw-w-auto tw-rounded-coordinator" @click="saveRule">
 			{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_SAVE') }}
 		</button>
 	</div>

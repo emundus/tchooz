@@ -176,6 +176,7 @@ module.exports = {
             borderRadius: {
                 'coordinator': 'var(--em-coordinator-br)',
                 'coordinator-cards': 'var(--em-coordinator-br-cards)',
+                'coordinator-form': 'var(--em-coordinator-form-br)',
                 'applicant': 'var(--em-applicant-br)',
                 'form': 'var(--em-form-br)',
                 'status': 'var(--em-status-br)',

@@ -172,7 +172,7 @@ export default {
 							:class="{
 								'tw-cursor-not-allowed tw-text-neutral-500':
 									checkedItems.length === 0 || !(typeof action.showon === 'undefined' || evaluateShowOn(action.showon)),
-								'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300':
+								'tw-cursor-pointer tw-text-base hover:tw-rounded-coordinator-form hover:tw-bg-neutral-300':
 									checkedItems.length > 0 &&
 									((typeof action.showon !== 'undefined' && evaluateShowOn(action.showon)) ||
 										typeof action.showon === 'undefined'),
@@ -204,7 +204,7 @@ export default {
 						type="text"
 						v-model="searches[tabKey].search"
 						:placeholder="translate('COM_EMUNDUS_ONBOARD_SEARCH')"
-						class="tw-m-0 !tw-rounded-coordinator"
+						class="tw-m-0 !tw-rounded-coordinator-form"
 						:class="{
 							'em-disabled-events': items[tabKey].length < 1 && searches[tabKey].search === '',
 						}"

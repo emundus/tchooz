@@ -714,7 +714,7 @@
             border: 1px solid var(--neutral-500);
             background: var(--neutral-0);
             color: var(--em-green-2);
-            border-radius: var(--em-coordinator-br) !important;
+            border-radius: var(--em-coordinator-form-br) !important;
             width: 200px;
             display: -webkit-box;
             display: -ms-flexbox;
@@ -1386,7 +1386,7 @@
 
         input:not([type='file']):not(.custom-color-picker), select, textarea {
             color: var(--em-default-text-color-1);
-            border-radius: var(--em-coordinator-br);
+            border-radius: var(--em-coordinator-form-br);
             @apply tw-px-2.5 tw-py-2;
             @apply tw-mb-0;
             background-color: var(--em-form-bgc);

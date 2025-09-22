@@ -70,7 +70,7 @@
 .em-coordinator .com_emundus_vue div:not(.editor-toolbar) select,
 .em-coordinator .com_emundus_vue div:not(.editor-toolbar) select:focus,
 .em-coordinator .tchooz-widget__selects select, .swal2-html-container div:not(.editor-toolbar) select {
-  border-radius: var(--em-coordinator-br);
+  border-radius: var(--em-coordinator-form-br);
   outline: none;
 }
 
@@ -7028,7 +7028,7 @@ fieldset[disabled] .multiselect {
   height: auto;
   align-items: center;
   padding: 0 24px 0 4px;
-  border-radius: var(--em-coordinator-br);
+  border-radius: var(--em-coordinator-form-br);
   border: 1px solid var(--neutral-400);
   background: var(--neutral-0);
   font-size: var(--em-applicant-font-size);
