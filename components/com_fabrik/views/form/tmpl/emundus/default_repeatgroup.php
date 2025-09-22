@@ -56,12 +56,7 @@ foreach ($group->subgroups as $key => $subgroup) :
 
 			// Load each group in a <ul>
 			$this->elements = $subgroup;
-            if ($can_edit)
-            {
-                echo $this->loadTemplate('group');
-            } else {
-	            echo $this->loadTemplate('group_details');
-            }
+			echo $this->loadTemplate('group');
 			?>
 		</div><!-- end fabrikSubGroupElements -->
         <?php
