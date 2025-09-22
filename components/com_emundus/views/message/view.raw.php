@@ -30,6 +30,8 @@ class EmundusViewMessage extends JViewLegacy
 	protected $body;
 	protected $data;
 
+	public bool $atLeastOneAnonym = false;
+
 	public function __construct($config = array())
 	{
 
@@ -94,6 +96,7 @@ class EmundusViewMessage extends JViewLegacy
 						$user->name  = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user->id;
 						$user->email = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
 						$this->users[$key] = $user;
+						$this->atLeastOneAnonym = true;
 					}
 				}
 
@@ -145,9 +148,11 @@ class EmundusViewMessage extends JViewLegacy
 						$user                = $m_application->getApplicantInfos($fnum->sid, $tables);
 						$user['campaign_id'] = $fnum->cid;
 						$fnum_array[]        = $fnum->fnum;
+
 						if ($user['is_anonym'] == 1) {
 							$user['name'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user['id'];
 							$user['email'] = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
+							$this->atLeastOneAnonym = true;
 						}
 
 						$this->users[]       = $user;

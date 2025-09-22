@@ -24,6 +24,7 @@ class EmundusViewMessage extends JViewLegacy
 {
 	protected $users;
 	protected $fnums;
+	public bool $atLeastOneAnonym = false;
 
 	public function __construct($config = array())
 	{
@@ -84,6 +85,7 @@ class EmundusViewMessage extends JViewLegacy
 				if ($user['is_anonym'] == 1) {
 					$user['name'] = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . ' ' . $user['id'];
 					$user['email'] = Text::_('COM_EMUNDUS_ANONYM_EMAIL');
+					$this->atLeastOneAnonym = true;
 				}
 
 				$this->users[]       = $user;
