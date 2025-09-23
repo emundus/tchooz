@@ -895,10 +895,24 @@ class EmundusControllerFiles extends BaseController
 					exit;
 				}
 
+				$userLink = '';
+				foreach ($items as $item) {
+					if ($item->link == 'index.php?option=com_emundus&view=files' || $item->link === 'index.php?option=com_emundus&view=evaluation')
+					{
+						$userLink = $item->route;
+						break;
+					}
+				}
+
 				$fnumList = '<ul>';
 				foreach ($fnums as $fnum) {
-					//$fnumList .= '<li><a href="'.JURI::base().$userLink.'#'.$fnum['fnum'].'|open">'.$fnum['name'].' ('.$fnum['fnum'].')</a></li>';
-					$fnumList            .= '<li><a href="' . Uri::base() . '#' . $fnum['fnum'] . '|open">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
+					if(!empty($userLink))
+					{
+						$fnumList .= '<li><a href="' . Uri::base() . $userLink . '#' . $fnum['fnum'] . '|open">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
+					}
+					else {
+						$fnumList .= '<li>' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</li>';
+					}
 					$campaign_label      = $fnums[$fnum['fnum']]['label'];
 					$campaign_start_date = $fnums[$fnum['fnum']]['start_date'];
 					$campaign_end_date   = $fnums[$fnum['fnum']]['end_date'];
