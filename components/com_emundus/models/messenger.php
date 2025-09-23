@@ -112,19 +112,64 @@ class EmundusModelMessenger extends ListModel
 			$this->db->setQuery($query);
 			$closed = $this->db->execute();
 
-			// Remove notifications
-			$query->clear()
-				->delete($this->db->quoteName('#__emundus_chatroom_notifications','ecn'))
-				->leftJoin($this->db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->db->quoteName('ec.id') . ' = ' . $this->db->quoteName('ecn.chatroom_id'))
-				->where($this->db->quoteName('ec.fnum') . ' LIKE ' . $this->db->quote($fnum));
+			// Remove notifications, cannot use query builder for DELETE with JOIN
+			$query = 'DELETE ' . $this->db->quoteName('ecn') . ' FROM ' . $this->db->quoteName('#__emundus_chatroom_notifications', 'ecn')
+				. ' LEFT JOIN ' . $this->db->quoteName('#__emundus_chatroom', 'ec') . ' ON ' . $this->db->quoteName('ec.id') . ' = ' . $this->db->quoteName('ecn.chatroom_id')
+				. ' WHERE ' . $this->db->quoteName('ec.fnum') . ' LIKE ' . $this->db->quote($fnum);
 			$this->db->setQuery($query);
 			$this->db->execute();
+
+			// Clear cache
+			if(!class_exists('EmundusHelperCache'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+			}
+			$h_cache = new EmundusHelperCache();
+			if($h_cache->isEnabled())
+			{
+				$notifications_no_applicant = $h_cache->get('notifications_no_applicant');
+				if (!empty($notifications_no_applicant))
+				{
+					foreach ($notifications_no_applicant as $key => $notification)
+					{
+						if ($notification['fnum'] === $fnum)
+						{
+							unset($notifications_no_applicant[$key]);
+						}
+					}
+					$notifications_no_applicant = array_values($notifications_no_applicant);
+					$h_cache->set('notifications_no_applicant', $notifications_no_applicant);
+				}
+
+				if(!class_exists('EmundusModelFiles'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+				}
+				$m_files = new EmundusModelFiles();
+				$fnumInfos = $m_files->getFnumInfos($fnum);
+				if (!empty($fnumInfos))
+				{
+					$notifications_applicant = $h_cache->get('notifications_' . $fnumInfos['applicant_id']);
+					if (!empty($notifications_applicant))
+					{
+						foreach ($notifications_applicant as $key => $notification)
+						{
+							if ($notification['fnum'] === $fnum)
+							{
+								unset($notifications_applicant[$key]);
+							}
+						}
+						$notifications_applicant = array_values($notifications_applicant);
+						$h_cache->set('notifications_' . $fnumInfos['applicant_id'], $notifications_applicant);
+					}
+				}
+			}
 		}
 		catch (Exception $e)
 		{
 			Log::add('Error closing chatroom : ' . $e->getMessage(), Log::ERROR, 'com_emundus.chatroom');
 		}
-
+		
 		return $closed;
 	}
 
@@ -141,6 +186,8 @@ class EmundusModelMessenger extends ListModel
 				->where($this->db->quoteName('fnum') . ' LIKE ' . $this->db->quote($fnum));
 			$this->db->setQuery($query);
 			$opened = $this->db->execute();
+
+			// Reinstate notifications
 		}
 		catch (Exception $e)
 		{
