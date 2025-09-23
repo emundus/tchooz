@@ -405,17 +405,22 @@ class YousignSynchronizer extends Api
 			$phoneUtil = PhoneNumberUtil::getInstance();
 
 			$phone_number = $signer->phone_1;
-			if (preg_match('/^\w{2}/', $phone_number)) {
-				$region     = substr($phone_number, 0, 2);
-				$phone_number = substr($phone_number, 2);
+			if(!empty($phone_number))
+			{
+				if (preg_match('/^\w{2}/', $phone_number))
+				{
+					$region       = substr($phone_number, 0, 2);
+					$phone_number = substr($phone_number, 2);
 
-				$phone_number = $phoneUtil->parse($phone_number, $region);
-			}
+					$phone_number = $phoneUtil->parse($phone_number, $region);
+				}
 
-			if ($phoneUtil->isValidNumber($phone_number)) {
-				$phone_number = $phoneUtil->format($phone_number, PhoneNumberFormat::E164);
+				if ($phoneUtil->isValidNumber($phone_number))
+				{
+					$phone_number = $phoneUtil->format($phone_number, PhoneNumberFormat::E164);
 
-				$payload['info']['phone_number'] = $phone_number;
+					$payload['info']['phone_number'] = $phone_number;
+				}
 			}
 		}
 

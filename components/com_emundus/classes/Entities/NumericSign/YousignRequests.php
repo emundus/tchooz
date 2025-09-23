@@ -175,7 +175,10 @@ class YousignRequests
 
 	public function setExpirationDate(string $expirationDate): void
 	{
-		$this->expirationDate = $expirationDate;
+		$dt = new \DateTime($expirationDate);
+		$sqlDate = $dt->format('Y-m-d H:i:s');
+
+		$this->expirationDate = $sqlDate;
 	}
 
 	public function getRetryCount(): int
