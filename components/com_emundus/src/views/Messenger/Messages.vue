@@ -152,6 +152,11 @@ export default {
 					}
 
 					this.$emit('closedChatroom', this.currentChatroom.fnum);
+
+					let event = new CustomEvent('removeMessengerNotifications', {
+						detail: { fnum: this.currentChatroom.fnum },
+					});
+					document.dispatchEvent(event);
 				} else {
 					Swal.fire({
 						title: Joomla.Text._('COM_EMUNDUS_ONBOARD_ERROR'),
