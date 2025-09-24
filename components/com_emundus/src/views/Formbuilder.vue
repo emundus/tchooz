@@ -185,8 +185,8 @@
 							v-else-if="currentPage && showInSection === 'translations'"
 							:key="currentPage.id"
 							class="tw-p-6"
-							:objectValue="'emundus_setup_profiles'"
-							:dataValue="profile_id"
+							:objectValue="mode === 'eval' ? 'fabrik_lists' : 'emundus_setup_profiles'"
+							:dataValue="mode === 'eval' ? form_id : profile_id"
 							:childrenValue="currentPage.id"
 							:display-filters="false"
 						/>
@@ -476,8 +476,8 @@ export default {
 
 			if (this.mode === 'eval' || this.mode === 'models') {
 				this.rightPanel.tabs = this.rightPanel.tabs.filter((tab) => tab !== 'hierarchy' && tab !== 'create-document');
-				this.leftPanel.tabs = this.leftPanel.tabs.filter(
-					(tab) => tab.code != 'documents' && tab.code != 'translations',
+				this.leftPanel.tabs = this.leftPanel.tabs.filter((tab) =>
+					this.mode === 'eval' ? tab.code !== 'documents' : tab.code !== 'documents' && tab.code !== 'translations',
 				);
 				this.form_id = this.profile_id;
 				this.profile_id = 0;

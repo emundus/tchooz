@@ -185,8 +185,9 @@ class EmundusControllerTranslations extends BaseController
 		$table        = $this->input->get->getString('table', null);
 		$reference_id = $this->input->get->getInt('reference_id', null);
 		$label        = $this->input->get->getString('label', null);
+		$parent_table = $this->input->get->getString('parent_table', null);
 
-		$result = $this->model->getChildrens($table, $reference_id, $label);
+		$result = $this->model->getChildrens($table, $reference_id, $label, $parent_table);
 
 		echo json_encode($result);
 		exit;
