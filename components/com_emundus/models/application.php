@@ -255,7 +255,7 @@ class EmundusModelApplication extends ListModel
 				$this->_db->quoteName('esc.year'),
 				$this->_db->quoteName('esc.training'),
 				'CASE WHEN u.is_anonym != 1 THEN CONCAT(u.firstname, " ", u.lastname) ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END AS user_name',
-				'CASE WHEN u2.is_anonym != 1 THEN CONCAT(u2.firstname, " ", u2.lastname) ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END AS modified_user_name'
+				'CASE WHEN (u2.is_anonym != 1 OR u2.id IS NULL) THEN CONCAT(u2.firstname, " ", u2.lastname) ELSE "' . Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') . '" END AS modified_user_name'
 			];
 
 			$query->from($this->_db->quoteName('#__emundus_uploads', 'eu'))

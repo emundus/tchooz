@@ -2714,10 +2714,6 @@ class EmundusControllersettings extends BaseController
 					$mfaForSso = $parameters['2faforSSO'] ?? 0;
 				}
 
-				// Clear cache of com_plugins
-				$cache = Factory::getCache('com_plugins');
-				$cache->clean('com_plugins');
-
 				foreach ($profiles as $key => $profile)
 				{
 					if($profile !== 'applicant')
@@ -2769,6 +2765,10 @@ class EmundusControllersettings extends BaseController
 				);
 				$dispatcher->dispatch('onAfterUpdate2fa', $onAfterUpdate2fa);
 				//
+
+				// Clear cache of com_plugins
+				$cache = Factory::getCache('com_plugins');
+				$cache->clean('com_plugins');
 
 				$response['code']    = 200;
 				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_CONFIG_SAVED');

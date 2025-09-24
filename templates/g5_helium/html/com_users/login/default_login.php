@@ -194,7 +194,7 @@ else
 	<?php endif; ?>
 
 	<?php if(!empty($this->samlConfig)) : ?>
-        <div class="tw-mt-8 tw-w-full tw-flex tw-flex-col tw-items-center">
+        <div id="saml_login" class="sso-login tw-mt-8 tw-w-full tw-flex tw-flex-col tw-items-center">
             <div class="tw-w-full tw-flex tw-flex-col tw-items-center tw-gap-4">
                 <a class="tw-w-full tw-flex tw-items-center tw-justify-center tw-border tw-py-3 tw-px-2 tw-rounded-applicant tw-border-profile-full tw-text-profile-full tw-gap-4 hover:tw-bg-profile-full hover:tw-text-white"
                    href="<?php echo $this->samlConfig['metadata_url']; ?>">

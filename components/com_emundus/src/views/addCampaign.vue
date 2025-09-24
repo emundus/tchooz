@@ -448,7 +448,7 @@
 					<button
 						id="save-btn"
 						type="button"
-						class="tw-btn-primary tw-w-auto"
+						class="tw-btn-primary tw-w-auto tw-rounded-coordinator"
 						@click="
 							quit = 1;
 							submit();

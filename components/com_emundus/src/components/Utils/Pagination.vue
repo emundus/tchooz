@@ -1,7 +1,7 @@
 <template>
 	<div class="tw-flex tw-items-center tw-justify-between tw-py-2" :class="stickyClass" :style="stickyStyle">
 		<div
-			class="tw-flex tw-h-[40px] tw-items-center tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-px-3 tw-py-2"
+			class="tw-flex tw-h-[40px] tw-items-center tw-rounded-coordinator-form tw-border tw-border-neutral-300 tw-bg-white tw-px-3 tw-py-2"
 		>
 			<div class="tw-flex tw-items-center tw-gap-2">
 				<label for="pager-select" class="!tw-mb-0">{{ translate('COM_EMUNDUS_PAGINATION_DISPLAY') }}</label>

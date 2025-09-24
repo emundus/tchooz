@@ -5,7 +5,11 @@
 				{{ translate('COM_EMUNDUS_FORMBUILDER_RULES') + this.$props.page.label }}
 			</h2>
 
-			<button id="add-section" class="tw-btn-primary tw-mb-4 tw-px-6 tw-py-3" @click="$emit('add-rule', 'js')">
+			<button
+				id="add-section"
+				class="tw-btn-primary tw-mb-4 tw-rounded-coordinator tw-px-6 tw-py-3"
+				@click="$emit('add-rule', 'js')"
+			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_RULE_ADD_CONDITION') }}
 			</button>
 

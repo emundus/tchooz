@@ -624,8 +624,17 @@ function openFiles(fnum, page = 0, vue = false) {
 
                             // Apply active to the first menu
                             $('#em-appli-menu .list-group-item').removeClass('active');
-                            if ($('#em-appli-menu .list-group-item:eq(0)')) {
-                                $('#em-appli-menu .list-group-item:eq(0)').addClass('active');
+
+                            let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+                            let lastTabId = sessionStorage.getItem('com_emundus_last_tab_old_' + menu);
+                            if (lastTabId && $('#em-appli-menu #' + lastTabId).length > 0) {
+                                $('#em-appli-menu #' + lastTabId).addClass('active');
+                                firstMenu = $('#em-appli-menu #' + lastTabId).attr('href').replace(/^\//, '');
+                            }
+                            else {
+                                if ($('#em-appli-menu .list-group-item:eq(0)')) {
+                                    $('#em-appli-menu .list-group-item:eq(0)').addClass('active');
+                                }
                             }
                         } else {
                             $('#em-appli-menu').hide();
@@ -4538,6 +4547,9 @@ $(document).ready(function() {
                     break;
 
                 case 'em-close-file':
+                    let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+                    sessionStorage.removeItem('com_emundus_last_tab_old_' + menu);
+
                     $.ajaxQ.abortAll();
                     document.location.hash = "close";
                     $('.em-check:checked').prop('checked', false);
@@ -4801,6 +4813,9 @@ $(document).ready(function() {
         // Add active class to the clicked item
         $('#em-appli-menu .list-group-item').removeClass('active');
         $(this).addClass('active');
+
+        let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+        sessionStorage.setItem('com_emundus_last_tab_old_' + menu, id);
 
         $.ajax({
             type: "get",

@@ -15,6 +15,7 @@ use Joomla\CMS\Session\MetadataManager;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
+use Joomla\DI\Container;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
@@ -30,91 +31,100 @@ use Joomla\Event\SubscriberInterface;
  */
 final class SessionGC extends CMSPlugin implements SubscriberInterface
 {
-    use TaskPluginTrait;
+	use TaskPluginTrait;
 
-    /**
-     * The meta data manager
-     *
-     * @var   MetadataManager
-     *
-     * @since 4.4.0
-     */
-    private $metadataManager;
+	/**
+	 * The meta data manager
+	 *
+	 * @var   MetadataManager
+	 *
+	 * @since 4.4.0
+	 */
+	private $metadataManager;
 
-    /**
-     * @var string[]
-     * @since 5.0.0
-     */
-    private const TASKS_MAP = [
-        'session.gc' => [
-            'langConstPrefix' => 'PLG_TASK_SESSIONGC',
-            'method'          => 'sessionGC',
-            'form'            => 'sessionGCForm',
-        ],
-    ];
+	private ?Container $container;
 
-    /**
-     * @var boolean
-     * @since 5.0.0
-     */
-    protected $autoloadLanguage = true;
+	/**
+	 * @var string[]
+	 * @since 5.0.0
+	 */
+	private const TASKS_MAP = [
+		'session.gc' => [
+			'langConstPrefix' => 'PLG_TASK_SESSIONGC',
+			'method'          => 'sessionGC',
+			'form'            => 'sessionGCForm',
+		],
+	];
 
-    /**
-     * Constructor.
-     *
-     * @param   DispatcherInterface  $dispatcher       The dispatcher
-     * @param   array                $config           An optional associative array of configuration settings
-     * @param   MetadataManager      $metadataManager  The user factory
-     *
-     * @since   4.4.0
-     */
-    public function __construct(DispatcherInterface $dispatcher, array $config, MetadataManager $metadataManager)
-    {
-        parent::__construct($dispatcher, $config);
+	/**
+	 * @var boolean
+	 * @since 5.0.0
+	 */
+	protected $autoloadLanguage = true;
 
-        $this->metadataManager = $metadataManager;
-    }
+	/**
+	 * Constructor.
+	 *
+	 * @param   DispatcherInterface  $dispatcher       The dispatcher
+	 * @param   array                $config           An optional associative array of configuration settings
+	 * @param   MetadataManager      $metadataManager  The user factory
+	 *
+	 * @since   4.4.0
+	 */
+	public function __construct(DispatcherInterface $dispatcher, array $config, MetadataManager $metadataManager, ?Container $container = null)
+	{
+		parent::__construct($dispatcher, $config);
 
-    /**
-     * @inheritDoc
-     *
-     * @return string[]
-     *
-     * @since 5.0.0
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'onTaskOptionsList'    => 'advertiseRoutines',
-            'onExecuteTask'        => 'standardRoutineHandler',
-            'onContentPrepareForm' => 'enhanceTaskItemForm',
-        ];
-    }
+		$this->metadataManager = $metadataManager;
+		$this->container = $container;
+	}
 
-    /**
-     * @param   ExecuteTaskEvent  $event  The `onExecuteTask` event.
-     *
-     * @return integer  The routine exit code.
-     *
-     * @since  5.0.0
-     * @throws \Exception
-     */
-    private function sessionGC(ExecuteTaskEvent $event): int
-    {
-        $enableGC = (int) $event->getArgument('params')->enable_session_gc ?? 1;
+	/**
+	 * @inheritDoc
+	 *
+	 * @return string[]
+	 *
+	 * @since 5.0.0
+	 */
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			'onTaskOptionsList'    => 'advertiseRoutines',
+			'onExecuteTask'        => 'standardRoutineHandler',
+			'onContentPrepareForm' => 'enhanceTaskItemForm',
+		];
+	}
 
-        if ($enableGC) {
-            $this->getApplication()->getSession()->gc();
-        }
+	/**
+	 * @param   ExecuteTaskEvent  $event  The `onExecuteTask` event.
+	 *
+	 * @return integer  The routine exit code.
+	 *
+	 * @since  5.0.0
+	 * @throws \Exception
+	 */
+	private function sessionGC(ExecuteTaskEvent $event): int
+	{
+		$enableGC = (int) $event->getArgument('params')->enable_session_gc ?? 1;
 
-        $enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
+		$session = $this->getApplication()->getSession();
+		if($this->getApplication()->getName() === 'cli' && !empty($this->container))
+		{
+			$session = $this->container->get('session.web.site');
+		}
 
-        if ($this->getApplication()->get('session_handler', 'none') !== 'database' && $enableMetadata) {
-            $this->metadataManager->deletePriorTo(time() - $this->getApplication()->getSession()->getExpire());
-        }
+		if ($enableGC) {
+			$session->gc();
+		}
 
-        $this->logTask('SessionGC end');
+		$enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
 
-        return Status::OK;
-    }
+		if ($this->getApplication()->get('session_handler', 'none') !== 'database' && $enableMetadata) {
+			$this->metadataManager->deletePriorTo(time() - $session->getExpire());
+		}
+
+		$this->logTask('SessionGC end');
+
+		return Status::OK;
+	}
 }

@@ -57,7 +57,7 @@
 							v-for="tab in tabsICanAccessTo"
 							:key="tab.name"
 							class="em-light-tabs tw-cursor-pointer"
-							@click="selected = tab.name"
+							@click="updateTab(tab.name)"
 							:class="selected === tab.name ? 'em-light-selected-tab' : ''"
 						>
 							<span class="tw-text-sm">{{ translate(tab.label) }}</span>
@@ -311,11 +311,24 @@ export default {
 						this.selectedFile = result.data;
 						this.access = result.rights;
 
-						if (this.defaultTabs.length > 0) {
-							this.selected = this.defaultTabs[0].name;
+						let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+						let lastTab = sessionStorage.getItem('com_emundus_last_tab_' + menu);
+
+						// if the last tab is in the default tabs, then select it
+						let tabFind = this.tabs.find((tab) => tab.name === lastTab);
+
+						console.log('lastTab', lastTab, tabFind, this.defaultTabs);
+
+						if (lastTab && tabFind && (this.access[tabFind.access].r || this.access[tabFind.access].c)) {
+							this.updateTab(lastTab);
 						} else {
-							this.selected = 'application';
+							if (this.defaultTabs.length > 0) {
+								this.updateTab(this.defaultTabs[0].name);
+							} else {
+								this.updateTab('application');
+							}
 						}
+
 						this.updateURL(this.selectedFile.fnum);
 						this.getApplicationForm();
 						this.getReadonlyEvaluations();
@@ -449,6 +462,9 @@ export default {
 			this.showModal = false;
 			document.querySelector('body').style.overflow = 'visible';
 
+			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+			sessionStorage.removeItem('com_emundus_last_tab_' + menu);
+
 			// Remove the hash from the URL
 			this.updateURL();
 
@@ -489,6 +505,12 @@ export default {
 		},
 		replaceTagsIframeUrl(url) {
 			return url.replace('{fnum}', this.selectedFile.fnum);
+		},
+		updateTab(tabName) {
+			this.selected = tabName;
+
+			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+			sessionStorage.setItem('com_emundus_last_tab_' + menu, tabName);
 		},
 	},
 	computed: {

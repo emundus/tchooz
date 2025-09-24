@@ -78,7 +78,7 @@ export default {
 									allLabel: 'COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES',
 									getter: 'getemailcategories',
 									controller: 'email',
-									key: 'recherche',
+									key: 'category',
 									alwaysDisplay: true,
 									values: null,
 								},

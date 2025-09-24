@@ -292,7 +292,6 @@ class EmundusControllerMessenger extends BaseController
 
 			if (!empty($fnum)) {
 				$response['msg'] = Text::_('ACCESS_DENIED');
-				$message_input   = $this->input->getString('message');
 				$applicant       = $this->input->getBool('applicant');
 				$attachment      = $this->input->getInt('attachment');
 
@@ -300,9 +299,8 @@ class EmundusControllerMessenger extends BaseController
 				$m_files      = $this->getModel('Files');
 				$fnumInfos    = $m_files->getFnumInfos($fnum);
 				$applicant_id = $fnumInfos['applicant_id'];
-				$current_user = JFactory::getUser();
 
-				if (($current_user->id == $applicant_id || EmundusHelperAccess::asAccessAction(36, 'c', $current_user->id, $fnum)) && isset($file)) {
+				if (($this->user->id == $applicant_id || EmundusHelperAccess::asAccessAction(36, 'c', $this->user->id, $fnum)) && isset($file)) {
 					$path     = $file['name'];
 					$ext      = pathinfo($path, PATHINFO_EXTENSION);
 					$filename = pathinfo($path, PATHINFO_FILENAME);
@@ -338,8 +336,8 @@ class EmundusControllerMessenger extends BaseController
 					} while (file_exists($target_file));
 
 					if (move_uploaded_file($file["tmp_name"], $target_file)) {
-						$message     = '<p>' . $message_input . '</p><a href="' . $target_file . '" download><img src="/images/emundus/messenger/file_download.svg" class="messages__download_icon" alt="' . $filename . '">' . $filename . '</a>';
-						$new_message = $this->m_messenger->sendMessage($message, $fnum);
+						$message     = '<a href="' . $target_file . '" download class="tw-flex tw-items-center tw-gap-2"><span class="material-icons-outlined">file_download</span>' . $filename . '</a>';
+						$new_message = $this->m_messenger->sendMessage($message, $fnum, $this->user->id, false);
 						if ($applicant) {
 							$upload_emundus = $this->m_messenger->moveToUploadedFile($fnumInfos, $attachment, $filesrc, $target_file);
 						}
