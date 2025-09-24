@@ -83,7 +83,7 @@ export default {
 <template>
 	<div class="tw-relative">
 		<div
-			class="tw-absolute tw-right-0 tw-top-6 tw-w-[25em] tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-3 tw-shadow-standard"
+			class="tw-absolute tw-right-0 tw-top-6 tw-w-[25em] tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-3 tw-shadow-standard"
 		>
 			<div class="tw-flex tw-items-center tw-justify-between">
 				<h4>{{ translate('COM_EMUNDUS_MESSENGER_NOTIFICATIONS') }}</h4>
@@ -114,9 +114,7 @@ export default {
 					<div class="tw-mt-1 tw-border-s-2 tw-border-main-500 tw-pl-1" v-if="conversionOpened === unread.page">
 						<div v-for="message in unread.messages" class="tw-mb-2 tw-flex tw-flex-col tw-gap-1">
 							<span class="tw-text-sm">{{ message.date_time }}</span>
-							<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-2">
-								{{ message.message }}
-							</div>
+							<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-2" v-html="message.message"></div>
 						</div>
 
 						<div class="tw-mx-1 tw-mt-1 tw-flex tw-items-center tw-justify-between">

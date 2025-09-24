@@ -302,7 +302,7 @@ export default {
 			cursor: pointer;
 			border: 1px solid var(--neutral-500);
 			background: var(--red-700);
-			border-radius: var(--em-coordinator-br) !important;
+			border-radius: var(--em-coordinator-form-br) !important;
 			padding: 10px 50px;
 			display: -webkit-box;
 			display: -ms-flexbox;
@@ -320,7 +320,7 @@ export default {
 			cursor: pointer;
 			border: 1px solid var(--neutral-500);
 			color: var(--em-green-2);
-			border-radius: var(--em-coordinator-br) !important;
+			border-radius: var(--em-coordinator-form-br) !important;
 			padding: 10px 50px;
 			display: -webkit-box;
 			display: -ms-flexbox;
@@ -338,7 +338,7 @@ export default {
 			box-shadow: none;
 			cursor: pointer;
 			border: 1px solid var(--em-profile-color);
-			border-radius: var(--em-coordinator-br) !important;
+			border-radius: var(--em-coordinator-form-br) !important;
 			width: 100% !important;
 			max-width: 250px;
 			display: flex;
@@ -355,7 +355,7 @@ export default {
 			cursor: pointer;
 			border: 1px solid var(--red-500);
 			background: var(--red-500);
-			border-radius: var(--em-coordinator-br) !important;
+			border-radius: var(--em-coordinator-form-br) !important;
 			width: 100% !important;
 			max-width: 250px;
 			display: flex;

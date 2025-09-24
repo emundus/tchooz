@@ -262,7 +262,7 @@
 				</div>
 
 				<div class="tw-flex tw-justify-end">
-					<button type="submit" class="tw-btn-primary !tw-w-auto">
+					<button type="submit" class="tw-btn-primary !tw-w-auto tw-rounded-coordinator">
 						{{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
 					</button>
 				</div>

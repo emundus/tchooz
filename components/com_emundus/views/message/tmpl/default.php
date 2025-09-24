@@ -93,7 +93,7 @@ if ($allowed_attachments !== true) {
     }
 
     div#mail_from_name, div#mail_subject {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
         border: solid 2px transparent;
     }
 
@@ -102,12 +102,12 @@ if ($allowed_attachments !== true) {
     }
 
     div#mail_from_name:hover, div#mail_subject:hover {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
         border: solid 2px var(--em-coordinator-bc);
     }
 
     #cc-box-label, #bcc-box-label, #replyto-box-label {
-        border-radius: var(--em-coordinator-br);
+        border-radius: var(--em-coordinator-form-br);
         width: fit-content;
         padding: var(--p-4) var(--p-4) var(--p-4) 0;
         margin-left: 0;
@@ -273,17 +273,19 @@ if ($allowed_attachments !== true) {
                         </div>
                     </div>
 
-                    <div class="tw-flex tw-items-center">
-                        <div id="cc-box-label" class="em-flex-row em-pointer" onclick="openCC()">
-                            <label class="em-mb-0-important"><?= Text::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
-                            <span id="cc-icon" class="material-symbols-outlined">chevron_right</span>
-                        </div>
+                    <?php if (!$this->atLeastOneAnonym): ?>
+                        <div class="tw-flex tw-items-center">
+                            <div id="cc-box-label" class="em-flex-row em-pointer" onclick="openCC()">
+                                <label class="em-mb-0-important"><?= Text::_('COM_EMUNDUS_EMAILS_CC_LABEL'); ?></label>
+                                <span id="cc-icon" class="material-symbols-outlined">chevron_right</span>
+                            </div>
 
-                        <div id="bcc-box-label" class="em-flex-row em-pointer" onclick="openBCC()">
-                            <label class="em-mb-0-important"><?= Text::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
-                            <span id="bcc-icon" class="material-symbols-outlined">chevron_right</span>
+                            <div id="bcc-box-label" class="em-flex-row em-pointer" onclick="openBCC()">
+                                <label class="em-mb-0-important"><?= Text::_('COM_EMUNDUS_EMAILS_BCC_LABEL'); ?></label>
+                                <span id="bcc-icon" class="material-symbols-outlined">chevron_right</span>
+                            </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
                 </div>
 
             </div>

@@ -1,30 +1,37 @@
 [
   {
     "title": "COM_EMUNDUS_ONBOARD_PDF_DOCUMENTS",
-    "value": "pdf"
+    "value": "pdf",
+    "mimeType": "application/pdf"
   },
   {
     "title": "COM_EMUNDUS_ONBOARD_PICTURES_DOCUMENTS",
-    "value": "jpeg;jpg;png"
+    "value": "jpeg;jpg;png",
+    "mimeType": "image/jpeg,image/png"
   },
   {
     "title": "COM_EMUNDUS_ONBOARD_OFFICE_DOCUMENTS",
-    "value": "doc;docx;odt;ppt;pptx"
+    "value": "doc;docx;odt;ppt;pptx",
+    "mimeType": "application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.oasis.opendocument.text,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
   },
   {
     "title": "COM_EMUNDUS_ONBOARD_EXCEL_DOCUMENTS",
-    "value": "xls;xlsx;odf"
+    "value": "xls;xlsx;odf",
+    "mimeType": "application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.spreadsheet"
   },
   {
     "title": "COM_EMUNDUS_FORM_BUILDER_FORMATS_AUDIO",
-    "value": "mp3"
+    "value": "mp3",
+    "mimeType": "audio/mpeg"
   },
   {
     "title": "COM_EMUNDUS_FORM_BUILDER_FORMATS_VIDEO",
-    "value": "mp4"
+    "value": "mp4",
+    "mimeType": "video/mp4"
   },
   {
     "title": "Zip",
-    "value": "zip"
+    "value": "zip",
+    "mimeType": "application/zip"
   }
 ]

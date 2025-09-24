@@ -1,7 +1,7 @@
 <template>
 	<div id="form-builder-booking">
 		<div
-			class="tw-relative tw-flex tw-w-full tw-items-center tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-4"
+			class="tw-relative tw-flex tw-w-full tw-items-center tw-rounded-coordinator-form tw-border tw-border-neutral-300 tw-p-4"
 		>
 			<div class="tw-flex tw-w-full tw-items-start tw-gap-1">
 				<button

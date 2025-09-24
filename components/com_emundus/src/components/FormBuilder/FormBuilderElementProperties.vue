@@ -162,7 +162,7 @@
 		</div>
 
 		<div class="actions tw-m-4 tw-flex tw-items-center tw-justify-between">
-			<button class="tw-btn-primary" @click="saveProperties()">
+			<button class="tw-btn-primary tw-rounded-coordinator" @click="saveProperties()">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_SAVE') }}
 			</button>
 		</div>

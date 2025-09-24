@@ -275,7 +275,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		// Manage 2fa
 		$user = $app->getIdentity();
-		if ($user instanceof User && !$user->guest)
+		if ($user instanceof User && !$user->guest && $user->activation != -1)
 		{
 			$plugin   = PluginHelper::getPlugin('system', 'emundus');
 			$params   = new Registry($plugin->params);

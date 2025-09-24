@@ -62,8 +62,8 @@ export default {
 		border-bottom: solid 1px;
 		border-left: solid 1px;
 		border-color: #e0e0e5;
-		border-top-left-radius: var(--em-coordinator-br);
-		border-bottom-left-radius: var(--em-coordinator-br);
+		border-top-left-radius: var(--em-coordinator-form-br);
+		border-bottom-left-radius: var(--em-coordinator-form-br);
 
 		img {
 			width: 24px;

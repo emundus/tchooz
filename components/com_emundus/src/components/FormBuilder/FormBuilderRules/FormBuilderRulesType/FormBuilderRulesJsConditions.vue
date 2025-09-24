@@ -43,7 +43,7 @@
 		<button
 			type="button"
 			@click="$emit('add-condition', index)"
-			class="tw-btn-tertiary tw-float-right tw-mt-2 !tw-w-max"
+			class="tw-btn-tertiary tw-float-right tw-mt-2 !tw-w-max tw-rounded-coordinator"
 		>
 			{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE_CONDITION') }}
 		</button>

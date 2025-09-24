@@ -33,7 +33,12 @@
 		></span>
 
 		<div class="form-builder-page-sections tw-mt-2">
-			<button v-if="sections.length > 0" id="add-section" class="tw-btn-primary tw-px-6 tw-py-3" @click="addSection()">
+			<button
+				v-if="sections.length > 0"
+				id="add-section"
+				class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3"
+				@click="addSection()"
+			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
 			</button>
 			<form-builder-page-section
@@ -54,7 +59,7 @@
 			>
 			</form-builder-page-section>
 		</div>
-		<button id="add-section" class="tw-btn-primary tw-px-6 tw-py-3" @click="addSection()">
+		<button id="add-section" class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3" @click="addSection()">
 			{{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
 		</button>
 

@@ -253,6 +253,8 @@
 				@closed="closeModal"
 				:click-to-close="false"
 				:center="centerPreview"
+				:backdrop="centerPreview"
+				:classes="!centerPreview ? '!tw-relative !tw-top-[30px]' : ''"
 			>
 				<div class="modal-head tw-flex tw-w-full tw-items-center tw-justify-between">
 					<div id="actions-left" class="tw-flex tw-items-center tw-justify-start">
@@ -761,6 +763,10 @@ export default {
 			}
 		},
 		changeAttachment(position, reverse = false) {
+			if (position < 0 || position >= this.displayedAttachments.length) {
+				return;
+			}
+
 			this.slideTransition = reverse ? 'slide-fade-reverse' : 'slide-fade';
 			this.modalLoading = true;
 			this.selectedAttachment = this.displayedAttachments[position];

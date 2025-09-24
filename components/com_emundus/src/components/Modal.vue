@@ -1,7 +1,7 @@
 <template>
 	<transition :name="transition" :duration="delay">
 		<div class="modal___wrapper" v-show="isOpened">
-			<div class="modal___backdrop"></div>
+			<div v-if="backdrop" class="modal___backdrop"></div>
 			<div
 				:id="'modal___' + name"
 				class="modal___container"
@@ -74,6 +74,10 @@ export default {
 		blockScrolling: {
 			type: Boolean,
 			default: false,
+		},
+		backdrop: {
+			type: Boolean,
+			default: true,
 		},
 	},
 	emits: ['beforeOpen', 'closed'],

@@ -34,7 +34,7 @@
 				></Tabs>
 
 				<div
-					class="tw-relative tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
+					class="tw-relative tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
 				>
 					<div v-if="selectedMenuItem.id === 5" class="warning-message-program mb-1">
 						<p class="flex flex-row tw-text-red-600">

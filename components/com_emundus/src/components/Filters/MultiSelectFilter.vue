@@ -26,7 +26,7 @@
 			</div>
 		</div>
 		<div
-			class="multi-select-filter-card tw-mt-1 tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-p-2"
+			class="multi-select-filter-card tw-mt-1 tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-bg-white tw-p-2"
 		>
 			<section class="recap" :class="{ hidden: opened }">
 				<div
@@ -100,7 +100,7 @@
 				</div>
 				<hr v-if="displayedAndorOperators.length > 0" />
 				<input
-					class="tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-p-2 tw-shadow-standard"
+					class="tw-w-full tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-bg-white tw-p-2 tw-shadow-standard"
 					:id="filter.uid + '-filter-search'"
 					:ref="filter.uid + '-search-input'"
 					type="text"

@@ -10,7 +10,7 @@
 
 		<ul
 			:class="{
-				'tw-mt-1 tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white !tw-pl-0 tw-shadow-standard': true,
+				'tw-mt-1 tw-w-full tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-bg-white !tw-pl-0 tw-shadow-standard': true,
 				hidden: opened === false,
 			}"
 		>

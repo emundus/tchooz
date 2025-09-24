@@ -20,7 +20,7 @@
 				<div
 					id="global-search-values"
 					ref="globalSearchValues"
-					class="tw-flex tw-flex-wrap tw-items-center tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white"
+					class="tw-flex tw-flex-wrap tw-items-center tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-bg-white"
 					@click="onEnterGlobalSearchDiv"
 				>
 					<div v-if="globalSearch.length > 0" class="tw-flex tw-flex-wrap tw-items-center">
