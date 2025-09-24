@@ -32,7 +32,7 @@
 		<transition name="fade">
 			<div
 				v-show="isOpen"
-				class="popover-content tw-rounded-coordinator tw-shadow"
+				class="popover-content tw-rounded-coordinator-form tw-shadow"
 				ref="popoverContent"
 				:id="'popover-content-' + id"
 				:style="popoverContentStyle"

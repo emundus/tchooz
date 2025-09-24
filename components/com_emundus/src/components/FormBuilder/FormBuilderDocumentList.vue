@@ -38,7 +38,7 @@
 					</transition-group>
 				</draggable>
 			</div>
-			<button id="add-document" class="tw-btn-primary tw-px-6 tw-py-3" @click="addDocument('1')">
+			<button id="add-document" class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3" @click="addDocument('1')">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_REQUIRED_DOCUMENT') }}
 			</button>
 		</div>
@@ -79,7 +79,7 @@
 					</transition-group>
 				</draggable>
 			</div>
-			<button id="add-document" class="tw-btn-primary tw-px-6 tw-py-3" @click="addDocument('0')">
+			<button id="add-document" class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3" @click="addDocument('0')">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_CREATE_OPTIONAL_DOCUMENT') }}
 			</button>
 		</div>

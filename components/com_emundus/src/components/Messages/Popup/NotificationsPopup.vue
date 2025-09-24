@@ -83,7 +83,7 @@ export default {
 <template>
 	<div class="tw-relative">
 		<div
-			class="tw-absolute tw-right-0 tw-top-6 tw-w-[25em] tw-rounded-coordinator tw-border tw-border-neutral-300 tw-bg-white tw-p-3 tw-shadow-standard"
+			class="tw-absolute tw-right-0 tw-top-6 tw-w-[25em] tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-3 tw-shadow-standard"
 		>
 			<div class="tw-flex tw-items-center tw-justify-between">
 				<h4>{{ translate('COM_EMUNDUS_MESSENGER_NOTIFICATIONS') }}</h4>

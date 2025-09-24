@@ -1,6 +1,6 @@
 <template>
 	<div
-		class="time-filter em-mb-8 tw-w-full tw-rounded-coordinator tw-border tw-border-neutral-400 tw-bg-white tw-p-2 tw-shadow-standard"
+		class="time-filter em-mb-8 tw-w-full tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-bg-white tw-p-2 tw-shadow-standard"
 	>
 		<div class="tw-flex tw-items-center tw-justify-between">
 			<p class="recap-label" :title="filter.label">{{ filter.label }}</p>

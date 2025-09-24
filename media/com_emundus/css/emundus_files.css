@@ -2108,7 +2108,7 @@ label[for="em-file_to_upload"]:hover {
 
 #em-mails-sent .list-group-item, #em-mails-failed .list-group-item {
     background-color: var(--neutral-300);
-    border-radius: var(--em-coordinator-br);
+    border-radius: var(--em-coordinator-form-br);
 }
 
 #em-mails-sent .list-group-item[sended]:hover::after {
@@ -2116,7 +2116,7 @@ label[for="em-file_to_upload"]:hover {
     position: absolute;
     top: 45px;
     right: 0;
-    border-radius: var(--em-coordinator-br);
+    border-radius: var(--em-coordinator-form-br);
     background: white;
     padding: 6px;
     border: solid 1px var(--neutral-300);

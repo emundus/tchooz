@@ -153,10 +153,14 @@
 		</div>
 
 		<div class="tw-flex tw-flex-row tw-justify-end">
-			<button v-if="steps.length > 0" class="tw-btn tw-btn-primary tw-mt-4" @click="saveCampaignSteps">
+			<button
+				v-if="steps.length > 0"
+				class="tw-btn tw-btn-primary tw-mt-4 tw-rounded-coordinator"
+				@click="saveCampaignSteps"
+			>
 				{{ translate('COM_EMUNDUS_ONBOARD_ADD_CONTINUER') }}
 			</button>
-			<button v-else class="tw-btn tw-btn-primary tw-mt-4" @click="goNext">
+			<button v-else class="tw-btn tw-btn-primary tw-mt-4 tw-rounded-coordinator" @click="goNext">
 				{{ translate('COM_EMUNDUS_ONBOARD_CONTINUE') }}
 			</button>
 		</div>

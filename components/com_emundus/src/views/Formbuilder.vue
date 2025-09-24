@@ -41,7 +41,7 @@
 				</span>
 				<div class="tw-flex tw-flex-col tw-items-end">
 					<button
-						class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-px-3 tw-py-2"
+						class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-rounded-coordinator tw-px-3 tw-py-2"
 						v-if="
 							this.mode !== 'eval' &&
 							this.mode !== 'models' &&
@@ -56,7 +56,7 @@
 						}}</label>
 					</button>
 					<button
-						class="em-w-auto tw-btn-primary tw-gap-3 tw-px-6 tw-py-3"
+						class="em-w-auto tw-btn-primary tw-gap-3 tw-rounded-coordinator tw-px-6 tw-py-3"
 						v-if="previewForm"
 						@click="previewForm = false"
 					>
