@@ -91,13 +91,14 @@ export default {
 		}
 	},
 
-	async getChildrens(table, reference_id, label) {
+	async getChildrens(table, reference_id, label, parent_table = '') {
 		try {
 			return await client().get(`index.php?option=com_emundus&controller=translations&task=getchildrens`, {
 				params: {
 					table,
 					reference_id,
 					label,
+					parent_table,
 				},
 			});
 		} catch (e) {
