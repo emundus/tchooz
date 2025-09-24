@@ -82,8 +82,6 @@ import axios from 'axios';
 import moment from 'moment';
 import { useGlobalStore } from '@/stores/global';
 
-import '../assets/css/messenger.scss';
-
 import AttachDocument from '@/components/Messages/modals/AttachDocument.vue';
 
 import qs from 'qs';
@@ -337,18 +335,7 @@ export default {
 </script>
 
 <style>
-.messages__vue_attach_document {
-	width: 100%;
-	position: absolute;
-	background: white;
-	bottom: 120px;
-	z-index: 9999;
-}
 .messages__list-block {
 	padding: 0px 55px;
-}
-
-.messages__attach_content {
-	padding: 0 70px;
 }
 </style>
