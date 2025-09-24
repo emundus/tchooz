@@ -427,7 +427,7 @@ class EmundusModelMessenger extends ListModel
 	 * @throws Exception
 	 * @since version 1.0.0
 	 */
-	function sendMessage($message, $fnum, $user_id = 0)
+	function sendMessage($message, $fnum, $user_id = 0, $sanitize = true): stdClass
 	{
 		$result = new stdClass();
 
@@ -451,8 +451,12 @@ class EmundusModelMessenger extends ListModel
 
 		if (!empty($fnum_detail))
 		{
-			$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-			$message = $htmlSanitizer->sanitizeFor('title', $message);
+			// In case of sending message via frontend, sanitize the message
+			if($sanitize)
+			{
+				$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+				$message       = $htmlSanitizer->sanitizeFor('title', $message);
+			}
 
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();

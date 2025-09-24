@@ -114,9 +114,7 @@ export default {
 					<div class="tw-mt-1 tw-border-s-2 tw-border-main-500 tw-pl-1" v-if="conversionOpened === unread.page">
 						<div v-for="message in unread.messages" class="tw-mb-2 tw-flex tw-flex-col tw-gap-1">
 							<span class="tw-text-sm">{{ message.date_time }}</span>
-							<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-2">
-								{{ message.message }}
-							</div>
+							<div class="tw-rounded-coordinator tw-border tw-border-neutral-300 tw-p-2" v-html="message.message"></div>
 						</div>
 
 						<div class="tw-mx-1 tw-mt-1 tw-flex tw-items-center tw-justify-between">

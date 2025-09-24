@@ -45,6 +45,7 @@ export default {
 			send_progress: false,
 			createNewChatroom: false,
 			showClosedChatroom: false,
+			attachOpen: false,
 
 			files: [],
 			fileSelected: null,
@@ -316,6 +317,17 @@ export default {
 			const time = d.toTimeString().split(' ')[0];
 			return `${date} ${time}`;
 		},
+
+		attachDocument() {
+			this.attachOpen = !this.attachOpen;
+			this.scrollToBottom();
+		},
+
+		pushAttachmentMessage(message) {
+			this.pushToDatesArray(message);
+			this.scrollToBottom();
+			this.attachOpen = !this.attachOpen;
+		},
 	},
 	computed: {
 		messageByDates() {
@@ -580,7 +592,7 @@ export default {
 							class="tw-w-full tw-overflow-y-scroll"
 							id="messages__list"
 							:class="{
-								'tw-relative tw-mb-4 tw-max-h-[65vh]': applicant == false,
+								'tw-relative tw-mb-4 tw-max-h-[65vh] tw-min-h-[60vh]': applicant == false,
 								'tw-absolute tw-max-h-[80%]': applicant == true,
 							}"
 							:style="messages_loading ? 'opacity: 0' : ''"
@@ -612,7 +624,7 @@ export default {
 												{{ message.date_hour }}
 											</span>
 										</p>
-										<span
+										<div
 											class="tw-mt-1 tw-w-full tw-max-w-[30vw] tw-p-3 tw-text-start"
 											:class="{
 												'tw-bg-blue-500 tw-text-white': message.me === true,
@@ -621,7 +633,7 @@ export default {
 												'tw-rounded-coordinator': applicant == false,
 											}"
 											v-html="message.message"
-										></span>
+										></div>
 										<span v-if="message.progress && message.progress === true" class="tw-text-italic tw-text-sm"
 											>Envoi en cours...</span
 										>
@@ -637,6 +649,16 @@ export default {
 								'tw-absolute': applicant == true,
 							}"
 						>
+							<transition :name="'slide-up'" type="transition">
+								<AttachDocument
+									:fnum="currentChatroom.fnum"
+									v-if="attachOpen"
+									:applicant="true"
+									@pushAttachmentMessage="pushAttachmentMessage"
+									@close="attachDocument"
+									ref="attachment"
+								/>
+							</transition>
 							<div class="tw-flex tw-items-center tw-gap-2" v-if="currentChatroom.status == 1">
 								<div class="tw-w-full">
 									<textarea
@@ -655,7 +677,10 @@ export default {
 										@keydown.enter.exact.prevent="sendMessage($event)"
 									/>
 								</div>
-								<span class="material-symbols-outlined tw-cursor-pointer" @click="sendMessage">send</span>
+								<div class="tw-flex tw-items-center tw-gap-2">
+									<span class="material-icons-outlined em-pointer" @click="attachDocument">attach_file</span>
+									<span class="material-symbols-outlined tw-cursor-pointer" @click="sendMessage">send</span>
+								</div>
 							</div>
 							<button
 								type="button"
