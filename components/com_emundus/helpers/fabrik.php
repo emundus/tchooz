@@ -21,6 +21,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
@@ -1511,6 +1512,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						break;
 					case 'internalid':
 						$formatted_value = '';
+						break;
+					case 'fileupload':
+						$live_site = Factory::getApplication()->get('live_site', Uri::root());
+						$live_site = rtrim($live_site, '/');
+						$formatted_value = $live_site.$raw_value;
 						break;
 
 					default:
