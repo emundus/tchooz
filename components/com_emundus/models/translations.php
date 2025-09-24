@@ -292,6 +292,8 @@ class EmundusModelTranslations extends ListModel
 	{
 		$objects = array();
 
+
+		// todo: put the result in cache
 		include_once(JPATH_ROOT . '/administrator/components/com_falang/models/ContentElement.php');
 
 		jimport('joomla.filesystem.folder');
@@ -389,6 +391,21 @@ class EmundusModelTranslations extends ListModel
 
 		$query = $this->_db->getQuery(true);
 
+		// todo: maybe use translations objects
+		$allowed_tables = [
+			'emundus_setup_attachments',
+			'emundus_setup_profiles',
+			'emundus_setup_campaigns',
+			'emundus_setup_status',
+			'emundus_setup_action_tag',
+			'fabrik_lists'
+		];
+
+		if (!in_array($table, $allowed_tables))
+		{
+			throw new Exception(Text::_('ACCESS_DENIED'));
+		}
+
 		try
 		{
 			$query->select($this->_db->quoteName($reference_id) . 'as id,' . $this->_db->quoteName($label) . 'as label')
@@ -398,7 +415,12 @@ class EmundusModelTranslations extends ListModel
 				$filters = explode(',', $filters);
 				foreach ($filters as $filter)
 				{
-					$query->where($this->_db->quoteName($filter) . ' = 1');
+					if ($filter === 'evaluations') { // todo: this is not generic
+						$query->where($this->_db->quoteName('db_table_name') . ' LIKE ' . $this->_db->quote('jos_emundus_evaluations_%'));
+					} else
+					{
+						$query->where($this->_db->quoteName($filter) . ' = 1');
+					}
 				}
 			}
 			$this->_db->setQuery($query);
@@ -413,7 +435,7 @@ class EmundusModelTranslations extends ListModel
 		return $datas;
 	}
 
-	public function getChildrens(string $table, int $reference_id, string $label)
+	public function getChildrens(string $table, int $reference_id, string $label, string $parent_table = '')
 	{
 		$childrens = array();
 
@@ -421,14 +443,18 @@ class EmundusModelTranslations extends ListModel
 
 		if ($table == 'fabrik_forms')
 		{
-			$forms = array();
-			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-			$h_menu = new EmundusHelperMenu;
+			if ($parent_table !== 'fabrik_lists') { // todo: this is not generic
+				$forms = array();
+				require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
+				$h_menu = new EmundusHelperMenu;
 
-			$tableuser = $h_menu->buildMenuQuery($reference_id);
-			foreach ($tableuser as $menu)
-			{
-				$forms[] = $menu->form_id;
+				$tableuser = $h_menu->buildMenuQuery($reference_id);
+				foreach ($tableuser as $menu)
+				{
+					$forms[] = $menu->form_id;
+				}
+			} else {
+				$forms = array($reference_id);
 			}
 		}
 

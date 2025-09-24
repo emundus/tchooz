@@ -431,14 +431,17 @@ export default {
 					if (field.Type === 'children') {
 						this.children_type = field.Label;
 						children_existing = true;
-						translationsService.getChildrens(field.Label, this.data.id, field.Name).then((response) => {
-							this.childrens = response.data;
 
-							if (this.object.table.load_first_child === 'true') {
-								this.children = this.childrens[0];
-							}
-							this.loading = false;
-						});
+						translationsService
+							.getChildrens(field.Label, this.data.id, field.Name, this.object.table.name)
+							.then((response) => {
+								this.childrens = response.data;
+
+								if (this.object.table.load_first_child === 'true') {
+									this.children = this.childrens[0];
+								}
+								this.loading = false;
+							});
 					}
 				});
 
