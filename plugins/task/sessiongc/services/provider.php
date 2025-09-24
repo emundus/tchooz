@@ -20,29 +20,30 @@ use Joomla\Event\DispatcherInterface;
 use Joomla\Plugin\Task\SessionGC\Extension\SessionGC;
 
 return new class () implements ServiceProviderInterface {
-    /**
-     * Registers the service provider with a DI container.
-     *
-     * @param   Container  $container  The DI container.
-     *
-     * @return  void
-     *
-     * @since   5.0.0
-     */
-    public function register(Container $container): void
-    {
-        $container->set(
-            PluginInterface::class,
-            function (Container $container) {
-                $plugin = new SessionGC(
-                    $container->get(DispatcherInterface::class),
-                    (array) PluginHelper::getPlugin('task', 'sessiongc'),
-                    $container->get(MetadataManager::class)
-                );
-                $plugin->setApplication(Factory::getApplication());
+	/**
+	 * Registers the service provider with a DI container.
+	 *
+	 * @param   Container  $container  The DI container.
+	 *
+	 * @return  void
+	 *
+	 * @since   5.0.0
+	 */
+	public function register(Container $container): void
+	{
+		$container->set(
+			PluginInterface::class,
+			function (Container $container) {
+				$plugin = new SessionGC(
+					$container->get(DispatcherInterface::class),
+					(array) PluginHelper::getPlugin('task', 'sessiongc'),
+					$container->get(MetadataManager::class),
+					$container
+				);
+				$plugin->setApplication(Factory::getApplication());
 
-                return $plugin;
-            }
-        );
-    }
+				return $plugin;
+			}
+		);
+	}
 };
