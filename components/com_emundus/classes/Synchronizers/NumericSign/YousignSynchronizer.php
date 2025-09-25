@@ -413,6 +413,8 @@ class YousignSynchronizer extends Api
 					$phone_number = substr($phone_number, 2);
 
 					$phone_number = $phoneUtil->parse($phone_number, $region);
+				} else {
+					$phone_number = $phoneUtil->parse($phone_number, null);
 				}
 
 				if ($phoneUtil->isValidNumber($phone_number))
