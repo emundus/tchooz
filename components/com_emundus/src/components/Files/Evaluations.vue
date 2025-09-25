@@ -1,12 +1,12 @@
 <template>
 	<div id="evaluations-container">
-		<div v-if="evaluations.length > 0" class="tw-flex tw-h-full tw-flex-col">
-			<nav class="tw-pt-1">
+		<div v-if="evaluations.length > 0" class="tw-mt-2 tw-flex tw-h-full tw-flex-col">
+			<nav class="tw-overflow-x-auto tw-pt-1">
 				<ul class="tw-flex tw-list-none tw-flex-row">
 					<li
 						v-for="evaluation in evaluations"
 						:key="evaluation.id"
-						class="tw-cursor-pointer tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow"
+						class="tw-cursor-pointer tw-whitespace-nowrap tw-rounded-t-lg tw-px-2.5 tw-py-3 tw-shadow"
 						:class="{
 							'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id,
 						}"

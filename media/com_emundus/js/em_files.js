@@ -5901,7 +5901,7 @@ function updateProfileForm(profile){
     /* call to ajax */
     $.ajax({
         type: 'post',
-        url: '/index.php?option=com_emundus&controller=application&task=getform',
+        url: langPath+'/index.php?option=com_emundus&controller=application&task=getform',
         dataType: 'json',
         data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
         success: function(result) {
