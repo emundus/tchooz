@@ -714,7 +714,7 @@
             border: 1px solid var(--neutral-500);
             background: var(--neutral-0);
             color: var(--em-green-2);
-            border-radius: var(--em-coordinator-form-br) !important;
+            border-radius: var(--em-form-yesno-br) !important;
             width: 200px;
             display: -webkit-box;
             display: -ms-flexbox;
@@ -744,7 +744,7 @@
             cursor: pointer;
             border: 1px solid var(--neutral-500);
             background: var(--neutral-0);
-            border-radius: var(--em-coordinator-br) !important;
+            border-radius: var(--em-form-yesno-br) !important;
             width: 200px;
             display: -webkit-box;
             display: -ms-flexbox;
