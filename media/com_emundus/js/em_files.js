@@ -515,7 +515,7 @@ function openFiles(fnum, page = 0, vue = false) {
                 document.getElementsByTagName("head")[0].appendChild(tag);
 
                 $('#em-collaborators .panel-body').append(result);
-                if(document.querySelector('#collaborators_block').innerHtml) {
+                if(document.querySelector('#collaborators_block') && document.querySelector('#collaborators_block').innerHtml) {
                     document.getElementById('em-collaborators').style.display = 'block';
                 }
             } else {
