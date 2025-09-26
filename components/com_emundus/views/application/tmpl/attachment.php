@@ -57,6 +57,7 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
      rights="<?= base64_encode(json_encode(['can_export' => $can_export, 'can_see' => $can_see_attachments])) ?>"
      columns="<?= base64_encode(json_encode($this->columns)) ?>"
      is_applicant="<?php echo $this->is_applicant ?>"
+     center_preview="1"
 >
 </div>
 
