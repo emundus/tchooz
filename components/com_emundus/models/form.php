@@ -1018,16 +1018,50 @@ class EmundusModelForm extends JModelList
 													$this->db->setQuery($query);
 													$conditions = $this->db->loadObjectList();
 
+													$group_conditions = [];
 													foreach ($conditions as $condition) {
+														// Manage jos_emundus_setup_form_rules_js_conditions_group
 														$insert = [
 															'parent_id' => $new_rule_id,
 															'field' => $condition->field,
 															'state' => $condition->state,
-															'values' => $condition->values,
-															'label' => $condition->label
+															'values' => $condition->values
 														];
 														$insert = (object) $insert;
-														$this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
+
+														if($this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert))
+														{
+															// Store group condition to duplicate after
+															$new_condition_id = $this->db->insertid();
+															$group_conditions[$condition->group][] = $new_condition_id;
+														}
+													}
+
+													foreach ($group_conditions as $group => $grouped_conditions) {
+														$query->clear()
+															->select('*')
+															->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group'))
+															->where($this->db->quoteName('id') . ' = ' . $this->db->quote($group));
+														$this->db->setQuery($query);
+														$group_info = $this->db->loadObject();
+
+														$insert = (object) [
+															'group_type' => $group_info->group_type,
+														];
+
+														if($this->db->insertObject('#__emundus_setup_form_rules_js_conditions_group', $insert))
+														{
+															$new_group_id = $this->db->insertid();
+
+															foreach ($grouped_conditions as $grouped_condition)
+															{
+																$update = (object) [
+																	'id'    => $grouped_condition,
+																	'group' => $new_group_id
+																];
+																$this->db->updateObject('#__emundus_setup_form_rules_js_conditions', $update, 'id');
+															}
+														}
 													}
 												}
 											}
