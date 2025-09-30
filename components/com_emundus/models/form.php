@@ -45,7 +45,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array|stdClass
 	 */
-	function getAllForms(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0): array
+	function getAllForms(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0, string $order_by = ''): array
 	{
 		$data = ['datas' => [], 'count' => 0];
 		require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
@@ -98,8 +98,18 @@ class EmundusModelForm extends JModelList
 			->andWhere($filterId)
 			->andWhere($this->db->quoteName('sp.id') . ' IN (' . implode(',', $this->db->quote($allowed_profile_ids)) . ')')
 			->andWhere($this->db->quoteName('sp.label') . ' != ' . $this->db->quote('noprofile'))
-			->group($this->db->quoteName('sp.id'))
-			->order('id ' . $sort);
+			->group($this->db->quoteName('sp.id'));
+
+		$valid_columns = ['id', 'label'];
+		if(!empty($order_by) && in_array($order_by, $valid_columns))
+		{
+			// Check that order_by is a valid column
+			$query->group($this->db->quoteName('sp.' . $order_by))
+				->order($this->db->quoteName('sp.' . $order_by) . ' ' . $sort);
+		}
+		else {
+			$query->order('sp.id ' . $sort);
+		}
 
 		try {
 			$this->db->setQuery($query);
