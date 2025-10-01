@@ -38,6 +38,17 @@ use Joomla\CMS\Plugin\PluginHelper;
         </td>
     </tr>
     <tr class="row0">
+        <th width="220" align="left"><?php echo Text::_('COM_FALANG_CPANEL_CONFIGURATION_PLG_CUSTOM_FIELDS'); ?></th>
+        <td><?php
+            $falang_cf = PluginHelper::getPlugin('system', 'falangcf');
+            if (!empty($falang_cf)) {?>
+                <i class="fa fa-check fa-success"></i>
+            <?php } else { ?>
+                <i class="fa fa-times fa-danger"></i>
+            <?php } ?>
+        </td>
+    </tr>
+    <tr class="row1">
         <th width="220" align="left"><?php echo Text::_('COM_FALANG_CPANEL_CONFIGURATION_PLG_QJUMP'); ?></th>
         <td><?php
             $quick_jump = PluginHelper::getPlugin('system', 'falangquickjump');

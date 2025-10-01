@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Factory;
 use Joomla\Registry\Registry;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\DisplayController;
 
 class SecuritycheckproBaseController extends DisplayController
@@ -43,7 +45,7 @@ class SecuritycheckproBaseController extends DisplayController
     /* Hace una consulta a la tabla especificada como parámetro */
     public function load($key_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query 
             ->select($db->quoteName('storage_value'))
@@ -63,7 +65,7 @@ class SecuritycheckproBaseController extends DisplayController
     /* Acciones al pulsar el botón para exportar la configuración */
     function Export_config()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las distintas opciones del Firewall Web
         $query = $db->getQuery(true)

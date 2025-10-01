@@ -14,6 +14,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\Filesystem\File;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -71,7 +73,7 @@ class UploadModel extends BaseDatabaseModel
             $file_content = file_get_contents($tmp_dest);
             $file_content_json = json_decode($file_content, true);
         
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
         
             // Si hay contenido...
             if (!empty($file_content_json)) {

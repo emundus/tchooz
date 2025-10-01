@@ -16,7 +16,7 @@ admin/blueprints/menu/block.yaml	da3b3b7948002ba1c9d84618ab67fb08
 admin/blueprints/position/chrome.yaml	9706c328779547e22edd19147b02b2ab
 blueprints/page/assets.yaml	c68b786eee9ccd0ed6a1c947ee62cbb9
 blueprints/page/body.yaml	7f6fc9e8368dbfcdb7ca1846d3394839
-blueprints/page/fontawesome.yaml	2f9294310bc4a536e0e20d19e760b051
+blueprints/page/fontawesome.yaml	9eb1dd92b5d966b2438c5ba1ed54df95
 blueprints/page/head.yaml	da69f501e6c1adbf91e2e14d12ee62fe
 css-compiled/bootstrap5-rtl.css	ef9800f64c5ac65eaa9f974636adaf96
 css-compiled/bootstrap5.css	6c4addd2c34263930147a3a5a792bebe
@@ -36,8 +36,8 @@ particles/assets.yaml	7301addeae37a1b8a99dd4a7865ce31f
 particles/branding.html.twig	162bcc6af168b8c113a3d365c8e6c7b4
 particles/branding.yaml	e17cb1fcbad0c9af4d9119f8544d3bc9
 particles/content.yaml	68d6d57c5f088d16e2c6b03e0c8753e0
-particles/contentarray.html.twig	c79cf90e14cba61510a59f48e899bcac
-particles/contentarray.yaml	dc5ef2d3c9c2ee276b088dc56367d48a
+particles/contentarray.html.twig	8fa7754ea25079b5f0175d297517e782
+particles/contentarray.yaml	da4ae2fcbbb0bef68c21c673edbbf199
 particles/copyright.html.twig	9cdfc98efcfa0bd5f37c012bad8e2345
 particles/copyright.yaml	2f80b0c680382d94eabc8c83478ff979
 particles/custom.html.twig	9c932ef8b906302b739c67bd5949b7f1
@@ -319,7 +319,7 @@ templates/layout/offcanvas.html.twig	04001d9f6b7c5573236c14b9a28cfa7a
 templates/layout/section.html.twig	9fbd8525cbb293ea652d74bbf1aec361
 templates/layout/wrapper.html.twig	80575cb54b77a5b88b8299c99fda28e1
 templates/page.html.twig	d50a3745a0cf930987dc9ce6878ac085
-templates/page_head.html.twig	078952395209583b1784dc2ba1a2978f
+templates/page_head.html.twig	c05db538176622a30b708f4de7bc17a4
 templates/partials/particle.html.twig	07935cff8475093e4c5e315985b39b99
 twig/component.html.twig	abdb4071d7588181a6c4c196436b3e5d
 twig/error.html.twig	53af3ecf22a84bc4e01e7f2c64c4da0d

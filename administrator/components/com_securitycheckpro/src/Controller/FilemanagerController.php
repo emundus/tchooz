@@ -15,6 +15,8 @@ use Joomla\Registry\Registry;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\Filesystem\File;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 
@@ -428,7 +430,7 @@ class FilemanagerController extends SecuritycheckproBaseController
         $this->folder_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
     
         // Obtenemos el nombre del escaneo actual
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
             ->from($db->quoteName('#__securitycheckpro_storage'))

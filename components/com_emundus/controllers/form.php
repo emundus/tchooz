@@ -65,9 +65,10 @@ class EmundusControllerForm extends BaseController
 			$filter    = $this->input->getString('filter', '');
 			$sort      = $this->input->getString('sort', '');
 			$recherche = $this->input->getString('recherche', '');
+			$order_by  = $this->input->getString('order_by', '');
 
-			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page, $this->_user->id);
-
+			$data = $this->m_form->getAllForms($filter, $sort, $recherche, $lim, $page, $this->_user->id, $order_by);
+			
 			foreach ($data['datas'] as $key => $form)
 			{
 				// find campaigns associated with form

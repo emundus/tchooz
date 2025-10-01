@@ -1245,7 +1245,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						$sent_states = [];
 						if ($action->send_to_applicant && !empty($fnum))
 						{
-							$sent_states[] = $m_emails->sendEmail($fnum, $action->email_to_send, null, [], false, $this->automated_task_user);
+							$automatedUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->automated_task_user);
+							$sent_states[] = $m_emails->sendEmail($fnum, $action->email_to_send, null, [], false, $this->automated_task_user, $automatedUser);
 						}
 
 						if ($action->send_to_triggering_user)

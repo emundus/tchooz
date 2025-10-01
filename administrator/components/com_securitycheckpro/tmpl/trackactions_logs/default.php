@@ -14,8 +14,10 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\Plugin\System\Trackactions\Model\TrackActionsHelperModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
-$document = Factory::getDocument();
+$document = Factory::getApplication()->getDocument();
 
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn = $this->escape($this->state->get('list.direction'));
@@ -131,14 +133,14 @@ $listDirn = $this->escape($this->state->get('list.direction'));
                                         <?php 
                                         $user_id = $item->user_id;
                                                         
-                                        $db = Factory::getDBO();
+                                        $db = Factory::getContainer()->get(DatabaseInterface::class);
                                         $query = "SELECT COUNT(*) FROM #__users WHERE id={$user_id}";
                                         $db->setQuery($query);
                                         $db->execute();
                                         $existe_usuario = $db->loadResult();
                                                         
                                         if ($existe_usuario ) {
-                                            $user_object = \Joomla\CMS\Factory::getUser($user_id);
+                                            $user_object = Factory::getApplication()->getIdentity($user_id);
                                             // El usuario pertenece al grupo Super users
                                             if (array_search(8, $user_object->groups) !== false ) {                                    
                                                 $span = '<span class="badge bg-danger">';

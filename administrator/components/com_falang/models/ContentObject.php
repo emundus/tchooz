@@ -496,6 +496,7 @@ class ContentObject
 
     /**
      * @from 5.19
+     * @update 5.21 fix case when param's don't exist
      *
      * get the images translations for tag and put them in the param's field
      */
@@ -507,9 +508,11 @@ class ContentObject
             if (array_key_exists("images", $translationFields))
             {
                 $registry = new Registry;
-                $registry->loadString($translationFields['params']->value);
-                $registry->loadString($translationFields['images']->value);
-                $translationFields['params']->value = $registry->toString();
+                if (isset($translationFields['params'])){
+                    $registry->loadString($translationFields['params']->value);
+                    $registry->loadString($translationFields['images']->value);
+                    $translationFields['params']->value = $registry->toString();
+                }
             }
 
     }

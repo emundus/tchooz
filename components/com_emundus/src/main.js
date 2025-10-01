@@ -131,6 +131,7 @@ if (document) {
 							defaultAttachments: datas.attachments ? datas.attachments : null,
 							columns: datas.columns,
 							is_applicant: datas.is_applicant,
+							centerPreview: datas.center_preview ? datas.center_preview == 1 : false,
 						});
 						break;
 					case 'Comments':

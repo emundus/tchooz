@@ -27,7 +27,7 @@ $autoupdate_status = Text::_('COM_SECURITYCHECKPRO_AUTOUPDATE_STATUS');
 $translator_url = Text::_('COM_SECURITYCHECKPRO_TRANSLATOR_URL');
 
 // Load the admin languague
-$lang = Factory::getLanguage();
+$lang = Factory::getApplication()->getLanguage();
 $lang->load('com_admin', JPATH_ADMINISTRATOR);
 
 // Url to be used on statistics
@@ -625,7 +625,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
                     </div>
                 </div>
                 </div>
-                <div class="card-footer small text-muted"><?php echo Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE'); echo date('Y-m-d H:i:s'); ?>
+                <div class="card-footer small"><?php echo Text::_('COM_SECURITYCHECKPRO_UPDATE_DATE'); echo date('Y-m-d H:i:s'); ?>
                 </div>
             </div>    
 
@@ -655,7 +655,7 @@ while ( ($valor_a_mostrar == 0) && ($contador < 3) ){
             
             <!-- Disclaimer -->
             <div class="card text-white bg-info mb-3 max-width-20rem">
-              <div class="card-header"><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER'); ?></div>
+              <div class="card-header text-white"><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER'); ?></div>
               <div class="card-body">
                 <p class="card-text"><?php echo Text::_('COM_SECURITYCHECKPRO_CPANEL_DISCLAIMER_TEXT'); ?></p>
               </div>

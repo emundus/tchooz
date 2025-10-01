@@ -78,8 +78,7 @@ INSERT INTO `#__securitycheckpro_db` (`product`,`vuln_type`,`vulnerableversion`,
 ('Joomla!','core','5.2.3','<=','5','>=','Joomla! core','One vulnerability','Feb 19 2025','Joomla 5.0.0 to 5.2.3','update','5.2.4'),
 ('com_convertforms','component','4.4.7','<=','4','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
 ('com_convertforms','component','4.4.7','<=','5','>=','Convert Forms Component','File upload and XSS vulnerabilities','Feb 25 2025','Version 1.0.0 to 4.4.7','update','4.4.9'),
-('Joomla!','core','4.4.12','<=','4','>=','Joomla! core','One vulnerability','Apr 08 2025','Joomla 4.0.0 to 4.4.12','update','4.4.13'),
-('Joomla!','core','5.2.5','<=','5','>=','Joomla! core','One vulnerability','Apr 08 2025','Joomla 5.0.0 to 5.2.4','update','5.2.6');
+('com_kunena','component','6.4.2','<=','5','>=','Kunena Component','Not defined high vulnerability','May 31 2025','Version 6.4.2 and maybe lower','update','6.4.3');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_logs`;
 CREATE TABLE IF NOT EXISTS `#__securitycheckpro_logs` (
@@ -202,7 +201,7 @@ CREATE TABLE IF NOT EXISTS `#__securitycheckpro_update_database` (
 `message` VARCHAR(300),
 PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=0 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.29');
+INSERT INTO `#__securitycheckpro_update_database` (`version`) VALUES ('1.3.30');
 
 DROP TABLE IF EXISTS `#__securitycheckpro_users_control`;
 CREATE TABLE `#__securitycheckpro_users_control` (

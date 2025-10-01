@@ -628,7 +628,7 @@ class EmundusModelEvaluation extends JModelList
 											continue;
 										}
 
-										$step_element->table_label = Text::_($step_element->table_label);
+										$step_element->table_label = Text::_($step_element->form_label);
 										$step_element->label =  Text::_($step->label);
 										$step_element->form_id = $step->form_id;
 										$step_element->step_id = $step->id;
@@ -2948,6 +2948,7 @@ class EmundusModelEvaluation extends JModelList
 		foreach ($fnum_array as $fnum)
 		{
 			$generated_letters = $_mEval->getLetterTemplateForFnum($fnum, $templates);
+			$generated_letters_original = $generated_letters;
 
 			PluginHelper::importPlugin('emundus');
 			PluginHelper::importPlugin('actionlog');
@@ -2964,6 +2965,24 @@ class EmundusModelEvaluation extends JModelList
 				]
 			);
 			$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
+
+			// Make sure that only letters that were originally selected are generated
+			// This is to avoid issues with plugins that add letters
+			// but the user did not select them. If we want to add letters, use an event onAfterGenerateLetters
+			$generated_letters_original_ids = array_map(fn($letter) => $letter->id, $generated_letters_original);
+			foreach($generated_letters as $key => $letter)
+			{
+				if (!in_array($letter->id, $generated_letters_original_ids))
+				{
+					unset($generated_letters[$key]);
+				}
+			}
+			$generated_letters = array_values($generated_letters);
+
+			if (empty($generated_letters))
+			{
+				$generated_letters = $generated_letters_original;
+			}
 
 			$fnumInfo          = $_mFile->getFnumsTagsInfos([$fnum]);
 

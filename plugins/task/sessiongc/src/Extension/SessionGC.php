@@ -31,100 +31,100 @@ use Joomla\Event\SubscriberInterface;
  */
 final class SessionGC extends CMSPlugin implements SubscriberInterface
 {
-	use TaskPluginTrait;
+    use TaskPluginTrait;
 
-	/**
-	 * The meta data manager
-	 *
-	 * @var   MetadataManager
-	 *
-	 * @since 4.4.0
-	 */
-	private $metadataManager;
+    /**
+     * The meta data manager
+     *
+     * @var   MetadataManager
+     *
+     * @since 4.4.0
+     */
+    private $metadataManager;
 
 	private ?Container $container;
 
-	/**
-	 * @var string[]
-	 * @since 5.0.0
-	 */
-	private const TASKS_MAP = [
-		'session.gc' => [
-			'langConstPrefix' => 'PLG_TASK_SESSIONGC',
-			'method'          => 'sessionGC',
-			'form'            => 'sessionGCForm',
-		],
-	];
+    /**
+     * @var string[]
+     * @since 5.0.0
+     */
+    private const TASKS_MAP = [
+        'session.gc' => [
+            'langConstPrefix' => 'PLG_TASK_SESSIONGC',
+            'method'          => 'sessionGC',
+            'form'            => 'sessionGCForm',
+        ],
+    ];
 
-	/**
-	 * @var boolean
-	 * @since 5.0.0
-	 */
-	protected $autoloadLanguage = true;
+    /**
+     * @var boolean
+     * @since 5.0.0
+     */
+    protected $autoloadLanguage = true;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   DispatcherInterface  $dispatcher       The dispatcher
-	 * @param   array                $config           An optional associative array of configuration settings
-	 * @param   MetadataManager      $metadataManager  The user factory
-	 *
-	 * @since   4.4.0
-	 */
-	public function __construct(DispatcherInterface $dispatcher, array $config, MetadataManager $metadataManager, ?Container $container = null)
-	{
-		parent::__construct($dispatcher, $config);
+    /**
+     * Constructor.
+     *
+     * @param   DispatcherInterface  $dispatcher       The dispatcher
+     * @param   array                $config           An optional associative array of configuration settings
+     * @param   MetadataManager      $metadataManager  The user factory
+     *
+     * @since   4.4.0
+     */
+    public function __construct(DispatcherInterface $dispatcher, array $config, MetadataManager $metadataManager, ?Container $container = null)
+    {
+        parent::__construct($dispatcher, $config);
 
-		$this->metadataManager = $metadataManager;
-		$this->container = $container;
-	}
+        $this->metadataManager = $metadataManager;
+	    $this->container = $container;
+    }
 
-	/**
-	 * @inheritDoc
-	 *
-	 * @return string[]
-	 *
-	 * @since 5.0.0
-	 */
-	public static function getSubscribedEvents(): array
-	{
-		return [
-			'onTaskOptionsList'    => 'advertiseRoutines',
-			'onExecuteTask'        => 'standardRoutineHandler',
-			'onContentPrepareForm' => 'enhanceTaskItemForm',
-		];
-	}
+    /**
+     * @inheritDoc
+     *
+     * @return string[]
+     *
+     * @since 5.0.0
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onTaskOptionsList'    => 'advertiseRoutines',
+            'onExecuteTask'        => 'standardRoutineHandler',
+            'onContentPrepareForm' => 'enhanceTaskItemForm',
+        ];
+    }
 
-	/**
-	 * @param   ExecuteTaskEvent  $event  The `onExecuteTask` event.
-	 *
-	 * @return integer  The routine exit code.
-	 *
-	 * @since  5.0.0
-	 * @throws \Exception
-	 */
-	private function sessionGC(ExecuteTaskEvent $event): int
-	{
-		$enableGC = (int) $event->getArgument('params')->enable_session_gc ?? 1;
+    /**
+     * @param   ExecuteTaskEvent  $event  The `onExecuteTask` event.
+     *
+     * @return integer  The routine exit code.
+     *
+     * @since  5.0.0
+     * @throws \Exception
+     */
+    private function sessionGC(ExecuteTaskEvent $event): int
+    {
+        $enableGC = (int) $event->getArgument('params')->enable_session_gc ?? 1;
 
-		$session = $this->getApplication()->getSession();
-		if($this->getApplication()->getName() === 'cli' && !empty($this->container))
-		{
-			$session = $this->container->get('session.web.site');
-		}
+	    $session = $this->getApplication()->getSession();
+	    if($this->getApplication()->getName() === 'cli' && !empty($this->container))
+	    {
+		    $session = $this->container->get('session.web.site');
+	    }
 
-		if ($enableGC) {
-			$session->gc();
-		}
+	    if ($enableGC) {
+		    $session->gc();
+	    }
 
-		$enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
+        $enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
 
-		if ($this->getApplication()->get('session_handler', 'none') !== 'database' && $enableMetadata) {
-			$this->metadataManager->deletePriorTo(time() - $session->getExpire());
-		}
+        if ($this->getApplication()->get('session_handler', 'none') !== 'database' && $enableMetadata) {
+            $this->metadataManager->deletePriorTo(time() - $session->getExpire());
+        }
 
-		$this->logTask('SessionGC end');
+        $this->logTask('SessionGC end');
 
-		return Status::OK;
-	}
+        return Status::OK;
+    }
 }

@@ -896,10 +896,23 @@ class EmundusControllerFiles extends BaseController
 				}
 
 				$userLink = '';
+				$openSuffix = true;
 				foreach ($items as $item) {
-					if ($item->link == 'index.php?option=com_emundus&view=files' || $item->link === 'index.php?option=com_emundus&view=evaluation')
+					if ($item->link === 'index.php?option=com_emundus&view=files')
 					{
 						$userLink = $item->route;
+						break;
+					}
+
+					if ($item->link === 'index.php?option=com_emundus&view=evaluation')
+					{
+						$userLink = $item->route;
+
+						$params = json_decode($item->getParams());
+						if(!empty($params->em_open_file_in_modal) && $params->em_open_file_in_modal == 1)
+						{
+							$openSuffix = false;
+						}
 						break;
 					}
 				}
@@ -908,7 +921,7 @@ class EmundusControllerFiles extends BaseController
 				foreach ($fnums as $fnum) {
 					if(!empty($userLink))
 					{
-						$fnumList .= '<li><a href="' . Uri::base() . $userLink . '#' . $fnum['fnum'] . '|open">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
+						$fnumList .= '<li><a href="' . Uri::base() . $userLink . '#' . $fnum['fnum'] . ($openSuffix ? '|open' : '') . '">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
 					}
 					else {
 						$fnumList .= '<li>' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</li>';

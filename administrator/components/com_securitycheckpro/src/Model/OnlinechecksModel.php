@@ -16,6 +16,8 @@ use Joomla\CMS\Pagination\Pagination;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\Filesystem\File;
 use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -74,7 +76,7 @@ class OnlineChecksModel extends ListModel
         $query = null;
         $deleted_elements = 0;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // Creamos el objeto JInput para obtener las variables del formulario
         $jinput = Factory::getApplication()->input;
@@ -118,7 +120,7 @@ class OnlineChecksModel extends ListModel
         $query = null;
         $deleted_elements = 0;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las webs que serán borradas de la BBDD
 		$input = Factory::getApplication()->input;
@@ -147,7 +149,7 @@ class OnlineChecksModel extends ListModel
     public function load($key_name = null)
     {
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         $query = $db->getQuery(true)
             ->select(array('*'))

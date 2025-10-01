@@ -2,8 +2,8 @@
 <extension version="3.9" type="library" method="upgrade">
     <name>Gantry 5 Framework</name>
     <libraryname>gantry5</libraryname>
-    <version>5.5.23</version>
-    <creationDate>August 11, 2025</creationDate>
+    <version>5.5.25</version>
+    <creationDate>September 15, 2025</creationDate>
     <author>Tiger12, LLC</author>
     <authorEmail>gantry@tiger12.com</authorEmail>
     <authorUrl>http://tiger12.com</authorUrl>

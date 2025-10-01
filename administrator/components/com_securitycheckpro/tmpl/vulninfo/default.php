@@ -17,7 +17,7 @@ use Joomla\CMS\Language\Text;
 Session::checkToken('get') or die('Invalid Token');
 
 // Load plugin language
-$lang2 = Factory::getLanguage();
+$lang2 = Factory::getApplication()->getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
 $type_array = array(HTMLHelper::_('select.option', 'Component', Text::_('COM_SECURITYCHECKPRO_TITLE_COMPONENT')),

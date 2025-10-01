@@ -16,6 +16,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\Filesystem\File;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -109,7 +111,7 @@ class ProtectionModel extends BaseDatabaseModel
     /* Hace una consulta a la tabla #__securitycheckpro_storage, que contiene la configuración de 'htaccess protection' */
     public function load($key_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query 
             ->select($db->quoteName('storage_value'))
@@ -142,7 +144,7 @@ class ProtectionModel extends BaseDatabaseModel
             $this->load($key_name);
         }
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
             

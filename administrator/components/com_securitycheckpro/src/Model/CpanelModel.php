@@ -15,6 +15,9 @@ use Joomla\CMS\Component\ComponentHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
+use Joomla\CMS\Event\DispatcherInterface;
 
 /**
  * Modelo Securitycheck
@@ -62,7 +65,7 @@ class CpanelModel extends BaseModel
     'mode'            => 1,
     'logs_attacks'            => 1,
     'log_limits_per_ip_and_day'            => 0,
-    'redirect_after_attack'            => 1,
+    'redirect_after_attack'            => 0,
     'redirect_options'            => 1,
     'second_level'            => 1,
     'second_level_redirect'            => 1,
@@ -87,7 +90,7 @@ class CpanelModel extends BaseModel
     'using_integers_exceptions'            => 'com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter',
     'escape_strings_exceptions'            => 'com_kunena,com_jce',
     'lfi_exceptions'            => '',
-    'second_level_exceptions'            => 'com_securitycheckprocontrolcenter',    
+    'second_level_exceptions'            => '',    
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
     );
@@ -127,7 +130,7 @@ class CpanelModel extends BaseModel
     por el módulo 'Securitycheck Pro Info Module'.  */
     function buscarQuickIcons()
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query->select($db->quoteName(array('element', 'manifest_cache')))
             ->from($db->quoteName('#__extensions'))
@@ -149,7 +152,7 @@ class CpanelModel extends BaseModel
     function get_plugin_id($opcion)
     {
 
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
         if ($opcion == 1) {
 			$query->select($db->quoteName('extension_id'));
@@ -192,7 +195,7 @@ class CpanelModel extends BaseModel
         // Inicializamos la variable
         $query = null;
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         switch ($opcion)
         {
         case 'last_year':		
@@ -266,7 +269,7 @@ class CpanelModel extends BaseModel
         // Inicializamos la variable
         $query = null;
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         switch ($opcion)
         {
         case 'total_firewall_rules':
@@ -313,7 +316,7 @@ class CpanelModel extends BaseModel
         $query = null;
         $applied = true;
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las distintas opciones del Firewall Web
         $query = $db->getQuery(true)
@@ -398,7 +401,7 @@ class CpanelModel extends BaseModel
         $query = null;
         $result = false;
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
@@ -426,10 +429,10 @@ class CpanelModel extends BaseModel
         $query = null;
         $applied = true;
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las distintas opciones del Firewall Web
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
             ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -439,7 +442,7 @@ class CpanelModel extends BaseModel
         $params = json_decode($params, true);
     
         // Obtenemos los valores de configuración previos
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
             ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -533,7 +536,7 @@ class CpanelModel extends BaseModel
         }
     
         // Actualizamos los parámetros del plugin en la BBDD
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__extensions'))
             ->set('enabled = 0')
@@ -561,7 +564,7 @@ class CpanelModel extends BaseModel
         }
     
         // Actualizamos los parámetros del plugin en la BBDD
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->update($db->quoteName('#__extensions'))
             ->set('enabled = 1')
@@ -576,7 +579,7 @@ class CpanelModel extends BaseModel
 
         $version = '0.0.0';
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
         if ($extension == 'securitycheckpro') {
 			$query->select($db->quoteName('manifest_cache'));
@@ -611,7 +614,7 @@ class CpanelModel extends BaseModel
         static $modals;
         static $included;
 
-        $document = &Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
 
         // Load the necessary files if they haven't yet been loaded
         if (!isset($included)) {
@@ -665,7 +668,7 @@ class CpanelModel extends BaseModel
     /* Función que crea un trigger con las parámetros pasados como argumento */
     function create_trigger_scp($option,$component_name,$table_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         try 
         {        
             $message = Text::_('COM_SECURITYCHECKPRO_LOCKED_MESSAGE');
@@ -1007,7 +1010,7 @@ class CpanelModel extends BaseModel
             }
         }
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         // Block scp tables
         try 
         {        
@@ -1024,7 +1027,7 @@ class CpanelModel extends BaseModel
     /* Función que borra un trigger */
     function drop_trigger($trigger_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         try 
         {    
@@ -1048,7 +1051,7 @@ class CpanelModel extends BaseModel
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $lock_tables_easy = $params->get('lock_tables_easy');
             
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         try 
         {        
             $query = "SHOW TRIGGERS;";    
@@ -1079,7 +1082,7 @@ class CpanelModel extends BaseModel
             }
         }      
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         try 
         {        
             $query = "UPDATE #__securitycheckpro_storage SET storage_value = '0' WHERE storage_key = 'locked'";
@@ -1095,7 +1098,7 @@ class CpanelModel extends BaseModel
     function lock_status()
     {
         $locked = 0;
-        $db = Factory::getDBO();    
+        $db = Factory::getContainer()->get(DatabaseInterface::class);    
 		$query = $db->getQuery(true);
         try 
         {   
@@ -1115,6 +1118,8 @@ class CpanelModel extends BaseModel
 	/* Función que activa la recogida de estadísiticas */
     function enable_analytics($website_code,$control_center_url)
     {
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+		
 		$success = 1;
 		
         // Get the params and set the new values
@@ -1124,7 +1129,7 @@ class CpanelModel extends BaseModel
 			$params->set('website_code', $website_code);
 				
 			$componentid = ComponentHelper::getComponent('com_securitycheckpro')->id;
-			$table = Table::getInstance('extension');
+			$table = new \Joomla\CMS\Table\Extension($db);
 			$table->load($componentid);
 			$table->bind(array('params' => $params->toString()));
 				
@@ -1140,8 +1145,12 @@ class CpanelModel extends BaseModel
 			}
 				
 			// Clean the component cache. Without these lines changes will not be reflected until cache expired.
-			parent::cleanCache('_system', 0);
-			parent::cleanCache('_system', 1); 			
+			// Establece el dispatcher antes de llamar a cleanCache()
+			$this->setDispatcher(Factory::getApplication()->getDispatcher());
+
+			// Ahora llama a cleanCache()
+			$this->cleanCache('_system', 0);
+			$this->cleanCache('_system', 1);		
 			
 		} catch (Exception $e)		
         {
@@ -1153,6 +1162,8 @@ class CpanelModel extends BaseModel
 	/* Función que desactiva la recogida de estadísiticas */
     function disable_analytics($website_code,$control_center_url)
     {
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
+		
 		$success = 1;
 		
         // Get the params and set the new values
@@ -1161,7 +1172,7 @@ class CpanelModel extends BaseModel
 			$params->set('enable_analytics', 0);
 							
 			$componentid = ComponentHelper::getComponent('com_securitycheckpro')->id;
-			$table = Table::getInstance('extension');
+			$table = new \Joomla\CMS\Table\Extension($db);
 			$table->load($componentid);
 			$table->bind(array('params' => $params->toString()));
 				
@@ -1177,8 +1188,12 @@ class CpanelModel extends BaseModel
 			}
 				
 			// Clean the component cache. Without these lines changes will not be reflected until cache expired.
-			parent::cleanCache('_system', 0);
-			parent::cleanCache('_system', 1); 
+			// Establece el dispatcher antes de llamar a cleanCache()
+			$this->setDispatcher(Factory::getApplication()->getDispatcher());
+
+			// Ahora llama a cleanCache()
+			$this->cleanCache('_system', 0);
+			$this->cleanCache('_system', 1);
 			
 		} catch (Exception $e)		
         {
@@ -1191,7 +1206,7 @@ class CpanelModel extends BaseModel
 	/* Función que actualiza el campo 'extra_query' de la tabla update_sites. */
     function update_extra_query_update_sites_table($site_id,$dlid)
     {
-		$db = Factory::getDBO();    
+		$db = Factory::getContainer()->get(DatabaseInterface::class);    
 		$query = $db->getQuery(true);
 				
 		if ( !is_int($site_id) ) {

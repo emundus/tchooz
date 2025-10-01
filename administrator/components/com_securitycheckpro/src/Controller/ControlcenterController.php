@@ -14,6 +14,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\Filesystem\File;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproController;
 
 /**
@@ -122,7 +124,7 @@ class ControlcenterController extends SecuritycheckproController
         } 
 		if ($res) {
 			Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_FILE_DELETED'));
-			$db = Factory::getDbo();		
+			$db = Factory::getContainer()->get(DatabaseInterface::class);		
 			$sql = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='controlcenter_log'";
 			$db->setQuery($sql);
 			$db->execute();  

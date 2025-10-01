@@ -14,9 +14,10 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Version;
-use Joomla\CMS\Filesystem\File;
+use Joomla\Filesystem\File;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
-
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -149,7 +150,7 @@ class SecuritycheckproModel extends BaseModel
 		$dbtype = $config->get('dbtype');
 		
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
         $query->select('*');
@@ -183,7 +184,7 @@ class SecuritycheckproModel extends BaseModel
     {
 
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         // Sanitizamos las entradas
@@ -218,7 +219,7 @@ class SecuritycheckproModel extends BaseModel
     function chequear_vulnerabilidades()
     {
         // Extraemos los componentes instalados
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		
         $query = $this->_buildQuery();
         $db->setQuery($query);
@@ -313,7 +314,7 @@ class SecuritycheckproModel extends BaseModel
     function actualizar_registro($nombre,$database,$campo,$nuevo_valor,$campo_set,$tipo=null)
     {
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         // Sanitizamos las entradas
@@ -350,7 +351,7 @@ class SecuritycheckproModel extends BaseModel
         $encontrado = false;
 
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         // Sanitizamos las entradas
@@ -384,7 +385,7 @@ class SecuritycheckproModel extends BaseModel
     */
     function insertar_registro($nombre,$version,$tipo)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // Sanitizamos las entradas
         $nombre = $db->escape($nombre);
@@ -396,7 +397,7 @@ class SecuritycheckproModel extends BaseModel
         'Installedversion' => $version,
         'sc_type' => $tipo
         );
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         $result = $db->insertObject('#__securitycheckpro', $valor, 'id');
         return $result;
@@ -410,7 +411,7 @@ class SecuritycheckproModel extends BaseModel
         $mainframe = Factory::getApplication();    
         $jinput = $mainframe->input;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = "SELECT * FROM #__securitycheckpro";
         $db->setQuery($query);
         $db->execute();
@@ -424,7 +425,7 @@ class SecuritycheckproModel extends BaseModel
             $buscar_componente = $this->buscar_registro($nombre, $database, 'element');
             if (!($buscar_componente)) { /*Si el componente no existe en #_extensions, lo eliminamos  de #_securitycheckpro */
                 if ($nombre != 'Joomla!') { /* Este componente no existe como extensión*/
-                    $db = Factory::getDBO();
+                    $db = Factory::getContainer()->get(DatabaseInterface::class);
                     // Sanitizamos las entradas
                     $nombre = $db->Quote($db->escape($nombre));
                     $query = 'DELETE FROM #__securitycheckpro WHERE Product=' .$nombre;
@@ -454,7 +455,7 @@ class SecuritycheckproModel extends BaseModel
     */
     function actualizarbbdd($registros)
     {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		$scan_path = JPATH_ADMINISTRATOR.DIRECTORY_SEPARATOR.'components'.DIRECTORY_SEPARATOR.'com_securitycheckpro'.DIRECTORY_SEPARATOR.'scans'.DIRECTORY_SEPARATOR;
 		
@@ -540,7 +541,7 @@ class SecuritycheckproModel extends BaseModel
     {
         $jinput = Factory::getApplication()->input;
 
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = "SELECT * FROM #__extensions WHERE (state=0) AND ((type='component') OR (type='module') OR (type='plugin'))";
         $db->setQuery($query);
         $db->execute();
@@ -592,7 +593,7 @@ class SecuritycheckproModel extends BaseModel
     function get_plugin_id($opcion)
     {
 
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
         if ($opcion == 1) {
 			$query->select($db->quoteName('extension_id'));
@@ -615,7 +616,7 @@ class SecuritycheckproModel extends BaseModel
     /* Función que obtiene la fecha de actualización del último componente añadido a la bbdd por el plugin 'Update Database'  */
     function get_last_update()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		try {
 			$query = 'SELECT published FROM #__securitycheckpro_db ORDER BY id DESC LIMIT 1';
 			$db->setQuery($query);
@@ -634,7 +635,7 @@ class SecuritycheckproModel extends BaseModel
     {
         $data = null;
         $content = "";
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Cargamos los datos
         if (empty($data)) {

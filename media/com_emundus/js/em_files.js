@@ -515,7 +515,7 @@ function openFiles(fnum, page = 0, vue = false) {
                 document.getElementsByTagName("head")[0].appendChild(tag);
 
                 $('#em-collaborators .panel-body').append(result);
-                if(document.querySelector('#collaborators_block').innerHtml) {
+                if(document.querySelector('#collaborators_block') && document.querySelector('#collaborators_block').innerHtml) {
                     document.getElementById('em-collaborators').style.display = 'block';
                 }
             } else {
@@ -5841,7 +5841,14 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
-        var id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+        const elementId = $(this).attr('id');
+
+        let id = 0;
+        if (elementId.startsWith('emundus_checkall_grp_evaluation_steps_')) {
+            id = $(this).attr('id').split('emundus_checkall_grp_evaluation_steps_')[1];
+        } else {
+            id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+        }
 
         const checked = $('#emundus_checkall_grp_' + id).is(":checked");
         const isXlsExport = document.getElementById('appelement');
@@ -5901,7 +5908,7 @@ function updateProfileForm(profile){
     /* call to ajax */
     $.ajax({
         type: 'post',
-        url: '/index.php?option=com_emundus&controller=application&task=getform',
+        url: langPath+'/index.php?option=com_emundus&controller=application&task=getform',
         dataType: 'json',
         data: { profile: profile, user: $('#user_hidden').attr('value'), fnum: $('#fnum_hidden').attr('value') },
         success: function(result) {

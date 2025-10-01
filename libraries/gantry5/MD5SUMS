@@ -4,6 +4,8 @@ assets/css/font-awesome.min.css	269550530cc127b6aa5a35925a7de6ce
 assets/css/font-awesome6-all.min.css	9402848c3d4bbc710c764326f8b887c9
 assets/css/font-awesome6-pseudo.min.css	f078bb59dea4595eb6922a814d72ccf2
 assets/css/font-awesome6-shim.min.css	945af432e96851f47f2b4ad641972c00
+assets/css/font-awesome7-all.min.css	db8e0af2bfbf78d912f3de852e05acec
+assets/css/font-awesome7-shim.min.css	54237d4399bf1299687a49742e1aa5e6
 assets/css/lightcase.css	dfdf96700a010c18cabd81d058a236cf
 assets/css/whoops.css	afac3c5ad7a94166ef0c93c42946fbe1
 assets/fonts/FontAwesome.otf	0d2717cd5d853e5c765ca032dfd41a4d
@@ -19,6 +21,8 @@ assets/fonts/lightcase.woff	30cce75077e855a9f9c53b2ba6e76c4d
 assets/images/gantry5-logo.png	4760ca4f7e636cdb069bab077e6e4549
 assets/js/font-awesome5-all.min.js	6db763bc4e4a292c7520eb0a5bad0f5c
 assets/js/font-awesome5-shim.min.js	cd53a56fd5accc9a5396a8eb66752d20
+assets/js/font-awesome7-all.min.js	f987908d0b699b8efa5fbafc2841ea29
+assets/js/font-awesome7-shim.min.js	23f6e651ee2569c22a83be257ef97582
 assets/js/lightcase.js	9deee98d0c1b00991ced68abba30ddd4
 assets/js/main.js	44fb255492ec012eeca7f2d61bbd5e0a
 assets/webfonts/fa-brands-400.eot	0fabb6606be4c45acfeedd115d0caca4
@@ -36,6 +40,10 @@ assets/webfonts/fa-solid-900.svg	03ba7cb710104df27f1c9c46d64bee4e
 assets/webfonts/fa-solid-900.ttf	781e85bb50c8e8301c30de56b31b1f04
 assets/webfonts/fa-solid-900.woff	ee09ad7553b8ad3d81150d609d5341a0
 assets/webfonts/fa-solid-900.woff2	c500da19d776384ba69573ae6fe274e7
+assets/webfonts/fa7/fa-brands-400.woff2	ed1903192eade544e6c2205902b678e4
+assets/webfonts/fa7/fa-regular-400.woff2	49d7fd7a16b90576fb4ac8e2b5f2ad27
+assets/webfonts/fa7/fa-solid-900.woff2	18dd0b25bda3d372b262b08edeed525a
+assets/webfonts/fa7/fa-v4compatibility.woff2	67b58b166bfed8ac01a5f93c2c57f431
 assets/yarn.lock	0d81a067ae8b0d8abe9cba4a78096331
 compat/composer.json	820aa055b22a28e0804c801bb747376e
 compat/composer.lock	cbc95daf51d6359f3b18d88a2630cb32
@@ -49,7 +57,7 @@ compat/vendor/composer/autoload_psr4.php	0f8f17122cdd5bae888ff534a6bcf7f8
 compat/vendor/composer/autoload_real.php	1f1157edf2b2e70a71611191be039438
 compat/vendor/composer/autoload_static.php	4d358f4d763e5de39214ada6a2d38073
 compat/vendor/composer/installed.json	7a9765737227c787b55c06d9db8dba13
-compat/vendor/composer/installed.php	46f71f0a5543e8135f7f8972823de2ad
+compat/vendor/composer/installed.php	782ecc62c43672bffeb09345b14d1375
 compat/vendor/composer/platform_check.php	9c5def58a7133edae32080dbd60c0c4f
 compat/vendor/pimple/pimple/.github/workflows/tests.yml	4e3bfd724bb9dc1fd2fa9932fcf496e7
 compat/vendor/pimple/pimple/README.rst	a956d6812cf186e51382ee7306532e6c
@@ -517,10 +525,10 @@ compat/vendor/twig/twig/src/Util/DeprecationCollector.php	3544a13fe362d8df807ac3
 compat/vendor/twig/twig/src/Util/TemplateDirIterator.php	95e8577b871e6576d437d31832f09155
 composer.json	8675d8256d8146d0ca1c6bf61d16b5f1
 composer.lock	9e2caf4fbfbf8ea1dedc4247b695c1e7
-gantry5.xml	eb6d1c1d4a6bf2ce341c4fad448bbe90
+gantry5.xml	98edd37c1b32d0226d099f2b77efe083
 language/en-GB/en-GB.lib_gantry5.sys.ini	8a4fd5e54b680861e7db91ee7b0d9111
 src/Loader.php	7bcac3ed4b2071dc85e3a8695865f6cb
-src/RealLoader.php	0bf69a63b74491c3673c7fdc7ffbd312
+src/RealLoader.php	581d7aaa559c4b67f98e8098ed03f471
 src/bootstrap.php	cf7d06ca4e9e453b67d7e16fccb2388c
 src/classes/Gantry/Admin/Controller/Html/About.php	8950b7330c6181eed3bb37567e06bb12
 src/classes/Gantry/Admin/Controller/Html/Cache.php	c6c7ca87ac31cdd846ed86b51bb78e82
@@ -646,7 +654,7 @@ src/classes/Gantry/Component/Twig/TokenParser/TokenParserSwitch.php	0881a9705583
 src/classes/Gantry/Component/Twig/TokenParser/TokenParserThrow.php	818ba9fd541e4a6ed5a2ce383d652209
 src/classes/Gantry/Component/Twig/TokenParser/TokenParserTryCatch.php	80747e415ec2a41195b7702fa01f9775
 src/classes/Gantry/Component/Twig/TwigCacheFilesystem.php	cdeafac07b40fb4e6abeaee5b3b372ef
-src/classes/Gantry/Component/Twig/TwigExtension.php	5a1aec7a9fbc58b414a56dc34221aacb
+src/classes/Gantry/Component/Twig/TwigExtension.php	3322889c3b1565f7f7c0c1c1903705d2
 src/classes/Gantry/Component/Url/Url.php	763a7519a336a5badcee2ff3248a5d92
 src/classes/Gantry/Component/Whoops/SystemFacade.php	c6690c136eab7cea14724766aaeda08a
 src/classes/Gantry/Framework/Assignments.php	a9ea8c69ecb7bfac008f3d1cc42ba421
@@ -685,7 +693,7 @@ src/classes/Gantry/Joomla/Category/CategoryFinder.php	7a09201a7f473e4967efdc6ac9
 src/classes/Gantry/Joomla/Contact/Contact.php	bd8f4466bc5a0aa8ecb355eeb57015f7
 src/classes/Gantry/Joomla/Contact/ContactFinder.php	98711972b5707fb74769aeac2f449433
 src/classes/Gantry/Joomla/Content/Content.php	3e8413db030debc1e699e8ee8e21e228
-src/classes/Gantry/Joomla/Content/ContentFinder.php	b39c155aad8207d5ebfe2742c29d6365
+src/classes/Gantry/Joomla/Content/ContentFinder.php	acd4df136e80f5d2a89139496aebc31c
 src/classes/Gantry/Joomla/Manifest.php	f63972e6da2f58020a2dc01ffdcc6113
 src/classes/Gantry/Joomla/MenuHelper.php	8d1967528efcb425e3c1fe03bd6c53f3
 src/classes/Gantry/Joomla/MenuItem/MenuItem.php	80c131280f8715fa54bfbb8b1e50b1b0
@@ -709,7 +717,7 @@ vendor/composer/autoload_psr4.php	848e2b01f23ae2fcb5f65f4a2be29d96
 vendor/composer/autoload_real.php	b83bb2ac059b8156544ca65f6455a95e
 vendor/composer/autoload_static.php	66a723c4bdd6258f9e4c05cab1bf8788
 vendor/composer/installed.json	491c1e800dd5e39626d1818fafa2acb2
-vendor/composer/installed.php	569fd4fded3a0306aea2b1c333ac75e0
+vendor/composer/installed.php	a74e4c9d9f4f5d1e46510c1f310db371
 vendor/composer/platform_check.php	f13bb9a8d43e9a399f4f92f1fe8de630
 vendor/erusev/parsedown-extra/ParsedownExtra.php	0a377efcd5580927d1d15b7e0a5fad62
 vendor/erusev/parsedown-extra/composer.json	58c37b15a2b155d1e208af0487c02972

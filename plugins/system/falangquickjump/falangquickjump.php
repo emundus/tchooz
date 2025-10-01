@@ -56,57 +56,68 @@ class plgSystemFalangquickjump extends CMSPlugin
         $this->loadLanguage();
     }
 
-    //sbou4
 	/*
 	 * Add display modal windows
+	 *
+	 * @update 5.20 only for html document (fix ajax call and json response showtime)
 	 * */
 	public function onAfterRender(){
-    	if ($this->app->isClient('site')) {return true;}
+    	if ($this->app->isClient('administrator')) {
 
-    	//test if falang plugin is enabled.
-		$falang_driver = PluginHelper::isEnabled('system', 'falangdriver');
-		if (!$falang_driver){return;}
+            $document = Factory::getApplication()->getDocument();
+
+            //only for html document
+            if (!($document instanceof \Joomla\CMS\Document\HtmlDocument)) {
+                return;
+            }
+
+            //test if falang plugin is enabled.
+            $falang_driver = PluginHelper::isEnabled('system', 'falangdriver');
+            if (!$falang_driver) {
+                return;
+            }
 
 
-		$input = $this->app->input;
-		$option = $input->get('option', null, 'cmd');
-		$view = $input->get('view', 'default', 'cmd');
-		$task = $input->get('task', null, 'cmd');
+            $input = $this->app->input;
+            $option = $input->get('option', null, 'cmd');
+            $view = $input->get('view', 'default', 'cmd');
+            $task = $input->get('task', null, 'cmd');
 
-		//fix ArticleAnywhere Problem FalangManager not defined
-        $rl_qp = $input->get('rl_qp',null,'cmd');
-        if (isset($rl_qp)){return;}
+            //fix ArticleAnywhere Problem FalangManager not defined
+            $rl_qp = $input->get('rl_qp', null, 'cmd');
+            if (isset($rl_qp)) {
+                return;
+            }
 
-		jimport('joomla.application.component.helper');
-		$params = ComponentHelper::getParams('com_falang');
+            jimport('joomla.application.component.helper');
+            $params = ComponentHelper::getParams('com_falang');
 
-		//get supported component <form></form>
-		$component = $this->loadComponent();
-		if (!isset($component)){
-			return;
-		}
+            //get supported component <form></form>
+            $component = $this->loadComponent();
+            if (!isset($component)) {
+                return;
+            }
 
-		if (!is_null($view) || is_null($task)) {
-			if (is_null($view)) {
-				$view = 'default';
-			}
-			//$view = $jd->getView($option, $view);
-		} elseif (!is_null($task)) {
-			//$view = $jd->getViewByTask($option, $task);
-		}
+            if (!is_null($view) || is_null($task)) {
+                if (is_null($view)) {
+                    $view = 'default';
+                }
+                //$view = $jd->getView($option, $view);
+            } elseif (!is_null($task)) {
+                //$view = $jd->getViewByTask($option, $task);
+            }
 
-		//display only on view $taksk is null
-		if (is_null($task)) {
-			$supported_views = explode(',', $component[3]);
-			if (!in_array($view, $supported_views)) {
-				return;
-			}
-		}
-		if (isset($view)) {
-			$this->addQuickModalWindows();
-		}
-
-		return true;
+            //display only on view $taksk is null
+            if (is_null($task)) {
+                $supported_views = explode(',', $component[3]);
+                if (!in_array($view, $supported_views)) {
+                    return;
+                }
+            }
+            if (isset($view)) {
+                $this->addQuickModalWindows();
+            }
+        }
 	}
 
 	/*
@@ -408,6 +419,11 @@ class plgSystemFalangquickjump extends CMSPlugin
         }
     }
 
+    /*
+     * @update 5.20 fix bug for some component not laoding the quickjump from xml (like showtime_galleries)
+     *              for long table name
+     *              change load first quickjump and the falang option after for override
+     * */
     public function loadComponent () {
         $mapping=null;
 
@@ -416,21 +432,15 @@ class plgSystemFalangquickjump extends CMSPlugin
         $view = $input->get('view', 'default', 'cmd');
         //load content element quickjump if exist first
         $falangManager = FalangManager::getInstance();
-        $contentElmentName = str_replace('com_','',$option);
-        $contentElement = $falangManager->getContentElement($contentElmentName);
-        if (isset($contentElement)){
-            $quickjumps = $contentElement->getQuickjumps();
+
+        $contentElements = $falangManager->getContentElements(true);
+        $quickjumps = array();
+        foreach ($contentElements as $contentElement){
+            $contentElementQJ = $contentElement->getQuickjumps();
+            if (!empty($contentElementQJ)){
+                $quickjumps = array_merge($quickjumps,$contentElementQJ);
+            }
         }
-
-
-        //load supported component
-        //        $contentElements = $falangManager->getContentElements();
-
-        //        $value = array();
-        //        foreach ($contentElements as $contentElement) {
-        //            $form = $contentElement->_xmlFile->getElementsByTagName('component')->item(0);
-        //            if (isset($form)){$value[]= trim($form->textContent);}
-        //        }
 
         $params = ComponentHelper::getParams('com_falang');
 
@@ -438,9 +448,8 @@ class plgSystemFalangquickjump extends CMSPlugin
         $component_list = $params->get('component_list');
         $value = explode("\r\n",$component_list);
 
-        if (isset($quickjumps)){
-            $value = array_merge($value,$quickjumps);
-        }
+        //merge falang option and the xml quickjump definition
+        $value = array_merge($quickjumps,$value);
 
         $components =$value;
         $mapping=null;

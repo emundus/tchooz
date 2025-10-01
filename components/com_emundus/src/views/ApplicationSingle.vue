@@ -26,14 +26,21 @@
 				</div>
 				<div v-if="fnums.length > 1" class="tw-flex tw-items-center">
 					<span
-						class="material-symbols-outlined tw-cursor-pointer tw-text-base"
-						style="color: white"
+						class="material-symbols-outlined tw-text-base"
+						:class="{ 'tw-cursor-disabled': currentFnumIndex === 0, 'tw-cursor-pointer': currentFnumIndex !== 0 }"
+						:style="{ color: currentFnumIndex === 0 ? 'var(--neutral-500)' : 'white' }"
 						@click="openPreviousFnum"
 						>navigate_before</span
 					>
+					<!-- Display current index / total -->
+					<span class="tw-mx-2 tw-text-sm tw-text-white"> {{ currentFnumIndex + 1 }} / {{ fnums.length }} </span>
 					<span
-						class="material-symbols-outlined tw-cursor-pointer tw-text-base"
-						style="color: white"
+						class="material-symbols-outlined tw-text-base"
+						:class="{
+							'tw-cursor-disabled': currentFnumIndex === fnums.length - 1,
+							'tw-cursor-pointer': currentFnumIndex !== fnums.length - 1,
+						}"
+						:style="{ color: currentFnumIndex === fnums.length - 1 ? 'var(--neutral-500)' : 'white' }"
 						@click="openNextFnum"
 						>navigate_next</span
 					>
@@ -271,6 +278,8 @@ export default {
 
 				if (e.detail.fnums) {
 					this.fnums = e.detail.fnums;
+					// Remove duplicates
+					this.fnums = [...new Set(this.fnums)];
 				}
 
 				if (typeof this.selectedFile !== 'undefined' && this.selectedFile !== null) {
@@ -316,8 +325,6 @@ export default {
 
 						// if the last tab is in the default tabs, then select it
 						let tabFind = this.tabs.find((tab) => tab.name === lastTab);
-
-						console.log('lastTab', lastTab, tabFind, this.defaultTabs);
 
 						if (lastTab && tabFind && (this.access[tabFind.access].r || this.access[tabFind.access].c)) {
 							this.updateTab(lastTab);
@@ -462,9 +469,6 @@ export default {
 			this.showModal = false;
 			document.querySelector('body').style.overflow = 'visible';
 
-			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
-			sessionStorage.removeItem('com_emundus_last_tab_' + menu);
-
 			// Remove the hash from the URL
 			this.updateURL();
 
@@ -475,6 +479,7 @@ export default {
 				typeof this.selectedFile === 'string'
 					? this.fnums.indexOf(this.selectedFile)
 					: this.fnums.indexOf(this.selectedFile.fnum);
+
 			if (index !== -1 && index < this.fnums.length - 1) {
 				const newIndex = index + 1;
 				if (newIndex > this.fnums.length) {
@@ -520,6 +525,14 @@ export default {
 		},
 		tabsICanAccessTo() {
 			return this.tabs.filter((tab) => this.access[tab.access].r || this.access[tab.access].c);
+		},
+		currentFnumIndex() {
+			if (typeof this.selectedFile === 'string') {
+				return this.fnums.indexOf(this.selectedFile);
+			} else if (this.selectedFile && this.selectedFile.fnum) {
+				return this.fnums.indexOf(this.selectedFile.fnum);
+			}
+			return -1;
 		},
 	},
 };

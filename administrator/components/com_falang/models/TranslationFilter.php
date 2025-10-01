@@ -959,6 +959,8 @@ class JFContentParams extends CMSObject
      * @update 5.13 change the way the tab are open not on a list to open but on a list to not open (allow extra plugin to work directly)
      *              add display original value for list and list multiple
      * @update 5.18 add editor custom fields copy/translate (message for original)
+     * @update 5.21 skip display of copy/transate/original for JFormFieldACFGAllery
+     *              custom fields with a specific language code are not displayed for translation
      * */
     function render($type)
     {
@@ -1083,7 +1085,29 @@ class JFContentParams extends CMSObject
                 <fieldset class="options-form">
                     <ul class="adminformlist">
                         <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+                            <?php
+                            //don't display a field not set to all language
+                            //or set as disabledTranslation
+                            $hide_cf_field = false;
+                            $disabledTranslation = false;
+                            foreach ($original_cfs as $original_cf){
+                                if ($original_cf->name == $field->fieldname){
+                                    if ( $original_cf->language != '*'){
+                                        $hide_cf_field = true;
+                                    }
+                                    $disabledTranslation = $original_cf->params->get('disableTranslation') ?? false;
+                                }
+                            }
+
+                            ?>
+                            <!-- the field can't be displayed -->
+                            <?php if ($disabledTranslation){continue;} ?>
+                            <?php if ($hide_cf_field){continue;} ?>
+                            <?php if ($field instanceof ('JFormFieldACFGAllery')){continue;} ?>
+
+                            <!-- the field can be displayed -->
                             <?php echo $field->renderField(); ?>
+                            <?php if ($field instanceof ('JFormFieldACFGAllery')){continue;} ?>
                             <?php if (in_array($field->type , $supported_original) ) { ?>
                                 <div class="control-group">
                                     <div class="control-label">&nbsp;</div>
@@ -1103,8 +1127,8 @@ class JFContentParams extends CMSObject
                                         <?php
                                         if ($field->type == 'Text' || $field->type == 'Textarea' || $field->type == 'Editor') { ?>
                                             <div class="falang-cf" style = "" >
-                                                <a style="margin-right: 5px;" class="button btn-translate" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo $originalValue;?>','translate')" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE','Translate'); ?>"><i class="fas fa-globe"></i></a>
-                                                <a class="button btn-copy" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo $originalValue;?>','copy')" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
+                                                <a style="margin-right: 5px;" class="button btn-translate" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo base64_encode($originalValue);?>','translate')" title="<?php echo Text::sprintf('COM_FALANG_BTN_TRANSLATE','Translate'); ?>"><i class="fas fa-globe"></i></a>
+                                                <a class="button btn-copy" onclick="TranslateCF('<?php echo $field->id;?>','<?php echo base64_encode($originalValue);?>','copy')" title="<?php echo Text::_('COM_FALANG_BTN_COPY'); ?>"><i class="icon-copy"></i></a>
                                             </div>
                                             <?php } ?>
                                         <?php
@@ -1545,6 +1569,7 @@ class TranslateParams_tags extends TranslateParams_xml
 
 }
 
+#[AllowDynamicProperties]
 class TranslateParams_fields extends TranslateParams_xml
 {
 

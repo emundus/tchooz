@@ -3054,9 +3054,7 @@ class EmundusModelApplication extends ListModel
 										$j     = 0;
 
 										foreach ($r_element as $key => $r_elt) {
-
 											if ($key != 'id' && $key != 'parent_id' && isset($elements[$j])) {
-
 												$params = json_decode($elements[$j]->params);
 
 												if (in_array($elements[$j]->plugin,['date','jdate']) && (!empty($r_elt) && ($r_elt != '0000-00-00 00:00:00' && $r_elt != '0000-00-00'))) {
@@ -3172,7 +3170,7 @@ class EmundusModelApplication extends ListModel
 												}
 												elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
 													$index = array_search($r_elt, $params->sub_options->sub_values);
-													if (strlen($index) > 0) {
+													if ($index !== false) {
 														$elt = Text::_($params->sub_options->sub_labels[$index]);
 													}
 													elseif (!empty($params->dropdown_populate)) {
@@ -3340,7 +3338,7 @@ class EmundusModelApplication extends ListModel
 														$elt = Text::_($this->_db->loadResult());
 													}
 												}
-												elseif (@$elements[$j]->plugin == 'cascadingdropdown') {
+												elseif ($elements[$j]->plugin == 'cascadingdropdown') {
                                                     $cascadingdropdown_id    = $params->cascadingdropdown_id;
                                                     $r1                      = explode('___', $cascadingdropdown_id);
                                                     $cascadingdropdown_label = $params->cascadingdropdown_label;
@@ -3433,10 +3431,11 @@ class EmundusModelApplication extends ListModel
 													}
 													$elt .= "</ul>";
 												}
-												elseif ($elements[$j]->plugin == 'dropdown' || @$elements[$j] == 'radiobutton') {
+												elseif ($elements[$j]->plugin == 'dropdown' || $elements[$j]->plugin == 'radiobutton') {
 													$params = json_decode($elements[$j]->params);
 													$index  = array_search($r_elt, $params->sub_options->sub_values);
-													if (strlen($index) > 0) {
+
+													if ($index !== false) {
 														$elt = Text::_($params->sub_options->sub_labels[$index]);
 													}
 													elseif (!empty($params->dropdown_populate)) {
