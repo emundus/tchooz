@@ -886,7 +886,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											$value = EmundusHelperFabrik::extractNumericValue($value);
 											$conditions_status[] = $this->operateCondition($condition, $value);
 										}
-									} else {
+									}
+									//TODO: Manage checkboxes cases
+									else {
 										if ($linked)
 										{
 											$query->clear()
