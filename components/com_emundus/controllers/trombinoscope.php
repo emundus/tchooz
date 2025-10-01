@@ -11,6 +11,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 
 /**
  * eMundus Component Controller
@@ -82,7 +83,7 @@ class EmundusControllerTrombinoscope extends EmundusController
 	 */
 	public function generate_preview()
 	{
-		$response     = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED'), 'html_content' => ''];
+		$response     = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'html_content' => ''];
 
 		if (EmundusHelperAccess::asAccessAction(31, 'c', $this->app->getIdentity()->id)) {
 
@@ -356,11 +357,11 @@ footer {
 	 */
 	public function generate_pdf()
 	{
-		$response     = ['status' => false, 'code' => 403, 'msg' => JText::_('ACCESS_DENIED')];
-		$current_user = JFactory::getUser();
+		$response     = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
+		$current_user = Factory::getApplication()->getIdentity();
 
 		if (EmundusHelperAccess::asAccessAction(31, 'c', $current_user->id)) {
-			$response['msg'] = JText::_('BAD_REQUEST');
+			$response['msg'] = Text::_('BAD_REQUEST');
 
 			$format = $this->input->get('format');
 
@@ -388,11 +389,11 @@ footer {
 						$response['pdf_url'] = $m_trombinoscrope->generate_pdf($html_content, $format);
 						$response['status']  = true;
 						$response['code']    = 200;
-						$response['msg']     = JText::_('SUCCESS');
+						$response['msg']     = Text::_('SUCCESS');
 					}
 					else {
 						$response['code'] = 500;
-						$response['msg']  = JText::_('FAIL');
+						$response['msg']  = Text::_('FAIL');
 					}
 				}
 			}

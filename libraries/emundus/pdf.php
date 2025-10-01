@@ -303,8 +303,8 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
 
     if (!empty($courses)) {
         foreach ($courses as $c) {
-            $ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-            $de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+            $ds = !empty($c['date_start']) ? date(Text::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : Text::_('NOT_DEFINED');
+            $de = !empty($c['date_end']) ? date(Text::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : Text::_('NOT_DEFINED');
             $courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
             $courses_list .= $ds.' - '.$de.'<br />';
             $courses_fee  .= 'Euro '.$c['price'].',-- ';
@@ -453,7 +453,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
                 $url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
                 copy(JPATH_BASE.$letter['file'], $path);
             } else {
-                $app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
+                $app->enqueueMessage($name.' - '.Text::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
                 $error++;
             }
 
@@ -481,7 +481,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
                 $document->save($path);
                 unset($document);
             } else {
-                $app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
+                $app->enqueueMessage($name.' - '.Text::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
                 $error++;
             }
 
@@ -492,7 +492,7 @@ function letter_pdf ($user_id, $eligibility, $training, $campaign_id, $evaluatio
                 $path = EMUNDUS_PATH_ABS.$user_id.DS.$name;
                 $url  = EMUNDUS_PATH_REL.$user_id.'/'.$name;
             } else {
-                $app->enqueueMessage($name.' - '.JText::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
+                $app->enqueueMessage($name.' - '.Text::_("TEMPLATE_FILE_MISSING").' : '.JPATH_BASE.$letter['file'], 'error');
                 $error++;
             }
 
@@ -623,8 +623,8 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
     $courses_list = '';
     $courses_fee = ' ';
     foreach ($courses as $c) {
-        $ds = !empty($c['date_start']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : JText::_('NOT_DEFINED');
-        $de = !empty($c['date_end']) ? date(JText::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : JText::_('NOT_DEFINED');
+        $ds = !empty($c['date_start']) ? date(Text::_('DATE_FORMAT_LC3'), strtotime($c['date_start'])) : Text::_('NOT_DEFINED');
+        $de = !empty($c['date_end']) ? date(Text::_('DATE_FORMAT_LC3'), strtotime($c['date_end'])) : Text::_('NOT_DEFINED');
         $courses_list .= '<img src="'.JPATH_BASE.DS."media".DS."com_emundus".DS."images".DS."icones".DS."checkbox-unchecked_16x16.png".'" width="8" height="8" align="left" /> ';
         $courses_list .= $ds.' - '.$de.'<br />';
         $courses_fee  .= 'Euro '.$c['price'].'<br>';
@@ -673,7 +673,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
     $post = [
     	'TRAINING_CODE' => @$letters[0]['training'],
         'TRAINING_PROGRAMME' => @$programme,
-        'REASON' => JText::_("DEPEND_OF_EVALUATION"),
+        'REASON' => Text::_("DEPEND_OF_EVALUATION"),
         'TRAINING_FEE' => @$courses_fee,
         'TRAINING_PERIODE' => @$courses_list
     ];
@@ -704,7 +704,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
                 readfile($file);
                 exit;
             } else {
-                JError::raiseWarning( 500, JText::_( 'FILE_NOT_FOUND' ).' '.$file );
+                JError::raiseWarning( 500, Text::_( 'FILE_NOT_FOUND' ).' '.$file );
             }
 
         } elseif ($letter['template_type'] == 3) { // Template file .docx
@@ -741,7 +741,7 @@ function letter_pdf_template ($user_id, $letter_id, $fnum = null) {
                 readfile($file);
                 exit;
             } else {
-                JError::raiseWarning( 500, JText::_( 'FILE_NOT_FOUND' ).' '.$file );
+                JError::raiseWarning( 500, Text::_( 'FILE_NOT_FOUND' ).' '.$file );
             }
 
             unset($document);
@@ -911,7 +911,7 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
             $allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
 
             if ($options[0] != "0") {
-                $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : JText::_('NOT_SENT');
+                $date_submitted = (!empty($item->date_submitted) && strpos($item->date_submitted, '0000') === false) ? EmundusHelperDate::displayDate($item->date_submitted) : Text::_('NOT_SENT');
 
                 // Create an date object
                 $date_printed = new Date();
@@ -919,20 +919,20 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	            $date_printed = EmundusHelperDate::displayDate($date_printed, 'DATE_FORMAT_LC2', 0);
 
 	            if (!$anonymize_data) {
-		            $htmldata .= '<p><b>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . ' :</b> ' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</p>';
+		            $htmldata .= '<p><b>' . Text::_('PDF_HEADER_INFO_CANDIDAT') . ' :</b> ' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . '</p>';
 	            }
 
 	            if (!$anonymize_data && in_array("aemail", $options)) {
-		            $htmldata .= '<p><b>' . JText::_('EMAIL') . ' :</b> ' . @$item->email . '</p>';
+		            $htmldata .= '<p><b>' . Text::_('EMAIL') . ' :</b> ' . @$item->email . '</p>';
 	            }
 	            if (in_array("afnum", $options)) {
-		            $htmldata .= '<p><b>' . JText::_('FNUM') . ' :</b> ' . $fnum . '</p>';
+		            $htmldata .= '<p><b>' . Text::_('FNUM') . ' :</b> ' . $fnum . '</p>';
 	            }
                 $htmldata .= '</td></tr></table><hr/></header>';
 
                 $htmldata .= '<table width="100%">';
 
-                //$htmldata .= '<tr><td><h3>' . JText::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
+                //$htmldata .= '<tr><td><h3>' . Text::_('PDF_HEADER_INFO_CANDIDAT') . '</h3></td></tr>';
 				if(!empty($item->avatar) && is_image_ext($item->avatar) && ($allowed_attachments === true || in_array('10', $allowed_attachments)))
 				{
 					if (file_exists(EMUNDUS_PATH_ABS . @$item->user_id . '/tn_' . @$item->avatar))
@@ -957,31 +957,31 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
                 if (in_array("aid", $options)) {
                     $htmldata .=
                         '<tr>
-                                    <td class="idcandidat"><b>' . JText::_('ID_CANDIDAT') . ' :</b> ' . @$item->user_id . '</td>
+                                    <td class="idcandidat"><b>' . Text::_('ID_CANDIDAT') . ' :</b> ' . @$item->user_id . '</td>
                                 </tr>';
                 }
 
-                $htmldata .= '<tr><td><h3>' . JText::_('PDF_HEADER_INFO_DOSSIER') . '</h3></td></tr><tr><td class="name">' . @$item->label . ' (' . @$item->cb_schoolyear . ')</td></tr>';
+                $htmldata .= '<tr><td><h3>' . Text::_('PDF_HEADER_INFO_DOSSIER') . '</h3></td></tr><tr><td class="name">' . @$item->label . ' (' . @$item->cb_schoolyear . ')</td></tr>';
 
                 if (in_array("afnum", $options)) {
-                    $htmldata .= '<tr class="nationality"><td><b>' . JText::_('FNUM') . ' :</b> ' . $fnum . '</td></tr>';
+                    $htmldata .= '<tr class="nationality"><td><b>' . Text::_('FNUM') . ' :</b> ' . $fnum . '</td></tr>';
                 }
 
                 if (in_array("aapp-sent", $options)) {
-                    $htmldata .= '<tr><td class="statut"><b>' . JText::_('APPLICATION_SENT_ON') . ' :</b> ' . $date_submitted . '</td></tr>';
+                    $htmldata .= '<tr><td class="statut"><b>' . Text::_('APPLICATION_SENT_ON') . ' :</b> ' . $date_submitted . '</td></tr>';
                 }
 
                 if (in_array("adoc-print", $options)) {
-                    $htmldata .= '<tr class="sent"><td><b>' . JText::_('DOCUMENT_PRINTED_ON') . ' :</b> ' . $date_printed . '</td></tr>';
+                    $htmldata .= '<tr class="sent"><td><b>' . Text::_('DOCUMENT_PRINTED_ON') . ' :</b> ' . $date_printed . '</td></tr>';
                 }
 
                 if (in_array("status", $options)) {
                     $status = $m_files->getStatusByFnums(explode(',', $fnum));
-                    $htmldata .= '<tr class="sent"><td><b>' . JText::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' :</b> ' . $status[$fnum]['value'] . '</td></tr>';
+                    $htmldata .= '<tr class="sent"><td><b>' . Text::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' :</b> ' . $status[$fnum]['value'] . '</td></tr>';
                 }
 	            if ($attachments) {
 		            $uploads = $m_application->getUserAttachmentsByFnum($fnum, '');
-					$files_updated = count($uploads) > 1 ? JText::_('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED') : JText::_('COM_EMUNDUS_ATTACHMENTS_FILE_UPLOADED');
+					$files_updated = count($uploads) > 1 ? Text::_('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED') : Text::_('COM_EMUNDUS_ATTACHMENTS_FILE_UPLOADED');
 		            $htmldata .= '<tr class="sent"><td><b>' . $files_updated . ' :</b>' . ' ' . count($uploads) . '</a></td></tr>';
 	            }
 
@@ -1687,11 +1687,11 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
 			<div class="name">' . @$item->firstname . ' ' . strtoupper(@$item->lastname) . ', ' . @$item->label . ' (' . @$item->cb_schoolyear . ')</div>';
 
             if (isset($item->maiden_name)) {
-                $htmldata .= '<div class="maidename">' . JText::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
+                $htmldata .= '<div class="maidename">' . Text::_('MAIDEN_NAME') . ' : ' . $item->maiden_name . '</div>';
             }
         }
 
-        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, JText::_('DATE_FORMAT_LC2')) : JText::_('NOT_SENT');
+        $date_submitted = (!empty($item->date_submitted) && !strpos($item->date_submitted, '0000')) ? JHTML::_('date', $item->date_submitted, Text::_('DATE_FORMAT_LC2')) : Text::_('NOT_SENT');
 
             // Create an date object
             $date_printed = new Date();
@@ -1699,25 +1699,25 @@ function application_header_pdf($user_id, $fnum = null, $output = true, $options
             $date_printed = HtmlHelper::date($date_printed, Text::_('DATE_FORMAT_LC2'));
 
         if (!$anonymize_data && in_array("aemail", $options)) {
-            $htmldata .= '<div class="birthday">' . JText::_('EMAIL') . ' : ' . @$item->email . '</div>';
+            $htmldata .= '<div class="birthday">' . Text::_('EMAIL') . ' : ' . @$item->email . '</div>';
         }
 
         if (in_array("aid", $options)) {
-            $htmldata .= '<div class="nationality">' . JText::_('ID_CANDIDAT') . ' : ' . @$item->user_id . '</div>';
+            $htmldata .= '<div class="nationality">' . Text::_('ID_CANDIDAT') . ' : ' . @$item->user_id . '</div>';
         }
         if (in_array("afnum", $options)) {
-            $htmldata .= '<div class="nationality">' . JText::_('FNUM') . ' : ' . $fnum . '</div>';
+            $htmldata .= '<div class="nationality">' . Text::_('FNUM') . ' : ' . $fnum . '</div>';
         }
 
         if (in_array("aapp-sent", $options)) {
-            $htmldata .= '<div class="sent">' . JText::_('APPLICATION_SENT_ON') . ' : ' . $date_submitted . '</div>';
+            $htmldata .= '<div class="sent">' . Text::_('APPLICATION_SENT_ON') . ' : ' . $date_submitted . '</div>';
         }
         if (in_array("adoc-print", $options)) {
-            $htmldata .= '<div class="sent">'.JText::_('DOCUMENT_PRINTED_ON').' : '.$date_printed.'</div>';
+            $htmldata .= '<div class="sent">'.Text::_('DOCUMENT_PRINTED_ON').' : '.$date_printed.'</div>';
         }
         if (in_array("status", $options)) {
             $status = $m_files->getStatusByFnums(explode(',', $fnum));
-            $htmldata .= '<div class="sent">' . JText::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</div>';
+            $htmldata .= '<div class="sent">' . Text::_('COM_EMUNDUS_EXPORTS_PDF_STATUS') . ' : ' . $status[$fnum]['value'] . '</div>';
         }
         if (in_array("tags", $options)) {
             $tags = $m_files->getTagsByFnum(explode(',', $fnum));

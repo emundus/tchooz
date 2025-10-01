@@ -5841,7 +5841,14 @@ $(document).ready(function() {
     });
 
     $(document).on('click', '[id^=emundus_checkall_grp_]', function(){
-        var id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+        const elementId = $(this).attr('id');
+
+        let id = 0;
+        if (elementId.startsWith('emundus_checkall_grp_evaluation_steps_')) {
+            id = $(this).attr('id').split('emundus_checkall_grp_evaluation_steps_')[1];
+        } else {
+            id = $(this).attr('id').split('emundus_checkall_grp_')[1];
+        }
 
         const checked = $('#emundus_checkall_grp_' + id).is(":checked");
         const isXlsExport = document.getElementById('appelement');
