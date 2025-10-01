@@ -326,8 +326,6 @@ export default {
 						// if the last tab is in the default tabs, then select it
 						let tabFind = this.tabs.find((tab) => tab.name === lastTab);
 
-						console.log('lastTab', lastTab, tabFind, this.defaultTabs);
-
 						if (lastTab && tabFind && (this.access[tabFind.access].r || this.access[tabFind.access].c)) {
 							this.updateTab(lastTab);
 						} else {

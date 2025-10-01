@@ -10,7 +10,7 @@
 						:class="{
 							'em-bg-main-500 em-text-neutral-300': selectedTab === evaluation.id,
 						}"
-						@click="selectedTab = evaluation.id"
+						@click="updateTab(evaluation)"
 					>
 						{{ evaluation.label }}
 					</li>
@@ -97,8 +97,23 @@ export default {
 						this.evaluations = response.data;
 					}
 
+					// restore last selected tab from session storage
+					let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+					let lastTab = sessionStorage.getItem('com_emundus_last_tab_evaluation_' + menu);
+
 					if (this.evaluations.length > 0) {
-						this.selectedTab = this.evaluations[0].id;
+						// if last tab exists in current evaluations, select it
+						if (lastTab) {
+							let lastTabObj = JSON.parse(lastTab);
+							let exists = this.evaluations.find((evaluation) => evaluation.id == lastTabObj.id);
+							if (exists) {
+								this.updateTab(exists);
+							} else {
+								this.updateTab(this.evaluations[0]);
+							}
+						} else {
+							this.updateTab(this.evaluations[0]);
+						}
 					} else {
 						this.loading = false;
 					}
@@ -114,6 +129,12 @@ export default {
 				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view');
 				iframeDoc.querySelector('body .platform-content > div').classList.add('eval-form-split-view-container');
 			}
+		},
+		updateTab(evaluation) {
+			this.selectedTab = evaluation.id;
+
+			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
+			sessionStorage.setItem('com_emundus_last_tab_evaluation_' + menu, JSON.stringify(evaluation));
 		},
 	},
 	computed: {
