@@ -58,14 +58,14 @@ class Client
     /**
      * Constructor.
      *
-     * @param   array|\ArrayAccess       $options      OAuth2 Client options object
-     * @param   Http                     $http         The HTTP client object
-     * @param   Input                    $input        The input object
-     * @param   WebApplicationInterface  $application  The application object
+     * @param   array|\ArrayAccess        $options      OAuth2 Client options object
+     * @param   ?Http                     $http         The HTTP client object
+     * @param   ?Input                    $input        The input object
+     * @param   ?WebApplicationInterface  $application  The application object
      *
      * @since   1.0
      */
-    public function __construct($options = [], Http $http = null, Input $input = null, WebApplicationInterface $application = null)
+    public function __construct($options = [], ?Http $http = null, ?Input $input = null, ?WebApplicationInterface $application = null)
     {
         if (!\is_array($options) && !($options instanceof \ArrayAccess)) {
             throw new \InvalidArgumentException(
@@ -90,12 +90,13 @@ class Client
      */
     public function authenticate()
     {
-        if ($data['code'] = $this->input->get('code', false, 'raw')) {
+        if ($dataCode = $this->input->get('code', false, 'raw')) {
             $data = [
                 'grant_type'    => 'authorization_code',
                 'redirect_uri'  => $this->getOption('redirecturi'),
                 'client_id'     => $this->getOption('clientid'),
                 'client_secret' => $this->getOption('clientsecret'),
+                'code'          => $dataCode,
             ];
 
             $response = $this->http->post($this->getOption('tokenurl'), $data);
@@ -111,7 +112,7 @@ class Client
                 );
             }
 
-            if (strpos($response->headers['Content-Type'], 'application/json') !== false) {
+            if (in_array('application/json', $response->getHeader('Content-Type'))) {
                 $token = array_merge(json_decode($response->body, true), ['created' => time()]);
             } else {
                 parse_str($response->body, $token);
@@ -379,7 +380,7 @@ class Client
             );
         }
 
-        if (strpos($response->headers['Content-Type'], 'application/json') !== false) {
+        if (in_array('application/json', $response->getHeader('Content-Type'))) {
             $token = array_merge(json_decode($response->body, true), ['created' => time()]);
         } else {
             parse_str($response->body, $token);
