@@ -4448,7 +4448,17 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		if (!empty($parent_row_id)) {
-			$where .= ' AND t_origin.id = ' . $this->_db->quote($parent_row_id);
+			if ($isDatabaseJoin) {
+				if ($groupRepeat) {
+					$where .= ' AND t_table.id = ' . $this->_db->quote($parent_row_id);
+				}
+				else {
+					$where .= ' AND t_elt.id = ' . $this->_db->quote($parent_row_id);
+				}
+			}
+			else {
+				$where .= ' AND t_origin.id = ' . $this->_db->quote($parent_row_id);
+			}
 		}
 
 		$query->select($select)
