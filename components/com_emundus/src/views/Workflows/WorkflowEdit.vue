@@ -61,6 +61,7 @@
 									<span v-if="isPaymentStep(step)" class="material-symbols-outlined tw-mr-1 tw-text-white">paid</span>
 									<span v-else class="material-symbols-outlined tw-mr-1 tw-text-white">group</span>
 									<span class="tw-text-sm tw-text-white"> {{ stepTypeLabel(step.type) }} </span>
+									<span v-if="step.state != 1" class="tw-text-sm tw-text-white tw-ml-1"> ({{ translate('COM_EMUNDUS_WORKFLOW_ARCHIVED_STEP') }})</span>
 								</div>
 
 								<div class="tw-rounded-b-lg tw-rounded-r-lg tw-border tw-p-4 tw-shadow-sm" :class="stepClass(step)">
@@ -774,6 +775,13 @@ export default {
 						return !emptyField;
 					}),
 				);
+
+				if (this.fieldsInError[step.id].length > 0) {
+					if (step.state !== 1)
+					{
+						this.showArchivedSteps = true;
+					}
+				}
 			});
 
 			check = stepsCheck.every((stepCheck) => {
