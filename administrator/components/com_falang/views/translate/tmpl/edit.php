@@ -167,9 +167,17 @@ else {
 
 <script type="text/javascript">
 
+    /*function necessary to decode special caractère ü, ß, ä*/
+    function b64DecodeUnicode(str) {
+        // Going backwards: from bytestream, to percent-encoding, to original string.
+        return decodeURIComponent(atob(str).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+    }
+
     function TranslateCF(field,value,action){
-        console.log("TranslateCF");
-        console.log(action);
+        console.log("TranslateCF:"+action);
+        value = b64DecodeUnicode(value);
         try {
             if (action == "copy") {
                 setTranslation(field, value)

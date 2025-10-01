@@ -198,7 +198,7 @@ a.quickmodal{
 	color: #fff;
 	vertical-align: baseline;
 	white-space: nowrap;
-	background-color: #999;
+	background-color: #cdcdcd;/*#999999 #d6d6d6*/
 }
 
 a.quickjump {
@@ -401,8 +401,8 @@ button .quicktranslate.unpublished{
 }
 .translation-field-fieldparams td div.btn-group,.translation-field-fieldparams th div.btn-group, .translation-field-fieldparams th:nth-child(3){display: none}
 
-#falang-params .control-group{
-	margin:0 ;/* reset the select parameter for better display on the select translation button*/
+.adminformlist .control-group {
+	margin:0 ;/* reset the select parameter for better display on the select translation button only in falang*/
 }
 /*end custom field*/
 
