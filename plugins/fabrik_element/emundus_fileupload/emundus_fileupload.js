@@ -311,6 +311,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             var attachmentList = div_parent.querySelectorAll('.em-fileAttachment-link').length;
                             if (attachmentList === 0) {
                                 document.querySelector('div#' + this.element.id + '_attachment > .em-fileAttachmentTitle').remove();
+                                document.querySelector('div#' + this.element.id + '_attachment > #attachments_list').remove();
                             }
 
                             var inputHidden = document.querySelector('input#' + this.element.id);
@@ -379,6 +380,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             var input = document.querySelector('input#file_' + this.element.id);
             let div = input.parentElement;
             let divAttachment = document.getElementById(this.element.id + '_attachment');
+            let divList = document.getElementById('attachments_list');
 
             if (files.length > 0) {
                 if (!div.querySelector('.em-fileAttachmentTitle')) {
@@ -388,16 +390,26 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     divAttachment.appendChild(attachmentTitle);
                 }
 
+                if (!divList) {
+                    divList = document.createElement('div');
+                    divList.setAttribute("id", 'attachments_list');
+                    divAttachment.appendChild(divList);
+                }
+
                 for (var i = 0; i < files.length; i++) {
+                    // Build unique id for each file
+                    var filename = files[i].filename.replace(/\W+/g, '-').toLowerCase();
+                    console.log(filename);
+
                     var divFile = document.createElement('div');
-                    divFile.setAttribute("id", this.element.id + '_attachment' + i);
+                    divFile.setAttribute("id", this.element.id + '_attachment' + filename);
 
                     var divLink = document.createElement('div');
-                    divLink.setAttribute("id", this.element.id + '_attachment_link' + i);
+                    divLink.setAttribute("id", this.element.id + '_attachment_link' + filename);
                     divLink.setAttribute("class", 'em-fileAttachment-link');
 
                     if (!document.getElementById(divFile.id)) {
-                        divAttachment.appendChild(divFile);
+                        divList.appendChild(divFile);
                         divFile.appendChild(divLink);
                     }
 
@@ -426,7 +438,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                         divLink.appendChild(deleteButton);
 
-                        var button = document.querySelector('#' + this.element.id + '_attachment_link' + i + ' > a.em-deleteFile');
+                        var button = document.querySelector('#' + this.element.id + '_attachment_link' + filename + ' > a.em-deleteFile');
                         button.addEventListener('click', () => this.delete());
                     }
 
