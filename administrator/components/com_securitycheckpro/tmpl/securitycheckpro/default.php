@@ -17,7 +17,7 @@ use Joomla\CMS\Uri\Uri;
 Session::checkToken('get') or die('Invalid Token');
 
 // Load plugin language
-$lang2 = Factory::getLanguage();
+$lang2 = Factory::getApplication()->getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 
 $type_array = array(HTMLHelper::_('select.option', 'Component', Text::_('COM_SECURITYCHECKPRO_TITLE_COMPONENT')),
@@ -63,7 +63,7 @@ $data_dismiss = "data-bs-dismiss";
                     <div class="card-body">
         <?php if (($this->update_database_plugin_exists) && ($this->update_database_plugin_enabled) && ($this->database_message == "PLG_SECURITYCHECKPRO_UPDATE_DATABASE_DATABASE_UPDATED") ) { ?>                        
                         <div class="badge bg-success">
-                            <h4><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES'); ?></h4>
+                            <h4 class="text-white"><?php echo Text::_('COM_SECURITYCHECKPRO_REAL_TIME_UPDATES'); ?></h4>
                             <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_DATABASE_VERSION'); ?></strong><?php echo($this->database_version); ?></p>
                             <p><strong><?php echo Text::_('COM_SECURITYCHECKPRO_LAST_CHECK'); ?></strong><?php echo($this->last_check); ?></p>
                         </div>
@@ -79,7 +79,7 @@ $data_dismiss = "data-bs-dismiss";
             <?php
             if ($this->database_message != "COM_SECURITYCHECKPRO_UPDATE_DATABASE_SUBSCRIPTION_EXPIRED" ) {
                 ?>
-                                <a href="<?php echo 'index.php?option=com_plugins&task=plugin.edit&extension_id=' . $this->plugin_id?>" class="btn btn-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_CHECK_CONFIG'); ?></a>            
+                                <a href="/administrator/index.php?option=com_installer&view=updatesites" class="btn btn-dark"><?php echo Text::_('COM_SECURITYCHECKPRO_CHECK_CONFIG'); ?></a>            
             <?php } else { ?>
                                     <a href="https://securitycheck.protegetuordenador.com/subscriptions" target="_blank"  rel="noopener noreferrer" class="btn"><?php echo Text::_('COM_SECURITYCHECKPRO_RENEW'); ?></a>
             <?php } ?>

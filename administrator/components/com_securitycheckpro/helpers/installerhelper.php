@@ -4,6 +4,8 @@
 defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 class installerhelper {
     	
@@ -21,7 +23,7 @@ class installerhelper {
     'mode'            => 1,
     'logs_attacks'            => 1,
     'log_limits_per_ip_and_day'            => 0,
-    'redirect_after_attack'            => 1,
+    'redirect_after_attack'            => 0,
     'redirect_options'            => 1,
     'second_level'            => 1,
     'second_level_redirect'            => 1,
@@ -44,9 +46,9 @@ class installerhelper {
     'sql_pattern_exceptions'            => '',
     'if_statement_exceptions'            => '',
     'using_integers_exceptions'            => 'com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter',
-    'escape_strings_exceptions'            => 'com_kunena,com_jce',
+    'escape_strings_exceptions'            => 'com_kunena,com_jce,com_user',
     'lfi_exceptions'            => '',
-    'second_level_exceptions'            => 'com_securitycheckprocontrolcenter',    
+    'second_level_exceptions'            => '',    
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
     );
@@ -59,7 +61,7 @@ class installerhelper {
         $query = null;
         $applied = true;
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las distintas opciones del Firewall Web
         $query = $db->getQuery(true)

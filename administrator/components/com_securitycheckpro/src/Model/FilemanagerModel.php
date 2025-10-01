@@ -21,6 +21,8 @@ use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Client\ClientHelper;
 use Joomla\CMS\Client\FtpClient;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 class FileManagerModel extends BaseModel
 {
@@ -312,7 +314,7 @@ class FileManagerModel extends BaseModel
         }
     
         // Obtenemos el nombre de los escaneos anteriores
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
             ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -435,7 +437,7 @@ class FileManagerModel extends BaseModel
 		$files_found = array();
 		$exclude = array();
 				
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		if (!$include_exceptions) {
@@ -789,7 +791,7 @@ class FileManagerModel extends BaseModel
     public function getFiles($root, $include_exceptions, $opcion)
     {
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		$mainframe = Factory::getApplication();
@@ -936,7 +938,7 @@ class FileManagerModel extends BaseModel
                    $stack = str_replace("#<?php die('Forbidden.'); ?>", '', $stack);
             }
         
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true)
                 ->select(array($db->quoteName('storage_value')))
                 ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -1077,7 +1079,7 @@ class FileManagerModel extends BaseModel
             $filtered_array = array();
         
             // Obtenemos el nombre de los escaneos anteriores
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true)
                 ->select(array($db->quoteName('storage_value')))
                 ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -1169,7 +1171,7 @@ class FileManagerModel extends BaseModel
 							                                            
                             if (($number_of_extensions > 3) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx.yyy
                                 /* Cargamos el lenguaje del sitio */
-                                $lang = Factory::getLanguage();
+                                $lang = Factory::getApplication()->getLanguage();
                                 $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
                             
                                 $safe_malwarescan = 0;
@@ -1181,7 +1183,7 @@ class FileManagerModel extends BaseModel
 								$this->write_log("FILE: " . $file . " has multiple extensions");
                             } else if (($number_of_extensions > 2) && (strtolower($explodedName[1]) == 'php')) {  // Archivo tipo .php.xxx
                                 /* Cargamos el lenguaje del sitio */
-                                $lang = Factory::getLanguage();
+                                $lang = Factory::getApplication()->getLanguage();
                                 $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
                             
                                 $safe_malwarescan = 0;
@@ -1279,7 +1281,7 @@ class FileManagerModel extends BaseModel
     public function get_log_filename($opcion,$devolver=false) 
     {
     
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
@@ -1327,7 +1329,7 @@ class FileManagerModel extends BaseModel
     public function getDirectories($root, $include_exceptions, $opcion)
     {
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
     
         if(empty($root)) { $root = JPATH_ROOT;
@@ -1428,7 +1430,7 @@ class FileManagerModel extends BaseModel
         $array_exentos = array('index.html','web.config','.htaccess',$this->filemanager_name,$this->fileintegrity_name,$this->malwarescan_name);
     
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         if ($borrar) {
             // Extraemos la información de los archivos de escaneos online, que no deberán ser borrados...
@@ -1737,7 +1739,7 @@ class FileManagerModel extends BaseModel
     /* Función que obtiene un array con los datos que serán mostrados en la opción 'file manager' */
     function loadStack($opcion,$field,$showall=false)
     {
-		$db = $this->getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
         $stack = null;
     
         // Establecemos el tamaño máximo de memoria que el script puede consumir
@@ -2102,7 +2104,7 @@ class FileManagerModel extends BaseModel
     function set_campo_filemanager($campo,$valor)
     {
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
         $campo = htmlspecialchars($campo);
@@ -2126,7 +2128,7 @@ class FileManagerModel extends BaseModel
     function get_campo_filemanager($campo)
     {
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
         // Sanitizamos las entradas
@@ -2164,7 +2166,7 @@ class FileManagerModel extends BaseModel
     function initialize_database()
     {
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Borramos la tabla...
         $query = 'DROP TABLE IF EXISTS #__securitycheckpro_file_permissions';
@@ -2244,7 +2246,7 @@ class FileManagerModel extends BaseModel
     function grabar_log_propio($description)
     {
 
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Sanitizamos la entrada
         $description = htmlspecialchars($description);
@@ -2409,7 +2411,7 @@ class FileManagerModel extends BaseModel
     {
 
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 
         // Aadimos los strings sospechosos a la bsqueda de malware?
@@ -2704,7 +2706,7 @@ class FileManagerModel extends BaseModel
             Factory::getApplication()->enqueueMessage(Text::_('COM_SECURITYCHECKPRO_NO_VALID_MEMORY_LIMIT'), 'error');
         }
         
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Consultamos la BBDD para extraer el nombre del fichero de escaneos de integridad.
         $query = $db->getQuery(true)
@@ -2867,7 +2869,7 @@ class FileManagerModel extends BaseModel
         // Ponemos en la sesión de usuario que se ha lanzado una reparación de permisos
         $mainframe->setUserState("repair_launched", true);
         
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Cargamos el array de archivos
         if (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->filemanager_name)) {
@@ -2972,7 +2974,7 @@ class FileManagerModel extends BaseModel
     {
     
         // Cargamos los archivos de la BBDD
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         if (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name)) {
             $stack = @file_get_contents($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name);
@@ -2998,7 +3000,7 @@ class FileManagerModel extends BaseModel
         if ($stack_resume['files_with_incorrect_integrity'] > 0) {
     
             /* Cargamos el lenguaje del sitio */
-            $lang = Factory::getLanguage();
+            $lang = Factory::getApplication()->getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         
             // Cargamos las variables con el contenido almacenado en la BBDD
@@ -3052,7 +3054,7 @@ class FileManagerModel extends BaseModel
         $filenames = $jinput->get('filesintegritystatus_table', null, 'array');
     
         // Cargamos los archivos de la BBDD
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Leemos el contenido del fichero
         if (file_exists($this->folder_path.DIRECTORY_SEPARATOR.$this->fileintegrity_name)) {
@@ -3078,7 +3080,7 @@ class FileManagerModel extends BaseModel
         // Si existen archivos con permisos incorrectos, les cambiamos su estado
         if ($stack_resume['files_with_incorrect_integrity'] > 0) {
             // Cargamos el lenguaje del sitio
-            $lang = Factory::getLanguage();
+            $lang = Factory::getApplication()->getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         
             // Creamos un array de rutas
@@ -3146,7 +3148,7 @@ class FileManagerModel extends BaseModel
             
         if (!empty($paths)) {            
             // Creamos el nuevo objeto query
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true);
         
             // Cargamos el contenido del fichero de archivos sospechosos
@@ -3276,7 +3278,7 @@ class FileManagerModel extends BaseModel
         if (!empty($paths)) {    
         
             // Creamos el nuevo objeto query
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true);
         
             // Cargamos el contenido del fichero de archivos sospechosos
@@ -3391,7 +3393,7 @@ class FileManagerModel extends BaseModel
         $json_infected_files = null;
     
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
     
         // Inicializamos las variables
@@ -3846,7 +3848,7 @@ class FileManagerModel extends BaseModel
     private function format_data($response, $not_found = false, $file_data = null) 
     {    
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 
         // Inicializamos las variables
@@ -3983,7 +3985,7 @@ class FileManagerModel extends BaseModel
     
         // Actualizamos la bbdd con la información de este nuevo fichero
         if ($file_result) {
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             
             // Sanitizamos las entradas
             $filename = htmlspecialchars($filename);
@@ -4036,7 +4038,7 @@ class FileManagerModel extends BaseModel
         $params = ComponentHelper::getParams('com_securitycheckpro');
         (int) $log_files_to_store = $params->get('log_files_stored', 5);
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
             
         $sql = "SELECT COUNT(*) FROM #__securitycheckpro_online_checks";
         $db->setQuery($sql);
@@ -4149,7 +4151,7 @@ class FileManagerModel extends BaseModel
     
         
         // Obtenemos el nombre de los escaneos anteriores
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
             ->from($db->quoteName('#__securitycheckpro_storage'))
@@ -4300,7 +4302,7 @@ class FileManagerModel extends BaseModel
         }
     
         // Borramos el fichero del escaneo anterior
-        $db = $this->getDbo();        
+        $db = Factory::getContainer()->get(DatabaseInterface::class);        
         $query = $db->getQuery(true)
             ->delete($db->quoteName('#__securitycheckpro_storage'))
             ->where($db->quoteName('storage_key').' = '.$db->quote($storage_value));
@@ -4363,7 +4365,7 @@ class FileManagerModel extends BaseModel
     {
         $installs = null;
     
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         try
         {
         

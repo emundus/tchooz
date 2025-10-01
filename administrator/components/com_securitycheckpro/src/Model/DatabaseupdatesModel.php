@@ -15,6 +15,8 @@ use Joomla\Registry\Registry;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 
 /**
@@ -42,7 +44,7 @@ class DatabaseupdatesModel extends BaseModel
     function check_securitycheck_type()
     {
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Consultamos si está instalada la versión Pro
         $query = $db->getQuery(true)
@@ -77,6 +79,7 @@ class DatabaseupdatesModel extends BaseModel
     /* Función que añade vulnerabilidades a la bbdd del componente securitycheck */
     function add_vuln($array_complete,$local_database_version)
     {
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // La versión mayor de la bbdd corresponderá, al principio, a la almacenada.
         $this->higher_database_version = $this->get_database_version();
@@ -130,14 +133,13 @@ class DatabaseupdatesModel extends BaseModel
                             );
                         }
                     
-                        $insert_result = Factory::getDbo()->insertObject($this->vuln_table, $nueva_vulnerabilidad, 'id');
+                        $insert_result = $db->insertObject($this->vuln_table, $nueva_vulnerabilidad, 'id');
 						// Let's write a file to tell securitycheck that new entried have been added to database. This is needed by /com_securitycheckpro/backend/models/securitycheckpros.php		
 						$this->write_file();
 						
                     }    
                 } else if (($key_exists) && ($vulnerability['method'] == 'delete')) {
-                    // Método para eliminar una vulnerabilidad
-                    $db = Factory::getDbo();
+                    // Método para eliminar una vulnerabilidad                   
                     $query = $db->getQuery(true);
                 
                     $product_sanitized = htmlspecialchars($vulnerability['product']);
@@ -163,7 +165,7 @@ class DatabaseupdatesModel extends BaseModel
     function get_database_version()
     {
     
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Consultamos la última comprobación
         $query = $db->getQuery(true)
@@ -182,7 +184,7 @@ class DatabaseupdatesModel extends BaseModel
         // Inicializamos las variables
         $last_check = null;
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Consultamos la última comprobación
         $query = $db->getQuery(true)
@@ -335,7 +337,7 @@ class DatabaseupdatesModel extends BaseModel
     function set_campo_bbdd($campo,$valor)
     {
         // Creamos el nuevo objeto query
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
         // Sanitizamos las entradas
@@ -384,7 +386,7 @@ class DatabaseupdatesModel extends BaseModel
     function PluginStatus($opcion)
     {
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         if ($opcion == 1) {
             $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro'";
         } else if ($opcion == 2) {

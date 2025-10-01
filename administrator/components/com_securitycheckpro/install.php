@@ -9,36 +9,23 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Installer\Installer;
+use Joomla\CMS\Installer\InstallerScript;
 use Joomla\CMS\Factory;
 use Joomla\Filesystem\File;
 use Joomla\Filesystem\Folder;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Script file of Securitycheck Pro component
  */
-class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\InstallerScript
+class com_SecuritycheckproInstallerScript
 {
-    // Check if we are calling update method. It's used in 'install_message' function
-    public $update = false;
-    
-    // Resultado de la desinstalación del componente Securitycheck
-    public $result_free = "";
-    public $id_free;
-    
-    // 'memory_limit' demasiado bajo
-    public $memory_limit = '';
-    
-    // url plugin habilitado?
-    public $url_plugin_enabled = false;        
-    	
-	// Badge style bg- for J4 and higher
-	private $badge_style = "bg-";
-	
-	/**
-     * The extension ersion we are updating from
+    /**
+     * The extension version we are updating from
      *
      * @var    string
      * @since  3.7
@@ -121,37 +108,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
 		)
     );
             
-    /* Función que desinstala el componente Securitycheck */
-    private function _unistall_Securitycheck()
-    {
-        
-        $db = Factory::getDbo();
-        $installer = new Installer();
-        
-        $columnName      = $db->quoteName("extension_id");
-        $tableExtensions = $db->quoteName("#__extensions");
-        $type              = $db->quoteName("type");
-        $columnElement   = $db->quoteName("element");
-
-        // Uninstall Securitycheck component
-        $db->setQuery(
-            "SELECT 
-					$columnName
-				FROM
-					$tableExtensions
-				WHERE
-					$type='component'
-				AND
-					$columnElement='com_securitycheck'"        
-        );
-
-        $this->id_free = $db->loadResult();
-
-        if ($this->id_free) {
-            $this->result_free = $installer->uninstall('component', $this->id_free, 1);
-        }
-    } 
-
+    
 	/**
      * Removes obsolete files and folders
      *
@@ -197,7 +154,10 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
     {
     
 		// Extraemos la información necesario de la tabla #_extensions sobre el paquete trackactions       
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+		$installer = new Installer();
+		$installer->setDatabase($db);
+		
 		try {
 			$query = $db->getQuery(true);
 			$query->select('*');
@@ -222,8 +182,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
             
             // Si la versión instalada es menor a la 2.0, la desinstalamos
             if (version_compare($trackactions_version, "2.0", "lt")) {
-               $installer = new Installer();
-        
+                    
 				$columnName      = $db->quoteName("extension_id");
 				$tableExtensions = $db->quoteName("#__extensions");
 				$type              = $db->quoteName("type");
@@ -251,7 +210,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
         }
 		
 		// Extraemos la información necesario de la tabla #_extensions sobre el plugin trackactions_k2 (no debería existir!)    
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		try {
 			$query = $db->getQuery(true);
 			$query->select('*');
@@ -267,9 +226,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
 		        
         // Si no existe versión previa no es necesario hacer ninguna acción
         if (!empty($result_trackactions_k2)) {
-        
-            $installer = new Installer();
-        
+                
 			$columnName      = $db->quoteName("extension_id");
 			$tableExtensions = $db->quoteName("#__extensions");
 			$type              = $db->quoteName("type");
@@ -296,7 +253,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
         }
 		
 		// Extraemos la información necesario de la tabla #_extensions sobre el plugin "update database"       
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		try {
 			$query = $db->getQuery(true);
 			$query->select('*');
@@ -387,7 +344,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
         // Do changes for versions previous to 4.0
         $this->_4_version_changes();  
         
-        $this->_unistall_Securitycheck();    
+        $this->uninstallExtensions();    
         
     }
     
@@ -399,55 +356,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
      */
     function postflight($type, $parent)
     {
-		// Inicializamos las variables
-        $existe_tabla = false;
-                
-        $db = Factory::getDBO();
-        $total_rows = $db->getTableList();
-        
-        if (!(is_null($total_rows))) {
-            foreach ($total_rows as $table_name)
-            {
-                if (strstr($table_name, "securitycheckpro_logs")) {
-                    $existe_tabla = true;
-                }
-            }
-        }
-        
-        if ( ($type == "install") && (!$existe_tabla) ) {
-            // Disable Securitycheck Pro plugin
-            $tableExtensions = $db->quoteName("#__extensions");
-            $columnElement   = $db->quoteName("element");
-            $columnType      = $db->quoteName("type");
-            $columnEnabled   = $db->quoteName("enabled");
-            $db->setQuery(
-                "UPDATE 
-					$tableExtensions
-				SET
-					$columnEnabled=0
-				WHERE
-					$columnElement='securitycheckpro'
-				AND
-					$columnType='plugin'"
-            );
-            $db->execute();
-            
-            // Disable Securitycheck Pro Cron Task plugin
-            $db->setQuery(
-                "UPDATE 
-					$tableExtensions
-				SET
-					$columnEnabled=0
-				WHERE
-					$columnElement='securitycheckprocron'
-				AND
-					$columnType='plugin'"
-            );
-
-            $db->execute();
-            Factory::getApplication()->enqueueMessage('Error creating some mandatory tables in database. Securitycheck Pro and Cron plugins have been disabled.', 'warning');
-        }    
-		
+				
 		try
         {
 			// Do this only during installs
@@ -478,277 +387,21 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
 		// Remove obsolete files and folders
 		$this->_removeObsoleteFilesAndFolders($this->ObsoleteFilesAndFolders);        
     }
-    
-    /**
+	
+	/**
      * method to install the component
      *
      * @return void
      */
     function install($parent)
     {
-        // General settings
-        $status = new stdClass();
-        $status->modules = array();
-        
-        // Array to store module and plugin installation results
-        $result = array();
-        $indice = 0;
-        
-        $installer = new Installer();
-        
-        
-        $manifest = $parent->getParent()->getManifest();
-        $source = $parent->getParent()->getPath('source');
-        
-        // Install module
-        $db = Factory::getDbo();
-        $result[$indice] = $installer->install($source. DIRECTORY_SEPARATOR .'modules' . DIRECTORY_SEPARATOR .'mod_scpadmin_quickicons');
-        $indice++;
-                
-        // Enable and configure module
-        $query = "UPDATE #__modules SET position='icon', ordering = '1', published = '1' WHERE module='mod_scpadmin_quickicons'";
-        $db->setQuery($query);
-        $db->execute();
-        
-        $query = "SELECT id FROM #__modules WHERE module='mod_scpadmin_quickicons'";
-        $db->setQuery($query);
-        $modID = $db->loadResult();
-                
-        // If the module_id is empty, we'll get an SQL error and the installion process will break
-        if ((!empty($modID)) && (is_int(intval($modID)))) {                        
-           /* $query = "REPLACE #__modules_menu (moduleid,menuid) VALUES ({$modID}, 0)";
-			$query = "UPDATE #__modules_menu SET ordering = '-100' WHERE name='System - url inspector'";			
-			$db->setQuery($query);
-            $db->execute();*/
-        }
-                
-        $status->modules[] = array('name'=>'Securitycheck Pro - Quick Icons','client'=>'administrator', 'result'=>$result); 
-        
-        // Install plugins
-                        
-        foreach($manifest->plugins->plugin as $plugin)
-        {
-            $installer = new Installer();
-            $attributes = $plugin->attributes();
-            $plg = $source . DIRECTORY_SEPARATOR . $attributes['folder']. DIRECTORY_SEPARATOR . $attributes['plugin'];
-			$result[$indice] = $installer->install($plg);
-            $indice++;
-        }
-        
-        // Update the URL inspector plugin ordering; it must be published the last
-        $query = "UPDATE #__extensions SET ordering = '-100' WHERE name='System - url inspector'";
-        $db->setQuery($query);
-        $db->execute();
-        
-        // Check if url plugin is enabled
-        $query = "SELECT enabled from #__extensions WHERE name='System - url inspector'";
-        $db->setQuery($query);
-        $this->url_plugin_enabled = $db->loadResult();
-
-        $db = Factory::getDbo();
-        $tableExtensions = $db->quoteName("#__extensions");
-        $columnElement   = $db->quoteName("element");
-        $columnType      = $db->quoteName("type");
-        $columnEnabled   = $db->quoteName("enabled");
-            
-        // Enable Securitycheck Pro plugin
-        $db->setQuery(
-            "UPDATE 
-				$tableExtensions
-			SET
-				$columnEnabled=1
-			WHERE
-				$columnElement='securitycheckpro'
-			AND
-				$columnType='plugin'"
-        );
-
-        $db->execute();        
-        
-                
-        // Extract 'memory_limit' value cutting the last character
-        $memory_limit = ini_get('memory_limit');
-        $memory_limit = (int) substr($memory_limit, 0, -1);
-                
-                
-        // Enable Securitycheck Pro Cron Task plugin
-        $db->setQuery(
-            "UPDATE 
-			$tableExtensions
-				SET
-				$columnEnabled=1
-			WHERE
-				$columnElement='securitycheckprocron'
-			AND
-				$columnType='plugin'"
-        );
-
-        $db->execute();
-		
-		// Enable Securitycheck Pro Task Checker
-        $db->setQuery(
-            "UPDATE 
-				$tableExtensions
-			SET
-				$columnEnabled=1
-			WHERE
-				$columnElement='securitycheckpro_task_checker'
-			AND
-				$columnType='plugin'"
-        );
-
-        $db->execute();    
-		
 		// Create the scheduled task during the first install
         if ( empty($this->fromVersion) ) {			
            // Create the scheduled task
 			$this->create_scheduled_task();        
         }
-		
-                       
-        // Install message
-        $this->install_message($this->id_free, $this->result_free, $result, $status, $memory_limit);
-    }
+	}
     
-    /**
-     * method to uninstall the component
-     *
-     * @return void
-     */
-    function uninstall($parent)
-    {
-    
-        // General settings
-        $status = new stdClass();
-        $status->modules = array();
-        
-        // Array to store uninstall results
-        $result = array();
-        
-        $db = Factory::getDbo();
-        
-        // Uninstall module
-        $db->setQuery("SELECT extension_id FROM #__extensions WHERE type = 'module' AND element = 'mod_scpadmin_quickicons' LIMIT 1");
-        (int) $id = $db->loadResult();
-        if ($id) {
-            $installer = new Installer();
-            $result[0] = $installer->uninstall('module', $id);
-            $status->modules[] = array('name'=>'Securitycheck Pro - Quick Icons','client'=>'administrator', 'result'=>$result);            
-        }
-        
-        $columnName      = $db->quoteName("extension_id");
-        $tableExtensions = $db->quoteName("#__extensions");
-        $type              = $db->quoteName("type");
-        $columnElement   = $db->quoteName("element");
-        $columnType      = $db->quoteName("folder");
-        $result = array();
-            
-        // Uninstall  Securitycheck Pro plugin
-        $db->setQuery(
-            "SELECT 
-				$columnName
-			FROM
-				$tableExtensions
-			WHERE
-				$type='plugin'
-			AND
-				$columnElement='securitycheckpro'
-			AND
-				$columnType='system'"
-        );
-
-        $id = $db->loadResult();
-
-        if ($id) {
-            $installer = new Installer();
-            $result[1] = $installer->uninstall('plugin', $id, 1);        
-        } else {
-            $result[1] = false;
-        }
-        
-        // Uninstall  Securitycheck Pro Cron Task plugin
-        $db->setQuery(
-            "SELECT 
-				$columnName
-			FROM
-				$tableExtensions
-			WHERE
-				$type='plugin'
-			AND
-				$columnElement='securitycheckprocron'
-			AND
-				$columnType='task'"
-        );
-
-        $id = $db->loadResult();
-
-        if ($id) {
-            $installer = new Installer();
-            $result[2] = $installer->uninstall('plugin', $id, 1);        
-        } else 
-        {
-            $result[2] = false;
-        }
-        
-        // Uninstall  Securitycheck Pro URL inspector
-        $db->setQuery(
-            "SELECT 
-				$columnName
-			FROM
-				$tableExtensions
-			WHERE
-				$type='plugin'
-			AND
-				$columnElement='url_inspector'
-			AND
-				$columnType='system'"
-        );
-
-        $id = $db->loadResult();
-
-        if ($id) {
-            $installer = new Installer();
-            $result[3] = $installer->uninstall('plugin', $id, 1);        
-        } else {
-            $result[3] = false;
-        }    
-
-		// Uninstall  Securitycheck Pro Task Checker
-        $db->setQuery(
-            "SELECT 
-				$columnName
-			FROM
-				$tableExtensions
-			WHERE
-				$type='plugin'
-			AND
-				$columnElement='securitycheckpro_task_checker'
-			AND
-				$columnType='system'"
-        );
-
-        $id = $db->loadResult();
-
-        if ($id) {
-            $installer = new Installer();
-            $result[4] = $installer->uninstall('plugin', $id, 1);        
-        } else {
-            $result[4] = false;
-        }  
-		
-		// Remove scheduled tasks
-		try {
-            $sql = "DELETE FROM #__scheduler_tasks  WHERE type='securitycheckpro.cron'";
-			$db->setQuery($sql);
-			$db->execute();  		
-        } catch (\Throwable $e) {
-           Factory::getApplication()->enqueueMessage($e->getMessge(), 'error');
-        }
-		                        
-        // Uninstall message
-        $this->uninstall_message($result, $status);
-        
-    }
     
     /**
      * method to update the component
@@ -757,17 +410,14 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
      */
     function update($parent)
     {        
-        // This variable is updated.
-        $this->update = true;
-		// Uninstall extensions before removing their files and folders
+        // Uninstall extensions before removing their files and folders
         try {
             Log::add('Securitycheck Pro installation', Log::INFO, 'Update');
             $this->uninstallExtensions();
         } catch (\Throwable $e) {
            
         }
-		
-        $this->install($parent);        
+		       
     }
 	
 	/**
@@ -779,11 +429,11 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
      */
     protected function uninstallExtensions()
     {
-				
+		
         // Don't uninstall extensions when not updating from a version older than 4.2
-        if (empty($this->fromVersion) || version_compare($this->fromVersion, '4.2', 'ge')) {			
+       /* if (empty($this->fromVersion) || version_compare($this->fromVersion, '4.2', 'ge')) {			
             return true;
-        }
+        }*/
 
         $extensions = [
             /**
@@ -796,10 +446,14 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
              * 'pre_function' => Name of an optional migration function to be called before
              *                   uninstalling, `null` if not used.
              */
-            ['type' => 'plugin', 'element' => 'securitycheckpro_cron', 'folder' => 'system', 'client_id' => 0, 'pre_function' => 'migrateoldCronPlugin'],           
+            ['type' => 'plugin', 'element' => 'securitycheckpro_cron', 'folder' => 'system', 'client_id' => 0, 'pre_function' => 'migrateoldCronPlugin'],   
+			['type' => 'package', 'element' => 'pkg_securitycheck', 'folder' => '', 'client_id' => 0, 'pre_function' => ''],
+			['type' => 'component', 'element' => 'com_securitycheck', 'folder' => '', 'client_id' => 1, 'pre_function' => ''],
+			['type' => 'plugin', 'element' => 'securitycheck', 'folder' => 'system', 'client_id' => 0, 'pre_function' => ''],
+			
         ];
-
-        $db = Factory::getDbo();
+		
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         foreach ($extensions as $extension) {
             $row = $db->setQuery(
@@ -891,7 +545,7 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
      */
     private function migrateoldCronPlugin($data)
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 						
 		try {
 			$old_plugin_config = $db->setQuery(
@@ -918,458 +572,6 @@ class com_SecuritycheckproInstallerScript extends \Joomla\CMS\Installer\Installe
 		$this->create_scheduled_task();
     }
     
-    /**
-     * method to show the install message
-     *
-     * @return void
-     */
-    function install_message($id_free,$result_free,$result,$status,$memory_limit)
-    {
-        // Initialize variables
-        $cabecera = '';
-        $result_ok = '';
-        $result_not_ok = '';
-            
-        if (!($this->update)) {
-            $cabecera = Text::_('COM_SECURITYCHECKPRO_HEADER_INSTALL');
-            $result_ok = Text::_('COM_SECURITYCHECKPRO_INSTALLED');
-            $result_not_ok = Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED');
-        } else 
-        {
-            $cabecera = Text::_('COM_SECURITYCHECKPRO_HEADER_UPDATE');
-            $result_ok = Text::_('COM_SECURITYCHECKPRO_UPDATED');
-            $result_not_ok = Text::_('COM_SECURITYCHECKPRO_NOT_UPDATED');
-        }
-        
-        ?>
-        <img src='../media/com_securitycheckpro/images/tick_48x48.png' style='float: left; margin: 5px;'>
-        <?php
-        if (!($this->update)) {            
-            ?>
-            <h1><?php echo $cabecera ?></h1>
-            <h2><?php echo Text::_('COM_SECURITYCHECKPRO_WELCOME'); ?></h2>
-            <?php 
-        } else {
-            ?>
-            <h2><?php echo $cabecera ?></h2>
-            <?php
-        }
-        ?>
-            <div class="securitycheck-bootstrap">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="title" colspan="2"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION'); ?></th>
-                        <th width="30%"><?php echo Text::_('COM_SECURITYCHECKPRO_STATUS'); ?></th>
-                    </tr>
-                </thead>
-                <tfoot>
-                    <tr>
-                        <td colspan="3"></td>
-                    </tr>
-                </tfoot>
-                <tbody>
-                    <tr>
-                        <td colspan="2">Securitycheck Pro <?php echo Text::_('COM_SECURITYCHECKPRO_COMPONENT'); ?></td>
-                        <td>
-        <?php 
-                                $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-        ?>
-          <?php echo $span . $result_ok; ?>
-                            </span>
-                        </td>
-                    </tr>
-                    <tr class="row0">
-                        <td class="key" colspan="2">Securitycheck Pro <?php echo Text::_('COM_SECURITYCHECKPRO_PLUGIN'); ?></td>
-        <?php
-        if ($result[1]) {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . $result_ok; ?>
-                                </span>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "info\">";    
-            $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');                                                                                    
-            ?>
-            <?php echo $span . $message; ?>
-                            </td>
-            <?php
-        } else {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . $result_not_ok; ?>
-                                </span>
-                            </td>
-            <?php
-        }
-        ?>
-                    </tr>
-                    <tr class="row0">
-                        <td class="key" colspan="2">Securitycheck Pro Task Cron <?php echo Text::_('Plugin'); ?></td>
-        <?php
-        if ($result[4]) {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . $result_ok; ?>
-                            </span>
-            <?php 
-            $limit = false;
-			$span = "<span class=\"badge " . $this->badge_style . "info\">";    
-            $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
-            if ($memory_limit <= 128) {               
-                $limit = true;
-            }
-            ?>
-            <?php echo $span . $message; ?>
-				</span>
-            </td>
-            <?php
-        } else {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . $result_not_ok; ?>
-                            </span>
-                        </td>
-            <?php
-        }
-        ?>
-                    </tr>
-                    <tr class="row0">
-                        <td class="key" colspan="2">URL Inspector <?php echo Text::_('Plugin'); ?></td>
-        <?php
-        if ($result[2]) {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . $result_ok; ?>
-                                </span>
-            <?php 
-            if ($this->url_plugin_enabled) {
-                $span = "<span class=\"badge " . $this->badge_style . "info\">";    
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');
-            } else 
-            {
-                $span = "<span class=\"badge " . $this->badge_style . "danger\">";    
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_DISABLED');
-            }
-            ?>
-            <?php echo $span . $message; ?>                                
-                            </td>
-            <?php
-        } else
-                        {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . $result_not_ok; ?>
-                                </span>
-                            </td>
-            <?php
-        }
-        ?>
-                    </tr>      
-			<tr class="row0">
-                        <td class="key" colspan="2">Securitycheck Pro Task Checker <?php echo Text::_('Plugin'); ?></td>
-        <?php
-        if ($result[3]) {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . $result_ok; ?>
-                                </span>
-            <?php 
-				$span = "<span class=\"badge " . $this->badge_style . "info\">";
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');            
-            ?>
-            <?php echo $span . $message; ?>                                
-                </td>
-            <?php
-        } else
-                        {
-            ?>
-                            <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . $result_not_ok; ?>
-                                </span>
-                            </td>
-            <?php
-        }
-        ?>
-                    </tr>
-        <?php
-        if (count($status->modules) > 0) {
-            ?>
-                        <tr class="row0">
-                        <td class="key" colspan="2">Securitycheck Pro Info <?php echo Text::_('COM_SECURITYCHECKPRO_MODULE'); ?></td>
-            <?php
-            if ($status->modules['0']['result']) {
-                ?>
-                            <td>
-                <?php 
-                $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-                ?>
-                <?php echo $span . $result_ok; ?>
-                                </span>
-                <?php 
-                $span = "<span class=\"badge " . $this->badge_style . "info\">";    
-                $message = Text::_('COM_SECURITYCHECKPRO_PLUGIN_ENABLED');                                                                                    
-                ?>
-                <?php echo $span . $message; ?>
-                            </td>
-                <?php
-            } else
-            {
-                ?>
-                            <td>
-                <?php 
-                $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-                ?>
-                <?php echo $span . $result_not_ok; ?>
-                                </span>
-                            </td>                            
-                <?php
-            }
-            ?>
-                        </tr>
-            <?php
-        }
-        if ($id_free) {
-            ?>
-                        <tr class="row0">
-                            <td class="key" colspan="2">Securitycheck <?php echo Text::_('COM_SECURITYCHECK_COMPONENT'); ?></td>
-            <?php
-            if ($result_free) {
-                ?>
-                            <td>
-                <?php 
-                $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-                ?>
-                <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                                </span>
-                            </td>                                    
-                <?php
-            } else 
-            {
-                ?>
-                            <td>
-                <?php 
-                $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-                ?>
-                <?php echo $span . Text::_('COM_SECURITYCHECK_NOT_UNINSTALLED'); ?>
-                                </span>
-                            </td>                            
-                <?php
-            }
-            ?>
-                        </tr>
-            <?php
-        }
-        ?>
-                </tbody>
-            </table>
-            </div>
-        <?php
-    }
-
-    /**
-     * method to show the uninstall message
-     *
-     * @return void
-     */
-    function uninstall_message($result,$status)
-    {
-        ?>
-        <h1><?php echo Text::_('COM_SECURITYCHECKPRO_HEADER_UNINSTALL'); ?></h1>
-        <h2><?php echo Text::_('COM_SECURITYCHECKPRO_GOODBYE'); ?></h2>
-        <div class="securitycheck-bootstrap">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th class="title" colspan="2"><?php echo Text::_('COM_SECURITYCHECKPRO_EXTENSION'); ?></th>
-                    <th width="30%"><?php echo Text::_('COM_SECURITYCHECKPRO_STATUS'); ?></th>
-                </tr>
-            </thead>
-            <tfoot>
-                <tr>
-                    <td colspan="3"></td>
-                </tr>
-            </tfoot>
-            <tbody>
-                <tr>
-                    <td colspan="2">Securitycheck Pro <?php echo Text::_('COM_SECURITYCHECKPRO_COMPONENT'); ?></td>
-                    <td>
-        <?php 
-          $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-        ?>
-         <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                        </span>
-                    </td>                    
-                </tr>
-                <tr class="row0">
-                    <td class="key" colspan="2">Securitycheck Pro <?php echo Text::_('COM_SECURITYCHECKPRO_PLUGIN'); ?></td>
-        <?php
-        if ($result[1]) {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        } else 
-        {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
-                            </span>
-                        </td>                        
-            <?php
-        }
-        ?>
-                </tr>
-                <tr class="row0">
-                    <td class="key" colspan="2">Securitycheck Pro Cron <?php echo Text::_('Plugin'); ?></td>
-        <?php
-        if ($result[2]) {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        } else 
-        {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        }
-        ?>
-                </tr>
-                <tr class="row0">
-                    <td class="key" colspan="2">URL Inspector <?php echo Text::_('Plugin'); ?></td>
-        <?php
-        if ($result[3]) {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        } else
-        {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        }
-        ?>
-                </tr> 
-				<tr class="row0">
-                    <td class="key" colspan="2">Securitycheck Pro Task Checker <?php echo Text::_('Plugin'); ?></td>
-        <?php
-        if ($result[4]) {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        } else
-        {
-            ?>
-                        <td>
-            <?php 
-            $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-            ?>
-            <?php echo $span . Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
-                            </span>
-                        </td>
-            <?php
-        }
-        ?>
-                </tr>
-        <?php
-        if (count($status->modules) > 0) {
-            ?>
-                    <tr class="row0">
-                    <td class="key" colspan="2">Securitycheck Pro Info <?php echo Text::_('COM_SECURITYCHECKPRO_MODULE'); ?></td>
-            <?php
-            if ($status->modules['0']['result']) {
-                ?>
-                        <td>
-                <?php 
-                   $span = "<span class=\"badge " . $this->badge_style . "success\">";                                
-                ?>
-                <?php echo $span . Text::_('COM_SECURITYCHECKPRO_UNINSTALLED'); ?>
-                            </span>
-                        </td>
-                    <?php
-            } else
-            {
-                ?>
-                        <td>
-                <?php 
-                 $span = "<span class=\"badge " . $this->badge_style . "danger\">";                                
-                ?>
-                <?php echo $span . Text::_('COM_SECURITYCHECKPRO_NOT_INSTALLED'); ?>
-                            </span>
-                        </td>
-                  <?php
-            }
-            ?>
-                    </tr>
-            <?php
-        }
-        ?>
-            </tbody>
-        </table>
-        </div>
-        <?php
-    }
+    
 }
 ?>

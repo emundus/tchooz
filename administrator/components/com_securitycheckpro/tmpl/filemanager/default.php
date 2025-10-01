@@ -26,7 +26,7 @@ $status_array = array(HTMLHelper::_('select.option', '0', Text::_('COM_SECURITYC
             HTMLHelper::_('select.option', '2', Text::_('COM_SECURITYCHECKPRO_FILEMANAGER_TITLE_EXCEPTIONS')));
 
 // Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
+$document = Factory::getApplication()->getDocument();
 
 $list_group_style = 'class="margin-right-5" style="width: fit-content;"';
 if (version_compare(JVERSION, '4.0', 'ge')) {		

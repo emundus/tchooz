@@ -17,6 +17,8 @@ use Joomla\CMS\Component\ComponentHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\Plugin\System\Securitycheckpro\Extension\Securitycheckpro;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Plugin class for redirect handling.
@@ -69,7 +71,7 @@ class Url_inspector extends CMSPlugin
 			self::$objeto = new Securitycheckpro($subject, $config);
 
 			// Cargamos el lenguaje del sitio
-			self::$lang_firewall = Factory::getLanguage();
+			self::$lang_firewall = Factory::getApplication()->getLanguage();
 			self::$lang_firewall->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		}
 
@@ -86,7 +88,7 @@ class Url_inspector extends CMSPlugin
 		
 
 		$app = Factory::getApplication();
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 
 		// Initialize variables
@@ -203,7 +205,7 @@ class Url_inspector extends CMSPlugin
 
 	private function load($key_name)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 		$query
 			->select($db->quoteName('storage_value'))
@@ -314,7 +316,7 @@ class Url_inspector extends CMSPlugin
 	private static function doErrorHandling($error)
 	{
 		$app = Factory::getApplication();
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 
 		//Initialize variables

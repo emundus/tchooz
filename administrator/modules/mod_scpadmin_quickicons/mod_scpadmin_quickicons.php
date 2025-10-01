@@ -11,7 +11,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\Module\Scpadmin_quickicons\Administrator\Helper\Scpadmin_quickiconsHelper;
 
-$user = Factory::getUser();
+$user = Factory::getApplication()->getIdentity();
 
 // Añadido ACL (Si se deniega el acceso a la administración de Securitycheck Pro el módulo no será mostrado)
 if ($user->authorise('core.manage', 'com_securitycheckpro')) {

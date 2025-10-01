@@ -15,6 +15,8 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 final class Securitycheckpro_task_checker extends CMSPlugin implements SubscriberInterface
 {
@@ -52,7 +54,7 @@ final class Securitycheckpro_task_checker extends CMSPlugin implements Subscribe
      */
     public function onSCPTaskAdded(EventInterface $event)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = "SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key='remote_task'";
         $db->setQuery($query);
         $db->execute();

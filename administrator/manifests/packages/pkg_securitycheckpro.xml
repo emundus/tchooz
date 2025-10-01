@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="package" method="upgrade">
+	<name>Securitycheck Pro Package</name>
+	<packagename>securitycheckpro</packagename>
+	<creationDate>05-08-2025</creationDate>
+	<author>Jose A. Luque</author>
+	<authorEmail>contacto@protegetuordenador.com</authorEmail>
+	<authorUrl>securitycheck.protegetuordenador.com</authorUrl>
+	<copyright>Copyright (C) Securitycheck Extensions</copyright>
+	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
+	<version>4.2.5</version>
+	<description>The best option to protect and manage your site.</description>
+	
+	<scriptfile>script.php</scriptfile>
+		
+	<files folder="packages">
+		<file type="module" id="mod_scpadmin_quickicons" client="administrator">mod_scpadmin_quickicons.zip</file>
+		<file type="plugin" id="securitycheckpro" group="system">plg_securitycheckpro.zip</file>
+		<file type="plugin" id="url_inspector" group="system">plg_url_inspector.zip</file>
+		<file type="plugin" id="securitycheckpro_task_checker" group="system">plg_securitycheckpro_task_checker.zip</file>
+		<file type="plugin" id="securitycheckprocron" group="task">plg_securitycheckprocron.zip</file>			
+		<file type="component" id="com_securitycheckpro">com_securitycheckpro.zip</file>
+	</files>
+	
+ </extension>

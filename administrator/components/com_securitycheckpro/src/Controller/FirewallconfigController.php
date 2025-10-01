@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Session\Session;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\CpanelModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 
@@ -92,7 +94,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
         $data['custom_code'] = $custom_code;
         
         // Look for super users groups
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = "SELECT id from #__usergroups where title='Super Users'" ;            
         $db->setQuery($query);
         $super_user_group = $db->loadResult();
@@ -174,7 +176,7 @@ class FirewallconfigController extends SecuritycheckproBaseController
 		    
         $lista = $jinput->get("export", null);
 		
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$database = "#__securitycheckpro_" . $lista;
 		
 		try{

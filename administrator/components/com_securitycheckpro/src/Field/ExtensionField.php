@@ -14,6 +14,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\Plugin\System\Trackactions\Model\TrackActionsHelperModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -44,7 +46,7 @@ class ExtensionField extends ListField
     public function getOptions()
     {
 		
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select('DISTINCT b.extension')
             ->from($db->quoteName('#__securitycheckpro_trackactions', 'b'));
