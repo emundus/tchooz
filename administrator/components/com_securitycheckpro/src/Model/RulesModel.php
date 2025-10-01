@@ -15,6 +15,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Pagination\Pagination;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -80,7 +82,7 @@ class RulesModel extends BaseModel
     function load($data = null)
     {
         // Creamos un nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 
         // Obtenemos los grupos de Joomla
@@ -173,7 +175,7 @@ class RulesModel extends BaseModel
     
         ArrayHelper::toInteger($uids, array());
         
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         foreach($uids as $uid) 
         {
             try 
@@ -206,7 +208,7 @@ class RulesModel extends BaseModel
     
         ArrayHelper::toInteger($uids, array());
         
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         foreach($uids as $uid)
         {
             try 

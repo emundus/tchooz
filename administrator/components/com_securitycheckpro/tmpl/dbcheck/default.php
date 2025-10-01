@@ -17,7 +17,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 Session::checkToken('get') or die('Invalid Token');
 
 // Cargamos los archivos javascript necesarios
-$document = Factory::getDocument();
+$document = Factory::getApplication()->getDocument();
 
 HTMLHelper::_('bootstrap.tooltip', '.hasTooltip');
 ?>

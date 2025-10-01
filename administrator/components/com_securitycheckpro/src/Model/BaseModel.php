@@ -17,6 +17,8 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Table\Table;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\IpModel;
 
 if (!defined('SCP_CACERT_PEM')) define('SCP_CACERT_PEM', __DIR__ . '/cacert.pem');
@@ -65,7 +67,7 @@ class BaseModel extends BaseDatabaseModel
     'logs_attacks'            => 1,
     'scp_delete_period'            => 60,    
     'log_limits_per_ip_and_day'            => 0,
-    'redirect_after_attack'            => 1,
+    'redirect_after_attack'            => 0,
     'redirect_options'            => 1,
     'redirect_url'            => '',
     'custom_code'            => 'The webmaster has forbidden your access to this site',
@@ -96,9 +98,9 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     'sql_pattern_exceptions'            => '',
     'if_statement_exceptions'            => '',
     'using_integers_exceptions'            => 'com_dms,com_comprofiler,com_jce,com_contactenhanced,com_securitycheckprocontrolcenter',
-    'escape_strings_exceptions'            => 'com_kunena,com_jce',
+    'escape_strings_exceptions'            => 'com_kunena,com_jce,com_user',
     'lfi_exceptions'            => '',
-    'second_level_exceptions'            => 'com_securitycheckprocontrolcenter',    
+    'second_level_exceptions'            => '',    
     'session_protection_active'            => 1,
     'session_hijack_protection'            => 1,
 	'session_hijack_protection_what_to_check'            => 0,
@@ -176,7 +178,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 	/* Obtiene los elementos de una tabla pasada como argumento */
     function getTableData($table)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$database = "#__securitycheckpro_" . $table;
 		$array_ips = null;
 		
@@ -196,7 +198,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     function LogsPending()
     {
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = "SELECT COUNT(*) FROM #__securitycheckpro_logs WHERE marked='0'";		
         $db->setQuery($query);
         $db->execute();
@@ -226,7 +228,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 	/* Función que obtiene el download id de la tabla update_sites. */
     function get_extra_query_update_sites_table($element)
     {
-		$db = Factory::getDBO();    
+		$db = Factory::getContainer()->get(DatabaseInterface::class);    
 		$query = $db->getQuery(true);
 		
 					
@@ -278,7 +280,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     
         // Inicializamos las variables
         $query = null;
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $blacklist_ips = array();
         
         // Obtenemos el 'extension_id' del Firewall Web, disponible en la tabla '#__extensions'
@@ -329,7 +331,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 	/* Hace una consulta a la tabla espacificada como parámetro ' */
     public function load($key_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query 
             ->select($db->quoteName('storage_value'))
@@ -352,7 +354,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
             $this->load($key_name);
         }
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 		$query2 = $db->getQuery(true);
     
@@ -432,7 +434,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     function get_campo_bbdd($bbdd,$campo)
     {
         // Creamos el nuevo objeto query
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         $bbdd = htmlspecialchars($bbdd);
         $campo = htmlspecialchars($campo);
@@ -456,7 +458,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     function PluginStatus($opcion)
     {
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         if ($opcion == 1) {
             $query = "SELECT enabled FROM #__extensions WHERE name='System - Securitycheck Pro'";
         } else if ($opcion == 2) {
@@ -655,7 +657,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
     function set_campo_filemanager($campo,$valor)
     {
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
         // Sanitizamos las entradas
@@ -678,7 +680,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         try 
         {
             // Creamos el nuevo objeto query
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true);
         
             // Sanitizamos las entradas
@@ -713,7 +715,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 		$array_ips = null;
         $array_ip_peticionaria = explode('.', $ip);
 		
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$database = "#__securitycheckpro_" . $lista;
 		
 		try{
@@ -935,6 +937,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 	/* Función que modifica el valor de algún parámetro de un componente */
     function modify_component_value($param_name,$value,$option)
     {
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // Inicializamos las variables
         $added = true;
@@ -963,7 +966,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                 $params->set($param_name, $actual_values);
             
                 $componentid = ComponentHelper::getComponent('com_securitycheckpro')->id;
-                $table = Table::getInstance('extension');
+                $table = new \Joomla\CMS\Table\Extension($db);
                 $table->load($componentid);
                 $table->bind(array('params' => $params->toString()));
             
@@ -1013,7 +1016,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
                     $params->set($param_name, $new_value);
                 
                     $componentid = ComponentHelper::getComponent('com_securitycheckpro')->id;
-                    $table = Table::getInstance('extension');
+                    $table = new \Joomla\CMS\Table\Extension($db);
                     $table->load($componentid);
                     $table->bind(array('params' => $params->toString()));
                 
@@ -1051,7 +1054,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         // Parámetros de la aplicación
         $params = ComponentHelper::getParams('com_securitycheckpro');
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Creamos el objeto JInput para obtener las variables del formulario
         $jinput = Factory::getApplication()->input;
@@ -1110,7 +1113,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         // Parámetros de la aplicación
         $params = ComponentHelper::getParams('com_securitycheckpro');
     
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Creamos el objeto JInput para obtener las variables del formulario
         $jinput = Factory::getApplication()->input;
@@ -1173,7 +1176,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
 	/* Borra las tablas #_sessions y #_securitycheckpro_sessions */
     function purge_sessions()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         // Tabla 'sessions'
         $query = 'TRUNCATE TABLE #__session' ;
@@ -1186,7 +1189,7 @@ dHJleGVjLHBhc3N0aHJ1LHNoZWxsX2V4ZWMsY3JlYXRlRWxlbWVudA==',
         $db->execute();
     
         // For Joomla 4 we must also close the current session 
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $user_id = $user->id;    
     
         $app = Factory::getApplication();

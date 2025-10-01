@@ -14,7 +14,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Layout\LayoutHelper;
 
 // Load plugin language
-$lang2 = Factory::getLanguage();
+$lang2 = Factory::getApplication()->getLanguage();
 $lang2->load('plg_system_securitycheckpro');
             
 $listOrder = $this->escape($this->state->get('list.ordering'));

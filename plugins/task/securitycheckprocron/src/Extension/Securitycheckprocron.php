@@ -172,7 +172,7 @@ final class Securitycheckprocron extends CMSPlugin implements SubscriberInterfac
         if ($email_active) {        
         
             /* Cargamos el lenguaje del sitio */
-            $lang = Factory::getLanguage();
+            $lang = Factory::getApplication()->getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
                                 
             // Creamos el asunto y el cuerpo del mensaje

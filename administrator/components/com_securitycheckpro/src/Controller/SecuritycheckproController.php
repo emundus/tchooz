@@ -13,6 +13,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Session\Session;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Controller\SecuritycheckproBaseController;
 
 /**
@@ -113,7 +115,7 @@ class SecuritycheckproController extends SecuritycheckproBaseController
      */
     function csv_export()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = 'SELECT * FROM #__securitycheckpro_logs';
         $db->setQuery($query);
         $rows = $db->loadRowList();

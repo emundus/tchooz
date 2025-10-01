@@ -14,6 +14,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Pagination\Pagination;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
+
 /**
  * Modelo Vulninfo
  */
@@ -89,7 +92,7 @@ class VulninfoModel extends BaseModel
 		$local_joomla_branch = explode(".", JVERSION); 
 		$joomla_version_db = $local_joomla_branch[0] . ".0.0";
 		
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		$query = $db->getQuery(true)
 			->select('*')
@@ -106,7 +109,7 @@ class VulninfoModel extends BaseModel
      */
     function datos()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = 'SELECT * FROM #__securitycheckpro_db ORDER BY id DESC';
         $db->setQuery($query, $this->getState('limitstart'), $this->getState('limit'));
         $data = $db->loadAssocList();

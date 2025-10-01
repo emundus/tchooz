@@ -31,11 +31,11 @@ class HtmlView extends BaseHtmlView {
     function display($tpl = null) {
 		
 		ToolBarHelper::title(Text::_('Securitycheck Pro').' | ' .Text::_('COM_SECURITYCHECKPRO_CPANEL_VIEW_TRACKACTIONS_LOGS_TEXT'), 'securitycheckpro');
-        if (Factory::getUser()->authorise('core.delete', 'com_securitycheckpro')) {
+        if (Factory::getApplication()->getIdentity()->authorise('core.delete', 'com_securitycheckpro')) {
             ToolBarHelper::custom('delete', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE');
             ToolBarHelper::custom('delete_all', 'delete', 'delete', 'COM_SECURITYCHECKPRO_DELETE_ALL', false);
         }
-        if (Factory::getUser()->authorise('core.admin', 'com_userlogs') || Factory::getUser()->authorise('core.options', 'com_userlogs')) {
+        if (Factory::getApplication()->getIdentity()->authorise('core.admin', 'com_userlogs') || Factory::getApplication()->getIdentity()->authorise('core.options', 'com_userlogs')) {
             ToolBarHelper::custom('exportLogs', 'out-2', 'out-2', 'COM_SECURITYCHECKPRO_EXPORT_LOGS_CSV', false);
         }
 		

@@ -61,6 +61,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE_PAYMENT');
 Text::script('COM_EMUNDUS_WORKFLOW_CONFIGURE_PAYMENT_STEP');
 Text::script('COM_EMUNDUS_WORKFLOW_PAYMENT_STEP_RELATED_TO');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_STEP_FAILED');
+Text::script('COM_EMUNDUS_WORKFLOW_ARCHIVED_STEP');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

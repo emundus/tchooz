@@ -226,7 +226,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
         Log::addLogger(['text_file' => 'plugin.emundus.ammon.php'], Log::ALL, array('plugin.emundus.ammon'));
         Log::add('Registration successful for fnum ' . $arguments['fnum'] . ' on session ' . $arguments['session_id'] . ' -> ' . $arguments['message'], Log::INFO, 'plugin.emundus.ammon');
 
-		$message = $this->setMessage('ammon', 'create', $title, $arguments['status'], [], $arguments['data'], $more_data);
+		$message = $this->setMessage('ammon', 'create', $title, $arguments['status'], [], $arguments['data'], $more_data, $automated_task_user);
 		$this->addLog([$message], $messageLanguageKey, $context, $automated_task_user);
 	}
 
@@ -241,7 +241,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$more_data['fnum']       = $arguments['fnum'];
 		$more_data['session_id'] = $arguments['session_id'];
 
-		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT_ACTION', $arguments['status'], [], $arguments['data'], $more_data);
+		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_APPLICANT_ACTION', $arguments['status'], [], $arguments['data'], $more_data, $automated_task_user);
 		$this->addLog([$message], $messageLanguageKey, $context, $automated_task_user);
 	}
 
@@ -256,7 +256,7 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$more_data['name']    = $arguments['name'];
 		$more_data['message'] = $arguments['message'];
 
-		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME_ACTION', 'error', [], [], $more_data);
+		$message = $this->setMessage('ammon', 'create', 'PLG_ACTIONLOG_EMUNDUS_AMMON_FOUND_SIMILAR_NAME_ACTION', 'error', [], [], $more_data, $automated_task_user);
 		$this->addLog([$message], $messageLanguageKey, $context, $automated_task_user);
 	}
 
@@ -434,9 +434,9 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
 	}
 
-	private function setMessage($id = 0, $action = 'update', $title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE', $status = 'done', $old_data = [], $new_data = [], $more_data = [])
+	private function setMessage($id = 0, $action = 'update', $title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE', $status = 'done', $old_data = [], $new_data = [], $more_data = [], int $userId = 0)
 	{
-		$jUser = $this->getApplication()->getIdentity();
+		$jUser = !empty($userId) ? $this->getUserFactory()->loadUserById($userId) : $this->getApplication()->getIdentity();
 
 		$message = [
 			'id'          => $id,

@@ -3,6 +3,8 @@ defined('_JEXEC') or die();
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 ?>
 <!-- User session protection -->
  <div class="card mb-3">
@@ -42,7 +44,7 @@ use Joomla\CMS\Factory;
                                                 <div class="controls">
                                                     <?php
                                                     // Listamos todos los grupos presentes en el sistema excepto el grupo 'Guest'
-                                                    $db = Factory::getDBO();
+                                                    $db = Factory::getContainer()->get(DatabaseInterface::class);
                                                     $query = "SELECT id,title from #__usergroups WHERE title != 'Guest'";            
                                                     $db->setQuery($query);
                                                     $groups = $db->loadRowList();                        

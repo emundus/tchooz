@@ -2,9 +2,9 @@
 <extension type="package" version="4.0" method="upgrade">
 	<name>FaLang Package</name>
 	<author>Stéphane Bouey</author>
-	<creationDate>April 2025</creationDate>
+	<creationDate>September 2025</creationDate>
  	<packagename>falang</packagename>
-	 <version>5.19</version>
+	 <version>5.22</version>
 	 <url>http://www.faboba.com</url>
 	 <variant>standard</variant>
 	 <packager>Stéphane Bouey</packager>
@@ -17,14 +17,15 @@
 	 <!-- List of extensions to install -->
 	 <files folder="packages">
 	     <!-- Modules -->
-		 <file type="module" id="mod_falang" client="site">mod_falang_5.19.zip</file>
+		 <file type="module" id="mod_falang" client="site">mod_falang_5.22.zip</file>
 		 
 		  <!-- Plugins -->
-		 <file type="plugin" id="falangdriver" group="system">plg_falangdriver_5.19.zip</file>
-		 <file type="plugin" id="falangquickjump" group="system">plg_falangquickjump_5.19.zip</file>
+		 <file type="plugin" id="falangdriver" group="system">plg_falangdriver_5.22.zip</file>
+		 <file type="plugin" id="falangquickjump" group="system">plg_falangquickjump_5.22.zip</file>
+		 <file type="plugin" id="falangcf" group="system">plg_falangcf_5.22.zip</file>
 		 
 		 <!-- Component -->
-		 <file type="component" id="com_falang" >com_falang_5.19.zip</file>
+		 <file type="component" id="com_falang" >com_falang_5.22.zip</file>
 	 </files>
 	 
 	 <!-- All extensions need to be installed -->

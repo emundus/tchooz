@@ -32,6 +32,8 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Firew
 use Joomla\Component\Users\Administrator\Model\UserModel;
 use Joomla\CMS\User\User;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 class Securitycheckpro extends CMSPlugin 
 {
@@ -82,7 +84,7 @@ class Securitycheckpro extends CMSPlugin
 			$this->pro_plugin = new BaseModel();
 		}
 		
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         (int) $track_actions_delete_period = $this->pro_plugin->getValue('delete_period', 0, 'pro_plugin');
         (int) $scp_delete_period = $this->pro_plugin->getValue('scp_delete_period', 60, 'pro_plugin');
@@ -131,7 +133,7 @@ class Securitycheckpro extends CMSPlugin
         
         if ($logs_attacks) {
 			$this->pro_plugin = new BaseModel();
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             
             /* El parámetro 'blacklist_email' indica si se manda un correo cuando una ip aparece en la lista negra. Inicialmente lo forzamos a '1' para que siempre se mande un email, excepto cuando el parámetro '$tag_description' sea igual a 'IP_BLOCKED', que se cuando se comprueba y, en su caso, modifica este valor */
             $blacklist_email = 1;
@@ -195,7 +197,7 @@ class Securitycheckpro extends CMSPlugin
 			
 			           
             /* Cargamos el lenguaje del sitio */
-            $lang = Factory::getLanguage();
+            $lang = Factory::getApplication()->getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
             
             		
@@ -236,7 +238,7 @@ class Securitycheckpro extends CMSPlugin
                 $email_active = $this->pro_plugin->getValue('email_active', 0, 'pro_plugin');
                 
                 /* Cargamos el lenguaje del sitio */
-                $lang = Factory::getLanguage();
+                $lang = Factory::getApplication()->getLanguage();
                 $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         
                 if ($email_active) {    
@@ -303,7 +305,7 @@ class Securitycheckpro extends CMSPlugin
         $vulnerable = false;
         
         // Creamos el nuevo objeto query
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         // Sanitizamos el argumento
@@ -353,7 +355,7 @@ class Securitycheckpro extends CMSPlugin
 		$app = Factory::getApplication();
         $is_admin = $app->isClient('administrator');
         
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         if (!$user->guest) {
             $username = $user->username;
         }
@@ -563,10 +565,10 @@ class Securitycheckpro extends CMSPlugin
                 }
             }
 			                            
-            $sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00)).+\b(from)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+\b(set)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
+            $sqlpatterns = array("/delete(?=(\s|\+|%20|%u0020|%uff00))(.\b){1,3}(from)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/update(?=(\s|\+|%20|%u0020|%uff00)).+\b(set)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
             "/drop(?=(\s|\+|%20|%u0020|%uff00)).+\b(database|user|table|index)\b(?=(\s|\+|%20|%u0020|%uff00))/i",
             "/insert((\s|\+|%20|%u0020|%uff00|\/|%2f))+(values|set|select)\b((\s|\+|%20|%u0020|%uff00))*/i", "/union(?=(\s|\+|%20|%u0020|%uff00|\/|%2f)).+(select)\b((\s|\+|%20|%u0020|%uff00))*/i",
-            "/select(?=(\s|\+|%20|%u0020|%uff00)).+\b(from|ascii|char|concat|case)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/benchmark\(.*\)/i",
+            "/select(?=(\s|\+|%20|%u0020|%uff00))(.\b|.\B){1,3}(from|ascii|char|concat|case)\b(?=(\s|\+|%20|%u0020|%uff00))/i","/benchmark\(.*\)/i",
             "/md5\(.*\)/i","/sha1\(.*\)/i","/ascii\(.*\)/i","/concat\(.*\)/i","/char\(.*\)/i",
             "/substring\(.*\)/i","/where(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\w+)(=|<|>|<=|>=)(\w+)/i","/(or|and)(\s|\+|%20|%u0020|%uff00)(sleep)/i","/(\s|\+|%20|%u0020|%uff00)(pg_sleep)/i","/waitfor(\s|\+|%20|%u0020|%uff00)(delay)/i","/(\s|\+|%20|%u0020|%uff00)(or|and)(\s|\+|%20|%u0020|%uff00)(\()?((\'|%27)+(\d+)(\'|%27)+(=|%3d)(\'|%27)*\d+|((\')+(\D+)(\')+=(\')*\D+))/i","/=dbms_pipe\.receive_message/i","/order by \d+/i");              
                                             
@@ -700,12 +702,12 @@ class Securitycheckpro extends CMSPlugin
                     }
                                     
                     $string = $string_sanitized;
-                    $modified = true;
+                    $modified = true;					
                 }
             }
         }
                         
-                /* Header and user-agent check */
+        /* Header and user-agent check */
         if ((!$modified) && ($check_header_referer)) {
             $modified = $this->check_header_and_user_agent($logs_attacks, $user, $user_agent, $referer, $ip, $methods_options, $a, $request_uri, $sqlpatterns, $ifStatements, $usingIntegers, $lfiStatements, $username, $pageoption);
         }
@@ -792,10 +794,7 @@ class Securitycheckpro extends CMSPlugin
                     $modified = true;
                 }
             }
-            /*****
-    
-       * Referer checks 
-*****/
+            /* Referer checks */
             if (!$modified) {
                 if (isset($_SERVER['HTTP_REFERER'])) {
                     /* XSS Prevention in REFERER*/
@@ -839,17 +838,15 @@ class Securitycheckpro extends CMSPlugin
         $occurrences=0;
         $string_sanitized=$string;
         $application = Factory::getApplication();
-        $user = Factory::getUser();
+        $user = $application->getIdentity();
         $dbprefix = $application->getCfg('dbprefix');
         $pageoption='';
         $existe_componente = false;
         $extension_vulnerable = false;
         
-        $app = Factory::getApplication();
-        $is_admin = $app->isClient('administrator');
+        $is_admin = $application->isClient('administrator');
         
         // Consultamos si hemos de aplicar las reglas al usuario en función de su pertenencia a grupos.
-        $user = Factory::getUser();
         $apply_rules_to_user = $this->check_rules($user);
         
         $pageoption = $option;
@@ -883,7 +880,7 @@ class Securitycheckpro extends CMSPlugin
                         $string_sanitized = stripslashes($string);
                     }
                     // Line Comments
-                    $lineComments = array("/--/","/[^\=]#/","/\/\*/","/\*\//");
+                   	$lineComments = array("/--/","/[^\=\s]#/","/\/\*/","/\*\//","/(?=(%2f|\/)).+\*\*/i");
                     $string_sanitized = preg_replace($lineComments, "", $string_sanitized);
                 
                     $string_sanitized = $this->escapa_string($string);
@@ -915,7 +912,7 @@ class Securitycheckpro extends CMSPlugin
     function chequear_ip_en_lista_dinamica($ip,$blacklist_counter)
     {
         // Creamos el nuevo objeto query
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
     
         // Chequeamos si la IP tiene un formato válido
@@ -954,7 +951,7 @@ class Securitycheckpro extends CMSPlugin
     {
     
         // Creamos el nuevo objeto query
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         // Sanitizamos la entrada
@@ -976,7 +973,7 @@ class Securitycheckpro extends CMSPlugin
     function actualizar_lista_dinamica($attack_ip)
     {
 		// Creamos el nuevo objeto query
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 		
 		if (empty($this->pro_plugin)) {
@@ -1035,7 +1032,7 @@ class Securitycheckpro extends CMSPlugin
         }
         
         // El usuario logado debe coincidir con el almacenado en la sesión o ser el invitado (antes de logarse en el backend)
-        $currentUser = Factory::getUser();
+        $currentUser = $app->getIdentity();
                 
         if (!$currentUser->guest && (strtoupper($currentUser->username) != strtoupper($session_username))) {
             $is_ok = false;
@@ -1055,7 +1052,7 @@ class Securitycheckpro extends CMSPlugin
         try
         {
             // Get a database object
-            $db    = Factory::getDbo();
+            $db    = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true)
                 ->select('id')
                 ->from('#__users')
@@ -1122,7 +1119,7 @@ class Securitycheckpro extends CMSPlugin
         
         // Si la funcionalidad OTP está habilitada realizamos las secuencia
         if ($otp_enabled) {        
-            $session = Factory::getSession();                
+            $session = Factory::getApplication()->getSession();               
             $session_username = $session->get('otp_username', '', 'com_securitycheckpro');
 			                    
             if (empty($session_username)) {
@@ -1134,7 +1131,7 @@ class Securitycheckpro extends CMSPlugin
                 $userID = self::get_user_id($url_username);
 				                   
                 if (!empty($userID)) {                
-                    $user = Factory::getUser($userID);
+                    $user = Factory::getApplication()->getIdentity($userID);
                     if ($user->authorise('core.admin')) {
 						if (version_compare(JVERSION, '4.2.0', 'gt')) {
 							$check = self::check_mfa_status($userID, $url_otp); 
@@ -1237,7 +1234,7 @@ class Securitycheckpro extends CMSPlugin
     function acciones_lista_negra_dinamica($dynamic_blacklist_time,$attack_ip,$dynamic_blacklist_counter,$logs_attacks,$request_uri,$not_applicable)
     {
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         
         /* Actualizamos la lista dinámica */
@@ -1269,7 +1266,7 @@ class Securitycheckpro extends CMSPlugin
     function acciones_lista_negra($logs_attacks,$attack_ip,$access_attempt,$request_uri,$not_applicable)
     {
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
         
@@ -1299,13 +1296,13 @@ class Securitycheckpro extends CMSPlugin
 			$this->pro_plugin = new BaseModel();
 		}
 		
-        $redirect_after_attack = $this->pro_plugin->getValue('redirect_after_attack', 1, 'pro_plugin');
+        $redirect_after_attack = $this->pro_plugin->getValue('redirect_after_attack', 0, 'pro_plugin');
         $redirect_options = $this->pro_plugin->getValue('redirect_options', 1, 'pro_plugin');
         $redirect_url = $this->pro_plugin->getValue('redirect_url', '', 'pro_plugin');
         $custom_code = $this->pro_plugin->getValue('custom_code', 'The webmaster has forbidden your access to this site', 'pro_plugin');
 		$dynamic_blacklist = $this->pro_plugin->getValue('dynamic_blacklist', 1, 'pro_plugin');
 				
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		if (!is_null($ip)) {
@@ -1356,7 +1353,7 @@ class Securitycheckpro extends CMSPlugin
     function acciones_no_listas($methods,$attack_ip,$methods_options,$request_uri,$check_base_64,$logs_attacks,$secondlevel,$mode)
     {
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		// Si la variable "pro_plugin" está vacía la instanciamos
@@ -1373,7 +1370,7 @@ class Securitycheckpro extends CMSPlugin
             $this->sesiones_activas($logs_attacks, $attack_ip, $request_uri, $session_protection_active, $session_hijack_protection);
         }
         // Consultamos si hemos de aplicar las reglas al usuario en función de su pertenencia a grupos.
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $apply_rules_to_user = $this->check_rules($user);
                 
         if ( ($apply_rules_to_user) && (!empty($methods)) ) {            
@@ -1457,7 +1454,7 @@ class Securitycheckpro extends CMSPlugin
         $send = true;
         
         // Consultamos el número de correos mandados
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         $query = "UPDATE #__securitycheckpro_emails SET envoys=0, send_date='{$today}' WHERE (send_date < '{$today}')";
         $db->setQuery($query);
@@ -1470,7 +1467,7 @@ class Securitycheckpro extends CMSPlugin
         
         if ($envoys < $email_limit) {  // No se ha alcanzado el límite máximo de emails por día
             /* Cargamos el lenguaje del sitio */
-            $lang = Factory::getLanguage();
+            $lang = Factory::getApplication()->getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
                             
             // Añadimos la regla aplicada al cuerpo del correo
@@ -1502,7 +1499,7 @@ class Securitycheckpro extends CMSPlugin
             if ($send !== true) {              
             }else
             {
-                $db = Factory::getDBO();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $query = "UPDATE `#__securitycheckpro_emails` SET envoys=envoys+1 WHERE (send_date = '{$today}')";
                 $db->setQuery($query);
                 $db->execute();
@@ -1521,7 +1518,7 @@ class Securitycheckpro extends CMSPlugin
         
         $user_agent = $_SERVER['HTTP_USER_AGENT'];
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         // Obtenemos el id del usuario logado
         $query = "SELECT * FROM #__securitycheckpro_sessions WHERE (userid = '{$user_id}')";
@@ -1556,7 +1553,7 @@ class Securitycheckpro extends CMSPlugin
     {
         
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
 		
 		// Si la variable "pro_plugin" está vacía la instanciamos
@@ -1579,12 +1576,12 @@ class Securitycheckpro extends CMSPlugin
         // Variable que indicará si el usuario logado pertenece a un grupo al que haya que aplicar la protección
         $apply_to_user = false;
                 
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $user_id = (int) $user->id;
         $user_groups = $user->groups;
                 
         // Creamos el nuevo objeto query
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
                 
@@ -1659,7 +1656,7 @@ class Securitycheckpro extends CMSPlugin
     function onUserLogin($user, $options = array())
     {
         // Obtenemos un manejador a la BBDD
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		// Si la variable "pro_plugin" está vacía la instanciamos
 		if (empty($this->pro_plugin)) {
@@ -1722,7 +1719,7 @@ class Securitycheckpro extends CMSPlugin
         if (!empty($_COOKIE[session_name()])) {
 			$session_id = $db->Quote($db->escape($_COOKIE[session_name()]));
 		} else {
-			$session_id = $db->Quote($db->escape(Factory::getSession()->getId()));			
+			$session_id = $db->Quote($db->escape(Factory::getApplication()->getSession()->getId()));			
 		}
         $ip = $this->get_ip();
         $user_agent = $db->Quote($db->escape($_SERVER['HTTP_USER_AGENT']));
@@ -1744,7 +1741,7 @@ class Securitycheckpro extends CMSPlugin
         
         /* Controlamos el acceso de los administradores al backend */        
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
         
@@ -1774,7 +1771,7 @@ class Securitycheckpro extends CMSPlugin
                 $apply_to_user = false;
                                     
                 // Instanciamos un nuevo objeto usuario con la id del usuario logado para obtnere los grupos a los que pertenece
-                $user = Factory::getUser($userid);
+                $user = Factory::getApplication()->getIdentity($userid);
                 $user_groups = $user->groups;
                                 
                 // Chequeamos si el usuario pertenece a un grupo al que haya que aplicar la protección
@@ -1816,7 +1813,7 @@ class Securitycheckpro extends CMSPlugin
     {
         
         // Obtenemos un manejador a la BBDD
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         // Nombre del usuario logado
         $username = $db->Quote($db->escape($user['username']));
@@ -1834,9 +1831,9 @@ class Securitycheckpro extends CMSPlugin
     protected function chequeo_sesiones()
     {
         // Variables que usamos en la función
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         $user_id = (int) $user->id;
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         if (!$user->guest) {
         
@@ -1938,8 +1935,8 @@ class Securitycheckpro extends CMSPlugin
     {
         $apply = "yes";
         
-        $db = Factory::getDBO();
-        $user = Factory::getUser();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $user = Factory::getApplication()->getIdentity();
                 
         foreach ($user->groups as $grupo)
         {
@@ -1968,7 +1965,7 @@ class Securitycheckpro extends CMSPlugin
         // Inicializamos las variables necesarias
         $ip = 'Not set';
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         // Obtenemos el título del grupo al que se le aplica la excepción
@@ -2009,7 +2006,7 @@ class Securitycheckpro extends CMSPlugin
 		$plugin_enabled = false;
         $tables_locked = false;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         try 
         {
@@ -2061,7 +2058,7 @@ class Securitycheckpro extends CMSPlugin
 			}
     
             // Cargamos el lenguaje del sitio
-            $lang = Factory::getLanguage();
+            $lang = Factory::getApplication()->getLanguage();
             $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
             $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
             $access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
@@ -2191,7 +2188,7 @@ class Securitycheckpro extends CMSPlugin
         $params = ComponentHelper::getParams('com_securitycheckpro');
         $remove_meta_tag = $params->get('remove_meta_tag', 1);
         
-        $code  = Factory::getDocument();
+        $code  = Factory::getApplication()->getDocument();
         if ($remove_meta_tag) {
             $code->setGenerator('');
         }
@@ -2218,7 +2215,7 @@ class Securitycheckpro extends CMSPlugin
         $tag_description = '';
 		
 		/* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
         $access_attempt = $lang->_('COM_SECURITYCHECKPRO_ACCESS_ATTEMPT');
@@ -2283,7 +2280,7 @@ class Securitycheckpro extends CMSPlugin
         $ext = explode(',', $extensions_blacklist);
         
         // Obtenemos el usuario
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
         
         // Obtenemos el componente de la petición
 		$component = Factory::getApplication()->input->get('option','com_notfound');
@@ -2360,7 +2357,7 @@ class Securitycheckpro extends CMSPlugin
         $request_uri = $_SERVER['REQUEST_URI'];
                         
         /* Cargamos el lenguaje del sitio */
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
         $not_applicable = $lang->_('COM_SECURITYCHECKPRO_NOT_APPLICABLE');
                         
@@ -2438,7 +2435,7 @@ class Securitycheckpro extends CMSPlugin
             // Si la ip no es válida entonces bloqueamos la petición y mostramos un error 403
             if (!$ip_valid) {
                 // Cargamos el lenguaje del sitio 
-                $lang = Factory::getLanguage();
+                $lang = Factory::getApplication()->getLanguage();
                 $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
                 $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
                 $this->redirection(403, $error_403, true);                
@@ -2485,7 +2482,7 @@ class Securitycheckpro extends CMSPlugin
                 // Si la ip no es válida entonces bloqueamos la petición y mostramos un error 403
                 if (!$ip_valid) {
                     // Cargamos el lenguaje del sitio
-                    $lang = Factory::getLanguage();
+                    $lang = Factory::getApplication()->getLanguage();
                     $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
                     $error_403 = $lang->_('COM_SECURITYCHECKPRO_403_ERROR');
                     $this->redirection(403, $error_403, true);                
@@ -2509,7 +2506,7 @@ class Securitycheckpro extends CMSPlugin
         $admin_groups = array();        
         $logs_attacks = $this->pro_plugin->getValue('logs_attacks', 1, 'pro_plugin');
         $forbid_new_admins = $this->pro_plugin->getValue('forbid_new_admins', 0, 'pro_plugin');
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         
         if ($forbid_new_admins) {
                         
@@ -2687,8 +2684,8 @@ class Securitycheckpro extends CMSPlugin
 	private function translate_name($name,$type) {
 		$name_translated = $name;
 		
-		$lang = Factory::getLanguage();
-		$db = Factory::getDBO();
+		$lang = Factory::getApplication()->getLanguage();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		try {                        
 			$query = $db->getQuery(true)
@@ -2768,7 +2765,7 @@ class Securitycheckpro extends CMSPlugin
         $empty = true;
 		$control_center_enabled = false;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		if ($table == "installs_remote") {
 			// Check if controlcenter is enabled

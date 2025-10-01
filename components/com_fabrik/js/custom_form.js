@@ -2,7 +2,6 @@ requirejs(['fab/fabrik'], function () {
   var removedFabrikFormSkeleton = false;
   var formDataChanged = false;
   var js_rules = [];
-  var table_name = '';
   var form_loaded = false;
   var elt_to_not_clear = ['panel', 'calc'];
 
@@ -98,19 +97,6 @@ requirejs(['fab/fabrik'], function () {
   };
 
   Fabrik.addEvent('fabrik.form.loaded', function (form) {
-    /*setCookie('fabrik_form_session', 'true', 15);
-
-            setInterval(() => {
-                let active_form_session = getCookie('fabrik_form_session');
-                if(!active_form_session) {
-                    setTimeout(() => {
-                        window.location.href = window.location.origin + '/';
-                    }, 2000);
-                }
-            }, 10000);*/
-
-    table_name = form.options.primaryKey.split('___')[0];
-
     manageRepeatGroup(form);
 
     var formBlock = document.getElementsByClassName('fabrikForm')[0];
@@ -212,7 +198,15 @@ requirejs(['fab/fabrik'], function () {
   });
 
   Fabrik.addEvent('fabrik.form.group.delete.end', function (form, event) {
-    manageRepeatGroup(form);
+    manageRules(form.form, form.element);
+  });
+
+  Fabrik.addEvent('fabrik.calc.update', function (event, value) {
+    event.form.elements.forEach(function (element) {
+      if(element.baseElementId === event.baseElementId) {
+        manageRules(event.form, element);
+      }
+    });
   });
 
   Fabrik.addEvent('fabrik.form.elements.added', function (form, event) {

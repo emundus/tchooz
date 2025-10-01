@@ -2,7 +2,7 @@ MD5SUMS	d41d8cd98f00b204e9800998ecf8427e
 access.xml	c7260c266ff8a996a5cc093218d3f632
 blueprints/gantry/theme/admin.yaml	b0f2b75b7146342191a950e684cbb8f5
 blueprints/gantry/theme/configuration.yaml	bdca7a752f17b86e81a7d3bd65b81d21
-blueprints/gantry/theme/details.yaml	213686f69f0d464413ff28e5fd4d8a13
+blueprints/gantry/theme/details.yaml	b143676cf6b3eab390fd7676ee5ac6c9
 blueprints/menu/menu.yaml	97bfc9e993a9459303397d6be3a99cda
 blueprints/menu/menuitem.yaml	ed87e1e9e82216285ce528e5f7a79640
 config.xml	c0955cc0cfc79ea0a37512592f186d8d

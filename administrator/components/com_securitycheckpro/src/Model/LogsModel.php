@@ -17,6 +17,8 @@ use Joomla\Registry\Registry;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Utilities\ArrayHelper;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Vulninfo
@@ -72,7 +74,7 @@ class LogsModel extends ListModel
     {
         
         // Creamos el nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         
         $app        = Factory::getApplication();
@@ -184,7 +186,7 @@ class LogsModel extends ListModel
 		{
 			ArrayHelper::toInteger($uids, array());
     
-			$db = $this->getDbo();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 			foreach($uids as $uid) {
 				$sql = "UPDATE #__securitycheckpro_logs SET marked=1 WHERE id='{$uid}'";
 				$db->setQuery($sql);
@@ -206,7 +208,7 @@ class LogsModel extends ListModel
 		{    
 			ArrayHelper::toInteger($uids, array());
 			
-			$db = $this->getDbo();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 			foreach($uids as $uid) {
 				$sql = "UPDATE #__securitycheckpro_logs SET marked=0 WHERE id='{$uid}'";
 				$db->setQuery($sql);
@@ -227,7 +229,7 @@ class LogsModel extends ListModel
 		{     
 			ArrayHelper::toInteger($uids, array());
 		
-			$db = $this->getDbo();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 			foreach($uids as $uid) 
 			{
 				$sql = "DELETE FROM #__securitycheckpro_logs WHERE id='{$uid}'";
@@ -249,7 +251,7 @@ class LogsModel extends ListModel
         $array_size = 0;
         $added_elements = 0;
 		        
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las IPs que serán introducidas en la lista negra
         $jinput = Factory::getApplication()->input;
@@ -349,7 +351,7 @@ class LogsModel extends ListModel
     /* Hace una consulta a la tabla especificada como parámetro  */
     public function load($key_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query 
             ->select($db->quoteName('storage_value'))
@@ -389,7 +391,7 @@ class LogsModel extends ListModel
     function delete_all()
     {
     
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $sql = "TRUNCATE #__securitycheckpro_logs";
         $db->setQuery($sql);
         $db->execute();    
@@ -404,7 +406,7 @@ class LogsModel extends ListModel
         $array_size = 0;
         $added_elements = 0;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las IPs que serán introducidas en la lista negra
         $jinput = Factory::getApplication()->input;
@@ -458,7 +460,7 @@ class LogsModel extends ListModel
 	/* Función para guardar en la tabla securitycheck_storage la configuración pasada como argumento. Se usa para añadir un componente como excepción desde los logs */
 	function save_config($data) {
 		
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 		$query2 = $db->getQuery(true);
 		
@@ -533,7 +535,7 @@ class LogsModel extends ListModel
         $added_elements = 0;
 		$exists = true;
         
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Obtenemos los valores de las IPs que serán introducidas en la lista negra
         $jinput = Factory::getApplication()->input;
@@ -544,7 +546,7 @@ class LogsModel extends ListModel
         $array_size = count($uids);
         
         // Obtenemos los valores de las distintas opciones del Firewall Web
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array($db->quoteName('storage_value')))
             ->from($db->quoteName('#__securitycheckpro_storage'))

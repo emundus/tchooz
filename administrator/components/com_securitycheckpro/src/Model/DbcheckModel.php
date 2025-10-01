@@ -12,6 +12,8 @@ defined('_JEXEC') or die();
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 
 class DbcheckModel extends BaseModel
@@ -33,7 +35,7 @@ class DbcheckModel extends BaseModel
         $tables_to_check = $params->get('tables_to_check', 'All');
     
         if (is_null($cache)) {
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $db->setQuery("SHOW TABLE STATUS");
             $tables = $db->loadObjectList();
             // Si sólo tenemos que mostrar las tablas 'MyISAM', excluimos las demás
@@ -56,7 +58,7 @@ class DbcheckModel extends BaseModel
     public function optimizeTables()
     {
         $app     = Factory::getApplication();
-        $db     = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query    = $db->getQuery(true);
         $table     = $app->input->getVar('table');
         $engine     = $app->input->getVar('engine');

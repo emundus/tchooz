@@ -17,6 +17,8 @@ use Joomla\CMS\Component\ComponentHelper;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\ProtectionModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 class SysinfoModel extends BaseModel
 {
@@ -34,7 +36,7 @@ class SysinfoModel extends BaseModel
         if (is_null($this->info)) {
             $this->info = array();
             $version = new Version;
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
 			
 			$memory_limit = 0;
             

@@ -10,9 +10,11 @@ $document = $app->getDocument();
 $document->addStyleSheet('media/com_emundus/css/emundus_export_select_columns.css');
 
 function loadPanelHeading($id, $label, $type = 'tbl') {
+	$inputId = 'emundus_checkall_' . $type . '_' . $id;
+
 	$html = '<div class="panel panel-default tw-flex tw-flex-row">';
-	$html .= '<input type="checkbox" id="emundus_checkall_' . $type .'_' . $id . '" data-check=".emundusgroup_'. $id . '" class="tw-cursor-pointer">';
-	$html .= '<label for="emundus_checkall_' . $type .'_' . $id . '" class="!tw-mb-0 tw-cursor-pointer">' . Text::_($label) . '</label>';
+	$html .= '<input type="checkbox" id="' . $inputId .'" data-check=".emundusgroup_'. $id . '" class="tw-cursor-pointer">';
+	$html .= '<label for="' . $inputId . '" class="!tw-mb-0 tw-cursor-pointer">' . Text::_($label) . '</label>';
 	$html .= '</div>';
 
 	return $html;

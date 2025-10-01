@@ -20,7 +20,7 @@ if (version_compare(JVERSION, '4.0', 'ge')) {
 	$dropdown_style = "data-bs-toggle";
 	$data_dismiss = "data-bs-dismiss";
 	$dropdown_class_style = "header dropdown-menu";
-	$document = Factory::getDocument();
+	$document = Factory::getApplication()->getDocument();
     $document->addStyleDeclaration('.dropdown-item:last-child {border-bottom-right-radius: 0; border-bottom-left-radius: 0;}.dropdown-item:first-child {border-top-left-radius: 0;border-top-right-radius: 0;}');
 	
 }

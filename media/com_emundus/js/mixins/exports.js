@@ -331,7 +331,16 @@ function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_
 
     if (default_export === '') {
         /// if at least one is checked --> forms = 1
-        forms = $('[id^=felts] input:checked').length > 0 ?  1 : 0;
+        forms = $('[id^=felts] input:checked').length > 0 ? 1 : 0;
+
+        if ($('#evaluation-steps-elts input:checked').length > 0)
+        {
+            forms = 1;
+
+            if (!options.includes('eval_steps')) {
+                options.push('eval_steps');
+            }
+        }
 
         /// save all profiles
         let profiles = [];
@@ -346,7 +355,13 @@ function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_
         let tables = [];
         $('[id^=emundus_table_]').each(function (flt) {
             if($(this).find($('[id^=emundus_elm_]')).is(':checked') == true) {
-                let id = $(this).attr('id').split('emundus_table_')[1].replace(/\D/g, '');
+                let id = 0;
+                if ($(this).attr('id').startsWith('emundus_table_evaluation_steps_')) {
+                    id = $(this).attr('id').split('emundus_table_evaluation_steps_')[1].replace(/\D/g, '');
+                } else {
+                    id = $(this).attr('id').split('emundus_table_')[1].replace(/\D/g, '');
+                }
+
                 if (form_checked.length > 0) {
                     form_checked = form_checked.concat(',', id);
                 } else {
@@ -361,7 +376,7 @@ function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_
         $('[id^=emundus_grp_]').each(function (flt) {
             const group_id = $(this).attr('id').split('emundus_grp_')[1].replace(/\D/g, '');
 
-            if ($(this).find($('.emundusitem_' + group_id + '[id^=emundus_elm_]')).is(':checked') == true) {
+            if ($(this).find($('.emundusitem_' + group_id + '[id^=emundus_elm_]')).is(':checked') == true || $(this).find($('#emundus_grp_' + group_id + '[id^=emundus_elm_]')).is(':checked') == true) {
                 pdf_elements['groups'].push(group_id);
             }
         });
@@ -400,7 +415,15 @@ function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_
         document.querySelectorAll('#evaluation-steps-elts input[id^=emundus_checkall_grp_]').forEach(elt => {
             if (elt.checked == true) {
                 forms = 1;
-                pdf_elements['groups'].push(elt.id.split('emundus_checkall_grp_')[1]);
+
+                let group_id = 0;
+                if (elt.id.startsWith('emundus_checkall_grp_evaluation_steps_')) {
+                    group_id = elt.id.split('emundus_checkall_grp_evaluation_steps_')[1];
+                } else {
+                    group_id = elt.id.split('emundus_grp_')[1];
+                }
+                pdf_elements['groups'].push(group_id);
+
                 if (!options.includes('eval_steps')) {
                     options.push('eval_steps');
                 }
@@ -1086,7 +1109,12 @@ function getCheckedEvalSteps()
 
     document.querySelectorAll('#eval-steps-container input[id^=emundus_checkall_grp_]').forEach(elt => {
         if (elt.checked == true) {
-            let group_id = elt.id.split('emundus_checkall_grp_evaluation_steps_')[1];
+            let group_id = 0;
+            if (elt.id.startsWith('emundus_checkall_grp_evaluation_steps_')) {
+                group_id = elt.id.split('emundus_checkall_grp_evaluation_steps_')[1];
+            } else {
+                group_id = elt.id.split('emundus_checkall_grp_')[1];
+            }
 
             if (!json.groups.includes(group_id)) {
                 json.groups.push(group_id);
@@ -1096,7 +1124,7 @@ function getCheckedEvalSteps()
 
     document.querySelectorAll('#eval-steps-container input[id^=emundus_elm_]').forEach(elt => {
         if (elt.checked == true) {
-            let element_id = elt.id.split('emundus_elm_')[1];
+            let element_id = elt.value;
 
             if (!json.elements.includes(element_id)) {
                 json.elements.push(element_id);

@@ -236,7 +236,61 @@ if ($this->open_file_in_modal)
         '<?php echo Text::_('COM_EMUNDUS_COMMENTS_SENT'); ?>'];
     var loading = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader.gif'; ?>';
     var loadingLine = '<?php echo JURI::base() . 'media/com_emundus/images/icones/loader-line.gif'; ?>';
+
+    function checkurl() {
+        var url = $(location).attr('href');
+
+        url = url.split("#");
+        $('.alert.alert-warning').remove();
+
+        if (url[1] != null && url[1].length >= 20) {
+            // Check if the url contains open keyword
+            if(url[1].indexOf("open") === -1) {
+                $('.em-close-minimise').remove();
+                return;
+            }
+
+            url = url[1].split("|");
+            url = url[0].split('%7C');
+            var fnum = {};
+            fnum.fnum = url[0];
+
+            if (fnum.fnum != null && fnum.fnum !== "close") {
+                addLoader();
+                $('#' + fnum.fnum + '_check').prop('checked', true);
+
+                $.ajax({
+                    type: 'get',
+                    url: '/index.php?option=com_emundus&controller=files&task=getfnuminfos',
+                    async: true,
+                    dataType: "json",
+                    data: ({fnum: fnum.fnum}),
+                    success: function (result) {
+                        if (result.status && result.fnumInfos != null) {
+                            var fnumInfos = result.fnumInfos;
+                            fnum.name = fnumInfos.name;
+                            fnum.label = fnumInfos.label;
+                            openFiles(fnum);
+                        } else {
+                            removeLoader();
+                            $(".panel.panel-default").prepend("<div class=\"alert alert-warning\"><?= Text::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>");
+                        }
+                    },
+                    error: function (jqXHR) {
+                        removeLoader();
+                        $("<div class=\"alert alert-warning\"><?= Text::_('COM_EMUNDUS_APPLICATION_CANNOT_OPEN_FILE') ?></div>").prepend($(".panel.panel-default"));
+                        console.log(jqXHR.responseText);
+                    }
+                })
+
+            }
+        } else {
+            $('.em-close-minimise').remove();
+        }
+    }
+
     $(document).ready(function () {
+        checkurl();
         $('.chzn-select').chosen({width: '75%'});
         refreshFilter();
         reloadActions();
