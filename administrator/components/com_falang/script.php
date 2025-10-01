@@ -22,7 +22,11 @@ class com_falangInstallerScript
 
     protected $_previous_version = null;
 
-    /** @var array The list of extra modules and plugins to install */
+    /** @var array The list of extra modules and plugins to install
+     *
+     * @update 5.21 add falangcf plugin
+     */
+
     private $installation_queue = array(
         // modules => { (folder) => { (module) => { (position), (published) } }* }*
         'modules' => array(
@@ -34,7 +38,8 @@ class com_falangInstallerScript
         'plugins' => array(
             'system' => array(
                 'falangdriver' => 1,
-                'falangquickjump' => 1
+                'falangquickjump' => 1,
+                'falangcf' => 1
             )
         )
     );
@@ -60,6 +65,7 @@ class com_falangInstallerScript
     /** @var array Obsolete files and folders to remove from the Core release only
      *
      * @update 5.16 add $falangRemoveFilesAllVersion
+     * @update 5.22 remove helper.php from mod_falang
      */
     private $falangRemoveFilesFree = array(
         'files' => array(
@@ -82,7 +88,8 @@ class com_falangInstallerScript
             'administrator/components/com_falang/models/FalangContent.php',
             'administrator/components/com_falang/tables/FalangContent.php',
             'administrator/components/com_falang/tables/JFLanguage.php',
-            'administrator/components/com_falang/tables/index.html'
+            'administrator/components/com_falang/tables/index.html',
+            'modules/mod_falang/helper.php'
         ),
         'folders' => array(
             'administrator/components/com_falang/tables/'

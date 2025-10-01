@@ -527,6 +527,9 @@ class FalangHelper
     /*
      * @since 4.0.2
      * Detect Edit mode for article or yootheme
+     *
+     * @update 5.22 change return for yootheme customiser
+     *              allow language changing
      * */
     public static function isEditMode(){
         $return = false;
@@ -537,7 +540,7 @@ class FalangHelper
         //customizer is for yootheme
         $customizer = Factory::getApplication()->input->get('customizer');
         if (!empty($customizer)){
-            $return =  true;
+            $return =  false;
         }
 
         return $return;

@@ -16,6 +16,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Filesystem\File;
 
 
 jimport('joomla.html.pane');
@@ -97,7 +98,8 @@ class FalangViewDefault extends BaseHtmlView {
 	
 	/** 
 	 * Returns the path of the help file to be included as output for the page
-	 * The path is used as include statement within the view template  
+	 * The path is used as include statement within the view template
+     * @update
 	 */
 	protected function getHelpPathL($ref) {
 		$lang = Factory::getLanguage();
@@ -112,7 +114,7 @@ class FalangViewDefault extends BaseHtmlView {
 		if( $lang->getTag() != 'en-GB' ) {
 			$localeURL = JPATH_BASE.DS.$url.DS.$tag.DS.$ref;
 			jimport( 'joomla.filesystem.file' );
-			if( !JFile::exists( $localeURL ) ) {
+			if( !File::exists( $localeURL ) ) {
 				$tag = 'en-GB';
 			}
 		}
