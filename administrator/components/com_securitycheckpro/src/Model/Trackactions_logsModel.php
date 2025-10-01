@@ -16,6 +16,8 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Language\Text;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Vulninfo
@@ -65,7 +67,7 @@ class Trackactions_logsModel extends ListModel
         // Chequeamos el rango para borrar logs
         $this->checkIn();
 
-        $db    = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select('a.*')
             ->from($db->quoteName('#__securitycheckpro_trackactions', 'a'));
@@ -137,7 +139,7 @@ class Trackactions_logsModel extends ListModel
         $daysToDeleteAfter = (int) $items['delete_period'];
         
         if ($daysToDeleteAfter > 0) {
-            $db = Factory::getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true);
             $conditions = array($db->quoteName('log_date') . ' < DATE_SUB(NOW(), INTERVAL ' . $daysToDeleteAfter . ' DAY)');
 
@@ -236,7 +238,7 @@ class Trackactions_logsModel extends ListModel
             return false;
         }
     
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         foreach($uids as $uid)
         {
             $sql = "DELETE FROM #__securitycheckpro_trackactions WHERE id='{$uid}'";
@@ -248,7 +250,7 @@ class Trackactions_logsModel extends ListModel
     /* Función para runcar una tabla */
     function delete_all()
     {
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         $sql = "TRUNCATE table #__securitycheckpro_trackactions";
         $db->setQuery($sql);
@@ -265,7 +267,7 @@ class Trackactions_logsModel extends ListModel
     public function getLogsData($pks = null)
     {
         if ($pks == null) {
-            $db = $this->getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true)
                 ->select('a.*')
                 ->from($db->quoteName('#__securitycheckpro_trackactions', 'a'));

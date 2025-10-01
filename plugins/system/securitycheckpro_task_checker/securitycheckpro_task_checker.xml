@@ -2,12 +2,12 @@
 <extension type="plugin" group="system" method="upgrade">
 	<name>System - Securitycheck Pro Task Checker</name>
 	<author>José A. Luque </author>
-	<creationDate>06-05-2025</creationDate>
+	<creationDate>05-08-2025</creationDate>
 	<copyright>Copyright www.protegetuordenador.com</copyright>
 	<license>GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html</license>
 	<authorEmail>contacto@protegetuordenador.com</authorEmail>
 	<authorUrl>www.protegetuordenador.com</authorUrl>
-	<version>4.2.4</version>
+	<version>4.2.5</version>
 	<description>Plugin to check if there are new tasks assigned by the Control Center.</description>
 	<namespace path="src">Joomla\Plugin\System\Securitycheckpro_task_checker</namespace>
 	

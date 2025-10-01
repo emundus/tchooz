@@ -19,7 +19,7 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseM
 Session::checkToken('get') or die('Invalid Token');
 
 // Load plugin language
-$lang2 = Factory::getLanguage();
+$lang2 = Factory::getApplication()->getLanguage();
 $lang2->load('plg_system_securitycheckpro');
 ?>
 
@@ -67,18 +67,18 @@ $lang2->load('plg_system_securitycheckpro');
                                     </div>
                                 <div class="card-body">
                                     <div class="progress">
-            <?php 
-            if ($this->system_info['overall_joomla_configuration'] <=50 ) {
-                $div = "<div class=\"progress-bar bg-danger\"";
-            } else if (($this->system_info['overall_joomla_configuration'] >50) && ($this->system_info['overall_joomla_configuration'] <=70) ) {
-                $div = "<div class=\"progress-bar bg-warning\"";
-            } else {
-                $div = "<div class=\"progress-bar bg-success\"";
-            }
-            ?>                    
-            <?php echo $div . " role=\"progressbar\" style=\"width: " . $this->system_info['overall_joomla_configuration'] ."%\">" . $this->system_info['overall_joomla_configuration']; ?>
-                                        </div>                        
-                                    </div>
+										<?php 
+										if ($this->system_info['overall_joomla_configuration'] <=50 ) {
+											$div = '<div class="progress-bar bg-danger"';
+										} else if (($this->system_info['overall_joomla_configuration'] >50) && ($this->system_info['overall_joomla_configuration'] <=70) ) {
+											$div = "<div class=\"progress-bar bg-warning\"";
+										} else {
+											$div = "<div class=\"progress-bar bg-success\"";
+										}
+										?>                    
+										<?php echo $div . " role=\"progressbar\" aria-label=\"" . Text::_('COM_SECURITYCHECKPRO_SECURITY_OVERALL_STATUS') . "\" style=\"width: " . $this->system_info['overall_joomla_configuration'] ."%\">" . $this->system_info['overall_joomla_configuration']; ?>
+                                    </div>                        
+                                </div>
                                     <br/>
                                     
                                      <div class="row">

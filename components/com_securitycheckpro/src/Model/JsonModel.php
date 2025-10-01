@@ -38,6 +38,8 @@ use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\Prote
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\DatabaseupdatesModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\SecuritycheckproModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\FirewallconfigModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 if (!defined('SCP_USER_AGENT')) define('SCP_USER_AGENT', 'Securitycheck Pro User agent');
 
@@ -101,7 +103,7 @@ class JsonModel extends BaseModel
 		} else
 		{
 		
-			$db = $this->getDbo();	
+			$db = Factory::getContainer()->get(DatabaseInterface::class);	
 					
 			$object = (object)array(
 			'storage_key'        => 'remote_task',
@@ -136,7 +138,7 @@ class JsonModel extends BaseModel
 	// Función que realiza una determinada función según los parámetros especificados en la variable pasada como argumento
 	public function execute($json)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = "DELETE FROM #__securitycheckpro_storage WHERE storage_key='remote_task'";
 		$db->setQuery($query);
 		$db->execute();
@@ -528,7 +530,7 @@ class JsonModel extends BaseModel
 	// Extraemos los parámetros del componente
 	private function Config($key_name)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 		$query
 			->select($db->quoteName('storage_value'))
@@ -544,7 +546,7 @@ class JsonModel extends BaseModel
 	// Guardamos los parámetros del componente
 	private function SaveStorageParams($params,$key_name)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		$storage_value = json_encode($params);
 		// Instanciamos un objeto para almacenar los datos que serán sobreescritos/añadidos
@@ -631,7 +633,7 @@ class JsonModel extends BaseModel
 		$updates_to_send = '';
 		$remote_data = array();
 
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Buscamos la versión de SCP instalada
 		$query = $db->getQuery(true)
@@ -664,7 +666,7 @@ class JsonModel extends BaseModel
 		
 		$this->write_log("Checking vulnerable extensions...");
 		// Vulnerable components
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = "SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable='Si'";
 		$db->setQuery($query);
 		$db->execute();
@@ -896,7 +898,7 @@ class JsonModel extends BaseModel
 
 		try
 		{
-			$db = $this->getDbo();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 			$query = 'SELECT storage_value FROM #__securitycheckpro_storage WHERE storage_key="locked"';
 			$db->setQuery($query);
 			$db->execute();
@@ -966,7 +968,7 @@ class JsonModel extends BaseModel
 				// Chequeamos que al menos un Super usuario tenga el método habilitado
 				try
 				{
-					$db = Factory::getDBO();
+					$db = Factory::getContainer()->get(DatabaseInterface::class);
 					$query = 'SELECT user_id FROM #__user_usergroup_map WHERE group_id="8"';
 					$db->setQuery($query);
 					$db->execute();
@@ -1000,7 +1002,7 @@ class JsonModel extends BaseModel
 			if (version_compare(JVERSION, '4.2.0', 'gt')) {
 				try
 				{
-					$db = Factory::getDBO();
+					$db = Factory::getContainer()->get(DatabaseInterface::class);
 					$query = 'SELECT COUNT(*) FROM #__extensions WHERE type="plugin" and folder="multifactorauth" and enabled="1"';
 					$db->setQuery($query);
 					$db->execute();
@@ -1022,7 +1024,7 @@ class JsonModel extends BaseModel
 			
 			try
 			{
-				$db = $this->getDbo();
+				$db = Factory::getContainer()->get(DatabaseInterface::class);
 				$query = $db->getQuery(true)
 					->select(array($db->quoteName('enabled')))
 					->from($db->quoteName('#__extensions'))
@@ -1144,7 +1146,7 @@ class JsonModel extends BaseModel
 		$securitycheckpros_model->chequear_vulnerabilidades();
 
 		// Vulnerable components
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = 'SELECT COUNT(*) FROM #__securitycheckpro WHERE Vulnerable="Si"';
 		$db->setQuery($query);
 		$db->execute();
@@ -1277,7 +1279,7 @@ class JsonModel extends BaseModel
 		$cpanel_model = new CpanelModel();
 		
 		// Vulnerable components
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = 'DELETE FROM #__securitycheckpro_logs';
 		$db->setQuery($query);
 		$db->execute();
@@ -1342,7 +1344,7 @@ class JsonModel extends BaseModel
 		$this->write_log("Old core version: " . $old_version);	
 			
 		// Cargamos el lenguaje del componente 'com_installer'
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
 
 		// Inicializamos la variable $result, que será un array con el resultado y el mensaje devuelto en el proceso
@@ -1657,7 +1659,7 @@ class JsonModel extends BaseModel
 	{
 
 		// Instanciamos la consulta
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		$joomla_version = "3";
 		$query = "SELECT COUNT(*) FROM #__extensions WHERE element='com_akeeba'";		
@@ -1729,7 +1731,7 @@ class JsonModel extends BaseModel
 		}
 		
 		// Instanciamos la consulta
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		try{
 			$query = $db->getQuery(true)
 				->select('MAX(' . $db->qn('id') . ')')
@@ -1797,7 +1799,7 @@ class JsonModel extends BaseModel
 	{
 
 		// Instanciamos la consulta
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true)
 			->select('MAX(' . $db->qn('id') . ')')
 			->from($db->qn('#__easyjoomlabackup'));
@@ -1830,7 +1832,7 @@ class JsonModel extends BaseModel
 		// Inicializmaos las variables
 		$needs_update = 0;
 
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Extraemos el id de la extensión..
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
@@ -1868,7 +1870,7 @@ class JsonModel extends BaseModel
 		// Inicializamos las variables
 		$needs_update = 1;
 		
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Extraemos el id de la extensión..
 		$query = 'SELECT extension_id FROM #__extensions WHERE name="System - Securitycheck Pro Update Database"';
@@ -1909,7 +1911,7 @@ class JsonModel extends BaseModel
 		
 								
 		/* Cargamos el lenguaje del componente 'com_installer' */
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
 		$lang->load('com_installer',JPATH_ADMINISTRATOR);
 				
 					
@@ -2039,7 +2041,7 @@ class JsonModel extends BaseModel
 		{
 			$this->info = array();
 			$version = new \Joomla\CMS\Version();
-			$db = Factory::getDbo();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 			if (isset($_SERVER['SERVER_SOFTWARE']))
 			{
@@ -2074,7 +2076,7 @@ class JsonModel extends BaseModel
 		// Purgamos la caché y lanzamos la tarea
 		$find = $this->findUpdates();
 		
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Grab updates ignoring new installs (extraido de \administrator\components\com_installer\models\update.php)
 		$query = $db->getQuery(true)
@@ -2141,7 +2143,7 @@ class JsonModel extends BaseModel
 		 */
 	public function purge()
 	{
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Note: TRUNCATE is a DDL operation
 		// This may or may not mean depending on your database
@@ -2169,7 +2171,7 @@ class JsonModel extends BaseModel
 		 */
 	public function enableSites()
 	{
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true)
 			->update('#__update_sites')
 			->set('enabled = 1')
@@ -2260,7 +2262,7 @@ class JsonModel extends BaseModel
 				
 		// Inicializamos las variables
 		
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		
 		// Si las tablas están bloqueadas abortamos la instalación
 		$locked_tables = $this->check_locked_tables();
@@ -2412,7 +2414,7 @@ class JsonModel extends BaseModel
 
 		// Cargamos el lenguaje del componente 'com_installer'
 
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
 		$lang->load('com_installer', JPATH_ADMINISTRATOR);
 		
 		$this->write_log("Decrypting data...");
@@ -2707,7 +2709,7 @@ class JsonModel extends BaseModel
 	{
 
 		// Creamos el nuevo objeto query
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 
 		// Chequeamos si la IP tiene un formato válido

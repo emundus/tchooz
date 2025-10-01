@@ -61,7 +61,7 @@ class LogsdaterangeField extends PredefinedlistField
         parent::__construct($form);
 
         // Load the required language
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load('com_securitycheckpro', JPATH_ADMINISTRATOR);
     }
 }

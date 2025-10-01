@@ -13,6 +13,8 @@ defined('_JEXEC') or die();
 use Joomla\CMS\Factory;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -74,7 +76,7 @@ class RulesLogsModel extends BaseDatabaseModel
     function load_rules_logs()
     {
         // Creamos un nuevo objeto query
-        $db = $this->getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 
         // Obtenemos los grupos de Joomla

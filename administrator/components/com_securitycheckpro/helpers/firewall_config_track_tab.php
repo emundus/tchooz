@@ -3,6 +3,8 @@ defined('_JEXEC') or die();
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 ?>
 <!-- Track actions -->
 <?php if ($this->plugin_trackactions_installed) { ?>
@@ -38,7 +40,7 @@ use Joomla\CMS\Factory;
                                                     <div class="controls">
                                                         <?php
                                                         // Listamos todas las extensiones 
-                                                        $db = Factory::getDBO();
+                                                        $db = Factory::getContainer()->get(DatabaseInterface::class);
                                                         $query = "SELECT extension from #__securitycheckpro_trackactions_extensions" ;            
                                                         $db->setQuery($query);
                                                         $groups = $db->loadRowList();    

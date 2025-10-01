@@ -13,6 +13,8 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Form\Field\ListField;
 use Joomla\CMS\Form\FormHelper;
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 FormHelper::loadFieldClass('list');
 
@@ -56,7 +58,7 @@ class LogcreatorField extends ListField
 
             $options = array();
 
-            $db = Factory::getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
 
             // Construct the query
             $query = $db->getQuery(true)

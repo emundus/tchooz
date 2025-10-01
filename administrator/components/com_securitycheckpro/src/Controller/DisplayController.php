@@ -24,7 +24,7 @@ class DisplayController extends BaseController
     public function display($cachable = false, $urlparams = Array())
     {
 		
-        $document = Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
         $viewName = $this->input->getCmd('view', 'Cpanel');
         $viewFormat = $document->getType();
 		        

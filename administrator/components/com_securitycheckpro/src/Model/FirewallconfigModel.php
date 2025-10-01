@@ -18,6 +18,8 @@ use Joomla\Filesystem\File;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Administrator\Model\BaseModel;
 use SecuritycheckExtensions\Component\SecuritycheckPro\Site\Model\JsonModel;
 use Joomla\CMS\Mail\MailerFactoryInterface;
+use Joomla\Database\DatabaseDriver;
+use Joomla\Database\DatabaseInterface;
 
 /**
  * Modelo Securitycheck
@@ -92,7 +94,7 @@ class FirewallconfigModel extends BaseModel
     {
         // Inicializamos las variables
         $deleted_elements = 0;
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Creamos el objeto JInput para obtener las variables del formulario
         $jinput = Factory::getApplication()->input;
@@ -117,7 +119,7 @@ class FirewallconfigModel extends BaseModel
     /* Función que chequea si la opción de control center está habilitada en el firewall */
     function control_center_enabled()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         try {
             $query = $db->getQuery(true);
             $query 
@@ -212,7 +214,7 @@ class FirewallconfigModel extends BaseModel
         $uids = null;
         $database = "#__securitycheckpro_" . $type;  
 		 
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
     
         // Podemos pasar la IP como argumento; en ese caso no necesitamos capturar los valores del formulario
         if (is_null($ip)) {
@@ -453,7 +455,7 @@ class FirewallconfigModel extends BaseModel
 			$ip_to_validate = explode(",", $file_content);		
             $valid = true;
 						
-			$db = Factory::getDBO();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
         
             // Chequeamos si las IPs son válidas
             foreach($ip_to_validate as $ip) {

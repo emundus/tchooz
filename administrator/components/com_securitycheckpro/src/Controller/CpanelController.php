@@ -106,7 +106,7 @@ class CpanelController extends SecuritycheckproBaseController
     /* Hace una consulta a la tabla especificada como parámetro */
     public function load($key_name)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
         $query 
             ->select($db->quoteName('storage_value'))

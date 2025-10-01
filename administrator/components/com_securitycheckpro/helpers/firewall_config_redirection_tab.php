@@ -41,7 +41,7 @@ use Joomla\CMS\Editor\Editor;
 								$global_editor = $config->get('editor');
 
 								// GET USER'S DEFAULT EDITOR
-								$user_editor = Factory::getUser()->getParam("editor");
+								$user_editor = Factory::getApplication()->getIdentity()->getParam("editor");
 
 								if($user_editor && $user_editor !== 'JEditor') {
 									$selected_editor = $user_editor;
