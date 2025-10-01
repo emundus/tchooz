@@ -955,30 +955,30 @@ body ::-webkit-scrollbar-track {
 	opacity: 0;
 }
 
-.workflow-step[data-v-19f5560c] {
+.workflow-step[data-v-4c3299b6] {
 	min-width: 350px;
 }
-.hover-style-main[data-v-19f5560c]:hover {
+.hover-style-main[data-v-4c3299b6]:hover {
 	color: var(--main-500) !important;
 	border: 1px solid var(--main-500);
 }
-.hover-style-neutral[data-v-19f5560c]:hover {
+.hover-style-neutral[data-v-4c3299b6]:hover {
 	color: var(--neutral-500) !important;
 	border: 1px solid var(--neutral-500);
 }
-.hover-style-blue[data-v-19f5560c]:hover {
+.hover-style-blue[data-v-4c3299b6]:hover {
 	color: var(--blue-500) !important;
 	border: 1px solid var(--blue-500);
 }
-.hover-style-orange[data-v-19f5560c]:hover {
+.hover-style-orange[data-v-4c3299b6]:hover {
 	color: var(--orange-500) !important;
 	border: 1px solid var(--orange-500);
 }
-.hover-style-red[data-v-19f5560c]:hover {
+.hover-style-red[data-v-4c3299b6]:hover {
 	color: var(--red-500) !important;
 	border: 1px solid var(--red-500);
 }
-.hover-style-yellow[data-v-19f5560c]:hover {
+.hover-style-yellow[data-v-4c3299b6]:hover {
 	color: rgb(234 179 8 / var(--tw-bg-opacity, 1)) !important;
 	border: 1px solid rgb(234 179 8 / var(--tw-bg-opacity, 1));
 }

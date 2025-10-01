@@ -32,6 +32,8 @@
 						@click="openPreviousFnum"
 						>navigate_before</span
 					>
+					<!-- Display current index / total -->
+					<span class="tw-mx-2 tw-text-sm tw-text-white"> {{ currentFnumIndex + 1 }} / {{ fnums.length }} </span>
 					<span
 						class="material-symbols-outlined tw-text-base"
 						:class="{
