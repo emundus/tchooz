@@ -1404,6 +1404,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								return $action->letter_id == $letter->id;
 							});
 						}
+
+						$landed = true;
 					}
 				case 'sign_flow':
 					if (!empty($action->attachment_type))
