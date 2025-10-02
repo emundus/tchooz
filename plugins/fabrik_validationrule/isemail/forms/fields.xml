@@ -21,7 +21,7 @@
 
 			<field name="isemail-allow_empty"
 				type="radio"
-				default="0"
+				default="1"
 				class="btn-group"
 				layout="joomla.form.field.radio.switcher"
 				description="PLG_VALIDATIONRULE_ALLOW_EMPTY_DESC"
