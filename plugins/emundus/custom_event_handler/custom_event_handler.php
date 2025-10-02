@@ -1407,6 +1407,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 						$landed = true;
 					}
+					break;
 				case 'sign_flow':
 					if (!empty($action->attachment_type))
 					{
@@ -1531,6 +1532,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									]);
 								}
 							}
+
+							$landed = true;
 						}
 						catch (Exception $e)
 						{
