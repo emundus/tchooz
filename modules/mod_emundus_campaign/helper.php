@@ -397,16 +397,17 @@ class modEmundusCampaignHelper
 
 		try
 		{
-			$query->select('params')
+			$query->select('id, params')
 				->from($this->db->quoteName('#__modules'))
 				->where($this->db->quoteName('module') . ' LIKE ' . $this->db->quote('mod_emundus_user_dropdown'))
 				->andWhere($this->db->quoteName('published') . ' = 1');
 			$this->db->setQuery($query);
-			$params = $this->db->loadResult();
+			$user_module = $this->db->loadObject();
 
-			if (!empty($params))
+			$params = new stdClass();
+			if (!empty($user_module) && !empty($user_module->params))
 			{
-				$params = json_decode($params);
+				$params = json_decode($user_module->params);
 			}
 
 			return $params;
