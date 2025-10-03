@@ -30,7 +30,7 @@
 					translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_' + conditions_group)
 				}}</span>
 				<form-builder-rules-js-condition
-					:elements="elements"
+					:elements="availableElements"
 					:index="condition_key"
 					:condition="condition"
 					@remove-condition="removeCondition"
@@ -122,6 +122,9 @@ export default {
 	computed: {
 		conditionLabel() {
 			return `-- ${this.index + 1} --`;
+		},
+		availableElements() {
+			return this.elements.filter((el) => el.plugin !== 'panel');
 		},
 	},
 	watch: {
