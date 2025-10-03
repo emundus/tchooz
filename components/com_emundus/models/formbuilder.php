@@ -3346,10 +3346,6 @@ class EmundusModelFormbuilder extends JModelList
 		foreach ($languages as $language) {
 			$translated = $this->getTranslation($key, $language->lang_code);
 
-			if (empty($translated) || $translated === $key) {
-				$translated = $key;
-			}
-
 			$translations[$language->sef] = !empty($replace) ? str_replace($replace, '', $translated) : $translated;
 		}
 
