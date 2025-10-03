@@ -1508,7 +1508,7 @@ class EmundusModelEmails extends JModelList
 	 * @throws Exception
 	 * @since version v6
 	 */
-	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, string $mail_from, array $mail_to, string $mail_body): array
+	public function sendExpertMail(array $fnums, int $sender_id, string $mail_subject, string $mail_from_name, string $mail_from, array $mail_to, string $mail_body, int $mail_id = 0): array
 	{
 		$sent          = [];
 		$failed        = [];
@@ -1517,10 +1517,12 @@ class EmundusModelEmails extends JModelList
 		if (!empty($fnums) && !empty($mail_to) && !empty($mail_subject) && !empty($mail_body)) {
 			require_once(JPATH_SITE . DS . 'components/com_emundus/helpers/filters.php');
 			require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
+			require_once(JPATH_SITE . DS . 'components/com_emundus/models/messages.php');
 			PluginHelper::importPlugin('emundus');
 
 			$h_filters = new EmundusHelperFilters();
 			$m_files   = new EmundusModelFiles();
+			$m_messages = new EmundusModelMessages();
 
 			Log::addLogger(['text_file' => 'com_emundus.inviteExpert.error.php'], Log::ALL, 'com_emundus');
 
@@ -1552,7 +1554,14 @@ class EmundusModelEmails extends JModelList
 				$mail_from_name = preg_replace($tags['patterns'], $tags['replacements'], $mail_from_name);
 				$mail_from      = preg_replace($tags['patterns'], $tags['replacements'], $mail_from);
 			}
-			$mail_tmpl = $this->getEmail('confirm_post');
+
+			if(empty($mail_id))
+			{
+				$mail_tmpl = $this->getEmail('confirm_post');
+			}
+			else {
+				$mail_tmpl = $m_messages->getEmail($mail_id);
+			}
 
 			if (!empty($mail_to)) {
 				$mail_body = $this->setBody($example_user, $mail_body);
