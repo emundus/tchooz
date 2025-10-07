@@ -3235,6 +3235,8 @@ class EmundusModelFormbuilder extends JModelList
 										}
 									}
 
+									$this->duplicateConditions($form_model->id, $newformid);
+
 									// Duplicate the form-menu
 									$query
 										->clear()
@@ -4342,25 +4344,29 @@ class EmundusModelFormbuilder extends JModelList
 						$copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
 
 						if ($copied) {
-							$label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
+							$copied = $this->duplicateConditions($form_id_to_copy, $new_form_id);
 
-							// insert form into models list
+							if($copied)
+							{
+								$label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
 
-							$query = $this->db->getQuery(true);
+								// insert form into models list
+								$insert = [
+									'form_id' => $new_form_id,
+									'label'   => $label,
+									'created' => date('Y-m-d H:i:s')
+								];
+								$insert = (object) $insert;
 
-							$insert = [
-								'form_id' => $new_form_id,
-								'label'   => $label,
-								'created' => date('Y-m-d H:i:s')
-							];
-							$insert = (object) $insert;
-
-							try {
-								$inserted = $this->db->insertObject('#__emundus_template_form', $insert);
-							}
-							catch (Exception $e) {
-								$inserted = false;
-								Log::add('Failed to create new form model ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+								try
+								{
+									$inserted = $this->db->insertObject('#__emundus_template_form', $insert);
+								}
+								catch (Exception $e)
+								{
+									$inserted = false;
+									Log::add('Failed to create new form model ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+								}
 							}
 						}
 						else {
@@ -4911,5 +4917,142 @@ class EmundusModelFormbuilder extends JModelList
 		}
 
 		return $currencies;
+	}
+
+	public function duplicateConditions($formid, $new_form_id)
+	{
+		$duplicated = false;
+
+		$query = $this->db->createQuery();
+
+		try
+		{
+			$query->clear()
+				->select('*')
+				->from($this->db->quoteName('#__emundus_setup_form_rules'))
+				->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($formid));
+			$this->db->setQuery($query);
+			$rules = $this->db->loadObjectList();
+
+			foreach ($rules as $rule)
+			{
+				$insert = [
+					'date_time'  => date('Y-m-d H:i:s'),
+					'type'       => $rule->type,
+					'group'      => $rule->group,
+					'published'  => $rule->published,
+					'form_id'    => $new_form_id,
+					'created_by' => $rule->created_by,
+				];
+				$insert = (object) $insert;
+				$this->db->insertObject('#__emundus_setup_form_rules', $insert);
+				$new_rule_id = $this->db->insertid();
+
+				if (!empty($new_rule_id))
+				{
+					$duplicated = true;
+
+					$query->clear()
+						->select('*')
+						->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
+						->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule->id));
+					$this->db->setQuery($query);
+					$actions = $this->db->loadObjectList();
+
+					foreach ($actions as $action)
+					{
+						$insert = [
+							'parent_id' => $new_rule_id,
+							'action'    => $action->action,
+						];
+						$insert = (object) $insert;
+						$this->db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+						$new_action_id = $this->db->insertid();
+
+						if (!empty($new_action_id))
+						{
+							$query->clear()
+								->select('*')
+								->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
+								->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($action->id));
+							$this->db->setQuery($query);
+							$fields = $this->db->loadObjectList();
+
+							foreach ($fields as $field)
+							{
+								$insert = [
+									'parent_id' => $new_action_id,
+									'fields'    => $field->fields,
+									'params'    => $field->params
+								];
+								$insert = (object) $insert;
+								$this->db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+							}
+						}
+					}
+
+					$query->clear()
+						->select('*')
+						->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+						->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule->id));
+					$this->db->setQuery($query);
+					$conditions = $this->db->loadObjectList();
+
+					$group_conditions = [];
+					foreach ($conditions as $condition)
+					{
+						// Manage jos_emundus_setup_form_rules_js_conditions_group
+						$insert = [
+							'parent_id' => $new_rule_id,
+							'field'     => $condition->field,
+							'state'     => $condition->state,
+							'values'    => $condition->values
+						];
+						$insert = (object) $insert;
+
+						if ($this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert))
+						{
+							// Store group condition to duplicate after
+							$new_condition_id                      = $this->db->insertid();
+							$group_conditions[$condition->group][] = $new_condition_id;
+						}
+					}
+
+					foreach ($group_conditions as $group => $grouped_conditions)
+					{
+						$query->clear()
+							->select('*')
+							->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group'))
+							->where($this->db->quoteName('id') . ' = ' . $this->db->quote($group));
+						$this->db->setQuery($query);
+						$group_info = $this->db->loadObject();
+
+						$insert = (object) [
+							'group_type' => $group_info->group_type,
+						];
+
+						if ($this->db->insertObject('#__emundus_setup_form_rules_js_conditions_group', $insert))
+						{
+							$new_group_id = $this->db->insertid();
+
+							foreach ($grouped_conditions as $grouped_condition)
+							{
+								$update = (object) [
+									'id'    => $grouped_condition,
+									'group' => $new_group_id
+								];
+								$this->db->updateObject('#__emundus_setup_form_rules_js_conditions', $update, 'id');
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/formbuilder | Error at duplicating conditions : ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+		}
+
+		return $duplicated;
 	}
 }
