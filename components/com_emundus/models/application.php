@@ -2446,7 +2446,12 @@ class EmundusModelApplication extends ListModel
 															$elt = '<a href="' . $r_elt . '" target="_blank">' . $r_elt . '</a>';
 														}
 														else {
-															$elt = Text::_($r_elt);
+															$elt = $r_elt;
+														}
+
+														if(!empty($params->text_input_mask)) {
+															// Remove underscores from $elt if input mask is used
+															$elt = str_replace('_', '', $elt);
 														}
 													}
 													elseif ($elements[$j]->plugin == 'yesno') {
@@ -2731,6 +2736,11 @@ class EmundusModelApplication extends ListModel
 												}
 												else {
 													$elt = $element->content;
+												}
+												
+												if(!empty($params->text_input_mask)) {
+													// Remove underscores from $elt if input mask is used
+													$elt = str_replace('_', '', $elt);
 												}
 											}
 											elseif ($element->plugin == 'emundus_fileupload') {
@@ -3194,7 +3204,12 @@ class EmundusModelApplication extends ListModel
 														$elt = '<a href="' . $r_elt . '" target="_blank">' . $r_elt . '</a>';
 													}
 													else {
-														$elt = Text::_($r_elt);
+														$elt = $r_elt;
+													}
+
+													if(!empty($params->text_input_mask)) {
+														// Remove underscores from $elt if input mask is used
+														$elt = str_replace('_', '', $elt);
 													}
 												}
 												elseif ($elements[$j]->plugin == 'yesno') {
@@ -3459,7 +3474,12 @@ class EmundusModelApplication extends ListModel
 														$elt = '<a href="' . $r_elt . '" target="_blank">' . $r_elt . '</a>';
 													}
 													else {
-														$elt = Text::_($r_elt);
+														$elt = $r_elt;
+													}
+
+													if(!empty($params->text_input_mask)) {
+														// Remove underscores from $elt if input mask is used
+														$elt = str_replace('_', '', $elt);
 													}
 												}
 												elseif ($elements[$j]->plugin == 'yesno') {
@@ -3698,6 +3718,11 @@ class EmundusModelApplication extends ListModel
 												}
 												else {
 													$elt = $element->content;
+												}
+
+												if(!empty($params->text_input_mask)) {
+													// Remove underscores from $elt if input mask is used
+													$elt = str_replace('_', '', $elt);
 												}
 											}
 											elseif ($element->plugin == 'emundus_phonenumber') {

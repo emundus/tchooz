@@ -1818,6 +1818,7 @@ class EmundusControllerFiles extends BaseController
 				$iban_elements = [];
                 $calc_elements = [];
 				$currency_elements = [];
+				$masked_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine === 'step_id') {
 						$line .= Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . "\t";
@@ -1875,6 +1876,11 @@ class EmundusControllerFiles extends BaseController
 								$currency_elements[] =  $elt_name;
 							}
 
+							if ($fLine->element_plugin === 'field' && !empty($params->text_input_mask))
+							{
+								$masked_elements[] =  $elt_name;
+							}
+
 							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
@@ -1923,6 +1929,7 @@ class EmundusControllerFiles extends BaseController
 				$iban_elements = [];
                 $calc_elements = [];
 				$currency_elements = [];
+				$masked_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					$params                                                         = json_decode($fLine->element_attribs);
 					$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
@@ -1952,6 +1959,11 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_plugin === 'currency')
 					{
 						$currency_elements[] =  $elt_name;
+					}
+
+					if ($fLine->element_plugin === 'field' && !empty($params->text_input_mask))
+					{
+						$masked_elements[] =  $elt_name;
 					}
 				}
 			}
@@ -2133,6 +2145,10 @@ class EmundusControllerFiles extends BaseController
                                         }
 										else if (!empty($currency_elements) && in_array($k, $currency_elements)) {
 											$v = EmundusHelperFabrik::extractNumericValue($v);
+											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+										}
+										else if (!empty($masked_elements) && in_array($k, $masked_elements)) {
+											$v = str_replace('_', '', $v);
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {

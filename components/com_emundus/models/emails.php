@@ -1120,6 +1120,15 @@ class EmundusModelEmails extends JModelList
 						$fabrikValues[$elt['id']][$fnum]['val'] = $val['val'] ? Text::_('JYES') : Text::_('JNO');
 					}
 				}
+				if ($elt['plugin'] == 'field'){
+					if(!empty($params->text_input_mask))
+					{
+						foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+						{
+							$fabrikValues[$elt['id']][$fnum]['val'] = str_replace('_', '', $fabrikValues[$elt['id']][$fnum]['val']);
+						}
+					}
+				}
 			}
 			
 			$preg = array('patterns' => array(), 'replacements' => array());
