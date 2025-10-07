@@ -3960,7 +3960,7 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
-				if ($type === 'payment')
+					if ($type === 'payment')
 					{
 						$payment_repository = new PaymentRepository();
 						$payment_action_id  = $payment_repository->getActionId();
@@ -3980,13 +3980,20 @@ class EmundusModelSettings extends ListModel
 
 						$this->db->setQuery($query);
 						$updated = $this->db->execute();
-					} else if ($type === 'anonymous')
+					}
+					else if ($type === 'anonymous')
 					{
 						$query->clear()
 							->update($this->db->quoteName('#__menu'))
 							->set('published = ' . $this->db->quote($enabled ? 1 : 0))
 							->where('alias IN (' . $this->db->quote('connect-from-token') . ', ' . $this->db->quote('anonym-registration') . ')');
+						$this->db->setQuery($query);
+						$this->db->execute();
 
+						$query->clear()
+							->update($this->db->quoteName('#__emundus_setup_emails'))
+							->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled ? 1 : 0))
+							->where($this->db->quoteName('lbl') . ' = ' . $this->db->quote('anonym_token_email'));
 						$this->db->setQuery($query);
 						$this->db->execute();
 					}
