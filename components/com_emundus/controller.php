@@ -997,13 +997,18 @@ class EmundusController extends JControllerLegacy
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+		
+		
 		foreach ($fnums as $fnum) {
 			foreach ($files as $key => $file) {
-				$files[$key]['name'] = $htmlSanitizer->sanitize($file['name']);
+				$file['name'] = strip_tags($file['name']);
+				$file['name'] = $htmlSanitizer->sanitize($file['name']);
+				$files[$key]['name'] = $file['name'];
+
 				$local_filename = $file['name'];
 
 				$pageCount = 0;
-				if (empty($file['name'])) {
+				if (empty($file['name']) || str_starts_with($file['name'], '.')) {
 					$error = Uri::getInstance() . ' :: USER ID : ' . $user->id . ' -> try to upload empty file';
 					Log::add($error, Log::ERROR, 'com_emundus');
 					$errorInfo = Text::_("COM_EMUNDUS_ERROR_INFO_EMPTYFILE");
