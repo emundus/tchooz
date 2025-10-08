@@ -1119,6 +1119,12 @@ Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_DA
 Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_HOUR');
 Text::script('COM_EMUNDUS_SETTINGS_ADDONS_ANONYM_TOKEN_DURATION_VALIDITY_UNIT_MINUTE');
 
+Text::script('COM_EMUNDUS_USER_CATEGORY');
+Text::script('COM_EMUNDUS_AFFECT_USER_CATEGORY');
+Text::script('COM_EMUNDUS_AFFECT_USER_CATEGORY_ACTION');
+Text::script('COM_EMUNDUS_SELECT_USER_CATEGORY');
+Text::script('COM_EMUNDUS_AFFECT_USER_CATEGORY_SUCCESS');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)

@@ -16,24 +16,33 @@
 			</p>
 
 			<div class="tw-ml-2 tw-flex tw-w-full tw-flex-col">
-				<div class="tw-flex tw-items-center">
-					<multiselect
-						v-model="conditionData.field"
-						label="label_tag"
-						:custom-label="labelTranslate"
-						track-by="name"
-						:options="elements"
-						:multiple="false"
-						:taggable="false"
-						select-label=""
-						selected-label=""
-						deselect-label=""
-						:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELD')"
-						:close-on-select="true"
-						:clear-on-select="false"
-						:searchable="true"
-						:allow-empty="true"
-					></multiselect>
+				<div class="tw-flex tw-items-center tw-gap-2">
+					<div class="tw-flex tw-items-center">
+						<select v-model="conditionData.type" class="tw-rounded tw-border tw-border-neutral-500 tw-p-2">
+							<option v-for="type in fieldType" :key="type" :value="type">
+								{{ translate('COM_EMUNDUS_FORMBUILDER_RULE_TYPE_' + type.toUpperCase()) }}
+							</option>
+						</select>
+					</div>
+					<div class="tw-flex tw-w-full tw-items-center">
+						<multiselect
+							v-model="conditionData.field"
+							label="label_tag"
+							:custom-label="labelTranslate"
+							track-by="name"
+							:options="elementsOptions"
+							:multiple="false"
+							:taggable="false"
+							select-label=""
+							selected-label=""
+							deselect-label=""
+							:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_RULE_SELECT_FIELD')"
+							:close-on-select="true"
+							:clear-on-select="false"
+							:searchable="true"
+							:allow-empty="true"
+						></multiselect>
+					</div>
 				</div>
 
 				<div class="tw-mt-4">
@@ -113,6 +122,10 @@ export default {
 			type: Array,
 			default: () => [],
 		},
+		userProfileElements: {
+			type: Array,
+			default: () => [],
+		},
 		multiple: {
 			type: Boolean,
 			default: false,
@@ -122,6 +135,7 @@ export default {
 	data() {
 		return {
 			loading: false,
+			elementsOptions: [],
 			operators: [
 				{
 					id: 1,
@@ -156,6 +170,7 @@ export default {
 			],
 			options: [],
 			options_plugins: ['dropdown', 'databasejoin', 'radiobutton', 'checkbox'],
+			fieldType: ['form', 'user'],
 			conditionData: null,
 		};
 	},
@@ -163,8 +178,16 @@ export default {
 		this.conditionData = this.condition;
 	},
 	mounted() {
+		if (this.conditionData.type === 'form') {
+			this.elementsOptions = this.elements;
+		} else if (this.conditionData.type === 'user') {
+			this.elementsOptions = this.userProfileElements;
+		}
+
 		if (this.page.id) {
-			this.conditionData.field = this.elements.find((element) => element.name === this.conditionData.field);
+			console.log(this.conditionData.field);
+			console.log(this.elementsOptions);
+			this.conditionData.field = this.elementsOptions.find((element) => element.name === this.conditionData.field);
 			if (this.conditionData.field) {
 				this.defineOptions(this.conditionData.field);
 			}
@@ -189,7 +212,7 @@ export default {
 			let labelTranslated = label ? label[useGlobalStore().getShortLang] : '';
 
 			// If labelTranslated is empty, we try to find an other language
-			if (labelTranslated === '') {
+			if (labelTranslated === '' && label) {
 				let labels = Object.values(label);
 				labels.forEach((label) => {
 					if (label !== '') {
@@ -270,6 +293,20 @@ export default {
 
 				if (this.conditionData.values) {
 					this.conditionData.values = this.options.find((option) => option.primary_key == this.conditionData.values);
+				}
+			}
+		},
+	},
+	watch: {
+		'conditionData.type': function (newType, oldType) {
+			if (newType !== oldType && oldType !== null) {
+				this.conditionData.field = null;
+				this.conditionData.values = '';
+
+				if (newType === 'form') {
+					this.elementsOptions = this.elements;
+				} else if (newType === 'user') {
+					this.elementsOptions = this.userProfileElements;
 				}
 			}
 		},

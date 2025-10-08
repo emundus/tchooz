@@ -73,7 +73,7 @@ export default {
 		}
 	},
 
-	async redirectJRoute(link, language = 'fr-FR', redirect = true) {
+	async redirectJRoute(link, language = 'fr-FR', redirect = true, newtab = false) {
 		let formDatas = new FormData();
 		formDatas.append('link', link);
 		formDatas.append('redirect_language', language);
@@ -95,7 +95,14 @@ export default {
 
 			if (result.status) {
 				if (redirect) {
-					window.location.href = window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data;
+					if (newtab) {
+						window
+							.open(window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data, '_blank')
+							.focus();
+						return true;
+					} else {
+						window.location.href = window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data;
+					}
 				}
 				return result.data;
 			}
@@ -541,6 +548,94 @@ export default {
 	async save2faConfig(data) {
 		try {
 			return await fetchClient.post('save2faconfig', data);
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getUserCategories(only_published = true) {
+		try {
+			return await fetchClient.get('getusercategories', { only_published });
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async saveUserCategories(data) {
+		try {
+			return await fetchClient.post('saveusercategories', {
+				categories: JSON.stringify(data),
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async unpublishUserCategory(id) {
+		try {
+			return await fetchClient.post('updatepublishusercategory', {
+				id: id,
+				publish: false,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async publishUserCategory(id) {
+		try {
+			return await fetchClient.post('updatepublishusercategory', {
+				id: id,
+				publish: true,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async switchUserCategory(state) {
+		try {
+			return await fetchClient.post('switchusercategory', {
+				state: state,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async switchUserCategoryMandatory(state) {
+		try {
+			return await fetchClient.post('switchusercategorymandatory', {
+				state: state,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async fetchAliases() {
+		try {
+			return await fetchClient.get('fetchaliases');
 		} catch (e) {
 			return {
 				status: false,

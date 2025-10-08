@@ -119,7 +119,7 @@ function export_excel(fnums, letter) {
                             } else {
                                 $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
                             }
-                            generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements);
+                            generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, selectedOption.value);
                         } else {
                             $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.Text._(result.msg) + '</div>');
                         }
@@ -140,7 +140,7 @@ function export_excel(fnums, letter) {
     });
 }
 
-function generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements) {
+function generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, campaign) {
     const maxcsv = 65000;
     const maxxls = 65000;
     var start = json.start;
@@ -169,7 +169,8 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
                 objs: objJson,
                 opts: options,
                 objclass: objclass,
-                excelfilename:json.excelfilename
+                excelfilename:json.excelfilename,
+                campaign: campaign ? campaign : 0
             },
             success: function(result) {
                 var json = result.json;

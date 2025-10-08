@@ -2135,7 +2135,7 @@ class EmundusModelProgramme extends ListModel
 			$query->select('distinct sp.id')
 				->from($this->_db->quoteName('#__emundus_groups', 'g'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_groups', 'sg') . ' ON ' . $this->_db->quoteName('g.group_id') . ' = ' . $this->_db->quoteName('sg.id'))
-				->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->_db->quoteName('sg.id') . ' = ' . $this->_db->quoteName('sgr.parent_id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->_db->quoteName('sgr.parent_id') . ' = ' . $this->_db->quoteName('sg.id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->_db->quoteName('sgr.course') . ' = ' . $this->_db->quoteName('sp.code'))
 				->where($this->_db->quoteName('g.user_id') . ' = ' . $this->_db->quote($user_id));
 

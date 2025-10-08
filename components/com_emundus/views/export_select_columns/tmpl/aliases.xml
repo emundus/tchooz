@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Liste des balises de type Alias">
+        <message>
+            Affiche la liste des balises d'alias disponibles sur la plateforme
+        </message>
+    </layout>
+</metadata>

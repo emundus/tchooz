@@ -96,6 +96,9 @@ Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 Text::script('BACK');
 Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
+
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_USER_CATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_USERCATEGORY');
 ## END ##
 
 $app = Factory::getApplication();
