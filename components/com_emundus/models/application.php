@@ -1237,8 +1237,8 @@ class EmundusModelApplication extends ListModel
 					}
 
 
-					$this->updateAttachmentProgressByFnum(floor($completion), $f);
-					$result[$f] = floor($completion);
+					$this->updateAttachmentProgressByFnum(ceil($completion), $f);
+					$result[$f] = ceil($completion);
 				}
 			}
 			$progress = $result;
