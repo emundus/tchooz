@@ -1761,6 +1761,13 @@ class EmundusModelFormbuilder extends JModelList
 			}
 		}
 
+		// Clear fabrik_aliases cache
+		if(!class_exists('EmundusHelperFabrik'))
+		{
+			require_once (JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+		}
+		EmundusHelperFabrik::clearFabrikAliasesCache();
+
 		return $elementId;
 	}
 
@@ -2364,6 +2371,13 @@ class EmundusModelFormbuilder extends JModelList
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element['id']));
 			//
 			$this->db->setQuery($query);
+
+			// Clear fabrik_aliases cache
+			if(!class_exists('EmundusHelperFabrik'))
+			{
+				require_once (JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+			}
+			EmundusHelperFabrik::clearFabrikAliasesCache();
 
 			return $this->db->execute();
 		}

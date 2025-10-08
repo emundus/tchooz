@@ -2706,19 +2706,19 @@ class EmundusControllersettings extends BaseController
 
 			try
 			{
-				$profiles = [];
-				$mfaForSso = 0;
+				$profiles   = [];
+				$mfaForSso  = 0;
 				$parameters = $this->m_settings->get2faparameters();
-				if(!empty($parameters))
+				if (!empty($parameters))
 				{
-					$profiles = $parameters['2faForceForProfiles'];
-					$profiles = array_filter($profiles);
+					$profiles  = $parameters['2faForceForProfiles'];
+					$profiles  = array_filter($profiles);
 					$mfaForSso = $parameters['2faforSSO'] ?? 0;
 				}
 
 				foreach ($profiles as $key => $profile)
 				{
-					if($profile !== 'applicant')
+					if ($profile !== 'applicant')
 					{
 						$profiles[$key] = (int) $profile;
 					}
@@ -2746,20 +2746,20 @@ class EmundusControllersettings extends BaseController
 		{
 			try
 			{
-				$methods  = $this->input->getString('2fa_available_methods');
+				$methods = $this->input->getString('2fa_available_methods');
 				$methods = explode(',', $methods);
 
 				$response['status'] = $this->m_settings->switch2faMethods($methods);
 
-				$force    = $this->input->getInt('2fa_force_for_profiles', 0);
-				$profiles = $this->input->getString('2fa_mandatory_profiles');
-				$mfaForSso = $this->input->getInt('2fa_for_sso', 0);
-				$profiles = explode(',', $profiles);
+				$force              = $this->input->getInt('2fa_force_for_profiles', 0);
+				$profiles           = $this->input->getString('2fa_mandatory_profiles');
+				$mfaForSso          = $this->input->getInt('2fa_for_sso', 0);
+				$profiles           = explode(',', $profiles);
 				$response['status'] = $this->m_settings->update2faConfig($force, $profiles, $mfaForSso);
 
 				// Log actions
 				PluginHelper::importPlugin('actionlog');
-				$dispatcher                 = Factory::getApplication()->getDispatcher();
+				$dispatcher       = Factory::getApplication()->getDispatcher();
 				$onAfterUpdate2fa = new GenericEvent(
 					'onAfterUpdate2fa',
 					// Datas to pass to the event
@@ -3004,6 +3004,167 @@ class EmundusControllersettings extends BaseController
 
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	public function fetchaliases()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$sort      = $this->input->getString('sort', 'ASC');
+			$order_by  = $this->input->getString('order_by', '');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 0);
+			$page      = $this->input->getInt('page', 0);
+			$profile   = $this->input->getString('profile', 'all');
+
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_ALIASES');
+
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+			}
+			$aliases = EmundusHelperFabrik::getAllFabrikAliasesGrouped($lim, $page, $recherche, $profile, $order_by, $sort);
+			if (count($aliases) > 0)
+			{
+				// this data formatted is used in onboarding lists
+				foreach ($aliases['datas'] as $key => $alias)
+				{
+					$aliases['datas'][$key]['id']    = $key;
+					$aliases['datas'][$key]['label'] = ['fr' => $alias['name'], 'en' => $alias['name']];
+
+					$elements = [];
+					foreach ($alias['elements'] as $element)
+					{
+						$elements[] = [
+							'key'     => $element['name'],
+							'value'   => $element['path'] . ' ' . $element['label'],
+							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-neutral-300'
+						];
+					}
+
+					$aliases['datas'][$key]['additional_columns'] = [
+						[
+							'type'    => 'tags',
+							'key'     => Text::_('COM_EMUNDUS_ALIAS_ELEMENTS'),
+							'values'  => $elements,
+							'display' => 'table'
+						]
+					];
+				}
+			}
+
+			$response['data'] = ['datas' => array_values($aliases['datas']), 'count' => $aliases['count']];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getaliasprofiles()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$current_language    = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_ALIAS_PROFILES');
+
+			if (!class_exists('EmundusModelForm'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');
+			}
+			$m_form             = new EmundusModelForm();
+			$applicant_profiles = $m_form->getAllForms();
+			$evaluation_forms   = $m_form->getAllGrilleEval();
+
+			$profiles = [];
+			foreach ($applicant_profiles['datas'] as $profile)
+			{
+				$profiles[] = [
+					'value' => 'applicant_' . $profile->id,
+					'label' => $profile->label[$current_language],
+				];
+			}
+			foreach ($evaluation_forms['datas'] as $form)
+			{
+				$profiles[] = [
+					'value' => 'evaluation_' . $form->id,
+					'label' => $form->label[$current_language],
+				];
+			}
+
+			$response['data'] = $profiles;
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function exportcsvaliases()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_EXPORT_CSV_ALIASES');
+
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+			}
+			$aliases = EmundusHelperFabrik::getAllFabrikAliasesGrouped(null, null);
+
+			$excel_filename = 'export_aliases' . date('Ymd_His') . '.csv';
+			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
+			$fp             = fopen($excel_filepath, 'w');
+
+			$columns = [
+				'Alias',
+				'Elements'
+			];
+			fputcsv($fp, $columns, ';');
+
+			$rows = [];
+			foreach ($aliases['datas'] as $key => $alias)
+			{
+				$row    = [
+					$key,
+					implode(' | ', array_column($alias['elements'], 'path'))
+				];
+				$rows[] = $row;
+
+				fputcsv($fp, $row, ';');
+			}
+
+			fclose($fp);
+
+			$nb_cols = count($columns);
+			$nb_rows = count($rows);
+
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
+			$m_users  = new EmundusModelUsers();
+			$xls_file = $m_users->convertCsvToXls($excel_filename, $nb_cols, $nb_rows, 'export_aliases' . date('Ymd_His'), ';');
+
+			$excel_filepath = '';
+			if (!empty($xls_file))
+			{
+				$excel_filepath = JPATH_SITE . '/tmp/' . $xls_file;
+			}
+
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
+			header('Content-Length: ' . filesize($excel_filepath));
+
+			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }
 

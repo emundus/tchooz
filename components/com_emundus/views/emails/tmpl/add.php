@@ -91,6 +91,8 @@ JText::script('COM_EMUNDUS_ONBOARD_OK');
 JText::script('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE');
 JText::script('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE');
 
+JText::script('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST');
+
 $lang         = JFactory::getLanguage();
 $short_lang   = substr($lang->getTag(), 0, 2);
 $current_lang = $lang->getTag();

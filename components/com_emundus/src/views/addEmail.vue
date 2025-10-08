@@ -62,9 +62,20 @@
 								@uploadedImage="getMedia"
 							/>
 							<div class="tw-mt-1">
-								<a href="/export-tags" class="em-main-500-color em-hover-main-600 em-text-underline" target="_blank">{{
-									translate('COM_EMUNDUS_EMAIL_SHOW_TAGS')
-								}}</a>
+								<a
+									href="/export-tags"
+									class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1"
+									target="_blank"
+									>{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}
+									<span class="material-symbols-outlined">open_in_new</span>
+								</a>
+								<a
+									:href="'/' + aliasLink"
+									target="_blank"
+									class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1"
+									>{{ translate('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST') }}
+									<span class="material-symbols-outlined">open_in_new</span>
+								</a>
 							</div>
 							<div v-if="errors.message" class="tw-mb-1 tw-text-red-600">
 								<span class="tw-text-red-600">{{ translate('COM_EMUNDUS_ONBOARD_BODY_REQUIRED') }}</span>
@@ -372,6 +383,8 @@ export default {
 		],
 		suggestions: [],
 		medias: [],
+
+		aliasLink: '',
 	}),
 	created() {
 		const globalStore = useGlobalStore();
@@ -382,6 +395,7 @@ export default {
 		this.getAllAttachments();
 		this.getAllTags();
 		this.getAllDocumentLetter();
+		this.getAliasLink();
 		this.actualLanguage = globalStore.getShortLang;
 
 		emailService
@@ -622,6 +636,21 @@ export default {
 				this.selectedCategory = null;
 				this.form.category = '';
 			}
+		},
+
+		getAliasLink() {
+			settingsService
+				.redirectJRoute(
+					'index.php?option=com_emundus&view=export_select_columns&layout=aliases',
+					useGlobalStore().getCurrentLang,
+					false,
+				)
+				.then((response) => {
+					this.aliasLink = response;
+				})
+				.catch((error) => {
+					console.log(error);
+				});
 		},
 	},
 
