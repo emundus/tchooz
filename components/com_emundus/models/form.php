@@ -1471,6 +1471,11 @@ class EmundusModelForm extends JModelList
 		if (!empty($prid)) {
 			$query = $this->db->getQuery(true);
 
+			// Truncate label to 150 characters if too long to avoid database errors
+			if (strlen($label) > 150) {
+				$label = substr($label, 0, 147) . '...';
+			}
+
 			$query->update($this->db->quoteName('#__menu_types'))
 				->set($this->db->quoteName('title') . ' = ' . $this->db->quote($label))
 				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('menu-profile' . $prid));

@@ -27,6 +27,7 @@ class Release2_10_1Installer extends ReleaseInstaller
 
 		try
 		{
+			// Be sure that gantry mode next execution is set to the future
 			$query = $this->db->getQuery(true);
 
 			$query->select('id, type, published')
@@ -63,6 +64,9 @@ class Release2_10_1Installer extends ReleaseInstaller
 				$tasks[] = $this->db->updateObject('#__emundus_setup_emails', $update, 'id');
 			}
 
+			$str_query = 'alter table jos_menu_types modify title varchar(150) not null;';
+			$this->db->setQuery($str_query);
+			$tasks[] = $this->db->execute();
 
 			$result['status']  = !in_array(false, $tasks);
 		}
