@@ -774,7 +774,19 @@ class Com_EmundusInstallerScript
 
 			//Prepare cookies config
 			$cookie_domain = Factory::getApplication()->get('live_site', '');
-			if (!empty($cookie_domain) && strpos($cookie_domain, 'localhost') === false)
+			// Remove port if exists
+			$port = parse_url($cookie_domain, PHP_URL_PORT);
+			if (!empty($port))
+			{
+				$cookie_domain = str_replace(':' . $port, '', $cookie_domain);
+			}
+			$is_local = false;
+			if (strpos($cookie_domain, 'localhost') !== false || strpos($cookie_domain, '127.') !== false)
+			{
+				$is_local = true;
+			}
+
+			if (!empty($cookie_domain) && !$is_local)
 			{
 				$cookie_domain = explode('//', $cookie_domain);
 				$cookie_domain = $cookie_domain[1];
