@@ -1814,6 +1814,7 @@ class EmundusControllerFiles extends BaseController
 
 				$nbcol         = 6;
 				$date_elements = [];
+				$birthday_elements = [];
 				$textarea_elements = [];
 				$iban_elements = [];
                 $calc_elements = [];
@@ -1858,6 +1859,10 @@ class EmundusControllerFiles extends BaseController
 								} else {
 									$date_elements[$elt_name] = $params->date_form_format;
 								}
+							}
+
+							if ($fLine->element_plugin === 'birthday') {
+								$birthday_elements[] = $elt_name;
 							}
 
 							if ($fLine->element_plugin === 'textarea') {
@@ -1925,6 +1930,7 @@ class EmundusControllerFiles extends BaseController
 			} else {
 				// On définit les bons formats
 				$date_elements = [];
+				$birthday_elements = [];
 				$textarea_elements = [];
 				$iban_elements = [];
                 $calc_elements = [];
@@ -1943,6 +1949,10 @@ class EmundusControllerFiles extends BaseController
 						} else {
 							$date_elements[$elt_name] = $params->date_form_format;
 						}
+					}
+
+					if ($fLine->element_plugin === 'birthday') {
+						$birthday_elements[] = $elt_name;
 					}
 
 					if ($fLine->element_plugin == 'textarea') {
@@ -2107,11 +2117,67 @@ class EmundusControllerFiles extends BaseController
 										if (!empty($date_elements[$k])) {
 											$v = str_replace("\\", '', $v); // if date contains \, remove it
 
-											if ($v === '0000-00-00 00:00:00') {
-												$v = '';
+											if(strpos($k,'repeat')) {
+												$v = explode(',', $v);
+
+												$repeat_values = [];
+												foreach ($v as $repeat_value) {
+													if ($repeat_value === '0000-00-00 00:00:00') {
+														$repeat_value = '';
+													}
+													else {
+														// Trim and remove double quotes if any
+														$repeat_value = trim($repeat_value, '" ');
+														$repeat_value = date($date_elements[$k], strtotime($repeat_value));
+													}
+													$repeat_values[] = $repeat_value;
+												}
+
+												$v = implode(',', $repeat_values);
+											}
+											else
+											{
+												if ($v === '0000-00-00 00:00:00')
+												{
+													$v = '';
+												}
+												else
+												{
+													$v = date($date_elements[$k], strtotime($v));
+												}
+											}
+											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+										}
+										elseif (!empty($birthday_elements) && in_array($k, $birthday_elements)) {
+											if(strpos($k,'repeat')) {
+												$v = explode(',', $v);
+
+												$repeat_values = [];
+												foreach ($v as $repeat_value) {
+													// Trim and remove double quotes if any
+													$repeat_value = trim($repeat_value, '" ');
+
+													if ($repeat_value === '0000-00-00') {
+														$repeat_value = '';
+													}
+													else {
+														$repeat_value = date('d/m/Y', strtotime($repeat_value));
+													}
+													$repeat_values[] = $repeat_value;
+												}
+
+												$v = implode(',', $repeat_values);
 											}
 											else {
-												$v = date($date_elements[$k], strtotime($v));
+												// Trim and remove double quotes if any
+												$v = trim($v, '" ');
+
+												if ($v === '0000-00-00') {
+													$v = '';
+												}
+												else {
+													$v = date('d/m/Y', strtotime($v));
+												}
 											}
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
