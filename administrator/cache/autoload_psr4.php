@@ -12,6 +12,7 @@ return [
 	'Emundus\\Plugin\\SampleData\\Emundus\\' => [JPATH_PLUGINS . '/sampledata/emundus/src'],
 	'Emundus\\Plugin\\System\\EmundusProxyRedirect\\' => [JPATH_PLUGINS . '/system/emundusproxyredirect/src'],
 	'Emundus\\Plugin\\System\\EmundusQueueIt\\' => [JPATH_PLUGINS . '/system/emundusqueueit/src'],
+	'Emundus\\Plugin\\System\\EmundusUserCategory\\' => [JPATH_PLUGINS . '/system/emundus_user_category/src'],
 	'Emundus\\Plugin\\Task\\BookingRecall\\' => [JPATH_PLUGINS . '/task/bookingrecall/src'],
 	'Emundus\\Plugin\\Task\\Emailrecall\\' => [JPATH_PLUGINS . '/task/emailrecall/src'],
 	'Joomla\\Component\\Actionlogs\\Administrator\\' => [JPATH_ADMINISTRATOR . '/components/com_actionlogs/src'],

@@ -1727,6 +1727,7 @@ class EmundusModelCampaign extends ListModel
 			$query = $this->_db->getQuery(true);
 
 			$campaign_languages = [];
+			$campaign_usercategories  = [];
 			foreach ($data as $key => $val)
 			{
 				if (!in_array($key, $campaign_columns))
@@ -1734,6 +1735,11 @@ class EmundusModelCampaign extends ListModel
 					if ($key == 'languages')
 					{
 						$campaign_languages = $val;
+					}
+
+					if ($key == 'usercategories')
+					{
+						$campaign_usercategories = $val;
 					}
 
 					unset($data[$key]);
@@ -1839,6 +1845,20 @@ class EmundusModelCampaign extends ListModel
 								}
 							}
 
+							if (!empty($campaign_usercategories))
+							{
+								foreach ($campaign_usercategories as $usercategory)
+								{
+									$query->clear()
+										->insert($this->_db->quoteName('#__emundus_setup_campaigns_user_category'))
+										->set($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($campaign_id))
+										->set($this->_db->quoteName('user_category_id') . ' = ' . $this->_db->quote($usercategory));
+
+									$this->_db->setQuery($query);
+									$this->_db->execute();
+								}
+							}
+
 							$m_settings->onAfterCreateCampaign();
 
 							// Create a default trigger
@@ -1937,7 +1957,7 @@ class EmundusModelCampaign extends ListModel
 			$limit_status  = [];
 			$fields        = [];
 			$columns       = [];
-			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages'];
+			$keys_to_unset = ['profileLabel', 'progid', 'status', 'languages', 'usercategories'];
 			$labels        = new stdClass;
 
 			$app->triggerEvent('onBeforeCampaignUpdate', $data);
@@ -1984,6 +2004,7 @@ class EmundusModelCampaign extends ListModel
 					case 'progid':
 					case 'status':
 					case 'languages':
+					case 'usercategories':
 						// do nothing
 						break;
 					case 'alias':
@@ -2074,7 +2095,7 @@ class EmundusModelCampaign extends ListModel
 					$this->_db->setQuery($query);
 					$this->_db->execute();
 
-					if ($data['is_limited'] == 1)
+					if (!empty($data['is_limited']) && $data['is_limited'] == 1)
 					{
 						foreach ($limit_status as $limit_statu)
 						{
@@ -2112,28 +2133,36 @@ class EmundusModelCampaign extends ListModel
 							$this->_db->execute();
 						}
 					}
+					//
 
-					// update campaign languages
-					$query->clear()
-						->delete($this->_db->quoteName('#__emundus_setup_campaigns_languages'))
-						->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
+					// update usercategories
+					$emConfig = ComponentHelper::getParams('com_emundus');
+					$userCategoryEnabled = $emConfig->get('enable_user_categories', 0);
 
-					$this->_db->setQuery($query);
-					$this->_db->execute();
-
-					if (!empty($data['languages']))
+					if($userCategoryEnabled == 1)
 					{
-						foreach ($data['languages'] as $lang_id)
-						{
-							$query->clear()
-								->insert('#__emundus_setup_campaigns_languages')
-								->set('campaign_id = ' . $cid)
-								->set('lang_id = ' . $lang_id);
+						$query->clear()
+							->delete($this->_db->quoteName('#__emundus_setup_campaigns_user_category'))
+							->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($cid));
 
-							$this->_db->setQuery($query);
-							$this->_db->execute();
+						$this->_db->setQuery($query);
+						$this->_db->execute();
+
+						if (!empty($data['usercategories']))
+						{
+							foreach ($data['usercategories'] as $user_category_id)
+							{
+								$query->clear()
+									->insert('#__emundus_setup_campaigns_user_category')
+									->set('campaign_id = ' . $cid)
+									->set('user_category_id = ' . $user_category_id);
+
+								$this->_db->setQuery($query);
+								$this->_db->execute();
+							}
 						}
 					}
+					//
 
 					$this->createYear($data);
 
@@ -3699,6 +3728,26 @@ class EmundusModelCampaign extends ListModel
 		}
 
 		return $languages;
+	}
+
+	public function getCampaignUserCategoriesValues($campaign_id)
+	{
+		$usercategories = [];
+
+		if (!empty($campaign_id))
+		{
+			$query = $this->_db->createQuery();
+
+			$query->select('duc.id as value, duc.label')
+				->from($this->_db->quoteName('data_user_category', 'duc'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns_user_category', 'esc_uc') . ' ON ' . $this->_db->quoteName('esc_uc.user_category_id') . ' = ' . $this->_db->quoteName('duc.id'))
+				->where('esc_uc.campaign_id = ' . $this->_db->quote($campaign_id));
+
+			$this->_db->setQuery($query);
+			$usercategories = $this->_db->loadObjectList();
+		}
+
+		return $usercategories;
 	}
 
 

@@ -24,6 +24,8 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
+use Tchooz\Entities\User\UserCategoryEntity;
+use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -1110,7 +1112,7 @@ class EmundusControllersettings extends BaseController
 			if (!empty($param) && isset($value))
 			{
 				$config = new JConfig();
-				if ($this->m_settings->updateEmundusParam($component, $param, $value, $config))
+				if ($this->m_settings->updateEmundusParam($component, $param, $value))
 				{
 					$response['msg']    = Text::_('SUCCESS');
 					$response['status'] = true;
@@ -1145,7 +1147,7 @@ class EmundusControllersettings extends BaseController
 				foreach ($params as $param)
 				{
 					$param = json_decode($param);
-					if ($this->m_settings->updateEmundusParam($param->component, $param->param, $param->value, $config))
+					if ($this->m_settings->updateEmundusParam($param->component, $param->param, $param->value))
 					{
 						$response['msg'] .= Text::_('SUCCESS') . ' for ' . $param->param . $param->value . '. ';
 
@@ -2777,6 +2779,226 @@ class EmundusControllersettings extends BaseController
 			{
 				$response['code']    = 500;
 				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_2FA_CONFIG_SAVE_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getusercategories(): void
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$only_published = filter_var($this->input->getString('only_published', true), FILTER_VALIDATE_BOOLEAN);
+
+				$categoryRepository = new UserCategoryRepository();
+				$categories = $categoryRepository->getAllCategories($only_published);
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_FOUND');
+				$response['data']    = $categories;
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_FETCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function saveusercategories(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$categories  = $this->input->getString('categories');
+				$categories = json_decode($categories);
+
+				$categoryRepository = new UserCategoryRepository();
+
+				foreach ($categories as $category)
+				{
+					if(!empty($category->label))
+					{
+						$categoryEntity = new UserCategoryEntity(
+							$category->id ?? 0,
+							$category->label,
+							$this->user->id
+						);
+
+						$categoryCreated = $categoryRepository->save($categoryEntity);
+
+						if($categoryCreated instanceof UserCategoryEntity === false)
+						{
+							$response['code']    = 500;
+							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVE_FAILED');
+
+							echo json_encode((object) $response);
+							exit;
+						}
+					}
+				}
+
+				$response['status'] = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVED');
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVE_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function updatepublishusercategory(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$category_id = $this->input->getInt('id', 0);
+				$publish = filter_var($this->input->getString('publish', true), FILTER_VALIDATE_BOOLEAN);
+
+				if ($category_id > 0)
+				{
+					$categoryRepository = new UserCategoryRepository();
+
+					if ($category = $categoryRepository->getCategoryById($category_id))
+					{
+						$category->setPublished($publish);
+
+						$categoryRepository->save($category);
+					}
+
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_UNPUBLISHED');
+				}
+				else
+				{
+					$response['code']    = 400;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_UNPUBLISH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_UNPUBLISH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function switchusercategory(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$state = $this->input->getString('state', 0);
+				$state = filter_var($state, FILTER_VALIDATE_BOOLEAN);
+
+				// First switch parameter
+				if($this->m_settings->updateEmundusParam('emundus', 'enable_user_categories', $state ? 1 : 0))
+				{
+					$cache = Factory::getCache('_system');
+					$cache->clean('_system');
+
+					// Unpublish element in profile fabrik form
+					$this->m_settings->switchUsercategoryElement($state);
+
+					// Enable/disable system plugin
+					$this->m_settings->enableDisableUserCategoryPlugin($state);
+
+					$cache = Factory::getCache('mod_menu');
+					$cache->clean('mod_menu');
+					$cache->clean('com_menus');
+					$cache->clean('com_menus');
+
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_SUCCESS');
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function switchusercategorymandatory(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$state = $this->input->getString('state', 0);
+				$state = filter_var($state, FILTER_VALIDATE_BOOLEAN);
+
+				// First switch parameter
+				if($this->m_settings->updateEmundusParam('emundus', 'user_category_mandatory', $state ? 1 : 0))
+				{
+					$cache = Factory::getCache('_system');
+					$cache->clean('_system');
+
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_MANDATORY_SWITCH_SUCCESS');
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_MANDATORY_SWITCH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_MANDATORY_SWITCH_FAILED') . ': ' . $e->getMessage();
 			}
 		}
 

@@ -195,4 +195,43 @@ class SettingsModelTest extends UnitTestCase
 			}
 		}
 	}
+
+	public function testSwitchUsercategoryElement()
+	{
+		$result = $this->model->switchUsercategoryElement(true);
+		$this->assertTrue($result);
+
+		$result = $this->model->switchUsercategoryElement(false);
+		$this->assertTrue($result);
+	}
+
+	public function testEnableDisableUserCategoryPlugin()
+	{
+		$query = $this->db->getQuery(true);
+
+		$result = $this->model->enableDisableUserCategoryPlugin(true);
+		$this->assertTrue($result);
+
+		$query->select('enabled')
+			->from($this->db->quoteName('#__extensions'))
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote('emundus_user_category'))
+			->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'));
+		$this->db->setQuery($query);
+		$state = $this->db->loadResult();
+
+		$this->assertSame(1, $state, 'L\'activation du plugin Emundus - User Type fonctionne');
+
+		$result = $this->model->enableDisableUserCategoryPlugin(false);
+		$this->assertTrue($result);
+
+		$query->clear()
+			->select('enabled')
+			->from($this->db->quoteName('#__extensions'))
+			->where($this->db->quoteName('element') . ' = ' . $this->db->quote('emundus_user_category'))
+			->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'));
+		$this->db->setQuery($query);
+		$state = $this->db->loadResult();
+
+		$this->assertSame(0, $state, 'La désactivation du plugin Emundus - User Type fonctionne');
+	}
 }

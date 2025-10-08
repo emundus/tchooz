@@ -12,9 +12,10 @@
 				</div>
 
 				<form-builder-rules-js
-					v-if="type === 'js' && elements.length > 0"
+					v-if="type === 'js' && elements.length > 0 && this.userProfileElements.length > 0"
 					:page="fabrikPage"
 					:elements="elements"
+					:user-profile-elements="userProfileElements"
 					:rule="rule"
 					@close-rule-add-js="$emit('close-rule-add')"
 				/>
@@ -58,6 +59,7 @@ export default {
 		return {
 			fabrikPage: {},
 			elements: [],
+			userProfileElements: [],
 
 			loading: false,
 		};
@@ -79,6 +81,18 @@ export default {
 							this.elements.push(element);
 						}
 					});
+				});
+
+				formService.getUserProfileElements().then((response) => {
+					if (response.status) {
+						Object.entries(response.data).forEach(([key, element]) => {
+							if (!element.hidden) {
+								this.userProfileElements.push(element);
+							}
+						});
+					} else {
+						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+					}
 				});
 
 				this.loading = false;

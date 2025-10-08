@@ -1370,6 +1370,28 @@ class EmundusControllerCampaign extends BaseController
 		exit;
 	}
 
+	public function getcampaignusercategories()
+	{
+		$response = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$response['code'] = 500;
+			$campaign_id      = $this->input->getInt('campaign_id', 0);
+
+			if (!empty($campaign_id))
+			{
+				$m_campaign = $this->getModel('Campaign');
+
+				$usercategories = $m_campaign->getCampaignUserCategoriesValues($campaign_id);
+				$response  = ['status' => 1, 'msg' => Text::_('USERCATEGORIES_RETRIEVED'), 'data' => $usercategories, 'code' => 200];
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
 	public function getmediasize()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'size' => 10];

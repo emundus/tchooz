@@ -233,6 +233,24 @@
 							>
 						</span>
 					</div>
+
+					<div v-if="userCategoryEnabled == 1">
+						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_USER_CATEGORY') }}</label>
+
+						<multiselect
+							class="tw-mt-1"
+							v-model="campaignUsercategories"
+							label="label"
+							track-by="value"
+							:options="userCategoryOptions"
+							:multiple="true"
+							:taggable="false"
+							:placeholder="translate('COM_EMUNDUS_ONBOARD_CHOOSE_USERCATEGORY')"
+							select-label=""
+							selected-label=""
+							deselect-label=""
+						></multiselect>
+					</div>
 				</div>
 
 				<hr class="tw-mb-4 tw-mt-1.5" />
@@ -517,6 +535,7 @@ export default {
 		quit: 1,
 
 		isHiddenProgram: false,
+		userCategoryEnabled: false,
 
 		// Date picker rules
 		minDate: '',
@@ -527,6 +546,7 @@ export default {
 		years: [],
 		languages: [],
 		aliases: [],
+		userCategories: [],
 		editorPlugins: [
 			'history',
 			'link',
@@ -548,6 +568,7 @@ export default {
 		old_program_form: '',
 		aliasUpdated: false,
 		campaignLanguages: [],
+		campaignUsercategories: [],
 		form: {
 			label: {},
 			start_date: '',
@@ -610,7 +631,16 @@ export default {
 		this.coordinatorAccess = globalStore.hasCoordinatorAccess;
 
 		this.getLanguages().then(() => {
-			this.getCampaignById();
+			settingsService.getEmundusParams().then((response) => {
+				this.userCategoryEnabled = response.emundus.enable_user_categories == 1;
+				if (this.userCategoryEnabled) {
+					settingsService.getUserCategories().then((res) => {
+						this.userCategories = res.data;
+					});
+				}
+
+				this.getCampaignById();
+			});
 		});
 
 		campaignService.getAllItemsAlias(this.campaignId).then((response) => {
@@ -703,6 +733,7 @@ export default {
 			}
 
 			this.getCampaignLanguages();
+			this.getCampaignUsercategories();
 			this.getAllPrograms();
 		},
 
@@ -723,6 +754,14 @@ export default {
 			if (this.campaignId) {
 				campaignService.getCampaignLanguages(this.campaignId).then((response) => {
 					this.campaignLanguages = response.data;
+				});
+			}
+		},
+
+		getCampaignUsercategories() {
+			if (this.campaignId && this.userCategoryEnabled) {
+				campaignService.getCampaignUsercategories(this.campaignId).then((response) => {
+					this.campaignUsercategories = response.data;
 				});
 			}
 		},
@@ -777,6 +816,9 @@ export default {
 			form_data.start_date = this.formatDate(new Date(this.form.start_date));
 			form_data.end_date = this.formatDate(new Date(this.form.end_date));
 			form_data.languages = this.campaignLanguages.map((language) => language.value);
+			form_data.usercategories = this.userCategoryEnabled
+				? this.campaignUsercategories.map((category) => category.value)
+				: [];
 
 			campaignService.createCampaign(form_data).then((response) => {
 				if (response.status == 1) {
@@ -937,6 +979,9 @@ export default {
 			form_data.start_date = this.formatDate(new Date(this.form.start_date));
 			form_data.end_date = this.formatDate(new Date(this.form.end_date));
 			form_data.languages = this.campaignLanguages.map((language) => language.value);
+			form_data.usercategories = this.userCategoryEnabled
+				? this.campaignUsercategories.map((category) => category.value)
+				: [];
 
 			campaignService
 				.updateCampaign(form_data, this.campaignId)
@@ -1067,6 +1112,14 @@ export default {
 				return {
 					label: language.title,
 					value: language.lang_id,
+				};
+			});
+		},
+		userCategoryOptions() {
+			return this.userCategories.map((category) => {
+				return {
+					label: category.label,
+					value: category.id,
 				};
 			});
 		},

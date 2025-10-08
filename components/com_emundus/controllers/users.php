@@ -132,6 +132,7 @@ class EmundusControllerUsers extends BaseController
 		$auth_provider   = $this->input->getInt('auth_provider', 0);
 		$testing_account = $this->input->getInt('testing_account', 0);
 		$do_not_notify   = $this->input->getInt('do_not_notify', 0);
+		$user_category   = $this->input->getInt('user_category', 0);
 
 		$user = clone(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0));
 
@@ -181,6 +182,7 @@ class EmundusControllerUsers extends BaseController
 		$other_param['em_groups']    = !empty($groups) ? explode(',', $groups) : $groups;
 		$other_param['em_campaigns'] = !empty($campaigns) ? explode(',', $campaigns) : $campaigns;
 		$other_param['news']         = $news;
+		$other_param['user_category']         = $user_category;
 
 		$m_users        = $this->getModel('Users');
 		$acl_aro_groups = $m_users->getDefaultGroup($profile);
@@ -777,6 +779,7 @@ class EmundusControllerUsers extends BaseController
 		$newuser['em_campaigns']     = $this->input->getString('campaigns');
 		$newuser['em_groups']        = $this->input->getString('groups');
 		$newuser['news']             = $this->input->getInt('newsletter');
+		$newuser['user_category']    = $this->input->getInt('user_category');
 
 		if (preg_match('/^[0-9a-zA-Z\_\@\-\.\+]+$/', $newuser['username']) !== 1)
 		{
@@ -1932,6 +1935,55 @@ class EmundusControllerUsers extends BaseController
 			$response['data'] = array_values($m_users->getProfiles());
 			$response['status'] = true;
 			$response['msg'] = Text::_('COM_EMUNDUS_SUCCESS');
+		}
+
+		echo json_encode((object)$response);
+		exit;
+	}
+
+	public function affectuserscategory()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		$current_user = Factory::getApplication()->getIdentity();
+		if (!EmundusHelperAccess::asAccessAction(12, 'u', $current_user->id))
+		{
+			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
+
+			return;
+		}
+
+		$m_users = new EmundusModelUsers();
+
+		// Retrieve the users' data to extract (indicated by the checkboxes checked)
+		$checkboxes = $this->input->getString('checkboxes');
+		$users      = $this->input->getString('users', null);
+
+		$checkboxes = (array) json_decode(stripslashes($checkboxes));
+
+		// If 'all' is choosed, it's necessary to retrieve the ids
+		if ($users === 'all')
+		{
+			$all_users = $m_users->getUsers(0, 0);
+			$user_ids  = array();
+			foreach ($all_users as $user)
+			{
+				$user_ids[] = $user->id;
+			}
+		}
+		else
+		{
+			$user_ids = (array) json_decode(stripslashes($users));
+		}
+
+		if(!empty($user_ids))
+		{
+			// Get the category id
+			$user_category = $this->input->getInt('user_category', 0);
+
+			$affected = $m_users->affectUsersCategory($user_ids, $user_category);
+
+			$response = ['status' => $affected, 'msg' => Text::_('COM_EMUNDUS_USERS_CATEGORY_AFFECTED')];
 		}
 
 		echo json_encode((object)$response);
