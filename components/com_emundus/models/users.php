@@ -154,6 +154,7 @@ class EmundusModelUsers extends ListModel
 		$group        = $params['group'];
 		$jgroup       = $params['joomla_group'];
 		$institution  = $params['institution'];
+		$user_category	  = $params['user_category'];
 
 		$uid       = $this->app->input->get('rowid', null, 'GET', 'none', 0);
 		$edit      = $this->app->input->get('edit', 0, 'GET', 'none', 0);
@@ -238,6 +239,7 @@ class EmundusModelUsers extends ListModel
 		$showUniversities = $eMConfig->get('showUniversities');
 		$showJoomlagroups = $eMConfig->get('showJoomlagroups', 0);
 		$showNewsletter   = $eMConfig->get('showNewsletter');
+		$enableUserTypes  = $eMConfig->get('enable_user_categories', 0);
 
         $query = 'SELECT DISTINCT(u.id), e.lastname, e.firstname, u.email, u.username,  espr.label as profile,group_concat(DISTINCT eup.profile_id) as o_profiles, espr.published as is_applicant_profile, e.is_anonym, ';
 
@@ -251,6 +253,9 @@ class EmundusModelUsers extends ListModel
 		}
 		if ($showJoomlagroups == 1) {
 			$query .= 'GROUP_CONCAT( DISTINCT usg.title SEPARATOR "<br>") as joomla_groupe,';
+		}
+		if ($enableUserTypes == 1) {
+			$query .= 'duc.label as user_category,';
 		}
 
 		$query .= 'u.activation as active,u.block as block,mfa.method as mfa_method
@@ -267,6 +272,9 @@ class EmundusModelUsers extends ListModel
 		if ($showJoomlagroups == 1) {
 			$query .= 'LEFT JOIN #__user_usergroup_map AS um ON ( u.id = um.user_id AND um.group_id != 2)
                     LEFT JOIN jos_usergroups AS usg ON ( um.group_id = usg.id)';
+		}
+		if ($enableUserTypes == 1) {
+			$query .= ' LEFT JOIN data_user_category AS duc ON duc.id = e.user_category ';
 		}
 
 		if (!empty($programme) && $programme[0] != '%') {
@@ -321,6 +329,9 @@ class EmundusModelUsers extends ListModel
 
 		if (!empty($institution) && $institution[0] != '%')
 			$query .= ' AND u.id IN( SELECT jeu.user_id FROM #__emundus_users as jeu WHERE jeu.university_id IN (' . implode(',', $institution) . ')) ';
+
+		if (!empty($user_category) && $user_category[0] != '%')
+			$query .= ' AND e.user_category IN (' . implode(',', $user_category) . ') ';
 
 		if ($edit == 1) {
 			$query .= ' u.id=' . (int) $uid;
@@ -1164,6 +1175,7 @@ class EmundusModelUsers extends ListModel
 			$campaigns = $params['em_campaigns'];
 			$news      = $params['news'];
 			$univ_id   = $params['univ_id'];
+			$user_category = $params['user_category'] ?? null;
 
 			if (!empty($params['id_ehesp'])) {
 				$id_ehesp = $params['id_ehesp'];
@@ -1184,6 +1196,10 @@ class EmundusModelUsers extends ListModel
 			if (!empty($univ_id)) {
 				$columns[] = 'university_id';
 				$values[]  = $univ_id;
+			}
+			if (!empty($user_category)) {
+				$columns[] = 'user_category';
+				$values[]  = $this->db->quote($user_category);
 			}
 
 			$query->insert($this->db->quoteName('#__emundus_users'))
@@ -1983,7 +1999,8 @@ class EmundusModelUsers extends ListModel
 				'up.profile_value as newsletter',
 				'IF(JSON_VALID(u.params), json_extract(u.params,"$.testing_account"),0) as testing_account',
 				'u.authProvider',
-				'eu.is_anonym'
+				'eu.is_anonym',
+				'eu.user_category'
 			];
 
 			$query->select($columns)
@@ -2763,6 +2780,10 @@ class EmundusModelUsers extends ListModel
 
 		if (!empty($user['university_id'])) {
 			$query->set('university_id = ' . $this->db->quote($user['university_id']));
+		}
+
+		if ($eMConfig->get('enable_user_categories', 0) == 1) {
+			$query->set('user_category = ' . $this->db->quote($user['user_category']));
 		}
 
 		$query->where('user_id = ' . $this->db->quote($user['id']));
@@ -5398,5 +5419,30 @@ class EmundusModelUsers extends ListModel
 		}
 
 		return $created;
+	}
+
+	public function affectUsersCategory(array $ids, int $category): bool
+	{
+		$affected = false;
+
+		if(!empty($ids) && !empty($category))
+		{
+			try
+			{
+				$query = $this->db->getQuery(true);
+
+				$query->update($this->db->quoteName('#__emundus_users'))
+					->set($this->db->quoteName('user_category') . ' = ' . $this->db->quote($category))
+					->where($this->db->quoteName('user_id') . ' IN (' . implode(',', $ids) . ')');
+				$this->db->setQuery($query);
+				$affected = $this->db->execute();
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/users | Error when try to affect category to users : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $affected;
 	}
 }

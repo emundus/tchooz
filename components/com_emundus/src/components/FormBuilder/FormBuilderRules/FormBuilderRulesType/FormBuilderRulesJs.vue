@@ -12,6 +12,7 @@
 				<form-builder-rules-js-conditions
 					@add-condition="addCondition"
 					:elements="elements"
+					:user-profile-elements="userProfileElements"
 					:index="index"
 					:conditions="grouped_condition"
 					@remove-condition="removeCondition"
@@ -94,6 +95,10 @@ export default {
 			type: Array,
 			default: [],
 		},
+		userProfileElements: {
+			type: Array,
+			default: [],
+		},
 		rule: {
 			type: Object,
 			default: {},
@@ -119,6 +124,7 @@ export default {
 					field: '',
 					values: '',
 					state: '=',
+					type: 'form',
 					group_type: 'OR',
 				});
 
@@ -147,6 +153,7 @@ export default {
 				field: '',
 				values: '',
 				state: '=',
+				type: 'form',
 				group_type: 'OR',
 			});
 		},
@@ -156,6 +163,7 @@ export default {
 				field: '',
 				values: '',
 				state: '=',
+				type: 'form',
 				group_type: 'OR',
 			});
 
@@ -187,6 +195,7 @@ export default {
 							values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
 							state: condition.state,
 							group_type: condition.group_type,
+							type: condition.type,
 						});
 					}
 				});

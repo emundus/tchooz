@@ -13,9 +13,9 @@ use DateTime;
 use EmundusModelProfile;
 use EmundusModelProgramme;
 use Exception;
-use JLog;
-use Joomla\CMS\Log\Log;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\User\UserCategoryEntity;
+use Tchooz\Repositories\User\UserCategoryRepository;
 
 require_once JPATH_SITE . '/components/com_emundus/models/programme.php';
 require_once JPATH_SITE . '/components/com_emundus/models/profile.php';
@@ -165,6 +165,45 @@ class CampaignModelTest extends UnitTestCase
 		$new_campaign_id = $this->model->createCampaign($inserting_datas, $this->dataset['coordinator']);
 		$this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
 
+		// Testing create campaign with user categories values
+		$userCategoryRepository = new UserCategoryRepository();
+		$categoryEntity1 = new UserCategoryEntity(
+			id: 0,
+			label: 'Test Category',
+			created_by: 1,
+			created_at: date('Y-m-d H:i:s'),
+			published: 1
+		);
+		$categoryEntity2 = new UserCategoryEntity(
+			id: 0,
+			label: 'Another Category',
+			created_by: 1,
+			created_at: date('Y-m-d H:i:s'),
+			published: 1
+		);
+		$category1 = $userCategoryRepository->save($categoryEntity1);
+		$category2 = $userCategoryRepository->save($categoryEntity2);
+
+		$inserting_datas = [
+			'label'             => json_encode(['fr' => 'Campagne test unitaire', 'en' => 'Campagne test unitaire']),
+			'description'       => 'Lorem ipsum',
+			'short_description' => 'Lorem ipsum',
+			'start_date'        => $start_date->format('Y-m-d H:i:s'),
+			'end_date'          => $end_date->format('Y-m-d H:i:s'),
+			'profile_id'        => 1000,
+			'training'          => $this->dataset['program']['programme_code'],
+			'year'              => '2022-2023',
+			'published'         => 1,
+			'is_limited'        => 0,
+			'usercategories'   => [$category1->getId(), $category2->getId()]
+		];
+
+		$new_campaign_id_2 = $this->model->createCampaign($inserting_datas, $this->dataset['coordinator']);
+		$this->assertGreaterThan(0, $new_campaign_id, 'Assert campaign creation works.');
+
+		$user_categories = $this->model->getCampaignUserCategoriesValues($new_campaign_id_2);
+		$this->assertCount(2, $user_categories, 'Assert campaign is created with user categories values');
+
 		$program = $this->model->getProgrammeByCampaignID($new_campaign_id);
 		$this->assertNotEmpty($program, 'Getting program from campaign id works');
 		$this->assertSame($program['code'], $this->dataset['program']['programme_code'], 'The program code used in creation is retrieved when getting program by the new campaign id');
@@ -184,8 +223,11 @@ class CampaignModelTest extends UnitTestCase
 		$this->assertTrue($this->model->publishCampaign([$new_campaign_id]), 'Assert publish campaign works');
 		$this->assertTrue($this->model->pinCampaign($new_campaign_id), 'Assert pin campaign works properly');
 
-		$deleted = $this->model->deleteCampaign([$new_campaign_id]);
+		$deleted = $this->model->deleteCampaign([$new_campaign_id, $new_campaign_id_2]);
 		$this->assertTrue($deleted, 'Campaign deletion works properly');
+
+		$userCategoryRepository->delete($category1->getId());
+		$userCategoryRepository->delete($category2->getId());
 	}
 
 	/**
@@ -206,6 +248,46 @@ class CampaignModelTest extends UnitTestCase
 
 		$updated = $this->model->updateCampaign(['end_date' => null], 0);
 		$this->assertFalse($updated, 'Update campaign with empty data end_date stops the update');
+
+		// Testing update campaign with user categories values
+		if(!class_exists('EmundusModelSettings'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/settings.php';
+		}
+		$m_settings = new \EmundusModelSettings();
+		$m_settings->updateEmundusParam('emundus', 'enable_user_categories', 1, $this->dataset['coordinator']);
+		$userCategoryRepository = new UserCategoryRepository();
+		$categoryEntity1 = new UserCategoryEntity(
+			id: 0,
+			label: 'Test Category',
+			created_by: 1,
+			created_at: date('Y-m-d H:i:s'),
+			published: 1
+		);
+		$categoryEntity2 = new UserCategoryEntity(
+			id: 0,
+			label: 'Another Category',
+			created_by: 1,
+			created_at: date('Y-m-d H:i:s'),
+			published: 1
+		);
+		$category1 = $userCategoryRepository->save($categoryEntity1);
+		$category2 = $userCategoryRepository->save($categoryEntity2);
+
+		$updated = $this->model->updateCampaign(['start_date' => date('Y-m-d H:i:s'), 'end_date' => date('Y-m-d H:i:s'), 'usercategories' => [$category1->getId(), $category2->getId()]], $this->dataset['campaign'], $this->dataset['coordinator']);
+		$this->assertTrue($updated, 'Update campaign with user categories values works');
+
+		$user_categories = $this->model->getCampaignUserCategoriesValues($this->dataset['campaign']);
+		$this->assertCount(2, $user_categories, 'Assert campaign is updated with user categories values');
+
+		$updated = $this->model->updateCampaign(['start_date' => date('Y-m-d H:i:s'), 'end_date' => date('Y-m-d H:i:s'), 'usercategories' => []], $this->dataset['campaign'], $this->dataset['coordinator']);
+		$this->assertTrue($updated, 'Update campaign with empty user categories values works');
+		$user_categories = $this->model->getCampaignUserCategoriesValues($this->dataset['campaign']);
+		$this->assertCount(0, $user_categories, 'Assert campaign user categories values are deleted when updating with empty array');
+
+		$userCategoryRepository->delete($category1->getId());
+		$userCategoryRepository->delete($category2->getId());
+		$m_settings->updateEmundusParam('emundus', 'enable_user_categories', 0, $this->dataset['coordinator']);
 	}
 
 	/**
@@ -340,5 +422,14 @@ class CampaignModelTest extends UnitTestCase
 
 		$duplicated = $this->model->duplicateCampaign(0);
 		$this->assertFalse($duplicated, 'La campagne 0 n\'existe pas, donc on ne peut pas la dupliquer');
+	}
+
+	function testGetCampaignUserCategoriesValues()
+	{
+		$values = $this->model->getCampaignUserCategoriesValues(0);
+		$this->assertEmpty($values, 'Aucun valeur de catégorie utilisateur pour une campagne inexistante');
+
+		$values = $this->model->getCampaignUserCategoriesValues($this->dataset['campaign']);
+		$this->assertIsArray($values, 'Récupération des valeurs de catégorie utilisateur pour une campagne existante');
 	}
 }

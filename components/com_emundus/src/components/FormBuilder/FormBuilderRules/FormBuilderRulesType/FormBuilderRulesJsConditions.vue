@@ -31,6 +31,7 @@
 				}}</span>
 				<form-builder-rules-js-condition
 					:elements="elements"
+					:user-profile-elements="userProfileElements"
 					:index="condition_key"
 					:condition="condition"
 					@remove-condition="removeCondition"
@@ -78,6 +79,10 @@ export default {
 			default: 0,
 		},
 		elements: {
+			type: Array,
+			default: () => [],
+		},
+		userProfileElements: {
 			type: Array,
 			default: () => [],
 		},

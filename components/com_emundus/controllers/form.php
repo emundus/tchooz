@@ -1328,5 +1328,27 @@ class EmundusControllerForm extends BaseController
 		echo json_encode((object) $response);
 		exit;
 	}
+
+	public function getuserprofileelements()
+	{
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$elements = $this->m_form->getUserProfileElements();
+
+			if (!empty($elements))
+			{
+				$response = array('status' => true, 'msg' => Text::_('SUCCESS'), 'data' => $elements);
+			}
+			else
+			{
+				$response['msg'] = Text::_('NO_ELEMENTS_FOUND');
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
 }
 

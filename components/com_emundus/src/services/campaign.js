@@ -68,23 +68,6 @@ export default {
 		}
 
 		try {
-			const data = {
-				label: JSON.stringify(form.label),
-				start_date: form.start_date,
-				end_date: form.end_date,
-				short_description: form.short_description,
-				description: form.description,
-				training: form.training,
-				year: form.year,
-				published: form.published,
-				is_limited: form.is_limited,
-				profile_id: form.profile_id,
-				limit: form.limit,
-				limit_status: form.limit_status,
-				alias: form.alias,
-				pinned: form.pinned,
-			};
-
 			return await client.post(`createcampaign`, {
 				body: JSON.stringify(form),
 			});
@@ -257,6 +240,17 @@ export default {
 	async getCampaignLanguages(campaignId) {
 		try {
 			return await client.get('getcampaignlanguages&campaign_id=' + campaignId);
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getCampaignUsercategories(campaignId) {
+		try {
+			return await client.get('getcampaignusercategories&campaign_id=' + campaignId);
 		} catch (e) {
 			return {
 				status: false,

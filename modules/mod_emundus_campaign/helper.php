@@ -2,6 +2,7 @@
 
 use Joomla\CMS\Application\CMSApplication;
 use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -78,7 +79,8 @@ class modEmundusCampaignHelper
 			'ca.is_limited as campaign_is_limited',
 			'ca.limit as campaign_limit',
 			'group_concat(escrls.limit_status) as campaign_limit_status',
-			'count(ecc.id) as nb_files_in_limit'
+			'count(ecc.id) as nb_files_in_limit',
+			'group_concat(esc_uc.user_category_id) as user_categories_allowed',
 		];
 
 		if ($teachingUnityDates)
@@ -88,6 +90,7 @@ class modEmundusCampaignHelper
 
 			$query->select($columns)
 				->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
+				->leftJoin($this->db->qn('#__emundus_setup_campaigns_user_category', 'esc_uc') . ' ON ' . $this->db->qn('esc_uc.campaign_id') . ' = ' . $this->db->qn('ca.id'))
 				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
 				->leftJoin($this->db->qn('#__emundus_setup_teaching_unity', 'tu') . ' ON ' . $this->db->qn('tu.code') . ' = ' . $this->db->qn('ca.training') . ' AND ' . $this->db->quoteName('ca.year') . ' = ' . $this->db->quoteName('tu.schoolyear'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns_repeat_limit_status','escrls').' ON '.$this->db->quoteName('escrls.parent_id').' = '.$this->db->quoteName('ca.id'))
@@ -97,6 +100,7 @@ class modEmundusCampaignHelper
 		{
 			$query->select($columns);
 			$query->from($this->db->qn('#__emundus_setup_campaigns', 'ca'))
+				->leftJoin($this->db->qn('#__emundus_setup_campaigns_user_category', 'esc_uc') . ' ON ' . $this->db->qn('esc_uc.campaign_id') . ' = ' . $this->db->qn('ca.id'))
 				->leftJoin($this->db->qn('#__emundus_setup_programmes', 'pr') . ' ON ' . $this->db->qn('pr.code') . ' = ' . $this->db->qn('ca.training'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns_repeat_limit_status','escrls').' ON '.$this->db->quoteName('escrls.parent_id').' = '.$this->db->quoteName('ca.id'))
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature','ecc').' ON '.$this->db->quoteName('ecc.campaign_id').' = '.$this->db->quoteName('ca.id') . ' AND ' . $this->db->quoteName('ecc.status') . ' IN (escrls.limit_status)');
@@ -162,6 +166,36 @@ class modEmundusCampaignHelper
 				return strnatcmp($a->label, $b->label);
 			});
 		}
+
+		// If usertypes are enabled, filter campaigns by usertype
+		$emConfig = ComponentHelper::getParams('com_emundus');
+		if($emConfig->get('enable_user_categories') == 1)
+		{
+			$current_user = Factory::getApplication()->getIdentity();
+			if (!$current_user->guest)
+			{
+				// Get usercategory of current user
+				$query->clear()
+					->select('user_category')
+					->from($this->db->quoteName('#__emundus_users'))
+					->where($this->db->quoteName('user_id') . ' = ' . (int) $current_user->id);
+				$this->db->setQuery($query);
+				$current_user_category = $this->db->loadResult();
+
+				// Filter campaigns by usercategory
+				$campaigns = array_filter($campaigns, function ($campaign) use ($current_user_category) {
+					if (empty($campaign->user_categories_allowed))
+					{
+						return true;
+					}
+
+					$user_categories_allowed = explode(',', $campaign->user_categories_allowed);
+
+					return in_array($current_user_category, $user_categories_allowed);
+				});
+			}
+		}
+		//
 
 		return $campaigns;
 	}
