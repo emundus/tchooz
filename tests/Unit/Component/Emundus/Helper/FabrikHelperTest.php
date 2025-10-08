@@ -231,4 +231,18 @@ class FabrikHelperTest extends UnitTestCase
 			)
 		);
 	}
+
+	public function testGetAllFabrikAliasesGrouped()
+	{
+		$fabrik_aliases_grouped = $this->helper::getAllFabrikAliasesGrouped(25,1, '', '', '', 'ASC', $this->dataset['coordinator']);
+
+		$this->assertIsArray($fabrik_aliases_grouped, 'The aliases should be returned as an array');
+		$this->assertLessThanOrEqual(25, count($fabrik_aliases_grouped['datas']), 'There should be 25 aliases in the datas group');
+
+		$fabrik_aliases_grouped = $this->helper::getAllFabrikAliasesGrouped(5,1, '', '', '', 'ASC', $this->dataset['coordinator']);
+		$this->assertLessThanOrEqual(5, count($fabrik_aliases_grouped['datas']), 'There should be 5 aliases in the datas group when limit is set to 5');
+
+		$fabrik_aliases_grouped = $this->helper::getAllFabrikAliasesGrouped(25, 1, 'alias_that_does_not_exist', '', '', 'ASC', $this->dataset['coordinator']);
+		$this->assertEmpty($fabrik_aliases_grouped['datas'], 'There should be no aliases in the datas group when a non-existing alias is used as filter');
+	}
 }

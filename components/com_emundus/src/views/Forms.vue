@@ -58,7 +58,7 @@ export default {
 									},
 								},
 								{
-									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%',
+									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&profile=applicant_%id%',
 									label: 'COM_EMUNDUS_ONBOARD_MODIFY',
 									controller: 'form',
 									type: 'redirect',
@@ -107,14 +107,67 @@ export default {
 									name: 'add',
 								},
 								{
-									action: '\/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval',
+									action:
+										'\/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval&profile=evaluation_%id%',
 									label: 'COM_EMUNDUS_ONBOARD_MODIFY',
 									controller: 'form',
 									type: 'redirect',
 									name: 'edit',
 								},
+								{
+									action: 'publishFabrikForm',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_PUBLISH',
+									controller: 'form',
+									method: 'post',
+									name: 'publish',
+									showon: {
+										key: 'published',
+										operator: '=',
+										value: '0',
+									},
+								},
+								{
+									action: 'unpublishFabrikForm',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_UNPUBLISH',
+									controller: 'form',
+									method: 'post',
+									name: 'unpublish',
+									confirm: 'COM_EMUNDUS_ONBOARD_ACTION_CONFIRM_UNPUBLISH',
+									showon: {
+										key: 'published',
+										operator: '=',
+										value: '1',
+									},
+								},
+								{
+									action: 'duplicateFabrikForm',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_DUPLICATE',
+									controller: 'form',
+									method: 'post',
+									name: 'duplicate',
+								}
 							],
-							filters: [],
+							filters: [
+								{
+									label: 'COM_EMUNDUS_ONBOARD_FORMS_FILTER_PUBLISH',
+									allLabel: 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH',
+									alwaysDisplay: true,
+									getter: '',
+									controller: 'form',
+									key: 'filter',
+									values: [
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_PUBLISH',
+											value: 'Publish',
+										},
+										{
+											label: 'COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH',
+											value: 'Unpublish',
+										},
+									],
+									default: 'Publish',
+								},
+							],
 						},
 						{
 							title: 'COM_EMUNDUS_FORM_PAGE_MODELS',

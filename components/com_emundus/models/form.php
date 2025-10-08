@@ -17,6 +17,7 @@ jimport('joomla.database.table');
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 
@@ -158,20 +159,32 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	function getAllGrilleEval(string $filter, string $sort, string $recherche, int $lim, int $page, int $user_id = 0): array
+	function getAllGrilleEval(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0): array
 	{
 		$data     = ['datas' => [], 'count' => 0];
 
 		$query    = $this->db->getQuery(true);
 
+		if(empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
+
 		try {
 			// We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
 			// we must only keep forms that current user has access to
 			$query->clear()
-				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type'])
+				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type, ff.published'])
 				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
 				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
 				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations_%'));
+
+			if ($filter === 'Unpublish') {
+				$query->andWhere($this->db->quoteName('ff.published') . ' = 0');
+			}
+			else {
+				$query->andWhere($this->db->quoteName('ff.published') . ' = 1');
+			}
+
 			$this->db->setQuery($query);
 			$evaluation_forms = $this->db->loadObjectList();
 
@@ -744,6 +757,34 @@ class EmundusModelForm extends JModelList
 		return $response;
 	}
 
+	/**
+	 * @param   int  $formId
+	 *
+	 * @return bool
+	 */
+	public function unpublishFabrikForm(int $formId): bool
+	{
+		$unpublished = false;
+
+		if (!empty($formId))
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('published') . ' = 0')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formId));
+
+			try
+			{
+				$this->db->setQuery($query);
+				$unpublished = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error when unpublish fabrik form : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $unpublished;
+	}
 
 	public function publishForm($data)
 	{
@@ -778,6 +819,34 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
+	/**
+	 * @param   int  $formId
+	 *
+	 * @return bool
+	 */
+	public function publishFabrikForm(int $formId): bool
+	{
+		$published = false;
+
+		if (!empty($formId))
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('published') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formId));
+
+			try
+			{
+				$this->db->setQuery($query);
+				$published = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error when publish fabrik form : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $published;
+	}
 
 	public function duplicateForm($data, $duplicate_condition = true)
 	{
@@ -961,7 +1030,7 @@ class EmundusModelForm extends JModelList
 										$new_form = $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
 
 										if($duplicate_condition) {
-											$formbuilder->duplicateConditions($formid, $new_form['id']);
+											$formbuilder->duplicateConditions((int)$formid, (int)$new_form['id']);
 										}
 									}
 
@@ -2746,7 +2815,14 @@ class EmundusModelForm extends JModelList
 
 		try
 		{
-			$query->select($this->db->quoteName(['id','group', 'published', 'label']))
+			$query->select('form_id')
+				->from($this->db->quoteName('#__emundus_setup_formlist'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('profile'));
+			$this->db->setQuery($query);
+			$profile_form_id = $this->db->loadResult();
+
+			$query->clear()
+				->select($this->db->quoteName(['id','group', 'published', 'label']))
 				->from($this->db->quoteName('#__emundus_setup_form_rules'))
 				->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id))
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('js'));
@@ -2759,7 +2835,7 @@ class EmundusModelForm extends JModelList
 			foreach ($js_conditions as $js_condition)
 			{
 				$query->clear()
-					->select($this->db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type']))
+					->select($this->db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type', 'esfrjc.type']))
 					->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group','esfrjcg').' ON '.$this->db->quoteName('esfrjcg.id').' = '.$this->db->quoteName('esfrjc.group'))
 					->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($js_condition->id));
@@ -2775,8 +2851,14 @@ class EmundusModelForm extends JModelList
 							->select('jfe.label,jfe.plugin,jfe.params')
 							->from($this->db->quoteName('#__fabrik_elements', 'jfe'))
 							->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $this->db->quoteName('jffg.group_id') . ' = ' . $this->db->quoteName('jfe.group_id'))
-							->where($this->db->quoteName('jfe.name') . ' = ' . $this->db->quote($condition->field))
-							->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($form_id));
+							->where($this->db->quoteName('jfe.name') . ' = ' . $this->db->quote($condition->field));
+						if($condition->type == 'user')
+						{
+							$query->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($profile_form_id));
+						}
+						else {
+							$query->andWhere($this->db->quoteName('jffg.form_id') . ' = ' . $this->db->quote($form_id));
+						}
 
 						$this->db->setQuery($query);
 						$elt = $this->db->loadObject();
@@ -2875,8 +2957,6 @@ class EmundusModelForm extends JModelList
 
 		$grouped_conditions = json_decode($grouped_conditions);
 		$actions = json_decode($actions);
-
-
 
 		try
 		{
@@ -3119,7 +3199,8 @@ class EmundusModelForm extends JModelList
 				'field'     => $condition->field,
 				'state'     => in_array($condition->state, $operators) ? $condition->state : '=',
 				'values'    => $condition->values,
-				'group'     => !empty($condition->group) ? $condition->group : null
+				'group'     => !empty($condition->group) ? $condition->group : null,
+				'type'      => $condition->type ?? 'form'
 			];
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);
@@ -3183,5 +3264,74 @@ class EmundusModelForm extends JModelList
 		{
 			Log::add('component/com_emundus/models/form | Error at addAction : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
 		}
+	}
+
+	public function getUserProfileElements($only_names = false)
+	{
+		$elements = [];
+
+		try
+		{
+			$languages = LanguageHelper::getLanguages();
+
+			if(!class_exists('EmundusModelFormbuilder'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/formbuilder.php';
+			}
+			$m_formbuilder = new EmundusModelFormbuilder;
+
+			// Get profile form id
+			$query = $this->db->getQuery(true);
+
+			$query->select('form_id')
+				->from($this->db->quoteName('#__emundus_setup_formlist'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('profile'));
+			$this->db->setQuery($query);
+			$form_id = $this->db->loadResult();
+
+			$select = 'fe.id,fe.name,fe.label,fe.plugin,fe.eval,fe.group_id,fe.hidden,fe.params,fe.default,fe.published as publish,fe.show_in_list_summary';
+			if($only_names) {
+				$select = 'fe.name';
+			}
+			$query->clear()
+				->select($select)
+				->from($this->db->quoteName('#__fabrik_elements', 'fe'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('ffg.group_id') . ' = ' . $this->db->quoteName('fe.group_id'))
+				->where($this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quote($form_id))
+				->where($this->db->quoteName('fe.published') . ' = 1')
+				->order('fe.ordering ASC');
+			$this->db->setQuery($query);
+
+			if(!$only_names)
+			{
+				$elements = $this->db->loadObjectList();
+				foreach ($elements as $element)
+				{
+					$params = json_decode($element->params, true);
+
+					$element->FRequire = false;
+					if (!empty($params['validations']) && in_array('notempty', $params['validations']['plugin']))
+					{
+						$element->FRequire = true;
+					}
+					$element->label_tag = $element->label;
+					$element->label     = [];
+					foreach ($languages as $language)
+					{
+						$element->label[$language->sef] = $m_formbuilder->getTranslation($element->label_tag, $language->lang_code);
+					}
+					$element->params = $params;
+				}
+			}
+			else {
+				$elements = $this->db->loadColumn();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/form | Error at getUserProfileElements : ' . preg_replace("/[\r\n]/"," ",$e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $elements;
 	}
 }

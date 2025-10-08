@@ -5,6 +5,8 @@ requirejs(['fab/fabrik'], function () {
   var form_loaded = false;
   var elt_to_not_clear = ['panel', 'calc'];
 
+  var userDetails = Joomla.getOptions('plg_system_emundus.user_details', {});
+
   var operators = {
     '=': function (a, b, plugin) {
       if (!Array.isArray(a)) {
@@ -217,6 +219,9 @@ requirejs(['fab/fabrik'], function () {
           if (data.status) {
             js_rules = data.data.conditions;
 
+            // First check rules based on user data
+            manageRules(form, null, false);
+
             form.elements.forEach(function (element) {
               manageRules(form, element, false);
 
@@ -348,19 +353,37 @@ requirejs(['fab/fabrik'], function () {
     }, 100)
   }
 
-  function manageRules(form, element, clear = true) {
-    let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
-
+  function manageRules(form, element = null, clear = true)
+  {
     let elt_rules = [];
-    js_rules.forEach((js_rule) => {
-      js_rule.conditions.forEach((condition) => {
-        if (condition.field == elt_name) {
-          elt_rules.push(js_rule);
-        }
-      });
-    });
+    let block_rules = [];
+    // If conditions are of type form we check for all elements
+    if(element) {
+      let elt_name = element.origId ? element.origId.split('___')[1] : element.baseElementId.split('___')[1];
 
-    if (elt_rules.length > 0) {
+      js_rules.forEach((js_rule) => {
+        js_rule.conditions.forEach((condition) => {
+          if (condition.field == elt_name) {
+            elt_rules.push(js_rule);
+          }
+        });
+      });
+    }
+    // If we have no element specified we check if there are user type conditions
+    else {
+      js_rules.forEach((js_rule) => {
+        js_rule.conditions.forEach((condition) => {
+          if (condition.type === 'user' && userDetails && Object.keys(userDetails).includes(condition.field)) {
+            elt_rules.push(js_rule);
+          }
+          else {
+            block_rules.push(js_rule);
+          }
+        });
+      });
+    }
+
+    if (elt_rules.length > 0 && block_rules.length === 0) {
       elt_rules.forEach((rule) => {
         let condition_state = [];
 
@@ -372,25 +395,42 @@ requirejs(['fab/fabrik'], function () {
             };
           }
 
-          form.elements.forEach((elt) => {
-            let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
-
-            if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
-              if (operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
-                if (condition.group) {
-                  condition_state[condition.group].states.push(true);
-                } else {
-                  condition_state.push(true);
-                }
+          if(condition.type === 'user' && userDetails && Object.keys(userDetails).includes(condition.field)) {
+            if (operators[condition.state](userDetails[condition.field], condition.values)) {
+              if (condition.group) {
+                condition_state[condition.group].states.push(true);
               } else {
-                if (condition.group) {
-                  condition_state[condition.group].states.push(false);
-                } else {
-                  condition_state.push(false);
-                }
+                condition_state.push(true);
+              }
+            } else {
+              if (condition.group) {
+                condition_state[condition.group].states.push(false);
+              } else {
+                condition_state.push(false);
               }
             }
-          });
+          }
+          else {
+            form.elements.forEach((elt) => {
+              let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
+
+              if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
+                if (operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
+                  if (condition.group) {
+                    condition_state[condition.group].states.push(true);
+                  } else {
+                    condition_state.push(true);
+                  }
+                } else {
+                  if (condition.group) {
+                    condition_state[condition.group].states.push(false);
+                  } else {
+                    condition_state.push(false);
+                  }
+                }
+              }
+            });
+          }
         });
 
         if (condition_state.length > 0 && check_condition(condition_state, rule.group)) {
@@ -438,7 +478,7 @@ requirejs(['fab/fabrik'], function () {
               form.elements.forEach((elt) => {
                 let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                 let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
-                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                if (fields.includes(name) && (!element || (element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
                   if (['show', 'hide'].includes(action.action)) {
                     form.doElementFX('element_' + elt.strElement, action.action, elt);
 
@@ -518,7 +558,7 @@ requirejs(['fab/fabrik'], function () {
               form.elements.forEach((elt) => {
                 let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
                 let id = elt.baseElementId ? elt.baseElementId : elt.strElement;
-                if (fields.includes(name) && ((element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
+                if (fields.includes(name) && (!element || (element.options.inRepeatGroup && elt.getRepeatNum() == element.getRepeatNum()) || !element.options.inRepeatGroup)) {
                   if (['show', 'hide'].includes(opposite_action)) {
                     form.doElementFX('element_' + elt.strElement, opposite_action, elt);
 

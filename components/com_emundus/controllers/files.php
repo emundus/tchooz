@@ -1586,10 +1586,17 @@ class EmundusControllerFiles extends BaseController
 	 */
 	public function generate_array()
 	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 		$current_user = Factory::getApplication()->getIdentity();
 
 		if (!EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
 			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
+
+		if(!class_exists('EmundusHelperFabrik'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
 
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
@@ -1619,6 +1626,7 @@ class EmundusControllerFiles extends BaseController
 		$methode                            = $this->input->getString('methode', null);
 		$objclass                           = $this->input->get('objclass', null);
 		$excel_file_name                    = $this->input->get('excelfilename', null);
+		$campaign                           = $this->input->getInt('campaign', 0);
 		$opts                               = $this->getcolumn($opts);
 
 		// TODO: upper-case is mishandled, remove temporarily until fixed
@@ -1789,6 +1797,7 @@ class EmundusControllerFiles extends BaseController
 
 			// Here we filter elements which are already present but under a different name or ID, by looking at tablename___element_name.
 			$elts_present = [];
+			$elements_by_aliases = [];
 			foreach ($ordered_elements as $elt_id => $o_elt)
 			{
 				$element = !empty($o_elt->table_join) ? $o_elt->table_join . '___' . $o_elt->element_name : $o_elt->tab_name . '___' . $o_elt->element_name;
@@ -1799,6 +1808,14 @@ class EmundusControllerFiles extends BaseController
 				else
 				{
 					$elts_present[] = $element;
+
+					$params = json_decode($o_elt->element_attribs);
+
+					$elements_by_aliases[$element] = [];
+					if(!empty($params->alias))
+					{
+						$elements_by_aliases[$element] = EmundusHelperFabrik::getElementsByAlias($params->alias);
+					}
 				}
 			}
 
@@ -2047,10 +2064,8 @@ class EmundusControllerFiles extends BaseController
 				$emParams = ComponentHelper::getParams('com_emundus');
 				$excel_elts_to_escape = $emParams->get('export_elements_to_escape', '');
 				if(!empty($excel_elts_to_escape) && is_array($excel_elts_to_escape)) {
-					$db = Factory::getContainer()->get('DatabaseDriver');
-					$query = $db->getQuery(true);
-
-					$query->select('name')
+					$query->clear()
+						->select('name')
 						->from($db->quoteName('#__fabrik_elements'))
 						->where($db->quoteName('id') . ' IN ('.implode(',',$excel_elts_to_escape).')');
 					$db->setQuery($query);
@@ -2082,6 +2097,31 @@ class EmundusControllerFiles extends BaseController
 								}
 							}
 							else {
+								// If file is linked to an other campaign than the one selected for export, we try to find value with aliases
+								if(!empty($campaign) && empty($v) && $fnum['campaign_id'] != $campaign && !empty($elements_by_aliases[$k]))
+								{
+									// Maybe we can find a value with one of the alias
+									foreach ($elements_by_aliases[$k] as $other_elt) {
+										// Be sure that fnum column exists in this table
+										$fnum_query = 'SHOW COLUMNS FROM ' . $db->quoteName($other_elt->db_table_name) . ' LIKE ' . $db->quote('fnum');
+										$db->setQuery($fnum_query);
+										$fnum_column = $db->loadResult();
+
+										if(empty($fnum_column)) {
+											continue;
+										}
+
+										$query->clear()
+											->select($db->quoteName($other_elt->name))
+											->from($db->quoteName($other_elt->db_table_name))
+											->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum['fnum']));
+										$db->setQuery($query);
+										$v = $db->loadResult();
+										if(!empty($v)) {
+											break;
+										}
+									}
+								}
 								list($key_table, $key_element) = explode('___', $k);
 
 								if ($v == "") {

@@ -306,6 +306,57 @@ class CampaignsModel extends ListModel
                 $registry       = new Registry($item->metadata);
                 $item->metadata = $registry->toArray();
             }
+
+			if(!class_exists('EmundusModelCampaign'))
+			{
+				require_once JPATH_SITE.'/components/com_emundus/models/campaign.php';
+			}
+			if(!class_exists('EmundusHelperFabrik'))
+			{
+				require_once JPATH_SITE.'/components/com_emundus/helpers/fabrik.php';
+			}
+			$m_campaigns = new \EmundusModelCampaign();
+			$more_elements = $m_campaigns->getCampaignMoreForm($item->id);
+			
+			if(!empty($more_elements) && !empty($more_elements['elements']))
+			{
+				$query->clear()
+					->select('*')
+					->from($db->quoteName('#__emundus_setup_campaigns_more'))
+					->where($db->quoteName('campaign_id') . ' = :campaign_id')
+					->bind(':campaign_id', $item->id, ParameterType::INTEGER);
+				$db->setQuery($query);
+				$more_data = $db->loadAssoc();
+				
+				$query->clear()
+					->select('element_id, table_join, table_key')
+					->from($db->quoteName('#__fabrik_joins'))
+					->where($db->quoteName('join_from_table') . ' = ' . $db->quote('jos_emundus_setup_campaigns_more'));
+				$db->setQuery($query);
+				$join_tables = $db->loadAssocList('element_id');
+
+				$item->custom_fields = [];
+				foreach ($more_elements['elements'] as $element) {
+					if(!in_array($element['id'], array_keys($join_tables)))
+					{
+						$item->custom_fields[$element['name']] = \EmundusHelperFabrik::formatElementValue($element['name'], $more_data[$element['name']]);
+					}
+					else {
+						$query->clear()
+							->select($db->quoteName($join_tables[$element['id']]['table_key']))
+							->from($db->quoteName($join_tables[$element['id']]['table_join']))
+							->where($db->quoteName('parent_id') . ' = :id')
+							->bind(':id', $more_data['id'], ParameterType::INTEGER);
+						$db->setQuery($query);
+						$values = $db->loadColumn();
+
+						$item->custom_fields[$element['name']] = [];
+						foreach ($values as $value) {
+							$item->custom_fields[$element['name']][] = \EmundusHelperFabrik::formatElementValue($element['name'], $value);
+						}
+					}
+				}
+			}
         }
 
 	    $orderCol  = $this->state->get('list.ordering', 'sc.id');

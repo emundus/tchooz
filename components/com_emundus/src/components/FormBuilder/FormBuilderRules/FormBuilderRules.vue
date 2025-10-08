@@ -227,6 +227,7 @@ export default {
 		return {
 			rules: [],
 			elements: [],
+			userProfileElements: [],
 			keywords: '',
 
 			loading: false,
@@ -263,6 +264,18 @@ export default {
 							this.elements.push(element);
 						}
 					});
+				});
+
+				formService.getUserProfileElements().then((response) => {
+					if (response.status) {
+						Object.entries(response.data).forEach(([key, element]) => {
+							if (!element.hidden) {
+								this.userProfileElements.push(element);
+							}
+						});
+					} else {
+						this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
+					}
 				});
 			});
 		}

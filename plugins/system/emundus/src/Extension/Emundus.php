@@ -10,6 +10,7 @@
 
 namespace Joomla\Plugin\System\Emundus\Extension;
 
+use EmundusModelForm;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Event\Application\AfterRenderEvent;
@@ -20,6 +21,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\User\User;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
+use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
@@ -38,6 +40,8 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 
 final class Emundus extends CMSPlugin implements SubscriberInterface
 {
+	use DatabaseAwareTrait;
+	
 	const LABEL_COLORS = [
 		'lightpurple' => '--em-purple-2',
 		'purple'      => '--em-purple-2',
@@ -118,6 +122,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$head = $this->getApplication()->getDocument()->getHeadData();
 		$wa   = $this->getApplication()->getDocument()->getWebAssetManager();
 
+		$profile_data = [];
 		if (!$this->getApplication()->getIdentity()->guest)
 		{
 			$e_session       = $this->getApplication()->getSession()->get('emundusUser');
@@ -153,6 +158,24 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 				$wa->addInlineStyle($style);
 			}
+
+			//TODO: Improve this line with cache maybe
+			if(!class_exists('EmundusModelForm'))
+			{
+				require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
+			}
+			$m_form = new EmundusModelForm();
+			$profile_elements = $m_form->getUserProfileElements(true);
+			
+			if(!empty($profile_elements))
+			{
+				$query = $this->getDatabase()->getQuery(true);
+				$query->select($profile_elements)
+					->from($this->getDatabase()->quoteName('#__emundus_users'))
+					->where($this->getDatabase()->quoteName('user_id') . ' = ' . (int) $this->getApplication()->getIdentity()->id);
+				$this->getDatabase()->setQuery($query);
+				$profile_data = $this->getDatabase()->loadAssoc();
+			}
 		}
 
 		$this->getApplication()->getDocument()->setHeadData($head);
@@ -175,6 +198,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			'currentPath' => $currentLangPath
 		];
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.language', $options);
+		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.user_details', $profile_data);
 
 		// Load and injection directive
 		$wa->getRegistry()->addExtensionRegistryFile('plg_system_emundus');

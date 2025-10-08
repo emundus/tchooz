@@ -199,6 +199,12 @@ class TransactionRepository
 
 		if (!empty($transaction->data)) {
 			$transaction_entity->setData($transaction->data);
+
+			$data = json_decode($transaction->data);
+			if (!empty($data->installment) && !empty($data->installment->number_installment_debit))
+			{
+				$transaction_entity->setNumberInstallmentDebit($data->installment->number_installment_debit);
+			}
 		}
 
 		return $transaction_entity;
@@ -339,7 +345,7 @@ class TransactionRepository
 
 		return $saved;
 	}
-	
+
 	private function saveTransactionReference(TransactionEntity $transaction): bool
 	{
 		$saved = false;
@@ -379,7 +385,7 @@ class TransactionRepository
 				throw new \Exception(Text::_('COM_EMUNDUS_ERROR_SAVING_TRANSACTION'));
 			}
 		}
-		
+
 		return $saved;
 	}
 
@@ -704,6 +710,11 @@ class TransactionRepository
 		return $fnums;
 	}
 
+	/**
+	 * @param   array<TransactionEntity>  $transactions
+	 *
+	 * @return array
+	 */
 	public function prepareExport(array $transactions): array
 	{
 		$lines = [];
@@ -720,6 +731,7 @@ class TransactionRepository
 				Text::_('COM_EMUNDUS_TRANSACTION_DATE'),
 				Text::_('COM_EMUNDUS_TRANSACTION_SYNCHRONIZER'),
 				Text::_('COM_EMUNDUS_TRANSACTION_PAYMENT_METHOD'),
+				Text::_('COM_EMUNDUS_TRANSACTION_INSTALLMENT_NUMBER_DEBIT'),
 				Text::_('COM_EMUNDUS_TRANSACTION_STATUS'),
 				Text::_('COM_EMUNDUS_TRANSACTION_ITEM_ID'),
 				Text::_('COM_EMUNDUS_TRANSACTION_PRODUCT_LABEL'),
@@ -728,6 +740,8 @@ class TransactionRepository
 			];
 
 			foreach ($transactions as $transaction) {
+				assert($transaction instanceof TransactionEntity);
+
 				// a line by product
 				$data = $transaction->getData();
 				$data = json_decode($data);
@@ -744,6 +758,7 @@ class TransactionRepository
 					$transaction->getCreatedAt(true),
 					$this->getServiceLabel($transaction->getSynchronizerId()),
 					$transaction->getPaymentMethod()->getLabel(),
+					$transaction->getNumberInstallmentDebit(),
 					$transaction->getStatus()->getLabel(),
 				];
 

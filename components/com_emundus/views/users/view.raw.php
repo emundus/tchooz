@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\Plugin\PluginHelper;
 use Tchooz\Exception\EmundusException;
+use Tchooz\Repositories\User\UserCategoryRepository;
 
 /**
  * HTML Users View class for the Emundus Component
@@ -53,6 +54,7 @@ class EmundusViewUsers extends HtmlView
 	protected $items = null;
 	protected $display = null;
 	protected $display_anonym = false;
+	protected $user_categories = [];
 
 	function __construct($config = array())
 	{
@@ -219,6 +221,13 @@ class EmundusViewUsers extends HtmlView
 		// Get the LDAP elements.
 		$params             = ComponentHelper::getParams('com_emundus');
 		$this->ldapElements = $params->get('ldapElements');
+		
+		// Get user types
+		if ($params->get('enable_user_categories', 0) == 1)
+		{
+			$userCategoryRepository = new UserCategoryRepository();
+			$this->user_categories = $userCategoryRepository->getAllCategories();
+		}
 
 		// Check if we have external authentication
 		$emundusOauth2 = PluginHelper::getPlugin('authentication','emundus_oauth2');

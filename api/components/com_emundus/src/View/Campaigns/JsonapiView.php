@@ -43,7 +43,8 @@ class JsonapiView extends BaseApiView
 	    'pinned',
 	    'files',
 	    'applyUrl',
-	    'detailsUrl'
+	    'detailsUrl',
+	    'custom_fields'
     ];
 
     /**
@@ -65,7 +66,8 @@ class JsonapiView extends BaseApiView
 	    'pinned',
 	    'files',
 	    'applyUrl',
-	    'detailsUrl'
+	    'detailsUrl',
+	    'custom_fields'
     ];
 
     /**

@@ -21,6 +21,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\Uri\Uri;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
@@ -1377,6 +1378,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					case 'internalid':
 						$formatted_value = '';
 						break;
+					case 'fileupload':
+						$live_site = Factory::getApplication()->get('live_site', Uri::root());
+						$live_site = rtrim($live_site, '/');
+						$formatted_value = $live_site.$raw_value;
+						break;
 
 					default:
 						break;
@@ -2255,6 +2261,258 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 
 		return $aliases;
+	}
+
+	public static function getAllFabrikAliasesGrouped($lim = 25, $page = 1, $search = '', string $profile = '', string $order_by = '', string $sort = 'ASC', int $user_id = 0): array
+	{
+		$datas         = ['datas' => [], 'count' => 0];
+
+		$h_cache        = new EmundusHelperCache();
+		$aliases = $h_cache->get('fabrik_aliases_grouped');
+
+		if(empty($user_id))
+		{
+			$user = Factory::getApplication()->getIdentity();
+			if(!empty($user))
+			{
+				$user_id = $user->id;
+			}
+		}
+
+		try
+		{
+			if (empty($lim) || $lim == 'all')
+			{
+				$limit = '';
+			}
+			else
+			{
+				$limit = $lim;
+			}
+
+			if (empty($page) || empty($limit))
+			{
+				$offset = 0;
+			}
+			else
+			{
+				$offset = ($page - 1) * $limit;
+			}
+
+			if(empty($aliases))
+			{
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				// TODO: Display only evaluation forms if user has access to them
+				$query->select('esws.label, esws.form_id')
+					->from($db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
+					->leftJoin($db->quoteName('#__emundus_setup_workflows', 'esw') . ' ON ' . $db->quoteName('esw.id') . ' = ' . $db->quoteName('esws.workflow_id'))
+					->where($db->quoteName('esws.form_id') . ' IS NOT NULL')
+					->where($db->quoteName('esw.published') . ' = 1');
+				$db->setQuery($query);
+				$evaluation_form_ids = $db->loadAssocList('form_id');
+
+				$query->clear()
+					->select('fe.name, fe.label, fe.params, ff.label as form_label, fg.label as group_label, ff.id as form_id')
+					->from($db->quoteName('#__fabrik_elements', 'fe'))
+					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fe.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
+					->where($db->quoteName('fe.published') . ' = 1')
+					->where('JSON_EXTRACT(fe.params, \'$.alias\') IS NOT NULL');
+				$db->setQuery($query);
+				$elements = $db->loadObjectList();
+
+				// First filter aliases to have only those that match applicants or evaluation forms (Use cache for this part)
+				$profiles = [];
+
+				if(!class_exists('EmundusModelForm'))
+				{
+					require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
+				}
+				$m_form = new EmundusModelForm();
+				$available_profiles = $m_form->getAllForms('', '', '', 0, 0, $user_id);
+				$available_profiles = array_keys(array_column($available_profiles['datas'], null, 'id'));
+
+				$aliases = array_map(function ($element) use ($db, $query, $evaluation_form_ids, &$profiles, $available_profiles) {
+					$params = json_decode($element->params, true);
+					if (!empty($params['alias']))
+					{
+						// Get group label, form label and profile label for element context
+						$profile = null;
+						if(in_array($element->form_id, array_keys($profiles)))
+						{
+							$profile = $profiles[$element->form_id];
+						}
+
+						if(empty($profile))
+						{
+							$query->clear()
+								->select('esp.id, esp.label')
+								->from($db->quoteName('#__emundus_setup_profiles', 'esp'))
+								->leftJoin($db->quoteName('#__menu', 'm') . ' ON ' . $db->quoteName('m.menutype') . ' = ' . $db->quoteName('esp.menutype'))
+								->where($db->quoteName('m.link') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $element->form_id));
+							$db->setQuery($query);
+							$profile = $db->loadObject();
+
+							$profiles[$element->form_id] = $profile;
+						}
+
+						// If profile id is not in available profiles, we skip it
+						if(!empty($profile) && !in_array($profile->id, $available_profiles))
+						{
+							return null;
+						}
+
+						$profile_label = !empty($profile) ? Text::_($profile->label) : '';
+						$profile_id    = !empty($profile) ? ('applicant_' . $profile->id) : 0;
+
+						if (in_array($element->form_id, array_keys($evaluation_form_ids)))
+						{
+							$profile_label = !empty($evaluation_form_ids[$element->form_id]['label']) ? Text::_($evaluation_form_ids[$element->form_id]['label']) : Text::_('COM_EMUNDUS_EVALUATION_FORM');
+							$profile_id    = 'evaluation_' . $element->form_id;
+						}
+
+						if (empty($profile_label))
+						{
+							return null;
+						}
+
+						return [
+							'name'          => $element->name,
+							'label'         => $element->label,
+							'profile_id'    => $profile_id,
+							'profile_label' => $profile_label,
+							'alias'         => $params['alias'],
+							'form_label'    => $element->form_label,
+							'group_label'   => $element->group_label,
+						];
+					}
+					else
+					{
+						return null;
+					}
+				}, $elements);
+				// Filter out empty aliases
+				$aliases = array_filter($aliases, function ($alias) {
+					return !empty($alias);
+				});
+				//
+
+				$aliases = array_map(function ($element) {
+					$path = $element['profile_label'] . ' > ';
+					if (!empty(Text::_($element['form_label'])))
+					{
+						$path .= Text::_($element['form_label']) . ' > ';
+					}
+					if (!empty(Text::_($element['group_label'])))
+					{
+						$path .= Text::_($element['group_label']) . ' > ';
+					}
+
+					return [
+						'name'  => $element['name'],
+						'path'  => $path,
+						'profile_id'    => $element['profile_id'],
+						'label' => Text::_($element['label']),
+						'alias' => $element['alias'],
+					];
+				}, $aliases);
+
+				// Grouped by alias
+				$aliases = array_reduce($aliases, function ($carry, $item) {
+					$carry[$item['alias']]['name']       = $item['alias'];
+					$carry[$item['alias']]['elements'][] = $item;
+
+					return $carry;
+				}, []);
+
+				$h_cache->set('fabrik_aliases_grouped', $aliases);
+			}
+
+			// Apply profile filter
+			if (!empty($profile) && $profile != 'all')
+			{
+				$aliases = array_filter($aliases, function ($alias) use ($profile) {
+					foreach ($alias['elements'] as $element) {
+						if ($element['profile_id'] == $profile) {
+							return true;
+						}
+					}
+
+					return false;
+				});
+			}
+
+			// Then apply search filter
+			if (!empty($search))
+			{
+				$search = strtolower($search);
+				$aliases = array_filter($aliases, function ($alias) use ($search) {
+					// Search in alias name only
+					if(strpos(strtolower($alias['name']), $search) !== false) {
+						return true;
+					}
+
+					// Search in element labels and paths
+					foreach ($alias['elements'] as $element) {
+						if (strpos(strtolower($element['label']), $search) !== false) {
+							return true;
+						}
+					}
+
+					return false;
+				});
+			}
+
+			// Then apply limit and offset
+			$datas['count'] = count($aliases);
+			// Apply order
+			if (!empty($order_by))
+			{
+				$aliases = array_values($aliases);
+				$sort    = strtoupper($sort) == 'DESC' ? SORT_DESC : SORT_ASC;
+
+				if ($order_by == 'label')
+				{
+					$names = array_column($aliases, 'name');
+					array_multisort($names, $sort, $aliases);
+				}
+				elseif ($order_by == 'count')
+				{
+					$counts = array_map(function ($alias) {
+						return count($alias['elements']);
+					}, $aliases);
+					array_multisort($counts, $sort, $aliases);
+				}
+			}
+
+			if (!empty($limit))
+			{
+				$datas['datas'] = array_slice($aliases, $offset, $limit);
+			}
+			else {
+				$datas['datas'] = $aliases;
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/helpers/fabrik | Cannot get all fabrik aliases : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+		}
+
+		return $datas;
+	}
+
+	public static function clearFabrikAliasesCache()
+	{
+		if(!class_exists('EmundusHelperCache'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
+		}
+		$h_cache = new EmundusHelperCache();
+		$h_cache->set('fabrik_aliases', []);
+		$h_cache->set('fabrik_aliases_grouped', []);
 	}
 
 	/**

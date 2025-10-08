@@ -534,7 +534,8 @@ class EmundusModelSettings extends ListModel
 
 				return $this->db->execute();
 			}
-			else {
+			else
+			{
 				// Update only color
 				$query->clear()
 					->update('#__emundus_setup_action_tag')
@@ -1997,6 +1998,8 @@ class EmundusModelSettings extends ListModel
 		// Users params
 		$params['emundus']['disable_inactive_accounts_after_delay'] = $emundus_parameters->get('disable_inactive_accounts_after_delay', 12);
 		$params['emundus']['delete_testing_accounts_after_delay']   = $emundus_parameters->get('delete_testing_accounts_after_delay', 12);
+		$params['emundus']['enable_user_categories']                         = $emundus_parameters->get('enable_user_categories', 0);
+		$params['emundus']['user_category_mandatory']                     = $emundus_parameters->get('user_category_mandatory', 0);
 
 		foreach ($settings_applicants as $settings_applicant)
 		{
@@ -2107,7 +2110,7 @@ class EmundusModelSettings extends ListModel
 	 *
 	 * @return bool
 	 */
-	public function updateEmundusParam($component, $param, $value, $config)
+	public function updateEmundusParam($component, $param, $value, $user_id = null)
 	{
 		$updated = false;
 
@@ -2177,7 +2180,14 @@ class EmundusModelSettings extends ListModel
 
 		if ($updated)
 		{
-			$user           = Factory::getApplication()->getIdentity();
+			if(empty($user_id))
+			{
+				$user = Factory::getApplication()->getIdentity();
+			}
+			else {
+				$user = Factory::getUser($user_id);
+			}
+
 			$this->userID   = $user->id;
 			$this->userName = $user->name;
 			if ($value !== "")
@@ -3400,11 +3410,13 @@ class EmundusModelSettings extends ListModel
 		{
 			$config = [
 				'authentication' => [
-					'client_secret' => isset($setup->authentication->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->client_secret) : '',
+					'client_secret'  => isset($setup->authentication->client_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->client_secret) : '',
 					'webhook_secret' => isset($setup->authentication->webhook_secret) ? EmundusHelperFabrik::encryptDatas($setup->authentication->webhook_secret) : '',
 				]
 			];
-		} else {
+		}
+		else
+		{
 			$config = json_decode($app->config, true);
 
 			if (isset($setup->authentication->client_secret))
@@ -3845,7 +3857,8 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($query);
 			$params = json_decode($this->db->loadResult(), true);
 
-			if ($params['displayed']) {
+			if ($params['displayed'])
+			{
 				$addons[] = new AddonEntity(
 					'COM_EMUNDUS_ADDONS_ANONYMOUS',
 					'anonymous',
@@ -4036,7 +4049,7 @@ class EmundusModelSettings extends ListModel
 					$query->clear()
 						->update($this->db->quoteName('#__emundus_setup_emails'))
 						->set('published = ' . $this->db->quote($enabled))
-						->where('lbl IN (' . $this->db->quote('import_account_created') . ', ' . $this->db->quote('import_file_created')  . ', ' . $this->db->quote('import_file_updated') . ')');
+						->where('lbl IN (' . $this->db->quote('import_account_created') . ', ' . $this->db->quote('import_file_created') . ', ' . $this->db->quote('import_file_updated') . ')');
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
@@ -4653,25 +4666,25 @@ class EmundusModelSettings extends ListModel
 		try
 		{
 			$available_methods = [$this->db->quote('email'), $this->db->quote('totp')];
-			$query = $this->db->getQuery(true);
+			$query             = $this->db->getQuery(true);
 
 			$query->select('extension_id, element, enabled')
 				->from($this->db->quoteName('#__extensions'))
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
 				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('multifactorauth'))
-				->where($this->db->quoteName('element') . ' IN ('.implode(',',$available_methods).')');
+				->where($this->db->quoteName('element') . ' IN (' . implode(',', $available_methods) . ')');
 			$this->db->setQuery($query);
 			$methods_db = $this->db->loadObjectList('element');
 
 			foreach ($methods_db as $method)
 			{
-				if(in_array($method->element, $methods) && $method->enabled == 0)
+				if (in_array($method->element, $methods) && $method->enabled == 0)
 				{
 					$method->enabled = 1;
 
 					$this->db->updateObject('#__extensions', $method, 'extension_id');
 				}
-				elseif(!in_array($method->element, $methods) && $method->enabled == 1)
+				elseif (!in_array($method->element, $methods) && $method->enabled == 1)
 				{
 					$method->enabled = 0;
 
@@ -4703,7 +4716,7 @@ class EmundusModelSettings extends ListModel
 			$emundus_plugin = $this->db->loadObject();
 
 			$params = json_decode($emundus_plugin->params, true);
-			if($force === 1)
+			if ($force === 1)
 			{
 				$params['2faForceForProfiles'] = $profiles;
 			}
@@ -4712,7 +4725,7 @@ class EmundusModelSettings extends ListModel
 				$params['2faForceForProfiles'] = ['0'];
 			}
 
-			$params['2faforSSO'] = $mfaForSso;
+			$params['2faforSSO']    = $mfaForSso;
 			$emundus_plugin->params = json_encode($params);
 
 			return $this->db->updateObject('#__extensions', $emundus_plugin, 'extension_id');
@@ -4720,6 +4733,7 @@ class EmundusModelSettings extends ListModel
 		catch (Exception $e)
 		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+
 			return false;
 		}
 	}
@@ -4750,5 +4764,72 @@ class EmundusModelSettings extends ListModel
 		}
 
 		return $parameters;
+	}
+
+	public function switchUsercategoryElement(bool $state): bool
+	{
+		$result = false;
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select('form_id')
+				->from($this->db->quoteName('#__emundus_setup_formlist'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('profile'));
+			$this->db->setQuery($query);
+			$profile_form = $this->db->loadResult();
+
+			if (!empty($profile_form))
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__fabrik_elements','fe'))
+					->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
+					->set($this->db->quoteName('published') . ' = ' . $this->db->quote($state ? 1 : 0))
+					->where($this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quote($profile_form))
+					->where($this->db->quoteName('fe.name') . ' = ' . $this->db->quote('user_category'));
+				$this->db->setQuery($query);
+				$result = $this->db->execute();
+			}
+
+			// Unpublish action-users menu item
+			$query->clear()
+				->update($this->db->quoteName('#__menu'))
+				->set($this->db->quoteName('published') . ' = ' . $this->db->quote($state ? 1 : 0))
+				->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=users&format=raw&layout=affectusercategory&Itemid={Itemid}'));
+			$this->db->setQuery($query);
+			$result = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $result;
+	}
+
+	public function enableDisableUserCategoryPlugin(bool $state): bool
+	{
+		$result = false;
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = ' . $this->db->quote($state ? 1 : 0))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('emundus_user_category'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'));
+			$this->db->setQuery($query);
+			$result = $this->db->execute();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $result;
 	}
 }

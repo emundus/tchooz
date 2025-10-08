@@ -260,6 +260,9 @@ Text::script('COM_EMUNDUS_ONBOARD_NOTRIGGERS');
 Text::script('COM_EMUNDUS_ONBOARD_ACTION_DELETE');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS');
 
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_USER_CATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_USERCATEGORY');
+
 $app = Factory::getApplication();
 if (version_compare(JVERSION, '4.0', '>')) {
 	$lang = $app->getLanguage();

@@ -891,6 +891,32 @@ $(document).ready(function () {
 
 				break;
 
+			case 'affectusercategory':
+				addLoader();
+
+				await fetch(url, {
+					method: 'POST',
+					body: new URLSearchParams({})
+				})
+					.then((response) => {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.text();
+					})
+					.then((result) => {
+						removeLoader();
+						swalForm = true;
+						title = 'COM_EMUNDUS_AFFECT_USER_CATEGORY';
+						swal_confirm_button = 'COM_EMUNDUS_AFFECT_USER_CATEGORY_ACTION';
+						html = result;
+					})
+					.catch((error) => {
+						removeLoader();
+						console.error('Error:', error);
+					});
+				break;
+
 			case 6:
 				addLoader();
 
@@ -1156,6 +1182,49 @@ $(document).ready(function () {
 		 * 34: send email
 		 */
 		switch (id) {
+			case 'affectusercategory':
+				let userCategory = document.querySelector('select#user_category').value;
+
+				formData = new FormData();
+				formData.append('users', getUserCheck());
+				formData.append('user_category', userCategory);
+
+				fetch('/index.php?option=com_emundus&controller=users&task=affectuserscategory&Itemid=' + itemId, {
+					method: 'POST',
+					body: formData
+				})
+					.then(function (response) {
+						if (!response.ok) {
+							throw new Error('Network response was not ok');
+						}
+						return response.json();
+					})
+					.then(function (result) {
+						removeLoader();
+
+						if(result.status === false) {
+							Swal.fire({
+								position: 'center',
+								icon: 'error',
+								title: result.msg
+							});
+						}
+						else {
+							Swal.fire({
+								position: 'center',
+								icon: 'success',
+								title: Joomla.JText._('COM_EMUNDUS_AFFECT_USER_CATEGORY_SUCCESS'),
+								showCancelButton: false,
+								showConfirmButton: false,
+								reverseButtons: true,
+								allowOutsideClick: false,
+								timer: 1500
+							}).then((response) => {
+								reloadData();
+							});
+						}
+					});
+				break;
 			case 6:
 				addLoader();
 
@@ -1284,6 +1353,7 @@ $(document).ready(function () {
 				var groups = "";
 				var campaigns = "";
 				var oprofiles = "";
+				var user_category = $('select#user_category').val();
 
 				if ($("#groups").val() != null && $("#groups").val().length > 0) {
 					for (var i = 0; i < $("#groups").val().length; i++) {
@@ -1329,6 +1399,7 @@ $(document).ready(function () {
 				formData.append('oprofiles', oprofiles.substr(0, oprofiles.length - 1));
 				formData.append('groups', groups.substr(0, groups.length - 1));
 				formData.append('profile', profile);
+				formData.append('user_category', user_category);
 				formData.append('jgr', $('#profiles option:selected').attr('id'));
 				formData.append('email', email);
 				formData.append('newsletter', $('#news').is(':checked') ? 1 : 0);
@@ -1440,6 +1511,7 @@ $(document).ready(function () {
 				var groups = '';
 				var campaigns = '';
 				var oprofiles = '';
+				var user_category = $('select#user_category').val();
 
 				if ($("#groups").val() != null && $("#groups").val().length > 0) {
 					for (var i = 0; i < $("#groups").val().length; i++) {
@@ -1459,6 +1531,7 @@ $(document).ready(function () {
 						oprofiles += ',';
 					}
 				}
+
 				var login = $('#login').val();
 				var fn = $('#fname').val();
 				var ln = $('#lname').val();
@@ -1483,6 +1556,7 @@ $(document).ready(function () {
 				formData.append('campaigns', campaigns.substr(0, campaigns.length - 1));
 				formData.append('oprofiles', oprofiles.substr(0, oprofiles.length - 1));
 				formData.append('groups', groups.substr(0, groups.length - 1));
+				formData.append('user_category', user_category);
 				formData.append('profile', profile);
 				formData.append('jgr', $('#profiles option:selected').attr('id'));
 				formData.append('email', email);

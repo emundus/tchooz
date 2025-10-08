@@ -24,6 +24,8 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
+use Tchooz\Entities\User\UserCategoryEntity;
+use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -1110,7 +1112,7 @@ class EmundusControllersettings extends BaseController
 			if (!empty($param) && isset($value))
 			{
 				$config = new JConfig();
-				if ($this->m_settings->updateEmundusParam($component, $param, $value, $config))
+				if ($this->m_settings->updateEmundusParam($component, $param, $value))
 				{
 					$response['msg']    = Text::_('SUCCESS');
 					$response['status'] = true;
@@ -1145,7 +1147,7 @@ class EmundusControllersettings extends BaseController
 				foreach ($params as $param)
 				{
 					$param = json_decode($param);
-					if ($this->m_settings->updateEmundusParam($param->component, $param->param, $param->value, $config))
+					if ($this->m_settings->updateEmundusParam($param->component, $param->param, $param->value))
 					{
 						$response['msg'] .= Text::_('SUCCESS') . ' for ' . $param->param . $param->value . '. ';
 
@@ -2704,19 +2706,19 @@ class EmundusControllersettings extends BaseController
 
 			try
 			{
-				$profiles = [];
-				$mfaForSso = 0;
+				$profiles   = [];
+				$mfaForSso  = 0;
 				$parameters = $this->m_settings->get2faparameters();
-				if(!empty($parameters))
+				if (!empty($parameters))
 				{
-					$profiles = $parameters['2faForceForProfiles'];
-					$profiles = array_filter($profiles);
+					$profiles  = $parameters['2faForceForProfiles'];
+					$profiles  = array_filter($profiles);
 					$mfaForSso = $parameters['2faforSSO'] ?? 0;
 				}
 
 				foreach ($profiles as $key => $profile)
 				{
-					if($profile !== 'applicant')
+					if ($profile !== 'applicant')
 					{
 						$profiles[$key] = (int) $profile;
 					}
@@ -2744,20 +2746,20 @@ class EmundusControllersettings extends BaseController
 		{
 			try
 			{
-				$methods  = $this->input->getString('2fa_available_methods');
+				$methods = $this->input->getString('2fa_available_methods');
 				$methods = explode(',', $methods);
 
 				$response['status'] = $this->m_settings->switch2faMethods($methods);
 
-				$force    = $this->input->getInt('2fa_force_for_profiles', 0);
-				$profiles = $this->input->getString('2fa_mandatory_profiles');
-				$mfaForSso = $this->input->getInt('2fa_for_sso', 0);
-				$profiles = explode(',', $profiles);
+				$force              = $this->input->getInt('2fa_force_for_profiles', 0);
+				$profiles           = $this->input->getString('2fa_mandatory_profiles');
+				$mfaForSso          = $this->input->getInt('2fa_for_sso', 0);
+				$profiles           = explode(',', $profiles);
 				$response['status'] = $this->m_settings->update2faConfig($force, $profiles, $mfaForSso);
 
 				// Log actions
 				PluginHelper::importPlugin('actionlog');
-				$dispatcher                 = Factory::getApplication()->getDispatcher();
+				$dispatcher       = Factory::getApplication()->getDispatcher();
 				$onAfterUpdate2fa = new GenericEvent(
 					'onAfterUpdate2fa',
 					// Datas to pass to the event
@@ -2782,6 +2784,387 @@ class EmundusControllersettings extends BaseController
 
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	public function getusercategories(): void
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$only_published = filter_var($this->input->getString('only_published', true), FILTER_VALIDATE_BOOLEAN);
+
+				$categoryRepository = new UserCategoryRepository();
+				$categories = $categoryRepository->getAllCategories($only_published);
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_FOUND');
+				$response['data']    = $categories;
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_FETCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function saveusercategories(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$categories  = $this->input->getString('categories');
+				$categories = json_decode($categories);
+
+				$categoryRepository = new UserCategoryRepository();
+
+				foreach ($categories as $category)
+				{
+					if(!empty($category->label))
+					{
+						$categoryEntity = new UserCategoryEntity(
+							$category->id ?? 0,
+							$category->label,
+							$this->user->id
+						);
+
+						$categoryCreated = $categoryRepository->save($categoryEntity);
+
+						if($categoryCreated instanceof UserCategoryEntity === false)
+						{
+							$response['code']    = 500;
+							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVE_FAILED');
+
+							echo json_encode((object) $response);
+							exit;
+						}
+					}
+				}
+
+				$response['status'] = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVED');
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVE_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function updatepublishusercategory(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$category_id = $this->input->getInt('id', 0);
+				$publish = filter_var($this->input->getString('publish', true), FILTER_VALIDATE_BOOLEAN);
+
+				if ($category_id > 0)
+				{
+					$categoryRepository = new UserCategoryRepository();
+
+					if ($category = $categoryRepository->getCategoryById($category_id))
+					{
+						$category->setPublished($publish);
+
+						$categoryRepository->save($category);
+					}
+
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_UNPUBLISHED');
+				}
+				else
+				{
+					$response['code']    = 400;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_UNPUBLISH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_UNPUBLISH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function switchusercategory(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$state = $this->input->getString('state', 0);
+				$state = filter_var($state, FILTER_VALIDATE_BOOLEAN);
+
+				// First switch parameter
+				if($this->m_settings->updateEmundusParam('emundus', 'enable_user_categories', $state ? 1 : 0))
+				{
+					$cache = Factory::getCache('_system');
+					$cache->clean('_system');
+
+					// Unpublish element in profile fabrik form
+					$this->m_settings->switchUsercategoryElement($state);
+
+					// Enable/disable system plugin
+					$this->m_settings->enableDisableUserCategoryPlugin($state);
+
+					$cache = Factory::getCache('mod_menu');
+					$cache->clean('mod_menu');
+					$cache->clean('com_menus');
+					$cache->clean('com_menus');
+
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_SUCCESS');
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function switchusercategorymandatory(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$state = $this->input->getString('state', 0);
+				$state = filter_var($state, FILTER_VALIDATE_BOOLEAN);
+
+				// First switch parameter
+				if($this->m_settings->updateEmundusParam('emundus', 'user_category_mandatory', $state ? 1 : 0))
+				{
+					$cache = Factory::getCache('_system');
+					$cache->clean('_system');
+
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_MANDATORY_SWITCH_SUCCESS');
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_MANDATORY_SWITCH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_MANDATORY_SWITCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function fetchaliases()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$sort      = $this->input->getString('sort', 'ASC');
+			$order_by  = $this->input->getString('order_by', '');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 0);
+			$page      = $this->input->getInt('page', 0);
+			$profile   = $this->input->getString('profile', 'all');
+
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_ALIASES');
+
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+			}
+			$aliases = EmundusHelperFabrik::getAllFabrikAliasesGrouped($lim, $page, $recherche, $profile, $order_by, $sort);
+			if (count($aliases) > 0)
+			{
+				// this data formatted is used in onboarding lists
+				foreach ($aliases['datas'] as $key => $alias)
+				{
+					$aliases['datas'][$key]['id']    = $key;
+					$aliases['datas'][$key]['label'] = ['fr' => $alias['name'], 'en' => $alias['name']];
+
+					$elements = [];
+					foreach ($alias['elements'] as $element)
+					{
+						$elements[] = [
+							'key'     => $element['name'],
+							'value'   => $element['path'] . ' ' . $element['label'],
+							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-neutral-300'
+						];
+					}
+
+					$aliases['datas'][$key]['additional_columns'] = [
+						[
+							'type'    => 'tags',
+							'key'     => Text::_('COM_EMUNDUS_ALIAS_ELEMENTS'),
+							'values'  => $elements,
+							'display' => 'table'
+						]
+					];
+				}
+			}
+
+			$response['data'] = ['datas' => array_values($aliases['datas']), 'count' => $aliases['count']];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getaliasprofiles()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$current_language    = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_ALIAS_PROFILES');
+
+			if (!class_exists('EmundusModelForm'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');
+			}
+			$m_form             = new EmundusModelForm();
+			$applicant_profiles = $m_form->getAllForms();
+			$evaluation_forms   = $m_form->getAllGrilleEval();
+
+			$profiles = [];
+			foreach ($applicant_profiles['datas'] as $profile)
+			{
+				$profiles[] = [
+					'value' => 'applicant_' . $profile->id,
+					'label' => $profile->label[$current_language],
+				];
+			}
+			foreach ($evaluation_forms['datas'] as $form)
+			{
+				$profiles[] = [
+					'value' => 'evaluation_' . $form->id,
+					'label' => $form->label[$current_language],
+				];
+			}
+
+			$response['data'] = $profiles;
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function exportcsvaliases()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_EXPORT_CSV_ALIASES');
+
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+			}
+			$aliases = EmundusHelperFabrik::getAllFabrikAliasesGrouped(null, null);
+
+			$excel_filename = 'export_aliases' . date('Ymd_His') . '.csv';
+			$excel_filepath = JPATH_SITE . '/tmp/' . $excel_filename;
+			$fp             = fopen($excel_filepath, 'w');
+
+			$columns = [
+				'Alias',
+				'Elements'
+			];
+			fputcsv($fp, $columns, ';');
+
+			$rows = [];
+			foreach ($aliases['datas'] as $key => $alias)
+			{
+				$row    = [
+					$key,
+					implode(' | ', array_column($alias['elements'], 'path'))
+				];
+				$rows[] = $row;
+
+				fputcsv($fp, $row, ';');
+			}
+
+			fclose($fp);
+
+			$nb_cols = count($columns);
+			$nb_rows = count($rows);
+
+			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
+			$m_users  = new EmundusModelUsers();
+			$xls_file = $m_users->convertCsvToXls($excel_filename, $nb_cols, $nb_rows, 'export_aliases' . date('Ymd_His'), ';');
+
+			$excel_filepath = '';
+			if (!empty($xls_file))
+			{
+				$excel_filepath = JPATH_SITE . '/tmp/' . $xls_file;
+			}
+
+			header('Content-Type: application/vnd.ms-excel');
+			header('Content-Disposition: attachment; filename="' . basename($excel_filepath) . '"');
+			header('Content-Length: ' . filesize($excel_filepath));
+
+			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }
 

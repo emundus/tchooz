@@ -403,4 +403,15 @@ export default {
 			};
 		}
 	},
+
+	async getUserProfileElements() {
+		try {
+			return await fetchClient.get('getuserprofileelements');
+		} catch (error) {
+			return {
+				status: false,
+				error: error,
+			};
+		}
+	},
 };

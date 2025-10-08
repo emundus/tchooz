@@ -195,6 +195,19 @@ if ($this->user['is_anonym'] == 1)
                 </div>
             <?php endif ?>
 
+	        <?php if ($eMConfig->get('enable_user_categories', 0) == 1) : ?>
+                <div class="form-group em-addUser-user-categories">
+                    <label for="user_category"><?= Text::_('COM_EMUNDUS_USER_CATEGORY'); ?></label>
+                    <br/>
+                    <select class="em-chosen" name="user_category" id="user_category">
+                        <option value="0"><?= Text::_('PLEASE_SELECT'); ?></option>
+				        <?php foreach ($this->user_categories as $userCategory) : ?>
+                            <option value="<?= $userCategory->id; ?>" <?= (($this->edit == 1) && $userCategory->id == $this->user['user_category']) ? 'selected="true"' : ''; ?>><?= trim($userCategory->label); ?></option>
+				        <?php endforeach; ?>
+                    </select>
+                </div>
+	        <?php endif ?>
+
 	    <?php } ?>
 
         <div class="form-group em-hidden-appli-fields em-addUser-campaign"

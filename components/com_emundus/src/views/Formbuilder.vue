@@ -40,32 +40,41 @@
 				>
 					{{ title }}
 				</span>
-				<div class="tw-flex tw-flex-col tw-items-end">
-					<button
-						class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-rounded-coordinator tw-px-3 tw-py-2"
-						v-if="
-							this.mode !== 'eval' &&
-							this.mode !== 'models' &&
-							!previewForm &&
-							['page', 'rules'].includes(showInSection)
-						"
-						@click="previewForm = true"
-					>
-						<span class="material-symbols-outlined tw-text-white"> remove_red_eye </span>
-						<label class="tw-mb-0 tw-cursor-pointer" for="previewform">{{
-							translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW')
-						}}</label>
-					</button>
-					<button
-						class="em-w-auto tw-btn-primary tw-gap-3 tw-rounded-coordinator tw-px-6 tw-py-3"
-						v-if="previewForm"
-						@click="previewForm = false"
-					>
-						<span class="material-symbols-outlined tw-text-white"> handyman </span>
-						<label class="tw-mb-0" for="previewform">{{
-							translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER')
-						}}</label>
-					</button>
+				<div class="tw-flex tw-items-center tw-justify-end tw-gap-3">
+					<a
+						:href="'/' + this.aliasLink"
+						target="_blank"
+						class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap"
+						>{{ translate('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST') }}
+						<span class="material-symbols-outlined">open_in_new</span>
+					</a>
+					<div class="tw-flex tw-flex-col tw-items-end">
+						<button
+							class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-rounded-coordinator tw-px-3 tw-py-2"
+							v-if="
+								this.mode !== 'eval' &&
+								this.mode !== 'models' &&
+								!previewForm &&
+								['page', 'rules'].includes(showInSection)
+							"
+							@click="previewForm = true"
+						>
+							<span class="material-symbols-outlined tw-text-white"> remove_red_eye </span>
+							<label class="tw-mb-0 tw-cursor-pointer" for="previewform">{{
+								translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW')
+							}}</label>
+						</button>
+						<button
+							class="em-w-auto tw-btn-primary tw-gap-3 tw-rounded-coordinator tw-px-6 tw-py-3"
+							v-if="previewForm"
+							@click="previewForm = false"
+						>
+							<span class="material-symbols-outlined tw-text-white"> handyman </span>
+							<label class="tw-mb-0" for="previewform">{{
+								translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER')
+							}}</label>
+						</button>
+					</div>
 				</div>
 			</header>
 
@@ -341,10 +350,12 @@ import formBuilderMixin from '../mixins/formbuilder';
 import Translations from '@/components/Settings/TranslationTool/Translations.vue';
 import settingsService from '@/services/settings.js';
 import History from '@/views/History.vue';
+import ContactForm from '@/views/Contacts/ContactForm.vue';
 
 export default {
 	name: 'FormBuilder',
 	components: {
+		ContactForm,
 		History,
 		Translations,
 		FormBuilderCreateModel,
@@ -439,6 +450,8 @@ export default {
 
 			previewForm: false,
 			loading: false,
+
+			aliasLink: '',
 		};
 	},
 	setup() {
@@ -488,6 +501,7 @@ export default {
 
 		this.getFormTitle();
 		this.getPages();
+		this.getAliasLink();
 	},
 	mounted() {
 		this.$refs.modal.open();
@@ -731,6 +745,17 @@ export default {
 					settingsService.redirectJRoute('index.php?option=com_emundus&view=form', useGlobalStore().getCurrentLang);
 				}
 			}
+		},
+		getAliasLink() {
+			settingsService
+				.redirectJRoute(
+					'index.php?option=com_emundus&view=export_select_columns&layout=aliases',
+					useGlobalStore().getCurrentLang,
+					false,
+				)
+				.then((response) => {
+					this.aliasLink = response;
+				});
 		},
 		addRule(rule_type, rule = null) {
 			this.ruleType = rule_type;
