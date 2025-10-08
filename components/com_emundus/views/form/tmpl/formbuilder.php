@@ -571,6 +571,17 @@ Text::script('COM_EMUNDUS_FORMBUILDER_RULE_TYPE_USER');
 
 Text::script('COM_EMUNDUS_ONBOARD_TYPE_BOOKING');
 
+Text::script('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST');
+Text::script('COM_EMUNDUS_ONBOARD_ALIAS_LIST');
+Text::script('COM_EMUNDUS_ALIAS');
+Text::script('COM_EMUNDUS_ALIAS_ELEMENTS');
+Text::script('SEARCH');
+Text::script('COM_EMUNDUS_ALIAS_COPIED');
+Text::script('COM_EMUNDUS_ALIAS_PROFILE');
+Text::script('COM_EMUNDUS_ALIAS_PROFILE_ALL');
+Text::script('COM_EMUNDUS_ONBOARD_ALIASES_FILTER_PROFILES');
+Text::script('COM_EMUNDUS_ONBOARD_ALIASES_EXPORTS_EXCEL');
+
 $vue = 'em-formBuilder-vue';
 if ($this->eval != 0) {
 	$vue = 'em-evaluationBuilder-vue';

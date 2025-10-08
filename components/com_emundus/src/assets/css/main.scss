@@ -68,7 +68,8 @@
 .view-events #g-container-main .g-container,
 .view-payment:not(.layout-cart) #g-container-main .g-container,
 .view-sign #g-container-main .g-container,
-.view-emundus.layout-history #g-container-main .g-container {
+.view-emundus.layout-history #g-container-main .g-container,
+.view-export_select_columns.layout-aliases #g-container-main .g-container {
 	width: auto;
 	position: relative;
 }
@@ -82,7 +83,8 @@
 .view-events #g-container-main,
 .view-payment:not(.layout-cart) #g-container-main,
 .view-sign #g-container-main,
-.view-emundus.layout-history #g-container-main {
+.view-emundus.layout-history #g-container-main,
+.view-export_select_columns.layout-aliases #g-container-main {
 	padding-left: 76px;
 }
 

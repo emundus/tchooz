@@ -58,7 +58,7 @@ export default {
 									},
 								},
 								{
-									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%',
+									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&profile=applicant_%id%',
 									label: 'COM_EMUNDUS_ONBOARD_MODIFY',
 									controller: 'form',
 									type: 'redirect',
@@ -107,7 +107,8 @@ export default {
 									name: 'add',
 								},
 								{
-									action: '\/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval',
+									action:
+										'\/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval&profile=evaluation_%id%',
 									label: 'COM_EMUNDUS_ONBOARD_MODIFY',
 									controller: 'form',
 									type: 'redirect',

@@ -68,7 +68,7 @@
 					>
 						<thead>
 							<tr>
-								<th id="check-th" class="tw-p-4">
+								<th id="check-th" class="tw-p-4" v-if="canCheck">
 									<input class="items-check-all" type="checkbox" @change="onCheckAllitems" />
 								</th>
 								<th class="tw-cursor-pointer tw-p-4" @click="orderByColumn('label')" v-if="displayLabel">
@@ -116,8 +116,8 @@
 								v-for="item in displayedItems"
 								:key="item.id"
 								:id="'item-' + currentTab.key + '-' + item.id"
-								class="tw-group/item-row table-row tw-cursor-pointer tw-rounded-coordinator-cards tw-border"
-								@click="onCheckItem(item.id, $event)"
+								class="tw-group/item-row table-row tw-rounded-coordinator-cards tw-border"
+								@click="canCheck ? onCheckItem(item.id, $event) : null"
 								:class="{
 									'tw-flex tw-min-h-[200px] tw-flex-col tw-justify-between tw-gap-3 tw-rounded-coordinator-cards tw-p-8 tw-shadow-card':
 										viewType === 'blocs',
@@ -125,9 +125,11 @@
 									'tw-shadow-table-border-neutral': !checkedItems.includes(item.id) && viewType === 'table',
 									'tw-border-profile-full tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'blocs',
 									'tw-bg-white hover:tw-bg-neutral-100': !checkedItems.includes(item.id) && viewType === 'blocs',
+									'tw-cursor-pointer': canCheck,
 								}"
 							>
 								<td
+									v-if="canCheck"
 									v-show="viewType === 'table'"
 									class="tw-rounded-s-coordinator-cards tw-p-4"
 									:class="{
@@ -150,6 +152,7 @@
 										'tw-bg-main-50': checkedItems.includes(item.id) && viewType === 'table',
 										'tw-bg-white group-hover/item-row:tw-bg-neutral-100':
 											!checkedItems.includes(item.id) && viewType === 'table',
+										'tw-rounded-s-coordinator-cards': !canCheck && viewType === 'table',
 									}"
 								>
 									<span
@@ -427,6 +430,10 @@ export default {
 			default: null,
 		},
 		encoded: {
+			type: Boolean,
+			default: true,
+		},
+		canCheck: {
 			type: Boolean,
 			default: true,
 		},
@@ -766,7 +773,7 @@ export default {
 		},
 
 		async setFilterOptions(controller, filter, tab) {
-			return await fetch('index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+			return await fetch('/index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
 				.then((response) => response.json())
 				.then((response) => {
 					if (response.status === true) {
@@ -810,6 +817,32 @@ export default {
 				item = this.items[this.selectedListTab].find((item) => item.id === itemId);
 			}
 
+			if (action.name === 'copy_clipboard') {
+				if (!item) {
+					console.error('Item not found for copy to clipboard action');
+					return;
+				}
+
+				let textToCopy = item[action.field] || '';
+				// apply format
+				if (action.format) {
+					textToCopy = action.format.replace('%value%', textToCopy);
+				}
+				navigator.clipboard.writeText(textToCopy).then(() => {
+					Swal.fire({
+						icon: 'success',
+						title: this.translate(action.successMessage),
+						showConfirmButton: false,
+						timer: 1500,
+						customClass: {
+							title: 'em-swal-title',
+						},
+					});
+				});
+
+				return;
+			}
+
 			if (action.name === 'preview') {
 				this.onClickPreview(item);
 				return;
@@ -835,7 +868,7 @@ export default {
 				let url = action.action;
 				if (item !== null) {
 					Object.keys(item).forEach((key) => {
-						url = url.replace('%' + key + '%', item[key]);
+						url = url.replace(new RegExp('%' + key + '%', 'g'), item[key]);
 					});
 				}
 
@@ -927,9 +960,12 @@ export default {
 			}
 
 			let url = 'index.php?option=com_emundus&controller=' + exp.controller + '&task=' + exp.action;
-			let parameters = {
-				ids: this.checkedItems.length > 0 ? this.checkedItems : this.displayedItems.map((item) => item.id),
-			};
+			let parameters = {};
+			if (this.canCheck) {
+				parameters = {
+					ids: this.checkedItems.length > 0 ? this.checkedItems : this.displayedItems.map((item) => item.id),
+				};
+			}
 
 			if (Object.prototype.hasOwnProperty.call(exp, 'confirm')) {
 				Swal.fire({

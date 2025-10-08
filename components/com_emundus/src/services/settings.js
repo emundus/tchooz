@@ -73,7 +73,7 @@ export default {
 		}
 	},
 
-	async redirectJRoute(link, language = 'fr-FR', redirect = true) {
+	async redirectJRoute(link, language = 'fr-FR', redirect = true, newtab = false) {
 		let formDatas = new FormData();
 		formDatas.append('link', link);
 		formDatas.append('redirect_language', language);
@@ -95,7 +95,14 @@ export default {
 
 			if (result.status) {
 				if (redirect) {
-					window.location.href = window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data;
+					if (newtab) {
+						window
+							.open(window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data, '_blank')
+							.focus();
+						return true;
+					} else {
+						window.location.href = window.location.origin + (result.data.startsWith('/') ? '' : '/') + result.data;
+					}
 				}
 				return result.data;
 			}
@@ -619,6 +626,16 @@ export default {
 			return await fetchClient.post('switchusercategorymandatory', {
 				state: state,
 			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async fetchAliases() {
+		try {
+			return await fetchClient.get('fetchaliases');
 		} catch (e) {
 			return {
 				status: false,

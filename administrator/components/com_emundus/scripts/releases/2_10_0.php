@@ -16,7 +16,7 @@ use Joomla\CMS\Component\ComponentHelper;
 class Release2_10_0Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
-	
+
 	public function __construct()
 	{
 		parent::__construct();
@@ -32,6 +32,31 @@ class Release2_10_0Installer extends ReleaseInstaller
 		{
 			$this->initUserTypeFeature($query);
 
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&view=export_select_columns&layout=aliases'))
+				->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('coordinatormenu'));
+			$aliasesMenuItem = $this->db->setQuery($query)->loadResult();
+
+			if (empty($aliasesMenuItem))
+			{
+				$datas       = [
+					'menutype'     => 'coordinatormenu',
+					'title'        => 'Liste des alias',
+					'alias'        => 'liste-des-alias',
+					'link'         => 'index.php?option=com_emundus&view=export_select_columns&layout=aliases',
+					'type'         => 'component',
+					'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+					'access'       => 6,
+					'params'       => [
+						'menu_show' => 0,
+					]
+				];
+				$aliasesMenu = EmundusHelperUpdate::addJoomlaMenu($datas);
+				$this->tasks[]     = $aliasesMenu['status'];
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -42,7 +67,7 @@ class Release2_10_0Installer extends ReleaseInstaller
 
 		return $result;
 	}
-	
+
 	private function initUserTypeFeature($query)
 	{
 		$columns      = [

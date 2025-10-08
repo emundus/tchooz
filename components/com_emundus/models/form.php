@@ -159,11 +159,15 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	function getAllGrilleEval(string $filter, string $sort, string $recherche, int $lim, int $page, int $user_id = 0): array
+	function getAllGrilleEval(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0): array
 	{
 		$data     = ['datas' => [], 'count' => 0];
 
 		$query    = $this->db->getQuery(true);
+
+		if(empty($user_id)) {
+			$user_id = $this->app->getIdentity()->id;
+		}
 
 		try {
 			// We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
