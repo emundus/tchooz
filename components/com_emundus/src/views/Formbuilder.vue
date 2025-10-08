@@ -35,6 +35,7 @@
 					ref="formTitle"
 					@focusout="updateFormTitle"
 					@keyup.enter="updateFormTitleKeyup"
+					@keydown="(event) => checkMaxMinlength(event, 100, 3)"
 					:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD')"
 				>
 					{{ title }}
@@ -335,6 +336,7 @@ import { useGlobalStore } from '@/stores/global.js';
 import { useFormBuilderStore } from '@/stores/formbuilder.js';
 
 // mixins
+import Mixin from '../mixins/mixin';
 import formBuilderMixin from '../mixins/formbuilder';
 import Translations from '@/components/Settings/TranslationTool/Translations.vue';
 import settingsService from '@/services/settings.js';
@@ -361,7 +363,7 @@ export default {
 		FormBuilderRulesList,
 		FormBuilderRules,
 	},
-	mixins: [formBuilderMixin],
+	mixins: [formBuilderMixin, Mixin],
 	data() {
 		return {
 			mode: 'forms',
