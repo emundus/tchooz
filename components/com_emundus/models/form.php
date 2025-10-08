@@ -173,10 +173,18 @@ class EmundusModelForm extends JModelList
 			// We need to get the list of fabrik forms that are linked to the jos_emundus_evaluations table
 			// we must only keep forms that current user has access to
 			$query->clear()
-				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type'])
+				->select([$this->db->quoteName('ff.id'), $this->db->quoteName('ff.label'), '"grilleEval" AS type, ff.published'])
 				->from($this->db->quoteName('#__fabrik_forms', 'ff'))
 				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = ' . $this->db->quoteName('ff.id'))
 				->where($this->db->quoteName('fl.db_table_name') . ' LIKE ' . $this->db->quote('jos_emundus_evaluations_%'));
+
+			if ($filter === 'Unpublish') {
+				$query->andWhere($this->db->quoteName('ff.published') . ' = 0');
+			}
+			else {
+				$query->andWhere($this->db->quoteName('ff.published') . ' = 1');
+			}
+
 			$this->db->setQuery($query);
 			$evaluation_forms = $this->db->loadObjectList();
 
@@ -749,6 +757,34 @@ class EmundusModelForm extends JModelList
 		return $response;
 	}
 
+	/**
+	 * @param   int  $formId
+	 *
+	 * @return bool
+	 */
+	public function unpublishFabrikForm(int $formId): bool
+	{
+		$unpublished = false;
+
+		if (!empty($formId))
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('published') . ' = 0')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formId));
+
+			try
+			{
+				$this->db->setQuery($query);
+				$unpublished = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error when unpublish fabrik form : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $unpublished;
+	}
 
 	public function publishForm($data)
 	{
@@ -783,6 +819,34 @@ class EmundusModelForm extends JModelList
 		}
 	}
 
+	/**
+	 * @param   int  $formId
+	 *
+	 * @return bool
+	 */
+	public function publishFabrikForm(int $formId): bool
+	{
+		$published = false;
+
+		if (!empty($formId))
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('published') . ' = 1')
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formId));
+
+			try
+			{
+				$this->db->setQuery($query);
+				$published = $this->db->execute();
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/form | Error when publish fabrik form : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $published;
+	}
 
 	public function duplicateForm($data, $duplicate_condition = true)
 	{
@@ -965,123 +1029,8 @@ class EmundusModelForm extends JModelList
 
 										$new_form = $formbuilder->createMenuFromTemplate($label, $intro, $formid, $newprofile, true);
 
-										if($duplicate_condition) {
-											$query->clear()
-												->select('*')
-												->from($this->db->quoteName('#__emundus_setup_form_rules'))
-												->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($formid));
-											$this->db->setQuery($query);
-											$rules = $this->db->loadObjectList();
-
-											foreach ($rules as $rule) {
-												$insert = [
-													'date_time' => date('Y-m-d H:i:s'),
-													'type' => $rule->type,
-													'group' => $rule->group,
-													'published' => $rule->published,
-													'form_id' => $new_form['id'],
-													'created_by' => $rule->created_by,
-												];
-												$insert = (object) $insert;
-												$this->db->insertObject('#__emundus_setup_form_rules', $insert);
-												$new_rule_id = $this->db->insertid();
-
-												if(!empty($new_rule_id))
-												{
-													$query->clear()
-														->select('*')
-														->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
-														->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule->id));
-													$this->db->setQuery($query);
-													$actions = $this->db->loadObjectList();
-
-													foreach ($actions as $action)
-													{
-														$insert = [
-															'parent_id' => $new_rule_id,
-															'action' => $action->action,
-														];
-														$insert = (object) $insert;
-														$this->db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
-														$new_action_id = $this->db->insertid();
-
-														if(!empty($new_action_id))
-														{
-															$query->clear()
-																->select('*')
-																->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
-																->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($action->id));
-															$this->db->setQuery($query);
-															$fields = $this->db->loadObjectList();
-
-															foreach ($fields as $field) {
-																$insert = [
-																	'parent_id' => $new_action_id,
-																	'fields' => $field->fields,
-																	'params' => $field->params
-																];
-																$insert = (object) $insert;
-																$this->db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
-															}
-														}
-													}
-
-													$query->clear()
-														->select('*')
-														->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions'))
-														->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule->id));
-													$this->db->setQuery($query);
-													$conditions = $this->db->loadObjectList();
-
-													$group_conditions = [];
-													foreach ($conditions as $condition) {
-														// Manage jos_emundus_setup_form_rules_js_conditions_group
-														$insert = [
-															'parent_id' => $new_rule_id,
-															'field' => $condition->field,
-															'state' => $condition->state,
-															'values' => $condition->values,
-															'label' => $condition->label,
-															'type' => $condition->type
-														];
-														$insert = (object) $insert;
-
-														if($this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert))
-														{
-															// Store group condition to duplicate after
-															$new_condition_id = $this->db->insertid();
-															$group_conditions[$condition->group][] = $new_condition_id;
-														}
-													}
-
-													foreach ($group_conditions as $group => $grouped_conditions) {
-														$query->clear()
-															->select('*')
-															->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group'))
-															->where($this->db->quoteName('id') . ' = ' . $this->db->quote($group));
-														$this->db->setQuery($query);
-														$group_info = $this->db->loadObject();
-
-														$insert = (object) [
-															'group_type' => $group_info->group_type,
-														];
-
-														if($this->db->insertObject('#__emundus_setup_form_rules_js_conditions_group', $insert))
-														{
-															$new_group_id = $this->db->insertid();
-
-															foreach ($grouped_conditions as $grouped_condition)
-															{
-																$update = (object) [
-																	'id'    => $grouped_condition,
-																	'group' => $new_group_id
-																];
-																$this->db->updateObject('#__emundus_setup_form_rules_js_conditions', $update, 'id');
-															}
-														}
-													}
-												}
-											}
+										if ($duplicate_condition) {
+											$formbuilder->duplicateConditions((int)$formid, (int)$new_form['id']);
 										}
 									}
 

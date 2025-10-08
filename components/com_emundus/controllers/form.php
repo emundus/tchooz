@@ -19,6 +19,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * Form Controller
@@ -29,6 +30,8 @@ use Joomla\CMS\MVC\Controller\BaseController;
  */
 class EmundusControllerForm extends BaseController
 {
+	use TraitResponse;
+
 	protected $app;
 
 	private $_user;
@@ -246,6 +249,36 @@ class EmundusControllerForm extends BaseController
 		exit;
 	}
 
+	public function unpublishFabrikForm(): void
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$form_id = $this->input->getInt('id', 0);
+
+			if ($form_id > 0)
+			{
+				$unpublished = $this->m_form->unpublishFabrikForm($form_id);
+
+				if ($unpublished)
+				{
+					$response = ['status' => true, 'msg' => Text::_('FORM_UNPUBLISHED'), 'code' => 200];
+				}
+				else
+				{
+					$response = ['status' => false, 'msg' => Text::_('ERROR_CANNOT_UNPUBLISH_FORM'), 'code' => 500];
+				}
+			}
+			else
+			{
+				$response = ['status' => false, 'msg' => Text::_('MISSING_PARAMS'), 'code' => 400];
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
 
 	public function publishform()
 	{
@@ -267,6 +300,36 @@ class EmundusControllerForm extends BaseController
 		}
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	public function publishFabrikForm(): void
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$form_id = $this->input->getInt('id', 0);
+
+			if ($form_id > 0)
+			{
+				$published = $this->m_form->publishFabrikForm($form_id);
+
+				if ($published)
+				{
+					$response = ['status' => true, 'msg' => Text::_('FORM_PUBLISHED'), 'code' => 200];
+				}
+				else
+				{
+					$response = ['status' => false, 'msg' => Text::_('ERROR_CANNOT_PUBLISH_FORM'), 'code' => 500];
+				}
+			}
+			else
+			{
+				$response = ['status' => false, 'msg' => Text::_('MISSING_PARAMS'), 'code' => 400];
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 
 
@@ -299,6 +362,41 @@ class EmundusControllerForm extends BaseController
 
 		echo json_encode((object) $tab);
 		exit;
+	}
+
+	public function duplicateFabrikForm() : void
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+		{
+			$formId = $this->input->getInt('id', 0);
+
+			if ($formId > 0)
+			{
+				if (!class_exists('EmundusModelFormBuilder'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
+				}
+				$m_formbuilder = new EmundusModelFormBuilder();
+				$duplicatedFormId = $m_formbuilder->duplicateFabrikForm($formId, $this->_user->id, ['keep_structure' => false]);
+
+				if ($duplicatedFormId)
+				{
+					$response = ['status' => true, 'msg' => Text::_('FORM_DUPLICATED'), 'data' => $duplicatedFormId, 'code' => 200];
+				}
+				else
+				{
+					$response = ['status' => false, 'msg' => Text::_('ERROR_CANNOT_DUPLICATE_FORM'), 'code' => 500];
+				}
+			}
+			else
+			{
+				$response = ['status' => false, 'msg' => Text::_('MISSING_PARAMS'), 'code' => 400];
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 
 

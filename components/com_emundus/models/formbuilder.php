@@ -21,6 +21,8 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Indexer\IndexEntity;
+use Tchooz\Services\Fabrik\ApplicantTableCreator;
+use Tchooz\Services\Fabrik\EvaluationTableCreator;
 
 class EmundusModelFormbuilder extends JModelList
 {
@@ -2939,7 +2941,7 @@ class EmundusModelFormbuilder extends JModelList
 	 *
 	 * @return array
 	 */
-	function createMenuFromTemplate($label, $intro, $formid, $prid, bool $keep_structure = false)
+	function createMenuFromTemplate($label, $intro, $formid, $prid, bool $keep_structure = false, int $userId = 0)
 	{
 		$response = array('status' => false, 'msg' => 'Failed to create menu from form template');
 
@@ -2999,334 +3001,83 @@ class EmundusModelFormbuilder extends JModelList
 				$this->db->setQuery($query);
 				$menu_parent = $this->db->loadObject();
 
-				// Duplicate the form
-				$query->clear()
-					->select('*')
-					->from('#__fabrik_forms')
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($formid));
-				$this->db->setQuery($query);
-				$form_model = $this->db->loadObject();
-
-				$insert = [];
-				foreach ($form_model as $key => $val) {
-					if ($key != 'id' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down') {
-						$insert[$key] = $val;
-					}
-				}
-				$insert['created'] = date('Y-m-d H:i:s');
-				$insert['publish_up'] = date('Y-m-d H:i:s');
-				$insert = (object) $insert;
-
 				try {
-					$form_inserted = $this->db->insertObject('#__fabrik_forms', $insert);
-					$newformid     = $this->db->insertid();
+					$newformid = $this->duplicateFabrikForm($formid, $userId, [
+						'keep_structure' => $keep_structure,
+						'label'          => $label,
+						'intro'          => $intro,
+						'prid'           => $prid
+					]);
 
-					if ($form_inserted && !empty($newformid)) {
-						// Update translation files
-						$this->translate('FORM_' . $prid . '_' . $newformid, $label, 'fabrik_forms', $newformid, 'label');
-						$this->translate('FORM_' . $prid . '_INTRO_' . $newformid, $intro, 'fabrik_forms', $newformid, 'intro');
+					$newList = $this->getList($newformid);
 
-						$update = [
-							'id' => $newformid,
-							'label' => 'FORM_' . $prid . '_' . $newformid,
-							'intro' => 'FORM_' . $prid . '_INTRO_' . $newformid
-						];
-						$update = (object) $update;
-						$updated = $this->db->updateObject('#__fabrik_forms', $update, 'id');
-
-						// Duplicate fabrik list
-						$query->clear()
-							->select('*')
-							->from('#__fabrik_lists')
-							->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($formid));
+					if (!empty($newList->id)) {
+						// Duplicate the form-menu
+						$query
+							->clear()
+							->select('rgt')
+							->from($this->db->quoteName('#__menu'))
+							->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($profile->menutype))
+							->andWhere($this->db->quoteName('path') . ' LIKE ' . $this->db->quote($profile->menutype . '%'))
+							->andWhere($this->db->quoteName('published') . ' = 1')
+							->order('rgt');
 						$this->db->setQuery($query);
-						$list_model = $this->db->loadObject();
-
-						if (!empty($list_model)) {
-							if (!$keep_structure) {
-								$list_model->db_table_name  = $this->createDatabaseTableFromTemplate($list_model->db_table_name, $prid);
-								$list_model->db_primary_key = $list_model->db_table_name . '.id';
-							}
-							$db_table_name = $list_model->db_table_name;
-
-							if (!empty($db_table_name)) {
-								$insert = [];
-								foreach ($list_model as $key => $val) {
-									if ($key != 'id' && $key != 'form_id' && $key != 'access' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down') {
-										$insert[$key] = $val;
-									}
-									elseif ($key == 'form_id') {
-										$insert[$key] = $newformid;
-									}
-									elseif ($key == 'access') {
-										$insert[$key] = $prid;
-									}
-								}
-								$insert['created'] = date('Y-m-d H:i:s');
-								$insert['publish_up'] = date('Y-m-d H:i:s');
-								$insert = (object) $insert;
-								$this->db->insertObject('#__fabrik_lists', $insert);
-								$newlistid = $this->db->insertid();
-
-								if (!empty($newlistid)) {
-									$update = [
-										'id' => $newlistid,
-										'label' => 'FORM_' . $prid . '_' . $newformid,
-										'introduction' => '<p>FORM_' . $prid . '_INTRO_' . $newformid . '</p'
-									];
-									$update = (object) $update;
-									$updated = $this->db->updateObject('#__fabrik_lists', $update, 'id');
-
-									// JOIN LIST AND PROFILE_ID
-									$insert = [
-										'form_id' => $newlistid,
-										'profile_id' => $prid,
-										'created' => date('Y-m-d H:i:s')
-									];
-									$insert = (object) $insert;
-									$this->db->insertObject('#__emundus_setup_formlist', $insert);
-
-									// Duplicate group
-									$ordering = 0;
-									foreach ($groups as $group) {
-										$ordering++;
-										$properties = $group->getGroupProperties($group->getFormModel());
-										$elements   = $group->getMyElements();
-
-										$query->clear()
-											->select('*')
-											->from('#__fabrik_groups')
-											->where($this->db->quoteName('id') . ' = ' . $this->db->quote($properties->id));
-										$this->db->setQuery($query);
-										$group_model = $this->db->loadObject();
-
-										$insert = [];
-										foreach ($group_model as $key => $val) {
-											if ($key != 'id' && $key != 'form_id' && $key != 'created_by' && $key != 'created' && $key != 'modified' && $key != 'checked_out_time') {
-												$insert[$key] = $val;
-											}
-											elseif ($key == 'form_id') {
-												$insert[$key] = $newformid;
-											}
-											elseif ($key == 'created_by') {
-												$insert[$key] = $user->id;
-											}
-											elseif ($key == 'created') {
-												$insert[$key] = date('Y-m-d H:i:s');
-											}
-										}
-										$insert = (object) $insert;
-										$this->db->insertObject('#__fabrik_groups', $insert);
-
-										$newgroupid = $this->db->insertid();
-
-										if ($group_model->is_join == 1) {
-											$query->clear()
-												->select('table_join')
-												->from($this->db->quoteName('#__fabrik_joins'))
-												->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote($properties->id))
-												->andWhere($this->db->quoteName('table_join_key') . ' = ' . $this->db->quote('parent_id'));
-											$this->db->setQuery($query);
-											$repeat_table_to_copy = $this->db->loadResult();
-
-											if (!$keep_structure) {
-												$repeat_table_to_copy = $this->createDatabaseTableFromTemplate($repeat_table_to_copy, $prid, $db_table_name, $newgroupid);
-											}
-
-											$joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
-
-											$insert = [
-												'list_id' => $newlistid,
-												'element_id' => 0,
-												'join_from_table' => $db_table_name,
-												'table_join' => $repeat_table_to_copy,
-												'table_key' => 'id',
-												'table_join_key' => 'parent_id',
-												'join_type' => 'left',
-												'group_id' => $newgroupid,
-												'params' => $joins_params
-											];
-											$insert = (object) $insert;
-											$this->db->insertObject('#__fabrik_joins', $insert);
-										}
-
-										// Update translation files
-										if ($formid == 258) {
-											$labels = array(
-												'fr' => "Confirmation d'envoi de dossier",
-												'en' => 'Confirmation of file sending',
-											);
-											$this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels, 'fabrik_groups', $newgroupid, 'label');
-										}
-										else {
-											$labels_to_duplicate = $this->getLabelsFromTranslationKeyForLanguages($group_model->label, $languages, $model_prefix);
-											foreach ($languages as $language) {
-												if ($label[$language->sef] == '') {
-													$label[$language->sef] = $group_model->label;
-												}
-											}
-											$this->translate('GROUP_' . $newformid . '_' . $newgroupid, $labels_to_duplicate, 'fabrik_groups', $newgroupid, 'label');
-										}
-
-										$update = [
-											'id' => $newgroupid,
-											'label' => 'GROUP_' . $newformid . '_' . $newgroupid,
-											'name' => 'GROUP_' . $newformid . '_' . $newgroupid
-										];
-										$update = (object) $update;
-										$updated = $this->db->updateObject('#__fabrik_groups', $update, 'id');
-
-										$insert = [
-											'form_id' => $newformid,
-											'group_id' => $newgroupid,
-											'ordering' => $ordering
-										];
-										$insert = (object) $insert;
-										$this->db->insertObject('#__fabrik_formgroup', $insert);
-
-
-										$params = json_decode($group_model->params);
-										$intro_key = $params->intro ?? '';
-										$intro_to_duplicate = $this->getLabelsFromTranslationKeyForLanguages($intro_key, $languages, $model_prefix);
-										$group_intro_key = 'FORM_' . $newformid . '_GROUP_' . $newgroupid . '_INTRO';
-
-										$this->translate($group_intro_key, $intro_to_duplicate, 'fabrik_groups', $newgroupid, 'intro');
-
-										$params->intro = $group_intro_key;
-
-										$update = [
-											'id' => $newgroupid,
-											'params' => json_encode($params)
-										];
-										$updateObj = (object)$update;
-										$this->db->updateObject('#__fabrik_groups', $updateObj, 'id');
-
-										foreach ($elements as $element) {
-											try {
-												$newelement   = $element->copyRow($element->element->id, 'Copy of %s', $newgroupid);
-												$newelementid = $newelement->id;
-
-												$el_params = json_decode($element->element->params);
-
-												// Update translation files
-												if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options) {
-													$sub_labels = [];
-													foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
-														$labels_to_duplicate = array();
-														foreach ($languages as $language) {
-															$labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($sub_label, $language->lang_code));
-															if ($label[$language->sef] == '') {
-																$label[$language->sef] = $sub_label;
-															}
-														}
-														$this->translate('SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'sub_labels');
-														$sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
-													}
-													$el_params->sub_options->sub_labels = $sub_labels;
-												}
-
-												$labels_to_duplicate = array();
-												foreach ($languages as $language) {
-													$labels_to_duplicate[$language->sef] = str_replace($model_prefix, '', $this->getTranslation($element->element->label, $language->lang_code));
-													if ($label[$language->sef] == '') {
-														$label[$language->sef] = $element->element->label;
-													}
-												}
-												$this->translate('ELEMENT_' . $newgroupid . '_' . $newelementid, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'label');
-
-												$update = [
-													'id' => $newelementid,
-													'label' => 'ELEMENT_' . $newgroupid . '_' . $newelementid,
-													'published' => $element->element->published,
-													'params' => json_encode($el_params)
-												];
-												$update = (object) $update;
-												$updated = $this->db->updateObject('#__fabrik_elements', $update, 'id');
-											}
-											catch (Exception $e) {
-												Log::add('component/com_emundus/models/formbuilder | Error at create a page from the model ' . $formid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-											}
-										}
-									}
-
-									// Duplicate the form-menu
-									$query
-										->clear()
-										->select('rgt')
-										->from($this->db->quoteName('#__menu'))
-										->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote($profile->menutype))
-										->andWhere($this->db->quoteName('path') . ' LIKE ' . $this->db->quote($profile->menutype . '%'))
-										->andWhere($this->db->quoteName('published') . ' = 1')
-										->order('rgt');
-									$this->db->setQuery($query);
-									$menus = $this->db->loadObjectList();
-									$rgts  = [];
-									foreach (array_values($menus) as $menu) {
-										if (!in_array($menu->rgt, $rgts)) {
-											$rgts[] = intval($menu->rgt);
-										}
-									}
-
-									$params    = EmundusHelperFabrik::prepareFabrikMenuParams();
-									$datas     = [
-										'menutype'     => $profile->menutype,
-										'title'        => 'FORM_' . $profile->id . '_' . $newformid,
-										'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
-										'path'         => $menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid,
-										'alias'        => 'form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])),
-										'type'         => 'component',
-										'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
-										'params'       => $params
-									];
-									$parent_id = 1;
-									if ($list_model->db_table_name != 'jos_emundus_declaration' && $menu_parent->id != 0) {
-										$parent_id = $menu_parent->id;
-									}
-									$result = EmundusHelperUpdate::addJoomlaMenu($datas, $parent_id, 1, 'last-child', $modules);
-									if ($result['status'] !== true) {
-										return array(
-											'status' => false,
-											'msg'    => 'UNABLE_TO_INSERT_NEW_MENU'
-										);
-									}
-									$newmenuid = $result['id'];
-
-									if (!empty($newmenuid)) {
-										$update = [
-											'id' => $newmenuid,
-											'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid,
-											'published' => 1
-										];
-										$update = (object) $update;
-										$updated = $this->db->updateObject('#__menu', $update, 'id');
-
-										require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
-										$falang = new EmundusModelFalang;
-										$falang->insertFalang($label, $newmenuid, 'menu', 'title');
-
-										$response['id']     = $newformid;
-										$response['link']   = 'index.php?option=com_fabrik&view=form&formid=' . $newformid;
-										$response['rgt']    = array_values($rgts)[strval(sizeof($rgts) - 1)] + 2;
-										$response['status'] = true;
-									}
-									else {
-										$response['msg'] = 'Failed to insert new menu';
-									}
-								}
-								else {
-									$response['msg'] = 'Failed to insert new list';
-								}
-							}
-							else {
-								$response['msg'] = 'Empty db table name';
+						$menus = $this->db->loadObjectList();
+						$rgts  = [];
+						foreach ($menus as $menu) {
+							if (!in_array($menu->rgt, $rgts)) {
+								$rgts[] = intval($menu->rgt);
 							}
 						}
+
+						$params    = EmundusHelperFabrik::prepareFabrikMenuParams();
+						$datas     = [
+							'menutype'     => $profile->menutype,
+							'title'        => 'FORM_' . $profile->id . '_' . $newformid,
+							'link'         => 'index.php?option=com_fabrik&view=form&formid=' . $newformid,
+							'path'         => $menu_parent->path . '/' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])) . '-' . $newformid,
+							'alias'        => 'form-' . $newformid . '-' . str_replace($this->getSpecialCharacters(), '-', strtolower($label['fr'])),
+							'type'         => 'component',
+							'component_id' => ComponentHelper::getComponent('com_fabrik')->id,
+							'params'       => $params
+						];
+						$parent_id = 1;
+						if ($newList->db_table_name != 'jos_emundus_declaration' && $menu_parent->id != 0) {
+							$parent_id = $menu_parent->id;
+						}
+						$result = EmundusHelperUpdate::addJoomlaMenu($datas, $parent_id, 1, 'last-child', $modules);
+						if ($result['status'] !== true) {
+							return array(
+								'status' => false,
+								'msg'    => 'UNABLE_TO_INSERT_NEW_MENU'
+							);
+						}
+						$newmenuid = $result['id'];
+
+						if (!empty($newmenuid)) {
+							$update = [
+								'id' => $newmenuid,
+								'alias' => 'menu-profile' . $profile->id . '-form-' . $newmenuid,
+								'published' => 1
+							];
+							$update = (object) $update;
+							$updated = $this->db->updateObject('#__menu', $update, 'id');
+
+							require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
+							$falang = new EmundusModelFalang;
+							$falang->insertFalang($label, $newmenuid, 'menu', 'title');
+
+							$response['id']     = $newformid;
+							$response['link']   = 'index.php?option=com_fabrik&view=form&formid=' . $newformid;
+							$response['rgt']    = array_values($rgts)[strval(sizeof($rgts) - 1)] + 2;
+							$response['status'] = true;
+						}
 						else {
-							$response['msg'] = 'Failed to retrieve list from model form_id ' . $formid;
+							$response['msg'] = 'Failed to insert new menu';
 						}
 					}
 					else {
-						$response['msg'] = 'Failed to create new form';
+						$response['msg'] = 'Failed to insert new list';
 					}
 				}
 				catch (Exception $e) {
@@ -4337,6 +4088,14 @@ class EmundusModelFormbuilder extends JModelList
 		return $form_id;
 	}
 
+	/**
+	 * TODO: use duplicateForm instead ?
+	 * @param $form_id_to_copy
+	 * @param $label
+	 *
+	 * @return false
+	 * @throws Exception
+	 */
 	public function addFormModel($form_id_to_copy, $label)
 	{
 		$inserted = false;
@@ -4356,6 +4115,7 @@ class EmundusModelFormbuilder extends JModelList
 						$copied = $this->copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $list_to_copy->db_table_name);
 
 						if ($copied) {
+							$copied = $this->duplicateConditions((int)$form_id_to_copy, (int)$new_form_id);
 							$label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
 
 							// insert form into models list
@@ -4504,21 +4264,7 @@ class EmundusModelFormbuilder extends JModelList
 
 					if ($form_inserted) {
 						$new_form_id = $this->db->insertid();
-
-						$query->clear()
-							->update('#__fabrik_forms')
-							->set('label = ' . $this->db->quote('FORM_MODEL_' . $new_form_id))
-							->where('id = ' . $new_form_id);
-
-						$this->db->setQuery($query);
-						$this->db->execute();
-
-						$languages           = JLanguageHelper::getLanguages();
-						$labels_to_duplicate = [];
-						foreach ($languages as $language) {
-							$labels_to_duplicate[$language->sef] = $label_prefix . $this->getTranslation($form_model->label, $language->lang_code);
-						}
-						$this->translate('FORM_MODEL_' . $new_form_id, $labels_to_duplicate, 'fabrik_forms', $new_form_id, 'label');
+						$this->updateFabrikLabel($new_form_id, 'FORM_MODEL_', '', $label_prefix);
 					}
 				}
 				catch (Exception $e) {
@@ -4584,17 +4330,24 @@ class EmundusModelFormbuilder extends JModelList
 		return $new_list_id;
 	}
 
-	public function getList($form_id, $columns = '*')
+	public function getList(int $form_id = 0, int $list_id = 0, $columns = '*')
 	{
 		$list = new stdClass();
 
-		if (!empty($form_id)) {
+		if (!empty($form_id) || !empty($list_id)) {
 
 			$query = $this->db->getQuery(true);
 
 			$query->select($columns)
-				->from('#__fabrik_lists')
-				->where('form_id = ' . $form_id);
+				->from('#__fabrik_lists');
+
+			if (!empty($list_id)) {
+				$query->where('id = ' . $list_id);
+			}
+
+			if (!empty($form_id)) {
+				$query->where('form_id = ' . $form_id);
+			}
 
 			try {
 				$this->db->setQuery($query);
@@ -4608,6 +4361,18 @@ class EmundusModelFormbuilder extends JModelList
 		return $list;
 	}
 
+	/**
+	 * @param          $form_id_to_copy
+	 * @param          $new_form_id
+	 * @param          $new_list_id
+	 * @param          $db_table_name
+	 * @param          $label_prefix
+	 * @param          $user
+	 * @param   array  $elements_to_exclude
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
 	public function copyGroups($form_id_to_copy, $new_form_id, $new_list_id, $db_table_name, $label_prefix = '', $user = null, array $elements_to_exclude = []): bool
 	{
 		$copied = false;
@@ -4627,6 +4392,7 @@ class EmundusModelFormbuilder extends JModelList
 			$languages = LanguageHelper::getLanguages();
 			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 			$form = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+			assert($form instanceof FabrikFEModelForm);
 			$form->setId(intval($form_id_to_copy));
 			$ordering = 0;
 
@@ -4635,7 +4401,8 @@ class EmundusModelFormbuilder extends JModelList
 			foreach ($groups as $g_index => $group) {
 				$groups_copied[$g_index] = false;
 				$ordering++;
-				$properties = $group->getGroupProperties($group->getFormModel());
+				$formModel = $group->getFormModel();
+				$properties = $group->getGroupProperties($formModel);
 
 				$query->clear()
 					->select('*')
@@ -4925,5 +4692,578 @@ class EmundusModelFormbuilder extends JModelList
 		}
 
 		return $currencies;
+	}
+
+	/**
+	 * @param   int    $formId
+	 * @param   int    $userId
+	 * @param   array  $args
+	 *
+	 * @return int
+	 */
+	public function duplicateFabrikForm(int $formId, int $userId, array $args = []): int
+	{
+		$newFormId = 0;
+
+		if (!empty($formId))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->clear()
+				->select('*')
+				->from('#__fabrik_forms')
+				->where($db->quoteName('id') . ' = ' . $db->quote($formId));
+			$db->setQuery($query);
+			$formModel = $db->loadAssoc();
+			$insert    = array_filter($formModel, function ($key) {
+				return $key != 'id' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down';
+			}, ARRAY_FILTER_USE_KEY);
+			$insert['created_by'] = $userId;
+			$insert['created'] = date('Y-m-d H:i:s');
+			$insert['publish_up'] = date('Y-m-d H:i:s');
+			$insert = (object) $insert;
+
+			$inserted = $db->insertObject('#__fabrik_forms', $insert);
+			$newFormId = $inserted ? $db->insertid() : 0;
+
+			if (!empty($newFormId)) {
+				JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+				$fabrikFormModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+				assert($fabrikFormModel instanceof FabrikFEModelForm);
+				$fabrikFormModel->setId($formId);
+
+				$keyPrefix = str_starts_with('jos_emundus_evaluations', $fabrikFormModel->getListModel()->db_table_name) ? 'FORM_EVALUATION_' : 'FORM_' . $args['profile_id'] . '_';
+				$this->updateFabrikLabel($newFormId, $keyPrefix, '', Text::_('COPY_OF') . ' ');
+				$this->updateFabrikLabel($newFormId, $keyPrefix, '_INTRO', '', 'fabrik_forms', 'intro');
+
+				$newListId = $this->duplicateFabrikList($fabrikFormModel->getListModel()->getId(), $newFormId, $args, $userId);
+				if (!empty($newListId)) {
+					$args['db_table_name'] = $this->getList(0, $newListId)->db_table_name;
+					if (!empty($args['profile_id']))
+					{
+						if (!$this->joinFabrikListToProfile($newListId, (int)$args['profile_id']))
+						{
+							throw new RuntimeException('Failed to join fabrik list id ' . $newListId . ' to profile id ' . (int)$args['profile_id']);
+						}
+					}
+
+					$duplicatedGroups = $this->duplicateFabrikGroups($formId, $newFormId, $newListId, $args, $userId);
+					if (!$duplicatedGroups)
+					{
+						throw new RuntimeException('Failed to duplicate fabrik groups for form id ' . $formId);
+					} else {
+						$this->duplicateConditions($formId, $newFormId);
+					}
+				}
+				else
+				{
+					throw new RuntimeException('Failed to duplicate fabrik list for form id ' . $formId);
+				}
+			}
+			else
+			{
+				throw new RuntimeException('Failed to duplicate fabrik form id ' . $formId);
+			}
+		}
+
+		return $newFormId;
+	}
+
+	/**
+	 * @param   int    $listId
+	 * @param   int    $newFormId
+	 * @param   array  $args
+	 * @param   int    $userId
+	 *
+	 * @return int
+	 */
+	public function duplicateFabrikList(int $listId, int $newFormId, array $args, int $userId): int
+	{
+		$newListId = 0;
+
+		if (!empty($listId) && !empty($newFormId))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$listModel = $this->getList(0, $listId);
+
+			$keepStructure = $args['keep_structure'] ?? false;
+
+			if (!$keepStructure) {
+				$creators = [
+					new ApplicantTableCreator(),
+					new EvaluationTableCreator()
+				];
+
+				foreach ($creators as $creator) {
+					if ($creator->supports($listModel->db_table_name)) {
+						$listModel->db_table_name = $creator->createTableFromReference($listModel->db_table_name, $args);
+						$listModel->db_primary_key = $listModel->db_table_name . '.id';
+						break;
+					}
+				}
+			}
+
+			if (!empty($listModel->db_table_name)) {
+				$insert = [];
+				foreach ($listModel as $key => $val) {
+					if ($key != 'id' && $key != 'form_id' && $key != 'access' && $key != 'modified' && $key != 'checked_out_time' && $key != 'publish_down') {
+						$insert[$key] = $val;
+					}
+					elseif ($key == 'form_id') {
+						$insert[$key] = $newFormId;
+					}
+					elseif ($key == 'access') {
+						$insert[$key] = $args['profile_id'] ?? 1;
+					}
+				}
+				$insert['created_by'] = $userId;
+				$insert['created'] = date('Y-m-d H:i:s');
+				$insert['publish_up'] = date('Y-m-d H:i:s');
+				$insert = (object) $insert;
+				$db->insertObject('#__fabrik_lists', $insert);
+				$newListId = $db->insertid();
+
+				if (!empty($newListId)) {
+					$keyPrefix = str_starts_with('jos_emundus_evaluations', $listModel->db_table_name) ? 'FORM_EVALUATION_' : 'FORM_' . $args['profile_id'] . '_';
+					$this->updateFabrikLabel($newListId, $keyPrefix, '', Text::_('COPY_OF') . ' ', 'fabrik_lists');
+					$this->updateFabrikLabel($newListId, $keyPrefix, '_INTRO', '', 'fabrik_lists', 'introduction');
+				}
+				else {
+					throw new RuntimeException('Failed to duplicate fabrik list id ' . $listId);
+				}
+			}
+		}
+
+		return $newListId;
+	}
+
+	/**
+	 * @param   int    $oldFormId
+	 * @param   int    $newFormId
+	 * @param   int    $newListId
+	 * @param   array  $args ['db_table_name' => '...', 'keep_structure' => true/false, etc...]
+	 * @param   int    $userId
+	 *
+	 * @return bool
+	 */
+	public function duplicateFabrikGroups(int $oldFormId, int $newFormId, int $newListId, array $args, int $userId): bool
+	{
+		$duplicated = false;
+
+		if (!empty($oldFormId) && !empty($newFormId))
+		{
+			$languages = JLanguageHelper::getLanguages();
+			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
+			$fabrikFormModel = JModelLegacy::getInstance('Form', 'FabrikFEModel');
+			assert($fabrikFormModel instanceof FabrikFEModelForm);
+			$fabrikFormModel->setId($oldFormId);
+			$groups = $fabrikFormModel->getGroups();
+
+			$ordering = 0;
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+			foreach ($groups as $group) {
+				$ordering++;
+				$formModel = $group->getFormModel();
+				$properties = $group->getGroupProperties($formModel);
+
+				$query->clear()
+					->select('*')
+					->from('#__fabrik_groups')
+					->where($db->quoteName('id') . ' = ' . $db->quote($properties->id));
+				$db->setQuery($query);
+				$group_model = $db->loadObject();
+
+				$insert = [];
+				foreach ($group_model as $key => $val) {
+					if ($key != 'id' && $key != 'form_id' && $key != 'created_by' && $key != 'created' && $key != 'modified' && $key != 'checked_out_time') {
+						$insert[$key] = $val;
+					}
+					elseif ($key == 'form_id') {
+						$insert[$key] = $newFormId;
+					}
+					elseif ($key == 'created_by') {
+						$insert[$key] = $userId;
+					}
+					elseif ($key == 'created') {
+						$insert[$key] = date('Y-m-d H:i:s');
+					}
+				}
+				$insert = (object) $insert;
+				$db->insertObject('#__fabrik_groups', $insert);
+
+				$newGroupId = $db->insertid();
+
+				if ($group_model->is_join == 1) {
+					$query->clear()
+						->select('table_join')
+						->from($this->db->quoteName('#__fabrik_joins'))
+						->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote($properties->id))
+						->andWhere($this->db->quoteName('table_join_key') . ' = ' . $this->db->quote('parent_id'));
+					$this->db->setQuery($query);
+					$repeat_table_to_copy = $this->db->loadResult();
+
+					if (!$args['keep_structure']) {
+						$creators = [
+							new ApplicantTableCreator(),
+							new EvaluationTableCreator()
+						];
+						foreach ($creators as $creator) {
+							if ($creator->supports($repeat_table_to_copy)) {
+								$repeat_table_to_copy = $creator->createTableFromReference($repeat_table_to_copy, [
+									'parent_table_name' => $args['db_table_name'],
+									'group_id' => $newGroupId,
+									'keep_structure' => $args['keep_structure']
+								]);
+								break;
+							}
+						}
+					}
+
+					$joins_params = '{"type":"group","pk":"`' . $repeat_table_to_copy . '`.`id`"}';
+
+					$insert = [
+						'list_id' => $newListId,
+						'element_id' => 0,
+						'join_from_table' => $args['db_table_name'],
+						'table_join' => $repeat_table_to_copy,
+						'table_key' => 'id',
+						'table_join_key' => 'parent_id',
+						'join_type' => 'left',
+						'group_id' => $newGroupId,
+						'params' => $joins_params
+					];
+					$insert = (object) $insert;
+					$this->db->insertObject('#__fabrik_joins', $insert);
+				}
+
+				// Update translation files
+				if ($oldFormId == 258) {
+					$labels = array(
+						'fr' => "Confirmation d'envoi de dossier",
+						'en' => 'Confirmation of file sending',
+					);
+					$this->translate('GROUP_' . $newFormId . '_' . $newGroupId, $labels, 'fabrik_groups', $newGroupId, 'label');
+				}
+				else {
+					$labels_to_duplicate = $this->getLabelsFromTranslationKeyForLanguages($group_model->label, $languages, $args['model_prefix']);
+					foreach ($languages as $language) {
+						if ($args['label'][$language->sef] == '') {
+							$args['label'][$language->sef] = $group_model->label;
+						}
+					}
+					$this->translate('GROUP_' . $newFormId . '_' . $newGroupId, $labels_to_duplicate, 'fabrik_groups', $newGroupId, 'label');
+				}
+
+				$update = [
+					'id' => $newGroupId,
+					'label' => 'GROUP_' . $newFormId . '_' . $newGroupId,
+					'name' => 'GROUP_' . $newFormId . '_' . $newGroupId
+				];
+				$update = (object) $update;
+				$updated = $this->db->updateObject('#__fabrik_groups', $update, 'id');
+
+				$insert = [
+					'form_id' => $newFormId,
+					'group_id' => $newGroupId,
+					'ordering' => $ordering
+				];
+				$insert = (object) $insert;
+				$db->insertObject('#__fabrik_formgroup', $insert);
+
+				$params = json_decode($group_model->params);
+				$intro_key = $params->intro ?? '';
+				$intro_to_duplicate = $this->getLabelsFromTranslationKeyForLanguages($intro_key, $languages, $args['model_prefix']);
+				$group_intro_key = 'FORM_' . $newFormId . '_GROUP_' . $newGroupId . '_INTRO';
+
+				$this->translate($group_intro_key, $intro_to_duplicate, 'fabrik_groups', $newGroupId, 'intro');
+				$params->intro = $group_intro_key;
+
+				$update = [
+					'id' => $newGroupId,
+					'params' => json_encode($params)
+				];
+				$updateObj = (object)$update;
+				$db->updateObject('#__fabrik_groups', $updateObj, 'id');
+
+				foreach ($group->getMyElements() as $element) {
+					$this->duplicateFabrikGroupElement($element, $newGroupId, $newFormId, $args);
+				}
+
+				$duplicated = !empty($newGroupId);
+			}
+		} else {
+			throw new RuntimeException('No old form id or new form id given to duplicate the groups');
+		}
+
+		return $duplicated;
+	}
+
+	/**
+	 * @param   object  $element
+	 * @param   int     $newGroupId
+	 * @param   int     $newFormId
+	 * @param   array   $args
+	 *
+	 * @return bool
+	 */
+	public function duplicateFabrikGroupElement(object $element, int $newGroupId, int $newFormId, array &$args): bool
+	{
+		$duplicated = false;
+
+		if (!empty($element) && !empty($newGroupId) && !empty($newFormId))
+		{
+			$languages = JLanguageHelper::getLanguages();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			try
+			{
+				$newelement   = $element->copyRow($element->element->id, 'Copy of %s', $newGroupId);
+				$newelementid = $newelement->id;
+
+				$el_params = json_decode($element->element->params);
+
+				// Update translation files
+				if (($element->element->plugin === 'checkbox' || $element->element->plugin === 'radiobutton' || $element->element->plugin === 'dropdown') && $el_params->sub_options)
+				{
+					$sub_labels = [];
+					foreach ($el_params->sub_options->sub_labels as $index => $sub_label)
+					{
+						$labels_to_duplicate = array();
+
+
+						foreach ($languages as $language)
+						{
+							$labels_to_duplicate[$language->sef] = str_replace($args['model_prefix'], '', $this->getTranslation($sub_label, $language->lang_code));
+							if ($args['label'][$language->sef] == '')
+							{
+								$args['label'][$language->sef] = $sub_label;
+							}
+						}
+						$this->translate('SUBLABEL_' . $newGroupId . '_' . $newelementid . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'sub_labels');
+						$sub_labels[] = 'SUBLABEL_' . $newGroupId . '_' . $newelementid . '_' . $index;
+					}
+					$el_params->sub_options->sub_labels = $sub_labels;
+				}
+
+				$labels_to_duplicate = array();
+				foreach ($languages as $language)
+				{
+					$labels_to_duplicate[$language->sef] = str_replace($args['model_prefix'], '', $this->getTranslation($element->element->label, $language->lang_code));
+					if ($args['label'][$language->sef] == '')
+					{
+						$args['label'][$language->sef] = $element->element->label;
+					}
+				}
+				$this->translate('ELEMENT_' . $newGroupId . '_' . $newelementid, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'label');
+
+				$update  = [
+					'id'        => $newelementid,
+					'label'     => 'ELEMENT_' . $newGroupId . '_' . $newelementid,
+					'published' => $element->element->published,
+					'params'    => json_encode($el_params)
+				];
+				$update  = (object) $update;
+				$updated = $db->updateObject('#__fabrik_elements', $update, 'id');
+
+				$duplicated = !empty($newelementid);
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/models/formbuilder | Error at create a page for ' . $newFormId . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $duplicated;
+	}
+
+	public function updateFabrikLabel(int $identifier, string $keyPrefix, string $keySuffix = '', string $labelPrefix = '', string $referenceTable = 'fabrik_forms', string $referenceField = 'label'): bool
+	{
+		$updated = false;
+
+		if (!in_array($referenceTable, ['fabrik_forms', 'fabrik_groups', 'fabrik_elements', 'fabrik_lists'])) {
+			throw new InvalidArgumentException('Reference table ' . $referenceTable . ' not allowed in updateFabrikLabel');
+		}
+
+		if (!empty($identifier)) {
+			$keyPrefix = empty($keyPrefix) ? 'FORM_' : $keyPrefix;
+			$newKey = $keyPrefix . $identifier . $keySuffix;
+
+			$query = $this->db->createQuery();
+
+			$query->clear()
+				->select($referenceField)
+				->from('#__' . $referenceTable)
+				->where('id = ' . $this->db->quote($identifier));
+
+			$this->db->setQuery($query);
+			$oldLabel = $this->db->loadResult();
+			$oldLabel = strip_tags($oldLabel);
+
+			$query->clear()
+				->update('#__' . $referenceTable)
+				->set($referenceField . ' = ' . $this->db->quote($newKey))
+				->where('id = ' . $identifier);
+
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$languages = JLanguageHelper::getLanguages();
+			$labels = [];
+			foreach ($languages as $language) {
+				$labels[$language->sef] = $labelPrefix . $this->getTranslation($oldLabel, $language->lang_code);
+			}
+			$key = $this->translate($newKey, $labels, $referenceTable, $identifier, $referenceField);
+			$updated = !empty($key);
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * TODO: verify what happens if structure is not kept and there are conditions on the form
+	 *
+	 * @param   int  $formid
+	 * @param   int  $new_form_id
+	 *
+	 * @return bool
+	 */
+	public function duplicateConditions(int $formid, int $new_form_id): bool
+	{
+		$duplicated = false;
+
+		$query = $this->db->createQuery();
+
+		try
+		{
+			$query->clear()
+				->select('*')
+				->from($this->db->quoteName('#__emundus_setup_form_rules'))
+				->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($formid));
+			$this->db->setQuery($query);
+			$rules = $this->db->loadObjectList();
+
+			foreach ($rules as $rule)
+			{
+				$insert = [
+					'date_time'  => date('Y-m-d H:i:s'),
+					'type'       => $rule->type,
+					'group'      => $rule->group,
+					'published'  => $rule->published,
+					'form_id'    => $new_form_id,
+					'created_by' => $rule->created_by,
+				];
+				$insert = (object) $insert;
+				$this->db->insertObject('#__emundus_setup_form_rules', $insert);
+				$new_rule_id = $this->db->insertid();
+
+				if (!empty($new_rule_id))
+				{
+					$duplicated = true;
+
+					$query->clear()
+						->select('*')
+						->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
+						->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule->id));
+					$this->db->setQuery($query);
+					$actions = $this->db->loadObjectList();
+
+					foreach ($actions as $action)
+					{
+						$insert = [
+							'parent_id' => $new_rule_id,
+							'action'    => $action->action,
+						];
+						$insert = (object) $insert;
+						$this->db->insertObject('#__emundus_setup_form_rules_js_actions', $insert);
+						$new_action_id = $this->db->insertid();
+
+						if (!empty($new_action_id))
+						{
+							$query->clear()
+								->select('*')
+								->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
+								->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($action->id));
+							$this->db->setQuery($query);
+							$fields = $this->db->loadObjectList();
+
+							foreach ($fields as $field)
+							{
+								$insert = [
+									'parent_id' => $new_action_id,
+									'fields'    => $field->fields,
+									'params'    => $field->params
+								];
+								$insert = (object) $insert;
+								$this->db->insertObject('#__emundus_setup_form_rules_js_actions_fields', $insert);
+							}
+						}
+					}
+
+					$query->clear()
+						->select('*')
+						->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions'))
+						->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule->id));
+					$this->db->setQuery($query);
+					$conditions = $this->db->loadObjectList();
+
+					$group_conditions = [];
+					foreach ($conditions as $condition)
+					{
+						// Manage jos_emundus_setup_form_rules_js_conditions_group
+						$insert = [
+							'parent_id' => $new_rule_id,
+							'field'     => $condition->field,
+							'state'     => $condition->state,
+							'values'    => $condition->values
+						];
+						$insert = (object) $insert;
+
+						if ($this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert))
+						{
+							// Store group condition to duplicate after
+							$new_condition_id                      = $this->db->insertid();
+							$group_conditions[$condition->group][] = $new_condition_id;
+						}
+					}
+
+					foreach ($group_conditions as $group => $grouped_conditions)
+					{
+						$query->clear()
+							->select('*')
+							->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group'))
+							->where($this->db->quoteName('id') . ' = ' . $this->db->quote($group));
+						$this->db->setQuery($query);
+						$group_info = $this->db->loadObject();
+
+						$insert = (object) [
+							'group_type' => $group_info->group_type,
+						];
+
+						if ($this->db->insertObject('#__emundus_setup_form_rules_js_conditions_group', $insert))
+						{
+							$new_group_id = $this->db->insertid();
+
+							foreach ($grouped_conditions as $grouped_condition)
+							{
+								$update = (object) [
+									'id'    => $grouped_condition,
+									'group' => $new_group_id
+								];
+								$this->db->updateObject('#__emundus_setup_form_rules_js_conditions', $update, 'id');
+							}
+						}
+					}
+				}
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('component/com_emundus/models/formbuilder | Error at duplicating conditions : ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
+		}
+
+		return $duplicated;
 	}
 }
