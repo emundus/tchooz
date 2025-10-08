@@ -199,7 +199,7 @@ export default {
 		}
 	},
 	methods: {
-		labelTranslate({ label, name, group_id, elements }) {
+		labelTranslate({ label, name, group_id, elements, plugin, default: isDefault }) {
 			let labelTranslated = label ? label[useGlobalStore().getShortLang] : '';
 
 			// If labelTranslated is empty, we try to find an other language
@@ -223,6 +223,17 @@ export default {
 					'%s',
 					element.label[useGlobalStore().getShortLang],
 				);
+			} else if (plugin === 'panel' && isDefault) {
+				let text = isDefault;
+				// Strip HTML tags if any
+				text = text.replace(/<\/?[^>]+(>|$)/g, '');
+				// Truncate to 30 characters
+				if (text.length > 30) {
+					text = text.substring(0, 30) + '...';
+				}
+
+				// Display first character of panel if no label
+				return '[' + this.translate('COM_EMUNDUS_ONBOARD_TYPE_PANEL') + '] - ' + text;
 			} else {
 				return name;
 			}
