@@ -1148,7 +1148,7 @@ class EmundusHelperFiles
 				->join('INNER', '#__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id')
 				->join('INNER', '#__fabrik_forms AS forme ON formgroup.form_id = forme.id')
 				->join('INNER', '#__fabrik_lists AS tab ON tab.form_id = formgroup.form_id')
-				->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))')
+				->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND ((groupe.id=joins.group_id AND JSON_EXTRACT(joins.params,"$.type") = "group") OR element.id=joins.element_id))')
 				->where('element.id IN (' . ltrim($elements_id, ',') . ')')
 				->order('find_in_set(element.id, "' . ltrim($elements_id, ',') . '")');
 
