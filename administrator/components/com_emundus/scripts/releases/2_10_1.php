@@ -27,7 +27,6 @@ class Release2_10_1Installer extends ReleaseInstaller
 
 		try
 		{
-			// Be sure that gantry mode next execution is set to the future
 			$query = $this->db->getQuery(true);
 
 			$query->select('id, type, published')
@@ -66,6 +65,14 @@ class Release2_10_1Installer extends ReleaseInstaller
 
 			$str_query = 'alter table jos_menu_types modify title varchar(150) not null;';
 			$this->db->setQuery($str_query);
+			$tasks[] = $this->db->execute();
+
+			// Delete module-ldap-cas-saml-mise-en-place and retroplanning articles
+			$query->clear()
+				->delete($this->db->quoteName('#__content'))
+				->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('module-ldap-cas-saml-mise-en-place'))
+				->orWhere($this->db->quoteName('alias') . ' = ' . $this->db->quote('retroplanning'));
+			$this->db->setQuery($query);
 			$tasks[] = $this->db->execute();
 
 			$result['status']  = !in_array(false, $tasks);
