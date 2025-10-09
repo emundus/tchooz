@@ -1148,7 +1148,7 @@ class EmundusHelperFiles
 				->join('INNER', '#__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id')
 				->join('INNER', '#__fabrik_forms AS forme ON formgroup.form_id = forme.id')
 				->join('INNER', '#__fabrik_lists AS tab ON tab.form_id = formgroup.form_id')
-				->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))')
+				->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND ((groupe.id=joins.group_id AND JSON_EXTRACT(joins.params,"$.type") = "group") OR element.id=joins.element_id))')
 				->where('element.id IN (' . ltrim($elements_id, ',') . ')')
 				->order('find_in_set(element.id, "' . ltrim($elements_id, ',') . '")');
 
@@ -4759,60 +4759,37 @@ class EmundusHelperFiles
 
 									if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
 									{
-										foreach ($already_joined as $already_join_alias => $already_joined_table_name)
+										// if element is in a repeat group, try to find the parent table and check if it is linked to fnum
+										if ($fabrik_element_data['group_params']['repeat_group_button'] == 1  || $fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checklist', 'multilist']))
 										{
-											$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
+											$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
 
-											// if element is in a repeat group, try to find the parent table and check if it is linked to fnum
-											if ($fabrik_element_data['group_params']['repeat_group_button'] == 1)
+											if (!empty($join_informations))
 											{
-												$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
-
-												if (!empty($join_informations))
+												$parent_table = $join_informations['join_from_table'];
+												if ($this->isTableLinkedToCampaignCandidature($parent_table))
 												{
-													$parent_table = $join_informations['join_from_table'];
-													if ($this->isTableLinkedToCampaignCandidature($parent_table))
+													if (!in_array($parent_table, $already_joined))
 													{
-														if (!in_array($parent_table, $already_joined))
-														{
-															$already_joined[] = $parent_table;
-															$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
-														}
-
-														if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
-														{
-															$already_joined[] = $fabrik_element_data['db_table_name'];
-															$where['join']    .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name']) . ' ON ' . $fabrik_element_data['db_table_name'] . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table . '.' . $join_informations['table_key'];
-														}
-														$mapped_to_fnum = true;
-														break;
+														$already_joined[] = $parent_table;
+														$where['join']    .= ' LEFT JOIN ' . $db->quoteName($parent_table) . ' ON ' . $parent_table . '.fnum = jecc.fnum ';
 													}
+
+													if (!in_array($fabrik_element_data['db_table_name'], $already_joined))
+													{
+														$already_joined[] = $fabrik_element_data['db_table_name'];
+														$where['join']    .= ' LEFT JOIN ' . $db->quoteName($fabrik_element_data['db_table_name']) . ' ON ' . $fabrik_element_data['db_table_name'] . '.' . $join_informations['table_join_key'] . ' = ' . $parent_table . '.' . $join_informations['table_key'];
+													}
+													$mapped_to_fnum = true;
 												}
 											}
+										}
 
-											if ($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checklist', 'multilist']))
+										if (!$mapped_to_fnum) {
+											foreach ($already_joined as $already_join_alias => $already_joined_table_name)
 											{
-												$query->clear()
-													->select('*')
-													->from('#__fabrik_joins')
-													->where('table_join = ' . $db->quote($fabrik_element_data['db_table_name']))
-													->andWhere('join_from_table = ' . $db->quote($already_joined_table_name))
-													->andWhere('element_id = ' . $db->quote($fabrik_element_data['element_id']));
+												$already_join_alias = !is_numeric($already_join_alias) ? $already_join_alias : $already_joined_table_name;
 
-												$db->setQuery($query);
-												$join_informations = $db->loadAssoc();
-
-												if (!empty($join_informations))
-												{
-													$join_informations['params'] = json_decode($join_informations['params'], true);
-													$already_joined[]            = $fabrik_element_data['db_table_name'];
-													$where['join']               .= ' LEFT JOIN ' . $db->quoteName($join_informations['table_join']) . ' ON ' . $db->quoteName($join_informations['table_join'] . '.parent_id') . ' = ' . $db->quoteName($already_join_alias . '.id');
-													$mapped_to_fnum              = true;
-													break;
-												}
-											}
-											else
-											{
 												$query->clear()
 													->select('*')
 													->from('#__fabrik_joins')
@@ -4843,7 +4820,7 @@ class EmundusHelperFiles
 
 								if ($mapped_to_fnum)
 								{
-									if ($fabrik_element_data['group_params']['repeat_group_button'] == 1)
+									if ($fabrik_element_data['group_params']['repeat_group_button'] == 1 || ($fabrik_element_data['plugin'] === 'databasejoin' && in_array($fabrik_element_data['element_params']['database_join_display_type'], ['checklist', 'multilist'])))
 									{
 										$join_informations = $this->getJoinInformations($filter_id, $fabrik_element_data['group_id'], $fabrik_element_data['list_id']);
 
@@ -4915,6 +4892,8 @@ class EmundusHelperFiles
 
 										$where['q'] .= ' AND ' . $this->writeQueryWithOperator($db_table_name_alias . '.' . $fabrik_element_data['name'], $filter['value'], $filter['operator'], $filter['type'], $fabrik_element_data);
 									}
+								} else {
+									dump($fabrik_element_data);
 								}
 							}
 						}
@@ -5355,8 +5334,10 @@ class EmundusHelperFiles
 				->leftJoin('#__fabrik_groups AS jfg ON jfg.id = jfe.group_id')
 				->leftJoin('#__fabrik_formgroup AS jffg ON jffg.group_id = jfg.id')
 				->leftJoin('#__fabrik_lists AS jfl ON jfl.form_id = jffg.form_id')
-				->leftJoin('#__fabrik_joins AS jfj ON jfj.list_id = jfl.id AND (jfj.element_id = ' . $element_id . ' OR jfj.group_id = jfg.id)')
+				->leftJoin('#__fabrik_joins AS jfj ON (((jfg.id = jfj.group_id AND JSON_EXTRACT(jfj.params,"$.type") = "group") OR jfe.id = jfj.element_id))')
 				->where('jfe.id = ' . $element_id);
+			$query->order('JSON_EXTRACT(jfj.params,"$.type") DESC')
+				->setLimit(1);
 
 			try
 			{
@@ -5368,11 +5349,6 @@ class EmundusHelperFiles
 				Log::add('Failed to retreive fabrik element data in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
-			if (!empty($data['fabrik_table_join']))
-			{
-				$data['db_table_name'] = $data['fabrik_table_join'];
-			}
-
 			if (!empty($data['group_params']))
 			{
 				$data['group_params'] = json_decode($data['group_params'], true);
@@ -5381,6 +5357,11 @@ class EmundusHelperFiles
 			if (!empty($data['element_params']))
 			{
 				$data['element_params'] = json_decode($data['element_params'], true);
+			}
+
+			if (!empty($data['group_params']['repeat_group_button'] == 1 || $data['plugin'] === 'databasejoin' && in_array($data['element_params']['database_join_display_type'], ['checklist', 'multilist'])))
+			{
+				$data['db_table_name'] = $data['fabrik_table_join'];
 			}
 		}
 
@@ -5509,48 +5490,58 @@ class EmundusHelperFiles
 				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
-				$query->clear()
-					->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
-					->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
-					->where('TABLE_NAME IN (' . $db->quote($searched_table) . ', ' . $db->quote($base_table) . ')')
-					->andWhere('REFERENCED_TABLE_NAME IN (' . $db->quote($base_table) . ', ' . $db->quote($searched_table) . ')');
-
-				try
+				if ($this->isTableLinkedToCampaignCandidature($searched_table) && $this->isTableLinkedToCampaignCandidature($base_table))
 				{
-					$db->setQuery($query);
-					$join = $db->loadAssoc();
-				}
-				catch (Exception $e)
-				{
-					Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-				}
-
-				if (empty($join))
-				{
-					// look into fabrik tables
+					$joins[] = [
+						'table_key'       => 'fnum',
+						'table_join_key'  => 'fnum',
+						'join_from_table' => $searched_table,
+						'table_join'      => $base_table,
+					];
+				} else {
 					$query->clear()
-						->select('DISTINCT table_key, table_join_key, join_from_table, table_join, params')
-						->from($db->quoteName('#__fabrik_joins'))
-						->where('table_join = ' . $db->quote($base_table))
-						->andWhere('table_join_key IN ("id", "parent_id")');
+						->select('COLUMN_NAME as table_key, REFERENCED_COLUMN_NAME as table_join_key, TABLE_NAME as join_from_table, REFERENCED_TABLE_NAME as table_join')
+						->from($db->quoteName('INFORMATION_SCHEMA.KEY_COLUMN_USAGE'))
+						->where('TABLE_NAME IN (' . $db->quote($searched_table) . ', ' . $db->quote($base_table) . ')')
+						->andWhere('REFERENCED_TABLE_NAME IN (' . $db->quote($base_table) . ', ' . $db->quote($searched_table) . ')');
 
 					try
 					{
 						$db->setQuery($query);
-						$leftJoin = $db->loadAssoc();
+						$join = $db->loadAssoc();
 					}
 					catch (Exception $e)
 					{
 						Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					}
 
-					$next_index = $i + 1;
-					$joins[]    = $leftJoin;
-					$joins      = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
-				}
-				else
-				{
-					$joins[] = $join;
+					if (empty($join))
+					{
+						// look into fabrik tables
+						$query->clear()
+							->select('DISTINCT table_key, table_join_key, join_from_table, table_join, params')
+							->from($db->quoteName('#__fabrik_joins'))
+							->where('table_join = ' . $db->quote($base_table))
+							->andWhere('table_join_key IN ("id", "parent_id")');
+
+						try
+						{
+							$db->setQuery($query);
+							$leftJoin = $db->loadAssoc();
+
+							$next_index = $i + 1;
+							$joins[]    = $leftJoin;
+							$joins      = array_merge($joins, $this->findJoinsBetweenTablesRecursively($searched_table, $leftJoin['join_from_table'], $next_index));
+						}
+						catch (Exception $e)
+						{
+							Log::add('Failed to retreive join informations in filter context ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+						}
+					}
+					else
+					{
+						$joins[] = $join;
+					}
 				}
 			}
 		}
@@ -5980,18 +5971,12 @@ class EmundusHelperFiles
 				$from_base_table = $fabrik_element_data['fabrik_table_join'];
 				$subquery        = '';
 
-				if ($fabrik_element_data['group_params']['repeat_group_button'] == 1)
-				{
-					$repeat_join_infos = $this->getJoinInformations($fabrik_element_data['element_id']);
-					$from_base_table   = $repeat_join_infos['table_join'];
-				}
-
-				$joins = $this->findJoinsBetweenTablesRecursively($searched_table, $from_base_table);
+				$joins = $this->findJoinsBetweenTablesRecursively($searched_table, $from_base_table, 0);
 
 				// we've found an array of joins between the two tables
 				if (!empty($joins))
 				{
-					$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature ';
+					$subquery = ' SELECT DISTINCT jos_emundus_campaign_candidature.id FROM jos_emundus_campaign_candidature';
 
 					$already_joined_tables = [];
 					$subquery              .= $this->writeJoins($joins, $already_joined_tables);
@@ -6780,7 +6765,7 @@ class EmundusHelperFiles
 		if (!empty($table_name))
 		{
 			// check if table has a column named 'fnum'
-			$db    = JFactory::getDBO();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('column_name')

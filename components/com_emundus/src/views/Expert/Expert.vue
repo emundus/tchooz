@@ -123,6 +123,7 @@ export default {
 				mail_to: this.form.to,
 				mail_subject: this.form.subject,
 				mail_body: this.form.body,
+				mail_id: this.form.emailId,
 			};
 
 			return await emailService.sendExpertEmail(data).then((response) => {
