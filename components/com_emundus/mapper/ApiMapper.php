@@ -72,7 +72,8 @@ class ApiMapper
 
 				switch ($field->element_type) {
 					case 'alias':
-						$fabrik_value = EmundusHelperFabrik::getValueByAlias($field->elementId, $this->fnum);
+						$h_fabrik = new EmundusHelperFabrik();
+						$fabrik_value = $h_fabrik->getValueByAlias($field->elementId, $this->fnum);
 
 						if (!empty($fabrik_value) && !empty($fabrik_value['raw'])) {
 							$fabrik_element_type = '';

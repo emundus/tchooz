@@ -114,16 +114,10 @@ class FabrikHelperTest extends UnitTestCase
 		}
 	}
 
-	/**
-	 * @return void
-	 * @description Test the getValueByAlias() method
-	 * @covers EmundusHelperFabrik::getValueByAlias
-	 * It should return the value of the element with the alias and form number passed as parameters
-	 */
 	public function testGetValueByAlias()
 	{
-		$this->assertEmpty($this->helper::getValueByAlias("", 1)['raw'], 'Empty alias should return empty raw value');
-		$this->assertEmpty($this->helper::getValueByAlias("test", "")['raw'], 'Empty fnum should return empty raw value');
+		$this->assertEmpty($this->helper->getValueByAlias('', 1), 'Empty alias should return empty raw value');
+		$this->assertEmpty($this->helper->getValueByAlias('test', ''), 'Empty fnum should return empty raw value');
 
 		$form_id = $this->h_dataset->getUnitTestFabrikForm();
 		$applicant_id = $this->dataset['applicant'];
@@ -163,7 +157,7 @@ class FabrikHelperTest extends UnitTestCase
 				$this->assertTrue($updated, 'The params should be updated in the database');
 			}
 
-			$value = $this->helper::getValueByAlias($params['alias'], null, $applicant_id);
+			$value = $this->helper->getValueByAlias($params['alias'], null, $applicant_id);
 			$this->assertEmpty($value['raw'], 'The value obtained should not be empty');
 
 			// insert a value in the database
@@ -177,12 +171,15 @@ class FabrikHelperTest extends UnitTestCase
 			$inserted = $db->execute();
 			$this->assertTrue($inserted, 'The value should be inserted in the database');
 
-			$value = $this->helper::getValueByAlias($params['alias'],null, $applicant_id);
+			$value = $this->helper->getValueByAlias($params['alias'],null, $applicant_id);
 			$this->assertEquals($targeted_value, $value['raw'], 'The value obtained should be the same as the value in the database');
 
-			$value = $this->helper::getValueByAlias($params['alias'],null, $applicant_id, 'column');
-			$this->assertIsArray($value['raw'], 'The value obtained should be an array using the column format');
-			$this->assertEquals($targeted_value, $value['raw'][0], 'The value obtained should be the same as the value in the database using the column format');
+			$value = $this->helper->getValueByAlias($params['alias'],$this->dataset['fnum']);
+			$this->assertEmpty($value, 'The value obtained should be empty because the element is not in an applicant form');
+
+			$value = $this->helper->getValueByAlias($params['alias'],null, $applicant_id, 'column');
+			$this->assertIsArray($value, 'The value obtained should be an array using the column format');
+			$this->assertEquals($targeted_value, $value[0]['raw'], 'The value obtained should be the same as the value in the database using the column format');
 		}
 	}
 

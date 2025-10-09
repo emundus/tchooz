@@ -25,6 +25,9 @@ use Joomla\CMS\Uri\Uri;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Fabrik\ElementPlugin;
+use Tchooz\Enums\ValueFormat;
+use Tchooz\Factories\TransformerFactory;
 
 /**
  * Emundus Fabrik Helper
@@ -33,32 +36,14 @@ use Joomla\CMS\Language\Text;
 class EmundusHelperFabrik
 {
 
-	/**
-	 * Update a parameter in the params array
-	 *
-	 * @param $params
-	 * @param $attribute
-	 * @param $value
-	 *
-	 * @return mixed
-	 *
-	 * @since version 1.0.0
-	 */
-	static function updateParam($params, $attribute, $value)
+	static function updateParam(array $params, $attribute, $value): array
 	{
 		$params[$attribute] = strval($value);
 
 		return $params;
 	}
 
-	/**
-	 * Prepare Fabrik list parameters when create a new page from formbuilder
-	 *
-	 * @return array
-	 *
-	 * @since version 1.0.0
-	 */
-	static function prepareListParams()
+	static function prepareListParams(): array
 	{
 		return array(
 			'show-table-filters'                => '1',
@@ -197,17 +182,7 @@ class EmundusHelperFabrik
 		);
 	}
 
-	/**
-	 * Prepare Fabrik form parameters when create a new page from formbuilder
-	 *
-	 * @param $init_plugins
-	 * @param $type
-	 *
-	 * @return array|string[]
-	 *
-	 * @since version 1.0.0
-	 */
-	static function prepareFormParams($init_plugins = true, $type = '')
+	static function prepareFormParams(bool $init_plugins = true, ?string $type = ''): array
 	{
 		$params = array(
 			'outro'                              => '',
@@ -319,16 +294,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return array_merge($params, $plugins);
 	}
 
-	/**
-	 * Prepare Submittion plugin parameters when create a new form
-	 *
-	 * @param $params
-	 *
-	 * @return mixed
-	 *
-	 * @since version 1.0.0
-	 */
-	function prepareSubmittionPlugin($params)
+	function prepareSubmittionPlugin(array $params): array
 	{
 		$params['submit_button_label'] = 'SUBMIT';
 		$params['submit-success-msg']  = 'APPLICATION_SENT';
@@ -336,14 +302,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $params;
 	}
 
-	/**
-	 * Prepare Group parameters when add a new section in a form from formbuilder
-	 *
-	 * @return string[]
-	 *
-	 * @since version 1.0.0
-	 */
-	static function prepareGroupParams()
+	static function prepareGroupParams(): array
 	{
 		return array(
 			'split_page'                 => '0',
@@ -372,18 +331,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		);
 	}
 
-	/**
-	 * Prepare Element parameters via plugin when add a new element in a group from formbuilder
-	 *
-	 * @param $plugin
-	 * @param $notempty
-	 * @param $attachementId
-	 *
-	 * @return array
-	 *
-	 * @since version 1.0.0
-	 */
-	static function prepareElementParameters($plugin, $notempty = true, $attachementId = 0)
+	static function prepareElementParameters(string $plugin, ?bool $notempty = true, ?int $attachementId = 0): array
 	{
 
 		$plugin_no_required = ['display', 'panel'];
@@ -805,16 +753,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $params;
 	}
 
-	/**
-	 * Get the database type for a specific plugin
-	 *
-	 * @param $plugin
-	 *
-	 * @return string
-	 *
-	 * @since version 1.0.0
-	 */
-	static function getDBType($plugin)
+	static function getDBType(string $plugin): string
 	{
 		$dbtype = 'TEXT';
 
@@ -830,63 +769,34 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $dbtype;
 	}
 
-	/**
-	 * Initialize the label for a specific plugin
-	 *
-	 * @param $plugin
-	 *
-	 * @return string[]
-	 *
-	 * @since version 1.0.0
-	 */
-	static function initLabel($plugin)
+	static function initLabel(?string $plugin): array
 	{
-		$label = array();
-		switch ($plugin)
+		return match ($plugin)
 		{
-			case 'nom':
-				$label = array(
-					'fr' => 'Nom',
-					'en' => 'Name',
-				);
-				break;
-			case 'prenom':
-				$label = array(
-					'fr' => 'Prénom',
-					'en' => 'First name',
-				);
-				break;
-			case 'email':
-				$label = array(
-					'fr' => 'Adresse e-mail',
-					'en' => 'E-mail address',
-				);
-				break;
-			case 'emundus_phonenumber':
-				$label = array(
-					'fr' => 'Numéro de téléphone',
-					'en' => 'Phone number',
-				);
-				break;
-			default:
-				$label = array(
-					'fr' => '',
-					'en' => '',
-				);
-				break;
-		}
-
-		return $label;
+			'nom' => array(
+				'fr' => 'Nom',
+				'en' => 'Name',
+			),
+			'prenom' => array(
+				'fr' => 'Prénom',
+				'en' => 'First name',
+			),
+			'email' => array(
+				'fr' => 'Adresse e-mail',
+				'en' => 'E-mail address',
+			),
+			'emundus_phonenumber' => array(
+				'fr' => 'Numéro de téléphone',
+				'en' => 'Phone number',
+			),
+			default => array(
+				'fr' => '',
+				'en' => '',
+			),
+		};
 	}
 
-	/**
-	 * Prepare Fabrik menu parameters when create a new page from formbuilder
-	 *
-	 * @return string[]
-	 *
-	 * @since version 1.0.0
-	 */
-	static function prepareFabrikMenuParams()
+	static function prepareFabrikMenuParams(): array
 	{
 		return [
 			'rowid'                 => '',
@@ -911,18 +821,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		];
 	}
 
-	/**
-	 * Add a new option to a specific element (dropdown, checkbox, radiobutton)
-	 *
-	 * @param $eid
-	 * @param $label
-	 * @param $value
-	 *
-	 * @return boolean
-	 *
-	 * @since version 1.0.0
-	 */
-	static function addOption($eid, $label, $value)
+	static function addOption($eid, $label, $value): bool
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
@@ -954,18 +853,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 	}
 
-	/**
-	 * Add a notempty validation to a specific element
-	 *
-	 * @param $eid
-	 * @param $message
-	 * @param $condition
-	 *
-	 * @return boolean
-	 *
-	 * @since version 1.0.0
-	 */
-	static function addNotEmptyValidation($eid, $message = '', $condition = '')
+	static function addNotEmptyValidation($eid, $message = '', $condition = ''): bool
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
@@ -1016,19 +904,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 	}
 
-	/**
-	 * Create Fabrik join if element is a user plugin
-	 *
-	 * @param $eid
-	 * @param $name
-	 * @param $plugin
-	 * @param $group_id
-	 *
-	 * @return bool
-	 *
-	 * @since version 1.0.0
-	 */
-	static function checkFabrikJoins($eid, $name, $plugin, $group_id)
+	static function checkFabrikJoins($eid, $name, $plugin, $group_id): bool
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
@@ -1072,17 +948,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 	}
 
-	/**
-	 * Add JS Action to a specific element
-	 *
-	 * @param $eid
-	 * @param $action
-	 *
-	 * @return false
-	 *
-	 * @since version 1.0.0
-	 */
-	static function addJsAction($eid, $action)
+	static function addJsAction($eid, $action): bool
 	{
 		$added = false;
 
@@ -1102,13 +968,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				if (empty($assignations))
 				{
 					$js     = null;
-					$params = array(
+					$params = [
 						'js_e_event'     => '',
 						'js_e_trigger'   => '',
 						'js_e_condition' => '',
 						'js_e_value'     => '',
 						'js_published'   => '1',
-					);
+					];
 
 					$event = 'change';
 					if (is_string($action))
@@ -1146,70 +1012,39 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			catch (Exception $e)
 			{
 				Log::add('component/com_emundus/helpers/fabrik | Cannot create JS Action for element ' . $eid . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-				$added = false;
 			}
 		}
 
 		return $added;
 	}
 
-	/**
-	 * Get database table name for a specific Fabrik form or list
-	 *
-	 * @param $id
-	 * @param $object
-	 *
-	 * @return boolean
-	 *
-	 * @since version 1.0.0
-	 */
-	static function getTableFromFabrik($id, $object = 'list')
+	static function getTableFromFabrik($id, $object = 'list'): string
 	{
+		$table_name = '';
+
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
 		try
 		{
-			$query->select('fl.db_table_name')
-				->from($db->quoteName('#__fabrik_lists', 'fl'));
-			if ($object == 'form')
-			{
-				$query->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ff.id'))
-					->where($db->quoteName('ff.id') . ' = ' . $db->quote($id));
-			}
-			else
-			{
-				$query->where($db->quoteName('fl.id') . ' = ' . $db->quote($id));
-			}
+			$where_column = ($object == 'list') ? 'id' : 'form_id';
+
+			$query->select('db_table_name')
+				->from($db->quoteName('#__fabrik_lists'))
+				->where($db->quoteName($where_column) . ' = ' . $db->quote($id));
 
 			$db->setQuery($query);
-
-			return $db->loadResult();
+			$table_name = $db->loadResult();
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/helpers/fabrik | Cannot get table from fabrik with type ' . $object . ' ' . $id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $table_name;
 	}
 
-	/**
-	 * Create a new filter for current Fabrik list
-	 *
-	 * @param $filters
-	 * @param $eid
-	 * @param $value
-	 * @param $condition
-	 * @param $join
-	 * @param $hidden
-	 * @param $raw
-	 *
-	 * @return array
-	 *
-	 * @since version 1.0.0
-	 */
-	static function createFilterList(&$filters, $eid, $value, $condition = '=', $join = 'AND', $hidden = 0, $raw = 0)
+	static function createFilterList(&$filters, $eid, $value, $condition = '=', $join = 'AND', $hidden = 0): array
 	{
 		if (!isset($filters['elementid']))
 		{
@@ -1271,19 +1106,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $filters;
 	}
 
-	/**
-	 * Format a phone number according to the given format
-	 *
-	 * @param $phone_number string The phone number to format
-	 * @param $format       int The format to use
-	 *                      0 => E164
-	 *                      1 => INTERNATIONAL
-	 *                      2 => NATIONAL
-	 *                      3 => RFC3966
-	 *
-	 * @return string The formatted phone number, if the phone number is not valid, empty string is returned
-	 */
-	static function getFormattedPhoneNumberValue($phone_number, $format = PhoneNumberFormat::E164)
+	static function getFormattedPhoneNumberValue(string|array $phone_number, $format = PhoneNumberFormat::E164): string
 	{
 		$formattedValue = '';
 
@@ -1328,30 +1151,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $formattedValue;
 	}
 
-	/**
-	 * Get database table name for a specific Fabrik form
-	 *
-	 * @param $formid
-	 *
-	 * @return string
-	 *
-	 * @since version 1.0.0
-	 */
-	public static function getDbTableName($formid)
+	public static function getDbTableName($formid): string
 	{
 		$db_table_name = '';
-		$db            = Factory::getContainer()->get('DatabaseDriver');
-		$query         = $db->getQuery(true);
 
 		if (!empty($formid))
 		{
 			try
 			{
-				$query->select('db_table_name')
-					->from($db->quoteName('#__fabrik_lists'))
-					->where($db->quoteName('form_id') . ' = ' . $formid);
-				$db->setQuery($query);
-				$db_table_name = $db->loadResult();
+				$db_table_name = self::getTableFromFabrik($formid, 'form');
 			}
 			catch (Exception $e)
 			{
@@ -1362,18 +1170,6 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $db_table_name;
 	}
 
-	/**
-	 * @param $elt_name  string fabrik element name
-	 * @param $raw_value string|array raw value of the element
-	 * @param $groupId   int group ID of the element
-	 * @param $uid       int user ID for replace in databasejoin
-	 * @param $html      bool if the value should be formatted with HTML tags
-	 *
-	 * @description This function format a value of an element according to its plugin name
-	 * @return mixed|string|null
-	 *
-	 * @throws Exception
-	 */
 	static function formatElementValue($elt_name, $raw_value, $groupId = null, $uid = null, $html = false)
 	{
 		$formatted_value = $raw_value;
@@ -1597,18 +1393,6 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $formatted_value;
 	}
 
-	/**
-	 * Encrypt datas
-	 *
-	 * @param $value
-	 * @param $encryption_key
-	 * @param $cipher
-	 * @param $iv
-	 *
-	 * @return false|mixed|string
-	 *
-	 * @since version 1.0.0
-	 */
 	static function encryptDatas($value, $encryption_key = null, $cipher = 'aes-128-cbc', $iv = null)
 	{
 		$result = $value;
@@ -1800,20 +1584,6 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $result;
 	}
 
-	/**
-	 * Migrate encrypted datas from an old cipher to a new one
-	 *
-	 * @param $old_cipher
-	 * @param $new_cipher
-	 * @param $old_key
-	 * @param $new_key
-	 * @param $datas
-	 * @param $iv
-	 *
-	 * @return array
-	 *
-	 * @since version 1.0.0
-	 */
 	public static function migrateEncryptDatas($old_cipher, $new_cipher, $old_key, $new_key, $datas, $iv = null)
 	{
 		foreach ($datas as $key => $data)
@@ -1847,16 +1617,6 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $datas;
 	}
 
-	/**
-	 * Get a parameter from a Fabrik element of type date or jdate
-	 *
-	 * @param $elt
-	 * @param $param
-	 *
-	 * @return mixed|string
-	 *
-	 * @since version 1.0.0
-	 */
 	public static function getFabrikDateParam($elt, $param)
 	{
 		$result = '';
@@ -1877,16 +1637,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $result;
 	}
 
-	/**
-	 * Get groups from Fabrik forms
-	 *
-	 * @param $form_ids
-	 *
-	 * @return array
-	 *
-	 * @since version 1.40.0
-	 */
-	static function getGroupsFromFabrikForms($form_ids)
+	static function getGroupsFromFabrikForms(array $form_ids): array
 	{
 		$groups   = [];
 		$form_ids = array_unique($form_ids);
@@ -1923,14 +1674,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $groups;
 	}
 
-	/**
-	 * Get elements from Fabrik forms
-	 *
-	 * @param $form_ids
-	 *
-	 * @return array
-	 */
-	static function getElementsFromFabrikForms($form_ids, $excluded_plugins = [])
+	static function getElementsFromFabrikForms(array $form_ids, array $excluded_plugins = []): array
 	{
 		$elements = [];
 		$form_ids = array_unique($form_ids);
@@ -2015,17 +1759,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $elements;
 	}
 
-	/**
-	 * @param $alias     string The alias to search the element for
-	 * @param $form_id   int    The form id to search the element for
-	 *
-	 * @description Return element name and storage table according to alias
-	 *
-	 * @return array
-	 */
-	static function getElementsByAlias($alias, $form_id = null)
+	static function getElementsByAlias(string $alias, ?int $form_id = null): array
 	{
-
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
 
@@ -2035,12 +1770,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		{
 			try
 			{
-				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params')
+				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join')
 					->from($db->quoteName('#__fabrik_elements', 'fe'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
 					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+					->leftJoin($db->quoteName('#__fabrik_joins', 'fj') . ' ON ' . $db->quoteName('fl.id') . ' = ' . $db->quoteName('fj.list_id') . ' AND ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fj.group_id'))
 					->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias))
 					->where($db->quoteName('fe.published') . ' = 1')
 					->where($db->quoteName('fg.published') . ' = 1')
@@ -2062,23 +1798,16 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $elements;
 	}
 
-	/**
-	 * TODO: Get valueS by alias, why stop at one value?
-	 *
-	 * @param         $alias        string The alias to search the element's value for
-	 * @param   null  $fnum         int    The form number to search the element's value for
-	 * @param         $user_id      int    The user id to search the element's value for
-	 * @param         $load_option  string The query load method to use to retrieve the values
-	 * @param   null  $step_id      int    The workflow step we want the values from
-	 * @param   bool  $use_evaluation_forms
-	 *
-	 * @return mixed|string|null
-	 * @description Return the value of an element according to its alias in a form
-	 *
-	 */
-	static function getValueByAlias(string $alias, ?string $fnum = null, int $user_id = 0, string $load_option = 'result', int $step_id = null, bool $use_evaluation_forms = true): array
+	public function getValueByAlias(
+		string $alias,
+		?string $fnum = null,
+		int $user_id = 0,
+		string $load_option = 'result',
+		int $step_id = null,
+		bool $use_evaluation_forms = true
+	): array
 	{
-		$value = ['value' => '', 'raw' => ''];
+		$values = [];
 
 		if (!empty($alias) && (!empty($fnum) || !empty($user_id)))
 		{
@@ -2091,6 +1820,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 				if (!empty($fnum))
 				{
+					// TODO: Aliases from profile forms are removed here, we have to keep them if we want to get values from profile forms
+
 					// ! this means that only applicants forms data will be retrieved !
 					require_once(JPATH_SITE . '/components/com_emundus/models/application.php');
 					$m_application = new EmundusModelApplication();
@@ -2109,7 +1840,34 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 						if ((!empty($fnum) && in_array('fnum', $columns)) || (!empty($user_id) && in_array('user', $columns) || in_array('user_id', $columns)))
 						{
-							$query->clear()
+							//TODO: Allow getFabrikElementValue to get values by step_id
+							$element      = (array) $element;
+							$fabrik_value = $this->getFabrikElementValue($element, $fnum, 0, ValueFormat::BOTH, $user_id);
+							if (!empty($fabrik_value[$element['id']]))
+							{
+								if (!empty($fnum) && !empty($fabrik_value[$element['id']][$fnum]))
+								{
+									$value['raw'] = $fabrik_value[$element['id']][$fnum]['raw'];
+									$value['value'] = $fabrik_value[$element['id']][$fnum]['val'];
+								}
+								elseif (!empty($user_id) && !empty($fabrik_value[$element['id']][$user_id]))
+								{
+									$value['raw'] = $fabrik_value[$element['id']][$user_id]['raw'];
+									$value['value'] = $fabrik_value[$element['id']][$user_id]['val'];
+								}
+								else {
+									$value['raw'] = '';
+									$value['value'] = '';
+								}
+
+								if($load_option == 'column') {
+									$values[] = $value;
+								} else {
+									return $value;
+								}
+							}
+
+							/*$query->clear()
 								->select($db->quoteName($element->name))
 								->from($db->quoteName($element->db_table_name));
 
@@ -2153,7 +1911,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 								$value['raw']   = $raw_value;
 								$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
 								break;
-							}
+							}*/
 						}
 					}
 				}
@@ -2164,7 +1922,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 		}
 
-		return $value;
+		return $values;
 	}
 
 	public static function displayPasswordTip()
@@ -2568,7 +2326,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 				// First filter aliases to have only those that match applicants or evaluation forms (Use cache for this part)
 				$profiles = [];
-				
+
 				if(!class_exists('EmundusModelForm'))
 				{
 					require_once(JPATH_SITE . '/components/com_emundus/models/form.php');
@@ -2587,7 +2345,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						{
 							$profile = $profiles[$element->form_id];
 						}
-						
+
 						if(empty($profile))
 						{
 							$query->clear()
@@ -2788,7 +2546,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				{
 					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
 					{
-						$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id, 'result', null, false);
+						$h_fabrik    = new EmundusHelperFabrik();
+						$alias_value = $h_fabrik->getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id, 'result', null, false);
 
 						if (!empty($alias_value['raw']))
 						{
@@ -3067,5 +2826,646 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$dompdf->render();
 
 		return $dompdf->stream($filename, array("Attachment" => false));
+	}
+
+	public function getFabrikElementValue(
+		array       $fabrik_element,
+		?string     $fnum = null,
+		int         $row_id = 0,
+		ValueFormat $return = ValueFormat::FORMATTED,
+		int         $user_id = 0,
+	): array
+	{
+		$isRaw = $return === ValueFormat::RAW;
+
+		$value = [];
+
+		if (empty($fabrik_element))
+		{
+			return $value;
+		}
+
+		$plugin = ElementPlugin::tryFromString($fabrik_element['plugin']);
+		if ($plugin === null || empty($fabrik_element['params']) || empty($fabrik_element['group_params']))
+		{
+			return $value;
+		}
+
+		$params      = json_decode($fabrik_element['params']);
+		$groupParams = json_decode($fabrik_element['group_params']);
+
+		$fnums = !empty($fnum) ? [$fnum] : null;
+
+		$date_format = null;
+		if ($plugin->isDateField())
+		{
+			$date_format_parameter = $plugin->getDateFormatParameter();
+			if (!empty($date_format_parameter))
+			{
+				$date_format = !empty($params->$date_format_parameter) ? $params->$date_format_parameter : 'Y-m-d H:i:s';
+			}
+		}
+
+		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
+
+		if ($plugin === ElementPlugin::DATABASEJOIN || $isRepeatGroup)
+		{
+			$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id);
+		}
+		else
+		{
+			$value[$fabrik_element['id']] = $this->getFabrikValue($fnums, $fabrik_element['db_table_name'], $fabrik_element['name'], $date_format, $row_id, $return, $user_id);
+		}
+
+		// Transform value if needed
+		$transformer = TransformerFactory::make($plugin->value, (array)$params, (array)$groupParams);
+		foreach ($value[$fabrik_element['id']] as $fnumKey => $val)
+		{
+			$key = 'val';
+			if($plugin === ElementPlugin::CURRENCY){
+				$key = 'raw';
+			}
+
+			$values = [$val['val']];
+			if($isRepeatGroup) {
+				$values = explode(',', $val['val']);
+			}
+
+			$formatted_values = [];
+			foreach ($values as $_value)
+			{
+				if ($plugin === ElementPlugin::CURRENCY)
+				{
+					$formatted_values[] = self::extractNumericValue($_value);
+				}
+				elseif (!$isRaw)
+				{
+					$formatted_values[] = $transformer->transform($_value);
+				}
+			}
+
+			if($isRepeatGroup) {
+				$value[$fabrik_element['id']][$fnumKey][$key] = implode(', ', $formatted_values);
+			} else {
+				$value[$fabrik_element['id']][$fnumKey][$key] = $formatted_values[0] ?? '';
+			}
+		}
+		//
+
+		if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
+		{
+			$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
+		}
+
+		return $value;
+	}
+
+	public function getFabrikValueRepeat(
+		array             $elt,
+		string|array|null $fnums,
+		object            $params,
+		bool              $groupRepeat,
+		int               $parent_row_id = 0,
+		ValueFormat       $return = ValueFormat::FORMATTED,
+		?string           $date_format = null,
+		int               $user_id = 0
+	)
+	{
+		if (!is_array($fnums) && $fnums !== null)
+		{
+			$fnums = [$fnums];
+		}
+
+		if (empty($fnums) && empty($user_id))
+		{
+			return [];
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$plugin = ElementPlugin::tryFromString($elt['plugin']);
+		if ($plugin === null)
+		{
+			return [];
+		}
+
+		$tableName      = $elt['db_table_name'];
+		$tableJoin      = $elt['table_join'];
+		$name           = $elt['name'];
+		$isFnumsNull    = ($fnums === null || (is_array($fnums) && count($fnums) === 0));
+		$isDatabaseJoin = ($plugin === ElementPlugin::DATABASEJOIN);
+		$isMulti        = isset($params->database_join_display_type) && ($params->database_join_display_type == 'multilist' || $params->database_join_display_type == 'checkbox');
+
+		$select   = '';
+		$from     = '';
+		$leftJoin = [];
+		$where    = '';
+		$group    = '';
+
+		if ($plugin->isDateField())
+		{
+			$date_form_format = $this->dateFormatToMysql($date_format);
+
+			if ($return === ValueFormat::BOTH)
+			{
+				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+			}
+			elseif ($return === ValueFormat::RAW)
+			{
+				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+			}
+			else
+			{
+				$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+			}
+		}
+		else
+		{
+			// TODO: Manage join_val_column_concat
+			if ($isDatabaseJoin)
+			{
+				// join_key_column = raw, join_val_column = formatted
+				if ($groupRepeat)
+				{
+					if ($return === ValueFormat::BOTH)
+					{
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+					}
+					elseif ($return === ValueFormat::RAW)
+					{
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+					}
+					else
+					{
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+					}
+				}
+				else
+				{
+					if ($isMulti)
+					{
+						if ($return === ValueFormat::BOTH)
+						{
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+						}
+						elseif ($return === ValueFormat::RAW)
+						{
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+						}
+						else
+						{
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+						}
+					}
+					else
+					{
+						if ($return === ValueFormat::BOTH)
+						{
+							$select = 't_origin.' . $params->join_key_column . ' as raw, t_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+						}
+						elseif ($return === ValueFormat::RAW)
+						{
+							$select = 't_origin.' . $params->join_key_column . ' as val, t_elt.fnum ';
+						}
+						else
+						{
+							$select = 't_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+						}
+					}
+				}
+			}
+			else
+			{
+				if ($return === ValueFormat::BOTH)
+				{
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+				}
+				elseif ($return === ValueFormat::RAW)
+				{
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+				}
+				else
+				{
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+				}
+			}
+		}
+
+		if ($isDatabaseJoin)
+		{
+			if ($groupRepeat)
+			{
+				$tableName2 = $tableJoin;
+				if ($isMulti)
+				{
+					$from       = $db->quoteName($params->join_db_name, 't_origin');
+					$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
+					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
+					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
+				}
+				else
+				{
+					$from       = $db->quoteName($params->join_db_name, 't_origin');
+					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
+					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
+				}
+			}
+			else
+			{
+				if ($isMulti)
+				{
+					$from       = $db->quoteName($params->join_db_name, 't_origin');
+					$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
+					$leftJoin[] = $db->quoteName($tableName, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
+				}
+				else
+				{
+					$from       = $db->quoteName($params->join_db_name, 't_origin');
+					$leftJoin[] = $db->quoteName($tableName, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
+				}
+			}
+
+		}
+		else
+		{
+			$from       = $db->quoteName($tableJoin, 't_repeat');
+			$leftJoin[] = $db->quoteName($tableName, 't_origin') . ' ON t_origin.id = t_repeat.parent_id';
+		}
+
+		if ($isMulti || $isDatabaseJoin)
+		{
+			if (!$isFnumsNull)
+			{
+				if ($groupRepeat)
+				{
+					$where = $db->quoteName('t_table.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')';
+					$group = $db->quoteName('t_table.fnum');
+				}
+				else
+				{
+					$where = $db->quoteName('t_elt.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')';
+					$group = $db->quoteName('t_elt.fnum');
+				}
+			}
+		}
+		else
+		{
+			if (!$isFnumsNull)
+			{
+				$where = $db->quoteName('t_origin.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')';
+				$group = $db->quoteName('t_origin.fnum');
+			}
+		}
+
+		if (!empty($user_id))
+		{
+			$userColumn = null;
+			if ($this->tableHasColumn($tableName, 'user'))
+			{
+				$userColumn = 'user';
+			}
+			elseif ($this->tableHasColumn($tableName, 'user_id'))
+			{
+				$userColumn = 'user_id';
+			}
+
+			if ($userColumn !== null)
+			{
+				$userCondition = $db->quoteName('t_origin.' . $userColumn) . ' = ' . $db->quote($user_id);
+
+				if (!empty($where))
+				{
+					$where .= ' AND ' . $userCondition;
+				}
+				else
+				{
+					$where = $userCondition;
+				}
+			}
+		}
+
+		if (!empty($parent_row_id) && !$isFnumsNull)
+		{
+			if ($isDatabaseJoin)
+			{
+				if ($groupRepeat)
+				{
+					$where .= ' AND t_table.id = ' . $db->quote($parent_row_id);
+				}
+				else
+				{
+					$where .= ' AND t_elt.id = ' . $db->quote($parent_row_id);
+				}
+			}
+			else
+			{
+				$where .= ' AND t_origin.id = ' . $db->quote($parent_row_id);
+			}
+		}
+
+		$query->select($select)
+			->from($from);
+		foreach ($leftJoin as $join)
+		{
+			$query->leftJoin($join);
+		}
+		$query->where($where)
+			->group($group);
+
+		try
+		{
+			$db->setQuery($query);
+
+			if (!$isFnumsNull)
+			{
+				$res = $db->loadAssocList('fnum');
+			}
+			else
+			{
+				$res = $db->loadAssocList();
+			}
+
+			return $res;
+		}
+		catch (Exception $e)
+		{
+			throw $e;
+		}
+	}
+
+	public function getFabrikValue(
+		string|array|null $fnums,
+		string            $tableName,
+		string            $name,
+		?string           $dateFormat = null,
+		int               $row_id = 0,
+		ValueFormat       $return = ValueFormat::FORMATTED,
+		int               $user_id = 0
+	): array
+	{
+		$values = [];
+
+		if (!is_array($fnums) && $fnums !== null)
+		{
+			$fnums = [$fnums];
+		}
+
+		if (empty($fnums) && empty($user_id))
+		{
+			return $values;
+		}
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		// check if column fnum exists
+		$fnum_column_existing = $this->tableHasColumn($tableName, 'fnum');
+		$user_column           = null;
+		if ($this->tableHasColumn($tableName, 'user'))
+		{
+			$user_column = 'user';
+		}
+		elseif ($this->tableHasColumn($tableName, 'user_id'))
+		{
+			$user_column = 'user_id';
+		}
+
+
+		if ($fnum_column_existing && !empty($fnums))
+		{
+			$query->clear()
+				->select('fnum, ' . $db->quoteName($name) . ' as val')
+				->from($db->quoteName($tableName))
+				->where($db->quoteName('fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')');
+
+			if (!empty($user_id) && $user_column !== null)
+			{
+				$query->andWhere($db->quoteName($user_column) . ' = ' . $db->quote($user_id));
+			}
+
+			if (!empty($row_id))
+			{
+				$query->andWhere($db->quoteName('id') . ' = ' . $db->quote($row_id));
+			}
+
+			try
+			{
+				$db->setQuery($query);
+				$rows = $db->loadAssocList('fnum');
+
+				if ($return === ValueFormat::BOTH)
+				{
+					foreach ($rows as $fnumKey => $row)
+					{
+						$raw       = $row['val'];
+						$formatted = $raw;
+
+						if (!empty($dateFormat) && $raw !== null && $raw !== '')
+						{
+							$formatted = date($dateFormat, strtotime($raw));
+						}
+
+						$values[$fnumKey] = [
+							'raw'  => $raw,
+							'val'  => $formatted,
+							'fnum' => $fnumKey
+						];
+					}
+				}
+				elseif ($return === ValueFormat::RAW)
+				{
+					// keep legacy shape: val => raw value
+					foreach ($rows as $fnumKey => $row)
+					{
+						$values[$fnumKey] = [
+							'val'  => $row['val'],
+							'fnum' => $fnumKey
+						];
+					}
+				}
+				else // formatted
+				{
+					foreach ($rows as $fnumKey => $row)
+					{
+						$val = $row['val'];
+						if (!empty($dateFormat) && $val !== null && $val !== '')
+						{
+							$val = date($dateFormat, strtotime($val));
+						}
+
+						$values[$fnumKey] = [
+							'val'  => $val,
+							'fnum' => $fnumKey
+						];
+					}
+				}
+			}
+			catch (Exception $e)
+			{
+				throw $e;
+			}
+		}
+		else
+		{
+			if ($user_column !== null && !empty($user_id))
+			{
+				try
+				{
+					// Query by user/user_id
+					$query->clear()
+						->select($db->quoteName($name) . ' as val, ' . $db->quoteName($user_column) . ' as user_val')
+						->from($db->quoteName($tableName))
+						->where($db->quoteName($user_column) . ' = ' . $db->quote($user_id));
+
+					if (!empty($row_id))
+					{
+						$query->andWhere($db->quoteName('id') . ' = ' . $db->quote($row_id));
+					}
+
+					$db->setQuery($query);
+
+					// We don't have fnum key; use user id as key to keep associative results stable
+					$row = $db->loadAssoc();
+
+					if ($row !== null)
+					{
+						$raw = $row['val'];
+						if ($return === ValueFormat::BOTH)
+						{
+							$formatted = $raw;
+							if (!empty($dateFormat) && $raw !== null && $raw !== '')
+							{
+								$formatted = date($dateFormat, strtotime($raw));
+							}
+
+							$values[$user_id] = [
+								'raw'  => $raw,
+								'val'  => $formatted,
+								'fnum' => $user_id
+							];
+						}
+						elseif ($return === ValueFormat::RAW)
+						{
+							$values[$user_id] = [
+								'val'  => $raw,
+								'fnum' => $user_id
+							];
+						}
+						else
+						{
+							$val = $raw;
+							if (!empty($dateFormat) && $val !== null && $val !== '')
+							{
+								$val = date($dateFormat, strtotime($val));
+							}
+
+							$values[$user_id] = [
+								'val'  => $val,
+								'fnum' => $user_id
+							];
+						}
+					}
+				}
+				catch (Exception $e)
+				{
+					throw $e;
+				}
+			}
+			else
+			{
+				if (!empty($user_column_existing))
+				{
+					try
+					{
+						foreach ($fnums as $fnum)
+						{
+							$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+
+							$query->clear()
+								->select($db->quoteName($name) . ' as val')
+								->from($db->quoteName($tableName))
+								->where($db->quoteName('user_id') . ' = ' . $db->quote($applicant_id));
+
+							if (!empty($row_id))
+							{
+								$query->andWhere($db->quoteName('id') . ' = ' . $db->quote($row_id));
+							}
+
+							$db->setQuery($query);
+							$value = $db->loadResult();
+
+							if ($return === ValueFormat::BOTH)
+							{
+								$raw       = $value;
+								$formatted = $raw;
+								if (!empty($dateFormat) && $raw !== null && $raw !== '')
+								{
+									$formatted = date($dateFormat, strtotime($raw));
+								}
+
+								$values[$fnum] = [
+									'raw'  => $raw,
+									'val'  => $formatted,
+									'fnum' => $fnum
+								];
+							}
+							elseif ($return === ValueFormat::RAW)
+							{
+								$values[$fnum] = [
+									'val'  => $value,
+									'fnum' => $fnum
+								];
+							}
+							else // formatted
+							{
+								$val = $value;
+								if (!empty($dateFormat) && $val !== null && $val !== '')
+								{
+									$val = date($dateFormat, strtotime($val));
+								}
+
+								$values[$fnum] = [
+									'val'  => $val,
+									'fnum' => $fnum
+								];
+							}
+						}
+					}
+					catch (Exception $e)
+					{
+						throw $e;
+					}
+				}
+			}
+		}
+
+		return $values;
+	}
+
+	private function dateFormatToMysql($date_format)
+	{
+		$date_format = str_replace('D', '%D', $date_format);
+		$date_format = str_replace('d', '%d', $date_format);
+		$date_format = str_replace('M', '%M', $date_format);
+		$date_format = str_replace('m', '%m', $date_format);
+		$date_format = str_replace('Y', '%Y', $date_format);
+		$date_format = str_replace('y', '%y', $date_format);
+		$date_format = str_replace('H', '%H', $date_format);
+		$date_format = str_replace('h', '%h', $date_format);
+		$date_format = str_replace('I', '%I', $date_format);
+		$date_format = str_replace('i', '%i', $date_format);
+		$date_format = str_replace('S', '%S', $date_format);
+
+		return str_replace('s', '%s', $date_format);
+	}
+
+	private function tableHasColumn(string $tableName, string $columnName): bool
+	{
+		$db  = Factory::getContainer()->get('DatabaseDriver');
+		$sql = 'SHOW COLUMNS FROM ' . $db->quoteName($tableName) . ' WHERE ' . $db->quoteName('Field') . ' = ' . $db->quote($columnName);
+		$res = $db->setQuery($sql)->loadResult();
+
+		return !empty($res);
 	}
 }

@@ -145,7 +145,7 @@ export default {
 									controller: 'form',
 									method: 'post',
 									name: 'duplicate',
-								}
+								},
 							],
 							filters: [
 								{

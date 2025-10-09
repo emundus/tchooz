@@ -4119,9 +4119,6 @@ class EmundusModelFormbuilder extends JModelList
 							$label = !empty($label) ? $label : 'Model - ' . $form_id_to_copy . ' - ' . $new_form_id;
 
 							// insert form into models list
-
-							$query = $this->db->getQuery(true);
-
 							$insert = [
 								'form_id' => $new_form_id,
 								'label'   => $label,
@@ -4129,10 +4126,12 @@ class EmundusModelFormbuilder extends JModelList
 							];
 							$insert = (object) $insert;
 
-							try {
+							try
+							{
 								$inserted = $this->db->insertObject('#__emundus_template_form', $insert);
 							}
-							catch (Exception $e) {
+							catch (Exception $e)
+							{
 								$inserted = false;
 								Log::add('Failed to create new form model ' . $e->getMessage(), Log::ERROR, 'com_emundus.formbuilder');
 							}

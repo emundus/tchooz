@@ -83,6 +83,7 @@ class AmmonRepository
 		$registered = false;
 
 		try {
+			$h_fabrik = new \EmundusHelperFabrik();
 			if (!$skip_company) {
 				$company = $this->getOrCreateCompany();
 				if (!empty($company)) {
@@ -99,7 +100,7 @@ class AmmonRepository
 							}
 						}
 
-						$different_referee = \EmundusHelperFabrik::getValueByAlias('different_admin', $this->fnum);
+						$different_referee = $h_fabrik->getValueByAlias('different_admin', $this->fnum);
 						if ($different_referee['raw'] == 1) {
 							Log::add('Need to create a different referee for '. $this->fnum, Log::INFO, 'plugin.emundus.ammon');
 
@@ -154,7 +155,8 @@ class AmmonRepository
 	{
 		$paying = false;
 
-		$value = \EmundusHelperFabrik::getValueByAlias('registration_company_price', $this->fnum);
+		$h_fabrik = new \EmundusHelperFabrik();
+		$value = $h_fabrik->getValueByAlias('registration_company_price', $this->fnum);
 		if (!empty($value) && !empty($value['raw'])) {
 			$price = str_replace(' ', '', $value['raw']);
 			$price = str_replace(',', '.', $price);
@@ -205,7 +207,8 @@ class AmmonRepository
 		$siret = '';
 
 		if (!empty($fnum)) {
-			$value = \EmundusHelperFabrik::getValueByAlias('company_siret', $fnum);
+			$h_fabrik = new \EmundusHelperFabrik();
+			$value = $h_fabrik->getValueByAlias('company_siret', $fnum);
 
 			if (!empty($value)) {
 				$siret = $value['raw'];
@@ -379,13 +382,15 @@ class AmmonRepository
 		$user = null;
 
 		if (!empty($fnum)) {
+			$h_fabrik = new \EmundusHelperFabrik();
+
 			$firstname = '';
 			$lastname = '';
 
 			try {
-				$firstname = \EmundusHelperFabrik::getValueByAlias('registration_first_name', $fnum)['raw'];
-				$lastname = \EmundusHelperFabrik::getValueByAlias('registration_common_name', $fnum)['raw'];
-				$birthdate = \EmundusHelperFabrik::getValueByAlias('registration_date_of_birth', $fnum)['raw'];
+				$firstname = $h_fabrik->getValueByAlias('registration_first_name', $fnum)['raw'];
+				$lastname = $h_fabrik->getValueByAlias('registration_common_name', $fnum)['raw'];
+				$birthdate = $h_fabrik->getValueByAlias('registration_date_of_birth', $fnum)['raw'];
 				$ammon_user = $this->synchronizer->getUser($lastname, $firstname, $birthdate, $force_new_user_if_not_found);
 
 				if (!empty($ammon_user)) {

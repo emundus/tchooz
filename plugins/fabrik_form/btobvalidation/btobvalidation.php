@@ -114,6 +114,7 @@ class PlgFabrik_FormBtobValidation extends plgFabrik_Form
 		$moved = false;
 
 		if (!empty($status) && !empty($user_id)) {
+			$h_fabrik = new EmundusHelperFabrik();
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
@@ -153,7 +154,7 @@ class PlgFabrik_FormBtobValidation extends plgFabrik_Form
 							$db->setQuery($query);
 							$campaign = $db->loadObject();
 
-							$price = EmundusHelperFabrik::getValueByAlias('registration_candidate_price', $fnum);
+							$price = $h_fabrik->getValueByAlias('registration_candidate_price', $fnum);
 
 							$query->clear()
 								->insert('#__emundus_btob')
@@ -165,24 +166,24 @@ class PlgFabrik_FormBtobValidation extends plgFabrik_Form
 							$row_id = $db->insertid();
 
 							if (!empty($row_id)) {
-								$lastname = EmundusHelperFabrik::getValueByAlias('registration_common_name', $fnum);
-								$firstname = EmundusHelperFabrik::getValueByAlias('registration_first_name', $fnum);
-								$email = EmundusHelperFabrik::getValueByAlias('correspondence_different_email', $fnum);
+								$lastname = $h_fabrik->getValueByAlias('registration_common_name', $fnum);
+								$firstname = $h_fabrik->getValueByAlias('registration_first_name', $fnum);
+								$email = $h_fabrik->getValueByAlias('correspondence_different_email', $fnum);
 								if (empty($email['raw'])) {
-									$email = EmundusHelperFabrik::getValueByAlias('registration_email', $fnum);
+									$email = $h_fabrik->getValueByAlias('registration_email', $fnum);
 								}
 
-								$financement_entreprise = EmundusHelperFabrik::getValueByAlias('registration_company_price', $fnum);
-								$financement_organisme = EmundusHelperFabrik::getValueByAlias('registration_organism_price', $fnum);
+								$financement_entreprise = $h_fabrik->getValueByAlias('registration_company_price', $fnum);
+								$financement_organisme = $h_fabrik->getValueByAlias('registration_organism_price', $fnum);
 								$fullname = $lastname['value'] . ' ' . $firstname['value'];
-								$civility = EmundusHelperFabrik::getValueByAlias('registration_civility', $fnum);
-								$btob_amenagements = EmundusHelperFabrik::getValueByAlias('accomodation_yesno', $fnum);
+								$civility = $h_fabrik->getValueByAlias('registration_civility', $fnum);
+								$btob_amenagements = $h_fabrik->getValueByAlias('accomodation_yesno', $fnum);
 
 								if (empty($btob_amenagements['raw'])) {
 									$btob_amenagements['raw'] = 0;
 								}
 
-								$amenagements_details = EmundusHelperFabrik::getValueByAlias('accomodation_specify', $fnum);
+								$amenagements_details = $h_fabrik->getValueByAlias('accomodation_specify', $fnum);
 
 								$query->clear()
 									->insert('#__emundus_btob_1237_repeat')

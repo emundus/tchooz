@@ -170,7 +170,8 @@ class EmundusHelperEvents
 				{
 					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
 					{
-						$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id);
+						$h_fabrik = new EmundusHelperFabrik();
+						$alias_value = $h_fabrik->getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id);
 
 						if (!empty($alias_value['raw']))
 						{
@@ -947,7 +948,8 @@ class EmundusHelperEvents
 						if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
 						{
 							//TODO: Manage alias from evaluation forms
-							$alias_value = EmundusHelperFabrik::getValueByAlias($elt->getParams()->get('alias'), null, $user->id);
+							$h_fabrik = new EmundusHelperFabrik();
+							$alias_value = $h_fabrik->getValueByAlias($elt->getParams()->get('alias'), null, $user->id);
 
 							if (!empty($alias_value['raw']))
 							{

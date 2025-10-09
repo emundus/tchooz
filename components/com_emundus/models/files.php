@@ -227,7 +227,7 @@ class EmundusModelFiles extends JModelLegacy
 					}
 					$publish_query = ($published_column) ? " AND $attribs->join_db_name.published = 1 " : '';
 
-					if ($group_params->repeat_group_button == 1) {
+					if ($group_params->repeat_group_button == 1 || $attribs->database_join_display_type == "multilist" || $attribs->database_join_display_type == "checkbox") {
 						$query = '(
                                     select GROUP_CONCAT(' . $column . ' SEPARATOR ", ")
                                     from ' . $attribs->join_db_name . '
@@ -240,33 +240,12 @@ class EmundusModelFiles extends JModelLegacy
                                   ) AS `' . $def_elmt->tab_name . '___' . $def_elmt->element_name . '`';
 					}
 					else {
-						if ($attribs->database_join_display_type == "checkbox") {
-							$t     = $def_elmt->table_join;
-							$query = '(SELECT GROUP_CONCAT(' . $column . ')
-                                FROM ' . $attribs->join_db_name . '
-                                WHERE `' . $attribs->join_db_name . '`.`' . $attribs->join_key_column . '` IN (
-                                    select `' . $t . '`.`' . $def_elmt->element_name . '`
-                                    from `' . $t . '`
-                                    where `' . $t . '`.parent_id = `' . $def_elmt->join_from_table . '`.id
-                                )) AS `' . $t . '___' . $def_elmt->element_name . '`';
-						}
-						else if ($attribs->database_join_display_type == 'multilist') {
-							$t     = $def_elmt->tab_name . '_repeat_' . $def_elmt->element_name;
-							$query = '(
-                                select DISTINCT ' . $column . '
-                                from ' . $attribs->join_db_name . '
-                                where `' . $attribs->join_db_name . '`.`' . $attribs->join_key_column . '`=`' . $t . '`.`' . $def_elmt->element_name . '`
-                                ' . $publish_query . '
-                            ) AS `' . $t . '`';
-						}
-						else {
-							$query = '(
+						$query = '(
                                 select DISTINCT ' . $column . '
                                 from ' . $attribs->join_db_name . '
                                 where `' . $attribs->join_db_name . '`.`' . $attribs->join_key_column . '`=`' . $def_elmt->tab_name . '`.`' . $def_elmt->element_name . '`
                                 ' . $publish_query . '
                                 ) AS `' . $def_elmt->tab_name . '___' . $def_elmt->element_name . '`';
-						}
 					}
 					$this->_elements_default[] = $query;
 				}
@@ -319,7 +298,7 @@ class EmundusModelFiles extends JModelLegacy
 						$element_attribs = json_decode($def_elmt->element_attribs);
 						$select          = $def_elmt->tab_name . '.' . $def_elmt->element_name;
 						foreach ($element_attribs->sub_options->sub_values as $key => $value) {
-							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
+							$select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' .
 								Text::_(addslashes($element_attribs->sub_options->sub_labels[$key])) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;

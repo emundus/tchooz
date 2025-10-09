@@ -96,7 +96,12 @@ class FilesHelperTest extends UnitTestCase
 
 		$joins          = $this->helper->findJoinsBetweenTablesRecursively('jos_emundus_evaluations', 'jos_emundus_campaign_candidature');
 		$joins_reversed = $this->helper->findJoinsBetweenTablesRecursively('jos_emundus_campaign_candidature', 'jos_emundus_evaluations');
-		$this->assertSame($joins, $joins_reversed, 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations');
+
+		// 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations' with only join direction changed
+		$this->assertEquals($joins[0]['join_from_table'], $joins_reversed[0]['table_join'], 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations with only join direction changed');
+		$this->assertEquals($joins[0]['table_join'], $joins_reversed[0]['join_from_table'], 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations with only join direction changed');
+		$this->assertEquals($joins[0]['table_key'], $joins_reversed[0]['table_join_key'], 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations with only join direction changed');
+		$this->assertEquals($joins[0]['table_join_key'], $joins_reversed[0]['table_key'], 'Join between jos_emundus_evaluations and jos_emundus_campaign_candidature returns same join as join between jos_emundus_campaign_candidature and jos_emundus_evaluations with only join direction changed');
 	}
 
 	/**

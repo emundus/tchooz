@@ -287,6 +287,11 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la sécurisation de l\'API Tchooz v2', 'error');
 		}
 
+		if (!$this->secureSomeArticles())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la sécurisation de certains articles', 'error');
+		}
+
 		EmundusHelperUpdate::generateCampaignsAlias();
 
 		return true;
@@ -776,7 +781,19 @@ class Com_EmundusInstallerScript
 
 			//Prepare cookies config
 			$cookie_domain = Factory::getApplication()->get('live_site', '');
-			if (!empty($cookie_domain) && strpos($cookie_domain, 'localhost') === false)
+			// Remove port if exists
+			$port = parse_url($cookie_domain, PHP_URL_PORT);
+			if (!empty($port))
+			{
+				$cookie_domain = str_replace(':' . $port, '', $cookie_domain);
+			}
+			$is_local = false;
+			if (strpos($cookie_domain, 'localhost') !== false || strpos($cookie_domain, '127.') !== false)
+			{
+				$is_local = true;
+			}
+
+			if (!empty($cookie_domain) && !$is_local)
 			{
 				$cookie_domain = explode('//', $cookie_domain);
 				$cookie_domain = $cookie_domain[1];
@@ -1346,6 +1363,50 @@ class Com_EmundusInstallerScript
 				$params['loggable_verbs'] = ['GET', 'POST', 'PUT', 'DELETE'];
 				$actionLogsComponent->params = json_encode($params);
 				$tasks[] = $this->db->updateObject('#__extensions', $actionLogsComponent, 'extension_id');
+			}
+		}
+		catch (\Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			return false;
+		}
+
+		return !in_array(false, $tasks);
+	}
+
+	private function secureSomeArticles(): bool
+	{
+		$query  = $this->db->createQuery();
+		$tasks = [];
+
+		try
+		{
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__viewlevels'))
+				->where($this->db->quoteName('title') . ' = ' . $this->db->quote('Coordinator'));
+			$this->db->setQuery($query);
+			$coordinatorViewLevelId = $this->db->loadResult();
+
+			if(!empty($coordinatorViewLevelId))
+			{
+				$query->clear()
+					->select('id, access')
+					->from($this->db->quoteName('#__categories'))
+					->where($this->db->quoteName('path') . ' = ' . $this->db->quote('gestion-de-projet'))
+					->where($this->db->quoteName('extension') . ' = ' . $this->db->quote('com_content'));
+				$this->db->setQuery($query);
+				$category = $this->db->loadObject();
+
+				if (!empty($category) && !empty($category->id))
+				{
+					$update  = [
+						'id'     => $category->id,
+						'access' => $coordinatorViewLevelId
+					];
+					$update  = (object) $update;
+					$tasks[] = $this->db->updateObject('#__categories', $update, 'id');
+				}
 			}
 		}
 		catch (\Exception $e)

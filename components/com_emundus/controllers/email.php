@@ -159,11 +159,12 @@ class EmundusControllerEmail extends BaseController
 			$mail_from      = $this->input->post->getString('mail_from', '');
 			$mail_to        = $this->input->post->getString('mail_to', '');
 			$mail_body      = $this->input->post->getRaw('mail_body', '');
+			$mail_id        = $this->input->post->getInt('mail_id', 0);
 
 			if (!empty($fnums) && !empty($mail_subject) && !empty($mail_to) && !empty($mail_body))
 			{
 				$mail_to = explode(',', $mail_to);
-				$email    = $this->m_emails->sendExpertMail((array) $fnums, $this->_user->id, $mail_subject, $mail_from_name, $mail_from, $mail_to, $mail_body);
+				$email    = $this->m_emails->sendExpertMail((array) $fnums, $this->_user->id, $mail_subject, $mail_from_name, $mail_from, $mail_to, $mail_body, $mail_id);
 
 				$response = ['status' => true, 'sent' => $email['sent'], 'failed' => $email['failed'], 'message' => $email['message']];
 			}

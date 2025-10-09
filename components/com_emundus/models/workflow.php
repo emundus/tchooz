@@ -1810,7 +1810,7 @@ class EmundusModelWorkflow extends JModelList
 							$evaluation_row_id = $evaluation['id'];
 							$value = $m_files->getFabrikElementValue($fabrik_element, $fnum, $evaluation_row_id);
 
-							if (!empty($value) && !empty($value[$fabrik_element['id']][$fnum]['val']))
+							if (!empty($value) && isset($value[$fabrik_element['id']][$fnum]['val']))
 							{
 								$data[$key][$element_name] = $value[$fabrik_element['id']][$fnum]['val'];
 							}

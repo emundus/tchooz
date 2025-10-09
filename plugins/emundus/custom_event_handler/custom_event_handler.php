@@ -886,7 +886,9 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											$value = EmundusHelperFabrik::extractNumericValue($value);
 											$conditions_status[] = $this->operateCondition($condition, $value);
 										}
-									} else {
+									}
+									//TODO: Manage checkboxes cases
+									else {
 										if ($linked)
 										{
 											$query->clear()
@@ -1032,10 +1034,12 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								}
 								else
 								{
-									$value = EmundusHelperFabrik::getValueByAlias($condition->targeted_column, $fnum);
+									$h_fabrik = new EmundusHelperFabrik();
+									$value = $h_fabrik->getValueByAlias($condition->targeted_column, $fnum);
 
 									if (isset($value['raw']))
 									{
+										//TODO: Manage checkboxes,multilist cases
 										$conditions_status[] = $this->operateCondition($condition, $value['raw']);
 									}
 									else
@@ -1402,7 +1406,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								return $action->letter_id == $letter->id;
 							});
 						}
+
+						$landed = true;
 					}
+					break;
 				case 'sign_flow':
 					if (!empty($action->attachment_type))
 					{
@@ -1442,6 +1449,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							}
 							$m_sign  = new EmundusModelSign([], null, Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
 							$m_files = new EmundusModelFiles();
+							$h_fabrik = new EmundusHelperFabrik();
 
 							$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 
@@ -1470,7 +1478,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										}
 										elseif (in_array($information, $fabrik_aliases))
 										{
-											$informations[$key] = EmundusHelperFabrik::getValueByAlias($information, $fnum)['value'];
+											$informations[$key] = $h_fabrik->getValueByAlias($information, $fnum)['value'];
 										}
 									}
 								}
@@ -1527,6 +1535,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									]);
 								}
 							}
+
+							$landed = true;
 						}
 						catch (Exception $e)
 						{

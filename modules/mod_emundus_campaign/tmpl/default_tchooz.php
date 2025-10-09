@@ -55,14 +55,16 @@ if (sizeof($tmp_campaigns) > 0)
 
 	foreach ($tmp_campaigns as $key => $campaign)
 	{
+
         $item = $menu->getItems('alias', $campaign->alias, true);
         // Change link of campaign only if there is a menu item with the alias and no custom link on the program
         if(!empty($item) && empty($campaign->link) && empty($mod_em_campaign_custom_link))
         {
             $campaign->link = $base_url.'/'.$campaign->alias;
         }
-        elseif(!empty($mod_em_campaign_custom_link) && is_array($mod_em_campaign_custom_link))
+        elseif(!empty($mod_em_campaign_custom_link))
         {
+	        $mod_em_campaign_custom_link = (array) $mod_em_campaign_custom_link;
             foreach ($mod_em_campaign_custom_link as $customLink)
             {
                 if(!empty($customLink->mod_em_campaign_custom_link_link) && $customLink->mod_em_campaign_custom_link_program === $campaign->training) {

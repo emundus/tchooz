@@ -1269,7 +1269,7 @@ if (!empty($applications))
         }
     }
 
-    jQuery('#applications_searchbar').keyup(delay(function(e) {
+    jQuery('#searchword').keyup(delay(function(e) {
         let search = e.target.value
 
         if (search !== '') {
