@@ -209,6 +209,11 @@
 
 .no-result {
   background-image: url("../../../../media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg");
+  display: var(--no-results);
+}
+
+.no-result-display {
+  display: var(--no-results);
 }
 
 .notes-taking {

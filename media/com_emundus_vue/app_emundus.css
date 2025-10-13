@@ -1171,7 +1171,7 @@ span.label[data-v-d6006dcf] {
 	padding: 30px;
 }
 
-#background-tchoozy[data-v-35e1edd3] {
+#background-tchoozy[data-v-fc1d52d9] {
 	mask-image: url('/media/com_emundus_vue/assets/tchoozy-gestionnaire.svg');
 	-webkit-mask-image: url('/media/com_emundus_vue/assets/tchoozy-gestionnaire.svg');
 	background: var(--neutral-0);
@@ -1191,8 +1191,9 @@ span.label[data-v-d6006dcf] {
 	right: 0;
 	top: 0;
 	width: 228px;
+	display: var(--logged-homepage);
 }
-#background-shapes[data-v-35e1edd3] {
+#background-shapes[data-v-fc1d52d9] {
 	mask-image: url('/media/com_emundus_vue/assets/fond-fonce.svg');
 	-webkit-mask-image: url('/media/com_emundus_vue/assets/fond-fonce.svg');
 	background: var(--neutral-0);
@@ -1636,10 +1637,11 @@ div > fieldset[data-toggle='radio_buttons'] > div > input.fabrikinput {
 	position: inherit;
 }
 
-.no-result-image[data-v-cd8390c8] {
+.no-result-image[data-v-7a38a856] {
 	width: 10vw;
 	height: 10vw;
 	margin: 0 auto;
+	display: var(--no-results);
 }
 .em-skeleton[data-v-a19fd706] {
   display: inline-block;

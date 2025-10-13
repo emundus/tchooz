@@ -128,3 +128,22 @@ form:
       options:
         url("/media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"): Enabled
         none: Disabled
+
+    # Coordinators
+    logged-homepage:
+      type: select.select
+      label: Logged homepage illustration
+      default: block
+      description: Tchoozy gestionnaire
+      options:
+        block: Enabled
+        none: Disabled
+
+    no-results:
+      type: select.select
+      label: No results illustration
+      default: block
+      description: Tchoozy no results
+      options:
+        block: Enabled
+        none: Disabled

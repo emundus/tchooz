@@ -232,6 +232,7 @@
 			<div v-else class="tw-text-center">
 				<img
 					src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg"
+					class="no-result-display"
 					alt="empty-list"
 					style="width: 10vw; height: 10vw; margin: 0 auto"
 				/>
