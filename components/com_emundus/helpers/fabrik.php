@@ -1106,7 +1106,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $filters;
 	}
 
-	static function getFormattedPhoneNumberValue(string|array $phone_number, $format = PhoneNumberFormat::E164): string
+	static function getFormattedPhoneNumberValue(string|array|null $phone_number, $format = PhoneNumberFormat::E164): string
 	{
 		$formattedValue = '';
 
