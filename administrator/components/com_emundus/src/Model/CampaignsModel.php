@@ -169,6 +169,7 @@ class CampaignsModel extends ListModel
                     $db->quoteName('sc.published'),
                     $db->quoteName('sc.pinned'),
                     $db->quoteName('sc.alias'),
+                    $db->quoteName('sc.visible'),
                 ]
             )
         )
