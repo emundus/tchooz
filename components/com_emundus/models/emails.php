@@ -2934,8 +2934,8 @@ class EmundusModelEmails extends JModelList
 					if (empty($translated_status)) {
 						$query->clear()
 							->select('value')
-							->from('#__emundus_setup_status')
-							->where('step = ' . $trigger->status);
+							->from($this->_db->quoteName('#__emundus_setup_status'))
+							->where($this->_db->quoteName('step') . ' = ' . $this->_db->quote($trigger->status));
 
 						$this->_db->setQuery($query);
 						$trigger->status = $this->_db->loadResult();
