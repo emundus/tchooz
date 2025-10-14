@@ -2407,4 +2407,34 @@ class EmundusModelProgramme extends ListModel
 
 		return $category;
 	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return int
+	 */
+	public function getProgramIdByFnum(string $fnum): int
+	{
+		$programId = 0;
+
+		if (!empty($fnum))
+		{
+			$query = $this->_db->createQuery();
+
+			$query->select('esp.id')
+				->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.training') . ' = ' . $this->_db->quoteName('esp.code'))
+				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.campaign_id') . ' = ' . $this->_db->quoteName('esc.id'))
+				->where($this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$programId = (int)$this->_db->loadResult();
+			} catch (Exception $e) {
+				Log::add('component/com_emundus/models/program | Error at getting category by fnum ' . $fnum . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $programId;
+	}
 }
