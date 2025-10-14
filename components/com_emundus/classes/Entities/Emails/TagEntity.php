@@ -157,8 +157,12 @@ class TagEntity
 		return $modified_value;
 	}
 
-	public function setValue(string|int $value): void
+	public function setValue(string|int|null $value): void
 	{
+		if (is_null($value)) {
+			$value = '';
+		}
+
 		$this->value = $value;
 	}
 
