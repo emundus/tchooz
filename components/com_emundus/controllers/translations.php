@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
@@ -275,12 +276,19 @@ class EmundusControllerTranslations extends BaseController
 		}
 
 
-		$override        = $this->input->getString('value', null);
+		$override        = $this->input->getRaw('value', null);
 		$lang_to         = $this->input->getString('lang_to', null);
 		$reference_table = $this->input->getString('reference_table', null);
 		$reference_id    = $this->input->getInt('reference_id', 0);
 		$reference_field = $this->input->getString('reference_field', null);
 		$tag             = $this->input->getString('tag', null);
+		
+		// Sanitize override to avoid XSS
+		if (!class_exists('HtmlSanitizerSingleton')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
+		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+		$override = $htmlSanitizer->sanitize($override);
 
 		$result = $this->model->updateTranslation($tag, $override, $lang_to, 'override', $reference_table, $reference_id, $reference_field);
 

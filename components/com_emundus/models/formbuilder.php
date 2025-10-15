@@ -14,6 +14,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.model');
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -1665,13 +1666,24 @@ class EmundusModelFormbuilder extends JModelList
 								'sub_labels' => $sub_labels
 							);
 						}
+
+						if ($plugin === 'display' || $plugin === 'panel') {
+							$translation_default_tag = 'ELEMENT_' . $gid . '_' . $elementId . '_DEFAULT';
+
+							$this->translate($translation_default_tag, ['fr' => $default, 'en' => $default], 'fabrik_elements', $elementId, 'default', $user->id);
+							$default = $translation_default_tag;
+						}
 						//
 
 						$query->clear()
 							->update($this->db->quoteName('#__fabrik_elements'))
 							->set($this->db->quoteName('label') . ' = ' . $this->db->quote(strtoupper('element_' . $gid . '_' . $elementId)))
-							->set($this->db->quoteName('name') . ' = ' . $this->db->quote($name))
-							->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+							->set($this->db->quoteName('name') . ' = ' . $this->db->quote($name));
+						if($plugin === 'display' || $plugin === 'panel')
+						{
+							$query->set($this->db->quoteName('default') . ' = ' . $this->db->quote($default));
+						}
+						$query->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
 							->where($this->db->quoteName('id') . '= ' . $this->db->quote($elementId));
 						$this->db->setQuery($query);
 						$this->db->execute();
@@ -2345,6 +2357,7 @@ class EmundusModelFormbuilder extends JModelList
 				$element['params']['average_multiple_elements'] = json_encode($element['params']['average_multiple_elements']);
 			}
 
+			// Manage alias
 			if(($element['params']['alias'] === "" || $element['params']['alias'] === "element_sans_titre") && isset($element['label']['fr'])){
 				$element['params']['alias'] =  $element['label']['fr'];
 			}
@@ -2357,16 +2370,79 @@ class EmundusModelFormbuilder extends JModelList
 			$element['params']['alias'] = strtolower($element['params']['alias']);
 
 			$element['params']['alias'] = $element['params']['alias'] === "" ? (!empty($element['name']) ? strtolower($element['name']) . "_alias" : "alias") :  $element['params']['alias'];
+			//
+			
+			// Manage translations for helptext (rollover)
+			if(!empty($element['params']['rollover']) && is_array($element['params']['rollover']))
+			{
+				// Sanitize override to avoid XSS
+				foreach ($element['params']['rollover'] as $lang => $value)
+				{
+					if (!class_exists('HtmlSanitizerSingleton'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+					}
+					$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+					$element['params']['rollover'][$lang] = $htmlSanitizer->sanitize($value);
+				}
+
+
+				$existing_rollover_translation = 0;
+				if(!empty($element['rollover_tag']))
+				{
+					$query->clear()
+						->select('id')
+						->from($this->db->quoteName('#__emundus_setup_languages'))
+						->where($this->db->quoteName('reference_id') . ' = ' . $element['id'])
+						->where($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('fabrik_elements'))
+						->where($this->db->quoteName('reference_field') . ' = ' . $this->db->quote('rollover'))
+						->where($this->db->quoteName('tag') . ' = ' . $this->db->quote($element['rollover_tag']));
+					$this->db->setQuery($query);
+					$existing_translation = $this->db->loadResult();
+				}
+
+				if(empty($existing_translation)) {
+					$element['rollover_tag'] = 'ELEMENT_HELP_' . $element['group_id'] . '_' . $element['id'];
+
+					$this->translate($element['rollover_tag'], $element['params']['rollover'], 'fabrik_elements', $element['id'], 'rollover', $user);
+				}
+				else
+				{
+					$this->updateTranslation($element['rollover_tag'], $element['params']['rollover'], 'fabrik_elements', $element['id'], 'rollover', $user);
+				}
+
+				$element['params']['rollover'] = $element['rollover_tag'];
+			}
+			//
 
 			// Update the element
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),
-				$this->db->quoteName('default') . ' = ' . $this->db->quote($element['default']),
 				$this->db->quoteName('eval') . ' = ' . $this->db->quote($element['eval']),
 				$this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($element['params'])),
 				$this->db->quoteName('modified_by') . ' = ' . $this->db->quote($user),
 				$this->db->quoteName('modified') . ' = ' . $this->db->quote($date),
 			);
+
+			if($element['plugin'] === 'panel' && is_array($element['default'])) {
+				foreach ($element['default'] as $lang => $value)
+				{
+					// Sanitize override to avoid XSS
+					if (!class_exists('HtmlSanitizerSingleton'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+					}
+					$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+					$element['default'][$lang] = $htmlSanitizer->sanitize($value);
+				}
+
+				// Update translation of default label
+				$this->updateTranslation($db_element->default_text, $element['default'], 'fabrik_elements', $element['id'], 'default', $user);
+			}
+			else {
+				$fields[] = $this->db->quoteName('default') . ' = ' . $this->db->quote($element['default']);
+			}
+
 			$query->clear()
 				->update($this->db->quoteName('#__fabrik_elements'))
 				->set($fields)

@@ -28,7 +28,7 @@ $d = $displayData;
                 <h3><?php echo Text::_($d->title); ?></h3>
 		    <?php endif; ?>
             <div class="<?php if (!empty($d->title)) : ?>tw-mt-2<?php else : ?>!tw-mt-0<?php endif; ?>">
-                <div class="tw-whitespace-pre-wrap" id="<?php echo $d->id; ?>-value" style="color: <?php echo $d->textColor; ?>"><?php echo $d->value;?></div>
+                <div class="tw-whitespace-pre-wrap" id="<?php echo $d->id; ?>-value" style="color: <?php echo $d->textColor; ?>"><?php echo Text::_($d->value);?></div>
             </div>
         </div>
     </div>
