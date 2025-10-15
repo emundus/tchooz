@@ -162,6 +162,7 @@ export default {
 	right: 0;
 	top: 0;
 	width: 228px;
+	display: var(--logged-homepage);
 }
 
 #background-shapes {

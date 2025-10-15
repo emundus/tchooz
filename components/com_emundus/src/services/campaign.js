@@ -324,4 +324,30 @@ export default {
 			};
 		}
 	},
+
+	async publishCampaign(campaignId) {
+		try {
+			return await client.post('publishcampaign', {
+				id: campaignId,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async needMoreInfo(campaignId) {
+		try {
+			return await client.get('needmoreinfo', {
+				id: campaignId,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };

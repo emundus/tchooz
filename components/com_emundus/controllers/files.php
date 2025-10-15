@@ -1837,6 +1837,7 @@ class EmundusControllerFiles extends BaseController
                 $calc_elements = [];
 				$currency_elements = [];
 				$masked_elements = [];
+				$phonenumber_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					if ($fLine === 'step_id') {
 						$line .= Text::_('COM_EMUNDUS_EVALUATION_EVAL_STEP') . "\t";
@@ -1903,6 +1904,11 @@ class EmundusControllerFiles extends BaseController
 								$masked_elements[] =  $elt_name;
 							}
 
+							if ($fLine->element_plugin === 'emundus_phonenumber')
+							{
+								$phonenumber_elements[] =  $elt_name;
+							}
+
 							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
@@ -1953,6 +1959,7 @@ class EmundusControllerFiles extends BaseController
                 $calc_elements = [];
 				$currency_elements = [];
 				$masked_elements = [];
+				$phonenumber_elements = [];
 				foreach ($ordered_elements as $fLine) {
 					$params                                                         = json_decode($fLine->element_attribs);
 					$elt_name = $fLine->tab_name.'___'.$fLine->element_name;
@@ -1991,6 +1998,11 @@ class EmundusControllerFiles extends BaseController
 					if ($fLine->element_plugin === 'field' && !empty($params->text_input_mask))
 					{
 						$masked_elements[] =  $elt_name;
+					}
+
+					if ($fLine->element_plugin === 'emundus_phonenumber')
+					{
+						$phonenumber_elements[] =  $elt_name;
 					}
 				}
 			}
@@ -2255,6 +2267,10 @@ class EmundusControllerFiles extends BaseController
 										}
 										else if (!empty($masked_elements) && in_array($k, $masked_elements)) {
 											$v = str_replace('_', '', $v);
+											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
+										}
+										else if (!empty($phonenumber_elements) && in_array($k, $phonenumber_elements)) {
+											$v = "'" . preg_replace('/^[a-zA-Z]{2}/', '', $v);
 											$line .= preg_replace("/\r|\n|\t/", "", $v) . "\t";
 										}
 										elseif (count($opts) > 0 && in_array("upper-case", $opts)) {

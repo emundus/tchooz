@@ -44,6 +44,7 @@ class JsonapiView extends BaseApiView
 	    'files',
 	    'applyUrl',
 	    'detailsUrl',
+	    'visible',
 	    'custom_fields'
     ];
 
@@ -67,6 +68,7 @@ class JsonapiView extends BaseApiView
 	    'files',
 	    'applyUrl',
 	    'detailsUrl',
+	    'visible',
 	    'custom_fields'
     ];
 

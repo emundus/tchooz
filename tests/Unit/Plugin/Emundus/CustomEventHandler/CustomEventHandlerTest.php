@@ -224,4 +224,74 @@ class CustomEventHandlerTest extends UnitTestCase
 		$status = self::callPrivateMethod($this->model, 'runEventSimpleAction', [$event, $data]);
 		$this->assertTrue($status, 'If the conditions are met, the action should be launched');
 	}
+
+	/**
+	 * @covers plgEmundusCustom_event_handler::operateCondition
+	 * @return void
+	 */
+	public function testOperateCondition()
+	{
+		$condition = new \stdClass();
+		$condition->targeted_column = 'jos_emundus_campaign_candidature.fnum';
+		$condition->targeted_value = $this->dataset['fnum'];
+		$condition->operator = '=';
+
+		$value = $this->dataset['fnum'];
+
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertTrue($result, 'The condition should be met');
+
+		$condition->operator = '!=';
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertFalse($result, 'The condition should not be met');
+
+		$value = 1;
+		$condition->operator = 'IN';
+		$condition->targeted_value = [1, 2];
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertTrue($result, 'The condition should be met');
+
+		$condition->targeted_value = [2, 3];
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertFalse($result, 'The condition should not be met');
+
+		$condition->operator = 'NOT IN';
+		$condition->targeted_value = [2, 3];
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertTrue($result, 'The condition should be met');
+
+		$condition->targeted_value = [1, 2];
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertFalse($result, 'The condition should not be met');
+
+	}
+
+	/**
+	 * @covers plgEmundusCustom_event_handler::operateCondition
+	 * @return void
+	 */
+	public function testOperateConditionMultipleTargetValues()
+	{
+		$condition = new \stdClass();
+		$condition->targeted_column = 'jos_emundus_campaign_candidature.fnum';
+		$condition->targeted_value = [1, 2];
+		$condition->operator = 'IN';
+
+		$value = 1;
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertTrue($result, 'The condition should be met');
+
+		$value = 3;
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertFalse($result, 'The condition should not be met');
+
+		$condition->operator = 'NOT IN';
+		$value = 3;
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertTrue($result, 'The condition should be met');
+
+		$value = 1;
+		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
+		$this->assertFalse($result, 'The condition should not be met');
+	}
 }

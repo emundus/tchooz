@@ -149,8 +149,9 @@ class EmundusControllerForm extends BaseController
 			$filter    = $this->input->getString('filter', '');
 			$sort      = $this->input->getString('sort', '');
 			$recherche = $this->input->getString('recherche', '');
+			$order_by  = $this->input->getString('order_by', '');
 
-			$forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page, $this->_user->id);
+			$forms = $this->m_form->getAllGrilleEval($filter, $sort, $recherche, $lim, $page, $this->_user->id, $order_by);
 
 			if (count($forms) > 0)
 			{

@@ -38,7 +38,12 @@
 				<!-- Help text -->
 				<div v-if="element.params" class="tw-mt-4">
 					<label for="element-rollover">{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_HELPTEXT') }}</label>
-					<input id="element-rollover" name="element-alias" type="text" v-model="element.params.rollover" />
+					<input
+						id="element-rollover"
+						name="element-alias"
+						type="text"
+						v-model="element.params.rollover[shortDefaultLang]"
+					/>
 				</div>
 
 				<!-- Publish/Unpublish -->
@@ -97,12 +102,12 @@
 						v-if="element.eval == 0"
 						id="element-default"
 						name="element-default"
-						v-model="element.default"
+						v-model="element.default[shortDefaultLang]"
 						class="tw-w-full tw-resize-y"
 					></textarea>
 					<tip-tap-editor
 						v-if="element.eval == 1"
-						v-model="element.default"
+						v-model="element.default[shortDefaultLang]"
 						:id="'element-default'"
 						:upload-url="'/index.php?option=com_emundus&controller=settings&task=uploadmedia'"
 						:editor-content-height="'30em'"
@@ -383,9 +388,12 @@ export default {
 	},
 	watch: {
 		'element.eval': function (value) {
-			if (value == 0) {
-				this.element.default = this.element.default.replace(/<p>/g, '\n');
-				this.element.default = this.element.default.replace(/(<([^>]+)>)/gi, '');
+			if (value == 0 && this.element.default && this.element.default[this.shortDefaultLang]) {
+				this.element.default[this.shortDefaultLang] = this.element.default[this.shortDefaultLang].replace(/<p>/g, '\n');
+				this.element.default[this.shortDefaultLang] = this.element.default[this.shortDefaultLang].replace(
+					/(<([^>]+)>)/gi,
+					'',
+				);
 			}
 		},
 

@@ -128,7 +128,7 @@
   --em-applicant-font: #{$font-family-text};
   --em-applicant-font-title: #{$font-family-title};
 
-/* FONT SIZE */
+  /* FONT SIZE */
   --em-coordinator-font-size: #{$coordinator-font-size};
   --em-coordinator-h1: #{$coordinator-size-h1};
   --em-coordinator-h2: #{$coordinator-size-h2};
@@ -196,7 +196,7 @@
   --em-font-weight-700: 700;
   --em-font-weight-800: 800;
   --em-font-weight-900: 900;
-  
+
   // Padding
   --p-4: 4px;
   --p-8: 8px;
@@ -323,7 +323,7 @@
   /** UTILITIES **/
   --link-xxs-size: #{$font-xxs-size};
   --link-regular: #{$base-primary-color};
-  --link-visited: color-mix(in srgb,var(--link-regular),#000 30%);
+  --link-visited: color-mix(in srgb, var(--link-regular), #000 30%);
 
   /** STATUS,TAGS **/
   --em-default: #{$accent-grey-1};
@@ -392,6 +392,10 @@
 
   //TCHOOZY - Easter egg
   --display-hiding: #{$tchoozy-hiding};
+
+  //TCHOOZY - Coordinators
+  --logged-homepage: #{$tchoozy-logged-homepage};
+  --no-results: #{$tchoozy-no-results};
 
   // VueScheduler
   --sx-color-primary: var(--main-500);
