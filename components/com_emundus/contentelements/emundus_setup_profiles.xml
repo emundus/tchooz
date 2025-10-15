@@ -21,6 +21,8 @@
                      join_table="fabrik_elements" join_column="group_id">
                 <field name="label" type="field" section="fabrik_elements" order="1">Titre</field>
                 <field name="sub_labels" type="field" section="fabrik_elements" order="2">Option</field>
+                <field name="default" type="wysiwig" section="fabrik_elements" order="3">Contenu</field>
+                <field name="rollover" type="field" section="fabrik_elements" order="4">Texte d'aide</field>
             </section>
         </table>
     </reference>

@@ -33,9 +33,11 @@
 						@keyup.enter="updateLabelKeyup"
 					/>
 				</label>
-				<span class="fabrikElementTip fabrikElementTipAbove">{{
-					element.params.rollover.replace(/(<([^>]+)>)/gi, '')
-				}}</span>
+				<span
+					class="fabrikElementTip fabrikElementTipAbove"
+					v-if="element.params.rollover && element.params.rollover[shortDefaultLang]"
+					>{{ element.params.rollover[shortDefaultLang].replace(/(<([^>]+)>)/gi, '') }}</span
+				>
 			</div>
 			<div id="element-action-icons" class="tw-mt-2 tw-flex tw-items-end">
 				<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
