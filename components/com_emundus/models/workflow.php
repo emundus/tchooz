@@ -1784,7 +1784,7 @@ class EmundusModelWorkflow extends JModelList
 				$query = $this->db->getQuery(true);
 
 				$query->clear()
-					->select('evaluation.id, evaluation.evaluator, eu.firstname, eu.lastname')
+					->select('evaluation.id, evaluation.evaluator, eu.firstname, eu.lastname, ecc.campaign_id')
 					->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 					->leftJoin($this->db->quoteName($step_data->table, 'evaluation') . ' ON ' . $this->db->quoteName('evaluation.ccid') . ' = ' . $this->db->quoteName('ecc.id') . ' AND ' . $this->db->quoteName('evaluation.step_id') . ' = ' . $this->db->quote($step_id))
 					->leftJoin($this->db->quoteName('#__emundus_users', 'eu') . ' ON ' . $this->db->quoteName('eu.user_id') . ' = ' . $this->db->quoteName('evaluation.evaluator'))
@@ -1796,6 +1796,7 @@ class EmundusModelWorkflow extends JModelList
 				foreach ($evaluations as $eval_key => $evaluation) {
 					$key = $evaluation['id'] ?? $fnum . '-' . $eval_key;
 					$data[$key] = [
+                        'campaign_id' => $evaluation['campaign_id'],
 						'step_id' => $step_data->label,
 						'evaluation_id' => $evaluation['id'],
 						'evaluator_name' => $evaluation['firstname'] . ' ' . $evaluation['lastname'],
