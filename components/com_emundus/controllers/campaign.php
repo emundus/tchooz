@@ -496,12 +496,9 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($data))
 			{
-				$published = $this->m_campaign->publishCampaign($data);
+				$result = $this->m_campaign->publishCampaign($data);
 
-				if ($published)
-				{
-					$response = array('status' => 1, 'msg' => Text::_('CAMPAIGN_PUBLISHED'), 'data' => $published);
-				}
+				$response = array('status' => $result['success'], 'msg' => Text::_($result['message']), 'data' => $result['success']);
 			}
 		}
 
@@ -1628,6 +1625,44 @@ class EmundusControllerCampaign extends BaseController
 
 		echo json_encode($response);
 		exit();
+	}
+
+	public function needmoreinfo()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => false];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$id = $this->input->getInt('id', 0);
+
+			if (!empty($id))
+			{
+				$emParams = ComponentHelper::getParams('com_emundus');
+				$force_campaigns_more = $emParams->get('force_campaigns_more', 0);
+				if($force_campaigns_more == 1)
+				{
+					$campaign_more_row = $this->m_campaign->getCampaignMoreRowId($id);
+
+					if(!empty($campaign_more_row))
+					{
+						$response['data'] = false;
+					}
+					else {
+						$response['data'] = true;
+					}
+				}
+
+				$response['msg'] = Text::_('SUCCESS');
+			}
+			else
+			{
+				$response['msg'] = Text::_('MISSING_PARAMETERS');
+				$response['code'] = 400;
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
 	}
 }
 

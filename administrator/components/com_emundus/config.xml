@@ -222,6 +222,12 @@
             <option value="1">JYes</option>
         </field>
     </fieldset>
+    <fieldset label="COM_EMUNDUS_CAMPAIGNS" name="campaigns" description="COM_EMUNDUS_CAMPAIGNS_DESC">
+        <field type="list" name="force_campaigns_more" label="COM_EMUNDUS_CAMPAIGNS_FORCE_CAMPAIGNS_MORE">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+    </fieldset>
 
     <fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">
         <field name="id_applicants" type="text" size="50" default="" label="ID_APPLICANTS"

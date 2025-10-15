@@ -1963,7 +1963,7 @@ class EmundusControllersettings extends BaseController
 					'WEB_SECURITY_REQUESTS' => $request
 				];
 
-				$response['status'] = $m_emails->sendEmailNoFnum('support@emundus.fr', 'web_security_request', $post, $this->user->id, null, null, true, $technical_contacts);
+				$response['status'] = $m_emails->sendEmailNoFnum('support@emundus.fr', 'web_security_request', $post, $this->user->id, [], null, true, $technical_contacts);
 				if ($response['status'])
 				{
 					$response['code']    = 200;

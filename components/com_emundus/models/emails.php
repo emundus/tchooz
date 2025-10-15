@@ -2934,8 +2934,8 @@ class EmundusModelEmails extends JModelList
 					if (empty($translated_status)) {
 						$query->clear()
 							->select('value')
-							->from('#__emundus_setup_status')
-							->where('step = ' . $trigger->status);
+							->from($this->_db->quoteName('#__emundus_setup_status'))
+							->where($this->_db->quoteName('step') . ' = ' . $this->_db->quote($trigger->status));
 
 						$this->_db->setQuery($query);
 						$trigger->status = $this->_db->loadResult();
@@ -3271,7 +3271,7 @@ class EmundusModelEmails extends JModelList
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, array $attachments = [], ?string $fnum = null, int|bool $log_email = true, array $emails_cc = [], ?int $user_id_from = null)
+	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, ?array $attachments = [], ?string $fnum = null, int|bool $log_email = true, ?array $emails_cc = [], ?int $user_id_from = null)
 	{
 		$sent = false;
 
@@ -3506,6 +3506,7 @@ class EmundusModelEmails extends JModelList
 
 			// Get default mail sender info
 			$mail_from_sys = $config->get('mailfrom');
+			$mail_from_sys_name = $config->get('fromname');
 			$reply_to = $config->get('replyto', $mail_from_sys);
 			$reply_to_name = $config->get('replytoname', $mail_from_sys_name);
 

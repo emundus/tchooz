@@ -325,8 +325,7 @@ class EmundusModelEvaluation extends JModelList
 							{
 								$label = '';
 							}
-							$select = 'REPLACE(' . $select . ', "' . $value . '", "' .
-								Text::_($label) . '")';
+                            $select = 'REGEXP_REPLACE(' . $select . ', "\\\b' . $value . '\\\b", "' . Text::_($label) . '")';
 						}
 						$this->_elements_default[] = $select . ' AS ' . $def_elmt->tab_name . '___' . $def_elmt->element_name;
 					}

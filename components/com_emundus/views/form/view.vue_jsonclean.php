@@ -241,7 +241,18 @@ class EmundusViewForm extends FabrikViewFormBase
 						${"element" . $o_element->id}->name        = $o_element->name;
 						${"element" . $o_element->id}->group_id    = $GroupProperties->id;
 						${"element" . $o_element->id}->hidden      = $content_element->hidden;
-						${"element" . $o_element->id}->default     = $o_element->default;
+						if($o_element->plugin === 'panel')
+						{
+							${"element" . $o_element->id}->default_tag = $o_element->default;
+							${"element" . $o_element->id}->default     = new stdClass;
+							foreach ($languages as $language) {
+								${"element" . $o_element->id}->default->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->default_tag, $language->lang_code);
+							}
+						}
+						else {
+							${"element" . $o_element->id}->default     = $o_element->default;
+						}
+
 						${"element" . $o_element->id}->eval = $o_element->eval;
 						${"element" . $o_element->id}->labelsAbove = $labelsAbove;
 						${"element" . $o_element->id}->plugin      = $o_element->plugin;
@@ -269,6 +280,24 @@ class EmundusViewForm extends FabrikViewFormBase
 								{
 									$el_parmas->database_join_exclude = $ids[0][1];
 								}
+							}
+						}
+						
+						// Translate rollover parameter
+						if(!empty($el_parmas->rollover))
+						{
+							${"element" . $o_element->id}->rollover_tag = $el_parmas->rollover;
+							$el_parmas->rollover                        = new stdClass;
+							foreach ($languages as $language)
+							{
+								$el_parmas->rollover->{$language->sef} = htmlspecialchars_decode($formbuilder->getTranslation(${"element" . $o_element->id}->rollover_tag, $language->lang_code));
+							}
+						}
+						else {
+							$el_parmas->rollover = new stdClass;
+							foreach ($languages as $language)
+							{
+								$el_parmas->rollover->{$language->sef} = '';
 							}
 						}
 

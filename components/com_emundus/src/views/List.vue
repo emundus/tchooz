@@ -1113,6 +1113,8 @@ export default {
 								},
 							});
 						}
+
+						this.getListItems();
 					}
 				}
 			}

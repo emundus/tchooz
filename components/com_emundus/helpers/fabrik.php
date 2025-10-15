@@ -1106,7 +1106,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $filters;
 	}
 
-	static function getFormattedPhoneNumberValue(string|array $phone_number, $format = PhoneNumberFormat::E164): string
+	static function getFormattedPhoneNumberValue(string|array|null $phone_number, $format = PhoneNumberFormat::E164): string
 	{
 		$formattedValue = '';
 
@@ -1798,6 +1798,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $elements;
 	}
 
+	// TODO: return an entity to make sure it's always the same structure returned
+	// return type could be FabrikValue or a collection of FabrikValue
 	public function getValueByAlias(
 		string $alias,
 		?string $fnum = null,
@@ -1840,79 +1842,39 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 						if ((!empty($fnum) && in_array('fnum', $columns)) || (!empty($user_id) && in_array('user', $columns) || in_array('user_id', $columns)))
 						{
-							//TODO: Allow getFabrikElementValue to get values by step_id
 							$element      = (array) $element;
 							$fabrik_value = $this->getFabrikElementValue($element, $fnum, 0, ValueFormat::BOTH, $user_id);
 							if (!empty($fabrik_value[$element['id']]))
 							{
-								if (!empty($fnum) && !empty($fabrik_value[$element['id']][$fnum]))
+								if (!empty($fnum) && !empty($fabrik_value[$element['id']][$fnum]) && !is_null($fabrik_value[$element['id']][$fnum]['raw']) && $fabrik_value[$element['id']][$fnum]['raw'] != '')
 								{
 									$value['raw'] = $fabrik_value[$element['id']][$fnum]['raw'];
 									$value['value'] = $fabrik_value[$element['id']][$fnum]['val'];
 								}
-								elseif (!empty($user_id) && !empty($fabrik_value[$element['id']][$user_id]))
+								elseif (!empty($user_id) && !empty($fabrik_value[$element['id']][$user_id]) && !is_null($fabrik_value[$element['id']][$user_id]['raw']) && $fabrik_value[$element['id']][$user_id]['raw'] != '')
 								{
 									$value['raw'] = $fabrik_value[$element['id']][$user_id]['raw'];
 									$value['value'] = $fabrik_value[$element['id']][$user_id]['val'];
 								}
 								else {
-									$value['raw'] = '';
-									$value['value'] = '';
+									if ($load_option == 'column') {
+										$values[] = ['raw' => '', 'value' => ''];
+									}
+
+									continue; // no value found for this element, try next one
 								}
 
-								if($load_option == 'column') {
+								if ($load_option == 'column') {
 									$values[] = $value;
 								} else {
 									return $value;
 								}
 							}
-
-							/*$query->clear()
-								->select($db->quoteName($element->name))
-								->from($db->quoteName($element->db_table_name));
-
-							if (!empty($fnum) && in_array('fnum', $columns))
-							{
-								$query->where("fnum LIKE " . $db->quote($fnum));
-							}
-
-							if (!empty($user_id) && (in_array('user', $columns) || in_array('user_id', $columns)))
-							{
-								if (in_array('user', $columns))
-								{
-									$query->where("user = " . $db->quote($user_id));
-								}
-								elseif (in_array('user_id', $columns))
-								{
-									$query->where("user_id = " . $db->quote($user_id));
-								}
-							}
-
-							if (!empty($step_id) && in_array('step_id', $columns))
-							{
-								$query->where("step_id = " . $db->quote($step_id));
-							}
-
-							$query->order('id DESC');
-							$db->setQuery($query);
-
-
-							if ($load_option == 'column')
-							{
-								$raw_value = $db->loadColumn();
-							}
-							else
-							{
-								$raw_value = $db->loadResult();
-							}
-
-							if (!empty($raw_value))
-							{
-								$value['raw']   = $raw_value;
-								$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
-								break;
-							}*/
 						}
+					}
+
+					if (empty($values) && $load_option == 'result') {
+						$values = ['raw' => '', 'value' => ''];
 					}
 				}
 				catch (Exception $e)
@@ -2838,7 +2800,10 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	{
 		$isRaw = $return === ValueFormat::RAW;
 
-		$value = [];
+		$value = [
+			'raw' => '',
+			'val' => '',
+		];
 
 		if (empty($fabrik_element))
 		{
@@ -2881,33 +2846,37 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$transformer = TransformerFactory::make($plugin->value, (array)$params, (array)$groupParams);
 		foreach ($value[$fabrik_element['id']] as $fnumKey => $val)
 		{
-			$key = 'val';
-			if($plugin === ElementPlugin::CURRENCY){
-				$key = 'raw';
-			}
+			$value[$fabrik_element['id']][$fnumKey]['raw'] = $val['val'];
+			$value[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
 
-			$values = [$val['val']];
-			if($isRepeatGroup) {
-				$values = explode(',', $val['val']);
-			}
-
-			$formatted_values = [];
-			foreach ($values as $_value)
+			if ($return === ValueFormat::FORMATTED || $return === ValueFormat::BOTH)
 			{
-				if ($plugin === ElementPlugin::CURRENCY)
-				{
-					$formatted_values[] = self::extractNumericValue($_value);
-				}
-				elseif (!$isRaw)
-				{
-					$formatted_values[] = $transformer->transform($_value);
-				}
-			}
+				$formatted_values = [];
 
-			if($isRepeatGroup) {
-				$value[$fabrik_element['id']][$fnumKey][$key] = implode(', ', $formatted_values);
-			} else {
-				$value[$fabrik_element['id']][$fnumKey][$key] = $formatted_values[0] ?? '';
+				$values = [$val['val']];
+				if ($isRepeatGroup) {
+					$values = explode(',', $val['val']);
+				}
+				foreach ($values as $_value)
+				{
+					if ($plugin === ElementPlugin::CURRENCY)
+					{
+						$formatted_values[] = self::extractNumericValue($_value);
+					}
+					elseif (!$isRaw)
+					{
+						$formatted_values[] = $transformer->transform($_value);
+					}
+				}
+
+				if ($isRepeatGroup)
+				{
+					$value[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
+				}
+				else
+				{
+					$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values[0] ?? '';
+				}
 			}
 		}
 		//
