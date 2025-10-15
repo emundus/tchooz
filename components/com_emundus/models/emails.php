@@ -3271,7 +3271,7 @@ class EmundusModelEmails extends JModelList
 	 * @return bool
 	 * @throws Exception
 	 */
-	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, array $attachments = [], ?string $fnum = null, int|bool $log_email = true, array $emails_cc = [], ?int $user_id_from = null)
+	public function sendEmailNoFnum(string $email_address, int|string $email, ?array $post = null, ?int $user_id = null, ?array $attachments = [], ?string $fnum = null, int|bool $log_email = true, array $emails_cc = [], ?int $user_id_from = null)
 	{
 		$sent = false;
 
