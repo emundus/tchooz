@@ -1,14 +1,17 @@
 <template>
 	<div>
+		<Info v-if="needMoreInfo" text="COM_EMUNDUS_CAMPAIGNS_MORE_INFO" class="tw-mb-4" />
 		<iframe v-if="formUrl.length > 0" id="more-form-iframe" :src="formUrl" width="100%"></iframe>
 	</div>
 </template>
 
 <script>
 import campaignService from '@/services/campaign.js';
+import Info from '@/components/Utils/Info.vue';
 
 export default {
 	name: 'CampaignMore',
+	components: { Info },
 	props: {
 		campaignId: {
 			type: Number,
@@ -23,14 +26,22 @@ export default {
 	data() {
 		return {
 			formUrl: '',
+
+			needMoreInfo: false,
 		};
 	},
 	created() {
+		campaignService.needMoreInfo(this.campaignId).then((response) => {
+			this.needMoreInfo = response.data;
+		});
+
 		if (this.defaultFormUrl.length > 0) {
 			this.formUrl = this.defaultFormUrl;
 		} else {
 			this.getFormUrl();
 		}
+
+		this.addEventListeners();
 	},
 	methods: {
 		getFormUrl() {
@@ -44,6 +55,44 @@ export default {
 				.catch((error) => {
 					console.error(error);
 				});
+		},
+
+		addEventListeners() {
+			window.addEventListener(
+				'message',
+				function (e) {
+					if (e.data === 'askPublishCampaign') {
+						Swal.fire({
+							title: this.translate('COM_EMUNDUS_CAMPAIGNS_MORE_PUBLISH_TITLE'),
+							text: this.translate('COM_EMUNDUS_CAMPAIGNS_MORE_PUBLISH_TEXT'),
+							showCancelButton: true,
+							confirmButtonText: Joomla.Text._('JYES'),
+							cancelButtonText: Joomla.Text._('JNO'),
+							reverseButtons: true,
+							customClass: {
+								title: 'em-swal-title',
+							},
+						}).then((result) => {
+							if (result.isConfirmed) {
+								// Exécution de la requête AJAX pour publier la campagne
+								campaignService.publishCampaign(this.campaignId).then((result) => {
+									if (result.status) {
+										Swal.fire({
+											icon: 'success',
+											title: this.translate('COM_EMUNDUS_CAMPAIGNS_MORE_PUBLISH_SUCCESS_TITLE'),
+											text: this.translate('COM_EMUNDUS_CAMPAIGNS_MORE_PUBLISH_SUCCESS_TEXT'),
+											reverseButtons: true,
+											customClass: {
+												title: 'em-swal-title',
+											},
+										});
+									}
+								});
+							}
+						});
+					}
+				}.bind(this),
+			);
 		},
 	},
 };
