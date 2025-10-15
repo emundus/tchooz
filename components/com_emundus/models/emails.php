@@ -3506,6 +3506,7 @@ class EmundusModelEmails extends JModelList
 
 			// Get default mail sender info
 			$mail_from_sys = $config->get('mailfrom');
+			$mail_from_sys_name = $config->get('fromname');
 			$reply_to = $config->get('replyto', $mail_from_sys);
 			$reply_to_name = $config->get('replytoname', $mail_from_sys_name);
 
