@@ -719,6 +719,7 @@ export default {
 				<div v-else>
 					<div class="tw-mt-6 tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-2">
 						<img
+							class="no-result-display"
 							src="../../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"
 							style="width: 250px; object-fit: cover; height: 65px"
 						/>
@@ -735,6 +736,7 @@ export default {
 			<div v-else>
 				<div class="tw-mt-6 tw-flex tw-h-full tw-flex-col tw-items-center tw-justify-center tw-gap-2">
 					<img
+						class="no-result-display"
 						src="../../../../../media/com_emundus/images/tchoozy/complex-illustrations/hiding.svg"
 						style="width: 250px; object-fit: cover; height: 65px"
 					/>
