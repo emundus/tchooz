@@ -159,7 +159,7 @@ class EmundusModelForm extends JModelList
 	 *
 	 * @return array
 	 */
-	function getAllGrilleEval(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0): array
+	function getAllGrilleEval(string $filter = '', string $sort = '', string $recherche = '', int $lim = 0, int $page = 0, int $user_id = 0, string $order_by = ''): array
 	{
 		$data     = ['datas' => [], 'count' => 0];
 
@@ -236,6 +236,8 @@ class EmundusModelForm extends JModelList
 				$path_to_files  = array();
 				$Content_Folder = array();
 				$languages      = JLanguageHelper::getLanguages();
+				$current_language = $this->app->getLanguage()->getTag();
+				$current_language = substr($current_language, 0, 2);
 				foreach ($languages as $language) {
 					$path_to_files[$language->sef]  = $path_to_file . $language->lang_code . '.override.ini';
 					$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
@@ -248,6 +250,25 @@ class EmundusModelForm extends JModelList
 					}
 					$evaluation_form->label = $label;
 					$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
+				}
+
+				if($order_by == 'label')
+				{
+					$sort = $sort === 'ASC' ? SORT_ASC : SORT_DESC;
+					$sort_labels = array_column($evaluation_forms, 'label', 'id');
+					$sort_labels_current_language = array_map(function($labels) use ($current_language) {
+						return $labels[$current_language] ?? reset($labels);
+					}, $sort_labels);
+					array_multisort($sort_labels_current_language, $sort, $evaluation_forms);
+				}
+
+				if(!empty($recherche))
+				{
+					$evaluation_forms = array_filter($evaluation_forms, function($form) use ($recherche, $current_language) {
+						$label = $form->label[$current_language] ?? reset($form->label);
+						return stripos($label, $recherche) !== false;
+					});
+					$evaluation_forms = array_values($evaluation_forms);
 				}
 			}
 

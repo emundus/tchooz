@@ -1335,7 +1335,11 @@ class EmundusControllerFormbuilder extends BaseController
 		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
-			$models             = $this->m_formbuilder->getPagesModel();
+			$sort      = $this->input->getString('sort', '');
+			$recherche = $this->input->getString('recherche', '');
+			$order_by  = $this->input->getString('order_by', '');
+
+			$models             = $this->m_formbuilder->getPagesModel([], [], $sort, $recherche, $order_by);
 			$response['status'] = true;
 			$response['data']   = ['datas' => $models, 'count' => count($models)];
 			$response['msg']    = 'Succès';

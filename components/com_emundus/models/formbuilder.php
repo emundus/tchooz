@@ -2881,7 +2881,7 @@ class EmundusModelFormbuilder extends JModelList
 	 *
 	 * @return array|mixed|void
 	 */
-	function getPagesModel($form_ids = [], $model_ids = [])
+	function getPagesModel($form_ids = [], $model_ids = [],  string $sort = '', string $recherche = '', string $order_by = '')
 	{
 		$models = [];
 
@@ -2903,6 +2903,9 @@ class EmundusModelFormbuilder extends JModelList
 			$this->db->setQuery($query);
 			$models = $this->db->loadObjectList();
 
+			$current_language = $this->app->getLanguage()->getTag();
+			$current_language = substr($current_language, 0, 2);
+
 			foreach ($models as $model) {
 				$model->label = array(
 					'fr' => $this->getTranslation($model->label, 'fr-FR'),
@@ -2921,6 +2924,24 @@ class EmundusModelFormbuilder extends JModelList
 					'fr' => $this->getTranslation(strip_tags($model_data->intro), 'fr-FR'),
 					'en' => $this->getTranslation(strip_tags($model_data->intro), 'en-GB')
 				);
+			}
+
+			if($order_by === 'label')
+			{
+				$sort = $sort === 'ASC' ? SORT_ASC : SORT_DESC;
+				$sort_labels = array_column($models, 'label', 'id');
+				$sort_labels_current_language = array_map(function($labels) use ($current_language) {
+					return $labels[$current_language] ?? reset($labels);
+				}, $sort_labels);
+				array_multisort($sort_labels_current_language, $sort, $models);
+			}
+
+			if(!empty($recherche))
+			{
+				$models = array_filter($models, function($model) use ($recherche, $current_language) {
+					$label = $model->label[$current_language] ?? reset($model->label);
+					return stripos($label, $recherche) !== false;
+				});
 			}
 		}
 		catch (Exception $e) {
