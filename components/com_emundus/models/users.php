@@ -4700,36 +4700,6 @@ class EmundusModelUsers extends ListModel
 		return $new_token;
 	}
 
-	public function isSamlUser($user_id)
-	{
-		$isSamlUser = false;
-
-		if (!empty($user_id)) {
-
-			$query = $this->db->getQuery(true);
-
-			$query->select('params')
-				->from('#__users')
-				->where('id = ' . $user_id);
-
-			try {
-				$params = $this->db->loadResult();
-			}
-			catch (Exception $e) {
-				$params = '';
-				Log::add(' com_emundus/models/users.php | Failed to check if is saml users : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-			}
-
-			if (!empty($params)) {
-				$params = json_decode($params, true);
-
-				$isSamlUser = !empty($params['saml']) && $params['saml'] == 1;
-			}
-		}
-
-		return $isSamlUser;
-	}
-
 	public function getIdentityPhoto($fnum, $applicant_id)
 	{
 		$attachment_id = ComponentHelper::getParams('com_emundus')->get('photo_attachment', '');

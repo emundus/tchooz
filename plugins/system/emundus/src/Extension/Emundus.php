@@ -34,6 +34,7 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
+
 // phpcs:enable PSR1.Files.SideEffects
 
 final class Emundus extends CMSPlugin implements SubscriberInterface
@@ -125,7 +126,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 			if (!empty($e_session->profile))
 			{
-				if(!class_exists('EmundusModelUsers'))
+				if (!class_exists('EmundusModelUsers'))
 				{
 					require_once JPATH_ROOT . '/components/com_emundus/models/users.php';
 				}
@@ -192,47 +193,60 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		// If samlredirect plugin is active and we're coming from saml login page we can try to update user informations
 		$userParams = (!empty($user->params)) ? json_decode($user->params) : [];
-		if (!$user->guest && PluginHelper::isEnabled('system', 'samlredirect') && !empty($userParams) && $userParams->saml == 1)
+		$isSamlUser = false;
+		if (!$user->guest && !empty($user->id) && PluginHelper::isEnabled('system', 'samlredirect'))
+		{
+			$isSamlUser = $this->isSamlUser($user->id);
+		}
+
+		if (!$user->guest && $isSamlUser)
 		{
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
+			
+			// Check if __miniorange_saml_config table exists
+			$tables = $db->getTableList();
+			$tableExists = in_array($db->getPrefix() . 'miniorange_saml_config', $tables);
 
-			$query->select('single_signon_service_url')
-				->from($db->quoteName('#__miniorange_saml_config'));
-			$db->setQuery($query);
-			$singleSignOnServiceUrl = $db->loadResult();
-
-			if (!empty($singleSignOnServiceUrl))
+			if($tableExists)
 			{
-				$parsedUrl   = parse_url($singleSignOnServiceUrl);
-				$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
+				$query->select('single_signon_service_url')
+					->from($db->quoteName('#__miniorange_saml_config'));
+				$db->setQuery($query);
+				$singleSignOnServiceUrl = $db->loadResult();
 
-				if (!empty($httpReferer) && $httpReferer == ($parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/'))
+				if (!empty($singleSignOnServiceUrl))
 				{
-					$query->select('profile_key,profile_value')
-						->from($db->quoteName('#__user_profiles'))
-						->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
-					$db->setQuery($query);
-					$profileDatas = $db->loadAssocList('profile_key', 'profile_value');
+					$parsedUrl   = parse_url($singleSignOnServiceUrl);
+					$httpReferer = $_SERVER['HTTP_REFERER'] ?? '';
 
-					foreach ($profileDatas as $profileKey => $profileValue)
+					if (!empty($httpReferer) && $httpReferer == ($parsedUrl['scheme'] . '://' . $parsedUrl['host'] . '/'))
 					{
-						$profileKeyParts = explode('.', $profileKey);
-						if (!empty($profileKeyParts[1]) && !empty($profileKeyParts[2]))
-						{
-							$query = 'SHOW COLUMNS FROM ' . $db->quoteName('#__' . $profileKeyParts[1]) . ' LIKE ' . $db->quote($profileKeyParts[2]);
-							$db->setQuery($query);
-							$columnExists = $db->loadResult();
+						$query->select('profile_key,profile_value')
+							->from($db->quoteName('#__user_profiles'))
+							->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+						$db->setQuery($query);
+						$profileDatas = $db->loadAssocList('profile_key', 'profile_value');
 
-							if (!empty($columnExists))
+						foreach ($profileDatas as $profileKey => $profileValue)
+						{
+							$profileKeyParts = explode('.', $profileKey);
+							if (!empty($profileKeyParts[1]) && !empty($profileKeyParts[2]))
 							{
-								// Update the user profile field in the users table
-								$query = $db->getQuery(true);
-								$query->update($db->quoteName('#__' . $profileKeyParts[1]))
-									->set($db->quoteName($profileKeyParts[2]) . ' = ' . $db->quote($profileValue))
-									->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+								$query = 'SHOW COLUMNS FROM ' . $db->quoteName('#__' . $profileKeyParts[1]) . ' LIKE ' . $db->quote($profileKeyParts[2]);
 								$db->setQuery($query);
-								$db->execute();
+								$columnExists = $db->loadResult();
+
+								if (!empty($columnExists))
+								{
+									// Update the user profile field in the users table
+									$query = $db->getQuery(true);
+									$query->update($db->quoteName('#__' . $profileKeyParts[1]))
+										->set($db->quoteName($profileKeyParts[2]) . ' = ' . $db->quote($profileValue))
+										->where($db->quoteName('user_id') . ' = ' . $db->quote($user->id));
+									$db->setQuery($query);
+									$db->execute();
+								}
 							}
 						}
 					}
@@ -277,17 +291,20 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$user = $app->getIdentity();
 		if ($user instanceof User && !$user->guest && $user->activation != -1)
 		{
-			$plugin   = PluginHelper::getPlugin('system', 'emundus');
-			$params   = new Registry($plugin->params);
-			$mfaSso   = $params->get('2faforSSO', 0);
+			$plugin = PluginHelper::getPlugin('system', 'emundus');
+			$params = new Registry($plugin->params);
+			$mfaSso = $params->get('2faforSSO', 0);
 
-			if($mfaSso == 0 && !empty($userParams) && ($userParams->saml == 1 || $userParams->OAuth2 === 'openid'))
+			if ($mfaSso == 0 && ($isSamlUser || (!empty($userParams) && $userParams->OAuth2 === 'openid')))
 			{
 				// If user logged in via SAML or OIDC we skip the 2FA enforcement
 				return;
 			}
 			// If 2fa for SSO is enabled but user email is @emundus.fr we skip the 2FA enforcement
-			elseif ($mfaSso == 1  && !empty($userParams) && ($userParams->saml == 1 || $userParams->OAuth2 === 'openid') && str_ends_with($user->email, '@emundus.fr'))
+			elseif (
+				$mfaSso == 1 &&
+				(!empty($userParams) && ($userParams->OAuth2 === 'openid') && str_ends_with($user->email, '@emundus.fr'))
+			)
 			{
 				return;
 			}
@@ -512,5 +529,19 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		// No viable MFA Method found. We won't show the Captive page.
 		return false;
+	}
+
+	private function isSamlUser(int $user_id): bool
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select('profile_value')
+			->from($db->quoteName('#__user_profiles'))
+			->where($db->quoteName('user_id') . ' = ' . $db->quote($user_id))
+			->where($db->quoteName('profile_key') . ' = ' . $db->quote('profile.issaml'));
+		$db->setQuery($query);
+
+		return !empty($db->loadResult());
 	}
 }
