@@ -225,15 +225,22 @@ export default {
 				);
 			} else if (plugin === 'panel' && isDefault) {
 				let text = isDefault;
-				// Strip HTML tags if any
-				text = text.replace(/<\/?[^>]+(>|$)/g, '');
-				// Truncate to 30 characters
-				if (text.length > 30) {
-					text = text.substring(0, 30) + '...';
+				if (typeof text === 'object') {
+					text = isDefault[useGlobalStore().getShortLang] ?? Object.values(isDefault)[0] ?? '';
 				}
 
-				// Display first character of panel if no label
-				return '[' + this.translate('COM_EMUNDUS_ONBOARD_TYPE_PANEL') + '] - ' + text;
+				if (text && typeof text === 'string') {
+					// Strip HTML tags if any
+					text = text.replace(/<\/?[^>]+(>|$)/g, '');
+					// Truncate to 30 characters
+					if (text.length > 30) {
+						text = text.substring(0, 30) + '...';
+					}
+
+					// Display first character of panel if no label
+					return '[' + this.translate('COM_EMUNDUS_ONBOARD_TYPE_PANEL') + '] - ' + text;
+				}
+				return '[' + this.translate('COM_EMUNDUS_ONBOARD_TYPE_PANEL') + '] - ' + name;
 			} else {
 				return name;
 			}
