@@ -158,7 +158,7 @@ class FabrikHelperTest extends UnitTestCase
 			}
 
 			$value = $this->helper->getValueByAlias($params['alias'], null, $applicant_id);
-			$this->assertEmpty($value['raw'], 'The value obtained should not be empty');
+			$this->assertEmpty($value['raw'], 'The value obtained should be empty');
 
 			// insert a value in the database
 			$targeted_value = 'test';
@@ -175,7 +175,7 @@ class FabrikHelperTest extends UnitTestCase
 			$this->assertEquals($targeted_value, $value['raw'], 'The value obtained should be the same as the value in the database');
 
 			$value = $this->helper->getValueByAlias($params['alias'],$this->dataset['fnum']);
-			$this->assertEmpty($value, 'The value obtained should be empty because the element is not in an applicant form');
+			$this->assertEmpty($value['raw'], 'The value obtained should be empty because the element is not in an applicant form');
 
 			$value = $this->helper->getValueByAlias($params['alias'],null, $applicant_id, 'column');
 			$this->assertIsArray($value, 'The value obtained should be an array using the column format');
