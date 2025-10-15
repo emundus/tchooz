@@ -1908,6 +1908,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 							if (!empty($raw_value))
 							{
+								// If checkbox, we may have multiple values so return an array as raw value
+								if ($element->plugin == 'checkbox' && is_string($raw_value) && json_validate($raw_value))
+								{
+									$raw_value = json_decode($raw_value, true);
+								}
 								$value['raw']   = $raw_value;
 								$value['value'] = EmundusHelperFabrik::formatElementValue($element->name, $raw_value);
 								break;
