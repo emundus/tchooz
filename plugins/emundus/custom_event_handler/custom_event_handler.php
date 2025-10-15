@@ -887,7 +887,37 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											$conditions_status[] = $this->operateCondition($condition, $value);
 										}
 									}
-									//TODO: Manage checkboxes cases
+									elseif ($plugin === 'checkbox')
+									{
+										if ($linked) {
+											$query->clear()
+												->select($column)
+												->from($db->quoteName($table_name))
+												->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum));
+
+											$db->setQuery($query);
+											$value = $db->loadResult();
+
+											// Explode values stored as ["a","b","c"]
+											if (!empty($value))
+											{
+												$values = json_decode($value, true);
+
+												if(!empty($values))
+												{
+													if (!is_array($values))
+													{
+														$values = [$values];
+													}
+
+												}
+											} else {
+												$values = [];
+											}
+
+											$conditions_status[] = $this->operateCondition($condition, $values);
+										}
+									}
 									else {
 										if ($linked)
 										{
@@ -1168,21 +1198,45 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 	{
 		$result = false;
 
-		if (!empty($condition) && isset($value))
-		{
-			$result = match ($condition->operator)
-			{
-				'=' => $value == $condition->targeted_value,
-				'!=' => $value != $condition->targeted_value,
-				'IN' => in_array($value, explode('|', $condition->targeted_value)),
-				'NOT IN' => !in_array($value, explode('|', $condition->targeted_value)),
-				'inferior' => $value < $condition->targeted_value,
-				'inferior_equal' => $value <= $condition->targeted_value,
-				'superior' => $value > $condition->targeted_value,
-				'superior_equal' => $value >= $condition->targeted_value,
-				'array_includes' => is_array($value) && in_array($condition->targeted_value, $value),
-				default => false,
-			};
+		if (!empty($condition) && isset($value)) {
+			if (is_array($value)) {
+				switch ($condition->operator) {
+					case 'array_includes':
+					case '=':
+						$result = in_array($condition->targeted_value, $value);
+						break;
+					case '!=':
+						$result = !in_array($condition->targeted_value, $value);
+						break;
+					case 'IN':
+						$result = count(array_intersect($value, explode('|', $condition->targeted_value))) > 0;
+						break;
+					case 'NOT IN':
+						$result = count(array_intersect($value, explode('|', $condition->targeted_value))) === 0;
+						break;
+					default:
+						$result = false;
+						break;
+				}
+			} else {
+				if (is_string($condition->targeted_value) && str_contains('|', $condition->targeted_value)) {
+					$targeted_values = explode('|', $condition->targeted_value);
+				} else {
+					$targeted_values = $condition->targeted_value;
+				}
+
+				$result = match ($condition->operator) {
+					'=' => $value == $condition->targeted_value,
+					'!=' => $value != $condition->targeted_value,
+					'IN' => in_array($value, $targeted_values),
+					'NOT IN' => !in_array($value, $targeted_values),
+					'inferior' => $value < $condition->targeted_value,
+					'inferior_equal' => $value <= $condition->targeted_value,
+					'superior' => $value > $condition->targeted_value,
+					'superior_equal' => $value >= $condition->targeted_value,
+					default => false,
+				};
+			}
 		}
 
 		return $result;
