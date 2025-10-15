@@ -96,7 +96,7 @@ endforeach;
 					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
                             <div>
-                                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" class="no-result-display" style="width: 10vw; height: 10vw; margin: 0 auto;">
                                 <p class="tw-text-center" style="width: fit-content; margin: 0 auto;">
 									<?php echo $this->emptyDataMessage; ?>
 									<?php if ($this->showAdd) :?>
@@ -126,7 +126,7 @@ endforeach;
 					<td class="emptyDataMessage" style="<?php echo $this->emptyStyle?>" colspan="<?php echo count($this->headings)?>">
 						<div class="emptyDataMessage" style="<?php echo $this->emptyStyle?>">
                             <div>
-                                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" style="width: 10vw; height: 10vw; margin: 0 auto;">
+                                <img src="/media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg" alt="empty-list" class="no-result-display" style="width: 10vw; height: 10vw; margin: 0 auto;">
                                 <p class="tw-text-center" style="width: fit-content; margin: 0 auto;">
                                     <?php echo $this->emptyDataMessage; ?>
                                     <?php if ($this->showAdd) :?>

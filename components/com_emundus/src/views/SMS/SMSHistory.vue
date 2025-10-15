@@ -40,7 +40,7 @@
 			<img
 				src="@media/com_emundus/images/tchoozy/complex-illustrations/no-result.svg"
 				alt="empty-list"
-				class="tw-mx-auto tw-mt-8 tw-w-1/2"
+				class="no-result-display tw-mx-auto tw-mt-8 tw-w-1/2"
 				style="width: 10vw; height: 10vw; margin: 0 auto"
 			/>
 			<p>{{ translate('COM_EMUNDUS_SMS_EMPTY_HISTORY') }}</p>

@@ -26,5 +26,6 @@ export default {
 	width: 10vw;
 	height: 10vw;
 	margin: 0 auto;
+	display: var(--no-results);
 }
 </style>
