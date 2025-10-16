@@ -380,6 +380,47 @@ class FalangHelper
                             }
                         }
 
+	                    // Fix for Fabrikar
+	                    if (isset($vars['option']) && $vars['option'] == 'com_fabrik' && isset($vars['view']) && $vars['view'] == 'list') {
+		                    $fManager = \FalangManager::getInstance();
+		                    $id_lang  = $fManager->getLanguageID($language->lang_code);
+		                    $db       = Factory::getDbo();
+		                    $query = $db->getQuery(true);
+		                    $query->select('fc.value')
+			                    ->from('#__falang_content fc')
+			                    ->where('fc.reference_id = ' . (int) $vars['Itemid'])
+			                    ->where('fc.language_id = ' . (int) $id_lang)
+			                    ->where('fc.reference_field = \'link\'')
+			                    ->where('fc.published = 1')
+			                    ->where('fc.reference_table = \'menu\'');
+		                    $db->setQuery($query);
+		                    $link = $db->loadResult();
+
+		                    if(!empty($link)) {
+			                    // Extract the listid from the link
+			                    preg_match('/listid=([0-9]+)/', $link, $matches);
+			                    if (isset($matches[1])) {
+				                    $vars['listid'] = $matches[1];
+			                    }
+		                    }
+		                    else {
+			                    // Get default listid from the menu item params
+			                    $query->clear()
+				                    ->select('m.link')
+				                    ->from('#__menu m')
+				                    ->where('m.id = ' . (int) $vars['Itemid']);
+			                    $db->setQuery($query);
+			                    $link = $db->loadResult();
+
+			                    if(!empty($link)) {
+				                    preg_match('/listid=([0-9]+)/', $link, $matches);
+				                    if (isset($matches[1])) {
+					                    $vars['listid'] = $matches[1];
+				                    }
+			                    }
+		                    }
+	                    }
+
                         $url = 'index.php?'.URI::buildQuery($vars);
                         $language->link = Route::_($url);
 
