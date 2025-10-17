@@ -843,6 +843,7 @@ class EmundusModelEvaluation extends JModelList
 
 	public function _buildContentOrderBy()
 	{
+        $order = ' ORDER BY jecc.date_submitted DESC, jecc.date_time DESC';
 		$filter_order     = JFactory::getSession()->get('filter_order');
 		$filter_order_Dir = JFactory::getSession()->get('filter_order_Dir');
 
@@ -878,10 +879,11 @@ class EmundusModelEvaluation extends JModelList
 			$filter_order = 'name';
 		}
 
-		if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering))
-			return ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
+        if (!empty($filter_order) && !empty($filter_order_Dir) && in_array($filter_order, $can_be_ordering)) {
+            $order = ' ORDER BY ' . $filter_order . ' ' . $filter_order_Dir;
+        }
 
-		return '';
+        return $order;
 	}
 
 	public function multi_array_sort($multi_array, $sort_key, $sort = SORT_ASC)
