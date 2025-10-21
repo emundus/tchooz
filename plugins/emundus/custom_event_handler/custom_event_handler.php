@@ -1358,6 +1358,28 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							}
 						}
 
+						if (!empty($action->send_to_users) && is_array($action->send_to_users))
+						{
+							$query->clear()
+								->select('email')
+								->from('#__users')
+								->where('id IN (' . implode(',', $db->quote($action->send_to_users)) . ')');
+							$db->setQuery($query);
+							$users_emails = $db->loadColumn();
+
+							if (!empty($users_emails))
+							{
+								foreach ($users_emails as $user_email)
+								{
+									$sent_states[] = $m_emails->sendEmailNoFnum($user_email, $action->email_to_send, null, null, [], $fnum, true, [], $this->automated_task_user);
+								}
+							}
+							else
+							{
+								$sent_states[] = false;
+							}
+						}
+
 						$landed = !empty($sent_states) && !in_array(false, $sent_states);
 					}
 					break;
