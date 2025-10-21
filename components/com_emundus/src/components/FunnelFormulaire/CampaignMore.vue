@@ -1,6 +1,5 @@
 <template>
 	<div>
-		<Info v-if="needMoreInfo" text="COM_EMUNDUS_CAMPAIGNS_MORE_INFO" class="tw-mb-4" />
 		<iframe v-if="formUrl.length > 0" id="more-form-iframe" :src="formUrl" width="100%"></iframe>
 	</div>
 </template>
@@ -31,10 +30,6 @@ export default {
 		};
 	},
 	created() {
-		campaignService.needMoreInfo(this.campaignId).then((response) => {
-			this.needMoreInfo = response.data;
-		});
-
 		if (this.defaultFormUrl.length > 0) {
 			this.formUrl = this.defaultFormUrl;
 		} else {

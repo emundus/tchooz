@@ -1677,6 +1677,25 @@ class EmundusModelCampaign extends ListModel
 								}
 							}
 						}
+
+						// Duplicate more informations
+						$more_form = $this->getCampaignMoreForm($id);
+						if(!empty($more_form) && !empty($more_form['row_id']))
+						{
+							// Check if setup_campaigns_more row exist for this campaign
+							$query->clear()
+								->select('*')
+								->from($this->_db->quoteName('#__emundus_setup_campaigns_more'))
+								->where($this->_db->quoteName('campaign_id') . ' = ' . $this->_db->quote($id));
+							$this->_db->setQuery($query);
+							$campaign_more_row = $this->_db->loadAssoc();
+
+							$insert = $campaign_more_row;
+							$insert['campaign_id'] = $new_campaign_id;
+							unset($insert['id']);
+							$insert = (object) $insert;
+							$this->_db->insertObject('#__emundus_setup_campaigns_more', $insert);
+						}
 					}
 				}
 			}
@@ -1758,6 +1777,7 @@ class EmundusModelCampaign extends ListModel
 
 			$eMConfig                       = ComponentHelper::getParams('com_emundus');
 			$create_default_program_trigger = $eMConfig->get('create_default_program_trigger', 1);
+			$force_campaigns_more = $eMConfig->get('force_campaigns_more', 0);
 
 			$i            = 0;
 			$labels       = new stdClass();
@@ -1848,6 +1868,17 @@ class EmundusModelCampaign extends ListModel
 
 			if (!empty($data['label']))
 			{
+				// Check if we have campaign more form mandatory fields to fill
+				if($force_campaigns_more == 1)
+				{
+					$more_form = $this->getCampaignMoreForm();
+					if (!empty($more_form))
+					{
+						// Set published to 0
+						$data['published'] = 0;
+					}
+				}
+
 				$query->clear()
 					->insert($this->_db->quoteName('#__emundus_setup_campaigns'))
 					->columns($this->_db->quoteName(array_keys($data)))
