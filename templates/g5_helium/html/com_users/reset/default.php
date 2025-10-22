@@ -7,6 +7,8 @@
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die;
 
 JHtml::_('behavior.keepalive');
@@ -18,7 +20,13 @@ $document->addStyleSheet("templates/g5_helium/html/com_users/reset/style/com_use
 require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'settings.php');
 $m_settings = new EmundusModelsettings();
 
+$email    = Factory::getApplication()->input->getString('email', '');
+$this->form->setValue('email', '', $email);
+
 $favicon = $m_settings->getFavicon();
+
+// Load language file of plugins/user/emundus
+Factory::getApplication()->getLanguage()->load('plg_user_emundus', JPATH_SITE, Factory::getApplication()->getLanguage()->getTag(), true);
 
 ?>
 <div class="reset<?php echo $this->pageclass_sfx; ?>">

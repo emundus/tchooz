@@ -15,24 +15,25 @@
         <option value="element">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_ALIAS</option>
         <option value="fixed">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_FIXED</option>
         <option value="applicant">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_APPLICANT</option>
+        <option value="collaborators">PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_TYPE_FORM_COLLABORATORS</option>
     </field>
 
     <field
-            showon="signer_type!:applicant"
+            showon="signer_type!:applicant[AND]signer_type!:collaborators"
             name="signer_email"
             type="text"
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_EMAIL_LABEL"
     />
 
     <field
-            showon="signer_type!:applicant"
+            showon="signer_type!:applicant[AND]signer_type!:collaborators"
             name="signer_firstname"
             type="text"
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_FIRSTNAME_LABEL"
     />
 
     <field
-            showon="signer_type!:applicant"
+            showon="signer_type!:applicant[AND]signer_type!:collaborators"
             name="signer_lastname"
             type="text"
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_LASTNAME_LABEL"

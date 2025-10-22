@@ -229,7 +229,7 @@ class YousignService
 											if ($signer->id === $yousign_signer->request_signer_id)
 											{
 												$api_audit_trails = $this->yousign_synchronizer->getAuditTrails($yousign_request->getProcedureId(), $yousign_signer->signer_id);
-												if ($api_audit_trails['status'] === 200)
+												if ($api_audit_trails['status'] === 200 && !empty($api_audit_trails['data']->signer->signature_process_completed_at))
 												{
 													$this->request_signers_repository->updateSignedAt($signer->id, $api_audit_trails['data']->signer->signature_process_completed_at);
 												}

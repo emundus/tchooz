@@ -372,7 +372,6 @@
     }
 
     // Prevents the mousedown event from "eating" the click event.
-    // eslint-disable-next-line class-methods-use-this
     mousedown(e) {
       e.stopPropagation();
       e.preventDefault();
@@ -384,10 +383,7 @@
         const tmpValue = value.split('');
         newValue = tmpValue[0] + tmpValue[1] + tmpValue[1] + tmpValue[2] + tmpValue[2] + tmpValue[3] + tmpValue[3];
       }
-
-      // eslint-disable-next-line no-restricted-syntax
       for (const color in colorNames) {
-        // eslint-disable-next-line no-prototype-builtins
         if (colorNames.hasOwnProperty(color) && newValue.toLowerCase() === colorNames[color]) {
           return color;
         }
@@ -399,7 +395,6 @@
      * Converts a RGB color to its hexadecimal value.
      * See http://stackoverflow.com/questions/1740700/get-hex-value-rather-than-rgb-value-using-$
      */
-    // eslint-disable-next-line class-methods-use-this
     rgb2hex(rgb) {
       const hex = x => `0${parseInt(x, 10).toString(16)}`.slice(-2);
       const matches = rgb.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);

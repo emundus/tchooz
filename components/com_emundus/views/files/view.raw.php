@@ -427,9 +427,19 @@ class EmundusViewFiles extends JViewLegacy
 									$userObj->photo = $h_files->getPhotos($value);
 								}
 								$userObj->user            = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $user['applicant_id']);
-								$userObj->user->name      = $user['is_anonym'] ? $value : $user['name'];
+								$userObj->user->name      = $user['name'];
 								$userObj->unread_messages = !empty($unread_messages) ? $unread_messages[$value] : '';
-								$userObj->user->email     = $user['is_anonym'] ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $userObj->user->email;
+
+								if ($user['is_anonym']) {
+									$userObj->user->name = $value;
+									$userObj->user->email = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+								}
+								elseif (EmundusHelperAccess::isDataAnonymized(Factory::getApplication()->getIdentity()->id))
+								{
+									$userObj->user->name = $value;
+									$userObj->user->email = '';
+									$userObj->user->id = '';
+								}
 
 								$line['fnum'] = $userObj;
 							}

@@ -106,8 +106,6 @@ class Com_EmundusInstallerScript
 
 		$releases_path = JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/releases/';
 
-		$query = $this->db->getQuery(true);
-
 		$releases_available = scandir($releases_path);
 		// Sort naturally
 		natcasesort($releases_available);
@@ -132,6 +130,15 @@ class Com_EmundusInstallerScript
 						if ($release_installed['status'])
 						{
 							EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' installed', 'success');
+
+							// Add the update date to jos_emundus_versions
+							$date = Factory::getDate()->toSql();
+
+							if(!$this->storeVersion($release_version, $date))
+							{
+								EmundusHelperUpdate::displayMessage('Erreur lors de l\'enregistrement de la version ' . $release_version . ' dans la table des versions.', 'error');
+								$succeed = false;
+							}
 						}
 						else
 						{
@@ -146,6 +153,40 @@ class Com_EmundusInstallerScript
 		return $succeed;
 	}
 
+	private function storeVersion($version, $date): bool
+	{
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_version'))
+				->where($this->db->quoteName('version') . ' = ' . $this->db->quote($version));
+			$this->db->setQuery($query);
+			$existing_version = $this->db->loadObject();
+
+			if(empty($existing_version))
+			{
+				$insert = (object) [
+					'version' => $version,
+					'update_date' => $date,
+				];
+				return $this->db->insertObject('#__emundus_version', $insert);
+			}
+			else {
+				$update = (object) [
+					'version' => $version,
+					'update_date' => $date,
+				];
+				return $this->db->updateObject('#__emundus_version', $update, 'version');
+			}
+		}
+		catch (Exception $e)
+		{
+			return false;
+		}
+	}
+
 	/**
 	 * Run when the component is uninstalled.
 	 *
@@ -157,16 +198,6 @@ class Com_EmundusInstallerScript
 	{
 	}
 
-	/**
-	 * Run after installation or upgrade run
-	 *
-	 * @param   string  $type    discover_install (Install unregistered extensions that have been discovered.)
-	 *                           or install (standard install)
-	 *                           or update (update)
-	 * @param   object  $parent  installer object
-	 *
-	 * @return  bool
-	 */
 	public function postflight($type, $parent)
 	{
 		$db    = Factory::getContainer()->get('DatabaseDriver');
