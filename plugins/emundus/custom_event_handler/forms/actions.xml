@@ -101,6 +101,19 @@
             key_field="id"
             value_field="label"
             multiple="true"
+            layout="joomla.form.field.list-fancy-select"
+    />
+    <field
+            showon="action_type:send_email"
+            name="send_to_users"
+            type="sql"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_USERS_LABEL"
+            description="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SEND_TO_USERS_DESC"
+            query="SELECT u.id, concat(u.name,' (',u.email,')') as label FROM #__emundus_users AS eu LEFT JOIN #__users AS u ON eu.user_id = u.id LEFT JOIN #__emundus_users_profiles AS eup ON u.id = eup.user_id WHERE eu.profile IN (SELECT id FROM jos_emundus_setup_profiles WHERE published = 0) OR eup.profile_id IN (SELECT id FROM jos_emundus_setup_profiles WHERE published = 0) GROUP BY u.id"
+            key_field="id"
+            value_field="label"
+            multiple="true"
+            layout="joomla.form.field.list-fancy-select"
     />
     <!-- End Send email fields -->
 
@@ -211,6 +224,7 @@
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGNERS_LABEL"
             multiple="true"
             formsource="plugins/emundus/custom_event_handler/forms/signers.xml"
+            layout="joomla.form.field.list-fancy-select"
     >
     </field>
 
