@@ -49,9 +49,9 @@ class Language
     protected $metadata;
 
     /**
-     * Array holding the language locale or boolean null if none.
+     * Array holding the language locale or null.
      *
-     * @var    array|boolean
+     * @var    ?array
      * @since  1.0
      */
     protected $locale;
@@ -108,7 +108,7 @@ class Language
      * The localisation object.
      *
      * @var    LocaliseInterface
-     * @since  2.0.0-alpha
+     * @since  2.0
      */
     protected $localise;
 
@@ -116,7 +116,7 @@ class Language
      * LanguageHelper object
      *
      * @var    LanguageHelper
-     * @since  2.0.0-alpha
+     * @since  2.0
      */
     protected $helper;
 
@@ -124,7 +124,7 @@ class Language
      * The base path to the language folder
      *
      * @var    string
-     * @since  2.0.0-alpha
+     * @since  2.0
      */
     protected $basePath;
 
@@ -132,7 +132,7 @@ class Language
      * MessageCatalogue object
      *
      * @var    MessageCatalogue
-     * @since  2.0.0-alpha
+     * @since  2.0
      */
     protected $catalogue;
 
@@ -140,7 +140,7 @@ class Language
      * Language parser registry
      *
      * @var    ParserRegistry
-     * @since  2.0.0-alpha
+     * @since  2.0
      */
     protected $parserRegistry;
 
@@ -233,7 +233,7 @@ class Language
      *
      * @return  string  The translation of the string
      *
-     * @since   2.0.0-alpha
+     * @since   2.0
      */
     public function translate(string $string, bool $jsSafe = false, bool $interpretBackSlashes = true): string
     {
@@ -299,14 +299,14 @@ class Language
      */
     public function transliterate($string)
     {
-        $string = $this->localise->transliterate($string);
+        $transliterated_string = $this->localise->transliterate($string);
 
         // The transliterate method can return false if there isn't a fully valid UTF-8 string entered
-        if ($string === false) {
-            throw new \RuntimeException('Invalid UTF-8 was detected in the string "%s"', $string);
+        if ($transliterated_string === false) {
+            throw new \RuntimeException(sprintf('Invalid UTF-8 was detected in the string "%s"', $string));
         }
 
-        return $string;
+        return $transliterated_string;
     }
 
     /**
@@ -400,14 +400,11 @@ class Language
         $this->counter++;
 
         $result  = false;
-        $strings = false;
 
         if (file_exists($filename)) {
             $strings = $this->parse($filename);
-        }
 
-        if ($strings) {
-            if (\is_array($strings) && \count($strings)) {
+            if (\count($strings)) {
                 $this->catalogue->addMessages(array_replace($strings, $this->override));
                 $result = true;
             }
@@ -466,7 +463,7 @@ class Language
      *
      * @return  integer  A count of the number of parsing errors
      *
-     * @since   2.0.0-alpha
+     * @since   2.0
      */
     public function debugFile(string $filename): int
     {
@@ -522,7 +519,7 @@ class Language
      *
      * @return  string
      *
-     * @since   2.0.0-alpha
+     * @since   2.0
      */
     public function getBasePath(): string
     {
@@ -825,7 +822,7 @@ class Language
      *
      * @return  MessageCatalogue
      *
-     * @since   2.0.0-alpha
+     * @since   2.0
      */
     public function getCatalogue(): MessageCatalogue
     {
@@ -839,7 +836,7 @@ class Language
      *
      * @return  void
      *
-     * @since   2.0.0-alpha
+     * @since   2.0
      */
     public function setCatalogue(MessageCatalogue $catalogue): void
     {
@@ -881,7 +878,7 @@ class Language
      *
      * @return  string  The weekend days of the week separated by a comma according to the language
      *
-     * @since   2.0.0-alpha
+     * @since   2.0
      */
     public function getWeekEnd(): string
     {

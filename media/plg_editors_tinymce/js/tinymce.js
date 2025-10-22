@@ -5,7 +5,6 @@ import { JoomlaEditor, JoomlaEditorDecorator } from 'editor-api';
  * @license    GNU General Public License version 2 or later; see LICENSE.txt
  */
 
-
 /* global tinymce, tinyMCE */
 
 // Debounce ReInit per editor ID

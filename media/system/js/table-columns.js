@@ -176,8 +176,6 @@ if (window.innerWidth > 992) {
     if (!tableName) {
       return;
     }
-
-    /* eslint-disable-next-line no-new */
     new TableColumns($table, tableName);
   });
 }

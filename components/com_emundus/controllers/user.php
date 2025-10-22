@@ -42,8 +42,7 @@ class EmundusControllerUser extends BaseController
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-
-		require_once(JPATH_COMPONENT . DS . 'models' . DS . 'user.php');
+		require_once(JPATH_ROOT . '/components/com_emundus/models/user.php');
 
 		$this->app    = Factory::getApplication();
 		$this->_user  = $this->app->getSession()->get('emundusUser');

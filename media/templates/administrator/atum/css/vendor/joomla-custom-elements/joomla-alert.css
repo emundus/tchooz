@@ -193,16 +193,16 @@ html[dir="rtl"] joomla-alert .joomla-alert--close, html[dir="rtl"] joomla-alert 
   text-decoration: underline;
 }
 
+#system-message-container joomla-alert[type="warning"] .joomla-alert--close {
+  color: var(--state-warning-text);
+}
+
 #system-message-container joomla-alert[type="warning"] {
   --alert-accent-color: var(--state-warning-text);
   --alert-bg-color: var(--state-warning-bg);
   --alert-border: var(--state-warning-border);
   --alert-heading-bg: var(--state-warning-heading-bg);
   --alert-link-color: var(--state-success-link-color, var(--states-link-color));
-}
-
-#system-message-container joomla-alert[type="warning"] .joomla-alert--close {
-  color: var(--state-warning-text);
 }
 
 #system-message-container joomla-alert[type="warning"] a {
