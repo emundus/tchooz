@@ -1178,7 +1178,7 @@ if (!empty($applications))
         emptyTiles.forEach((tile) => {
             tile.addEventListener('click', (event) => {
 				<?php if($show_add_application && $applicant_can_renew) : ?>
-                window.location.href = "<?php echo $cc_list_url; ?>"
+                window.location.href = "<?php echo $campaigns_list_url; ?>"
 				<?php else : ?>
                 window.location.href = "<?php echo $campaigns_list_url; ?>"
 				<?php endif; ?>

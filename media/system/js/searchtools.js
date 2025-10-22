@@ -252,15 +252,11 @@ Joomla = window.Joomla || {};
       }
       self.theForm.submit();
     }
-
-    // eslint-disable-next-line class-methods-use-this
     updateFilterCount(count) {
       if (this.clearButton) {
         this.clearButton.disabled = count === 0 && !this.searchString.length;
       }
     }
-
-    // eslint-disable-next-line class-methods-use-this
     checkActiveStatus(cont) {
       let activeFilterCount = 0;
       this.getFilterFields().forEach(item => {
@@ -289,8 +285,6 @@ Joomla = window.Joomla || {};
         this.clearButton.disabled = activeFilterCount === 0 && !this.searchString.length;
       }
     }
-
-    // eslint-disable-next-line class-methods-use-this
     activeFilter(element) {
       element.classList.add('active');
       const chosenId = `#${element.getAttribute('id')}`;
@@ -320,8 +314,6 @@ Joomla = window.Joomla || {};
         filteredByCaption.textContent += captionContent;
       }
     }
-
-    // eslint-disable-next-line class-methods-use-this
     deactiveFilter(element) {
       element.classList.remove('active');
       const chosenId = `#${element.getAttribute('id')}`;
@@ -330,8 +322,6 @@ Joomla = window.Joomla || {};
         tmpEl.classList.remove('active');
       }
     }
-
-    // eslint-disable-next-line consistent-return
     getFilterFields() {
       if (this.mainContainer) {
         return this.mainContainer.querySelectorAll('select,input');
@@ -346,15 +336,12 @@ Joomla = window.Joomla || {};
     }
 
     // Common container functions
-    // eslint-disable-next-line class-methods-use-this
     hideContainer(container) {
       if (container) {
         container.classList.remove('js-stools-container-filters-visible');
         document.body.classList.remove('filters-shown');
       }
     }
-
-    // eslint-disable-next-line class-methods-use-this
     showContainer(container) {
       container.classList.add('js-stools-container-filters-visible');
       document.body.classList.add('filters-shown');
@@ -441,8 +428,6 @@ Joomla = window.Joomla || {};
       }
       this.activeOrder = this.orderField.value;
     }
-
-    // eslint-disable-next-line class-methods-use-this
     updateFieldValue(field, newValue) {
       const type = field.getAttribute('type');
       if (type === 'hidden' || type === 'text') {
@@ -476,10 +461,7 @@ Joomla = window.Joomla || {};
         }
       }
     }
-
-    // eslint-disable-next-line class-methods-use-this,consistent-return
     findOption(select, value) {
-      // eslint-disable-next-line no-plusplus
       for (let i = 0, l = select.length; l > i; i++) {
         if (select[i].value === value) {
           return select[i];
@@ -491,8 +473,6 @@ Joomla = window.Joomla || {};
     if (Joomla.getOptions('searchtools')) {
       const options = Joomla.getOptions('searchtools');
       const element = document.querySelector(options.selector);
-
-      // eslint-disable-next-line no-new
       new Searchtools(element, options);
     }
     const sort = document.getElementById('sorted');

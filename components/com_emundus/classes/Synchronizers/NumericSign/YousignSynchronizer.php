@@ -56,7 +56,8 @@ class YousignSynchronizer extends Api
 	{
 		$payload = [
 			'name'          => trim($name),
-			'delivery_mode' => $delivery_mode
+			'delivery_mode' => $delivery_mode,
+			'ordered_signers' => false
 		];
 		
 		if(!empty($expiration_date))
@@ -384,9 +385,14 @@ class YousignSynchronizer extends Api
 
 	public function addSigner(string $procedure_id, \stdClass $signer, string $document_id, object|string|null $signature_position = '', string $signature_level = 'electronic_signature', string $signature_authentication_mode = 'otp_email'): array
 	{
-		if($signature_level !== 'electronic_signature')
+		switch ($signature_level)
 		{
-			$signature_authentication_mode = 'otp_sms';
+			case 'advanced_electronic_signature':
+				$signature_authentication_mode = 'otp_sms';
+				break;
+			case 'qualified_electronic_signature':
+				$signature_authentication_mode = null;
+				break;
 		}
 
 		$payload = [

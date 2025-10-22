@@ -65,15 +65,14 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
     /**
      * Constructor.
      *
-     * @param   DispatcherInterface  $dispatcher       The dispatcher
      * @param   array                $config           An optional associative array of configuration settings
      * @param   MetadataManager      $metadataManager  The user factory
      *
      * @since   4.4.0
      */
-    public function __construct(DispatcherInterface $dispatcher, array $config, MetadataManager $metadataManager, ?Container $container = null)
+    public function __construct(array $config, MetadataManager $metadataManager, ?Container $container = null)
     {
-        parent::__construct($dispatcher, $config);
+        parent::__construct($config);
 
         $this->metadataManager = $metadataManager;
 	    $this->container = $container;

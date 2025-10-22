@@ -33,7 +33,7 @@ class MigrateEmundusJob extends TchoozJob
 		$section1 = $output->section();
 		$section2 = $output->section();
 
-		$tablesToIgnore = ['jos_emundus_version'];
+		$tablesToIgnore = [];
 
 		$dbTables       = $this->databaseService->getTables();
 		$dbSourceTables = $this->databaseServiceSource->getTables();

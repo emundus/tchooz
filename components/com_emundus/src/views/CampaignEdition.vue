@@ -27,6 +27,8 @@
 					</p>
 				</div>
 
+				<Info v-if="needMoreInfo" text="COM_EMUNDUS_CAMPAIGNS_MORE_INFO" class="tw-mb-4" />
+
 				<Tabs
 					v-show="profileId"
 					:tabs="tabs"
@@ -119,11 +121,13 @@ import MessageTriggers from '@/views/MessageTriggers.vue';
 import { useGlobalStore } from '@/stores/global.js';
 import History from '@/views/History.vue';
 import Tabs from '@/components/Utils/Tabs.vue';
+import Info from '@/components/Utils/Info.vue';
 
 export default {
 	name: 'CampaignEdition',
 
 	components: {
+		Info,
 		MessageTriggers,
 		Tabs,
 		History,
@@ -211,6 +215,7 @@ export default {
 		campaignsByProgram: [],
 		form: {},
 		campaignMoreFormUrl: '',
+		needMoreInfo: false,
 		program: {
 			id: 0,
 			code: '',
@@ -287,6 +292,10 @@ export default {
 							}
 
 							this.campaignMoreFormUrl = response.data;
+
+							campaignService.needMoreInfo(this.campaignId).then((response) => {
+								this.needMoreInfo = response.data;
+							});
 						}
 
 						resolve();
@@ -320,7 +329,7 @@ export default {
 
 				let cookie = this.getCookie('campaign_' + this.campaignId + '_menu');
 				if (cookie) {
-					this.menuHighlight = cookie;
+					this.next();
 					document.cookie = 'campaign_' + this.campaignId + '_menu =; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 				}
 			});

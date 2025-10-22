@@ -261,6 +261,13 @@
       ]
     },
     {
+      "name": "core",
+      "type": "script",
+      "class": "CoreAssetItem",
+      "uri": "system/core.min.js",
+      "version": "a3d8f8"
+    },
+    {
       "name": "keepalive",
       "type": "script",
       "class": "KeepaliveAssetItem",
@@ -272,13 +279,6 @@
         "type": "module"
       },
       "version": "08e025"
-    },
-    {
-      "name": "core",
-      "type": "script",
-      "class": "CoreAssetItem",
-      "uri": "system/core.min.js",
-      "version": "2cb912"
     },
     {
       "name": "messages",
@@ -317,18 +317,6 @@
       "version": "b135d0"
     },
     {
-      "name": "showon",
-      "type": "script",
-      "dependencies": [
-        "core"
-      ],
-      "uri": "system/showon.min.js",
-      "attributes": {
-        "type": "module"
-      },
-      "version": "e51227"
-    },
-    {
       "name": "searchtools",
       "type": "script",
       "dependencies": [
@@ -339,6 +327,18 @@
         "defer": true
       },
       "version": "abfb14"
+    },
+    {
+      "name": "showon",
+      "type": "script",
+      "dependencies": [
+        "core"
+      ],
+      "uri": "system/showon.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "version": "e51227"
     },
     {
       "name": "switcher",
@@ -361,16 +361,17 @@
       "version": "4bcb00"
     },
     {
-      "name": "joomla.draggable",
+      "name": "form.validate",
       "type": "script",
-      "uri": "system/draggable.min.js",
+      "class": "FormValidateAssetItem",
       "attributes": {
-        "defer": true
+        "type": "module"
       },
       "dependencies": [
-        "dragula"
+        "core"
       ],
-      "version": "ffd540"
+      "uri": "system/fields/validate.min.js",
+      "version": "75ac5d"
     },
     {
       "name": "field.color-adv",
@@ -385,17 +386,16 @@
       "version": "4c7560"
     },
     {
-      "name": "form.validate",
+      "name": "joomla.draggable",
       "type": "script",
-      "class": "FormValidateAssetItem",
+      "uri": "system/draggable.min.js",
       "attributes": {
-        "type": "module"
+        "defer": true
       },
       "dependencies": [
-        "core"
+        "dragula"
       ],
-      "uri": "system/fields/validate.min.js",
-      "version": "8dcde2"
+      "version": "ffd540"
     },
     {
       "name": "highlight",
@@ -422,6 +422,25 @@
       "version": "61f142"
     },
     {
+      "name": "field.passwordstrength",
+      "type": "script",
+      "uri": "system/fields/passwordstrength.min.js",
+      "attributes": {
+        "defer": true
+      },
+      "dependencies": [
+        "core",
+        "form.validate"
+      ],
+      "version": "868594"
+    },
+    {
+      "name": "field.calendar",
+      "type": "style",
+      "uri": "system/fields/calendar.css",
+      "version": "5da368"
+    },
+    {
       "name": "field.calendar-rtl",
       "type": "style",
       "uri": "system/fields/calendar-rtl.css",
@@ -437,35 +456,7 @@
       "dependencies": [
         "field.calendar.helper"
       ],
-      "version": "732cb2"
-    },
-    {
-      "name": "field.calendar",
-      "type": "style",
-      "uri": "system/fields/calendar.css",
-      "version": "5da368"
-    },
-    {
-      "name": "field.passwordstrength",
-      "type": "script",
-      "uri": "system/fields/passwordstrength.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "dependencies": [
-        "core",
-        "form.validate"
-      ],
-      "version": "868594"
-    },
-    {
-      "name": "field.color-slider",
-      "type": "script",
-      "uri": "system/fields/joomla-field-color-slider.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "version": "01c1ec"
+      "version": "b3233a"
     },
     {
       "name": "field.modal-fields",
@@ -480,6 +471,15 @@
       "deprecated": true,
       "deprecatedMsg": "Use [modal-content-select-field] asset instead. To be removed in Joomla 6.",
       "version": "21a476"
+    },
+    {
+      "name": "field.color-slider",
+      "type": "script",
+      "uri": "system/fields/joomla-field-color-slider.min.js",
+      "attributes": {
+        "defer": true
+      },
+      "version": "01c1ec"
     },
     {
       "name": "webcomponent.field-fancy-select",
@@ -665,16 +665,16 @@
       "version": "28819e"
     },
     {
+      "name": "joomla.dialog-autocreate",
       "type": "script",
-      "name": "modal-content-select",
-      "dependencies": [
-        "core"
-      ],
-      "uri": "system/modal-content-select.min.js",
+      "uri": "system/joomla-dialog-autocreate.min.js",
       "attributes": {
         "type": "module"
       },
-      "version": "feb637"
+      "dependencies": [
+        "joomla.dialog"
+      ],
+      "version": "44fd47"
     },
     {
       "name": "list-view",
@@ -687,6 +687,18 @@
         "core"
       ],
       "version": "bb814f"
+    },
+    {
+      "type": "script",
+      "name": "modal-content-select",
+      "dependencies": [
+        "core"
+      ],
+      "uri": "system/modal-content-select.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "version": "feb637"
     },
     {
       "type": "script",
@@ -709,18 +721,6 @@
         "type": "module"
       },
       "version": "c1bf6e"
-    },
-    {
-      "name": "joomla.dialog-autocreate",
-      "type": "script",
-      "uri": "system/joomla-dialog-autocreate.min.js",
-      "attributes": {
-        "type": "module"
-      },
-      "dependencies": [
-        "joomla.dialog"
-      ],
-      "version": "44fd47"
     }
   ]
 }

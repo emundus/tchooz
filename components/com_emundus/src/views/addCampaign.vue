@@ -1016,7 +1016,7 @@ export default {
 				document.cookie = 'campaign_' + this.campaignId + '_menu = 1; expires=Session; path=/';
 				if (redirect === '') {
 					redirect =
-						'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=0';
+						'index.php?option=com_emundus&view=campaigns&layout=addnextcampaign&cid=' + this.campaignId + '&index=1';
 				}
 
 				this.redirectJRoute(redirect);
