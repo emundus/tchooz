@@ -155,7 +155,7 @@ final class EmundusProxyRedirect extends CMSPlugin
 					$user->sendEmail      = 0;
 					$user->registerDate   = date('Y-m-d H:i:s');
 					$user->activation     = '';
-					$user->params         = '';
+					$user->params         = json_encode(['proxy_user' => 1]);
 					$user->guest          = 0;
 
 					$user->groups = $groups_map['j_groups'];
@@ -184,6 +184,15 @@ final class EmundusProxyRedirect extends CMSPlugin
 					$user->name          = $fullname;
 					$user->email         = $email;
 					$user->lastvisitDate = date('Y-m-d H:i:s');
+					$params = $user->params;
+					if(!empty($params)) {
+						$params = json_decode($params, true);
+					}
+					else {
+						$params = [];
+					}
+					$params['proxy_user'] = 1;
+					$user->params        = json_encode($params);
 					//$user->groups        = $groups_map['j_groups'];
 
 					if ($user->save()) {

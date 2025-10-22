@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension version="4" type="plugin" group="user">
-	<name>plg_user_emundus</name>
+<extension method="upgrade" type="plugin" group="user">
+	<name>PLG_USER_EMUNDUS</name>
 	<author>eMundus</author>
 	<creationDate>December 2006</creationDate>
 	<copyright>(C) 2005 - 2009 Open Source Matters. All rights reserved.</copyright>
@@ -9,11 +9,15 @@
 	<authorUrl>www.emundus.fr</authorUrl>
 	<version>2.0.0</version>
 	<description>PLG_USER_JOOMLA_XML_DESCRIPTION</description>
+	<namespace path="src">Joomla\Plugin\User\Emundus</namespace>
 	<files>
-		<filename>emundus.xml</filename>
-		<filename plugin="emundus">emundus.php</filename>
-		<filename>index.html</filename>
+		<folder plugin="emundus">services</folder>
+		<folder>src</folder>
 	</files>
+	<languages>
+		<language tag="fr-FR">language/fr-FR/plg_user_emundus.ini</language>
+		<language tag="fr-FR">language/fr-FR/plg_user_emundus.sys.ini</language>
+	</languages>
 	<config>
 		<fields name="params">
 			<fieldset name="basic">

@@ -35,6 +35,8 @@ use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Site\Model\ResetModel;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
+use Joomla\Ldap\LdapClient;
+use Joomla\Registry\Registry;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use \Joomla\CMS\User\User;
 
@@ -3248,14 +3250,15 @@ class EmundusModelUsers extends ListModel
 
 	/**
 	 * Connect to LDAP
-	 * @return mixed
+	 * @return void
+	 * @depecated Need to be removed in future versions
 	 */
-	public function searchLDAP($search)
+	public function searchLDAP($search): bool|stdClass
 	{
 		// Create LDAP object using params entered in plugin
-		$plugin = JPluginHelper::getPlugin('authentication', 'ldap');
-		$params = new JRegistry($plugin->params);
-		$ldap   = new JLDAP($params);
+		$plugin = PluginHelper::getPlugin('authentication', 'ldap');
+		$params = new Registry($plugin->params);
+		$ldap   = new LdapClient($params);
 
 		if (!$ldap->connect())
 			return false;
