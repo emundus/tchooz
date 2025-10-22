@@ -1562,15 +1562,24 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								}
 								elseif ($signer->signer_type === 'element')
 								{
+									$informations = [
+										'email'     => $signer->signer_email,
+										'firstname' => $signer->signer_firstname,
+										'lastname'  => $signer->signer_lastname,
+									];
+
 									foreach ($informations as $key => $information)
 									{
-										if (is_int($information))
+										if (!empty((int) $information))
 										{
-											$fabrik_element = $m_files->getValueFabrikByIds($signer->signer_element);
+											$fabrik_element = $m_files->getValueFabrikByIds([(int)$information]);
 											if (!empty($fabrik_element))
 											{
 												$raw_value          = $m_files->getFabrikValue([$fnum], $fabrik_element[0]['db_table_name'], $fabrik_element[0]['name']);
-												$informations[$key] = EmundusHelperFabrik::formatElementValue($fabrik_element[0]['name'], $raw_value);
+												if(!empty($raw_value[$fnum]['val']))
+												{
+													$informations[$key] = EmundusHelperFabrik::formatElementValue($fabrik_element[0]['name'], $raw_value[$fnum]['val']);
+												}
 											}
 										}
 										elseif (in_array($information, $fabrik_aliases))
