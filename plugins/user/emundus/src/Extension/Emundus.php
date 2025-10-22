@@ -39,7 +39,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 	use TraitVersion;
 
-	const VERSION = '2.10.3';
+	const VERSION = '2.10.5';
 
 	public static function getSubscribedEvents(): array
 	{
@@ -507,32 +507,35 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$instance->load($id);
 		}
 
-		$version_date = $this->getVersionDate($db, self::VERSION);
+		$emConfig = ComponentHelper::getParams('com_emundus');
+		$ask_reset_password = $emConfig->get('ask_reset_password', 0);
+		if($ask_reset_password == 1)
+		{
+			$version_date = $this->getVersionDate($db, self::VERSION);
 
-		if (
-			$this->isLocal($instance)
-			&&
-			(
+			if (
+				$this->isLocal($instance)
+				&&
 				(
-					empty($instance->lastResetTime) && strtotime($instance->registerDate) < strtotime($version_date)
-				)
-				||
-				(
-					!empty($instance->lastResetTime) && strtotime($instance->lastResetTime) < strtotime($version_date)
+					(
+						empty($instance->lastResetTime) && strtotime($instance->registerDate) < strtotime($version_date)
+					)
+					||
+					(
+						!empty($instance->lastResetTime) && strtotime($instance->lastResetTime) < strtotime($version_date)
+					)
 				)
 			)
-		)
-		{
-			$this->loadLanguage();
+			{
+				$this->loadLanguage();
 
-			$event->addResult(false);
+				$event->addResult(false);
 
-			// Logout user if lastResetTime is empty and redirect to forgot password
-			$this->getApplication()->logout($id);
-			$this->getApplication()->enqueueMessage(Text::_('PLG_USER_EMUNDUS_RESET_PASSWORD'), 'warning');
-			$this->getApplication()->redirect(Route::_('index.php?option=com_users&view=reset') . '?email=' . urlencode($user['username']), 303);
+				// Logout user if lastResetTime is empty and redirect to forgot password
+				$this->getApplication()->logout($id, ['redirect_link' => Route::_('index.php?option=com_users&view=reset') . '?email=' . urlencode($user['email']), 'redirect_message' => Text::_('PLG_USER_EMUNDUS_RESET_PASSWORD'), 'redirect_code' => 303]);
 
-			return;
+				return;
+			}
 		}
 
 		if (empty($redirect))
@@ -853,10 +856,20 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		$userid = (int) $user['id'];
 
-		include_once(JPATH_SITE.'/components/com_emundus/helpers/menu.php');
-		$url = \EmundusHelperMenu::getLogoutRedirectLink();
+		if(empty($options['redirect_link']))
+		{
+			include_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
+			$url = \EmundusHelperMenu::getLogoutRedirectLink();
 
-		$this->getApplication()->redirect(Uri::base(true).$url);
+			$this->getApplication()->redirect(Uri::base(true) . $url);
+		}
+		else {
+			if(!empty($options['redirect_message']))
+			{
+				$this->getApplication()->enqueueMessage($options['redirect_message']);
+			}
+			$this->getApplication()->redirect($options['redirect_link'], $options['redirect_code'] ?? 303);
+		}
 	}
 
 	private function isLdap(array $user): array
