@@ -164,6 +164,11 @@
         </field>
         <field name="forgotten_password_link" type="text" default=""
                label="COM_EMUNDUS_LOGIN_FORGOTTEN_PASSWORD_LINK"/>
+        <field name="ask_reset_password" type="list" default="0"
+               label="COM_EMUNDUS_LOGIN_ASK_RESET_PASSWORD" description="COM_EMUNDUS_LOGIN_ASK_RESET_PASSWORD_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
     </fieldset>
     <fieldset label="COM_EMUNDUS_EVALUATORS" name="evaluators" description="COM_EMUNDUS_EVALUATORS_DESC">
         <field name="multi_eval" type="radio" default="0" label="ALLOW_MULTIPLE_EVALUATIONS"
