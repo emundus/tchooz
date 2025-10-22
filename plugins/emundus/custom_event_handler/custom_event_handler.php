@@ -1487,7 +1487,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					}
 					break;
 				case 'sign_flow':
-					if (!empty($action->attachment_type))
+					if (!empty($action->attachment_type) && !empty($fnum))
 					{
 						try
 						{
@@ -1533,13 +1533,34 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 							$signers_actions = (array) $action->action_signers;
 							foreach ($signers_actions as $signer)
 							{
-								$informations = [
-									'email'     => $signer->signer_email,
-									'firstname' => $signer->signer_firstname,
-									'lastname'  => $signer->signer_lastname,
-								];
+								$sub_signers = [];
 
-								if ($signer->signer_type === 'element')
+								if ($signer->signer_type === 'collaborators')
+								{
+									$query->clear()
+										->select('u.email, eu.firstname, eu.lastname')
+										->from($db->quoteName('#__emundus_files_request','efr'))
+										->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = efr.user_id')
+										->leftJoin($db->quoteName('#__users', 'u') . ' ON u.id = efr.user_id')
+										->where($db->quoteName('efr.fnum') . ' = :fnum')
+										->where($db->quoteName('efr.uploaded') . ' = 1')
+										->bind(':fnum', $fnum, ParameterType::STRING);
+									$db->setQuery($query);
+									$collaborators = $db->loadAssocList();
+
+									foreach ($collaborators as $collaborator)
+									{
+										if (!empty($collaborator['email'] && !empty($collaborator['firstname']) && !empty($collaborator['lastname'])))
+										{
+											$sub_signers[] = [
+												'email'     => $collaborator['email'],
+												'firstname' => $collaborator['firstname'],
+												'lastname'  => $collaborator['lastname'],
+											];
+										}
+									}
+								}
+								elseif ($signer->signer_type === 'element')
 								{
 									foreach ($informations as $key => $information)
 									{
@@ -1557,9 +1578,13 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											$informations[$key] = $h_fabrik->getValueByAlias($information, $fnum)['value'];
 										}
 									}
-								}
 
-								if ($signer->signer_type === 'applicant')
+									if (!empty($informations))
+									{
+										$sub_signers[] = $informations;
+									}
+								}
+								elseif ($signer->signer_type === 'applicant')
 								{
 									$query->clear()
 										->select('u.email, eu.firstname, eu.lastname')
@@ -1570,24 +1595,41 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										->bind(':ccid', $ccid, ParameterType::INTEGER);
 									$db->setQuery($query);
 									$informations = $db->loadAssoc();
+
+									if (!empty($informations))
+									{
+										$sub_signers[] = $informations;
+									}
+								}
+								elseif ($signer->signer_type === 'fixed')
+								{
+									$informations = [
+										'email'     => $signer->signer_email,
+										'firstname' => $signer->signer_firstname,
+										'lastname'  => $signer->signer_lastname,
+									];
+									$sub_signers[] = $informations;
 								}
 
-								if (!empty($informations['email'] && !empty($informations['firstname']) && !empty($informations['lastname'])))
+								foreach ($sub_signers as $informations)
 								{
-									$contactRepository = new ContactRepository($db);
-									$contact           = $contactRepository->getByEmail($informations['email']);
-									if (empty($contact))
+									if (!empty($informations['email'] && !empty($informations['firstname']) && !empty($informations['lastname'])))
 									{
-										$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
-										$contact->setId($contactRepository->flush($contact));
-									}
+										$contactRepository = new ContactRepository($db);
+										$contact           = $contactRepository->getByEmail($informations['email']);
+										if (empty($contact))
+										{
+											$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
+											$contact->setId($contactRepository->flush($contact));
+										}
 
-									if (!empty($contact))
-									{
-										$signers[] = [
-											'signer'               => $contact->getId(),
-											'authentication_level' => $signer->signer_authentication_level ?? 0,
-										];
+										if (!empty($contact))
+										{
+											$signers[] = [
+												'signer'               => $contact->getId(),
+												'authentication_level' => $signer->signer_authentication_level ?? 0,
+											];
+										}
 									}
 								}
 							}

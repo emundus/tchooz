@@ -3527,6 +3527,8 @@ class EmundusModelEvaluation extends JModelList
                                                 $html    = $tag->getValue();
                                                 $section = $phpWord->addSection();
 
+												// TODO: Parse html with DOMDocument and build table with phpWord to avoid issues with complex tables
+
                                                 \PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
                                                 $containers = $section->getElements();
                                                 $clone      = $preprocess->cloneBlock('CONTAINER_' . $tag->getName(), count($containers), true, true);
