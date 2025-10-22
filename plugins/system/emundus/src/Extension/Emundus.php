@@ -15,11 +15,13 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Event\Application\AfterRenderEvent;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
@@ -42,7 +44,8 @@ use Tchooz\Entities\Emails\TagModifierRegistry;
 final class Emundus extends CMSPlugin implements SubscriberInterface
 {
 	use DatabaseAwareTrait;
-	
+	use UserFactoryAwareTrait;
+
 	const LABEL_COLORS = [
 		'lightpurple' => '--em-purple-2',
 		'purple'      => '--em-purple-2',
@@ -161,14 +164,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 
 			//TODO: Improve this line with cache maybe
-			if(!class_exists('EmundusModelForm'))
+			if (!class_exists('EmundusModelForm'))
 			{
 				require_once JPATH_ROOT . '/components/com_emundus/models/form.php';
 			}
-			$m_form = new EmundusModelForm();
+			$m_form           = new EmundusModelForm();
 			$profile_elements = $m_form->getUserProfileElements(true);
-			
-			if(!empty($profile_elements))
+
+			if (!empty($profile_elements))
 			{
 				$query = $this->getDatabase()->getQuery(true);
 				$query->select($profile_elements)
@@ -227,7 +230,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		{
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
-			
+
 			// Check if __miniorange_saml_config table exists
 			$tables = $db->getTableList();
 			$tableExists = in_array($db->getPrefix() . 'miniorange_saml_config', $tables);

@@ -302,6 +302,7 @@ return [
 	'Joomla\\Plugin\\Task\\UpdateNotification\\' => [JPATH_PLUGINS . '/task/updatenotification/src'],
 	'Joomla\\Plugin\\Task\\Yousign\\' => [JPATH_PLUGINS . '/task/yousign/src'],
 	'Joomla\\Plugin\\User\\ContactCreator\\' => [JPATH_PLUGINS . '/user/contactcreator/src'],
+	'Joomla\\Plugin\\User\\Emundus\\' => [JPATH_PLUGINS . '/user/emundus/src'],
 	'Joomla\\Plugin\\User\\Joomla\\' => [JPATH_PLUGINS . '/user/joomla/src'],
 	'Joomla\\Plugin\\User\\Profile\\' => [JPATH_PLUGINS . '/user/profile/src'],
 	'Joomla\\Plugin\\User\\Terms\\' => [JPATH_PLUGINS . '/user/terms/src'],
