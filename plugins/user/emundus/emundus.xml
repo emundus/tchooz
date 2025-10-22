@@ -17,6 +17,8 @@
 	<languages>
 		<language tag="fr-FR">language/fr-FR/plg_user_emundus.ini</language>
 		<language tag="fr-FR">language/fr-FR/plg_user_emundus.sys.ini</language>
+		<language tag="en-GB">language/en-GB/plg_user_emundus.ini</language>
+		<language tag="en-GB">language/en-GB/plg_user_emundus.sys.ini</language>
 	</languages>
 	<config>
 		<fields name="params">
