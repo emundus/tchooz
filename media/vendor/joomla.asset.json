@@ -1,10 +1,20 @@
 {
   "$schema": "https://developer.joomla.org/schemas/json-schema/web_assets.json",
   "name": "joomla",
-  "version": "5.3.4",
+  "version": "5.4.0",
   "description": "Joomla CMS",
   "license": "GPL-2.0-or-later",
   "assets": [
+    {
+      "name": "short-and-sweet",
+      "type": "script",
+      "uri": "vendor/short-and-sweet/short-and-sweet.min.js",
+      "attributes": {
+        "type": "module"
+      },
+      "package": "short-and-sweet",
+      "version": "1.0.4"
+    },
     {
       "name": "diff",
       "type": "script",
@@ -50,16 +60,6 @@
       "version": "3.0.17"
     },
     {
-      "name": "short-and-sweet",
-      "type": "script",
-      "uri": "vendor/short-and-sweet/short-and-sweet.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "package": "short-and-sweet",
-      "version": "1.0.4"
-    },
-    {
       "name": "awesomplete",
       "type": "style",
       "uri": "vendor/awesomplete/awesomplete.css",
@@ -85,33 +85,6 @@
       ],
       "package": "awesomplete",
       "version": "1.1.7"
-    },
-    {
-      "name": "choicesjs",
-      "type": "style",
-      "uri": "vendor/choicesjs/choices.min.css",
-      "package": "choices.js",
-      "version": "9.1.0"
-    },
-    {
-      "name": "choicesjs",
-      "type": "script",
-      "uri": "vendor/choicesjs/choices.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "package": "choices.js",
-      "version": "9.1.0"
-    },
-    {
-      "name": "choicesjs",
-      "type": "preset",
-      "dependencies": [
-        "choicesjs#style",
-        "choicesjs#script"
-      ],
-      "package": "choices.js",
-      "version": "9.1.0"
     },
     {
       "name": "cropperjs",
@@ -150,6 +123,33 @@
       "version": "1.6.2"
     },
     {
+      "name": "choicesjs",
+      "type": "style",
+      "uri": "vendor/choicesjs/choices.min.css",
+      "package": "choices.js",
+      "version": "9.1.0"
+    },
+    {
+      "name": "choicesjs",
+      "type": "script",
+      "uri": "vendor/choicesjs/choices.min.js",
+      "attributes": {
+        "defer": true
+      },
+      "package": "choices.js",
+      "version": "9.1.0"
+    },
+    {
+      "name": "choicesjs",
+      "type": "preset",
+      "dependencies": [
+        "choicesjs#style",
+        "choicesjs#script"
+      ],
+      "package": "choices.js",
+      "version": "9.1.0"
+    },
+    {
       "name": "dragula",
       "type": "style",
       "uri": "vendor/dragula/dragula.min.css",
@@ -184,6 +184,16 @@
       "version": "5.2.1"
     },
     {
+      "name": "hotkeysjs",
+      "type": "script",
+      "uri": "vendor/hotkeysjs/hotkeys.min.js",
+      "attributes": {
+        "defer": true
+      },
+      "package": "hotkeys-js",
+      "version": "3.13.15"
+    },
+    {
       "name": "jquery-migrate",
       "type": "script",
       "uri": "vendor/jquery-migrate/jquery-migrate.min.js",
@@ -192,6 +202,13 @@
       ],
       "package": "jquery-migrate",
       "version": "3.5.2"
+    },
+    {
+      "name": "jquery",
+      "type": "script",
+      "uri": "vendor/jquery/jquery.min.js",
+      "package": "jquery",
+      "version": "3.7.1"
     },
     {
       "name": "webcomponent.joomla-alert",
@@ -262,6 +279,33 @@
       "version": "0.4.1"
     },
     {
+      "name": "chosen",
+      "type": "style",
+      "uri": "vendor/chosen/chosen.css",
+      "package": "chosen-js",
+      "version": "1.8.7"
+    },
+    {
+      "name": "chosen",
+      "type": "script",
+      "uri": "vendor/chosen/chosen.jquery.js",
+      "dependencies": [
+        "jquery"
+      ],
+      "package": "chosen-js",
+      "version": "1.8.7"
+    },
+    {
+      "name": "chosen",
+      "type": "preset",
+      "dependencies": [
+        "chosen#style",
+        "chosen#script"
+      ],
+      "package": "chosen-js",
+      "version": "1.8.7"
+    },
+    {
       "name": "minicolors",
       "type": "style",
       "uri": "vendor/minicolors/jquery.minicolors.css",
@@ -312,56 +356,12 @@
       "version": "4.1.7"
     },
     {
-      "name": "hotkeysjs",
-      "type": "script",
-      "uri": "vendor/hotkeysjs/hotkeys.min.js",
-      "attributes": {
-        "defer": true
-      },
-      "package": "hotkeys-js",
-      "version": "3.13.9"
-    },
-    {
-      "name": "chosen",
-      "type": "style",
-      "uri": "vendor/chosen/chosen.css",
-      "package": "chosen-js",
-      "version": "1.8.7"
-    },
-    {
-      "name": "chosen",
-      "type": "script",
-      "uri": "vendor/chosen/chosen.jquery.js",
-      "dependencies": [
-        "jquery"
-      ],
-      "package": "chosen-js",
-      "version": "1.8.7"
-    },
-    {
-      "name": "chosen",
-      "type": "preset",
-      "dependencies": [
-        "chosen#style",
-        "chosen#script"
-      ],
-      "package": "chosen-js",
-      "version": "1.8.7"
-    },
-    {
-      "name": "jquery",
-      "type": "script",
-      "uri": "vendor/jquery/jquery.min.js",
-      "package": "jquery",
-      "version": "3.7.1"
-    },
-    {
       "name": "sa11y",
       "type": "script",
       "uri": "vendor/sa11y/sa11y.esm.min.js",
       "importmap": true,
       "package": "sa11y",
-      "version": "4.1.1"
+      "version": "4.2.3"
     },
     {
       "name": "sa11y-lang",
@@ -370,21 +370,21 @@
       "importmap": true,
       "description": "A placeholder asset which is later initialised by plugin, depending on active language.",
       "package": "sa11y",
-      "version": "4.1.1"
+      "version": "4.2.3"
     },
     {
       "name": "sa11y",
       "type": "style",
       "uri": "vendor/sa11y/sa11y.min.css",
       "package": "sa11y",
-      "version": "4.1.1"
+      "version": "4.2.3"
     },
     {
       "name": "qrcode",
       "type": "script",
       "uri": "vendor/qrcode/qrcode.js",
       "package": "qrcode-generator",
-      "version": "1.4.4"
+      "version": "1.5.2"
     },
     {
       "name": "qrcode_SJIS",
@@ -394,7 +394,7 @@
         "qrcode"
       ],
       "package": "qrcode-generator",
-      "version": "1.4.4"
+      "version": "1.5.2"
     },
     {
       "name": "qrcode_UTF8",
@@ -404,7 +404,7 @@
         "qrcode"
       ],
       "package": "qrcode-generator",
-      "version": "1.4.4"
+      "version": "1.5.2"
     },
     {
       "name": "qrcode",
@@ -415,7 +415,7 @@
         "qrcode_UTF8#script"
       ],
       "package": "qrcode-generator",
-      "version": "1.4.4"
+      "version": "1.5.2"
     },
     {
       "name": "fontawesome",
@@ -429,7 +429,7 @@
       "type": "style",
       "uri": "vendor/bootstrap/bootstrap.min.css",
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.css.grid",
@@ -439,7 +439,7 @@
         "bootstrap.css"
       ],
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.alert",
@@ -452,7 +452,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.button",
@@ -465,7 +465,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.carousel",
@@ -478,7 +478,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.collapse",
@@ -491,7 +491,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.dropdown",
@@ -504,7 +504,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.modal",
@@ -517,7 +517,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.offcanvas",
@@ -530,7 +530,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.popover",
@@ -543,7 +543,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.scrollspy",
@@ -556,7 +556,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.tab",
@@ -569,7 +569,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     },
     {
       "name": "bootstrap.toast",
@@ -582,7 +582,7 @@
         "type": "module"
       },
       "package": "bootstrap",
-      "version": "5.3.3"
+      "version": "5.3.8"
     }
   ]
 }

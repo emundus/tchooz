@@ -139,7 +139,7 @@ class RuntimeStorage implements StorageInterface
      */
     private function generateId(): string
     {
-        return hash('sha256', uniqid(mt_rand()));
+        return hash('sha256', uniqid((string)mt_rand()));
     }
 
     /**
