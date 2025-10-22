@@ -232,6 +232,7 @@ class EmundusModelApplication extends ListModel
 
 			$eMConfig           = ComponentHelper::getParams('com_emundus');
 			$expert_document_id = $eMConfig->get('expert_document_id', '36');
+			$export_pdf         = $eMConfig->get('export_application_pdf', 0);
 
 			$query = $this->_db->getQuery(true);
 
@@ -272,8 +273,11 @@ class EmundusModelApplication extends ListModel
 			$query->select($columns)
 				->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->_db->quoteName('esc.id') . ' = ' . $this->_db->quoteName('eu.campaign_id'))
 				->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->_db->quoteName('ecc.fnum') . ' = ' . $this->_db->quoteName('eu.fnum'))
-				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum))
-				->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
+				->where($this->_db->quoteName('eu.fnum') . ' LIKE ' . $this->_db->quote($fnum));
+			if ($export_pdf != 1)
+			{
+				$query->andWhere('esa.lbl NOT LIKE ' . $this->_db->quote('_application_form'));
+			}
 
 			if (EmundusHelperAccess::isExpert($user_id)) {
 				$query->andWhere($this->_db->quoteName('esa.id') . ' != ' . $expert_document_id);
@@ -2910,11 +2914,12 @@ class EmundusModelApplication extends ListModel
 					throw $e;
 				}
 
-				$forms .= '<h2 ' . $breaker . '>';
+				$page_title = '<h2 ' . $breaker . '>';
 				if (count($groupes) > 0) {
-					$forms .= '<b><h2 class="pdf-page-title">' . preg_replace('/\s+/', ' ', Text::_(trim($itemt->label))) . '</h2></b>';
+					$page_title .= '<b><h2 class="pdf-page-title">' . preg_replace('/\s+/', ' ', Text::_(trim($itemt->label))) . '</h2></b>';
 				}
-				$forms .= '</h2>';
+				$page_title .= '</h2>';
+				$page_title_inserted = false;
 
 				// HANDLE CASE OF EVALUATION STEP, DISPLAY THE EVALUATOR NAME
 				if (!empty($itemt->step_id)) {
@@ -2933,6 +2938,12 @@ class EmundusModelApplication extends ListModel
 					$this->_db->setQuery($evaluation_step_query);
 					$evaluator_name = $this->_db->loadResult();
 
+					if(!$page_title_inserted)
+					{
+						$forms               .= $page_title;
+						$page_title_inserted = true;
+					}
+
 					$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
 				}
 
@@ -2949,6 +2960,12 @@ class EmundusModelApplication extends ListModel
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
 						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
 						{
+							if(!$page_title_inserted)
+							{
+								$forms               .= $page_title;
+								$page_title_inserted = true;
+							}
+
 							$forms .= '<h3 class="group">' . Text::_($itemg->label) . '</h3>';
 							$forms .= '<table style="margin: 0 18px;text-align: center;width: 95%;border: solid 1px black;">
 										<thead><tr><th style="font-size: 12px; text-align: center;font-weight: 400;">' . Text::_('COM_EMUNDUS_CANNOT_SEE_GROUP') . '</th></tr></thead>
@@ -2993,6 +3010,12 @@ class EmundusModelApplication extends ListModel
 						$group_label = Text::_($itemg->label);
 
 						if ($itemg->group_id == 14) {
+							if(!$page_title_inserted)
+							{
+								$forms               .= $page_title;
+								$page_title_inserted = true;
+							}
+
 							$forms .= '<table>';
 							foreach ($elements as $element) {
 								if (!empty($element->label) && $element->label != ' ' && !empty($element->content)) {
@@ -3028,6 +3051,12 @@ class EmundusModelApplication extends ListModel
 							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
 							if ($check_repeat_groups) {
+								if(!$page_title_inserted)
+								{
+									$forms               .= $page_title;
+									$page_title_inserted = true;
+								}
+
 								$forms .= '<h3 class="group">' . $group_label . '</h3>';
 								$forms .= '<table class="pdf-forms"><thead><tr class="background"> ';
 								foreach ($elements as &$element) {
@@ -3269,6 +3298,12 @@ class EmundusModelApplication extends ListModel
 							$check_repeat_groups = $this->checkEmptyRepeatGroups($elements, $table, $itemt->db_table_name, $fnum);
 
 							if ($check_repeat_groups) {
+								if(!$page_title_inserted)
+								{
+									$forms               .= $page_title;
+									$page_title_inserted = true;
+								}
+
 								$forms .= '<h3 class="group">' . $group_label . '</h3>';
 
 								if ($itemg->group_id == 174) {
@@ -3531,6 +3566,12 @@ class EmundusModelApplication extends ListModel
 							$check_not_empty_group = $this->checkEmptyGroups($elements, $itemt->db_table_name, $fnum);
 
 							if ($check_not_empty_group) {
+								if(!$page_title_inserted)
+								{
+									$forms               .= $page_title;
+									$page_title_inserted = true;
+								}
+
 								$forms .= '<h3 class="group">' . $group_label . '</h3>';
 
 								$forms .= '<table class="pdf-forms">';

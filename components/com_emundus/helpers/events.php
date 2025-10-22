@@ -1672,8 +1672,9 @@ class EmundusHelperEvents
 		$can_edit_after_deadline = $eMConfig->get('can_edit_after_deadline', '0');
 		$application_form_order  = $eMConfig->get('application_form_order', null);
 		$attachment_order        = $eMConfig->get('attachment_order', null);
-		$application_form_name   = $eMConfig->get('application_form_name', "application_form_pdf");
+		$application_form_name   = $eMConfig->get('application_form_name', "application_form");
 		$export_pdf              = $eMConfig->get('export_application_pdf', 0);
+		$overwrite_export_pdf    = $eMConfig->get('overwrite_old_export', 0);
 		$export_path             = $eMConfig->get('export_path', null);
 		$id_applicants           = explode(',', $eMConfig->get('id_applicants', '0'));
 		$new_status              = $eMConfig->get('default_send_status', 1);
@@ -1814,6 +1815,9 @@ class EmundusHelperEvents
 		// If pdf exporting is activated
 		if ($export_pdf == 1)
 		{
+			$lang = $app->getLanguage();
+			$lang->load('com_emundus', JPATH_SITE.'/components/com_emundus');
+
 			$fnum     = $student->fnum;
 			$fnumInfo = $mFiles->getFnumInfos($fnum);
 
@@ -1829,13 +1833,29 @@ class EmundusHelperEvents
 			$application_form_name = preg_replace('/\s/', '', $application_form_name);
 			$application_form_name = strtolower($application_form_name);
 
-			// If a file exists with that name, delete it
-			if (file_exists(JPATH_BASE . DS . 'tmp' . DS . $application_form_name))
+			// Check if extension is present, if yes remove it
+			if (str_ends_with($application_form_name, '.pdf'))
 			{
-				unlink(JPATH_BASE . DS . 'tmp' . DS . $application_form_name);
+				$application_form_name = substr($application_form_name, 0, -4);
 			}
 
-			$result = $mFiles->generatePDF([$fnum], $application_form_name, 1, 0, 1, 1);
+			$file_name = $application_form_name . '.pdf';
+			$target_file_name = $application_form_name . '.pdf';
+			if($overwrite_export_pdf != 1) {
+				// Add timestamp to filename to avoid overwriting
+				$target_file_name = $application_form_name . '_' . date('Ymd_His') . '.pdf';
+			}
+
+			$tmp_link = JPATH_BASE . '/tmp/' . $file_name;
+			$applicant_link = JPATH_BASE . '/images/emundus/files/' . $student->id . '/' . $target_file_name;
+
+			// If a file exists with that name, delete it
+			if (file_exists($tmp_link))
+			{
+				unlink($tmp_link);
+			}
+
+			$result = $mFiles->generatePDF([$fnum], $file_name, 1, 0, 1, 1);
 
 			// If export path is defined
 			if (!empty($export_path))
@@ -1860,26 +1880,50 @@ class EmundusHelperEvents
 						chmod(JPATH_BASE . DS . $d, 0755);
 					}
 				}
-				if (file_exists(JPATH_BASE . DS . $export_path . $application_form_name . ".pdf"))
+				if (file_exists(JPATH_BASE . DS . $export_path . $target_file_name))
 				{
-					unlink(JPATH_BASE . DS . $export_path . $application_form_name . ".pdf");
+					unlink(JPATH_BASE . DS . $export_path . $target_file_name);
 				}
-				copy(JPATH_BASE . DS . 'tmp' . DS . $application_form_name . ".pdf", JPATH_BASE . DS . $export_path . $application_form_name . ".pdf");
+				copy($tmp_link, JPATH_BASE . DS . $export_path . $target_file_name);
 			}
-			if (file_exists(JPATH_BASE . DS . "images" . DS . "emundus" . DS . "files" . DS . $student->id . DS . $fnum . "_application_form_pdf.pdf"))
+
+			if (file_exists($applicant_link))
 			{
-				unlink(JPATH_BASE . DS . "images" . DS . "emundus" . DS . "files" . DS . $student->id . DS . $fnum . "_application_form_pdf.pdf");
+				unlink($applicant_link);
 			}
-			copy(JPATH_BASE . DS . 'tmp' . DS . $application_form_name . ".pdf", JPATH_BASE . DS . "images" . DS . "emundus" . DS . "files" . DS . $student->id . DS . $fnum . "_application_form_pdf.pdf");
+			copy($tmp_link, $applicant_link);
 
-			// set a line in jos_emundus_uploads to say that the file has been generated
-			$query = $db->getQuery(true);
-			$query->insert($db->quoteName('#__emundus_uploads'))
-				->columns($db->quoteName('fnum') . ', ' . $db->quoteName('attachment_id') . ', ' . $db->quoteName('user_id') . ', ' . $db->quoteName('can_be_deleted') . ', ' . $db->quoteName('filename'))
-				->values($db->quote($fnum) . ', ' . $db->quote(26) . ', ' . $db->quote($student->id) . ', ' . $db->quote(1) . ', ' . $db->quote($fnum . "_application_form_pdf.pdf"));
+			$upload = (object) [
+				'fnum'          => $fnum,
+				'attachment_id' => 26,
+				'user_id'       => $student->id,
+				'can_be_deleted'=> 0,
+				'filename'      => $target_file_name
+			];
+			if($overwrite_export_pdf == 1) {
+				// Update upload if exists
+				$query = $db->getQuery(true);
+				$query->select('id')
+					->from($db->quoteName('#__emundus_uploads'))
+					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
+					->where($db->quoteName('attachment_id') . ' = 26')
+					->where($db->quoteName('user_id') . ' = ' . (int) $student->id);
+				$db->setQuery($query);
+				$upload_id = $db->loadResult();
 
-			$db->setQuery($query);
-			$db->execute();
+				if(!empty($upload_id))
+				{
+					$upload->id = $upload_id;
+					$upload->modified = $now;
+					$db->updateObject('#__emundus_uploads', $upload, 'id');
+				}
+				else {
+					$db->insertObject('#__emundus_uploads', $upload);
+				}
+			}
+			else {
+				$db->insertObject('#__emundus_uploads', $upload);
+			}
 		}
 
 		$student->candidature_posted = 1;
