@@ -57,7 +57,7 @@ class YousignSynchronizer extends Api
 		$payload = [
 			'name'          => trim($name),
 			'delivery_mode' => $delivery_mode,
-			'ordered_signers' => true
+			'ordered_signers' => false
 		];
 		
 		if(!empty($expiration_date))
