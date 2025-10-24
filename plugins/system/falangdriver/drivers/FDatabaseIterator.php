@@ -167,11 +167,11 @@ class FDatabaseIterator extends DatabaseIterator implements \Countable, \Iterato
     public function current() {
         $current = $this->result[$this->key];
         //get translated content for non default language
-        if ($this->current_language_tag != $this->default_language_tag){
+        //if ($this->current_language_tag != $this->default_language_tag){
             //rows supposed to be an array
             $rows = array(0 => $current);
             \Falang::translateList($rows, $this->current_language_tag, $this->reftable);
-        }
+       // }
         $this->key = $this->key + 1;
         return $current;
     }
