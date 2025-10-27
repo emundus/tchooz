@@ -3,6 +3,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\Database\ParameterType;
+use Tchooz\Traits\TraitDispatcher;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -26,6 +27,8 @@ class Budget
  */
 class PlgFabrik_FormBtobForm extends plgFabrik_Form
 {
+	use TraitDispatcher;
+
 	public function onBeforeLoad()
 	{
 		$formModel = $this->getModel();
@@ -399,7 +402,10 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 				$attachment_id = $this->getParams()->get('btob_attachment_to_generate', 43);
 				$m_evaluation->generateLetters($fnum, [$attachment_id], 1, 2, 0);
 
-				// TODO: Add event onAfterCreateBtoBFile
+				$this->dispatchJoomlaEvent('onAfterCreateBtoBFile', [
+					'fnum' => $fnum,
+					'campaign_id'  => $cid
+				]);
 			}
 		}
 
