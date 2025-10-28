@@ -390,7 +390,7 @@ export default {
 			>
 				<h2 class="tw-mb-4">{{ translate('COM_EMUNDUS_TRIGGER_EDIT_MODELS_SELECTION') }}</h2>
 
-				<div class="tw-flex tw-flex-col">
+				<div class="tw-mb-4 tw-flex tw-flex-col">
 					<label class="tw-flex tw-items-end tw-font-semibold" for="model_id">{{
 						translate('COM_EMUNDUS_TRIGGER_EDIT_MODELS_EMAIL_SELECTION')
 					}}</label>
