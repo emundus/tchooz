@@ -29,7 +29,12 @@ class Release2_10_6Installer extends ReleaseInstaller
 		{
 			$query = $this->db->getQuery(true);
 
-			$response         = EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterCreateBtoBFile', 'description' => '', 'category' => 'BToB', 'published' => 1]]);
+			$response         = EmundusHelperUpdate::addCustomEvents(
+				[
+					['label' => 'onAfterCreateBtoBFile', 'description' => '', 'category' => 'BToB', 'published' => 1],
+					['label' => 'onBeforeStoreAmmonTask', 'description' => '', 'category' => 'Task', 'published' => 0]
+				]
+			);
 			$tasks[]          = $response['status'];
 
 			$query->clear()
