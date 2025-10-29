@@ -28,7 +28,7 @@ class Release2_10_2Installer extends ReleaseInstaller
 
 		try
 		{
-			$query = $this->db->getQuery(true);
+			$query = $this->db->createQuery();
 
 			// Create a translation tag for each default column of panel elements
 			$query->clear()

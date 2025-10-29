@@ -714,7 +714,7 @@ class FileMaker
                                     $temp_records_mapping[] = array("" . $zweb_form_name . "::" . $data->name . "" => $reformatted_date);
                                     break;
                                 default:
-                                    $temp_records_mapping[] = array("" . $data->name . "" => $value);
+                                    $temp_records_mapping[] = array("" . $data->name . "" => strip_tags($value));
                                     break;
                             }
 

@@ -14,6 +14,9 @@ $onBeforeLoadChecklist  = new GenericEvent('onCallEventHandler',['onBeforeLoadCh
 $dispatcher->dispatch('onCallEventHandler', $onBeforeLoadChecklist);
 
 $app     = Factory::getApplication();
+$document = $app->getDocument();
+$wa       = $document->getWebAssetManager();
+
 $sesdion = $app->getSession();
 $_db     = Factory::getContainer()->get('DatabaseDriver');
 $user    = $app->getIdentity();
