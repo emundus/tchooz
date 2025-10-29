@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     scripts
  * @subpackage
@@ -30,7 +31,28 @@ class Release2_10_6Installer extends ReleaseInstaller
 
 			$response         = EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterCreateBtoBFile', 'description' => '', 'category' => 'BToB', 'published' => 1]]);
 			$tasks[]          = $response['status'];
-			$result['status'] = !in_array(false, $tasks);
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__fabrik_lists'))
+				->where($this->db->quoteName('db_table_name') . ' = ' . $this->db->quote('jos_emundus_setup_emails_trigger'));
+			$this->db->setQuery($query);
+			$triggers_fabrik_lists = $this->db->loadColumn();
+
+			foreach ($triggers_fabrik_lists as $triggersFabrikList)
+			{
+				// Unpublish admin menu with this list
+				$query->clear()
+					->update($this->db->quoteName('#__menu'))
+					->set($this->db->quoteName('published') . ' = 0')
+					->where($this->db->quoteName('menutype') . ' = ' . $this->db->quote('adminmenu'))
+					->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_fabrik&view=list&listid=' . (int) $triggersFabrikList));
+				$this->db->setQuery($query);
+				$tasks[] = (bool) $this->db->execute();
+			}
+
+
+			$result['status']  = !in_array(false, $tasks);
 		}
 		catch (\Exception $e)
 		{
