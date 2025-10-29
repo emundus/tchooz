@@ -2,6 +2,7 @@
 
 namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Installer\Installer;
 use Joomla\Console\Command\AbstractCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -12,10 +13,12 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Tchooz\Traits\TraitVersion;
 
 class TchoozUpdateCommand extends AbstractCommand
 {
 	use DatabaseAwareTrait;
+	use TraitVersion;
 
 	/**
 	 * The default command name
