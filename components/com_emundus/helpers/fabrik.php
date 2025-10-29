@@ -2846,7 +2846,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$transformer = TransformerFactory::make($plugin->value, (array)$params, (array)$groupParams);
 		foreach ($value[$fabrik_element['id']] as $fnumKey => $val)
 		{
-			$value[$fabrik_element['id']][$fnumKey]['raw'] = $val['val'];
+			$value[$fabrik_element['id']][$fnumKey]['raw'] = $val['raw'] ?? $val['val'];
 			$value[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
 
 			if ($return === ValueFormat::FORMATTED || $return === ValueFormat::BOTH)
@@ -3087,9 +3087,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 		}
 
+		$userColumn = null;
 		if (!empty($user_id))
 		{
-			$userColumn = null;
 			if ($this->tableHasColumn($tableName, 'user'))
 			{
 				$userColumn = 'user';
@@ -3101,7 +3101,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 			if ($userColumn !== null)
 			{
-				$userCondition = $db->quoteName('t_origin.' . $userColumn) . ' = ' . $db->quote($user_id);
+				$table_key = $isDatabaseJoin ? 't_elt' : 't_origin';
+
+				$select .= ', ' . $db->quoteName($table_key . '.' . $userColumn);
+
+				$userCondition = $db->quoteName($table_key . '.' . $userColumn) . ' = ' . $db->quote($user_id);
 
 				if (!empty($where))
 				{
@@ -3110,6 +3114,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				else
 				{
 					$where = $userCondition;
+				}
+
+				if(empty($group))
+				{
+					$group = $db->quoteName($table_key . '.' . $userColumn);
 				}
 			}
 		}
@@ -3139,8 +3148,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		{
 			$query->leftJoin($join);
 		}
-		$query->where($where)
-			->group($group);
+		$query->where($where);
+		if(!empty($group))
+		{
+			$query->group($group);
+		}
 
 		try
 		{
@@ -3149,6 +3161,10 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			if (!$isFnumsNull)
 			{
 				$res = $db->loadAssocList('fnum');
+			}
+			elseif (!empty($user_id) && !empty($userColumn))
+			{
+				$res = $db->loadAssocList($userColumn);
 			}
 			else
 			{

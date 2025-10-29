@@ -5,7 +5,7 @@ const client = new FetchClient('email');
 export default {
 	async getEmails() {
 		try {
-			return await client.get('getallemail');
+			return await client.get('getallemail&order_by=label&sort=asc');
 		} catch (e) {
 			return {
 				status: false,

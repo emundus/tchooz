@@ -3470,7 +3470,7 @@ class EmundusHelperUpdate
 	 *
 	 * @since version 1.35.0
 	 */
-	public static function createTable($table, $columns = [], $foreigns_key = [], $comment = '', $unique_keys = [])
+	public static function createTable($table, $columns = [], $foreigns_key = [], $comment = '', $unique_keys = [], $primary_key_options = []): array
 	{
 		$result = ['status' => false, 'message' => ''];
 
@@ -3489,7 +3489,26 @@ class EmundusHelperUpdate
 			if (empty($table_existing))
 			{
 				$query = 'CREATE TABLE ' . $table . '(';
-				$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
+				if(empty($primary_key_options))
+				{
+					$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
+				}
+				else {
+					$query_primary = ',' . $db->quoteName($primary_key_options['name']) . ' ' . $primary_key_options['type'];
+					if (!empty($primary_key_options['length']))
+					{
+						$query_primary .= '(' . $primary_key_options['length'] . ')';
+					}
+					$query_primary .= ' NOT NULL';
+					if (!empty($primary_key_options['auto_increment']) && $primary_key_options['auto_increment'] === true)
+					{
+						$query_primary .= ' AUTO_INCREMENT';
+					}
+					$query_primary .= ', PRIMARY KEY (' . $db->quoteName($primary_key_options['name']) . ')';
+					$query .= ltrim($query_primary, ',');
+				}
+
+
 				if (!empty($columns))
 				{
 					foreach ($columns as $column)
@@ -4279,309 +4298,6 @@ class EmundusHelperUpdate
 		}
 	}
 
-	public static function checkHealth()
-	{
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
-
-		// Remove appli emundus yaml assets
-		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml';
-		unlink($file);
-		//
-
-		// Remove ajax_validation on registration form
-		$query->clear()
-			->select('id,params')
-			->from($db->quoteName('#__fabrik_forms'))
-			->where($db->quoteName('id') . ' = 307');
-		$db->setQuery($query);
-		$registration_form = $db->loadObject();
-
-		if ($registration_form)
-		{
-			$params                     = json_decode($registration_form->params, true);
-			$params['ajax_validations'] = 0;
-
-			$query->clear()
-				->update($db->quoteName('#__fabrik_forms'))
-				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
-		// Check if profile menu translations is good
-		$query->clear()
-			->select('form_id')
-			->from($db->quoteName('#__emundus_setup_formlist'))
-			->where($db->quoteName('type') . ' LIKE ' . $db->quote('profile'));
-		$db->setQuery($query);
-		$form_id = $db->loadResult();
-
-		if (!empty($form_id))
-		{
-			$query->clear()
-				->select('id,params')
-				->from($db->quoteName('#__menu'))
-				->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id));
-			$db->setQuery($query);
-			$menu = $db->loadObject();
-
-			if (!empty($menu->id))
-			{
-				$query->clear()
-					->update($db->quoteName('#__falang_content'))
-					->set($db->quoteName('value') . ' = ' . $db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
-					->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-					->where($db->quoteName('reference_field') . ' = ' . $db->quote('link'))
-					->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu->id));
-				$db->setQuery($query);
-				$db->execute();
-
-				$query->clear()
-					->update($db->quoteName('#__falang_content'))
-					->set($db->quoteName('value') . ' = ' . $db->quote($menu->params))
-					->where($db->quoteName('reference_table') . ' = ' . $db->quote('menu'))
-					->where($db->quoteName('reference_field') . ' = ' . $db->quote('params'))
-					->where($db->quoteName('reference_id') . ' = ' . $db->quote($menu->id));
-				$db->setQuery($query);
-				$db->execute();
-			}
-		}
-		//
-
-		// Check if emundus event handler is enabled
-		$query->clear()
-			->select('extension_id')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' LIKE ' . $db->quote('custom_event_handler'));
-		$db->setQuery($query);
-		$custom_event_handler = $db->loadResult();
-
-		if (empty($custom_event_handler))
-		{
-			EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', '{"name":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE","type":"plugin","creationDate":"18 August 2021","author":"James Dean","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"james@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"1.22.1","description":"PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE_DESC","group":"","filename":"custom_event_handler"}', 'plugin', 1, 'emundus');
-		}
-		else
-		{
-			$query->clear()
-				->update($db->quoteName('#__extensions'))
-				->set($db->quoteName('enabled') . ' = 1')
-				->where($db->quoteName('extension_id') . ' = ' . $db->quote($custom_event_handler));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
-		// Check if emundus send zip file to user is enabled and delete_file email is here
-		$query->clear()
-			->select('extension_id')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' LIKE ' . $db->quote('send_file_archive'));
-		$db->setQuery($query);
-		$send_file_archive = $db->loadResult();
-
-		if (empty($send_file_archive))
-		{
-			EmundusHelperUpdate::installExtension('Emundus - Send ZIP file to user.', 'send_file_archive', '{"name":"Emundus - Send ZIP file to user.","type":"plugin","creationDate":"19 July 2019","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.","group":"","filename":"send_file_archive"}', 'plugin', 1, 'emundus', '{"delete_email":"delete_file"}');
-		}
-		else
-		{
-			$query->clear()
-				->update($db->quoteName('#__extensions'))
-				->set($db->quoteName('enabled') . ' = 1')
-				->where($db->quoteName('extension_id') . ' = ' . $db->quote($send_file_archive));
-			$db->setQuery($query);
-			$db->execute();
-		}
-
-		$query->clear()
-			->select('id')
-			->from($db->quoteName('#__emundus_setup_emails'))
-			->where($db->quoteName('lbl') . ' LIKE ' . $db->quote('delete_file'));
-		$db->setQuery($query);
-		$delete_file_email = $db->loadResult();
-
-		if (empty($delete_file_email))
-		{
-			$columns = [
-				$db->quoteName('lbl'),
-				$db->quoteName('subject'),
-				$db->quoteName('message'),
-				$db->quoteName('type'),
-				$db->quoteName('category'),
-			];
-			$values  = [
-				$db->quote('delete_file'),
-				$db->quote('Application file deleted / Dossier supprimé'),
-				$db->quote('<p>Dear [NAME],</p>
-<p>Your application file <strong><em>[FNUM]</em></strong> has been deleted.</p>
-<p>A zip file containing the data deleted is attached to this email.</p>
-<hr />
-<p>Bonjour [NAME],</p>
-<p>Votre dossier de candidature <strong><em>[FNUM]</em></strong> vient d\'&ecirc;tre supprim&eacute;.</p>
-<p>Ci-joint, une archive des informations qui ont &eacute;t&eacute; supprim&eacute;es.</p>'),
-				$db->quote(1),
-				$db->quote('Système'),
-			];
-			$query->clear()
-				->insert($db->quoteName('#__emundus_setup_emails'))
-				->columns($columns)
-				->values(implode(',', $values));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
-		// Check if dropfiles plugin is enabled
-		$query->clear()
-			->select('extension_id')
-			->from($db->quoteName('#__extensions'))
-			->where($db->quoteName('element') . ' LIKE ' . $db->quote('setup_category'))
-			->where($db->quoteName('folder') . ' LIKE ' . $db->quote('emundus'));
-		$db->setQuery($query);
-		$emundus_dropfiles_plugin = $db->loadResult();
-
-		if (empty($emundus_dropfiles_plugin))
-		{
-			EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
-		}
-		else
-		{
-			$query->clear()
-				->update($db->quoteName('#__extensions'))
-				->set($db->quoteName('enabled') . ' = 1')
-				->where($db->quoteName('extension_id') . ' = ' . $db->quote($emundus_dropfiles_plugin));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
-		// Manage SCP configuration
-		$query->clear()
-			->select('storage_value')
-			->from($db->quoteName('#__securitycheckpro_storage'))
-			->where($db->quoteName('storage_key') . ' LIKE ' . $db->quote('pro_plugin'));
-		$db->setQuery($query);
-		$scp_plugin = $db->loadResult();
-
-		if (!empty($scp_plugin))
-		{
-			$storage_value = json_decode($scp_plugin, true);
-
-			// Blacklist
-			$storage_value['dynamic_blacklist']         = 1;
-			$storage_value['dynamic_blacklist_counter'] = 5;
-			$storage_value['dynamic_blacklist_time']    = 300;
-			$storage_value['blacklist_email']           = 0;
-
-			// Strict mode
-			$storage_value['mode'] = 0;
-
-			// Logs
-			$storage_value['logs_attacks']              = 1;
-			$storage_value['scp_delete_period']         = 90;
-			$storage_value['log_limits_per_ip_and_day'] = 5;
-			$storage_value['add_access_attempts_logs']  = 1;
-
-			// Redirect
-			$storage_value['redirect_after_attack'] = 1;
-			$storage_value['redirect_options']      = 1;
-			$storage_value['custom_code']           = '<h1 style="text-align: center;">The application\'s firewall has been triggered by your use of the platform.<br />You no longer have access to the platform.<br />Please contact the platform manager so that he can unblock your account.</h1><hr /><h1 style="text-align: center;">Le pare-feu de l\'application vient de se déclencher suite à votre utilisation de la plateforme.<br />Vous n\'avez plus accès à la plateforme.<br />Merci de prendre contact avec le gestionnaire de cette plateforme afin qu\'il débloque votre compte.</h1>';
-
-			// Second level
-			$storage_value['second_level']             = 0;
-			$storage_value['second_level_redirect']    = 1;
-			$storage_value['second_level_limit_words'] = 5;
-			$storage_value['second_level_words']       = base64_encode('drop,update,set,admin,select,password,concat,login,load_file,ascii,char,union,group by,order by,insert,values,where,substring,benchmark,md5,sha1,schema,row_count,compress,encode,information_schema,script,javascript,img,src,body,iframe,frame,$_POST,eval,$_REQUEST,base64_decode,gzinflate,gzuncompress,gzinflate,strtrexec,passthru,shell_exec,createElement');
-
-			$storage_value['email_active'] = 0;
-			$storage_value['email_from_domain'] = 'security@emundus.fr';
-			$storage_value['email_from_name'] = 'eMundus Security';
-
-			// Exceptions
-			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
-			$storage_value['check_header_referer']             = 1;
-			$storage_value['check_base_64']                    = 0;
-			$storage_value['base64_exceptions']                = 'com_hikashop,com_emundus,com_fabrik,com_users,com_content';
-			$storage_value['strip_all_tags']                   = 0;
-			$storage_value['tags_to_filter'] = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,ilayer,layer,meta,object,script,xml';
-			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5,com_users,com_content,com_languages';
-			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_users,com_login,com_hikashop,com_menus';
-			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
-			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users,com_login';
-			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users,com_login,com_content';
-			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik,com_emundus,com_content,com_users,com_login,com_languages,com_hikashop,com_menus';
-			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users';
-			$storage_value['second_level_exceptions'] = '';
-
-			// Session
-			$storage_value['session_protection_active']               = 0;
-			$storage_value['session_hijack_protection']               = 0;
-			$storage_value['session_hijack_protection_what_to_check'] = 2;
-			$storage_value['session_protection_groups']               = ["11", "3", "5", "2", "10", "1"];
-			$storage_value['track_failed_logins']                     = 1;
-			$storage_value['logins_to_monitorize']                    = 0;
-			$storage_value['write_log']                               = 1;
-			$storage_value['actions_failed_login']                    = 1;
-			$storage_value['email_on_admin_login']                    = 0;
-			$storage_value['forbid_admin_frontend_login']             = 0;
-			$storage_value['forbid_new_admins']                       = 0;
-
-			// Upload scanner
-			$storage_value['upload_scanner_enabled']    = 1;
-			$storage_value['check_multiple_extensions'] = 1;
-			$storage_value['mimetypes_blacklist']       = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript';
-			$storage_value['extensions_blacklist']      = 'php,js,exe';
-			$storage_value['delete_files']              = 1;
-			$storage_value['actions_upload_scanner']    = 1;
-
-			$query->clear()
-				->update($db->quoteName('#__securitycheckpro_storage'))
-				->set($db->quoteName('storage_value') . ' = ' . $db->quote(json_encode($storage_value)))
-				->where($db->quoteName('storage_key') . ' = ' . $db->quote('pro_plugin'));
-			$db->setQuery($query);
-			$db->execute();
-		}
-
-		//
-
-		// Check if we have a favicon
-		$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
-		$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
-
-		if (!file_exists($current_favicon)) {
-			$current_favicon = 'gantry-media://custom/default_favicon.ico';
-
-			EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
-		}
-		//
-
-		// Check that registration form is on auto-login
-		$query->clear()
-			->select('id,params')
-			->from($db->quoteName('#__fabrik_forms'))
-			->where($db->quoteName('label') . ' LIKE ' . $db->quote('FORM_REGISTRATION'));
-		$db->setQuery($query);
-		$registration_form = $db->loadObject();
-
-		if (!empty($registration_form)) {
-			$params                     = json_decode($registration_form->params, true);
-			$params['juser_auto_login'] = ["1"];
-
-			$query->clear()
-				->update($db->quoteName('#__fabrik_forms'))
-				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-				->where($db->quoteName('id') . ' = ' . $db->quote($registration_form->id));
-			$db->setQuery($query);
-			$db->execute();
-		}
-		//
-
-		return true;
-	}
-
 	public static function updateComponentParameter($component, $key, $value, $old_value = null)
 	{
 		$update = true;
@@ -4620,52 +4336,6 @@ class EmundusHelperUpdate
 		}
 
 		return $result;
-	}
-
-	public static function checkPageClass()
-	{
-		$db    = Factory::getDbo();
-		$query = $db->getQuery(true);
-
-		$query->clear()
-			->select('menutype')
-			->from($db->quoteName('#__emundus_setup_profiles'))
-			->where($db->quoteName('published') . ' = 1')
-			->where($db->quoteName('status') . ' = ' . $db->quote(1));
-		$db->setQuery($query);
-		$menutypes = $db->loadColumn();
-
-		foreach ($menutypes as $key => $menutype)
-		{
-			$menutypes[$key] = $db->quote($menutype);
-		}
-
-		$query->clear()
-			->select('id,params')
-			->from($db->quoteName('#__menu'))
-			->where($db->quoteName('menutype') . ' IN (' . implode(',', $menutypes) . ')')
-			->where($db->quoteName('link') . ' LIKE ' . $db->quote('index.php?option=com_fabrik&view=form&formid=%'));
-		$db->setQuery($query);
-		$menus = $db->loadObjectList();
-
-		foreach ($menus as $menu)
-		{
-			$params = json_decode($menu->params, true);
-
-			if ($params['pageclass_sfx'] == '')
-			{
-				$params['pageclass_sfx'] = 'applicant-form';
-
-				$query->clear()
-					->update($db->quoteName('#__menu'))
-					->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
-					->where($db->quoteName('id') . ' = ' . $db->quote($menu->id));
-				$db->setQuery($query);
-				$db->execute();
-			}
-		}
-
-		return true;
 	}
 
 	public static function generateCampaignsAlias()

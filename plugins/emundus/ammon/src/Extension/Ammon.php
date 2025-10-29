@@ -14,6 +14,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseDriver;
 use Joomla\Event\DispatcherInterface;
@@ -87,6 +88,23 @@ class Ammon extends CMSPlugin implements SubscriberInterface
 				if ($valid) {
 					$force_new_user_if_not_found = $data['force_new_user_if_not_found'] ?? false;
 					$skip_company = !empty($this->specific_file_status) && $this->specific_file_status == $this->current_file_status && !empty($this->current_file_programme_category) && $this->current_file_programme_category === $this->specific_programme_category;
+
+                    PluginHelper::importPlugin('emundus');
+                    PluginHelper::importPlugin('actionlog');
+
+                    $dispatcher = Factory::getApplication()->getDispatcher();
+                    $onCallEventHandler = new GenericEvent(
+                        'onCallEventHandler',
+                        [
+                            'onBeforeStoreAmmonTask',
+                            [
+                                'force_new_user_if_not_found' => &$force_new_user_if_not_found,
+                                'skip_company' => &$skip_company,
+                                'fnum' => $fnum,
+                            ]
+                        ]
+                    );
+                    $dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 
 					if (!empty($session_id)) {
 						Log::add('Start registration for fnum ' . $fnum . ' and session ' . $session_id . ' in ammon api', Log::INFO, 'plugin.emundus.ammon');
