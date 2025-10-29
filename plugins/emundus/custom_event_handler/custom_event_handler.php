@@ -1219,7 +1219,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						break;
 				}
 			} else {
-				if (is_string($condition->targeted_value) && str_contains('|', $condition->targeted_value)) {
+                if (is_string($condition->targeted_value) && str_contains($condition->targeted_value, '|')) {
 					$targeted_values = explode('|', $condition->targeted_value);
 				} else {
 					$targeted_values = $condition->targeted_value;
