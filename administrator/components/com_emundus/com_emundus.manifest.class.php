@@ -16,17 +16,22 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
+use Joomla\Database\DatabaseInterface;
+use Tchooz\Traits\TraitVersion;
 
 class Com_EmundusInstallerScript
 {
-	private $db;
+	use TraitVersion;
 
-	protected $manifest_cache;
-	protected $schema_version;
+	private DatabaseInterface $db;
+
+	protected array|object|null $manifest_cache;
+
+	protected string|int|null $schema_version;
 
 	public function __construct()
 	{
-		// Get component manifest cache
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$query    = $this->db->getQuery(true);
 
@@ -45,49 +50,48 @@ class Com_EmundusInstallerScript
 		$this->schema_version = $this->db->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/src/Attributes/PostflightAttribute.php');
 	}
 
-	/**
-	 * Run before installation or upgrade run
-	 *
-	 * @param   string  $type    discover_install (Install unregistered extensions that have been discovered.)
-	 *                           or install (standard install)
-	 *                           or update (update)
-	 * @param   object  $parent  installer object
-	 *
-	 * @return  void
-	 */
-	public function preflight($type, $parent)
+	public function preflight(string $type, object $parent): void
 	{
 		if (version_compare(PHP_VERSION, '7.4.0', '<'))
 		{
-			echo "\033[31mThis extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version. \033[0m\n";
+			EmundusHelperUpdate::displayMessage('This extension works with PHP 7.4.0 or newer. Please contact your web hosting provider to update your PHP version.', 'error');
 			exit;
+		}
+
+		$query_str = 'SHOW TABLES LIKE ' . $this->db->quote('#__emundus_version');
+		$this->db->setQuery($query_str);
+		$table_exists = $this->db->loadResult();
+		if(!$table_exists)
+		{
+			$columns = [
+				[
+					'name'   => 'update_date',
+					'type'   => 'date',
+					'null'   => 0,
+				],
+			];
+			$primary_key_options = [
+				'name' => 'version',
+				'type' => 'varchar',
+				'length' => 20,
+				'auto_increment' => 0,
+			];
+
+			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
 		}
 	}
 
-	/**
-	 * Run when the component is installed
-	 *
-	 * @param   object  $parent  installer object
-	 *
-	 * @return bool
-	 */
-	public function install($parent)
+	public function install(object $parent): bool
 	{
 		$parent->getParent()->setRedirectURL('index.php?option=com_emundus');
 
 		return true;
 	}
 
-	/**
-	 * Run when the component is updated
-	 *
-	 * @param   object  $parent  installer object
-	 *
-	 * @return  bool
-	 */
-	public function update($parent)
+	public function update(object $parent): bool
 	{
 		$succeed = true;
 
@@ -107,7 +111,6 @@ class Com_EmundusInstallerScript
 		$releases_path = JPATH_ADMINISTRATOR . '/components/com_emundus/scripts/releases/';
 
 		$releases_available = scandir($releases_path);
-		// Sort naturally
 		natcasesort($releases_available);
 
 		if ($this->manifest_cache)
@@ -131,13 +134,23 @@ class Com_EmundusInstallerScript
 						{
 							EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' installed', 'success');
 
-							// Add the update date to jos_emundus_versions
 							$date = Factory::getDate()->toSql();
-
-							if(!$this->storeVersion($release_version, $date))
+							$existingVersion = $this->getVersion($this->db, $release_version);
+							if($existingVersion)
 							{
-								EmundusHelperUpdate::displayMessage('Erreur lors de l\'enregistrement de la version ' . $release_version . ' dans la table des versions.', 'error');
-								$succeed = false;
+								if(!$this->updateVersion($this->db, $release_version, $date))
+								{
+									EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' update failed', 'error');
+									$succeed = false;
+								}
+							}
+							else
+							{
+								if (!$this->createVersion($this->db, $release_version, $date))
+								{
+									EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' creation failed', 'error');
+									$succeed = false;
+								}
 							}
 						}
 						else
@@ -149,123 +162,25 @@ class Com_EmundusInstallerScript
 				}
 			}
 		}
-
+		
 		return $succeed;
 	}
+	
+	public function uninstall(object $parent): void
+	{}
 
-	private function storeVersion($version, $date): bool
+	public function postflight(string $type, object $parent): bool
 	{
-		$query = $this->db->getQuery(true);
-
-		try
+		$methods       = $this->getPostflightMethods();
+		foreach ($methods as $method => $name)
 		{
-			$query->select('*')
-				->from($this->db->quoteName('#__emundus_version'))
-				->where($this->db->quoteName('version') . ' = ' . $this->db->quote($version));
-			$this->db->setQuery($query);
-			$existing_version = $this->db->loadObject();
+			// Display message
+			EmundusHelperUpdate::displayMessage('Exécution de la tâche post-installation : ' . $name);
 
-			if(empty($existing_version))
+			if (!$this->$method())
 			{
-				$insert = (object) [
-					'version' => $version,
-					'update_date' => $date,
-				];
-				return $this->db->insertObject('#__emundus_version', $insert);
+				EmundusHelperUpdate::displayMessage('Erreur lors de l\'exécution de la tâche post-installation : ' . $name, 'error');
 			}
-			else {
-				$update = (object) [
-					'version' => $version,
-					'update_date' => $date,
-				];
-				return $this->db->updateObject('#__emundus_version', $update, 'version');
-			}
-		}
-		catch (Exception $e)
-		{
-			return false;
-		}
-	}
-
-	/**
-	 * Run when the component is uninstalled.
-	 *
-	 * @param   object  $parent  installer object
-	 *
-	 * @return  void
-	 */
-	public function uninstall($parent)
-	{
-	}
-
-	public function postflight($type, $parent)
-	{
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
-
-		if (!$this->setSitename())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du nom du site dans la configuration de eMundus.', 'error');
-		}
-
-		if (!$this->syncGantryLogo())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la synchronisation du logo dans la configuration de Gantry5.', 'error');
-		}
-
-		if (!$this->clearDashboard())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression des tableaux de bord par défaut.', 'error');
-		}
-
-		if (!EmundusHelperUpdate::checkHealth())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la santé de l\'installation.', 'error');
-		}
-
-		if (!EmundusHelperUpdate::checkPageClass())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des classes de pages.', 'error');
-		}
-
-		if (!$this->setAdminColorPalette())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour de la palette de couleurs de l\'administration.', 'error');
-		}
-
-		if (!$this->checkHtAccess())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du fichier .htaccess.', 'error');
-		}
-
-		if (!$this->checkPasswordFields())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du stockage des champs mot de passe.', 'error');
-		}
-
-		if (!$this->checkFabrikIcon())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de l\'icone détails des listes Fabrik', 'error');
-		}
-
-		if (!$this->checkFabrikTemplate())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification des templates Fabrik', 'error');
-		}
-
-		if (!$this->convertDateToJDate())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la conversion des champs Fabrik de date à jdate', 'error');
-		}
-
-		if (!$this->checkAccountApplicationMenu())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu compte utilisateur', 'error');
-		}
-
-		if (!$this->checkSSOAvailable())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la disponibilité du SSO', 'error');
 		}
 
 		if (!EmundusHelperUpdate::languageBaseToFile()['status'])
@@ -273,54 +188,9 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
 		}
 
-		if (!$this->recompileGantry5())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la recompilation de Gantry5.', 'error');
-		}
-
 		if (!EmundusHelperUpdate::clearJoomlaCache())
 		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la suppression du cache Joomla.', 'error');
-		}
-
-		if (!$this->checkConfig())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la configuration.', 'error');
-		}
-
-		if (!$this->checkAutomatedUser())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de l\'utilisateur automatisé.', 'error');
-		}
-
-		if (!$this->forceHikashopLightMode())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour du mode light de Hikashop.', 'error');
-		}
-
-		if (!$this->checkSessionGCScheduler())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification de la tâche planifié Session GC', 'error');
-		}
-
-		if (!$this->disableDropfilesEditorPlugin())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de désactivation du plugin Dropfiles - Editor', 'error');
-		}
-
-		if (!$this->checkHistoryMenu())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la vérification du menu Voir mon dossier', 'error');
-		}
-
-		if (!$this->secureAPI())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la sécurisation de l\'API Tchooz v2', 'error');
-		}
-
-		if (!$this->secureSomeArticles())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la sécurisation de certains articles', 'error');
 		}
 
 		EmundusHelperUpdate::generateCampaignsAlias();
@@ -328,7 +198,31 @@ class Com_EmundusInstallerScript
 		return true;
 	}
 
-	private function recompileGantry5()
+	private function getPostflightMethods(): array
+	{
+		$reflection = new ReflectionClass(self::class);
+		$methods    = $reflection->getMethods();
+		$results    = [];
+
+		foreach ($methods as $method)
+		{
+			$attributes = $method->getAttributes(PostflightAttribute::class);
+
+			if (!empty($attributes))
+			{
+				/**
+				 * @var PostflightAttribute $attributeInstance
+				 */
+				$attributeInstance           = $attributes[0]->newInstance();
+				$results[$method->getName()] = $attributeInstance->name;
+			}
+		}
+
+		return $results;
+	}
+
+	#[PostflightAttribute(name: "Recompile Gantry5")]
+	private function recompileGantry5(): bool
 	{
 		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
 		if (is_dir($dir) && !empty($dir))
@@ -344,7 +238,8 @@ class Com_EmundusInstallerScript
 		return true;
 	}
 
-	private function setSitename()
+	#[PostflightAttribute(name: "Set Site Name in database")]
+	private function setSitename(): bool
 	{
 		$updated = false;
 
@@ -385,7 +280,8 @@ class Com_EmundusInstallerScript
 		return $updated;
 	}
 
-	private function syncGantryLogo()
+	#[PostflightAttribute(name: "Sync logo in Gantry5")]
+	private function syncGantryLogo(): bool
 	{
 		$synced = false;
 
@@ -434,7 +330,8 @@ class Com_EmundusInstallerScript
 		return $synced;
 	}
 
-	private function clearDashboard()
+	#[PostflightAttribute(name: "Clear admins dashboard")]
+	private function clearDashboard(): bool
 	{
 		$query = $this->db->getQuery(true);
 
@@ -446,7 +343,8 @@ class Com_EmundusInstallerScript
 		return $this->db->execute();
 	}
 
-	private function setAdminColorPalette()
+	#[PostflightAttribute(name: "Set admin color palette")]
+	private function setAdminColorPalette(): bool
 	{
 		$colors_updated = false;
 
@@ -482,7 +380,8 @@ class Com_EmundusInstallerScript
 		return $colors_updated;
 	}
 
-	private function checkHtAccess()
+	#[PostflightAttribute(name: "Rebuild .htaccess file")]
+	private function checkHtAccess(): bool
 	{
 		$current_htaccess = file_get_contents(JPATH_ROOT . '/.htaccess');
 
@@ -539,7 +438,8 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
-	private function checkPasswordFields()
+	#[PostflightAttribute(name: "Check password fields storage")]
+	private function checkPasswordFields(): bool
 	{
 		$checked = true;
 
@@ -576,7 +476,8 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
-	private function checkFabrikIcon()
+	#[PostflightAttribute(name: "Check Fabrik list detail icon")]
+	private function checkFabrikIcon(): bool
 	{
 		$checked = true;
 
@@ -614,7 +515,8 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
-	private function checkFabrikTemplate()
+	#[PostflightAttribute(name: "Check Fabrik templates")]
+	private function checkFabrikTemplate(): bool
 	{
 		$checked = true;
 		$query   = $this->db->getQuery(true);
@@ -650,7 +552,8 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
-	private function convertDateToJDate()
+	#[PostflightAttribute(name: "Convert Fabrik date elements to jdate")]
+	private function convertDateToJDate(): bool
 	{
 		$converted = true;
 
@@ -741,7 +644,8 @@ class Com_EmundusInstallerScript
 		return $converted;
 	}
 
-	private function checkAccountApplicationMenu()
+	#[PostflightAttribute(name: "Check account application menu")]
+	private function checkAccountApplicationMenu(): bool
 	{
 		$checked = false;
 
@@ -790,9 +694,9 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
-	private function checkConfig()
+	#[PostflightAttribute(name: "Check configuration (cookies, session, frontediting)")]
+	private function checkConfig(): bool
 	{
-		$checked = false;
 		$options = [];
 
 		$query = $this->db->getQuery(true);
@@ -806,7 +710,7 @@ class Com_EmundusInstallerScript
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
 				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('authentication'));
 			$this->db->setQuery($query);
-			$checked = $this->db->execute();
+			$this->db->execute();
 
 			$options['frontediting'] = 0;
 
@@ -866,7 +770,8 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
-	private function checkSSOAvailable()
+	#[PostflightAttribute(name: "Check SSO availability")]
+	private function checkSSOAvailable(): bool
 	{
 		$checked = true;
 		$haveSSO = false;
@@ -936,6 +841,7 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
+	#[PostflightAttribute(name: "Check automated task user")]
 	private function checkAutomatedUser(): bool
 	{
 		$automated_user_id = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 0);
@@ -1030,6 +936,7 @@ class Com_EmundusInstallerScript
 		return !empty($automated_user_id);
 	}
 
+	#[PostflightAttribute(name: "Force Hikashop light mode")]
 	private function forceHikashopLightMode(): bool
 	{
 		$query = $this->db->getQuery(true);
@@ -1062,6 +969,7 @@ class Com_EmundusInstallerScript
 		}
 	}
 
+	#[PostflightAttribute(name: "Check session GC scheduler task")]
 	private function checkSessionGCScheduler(): bool
 	{
 		$checked = false;
@@ -1111,6 +1019,7 @@ class Com_EmundusInstallerScript
 		return $checked;
 	}
 
+	#[PostflightAttribute(name: "Disable Dropfiles editor plugin")]
 	private function disableDropfilesEditorPlugin(): bool
 	{
 		$query = $this->db->getQuery(true);
@@ -1124,6 +1033,7 @@ class Com_EmundusInstallerScript
 		return $this->db->setQuery($query)->execute();
 	}
 
+	#[PostflightAttribute(name: "Check applicant history menu")]
 	private function checkHistoryMenu(): bool
 	{
 		$query = $this->db->getQuery(true);
@@ -1177,6 +1087,7 @@ class Com_EmundusInstallerScript
 		}
 	}
 
+	#[PostflightAttribute(name: "Secure API access")]
 	private function secureAPI(): bool
 	{
 		$query  = $this->db->createQuery();
@@ -1405,6 +1316,7 @@ class Com_EmundusInstallerScript
 		return !in_array(false, $tasks);
 	}
 
+	#[PostflightAttribute(name: "Secure some articles")]
 	private function secureSomeArticles(): bool
 	{
 		$query  = $this->db->createQuery();
@@ -1447,5 +1359,437 @@ class Com_EmundusInstallerScript
 		}
 
 		return !in_array(false, $tasks);
+	}
+
+	#[PostflightAttribute(name: "Remove old Helium assets file")]
+	private function removeOldAssets(): bool
+	{
+		$file = JPATH_ROOT . '/templates/g5_helium/custom/config/24/page/assets.yaml';
+
+		if(!file_exists($file))
+		{
+			return true;
+		}
+
+		return unlink($file);
+	}
+
+	#[PostflightAttribute(name: "Remove AJAX validation from registration form")]
+	private function removeAjaxValidation(): bool
+	{
+		$removed = true;
+
+		$query  = $this->db->createQuery();
+
+		$query->select('id,params')
+			->from($this->db->quoteName('#__fabrik_forms'))
+			->where($this->db->quoteName('id') . ' = 307');
+		$this->db->setQuery($query);
+		$registration_form = $this->db->loadObject();
+
+		if ($registration_form)
+		{
+			$params                     = json_decode($registration_form->params, true);
+			$params['ajax_validations'] = 0;
+
+			$query->clear()
+				->update($this->db->quoteName('#__fabrik_forms'))
+				->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($registration_form->id));
+			$this->db->setQuery($query);
+			$removed = $this->db->execute();
+		}
+
+		return $removed;
+	}
+
+	#[PostflightAttribute(name: "Check profile menu translation")]
+	private function checkProfileMenuTranslation(): bool
+	{
+		$checked = true;
+		$query   = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('form_id')
+				->from($this->db->quoteName('#__emundus_setup_formlist'))
+				->where($this->db->quoteName('type') . ' LIKE ' . $this->db->quote('profile'));
+			$this->db->setQuery($query);
+			$form_id = $this->db->loadResult();
+
+			if (!empty($form_id))
+			{
+				$query->clear()
+					->select('id,params')
+					->from($this->db->quoteName('#__menu'))
+					->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id));
+				$this->db->setQuery($query);
+				$menu = $this->db->loadObject();
+
+				if (!empty($menu->id))
+				{
+					$query->clear()
+						->update($this->db->quoteName('#__falang_content'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote('index.php?option=com_fabrik&view=form&formid=' . $form_id))
+						->where($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('menu'))
+						->where($this->db->quoteName('reference_field') . ' = ' . $this->db->quote('link'))
+						->where($this->db->quoteName('reference_id') . ' = ' . $this->db->quote($menu->id));
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					$query->clear()
+						->update($this->db->quoteName('#__falang_content'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote($menu->params))
+						->where($this->db->quoteName('reference_table') . ' = ' . $this->db->quote('menu'))
+						->where($this->db->quoteName('reference_field') . ' = ' . $this->db->quote('params'))
+						->where($this->db->quoteName('reference_id') . ' = ' . $this->db->quote($menu->id));
+					$this->db->setQuery($query);
+					$checked = $this->db->execute();
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	#[PostflightAttribute(name: "Check Emundus event handler plugin")]
+	private function checkEmundusEventHandler(): bool
+	{
+		$checked = true;
+		$query   = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('extension_id')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('custom_event_handler'));
+			$this->db->setQuery($query);
+			$custom_event_handler = $this->db->loadResult();
+
+			if (empty($custom_event_handler))
+			{
+				$checked = EmundusHelperUpdate::installExtension('PLG_EMUNDUS_CUSTOM_EVENT_HANDLER_TITLE', 'custom_event_handler', null, 'plugin', 1, 'emundus');
+			}
+			else
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__extensions'))
+					->set($this->db->quoteName('enabled') . ' = 1')
+					->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($custom_event_handler));
+				$this->db->setQuery($query);
+				$checked = $this->db->execute();
+			}
+		}
+		catch (\Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	#[PostflightAttribute(name: "Check Emundus ZIP plugin")]
+	private function checkZipPlugin(): bool
+	{
+		$checked = true;
+		$query   = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('extension_id')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('send_file_archive'));
+			$this->db->setQuery($query);
+			$send_file_archive = $this->db->loadResult();
+
+			if (empty($send_file_archive))
+			{
+				$checked = EmundusHelperUpdate::installExtension('Emundus - Send ZIP file to user.', 'send_file_archive', '{"name":"Emundus - Send ZIP file to user.","type":"plugin","creationDate":"19 July 2019","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"This plugin sends a ZIP of the file when it is changed to a certain status or when it is deleted.","group":"","filename":"send_file_archive"}', 'plugin', 1, 'emundus', '{"delete_email":"delete_file"}');
+			}
+			else
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__extensions'))
+					->set($this->db->quoteName('enabled') . ' = 1')
+					->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($send_file_archive));
+				$this->db->setQuery($query);
+				$checked = $this->db->execute();
+			}
+
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_setup_emails'))
+				->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('delete_file'));
+			$this->db->setQuery($query);
+			$delete_file_email = $this->db->loadResult();
+
+			if (empty($delete_file_email))
+			{
+				$msg = '<p>Dear [NAME],</p>
+<p>Your application file <strong><em>[FNUM]</em></strong> has been deleted.</p>
+<p>A zip file containing the data deleted is attached to this email.</p>
+<hr />
+<p>Bonjour [NAME],</p>
+<p>Votre dossier de candidature <strong><em>[FNUM]</em></strong> vient d\'&ecirc;tre supprim&eacute;.</p>
+<p>Ci-joint, une archive des informations qui ont &eacute;t&eacute; supprim&eacute;es.</p>';
+				$insert = (object) [
+					'lbl'      => 'delete_file',
+					'subject'  => 'Application file deleted / Dossier supprimé',
+					'message'  => $msg,
+					'type'     => 1,
+					'category' => 'Système',
+				];
+				$checked = $this->db->insertObject('#__emundus_setup_emails', $insert);
+			}
+		}
+		catch (\Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			$checked = false;
+		}
+
+		return $checked;
+	}
+
+	#[PostflightAttribute(name: "Check Emundus Dropfiles category setup plugin")]
+	private function checkDropfilesPlugin(): bool
+	{
+		$query   = $this->db->getQuery(true);
+
+		$query->select('extension_id')
+			->from($this->db->quoteName('#__extensions'))
+			->where($this->db->quoteName('element') . ' LIKE ' . $this->db->quote('setup_category'))
+			->where($this->db->quoteName('folder') . ' LIKE ' . $this->db->quote('emundus'));
+		$this->db->setQuery($query);
+		$emundus_dropfiles_plugin = $this->db->loadResult();
+
+		if (empty($emundus_dropfiles_plugin))
+		{
+			return EmundusHelperUpdate::installExtension('Emundus - Create new dropfiles category', 'setup_category', '{"name":"Emundus - Create new dropfiles category","type":"plugin","creationDate":"July 2020","author":"eMundus","copyright":"(C) 2010-2019 EMUNDUS SOFTWARE. All rights reserved.","authorEmail":"dev@emundus.fr","authorUrl":"https:\/\/www.emundus.fr","version":"6.9.10","description":"PLG_EMUNDUS_SETUP_CATEGORY_DESCRIPTION","group":"","filename":"setup_category"}', 'plugin', 1, 'emundus');
+		}
+		else
+		{
+			$query->clear()
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('enabled') . ' = 1')
+				->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($emundus_dropfiles_plugin));
+			$this->db->setQuery($query);
+			return $this->db->execute();
+		}
+	}
+
+	#[PostflightAttribute(name: "Check SecurityCheckPro configuration")]
+	private function checkSCPConfiguration(): bool
+	{
+		$checked = true;
+		$query   = $this->db->getQuery(true);
+
+		$query->clear()
+			->select('storage_key, storage_value')
+			->from($this->db->quoteName('#__securitycheckpro_storage'))
+			->where($this->db->quoteName('storage_key') . ' LIKE ' . $this->db->quote('pro_plugin'));
+		$this->db->setQuery($query);
+		$scp_plugin = $this->db->loadObject();
+
+		if (!empty($scp_plugin) && !empty($scp_plugin->storage_value))
+		{
+			$storage_value = json_decode($scp_plugin->storage_value, true);
+
+			// Blacklist
+			$storage_value['dynamic_blacklist']         = 1;
+			$storage_value['dynamic_blacklist_counter'] = 5;
+			$storage_value['dynamic_blacklist_time']    = 300;
+			$storage_value['blacklist_email']           = 0;
+
+			// Strict mode
+			$storage_value['mode'] = 0;
+
+			// Logs
+			$storage_value['logs_attacks']              = 1;
+			$storage_value['scp_delete_period']         = 90;
+			$storage_value['log_limits_per_ip_and_day'] = 5;
+			$storage_value['add_access_attempts_logs']  = 1;
+
+			// Redirect
+			$storage_value['redirect_after_attack'] = 1;
+			$storage_value['redirect_options']      = 1;
+			$storage_value['custom_code']           = '<h1 style="text-align: center;">The application\'s firewall has been triggered by your use of the platform.<br />You no longer have access to the platform.<br />Please contact the platform manager so that he can unblock your account.</h1><hr /><h1 style="text-align: center;">Le pare-feu de l\'application vient de se déclencher suite à votre utilisation de la plateforme.<br />Vous n\'avez plus accès à la plateforme.<br />Merci de prendre contact avec le gestionnaire de cette plateforme afin qu\'il débloque votre compte.</h1>';
+
+			// Second level
+			$storage_value['second_level']             = 0;
+			$storage_value['second_level_redirect']    = 1;
+			$storage_value['second_level_limit_words'] = 5;
+			$storage_value['second_level_words']       = base64_encode('drop,update,set,admin,select,password,concat,login,load_file,ascii,char,union,group by,order by,insert,values,where,substring,benchmark,md5,sha1,schema,row_count,compress,encode,information_schema,script,javascript,img,src,body,iframe,frame,$_POST,eval,$_REQUEST,base64_decode,gzinflate,gzuncompress,gzinflate,strtrexec,passthru,shell_exec,createElement');
+
+			$storage_value['email_active'] = 0;
+			$storage_value['email_from_domain'] = 'security@emundus.fr';
+			$storage_value['email_from_name'] = 'eMundus Security';
+
+			// Exceptions
+			$storage_value['exclude_exceptions_if_vulnerable'] = 1;
+			$storage_value['check_header_referer']             = 1;
+			$storage_value['check_base_64']                    = 0;
+			$storage_value['base64_exceptions']                = 'com_hikashop,com_emundus,com_fabrik,com_users,com_content';
+			$storage_value['strip_all_tags']                   = 0;
+			$storage_value['tags_to_filter'] = 'applet,body,bgsound,base,basefont,embed,frame,frameset,head,html,ilayer,layer,meta,object,script,xml';
+			$storage_value['strip_tags_exceptions'] = 'com_jdownloads,com_hikashop,com_emundus,com_fabrik,com_gantry5,com_users,com_content,com_languages';
+			$storage_value['duplicate_backslashes_exceptions'] = 'com_emundus,com_fabrik,com_content,com_languages,com_users,com_login,com_hikashop,com_menus';
+			$storage_value['sql_pattern_exceptions'] = 'com_emundus,com_fabrik';
+			$storage_value['line_comments_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users,com_login';
+			$storage_value['using_integers_exceptions'] = 'com_jce,com_fabrik,com_users,com_login,com_content';
+			$storage_value['escape_strings_exceptions'] = 'com_jce,com_fabrik,com_emundus,com_content,com_users,com_login,com_languages,com_hikashop,com_menus';
+			$storage_value['lfi_exceptions'] = 'com_emundus,com_fabrik,com_content,com_users';
+			$storage_value['second_level_exceptions'] = '';
+
+			// Session
+			$storage_value['session_protection_active']               = 0;
+			$storage_value['session_hijack_protection']               = 0;
+			$storage_value['session_hijack_protection_what_to_check'] = 2;
+			$storage_value['session_protection_groups']               = ["11", "3", "5", "2", "10", "1"];
+			$storage_value['track_failed_logins']                     = 1;
+			$storage_value['logins_to_monitorize']                    = 0;
+			$storage_value['write_log']                               = 1;
+			$storage_value['actions_failed_login']                    = 1;
+			$storage_value['email_on_admin_login']                    = 0;
+			$storage_value['forbid_admin_frontend_login']             = 0;
+			$storage_value['forbid_new_admins']                       = 0;
+
+			// Upload scanner
+			$storage_value['upload_scanner_enabled']    = 1;
+			$storage_value['check_multiple_extensions'] = 1;
+			$storage_value['mimetypes_blacklist']       = 'application/x-dosexec,application/x-msdownload ,text/x-php,application/x-php,application/x-httpd-php,application/x-httpd-php-source,application/javascript';
+			$storage_value['extensions_blacklist']      = 'php,js,exe';
+			$storage_value['delete_files']              = 1;
+			$storage_value['actions_upload_scanner']    = 1;
+
+			$scp_plugin->storage_value = json_encode($storage_value);
+			$checked = $this->db->updateObject('#__securitycheckpro_storage', $scp_plugin, 'storage_key');
+		}
+
+		return $checked;
+	}
+
+	#[PostflightAttribute(name: "Check favicon")]
+	private function checkFavicon(): bool
+	{
+		$current_favicon = EmundusHelperUpdate::getYamlVariable('favicon', JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		$current_favicon = str_replace('gantry-media:/', 'images', $current_favicon);
+
+		if (!file_exists($current_favicon)) {
+			$current_favicon = 'gantry-media://custom/default_favicon.ico';
+
+			EmundusHelperUpdate::updateYamlVariable('favicon', $current_favicon, JPATH_ROOT . '/templates/g5_helium/custom/config/default/page/assets.yaml');
+		}
+
+		return true;
+	}
+
+	#[PostflightAttribute(name: "Check registration form autologin")]
+	private function checkRegistrationFormAutologin(): bool
+	{
+		$checked = true;
+		$query   = $this->db->getQuery(true);
+
+		$query->clear()
+			->select('id, params')
+			->from($this->db->quoteName('#__fabrik_forms'))
+			->where($this->db->quoteName('label') . ' LIKE ' . $this->db->quote('FORM_REGISTRATION'));
+		$this->db->setQuery($query);
+		$registration_form = $this->db->loadObject();
+
+		if (!empty($registration_form) && !empty($registration_form->params)) {
+			$params                     = json_decode($registration_form->params, true);
+			$params['juser_auto_login'] = ["1"];
+
+			$registration_form->params = json_encode($params);
+			$checked = $this->db->updateObject('#__fabrik_forms', $registration_form, 'id');
+		}
+
+		return $checked;
+	}
+
+	#[PostflightAttribute(name: "Check page class for applicant forms")]
+	private function checkPageClass(): bool
+	{
+		$checks = [];
+
+		$query = $this->db->getQuery(true);
+
+		$query->clear()
+			->select('menutype')
+			->from($this->db->quoteName('#__emundus_setup_profiles'))
+			->where($this->db->quoteName('published') . ' = 1')
+			->where($this->db->quoteName('status') . ' = ' . $this->db->quote(1));
+		$this->db->setQuery($query);
+		$menutypes = $this->db->loadColumn();
+
+		foreach ($menutypes as $key => $menutype)
+		{
+			$menutypes[$key] = $this->db->quote($menutype);
+		}
+
+		$query->clear()
+			->select('id,params')
+			->from($this->db->quoteName('#__menu'))
+			->where($this->db->quoteName('menutype') . ' IN (' . implode(',', $menutypes) . ')')
+			->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_fabrik&view=form&formid=%'));
+		$this->db->setQuery($query);
+		$menus = $this->db->loadObjectList();
+
+		foreach ($menus as $menu)
+		{
+			$params = json_decode($menu->params, true);
+
+			if ($params['pageclass_sfx'] == '')
+			{
+				$params['pageclass_sfx'] = 'applicant-form';
+				$menu->params = json_encode($params);
+
+				$checks[] = $this->db->updateObject('#__menu', $menu, 'id');
+			}
+		}
+
+		return !in_array(false, $checks);
+	}
+
+	#[PostflightAttribute(name: "Disable Fabrik debug")]
+	private function checkFabrikDebug(): bool
+	{
+		$checked = false;
+
+		$query   = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select('extension_id, params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('com_fabrik'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('component'));
+			$this->db->setQuery($query);
+			$fabrikComponent = $this->db->loadObject();
+
+			if(!empty($fabrikComponent) && !empty($fabrikComponent->params))
+			{
+				$params = json_decode($fabrikComponent->params, true);
+				$params['use_fabrikdebug'] = 0;
+				$params['burst_js'] = 0;
+				$fabrikComponent->params = json_encode($params);
+
+				$checked = $this->db->updateObject('#__extensions', $fabrikComponent, 'extension_id');
+			}
+		}
+		catch (Exception $e)
+		{
+			EmundusHelperUpdate::displayMessage($e->getMessage(), 'error');
+			$checked = false;
+		}
+
+		return $checked;
 	}
 }
