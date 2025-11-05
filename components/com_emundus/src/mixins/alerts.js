@@ -8,7 +8,7 @@ const alerts = {
 				icon: 'success',
 				showCancelButton: false,
 				showConfirmButton: false,
-				duration: 1500,
+				timer: 1500,
 				customClass: {
 					title: 'em-swal-title',
 				},
@@ -81,6 +81,39 @@ const alerts = {
 
 			return await this.displayAlert(options, callback);
 		},
+		async alertInput(
+			title,
+			inputValue = '',
+			inputPlaceholder = '',
+			confirmText = 'COM_EMUNDUS_OK',
+			cancelText = 'COM_EMUNDUS_ACTIONS_CANCEL',
+			callback = null,
+		) {
+			let options = {
+				title: this.translate(title),
+				input: 'text',
+				inputValue: inputValue,
+				inputPlaceholder: inputPlaceholder ? this.translate(inputPlaceholder) : '',
+				showCancelButton: true,
+				confirmButtonText: this.translate(confirmText),
+				cancelButtonText: this.translate(cancelText),
+				reverseButtons: true,
+				preConfirm: (inputValue) => {
+					if (!inputValue) {
+						Swal.showValidationMessage(this.translate('COM_EMUNDUS_INPUT_REQUIRED'));
+					}
+					return inputValue;
+				},
+				customClass: {
+					title: 'em-swal-title',
+					cancelButton: 'em-swal-cancel-button',
+					confirmButton: 'em-swal-confirm-button',
+				},
+			};
+
+			return await this.displayAlert(options, callback);
+		},
+
 		displayAlert(options, callback) {
 			return Swal.fire(options).then((result) => {
 				if (result.value) {

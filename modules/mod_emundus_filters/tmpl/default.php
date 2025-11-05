@@ -25,6 +25,7 @@ Text::script('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS');
 Text::script('MOD_EMUNDUS_FILTERS_SAVE_FILTERS');
 Text::script('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME');
 Text::script('MOD_EMUNDUS_FILTERS_SAVED_FILTERS');
+Text::script('MOD_EMUNDUS_FILTERS_NO_SAVED_FILTERS');
 Text::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_EQUAL_TO');
 Text::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_NOT_EQUAL_TO');
 Text::script('MOD_EMUNDUS_FILTERS_FILTER_OPERATOR_SUPERIOR_TO');
@@ -44,20 +45,37 @@ Text::script('MOD_EMUNDUS_FILTERS_SCOPE_ID');
 Text::script('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER');
 Text::script('MOD_EMUNDUS_FILTERS_MORE_VALUES');
 Text::script('MOD_EMUNDUS_FILTERS_GROUP_ASSOC');
-Text::script('MOD_EMUNDUS_FILTERS_WORKFLOW_STEPS');
-Text::script('MOD_EMUNDUS_FILTERS_WORKFLOW_EVALUATION_STATE');
-Text::script('MOD_EMUNDUS_FILTERS_VALUE_TO_EVALUATE');
-Text::script('MOD_EMUNDUS_FILTERS_VALUE_EVALUATED');
-Text::script('MOD_EMUNDUS_FILTERS_RESET');
-
+Text::script('MOD_EMUNDUS_FILTERS_SHARE_FILTERS');
+Text::script('MOD_EMUNDUS_FILTERS_SHARE_WITH_1');
+Text::script('MOD_EMUNDUS_FILTERS_SHARE_WITH_2');
+Text::script('MOD_EMUNDUS_FILTERS_SHARE_WITH_USERS');
+Text::script('MOD_EMUNDUS_FILTERS_SHARE_WITH_GROUPS');
+Text::script('MOD_EMUNDUS_FILTERS_SHARE_BUTTON');
+Text::script('MOD_EMUNDUS_FILTERS_USER_PRIVATE_FILTERS');
+Text::script('MOD_EMUNDUS_FILTERS_SHARED_FILTERS_WITH_USERS');
+Text::script('MOD_EMUNDUS_FILTERS_ALREADY_SHARED_WITH');
+Text::script('MOD_EMUNDUS_FILTERS_ALREADY_SHARED_WITH_USERS');
+Text::script('MOD_EMUNDUS_FILTERS_ALREADY_SHARED_WITH_GROUPS');
+Text::script('MOD_EMUNDUS_FILTERS_FILTER_ACTION_RENAME');
+Text::script('MOD_EMUNDUS_FILTERS_FILTER_ACTION_UPDATE');
+Text::script('MOD_EMUNDUS_FILTERS_FILTER_ACTION_SHARE');
+Text::script('MOD_EMUNDUS_FILTERS_FILTER_ACTION_DELETE');
+Text::script('MOD_EMUNDUS_FILTERS_SHARINGS_FOR');
+Text::script('MOD_EMUNDUS_FILTERS_DISPLAY_ALREADY_SHARED_TO');
+Text::script('MOD_EMUNDUS_FILTERS_DELETE_FILTER_CONFIRMATION');
+Text::script('MOD_EMUNDUS_FILTERS_FILTER_ACTION_DEFINE_AS_DEFAULT');
+Text::script('MOD_EMUNDUS_FILTERS_DEFAULT_FILTER');
+Text::script('MOD_EMUNDUS_FILTERS_CANCEL');
+Text::script('MOD_EMUNDUS_FILTERS_CONFIRM');
 ?>
 <div id="em-filters-vue"
      data-module-id="<?= $module->id ?>"
-     data-menu-id="<?= $menu->id ?>"
      data-applied-filters='<?= base64_encode(json_encode($applied_filters)) ?>'
      data-filters='<?= base64_encode(json_encode($filters)) ?>'
      data-quick-search-filters='<?= base64_encode(json_encode($quick_search_filters)) ?>'
      data-count-filter-values='<?= $params->get('count_filter_values')  ?>'
+     data-can-share-filters='<?= $can_share_filters ? 1 : 0 ?>'
+     data-user-id='<?= $em_user->id ?>'
 ></div>
 
 <script src="/media/mod_emundus_filters/app.js"></script>

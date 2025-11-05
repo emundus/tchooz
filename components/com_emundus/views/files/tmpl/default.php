@@ -20,7 +20,7 @@ $hash = EmundusHelperCache::getCurrentGitHash();
 
 <div class="tw-h-full">
     <div class="tw-h-full">
-        <div class="col-md-3 side-panel" style="height: calc(100vh - 139px);overflow-y: auto;">
+        <div class="col-md-3 side-panel" style="height: calc(100vh - 139px);overflow-y: auto; z-index:1;">
             <div class="panel panel-info em-containerFilter" id="em-files-filters">
                 <div class="panel-heading em-containerFilter-heading !tw-bg-profile-full">
                     <div>
@@ -28,18 +28,18 @@ $hash = EmundusHelperCache::getCurrentGitHash();
                     </div>
                     <div class="buttons" style="float:right; margin-top:0px">
                         <div class="em-flex-row">
-                            <label for="save-filter" class="em-mr-8 em-flex-row" style="margin-bottom: 0;">
-                                    <span class="material-symbols-outlined em-pointer em-color-white"
-                                          title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>">save</span>
-                            </label>
-                            <input type="button" style="display: none" id="save-filter"
-                                   title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_SAVE_BTN'); ?>" />
-                            <label for="clear-search" class="em-flex-row">
-                                <span class="material-symbols-outlined em-pointer em-color-white"
+							<?php
+							if (!$this->use_module_for_filters) {
+								?>
+                                <label for="clear-search" class="em-flex-row">
+                                <span class="material-icons-outlined em-pointer em-color-white"
                                       title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>">filter_alt_off</span>
-                            </label>
-                            <input type="button" style="display: none" id="clear-search"
-                                   title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>"/>
+                                </label>
+                                <input type="button" style="display: none" id="clear-search"
+                                       title="<?php echo JText::_('COM_EMUNDUS_ACTIONS_CLEAR_BTN'); ?>"/>
+								<?php
+							}
+							?>
                         </div>
                     </div>
                 </div>
@@ -55,6 +55,8 @@ $hash = EmundusHelperCache::getCurrentGitHash();
                          data-quick-search-filters='<?= base64_encode(json_encode($this->quick_search_filters)) ?>'
                          data-count-filter-values='<?= $this->count_filter_values ?>'
                          data-allow-add-filter='<?= $this->allow_add_filter ?>'
+                         data-default-selected-registered-filter-id='<?= $this->default_filter_id ?>'
+                         data-can-share-filters='<?= $this->can_share_filters ?>'
                     ></div>
 
                     <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash.rand(0,1000); ?>"></script>

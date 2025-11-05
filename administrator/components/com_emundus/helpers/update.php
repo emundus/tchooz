@@ -4570,4 +4570,87 @@ class EmundusHelperUpdate
 
 		return $added;
 	}
+
+	public static function createNewAction(
+		string $name,
+		array $crud = ['multi' => 0, 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 1],
+		string $label = '',
+		string $description = '',
+		int $published = 0,
+		bool $assign_all_rights_group = true,
+	): int
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		try
+		{
+			$query->clear()
+				->select('id')
+				->from('#__emundus_setup_actions')
+				->where('name = ' . $db->quote($name));
+			$db->setQuery($query);
+			$acl_id = $db->loadResult();
+
+			if(!empty($acl_id))
+			{
+				return $acl_id;
+			}
+
+
+			$query->clear()
+				->select('MAX(ordering)')
+				->from('#__emundus_setup_actions')
+				->where('ordering <> 999');
+			$db->setQuery($query);
+			$ordering = $db->loadResult();
+
+			if(empty($label))
+			{
+				$label = strtoupper('COM_EMUNDUS_ACL_' . $name);
+			}
+			if(empty($description))
+			{
+				$description = strtoupper('COM_EMUNDUS_ACL_' . $name . '_DESC');
+			}
+
+			$acl = (object) [
+				'name'        => $name,
+				'label'       => $label,
+				'multi'       => $crud['multi'] ?? 0,
+				'c'           => $crud['c'] ?? 1,
+				'r'           => $crud['r'] ?? 1,
+				'u'           => $crud['u'] ?? 1,
+				'd'           => $crud['d'] ?? 1,
+				'ordering'    => $ordering + 1,
+				'status'      => $published,
+				'description' => $description
+			];
+			$db->insertObject('#__emundus_setup_actions', $acl);
+			$acl->id = $db->insertid();
+
+			if($assign_all_rights_group)
+			{
+				// Give all rights to all rights group
+				$all_rights_group        = ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
+				$acl_rights = (object) [
+					'group_id'  => $all_rights_group,
+					'action_id' => $acl->id,
+					'c'         => 1,
+					'r'         => 1,
+					'u'         => 1,
+					'd'         => 1,
+					'time_date' => date('Y-m-d H:i:s')
+				];
+				$db->insertObject('#__emundus_acl', $acl_rights);
+			}
+
+			return $acl->id;
+		}
+		catch (Exception $e)
+		{
+			echo $e->getMessage();
+			return 0;
+		}
+	}
 }

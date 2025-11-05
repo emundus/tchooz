@@ -414,8 +414,76 @@ class EmundusControllerFiles extends BaseController
 
 			$m_files = $this->getModel('Files');
 			$filters = $m_files->getSavedFilters($this->_user->id, $item_id);
+			$shared_with_me_filters = $m_files->getSharedFilters($this->_user->id, $item_id);
+			$default_filter_id = $m_files->getDefaultFilterId($this->_user->id);
+
+			if (!empty($shared_with_me_filters)) {
+				foreach ($shared_with_me_filters as $key => $shared_filter) {
+					$found = false;
+					foreach ($filters as $filter) {
+						if ($filter['id'] == $shared_filter['id']) {
+							$found = true;
+							break;
+						}
+					}
+
+					if (!$found) {
+						// to acknowledge the user that the filter is shared with him
+						$shared_filter['shared'] = true;
+						$filters[] = $shared_filter;
+					}
+				}
+			}
+
+			foreach($filters as $index => $filter) {
+				if ($filter['id'] == $default_filter_id) {
+					$filters[$index]['default'] = true;
+				} else {
+					$filters[$index]['default'] = false;
+				}
+			}
+
+			// sort by favorite value
+			usort($filters, function($a, $b) {
+				if ($a['favorite'] == $b['favorite']) {
+					return 0;
+				}
+				return ($a['favorite'] < $b['favorite']) ? 1 : -1;
+			});
 
 			$response = ['status' => true, 'msg' => 'FILTERS_LOADED', 'data' => $filters];
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function getalreadysharedto()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asAccessAction('share_filters', 'c', $this->_user->id) || EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id)) {
+			$filter_id = $this->input->getInt('filter_id', 0);
+
+			if (!empty($filter_id)) {
+				// check if the filter is mine
+				$m_files = $this->getModel('Files');
+				$filters = $m_files->getSavedFilters($this->_user->id, null, $filter_id);
+				$found = false;
+				foreach ($filters as $filter) {
+					if ($filter['id'] == $filter_id) {
+						$found = true;
+						break;
+					}
+				}
+
+				if ($found) {
+					$shared_to = $m_files->getAlreadySharedTo($this->_user->id, $filter_id);
+					$response = ['status' => true, 'msg' => 'FILTERS_LOADED', 'data' => $shared_to];
+				}
+			} else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
 		}
 
 		echo json_encode($response);
@@ -426,7 +494,7 @@ class EmundusControllerFiles extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (!empty($this->_user->id)) {
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
 			$item_id   = $this->input->getInt('item_id', 0);
 			$filter_id = $this->input->getInt('id', 0);
 			$filters   = $this->input->getString('filters', null);
@@ -446,6 +514,76 @@ class EmundusControllerFiles extends BaseController
 		exit;
 	}
 
+	public function renamefilter()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$filter_id = $this->input->getInt('id', 0);
+			$name = $this->input->getString('name', '');
+
+			if (!empty($name) && !empty($filter_id)) {
+				$m_files = $this->getModel('Files');
+				$updated = $m_files->renameFilter($this->_user->id, $filter_id, $name);
+
+				$response = ['status' => $updated, 'msg' => 'FILTER_RENAMED'];
+			}
+			else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	public function togglefilterfavorite()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$filter_id = $this->input->getInt('filter_id', 0);
+
+			if (!empty($filter_id)) {
+				$set_favorite = $this->input->getInt('set_favorite', 0);
+				$m_files = $this->getModel('Files');
+				$updated = $m_files->toggleFilterFavorite($this->_user->id, $filter_id, $set_favorite);
+
+				$response = ['status' => $updated, 'msg' =>  Text::_('FILTER_FAVORITE_UPDATED')];
+			}
+			else {
+				$response['msg'] = Text::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode($response);
+		exit;
+	}
+
+	/**
+	 * TODO: re-open later
+	 * @return void
+	 */
+	public function defineasdefaultfilter()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		/*
+		 if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
+			$filter_id = $this->input->getInt('filter_id', 0);
+			$response['msg'] = Text::_('MISSING_PARAMS');
+
+			if (!empty($filter_id)) {
+				$m_files = $this->getModel('Files');
+				$updated = $m_files->defineAsDefaultFilter($this->_user->id, $filter_id);
+				$response = ['status' => $updated, 'msg' =>  Text::_('FILTER_FAVORITE_UPDATED'), 'code' => 200];
+			}
+		}
+		*/
+
+		$this->sendJsonResponse($response);
+	}
+
 	/**
 	 *
 	 */
@@ -460,6 +598,55 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		echo json_encode((object) (array('status' => $deleted)));
+		exit;
+	}
+
+	public function sharefilter()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asAccessAction('share_filters', 'c', $this->_user->id) || EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id)) {
+			$filter_id = $this->input->getInt('filter', 0);
+			$users = $this->input->getString('users', '');
+			$groups = $this->input->getString('groups', '');
+
+			if (!empty($filter_id)) {
+				$m_files = $this->getModel('Files');
+				$users = !empty($users) ? explode(',', $users) : [];
+				$groups = !empty($groups) ? explode(',', $groups) : [];
+
+				$shared = $m_files->shareFilter($filter_id, $users, $groups, $this->_user->id);
+
+				$response = ['status' => $shared, 'msg' => 'FILTER_SHARED', 'code' => 200];
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+				$response['code'] = 400;
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function deletesharing()
+	{
+		$response = ['status' => false, 'msg' => JText::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asAccessAction('share_filters', 'd', $this->_user->id) || EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id)) {
+			$filter_id = $this->input->getInt('filter_id', 0);
+			$sharing_id = $this->input->getInt('id', 0);
+			$type = $this->input->getString('type', '');
+
+			if (!empty($filter_id) && !empty($sharing_id) && !empty($type)) {
+				$m_files = $this->getModel('Files');
+				$deleted = $m_files->deleteSharing($filter_id, $sharing_id, $type, $this->_user->id);
+
+				$response = ['status' => $deleted, 'msg' => 'SHARING_DELETED'];
+			} else {
+				$response['msg'] = JText::_('MISSING_PARAMS');
+			}
+		}
+
+		echo json_encode($response);
 		exit;
 	}
 
@@ -2006,7 +2193,7 @@ class EmundusControllerFiles extends BaseController
 					}
 				}
 			}
-			
+
 			//check if evaluator can see others evaluators evaluations
 			if (EmundusHelperAccess::isEvaluator($current_user->id) && !@EmundusHelperAccess::isCoordinator($current_user->id)) {
 				$user      = $m_users->getUserById($current_user->id);

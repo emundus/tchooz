@@ -51,7 +51,7 @@ class EmundusFiltersFiles extends EmundusFilters
 				$this->addSessionFilters($session_filters);
 				$this->checkFiltersAvailability();
 			}
-			
+
 			$quick_search_filters = $this->app->getSession()->get('em-quick-search-filters', null);
 			if (!empty($quick_search_filters)) {
 				$this->setQuickSearchFilters($quick_search_filters);

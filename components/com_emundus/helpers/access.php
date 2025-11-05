@@ -164,7 +164,7 @@ class EmundusHelperAccess
 	/**
 	 * Get action access right.
 	 *
-	 * @param   int     $action_id  Id of the action.
+	 * @param   int     $action_id  Id or name of the action
 	 * @param   string  $crud       create/read/update/delete.
 	 *
 	 * @param   null    $user_id    The user id.
@@ -175,48 +175,79 @@ class EmundusHelperAccess
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null)
 	{
+		$has_access = false;
 		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users   = new EmundusModelUsers();
 
-		if (!empty($fnum))
-		{
-			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
-			if ($canAccess > 0)
-			{
-				return true;
-			}
-			elseif ($canAccess == 0 || $canAccess === null)
-			{
-				if (!empty($user_id)) {
-                    $groups = $m_users->getUserGroups($user_id, 'Column');
-                } else {
-                    $groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
-                }
+		if (!is_numeric($action_id)) {
+			$action_id = EmundusHelperAccess::getActionIdByName($action_id);
+		}
 
-				if (!empty($groups) && count($groups) > 0)
+		if (!empty($action_id)) {
+			if (!empty($fnum))
+			{
+				$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
+				if ($canAccess > 0)
 				{
-					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+					$has_access = true;
 				}
-				else
+				elseif ($canAccess == 0 || $canAccess === null)
 				{
-					return false;
+					if (!empty($user_id)) {
+						$groups = $m_users->getUserGroups($user_id, 'Column');
+					} else {
+						$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+					}
+
+					if (!empty($groups) && count($groups) > 0)
+					{
+						$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+					}
 				}
 			}
 			else
 			{
-				return false;
+				if (!empty($user_id)) {
+					$groups = $m_users->getUserGroups($user_id, 'Column');
+				} else
+				{
+					$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+				}
+
+				$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
 			}
 		}
-		else
-		{
-			if (!empty($user_id)) {
-                $groups = $m_users->getUserGroups($user_id, 'Column');
-            } else {
-                $groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
-            }
 
-			return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
+		return $has_access;
+	}
+
+	/**
+	 * @param $action_name string
+	 *
+	 * @return int|null
+	 */
+	static function getActionIdByName($action_name)
+	{
+		$action_id = null;
+
+		if (!empty($action_name)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('id')
+				->from('#__emundus_setup_actions')
+				->where('name = ' . $db->quote($action_name));
+
+			try {
+				$db->setQuery($query);
+				$action_id = $db->loadResult();
+			} catch (Exception $e) {
+				JLog::add('Can not find action id from name ' . $action_name . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				$action_id = null;
+			}
 		}
+
+		return $action_id;
 	}
 
 

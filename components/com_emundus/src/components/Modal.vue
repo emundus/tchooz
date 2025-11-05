@@ -79,6 +79,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		moveToParentWithIdentifier: {
+			type: String,
+			default: '',
+		},
 	},
 	emits: ['beforeOpen', 'closed'],
 	data() {
@@ -87,6 +91,10 @@ export default {
 		};
 	},
 	mounted() {
+		if (this.moveToParentWithIdentifier.length > 0) {
+			this.moveModalToParent();
+		}
+
 		if (this.openOnCreate) {
 			this.open();
 		}
@@ -122,9 +130,14 @@ export default {
 
 			this.$emit('closed');
 		},
+		moveModalToParent() {
+			const parentElement = document.querySelector(this.moveToParentWithIdentifier);
+			if (parentElement) {
+				parentElement.appendChild(this.$el);
+			}
+		},
 		onFocusOut() {
 			if (this.clickToClose) {
-				this.isOpened = false;
 				this.close();
 			}
 		},
