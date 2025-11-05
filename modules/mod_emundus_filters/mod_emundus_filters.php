@@ -3,14 +3,31 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
 $app = Factory::getApplication();
-$user = $app->getSession()->get('emundusUser');
+$em_user = $app->getSession()->get('emundusUser');
 
-if (!empty($user->id) && EmundusHelperAccess::asAccessAction(1, 'r', $user->id)) {
+if (!empty($em_user) && EmundusHelperAccess::asAccessAction(1, 'r', $em_user->id)) {
 	if (!empty($params)) {
 		$layout = $params->get('layout', '');
 		$filter_on_fnums = $params->get('filter_on_fnums', 0);
+		$can_share_filters = EmundusHelperAccess::asAccessAction('share_filters', 'c', $em_user->id);
+
+		$never_applied_default_filter = $app->getSession()->get('em-never-applied-default-filter', true);
+		if ($never_applied_default_filter) {
+			$m_files = new EmundusModelFiles();
+			$default_filter_id = $m_files->getDefaultFilterId($em_user->id);
+			if (!empty($default_filter_id)) {
+				$filter_data = $m_files->getDefaultFilter($default_filter_id, $params->get('id'));
+
+				if (!empty($filter_data)) {
+					$session_filter_from_default = json_decode($filter_data['constraints'], true);
+					$session_filters = $app->getSession()->set('em-applied-filters', $session_filter_from_default);
+					$app->getSession()->set('em-never-applied-default-filter', false);
+				}
+			}
+		}
 
 		if ($filter_on_fnums == 1) {
 			require_once JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php';

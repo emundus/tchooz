@@ -1,20 +1,31 @@
 <template>
 	<div id="emundus-filters" class="tw-w-full">
 		<section id="filters-top-actions" class="tw-mb-4">
-			<span
-				id="clear-filters"
-				class="material-symbols-outlined hidden tw-cursor-pointer"
-				@click="clearFilters"
-				:title="translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS')"
-				>filter_list_off</span
-			>
-			<span
-				id="save-filters"
-				class="material-symbols-outlined hidden tw-cursor-pointer"
-				@click="onClickSaveFilter"
-				:title="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTERS')"
-				>save</span
-			>
+			<button id="clear-filters" class="tw-mb-4 tw-cursor-pointer tw-text-red-500 tw-underline" @click="clearFilters">
+				{{ translate('MOD_EMUNDUS_FILTERS_CLEAR_FILTERS') }}
+			</button>
+
+			<RegisteredFilters
+				:filters="registeredFilters"
+				:selected-filter="selectedRegisteredFilter"
+				:filter-to-rename="filterToRename"
+				:opened="openedRegisteredFilters"
+				:can-share-filters="canShareFilters"
+				:has-unsaved="unsavedNewFilter"
+				@toggle-opened="toggleOpened"
+				@select="onSelectRegisteredFilter"
+				@save-new="saveNewFilter"
+				@save-temp="saveRegisteredFilters"
+				@edit-name="editFilterName"
+				@on-rename="onRenameFilter"
+				@update="updateFilter"
+				@share="shareFilter"
+				@delete="deleteRegisteredFilter"
+				@define-default="defineAsDefault"
+				@toggle-favorite="toggleFilterFavoriteState"
+			/>
+
+			<hr style="margin: 20px 32px" />
 
 			<div id="global-search-wrapper" class="tw-relative">
 				<div
@@ -72,58 +83,6 @@
 						</button>
 					</li>
 				</ul>
-			</div>
-			<div id="save-filters-inputs-btns">
-				<div
-					id="save-filter-new-name"
-					class="tw-flex tw-w-full tw-items-center tw-justify-between tw-rounded-coordinator tw-bg-white tw-p-4 tw-shadow-standard"
-					:class="{ hidden: !openSaveFilter }"
-				>
-					<input
-						id="new-filter-name"
-						ref="new-filter-name"
-						type="text"
-						class="tw-flex tw-items-center"
-						v-model="newFilterName"
-						:placeholder="translate('MOD_EMUNDUS_FILTERS_SAVE_FILTER_NAME')"
-						minlength="2"
-						@keyup.enter="saveFilters"
-						@focusout="onFocusOutNewFilter"
-					/>
-					<span
-						id="save-new-filter"
-						class="material-symbols-outlined tw-cursor-pointer"
-						:class="{ 'em-dark-blue-500-color': newFilterName.length > 1 }"
-						@click="saveFilters"
-						>done</span
-					>
-				</div>
-				<div v-if="registeredFilters.length > 0" id="registered-filters-wrapper" class="tw-mt-2">
-					<label for="registered-filters">{{ translate('MOD_EMUNDUS_FILTERS_SAVED_FILTERS') }}</label>
-					<div class="tw-flex tw-items-center tw-justify-between">
-						<select
-							id="registered-filters"
-							class="tw-w-full"
-							v-model="selectedRegisteredFilter"
-							@change="onSelectRegisteredFilter"
-						>
-							<option value="0">{{ translate('MOD_EMUNDUS_FILTERS_PLEASE_SELECT') }}</option>
-							<option
-								v-for="registeredFilter in registeredFilters"
-								:key="registeredFilter.id"
-								:value="registeredFilter.id"
-							>
-								{{ registeredFilter.name }}
-							</option>
-						</select>
-						<span
-							v-if="selectedRegisteredFilter > 0"
-							class="material-symbols-outlined tw-cursor-pointer tw-text-red-600"
-							@click="deleteRegisteredFilter"
-							>delete</span
-						>
-					</div>
-				</div>
 			</div>
 		</section>
 		<section id="applied-filters">
@@ -184,6 +143,21 @@
 				{{ translate('MOD_EMUNDUS_FILTERS_APPLY_FILTERS') }}
 			</button>
 		</section>
+
+		<Modal
+			:name="'share-filters-modal'"
+			ref="shareFiltersModal"
+			v-if="canShareFilters"
+			:title="translate('MOD_EMUNDUS_FILTERS_SHARE_FILTERS')"
+			:open-on-create="false"
+			:center="true"
+			:click-to-close="false"
+			:width="'70%'"
+			:classes="'tw-rounded-coordinator tw-p-4 tw-shadow-lg'"
+			:moveToParentWithIdentifier="'.platform-content.container'"
+		>
+			<share-filters v-if="filterToShare" :filter="filterToShare" @close="onCloseShareFilterModal"></share-filters>
+		</Modal>
 	</div>
 </template>
 
@@ -194,6 +168,11 @@ import DateFilter from '@/components/Filters/DateFilter.vue';
 import TimeFilter from '@/components/Filters/TimeFilter.vue';
 import DefaultFilter from '@/components/Filters/DefaultFilter.vue';
 import filtersService from '@/services/filters.js';
+import Popover from '@/components/Popover.vue';
+import Modal from '@/components/Modal.vue';
+import ShareFilters from '@/views/Filters/ShareFilters.vue';
+import RegisteredFilters from '@/views/Filters/RegisteredFilters.vue';
+import alert from '@/mixins/alerts.js';
 
 const defaultGlobalSearchScopes = [
 	{ value: 'everywhere', label: 'MOD_EMUNDUS_FILTERS_SCOPE_ALL' },
@@ -207,7 +186,17 @@ const defaultGlobalSearchScopes = [
 
 export default {
 	name: 'App',
-	components: { DateFilter, AdvancedSelect, MultiSelect, TimeFilter, DefaultFilter },
+	components: {
+		RegisteredFilters,
+		Modal,
+		ShareFilters,
+		DateFilter,
+		AdvancedSelect,
+		MultiSelect,
+		TimeFilter,
+		DefaultFilter,
+		Popover,
+	},
 	props: {
 		menuId: {
 			type: Number,
@@ -233,7 +222,16 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		canShareFilters: {
+			type: Boolean,
+			default: false,
+		},
+		defaultSelectedRegisteredFilterId: {
+			type: Number,
+			default: 0,
+		},
 	},
+	mixins: [alert],
 	data() {
 		return {
 			applySuccessEvent: null,
@@ -250,15 +248,22 @@ export default {
 			currentGlobalSearchScope: 'everywhere',
 			globalSearchScopes: [],
 			filters: [],
+			openedRegisteredFilters: false,
+			filterToShare: null,
+			filterToRename: null,
+			showShareFiltersModal: false,
 		};
 	},
 	mounted() {
 		this.applySuccessEvent = new Event('emundus-apply-filters-success');
 		this.startApplyFilters = new Event('emundus-start-apply-filters');
 		this.filters = this.defaultFilters;
-
-		this.getRegisteredFilters();
+		if (this.defaultSelectedRegisteredFilterId > 0) {
+			sessionStorage.setItem('emundus-current-filter', this.defaultSelectedRegisteredFilterId);
+		}
 		this.selectedRegisteredFilter = sessionStorage.getItem('emundus-current-filter') || 0;
+
+		this.getRegisteredFilters(true);
 		this.appliedFilters = this.defaultAppliedFilters.map((filter) => {
 			if (!filter.hasOwnProperty('operator')) {
 				filter.operator = '=';
@@ -422,19 +427,30 @@ export default {
 			});
 			this.applyFilters();
 		},
-		onFocusOutNewFilter(e) {
-			this.saveFilters(e);
-			this.openSaveFilter = false;
-		},
-		saveFilters(e) {
-			if (e) {
-				e.preventDefault();
-				e.stopPropagation();
+		saveNewFilter() {
+			if (this.registeredFilters.find((filter) => filter.id === 'tmp')) {
+				return;
 			}
-			let saved = false;
 
-			if (this.newFilterName.length > 0) {
-				// keep only the selected values, not all the values
+			this.alertInput('MOD_EMUNDUS_FILTERS_NEW_FILTER_NAME_PROMPT').then((result) => {
+				if (result.isConfirmed && result.value) {
+					this.registeredFilters.push({
+						id: 'tmp',
+						name: result.value,
+						constraints: JSON.stringify(this.appliedFilters),
+						shared: false,
+						shared_by: null,
+					});
+
+					this.saveRegisteredFilters('tmp');
+				}
+			});
+		},
+		saveRegisteredFilters(filterId) {
+			let saved = false;
+			const newFilter = this.registeredFilters.find((filter) => filter.id === filterId);
+
+			if (newFilter.name.length > 0) {
 				const filterContent = this.appliedFilters.map((filter) => {
 					// remove the values, not needed to save the filter
 					let filterCopy = JSON.parse(JSON.stringify(filter));
@@ -442,16 +458,55 @@ export default {
 					return filterCopy;
 				});
 
-				filtersService.saveFilters(filterContent, this.newFilterName, this.menuId).then((saved) => {
+				filtersService.saveFilters(filterContent, newFilter.name, this.menuId).then((saved) => {
 					if (saved) {
-						this.getRegisteredFilters();
+						const ids = this.registeredFilters.map((filter) => filter.id);
+						this.getRegisteredFilters().then(() => {
+							const newID = this.registeredFilters.map((filter) => filter.id).filter((id) => !ids.includes(id))[0];
+							this.onSelectRegisteredFilter(newID);
+						});
 					}
 				});
-				this.openSaveFilter = false;
-				this.newFilterName = '';
 			}
 
 			return saved;
+		},
+		editFilterName(filterId) {
+			let renamed = false;
+
+			if (filterId) {
+				this.filterToRename = this.registeredFilters.find((filter) => filter.id === filterId);
+			}
+			this.closeFilterPopover(filterId);
+
+			return renamed;
+		},
+		onRenameFilter(filterId) {
+			if (filterId) {
+				const foundFilter = this.registeredFilters.find((filter) => filter.id === filterId);
+
+				this.alertInput('MOD_EMUNDUS_FILTERS_NEW_FILTER_NAME_PROMPT', foundFilter.name).then((result) => {
+					if (result.isConfirmed && result.value) {
+						this.renameFilter(filterId, result.value);
+					}
+				});
+			}
+		},
+		renameFilter(filterId, newName = '') {
+			if (filterId) {
+				const foundFilter = this.registeredFilters.find((filter) => filter.id === filterId);
+				if (newName !== '') {
+					foundFilter.name = newName;
+				}
+
+				if (foundFilter) {
+					filtersService.renameFilter(filterId, foundFilter.name).then(() => {
+						this.getRegisteredFilters();
+					});
+				}
+			}
+
+			this.filterToRename = null;
 		},
 		updateFilter(filterId) {
 			let updated = false;
@@ -460,17 +515,36 @@ export default {
 				updated = filtersService.updateFilter(this.appliedFilters, this.menuId, filterId);
 
 				if (updated) {
+					this.alertSuccess('MOD_EMUNDUS_FILTERS_FILTER_UPDATED_SUCCESS');
 					this.getRegisteredFilters();
+				} else {
+					this.alertError('MOD_EMUNDUS_FILTERS_FILTER_UPDATED_ERROR');
 				}
 			}
+
+			this.closeFilterPopover(filterId);
+
 			return updated;
 		},
-		getRegisteredFilters() {
-			filtersService.getRegisteredFilters(this.menuId).then((filters) => {
+		getRegisteredFilters(firstLoad = false) {
+			return filtersService.getRegisteredFilters(this.menuId).then((filters) => {
 				this.registeredFilters = filters;
+				if (firstLoad) {
+					this.selectedRegisteredFilter = Number(sessionStorage.getItem('emundus-current-filter')) || 0;
+
+					if (this.availableFilters.length > 0) {
+						// Check via session storage if the registered filters panel should be opened
+						const opened = sessionStorage.getItem('emundus-registered-filters-opened');
+						this.openedRegisteredFilters = opened === '1';
+					}
+				}
 			});
 		},
-		onSelectRegisteredFilter() {
+		onSelectRegisteredFilter(filterId = null) {
+			if (filterId !== null) {
+				this.selectedRegisteredFilter = filterId;
+			}
+
 			if (this.selectedRegisteredFilter > 0) {
 				const foundFilter = this.registeredFilters.find((filter) => filter.id === this.selectedRegisteredFilter);
 
@@ -484,7 +558,7 @@ export default {
 							filter.andorOperator = 'OR';
 						}
 
-						if (!filter.hasOwnProperty('values')) {
+						if (!filter.hasOwnProperty('values') || filter.values.length < 1) {
 							filter.values = [];
 							this.defaultFilters.forEach((defaultFilter) => {
 								if (defaultFilter.id === filter.id) {
@@ -496,6 +570,12 @@ export default {
 									filter.values = defaultFilter.values;
 								}
 							});
+
+							if (filter.values.length < 1 && filter.type === 'select') {
+								filtersService.getFilterValues(filter.id).then((values) => {
+									filter.values = values;
+								});
+							}
 						}
 
 						return filter;
@@ -505,33 +585,6 @@ export default {
 				}
 			} else {
 				sessionStorage.removeItem('emundus-current-filter');
-			}
-		},
-		deleteRegisteredFilter() {
-			// delete  selectedRegisteredFilter from registeredFilters
-			const filterIdToDelete = this.selectedRegisteredFilter;
-			filtersService.deleteFilter(filterIdToDelete);
-
-			this.registeredFilters = this.registeredFilters.filter((filter) => filter.id !== filterIdToDelete);
-			this.selectedRegisteredFilter = 0;
-			this.onSelectRegisteredFilter();
-		},
-		onClickSaveFilter() {
-			if (this.selectedRegisteredFilter > 0) {
-				const foundFilter = this.registeredFilters.find((filter) => filter.id === this.selectedRegisteredFilter);
-
-				if (foundFilter) {
-					this.updateFilter(foundFilter.id);
-				}
-			} else {
-				this.openSaveFilter = !this.openSaveFilter;
-
-				if (this.openSaveFilter) {
-					// focus on the input new-filter-name
-					this.$nextTick(() => {
-						this.$refs['new-filter-name'].focus();
-					});
-				}
 			}
 		},
 		onRemoveFilter(filter) {
@@ -614,6 +667,74 @@ export default {
                 }
             });*/
 		},
+
+		shareFilter(filterId) {
+			if (this.canShareFilters) {
+				this.filterToShare = this.registeredFilters.find((filter) => filter.id === filterId);
+				this.$refs.shareFiltersModal.open();
+			}
+
+			this.closeFilterPopover(filterId);
+		},
+		deleteRegisteredFilter(filterId) {
+			if (filterId > 0) {
+				let filter = this.registeredFilters.find((f) => f.id === filterId);
+				Swal.fire({
+					title: this.translate('MOD_EMUNDUS_FILTERS_DELETE_FILTER_CONFIRMATION') + (filter ? filter.name : ''),
+					icon: 'warning',
+					showCancelButton: true,
+					confirmButtonText: this.translate('MOD_EMUNDUS_FILTERS_CONFIRM'),
+					cancelButtonText: this.translate('MOD_EMUNDUS_FILTERS_CANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						cancelButton: 'em-swal-cancel-button',
+						confirmButton: 'em-swal-confirm-button',
+					},
+				}).then((result) => {
+					if (result.value) {
+						filtersService.deleteFilter(filterId);
+						this.registeredFilters = this.registeredFilters.filter((filter) => filter.id !== filterId);
+
+						if (this.selectedRegisteredFilter === filterId) {
+							this.onSelectRegisteredFilter(0);
+						}
+					}
+
+					this.closeFilterPopover(filterId);
+				});
+			}
+		},
+		defineAsDefault(filterId) {
+			return;
+
+			filtersService.defineAsDefaultFilter(filterId).then((response) => {
+				if (response.status) {
+					this.getRegisteredFilters();
+				}
+
+				this.closeFilterPopover(filterId);
+			});
+		},
+		toggleFilterFavoriteState(filterId, favorite) {
+			filtersService.toggleFilterFavoriteState(filterId, favorite).then(() => {
+				this.getRegisteredFilters();
+			});
+		},
+		closeFilterPopover(filterId) {
+			if (this.$refs['popover' + filterId]) {
+				this.$refs['popover' + filterId][0].close();
+			}
+		},
+		onCloseShareFilterModal() {
+			this.$refs.shareFiltersModal.close();
+			this.filterToShare = null;
+		},
+		toggleOpened() {
+			this.openedRegisteredFilters = !this.openedRegisteredFilters;
+
+			sessionStorage.setItem('emundus-registered-filters-opened', this.openedRegisteredFilters ? '1' : '0');
+		},
 	},
 	computed: {
 		availableFilters() {
@@ -623,6 +744,9 @@ export default {
 		},
 		globalSearchPlaceholder() {
 			return this.globalSearch.length < 1 ? this.translate('MOD_EMUNDUS_FILTERS_GLOBAL_SEARCH_PLACEHOLDER') : '';
+		},
+		unsavedNewFilter() {
+			return this.registeredFilters.find((filter) => filter.id === 'tmp') !== undefined;
 		},
 	},
 };
@@ -678,5 +802,13 @@ export default {
 #save-filter-new-name {
 	position: absolute;
 	top: 0;
+}
+
+.favorite {
+	font-variation-settings:
+		'FILL' 0,
+		'wght' 400,
+		'GRAD' 0,
+		'opsz' 24;
 }
 </style>

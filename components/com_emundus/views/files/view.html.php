@@ -113,6 +113,21 @@ class EmundusViewFiles extends HtmlView
 				$this->quick_search_filters = $m_filters->getQuickSearchFilters();
 				$this->count_filter_values  = $menu_params->get('count_filter_values', 0);
 				$this->allow_add_filter     = $menu_params->get('allow_add_filter', 1);
+				$this->can_share_filters    = (EmundusHelperAccess::asAccessAction('share_filters', 'c', $current_user->id) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) ? 1 : 0;
+
+				/*
+				 * todo: rework default filter application
+				 * $never_applied_default_filter = $this->app->getSession()->get('em-never-applied-default-filter', true);
+				if ($never_applied_default_filter) {
+					$filter_data = $this->m_files->getDefaultFilter(0, $params->get('id'), $current_user->id);
+					if (!empty($filter_data))
+					{
+						$session_filter_from_default = json_decode($filter_data['constraints'], true);
+						$this->app->getSession()->set('em-applied-filters', $session_filter_from_default);
+						$this->app->getSession()->set('em-never-applied-default-filter', false);
+						$this->default_filter_id = $filter_data['id'];
+					}
+				}*/
 			}
 			catch (Exception $e)
 			{

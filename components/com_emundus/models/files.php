@@ -5352,18 +5352,25 @@ class EmundusModelFiles extends JModelLegacy
 		return $saved;
 	}
 
-	public function getSavedFilters($user_id, $item_id)
+	public function getSavedFilters($user_id, $item_id = null, $filter_id = null)
 	{
 		$filters = array();
 
 		if (!empty($user_id)) {
+			$query     = $this->_db->createQuery();
+			$query->select('ef.id, ef.name, ef.constraints, eff.id as favorite')
+				->from($this->_db->quoteName('#__emundus_filters', 'ef'))
+				->leftJoin($this->_db->quoteName('#__emundus_filters_favorites', 'eff') . ' ON ' . $this->_db->quoteName('ef.id') . ' = ' . $this->_db->quoteName('eff.filter_id') . ' AND ' . $this->_db->quoteName('eff.user_id') . ' = ' . $user_id)
+				->where('ef.user = ' . $user_id)
+				->where('ef.mode = ' . $this->_db->quote('search'));
 
-			$query     = $this->_db->getQuery(true);
-			$query->select('id, name, constraints')
-				->from($this->_db->quoteName('#__emundus_filters'))
-				->where('user = ' . $user_id)
-				->where('item_id = ' . $item_id)
-				->where('mode = ' . $this->_db->quote('search'));
+			if (!empty($item_id)) {
+				$query->where('ef.item_id = ' . $item_id);
+			}
+
+			if (!empty($filter_id)) {
+				$query->where('ef.id = ' . $filter_id);
+			}
 
 			try {
 				$this->_db->setQuery($query);
@@ -5375,6 +5382,266 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $filters;
+	}
+
+	/**
+	 * Get filters that are shared with the user, by his group or by his id directly
+	 * @param $user_id
+	 * @param $item_id
+	 *
+	 * @return array
+	 */
+	public function getSharedFilters($user_id, $item_id)
+	{
+		$filters = [];
+
+		if (!empty($user_id)) {
+			$user_groups = [];
+			if (!class_exists('EmundusModelUsers')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+			}
+			$m_users = new EmundusModelUsers();
+			$user_groups = $m_users->getUserGroups($user_id, 'Column');
+
+			if (is_null($this->_db)) {
+				$this->_db = Factory::getContainer()->get('DatabaseDriver');
+			}
+
+			$query = $this->_db->createQuery();
+
+			$query->select('ef.id, ef.name, ef.constraints, efa.shared_by, eff.id as favorite')
+				->from($this->_db->quoteName('#__emundus_filters', 'ef'))
+				->leftJoin($this->_db->quoteName('#__emundus_filters_assoc', 'efa') . ' ON ' . $this->_db->quoteName('efa') . '.filter_id = ' . $this->_db->quoteName('ef') . '.id')
+				->leftJoin($this->_db->quoteName('#__emundus_filters_favorites', 'eff') . ' ON ' . $this->_db->quoteName('ef.id') . ' = ' . $this->_db->quoteName('eff.filter_id') . ' AND ' . $this->_db->quoteName('eff.user_id') . ' = ' . $user_id)
+				->where('mode = ' . $this->_db->quote('search'));
+
+			if (!empty($user_groups)) {
+				$query->where('(' . $this->_db->quoteName('efa') . '.user_id = ' . $user_id . ' OR ' . $this->_db->quoteName('efa') . '.group_id IN (' . implode(',', $user_groups) . '))');
+			} else {
+				$query->where($this->_db->quoteName('efa') . '.user_id = ' . $user_id);
+			}
+
+			$query->where($this->_db->quoteName('ef') . '.item_id = ' . $item_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$filters = $this->_db->loadAssocList();
+			}
+			catch (Exception $e) {
+				JLog::add('Error getting shared filters: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filters;
+	}
+
+	public function getDefaultFilterId($user_id) {
+		$filter_id = 0;
+
+		if (!empty($user_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('filter_id')
+				->from($this->_db->quoteName('#__emundus_filters_user_default_filter'))
+				->where('user_id = ' . $user_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$filter_id = $this->_db->loadResult();
+			}
+			catch (Exception $e) {
+				Log::add('Error getting default filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filter_id;
+	}
+
+	public function getDefaultFilter($filter_id, $item_id = null, $user_id = null) {
+		$filter = [];
+
+		if (!empty($filter_id) || !empty($user_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('ef.id, ef.name, ef.constraints')
+				->from($this->_db->quoteName('#__emundus_filters', 'ef'))
+				->where('ef.mode = ' . $this->_db->quote('search'));
+
+			if (!empty($filter_id)) {
+				$query->where('ef.id = ' . $filter_id);
+			}
+
+			if (!empty($user_id)) {
+				$query->leftJoin($this->_db->quoteName('#__emundus_filters_user_default_filter', 'default') . ' ON default.filter_id = ef.id');
+				$query->where('default.user_id = ' . $user_id);
+			}
+
+			if (!empty($item_id)) {
+				$query->where('ef.item_id = ' . $item_id);
+			}
+
+			try {
+				$this->_db->setQuery($query);
+				$filter = $this->_db->loadAssoc();
+			}
+			catch (Exception $e) {
+				Log::add('Error getting saved filters: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filter;
+
+	}
+
+	/**
+	 * @param $filter_id
+	 *
+	 * @return array
+	 */
+	public function getAlreadySharedTo($user_id, $filter_id)
+	{
+		$already_shared_to = [
+			'users' => [],
+			'groups' => []
+		];
+
+		if (!empty($filter_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('user_id, group_id')
+				->from($this->_db->quoteName('#__emundus_filters_assoc'))
+				->where('filter_id = ' . $filter_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$associations = $this->_db->loadAssocList();
+			}
+			catch (Exception $e) {
+				JLog::add('Error getting already shared to: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+
+			if (!empty($associations)) {
+				$users = [];
+				$groups = [];
+
+				foreach($associations as $association) {
+					if (!empty($association['user_id'])) {
+						$users[] = $association['user_id'];
+					}
+					if (!empty($association['group_id'])) {
+						$groups[] = $association['group_id'];
+					}
+				}
+
+				if (!empty($users)) {
+					$query->clear()
+						->select('id, name as label')
+						->from($this->_db->quoteName('#__users'))
+						->where('id IN (' . implode(',', $users) . ')');
+
+					try {
+						$this->_db->setQuery($query);
+						$already_shared_to['users'] = $this->_db->loadAssocList();
+					}
+					catch (Exception $e) {
+						JLog::add('Error getting already shared to users: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
+				}
+
+				if (!empty($groups)) {
+					$query->clear()
+						->select('id, label')
+						->from($this->_db->quoteName('#__emundus_setup_groups'))
+						->where('id IN (' . implode(',', $groups) . ')');
+
+					try {
+						$this->_db->setQuery($query);
+						$already_shared_to['groups'] = $this->_db->loadAssocList();
+					}
+					catch (Exception $e) {
+						JLog::add('Error getting already shared to groups: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+		}
+
+		return $already_shared_to;
+	}
+
+	public function shareFilter($filter_id, $user_ids, $group_ids, $shared_by)
+	{
+		$shared = false;
+
+		if (!empty($filter_id) && (!empty($user_ids) || !empty($group_ids))) {
+			$query = $this->_db->createQuery();
+
+			$sharings = [];
+			foreach($user_ids as $user_id) {
+				$query->clear()
+					->insert($this->_db->quoteName('#__emundus_filters_assoc'))
+					->columns(['filter_id', 'user_id', 'shared_by', 'shared_date'])
+					->values($filter_id . ', ' . $user_id . ', ' . $shared_by . ', ' . $this->_db->quote(date('Y-m-d H:i:s')));
+
+				try {
+					$this->_db->setQuery($query);
+					$sharings[] = $this->_db->execute();
+				}
+				catch (Exception $e) {
+					JLog::add('Error sharing filter: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$sharings[] = false;
+				}
+			}
+
+			foreach($group_ids as $group_id) {
+				$query->clear()
+					->insert($this->_db->quoteName('#__emundus_filters_assoc'))
+					->columns(['filter_id', 'group_id', 'shared_by', 'shared_date'])
+					->values($filter_id . ', ' . $group_id . ', ' . $shared_by . ', ' . $this->_db->quote(date('Y-m-d H:i:s')));
+
+				try {
+					$this->_db->setQuery($query);
+					$sharings[] = $this->_db->execute();
+				}
+				catch (Exception $e) {
+					JLog::add('Error sharing filter: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$sharings[] = false;
+				}
+			}
+
+			$shared = !in_array(false, $sharings);
+		}
+
+		return $shared;
+	}
+
+	/**
+	 * @param $filter_id int
+	 * @param $share_to_id int user_id or group_id
+	 * @param $column string user_id or group_id
+	 * @param $shared_by int you are the owner of the filter, you can delete the sharing
+	 *
+	 * @return false
+	 */
+	public function deleteSharing($filter_id, $share_to_id, $column, $shared_by)
+	{
+		$deleted = false;
+
+		if (!empty($filter_id) && !empty($share_to_id) && !empty($column) && !empty($shared_by)) {
+			if ($column === 'user_id' || $column === 'group_id') {
+				$query = $this->_db->createQuery();
+				$query->delete($this->_db->quoteName('#__emundus_filters_assoc'))
+					->where('filter_id = ' . $filter_id)
+					->where($column . ' = ' . $share_to_id)
+					->where('shared_by = ' . $shared_by);
+
+				try {
+					$this->_db->setQuery($query);
+					$deleted = $this->_db->execute();
+				}
+				catch (Exception $e) {
+					JLog::add('Error deleting sharing: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+		}
+
+		return $deleted;
 	}
 
 	public function updateFilter($user_id, $filter_id, $filters, $item_id)
@@ -5401,6 +5668,104 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $updated;
+	}
+
+	public function renameFilter($user_id, $filter_id, $name)
+	{
+		$updated = false;
+
+		if (!empty($user_id) && !empty($filter_id) && !empty($name)) {
+
+			$query     = $this->_db->getQuery(true);
+			$query->update($this->_db->quoteName('#__emundus_filters'))
+				->set('name = ' . $this->_db->quote($name))
+				->where('user = ' . $user_id)
+				->where('id = ' . $filter_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Error updating filter name: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * @param $user_id
+	 * @param $filter_id
+	 * @param $set_favorite
+	 *
+	 * @return bool
+	 */
+	public function toggleFilterFavorite($user_id, $filter_id, $set_favorite = 0): bool
+	{
+		$updated = false;
+
+		if (!empty($user_id) && !empty($filter_id)) {
+			$query = $this->_db->createQuery();
+
+			if (!$set_favorite) {
+				$query->delete($this->_db->quoteName('#__emundus_filters_favorites'))
+					->where('user_id = ' . $user_id)
+					->where('filter_id = ' . $filter_id);
+			} else {
+				$query->insert($this->_db->quoteName('#__emundus_filters_favorites'))
+					->columns(['user_id', 'filter_id'])
+					->values($user_id . ', ' . $filter_id);
+			}
+
+			try {
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			} catch (Exception $e) {
+				Log::add('Error updating filter favorite: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+		}
+
+		return $updated;
+	}
+
+	public function defineAsDefaultFilter($user_id, $filter_id) {
+		$set_default = false;
+
+		if (!empty($user_id) && !empty($filter_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('id')
+				->from('#__emundus_filters_user_default_filter')
+				->where('user_id = ' . $user_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$default_filter_row_id = $this->_db->loadResult();
+
+				if (!empty($default_filter_row_id)) {
+					$query->clear()
+						->update('#__emundus_filters_user_default_filter')
+						->set('filter_id = ' . $filter_id)
+						->where('id = ' . $default_filter_row_id);
+
+					$this->_db->setQuery($query);
+					$set_default = $this->_db->execute();
+				} else {
+					$query->clear()
+						->insert('#__emundus_filters_user_default_filter')
+						->columns(['user_id', 'filter_id'])
+						->values($user_id . ', ' . $filter_id);
+
+					$this->_db->setQuery($query);
+					$set_default = $this->_db->execute();
+				}
+			} catch (Exception $e) {
+				Log::add('Define filter ' . $filter_id . ' as default for user ' . $user_id . ' failed', Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $set_default;
 	}
 
 	public function getStatusByGroup($uid = null)

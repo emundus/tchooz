@@ -576,7 +576,7 @@ body ::-webkit-scrollbar-track {
   width: 30px !important;
   height: 30px !important;
 }
-.modal___wrapper[data-v-3f5d1bb6] {
+.modal___wrapper[data-v-8b7a1d52] {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -591,7 +591,7 @@ body ::-webkit-scrollbar-track {
 		visibility 0.3s;
 	overflow-y: auto;
 }
-.modal___backdrop[data-v-3f5d1bb6] {
+.modal___backdrop[data-v-8b7a1d52] {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -603,7 +603,7 @@ body ::-webkit-scrollbar-track {
 	        backdrop-filter: blur(1px) opacity(1);
 	transition: 0.3s;
 }
-.modal___container[data-v-3f5d1bb6] {
+.modal___container[data-v-8b7a1d52] {
 	position: fixed;
 	top: 0;
 	left: 0;
@@ -932,11 +932,11 @@ body ::-webkit-scrollbar-track {
 .pagination li a.disabled span {
   color: var(--neutral-500) !important;
 }
-.popover-container[data-v-fe1981ba] {
+.popover-container[data-v-e41b523f] {
 	position: relative;
 	display: inline-block;
 }
-.popover-content[data-v-fe1981ba] {
+.popover-content[data-v-e41b523f] {
 	background-color: white;
 	position: absolute;
 	min-height: 40px;
@@ -944,16 +944,14 @@ body ::-webkit-scrollbar-track {
 	width: -moz-max-content;
 	width: max-content;
 	opacity: 1;
-	z-index: 9999;
-
 	transition: opacity 0.2s ease-in-out;
 }
-.fade-enter-active[data-v-fe1981ba],
-.fade-leave-active[data-v-fe1981ba] {
+.fade-enter-active[data-v-e41b523f],
+.fade-leave-active[data-v-e41b523f] {
 	transition: opacity 0.5s ease;
 }
-.fade-enter-from[data-v-fe1981ba],
-.fade-leave-to[data-v-fe1981ba] {
+.fade-enter-from[data-v-e41b523f],
+.fade-leave-to[data-v-e41b523f] {
 	opacity: 0;
 }
 
@@ -1109,6 +1107,31 @@ span.label[data-v-d6006dcf] {
 	overflow: hidden;
 }
 
+#advanced-select ul[data-v-d327c1bd] {
+	list-style-type: none;
+	overflow-y: auto;
+}
+#advanced-select ul li.em-pointer[data-v-d327c1bd]:hover {
+	background-color: #e4e4e4;
+}
+#advanced-select {
+&.absolute-behave {
+&[data-v-d327c1bd] {
+		position: relative;
+		}
+ul[data-v-d327c1bd] {
+			position: absolute;
+			z-index: 2;
+}
+}
+}
+
+.selected-values-to-share[data-v-4b4b2500] {
+	flex-wrap: wrap;
+	max-height: 100px;
+	overflow-y: auto;
+}
+
 #emundus-filters {
 	position: relative;
 }
@@ -1150,6 +1173,13 @@ span.label[data-v-d6006dcf] {
 #save-filter-new-name {
 	position: absolute;
 	top: 0;
+}
+.favorite {
+	font-variation-settings:
+		'FILL' 0,
+		'wght' 400,
+		'GRAD' 0,
+		'opsz' 24;
 }
 
 .tchooz-widget[data-v-01f8cbb9] {

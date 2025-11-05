@@ -213,6 +213,8 @@ if (document) {
 							defaultQuickSearchFilters: JSON.parse(atob(el.getAttribute('data-quick-search-filters'))),
 							countFilterValues: el.getAttribute('data-count-filter-values') === '1',
 							allowAddFilter: el.getAttribute('data-allow-add-filter') === '1',
+							canShareFilters: el.getAttribute('data-can-share-filters') === '1',
+							defaultSelectedRegisteredFilterId: el.getAttribute('data-default-selected-registered-filter-id') || 0,
 						});
 						break;
 					case 'Ranking/rankings':
