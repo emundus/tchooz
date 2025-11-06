@@ -374,8 +374,8 @@ class EmundusControllersettings extends BaseController
 		$filename = '';
 		if (!empty($logo))
 		{
-			$logo_path = explode('/', $logo);
-			$filename  = $logo_path[count($logo_path) - 1];
+			$base_url = Uri::base();
+			$filename = str_replace($base_url, '', $logo);
 		}
 
 		$tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $filename);

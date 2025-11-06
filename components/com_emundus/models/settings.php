@@ -1001,9 +1001,17 @@ class EmundusModelSettings extends ListModel
 
 			if (move_uploaded_file($new_logo, $target_file))
 			{
-				$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
+				libxml_use_internal_errors(true); // suppress HTML5 parsing warnings
 
-				$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
+				// Maybe the logo was already customized by an other name before so we have to search src tag and replace it
+				$dom = new DOMDocument();
+				$dom->loadHTML($logo_module->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+				$images = $dom->getElementsByTagName('img');
+				foreach ($images as $img)
+				{
+					$img->setAttribute('src', $target_file);
+				}
+				$new_content = $dom->saveHTML();
 
 				$query->clear()
 					->update($this->db->quoteName('#__modules'))
