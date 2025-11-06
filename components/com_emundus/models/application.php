@@ -1241,6 +1241,10 @@ class EmundusModelApplication extends ListModel
 					}
 
 
+					if ($completion > 100)
+					{
+						$completion = 100;
+					}
 					$this->updateAttachmentProgressByFnum(ceil($completion), $f);
 					$result[$f] = ceil($completion);
 				}
