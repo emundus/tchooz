@@ -225,10 +225,10 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      component="Campaigns"
      coordinatoraccess="1"
      sysadminaccess="1"
-     shortlang="fr"
-     currentlanguage="fr-FR"
+     shortlang="<?php echo $short_lang ?>"
+     currentlanguage="<?php echo $current_lang ?>"
      manylanguages="1"
-     defaultlang="fr-FR">
+     defaultlang="<?php echo $default_lang ?>">
 </div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
