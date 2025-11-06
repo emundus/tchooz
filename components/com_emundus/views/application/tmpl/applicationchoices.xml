@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="[Voeux] Gestion des voeux, vue gestionnaire">
+        <message>
+            <![CDATA[[Voeux] Gestion des voeux, vue gestionnaire]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

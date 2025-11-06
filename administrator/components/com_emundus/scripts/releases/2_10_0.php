@@ -68,7 +68,7 @@ class Release2_10_0Installer extends ReleaseInstaller
 		return $result;
 	}
 
-	private function initUserTypeFeature($query)
+	private function initUserTypeFeature($query): void
 	{
 		$columns      = [
 			[

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="4">
+  <name>plg_fabrik_element_application_choices</name>
+  <author>Fabrikar</author>
+  <creationDate>2025-08-20</creationDate>
+  <copyright>Copyright (C) 2005-2025 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>team@fabrikar.com</authorEmail>
+  <authorUrl>https://www.fabrikar.com</authorUrl>
+  <version>4.5.6</version>
+  <description>PLG_ELEMENT_APPLICATION_CHOICES_DESCRIPTION</description>
+  <files>
+    <filename plugin="applicationchoices">applicationchoices.php</filename>
+    <filename>applicationchoices.js</filename>
+    <filename>applicationchoices-min.js</filename>
+    <filename>index.html</filename>
+    <folder>forms</folder>
+    <folder>language</folder>
+    <folder>layouts</folder>
+  </files>
+</extension>

@@ -137,5 +137,11 @@
     "icon": "event",
     "name": "COM_EMUNDUS_ONBOARD_TYPE_BOOKING",
     "published": true
+  },
+  {
+    "value": "applicationchoices",
+    "icon": "fork_right",
+    "name": "COM_EMUNDUS_ONBOARD_TYPE_APPLICATIONCHOICES",
+    "published": true
   }
 ]

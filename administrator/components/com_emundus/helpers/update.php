@@ -21,6 +21,9 @@ use Joomla\Component\Cache\Administrator\Model\CacheModel;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\Component\Scheduler\Administrator\Helper\ExecRuleHelper;
 use Joomla\Registry\Registry;
+use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\Actions\CrudEntity;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 /**
  * Emundus helper.
@@ -170,7 +173,8 @@ class EmundusHelperUpdate
 				$query->update($db->quoteName('#__extensions'))
 					->set($db->quoteName('enabled') . ' = 0')
 					->where($db->quoteName('element') . ' LIKE ' . $db->quote($name));
-				if(!empty($folder)) {
+				if (!empty($folder))
+				{
 					$query->andWhere($db->quoteName('folder') . ' = ' . $db->quote($folder));
 				}
 				$db->setQuery($query);
@@ -265,8 +269,9 @@ class EmundusHelperUpdate
 		return $updated;
 	}
 
-    public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}',$administrator = false,$message = true){
-        $installed = false;
+	public static function installExtension($name, $element, $manifest_cache = null, $type = 'plugin', $enabled = 1, $folder = '', $params = '{}', $administrator = false, $message = true)
+	{
+		$installed = false;
 
 		if (!empty($element))
 		{
@@ -294,24 +299,30 @@ class EmundusHelperUpdate
 
 				if (!empty($folder_type))
 				{
-					if(!$administrator)
+					if (!$administrator)
 					{
-						if(!empty($folder))
+						if (!empty($folder))
 						{
 							$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
-						} else {
+						}
+						else
+						{
 							$manifest_path = JPATH_BASE . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
 						}
-					} else {
-						if(!empty($folder))
+					}
+					else
+					{
+						if (!empty($folder))
 						{
 							$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $folder . '/' . $element . '/' . $element . '.xml';
-						} else {
+						}
+						else
+						{
 							$manifest_path = JPATH_ADMINISTRATOR . '/' . $folder_type . '/' . $element . '/' . $element . '.xml';
 						}
 					}
 
-					if(file_exists($manifest_path))
+					if (file_exists($manifest_path))
 					{
 						$xml_string = file_get_contents($manifest_path);
 						$xml        = simplexml_load_string($xml_string);
@@ -380,7 +391,7 @@ class EmundusHelperUpdate
 						$db->setQuery($query);
 						$installed = $db->execute();
 
-						if($message)
+						if ($message)
 						{
 							self::displayMessage('L\'extension ' . $element . ' est déjà installée.');
 						}
@@ -393,7 +404,7 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				if($message)
+				if ($message)
 				{
 					self::displayMessage('Impossible d\'installer l\'extensions sans manifeste.', 'error');
 				}
@@ -401,7 +412,7 @@ class EmundusHelperUpdate
 		}
 		else
 		{
-			if($message)
+			if ($message)
 			{
 				self::displayMessage('Impossible d\'installer l\'extensions sans élément spécifié.', 'error');
 			}
@@ -583,7 +594,7 @@ class EmundusHelperUpdate
 	/**
 	 * Update a variable in the Joomla configuration file
 	 *
-	 * @param $options (key => value)
+	 * @param $options  (key => value)
 	 *
 	 * @return false
 	 * @since version 1.33.0
@@ -595,9 +606,11 @@ class EmundusHelperUpdate
 		$initialOptions = (new Registry(new \JConfig()))->toArray();
 
 		// Sanitize options
-		foreach ($options as $key => $value) {
+		foreach ($options as $key => $value)
+		{
 			// Remove some options
-			if (in_array($key, ['dbtype', 'host', 'user', 'password', 'db', 'dbencryption', 'secret', 'tmp_path', 'log_path'])) {
+			if (in_array($key, ['dbtype', 'host', 'user', 'password', 'db', 'dbencryption', 'secret', 'tmp_path', 'log_path']))
+			{
 				unset($options[$key]);
 			}
 
@@ -610,10 +623,11 @@ class EmundusHelperUpdate
 
 		$combinedOptions = array_merge($initialOptions, $options);
 
-		$app = Factory::getApplication();
+		$app   = Factory::getApplication();
 		$model = $app->bootComponent('com_config')->getMVCFactory($app)->createModel('Application', 'Administrator');
 
-		if ($model->save($combinedOptions)) {
+		if ($model->save($combinedOptions))
+		{
 			$updated = true;
 		}
 
@@ -627,10 +641,10 @@ class EmundusHelperUpdate
 	 *
 	 * @return bool
 	 *
-	 * @since version 1.33.0
+	 * @since     version 1.33.0
 	 * @depecated since version 2.0.0
 	 */
-	public static function updateConfigurationFileOld($config,$param, $value)
+	public static function updateConfigurationFileOld($config, $param, $value)
 	{
 		$updated = false;
 		if (!in_array($param, ['host', 'user', 'password', 'db', 'secret']))
@@ -657,7 +671,8 @@ class EmundusHelperUpdate
 
 	public static function getConfigurationFile()
 	{
-		$config_file    = JPATH_CONFIGURATION . '/configuration.php';
+		$config_file = JPATH_CONFIGURATION . '/configuration.php';
+
 		return file_get_contents($config_file);
 	}
 
@@ -952,15 +967,18 @@ class EmundusHelperUpdate
 
 				return $db->execute();
 			}
-			else if ($update)
+			else
 			{
-				$query->clear()
-					->update($db->quoteName('#__falang_content'))
-					->set($db->quoteName('value') . ' = ' . $db->quote($value))
-					->where($db->quoteName('id') . ' = ' . $db->quote($translation_id));
-				$db->setQuery($query);
+				if ($update)
+				{
+					$query->clear()
+						->update($db->quoteName('#__falang_content'))
+						->set($db->quoteName('value') . ' = ' . $db->quote($value))
+						->where($db->quoteName('id') . ' = ' . $db->quote($translation_id));
+					$db->setQuery($query);
 
-				return $db->execute();
+					return $db->execute();
+				}
 			}
 
 		}
@@ -2090,14 +2108,15 @@ class EmundusHelperUpdate
 			$params['params'] = [];
 		}
 
-		if(is_string($params['params'])) {
+		if (is_string($params['params']))
+		{
 			$params['params'] = json_decode($params['params'], true);
 		}
 
 		// Initialize again Joomla database to fix problem with Falang (or other plugins) that override default mysql driver
 		Factory::$database = null;
 
-		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		try
 		{
@@ -2173,7 +2192,7 @@ class EmundusHelperUpdate
 				{
 					$result['message'] = 'INSERTING JOOMLA MENU : Error at saving menu.';
 
-					if(!Factory::getApplication()->isClient('cli'))
+					if (!Factory::getApplication()->isClient('cli'))
 					{
 						$db->setQuery('UNLOCK TABLES');
 						$db->execute();
@@ -2225,7 +2244,7 @@ class EmundusHelperUpdate
 			$result['status']  = false;
 			$result['message'] = 'INSERTING MENU : ' . $e->getMessage();
 
-			if(!Factory::getApplication()->isClient('cli'))
+			if (!Factory::getApplication()->isClient('cli'))
 			{
 				$db->unlockTables();
 			}
@@ -2638,8 +2657,8 @@ class EmundusHelperUpdate
 			return $result;
 		}
 
-        $db = Factory::getContainer()->get('DatabaseDriver');
-        $query = $db->getQuery(true);
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
 		try
 		{
@@ -2655,44 +2674,53 @@ class EmundusHelperUpdate
 				'params'          => json_encode($params)
 			];
 
-	        $query->clear()
-		        ->select('id')
-		        ->from($db->quoteName('#__fabrik_joins'));
-	        if(!empty($datas['list_id'])) {
-		        $query->where($db->quoteName('list_id') . ' = ' . $datas['list_id']);
-	        }
-	        if(!empty($datas['element_id'])) {
-		        $query->where($db->quoteName('element_id') . ' = ' . $datas['element_id']);
-	        }
-	        if(!empty($datas['table_join'])) {
-		        $query->where($db->quoteName('table_join') . ' = ' . $db->quote($datas['table_join']));
-	        }
-	        if(!empty($datas['table_key'])) {
-		        $query->where($db->quoteName('table_key') . ' = ' . $db->quote($datas['table_key']));
-	        }
-	        if(!empty($datas['table_join_key'])) {
-		        $query->where($db->quoteName('table_join_key') . ' = ' . $db->quote($datas['table_join_key']));
-	        }
-	        if(!empty($datas['group_id'])) {
-		        $query->where($db->quoteName('group_id') . ' = ' . $datas['group_id']);
-	        }
-	        $db->setQuery($query);
-	        $is_existing = $db->loadResult();
+			$query->clear()
+				->select('id')
+				->from($db->quoteName('#__fabrik_joins'));
+			if (!empty($datas['list_id']))
+			{
+				$query->where($db->quoteName('list_id') . ' = ' . $datas['list_id']);
+			}
+			if (!empty($datas['element_id']))
+			{
+				$query->where($db->quoteName('element_id') . ' = ' . $datas['element_id']);
+			}
+			if (!empty($datas['table_join']))
+			{
+				$query->where($db->quoteName('table_join') . ' = ' . $db->quote($datas['table_join']));
+			}
+			if (!empty($datas['table_key']))
+			{
+				$query->where($db->quoteName('table_key') . ' = ' . $db->quote($datas['table_key']));
+			}
+			if (!empty($datas['table_join_key']))
+			{
+				$query->where($db->quoteName('table_join_key') . ' = ' . $db->quote($datas['table_join_key']));
+			}
+			if (!empty($datas['group_id']))
+			{
+				$query->where($db->quoteName('group_id') . ' = ' . $datas['group_id']);
+			}
+			$db->setQuery($query);
+			$is_existing = $db->loadResult();
 
-	        if(empty($is_existing))
-	        {
+			if (empty($is_existing))
+			{
 
-		        $query->clear()
-			        ->insert($db->quoteName('#__fabrik_joins'))
-			        ->columns($db->quoteName(array_keys($inserting_datas)))
-			        ->values(implode(',', $db->quote(array_values($inserting_datas))));
-		        $db->setQuery($query);
-		        $db->execute();
-	        }
-        } catch (Exception $e) {
-            $result['message'] = 'INSERTING FABRIK JOIN : Error : ' . $e->getMessage();
-            return $result;
-        }
+				$query->clear()
+					->insert($db->quoteName('#__fabrik_joins'))
+					->columns($db->quoteName(array_keys($inserting_datas)))
+					->values(implode(',', $db->quote(array_values($inserting_datas))));
+				$db->setQuery($query);
+				$db->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			$result['message'] = 'INSERTING FABRIK JOIN : Error : ' . $e->getMessage();
+
+			return $result;
+		}
 
 		$result['status'] = true;
 
@@ -2858,8 +2886,9 @@ class EmundusHelperUpdate
 		return $result;
 	}
 
-    public static function addFabrikElement($datas,$params = [],$required = true) {
-        $result = ['status' => false, 'message' => ''];
+	public static function addFabrikElement($datas, $params = [], $required = true)
+	{
+		$result = ['status' => false, 'message' => ''];
 
 		if (empty($datas['name']))
 		{
@@ -2894,8 +2923,8 @@ class EmundusHelperUpdate
 		{
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 
-            $default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin'],$required);
-            $params = array_merge($default_params, $params);
+			$default_params = EmundusHelperFabrik::prepareElementParameters($datas['plugin'], $required);
+			$params         = array_merge($default_params, $params);
 
 			try
 			{
@@ -3229,12 +3258,14 @@ class EmundusHelperUpdate
 				$db->execute();
 				$created['module_id'] = $db->insertid();
 
-				if(!empty($created['module_id'])) {
+				if (!empty($created['module_id']))
+				{
 					$created['status'] = true;
 
 					if (!empty($page))
 					{
-						if(!is_array($page)) {
+						if (!is_array($page))
+						{
 							$page = [$page];
 						}
 
@@ -3259,7 +3290,7 @@ class EmundusHelperUpdate
 			}
 			else
 			{
-				if($message)
+				if ($message)
 				{
 					EmundusHelperUpdate::displayMessage($title . ' module already exists.');
 				}
@@ -3290,9 +3321,12 @@ class EmundusHelperUpdate
 			{
 				$query->where('id = ' . $id);
 			}
-			else if (!empty($title))
+			else
 			{
-				$query->where('title = ' . $db->quote($title));
+				if (!empty($title))
+				{
+					$query->where('title = ' . $db->quote($title));
+				}
 			}
 
 			$db->setQuery($query);
@@ -3348,17 +3382,17 @@ class EmundusHelperUpdate
 		return $updated;
 	}
 
-	public static function updateContentTable($id , $value ,$attr)
+	public static function updateContentTable($id, $value, $attr)
 	{
 		$updated = false;
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->getQuery(true);
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$query   = $db->getQuery(true);
 
 		try
 		{
 			$query->update($db->quoteName('#__content'))
-			->set($db->quoteName($attr) . ' = ' . $db->quote($value))
-			->where($db->quoteName('asset_id') . ' = ' . $db->quote($id));
+				->set($db->quoteName($attr) . ' = ' . $db->quote($value))
+				->where($db->quoteName('asset_id') . ' = ' . $db->quote($id));
 			$db->setQuery($query);
 			$updated = $db->execute();
 		}
@@ -3489,11 +3523,12 @@ class EmundusHelperUpdate
 			if (empty($table_existing))
 			{
 				$query = 'CREATE TABLE ' . $table . '(';
-				if(empty($primary_key_options))
+				if (empty($primary_key_options))
 				{
 					$query .= 'id INT AUTO_INCREMENT PRIMARY KEY';
 				}
-				else {
+				else
+				{
 					$query_primary = ',' . $db->quoteName($primary_key_options['name']) . ' ' . $primary_key_options['type'];
 					if (!empty($primary_key_options['length']))
 					{
@@ -3505,7 +3540,7 @@ class EmundusHelperUpdate
 						$query_primary .= ' AUTO_INCREMENT';
 					}
 					$query_primary .= ', PRIMARY KEY (' . $db->quoteName($primary_key_options['name']) . ')';
-					$query .= ltrim($query_primary, ',');
+					$query         .= ltrim($query_primary, ',');
 				}
 
 
@@ -3538,7 +3573,8 @@ class EmundusHelperUpdate
 						{
 							$query_column .= ' NOT NULL';
 						}
-						if(!empty($column['comment'])) {
+						if (!empty($column['comment']))
+						{
 							$query_column .= ' COMMENT ' . $db->quote($column['comment']);
 						}
 
@@ -3572,9 +3608,12 @@ class EmundusHelperUpdate
 					}
 				}
 
-				if (!empty($unique_keys)) {
-					foreach ($unique_keys as $unique_key) {
-						if (!empty($unique_key['name'])) {
+				if (!empty($unique_keys))
+				{
+					foreach ($unique_keys as $unique_key)
+					{
+						if (!empty($unique_key['name']))
+						{
 							$query .= ', CONSTRAINT ' . $unique_key['name'] . ' UNIQUE (' . implode(',', $unique_key['columns']) . ')';
 						}
 					}
@@ -4132,13 +4171,13 @@ class EmundusHelperUpdate
 				'grey-2'       => '#757575',
 				'black'        => '#1e1e1e',
 			],
-			'font' => [
-				'size-h1' => '32px',
-				'size-h2' => '24px',
-				'size-h3' => '18px',
-				'size-h4' => '16px',
-				'size-h5' => '12px',
-				'size-h6' => '10px',
+			'font'             => [
+				'size-h1'   => '32px',
+				'size-h2'   => '24px',
+				'size-h3'   => '18px',
+				'size-h4'   => '16px',
+				'size-h5'   => '12px',
+				'size-h6'   => '10px',
 				'font-size' => '16px',
 				'xxs-size'  => '10px',
 			],
@@ -4271,28 +4310,28 @@ class EmundusHelperUpdate
 				'vertical'   => '8px',
 				'horizontal' => '12px',
 			],
-			'coordinator' => [
-				'background' => '#f8f8f8',
-				'interface' => '#353544',
-				'secondary-color' => '#353544',
-				'tertiary-color' => '#5A5A72',
-				'text-color' => '#4B4B4B',
-				'title-color' => '#0b0c0f',
-				'family-text' => 'Inter',
-				'family-title' => 'Inter',
-				'size-h1' => '32px',
-				'size-h2' => '24px',
-				'size-h3' => '18px',
-				'size-h4' => '16px',
-				'size-h5' => '12px',
-				'size-h6' => '10px',
-				'font-size' => '16px',
-				'border-radius' => '8px',
-				'border-color' => '#cccccc',
-				'form-height' => '40px',
-				'form-border-radius' => '4px',
-				'vertical' => '8px',
-				'horizontal' => '12px',
+			'coordinator'      => [
+				'background'          => '#f8f8f8',
+				'interface'           => '#353544',
+				'secondary-color'     => '#353544',
+				'tertiary-color'      => '#5A5A72',
+				'text-color'          => '#4B4B4B',
+				'title-color'         => '#0b0c0f',
+				'family-text'         => 'Inter',
+				'family-title'        => 'Inter',
+				'size-h1'             => '32px',
+				'size-h2'             => '24px',
+				'size-h3'             => '18px',
+				'size-h4'             => '16px',
+				'size-h5'             => '12px',
+				'size-h6'             => '10px',
+				'font-size'           => '16px',
+				'border-radius'       => '8px',
+				'border-color'        => '#cccccc',
+				'form-height'         => '40px',
+				'form-border-radius'  => '4px',
+				'vertical'            => '8px',
+				'horizontal'          => '12px',
 				'border-radius-cards' => '16px',
 			]
 		];
@@ -4352,8 +4391,8 @@ class EmundusHelperUpdate
 		{
 			require_once JPATH_ROOT . '/components/com_emundus/models/formbuilder.php';
 			$m_formbuilder = new EmundusModelFormbuilder();
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
+			$db            = Factory::getContainer()->get('DatabaseDriver');
+			$query         = $db->getQuery(true);
 
 			$query->clear()
 				->select('id')
@@ -4362,12 +4401,13 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$menutype = $db->loadResult();
 
-			if(empty($menutype)) {
+			if (empty($menutype))
+			{
 				$insert = [
-					'menutype' => 'campaigns',
-					'title' => 'Détails des campagnes',
+					'menutype'    => 'campaigns',
+					'title'       => 'Détails des campagnes',
 					'description' => 'Liste des liens de menus pour accéder aux détails des campagnes',
-					'client_id' => 0,
+					'client_id'   => 0,
 				];
 				$insert = (object) $insert;
 				$db->insertObject('#__menu_types', $insert);
@@ -4379,13 +4419,17 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$campaigns = $db->loadObjectList();
 
-			foreach ($campaigns as $campaign) {
-				if(empty($campaign->alias)) {
+			foreach ($campaigns as $campaign)
+			{
+				if (empty($campaign->alias))
+				{
 					$alias = $m_formbuilder->replaceAccents($campaign->label);
 					$alias = preg_replace('/[^A-Za-z0-9]/', '-', $alias);
 					$alias = str_replace(' ', '-', $alias);
 					$alias = strtolower($alias);
-				} else {
+				}
+				else
+				{
 					$alias = $campaign->alias;
 				}
 
@@ -4398,18 +4442,23 @@ class EmundusHelperUpdate
 				$item = $db->loadObject();
 
 				$update_campaign = true;
-				$create_item = true;
-				if(!empty($item)) {
+				$create_item     = true;
+				if (!empty($item))
+				{
 					$params = json_decode($item->params, true);
-					if($item->menutype == 'campaigns' && $params['com_emundus_programme_campaign_id'] == $campaign->id) {
+					if ($item->menutype == 'campaigns' && $params['com_emundus_programme_campaign_id'] == $campaign->id)
+					{
 						$create_item = false;
-					} else {
+					}
+					else
+					{
 						$alias = $alias . '-' . $campaign->id;
 					}
 				}
 
-				if($create_item) {
-					$modules_id =  [];
+				if ($create_item)
+				{
+					$modules_id = [];
 
 					$query->clear()
 						->select('id,params')
@@ -4417,23 +4466,25 @@ class EmundusHelperUpdate
 						->where($db->quoteName('module') . ' LIKE ' . $db->quote('mod_emundus_campaign'));
 					$db->setQuery($query);
 					$modules = $db->loadObjectList();
-					foreach ($modules as $module) {
+					foreach ($modules as $module)
+					{
 						$params = json_decode($module->params);
-						if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign') {
+						if (!empty($params->mod_em_campaign_layout) && $params->mod_em_campaign_layout == 'tchooz_single_campaign')
+						{
 							$modules_id[] = $module->id;
 						}
 					}
 
 					$params = [
-						'menutype' => 'campaigns',
-						'title'    => $campaign->label,
-						'alias'    => $alias,
-						'path'     => $alias,
-						'type' => 'component',
-						'link' => 'index.php?option=com_emundus&view=programme',
+						'menutype'     => 'campaigns',
+						'title'        => $campaign->label,
+						'alias'        => $alias,
+						'path'         => $alias,
+						'type'         => 'component',
+						'link'         => 'index.php?option=com_emundus&view=programme',
 						'component_id' => ComponentHelper::getComponent('com_emundus')->id,
-						'params'   => [
-							'com_emundus_programme_campaign_id' => $campaign->id,
+						'params'       => [
+							'com_emundus_programme_campaign_id'    => $campaign->id,
 							'com_emundus_programme_candidate_link' => 'index.php?option=com_fabrik&view=form&formid=307&Itemid=2700'
 						]
 					];
@@ -4441,7 +4492,7 @@ class EmundusHelperUpdate
 					$update_campaign = self::addJoomlaMenu($params, 1, 1, 'last-child', $modules_id)['status'];
 				}
 
-				if($update_campaign)
+				if ($update_campaign)
 				{
 					$query->clear()
 						->update($db->quoteName('#__emundus_setup_campaigns'))
@@ -4461,13 +4512,13 @@ class EmundusHelperUpdate
 		return true;
 	}
 
-	public static function createSchedulerTask($title,$type,$execution_rules,$cron_rules,$params = [],$state = 1)
+	public static function createSchedulerTask($title, $type, $execution_rules, $cron_rules, $params = [], $state = 1)
 	{
 		$task_created = false;
 
 		try
 		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->clear()
@@ -4477,7 +4528,7 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$task_created = $db->loadResult() > 0;
 
-			if(!$task_created)
+			if (!$task_created)
 			{
 				$scheduler_table = Factory::getApplication()->bootComponent('com_scheduler')->getMVCFactory()->createTable('Task', 'Administrator');
 
@@ -4491,15 +4542,15 @@ class EmundusHelperUpdate
 						'orphan_mail'        => '1',
 					],
 				];
-				$params = array_merge($params, $default_params);
+				$params         = array_merge($params, $default_params);
 
 
-				$basisDayOfMonth           = $execution_rules['exec-day'];
+				$basisDayOfMonth = $execution_rules['exec-day'];
 				[$basisHour, $basisMinute] = explode(':', $execution_rules['exec-time']);
 
 				$last_execution = Factory::getDate('now', 'GMT')->format('Y-m') . "-$basisDayOfMonth $basisHour:$basisMinute:00";
 
-				$data = [
+				$data                   = [
 					'title'           => $title,
 					'execution_rules' => $execution_rules,
 					'cron_rules'      => $cron_rules,
@@ -4530,7 +4581,7 @@ class EmundusHelperUpdate
 
 		if (!empty($type) && !empty($name))
 		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
 			$query->select('id')
@@ -4581,30 +4632,24 @@ class EmundusHelperUpdate
 
 	public static function createNewAction(
 		string $name,
-		array $crud = ['multi' => 0, 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 1],
+		array  $crud = ['multi' => 0, 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 1],
 		string $label = '',
 		string $description = '',
-		int $published = 0,
-		bool $assign_all_rights_group = true,
+		int    $published = 0,
+		bool   $assign_all_rights_group = true,
 	): int
 	{
-		$db = Factory::getContainer()->get('DatabaseDriver');
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
 
 		try
 		{
-			$query->clear()
-				->select('id')
-				->from('#__emundus_setup_actions')
-				->where('name = ' . $db->quote($name));
-			$db->setQuery($query);
-			$acl_id = $db->loadResult();
-
-			if(!empty($acl_id))
+			$actionRepository = new ActionRepository();
+			$acl              = $actionRepository->getByName($name);
+			if (!empty($acl))
 			{
-				return $acl_id;
+				return $acl->getId();
 			}
-
 
 			$query->clear()
 				->select('MAX(ordering)')
@@ -4613,37 +4658,27 @@ class EmundusHelperUpdate
 			$db->setQuery($query);
 			$ordering = $db->loadResult();
 
-			if(empty($label))
+			if (empty($label))
 			{
 				$label = strtoupper('COM_EMUNDUS_ACL_' . $name);
 			}
-			if(empty($description))
+			if (empty($description))
 			{
 				$description = strtoupper('COM_EMUNDUS_ACL_' . $name . '_DESC');
 			}
 
-			$acl = (object) [
-				'name'        => $name,
-				'label'       => $label,
-				'multi'       => $crud['multi'] ?? 0,
-				'c'           => $crud['c'] ?? 1,
-				'r'           => $crud['r'] ?? 1,
-				'u'           => $crud['u'] ?? 1,
-				'd'           => $crud['d'] ?? 1,
-				'ordering'    => $ordering + 1,
-				'status'      => $published,
-				'description' => $description
-			];
-			$db->insertObject('#__emundus_setup_actions', $acl);
-			$acl->id = $db->insertid();
+			$crud = new CrudEntity($crud['multi'] ?? 0, $crud['c'] ?? 1, $crud['r'] ?? 1, $crud['u'] ?? 1, $crud['d'] ?? 1);
+			$acl  = new ActionEntity(0, $name, $label, $crud, $ordering, $published === 1, $description);
 
-			if($assign_all_rights_group)
+			$actionRepository->flush($acl);
+
+			if ($assign_all_rights_group)
 			{
 				// Give all rights to all rights group
-				$all_rights_group        = ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
-				$acl_rights = (object) [
+				$all_rights_group = ComponentHelper::getParams('com_emundus')->get('all_rights_group', 1);
+				$acl_rights       = (object) [
 					'group_id'  => $all_rights_group,
-					'action_id' => $acl->id,
+					'action_id' => $acl->getId(),
 					'c'         => 1,
 					'r'         => 1,
 					'u'         => 1,
@@ -4653,11 +4688,12 @@ class EmundusHelperUpdate
 				$db->insertObject('#__emundus_acl', $acl_rights);
 			}
 
-			return $acl->id;
+			return $acl->getId();
 		}
 		catch (Exception $e)
 		{
 			echo $e->getMessage();
+
 			return 0;
 		}
 	}

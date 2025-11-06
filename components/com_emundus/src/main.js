@@ -40,6 +40,7 @@ import SMSSend from '@/views/SMS/SMSSend.vue';
 import Rankings from '@/views/Ranking/rankings.vue';
 import CartAppFile from '@/views/Payment/CartAppFile.vue';
 import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
+import ApplicationChoices from '@/views/Application/ApplicationChoices.vue';
 
 if (document) {
 	let app = null;
@@ -102,6 +103,7 @@ if (document) {
 					'Filters',
 					'Ranking/rankings',
 					'Payment/CartAppFile',
+					'Application/ApplicationChoices',
 				];
 
 				if (filesElement || componentNames.includes(componentName)) {
@@ -233,6 +235,15 @@ if (document) {
 						}
 
 						app = createApp(CartAppFile, {
+							...datas,
+						});
+						break;
+					case 'Application/ApplicationChoices':
+						if (el.getAttribute('data')) {
+							datas = JSON.parse(el.getAttribute('data'));
+						}
+
+						app = createApp(ApplicationChoices, {
 							...datas,
 						});
 						break;

@@ -18,6 +18,13 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Entities\Campaigns\CampaignEntity;
+use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 use \Tchooz\Traits\TraitResponse;
 
 /**
@@ -42,6 +49,8 @@ class EmundusControllerCampaign extends BaseController
 	 */
 	private $m_campaign;
 
+	private ActionEntity $applicationChoicesAction;
+
 	/**
 	 * Constructor.
 	 *
@@ -54,12 +63,22 @@ class EmundusControllerCampaign extends BaseController
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/access.php');
+		}
+		if (!class_exists('ActionRepository'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Actions/ActionRepository.php';
+		}
 
 		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 
 		$this->m_campaign = $this->getModel('Campaign');
+
+		$actionRepository               = new ActionRepository();
+		$this->applicationChoicesAction = $actionRepository->getByName('application_choices');
 	}
 
 	/**
@@ -195,10 +214,15 @@ class EmundusControllerCampaign extends BaseController
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
 			$program   = $this->input->getString('program', 'all');
+			$parent_id = $this->input->getInt('parent_campaign', 0);
 			$order_by  = $this->input->getString('order_by', 'sc.id');
 			$order_by  = $order_by == 'label' ? 'sc.label' : $order_by;
 
-			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, 'all', $order_by);
+			$campaignRepository = new CampaignRepository();
+			$addonRepository    = new AddonRepository();
+			$choices_addon      = $addonRepository->getByName('choices');
+
+			$campaigns = $this->m_campaign->getAssociatedCampaigns($filter, $sort, $recherche, $lim, $page, $program, 'all', $order_by, $parent_id);
 
 			$eMConfig              = ComponentHelper::getParams('com_emundus');
 			$allow_pinned_campaign = $eMConfig->get('allow_pinned_campaign', 0);
@@ -317,7 +341,24 @@ class EmundusControllerCampaign extends BaseController
 							'display' => 'blocs'
 						]
 					];
-					$campaigns['datas'][$key]     = $campaign;
+
+					if ($choices_addon->getValue()->isEnabled())
+					{
+						$campaign_parent_label = Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_NO_PARENT');
+						if (!empty($campaign->parent_id))
+						{
+							$campaign_parent       = $campaignRepository->getById($campaign->parent_id);
+							$campaign_parent_label = $campaign_parent->getLabel();
+						}
+						$campaign->additional_columns[] = [
+							'key'      => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_PARENT'),
+							'value'    => $campaign_parent_label,
+							'display'  => 'table',
+							'order_by' => 'sp.label'
+						];
+					}
+
+					$campaigns['datas'][$key] = $campaign;
 				}
 
 				$tab = array('status' => true, 'msg' => Text::_('CAMPAIGNS_RETRIEVED'), 'data' => $campaigns, 'allow_pinned_campaigns' => $allow_pinned_campaign);
@@ -1307,7 +1348,7 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($url))
 			{
-				$url = !empty(Uri::base()) ? Uri::base() . $url : '/'.$url;
+				$url      = !empty(Uri::base()) ? Uri::base() . $url : '/' . $url;
 				$response = ['status' => 1, 'msg' => Text::_('URL_RETRIEVED'), 'data' => $url, 'code' => 200];
 			}
 			else
@@ -1381,7 +1422,7 @@ class EmundusControllerCampaign extends BaseController
 				$m_campaign = $this->getModel('Campaign');
 
 				$usercategories = $m_campaign->getCampaignUserCategoriesValues($campaign_id);
-				$response  = ['status' => 1, 'msg' => Text::_('USERCATEGORIES_RETRIEVED'), 'data' => $usercategories, 'code' => 200];
+				$response       = ['status' => 1, 'msg' => Text::_('USERCATEGORIES_RETRIEVED'), 'data' => $usercategories, 'code' => 200];
 			}
 		}
 
@@ -1436,7 +1477,7 @@ class EmundusControllerCampaign extends BaseController
 
 				if (!empty($campaign))
 				{
-					$options = [
+					$options   = [
 						'status'      => $status_option === 'true',
 						'forms'       => $forms === 'true',
 						'evaluations' => $evaluations === 'true',
@@ -1472,7 +1513,7 @@ class EmundusControllerCampaign extends BaseController
 			'status'  => false,
 			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
 			'data'    => [],
-			'code'   => 403
+			'code'    => 403
 		];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
@@ -1498,11 +1539,14 @@ class EmundusControllerCampaign extends BaseController
 						$response['status']  = true;
 						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
 						$response['code']    = 200;
-					} else {
+					}
+					else
+					{
 						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_NO_ROWS_TO_IMPORT');
 						$response['code']    = 204;
 					}
-				} else
+				}
+				else
 				{
 					$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE');
 					$response['code']    = 400;
@@ -1549,8 +1593,8 @@ class EmundusControllerCampaign extends BaseController
 					flush();
 					ob_flush();
 
-					$m_campaign     = $this->getModel('Campaign');
-					$result = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
+					$m_campaign = $this->getModel('Campaign');
+					$result     = $m_campaign->importFiles($file, $campaign_id, $send_email, $create_new_fnum);
 
 					if (!empty($result))
 					{
@@ -1581,8 +1625,8 @@ class EmundusControllerCampaign extends BaseController
 
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
-			$m_campaign     = new EmundusModelCampaign();
-			$response = ['code' => 200, 'message' => Text::_('IMPORT_ACTIVATED'), 'status' => true,  'data' => $m_campaign->getImportAddon()->enabled && EmundusHelperAccess::asAccessAction($m_campaign->getImportActionId(), 'c', $this->_user->id)];
+			$m_campaign = new EmundusModelCampaign();
+			$response   = ['code' => 200, 'message' => Text::_('IMPORT_ACTIVATED'), 'status' => true, 'data' => $m_campaign->getImportAddon()->enabled && EmundusHelperAccess::asAccessAction($m_campaign->getImportActionId(), 'c', $this->_user->id)];
 		}
 
 		$this->sendJsonResponse($response);
@@ -1627,6 +1671,168 @@ class EmundusControllerCampaign extends BaseController
 		exit();
 	}
 
+	public function getavailablechoices(): void
+	{
+		$response = ['code' => 400, 'status' => false, 'data' => []];
+
+		if ($this->_user->guest)
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$search = $this->input->getString('search', '');
+		$filters = $this->input->getRaw('filters');
+		if(!empty($filters))
+		{
+			$filters = json_decode($filters, true);
+		}
+		$fnum   = $this->input->getString('fnum');
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'r', $this->_user->id, $fnum))
+		{
+			$current_fnum = $fnum;
+		}
+		else
+		{
+			$e_session    = Factory::getApplication()->getSession()->get('emundusUser');
+			$current_fnum = $e_session->fnum;
+		}
+
+		if (empty($current_fnum))
+		{
+			$response['code']    = 400;
+			$response['message'] = 'Missing fnum parameter.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		// TODO: refactor this with a Filter object
+		$built_filters       = [];
+		$campaignRepository = new CampaignRepository();
+		$more_elements = $campaignRepository->getCampaignMoreElements();
+		if (!class_exists('EmundusModelForm'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/models/form.php';
+		}
+		$m_form = new EmundusModelForm();
+		foreach ($more_elements as $element)
+		{
+			if($element['hidden'])
+			{
+				continue;
+			}
+
+			$type   = 'text';
+			$params = json_decode($element['params']);
+
+			$filter = [
+				'key'    => $element['name'],
+				'label'  => $element['label'],
+				'type'   => $type,
+				'alwaysDisplay' => true,
+				'value' => '',
+			];
+
+			if ($element['plugin'] === 'databasejoin')
+			{
+				$options = [];
+				try
+				{
+					$databasejoin_options = $m_form->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column);
+					$options[] = (object) ['value' => '', 'label' => Text::_('PLEASE_SELECT')];
+					foreach ($databasejoin_options as $db_option)
+					{
+						$option = new stdClass();
+						$option->value = $db_option->primary_key;
+						$option->label = $db_option->value;
+						$options[] = $option;
+					}
+					$filter['type']    = 'select';
+					$filter['options'] = $options;
+				}
+				catch (Exception $e)
+				{
+					continue;
+				}
+			}
+
+			if ($element['plugin'] === 'yesno')
+			{
+				$options = [
+					['value' => '', 'label' => Text::_('PLEASE_SELECT')],
+					['value' => 1, 'label' => Text::_('JYES')],
+					['value' => 0, 'label' => Text::_('JNO')],
+				];
+				$filter['type']    = 'select';
+				$filter['options'] = $options;
+			}
+
+			$built_filters[] = $filter;
+		}
+
+		// Set value from input filters
+		if (!empty($filters) && is_array($filters))
+		{
+			foreach ($built_filters as &$b_filter)
+			{
+				foreach ($filters as $key => $filter)
+				{
+					if ($b_filter['key'] === $key)
+					{
+						$b_filter['value'] = $filter;
+						break;
+					}
+				}
+			}
+		}
+
+		// Remove filters with empty value
+		$filters = array_filter($filters, function ($value) {
+			return $value !== '' && $value !== null;
+		});
+
+		$choices = [];
+
+		$applicationFileRepository = new ApplicationFileRepository($this->_user->id);
+		$applicationFile           = $applicationFileRepository->getByFnum($current_fnum);
+		if (empty($applicationFile) || empty($applicationFile->getCampaignId()))
+		{
+			$response['code']    = 403;
+			$response['message'] = 'No application file found for this user.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$emundusUserRepository = new EmundusUserRepository();
+		$emundusUser           = $emundusUserRepository->getByFnum($current_fnum);
+		$categoryUser          = $emundusUser->getUserCategory();
+
+		$campaign_choices   = $campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 't.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), [], $filters);
+		if ($campaign_choices->getTotalItems() > 0)
+		{
+			foreach ($campaign_choices->getItems() as $choice)
+			{
+				/**
+				 * @var CampaignEntity $choice
+				 */
+				$choices[] = $choice->__serialize();
+			}
+		}
+
+		$response['code']    = 200;
+		$response['data']    = $choices;
+		$response['filters'] = $built_filters;
+		$response['status']  = true;
+		$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+
+		$this->sendJsonResponse($response);
+	}
+
 	public function needmoreinfo()
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => false];
@@ -1637,17 +1843,18 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($id))
 			{
-				$emParams = ComponentHelper::getParams('com_emundus');
+				$emParams             = ComponentHelper::getParams('com_emundus');
 				$force_campaigns_more = $emParams->get('force_campaigns_more', 0);
-				if($force_campaigns_more == 1)
+				if ($force_campaigns_more == 1)
 				{
 					$campaign_more_row = $this->m_campaign->getCampaignMoreRowId($id);
 
-					if(!empty($campaign_more_row))
+					if (!empty($campaign_more_row))
 					{
 						$response['data'] = false;
 					}
-					else {
+					else
+					{
 						$response['data'] = true;
 					}
 				}
@@ -1656,13 +1863,40 @@ class EmundusControllerCampaign extends BaseController
 			}
 			else
 			{
-				$response['msg'] = Text::_('MISSING_PARAMETERS');
+				$response['msg']  = Text::_('MISSING_PARAMETERS');
 				$response['code'] = 400;
 			}
 		}
 
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	public function getparentcampaignsforfilter(): void
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$campaignRepository = new CampaignRepository();
+			$campaigns          = $campaignRepository->getParentCampaigns();
+
+			$campaignsObjects = [];
+			foreach ($campaigns as $campaign)
+			{
+				$campaignsObjects[] = [
+					'value' => $campaign->getId(),
+					'label' => $campaign->getLabel()
+				];
+			}
+
+			$response['status'] = true;
+			$response['msg']    = Text::_('SUCCESS');
+			$response['code']   = 200;
+			$response['data']   = $campaignsObjects;
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }
 

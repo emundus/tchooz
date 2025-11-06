@@ -29,27 +29,21 @@ use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
+use Tchooz\Factories\Addons\AddonFactoryResolver;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
 
-/**
- * Settings Controller
- *
- * @package    Joomla
- * @subpackage eMundus
- * @since      5.0.0
- */
 class EmundusControllersettings extends BaseController
 {
 	use TraitResponse;
 
-	protected $app;
-
 	private $user;
-	private $m_settings;
+
+	private EmundusModelSettings $m_settings;
 
 	/**
 	 * Constructor.
@@ -63,9 +57,15 @@ class EmundusControllersettings extends BaseController
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		$this->m_settings = $this->getModel('settings');
-		$this->app        = Factory::getApplication();
+		if(!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/access.php');
+		}
+		if(!class_exists('EmundusModelSettings'))
+		{
+			require_once(JPATH_BASE . DS . '/components/com_emundus/models/settings.php');
+		}
+		$this->m_settings = new EmundusModelSettings();
 
 		$this->user = $this->app->getIdentity();
 	}
@@ -2505,31 +2505,62 @@ class EmundusControllersettings extends BaseController
 
 	public function toggleaddon()
 	{
-		$this->checkToken('post');
+		$this->checkToken();
 
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$addon_type = $this->input->getString('addon_type', 0);
-			$enabled    = $this->input->getInt('enabled', 1);
-
-			if (!empty($addon_type))
-			{
-				$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
-				if ($response['status'])
-				{
-					$response['code']    = 200;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
-				}
-			}
+			$this->sendJsonResponse($response);
+			return;
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$addon_type = $this->input->getString('addon_type', 0);
+		$enabled    = $this->input->getInt('enabled', 1);
+
+		if(empty($addon_type))
+		{
+			$response['message'] = Text::_('MUST_SELECT_ADDON_TYPE');
+			$response['code']    = 400;
+
+			$this->sendJsonResponse($response);
+			return;
+		}
+
+		if(!class_exists('AddonRepository'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/classes/Repositories/Addons/AddonRepository.php';
+		}
+		$addonRepository = new AddonRepository();
+		$addon = $addonRepository->getByName($addon_type);
+
+		if(empty($addon))
+		{
+			$response['message'] = Text::_('ADDON_NOT_FOUND');
+			$response['code']    = 404;
+
+			$this->sendJsonResponse($response);
+			return;
+		}
+
+		// Check if we have a factory for this addon (name must be the same as the factory class)
+		try {
+			require_once JPATH_SITE . '/components/com_emundus/classes/Factories/Addons/AddonFactoryResolver.php';
+			$resolver = new AddonFactoryResolver();
+
+			$factory = $resolver->resolve($addon_type, $addon);
+			$response['status'] = $factory->toggle($enabled);
+		} catch (RuntimeException $e) {
+			$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
+		}
+
+		if ($response['status'])
+		{
+			$response['code']    = 200;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
+		}
+
+		$this->sendJsonResponse($response);
 	}
 
 	public function setupmessenger()
@@ -2945,11 +2976,6 @@ class EmundusControllersettings extends BaseController
 					// Enable/disable system plugin
 					$this->m_settings->enableDisableUserCategoryPlugin($state);
 
-					$cache = Factory::getCache('mod_menu');
-					$cache->clean('mod_menu');
-					$cache->clean('com_menus');
-					$cache->clean('com_menus');
-
 					$response['status']  = true;
 					$response['code']    = 200;
 					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SWITCH_SUCCESS');
@@ -3329,6 +3355,35 @@ class EmundusControllersettings extends BaseController
 			$response['data'] = !empty($data) ? $data : [];
 		}
 		$this->sendJsonResponse($response);
+	}
+
+	public function savemodalites(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$modalites = $this->input->getString('modalites');
+				$modalites = json_decode($modalites, true);
+
+				$response['status'] = $this->m_settings->saveModalites($modalites);
+
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MODALITES_SAVED');
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MODALITES_SAVE_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
 	}
 }
 

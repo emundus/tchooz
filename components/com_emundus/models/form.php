@@ -425,6 +425,9 @@ class EmundusModelForm extends JModelList
 				}
 
 				$profiles = array_merge($profiles_associated_through_campaign, $profiles_associated_through_workflow);
+
+				// Remove duplicate profiles
+				$profiles = array_map("unserialize", array_unique(array_map("serialize", $profiles)));
 			} catch (Exception $e) {
 				Log::add('Cannot get associated profiles from program codes : ' . $e->getMessage(), Log::ERROR, 'com_emundus.form');
 			}
@@ -2674,7 +2677,7 @@ class EmundusModelForm extends JModelList
 			if (!in_array($table, $allowed_tables) && !$private_call) {
 				throw new Exception(Text::_('ACCESS_DENIED'));
 			}
-
+			
 			$current_shortlang = explode('-', JFactory::getLanguage()->getTag())[0];
 
 			try {

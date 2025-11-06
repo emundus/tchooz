@@ -604,6 +604,9 @@ class EmundusViewApplication extends HtmlView
 					}
 					break;
 
+				case 'applicationchoices':
+					break;
+
 				case 'admission':
 					if (EmundusHelperAccess::asAccessAction(32, 'r', $this->user->id, $fnum)) {
 

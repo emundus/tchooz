@@ -85,6 +85,11 @@
 				type="booking"
 				:element="element"
 			></form-builder-element-booking>
+			<form-builder-element-application-choices
+				v-else-if="element.plugin === 'applicationchoices'"
+				type="applicationchoices"
+				:element="element"
+			></form-builder-element-application-choices>
 			<div v-else v-html="element.element" class="fabrikElement"></div>
 		</div>
 	</div>
@@ -102,6 +107,7 @@ import FormBuilderElementGeolocation from '@/components/FormBuilder/FormBuilderS
 
 import { useGlobalStore } from '@/stores/global.js';
 import FormBuilderElementBooking from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementBooking.vue';
+import FormBuilderElementApplicationChoices from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementApplicationChoices.vue';
 
 export default {
 	components: {
@@ -111,6 +117,7 @@ export default {
 		FormBuilderElementPhoneNumber,
 		FormBuilderElementWysiwig,
 		FormBuilderElementOptions,
+		FormBuilderElementApplicationChoices,
 	},
 	props: {
 		element: {

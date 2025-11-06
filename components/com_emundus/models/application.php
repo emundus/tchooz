@@ -27,6 +27,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 /**
  * Emundus Component Application Model
@@ -4282,14 +4283,17 @@ class EmundusModelApplication extends ListModel
 			if (!empty($fnum)) {
 				// get menu related to workflow steps of type evaluator
 				$query->clear()
-					->select('esp.id')
+					->select('esp.id, esc.id as campaign_id')
 					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
 					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 					->where('ecc.fnum LIKE ' . $this->_db->quote($fnum));
 
 				$this->_db->setQuery($query);
-				$program_id = $this->_db->loadResult();
+				$file_infos = $this->_db->loadObject();
+
+				$program_id = $file_infos->id ?? 0;
+				$campaign_id = $file_infos->campaign_id ?? 0;
 
 				if (!empty($program_id)) {
 					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
@@ -4297,7 +4301,22 @@ class EmundusModelApplication extends ListModel
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
 					}
 					$m_workflow = new EmundusModelWorkflow();
-					$workflows = $m_workflow->getWorkflows([], 0, 0, [$program_id]);
+
+					$programs_ids = [$program_id];
+					if(!empty($campaign_id))
+					{
+						if(!class_exists('CampaignRepository')) {
+							require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
+						}
+						$campaignRepository = new CampaignRepository();
+						$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id, $fnum);
+						if(!empty($linked_programs_ids))
+						{
+							$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+						}
+					}
+
+					$workflows = $m_workflow->getWorkflows([], 0, 0, $programs_ids);
 
 					$evaluator_link = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=workflows&layout=evaluatorstep');
 

@@ -87,6 +87,7 @@
 import { VueDraggableNext } from 'vue-draggable-next';
 import formBuilderService from '@/services/formbuilder';
 import eventsService from '@/services/events';
+import settingsService from '@/services/settings';
 import formBuilderMixin from '@/mixins/formbuilder';
 import errorsMixin from '@/mixins/errors';
 import formBuilderElements from '../../../data/form-builder/form-builder-elements.json';
@@ -157,6 +158,12 @@ export default {
 				if (this.eventsCount === 0) {
 					this.elements = this.elements.filter((element) => element.value !== 'booking');
 				}
+			}
+		});
+
+		settingsService.checkAddonStatus('choices').then((response) => {
+			if (!response.status || !response.data.enabled) {
+				this.elements = this.elements.filter((element) => element.value !== 'applicationchoices');
 			}
 		});
 	},

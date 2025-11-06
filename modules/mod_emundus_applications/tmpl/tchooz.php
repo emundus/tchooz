@@ -203,6 +203,7 @@ if (!empty($applications))
 		}
 	}
 }
+
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
@@ -795,6 +796,15 @@ if (!empty($applications))
 															<?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_TRANSACTIONS') ?>
                                                         </a>
 													<?php endif; ?>
+
+                                                    <?php if (!empty($application->choices) && !empty($choices_link)) : ?>
+                                                        <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
+                                                           href="<?= Route::_($choices_link->route); ?>"
+                                                           id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
+                                                            <span class="material-symbols-outlined tw-mr-2">fork_right</span>
+                                                            <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_APPLICATION_CHOICES') ?>
+                                                        </a>
+                                                    <?php endif; ?>
 
 													<?php
 													modemundusApplicationsHelper::displayCustomActions($application, $custom_actions, $key);

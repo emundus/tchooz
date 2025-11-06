@@ -3,6 +3,7 @@ import Multiselect from 'vue-multiselect';
 
 export default {
 	name: 'Filter',
+	emits: ['change-filter', 'remove-filter'],
 	components: {
 		Multiselect,
 	},

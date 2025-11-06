@@ -739,6 +739,17 @@ class EmundusController extends JControllerLegacy
 
 		if (empty($redirect)) {
 			if (empty($confirm)) {
+				if(!class_exists('EmundusModelWorkflow')) {
+					require_once(JPATH_SITE . DS . 'components/com_emundus/models/workflow.php');
+				}
+				$m_workflow = new EmundusModelWorkflow();
+				$choices_step = $m_workflow->getChoicesStepFromFnum($fnum, true);
+				if(!empty($choices_step))
+				{
+					$applicant_menu = Factory::getApplication()->getMenu()->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=application_choices', 'applicantmenu'], 'true');
+					$this->app->redirect(Uri::base().$applicant_menu->route);
+				}
+
 				$redirect = $m_application->getFirstPage();
 
 				if ($redirect == '/index.php') {

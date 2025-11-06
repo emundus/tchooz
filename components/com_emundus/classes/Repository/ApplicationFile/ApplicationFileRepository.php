@@ -3,12 +3,14 @@ namespace Tchooz\Repository\ApplicationFile;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 
+#[TableAttribute(table: '#__emundus_campaign_candidature')]
 class ApplicationFileRepository
 {
 	private DatabaseInterface $db;
@@ -17,10 +19,34 @@ class ApplicationFileRepository
 
 	public function __construct()
 	{
-		$this->db   = Factory::getContainer()->get('DatabaseDriver');
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		Log::addLogger(['text_file' => 'com_emundus.applicationrepository.php'], Log::ALL, array('com_emundus.applicationrepository'));
+	}
+
+	public function getByFnum(string $fnum): ?ApplicationFileEntity
+	{
+		$applicationFileEntity = null;
+
+		$this->query->clear()
+			->select('*')
+			->from('#__emundus_campaign_candidature')
+			->where('fnum = :fnum')
+			->bind(':fnum', $fnum);
+		$this->db->setQuery($this->query);
+		$result = $this->db->loadObject();
+
+		if(!empty($result))
+		{
+			$applicationFileEntity = new ApplicationFileEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($result->applicant_id));
+			$applicationFileEntity->setFnum($result->fnum);
+			$applicationFileEntity->setCampaignId($result->campaign_id);
+			$applicationFileEntity->setStatus($result->status);
+			$applicationFileEntity->setPublished($result->published);
+		}
+
+		return $applicationFileEntity;
 	}
 
 	public function flush(ApplicationFileEntity $applicationFileEntity, int $user_id = 0): bool
