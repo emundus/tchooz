@@ -231,6 +231,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$m_emails = new \EmundusModelEmails();
 			$post     = [
 				'NAME'      => $user['name'],
+				'APPLICANT_NAME' => $user['name'],
 				'LOGO'      => \EmundusHelperEmails::getLogo(),
 				'SITE_NAME' => $this->getApplication()->get('sitename'),
 			];
