@@ -63,6 +63,12 @@ Text::script('COM_EMUNDUS_WORKFLOW_PAYMENT_STEP_RELATED_TO');
 Text::script('COM_EMUNDUS_WORKFLOW_DELETE_STEP_FAILED');
 Text::script('COM_EMUNDUS_WORKFLOW_ARCHIVED_STEP');
 
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHOICES');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES_REQUIRED');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_ORDERING');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_CONFIRMED');
+
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();
 $short_lang   = substr($lang->getTag(), 0, 2);

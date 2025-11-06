@@ -180,6 +180,7 @@ return [
 	'Joomla\\Plugin\\Editors\\TinyMCE\\' => [JPATH_PLUGINS . '/editors/tinymce/src'],
 	'Joomla\\Plugin\\Editors\\TipTap\\' => [JPATH_PLUGINS . '/editors/tiptap/src'],
 	'Joomla\\Plugin\\Emundus\\Ammon\\' => [JPATH_PLUGINS . '/emundus/ammon/src'],
+	'Joomla\\Plugin\\Emundus\\ApplicationChoices\\' => [JPATH_PLUGINS . '/emundus/application_choices/src'],
 	'Joomla\\Plugin\\Emundus\\Emails\\' => [JPATH_PLUGINS . '/emundus/emails/src'],
 	'Joomla\\Plugin\\Emundus\\Filemaker\\' => [JPATH_PLUGINS . '/emundus/filemaker/src'],
 	'Joomla\\Plugin\\Emundus\\Mergeapplications\\' => [JPATH_PLUGINS . '/emundus/mergeapplications/src'],

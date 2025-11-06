@@ -25,6 +25,8 @@ use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
 use Tchooz\Traits\TraitVersion;
 
+require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitVersion.php';
+
 /**
  * @package     ${NAMESPACE}
  * @subpackage

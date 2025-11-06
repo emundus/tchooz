@@ -5287,6 +5287,9 @@ class EmundusHelperFiles
 										}
 									}
 									break;
+								case 'application_choices':
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('eccc.campaign_id', $filter['value'], $filter['operator']);
+									break;
 								default:
 									break;
 							}

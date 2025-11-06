@@ -251,6 +251,24 @@
 							deselect-label=""
 						></multiselect>
 					</div>
+
+					<div v-if="choicesModuleEnabled == 1">
+						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PARENT') }}</label>
+
+						<multiselect
+							class="tw-mt-1"
+							v-model="form.parent_id"
+							label="label"
+							track-by="value"
+							:options="campaignsOptions"
+							:multiple="false"
+							:taggable="false"
+							:placeholder="translate('COM_EMUNDUS_ONBOARD_CHOOSE_PARENT')"
+							select-label=""
+							selected-label=""
+							deselect-label=""
+						></multiselect>
+					</div>
 				</div>
 
 				<hr class="tw-mb-4 tw-mt-1.5" />
@@ -536,6 +554,7 @@ export default {
 
 		isHiddenProgram: false,
 		userCategoryEnabled: false,
+		choicesModuleEnabled: false,
 
 		// Date picker rules
 		minDate: '',
@@ -547,6 +566,7 @@ export default {
 		languages: [],
 		aliases: [],
 		userCategories: [],
+		otherCampaigns: [],
 		editorPlugins: [
 			'history',
 			'link',
@@ -584,6 +604,7 @@ export default {
 			pinned: 0,
 			visible: 1,
 			alias: '',
+			parent_id: null,
 		},
 		programForm: {
 			code: '',
@@ -639,7 +660,25 @@ export default {
 					});
 				}
 
-				this.getCampaignById();
+				settingsService.checkAddonStatus('choices').then((res) => {
+					this.choicesModuleEnabled = res.data.enabled;
+					if (this.choicesModuleEnabled) {
+						// Get all campaigns
+						campaignService.getAllCampaigns().then((campaigns) => {
+							// Exclude current campaign from the list
+							let index = campaigns.datas.findIndex((c) => c.id == this.campaignId);
+							if (index > -1) {
+								campaigns.datas.splice(index, 1);
+							}
+
+							this.otherCampaigns = campaigns.datas;
+
+							this.getCampaignById();
+						});
+					} else {
+						this.getCampaignById();
+					}
+				});
 			});
 		});
 
@@ -722,6 +761,17 @@ export default {
 						this.form.start_date = new Date(this.form.start_date);
 						this.form.end_date = new Date(this.form.end_date);
 						//
+
+						let parentCampaign = this.otherCampaigns.find((c) => c.id == this.form.parent_id);
+						if (parentCampaign) {
+							this.form.parent_id = {
+								value: parentCampaign.id,
+								label: parentCampaign.label[this.actualLanguage] || parentCampaign.label.fr || parentCampaign.label.en,
+							};
+						} else {
+							this.form.parent_id = null;
+						}
+
 						this.ready = true;
 					})
 					.catch((e) => {
@@ -819,6 +869,7 @@ export default {
 			form_data.usercategories = this.userCategoryEnabled
 				? this.campaignUsercategories.map((category) => category.value)
 				: [];
+			form_data.parent_id = this.choicesModuleEnabled && form_data.parent_id ? form_data.parent_id.value : 0;
 
 			campaignService.createCampaign(form_data).then((response) => {
 				if (response.status == 1) {
@@ -982,6 +1033,7 @@ export default {
 			form_data.usercategories = this.userCategoryEnabled
 				? this.campaignUsercategories.map((category) => category.value)
 				: [];
+			form_data.parent_id = this.choicesModuleEnabled && form_data.parent_id ? form_data.parent_id.value : null;
 
 			campaignService
 				.updateCampaign(form_data, this.campaignId)
@@ -1120,6 +1172,15 @@ export default {
 				return {
 					label: category.label,
 					value: category.id,
+				};
+			});
+		},
+		campaignsOptions() {
+			return this.otherCampaigns.map((campaign) => {
+				console.log(campaign.label[this.actualLanguage]);
+				return {
+					label: campaign.label[this.actualLanguage] || campaign.label['fr'] || campaign.label['en'] || 'No title',
+					value: campaign.id,
 				};
 			});
 		},

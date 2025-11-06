@@ -32,6 +32,49 @@ readonly class ActionRepository
 		$this->db   = Factory::getContainer()->get('DatabaseDriver');
 	}
 
+	public function flush(ActionEntity $entity): bool
+	{
+		if (empty($entity->getId()))
+		{
+			$insert = (object) [
+				'name'        => $entity->getName(),
+				'label'       => $entity->getLabel(),
+				'multi'       => $entity->getCrud()->getMulti(),
+				'c'           => $entity->getCrud()->getCreate(),
+				'r'           => $entity->getCrud()->getRead(),
+				'u'           => $entity->getCrud()->getUpdate(),
+				'd'           => $entity->getCrud()->getDelete(),
+				'ordering'    => $entity->getOrdering(),
+				'status'      => $entity->isStatus() ? 1 : 0,
+				'description' => $entity->getDescription(),
+			];
+
+			$this->db->insertObject($this->getTableName(self::class), $insert);
+
+			$entity->setId($this->db->insertid());
+		}
+		else
+		{
+			$update = (object) [
+				'id'          => $entity->getId(),
+				'name'        => $entity->getName(),
+				'label'       => $entity->getLabel(),
+				'multi'       => $entity->getCrud()->getMulti(),
+				'c'           => $entity->getCrud()->getCreate(),
+				'r'           => $entity->getCrud()->getRead(),
+				'u'           => $entity->getCrud()->getUpdate(),
+				'd'           => $entity->getCrud()->getDelete(),
+				'ordering'    => $entity->getOrdering(),
+				'status'      => $entity->isStatus(),
+				'description' => $entity->getDescription(),
+			];
+
+			$this->db->updateObject($this->getTableName(self::class), $update, 'id');
+		}
+
+		return true;
+	}
+
 	public function getByName(string $name): ?ActionEntity
 	{
 		$action_entity = null;

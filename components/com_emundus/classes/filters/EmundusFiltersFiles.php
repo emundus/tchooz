@@ -513,7 +513,7 @@ class EmundusFiltersFiles extends EmundusFilters
 			];
 		}
 
-		if ($config['filter_campaign'])
+		if ($config['filter_campaign'] || $config['filter_application_choices'])
 		{
 			$campaigns = [];
 
@@ -581,6 +581,20 @@ class EmundusFiltersFiles extends EmundusFilters
 				'available' => true,
 				'order'     => $config['filter_campaigns_order']
 			];
+
+			if($config['filter_application_choices']) {
+				$this->applied_filters[] = [
+					'uid'       => 'application_choices',
+					'id'        => 'application_choices',
+					'label'     => Text::_('MOD_EMUNDUS_FILTERS_APPLICATION_CHOICES'),
+					'type'      => 'select',
+					'values'    => $campaigns,
+					'value'     => ['all'],
+					'default'   => true,
+					'available' => true,
+					'order'     => $config['filter_application_choices_order']
+				];
+			}
 		}
 
 		if ($config['filter_years'])

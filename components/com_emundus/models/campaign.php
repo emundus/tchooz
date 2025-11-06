@@ -15,6 +15,7 @@
 
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
@@ -997,7 +998,7 @@ class EmundusModelCampaign extends ListModel
 	 *
 	 * @since version 1.0
 	 */
-	function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0, $program = 'all', $session = 'all', $order_by = 'sc.id')
+	function getAssociatedCampaigns($filter = '', $sort = 'DESC', $recherche = '', $lim = 25, $page = 0, $program = 'all', $session = 'all', $order_by = 'sc.id', $parent_id = null)
 	{
 		$associated_campaigns = [];
 
@@ -1139,6 +1140,10 @@ class EmundusModelCampaign extends ListModel
 			if ($session !== 'all')
 			{
 				$query->andWhere($this->_db->quoteName('year') . ' = ' . $this->_db->quote($session));
+			}
+			if(!empty($parent_id))
+			{
+				$query->andWhere($this->_db->quoteName('sc.parent_id') . ' = ' . $this->_db->quote($parent_id));
 			}
 			$query->group('sc.id')
 				->order($order_by . ' ' . $sort);
@@ -2049,6 +2054,11 @@ class EmundusModelCampaign extends ListModel
 			{
 				if ($val === '' || is_null($val))
 				{
+					if($key === 'parent_id')
+					{
+						$fields[] = $this->_db->quoteName($key) . ' = NULL';
+					}
+
 					$keys_to_unset[] = $key;
 					continue;
 				}
@@ -3417,7 +3427,18 @@ class EmundusModelCampaign extends ListModel
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 				$m_workflow = new EmundusModelWorkflow();
 
-				$workflows = $m_workflow->getWorkflows([], 0, 0, [$program['id']]);
+				$programs_ids = [$program['id']];
+
+				if(!class_exists('CampaignRepository')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
+				}
+				$campaignRepository = new CampaignRepository();
+				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id);
+				if(!empty($linked_programs_ids)) {
+					$programs_ids = array_merge($programs_ids, $linked_programs_ids);
+				}
+
+				$workflows = $m_workflow->getWorkflows([], 0, 0, $programs_ids);
 
 				if (!empty($workflows))
 				{
@@ -4506,5 +4527,40 @@ class EmundusModelCampaign extends ListModel
 		}
 
 		return $applicant_id;
+	}
+
+	public function getAvailableChoices(string $fnum): array
+	{
+		$campaigns = [];
+
+		try
+		{
+			$query = $this->_db->createQuery();
+
+			$query->select('campaign_id')
+				->from($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+			$this->_db->setQuery($query);
+			$parent_campaign = $this->_db->loadResult();
+
+			if(!empty($parent_campaign))
+			{
+				//TODO: Manage start_date and end_date of the campaigns
+				$query->clear()
+					->select('esc.id as value, esc.label as label')
+					->from($this->_db->quoteName('#__emundus_setup_campaigns', 'esc'))
+					->where($this->_db->quoteName('esc.parent_id') . ' = ' . $this->_db->quote($parent_campaign))
+					->andWhere($this->_db->quoteName('esc.published') . ' = 1')
+					->order($this->_db->quoteName('esc.label') . ' ASC');
+				$this->_db->setQuery($query);
+				$campaigns = $this->_db->loadObjectList();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error getting available choices : ' . $e->getMessage(), Log::ERROR, 'com_emundus.campaign');
+		}
+
+		return $campaigns;
 	}
 }

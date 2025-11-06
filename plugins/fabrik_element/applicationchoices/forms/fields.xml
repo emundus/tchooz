@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset label="COM_FABRIK_OPTIONS" name="plg-element-applicationchoices">
+			<field name="hidden"
+				   type="radio"
+				   default="0"
+				   class="btn-group"
+				   description="PLG_ELEMENT_FIELD_HIDDEN_DESC"
+				   label="PLG_ELEMENT_FIELD_HIDDEN_LABEL">
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+
+			<field name="default"
+				   type="fabrikeditor"
+				   mode="php"
+				   label="PLG_ELEMENT_EMUNDUS_PHONENUMBER_DEFAULT_LABEL" />
+
+			<field name="confirmation_application_choices"
+				type="radio"
+				default="0"
+				class="btn-group"
+				layout="joomla.form.field.radio.switcher"
+				label="PLG_ELEMENT_APPLICATION_CHOICES_CONFIRMATION_LABEL">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+			</field>
+
+		</fieldset>
+	</fields>
+</form>

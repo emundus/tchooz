@@ -1170,10 +1170,43 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
 											}
 											else
 											{
-												$register_url = $redirect_url . '?course=' . $result->code . '&cid=' . $result->id . '&Itemid=' . $mod_em_campaign_itemid;
+												// Parse redirect URL to ensure it is correct
+												$parsedUrl = parse_url($redirect_url);
+												parse_str($parsedUrl['query'] ?? '', $params);
+												if (empty($result->parent_id))
+												{
+													$params['course'] = $result->code;
+													$params['cid']    = $result->id;
+												}
+												else
+												{
+													$params['course']             = $result->parent_code;
+													$params['application_choice'] = $result->id;
+													$params['cid']                = $result->parent_id;
+												}
+
+												$newQuery = http_build_query($params);
+
+												if ($parsedUrl['scheme'])
+												{
+													$register_url =
+														($parsedUrl['scheme'] ?? 'http') . '://' .
+														($parsedUrl['host'] ?? '') .
+														(isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '') .
+														($parsedUrl['path'] ?? '') .
+														'?' . $newQuery;
+												}
+												else
+												{
+													$register_url = $redirect_url . '?' . $newQuery;
+												}
 											}
 
-											if (!$user->guest)
+											if (!empty($mod_em_campaign_itemid))
+											{
+												$register_url .= "&Itemid=" . $mod_em_campaign_itemid;
+											}
+											if (!$user->guest && !empty($formUrl))
 											{
 												$register_url .= '&redirect=' . $formUrl;
 											}

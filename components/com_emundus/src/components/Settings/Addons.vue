@@ -68,7 +68,7 @@ export default {
 			<div
 				v-if="!currentAddon"
 				v-for="addon in addons"
-				class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-3 tw-rounded-[15px] tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
+				class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-gap-3 tw-rounded-[15px] tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
 			>
 				<div class="tw-flex tw-items-center tw-justify-between">
 					<span class="material-symbols-outlined" style="font-size: 32px">{{ addon.icon }}</span>
@@ -88,10 +88,12 @@ export default {
 						</div>
 					</div>
 				</div>
-				<h4 class="tw-mt-2">{{ translate(addon.name) }}</h4>
-				<p class="tw-text-medium tw-text-sm tw-text-neutral-800">
-					{{ translate(addon.description) }}
-				</p>
+				<div class="tw-flex tw-flex-col tw-gap-2">
+					<h4 class="tw-mt-2">{{ translate(addon.name) }}</h4>
+					<p class="tw-text-medium tw-text-sm tw-text-neutral-800">
+						{{ translate(addon.description) }}
+					</p>
+				</div>
 
 				<div v-if="addonHasConfiguration(addon)" class="tw-mt-2">
 					<button class="tw-btn-tertiary tw-w-full" @click="currentAddon = addon">

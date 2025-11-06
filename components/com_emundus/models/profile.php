@@ -1112,6 +1112,13 @@ class EmundusModelProfile extends ListModel
 				else
 				{
 					$res = $this->_db->loadObjectList();
+					foreach ($res as $key => $profile)
+					{
+						if (empty($profile->menutype))
+						{
+							unset($res[$key]);
+						}
+					}
 				}
 			}
 			catch (Exception $e)
@@ -1147,7 +1154,7 @@ class EmundusModelProfile extends ListModel
 						}
 					}
 				}
-
+				
 				if (!empty($workflow_profiles))
 				{
 					$query = $this->_db->getQuery(true);

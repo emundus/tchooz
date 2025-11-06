@@ -17,6 +17,7 @@ use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
 defined('_JEXEC') or die('Restricted access');
@@ -703,6 +704,8 @@ class EmundusHelperAccess
 		$reason_cannot_edit = 'READONLY_ACCESS';
 
 		if (!empty($ccid) && !empty($step_data->id)) {
+			$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
 			$app = Factory::getApplication();
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
@@ -713,23 +716,36 @@ class EmundusHelperAccess
 
 			// Verify if this step and this ccid are linked together by workflow
 			$query->clear()
-				->select('esp.id')
+				->select('esp.id, esc.id as campaign_id')
 				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
 				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 				->where('ecc.id = ' . $ccid);
-
 			$db->setQuery($query);
-			$programme_id = $db->loadResult();
+			$file_infos = $db->loadObject();
+			$programme_id = !empty($file_infos) ? $file_infos->id : null;
+			$campaign_id = !empty($file_infos) ? $file_infos->campaign_id : null;
 
-			if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
+			$programs_ids = [$programme_id];
+			if(!empty($campaign_id))
+			{
+				if(!class_exists('CampaignRepository')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
+				}
+				$campaignRepository = new CampaignRepository();
+				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id, $fnum);
+				if(!empty($linked_programs_ids))
+				{
+					$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+				}
+			}
+
+			if (!empty($programs_ids) && !empty(array_intersect($programs_ids, $step_data->programs))) {
 				// verify if user can access to this evaluation form
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
 					$can_see = true;
 					$can_edit = true;
 				} else if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
-					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
-
 					// it's the bare minimum to potentially see the evaluation form
 					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) &&
 						(EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)))

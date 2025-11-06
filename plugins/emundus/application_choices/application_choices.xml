@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="console" method="upgrade">
+    <name>plg_emundus_application_choices</name>
+    <version>1.0.0</version>
+    <creationDate>October 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to create application choices on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\ApplicationChoices</namespace>
+    <files>
+        <folder plugin="application_choices">services</folder>
+        <folder>src</folder>
+    </files>
+</extension>

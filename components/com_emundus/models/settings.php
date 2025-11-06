@@ -3898,6 +3898,27 @@ class EmundusModelSettings extends ListModel
 				);
 			}
 
+
+			$choicesAddon = new AddonEntity(
+				'COM_EMUNDUS_ADDONS_CHOICES',
+				'choices',
+				'checklist_rtl',
+				'COM_EMUNDUS_ADDONS_CHOICES_DESC'
+			);
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('choices'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+			if ($params['displayed'])
+			{
+				$choicesAddon->setEnabled($params['enabled'] ?? 0);
+				$choicesAddon->setDisplayed(true);
+				$choicesAddon->setConfiguration($params['params'] ?? []);
+				$addons[] = $choicesAddon;
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3907,6 +3928,7 @@ class EmundusModelSettings extends ListModel
 		return $addons;
 	}
 
+	// TODO: Move addon management to dedicated repository with factories to handle each addon type
 	public function toggleAddon(string $type, int $enabled): bool
 	{
 		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
@@ -4104,6 +4126,31 @@ class EmundusModelSettings extends ListModel
 						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
 
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					break;
+				case 'choices':
+					// Enable step type
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_step_types'))
+						->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled))
+						->where($this->db->quoteName('label') . ' = ' . $this->db->quote('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHOICES'));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->select('value')
+						->from($this->db->quoteName('#__emundus_setup_config'))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
+					$this->db->setQuery($query);
+					$params = json_decode($this->db->loadResult(), true);
+
+					$params['enabled'] = $enabled === 1;
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_config'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 

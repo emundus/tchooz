@@ -81,6 +81,32 @@ const alerts = {
 
 			return await this.displayAlert(options, callback);
 		},
+		async alertDropdown(
+			title,
+			inputOptions,
+			inputPlaceholder = '',
+			confirmText = 'COM_EMUNDUS_OK',
+			cancelText = 'COM_EMUNDUS_ACTIONS_CANCEL',
+			callback = null,
+		) {
+			let options = {
+				title: this.translate(title),
+				input: 'select',
+				inputOptions: inputOptions,
+				inputPlaceholder: this.translate(inputPlaceholder),
+				showCancelButton: true,
+				confirmButtonText: this.translate(confirmText),
+				cancelButtonText: this.translate(cancelText),
+				reverseButtons: true,
+				customClass: {
+					title: 'em-swal-title',
+					cancelButton: 'em-swal-cancel-button',
+					confirmButton: 'em-swal-confirm-button',
+				},
+			};
+
+			return await this.displayAlert(options, callback);
+		},
 		async alertInput(
 			title,
 			inputValue = '',

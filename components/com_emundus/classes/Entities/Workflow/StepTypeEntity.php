@@ -12,6 +12,8 @@ class StepTypeEntity
 
 	public string $label;
 
+	public ?string $code;
+
 	public int $action_id;
 
 	public bool $system = false;
@@ -40,6 +42,7 @@ class StepTypeEntity
 		if (!empty($stepType)) {
 			$this->parent_id = $stepType->parent_id;
 			$this->label = $stepType->label;
+			$this->code = $stepType->code;
 			$this->action_id = $stepType->action_id;
 			$this->system = $stepType->system;
 		}
