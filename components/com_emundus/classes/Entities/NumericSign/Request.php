@@ -49,6 +49,8 @@ class Request
 
 	private array $signers = [];
 
+	private bool $ordered = false;
+
 	public function __construct($createdBy)
 	{
 		$this->createdAt = (new \DateTime())->format('Y-m-d H:i:s');
@@ -266,6 +268,16 @@ class Request
 		$this->signers[] = $signer;
 	}
 
+	public function isOrdered(): bool
+	{
+		return $this->ordered;
+	}
+
+	public function setOrdered(bool $ordered): void
+	{
+		$this->ordered = $ordered;
+	}
+
 	public function __serialize(): array
 	{
 		return [
@@ -284,7 +296,8 @@ class Request
 			'send_reminder'    => $this->sendReminder,
 			'last_reminder_at' => $this->lastReminderAt,
 			'created_at'       => $this->createdAt,
-			'created_by'       => $this->createdBy
+			'created_by'       => $this->createdBy,
+			'ordered'          => $this->ordered ? 1 : 0,
 		];
 	}
 }

@@ -29,6 +29,8 @@ class Release2_11_0Installer extends ReleaseInstaller
 		{
 			$this->initShareFilters();
 
+			$this->tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_sign_requests', 'ordered', 'TINYINT', 3, 1, 0);
+
 			$result['status']  = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)

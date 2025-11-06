@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
 use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Repositories\NumericSign\RequestRepository;
 
 /**
  * @package     Unit\Component\Emundus\Model
@@ -41,6 +42,8 @@ class SignModelTest extends UnitTestCase
 
 	public function testSaveRequest()
 	{
+		$requesRepository = new RequestRepository($this->db);
+
 		$attachment_id       = $this->h_dataset->createSampleAttachment();
 		$upload_id              = $this->h_dataset->createSampleUpload($this->dataset['fnum'], $this->dataset['campaign'], $this->dataset['applicant'], $attachment_id);
 
@@ -52,9 +55,10 @@ class SignModelTest extends UnitTestCase
 			'fnum' => '',
 			'attachment' => $attachment_id,
 			'connector' => 'yousign',
+			'ordered' => false
 		];
 
-		// 1. Test without signers
+		// 1. Test without signers and not ordered
 		$request_id = $this->model->saveRequest(
 			0,
 			$request['status'],
@@ -65,11 +69,15 @@ class SignModelTest extends UnitTestCase
 			$request['connector'],
 			[],
 			0,
-			$this->dataset['coordinator']
+			$this->dataset['coordinator'],
+			$request['ordered']
 		);
 		$this->assertIsInt($request_id, 'saveRequest without signers should return an integer');
 
-		// 2. Test with a signer
+		$requestEntity = $requesRepository->loadRequestById($request_id);
+		$this->assertFalse($requestEntity->isOrdered());
+
+		// 2. Test with a signer ordered
 		$signer_1 = $this->h_dataset->createSampleContact('signer1@emundus.fr', 'Signer 1', 'TEST');
 		$request['signers'] = [
 			[
@@ -78,6 +86,7 @@ class SignModelTest extends UnitTestCase
 				'position' => 'C1'
 			]
 		];
+		$request['ordered'] = true;
 		$request_id = $this->model->saveRequest(
 			0,
 			$request['status'],
@@ -88,9 +97,13 @@ class SignModelTest extends UnitTestCase
 			$request['connector'],
 			$request['signers'],
 			0,
-			$this->dataset['coordinator']
+			$this->dataset['coordinator'],
+			$request['ordered']
 		);
 		$this->assertIsInt($request_id, 'saveRequest with signers should return an integer');
+
+		$requestEntity = $requesRepository->loadRequestById($request_id);
+		$this->assertTrue($requestEntity->isOrdered());
 
 		// 3. Test with multiple signers
 		$signer_2 = $this->h_dataset->createSampleContact('signer2@emundus.fr', 'Signer 2', 'TEST');
