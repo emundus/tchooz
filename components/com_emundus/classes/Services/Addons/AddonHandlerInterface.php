@@ -7,9 +7,9 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Tchooz\Factories\Addons;
+namespace Tchooz\Services\Addons;
 
-interface AddonFactoryInterface
+interface AddonHandlerInterface
 {
 	public function toggle(bool $state): bool;
 }

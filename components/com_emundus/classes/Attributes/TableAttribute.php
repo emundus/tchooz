@@ -13,9 +13,11 @@ namespace Tchooz\Attributes;
 class TableAttribute
 {
 	public string $table;
+	public string $alias;
 
-	public function __construct(string $table)
+	public function __construct(string $table, string $alias = '')
 	{
 		$this->table = $table;
+		$this->alias = $alias ?: $table;
 	}
 }

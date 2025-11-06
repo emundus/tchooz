@@ -5,6 +5,7 @@ namespace Tchooz\Entities\Workflow;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 class StepEntity {
 	private int $id;
@@ -15,9 +16,9 @@ class StepEntity {
 
 	public StepTypeEntity $type;
 
-	public int $profile_id = 0;
+	public ?int $profile_id = 0;
 
-	public int $form_id = 0;
+	public ?int $form_id = 0;
 
 	public array $entry_status = [];
 
@@ -35,11 +36,35 @@ class StepEntity {
 
 	private DatabaseDriver $db;
 
-	public function __construct(int $id) {
+	/**
+	 * @param   int                  $id
+	 * @param   int                  $workflow_id
+	 * @param   string               $label
+	 * @param   StepTypeEntity|null  $type
+	 * @param   ?int                  $profile_id
+	 * @param   ?int                  $form_id
+	 * @param   array                $entry_status
+	 * @param   int|null             $output_status
+	 * @param   int                  $multiple
+	 * @param   int                  $state
+	 * @param   int                  $ordering
+	 */
+	public function __construct(int $id, int $workflow_id = 0, string $label = '', ?StepTypeEntity $type = null, ?int $profile_id = 0, ?int $form_id = 0, array $entry_status = [], ?int $output_status = null, int $multiple = 0, int $state = 1, int $ordering = 0) {
 		$this->id = $id;
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
-		if (!empty($this->id)) {
+		$this->workflow_id = $workflow_id;
+		$this->label = $label;
+		$this->type = $type ?? new StepTypeEntity(1);
+		$this->profile_id = $profile_id;
+		$this->form_id = $form_id;
+		$this->entry_status = $entry_status;
+		$this->output_status = $output_status;
+		$this->multiple = $multiple;
+		$this->state = $state;
+		$this->ordering = $ordering;
+
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		if (!empty($this->id) && empty($this->workflow_id) && empty($this->label) && empty($this->entry_status)) {
 			$this->load();
 		}
 	}
@@ -55,6 +80,119 @@ class StepEntity {
 		$this->load();
 	}
 
+	public function getWorkflowId(): int
+	{
+		return $this->workflow_id;
+	}
+
+	public function getLabel(): string
+	{
+		return $this->label;
+	}
+
+	public function setLabel(string $label): void
+	{
+		$this->label = $label;
+	}
+
+	public function getType(): StepTypeEntity
+	{
+		return $this->type;
+	}
+
+	public function setType(StepTypeEntity $type): void
+	{
+		$this->type = $type;
+	}
+
+	public function getProfileId(): ?int
+	{
+		return $this->profile_id;
+	}
+
+	public function setProfileId(int $profile_id): void
+	{
+		$this->profile_id = $profile_id;
+	}
+
+	public function getFormId(): ?int
+	{
+		return $this->form_id;
+	}
+
+	public function setFormId(int $form_id): void
+	{
+		$this->form_id = $form_id;
+	}
+
+	public function getEntryStatus(): array
+	{
+		return $this->entry_status;
+	}
+
+	public function setEntryStatus(array $entry_status): void
+	{
+		$this->entry_status = $entry_status;
+	}
+
+	public function getOutputStatus(): ?int
+	{
+		return $this->output_status;
+	}
+
+	public function setOutputStatus(?int $output_status): void
+	{
+		$this->output_status = $output_status;
+	}
+
+	public function getMultiple(): int
+	{
+		return $this->multiple;
+	}
+
+	public function setMultiple(int $multiple): void
+	{
+		$this->multiple = $multiple;
+	}
+
+	public function getState(): int
+	{
+		return $this->state;
+	}
+
+	public function setState(int $state): void
+	{
+		$this->state = $state;
+	}
+
+	public function getOrdering(): int
+	{
+		return $this->ordering;
+	}
+
+	public function isApplicantStep(): bool
+	{
+		return $this->type->action_id === 1;
+	}
+
+	public function isEvaluationStep(): bool
+	{
+		return !$this->isApplicantStep() && !$this->isPaymentStep();
+	}
+
+	public function isPaymentStep(): bool
+	{
+		$paymentRepository = new PaymentRepository();
+
+		return $this->type->id === $paymentRepository->getPaymentStepTypeId();
+	}
+
+	public function setOrdering(int $ordering): void
+	{
+		$this->ordering = $ordering;
+	}
+
+	// TODO: those functions should be in a repository class
 	private function load(): void
 	{
 		$query = $this->db->createQuery();
@@ -83,11 +221,6 @@ class StepEntity {
 				$this->setEvaluationTable();
 			}
 		}
-	}
-
-	public function isEvaluationStep(): bool
-	{
-		return $this->type->action_id !== 1;
 	}
 
 	private function setEvaluationTable(): void

@@ -50,6 +50,9 @@ class Com_EmundusInstallerScript
 		$this->schema_version = $this->db->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/EmundusTableColumn.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/EmundusColumnTypeEnum.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/EmundusTableForeignKey.php');
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/src/Attributes/PostflightAttribute.php');
 	}
 
@@ -162,10 +165,10 @@ class Com_EmundusInstallerScript
 				}
 			}
 		}
-		
+
 		return $succeed;
 	}
-	
+
 	public function uninstall(object $parent): void
 	{}
 

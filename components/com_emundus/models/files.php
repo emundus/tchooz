@@ -32,8 +32,14 @@ use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
 use \Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
+use Tchooz\Enums\ValueFormat;
 
 /**
  * Class EmundusModelFiles
@@ -835,9 +841,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getUserGroups($uid)
 	{
-		$h_files = new EmundusHelperFiles;
-
-		return $h_files->getUserGroups($uid);
+		return EmundusHelperFiles::getUserGroups($uid);
 	}
 
 	/**
@@ -1323,14 +1327,20 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $groups
 	 * @param $actions
 	 * @param $fnums
+	 * @param $current_user
 	 *
 	 * @return bool
 	 */
-	public function shareGroups($groups, $actions, $fnums)
+	public function shareGroups($groups, $actions, $fnums, $current_user = null)
 	{
 		$shared = false;
 
 		if (!empty($groups) && !empty($fnums)) {
+			if (empty($current_user))
+			{
+				$current_user = $this->app->getIdentity();
+			}
+
 			try {
 
 				$insert = [];
@@ -1369,12 +1379,12 @@ class EmundusModelFiles extends JModelLegacy
 					foreach ($fnums as $fnum) {
                         $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-						EmundusModelLogs::log($this->app->getIdentity()->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
 			catch (Exception $e) {
-				$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . '\n -> ' . $e->getMessage();
+				$error = Uri::getInstance() . ' :: USER ID : ' . $current_user->id . '\n -> ' . $e->getMessage();
 				Log::add($error, Log::ERROR, 'com_emundus');
 				$shared = false;
 			}
@@ -1392,6 +1402,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function shareUsers($users, $actions, $fnums, $current_user = null)
 	{
+		$shared = false;
 		$error = null;
 
 		if(empty($current_user)) {
@@ -1690,7 +1701,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool
 	 */
-	public function tagFile($fnums, $tags, $user_id = null)
+	public function tagFile($fnums, $tags, $user_id = null, ?AutomationExecutionContext $executionContext = null)
 	{
 		$tagged = false;
 
@@ -1762,7 +1773,24 @@ class EmundusModelFiles extends JModelLegacy
 				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags, 'tagged' => $tagged]]);
+			$onAfterTagAddEvtHandler = new GenericEvent(
+				'onCallEventHandler',
+				[
+					'onAfterTagAdd',
+					[
+						'fnums' => $fnums,
+						'tag' => $tags,
+						'tagged' => $tagged,
+						'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id), $fnums, [], [
+							onAfterTagAddDefinition::TAGS_KEY => $tags,
+						]),
+						'execution_context' => $executionContext
+					]
+				]
+			);
+
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$dispatcher->dispatch('onCallEventHandler', $onAfterTagAddEvtHandler);
 		}
 
 		return $tagged;
@@ -1819,7 +1847,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|mixed
 	 */
-	public function updateState($fnums, $state, $user_id = null)
+	public function updateState($fnums, $state, $user_id = null, ?AutomationExecutionContext $executionContext = null)
 	{
 		$res = false;
 
@@ -1918,7 +1946,21 @@ class EmundusModelFiles extends JModelLegacy
 								'onCallEventHandler',
 								['onAfterStatusChange',
 									// Datas to pass to the event
-									['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]
+									[
+										'fnum' => $fnum,
+									    'state' => $state,
+									    'old_state' => $old_status_step,
+										'context' => new EventContextEntity(
+											Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+											[$fnum],
+											[$fnumInfos['applicant_id']],
+											[
+												onAfterStatusChangeDefinition::STATUS_PARAMETER => $state,
+												onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status_step
+											]
+										),
+										'execution_context' => $executionContext
+									]
 								]
 							);
 							$onAfterStatusChange = new GenericEvent(
@@ -4322,149 +4364,24 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param   null  $fnums
 	 * @param         $params
 	 * @param         $groupRepeat
+	 * @param   int   $parent_row_id
+	 * @param   bool  $rawValue if true, return the raw value from the database, else format it according to the element type
 	 *
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id = 0)
+	public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id = 0, bool $rawValue = false)
 	{
-
-		if (!is_array($fnums)) {
-			$fnums = [$fnums];
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
+		$helper = new EmundusHelperFabrik();
 
-		$query = $this->_db->getQuery(true);
-
-		$tableName      = $elt['db_table_name'];
-		$tableJoin      = $elt['table_join'];
-		$name           = $elt['name'];
-		$plugin         = $elt['plugin'];
-		$isFnumsNull    = ($fnums === null);
-		$isDatabaseJoin = ($plugin === 'databasejoin');
-		$isMulti        = isset($params->database_join_display_type) && ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
-
-
-		$select = '';
-		$from = '';
-		$leftJoin = [];
-		$where = '';
-		$group = '';
-		if ($plugin === 'date') {
-			$date_form_format = $this->dateFormatToMysql($params->date_form_format);
-
-			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+		$format = ValueFormat::FORMATTED;
+		if ($rawValue) {
+			$format = ValueFormat::RAW;
 		}
-		else if ($plugin === 'birthday') {
-			$date_form_format = $this->dateFormatToMysql($params->list_date_format);
-			$query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
-		}
-		elseif ($plugin === 'jdate') {
-			$date_form_format = $this->dateFormatToMysql($params->jdate_form_format);
-
-			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
-		}
-		elseif ($isDatabaseJoin) {
-			if ($groupRepeat) {
-				$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
-			}
-			else {
-				if ($isMulti) {
-					$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
-				}
-				else {
-					$select = 't_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
-				}
-			}
-		}
-		else {
-			$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
-		}
-
-		if ($isDatabaseJoin) {
-			if ($groupRepeat) {
-				$tableName2 = $tableJoin;
-				if ($isMulti) {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
-					$leftJoin[] = $this->_db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
-				}
-				else {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
-				}
-			}
-			else {
-				if ($isMulti) {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
-				}
-				else {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
-				}
-			}
-
-		}
-		else {
-			$from = $this->_db->quoteName($tableJoin, 't_repeat');
-			$leftJoin[] = $this->_db->quoteName($tableName, 't_origin') . ' ON t_origin.id = t_repeat.parent_id';
-		}
-
-		if ($isMulti || $isDatabaseJoin) {
-			if ($groupRepeat) {
-				$where = $this->_db->quoteName('t_table.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
-				$group = $this->_db->quoteName('t_table.fnum');
-			}
-			else {
-				$where = $this->_db->quoteName('t_elt.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
-				$group = $this->_db->quoteName('t_elt.fnum');
-			}
-		}
-		else {
-			$where = $this->_db->quoteName('t_origin.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
-			$group = $this->_db->quoteName('t_origin.fnum');
-		}
-
-		if (!empty($parent_row_id)) {
-			if ($isDatabaseJoin) {
-				if ($groupRepeat) {
-					$where .= ' AND t_table.id = ' . $this->_db->quote($parent_row_id);
-				}
-				else {
-					$where .= ' AND t_elt.id = ' . $this->_db->quote($parent_row_id);
-				}
-			}
-			else {
-				$where .= ' AND t_origin.id = ' . $this->_db->quote($parent_row_id);
-			}
-		}
-
-		$query->select($select)
-			->from($from);
-		foreach ($leftJoin as $join) {
-			$query->leftJoin($join);
-		}
-		$query->where($where)
-			->group($group);
-
-		try {
-			$this->_db->setQuery($query);
-
-			if (!$isFnumsNull) {
-				$res = $this->_db->loadAssocList('fnum');
-			}
-			else {
-				$res = $this->_db->loadAssocList();
-			}
-
-			return $res;
-		}
-		catch (Exception $e) {
-			throw $e;
-		}
+		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format);
 	}
 
 	/**
@@ -4475,75 +4392,18 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0): array
+	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0, bool $rawValue = false): array
 	{
-		$values = [];
-
-		if (!is_array($fnums))
-		{
-			$fnums = [$fnums];
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
+		$helper = new EmundusHelperFabrik();
 
-		$query = $this->_db->getQuery(true);
-
-		// check if column fnum exists
-		$fnum_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('fnum'))->loadResult();
-
-		if (!empty($fnum_column_existing)) {
-			$query->clear()
-				->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
-				->from($this->_db->quoteName($tableName))
-				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
-
-			if (!empty($row_id)) {
-				$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
-			}
-
-			try {
-				$this->_db->setQuery($query);
-				$values = $this->_db->loadAssocList('fnum');
-
-				if(!empty($dateFormat))
-				{
-					foreach ($values as &$value)
-					{
-						$value['val'] = date($dateFormat, strtotime($value['val']));
-					}
-				}
-			}
-			catch (Exception $e) {
-				throw $e;
-			}
+		$format = ValueFormat::FORMATTED;
+		if ($rawValue) {
+			$format = ValueFormat::RAW;
 		}
-		else
-		{
-			$user_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('user_id'))->loadResult();
-
-			if (!empty($user_column_existing))
-			{
-				try {
-					foreach ($fnums as $fnum) {
-						$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
-						$query->clear()
-							->select($this->_db->quoteName($name) . ' as val')
-							->from($this->_db->quoteName($tableName))
-							->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
-
-						$this->_db->setQuery($query);
-						$value = $this->_db->loadResult();
-
-						$values[$fnum] = [
-							'val' => $value,
-							'fnum' => $fnum
-						];
-					}
-				} catch (Exception $e) {
-					throw $e;
-				}
-			}
-		}
-
-		return $values;
+		return $helper->getFabrikValue($fnums, $tableName, $name, $dateFormat, $row_id, $format);
 	}
 
 	/**
@@ -4559,83 +4419,105 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @param $fnum
+	 * @param        $fnum
+	 * @param   int  $user_id
 	 *
-	 * @return bool|mixed
+	 * @return bool
 	 */
-	public function deleteFile($fnum)
+	public function deleteFile($fnum, int $user_id = 0): bool
 	{
 		$deleted = false;
 
-		$this->app->triggerEvent('onBeforeDeleteFile', ['fnum' => $fnum]);
-		$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
-
-		$query = $this->_db->getQuery(true);
-
-		$query->select($this->_db->quoteName('filename'))
-			->from($this->_db->quoteName('#__emundus_uploads'))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-		$this->_db->setQuery($query);
-		try {
-			$files = $this->_db->loadColumn();
-		}
-		catch (Exception $e) {
-			// Do not hard fail, delete file data anyways.
-			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-		}
-
-
-		// Remove all files linked to the fnum.
-		$user_id = (int) substr($fnum, -7);
-		$dir     = EMUNDUS_PATH_ABS . $user_id . DS;
-		if ($dh = opendir($dir)) {
-
-			while (false !== ($obj = readdir($dh))) {
-				if (in_array($obj, $files)) {
-					if (!unlink($dir . $obj)) {
-						Log::add(Uri::getInstance() . ' :: Could not delete file -> ' . $obj . ' for fnum -> ' . $fnum, Log::ERROR, 'com_emundus');
-					}
-				}
+		if (!empty($fnum))
+		{
+			if (empty($user_id))
+			{
+				$user_id = Factory::getApplication()->getIdentity()->id;
 			}
 
-			closedir($dh);
-		}
+			$this->app->triggerEvent('onBeforeDeleteFile', ['fnum' => $fnum]);
+			$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
-		// remove hikashop orders linked to this file
-		$query->clear()
-			->select($this->_db->quoteName('order_id'))
-			->from($this->_db->quoteName('#__emundus_hikashop'))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+			$query = $this->_db->createQuery();
 
-		$this->_db->setQuery($query);
-		$order_ids = $this->_db->loadColumn();
-		if (!empty($order_ids)) {
-			$query->clear()
-				->delete($this->_db->quoteName('#__hikashop_order'))
-				->where($this->_db->quoteName('order_id') . ' IN (' . implode(',', $this->_db->quote($order_ids)) . ')');
+			$query->select($this->_db->quoteName('filename'))
+				->from($this->_db->quoteName('#__emundus_uploads'))
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 			try {
 				$this->_db->setQuery($query);
-				$this->_db->execute();
+				$files = $this->_db->loadColumn();
 			}
 			catch (Exception $e) {
-				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				// Do not hard fail, delete file data anyways.
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
-		}
 
-		$query->clear()
-			->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
-		try {
+			// Remove all files linked to the fnum.
+			$fileUserId = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+			if (!empty($fileUserId))
+			{
+				$dir     = EMUNDUS_PATH_ABS . $fileUserId . DS;
+				if ($dh = opendir($dir)) {
+
+					while (false !== ($obj = readdir($dh))) {
+						if (in_array($obj, $files)) {
+							if (!unlink($dir . $obj)) {
+								Log::add(Uri::getInstance() . ' :: Could not delete file -> ' . $obj . ' for fnum -> ' . $fnum, Log::ERROR, 'com_emundus');
+							}
+						}
+					}
+
+					closedir($dh);
+				}
+			}
+
+			// remove hikashop orders linked to this file
+			$query->clear()
+				->select($this->_db->quoteName('order_id'))
+				->from($this->_db->quoteName('#__emundus_hikashop'))
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
 			$this->_db->setQuery($query);
-			$deleted = $this->_db->execute();
+			$order_ids = $this->_db->loadColumn();
+			if (!empty($order_ids)) {
+				$query->clear()
+					->delete($this->_db->quoteName('#__hikashop_order'))
+					->where($this->_db->quoteName('order_id') . ' IN (' . implode(',', $this->_db->quote($order_ids)) . ')');
 
-			$this->app->triggerEvent('onAfterDeleteFile', ['fnum' => $fnum]);
-			$this->app->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
-		}
-		catch (Exception $e) {
-			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				try {
+					$this->_db->setQuery($query);
+					$this->_db->execute();
+				}
+				catch (Exception $e) {
+					Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+			}
+
+			$query->clear()
+				->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$deleted = $this->_db->execute();
+
+				$this->app->triggerEvent('onAfterDeleteFile', ['fnum' => $fnum]);
+
+				$onAfterDeleteFile = new GenericEvent('onCallEventHandler', [
+					'onAfterDeleteFile',
+					[
+						'fnum' => $fnum,
+						'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id), [$fnum], [$fileUserId], [])
+					]
+				]);
+				$this->app->getDispatcher()->dispatch('onCallEventHandler', $onAfterDeleteFile);
+			}
+			catch (Exception $e) {
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
 		}
 
 		return $deleted;
@@ -6451,99 +6333,12 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getFabrikElementValue(array $fabrik_element, string $fnum, int $row_id = 0): array
 	{
-		$value = [];
-
-		if (!empty($fabrik_element) && !empty($fnum)) {
-			$params      = json_decode($fabrik_element['params']);
-			$groupParams = json_decode($fabrik_element['group_params']);
-
-			if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, true, $row_id);
-			}
-			else if ($fabrik_element['plugin'] === 'databasejoin')
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, $groupParams->repeat_group_button == 1, $row_id);
-			}
-			else if ($fabrik_element['plugin'] == 'date')
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], $params->date_form_format, $row_id);
-			}
-			else if ($fabrik_element['plugin'] == 'jdate')
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], $params->jdate_form_format, $row_id);
-			}
-			else {
-				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], null, $row_id);
-			}
-
-			if ($fabrik_element['plugin'] == "checkbox" || $fabrik_element['plugin'] == "dropdown" || $fabrik_element['plugin'] == "radiobutton")
-			{
-				foreach ($value[$fabrik_element['id']] as $fnum => $val)
-				{
-					if ($fabrik_element['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1))
-					{
-						$val = json_decode($val['val']);
-					}
-					else
-					{
-						$val = explode(',', $val['val']);
-					}
-
-					if (count($val) > 0)
-					{
-						foreach ($val as $k => $v)
-						{
-							$index   = array_search($v, $params->sub_options->sub_values);
-							$val[$k] = Text::_($params->sub_options->sub_labels[$index]);
-						}
-						$value[$fabrik_element['id']][$fnum]['val'] = implode(", ", $val);
-					}
-					else
-					{
-						$value[$fabrik_element['id']][$fnum]['val'] = "";
-					}
-				}
-
-			}
-			elseif ($fabrik_element['plugin'] == "birthday")
-			{
-				foreach ($value[$fabrik_element['id']] as $fnum => $val)
-				{
-					$val = explode(',', $val['val']);
-					foreach ($val as $k => $v)
-					{
-						if (!empty($v))
-						{
-							$val[$k] = date($params->details_date_format, strtotime($v));
-						}
-					}
-					$value[$fabrik_element['id']][$fnum]['val'] = implode(",", $val);
-				}
-
-			}
-			elseif ($fabrik_element['plugin'] == 'emundus_phonenumber')
-			{
-				$value[$fabrik_element['id']][$fnum]['val'] = substr($value[$fabrik_element['id']][$fnum]['val'], 2, strlen($value[$fabrik_element['id']][$fnum]['val']));
-			}
-			elseif ($fabrik_element['plugin'] == 'yesno')
-			{
-				$value[$fabrik_element['id']][$fnum]['val'] = $value[$fabrik_element['id']][$fnum]['val'] == '1' ? Text::_('JYES') : Text::_('JNO');
-			}
-			elseif ($fabrik_element['plugin'] == 'cascadingdropdown')
-			{
-				foreach ($value[$fabrik_element['id']] as $fnum => $val) {
-					//$value[$fabrik_element['id']][$fnum]['val'] = $m_email->getCddLabel($fabrik_element, $val['val']);
-				}
-			}
-
-			if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
-			{
-				$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
-			}
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
 
-		return $value;
+		$helper = new EmundusHelperFabrik();
+		return $helper->getFabrikElementValue($fabrik_element, $fnum, $row_id);
 	}
 
 	public function mergeEvaluations(array $fnums_data, array $evaluations_by_fnum_by_step, array $columns): array

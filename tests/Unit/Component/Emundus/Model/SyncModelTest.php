@@ -60,6 +60,8 @@ class SyncModelTest extends UnitTestCase
 
 			$token = $this->model->authenticateApi($ammon_api, $api_class, $config['api_url'], true);
 			$this->assertNotEmpty($token, "Ammon successful auth");
+		} else {
+			$this->markTestSkipped('Ammon API configuration not found. Skipping test.');
 		}
 	}
 

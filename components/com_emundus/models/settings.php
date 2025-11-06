@@ -33,6 +33,7 @@ use Smalot\PdfParser\Parser;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
 class EmundusModelSettings extends ListModel
@@ -512,48 +513,44 @@ class EmundusModelSettings extends ListModel
 	 */
 	function updateTags($tag, $label, $color)
 	{
-		$query = $this->db->getQuery(true);
+		$udpated = false;
+
+		$query = $this->db->createQuery();
+
+		$query->clear()
+			->select('id')
+			->from('#__emundus_setup_action_tag')
+			->where('id != ' . $this->db->quote($tag))
+			->andWhere('label = ' . $this->db->quote($label));
+
+		$this->db->setQuery($query);
+		$existing = $this->db->loadResult();
+
+		if ($existing) {
+			throw new \Exception(Text::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS'));
+		}
 
 		try
 		{
 			$query->clear()
-				->select('id')
-				->from('#__emundus_setup_action_tag')
-				->where($this->db->quoteName('label') . ' = ' . $this->db->quote($label));
+				->update('#__emundus_setup_action_tag');
+
+			if (!empty($label))
+			{
+				$query->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label));
+			}
+
+			$query->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
 			$this->db->setQuery($query);
-			$result = $this->db->loadResult();
-
-			if (empty($result))
-			{
-				$query->clear()
-					->update('#__emundus_setup_action_tag')
-					->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label))
-					->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
-				$this->db->setQuery($query);
-
-				return $this->db->execute();
-			}
-			else
-			{
-				// Update only color
-				$query->clear()
-					->update('#__emundus_setup_action_tag')
-					->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
-				$this->db->setQuery($query);
-
-				return $this->db->execute();
-			}
-
-			return false;
+			$udpated = $this->db->execute();
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $udpated;
 	}
 
 	/**
@@ -3919,6 +3916,22 @@ class EmundusModelSettings extends ListModel
 				$choicesAddon->setConfiguration($params['params'] ?? []);
 				$addons[] = $choicesAddon;
 			}
+
+			$addonRepository = new AddonRepository();
+			$automationAddon = $addonRepository->getByName('automation');
+
+			if ($automationAddon->getValue()->isDisplayed())
+			{
+				$addons[] = new AddonEntity(
+					'COM_EMUNDUS_ADDONS_AUTOMATION',
+					'automation',
+					'automation',
+					'COM_EMUNDUS_ADDONS_AUTOMATION_DESC',
+					json_encode($automationAddon->getValue()->getParams()),
+					$automationAddon->getValue()->isEnabled() ? 1 : 0,
+					1
+				);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -4041,6 +4054,14 @@ class EmundusModelSettings extends ListModel
 						}
 
 						$query->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($payment_action_id));
+
+						$this->db->setQuery($query);
+						$updated = $this->db->execute();
+
+						$query->clear()
+							->update($this->db->quoteName('jos_emundus_plugin_events'))
+							->set($this->db->quoteName('available') . ' = ' . $enabled)
+							->where($this->db->quoteName('label') . ' IN (' . implode(',', $this->db->quote(['onAfterEmundusCartUpdate', 'onBeforeEmundusCartRender', 'onAfterEmundusTransactionUpdate', 'onAfterLoadEmundusPaymentStep'])) . ')');
 
 						$this->db->setQuery($query);
 						$updated = $this->db->execute();

@@ -13,6 +13,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterSubmitEvaluationDefinition;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -235,9 +237,17 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 	public function onAfterProcess(): void
 	{
 		$form_model = $this->getModel();
-
+		$ccid  = $this->app->input->getInt($form_model->getTableName() . '___ccid', 0);
+		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+		$applicantId = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 		PluginHelper::importPlugin('emundus', 'custom_event_handler');
-		$this->app->triggerEvent('onCallEventHandler', ['onAfterSubmitEvaluation', ['formModel' => $form_model]]);
+		$this->app->triggerEvent('onCallEventHandler', [
+			'onAfterSubmitEvaluation',
+			[
+				'formModel' => $form_model,
+				'context' => new EventContextEntity($this->user, [$fnum], [$applicantId], [onAfterSubmitEvaluationDefinition::FORM_KEY => $form_model->getId()])
+			]
+		]);
 
 		echo '<script src="' . Uri::base() . 'media/com_emundus/js/lib/sweetalert/sweetalert.min.js"></script>';
 

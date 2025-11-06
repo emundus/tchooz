@@ -1024,8 +1024,8 @@ class EmundusHelperEmails
 		}
 		
 		// Check if we are on http or https
-		if(Factory::getApplication()->isClient('cli')) {
-			$base_url = Factory::getApplication()->get('live_site');
+		if (Factory::getApplication()->isClient('cli')) {
+			$base_url = Factory::getApplication()->getConfig()->get('live_site');
 		}
 		elseif ($file_path)
 		{
@@ -1035,13 +1035,13 @@ class EmundusHelperEmails
 		{
 			$base_url = Uri::base();
 		}
-		/*$protocol = $_SERVER['HTTPS'] == 'on' ? 'https' : 'http';
-		if($protocol == 'http') {
-			$base_url = JPATH_BASE . '/';
-		}*/
 
 		if(!file_exists($logo)) {
 			$logo = 'images/custom/logo.png';
+		}
+
+		if (!empty($base_url) && !str_ends_with($base_url, '/') && !str_starts_with($logo, '/')) {
+			$base_url .= '/';
 		}
 
 		return $base_url . $logo;

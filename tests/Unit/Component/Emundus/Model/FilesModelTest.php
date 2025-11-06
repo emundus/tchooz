@@ -177,8 +177,8 @@ class FilesModelTest extends UnitTestCase
 		$data     = $this->model->getFnumArray2($fnums, $elements);
 		$this->assertEmpty($data, 'getFnumArray returns an empty array if no fnum is given');
 
-		$element_ids = [];
 		$form_id     = $this->h_dataset->getUnitTestFabrikForm();
+		$this->h_dataset->insertUnitTestFormData($this->dataset['applicant'], $this->dataset['fnum']);
 		
 		$query = $this->db->getQuery(true);
 		$query->select('jfe.id')
@@ -193,26 +193,6 @@ class FilesModelTest extends UnitTestCase
 		$elements    = $this->h_files->getElementsName($element_ids);
 		$this->assertNotEmpty($elements, 'getElementsName returns an array of elements');
 
-		$columns = ['user', 'fnum', 'e_797_7973', 'e_797_7974', 'e_797_7975', 'e_797_7976', 'e_797_7977', 'e_797_7978', 'e_797_7979', 'e_797_7980', 'e_797_7981', 'e_797_7982', 'e_797_7983', 'dropdown_multi', 'dbjoin_multi', 'cascadingdropdown'];
-		$values  = array($this->dataset['applicant'], $this->dataset['fnum'], 'TEST FIELD', 'TEST TEXTAREA', '["1"]', '2', '3', '65', 'Ajoutez du texte personnalisé pour vos candidats', "<p>S'il vous plait taisez vous</p>", '1', '2023-01-01', '2023-07-13 00:00:00', '["0","1"]', 0, '');
-		$query->clear()
-			->insert('jos_emundus_unit_test_form')
-			->columns($columns)
-			->values(implode(',', $this->db->quote($values)));
-
-		$this->db->setQuery($query);
-		$this->db->execute();
-		$insert_id = $this->db->insertid();
-
-		if (!empty($insert_id)) {
-			$query->clear()
-				->insert('jos_emundus_unit_test_form_repeat_dbjoin_multi')
-				->columns(['parent_id', 'dbjoin_multi'])
-				->values($insert_id . ', "17"');
-
-			$this->db->setQuery($query);
-			$this->db->execute();
-		}
 
 		$field_element = null;
 		foreach ($elements as $element) {

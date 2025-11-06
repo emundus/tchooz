@@ -20,6 +20,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesState;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
@@ -688,24 +690,43 @@ class EmundusModelWorkflow extends JModelList
 					Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 				}
 
-				$query->clear()
-					->select('program_id')
-					->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
-					->where($this->db->quoteName('workflow_id') . ' = ' . $id);
-
-				try
-				{
-					$this->db->setQuery($query);
-					$workflowData['programs'] = $this->db->loadColumn();
-				}
-				catch (Exception $e)
-				{
-					Log::add('Error while fetching workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				if (!empty($id)) {
+					$workflowData['programs'] = $this->getWorkflowPrograms($id);
 				}
 			}
 		}
 
 		return $workflowData;
+	}
+
+	/**
+	 * @param   int  $workflowId
+	 *
+	 * @return array
+	 */
+	public function getWorkflowPrograms(int $workflowId): array
+	{
+		$workflowPrograms = $this->h_cache->get('workflow_programs');
+		if (empty($workflowPrograms) || empty($workflowPrograms[$workflowId]))
+		{
+			$workflowPrograms = is_array($workflowPrograms) ? $workflowPrograms : [];
+
+			$query = $this->db->getQuery(true);
+			$query->clear()
+				->select('program_id')
+				->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
+				->where($this->db->quoteName('workflow_id') . ' = ' . $workflowId);
+
+			try {
+				$this->db->setQuery($query);
+				$workflowPrograms[$workflowId] = $this->db->loadColumn();
+				$this->h_cache->set('workflow_programs', $workflowPrograms);
+			} catch (Exception $e) {
+				Log::add('Error while fetching workflow programs: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $workflowPrograms[$workflowId];
 	}
 
 	/**
@@ -757,118 +778,110 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$data = new stdClass();
 
-		if (!empty($id))
-		{
-			$query = $this->db->createQuery();
-			$query->clear()
-				->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed, choices_rules.form_id as choices_form_id')
-				->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'payment_rules') . ' ON ' . $this->db->quoteName('payment_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_choices_rules', 'choices_rules') . ' ON ' . $this->db->quoteName('choices_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
-				->where('esws.id = ' . $id)
-				->group($this->db->quoteName('esws.id'));
+		$stepsCache = $this->h_cache->get('workflow_steps');
+		$stepsCache = is_array($stepsCache) ? $stepsCache : [];
 
-			try
-			{
-				$this->db->setQuery($query);
-				$data = $this->db->loadObject();
+		if (!empty($id) && isset($stepsCache[$id]) && $cid === null) {
+			return $stepsCache[$id];
+		}
 
-				if (!empty($data->id))
-				{
-					$data->entry_status = array_unique(explode(',', $data->entry_status));
-					$data->action_id    = 1;
-					$data->table        = '';
+		$query = $this->db->createQuery();
+		$query->clear()
+			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id')
+			->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'payment_rules') . ' ON ' . $this->db->quoteName('payment_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
+			->where('esws.id = ' . $id)
+			->group($this->db->quoteName('esws.id'));
 
-					if ($this->isEvaluationStep($data->type))
-					{
-						$query->clear()
-							->select('db_table_name, id')
-							->from('#__fabrik_lists')
-							->where('form_id = ' . $data->form_id);
+		try {
+			$this->db->setQuery($query);
+			$data = $this->db->loadObject();
 
-						try
-						{
-							$this->db->setQuery($query);
-							$table_data = $this->db->loadAssoc();
+			if (!empty($data->id)) {
+				$data->entry_status = array_unique(explode(',', $data->entry_status));
+				$data->action_id = 1;
+				$data->table = '';
 
-							$data->table    = $table_data['db_table_name'];
-							$data->table_id = $table_data['id'];
-						}
-						catch (Exception $e)
-						{
-							Log::add('Error while fetching form table name: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-						}
-					}
-
-					if (!empty($data->type))
-					{
-						$found_from_cache    = false;
-						$action_ids_by_types = $this->h_cache->get('action_ids_by_types');
-						$action_ids_by_types = empty($action_ids_by_types) ? [] : $action_ids_by_types;
-						if (!empty($action_ids_by_types[$data->type]))
-						{
-							$found_from_cache = true;
-							$data->action_id  = $action_ids_by_types[$data->type];
-						}
-
-						if (!$found_from_cache)
-						{
-							$query->clear()
-								->select('action_id')
-								->from($this->db->quoteName('#__emundus_setup_step_types'))
-								->where('id = ' . $data->type);
-
-							$this->db->setQuery($query);
-							$data->action_id = $this->db->loadResult();
-
-							if (!empty($data->action_id))
-							{
-								$action_ids_by_types[$data->type] = $data->action_id;
-								$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
-							}
-						}
-					}
-
+				if ($this->isEvaluationStep($data->type)) {
 					$query->clear()
-						->select('program_id')
-						->from($this->db->quoteName('#__emundus_setup_workflows_programs'))
-						->where($this->db->quoteName('workflow_id') . ' = ' . $data->workflow_id);
+						->select('db_table_name, id')
+						->from('#__fabrik_lists')
+						->where('form_id = ' . $data->form_id);
 
-					$this->db->setQuery($query);
-					$data->programs = $this->db->loadColumn();
+					try {
+						$this->db->setQuery($query);
+						$table_data = $this->db->loadAssoc();
+						$data->table = $table_data['db_table_name'];
+						$data->table_id = $table_data['id'];
+					} catch (Exception $e) {
+						Log::add('Error while fetching form table name: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+					}
+				}
 
-					if (!empty($cid))
-					{
+				if (!empty($data->type)) {
+					$found_from_cache = false;
+					$action_ids_by_types = $this->h_cache->get('action_ids_by_types');
+					$action_ids_by_types = empty($action_ids_by_types) ? [] : $action_ids_by_types;
+					if (!empty($action_ids_by_types[$data->type])) {
+						$found_from_cache = true;
+						$data->action_id = $action_ids_by_types[$data->type];
+					}
+
+					if (!$found_from_cache) {
 						$query->clear()
-							->select('step_dates.start_date, step_dates.end_date, step_dates.infinite, step_dates.relative_date, step_dates.relative_to, step_dates.relative_start_date_value, step_dates.relative_start_date_unit,  esc.start_date as campaign_start_date, esc.end_date as campaign_end_date')
-							->from($this->db->quoteName('#__emundus_setup_campaigns_step_dates', 'step_dates'))
-							->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = step_dates.campaign_id')
-							->where('step_dates.campaign_id = ' . $cid)
-							->where('step_dates.step_id = ' . $id);
+							->select('action_id')
+							->from($this->db->quoteName('#__emundus_setup_step_types'))
+							->where('id = ' . $data->type);
 
 						$this->db->setQuery($query);
-						$dates = $this->db->loadAssoc();
+						$data->action_id = $this->db->loadResult();
 
-						$data->start_date = !empty($dates['start_date']) && $dates['start_date'] !== '0000-00-00 00:00:00' ? $dates['start_date'] : $dates['campaign_start_date'];
-						$data->end_date   = !empty($dates['end_date']) && $dates['end_date'] !== '0000-00-00 00:00:00' ? $dates['end_date'] : $dates['campaign_end_date'];
-						$data->infinite   = $dates['infinite'];
+						if (!empty($data->action_id)) {
+							$action_ids_by_types[$data->type] = $data->action_id;
+							$this->h_cache->set('action_ids_by_types', $action_ids_by_types);
+						}
 					}
 				}
-				else
-				{
-					$data = new stdClass();
+
+				$data->programs = $this->getWorkflowPrograms($data->workflow_id);
+
+				if (!empty($cid)) {
+					$query->clear()
+						->select('step_dates.start_date, step_dates.end_date, step_dates.infinite, step_dates.relative_date, step_dates.relative_to, step_dates.relative_start_date_value, step_dates.relative_start_date_unit,  esc.start_date as campaign_start_date, esc.end_date as campaign_end_date')
+						->from($this->db->quoteName('#__emundus_setup_campaigns_step_dates', 'step_dates'))
+						->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = step_dates.campaign_id')
+						->where('step_dates.campaign_id = ' . $cid)
+						->where('step_dates.step_id = ' . $id);
+
+					$this->db->setQuery($query);
+					$dates = $this->db->loadAssoc();
+
+					$data->start_date = !empty($dates['start_date']) && $dates['start_date'] !== '0000-00-00 00:00:00' ? $dates['start_date'] : $dates['campaign_start_date'];
+					$data->end_date = !empty($dates['end_date']) && $dates['end_date'] !== '0000-00-00 00:00:00' ? $dates['end_date'] : $dates['campaign_end_date'];
+					$data->infinite = $dates['infinite'];
 				}
+
+				// Mise à jour du cache uniquement si pas de $cid
+				if ($cid === null) {
+					$stepsCache[$id] = $data;
+					$this->h_cache->set('workflow_steps', $stepsCache);
+				}
+			} else {
+				$data = new stdClass();
 			}
-			catch (Exception $e)
-			{
-				Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
-			}
+		} catch (Exception $e) {
+			Log::add('Error while fetching workflow steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 		}
 
 		return $data;
 	}
 
+	/**
+	 * @param $program_id
+	 *
+	 * @return array
+	 */
 	public function getEvaluatorStepsByProgram($program_id): array
 	{
 		$steps = [];
@@ -885,7 +898,7 @@ class EmundusModelWorkflow extends JModelList
 				{
 					if ($this->isEvaluationStep($step->type))
 					{
-						$steps[] = $this->getStepData($step->id);
+						$steps[] = $step;
 					}
 				}
 			}
@@ -2157,8 +2170,6 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($fnum))
 		{
-			$payment_repository = new PaymentRepository();
-
 			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, $this->payment_step_type);
 
 			if (empty($current_step) && !$only_current)
@@ -2353,5 +2364,87 @@ class EmundusModelWorkflow extends JModelList
 		}
 
 		return $config;
+	}
+
+	/**
+	 * @return array
+	 */
+	public static function getFormsInSteps(): array
+	{
+		$forms = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select('DISTINCT(steps.form_id)')
+			->from($db->quoteName('#__emundus_setup_workflows_steps', 'steps'))
+			->leftJoin($db->quoteName('#__emundus_setup_workflows', 'workflows') . ' ON ' . $db->quoteName('workflows.id') . ' = ' . $db->quoteName('steps.workflow_id'))
+			->where('steps.form_id IS NOT NULL')
+			->where('steps.form_id <> 0')
+			->where('steps.state = 1')
+			->andWhere('workflows.published = 1');
+
+		try {
+			$db->setQuery($query);
+			$forms = $db->loadColumn();
+		} catch (Exception $e) {
+			Log::add('Error while fetching forms in steps: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		return $forms;
+	}
+
+	/**
+	 * @return array<StepEntity>
+	 */
+	public function getSteps(int $workflowId = 0, $types = []): array
+	{
+		$steps = [];
+
+		$query = $this->db->getQuery(true);
+		$query->select('steps.*, GROUP_CONCAT(entry_status.status) as entry_status')
+			->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'steps'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'workflows') . ' ON ' . $this->db->quoteName('workflows.id') . ' = ' . $this->db->quoteName('steps.workflow_id'))
+			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'entry_status') . ' ON ' . $this->db->quoteName('entry_status.step_id') . ' = ' . $this->db->quoteName('steps.id'))
+			->where('workflows.published = 1')
+			->andWhere('steps.state = 1');
+
+		if (!empty($types)) {
+			$query->andWhere('steps.type IN (' . implode(',', $types) . ')');
+		}
+
+		if (!empty($workflowId)) {
+			$query->andWhere('steps.workflow_id = ' . $workflowId);
+		}
+
+		$query->group('steps.id');
+		$this->db->setQuery($query);
+		$steps_data = $this->db->loadObjectList();
+
+		if (!empty($steps_data)) {
+
+			$stepTypes = [];
+
+			foreach ($steps_data as $step_data) {
+				if (!isset($stepTypes[$step_data->type])) {
+					$stepTypes[$step_data->type] = new StepTypeEntity($step_data->type);
+				}
+
+				$steps[] = new StepEntity(
+					$step_data->id,
+					$step_data->workflow_id,
+					$step_data->label,
+					$stepTypes[$step_data->type],
+					$step_data->profile_id,
+					$step_data->form_id,
+					explode(',', $step_data->entry_status),
+					$step_data->output_status,
+					$step_data->multiple ?? 0,
+					$step_data->state,
+					$step_data->ordering
+				);
+			}
+		}
+
+		return $steps;
 	}
 }

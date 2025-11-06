@@ -1,0 +1,122 @@
+<?php
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
+use Tchooz\Entities\Automation\EventEntity;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
+
+Text::script('COM_EMUNDUS_AUTOMATION_ADD');
+Text::script('COM_EMUNDUS_AUTOMATION_EDIT');
+Text::script('COM_EMUNDUS_AUTOMATION_SAVED');
+Text::script('COM_EMUNDUS_AUTOMATION_NAME');
+Text::script('COM_EMUNDUS_AUTOMATION_DESCRIPTION');
+Text::script('COM_EMUNDUS_AUTOMATION_PUBLISHED');
+Text::script('COM_EMUNDUS_AUTOMATION_EVENT_TITLE');
+Text::script('COM_EMUNDUS_AUTOMATION_EVENT');
+Text::script('COM_EMUNDUS_AUTOMATION_EVENT_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_CONDITIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_ADD_CONDITION');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_ACTIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_ADD_ACTION');
+Text::script('COM_EMUNDUS_AUTOMATION_AVAILABLE_ACTIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_DESCRIPTION');
+Text::script('TCHOOZ_AUTOMATION_ACTION_UPDATE_TAGS_LABEL');
+Text::script('TCHOOZ_AUTOMATION_ACTION_UPDATE_TAGS_DESCRIPTION');
+Text::script('TCHOOZ_AUTOMATION_ACTION_UPDATE_STATUS_LABEL');
+Text::script('TCHOOZ_AUTOMATION_ACTION_UPDATE_STATUS_DESCRIPTION');
+Text::script('TCHOOZ_AUTOMATION_ACTION_SHARE_FILE_LABEL');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_TYPE');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_AND');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_AND_RELATION');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_OR');
+Text::script('COM_EMUNDUS_CONDITIONS_GROUP_OPERATOR_OR_RELATION');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_USERDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FILEDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FORMDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_ATTACHMENTDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CAMPAIGNDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_PROGRAMDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CONTEXTDATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_GROUP_DATA');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_DATE_RANGE');
+Text::script('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CALCULATED');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_TARGET');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_TARGET_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_OPERATOR');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_VALUE');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION_VALUE_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_CONDITIONS_IN_GROUP');
+Text::script('COM_EMUNDUS_AUTOMATION_ADD_CONDITION_GROUP');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITIONS_GROUP');
+Text::script('COM_EMUNDUS_AUTOMATION_CONDITION');
+Text::script('COM_EMUNDUS_AUTOMATION_REQUIRED_FIELD_ERROR');
+Text::script('COM_EMUNDUS_AUTOMATION_REQUIRED_FIELD_ERROR_DESC');
+Text::script('COM_EMUNDUS_MULTISELECT_NOKEYWORDS');
+Text::script('SELECTED');
+Text::script('PRESS_ENTER_TO_REMOVE');
+Text::script('COM_EMUNDUS_AUTOMATION_EVENT_FIELD_NEW_STATUS');
+Text::script('COM_EMUNDUS_AUTOMATION_EVENT_FIELD_OLD_STATUS');
+Text::script('COM_EMUNDUS_AUTOMATION_WHEN');
+Text::script('COM_EMUNDUS_AUTOMATION_IF');
+Text::script('COM_EMUNDUS_AUTOMATION_THEN');
+Text::script('COM_EMUNDUS_AUTOMATION_SELECT_EVENT');
+Text::script('COM_EMUNDUS_AUTOMATION_SEARCH_EVENTS');
+Text::script('COM_EMUNDUS_AUTOMATION_SEARCH_EVENTS_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_SEARCH_ACTIONS');
+Text::script('COM_EMUNDUS_AUTOMATION_SEARCH_ACTIONS_PLACEHOLDER');
+Text::script('COM_EMUNDUS_AUTOMATION_PLEASE_SELECT_EVENT');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_EVENT_ERROR');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_EVENT_ERROR_DESC');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_ACTIONS_ERROR');
+Text::script('COM_EMUNDUS_AUTOMATION_NO_ACTIONS_ERROR_DESC');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGETS');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGETS_HELPTEXT');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_ADD_TARGET');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_PREDEFINITION');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_PREDEFINITION_OPTION_NONE');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_FILTER_SELECTION');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_SELECTION_RULE');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_TYPE');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_TYPE_FILE');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_TYPE_USER');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_TYPE_GROUP');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_TARGET_TYPE_CUSTOM');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_NO_TARGETS_ERROR');
+Text::script('COM_EMUNDUS_AUTOMATION_ACTION_NO_TARGETS_ERROR_DESC');
+
+$operators = [];
+foreach (ConditionOperatorEnum::cases() as $operator) {
+	$operators[] = [
+		'value' => $operator->value,
+		'label' => Text::_($operator->getLabel())
+	];
+}
+
+$app          = Factory::getApplication();
+$lang         = $app->getLanguage();
+$short_lang   = substr($lang->getTag(), 0, 2);
+$current_lang = $lang->getTag();
+$datas = [
+	'automation' => $this->automation ? $this->automation->serialize() : null,
+    'operators' => $operators,
+    'operatorsFieldMapping' => ConditionOperatorEnum::getAvailableOperatorsForFieldType(),
+    'events' => array_map(function (EventEntity $event) {
+        return $event->serialize();
+    }, $this->events),
+    'targetPredefinitions' => $this->targetPredefinitions,
+    'eventDefinitions' => $this->eventDefinitions,
+	'shortLang' => $short_lang,
+	'currentLanguage' => $current_lang
+];
+?>
+
+<div id="em-component-vue" component="Automation/AutomationEdit"
+     data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
+>
+</div>
+
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $this->hash ?>"></script>

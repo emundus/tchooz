@@ -172,6 +172,14 @@ export default {
 							document.getElementById('tag_label_' + tag.id).textContent = tag.label;
 							this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG', response.msg);
 						}
+					})
+					.catch((error) => {
+						if (error.response.data.msg) {
+							this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG', error.response.data.msg);
+						} else {
+							this.displayError('COM_EMUNDUS_SETTINGS_FAILED_TO_UPDATE_TAG', 'COM_EMUNDUS_SETTINGS_UNKNOWN_ERROR');
+						}
+						document.getElementById('tag_label_' + tag.id).textContent = tag.label;
 					});
 			} else {
 				document.getElementById('tag_label_' + tag.id).textContent = tag.label;

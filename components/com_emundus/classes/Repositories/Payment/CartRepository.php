@@ -2,16 +2,14 @@
 
 namespace Tchooz\Repositories\Payment;
 
+use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterEmundusCartUpdateDefinition;
 use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Entities\Payment\AlterationType;
-use Tchooz\Entities\Payment\DiscountEntity;
-use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
-use Tchooz\Repositories\Payment\DiscountRepository;
-use Tchooz\Repositories\Payment\PaymentRepository;
-use Tchooz\Repositories\Payment\TransactionRepository;
-use \Tchooz\Repositories\Payment\CurrencyRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\ProductEntity;
@@ -445,7 +443,7 @@ class CartRepository
 		return $contact_entity;
 	}
 
-	public function saveCart(CartEntity $cart_entity, $user_id = 0): bool
+	public function saveCart(CartEntity $cart_entity, $user_id = 0, ?AutomationExecutionContext $executionContext = null): bool
 	{
 		$saved = false;
 
@@ -594,10 +592,33 @@ class CartRepository
 			}
 		}
 
-		if ($saved) {
+		if ($saved && empty($executionContext)) { // if execution context is set, we are in an automation, so do not trigger other automations
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', ['onAfterEmundusCartUpdate', ['fnum' => $cart_entity->getFnum(), 'cart' => $cart_entity]]);
+			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', [
+				'onAfterEmundusCartUpdate',
+				[
+					'fnum' => $cart_entity->getFnum(),
+					'cart' => $cart_entity,
+					'context' => new EventContextEntity(
+						Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+						[$cart_entity->getFnum()],
+						[$cart_entity->getCustomer()->getUserId()],
+						[
+							'cart' => $cart_entity->getId(),
+							'customer' => $cart_entity->getCustomer()->getId(),
+							onAfterEmundusCartUpdateDefinition::TOTAL_KEY => $cart_entity->getTotal(),
+							onAfterEmundusCartUpdateDefinition::PRODUCTS_KEY => array_map(fn($p) => $p->getId(), $cart_entity->getProducts()),
+							onAfterEmundusCartUpdateDefinition::DISCOUNTS_KEY => array_map(fn($a) => $a->getDiscount() ? $a->getDiscount()->getId() : null, $cart_entity->getPriceAlterations()),
+							onAfterEmundusCartUpdateDefinition::SELECTED_PAYMENT_METHOD_KEY => $cart_entity->getSelectedPaymentMethod()?->getId(),
+							onAfterEmundusCartUpdateDefinition::PAY_ADVANCE_KEY => $cart_entity->getPayAdvance(),
+							onAfterEmundusCartUpdateDefinition::NUMBER_INSTALLMENT_DEBIT_KEY => $cart_entity->getNumberInstallmentDebit(),
+							onAfterEmundusCartUpdateDefinition::PAYMENT_STEP_KEY => $cart_entity->getPaymentStep()?->getId()
+						]
+					),
+					'execution_context' => $executionContext
+				]
+			]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterEmundusCartUpdate);
 		}
 
@@ -751,12 +772,12 @@ class CartRepository
 	 *
 	 * @return bool
 	 */
-	public function addAlteration(CartEntity $cart, AlterationEntity $alteration, int $user_id): bool
+	public function addAlteration(CartEntity $cart, AlterationEntity $alteration, int $user_id, ?AutomationExecutionContext $executionContext = null): bool
 	{
 		$added = $cart->addAlteration($alteration);
 
 		if ($added) {
-			$added = $this->saveCart($cart, $user_id);
+			$added = $this->saveCart($cart, $user_id, $executionContext);
 
 			if ($added)
 			{
@@ -768,14 +789,14 @@ class CartRepository
 		return $added;
 	}
 
-	public function removeAlteration(CartEntity $cart, AlterationEntity $alteration, int $user_id): bool
+	public function removeAlteration(CartEntity $cart, AlterationEntity $alteration, int $user_id, ?AutomationExecutionContext $executionContext = null): bool
 	{
 		$removed = false;
 
 		foreach ($cart->getPriceAlterations() as $key => $price_alteration) {
 			if ($price_alteration->getId() == $alteration->getId()) {
 				$cart->removeAlteration($alteration);
-				$removed = $this->saveCart($cart, $user_id);
+				$removed = $this->saveCart($cart, $user_id, $executionContext);
 
 				if ($removed) {
 					$details = ['deleted' => [['element' => $alteration->getDescription()]]];

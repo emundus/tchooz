@@ -128,8 +128,10 @@ abstract class UnitTestCase extends TestCase
 
 	protected function setUp(): void
 	{
-		$this->dataset['applicant']   = $this->h_dataset->createSampleUser(1000, 'applicant_' . rand(0, 1000) . '@emundus.fr');
-		$this->dataset['coordinator'] = $this->h_dataset->createSampleUser(2, 'coordinator_' . rand(0, 1000) . '@emundus.fr', 'test1234', [2, 7]);
+		$this->dataset['applicant_email'] = 'applicant_' . rand(0, 99999) . '@emundus.fr';
+		$this->dataset['applicant']   = $this->h_dataset->createSampleUser(1000, $this->dataset['applicant_email']);
+		$this->dataset['coordinator_email'] = 'coordinator_' . rand(0, 99999) . '@emundus.fr';
+		$this->dataset['coordinator'] = $this->h_dataset->createSampleUser(2, $this->dataset['coordinator_email'], 'test1234', [2, 7], 'Test', 'COORD', [1]);
 		$this->dataset['program']     = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
 		$this->dataset['campaign']    = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
 		$this->dataset['fnum']        = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
@@ -147,6 +149,7 @@ abstract class UnitTestCase extends TestCase
 		$this->h_dataset->deleteSampleProgram($this->dataset['program']['programme_id']);
 		$this->h_dataset->deleteSampleCampaign($this->dataset['campaign']);
 		$this->h_dataset->deleteSampleFile($this->dataset['fnum']);
+		$this->h_dataset->deleteSamples();
 	}
 
 	protected static function callPrivateMethod($obj, $name, array $args)

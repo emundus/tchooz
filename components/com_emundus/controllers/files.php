@@ -973,8 +973,6 @@ class EmundusControllerFiles extends BaseController
 		}
 
 		JPluginHelper::importPlugin('emundus');
-
-
 		$this->app->triggerEvent('onCallEventHandler', ['onBeforeTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
 
 		foreach ($fnums as $fnum) {
@@ -992,11 +990,6 @@ class EmundusControllerFiles extends BaseController
 				}
 			}
 		}
-
-		$this->app->triggerEvent('onCallEventHandler', ['onAfterTagRemove', ['fnums' => $fnums, 'tags' => $tags]]);
-
-		unset($fnums);
-		unset($tags);
 
 		echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_TAGS_DELETE_SUCCESS'))));
 		exit;

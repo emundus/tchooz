@@ -13,7 +13,7 @@
 					disabled: false,
 				}"
 			>
-				<h1 v-if="title.length > 0" class="tw-text-center">{{ translate(title) }}</h1>
+				<h1 v-if="title.length > 0" class="tw-text-center" :class="titleClasses">{{ translate(title) }}</h1>
 				<slot @close="close"> </slot>
 			</div>
 		</div>
@@ -28,6 +28,10 @@ export default {
 			required: true,
 		},
 		title: {
+			type: String,
+			default: '',
+		},
+		titleClasses: {
 			type: String,
 			default: '',
 		},

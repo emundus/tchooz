@@ -12,18 +12,20 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Language;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Transliterate;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Table\Table;
-use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Cache\Administrator\Model\CacheModel;
-use Joomla\CMS\Language\LanguageHelper;
 use Joomla\Component\Scheduler\Administrator\Helper\ExecRuleHelper;
+use Joomla\Component\Scheduler\Administrator\Table\TaskTable;
 use Joomla\Registry\Registry;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Repositories\Actions\ActionRepository;
+
+require_once(__DIR__ . '/EmundusTableColumn.php');
+require_once(__DIR__ . '/EmundusColumnTypeEnum.php');
+require_once(__DIR__ . '/EmundusTableForeignKey.php');
 
 /**
  * Emundus helper.
@@ -2727,7 +2729,7 @@ class EmundusHelperUpdate
 		return $result;
 	}
 
-	public static function addColumn($table, $name, $type = 'VARCHAR', $length = null, $null = 1, $default = null)
+	public static function addColumn(string $table, string $name, string $type = 'VARCHAR', ?int $length = null, ?int $null = 1, mixed $default = null)
 	{
 		$result = ['status' => false, 'message' => ''];
 
@@ -3517,7 +3519,7 @@ class EmundusHelperUpdate
 
 		try
 		{
-			$db             = Factory::getDbo();
+			$db             = Factory::getContainer()->get('DatabaseDriver');
 			$table_existing = $db->setQuery('SHOW TABLE STATUS WHERE Name LIKE ' . $db->quote($table))->loadResult();
 
 			if (empty($table_existing))
@@ -3548,62 +3550,103 @@ class EmundusHelperUpdate
 				{
 					foreach ($columns as $column)
 					{
-						$query_column = ',' . $db->quoteName($column['name']);;
-						if (!empty($column['type']))
+						if (!is_array($column) && $column instanceof EmundusTableColumn)
 						{
-							$query_column .= ' ' . $column['type'];
-						}
-						else
-						{
-							$query_column .= ' VARCHAR';
-						}
-						if (!empty($column['length']))
-						{
-							$query_column .= '(' . $column['length'] . ')';
-						}
-						if (isset($column['default']) && $column['default'] !== '')
-						{
-							$query_column .= ' DEFAULT ' . $db->quote($column['default']);
-						}
-						if ($column['null'] == 1)
-						{
-							$query_column .= ' NULL';
-						}
-						else
-						{
-							$query_column .= ' NOT NULL';
-						}
-						if (!empty($column['comment']))
-						{
-							$query_column .= ' COMMENT ' . $db->quote($column['comment']);
-						}
+							$query_column = ',' . $db->quoteName($column->getName());;
+							$query_column .= ' ' . $column->getType()->value;
+							if (!empty($column->getLength()))
+							{
+								$query_column .= '(' . $column->getLength() . ')';
+							}
+							if (!is_null($column->getDefault()))
+							{
+								if ($column->getDefault() === 'NULL') {
+									$query_column .= ' DEFAULT NULL';
+								} else {
+									$query_column .= ' DEFAULT ' . $db->quote($column->getDefault());
+								}
+							}
+							if ($column->isNullable())
+							{
+								$query_column .= ' NULL';
+							}
+							else
+							{
+								$query_column .= ' NOT NULL';
+							}
+							if(!empty($column->getComment())) {
+								$query_column .= ' COMMENT ' . $db->quote($column->getComment());
+							}
 
-						$query .= $query_column;
+							$query .= $query_column;
+						}
+						else
+						{
+							$query_column = ',' . $db->quoteName($column['name']);;
+							if (!empty($column['type']))
+							{
+								$query_column .= ' ' . $column['type'];
+							}
+							else
+							{
+								$query_column .= ' VARCHAR';
+							}
+							if (!empty($column['length']))
+							{
+								$query_column .= '(' . $column['length'] . ')';
+							}
+							if (isset($column['default']) && $column['default'] !== '')
+							{
+								$query_column .= ' DEFAULT ' . $db->quote($column['default']);
+							}
+							if ($column['null'] == 1)
+							{
+								$query_column .= ' NULL';
+							}
+							else
+							{
+								$query_column .= ' NOT NULL';
+							}
+							if(!empty($column['comment'])) {
+								$query_column .= ' COMMENT ' . $db->quote($column['comment']);
+							}
+
+							$query .= $query_column;
+						}
 					}
 				}
 				if (!empty($foreigns_key))
 				{
 					foreach ($foreigns_key as $fk)
 					{
-						if (!empty($fk['name']) && !empty($fk['from_column']) && !empty($fk['ref_table']) && !empty($fk['ref_column']))
+						if (!is_array($fk) && $fk instanceof EmundusTableForeignKey)
 						{
-							$query .= ',CONSTRAINT ' . $fk['name'] . ' FOREIGN KEY (' . $fk['from_column'] . ') REFERENCES ' . $fk['ref_table'] . '(' . $fk['ref_column'] . ')';
+							$query .= ',CONSTRAINT ' . $fk->getName() . ' FOREIGN KEY (' . $fk->getFromColumn() . ') REFERENCES ' . $fk->getReferencedTable() . '(' . $fk->getReferencedColumn() . ')';
+
+							if (!empty($fk->getOnUpdate()))
+							{
+								$query .= ' ON UPDATE ' . $fk->getOnUpdate()->value;
+							}
+
+							if (!empty($fk->getOnDelete()))
+							{
+								$query .= ' ON DELETE ' . $fk->getOnDelete()->value;
+							}
 						}
-						if (!empty($fk['update_cascade']))
+						else
 						{
-							$query .= ' ON UPDATE CASCADE';
-						}
-						if (!empty($fk['update_set_null']))
-						{
-							$query .= ' ON UPDATE SET NULL';
-						}
-						if (!empty($fk['delete_cascade']))
-						{
-							$query .= ' ON DELETE CASCADE';
-						}
-						if(!empty($fk['delete_set_null']))
-						{
-							$query .= ' ON DELETE SET NULL';
+							if (!empty($fk['name']) && !empty($fk['from_column']) && !empty($fk['ref_table']) && !empty($fk['ref_column']))
+							{
+								$query .= ',CONSTRAINT ' . $fk['name'] . ' FOREIGN KEY (' . $fk['from_column'] . ') REFERENCES ' . $fk['ref_table'] . '(' . $fk['ref_column'] . ')';
+							}
+							if (!empty($fk['update_cascade']))
+							{
+								$query .= ' ON UPDATE CASCADE';
+							}
+							if (!empty($fk['delete_cascade']))
+							{
+								$query .= ' ON DELETE CASCADE';
+							}
 						}
 					}
 				}
@@ -4696,5 +4739,55 @@ class EmundusHelperUpdate
 
 			return 0;
 		}
+	}
+
+	public static function addSchedulerTask(string $type, string $title, array $executionRules, array $cronRules, int $priority, int $state = 0): bool
+	{
+		$added = false;
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+
+		$query->clear()
+			->select('id')
+			->from($db->quoteName('#__scheduler_tasks'))
+			->where($db->quoteName('type') . ' = ' . $db->quote($type));
+
+		$db->setQuery($query);
+		$exists = $db->loadResult();
+
+		if (empty($exists))
+		{
+			$table = new TaskTable($db);
+
+			$data = [
+				'title'           => $title,
+				'execution_rules' => json_encode($executionRules),
+				'cron_rules'      => json_encode($cronRules),
+				'last_execution'  => null,
+				// Set next execution to 2 hours from now to avoid immediate execution after creation
+				'next_execution'  => Date::getInstance()->add(new DateInterval('PT2H'))->toSql(),
+				'state'           => $state,
+				'priority'        => $priority,
+				'type'            => $type,
+				'created'         => Date::getInstance()->toSql(),
+				'created_by'      => 1,
+				'params' => '{"individual_log":false,"log_file":"","notifications":{"success_mail":"0","notification_success_groups":["8"],"failure_mail":"1","notification_failure_groups":["8"],"fatal_failure_mail":"1","notification_fatal_groups":["8"],"orphan_mail":"1","notification_orphan_groups":["8"]}}'
+			];
+
+			try {
+				if ($table->bind($data) && $table->check() && $table->store())
+				{
+					$added = true;
+				}
+			} catch (Exception $e) {
+				$added = false;
+			}
+		} else {
+			$added = true;
+		}
+
+
+		return $added;
 	}
 }

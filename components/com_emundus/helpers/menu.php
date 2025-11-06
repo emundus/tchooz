@@ -161,16 +161,51 @@ class EmundusHelperMenu
 		return $lists;
 	}
 
+
+	public static function getApplicantFormsInMenus(): array
+	{
+		$formIds = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$fabrik_component_id = ComponentHelper::getComponent('com_fabrik')->id;
+
+		$query->clear()
+			->select('link')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('published') . ' = 1')
+			->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('menu-profile%'))
+			->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'))
+			->andWhere($db->quoteName('component_id') . ' = ' . $db->quote($fabrik_component_id));
+
+		try {
+			$db->setQuery($query);
+			$links = $db->loadColumn();
+		}
+		catch (Exception $e) {
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+			return $formIds;
+		}
+
+		if (!empty($links)) {
+			foreach ($links as $link) {
+				preg_match('/formid=([0-9]+)/', $link, $matches);
+				if (isset($matches[1]) && is_numeric($matches[1])) {
+					$formIds[] = (int)$matches[1];
+				}
+			}
+		}
+
+
+		return $formIds;
+	}
+
 	function buildMenuListQuery($profile)
 	{
 		$menu_lists = array();
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$db = Factory::getDBO();
-		}
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$query = $db->getQuery(true);
 

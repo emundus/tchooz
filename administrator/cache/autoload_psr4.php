@@ -291,6 +291,7 @@ return [
 	'Joomla\\Plugin\\Task\\Createcampaigns\\' => [JPATH_PLUGINS . '/task/createcampaigns/src'],
 	'Joomla\\Plugin\\Task\\DeleteActionLogs\\' => [JPATH_PLUGINS . '/task/deleteactionlogs/src'],
 	'Joomla\\Plugin\\Task\\Emundusmessenger\\' => [JPATH_PLUGINS . '/task/emundusmessenger/src'],
+	'Joomla\\Plugin\\Task\\ExecuteEmundusActions\\' => [JPATH_PLUGINS . '/task/executeemundusactions/src'],
 	'Joomla\\Plugin\\Task\\Globalcheckin\\' => [JPATH_PLUGINS . '/task/globalcheckin/src'],
 	'Joomla\\Plugin\\Task\\Inactiveaccounts\\' => [JPATH_PLUGINS . '/task/inactiveaccounts/src'],
 	'Joomla\\Plugin\\Task\\Microsoftdynamics\\' => [JPATH_PLUGINS . '/task/microsoftdynamics/src'],

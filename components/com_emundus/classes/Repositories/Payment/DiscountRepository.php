@@ -42,8 +42,6 @@ class DiscountRepository
 
 		$query = $this->db->createQuery();
 
-		$offset = ($page - 1) * $lim;
-
 		$query->select('*')
 			->from($this->db->quoteName('jos_emundus_discount'));
 
@@ -57,7 +55,10 @@ class DiscountRepository
 			}
 		}
 
-		$query->setLimit($lim, $offset);
+		if (!empty($lim)) {
+			$offset = ($page - 1) * $lim;
+			$query->setLimit($lim, $offset);
+		}
 
 		try {
 			$this->db->setQuery($query);

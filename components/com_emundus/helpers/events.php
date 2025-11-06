@@ -22,6 +22,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Exception\EmundusException;
 
 defined('_JEXEC') or die('Restricted access');
@@ -1778,7 +1780,20 @@ class EmundusHelperEvents
 				'onCallEventHandler',
 				['onAfterStatusChange',
 					// Datas to pass to the event
-					['fnum' => $student->fnum, 'state' => $new_status, 'old_state' => $old_status]
+					[
+						'fnum' => $student->fnum,
+						'state' => $new_status,
+						'old_state' => $old_status,
+						'context' => new EventContextEntity(
+							Factory::getApplication()->getIdentity(),
+							[$student->fnum],
+							[$student->id],
+							[
+								onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status,
+								onAfterStatusChangeDefinition::STATUS => $new_status
+							]
+						)
+					]
 				]
 			);
 			$onAfterStatusChange             = new GenericEvent(
@@ -1809,7 +1824,20 @@ class EmundusHelperEvents
 
 		$onAfterSubmitFile = new GenericEvent('onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]);
 		$dispatcher->dispatch('onAfterSubmitFile', $onAfterSubmitFile);
-		$CEVonAfterSubmitFile = new GenericEvent('onCallEventHandler', ['onAfterSubmitFile', ['user' => $student->id, 'fnum' => $student->fnum]]);
+		$CEVonAfterSubmitFile = new GenericEvent('onCallEventHandler', ['onAfterSubmitFile', [
+			'user' => $student->id,
+			'fnum' => $student->fnum,
+			'context' => new EventContextEntity(
+				Factory::getApplication()->getIdentity(),
+				[$student->fnum],
+				[$student->id],
+				[
+					'step' => !empty($current_phase) && !empty($current_phase->id) ? $current_phase->id : null,
+					'old_status' => $old_status,
+					'status' => $new_status
+				]
+			)
+		]]);
 		$dispatcher->dispatch('onCallEventHandler', $CEVonAfterSubmitFile);
 
 		// If pdf exporting is activated
@@ -2307,28 +2335,44 @@ class EmundusHelperEvents
 		return $logged;
 	}
 
-	private function getFormElements($form_id)
+	public static function getFormElements($formId, int $elementId = 0, bool $searchHidden = false, array $excludedNames = ['fnum', 'time_date', 'user', 'date_time'], array $excludedPlugins = ['display', 'internalid']): array
 	{
 		$elements = [];
 
-		if (!empty($form_id))
-		{
-			$excluded_name    = ['fnum', 'time_date', 'user', 'date_time'];
-			$excluded_plugins = ['display', 'internalid'];
+		// todo: cache this by formid
 
+		if (!empty($formId))
+		{
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
-			$query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, fe.default, fl.db_table_name, fg.params as group_params')
+			$query->select('fe.id, fe.name, fe.plugin, fe.label, fe.params, fe.group_id, ffg.form_id, ff.label as form_label, fg.label as group_label, fe.default, fl.db_table_name, fg.params as group_params, fj.table_join')
 				->from($db->quoteName('#__fabrik_elements', 'fe'))
 				->innerJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fe.group_id'))
 				->innerJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+				->innerJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
 				->innerJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
-				->where($db->quoteName('ffg.form_id') . ' = ' . $form_id)
-				->where($db->quoteName('fe.published') . ' = 1')
-				->where($db->quoteName('fe.hidden') . ' != -1')
-				->where($db->quoteName('fe.name') . ' NOT IN (' . implode(',', $db->quote($excluded_name)) . ')')
-				->where($db->quoteName('fe.plugin') . ' NOT IN (' . implode(',', $db->quote($excluded_plugins)) . ')');
+				->leftJoin($db->quoteName('#__fabrik_joins', 'fj') . ' ON ' . $db->quoteName('fl.id') . ' = ' . $db->quoteName('fj.list_id') . ' AND (' . $db->quoteName('fe.id') . ' = ' . $db->quoteName('fj.element_id') . ' OR' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fj.group_id') . ')')
+				->where($db->quoteName('ffg.form_id') . ' = ' . $formId)
+				->where($db->quoteName('fe.published') . ' = 1');
+
+			if (!$searchHidden)
+			{
+				$query->where($db->quoteName('fe.hidden') . ' != -1');
+			}
+
+			if (!empty($excludedNames)) {
+				$query->where($db->quoteName('fe.name') . ' NOT IN (' . implode(',', $db->quote($excludedNames)) . ')');
+			}
+
+			if (!empty($excludedPlugins)) {
+				$query->where($db->quoteName('fe.plugin') . ' NOT IN (' . implode(',', $db->quote($excludedPlugins)) . ')');
+			}
+
+			if (!empty($elementId))
+			{
+				$query->where($db->quoteName('fe.id') . ' = ' . (int) $elementId);
+			}
 
 			try
 			{
@@ -2337,7 +2381,7 @@ class EmundusHelperEvents
 			}
 			catch (Exception $e)
 			{
-				Log::add('Failed to get elements from form id ' . $form_id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				Log::add('Failed to get elements from form id ' . $formId . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 		}
 
