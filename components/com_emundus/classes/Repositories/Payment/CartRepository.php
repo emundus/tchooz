@@ -143,7 +143,7 @@ class CartRepository
 				->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
 			$this->db->setQuery($query);
 			$user_id = $this->db->loadResult();
-			$contact_repository = new ContactRepository($this->db);
+			$contact_repository = new ContactRepository();
 			$customer = $contact_repository->getByUserId($user_id);
 
 			if (empty($customer)) {
@@ -221,7 +221,7 @@ class CartRepository
 						}
 					}
 				}
-				$contact_repository = new ContactRepository($this->db);
+				$contact_repository = new ContactRepository();
 				$contact_entity = $contact_repository->getByUserId($cart->user_id);
 
 				if (empty($contact_entity)) {
@@ -420,7 +420,7 @@ class CartRepository
 
 	private function createCartUser(int $user_id): ContactEntity
 	{
-		$contact_repository = new ContactRepository($this->db);
+		$contact_repository = new ContactRepository();
 		$contact_entity = $contact_repository->getByUserId($user_id);
 
 		if (empty($contact_entity)) {
@@ -939,7 +939,7 @@ class CartRepository
 			throw new \Exception(Text::_('COM_EMUNDUS_CART_EMPTY'));
 		}
 
-		if (empty($cart->getCustomer()->getAddress())) {
+		if (empty($cart->getCustomer()->getAddresses())) {
 			throw new \Exception(Text::_('COM_EMUNDUS_CART_CUSTOMER_ADDRESS_NOT_SET'));
 		}
 

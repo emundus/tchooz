@@ -119,6 +119,7 @@
 				:preserve-search="true"
 				:internal-search="multiselectOptions.internalSearch ? multiselectOptions.internalSearch : true"
 				:loading="isLoading"
+				:max="multiselectOptions.max ? multiselectOptions.max : null"
 				@tag="addOption"
 				@keyup="checkComma($event)"
 				@focusout="checkAddOption($event)"
@@ -126,6 +127,7 @@
 			>
 				<template #noOptions>{{ translate(multiselectOptions.noOptionsText) }}</template>
 				<template #noResult>{{ translate(multiselectOptions.noResultsText) }}</template>
+				<template #maxElements>{{ translate(multiselectOptions.maxElements) }}</template>
 			</multiselect>
 
 			<!-- TEXTAREA -->
@@ -252,6 +254,18 @@
 				</label>
 			</div>
 
+			<div v-else-if="parameter.type === 'secure_url'" class="tw-flex tw-w-full tw-items-center tw-gap-1">
+				<span class="text-neutral-600 tw-px-2 tw-py-1">https://</span>
+				<input
+					type="text"
+					v-model="value"
+					class="form-control tw-w-full tw-rounded-l-none"
+					:placeholder="translate(parameter.placeholder)"
+					:maxlength="parameter.maxlength"
+					:readonly="parameter.editable === false"
+				/>
+			</div>
+
 			<!-- INPUT -->
 			<input
 				v-else-if="isInput"
@@ -263,6 +277,7 @@
 				:min="undefined"
 				:step="parameter.type === 'number' ? parameter.step : null"
 				:pattern="parameter.pattern && parameter.pattern.length > 0 ? parameter.pattern : null"
+				v-maska="parameter.mask ? parameter.mask : null"
 				:placeholder="translate(parameter.placeholder)"
 				:id="paramId"
 				v-model="value"
@@ -272,8 +287,43 @@
 				@focusin="clearPassword(parameter)"
 			/>
 
-			<!-- Upload : TODO: use dropzone-->
-			<input v-else-if="parameter.type === 'file'" type="file" @change="onUploadFile" />
+			<div v-else-if="parameter.type === 'file' && dropzoneOptions.url !== ''" class="tw-w-full">
+				<div
+					class="tw-relative tw-mb-2 tw-flex tw-w-fit tw-rounded-coordinator-form tw-border tw-border-neutral-400 tw-p-2"
+					v-if="value"
+				>
+					<img v-if="value && typeof value === 'string'" :src="value" class="tw-max-h-40 tw-p-4" alt="image uploaded" />
+					<img
+						v-else-if="value && mediaThumbnail"
+						:src="mediaThumbnail"
+						class="tw-max-h-40 tw-p-4"
+						alt="image loaded"
+					/>
+					<span
+						class="material-symbols-outlined tw-absolute tw-right-2 tw-cursor-pointer tw-text-red-500"
+						@click="deleteMedia"
+						>delete</span
+					>
+				</div>
+
+				<vue-dropzone
+					v-show="!value"
+					:key="dropzoneOptions.maxFilesize"
+					ref="dropzone"
+					id="customdropzone"
+					style="width: 100%"
+					:include-styling="false"
+					:options="dropzoneOptions"
+					:useCustomSlot="true"
+					v-on:vdropzone-file-added="afterAdded"
+					v-on:vdropzone-removed-file="afterRemoved"
+					v-on:vdropzone-error="catchError"
+				>
+					<div class="dropzone-custom-content" id="dropzone-message">
+						{{ translate('COM_EMUNDUS_ONBOARD_DROP_FILE_HERE') }}
+					</div>
+				</vue-dropzone>
+			</div>
 
 			<DatePicker
 				v-else-if="parameter.type === 'datetime' || parameter.type === 'date' || parameter.type === 'time'"
@@ -332,8 +382,6 @@
 					:internal-search="true"
 					:loading="isLoading"
 				>
-					<template #noOptions>{{ translate(multiselectOptions.noOptionsText) }}</template>
-					<template #noResult>{{ translate(multiselectOptions.noResultsText) }}</template>
 					<template #singleLabel="props">
 						<img class="tw-w-6" :src="'/images/emundus/flags/' + props.option.flag_img" :alt="props.option.flag" />
 					</template>
@@ -345,14 +393,21 @@
 					</template>
 				</multiselect>
 
-				<input v-model="countryCode" type="text" class="country-code form-control !tw-mb-0 tw-w-[30px]" readonly />
-				<input
-					autocomplete="tel"
-					v-maska="mask"
-					v-model="value"
-					style="padding-left: 68px"
-					class="form-control !tw-mb-0 tw-min-w-[30%]"
-				/>
+				<div class="tw-relative tw-flex tw-items-center">
+					<input
+						v-model="countryCode"
+						type="text"
+						class="country-code form-control !tw-mb-0 tw-w-[30px] tw-bg-transparent"
+						readonly
+					/>
+					<input
+						autocomplete="tel"
+						v-maska="mask"
+						v-model="value"
+						style="padding-left: 70px"
+						class="form-control !tw-mb-0 tw-min-w-[30%]"
+					/>
+				</div>
 			</div>
 
 			<!-- INPUT IN CASE OF SPLIT -->
@@ -370,7 +425,7 @@
 		<!-- ERRORS -->
 		<div
 			v-if="errors[parameter.param] && !['yesno', 'toggle'].includes(parameter.type) && parameter.displayed"
-			class="tw-absolute tw-mt-1 tw-min-h-[24px] tw-text-red-600"
+			class="tw-mt-0 tw-min-h-[24px] tw-text-red-600"
 			:class="errors[parameter.param] ? 'tw-opacity-100' : 'tw-opacity-0'"
 			:id="'error-message-' + parameter.param"
 		>
@@ -395,10 +450,11 @@ import TipTapEditor from 'tip-tap-editor';
 import { AsYouType, getExampleNumber, parsePhoneNumber } from 'libphonenumber-js';
 import examples from 'libphonenumber-js/mobile/examples';
 import { vMaska } from 'maska/vue';
+import vueDropzone from 'vue2-dropzone-vue3';
 
 export default {
 	name: 'Parameter',
-	components: { DatePicker, Multiselect, Modal, TipTapEditor },
+	components: { DatePicker, Multiselect, Modal, TipTapEditor, vueDropzone },
 	directives: {
 		maska: vMaska,
 	},
@@ -473,6 +529,25 @@ export default {
 			countryCode: '',
 			countries: [],
 			mask: '',
+
+			dropzoneOptions: {
+				url: '',
+				maxFilesize: 10,
+				maxFiles: 1,
+				autoProcessQueue: false,
+				addRemoveLinks: true,
+				thumbnailWidth: null,
+				thumbnailHeight: null,
+				acceptedFiles: 'image/*',
+				dictCancelUpload: this.translate('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD'),
+				dictCancelUploadConfirmation: this.translate('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION'),
+				dictRemoveFile: this.translate('COM_EMUNDUS_ONBOARD_REMOVE_FILE'),
+				dictInvalidFileType: this.translate('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE'),
+				dictFileTooBig: this.translate('COM_EMUNDUS_ONBOARD_FILE_TOO_BIG'),
+				dictMaxFilesExceeded: this.translate('COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED'),
+				uploadMultiple: false,
+			},
+			mediaThumbnail: '',
 		};
 	},
 	async created() {
@@ -520,6 +595,15 @@ export default {
 			}
 
 			this.value = phoneNumber ? phoneNumber.nationalNumber : '';
+		} else if (this.parameter.type === 'toggle') {
+			this.value =
+				this.parameter.value === 1 || this.parameter.value === true || this.parameter.value === '1' ? '1' : '0';
+		} else if (this.parameter.type === 'file') {
+			this.dropzoneOptions.url = this.parameter.fileUrl ? this.parameter.fileUrl : '';
+			this.dropzoneOptions.maxFiles = this.parameter.maxFiles ? this.parameter.maxFiles : 1;
+			this.dropzoneOptions.acceptedFiles = this.parameter.acceptedFiles ? this.parameter.acceptedFiles : 'image/*';
+
+			this.value = this.parameter.value;
 		} else if (this.parameter) {
 			this.value = this.parameter.value;
 		}
@@ -592,6 +676,9 @@ export default {
 								break;
 							case 'regex':
 								valid = new RegExp(this.$props.multiselectOptions.tagRegex).test(newOption);
+								break;
+							case 'secure_url':
+								valid = this.validateUrl(newOption);
 								break;
 							default:
 								break;
@@ -681,6 +768,21 @@ export default {
 						this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_CHECK_INPUT_MAIL_NO';
 						return false;
 					}
+				} else if (this.parameter.type === 'url') {
+					const urlPattern = '^(https?:\\/\\/)?([A-Za-z0-9-]+\\.)+[A-Za-z]{2,}(\\/.*)?$';
+					const regex = new RegExp(urlPattern);
+					if (!regex.test(this.parameter.value)) {
+						this.errors[this.parameter.param] = 'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_URL_CHECK_INPUT_URL_NO';
+						return false;
+					}
+				} else if (this.parameter.type === 'secure_url') {
+					const urlPattern = '^([A-Za-z0-9-]+\\.)+[A-Za-z]{2,}(\\/.*)?$';
+					const regex = new RegExp(urlPattern);
+					if (!regex.test(this.parameter.value)) {
+						this.errors[this.parameter.param] =
+							'COM_EMUNDUS_GLOBAL_PARAMS_SECTION_VALID_DOMAIN_NAME_CHECK_INPUT_URL_NO';
+						return false;
+					}
 				}
 
 				delete this.errors[this.parameter.param];
@@ -711,6 +813,10 @@ export default {
 			let res = /^[\w.-]+@([\w-]+\.)+[\w-]{2,4}$/;
 			return res.test(email);
 		},
+		validateUrl(url) {
+			const regex = /^https:\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(\/.*)?$/;
+			return regex.test(url);
+		},
 		formatDateForDisplay(date) {
 			if (!date && this.parameter.type === 'datetime') return '00:00';
 			if (!date && this.parameter.type === 'date') return '';
@@ -732,6 +838,62 @@ export default {
 		onCloseAddModal() {
 			// Close the modal
 			this.$refs['addNew' + this.parameter.param].close();
+		},
+		//
+
+		// Dropzone
+		afterAdded(file) {
+			this.value = file;
+			setTimeout(() => {
+				this.mediaThumbnail = file.dataURL;
+			}, 200);
+
+			document.getElementById('dropzone-message').style.display = 'none';
+		},
+
+		afterRemoved() {
+			if (this.$refs.dropzone.getAcceptedFiles().length === 0) {
+				document.getElementById('dropzone-message').style.display = 'block';
+			}
+		},
+
+		catchError: function (file, message, xhr) {
+			Swal.fire({
+				title: Joomla.Text._('COM_EMUNDUS_ONBOARD_ERROR'),
+				text: message,
+				icon: 'error',
+				showCancelButton: false,
+				showConfirmButton: false,
+				timer: 3000,
+			});
+			this.$refs.dropzone.removeFile(file);
+		},
+
+		/*thumbnail: function (file, dataUrl) {
+			var j, len, ref, thumbnailElement;
+			if (file.previewElement) {
+				file.previewElement.classList.remove('dz-file-preview');
+				ref = file.previewElement.querySelectorAll('[data-dz-thumbnail-bg]');
+				for (j = 0, len = ref.length; j < len; j++) {
+					thumbnailElement = ref[j];
+					thumbnailElement.alt = file.name;
+					thumbnailElement.style.backgroundImage = 'url("' + dataUrl + '")';
+				}
+				return setTimeout(
+					(function (_this) {
+						return function () {
+							return file.previewElement.classList.add('dz-image-preview');
+						};
+					})(this),
+					1,
+				);
+			}
+		},*/
+
+		deleteMedia() {
+			this.value = null;
+			this.$refs.dropzone.removeAllFiles();
+			document.getElementById('dropzone-message').style.display = 'block';
 		},
 		//
 	},
@@ -758,7 +920,7 @@ export default {
 				if (val !== oldVal && val !== this.initValue) {
 					let valid = true;
 
-					if (['text', 'email', 'number', 'password', 'textarea'].includes(this.parameter.type)) {
+					if (['text', 'email', 'number', 'password', 'textarea', 'secure_url'].includes(this.parameter.type)) {
 						valid = this.validate();
 					}
 
@@ -829,7 +991,7 @@ export default {
 		},
 		isInput() {
 			return (
-				['text', 'email', 'number', 'password'].includes(this.parameter.type) &&
+				['text', 'email', 'number', 'password', 'secure_url'].includes(this.parameter.type) &&
 				this.parameter.displayed &&
 				this.parameter.editable !== 'semi'
 			);
@@ -893,7 +1055,7 @@ div > fieldset[data-toggle='radio_buttons'] > div > input.fabrikinput {
 }
 
 .country-phonenumber {
-	max-width: 20%;
+	max-width: 100px;
 }
 .country-phonenumber .multiselect__content-wrapper {
 	min-width: 300px;
@@ -905,7 +1067,8 @@ div > fieldset[data-toggle='radio_buttons'] > div > input.fabrikinput {
 	width: 60px !important;
 	min-width: unset !important;
 	position: absolute;
-	left: 23%;
+	left: 4px;
+	background: transparent !important;
 	height: 10px !important;
 }
 </style>

@@ -659,7 +659,7 @@ class TransactionRepository
 			$this->db->setQuery($query);
 			$applicant_id = $this->db->loadResult();
 
-			$contact_repository = new ContactRepository($this->db);
+			$contact_repository = new ContactRepository();
 			$customer = $contact_repository->getByUserId($applicant_id);
 		}
 
@@ -795,7 +795,7 @@ class TransactionRepository
 	{
 		$transaction = [];
 		$payment_repository = new PaymentRepository();
-		$contact_repository = new ContactRepository($this->db);
+		$contact_repository = new ContactRepository();
 
 		if(!class_exists('EmundusHelperFiles')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');

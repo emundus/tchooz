@@ -24,8 +24,13 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
+use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
+use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
+use Tchooz\Repositories\CountryRepository;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -3164,6 +3169,165 @@ class EmundusControllersettings extends BaseController
 			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
 		}
 
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcountries()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_COUNTRIES_LIST');
+
+			// Get current lang to return country names in the right language
+			$lang = Factory::getApplication()->getLanguage();
+			$lang = $lang->getTag();
+			$lang = substr($lang, 0, 2);
+
+			if(!class_exists('CountryRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/CountryRepository.php';
+			}
+			$countryRepository = new CountryRepository();
+			$countries         = $countryRepository->getAllCountries();
+			$data = [];
+			foreach($countries as $country)
+			{
+				// If we found a label_xx property for the current language, we use it
+				$label = $country->label_fr;
+				if(property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
+				{
+					$label = $country->{'label_' . $lang};
+				}
+
+				$data[] = ['value' => $country->id, 'name' => $label];
+			}
+
+			$response['data'] = !empty($data) ? $data : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcountriesforfilters()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_COUNTRIES_LIST');
+
+			// Get current lang to return country names in the right language
+			$lang = Factory::getApplication()->getLanguage();
+			$lang = $lang->getTag();
+			$lang = substr($lang, 0, 2);
+
+			if(!class_exists('CountryRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/CountryRepository.php';
+			}
+			$countryRepository = new CountryRepository();
+			$countries         = $countryRepository->getAllCountries();
+			$data = [];
+			$data[] = ['value' => 'no_nationality', 'label' => Text::_('COM_EMUNDUS_ONBOARD_CONTACT_FILTER_NO_NATIONALITY')];
+			foreach($countries as $country)
+			{
+				// If we found a label_xx property for the current language, we use it
+				$label = $country->label_fr;
+				if(property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
+				{
+					$label = $country->{'label_' . $lang};
+				}
+
+				$data[] = ['value' => $country->id, 'label' => $label];
+			}
+
+			$response['data'] = !empty($data) ? $data : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getorganizations(): void
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ORGANIZATIONS_LIST');
+
+			if (!class_exists('OrganizationRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/OrganizationRepository.php';
+			}
+			$organizationRepository = new OrganizationRepository();
+			$organizations          = $organizationRepository->getAllOrganizations(
+				'DESC',
+				'',
+				25,
+				0,
+				't.id',
+				true
+			);
+			$data = [];
+			foreach($organizations['datas'] as $organization)
+			{
+				if(!$organization instanceof OrganizationEntity)
+				{
+					continue;
+				}
+
+				$data[] = ['value' => $organization->getId(), 'name' => $organization->getName()];
+			}
+
+			$response['data'] = !empty($data) ? $data : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcontacts(): void
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CONTACTS_LIST');
+
+			if (!class_exists('ContactRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/ContactRepository.php';
+			}
+			$contactRepository = new ContactRepository();
+			$contacts          = $contactRepository->getAllContacts(
+				'DESC',
+				'',
+				25,
+				0,
+				't.id',
+				true
+			);
+			$data = [];
+			foreach($contacts['datas'] as $contact)
+			{
+				if(!$contact instanceof ContactEntity)
+				{
+					continue;
+				}
+
+				$data[] = ['value' => $contact->getId(), 'name' => $contact->getFullName()];
+			}
+			$response['data'] = !empty($data) ? $data : [];
+		}
 		$this->sendJsonResponse($response);
 	}
 }

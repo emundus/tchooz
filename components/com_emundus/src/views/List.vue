@@ -155,15 +155,41 @@
 										'tw-rounded-s-coordinator-cards': !canCheck && viewType === 'table',
 									}"
 								>
-									<span
-										@click="onClickAction(editAction, item.id, false, $event)"
-										:class="{
-											'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
-											'hover:tw-underline': editAction,
-										}"
-										:title="item.label[params.shortlang]"
-										v-html="item.label[params.shortlang]"
-									></span>
+									<div class="tw-flex tw-w-full tw-justify-between">
+										<span
+											v-if="editAction"
+											@click="onClickAction(editAction, item.id, false, $event)"
+											class="hover:tw-underline"
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<span
+											v-else-if="showAction"
+											@click="onClickAction(showAction, item.id, false, $event)"
+											class="hover:tw-underline"
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<span
+											v-else
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<img
+											v-if="item.image && viewType === 'blocs'"
+											:src="item.image"
+											class="tw-h-20 tw-w-20 tw-object-contain"
+										/>
+									</div>
 								</td>
 								<td
 									class="columns tw-p-4"
@@ -219,6 +245,13 @@
 										>
 											{{ translate(editAction.label) }}
 										</a>
+										<a
+											v-else-if="viewType === 'blocs' && showAction"
+											@click="onClickAction(showAction, item.id, false, $event)"
+											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
+										>
+											{{ translate(showAction.label) }}
+										</a>
 										<div class="tw-flex tw-items-center tw-justify-end tw-gap-2">
 											<button
 												v-if="editAction && viewType === 'table'"
@@ -228,6 +261,15 @@
 												:title="translate(editAction.label)"
 											>
 												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">edit</span>
+											</button>
+											<button
+												v-else-if="showAction && viewType === 'table'"
+												@click="onClickAction(showAction, item.id)"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
+												style="padding: 0.5rem"
+												:title="translate(showAction.label)"
+											>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">search</span>
 											</button>
 
 											<button
@@ -258,11 +300,12 @@
 											</button>
 
 											<div v-if="showModal && currentComponentElementId === item.id">
-												<Teleport to=".com_emundus_vue">
+												<Teleport to=".com_emundus">
 													<modal
 														:name="'modal-component'"
 														transition="nice-modal-fade"
 														:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+														:height="modalHeight"
 														:width="'600px'"
 														:delay="100"
 														:adaptive="true"
@@ -385,6 +428,8 @@ import Calendar from '@/views/Events/Calendar.vue';
 import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
+import ContactDetails from '@/components/Contacts/ContactDetails.vue';
+import OrganizationDetails from '@/components/Organizations/OrganizationDetails.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
 
@@ -414,6 +459,8 @@ export default {
 		EditSlot,
 		Import,
 		AssociateUser,
+		ContactDetails,
+		OrganizationDetails,
 		SaveRequest,
 	},
 	props: {
@@ -437,6 +484,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		modalHeight: {
+			type: String,
+			default: 'auto',
+		},
 	},
 	mixins: [alerts],
 	data() {
@@ -450,6 +501,8 @@ export default {
 			components: {
 				EditSlot,
 				AssociateUser,
+				ContactDetails,
+				OrganizationDetails,
 				Import,
 				SaveRequest,
 			},
@@ -1287,15 +1340,17 @@ export default {
 				e.stopPropagation();
 			}
 
-			Swal.fire({
-				html: '<div style="text-align: left;">' + html + '</div>',
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
+			if (html) {
+				Swal.fire({
+					html: '<div style="text-align: left;">' + html + '</div>',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: 'em-swal-single-action',
+					},
+				});
+			}
 		},
 	},
 	computed: {
@@ -1324,6 +1379,14 @@ export default {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {
 						return action.name === 'edit' && (action.view === this.viewType || typeof action.view === 'undefined');
+					})
+				: false;
+		},
+
+		showAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return action.name === 'show' && (action.view === this.viewType || typeof action.view === 'undefined');
 					})
 				: false;
 		},

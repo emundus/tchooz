@@ -3877,6 +3877,27 @@ class EmundusModelSettings extends ListModel
 					1
 				);
 			}
+
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('crc'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+			if ($params['displayed'])
+			{
+				$addons[] = new AddonEntity(
+					'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC',
+					'crc',
+					'sensor_occupied',
+					'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC_DESC',
+					json_encode($params['params']),
+					$params['enabled'] ?? 0,
+					1
+				);
+			}
+
 		}
 		catch (Exception $e)
 		{
@@ -4087,6 +4108,38 @@ class EmundusModelSettings extends ListModel
 					$updated = $this->db->execute();
 
 					break;
+				case 'crc':
+					$query->clear()
+						->update($this->db->quoteName('#__menu'))
+						->set('published = ' . $this->db->quote($enabled))
+						->where('alias IN (' . $this->db->quote('relation-client') . ', ' . $this->db->quote('contact-form') . ', ' . $this->db->quote('organization-form') .')');
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_actions'))
+						->set('status = ' . $this->db->quote($enabled))
+						->where('label IN (' . $this->db->quote('COM_EMUNDUS_ACL_CONTACT') . ', ' . $this->db->quote('COM_EMUNDUS_ACL_ORGANIZATION') .')');
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->select('value')
+						->from($this->db->quoteName('#__emundus_setup_config'))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
+					$this->db->setQuery($query);
+					$params = json_decode($this->db->loadResult(), true);
+
+					$params['enabled'] = $enabled === 1;
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_config'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					break;
+
 			}
 		}
 		catch (Exception $e)

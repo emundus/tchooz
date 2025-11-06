@@ -1624,15 +1624,16 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 								{
 									if (!empty($informations['email'] && !empty($informations['firstname']) && !empty($informations['lastname'])))
 									{
-										$contactRepository = new ContactRepository($db);
+										$contactRepository = new ContactRepository();
 										$contact           = $contactRepository->getByEmail($informations['email']);
+										$result = false;
 										if (empty($contact))
 										{
 											$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
-											$contact->setId($contactRepository->flush($contact));
+											$result = $contactRepository->flush($contact);
 										}
 
-										if (!empty($contact))
+										if ($result && !empty($contact->getId()))
 										{
 											$signers[] = [
 												'signer'               => $contact->getId(),

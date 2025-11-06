@@ -39,6 +39,7 @@ import SMSAppFile from '@/views/SMS/SMSAppFile.vue';
 import SMSSend from '@/views/SMS/SMSSend.vue';
 import Rankings from '@/views/Ranking/rankings.vue';
 import CartAppFile from '@/views/Payment/CartAppFile.vue';
+import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
 
 if (document) {
 	let app = null;

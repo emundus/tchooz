@@ -1,6 +1,8 @@
 <?php
 namespace Tchooz\Repository\ApplicationFile;
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
@@ -9,21 +11,26 @@ use Joomla\Database\QueryInterface;
 
 class ApplicationFileRepository
 {
+	private DatabaseInterface $db;
+
 	private QueryInterface $query;
 
-	public function __construct(
-		private DatabaseInterface $db,
-		private readonly int $user_id
-	)
+	public function __construct()
 	{
+		$this->db   = Factory::getContainer()->get('DatabaseDriver');
 		$this->query = $this->db->getQuery(true);
 
 		Log::addLogger(['text_file' => 'com_emundus.applicationrepository.php'], Log::ALL, array('com_emundus.applicationrepository'));
 	}
 
-	public function flush(ApplicationFileEntity $applicationFileEntity): bool
+	public function flush(ApplicationFileEntity $applicationFileEntity, int $user_id = 0): bool
 	{
 		$flushed = false;
+
+		if(empty($user_id))
+		{
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		try
 		{
@@ -39,14 +46,14 @@ class ApplicationFileRepository
 				throw new \Exception('Invalid fnum');
 			}
 
-			$ccid = $this->createCampaignCandidature($applicationFileEntity);
+			$ccid = $this->createCampaignCandidature($applicationFileEntity, $user_id);
 			if(empty($ccid)) {
 				throw new \Exception('Failed to create campaign candidature');
 			}
 
 			if(!empty($applicationFileEntity->getData())) {
 				foreach ($applicationFileEntity->getData() as $table => $data) {
-					if(!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $ccid)) {
+					if(!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $ccid, $user_id)) {
 						throw new \Exception('Failed to insert data into ' . $table);
 					}
 				}
@@ -63,9 +70,44 @@ class ApplicationFileRepository
 		return $flushed;
 	}
 
-	private function createCampaignCandidature(ApplicationFileEntity $applicationFileEntity): int
+	public function getApplicationFilesByApplicantId(int $applicant_id): array
+	{
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($applicant_id);
+		$application_files = [];
+
+		$this->query->clear()
+			->select('id, fnum, status, published, campaign_id')
+			->from('#__emundus_campaign_candidature')
+			->where('applicant_id = :applicant_id')
+			->bind(':applicant_id', $applicant_id, ParameterType::INTEGER);
+		$this->db->setQuery($this->query);
+		$results = $this->db->loadObjectList();
+
+		if(!empty($results)) {
+			foreach ($results as $result) {
+				if(!empty($result->fnum))
+				{
+					$application_file = new ApplicationFileEntity($user);
+					$application_file->setFnum($result->fnum);
+					$application_file->setStatus($result->status);
+					$application_file->setPublished($result->published);
+					$application_file->setCampaignId($result->campaign_id);
+
+					$application_files[] = $application_file;
+				}
+			}
+		}
+
+		return $application_files;
+	}
+
+	private function createCampaignCandidature(ApplicationFileEntity $applicationFileEntity, int $user_id = 0): int
 	{
 		$fnum = $applicationFileEntity->getFnum();
+
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		$this->query->clear()
 			->select('id')
@@ -80,7 +122,7 @@ class ApplicationFileRepository
 			$campaign_candidature = [
 				'date_time' => date('Y-m-d H:i:s'),
 				'applicant_id' => $applicationFileEntity->getUser()->id,
-				'user_id' => $this->user_id,
+				'user_id' => $user_id,
 				'campaign_id' => $applicationFileEntity->getCampaignId(),
 				'fnum' => $applicationFileEntity->getFnum(),
 				'status' => $applicationFileEntity->getStatus(),
@@ -97,9 +139,13 @@ class ApplicationFileRepository
 		return $ccid;
 	}
 	
-	private function insertDatas(array $datas, string $table, string $fnum, int $ccid): bool
+	private function insertDatas(array $datas, string $table, string $fnum, int $ccid, int $user_id = 0): bool
 	{
 		$result = false;
+
+		if(empty($user_id)) {
+			$user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		// If all datas are empty, skip the table
 		$skip = empty(array_filter($datas, fn($data) => !empty($data)));
@@ -114,7 +160,7 @@ class ApplicationFileRepository
 			$row_id = $this->getRowId($table, $fnum);
 
 			$datas['time_date'] = date('Y-m-d H:i:s');
-			$datas['user'] = $this->user_id;
+			$datas['user'] = $user_id;
 			$datas['fnum'] = $fnum;
 			if($this->haveCcidColumn($table)) {
 				$datas['ccid'] = $ccid;
@@ -214,7 +260,7 @@ class ApplicationFileRepository
 				$parent_datas = [
 					'time_date' => date('Y-m-d H:i:s'),
 					'fnum' => $fnum,
-					'user' => $this->user_id
+					'user' => $user_id
 				];
 				if($this->haveCcidColumn($table)) {
 					$parent_datas['ccid'] = $ccid;

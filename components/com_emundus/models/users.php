@@ -5418,4 +5418,27 @@ class EmundusModelUsers extends ListModel
 
 		return $affected;
 	}
+
+	public function getUserEmailById(int $id)
+	{
+		$user_email = null;
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('u.email')
+				->from($this->db->quoteName('#__users', 'eu'))
+				->where('u.id = ' . $id);
+
+			$this->db->setQuery($query);
+			$user_email = $this->db->loadResult();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error while getting user email: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $user_email;
+	}
 }

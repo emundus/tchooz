@@ -579,7 +579,13 @@ class CartEntity {
 	public function serialize(): array
 	{
 		$customer = $this->customer->__serialize();
-		$customer['address'] = $this->customer->getAddress()?->__serialize();
+
+		$customer['address'] = null;
+		$customer_addresses = $this->customer->getAddresses();
+		if(!empty($customer_addresses))
+		{
+			$customer['address'] = $customer_addresses[0]?->__serialize();
+		}
 
 		return [
 			'id' => $this->getId(),

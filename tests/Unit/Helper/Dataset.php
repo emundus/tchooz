@@ -906,7 +906,8 @@ class Dataset
 			'email' => $email,
 			'firstname' => $firstname,
 			'lastname' => $lastname,
-			'phone_1' => $phone
+			'phone_1' => $phone,
+			'status' => 'to_be_verified',
 		];
 
 		$query->insert('jos_emundus_contacts')

@@ -15,29 +15,28 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Payment\AlterationEntity;
-use Tchooz\Entities\Payment\PaymentMethodEntity;
-use \Tchooz\Repositories\Payment\ProductRepository;
-use \Tchooz\Repositories\Payment\ProductCategoryRepository;
-use \Tchooz\Repositories\Payment\CurrencyRepository;
-use \Tchooz\Repositories\Payment\PaymentRepository;
-use \Tchooz\Repositories\Payment\DiscountRepository;
-use \Tchooz\Repositories\Payment\CartRepository;
-use \Tchooz\Repositories\Contacts\ContactRepository;
-use Tchooz\Repositories\Payment\TransactionRepository;
-use Tchooz\Repositories\Payment\AlterationRepository;
-use \Tchooz\Entities\Payment\ProductEntity;
-use \Tchooz\Entities\Payment\DiscountEntity;
-use \Tchooz\Entities\Payment\CurrencyEntity;
-use \Tchooz\Entities\Payment\ProductCategoryEntity;
-use \Tchooz\Entities\Contacts\ContactEntity;
-use \Tchooz\Entities\Contacts\ContactAddressEntity;
-use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\AlterationType;
+use Tchooz\Entities\Payment\CurrencyEntity;
+use Tchooz\Entities\Payment\DiscountEntity;
+use Tchooz\Entities\Payment\DiscountType;
+use Tchooz\Entities\Payment\PaymentMethodEntity;
+use Tchooz\Entities\Payment\ProductCategoryEntity;
+use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Payment\AlterationRepository;
+use Tchooz\Repositories\Payment\CartRepository;
+use Tchooz\Repositories\Payment\CurrencyRepository;
+use Tchooz\Repositories\Payment\DiscountRepository;
+use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Repositories\Payment\ProductCategoryRepository;
+use Tchooz\Repositories\Payment\ProductRepository;
+use Tchooz\Repositories\Payment\TransactionRepository;
 
 class EmundusControllerPayment extends BaseController
 {
@@ -1468,10 +1467,7 @@ class EmundusControllerPayment extends BaseController
 			$cart = $cart_repository->getCartById($cart_id);
 
 			if ($cart_repository->canUserUpdateCart($cart, $user_id)) {
-
-				$db = Factory::getContainer()->get('DatabaseDriver');
-
-				$contact_repository = new ContactRepository($db);
+				$contact_repository = new ContactRepository();
 				$contact_entity = $contact_repository->getByUserId($cart->getCustomer()->getUserId());
 
 				if (!empty($contact_entity->getId()) && $contact_entity->getUserId() === $cart->getCustomer()->getUserId())
@@ -1480,11 +1476,11 @@ class EmundusControllerPayment extends BaseController
 					$firstname = $this->input->getString('firstname', '');
 					$lastname = $this->input->getString('lastname', '');
 					$phone = $this->input->getString('phone', '');
-					$address1 = $this->input->getString('address1', '');
-					$address2 = $this->input->getString('address2', '');
-					$zip = $this->input->getString('zip', '');
-					$city = $this->input->getString('city', '');
-					$state = $this->input->getString('state', '');
+					$street_address = $this->input->getString('street_address', '');
+					$extended_address = $this->input->getString('extended_address', '');
+					$postal_code = $this->input->getString('postal_code', '');
+					$locality = $this->input->getString('locality', '');
+					$region = $this->input->getString('region', '');
 					$country = $this->input->getInt('country', 0);
 
 					$contact_entity->setEmail($email);
@@ -1492,24 +1488,34 @@ class EmundusControllerPayment extends BaseController
 					$contact_entity->setLastname($lastname);
 					$contact_entity->setPhone1($phone);
 
-					$address_entity = $contact_entity->getAddress();
-					if (empty($address_entity)) {
-						$address_entity = new ContactAddressEntity($contact_entity->getId(), $address1, $address2, $city, $state, $zip, $country);
+					$addresses_entity = $contact_entity->getAddresses();
+					if (empty($addresses_entity)) {
+						// create a new address entity
+						$address_entity = new AddressEntity(
+							0,
+							$locality,
+							$region,
+							$street_address,
+							$extended_address,
+							$postal_code,
+							null,
+							$country
+						);
+						$addresses_entity = [$address_entity];
 					} else {
-						$address_entity->setContactId($contact_entity->getId());
-						$address_entity->setAddress1($address1);
-						$address_entity->setAddress2($address2);
-						$address_entity->setCity($city);
-						$address_entity->setState($state);
-						$address_entity->setZip($zip);
-						$address_entity->setCountry($country);
+						$addresses_entity[0]->setStreetAddress($street_address);
+						$addresses_entity[0]->setExtendedAddress($extended_address);
+						$addresses_entity[0]->setLocality($locality);
+						$addresses_entity[0]->setRegion($region);
+						$addresses_entity[0]->setPostalCode($postal_code);
+						$addresses_entity[0]->setCountry($country);
 					}
 
-					$contact_entity->setAddress($address_entity);
+					$contact_entity->setAddresses($addresses_entity);
 					try {
-						$contact_id = $contact_repository->flush($contact_entity);
+						$result = $contact_repository->flush($contact_entity);
 
-						if ($contact_id) {
+						if ($result && !empty($contact_entity->getId())) {
 							$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_SAVED'), 'status' => true];
 						} else {
 							$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_NOT_SAVED'), 'status' => false];
