@@ -78,7 +78,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		foreach ($tables as $table)
 		{
-			if (strpos($table, '_messages') > 0 && !strpos($table, '_eb_'))
+			if ($table === 'jos_messages')
 			{
 				$query->clear()
 					->delete($db->quoteName($table))
@@ -113,24 +113,52 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			{
 				continue;
 			}
+			
+			$columns = $db->getTableColumns($table);
 
-			if (strpos($table, '_files_request') > 0 || strpos($table, '_evaluations') > 0 || strpos($table, '_final_grade') > 0)
+			if (in_array($table, ['jos_emundus_files_request', 'jos_emundus_final_grade', 'jos_emundus_evaluations']))
 			{
+				if(!in_array('student_id', array_keys($columns)))
+				{
+					continue;
+				}
+
 				$query->clear()
 					->delete($db->quoteName($table))
 					->where($db->quoteName('student_id') . ' = ' . $userId);
 			}
-			elseif (strpos($table, '_uploads') > 0 || strpos($table, '_groups') > 0 || strpos($table, '_emundus_users') > 0 || strpos($table, '_emundus_emailalert') > 0)
+			elseif (in_array($table, ['jos_emundus_uploads', 'jos_emundus_groups', 'jos_emundus_users', 'jos_emundus_emailalert']))
 			{
+				if(!in_array('user_id', array_keys($columns)))
+				{
+					continue;
+				}
+
 				$query->clear()
 					->delete($db->quoteName($table))
 					->where($db->quoteName('user_id') . ' = ' . $userId);
 			}
-			elseif (strpos($table, '_emundus_comments') > 0 || strpos($table, '_emundus_campaign_candidature') > 0)
+			elseif (in_array($table, ['jos_emundus_comments', 'jos_emundus_campaign_candidature']))
 			{
+				if(!in_array('applicant_id', array_keys($columns)))
+				{
+					continue;
+				}
+
 				$query->clear()
 					->delete($db->quoteName($table))
 					->where($db->quoteName('applicant_id') . ' = ' . $userId);
+			}
+			elseif (str_contains($table, 'jos_emundus_evaluations_'))
+			{
+				if(!in_array('evaluator', array_keys($columns)))
+				{
+					continue;
+				}
+
+				$query->clear()
+					->delete($db->quoteName($table))
+					->where($db->quoteName('evaluator') . ' = ' . $userId);
 			}
 			else
 			{
@@ -142,7 +170,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$db->setQuery($query);
 				$db->execute();
 			}
-			catch (ExecutionFailureException $e)
+			catch (\Exception $e)
 			{
 				// Do nothing.
 				continue;
