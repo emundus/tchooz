@@ -223,7 +223,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			rmdir($dir);
 		}
 
-		if ($this->params->get('send_email_delete', 0) == 1 && !empty($user['email']) && !$this->getApplication()->isClient('cli'))
+		if ($this->getApplication()->get('mailonline', true) && $this->params->get('send_email_delete', 0) == 1 && !empty($user['email']) && !$this->getApplication()->isClient('cli'))
 		{
 			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
