@@ -9,117 +9,526 @@
 
 namespace Tchooz\Repositories\Contacts;
 
-use Tchooz\Attributes\TableAttribute;
-use Tchooz\Entities\Contacts\ContactEntity;
-use Tchooz\Traits\TraitTable;
-use Tchooz\Entities\Contacts\ContactAddressEntity;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\Database\DatabaseInterface;
+use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\Contacts\AddressEntity;
+use Tchooz\Entities\Contacts\ContactAddressEntity;
+use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Entities\Country;
+use Tchooz\Factories\Contacts\ContactFactory;
+use Tchooz\Repositories\CountryRepository;
+use Tchooz\Repositories\EmundusRepository;
+use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Services\UploadService;
+use Tchooz\Traits\TraitTable;
 
 if (!class_exists('ContactEntity'))
 {
 	require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/ContactEntity.php';
 }
 
+if (!class_exists('ContactOrganizationRepository'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/ContactOrganizationRepository.php';
+}
+
+if (!class_exists('ContactAddressRepository'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/ContactAddressRepository.php';
+}
+
+if (!class_exists('ContactAddressEntity'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/ContactAddressEntity.php';
+}
+
+if (!class_exists('AddressRepository'))
+{
+	require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/AddressRepository.php';
+}
+
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitTable.php';
 
 #[TableAttribute(table: '#__emundus_contacts')]
-readonly class ContactRepository
+class ContactRepository extends EmundusRepository implements RepositoryInterface
 {
 	use TraitTable;
 
-	public function __construct(private DatabaseInterface $db)
-	{}
+	private ContactFactory $factory;
 
-	public function flush(ContactEntity $contact): int
+	private const COLUMNS = [
+		't.id',
+		't.lastname',
+		't.firstname',
+		't.email',
+		't.phone_1',
+		't.user_id',
+		't.birthdate',
+		't.gender',
+		't.fonction',
+		't.service',
+		't.published',
+		't.profile_picture',
+		't.status'
+	];
+
+	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		$contact_id = null;
+		parent::__construct($withRelations, $exceptRelations, 'contact');
+		$this->factory = new ContactFactory();
+	}
 
-		$contact_object = $contact->__serialize();
+	/**
+	 * @throws \Exception
+	 */
+	public function flush(ContactEntity $entity): bool
+	{
+		$contact_object = $entity->__serialize();
 		$contact_object = (object) $contact_object;
 
-		if(empty($contact_object->email))
+		if (empty($contact_object->email))
 		{
-			throw new \Exception('Contact email not set.', 400);
+			throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_EMAIL_NOT_SET'), 400);
 		}
 
-		if (empty($contact->getId()))
+		if (empty($contact_object->user_id))
+		{
+			$contact_object->user_id = null;
+		}
+
+		// Add control to avoid duplicate email
+		$existing_contact = $this->getByEmail($contact_object->email);
+		if ($existing_contact && $existing_contact->getId() != $entity->getId())
+		{
+			throw new \InvalidArgumentException(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_EMAIL_ALREADY_EXISTS'), 400);
+		}
+
+		if (!empty($entity->getGender()))
+		{
+			$contact_object->gender = $entity->getGender()->value;
+		}
+
+		if (!empty($entity->getStatus()))
+		{
+			$contact_object->status = $entity->getStatus()->value;
+		}
+
+		if (empty($entity->getId()))
 		{
 			$contact_object->user_id = empty($contact_object->user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserByUsername($contact_object->email)->id : $contact_object->user_id;
-			if(empty($contact_object->user_id)) {
+			if (empty($contact_object->user_id))
+			{
 				$contact_object->user_id = null;
 			}
 
 			if ($this->db->insertObject($this->getTableName(self::class), $contact_object))
 			{
 				$contact_id = $this->db->insertid();
-				$contact->setId($contact_id);
+				$entity->setId($contact_id);
 			}
 			else
 			{
-				throw new \Exception('Failed to insert contact.', 500);
+				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_INSERT_FAILED'), 500);
+			}
+		}
+		else
+		{
+			if (!$this->db->updateObject($this->getTableName(self::class), $contact_object, 'id'))
+			{
+				throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_UPDATE_FAILED'), 500);
 			}
 		}
 
-		if (!$this->db->updateObject($this->getTableName(self::class), $contact_object, 'id'))
+		// First, flush the address if exists
+		$addressRepository        = new AddressRepository();
+		$contactAddressRepository = new ContactAddressRepository();
+		$contact_addresses        = $contactAddressRepository->getAllAddressesIdsByContactId($entity->getId());
+
+		if (!empty($entity->getAddresses()))
 		{
-			throw new \Exception('Failed to update contact.', 500);
-		} else {
-			$contact_id = $contact->getId();
+			foreach ($entity->getAddresses() as $key => $address)
+			{
+				if (!($address instanceof AddressEntity))
+				{
+					continue;
+				}
+
+				if (!$addressRepository->flush($address))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_ADDRESS_INSERT_FAILED'), 500);
+				}
+
+				$entity->getAddresses()[$key]->setId($address->getId());
+
+				if (!in_array($address->getId(), $contact_addresses))
+				{
+					$contact_address = new ContactAddressEntity($entity, $address);
+					if (!$contactAddressRepository->flush($contact_address))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_ASSOCIATE_TO_ADDRESS_FAILED'), 500);
+					}
+				}
+			}
 		}
 
-		if (!empty($contact->getAddress()))
+		// Delete addresses that are no longer associated
+		foreach ($contact_addresses as $existingAddress)
 		{
-			$address = $contact->getAddress();
-			$address_object = $address->__serialize();
-			$address_object = (object) $address_object;
-
-			if (empty($address->getId()))
+			$found = false;
+			foreach ($entity->getAddresses() as $address)
 			{
-				$address_object->contact_id = $contact_id;
-				if ($this->db->insertObject('#__emundus_contacts_address', $address_object))
+				if ($address->getId() === $existingAddress)
 				{
-					$address_id = $this->db->insertid();
+					$found = true;
+					break;
+				}
+			}
+
+			if (!$found)
+			{
+				if(!$contactAddressRepository->detachAddressIdFromContact($entity->getId(), $existingAddress))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_ADDRESS_DETACH_TO_CONTACT_FAILED'), 500);
 				}
 				else
 				{
-					throw new \Exception('Failed to insert contact address.', 500);
+					if(!$addressRepository->delete($existingAddress))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_ADDRESS_DELETE_FAILED'), 500);
+					}
+				}
+			}
+		}
+
+		// Then, flush countries if any
+		$countryRepository        = new CountryRepository();
+		$contactCountryrepository = new ContactCountryRepository();
+		$contact_countries        = $contactCountryrepository->getCountriesIdsByContactId($entity->getId());
+
+		if (!empty($entity->getCountries()))
+		{
+			foreach ($entity->getCountries() as $country)
+			{
+				if (!($country instanceof Country))
+				{
+					continue;
+				}
+
+				$country_in_db = $countryRepository->getByIso2($country->getIso2());
+				if ($country_in_db && !in_array($country_in_db->getId(), $contact_countries))
+				{
+					if (!$contactCountryrepository->associateContactToCountry($entity->getId(), $country_in_db->getId()))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_ASSOCIATE_TO_COUNTRY_FAILED'), 500);
+					}
+				}
+			}
+		}
+
+		// Detach countries that are no longer associated
+		foreach ($contact_countries as $existingCountryId)
+		{
+			$found = false;
+			foreach ($entity->getCountries() as $country)
+			{
+				if ($country->getId() === $existingCountryId)
+				{
+					$found = true;
+					break;
 				}
 			}
 
-			if (!$this->db->updateObject('#__emundus_contacts_address', $address_object, 'id'))
+			if (!$found)
 			{
-				throw new \Exception('Failed to update contact address.', 500);
+				if(!$contactCountryrepository->detachContactFromCountry($entity->getId(), $existingCountryId))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_COUNTRY_DETACH_TO_CONTACT_FAILED'), 500);
+				}
 			}
 		}
 
-		return $contact_id;
+		// Finally, flush organizations if any
+		$contactOrganizationRepository     = new ContactOrganizationRepository();
+		$alreadyAssociatedOrganizationsIds = $contactOrganizationRepository->getOrganizationsIdsByContactId($entity->getId());
+
+		if (!empty($entity->getOrganizations()))
+		{
+			foreach ($entity->getOrganizations() as $organization)
+			{
+				if (!in_array($organization->getId(), $alreadyAssociatedOrganizationsIds))
+				{
+					if(!$contactOrganizationRepository->associateContactToOrganization($entity->getId(), $organization->getId(), 0))
+					{
+						throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_CONTACT_ASSOCIATE_TO_ORGANIZATION_FAILED'), 500);
+					}
+				}
+			}
+		}
+
+		// Detach organizations that are no longer associated
+		foreach ($alreadyAssociatedOrganizationsIds as $existingOrganizationId)
+		{
+			$found = false;
+			foreach ($entity->getOrganizations() as $organization)
+			{
+				if ($organization->getId() === $existingOrganizationId)
+				{
+					$found = true;
+					break;
+				}
+			}
+
+			if (!$found)
+			{
+				if(!$contactOrganizationRepository->detachContactFromOrganization($entity->getId(), $existingOrganizationId))
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ONBOARD_CRC_ORGANIZATION_DETACH_TO_CONTACT_FAILED'), 500);
+				}
+			}
+		}
+
+		// If false, an exception is throw before
+		return true;
 	}
 
-	public function getByEmail(string $email): ?ContactEntity
+	public function delete(int $id): bool
 	{
-		$contact_entity = null;
+		$deleted = false;
 
-		$query = $this->db->getQuery(true);
-		$query->select('*')
-			->from($this->getTableName(self::class))
-			->where('email = ' . $this->db->quote($email));
-		$this->db->setQuery($query);
-		$contact = $this->db->loadAssoc();
-
-		if(!empty($contact))
+		if (!empty($id))
 		{
-			$contact_entity = new ContactEntity($contact['email'], $contact['lastname'], $contact['firstname'], $contact['phone_1'], $contact['id'], $contact['user_id']);
+			$query = $this->db->createQuery();
 
-			$address = $this->getContactAddress($contact['id']);
-			if($address)
+			$addressRepository        = new AddressRepository();
+			$contactAddressRepository = new ContactAddressRepository();
+
+			// First, delete addresses associated
+			$addresses = $contactAddressRepository->getAllAddressesIdsByContactId($id);
+			foreach ($addresses as $address)
 			{
-				$contact_entity->setAddress($address);
+				$addressRepository->delete($address);
+			}
+
+			// If foreign keys with cascade delete are not set, we need to detach all addresses associated
+			$contactAddressRepository->detachAllAddressesFromContact($id);
+			//
+
+			// Then, detach all organizations associated if foreign keys with cascade delete are not set
+			$contactOrgRepository = new ContactOrganizationRepository();
+			$contactOrgRepository->detachAllOrganizationsFromContact($id);
+			//
+
+			// Then, detach all countries associated if foreign keys with cascade delete are not set
+			$contactCountryRepository = new ContactCountryRepository();
+			$contactCountryRepository->detachAllCountriesFromContact($id);
+			//
+
+			$query->clear()
+				->delete($this->getTableName(self::class))
+				->where('id = ' . $id);
+
+			try
+			{
+				$this->db->setQuery($query);
+				$deleted = (bool) $this->db->execute();
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error on delete contact : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contact');
 			}
 		}
 
-		return $contact_entity;
+		return $deleted;
+	}
+
+	public function togglePublished(int $contact_id, bool $published): bool
+	{
+		$toggled = false;
+
+		if (!empty($contact_id))
+		{
+			$query = $this->db->createQuery();
+
+			$query->update($this->getTableName(self::class))
+				->set('published = ' . (int) $published)
+				->where('id = ' . $contact_id);
+
+			try
+			{
+				$this->db->setQuery($query);
+				$toggled = (bool) $this->db->execute();
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error on toggle published contact : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contact');
+			}
+		}
+
+		return $toggled;
+	}
+
+	public function getAllContacts(
+		$sort = 'DESC',
+		$search = '',
+		$lim = 25,
+		$page = 0,
+		$order_by = 't.id',
+		$published = null,
+		$ids = [],
+		$phone_number = '',
+		$organizations = [],
+		$nationalities = []
+	): array
+	{
+		$result = [
+			'datas' => [],
+			'count' => 0,
+		];
+
+		if (empty($lim) || $lim == 'all')
+		{
+			$limit = '';
+		}
+		else
+		{
+			$limit = $lim;
+		}
+
+		if (empty($page) || empty($limit))
+		{
+			$offset = 0;
+		}
+		else
+		{
+			$offset = ($page - 1) * $limit;
+		}
+
+		if (empty($sort))
+		{
+			$sort = 'DESC';
+		}
+
+		$query = $this->db->createQuery();
+
+		$query->select(self::COLUMNS)
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->leftJoin($this->db->quoteName('#__emundus_contacts_organizations', 'eco') . ' ON ' . $this->db->quoteName('eco.contact_id') . ' = ' . $this->db->quoteName('t.id'))
+			->leftJoin($this->db->quoteName('#__emundus_contacts_countries', 'ecc') . ' ON ' . $this->db->quoteName('ecc.contact_id') . ' = ' . $this->db->quoteName('t.id'));
+		// Apply filters if needed
+		if (!empty($search))
+		{
+			$search     = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
+			$conditions = [
+				$this->db->quoteName('t.firstname') . ' LIKE ' . $search,
+				$this->db->quoteName('t.lastname') . ' LIKE ' . $search,
+				$this->db->quoteName('t.email') . ' LIKE ' . $search,
+				$this->db->quoteName('t.phone_1') . ' LIKE ' . $search,
+				$this->db->quoteName('t.fonction') . ' LIKE ' . $search,
+				$this->db->quoteName('t.service') . ' LIKE ' . $search,
+			];
+			$query->where('(' . implode(' OR ', $conditions) . ')');
+		}
+
+		if (!empty($published) && $published !== 'all')
+		{
+			$published = $published == 'true' ? 1 : 0;
+			$query->where($this->db->quoteName('t.published') . ' = ' . $published);
+		}
+
+		if (!empty($ids) && is_array($ids))
+		{
+			$query->where($this->db->quoteName('t.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
+		}
+
+		if (!empty($organizations) && is_array($organizations))
+		{
+			$has_no_organization = in_array('no_organization', $organizations, true);
+			$org_ids             = array_filter($organizations, fn($id) => $id !== 'no_organization');
+
+			$org_conditions = [];
+
+			if (!empty($org_ids))
+			{
+				$org_conditions[] = $this->db->quoteName('eco.organization_id') . ' IN (' . implode(',', array_map('intval', $org_ids)) . ')';
+			}
+
+			if ($has_no_organization)
+			{
+				$org_conditions[] = $this->db->quoteName('eco.organization_id') . ' IS NULL';
+			}
+
+			if (!empty($org_conditions))
+			{
+				$query->where('(' . implode(' OR ', $org_conditions) . ')');
+			}
+		}
+
+		if (!empty($nationalities) && is_array($nationalities))
+		{
+			$has_no_nationality = in_array('no_nationality', $nationalities, true);
+			$nat_ids            = array_filter($nationalities, fn($id) => $id !== 'no_nationality');
+
+			$nat_conditions = [];
+
+			if (!empty($nat_ids))
+			{
+				$nat_conditions[] = $this->db->quoteName('ecc.country_id') . ' IN (' . implode(',', array_map('intval', $nat_ids)) . ')';
+			}
+
+			if ($has_no_nationality)
+			{
+				$nat_conditions[] = $this->db->quoteName('ecc.country_id') . ' IS NULL';
+			}
+
+			if (!empty($nat_conditions))
+			{
+				$query->where('(' . implode(' OR ', $nat_conditions) . ')');
+			}
+		}
+
+
+		if (!empty($phone_number))
+		{
+			if ($phone_number === 'no_phone_number')
+			{
+				$query->having('(t.phone_1 IS NULL OR t.phone_1 = "")');
+			}
+			else
+			{
+				$phone_number = preg_replace('/\s+/', '', $phone_number);
+				$phone_number = $this->db->quote('%' . $phone_number . '%');
+				$query->where('REPLACE(t.phone_1, " ", "") LIKE ' . $phone_number);
+			}
+		}
+
+		// Apply orders and limits if needed
+		$query->group('t.id')
+			->order($order_by . ' ' . $sort);
+
+		try
+		{
+			$this->db->setQuery($query);
+			$contacts_count = sizeof($this->db->loadObjectList());
+
+			$this->db->setQuery($query, $offset, $limit);
+			$contacts = $this->db->loadObjectList();
+
+			foreach ($contacts as $key => $contact)
+			{
+				$contacts[$key] = $this->factory->fromDbObject($contact, $this->withRelations, $this->exceptRelations);
+			}
+
+			$result = array('datas' => $contacts, 'count' => $contacts_count);
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error on get all contacts : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contacts');
+		}
+
+		return $result;
 	}
 
 	public function getById(int $id): ?ContactEntity
@@ -127,21 +536,36 @@ readonly class ContactRepository
 		$contact_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select('*')
-			->from($this->getTableName(self::class))
-			->where('id = ' . $this->db->quote($id));
+		$query->select(self::COLUMNS)
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->leftJoin($this->db->quoteName($this->getTableName(ContactAddressRepository::class), 'j1') . ' ON ' . $this->db->quoteName('j1.contact_id') . ' = ' . $this->db->quoteName('t.id'))
+			->where('t.id = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
 		$contact = $this->db->loadAssoc();
 
 		if (!empty($contact))
 		{
-			$contact_entity = new ContactEntity($contact['email'], $contact['lastname'], $contact['firstname'], $contact['phone_1'], $contact['id'], $contact['user_id']);
+			$contact_entity = $this->factory->fromDbObject($contact, $this->withRelations, $this->exceptRelations);
+		}
 
-			$address = $this->getContactAddress($contact['id']);
-			if ($address)
-			{
-				$contact_entity->setAddress($address);
-			}
+		return $contact_entity;
+	}
+
+	public function getByEmail(string $email): ?ContactEntity
+	{
+		$contact_entity = null;
+
+		$query = $this->db->getQuery(true);
+
+		$query->select('id')
+			->from($this->db->quoteName($this->getTableName(self::class)))
+			->where('email = ' . $this->db->quote($email));
+		$this->db->setQuery($query);
+		$contact_id = $this->db->loadResult();
+
+		if (!empty($contact_id))
+		{
+			$contact_entity = $this->getById($contact_id);
 		}
 
 		return $contact_entity;
@@ -152,50 +576,120 @@ readonly class ContactRepository
 		$contact_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select('*')
+
+		$query->select('id')
 			->from($this->getTableName(self::class))
 			->where('user_id = ' . $this->db->quote($user_id));
 		$this->db->setQuery($query);
-		$contact = $this->db->loadAssoc();
+		$contact_id = $this->db->loadResult();
 
 
-		if (!empty($contact))
+		if (!empty($contact_id))
 		{
-			$contact_entity = new ContactEntity($contact['email'], $contact['lastname'], $contact['firstname'], $contact['phone_1'], $contact['id'], $contact['user_id']);
-
-			$address = $this->getContactAddress($contact['id']);
-			if ($address)
-			{
-				$contact_entity->setAddress($address);
-			}
+			$contact_entity = $this->getById($contact_id);
 		}
 
 		return $contact_entity;
 	}
 
-	public function getContactAddress(int $contact_id): ?ContactAddressEntity
+	public function getFilteredContacts(): array
 	{
-		$contact_address_entity = null;
+		$contacts = [];
+		$query    = $this->db->getQuery(true);
 
-		if (!empty($contact_id)) {
-			$query = $this->db->getQuery(true);
+		try
+		{
+			$query->clear()
+				->select([$this->db->quoteName('ec.id', 'value'), 'CONCAT(ec.lastname," ",ec.firstname) as label'])
+				->from($this->db->quoteName('#__emundus_contacts', 'ec'));
+			$this->db->setQuery($query);
+			$contacts = $this->db->loadObjectList();
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error while getting contacts: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contact');
+		}
 
-			$query->select('*')
-				->from('#__emundus_contacts_address')
-				->where('contact_id = ' . $this->db->quote($contact_id));
+		return $contacts;
+	}
+
+	public function getFilteredContactsByPhoneNumber(): array
+	{
+		$phone_numbers = [];
+		$query         = $this->db->getQuery(true);
+
+		try
+		{
+			$query->clear()
+				->select([
+					$this->db->quoteName('ec.phone_1', 'value'),
+					'ec.phone_1 AS label'
+				])
+				->from($this->db->quoteName('#__emundus_contacts', 'ec'))
+				->where($this->db->quoteName('ec.phone_1') . ' IS NOT NULL')
+				->where($this->db->quoteName('ec.phone_1') . " != ''")
+				->group($this->db->quoteName('ec.phone_1'));
 
 			$this->db->setQuery($query);
-			$address = $this->db->loadAssoc();
-			if (!empty($address))
+			$phone_numbers = $this->db->loadObjectList();
+
+			$phone_numbers[] = (object) [
+				'value' => 'no_phone_number',
+				'label' => Text::_('COM_EMUNDUS_ONBOARD_CONTACT_FILTER_NO_PHONE_NUMBER')
+			];
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error while getting contacts phone numbers: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contact');
+		}
+
+		return $phone_numbers;
+	}
+
+	public function deleteProfilePicture(int $id): bool
+	{
+		$deleted = false;
+
+		if (!empty($id))
+		{
+			$query = $this->db->createQuery();
+
+			$query->select('profile_picture')
+				->from($this->getTableName(self::class))
+				->where('id = ' . $id);
+
+			try
 			{
-				if (!class_exists('ContactAddressEntity'))
+				$this->db->setQuery($query);
+				$profile_picture_path = $this->db->loadResult();
+
+				if (!empty($profile_picture_path))
 				{
-					require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Contacts/ContactAddressEntity.php';
+					$uploader = new UploadService('images/emundus/contacts/');
+					$deleted  = $uploader->deleteFile($profile_picture_path);
 				}
-				$contact_address_entity = new ContactAddressEntity($contact_id, $address['address1'], $address['address2'], $address['city'], $address['state'], $address['zip'], $address['country'], $address['id']);
+				else
+				{
+					$deleted = true;
+				}
+
+				if ($deleted)
+				{
+					$update = $this->db->createQuery();
+					$update->update($this->getTableName(self::class))
+						->set('profile_picture = NULL')
+						->where('id = ' .  $id);
+
+					$this->db->setQuery($update)->execute();
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error on delete contact profile picture : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.contact');
 			}
 		}
 
-		return $contact_address_entity;
+		return $deleted;
 	}
+
 }

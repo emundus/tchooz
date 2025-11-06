@@ -643,4 +643,15 @@ export default {
 			};
 		}
 	},
+
+	async getCountries() {
+		try {
+			return await fetchClient.get('getcountries');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };

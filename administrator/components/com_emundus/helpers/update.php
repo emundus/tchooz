@@ -3557,9 +3557,17 @@ class EmundusHelperUpdate
 						{
 							$query .= ' ON UPDATE CASCADE';
 						}
+						if (!empty($fk['update_set_null']))
+						{
+							$query .= ' ON UPDATE SET NULL';
+						}
 						if (!empty($fk['delete_cascade']))
 						{
 							$query .= ' ON DELETE CASCADE';
+						}
+						if(!empty($fk['delete_set_null']))
+						{
+							$query .= ' ON DELETE SET NULL';
 						}
 					}
 				}

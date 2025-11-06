@@ -175,7 +175,7 @@ class EmundusModelSign extends ListModel
 			{
 				if(!empty($signers))
 				{
-					$contactRepository = new ContactRepository($this->db);
+					$contactRepository = new ContactRepository();
 					foreach ($signers as $signer)
 					{
 						if(is_array($signer))
@@ -218,12 +218,12 @@ class EmundusModelSign extends ListModel
 		{
 			if(!empty($email))
 			{
-				$contactRepository = new ContactRepository($this->db);
+				$contactRepository = new ContactRepository();
 				$contact           = $contactRepository->getByEmail($email);
 				if (empty($contact))
 				{
 					$contact = new ContactEntity($email, $lastname, $firstname, '');
-					$contact->setId($contactRepository->flush($contact));
+					$contactRepository->flush($contact);
 				}
 
 				$requestRepository = new RequestRepository($this->db);

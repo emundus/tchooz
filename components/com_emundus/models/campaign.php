@@ -4055,7 +4055,7 @@ class EmundusModelCampaign extends ListModel
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/Repository/ApplicationFile/ApplicationFileRepository.php');
 					}
-					$applicationFileRepository = new ApplicationFileRepository($this->_db, $user_id);
+					$applicationFileRepository = new ApplicationFileRepository();
 					if (!class_exists('EmundusHelperDate'))
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/EmundusHelperDate.php');
@@ -4206,7 +4206,7 @@ class EmundusModelCampaign extends ListModel
 								$datas = $importFactory->formatDatas($datas);
 								$importApplicationEntity->setData($datas);
 
-								if ($applicationFileRepository->flush($importApplicationEntity))
+								if ($applicationFileRepository->flush($importApplicationEntity, $user_id))
 								{
 									$files_imported[] = $fnum;
 									$status           = true;

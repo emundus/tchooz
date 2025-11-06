@@ -23,6 +23,9 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
+use Tchooz\Enums\Crud;
+use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * Emundus Component Users Controller
@@ -33,6 +36,7 @@ use Joomla\Component\Users\Administrator\Model\MethodsModel;
  */
 class EmundusControllerUsers extends BaseController
 {
+	use TraitResponse;
 	/**
 	 * Emundus user session
 	 *
@@ -1849,16 +1853,37 @@ class EmundusControllerUsers extends BaseController
 
 	public function getacl()
 	{
+		$right = false;
+
 		$action = $this->input->get('action');
 		$crud   = $this->input->getString('crud', 'r');
 		$fnum   = $this->input->getString('fnum', '');
 
-		if (is_string($action))
+		// Check if CRUD is correct
+		if (!Crud::tryFrom($crud))
 		{
-			$action = EmundusHelperAccess::getActionIdFromActionName($action);
+			echo json_encode(array('status' => false, 'msg' => 'Invalid CRUD parameter', 'right' => false));
+			exit;
 		}
 
-		$right = EmundusHelperAccess::asAccessAction($action, $crud, $this->user->id, $fnum);
+		$action_id = 0;
+		if (is_string($action))
+		{
+			$actionRepository = new ActionRepository();
+			$action = $actionRepository->getByName($action);
+			if(!empty($action->getId()))
+			{
+				$action_id = $action->getId();
+			}
+		}
+		else {
+			$action_id = (int) $action;
+		}
+
+		if(!empty($action_id))
+		{
+			$right = EmundusHelperAccess::asAccessAction($action_id, $crud, $this->user->id, $fnum);
+		}
 
 		echo json_encode(array('status' => true, 'right' => $right));
 		exit;
@@ -1988,5 +2013,53 @@ class EmundusControllerUsers extends BaseController
 
 		echo json_encode((object)$response);
 		exit;
+	}
+
+	public function getuseremail(): void
+	{
+		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$id = $this->input->getInt('id', 0);
+
+		if (empty($id))
+		{
+			$response['code']    = 400;
+			$response['message'] = 'Missing required fields.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		try
+		{
+			$m_users = new EmundusModelUsers();
+			if ($contact = $m_users->getUserEmailById($id))
+			{
+				$response['code']    = 200;
+				$response['status']  = true;
+				$response['message'] = 'User email retrieved successfully.';
+				$response['data']    = $contact->__serialize();
+			}
+			else
+			{
+				throw new \Exception('Failed to retrieve user email.', 500);
+			}
+		}
+		catch (\Exception $e)
+		{
+			$response['code']    = $e->getCode();
+			$response['message'] = $e->getMessage();
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

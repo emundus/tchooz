@@ -84,6 +84,14 @@ Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
 Text::script('COM_EMUNDUS_MAIL_SENDED');
 
+Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD');
+Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION');
+Text::script('COM_EMUNDUS_ONBOARD_REMOVE_FILE');
+Text::script('COM_EMUNDUS_ONBOARD_INVALID_FILE_TYPE');
+Text::script('COM_EMUNDUS_ONBOARD_FILE_TOO_BIG');
+Text::script('COM_EMUNDUS_ONBOARD_MAX_FILES_EXCEEDED');
+Text::script('COM_EMUNDUS_ONBOARD_DROP_FILE_HERE');
+
 Text::script('COM_EMUNDUS_EX');
 Text::script('COM_EMUNDUS_ADD');
 Text::script('COM_EMUNDUS_THESIS_DELETE');
@@ -1166,6 +1174,9 @@ Text::script('COM_EMUNDUS_SHARE_FILTERS');
 Text::script('COM_EMUNDUS_ACL_SHARE_FILTERS_DESC');
 Text::script('MOD_EMUNDUS_FILTERS_NEW_FILTER_NAME_PROMPT');
 Text::script('COM_EMUNDUS_INPUT_REQUIRED');
+
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC_DESC');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');

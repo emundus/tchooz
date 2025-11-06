@@ -58,6 +58,8 @@ workspace.xml
 !/images/custom/default_favicon.ico
 images/emundus/import/*
 images/emundus/photo/*
+images/emundus/contacts/*
+images/emundus/organizations/*
 images/stories/*
 /images/emundus/carriere/*
 /images/emundus/files/*

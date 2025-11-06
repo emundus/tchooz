@@ -4,118 +4,33 @@ namespace Tchooz\Entities\Contacts;
 
 class ContactAddressEntity
 {
-	private int $id = 0;
-	private int $contact_id = 0;
-	private string $address1 = '';
-	private string $address2 = '';
-	private string $city = '';
-	private string $state = '';
-	private string $zip = '';
-	private int $country = 0;
+	private ContactEntity $contact;
 
-	public function __construct(int $contact_id, string $address1, string $address2, string $city, string $state, string $zip, int $country, ?int $id = 0)
+	private AddressEntity $address;
+
+	public function __construct(ContactEntity $contact, AddressEntity $address)
 	{
-		$this->contact_id = $contact_id;
-		$this->address1 = $address1;
-		$this->address2 = $address2;
-		$this->city = $city;
-		$this->state = $state;
-		$this->zip = $zip;
-		$this->country = $country;
-		$this->id = $id ?: 0;
+		$this->contact = $contact;
+		$this->address = $address;
 	}
 
-	public function getId(): int
+	public function getContact(): ContactEntity
 	{
-		return $this->id;
+		return $this->contact;
 	}
 
-	public function setId(int $id): void
+	public function setContact(ContactEntity $contact): void
 	{
-		$this->id = $id;
+		$this->contact = $contact;
 	}
 
-	public function getContactId(): int
+	public function getAddress(): AddressEntity
 	{
-		return $this->contact_id;
+		return $this->address;
 	}
 
-	public function setContactId(int $contact_id): void
+	public function setAddress(AddressEntity $address): void
 	{
-		$this->contact_id = $contact_id;
-	}
-
-	public function getAddress1(): string
-	{
-		return $this->address1;
-	}
-
-	public function setAddress1(string $address1): void
-	{
-		$this->address1 = $address1;
-	}
-
-	public function getAddress2(): string
-	{
-		return $this->address2;
-	}
-
-	public function setAddress2(string $address2): void
-	{
-		$this->address2 = $address2;
-	}
-
-	public function getCity(): string
-	{
-		return $this->city;
-	}
-
-	public function setCity(string $city): void
-	{
-		$this->city = $city;
-	}
-
-	public function getState(): string
-	{
-		return $this->state;
-	}
-
-	public function setState(string $state): void
-	{
-		$this->state = $state;
-	}
-
-	public function getZip(): string
-	{
-		return $this->zip;
-	}
-
-	public function setZip(string $zip): void
-	{
-		$this->zip = $zip;
-	}
-
-	public function getCountry(): int
-	{
-		return $this->country;
-	}
-
-	public function setCountry(int $country): void
-	{
-		$this->country = $country;
-	}
-
-	public function __serialize(): array
-	{
-		return [
-			'id' => $this->getId(),
-			'contact_id' => $this->getContactId(),
-			'address1' => $this->getAddress1(),
-			'address2' => $this->getAddress2(),
-			'city' => $this->getCity(),
-			'state' => $this->getState(),
-			'zip' => $this->getZip(),
-			'country' => $this->getCountry(),
-		];
+		$this->address = $address;
 	}
 }
