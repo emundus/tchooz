@@ -98,7 +98,7 @@ class EmundusModelSign extends ListModel
 		return $requests;
 	}
 
-	public function saveRequest(int $id, string $status, int $ccid, int  $userId, string $fnum, int $attachment, string $connector, array $signers, int $upload = 0, int $current_user_id = 0): int
+	public function saveRequest(int $id, string $status, int $ccid, int  $userId, string $fnum, int $attachment, string $connector, array $signers, int $upload = 0, int $current_user_id = 0, bool $ordered = false): int
 	{
 		$query = $this->db->getQuery(true);
 		if(empty($current_user_id))
@@ -169,6 +169,7 @@ class EmundusModelSign extends ListModel
 			}
 
 			$requestEntity->setUploadId($upload);
+			$requestEntity->setOrdered($ordered);
 
 			if($request_id = $requestRepository->flush($requestEntity))
 			{

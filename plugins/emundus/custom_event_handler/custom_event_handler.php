@@ -1645,7 +1645,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 							if (!empty($signers))
 							{
-								if ($request_id = $m_sign->saveRequest(0, 'to_sign', $ccid, 0, $fnum, $action->attachment_type, $action->signer_connector, $signers))
+								if ($request_id = $m_sign->saveRequest(0, 'to_sign', $ccid, 0, $fnum, $action->attachment_type, $action->signer_connector, $signers, 0, 0, $action->signer_ordered == 1))
 								{
 									$requestRepository = new RequestRepository($db);
 									$requestEntity     = $requestRepository->loadRequestById($request_id);

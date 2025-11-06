@@ -208,6 +208,17 @@
 
     <field
             showon="action_type:sign_flow"
+            name="signer_ordered"
+            type="list"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_ORDERED_LABEL"
+            default="0"
+    >
+        <option value="0">JNO</option>
+        <option value="1">JYES</option>
+    </field>
+
+    <field
+            showon="action_type:sign_flow"
             name="attachment_type"
             type="sql"
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ATTACHMENT_ID_LABEL"
@@ -224,7 +235,6 @@
             label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_ACTION_SIGNERS_LABEL"
             multiple="true"
             formsource="plugins/emundus/custom_event_handler/forms/signers.xml"
-            layout="joomla.form.field.list-fancy-select"
     >
     </field>
 

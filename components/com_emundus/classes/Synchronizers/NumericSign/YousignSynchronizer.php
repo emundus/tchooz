@@ -52,12 +52,12 @@ class YousignSynchronizer extends Api
 		}
 	}
 
-	public function initRequest(string $name, string $delivery_mode = 'email', string $expiration_date = ''): array
+	public function initRequest(string $name, string $delivery_mode = 'email', string $expiration_date = '', bool $is_ordered = false): array
 	{
 		$payload = [
 			'name'          => trim($name),
 			'delivery_mode' => $delivery_mode,
-			'ordered_signers' => false
+			'ordered_signers' => $is_ordered
 		];
 		
 		if(!empty($expiration_date))

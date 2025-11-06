@@ -120,6 +120,8 @@ class RequestRepository
 				{
 					$request->setLastReminderAt($request_db['last_reminder_at']);
 				}
+				$ordered = $request_db['ordered'] == 1;
+				$request->setOrdered($ordered);
 
 				return $request;
 			}
