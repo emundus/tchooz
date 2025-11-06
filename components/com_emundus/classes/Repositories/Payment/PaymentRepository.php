@@ -5,6 +5,7 @@ namespace Tchooz\Repositories\Payment;
 use EmundusHelperCache;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\ProductEntity;
@@ -44,6 +45,11 @@ class PaymentRepository
 		if (!empty($this->action_id) && $this->addon->enabled == 1) {
 			$this->activated = true;
 		}
+	}
+
+	public function isActivated(): bool
+	{
+		return $this->activated;
 	}
 
 	public function loadAddon(): void
@@ -235,7 +241,26 @@ class PaymentRepository
 		if (!empty($payment_step) && !empty($fnum)) {
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onAfterLoadEmundusPaymentStep = new GenericEvent('onCallEventHandler', ['onAfterLoadEmundusPaymentStep', ['payment_step' => $payment_step, 'rules' => $rules, 'fnum' => $fnum]]);
+			$onAfterLoadEmundusPaymentStep = new GenericEvent(
+				'onCallEventHandler',
+				[
+					'onAfterLoadEmundusPaymentStep',
+					[
+						'payment_step' => $payment_step,
+						'rules' => $rules,
+						'fnum' => $fnum,
+						'context' => new EventContextEntity(
+							null,
+							[$fnum],
+							[],
+							[
+								'payment_step' => $step_id,
+								'rules' => $rules,
+								'payment_step_entity' => $payment_step,
+							]
+						)
+					]
+				]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterLoadEmundusPaymentStep);
 		}
 

@@ -13,6 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onBeforeEmundusCartRenderDefinition;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -90,13 +93,31 @@ class EmundusViewPayment extends JViewLegacy
 				$step = $m_workflow->getPaymentStepFromFnum($fnum);
 
 				if (!empty($step->id)) {
-					PluginHelper::importPlugin('emundus');
-					$dispatcher         = Factory::getApplication()->getDispatcher();
-					$onBeforeRenderCart = new GenericEvent('onCallEventHandler', ['onBeforeEmundusCartRender', ['fnum' => $fnum]]);
-					$dispatcher->dispatch('onCallEventHandler', $onBeforeRenderCart);
-
 					$this->cart_repository = new CartRepository();
 					$this->cart = $this->cart_repository->getCartByFnum($fnum, $step->id);
+
+					PluginHelper::importPlugin('emundus');
+					$dispatcher         = Factory::getApplication()->getDispatcher();
+					$onBeforeRenderCart = new GenericEvent(
+						'onCallEventHandler',
+						[
+							'onBeforeEmundusCartRender',
+							[
+								'fnum' => $fnum,
+								'context' => new EventContextEntity(
+									$this->user,
+									[$fnum],
+									[$this->user->id],
+									[
+										onBeforeEmundusCartRenderDefinition::PAYMENT_STEP_KEY => $step->id,
+										'cart' => $this->cart
+									]
+								),
+								'execution_context' => null
+							],
+						],
+					);
+					$dispatcher->dispatch('onCallEventHandler', $onBeforeRenderCart);
 
 					if (!class_exists('EmundusModelProfile')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');

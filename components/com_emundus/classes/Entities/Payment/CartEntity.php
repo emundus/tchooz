@@ -218,7 +218,8 @@ class CartEntity {
 		}
 	}
 
-	public function calculateTotalAdvance() {
+	public function calculateTotalAdvance(): self
+	{
 		$total = 0.00;
 
 		if ($this->advance_amount_type == DiscountType::PERCENTAGE) {
@@ -227,7 +228,16 @@ class CartEntity {
 			$total = $this->advance_amount;
 		}
 
+		// if there is an alteration of type alter_advance_amount, apply it, it is supposed to override the advance amount
+		foreach($this->alterations as $alteration) {
+			if ($alteration->getType() === AlterationType::ALTER_ADVANCE_AMOUNT) {
+				$total = $alteration->getAmount();
+			}
+		}
+
 		$this->setTotalAdvance($total);
+
+		return $this;
 	}
 
 	public function setCustomer(ContactEntity $customer): void

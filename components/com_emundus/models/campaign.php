@@ -14,6 +14,7 @@
 // phpcs:enable PSR1.Files.SideEffects
 
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Settings\AddonEntity;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
@@ -1342,10 +1343,15 @@ class EmundusModelCampaign extends ListModel
 		return $deleted;
 	}
 
-	public function unpublishCampaign(string|array $data): bool
+	public function unpublishCampaign(string|array $data, int $userId = 0): bool
 	{
 		PluginHelper::importPlugin('emundus');
 		$dispatcher = Factory::getApplication()->getDispatcher();
+
+		if (empty($userId))
+		{
+			$userId = $this->_user->id;
+		}
 
 		$unpublished = false;
 
@@ -1414,10 +1420,10 @@ class EmundusModelCampaign extends ListModel
 						'onCallEventHandler',
 						['onAfterCampaignUnpublish',
 							// Datas to pass to the event
-							['campaign' => $data]
+							['campaign' => $data, 'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId), [],[],[])]
 						]
 					);
-					$onAfterCampaignUnpublish             = new GenericEvent(
+					$onAfterCampaignUnpublish = new GenericEvent(
 						'onAfterCampaignUnpublish',
 						// Datas to pass to the event
 						['campaign' => $data]
@@ -1435,9 +1441,14 @@ class EmundusModelCampaign extends ListModel
 		return $unpublished;
 	}
 
-	public function publishCampaign($data): array
+	public function publishCampaign($data, int $userId = 0): array
 	{
 		$response = ['success' => false, 'message' => ''];
+
+		if (empty($userId))
+		{
+			$userId = $this->_user->id;
+		}
 
 		PluginHelper::importPlugin('emundus');
 		$dispatcher = Factory::getApplication()->getDispatcher();
@@ -1558,7 +1569,10 @@ class EmundusModelCampaign extends ListModel
 						'onCallEventHandler',
 						['onAfterCampaignPublish',
 							// Datas to pass to the event
-							['campaign' => $data]
+							[
+								'campaign' => $data,
+								'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId), [],[],[])
+							]
 						]
 					);
 					$onAfterCampaignPublish             = new GenericEvent(
@@ -1985,8 +1999,11 @@ class EmundusModelCampaign extends ListModel
 
 							PluginHelper::importPlugin('emundus');
 
-							JFactory::getApplication()->triggerEvent('onAfterCampaignCreate', ['campaign_id' => $campaign_id]);
-							JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignCreate', ['campaign' => $campaign_id]]);
+							Factory::getApplication()->triggerEvent('onAfterCampaignCreate', ['campaign_id' => $campaign_id]);
+							Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterCampaignCreate', [
+								'campaign' => $campaign_id,
+								'context' => new EventContextEntity($this->_user, [], [], [])
+							]]);
 						}
 					}
 				}
@@ -4389,6 +4406,8 @@ class EmundusModelCampaign extends ListModel
 	public function getAllCampaignElements(): array
 	{
 		$elements = [];
+
+		// todo: cache
 
 		$display_teaching_unity_columns = ComponentHelper::getParams('com_emundus')->get('display_teaching_unity_columns', 0);
 

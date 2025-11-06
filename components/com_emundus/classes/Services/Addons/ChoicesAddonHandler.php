@@ -7,13 +7,14 @@
  * @license     A "Slug" license name e.g. GPL2
  */
 
-namespace Tchooz\Factories\Addons;
+namespace Tchooz\Services\Addons;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Factories\Addons\AddonFactoryInterface;
 use Tchooz\Repositories\Addons\AddonRepository;
 
-class ChoicesAddonFactory implements AddonFactoryInterface
+class ChoicesAddonHandler implements AddonFactoryInterface
 {
 	private AddonEntity $addon;
 

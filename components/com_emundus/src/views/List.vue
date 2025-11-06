@@ -6,7 +6,8 @@
 			v-else
 			:title="currentList.title"
 			:introduction="currentList.intro"
-			:add-action="addAction"
+			:primary-action="addAction"
+			:secondary-action="secondaryAction"
 			@action="onClickAction"
 		/>
 
@@ -209,6 +210,7 @@
 										<span
 											v-for="tag in column.values"
 											:key="tag.key"
+											:title="tag.title ? tag.title : ''"
 											class="tw-mr-2 tw-h-max"
 											:class="tag.classes"
 											v-html="tag.value"
@@ -340,6 +342,7 @@
 															'tw-hidden': !(
 																typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon)
 															),
+															'tw-text-red-500': action.name === 'delete',
 														}"
 														@click="onClickAction(action, item.id, false, $event)"
 														class="tw-cursor-pointer tw-px-2 tw-py-1.5 tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
@@ -708,14 +711,17 @@ export default {
 								});
 							}
 
-							url += '&view=' + this.viewType;
-
 							if (this.defaultFilter && this.defaultFilter.length > 0) {
 								url += '&' + this.defaultFilter;
 							}
 
 							try {
-								fetch(url)
+								fetch(url, {
+									method: 'GET',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+								})
 									.then((response) => response.json())
 									.then((response) => {
 										if (response.status === true) {
@@ -1111,7 +1117,8 @@ export default {
 
 				if (method === 'get') {
 					response = await fetchClient.get(task, data).catch((error) => {
-						console.error(error.message);
+						console.log(error);
+
 						this.alertError('COM_EMUNDUS_ERROR', error.message);
 						removeLoader();
 					});
@@ -1175,11 +1182,13 @@ export default {
 			this.loading.items = false;
 		},
 
-		onClickPreview(item) {
+		async onClickPreview(item) {
 			if (this.previewAction && this.previewAction.method) {
+				const html = await this.previewAction.method(item);
+
 				Swal.fire({
 					title: this.translate(this.previewAction.title),
-					html: this.previewAction.method(item),
+					html: html,
 					reverseButtons: true,
 					customClass: {
 						title: 'em-swal-title',
@@ -1367,7 +1376,7 @@ export default {
 			return typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.filter((action) => {
 						return (
-							!['add', 'edit'].includes(action.name) &&
+							!['add', 'edit', 'secondary-head'].includes(action.name) &&
 							!Object.prototype.hasOwnProperty.call(action, 'icon') &&
 							action.display
 						);
@@ -1399,6 +1408,13 @@ export default {
 				: false;
 		},
 
+		secondaryAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return action.name === 'secondary-head' && action.display;
+					})
+				: false;
+		},
 		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {

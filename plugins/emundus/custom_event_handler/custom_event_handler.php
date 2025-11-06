@@ -18,7 +18,10 @@ use Joomla\Database\ParameterType;
 use Joomla\Utilities\ArrayHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Traits\TraitDispatcher;
@@ -132,6 +135,8 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					continue;
 				}
 			}
+
+			$this->runAutomations($event, $args);
 
 			if (method_exists($this->hEvents, $event))
 			{
@@ -1332,7 +1337,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 						if (!empty($action->send_to_users_with_groups))
 						{
 							$users_emails = [];
-							$user_ids     = EmundusHelperAccess::getUsersFromGroupsThatCanAccessToFile($action->send_to_users_with_groups, $fnum);
+							$user_ids     = EmundusHelperAccess::getUsersThatCanAccessToFile($fnum, $action->send_to_users_with_groups);
 
 							if (!empty($user_ids))
 							{
@@ -1711,7 +1716,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 
 									foreach ($action->assoc_action_groups as $group_id)
 									{
-										$landed = $m_application->deleteGroupAccess($fnum, $group_id, $current_user);
+										$landed = $m_application->deleteGroupAccess($fnum, (int)$group_id, (int)$current_user);
 									}
 								}
 								break;
@@ -1912,6 +1917,55 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 					}
 				}
 			}
+		}
+
+		return $ran;
+	}
+
+
+	/**
+	 * @param   string  $event
+	 * @param   array   $data
+	 *
+	 * @return bool
+	 */
+	public function runAutomations(string $event, array $data): bool
+	{
+		$ran = false;
+
+		if (empty($data['context']) || !assert($data['context'] instanceof EventContextEntity))
+		{
+			return false;
+		}
+
+		if (empty($data['execution_context']) || !assert($data['execution_context'] instanceof AutomationExecutionContext))
+		{
+			$data['execution_context'] = new AutomationExecutionContext();
+		}
+
+		$repository = new AutomationRepository();
+		$automations = $repository->getAutomationsByEventName($event);
+
+		if (!empty($automations))
+		{
+			$allRan = [];
+			foreach($automations as $automation)
+			{
+				try {
+					$allRan[] = $automation->process($data['context'], $data['execution_context']);
+				}
+				catch (\Exception $exception)
+				{
+					Log::add('Failed to run automation ' . $automation->getId() . ' on event ' . $event . ' : ' . $exception->getMessage(), Log::ERROR, 'com_emundus.custom_event_handler');
+				}
+			}
+
+			if (!empty($allRan) && !in_array(false, $allRan))
+			{
+				$ran = true;
+			}
+		} else {
+			$ran = true;
 		}
 
 		return $ran;

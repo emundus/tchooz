@@ -118,6 +118,9 @@
 				:deselectGroupLabel="translate(multiselectOptions.deselectGroupLabel)"
 				:preserve-search="true"
 				:internal-search="multiselectOptions.internalSearch ? multiselectOptions.internalSearch : true"
+				:group-values="multiselectOptions.groupValues ? multiselectOptions.groupValues : null"
+				:group-label="multiselectOptions.groupLabel ? multiselectOptions.groupLabel : null"
+				:group-select="multiselectOptions.groupSelect ? multiselectOptions.groupSelect : false"
 				:loading="isLoading"
 				:max="multiselectOptions.max ? multiselectOptions.max : null"
 				@tag="addOption"
@@ -234,8 +237,10 @@
 				<div class="em-toggle">
 					<input
 						type="checkbox"
-						true-value="1"
-						false-value="0"
+						:true-value="parameter.trueValue !== undefined && parameter.trueValue !== null ? parameter.trueValue : 1"
+						:false-value="
+							parameter.falseValue !== undefined && parameter.falseValue !== null ? parameter.falseValue : 0
+						"
 						class="em-toggle-check"
 						:id="paramId + '_input'"
 						v-model="value"
@@ -557,15 +562,30 @@ export default {
 		this.parameter = this.parameterObject;
 
 		if (this.parameter.type === 'multiselect') {
-			if (this.$props.multiselectOptions.asyncRoute) {
+			if (this.$props.multiselectOptions.asyncRoute && this.$props.multiselectOptions.options.length < 1) {
 				await this.asyncFind('');
 			} else {
 				this.multiOptions = this.$props.multiselectOptions.options;
 			}
 			if (!this.multiselectOptions.multiple) {
-				this.value = this.multiOptions.find(
-					(option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value,
-				);
+				let found = null;
+
+				// Cas des options groupées
+				if (Array.isArray(this.multiOptions) && this.multiOptions.length > 0 && this.multiOptions[0].options) {
+					for (const group of this.multiOptions) {
+						found = group.options.find(
+							(option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value,
+						);
+						if (found) break;
+					}
+				} else {
+					// Cas simple (liste plate)
+					found = this.multiOptions.find(
+						(option) => option[this.$props.multiselectOptions.trackBy] == this.parameter.value,
+					);
+				}
+
+				this.value = found;
 			} else {
 				// Check if values are not already object
 				if (this.parameter.value && this.parameter.value.length > 0 && typeof this.parameter.value[0] !== 'object') {
@@ -744,7 +764,14 @@ export default {
 								this.$props.multiselectOptions.asyncController,
 							)
 							.then((response) => {
-								this.multiOptions = response.data;
+								if (this.$props.multiselectOptions.asyncCallback) {
+									this.$props.multiselectOptions.asyncCallback(response, this.parameter).then((res) => {
+										this.multiOptions = res;
+									});
+								} else {
+									this.multiOptions = response.data;
+								}
+
 								this.isLoading = false;
 								this.$emit('ajaxOptionsLoaded', this.multiOptions, this.parameter.param);
 								resolve(true);
@@ -791,7 +818,7 @@ export default {
 		},
 		checkValue(parameter) {
 			if (parameter.type === 'number') {
-				if (this.value > parameter.max) {
+				if (parameter.max && this.value > parameter.max) {
 					this.value = parameter.max;
 				}
 			} else {

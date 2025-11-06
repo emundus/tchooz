@@ -23,6 +23,7 @@ require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
@@ -39,6 +40,8 @@ use Joomla\Ldap\LdapClient;
 use Joomla\Registry\Registry;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use \Joomla\CMS\User\User;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterAddUserToGroupDefinition;
 
 /**
  * Emundus Component Users Model
@@ -1227,7 +1230,21 @@ class EmundusModelUsers extends ListModel
 					$this->db->execute();
 
 					$this->app->triggerEvent('onAfterAddUserToGroup', [$user_id, $group]);
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterAddUserToGroup', ['user_id' => $user_id, 'group' => $group]]);
+					$this->app->triggerEvent('onCallEventHandler', ['
+					onAfterAddUserToGroup',
+						[
+							'user_id' => $user_id,
+							'group' => $group,
+							'context' => new EventContextEntity(
+								$this->user,
+								[],
+								[$user_id],
+								[
+									onAfterAddUserToGroupDefinition::GROUPS_KEY => $group
+								]
+							)
+						]
+					]);
 				}
 			}
 
@@ -1238,7 +1255,7 @@ class EmundusModelUsers extends ListModel
 
 					$fnum = EmundusHelperFiles::createFnum($campaign, $user_id);
 
-					if(!empty($fnum)) {
+					if (!empty($fnum)) {
 						$columns = array('applicant_id', 'user_id', 'campaign_id', 'fnum');
 						$values  = array($user_id, $this->user->id, $campaign, $fnum);
 						$query->clear()
@@ -1249,7 +1266,15 @@ class EmundusModelUsers extends ListModel
 						$this->db->execute();
 
 						$this->app->triggerEvent('onAfterCampaignCandidature', [$user_id, $this->user->id, $campaign]);
-						$this->app->triggerEvent('onCallEventHandler', ['onAfterCampaignCandidature', ['user_id' => $user_id, 'connected' => $this->user->id, 'campaign' => $campaign]]);
+						$this->app->triggerEvent('onCallEventHandler', [
+							'onAfterCampaignCandidature',
+							[
+								'user_id' => $user_id,
+								'connected' => $this->user->id,
+								'campaign' => $campaign,
+								'context' => new EventContextEntity($this->user, [$fnum], [$user_id], [])
+							]
+						]);
 					}
 				}
 			}
@@ -1377,8 +1402,8 @@ class EmundusModelUsers extends ListModel
 
 	public function login($uid) {
 		$app     = Factory::getApplication();
-		$db      = Factory::getDBO();
-		$session = Factory::getSession();
+		$db      = Factory::getContainer()->get('DatabaseDriver');
+		$session = $app->getSession();
 
 		$instance   = Factory::getUser($uid);
 
@@ -1410,8 +1435,12 @@ class EmundusModelUsers extends ListModel
 		$options['action'] = 'core.login.site';
 
 		$response['username'] = $instance->get('username');
-		$app->triggerEvent('onUserLogin', array($response, $options));
-		$app->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $uid]]);
+
+		$dispatcher = $app->getDispatcher();
+		$onUserLoginEvent = new GenericEvent('onUserLogin', array($response, $options));
+		$dispatcher->dispatch('onUserLogin', $onUserLoginEvent);
+		$cehEvent = new GenericEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $uid]]);
+		$dispatcher->dispatch('onCallEventHandler', $cehEvent);
 
 		return $instance;
 	}
@@ -1901,6 +1930,28 @@ class EmundusModelUsers extends ListModel
 				try {
 					$this->db->setQuery($query);
 					$affected = $this->db->execute();
+
+					if ($affected)
+					{
+						PluginHelper::importPlugin('emundus');
+						$userIds = array_map(function ($user) {return $user['user_id'];}, $users);
+						$cehEvent = new GenericEvent('onCallEventHandler',
+							[
+								'onAfterAddUserToGroup',
+								[
+									'context' => new EventContextEntity(
+										$this->user,
+										[],
+										$userIds,
+										[
+											onAfterAddUserToGroupDefinition::GROUPS_KEY => $groups
+										]
+									)
+								]
+							]
+						);
+						$this->app->getDispatcher()->dispatch('onCallEventHandler', $cehEvent);
+					}
 				}
 				catch (Exception $e) {
 					Log::add('Error on affecting users to groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');

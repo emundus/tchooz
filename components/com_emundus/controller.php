@@ -21,6 +21,7 @@ use Joomla\CMS\Uri\Uri;
 use \setasign\Fpdi\Fpdi;
 use \setasign\Fpdi\PdfReader;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\Entities\Automation\EventContextEntity;
 
 /**
  * eMundus Component Controller
@@ -399,7 +400,7 @@ class EmundusController extends JControllerLegacy
 
 		if (in_array($fnum, array_keys($current_user->fnums))) {
 			$user = $current_user;
-			$m_files->deleteFile($fnum);
+			$m_files->deleteFile($fnum, $current_user->id);
 			EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, 1, 'd', 'COM_EMUNDUS_ACCESS_FORM_DELETE');
 		}
 		elseif (EmundusHelperAccess::asAccessAction(1, 'd', $current_user->id, $fnum) || EmundusHelperAccess::asAdministratorAccessLevel($current_user->id)) {
@@ -772,7 +773,21 @@ class EmundusController extends JControllerLegacy
 		EmundusModelLogs::log($this->app->getIdentity()->id, $applicant_id, $fnum, 1, 'r', 'COM_EMUNDUS_ACCESS_FILE_READ');
 
 		$this->app->triggerEvent('onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]);
-		$this->app->triggerEvent('onCallEventHandler', ['onBeforeApplicantEnterApplication', ['fnum' => $fnum, 'aid' => $applicant_id, 'redirect' => $redirect]]);
+		$this->app->triggerEvent('onCallEventHandler',
+			[
+				'onBeforeApplicantEnterApplication',
+				[
+					'fnum' => $fnum,
+					'aid' => $applicant_id,
+					'redirect' => $redirect,
+				    'context' => new EventContextEntity(
+					    $this->app->getIdentity(),
+					    [$fnum],
+					    [$applicant_id],
+				    )
+				]
+			]
+		);
 
 		$this->app->redirect(Route::_($redirect));
 	}

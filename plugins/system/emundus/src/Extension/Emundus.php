@@ -28,6 +28,8 @@ use Joomla\Database\ParameterType;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
 use Tchooz\Entities\Emails\Modifiers\CapitalizeModifier;
 use Tchooz\Entities\Emails\Modifiers\LettersModifier;
 use Tchooz\Entities\Emails\Modifiers\LowercaseModifier;
@@ -311,7 +313,17 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		PluginHelper::importPlugin('emundus');
 		$dispatcher    = $app->getDispatcher();
-		$onAfterRender = new GenericEvent('onCallEventHandler', ['onAfterRender', ['session' => $e_session]]);
+		$onAfterRender = new GenericEvent('onCallEventHandler', [
+			'onAfterRender',
+			[
+				'session' => $e_session,
+				'context' => new EventContextEntity($user, [], [$user->id],
+					[
+						onAfterRenderDefinition::KEY_LOGGED_IN => $user->guest != 1 ? 1 : 0,
+					]
+				)
+			]
+		]);
 		$dispatcher->dispatch('onCallEventHandler', $onAfterRender);
 
 		// Manage 2fa

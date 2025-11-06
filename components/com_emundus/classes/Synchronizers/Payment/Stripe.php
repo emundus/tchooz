@@ -3,15 +3,18 @@
 namespace Tchooz\Synchronizers\Payment;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Stripe\StripeClient;
 use Tchooz\Entities\Payment\AlterationEntity;
+use Tchooz\Entities\Payment\AlterationType;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Factories\Payment\StripeItemFactory;
 use Tchooz\Repositories\Payment\TransactionRepository;
 
 class Stripe
@@ -139,106 +142,69 @@ class Stripe
 	{
 		$items = [];
 
-		foreach ($cart->getProducts() as $product) {
-			if (!($product instanceof ProductEntity)) {
-				continue;
+		$factory = new StripeItemFactory();
+
+		if ($cart->getPayAdvance() === 1)
+		{
+			$totalAdvance = $cart->calculateTotalAdvance()->getTotalAdvance();
+			$items[] = $factory->createStripeItem($totalAdvance, $transaction->getCurrency(), Text::_('COM_EMUNDUS_PAYMENT_ADVANCE_PAYMENT'));
+		}
+		else
+		{
+			foreach ($cart->getProducts() as $product) {
+				if (!($product instanceof ProductEntity)) {
+					continue;
+				}
+
+				$amount_of_product = $product->getPrice(); // Amount in cents
+
+				foreach ($cart->getPriceAlterations() as $alteration) {
+					if (!($alteration instanceof AlterationEntity)) {
+						continue;
+					}
+
+					if (!empty($alteration->getProduct()) && $alteration->getProduct()->getId() === $product->getId()) {
+						if ($alteration->getType() === AlterationType::TYPE_FIXED) {
+							$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
+						} elseif ($alteration->getType() === AlterationType::TYPE_PERCENTAGE) {
+							$amount_of_product += ($amount_of_product * $alteration->getAmount() / 100);
+						}
+					}
+				}
+
+				$items[] = $factory->createStripeItem($amount_of_product, $transaction->getCurrency(), $product->getLabel(), $product->getDescription());
 			}
-
-			$amount_of_product = $product->getPrice() * 100; // Amount in cents
-
 			foreach ($cart->getPriceAlterations() as $alteration) {
 				if (!($alteration instanceof AlterationEntity)) {
 					continue;
 				}
 
-				if (!empty($alteration->getProduct()) && $alteration->getProduct()->getId() === $product->getId()) {
-					if ($alteration->getType() === AlterationEntity::TYPE_FIXED) {
-						// add a item with a fixed amount
-						$items[] = [
-							'price_data' => [
-								'currency' => $transaction->getCurrency()->getIso3(),
-								'product_data' => [
-									'name' => $alteration->getDescription(),
-									'description' => ''
-								],
-								'unit_amount' => (int) ($alteration->getAmount() * 100), // Convert to cents
-							],
-							'quantity' => 1,
-							'metadata' => ['type' => 'alteration']
-						];
-					} elseif ($alteration->getType() === AlterationEntity::TYPE_PERCENTAGE) {
-						$amount_of_product += ($amount_of_product * $alteration->getAmount() / 100);
-					}
-				}
-			}
-
-			$items[] = [
-				'price_data' => [
-					'currency' => $transaction->getCurrency()->getIso3(),
-					'product_data' => [
-						'name' => $product->getLabel(),
-						'description' => $product->getDescription()
-					],
-					'unit_amount' => (int) $amount_of_product,
-				],
-				'quantity' => 1
-			];
-		}
-
-		foreach ($cart->getPriceAlterations() as $alteration) {
-			if (!($alteration instanceof AlterationEntity)) {
-				continue;
-			}
-
-			if (empty($alteration->getProduct())) {
-				if ($alteration->getType() === AlterationEntity::TYPE_FIXED) {
-					// add a item with a fixed amount
-					$items[] = [
-						'price_data' => [
-							'currency' => $transaction->getCurrency()->getIso3(),
-							'product_data' => [
-								'name' => $alteration->getDescription(),
-								'description' => ''
-							],
-							'unit_amount' => (int) ($alteration->getAmount() * 100), // Convert to cents
-						],
-						'quantity' => 1,
-						'metadata' => ['type' => 'alteration']
-					];
-				} elseif ($alteration->getType() === AlterationEntity::TYPE_PERCENTAGE) {
-					$alteration_amount = 0;
-					foreach ($items as &$item) {
-						if (isset($item['price_data']['unit_amount'])) {
-							// Calculate the percentage of the item amount
-							$alteration_amount += ($item['price_data']['unit_amount'] / 100) * $alteration->getAmount();
+				if (empty($alteration->getProduct())) {
+					if ($alteration->getType() === AlterationType::TYPE_FIXED) {
+						$items[] = $factory->createStripeItem($alteration->getAmount(), $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
+					} elseif ($alteration->getType() === AlterationType::TYPE_PERCENTAGE) {
+						$alteration_amount = 0;
+						foreach ($items as &$item) {
+							if (isset($item['price_data']['unit_amount'])) {
+								// Calculate the percentage of the item amount
+								$alteration_amount += ($item['price_data']['unit_amount'] / 100) * $alteration->getAmount();
+							}
 						}
-					}
 
-					// Add the alteration as a new item with the calculated amount
-					$items[] = [
-						'price_data' => [
-							'currency' => $transaction->getCurrency()->getIso3(),
-							'product_data' => [
-								'name' => $alteration->getDescription(),
-								'description' => ''
-							],
-							'unit_amount' => (int) ($alteration_amount * 100), // Convert to cents
-						],
-						'quantity' => 1,
-						'metadata' => ['type' => 'alteration']
-					];
+						$items[] = $factory->createStripeItem($alteration_amount, $transaction->getCurrency(), $alteration->getDescription(), '', 1, ['type' => 'alteration']);
+					}
 				}
 			}
-		}
 
-		// assert sum of all items is equal to the total amount of the cart
-		$sum = array_sum(array_map(function($item) {
-			return isset($item['price_data']['unit_amount']) ? (float)($item['price_data']['unit_amount'] / 100) : 0;
-		}, $items));
+			// assert sum of all items is equal to the total amount of the cart
+			$sum = array_sum(array_map(function($item) {
+				return isset($item['price_data']['unit_amount']) ? (float)($item['price_data']['unit_amount'] / 100) : 0;
+			}, $items));
 
-		if ($cart->getTotal() !== $sum) {
-			Log::add('Stripe checkout session total amount mismatch: cart total is ' . $cart->getTotal() . ', but items sum is ' . $sum, Log::ERROR, 'com_emundus.stripe');
-			throw new \Exception('Total amount mismatch between cart and items');
+			if ($cart->getTotal() !== $sum) {
+				Log::add('Stripe checkout session total amount mismatch: cart total is ' . $cart->getTotal() . ', but items sum is ' . $sum, Log::ERROR, 'com_emundus.stripe');
+				throw new \Exception('Total amount mismatch between cart and items');
+			}
 		}
 
 		return $items;

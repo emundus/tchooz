@@ -40,6 +40,4 @@ class AddonEntity
 	{
 		$this->value = $value;
 	}
-
-
 }

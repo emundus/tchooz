@@ -170,11 +170,11 @@ class EmundusModelMessages extends ListModel
 	/**
 	 * Gets all published letters unless a filter is active.
 	 *
-	 * @return Boolean False if the query fails and nothing can be loaded.
-	 * @return Array An array of objects describing letters.
+	 * @return array An array of objects describing letters.
 	 */
-	function getLetters()
+	function getLetters(): array
 	{
+		$letters = [];
 		$session = Factory::getApplication()->getSession();
 
 		$filt_params = $session->get('filt_params');
@@ -186,34 +186,31 @@ class EmundusModelMessages extends ListModel
 			->from($this->db->quoteName('#__emundus_setup_letters', 'l'));
 
 		// if a filter is added then we need to filter out the letters that dont match.
-		if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
+		if (!empty($filt_params)) {
+			if (isset($filt_params['campaign'][0]) && $filt_params['campaign'][0] != '%') {
 
-			$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'p') . ' ON ' . $this->db->QuoteName('lrt.training') . ' = ' . $this->db->QuoteName('p.code'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.training') . ' = ' . $this->db->QuoteName('p.code'))
-				->where($this->db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0]);
+				$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'p') . ' ON ' . $this->db->QuoteName('lrt.training') . ' = ' . $this->db->QuoteName('p.code'))
+					->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'c') . ' ON ' . $this->db->QuoteName('c.training') . ' = ' . $this->db->QuoteName('p.code'))
+					->where($this->db->quoteName('c.id') . ' LIKE ' . $filt_params['campaign'][0]);
 
-		}
-		else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
+			}
+			else if (isset($filt_params['programme'][0]) && $filt_params['programme'][0] != '%') {
 
-			$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
-				->where($this->db->quoteName('lrt.training') . ' LIKE ' . $this->db->Quote($filt_params['programme'][0]));
-
+				$query->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'lrt') . ' ON ' . $this->db->quoteName('lrt.parent_id') . ' = ' . $this->db->quoteName('l.id'))
+					->where($this->db->quoteName('lrt.training') . ' LIKE ' . $this->db->Quote($filt_params['programme'][0]));
+			}
 		}
 
 		try {
-
 			$this->db->setQuery($query);
-
-			return $this->db->loadObjectList();
-
+			$letters = $this->db->loadObjectList();
 		}
 		catch (Exception $e) {
 			Log::add('Error getting letters in model/messages at query : ' . preg_replace("/[\r\n]/", " ", $query->__toString()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
 
+		return $letters;
 	}
 
 

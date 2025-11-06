@@ -5,6 +5,9 @@ namespace Tchooz\Repositories\Payment;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterEmundusTransactionUpdateDefinition;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
@@ -339,7 +342,23 @@ class TransactionRepository
 
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', ['onAfterEmundusTransactionUpdate', ['fnum' => $transaction->getFnum(), 'transaction' => $transaction]]);
+			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', [
+				'onAfterEmundusTransactionUpdate',
+				[
+					'fnum' => $transaction->getFnum(),
+					'transaction' => $transaction,
+					'context' => new EventContextEntity(
+						Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+						[$transaction->getFnum()],
+						[],
+						[
+							onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STATUS_PARAMETER => $transaction->getStatus()->value,
+							onAfterEmundusTransactionUpdateDefinition::OLD_TRANSACTION_STATUS_PARAMETER => !empty($old_data['status']) ? $old_data['status'] : null,
+							onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STEP_ID_PARAMETER => $transaction->getStepId(),
+						]
+					)
+				]
+			]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterEmundusCartUpdate);
 		}
 

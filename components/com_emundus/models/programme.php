@@ -21,7 +21,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
-
+use Tchooz\Entities\Automation\EventContextEntity;
 class EmundusModelProgramme extends ListModel
 {
 	private $app;
@@ -704,7 +704,10 @@ class EmundusModelProgramme extends ListModel
 					$programme = $this->_db->loadObject();
 
 					// Call plugin triggers
-					$this->app->triggerEvent('onCallEventHandler', ['onAfterProgramCreate', ['programme' => $programme, 'user_id' => $user_id]]);
+					$this->app->triggerEvent('onCallEventHandler', [
+						'onAfterProgramCreate',
+						['programme' => $programme, 'user_id' => $user_id, 'context' => new EventContextEntity($user, [],[],[])],
+					]);
 
 					$response = array(
 						'programme_id' => $prog_id,
@@ -776,6 +779,35 @@ class EmundusModelProgramme extends ListModel
 		}
 
 		return $updated;
+	}
+
+	public function addProgramToGroup(string $programCode, int $groupId): bool
+	{
+		$added = false;
+
+		if (!empty($programCode) && !empty($groupId))
+		{
+			$query = $this->_db->createQuery();
+
+			$query->insert($this->_db->quoteName('#__emundus_setup_groups_repeat_course'))
+				->columns([
+					$this->_db->quoteName('parent_id'),
+					$this->_db->quoteName('course')
+				])
+				->values(
+					$this->_db->quote($groupId) . ', ' . $this->_db->quote($programCode)
+				);
+
+			try {
+				$this->_db->setQuery($query);
+				$added = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('component/com_emundus/models/program | Error when adding program ' . $programCode . ' to group ' . $groupId . ': ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $added;
 	}
 
 	/**

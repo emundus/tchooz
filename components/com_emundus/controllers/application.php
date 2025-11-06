@@ -808,7 +808,7 @@ class EmundusControllerApplication extends BaseController
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->deleteGroupAccess($fnum, $id);
+				$res->status = $m_application->deleteGroupAccess($fnum, (int)$id);
 			}
 			else
 			{
@@ -1842,7 +1842,7 @@ class EmundusControllerApplication extends BaseController
 
 			return;
 		}
-		
+
 		$choicesConfiguration = $m_workflow->getChoicesConfigurationFromFnum($current_fnum);
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
@@ -2174,7 +2174,7 @@ class EmundusControllerApplication extends BaseController
 			$choice->setState(ChoicesState::WAITING);
 			$repository->flush($choice, false);
 		}
-		
+
 
 		$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($current_fnum);
 
@@ -2340,7 +2340,7 @@ class EmundusControllerApplication extends BaseController
 
 		$m_workflow = new EmundusModelWorkflow();
 		$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($current_fnum);
-		
+
 		$redirect_url = 'index.php';
 		if (!empty($current_phase->id))
 		{

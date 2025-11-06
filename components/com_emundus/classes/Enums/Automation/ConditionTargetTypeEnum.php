@@ -1,0 +1,31 @@
+<?php
+namespace Tchooz\Enums\Automation;
+enum ConditionTargetTypeEnum: string
+{
+	case USERDATA = 'user_data';
+	case FORMDATA = 'form_data';
+	case ATTACHMENTDATA = 'attachment_data';
+	case CAMPAIGNDATA = 'campaign_data';
+	case PROGRAMDATA = 'program_data';
+	case CONTEXTDATA = 'context_data';
+	case GROUP_DATA = 'group_data';
+	case DATE_RANGE = 'date_range';
+	case CALCULATED = 'calculated';
+	case FILEDATA = 'file_data';
+
+	public function getLabel(): string
+	{
+		return match($this) {
+			self::USERDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_USERDATA',
+			self::FORMDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FORMDATA',
+			self::ATTACHMENTDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_ATTACHMENTDATA',
+			self::CAMPAIGNDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CAMPAIGNDATA',
+			self::PROGRAMDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_PROGRAMDATA',
+			self::GROUP_DATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_GROUP_DATA',
+			self::CONTEXTDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CONTEXTDATA',
+			self::DATE_RANGE => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_DATE_RANGE',
+			self::CALCULATED => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CALCULATED',
+			self::FILEDATA => 'COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FILEDATA',
+		};
+	}
+}

@@ -3,6 +3,7 @@
 namespace Joomla\Plugin\User\Emundus\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\AfterDeleteEvent;
 use Joomla\CMS\Event\User\AfterResetCompleteEvent;
 use Joomla\CMS\Event\User\AfterSaveEvent;
@@ -18,11 +19,13 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryAwareTrait;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Traits\TraitVersion;
 
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitVersion.php';
@@ -867,7 +870,21 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$this->getApplication()->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+
+			$event = new GenericEvent('onCallEventHandler',
+				['onUserLogin',
+					[
+						'user_id' => $user->id,
+						'context' => new EventContextEntity(
+							Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user->id),
+							[],
+							[$user->id],
+							[]
+						)
+					]
+				]
+			);
+			$this->getApplication()->getDispatcher()->dispatch('onCallEventHandler', $event);
 
 			if (!empty($previous_url))
 			{

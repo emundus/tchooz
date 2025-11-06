@@ -44,6 +44,7 @@ enum ElementPlugin: string
 	case PHONENUMBER = 'emundus_phonenumber';
 	case IBAN = 'iban';
 	case PANEL = 'panel';
+	case DISPLAY = 'display';
 
 	public static function tryFromString(?string $plugin): ?self
 	{

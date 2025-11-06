@@ -697,49 +697,55 @@ class EmundusControllerUsers extends BaseController
 
 	public function affectgroups()
 	{
+		$response = ['code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'status' => false];
 
-		$users = $this->input->getString('users', null);
-
-		$groups  = $this->input->getString('groups', null);
-		$m_users = $this->getModel('Users');
-
-		if ($users === 'all')
+		if (EmundusHelperAccess::asAccessAction(12, 'u', $this->user->id) || EmundusHelperAccess::asAccessAction(12, 'c', $this->user->id))
 		{
-			$us    = $m_users->getUsers(0, 0);
-			$users = array();
-			foreach ($us as $u)
+			$users = $this->input->getString('users', null);
+
+			$groups  = $this->input->getString('groups', null);
+			$m_users = $this->getModel('Users');
+
+			if ($users === 'all')
 			{
-				$users[] = $u->id;
+				$us    = $m_users->getUsers(0, 0);
+				$users = array();
+				foreach ($us as $u)
+				{
+					$users[] = $u->id;
+				}
+			}
+			else
+			{
+				$users = (array) json_decode(stripslashes($users));
+			}
+
+			$users = array_filter($users, function ($user) {
+				return $user !== 'em-check-all' && is_numeric($user);
+			});
+
+			$users = $m_users->getNonApplicantId($users);
+			$res   = $m_users->affectToGroups($users, explode(',', $groups));
+
+			if ($res === true)
+			{
+				$response['code'] = 200;
+				$response['status'] = true;
+				$response['msg'] = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
+			}
+			elseif ($res === 0)
+			{
+				$response['code'] = 200;
+				$response['msg'] = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
+			}
+			else
+			{
+				$response['code'] = 500;
+				$response['msg'] = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 			}
 		}
-		else
-		{
-			$users = (array) json_decode(stripslashes($users));
-		}
 
-		$users = array_filter($users, function ($user) {
-			return $user !== 'em-check-all' && is_numeric($user);
-		});
-
-		$users = $m_users->getNonApplicantId($users);
-		$res   = $m_users->affectToGroups($users, explode(',', $groups));
-
-		if ($res === true)
-		{
-			$res = true;
-			$msg = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
-		}
-		elseif ($res === 0)
-		{
-			$msg = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
-		}
-		else
-		{
-			$msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
-		}
-
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	public function edituser()

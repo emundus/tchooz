@@ -502,7 +502,7 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($data))
 			{
-				$unpublished = $this->m_campaign->unpublishCampaign($data);
+				$unpublished = $this->m_campaign->unpublishCampaign($data, $this->_user->id);
 
 				if ($unpublished)
 				{
@@ -537,7 +537,7 @@ class EmundusControllerCampaign extends BaseController
 
 			if (!empty($data))
 			{
-				$result = $this->m_campaign->publishCampaign($data);
+				$result = $this->m_campaign->publishCampaign($data, $this->_user->id);
 
 				$response = array('status' => $result['success'], 'msg' => Text::_($result['message']), 'data' => $result['success']);
 			}

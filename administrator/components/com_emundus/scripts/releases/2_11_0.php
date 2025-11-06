@@ -10,8 +10,20 @@
 
 namespace scripts;
 
+use EmundusColumnTypeEnum;
 use EmundusHelperUpdate;
 use Joomla\CMS\Component\ComponentHelper;
+use EmundusTableColumn;
+use EmundusTableForeignKey;
+use EmundusTableForeignKeyOnEnum;
+use Joomla\CMS\Date\Date;
+use Joomla\CMS\Table\Table;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Enums\Automation\ConditionsAndorEnum;
+use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
+use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\Task\TaskStatusEnum;
+
 
 class Release2_11_0Installer extends ReleaseInstaller
 {
@@ -31,6 +43,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 		try
 		{
 			$this->initShareFilters();
+			$this->initAutomationBuilder();
 
 			$this->tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_sign_requests', 'ordered', 'TINYINT', 3, 1, 0);
 
@@ -47,6 +60,263 @@ class Release2_11_0Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function initAutomationBuilder(): void
+	{
+		$query = $this->db->createQuery();
+
+		// Add automation module to setup_config
+		$query->clear()
+			->select('*')
+			->from($this->db->quoteName('#__emundus_setup_config'))
+			->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('automation'));
+		$this->db->setQuery($query);
+		$config = $this->db->loadObject();
+
+		if (empty($config->namekey))
+		{
+			$insert        = (object) [
+				'namekey' => 'automation',
+				'value'   => json_encode([
+					'enabled'   => 0,
+					'displayed' => 0,
+					'params'    => new \stdClass()
+				])
+			];
+			$this->tasks[] = $this->db->insertObject('#__emundus_setup_config', $insert);
+		}
+
+		$automationResult = EmundusHelperUpdate::createTable('jos_emundus_automation',
+			[
+				new EmundusTableColumn('name', EmundusColumnTypeEnum::VARCHAR, 255, false),
+				new EmundusTableColumn('description', EmundusColumnTypeEnum::TEXT, null, true),
+				new EmundusTableColumn('event_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('published', EmundusColumnTypeEnum::TINYINT, 1, false, 1),
+			],
+			[
+				new EmundusTableForeignKey('fk_automation_event', 'event_id', 'jos_emundus_plugin_events', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $automationResult['status'];
+
+		$actionResult = EmundusHelperUpdate::createTable('jos_emundus_action',
+			[
+				new EmundusTableColumn('name', EmundusColumnTypeEnum::VARCHAR, 100, false),
+				new EmundusTableColumn('automation_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('params', EmundusColumnTypeEnum::JSON, null, true),
+			],
+			[
+				new EmundusTableForeignKey('fk_action_automation', 'automation_id', 'jos_emundus_automation', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $actionResult['status'];
+
+		$groupConditionTable = EmundusHelperUpdate::createTable('jos_emundus_group_condition',
+			[
+				new EmundusTableColumn('parent_id', EmundusColumnTypeEnum::INT, 11, true, 'NULL'),
+				new EmundusTableColumn('operator', EmundusColumnTypeEnum::VARCHAR, 10, false, ConditionsAndorEnum::AND->value),
+			],
+			[
+				new EmundusTableForeignKey('fk_group_condition_parent', 'parent_id', 'jos_emundus_group_condition', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $groupConditionTable['status'];
+
+		$conditionTable = EmundusHelperUpdate::createTable('jos_emundus_condition',
+			[
+				new EmundusTableColumn('group_id', EmundusColumnTypeEnum::INT, 11, true),
+				new EmundusTableColumn('target', EmundusColumnTypeEnum::VARCHAR, 255, false),
+				new EmundusTableColumn('type', EmundusColumnTypeEnum::VARCHAR, 255, false, ConditionTargetTypeEnum::FORMDATA->value),
+				new EmundusTableColumn('operator', EmundusColumnTypeEnum::VARCHAR, 50, false, ConditionOperatorEnum::EQUALS->value),
+				new EmundusTableColumn('value', EmundusColumnTypeEnum::VARCHAR, 255, true, 'NULL'),
+			],
+			[
+				new EmundusTableForeignKey('fk_condition_group_condition', 'group_id', 'jos_emundus_group_condition', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $conditionTable['status'];
+
+		$automationConditionsTable = EmundusHelperUpdate::createTable('jos_emundus_automation_condition',
+			[
+				new EmundusTableColumn('automation_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('condition_id', EmundusColumnTypeEnum::INT, 11, false),
+			],
+			[
+				new EmundusTableForeignKey('fk_automation_conditions_automation', 'automation_id', 'jos_emundus_automation', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+				new EmundusTableForeignKey('fk_automation_conditions_condition', 'condition_id', 'jos_emundus_condition', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $automationConditionsTable['status'];
+
+		$actionConditionsTable = EmundusHelperUpdate::createTable('jos_emundus_action_condition',
+			[
+				new EmundusTableColumn('action_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('condition_id', EmundusColumnTypeEnum::INT, 11, false),
+			],
+			[
+				new EmundusTableForeignKey('fk_action_conditions_action', 'action_id', 'jos_emundus_action', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+				new EmundusTableForeignKey('fk_action_conditions_condition', 'condition_id', 'jos_emundus_condition', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $actionConditionsTable['status'];
+
+
+		$targetsTable = EmundusHelperUpdate::createTable('jos_emundus_automation_target',
+			[
+				new EmundusTableColumn('action_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('type', EmundusColumnTypeEnum::VARCHAR, 50, false, TargetTypeEnum::FILE->value),
+				new EmundusTableColumn('predefinition', EmundusColumnTypeEnum::VARCHAR, 255, true),
+			],
+			[
+				new EmundusTableForeignKey('fk_automation_target_action', 'action_id', 'jos_emundus_action', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $targetsTable['status'];
+
+		$targetsConditionsTable = EmundusHelperUpdate::createTable('jos_emundus_automation_target_condition',
+			[
+				new EmundusTableColumn('target_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('condition_id', EmundusColumnTypeEnum::INT, 11, false),
+			],
+			[
+				new EmundusTableForeignKey('fk_target_conditions_target', 'target_id', 'jos_emundus_automation_target', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+				new EmundusTableForeignKey('fk_target_conditions_condition', 'condition_id', 'jos_emundus_condition', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $targetsConditionsTable['status'];
+
+		$menuResult = EmundusHelperUpdate::addJoomlaMenu([
+			'menutype' => 'onboardingmenu',
+			'title' => 'Automatisations',
+			'alias' => 'emundus-automations',
+			'link' => 'index.php?option=com_emundus&view=automation',
+			'published' => 1,
+			'type' => 'component',
+			'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+			'params' => [
+				'menu_show' => 1,
+				'menu_image_css' => 'automation'
+			],
+		]);
+		$this->tasks[] = $menuResult['status'];
+
+		if (!empty($menuResult['id'])) {
+			// add sub menu edit automation
+			$editmenu = EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'onboardingmenu',
+				'title' => 'Automatisations',
+				'alias' => 'automation-edit',
+				'link' => 'index.php?option=com_emundus&view=automation&layout=edit',
+				'published' => 1,
+				'type' => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_show' => 1,
+					'menu_image_css' => 'automation'
+				],
+			], $menuResult['id']);
+			$this->tasks[] = $editmenu['status'];
+		}
+
+		$actionId = EmundusHelperUpdate::createNewAction('automation', ['multi' => 0, 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 1], 'COM_EMUNDUS_AUTOMATION', 'COM_EMUNDUS_AUTOMATION_DESC');
+		$this->tasks[] = !empty($actionId);
+
+		EmundusHelperUpdate::addColumn('jos_emundus_plugin_events', 'available', EmundusColumnTypeEnum::TINYINT->value, 1, false, 0);
+		$eventNames = [
+			'onAfterStatusChange',
+			'onAfterDeleteFile',
+			'onAfterAddUserToGroup',
+			'onAfterAddUserProfile',
+			'onAfterCampaignCandidature',
+			'onAfterCampaignCreate',
+			'onAfterCampaignUnpublish',
+			'onAfterProgramCreate',
+			'onBeforeLoad',
+			'onAfterProcess',
+			'onAfterTagAdd',
+			'onAfterCampaignPublish',
+			'onAfterCopyApplication',
+			'onAfterSubmitEvaluation',
+			'onAfterRender',
+			'onAfterSubmitFile',
+			'onBeforeApplicantEnterApplication',
+			'onUserLogin'
+		];
+
+		$query->clear()
+			->update($this->db->quoteName('jos_emundus_plugin_events'))
+			->set($this->db->quoteName('available') . ' = 1')
+			->set($this->db->quoteName('description') . ' = ' . $this->db->quote(''))
+			->where($this->db->quoteName('label') . ' IN (' . implode(',', $this->db->quote($eventNames)) . ')');
+
+		$this->db->setQuery($query);
+		$this->tasks[] = $this->db->execute();
+
+		$query->clear()
+			->update($this->db->quoteName('jos_emundus_plugin_events'))
+			->set($this->db->quoteName('category') . ' = ' . $this->db->quote('Campaign'))
+			->where($this->db->quoteName('category') . ' = ' . $this->db->quote('Camapign'));
+
+		$this->db->setQuery($query);
+		$this->tasks[] = $this->db->execute();
+
+		$createTaskTable = EmundusHelperUpdate::createTable('jos_emundus_task',
+			[
+				new EmundusTableColumn('status', EmundusColumnTypeEnum::VARCHAR, 50, false, TaskStatusEnum::PENDING->value),
+				new EmundusTableColumn('action_id', EmundusColumnTypeEnum::INT, 11, false),
+				new EmundusTableColumn('user_id', EmundusColumnTypeEnum::INT, 11, true, 'NULL'),
+				new EmundusTableColumn('metadata', EmundusColumnTypeEnum::JSON, null, true),
+				new EmundusTableColumn('created_at', EmundusColumnTypeEnum::DATETIME, null, false),
+				new EmundusTableColumn('updated_at', EmundusColumnTypeEnum::DATETIME, null, false),
+				new EmundusTableColumn('started_at', EmundusColumnTypeEnum::DATETIME, null, true, 'NULL'),
+				new EmundusTableColumn('finished_at', EmundusColumnTypeEnum::DATETIME, null, true, 'NULL'),
+				new EmundusTableColumn('attempts', EmundusColumnTypeEnum::INT, 11, false, 0),
+			],
+			[
+				new EmundusTableForeignKey('fk_task_user', 'user_id', 'jos_users', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::SET_NULL),
+				new EmundusTableForeignKey('fk_task_action', 'action_id', 'jos_emundus_action', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::CASCADE),
+			]
+		);
+		$this->tasks[] = $createTaskTable['status'];
+
+		$this->tasks[] =  EmundusHelperUpdate::installExtension('plg_task_executeemundusactions', 'executeemundusactions', null, 'plugin', 1, 'task');
+		$this->tasks[] =  EmundusHelperUpdate::addSchedulerTask('plg_task_executeemundusactions_task_get', 'Exécuter les actions Emundus', ["rule-type" => "interval-minutes", "interval-minutes" => "1", 'exec-day' => Date::getInstance()->day, "exec-time" => "12:00"], ["type" => "interval", "exp"=>"PT1M"], 1, 1);
+
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__menu'))
+			->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('rapport-d-activite-2'));
+		$this->db->setQuery($query);
+		$reportMenuId = $this->db->loadResult();
+
+		if (!empty($reportMenuId))
+		{
+			$menuResult = EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'adminmenu',
+				'title' => 'Historique d\'exécution des actions asynchrones',
+				'alias' => 'emundus-tasks-history',
+				'link' => 'index.php?option=com_emundus&view=task&layout=history',
+				'published' => 1,
+				'type' => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_show' => 1,
+					'menu_image_css' => 'schedule'
+				],
+			], $reportMenuId);
+			$this->tasks[] = $menuResult['status'];
+		} else {
+			$this->tasks[] = false;
+		}
+
+		$params = ComponentHelper::getParams('com_scheduler');
+		$params->set('lazy_scheduler.enabled', false);
+
+		$table = Table::getInstance('extension');
+		$table->load(['element' => 'com_scheduler', 'type' => 'component']);
+		$table->params = $params->toString();
+		$table->store();
 	}
 
 	private function initShareFilters(): void
@@ -221,14 +491,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 			['name' => 'country', 'type' => 'INT', 'length' => 11, 'null' => 1],
 		];
 		$foreign_keys  = [
-			[
-				'name'            => 'jos_emundus_addresses_country_fk',
-				'from_column'     => 'country',
-				'ref_table'       => 'data_country',
-				'ref_column'      => 'id',
-				'update_cascade'  => true,
-				'delete_set_null' => true
-			]
+			new EmundusTableForeignKey('jos_emundus_addresses_country_fk', 'country', 'data_country', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::SET_NULL),
 		];
 		$this->tasks[] = EmundusHelperUpdate::createTable('jos_emundus_addresses', $columns, $foreign_keys, 'List of addresses')['status'];
 		$this->migrateOldAddressesToNewStructure($query);
@@ -267,14 +530,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 			['name' => 'logo', 'type' => 'VARCHAR', 'length' => 255, 'null' => 1],
 		];
 		$foreign_keys  = [
-			[
-				'name'            => 'jos_emundus_organizations_address_fk',
-				'from_column'     => 'address',
-				'ref_table'       => 'jos_emundus_addresses',
-				'ref_column'      => 'id',
-				'update_cascade'  => true,
-				'delete_set_null' => true
-			],
+			new EmundusTableForeignKey('jos_emundus_organizations_address_fk', 'address', 'jos_emundus_addresses', 'id', EmundusTableForeignKeyOnEnum::CASCADE, EmundusTableForeignKeyOnEnum::SET_NULL),
 		];
 		$this->tasks[] = EmundusHelperUpdate::createTable('jos_emundus_organizations', $columns, $foreign_keys, 'List of organizations')['status'];
 

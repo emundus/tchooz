@@ -29,10 +29,10 @@ use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
-use Tchooz\Factories\Addons\AddonFactoryResolver;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
+use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -229,25 +229,30 @@ class EmundusControllersettings extends BaseController
 
 	public function updatetags()
 	{
-		$user = $this->user;
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403);
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$tag   = $this->input->getInt('tag');
 			$label = $this->input->getString('label');
 			$color = $this->input->getString('color');
 
-			$result         = $this->m_settings->updateTags($tag, $label, $color);
-			$msg            = $result ? JText::_('SUCCESS') : JText::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS');
-			$changeresponse = array('status' => $result, 'msg' => $msg);
+			try {
+				if ($this->m_settings->updateTags($tag, $label, $color)) {
+					$response = array('status' => true, 'msg' => Text::_('SUCCESS'), 'code' => 200);
+				}
+				else
+				{
+					$response['code'] = 400;
+					$response['msg']  = Text::_('FAILED');
+				}
+			} catch (\Exception $e) {
+				$response['code'] = 400;
+				$response['msg'] = $e->getMessage();
+			}
 		}
-		echo json_encode((object) $changeresponse);
-		exit;
+
+		$this->sendJsonResponse($response);
 	}
 
 	public function getarticle()
@@ -1987,9 +1992,6 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
 			$extension    = $this->input->getString('extension', '');
 			$only_pending = $this->input->getString('only_pending', false);
 			$only_pending = filter_var($only_pending, FILTER_VALIDATE_BOOLEAN);
@@ -2543,13 +2545,12 @@ class EmundusControllersettings extends BaseController
 			return;
 		}
 
-		// Check if we have a factory for this addon (name must be the same as the factory class)
+		// Check if we have a handler for this addon (name must be the same as the factory class)
 		try {
-			require_once JPATH_SITE . '/components/com_emundus/classes/Factories/Addons/AddonFactoryResolver.php';
-			$resolver = new AddonFactoryResolver();
+			$resolver = new AddonHandlerResolver();
 
-			$factory = $resolver->resolve($addon_type, $addon);
-			$response['status'] = $factory->toggle($enabled);
+			$handler = $resolver->resolve($addon_type, $addon);
+			$response['status'] = $handler->toggle($enabled);
 		} catch (RuntimeException $e) {
 			$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
 		}

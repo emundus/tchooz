@@ -23,4 +23,17 @@ trait TraitTable
 
 		return '';
 	}
+
+	public function getTableAlias(string $class): string
+	{
+		$reflection = new \ReflectionClass($class);
+		$attributes = $reflection->getAttributes('Tchooz\Attributes\TableAttribute');
+
+		if (count($attributes) > 0)
+		{
+			return !empty($attributes[0]->getArguments()['alias']) ? $attributes[0]->getArguments()['alias'] : $attributes[0]->getArguments()['table'];
+		}
+
+		return '';
+	}
 }

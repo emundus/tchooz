@@ -55,8 +55,6 @@ class ProductRepository
 
 		$query = $this->db->createQuery();
 
-		$offset = ($page - 1) * $lim;
-
 		$query->select('p.*')
 			->from($this->db->quoteName('jos_emundus_product', 'p'))
 			->leftJoin($this->db->quoteName('jos_emundus_product_category', 'c') . ' ON c.id = p.category_id')
@@ -76,7 +74,10 @@ class ProductRepository
 			$query->andWhere($this->db->quoteName('p.description') . ' LIKE ' . $this->db->quote('%' . $search . '%') . ' OR ' . $this->db->quoteName('p.label') . ' LIKE ' . $this->db->quote('%' . $search . '%') . ' OR ' . $this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $search . '%'));
 		}
 
-		$query->setLimit($lim, $offset);
+		if ($lim > 0) {
+			$offset = ($page - 1) * $lim;
+			$query->setLimit($lim, $offset);
+		}
 
 		try {
 			$this->db->setQuery($query);
