@@ -11,10 +11,9 @@ namespace Tchooz\Services\Addons;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Factories\Addons\AddonFactoryInterface;
 use Tchooz\Repositories\Addons\AddonRepository;
 
-class ChoicesAddonHandler implements AddonFactoryInterface
+class ChoicesAddonHandler implements AddonHandlerInterface
 {
 	private AddonEntity $addon;
 
