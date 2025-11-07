@@ -45,6 +45,8 @@ class Release2_11_0Installer extends ReleaseInstaller
 			$this->initShareFilters();
 			$this->initAutomationBuilder();
 
+			$this->initStats();
+
 			$this->tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_sign_requests', 'ordered', 'TINYINT', 3, 1, 0);
 
 			$this->initCrcFeature($query);
@@ -1054,5 +1056,34 @@ class Release2_11_0Installer extends ReleaseInstaller
 				}
 			}
 		}
+	}
+
+	private function initStats(): void
+	{
+		$columns      = [
+			[
+				'name'   => 'date',
+				'type'   => 'DATE',
+				'null'   => 0,
+			],
+			[
+				'name'   => 'count',
+				'type'   => 'INT',
+				'length' => 11,
+				'null'   => 0,
+				'default'=> 0,
+			],
+			[
+				'name'   => 'link',
+				'type'   => 'VARCHAR',
+				'length' => 255,
+				'null'   => 1,
+			]
+		];
+		$created      = EmundusHelperUpdate::createTable('jos_emundus_page_analytics', $columns);
+		$this->tasks[]      = $created['status'];
+
+		// Install the plugin but do not enable it by default
+		$this->tasks[] = EmundusHelperUpdate::installExtension('plg_emundus_analytics_system', 'emundus_analytics', null, 'plugin', 0, 'system');
 	}
 }

@@ -19,7 +19,7 @@ class AddonHandlerResolver
 
 	public function resolve(string $addonType, $addon): AddonHandlerInterface
 	{
-		$classBase = ucfirst($addonType) . 'AddonHandler';
+		$classBase = str_replace(' ', '', ucwords(str_replace('_', ' ', $addonType))) . 'AddonHandler';
 		$fileName  = $this->basePath . $classBase . '.php';
 
 		if (!file_exists($fileName)) {
