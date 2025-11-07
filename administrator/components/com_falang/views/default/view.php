@@ -31,9 +31,10 @@ class FalangViewDefault extends BaseHtmlView {
 
     protected $state;
 
+
 	public function display($tpl=null)
 	{
-	    $document = Factory::getDocument();
+	    $document = Factory::getApplication()->getDocument();
 		$document->addStyleSheet(URI::base().'components/com_falang/assets/css/falang.css');
         $document->addStyleSheet(URI::base().'components/com_falang/assets/css/toastr.css');
 
@@ -89,7 +90,7 @@ class FalangViewDefault extends BaseHtmlView {
 				</a>
 			</div>
 			<br />
-			&copy; 2024 - faboba.com All right Reserved
+			&copy; 2025 - faboba.com All right Reserved
 			<p></p>
 		</div>
 		<?php
@@ -102,7 +103,7 @@ class FalangViewDefault extends BaseHtmlView {
      * @update
 	 */
 	protected function getHelpPathL($ref) {
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
 		if (!preg_match( '#\.html$#i', $ref )) {
 			$ref = $ref . '.html';
 		}
@@ -113,13 +114,11 @@ class FalangViewDefault extends BaseHtmlView {
 		// Check if the file exists within a different language!
 		if( $lang->getTag() != 'en-GB' ) {
 			$localeURL = JPATH_BASE.DS.$url.DS.$tag.DS.$ref;
-			jimport( 'joomla.filesystem.file' );
 			if( !File::exists( $localeURL ) ) {
 				$tag = 'en-GB';
 			}
 		}
 		return $url.'/'.$tag.'/'.$ref;
-		
 	}
 	
 	/**
@@ -127,7 +126,7 @@ class FalangViewDefault extends BaseHtmlView {
 	 *
 	 */
 	protected function _hideSubmenu(){
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->addStyleSheet(URI::base().'components/com_falang/assets/css/hidesubmenu.css');
 	}
 

@@ -12,6 +12,7 @@
   		<field type="text" name="title"  length="50" maxlength="250" translate="0">Title </field>
   		<field type="text" name="label" length="50" maxlength="250" translate="1">Label</field>
         <field type="params" name="fieldparams" translate="1">Field Params</field>
+        <filter>c.language="*"</filter>
   	</table>
   </reference>
   <translationfilters>

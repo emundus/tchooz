@@ -9,6 +9,7 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -231,7 +232,7 @@ class ContentElement {
      * @since 4.0.1 add order parameer string like asc
 	 */
 	function createContentSQL( $idLanguage=-1, $contentid=null, $limitStart=-1, $maxRows=-1 , $filters=array(),$order="",$direction = "asc") {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$sqlFields=null;
 		$where=array();
 		$join=null;
@@ -470,7 +471,7 @@ class ContentElement {
 	 * @return number of elements
 	 */
 	function countReferences( $idLanguage=-1, $filters=array() ) {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$db->setQuery( $this->countContentSQL( $idLanguage, $filters ) );
 		$count=$db->loadResult();
 		return $count;

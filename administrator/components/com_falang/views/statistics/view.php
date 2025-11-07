@@ -30,7 +30,7 @@ class StatisticsViewStatistics extends FalangViewDefault
 	{
         HTMLHelper::stylesheet( 'falang.css', 'administrator/components/com_falang/assets/css/' );
 
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_STATISTICS'));
 
 		// Set toolbar items for the page

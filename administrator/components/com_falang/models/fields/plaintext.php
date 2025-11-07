@@ -27,7 +27,7 @@ class JFormFieldPlaintext extends FormField
 
     public function getInput()
     {
-        $document = Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
         $document->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css');
 
         $text = trim($this->value);

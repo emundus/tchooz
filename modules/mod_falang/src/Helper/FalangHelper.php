@@ -11,7 +11,7 @@ namespace Faboba\Module\Falang\Site\Helper;
 use Joomla\CMS\Association\AssociationServiceInterface;
 use Joomla\CMS\Categories\Categories;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\File;
+use Joomla\Database\DatabaseInterface;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Multilanguage;
@@ -198,7 +198,7 @@ class FalangHelper
 		                    {
                                 $fManager = \FalangManager::getInstance();
 			                    $id_lang  = $fManager->getLanguageID($language->lang_code);
-			                    $db       = Factory::getDbo();
+			                    $db       = Factory::getContainer()->get(DatabaseInterface::class);
 			                    // get translated path if exist
 			                    $query = $db->getQuery(true);
 			                    $query->select('fc.value')
@@ -264,7 +264,7 @@ class FalangHelper
                             //TODO use a method for this
                             if ($language->lang_code != $default_lang) {
 
-                                $db = Factory::getDbo();
+                                $db = Factory::getContainer()->get(DatabaseInterface::class);
                                 $dbQuery = $db->getQuery(true)
                                     ->select('fc.value')
                                     ->from('#__falang_content fc')
@@ -292,7 +292,7 @@ class FalangHelper
                                 }
                             } else {
                                 //for default langauge get alias from #content without the id to not be override by falang
-                            $db = Factory::getDbo();
+                            $db = Factory::getContainer()->get(DatabaseInterface::class);
                             $query = $db->getQuery(true);
                             $query->select('alias')->from('#__content')->where('id = ' . (int) $item->id);
                             $db->setQuery($query);
@@ -466,7 +466,7 @@ class FalangHelper
 
                             // $translatedPath not exist if not translated or site default language
                             // don't pass id to the query , so no translation given by falang
-                            $db = Factory::getDbo();
+                            $db = Factory::getContainer()->get(DatabaseInterface::class);
                             $query = $db->getQuery(true);
                             $query->select('m.path')
                                 ->from('#__menu m')
@@ -558,7 +558,7 @@ class FalangHelper
 	}
 
     public static function isFalangDriverActive() {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         if (!is_a($db,"JFalangDatabase")){
            return false;
         }
@@ -589,11 +589,13 @@ class FalangHelper
 
     /**
      * @since 4.14 add 4sef suport
+     *
+     * @update 6.0 use native method for file exist pb J5/J6
      * @return true|void
      */
     public static function forSefEnabled() {
         $forSeffilename =  JPATH_PLUGINS. '/system/forsef/vendor/weeblr/forsef/api.php';
-        if (File::exists($forSeffilename)) {
+        if (file_exists($forSeffilename)) {
             if (\Forsef::isEnabled())
             {
                 return true;
@@ -625,7 +627,7 @@ class FalangHelper
 	    {
 		    $fManager = \FalangManager::getInstance();
 		    $id_lang  = $fManager->getLanguageID($language->lang_code);
-		    $db       = Factory::getDbo();
+		    $db       = Factory::getContainer()->get(DatabaseInterface::class);
 		    // get translated path if exist
 		    $query = $db->getQuery(true);
 		    $query->select('fc.value')
@@ -690,7 +692,7 @@ class FalangHelper
                     elseif ( $default_lang != $loop_language->lang_code ) {
                         $fManager = \FalangManager::getInstance();
                         $id_lang  = $fManager->getLanguageID( $loop_language->lang_code );
-                        $db       = Factory::getDbo();
+                        $db       = Factory::getContainer()->get(DatabaseInterface::class);
                         $dbQuery  = $db->getQuery( true )
                             ->select( 'fc.value' )
                             ->from( '#__falang_content fc' )
@@ -712,7 +714,7 @@ class FalangHelper
                     //on prends l'alias du produit
                     if (empty($name)){
                         // translated languague look in native table
-                        $db      = Factory::getDbo();
+                        $db      = Factory::getContainer()->get(DatabaseInterface::class);
                         $dbQuery = $db->getQuery( true )
                             ->select( 'product_alias' )
                             ->from( '#__hikashop_product' )
@@ -738,7 +740,7 @@ class FalangHelper
     }
 
     public static function getTranslatedPathFromMenuItem($ItemID,$idLang){
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         // get translated path if exist
         $query = $db->getQuery(true);
         $query->select('fc.value')
@@ -762,7 +764,7 @@ class FalangHelper
 
         $table->load($reference_id);
         // Get the path from the node to the root (translated)
-        $db     = Factory::getDBO();
+        $db     = Factory::getContainer()->get(DatabaseInterface::class);
         $query  = $db->getQuery(true);
         $select = 'p.*, jfc.value as jfcvalue';
         $query->select($select);

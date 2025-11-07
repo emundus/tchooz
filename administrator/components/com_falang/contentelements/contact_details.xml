@@ -23,6 +23,7 @@
 			<field type="htmltext" name="misc" length="50" maxlength="255" translate="1">Misc</field>
             <field type="textarea" name="metadesc"  rows="2" columns="80" translate="1">Metadesc</field>
 			<field type="params" name="params" translate="0">Params</field>
+			<filter>c.language="*"</filter>
         </table>
 	</reference>
 	<translationfilters>

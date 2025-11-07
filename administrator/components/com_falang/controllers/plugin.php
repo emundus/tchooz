@@ -10,6 +10,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -34,7 +35,7 @@ class PluginController extends BaseController  {
     function display($cachable = false, $urlparams = array())
 	{
 		// test if any plugins are installed - if not divert to installation screen
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = 'SELECT COUNT(*)'
 			. ' FROM #__extensions AS p'
 			. ' WHERE p.folder = '.$db->Quote("falang")

@@ -12,6 +12,7 @@ defined( '_JEXEC' ) or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseInterface;
 
 class Falang {
 
@@ -37,11 +38,11 @@ class Falang {
 		//sbou4
 		if (!isset($rows) || !is_array($rows)) return $rows;
 		$jfManager = FalangManager::getInstance();
-		$registry = Factory::getConfig();
+		$registry = Factory::getApplication()->getConfig();
 
 		$defaultLang = $registry->get("language");
 
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
         $tempsql = $db->getQuery(false);
         //sbou TODO test null ?
         if (is_a($tempsql,'JDatabaseQueryMySQLi') || is_a($tempsql,'JDatabaseQueryMySQL') ) {
@@ -158,7 +159,7 @@ class Falang {
        }
 
 
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// setup falang pluginds
 		PluginHelper::importPlugin('falang');
@@ -337,7 +338,7 @@ class Falang {
 				$jfm = FalangManager::getInstance();
 				$contentElement = $jfm->getContentElement( $reference_table );
 				// The language is not relevant for this function so just use the current language
-				$registry = Factory::getConfig();
+				$registry = Factory::getApplication()->getConfig();
 				$lang = $registry->get("config.jflang");
 
 				include_once( JPATH_ADMINISTRATOR.DS."components".DS."com_falang".'/models/ContentObject.php');

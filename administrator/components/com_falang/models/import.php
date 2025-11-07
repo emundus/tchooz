@@ -9,7 +9,8 @@
 // No direct access to this file
 use Falang\Component\Administrator\Table\FalangContentTable;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\File;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Filesystem\File;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Table\Table;
 use Joomla\Input\Input;
@@ -90,7 +91,7 @@ class ImportModelImport extends FormModel
         $files = new Input($_FILES, array());
         $file = $files->get('jform', null, 'array');
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true);
 
         $inputfile = $file['tmp_name']['translationFile'];
@@ -113,7 +114,7 @@ class ImportModelImport extends FormModel
         $targetlanguageId = $falangManager->getLanguageID($targetlanguage);
         $published = 1;//mark field as published
 
-        $user = Factory::getUser();
+        $user = Factory::getApplication()->getIdentity();
 
 
 

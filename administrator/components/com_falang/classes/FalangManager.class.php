@@ -10,7 +10,8 @@
 use Joomla\CMS\Cache\Cache;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\Folder;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Filesystem\Folder;
 use Joomla\CMS\Language\LanguageHelper;
 
 defined('_JEXEC') or die;
@@ -93,7 +94,7 @@ class FalangManager {
 
 	public static function setBuffer()
 	{
-		$doc = Factory::getDocument();
+		$doc = Factory::getApplication()->getDocument();
 		$cacheBuf = $doc->getBuffer('component');
 
 		$cacheBuf2 =
@@ -115,7 +116,7 @@ class FalangManager {
 	 */
 	function _loadPrimaryKeyData() {
 		if ($this->_primaryKeys==null){
-			$db = Factory::getDBO();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 			$db->setQuery( "SELECT joomlatablename,tablepkID FROM `#__falang_tableinfo`");
 			//sbou TODO pass false to skip translation
 			//TODO verify how to skip translation
@@ -266,6 +267,27 @@ class FalangManager {
         return LanguageHelper::getContentLanguages($active);
 	}
 
+    /*
+     * Get the language for translation published or not
+     * default languages depending of Falang param's
+     *
+     * @since 6.0
+     * */
+    function getLanguagesForTranslation(){
+        $languages = LanguageHelper::getContentLanguages([0,1]);
+        $default_site_language = ComponentHelper::getParams('com_languages')->get("site","en-GB");
+        //remove default language based on falang params
+        $params = ComponentHelper::getParams('com_falang');
+        $showDefaultLanguageAdmin = $params->get("showDefaultLanguageAdmin", false);
+        if (!$showDefaultLanguageAdmin){
+            if (isset($languages[$default_site_language])){
+                unset($languages[$default_site_language]);
+            }
+        }
+        return $languages;
+
+    }
+
 	/**
 	 * Fetches full langauge data for given shortcode from language cache
 	 *
@@ -331,7 +353,7 @@ class FalangManager {
 		$hash = md5(json_encode([$reftable,$reffield, $refids, $language]));
 
 		if (!isset($cache[$hash])) {
-			$db      = Factory::getDbo();
+			$db      = Factory::getContainer()->get(DatabaseInterface::class);
 			$dbQuery = $db->getQuery(true)
 				->select($db->quoteName('value'))
 				->from('#__falang_content fc')
@@ -361,7 +383,7 @@ class FalangManager {
 
 	public function getRawFieldOrigninal($refid)
 	{
-		$db      = Factory::getDbo();
+		$db      = Factory::getContainer()->get(DatabaseInterface::class);
 		$dbQuery = $db->getQuery(true)
 			->select($db->quoteName(array('field_id', 'value')))
 			->from('#__fields_values')
@@ -418,5 +440,89 @@ class FalangManager {
         }
 
         return (object)$updateInfo;
+    }
+
+    /*
+     * Load the components supported for Quickjump
+     *
+     * @update 5.20 fix bug for some component not laoding the quickjump from xml (like showtime_galleries)
+     *              for long table name
+     *              change load first quickjump and the falang option after for override
+     *         6.00 fix warning component list empty
+     *              move from quickjump in FalangManager Class
+     *              rename loadComponent to loadQJComponent
+     * */
+    public function loadQJComponent () {
+        $mapping=null;
+
+        $input = Factory::getApplication()->input;
+        $option = $input->get('option', false, 'cmd');
+        $view = $input->get('view', 'default', 'cmd');
+        //load content element quickjump if exist first
+        $falangManager = FalangManager::getInstance();
+
+        $contentElements = $falangManager->getContentElements(true);
+        $quickjumps = array();
+        foreach ($contentElements as $contentElement){
+            $contentElementQJ = $contentElement->getQuickjumps();
+            if (!empty($contentElementQJ)){
+                $quickjumps = array_merge($quickjumps,$contentElementQJ);
+            }
+        }
+
+        $params = ComponentHelper::getParams('com_falang');
+
+        //Add quickjump from content element to the last element , so they can be overrided.
+        $component_list = $params->get('component_list','');
+        $value = explode("\r\n",$component_list);
+
+        //merge falang option and the xml quickjump definition
+        $value = array_merge($quickjumps,$value);
+
+        $components =$value;
+        $mapping=null;
+        foreach ($components as $component){
+            //if empty line go to next
+            if (empty($component)){continue;}
+            $map = explode("#",$component);
+            $mapviews = explode(',',$map[3]);
+            $mpvcnt = count($mapviews);
+            $proceed = false;
+            if (count($map)>=3 && trim($map[0])==$option){
+                for($xx=0; $xx<$mpvcnt; $xx++){if($mapviews[$xx] == $view){$proceed = true;}}
+                if($proceed == true){
+                    if (count($map)>3 && (count($map)-3)%2==0){
+                        $matched=true;
+                        for ($p=0;$p<(count($map)-3)/2;$p++){
+                            //sbou5
+                            //$testParam = JRequest::getVar( trim($map[3+$p*2]), '');
+                            $testParam = $input->getString( trim($map[3+$p*2]), '');
+                            if ((strpos(trim($map[4+$p*2]),"!")!==false && strpos(trim($map[4+$p*2]),"!")==0)){
+                                if ($testParam == substr(trim($map[4+$p*2]),1)){
+                                    $matched=false;
+                                    break;
+                                }
+                            }
+                            else {
+                                if ($testParam != trim($map[4+$p*2])){
+                                    $matched=false;
+                                    break;
+                                }
+                            }
+                        }
+                        if ($matched) {
+                            $mapping=$map;
+                            break;
+                        }
+                    }
+                    else {
+                        $mapping=$map;
+                        break;
+                    }
+
+                }
+            }
+        }
+        return $mapping;
     }
 }

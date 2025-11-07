@@ -10,6 +10,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -33,8 +34,8 @@ $message2		= $state->get('extension.message');
 	</tbody>
 </table>
 <?php
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 $filterOptions = '<table align="right"><tr>';
 $filterOptions .= '<td  nowrap="nowrap" align="center">' .Text::_('Languages'). ':<br/>' .$this->langlist. '</td>';
 $filterOptions .= '<td  nowrap="nowrap" align="center">' .Text::_('Content elements'). ':<br/>' .$this->clist. '</td>';

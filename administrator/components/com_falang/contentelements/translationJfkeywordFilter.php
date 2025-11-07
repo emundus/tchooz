@@ -9,6 +9,7 @@
 // No direct access to this file
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -27,7 +28,7 @@ class translationJfkeywordFilter extends translationFilter
 		if (!$this->filterField) return "";
 		$filter="";
 		if ($this->filter_value!=""){
-			$db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
 			$filter =  "LOWER(c.".$this->filterField." ) LIKE '%".$db->escape( $this->filter_value, true )."%'";
 		}
 		return $filter;

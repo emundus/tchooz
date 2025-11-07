@@ -15,6 +15,7 @@ use FalangManager;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\Component\Tags\Site\Service\Router;
+use Joomla\Database\DatabaseInterface;
 
 
 /**
@@ -27,8 +28,8 @@ class FalangRouter extends Router
 
     protected function fixSegment($segment)
     {
-        $db = Factory::getDbo();
-        $lang         = Factory::getLanguage();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $lang         = Factory::getApplication()->getLanguage();
         $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
         // Try to find tag id

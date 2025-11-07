@@ -11,8 +11,9 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Cache\CacheStorage;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\File;
-use Joomla\CMS\Filesystem\Folder;
+use Joomla\Database\DatabaseInterface;
+use Joomla\Filesystem\File;
+use Joomla\Filesystem\Folder;
 
 //Register class that don't follow one file per class naming conventions
 JLoader::register('JCacheStorage' , JPATH_LIBRARIES .DS. 'joomla'.DS.'cache' .DS.'storage.php');
@@ -41,7 +42,7 @@ class JCacheStorageJfdb extends CacheStorage
 	{
 		static $expiredCacheCleaned;
 
-		$this->profile_db =  Factory::getDBO();
+		$this->profile_db =  Factory::getContainer()->get(DatabaseInterface::class);
 		$this->db = clone ($this->profile_db);		
 
 		$this->_language	= (isset($options['language'])) ? $options['language'] : 'en-GB';
@@ -79,7 +80,7 @@ class JCacheStorageJfdb extends CacheStorage
 	 *
 	 */
 	function setupDB() {
-		$db =  Factory::getDBO();
+		$db =  Factory::getContainer()->get(DatabaseInterface::class);
 		$charset = ($db->hasUTF()) ? 'CHARACTER SET utf8 COLLATE utf8_general_ci' : '';
 		$sql = "CREATE TABLE IF NOT EXISTS `#__dbcache` ("
 		. "\n `id` varchar ( 32 )  NOT NULL default '',"

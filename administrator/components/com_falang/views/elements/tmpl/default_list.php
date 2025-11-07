@@ -13,7 +13,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 
-$user = Factory::getUser();
+$user = Factory::getApplication()->getIdentity();
 ?>
 <form action="index.php" method="post" name="adminForm" id="adminForm">
     <div class="row">

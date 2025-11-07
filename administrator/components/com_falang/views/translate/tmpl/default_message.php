@@ -18,7 +18,7 @@ $message1		= $state->get('message');
 $message2		= $state->get('extension.message');
 
 //use for message
-Factory::getDocument()->addScript('components/com_falang/assets/js/toast.js');
+Factory::getApplication()->getDocument()->addScript('components/com_falang/assets/js/toast.js');
 
 ?>
     <script type="text/javascript">

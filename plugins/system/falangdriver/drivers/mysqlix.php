@@ -9,6 +9,7 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
+use Joomla\Database\DatabaseInterface;
 use Joomla\Database\Mysqli\MysqliDriver;
 use \Joomla\Database\StatementInterface;
 use Joomla\CMS\Factory;
@@ -29,7 +30,7 @@ class JOverrideDatabase extends MysqliDriver
 	protected $statement;
 
     function __construct($options){
-        $db =  Factory::getDbo();
+        $db =  Factory::getContainer()->get(DatabaseInterface::class);
         // support for recovery of existing connections (Martin N. Brampton)
         if (isset($this->options)) $this->options = $options;
 

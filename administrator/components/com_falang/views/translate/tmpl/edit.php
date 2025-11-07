@@ -16,6 +16,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\WebAsset\WebAssetManager;
 use Joomla\Component\Finder\Administrator\Indexer\Parser\Html;
+use Joomla\Database\DatabaseInterface;
 
 $input = Factory::getApplication()->input;
 $document = Factory::getApplication()->getDocument();
@@ -82,8 +83,8 @@ $skip_params = false;
 $jfmanager = FalangManager::getInstance();
 $active_language = $jfmanager->getLanguageByID($select_language_id);
 
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 $elementTable = $this->actContentObject->getTable();
 $input = Factory::getApplication()->input;
 
@@ -98,7 +99,7 @@ HTMLHelper::_('bootstrap.renderModal');
 HTMLHelper::_('jquery.framework');
 $document->addScript('components/com_falang/assets/js/jquery.cookie.js', array('version' => 'auto', 'relative' => true));
 
-HTMLHelper::_('formbehavior.chosen', 'select');
+//HTMLHelper::_('formbehavior.chosen', 'select');
 
 //use to name form to allow form validation
 $idForm = 'adminForm';
@@ -127,7 +128,7 @@ switch ($elementTable->Name) {
 
 jimport( 'joomla.html.editor' );
 // check system and user editor and load appropriate copying script
-$user = Factory::getUser();
+$user = Factory::getApplication()->getIdentity();
 $conf = Factory::getApplication()->getConfig();
 $editor = $conf->get('editor');
 $wysiwygeditor = \Joomla\CMS\Editor\Editor::getInstance($editor);

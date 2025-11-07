@@ -24,7 +24,7 @@ class TranslatorBing extends TranslatorDefault {
 		//region non necessary for global endpoint
 		$script = "var azureKey = '".$params->get('translator_bingkey')."';\n";
 
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 		
 		$this->script = 'translatorBing.js';
