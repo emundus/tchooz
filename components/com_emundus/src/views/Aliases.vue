@@ -35,7 +35,8 @@ export default {
 
 			config: {
 				aliases: {
-					title: 'COM_EMUNDUS_ONBOARD_ALIAS_LIST',
+					title: 'COM_EMUNDUS_ONBOARD_ALIAS_TAGS_LIST',
+					intro: 'COM_EMUNDUS_ONBOARD_ALIAS_TAGS_LIST_INTRO',
 					tabs: [
 						{
 							title: 'COM_EMUNDUS_ONBOARD_ALIAS_LIST',
@@ -60,9 +61,10 @@ export default {
 									field: 'name',
 									format: '${%value%}',
 									label: 'COM_EMUNDUS_ONBOARD_COPY_ALIAS',
-									name: 'copy_clipboard',
+									name: 'edit',
 									type: 'copy_clipboard',
 									successMessage: 'COM_EMUNDUS_ALIAS_COPIED',
+									icon: 'content_copy',
 								},
 							],
 							exports: [
@@ -76,6 +78,87 @@ export default {
 									exportModal: false,
 								},
 							],
+						},
+						{
+							title: 'COM_EMUNDUS_ONBOARD_FORM_TAGS_LIST',
+							key: 'tags',
+							controller: 'settings',
+							getter: 'fetchtags',
+							noData: 'COM_EMUNDUS_ONBOARD_NOTAGS',
+							viewsOptions: [{ value: 'table', icon: 'dehaze' }],
+							filters: [
+								{
+									label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_CAMPAIGN',
+									allLabel: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_CAMPAIGN_ALL',
+									alwaysDisplay: true,
+									getter: 'getcampaignsfilter',
+									controller: 'settings',
+									key: 'campaign',
+									values: null,
+								},
+								{
+									label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_FORM_TYPE',
+									allLabel: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_FORM_TYPE_ALL',
+									alwaysDisplay: true,
+									key: 'formtype',
+									values: [
+										{
+											value: 'all',
+											label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_FORM_TYPE_ALL',
+										},
+										{
+											value: 'applicant',
+											label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_FORM_TYPE_APPLICANT',
+										},
+										{
+											value: 'management',
+											label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_FORM_TYPE_MANAGEMENT',
+										},
+									],
+								},
+								{
+									label: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_STEPS',
+									allLabel: 'COM_EMUNDUS_ONBOARD_TAGS_FILTER_STEPS_ALL',
+									alwaysDisplay: true,
+									getter: 'getstepsfilter',
+									controller: 'settings',
+									key: 'step',
+									values: null,
+								},
+							],
+							actions: [
+								{
+									field: 'id',
+									format: '${%value%}',
+									label: 'COM_EMUNDUS_ONBOARD_COPY_TAG',
+									name: 'edit',
+									type: 'copy_clipboard',
+									successMessage: 'COM_EMUNDUS_TAG_COPIED',
+									icon: 'content_copy',
+								},
+							],
+							exports: [],
+						},
+						{
+							title: 'COM_EMUNDUS_ONBOARD_GENERAL_TAGS_LIST',
+							key: 'other_tags',
+							controller: 'settings',
+							getter: 'fetchgeneraltags',
+							noData: 'COM_EMUNDUS_ONBOARD_NOTAGS',
+							viewsOptions: [{ value: 'table', icon: 'dehaze' }],
+							filters: [],
+							actions: [
+								{
+									field: 'tag',
+									format: '[%value%]',
+									label: 'COM_EMUNDUS_ONBOARD_COPY_TAG',
+									name: 'edit',
+									type: 'copy_clipboard',
+									successMessage: 'COM_EMUNDUS_TAG_COPIED',
+									icon: 'content_copy',
+								},
+							],
+							exports: [],
 						},
 					],
 				},

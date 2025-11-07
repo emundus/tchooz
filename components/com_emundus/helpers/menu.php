@@ -22,24 +22,30 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 
 class EmundusHelperMenu
 {
 
-	public static function buildMenuQuery($profile, $formids = null, $checklevel = true)
+	public static function buildMenuQuery($profile, $formids = null, $checklevel = true, int $userId = 0)
 	{
 		if (empty($profile)) {
 			return false;
 		}
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 		$h_cache = new EmundusHelperCache();
 		$list = $h_cache->get('menus_'.$profile);
 
 		if (empty($list) || !empty($formids) || !$checklevel) {
 			$app  = Factory::getApplication();
 			$db   = Factory::getContainer()->get('DatabaseDriver');
-			$user = $app->getIdentity();
+
+			if (empty($userId)) {
+				$user = $app->getIdentity();
+			} else {
+				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+			}
 
 			$query = $db->getQuery(true);
 

@@ -649,14 +649,14 @@ class EmundusModelEvaluation extends JModelList
 	/**
 	 * Get list of evaluation elements
 	 *
-	 * @param   int show_in_list_summary get elements displayed in Fabrik List ; yes=1
-	 * @param   int hidden get hidden elements ; yes=1
-	 * @param   array code get elements from Evaluation form defined for programme list
+	 * @param   int    $show_in_list_summary  show_in_list_summary get elements displayed in Fabrik List ; yes=1
+	 * @param   int    $hidden                get hidden elements ; yes=1
+	 * @param   array  $code                  code get elements from Evaluation form defined for programme list
 	 *
 	 * @return    array list of Fabrik element ID used in evaluation form
 	 **@throws Exception
 	 */
-	public function getEvaluationElementsName($show_in_list_summary = 1, $hidden = 0, $code = array(), $all = null)
+	public function getEvaluationElementsName(int $show_in_list_summary = 1, int $hidden = 0, array $code = array(), ?bool $all = null, int $user_id = 0)
 	{
 		$session = Factory::getApplication()->getSession();
 		$h_list  = new EmundusHelperList;
@@ -679,9 +679,10 @@ class EmundusModelEvaluation extends JModelList
 			{
 				return array();
 			}
+
 			foreach ($programmes as $value)
 			{
-				$groups = $this->getGroupsEvalByProgramme($value);
+				$groups = $this->getGroupsEvalByProgramme($value, 'code', $user_id);
 
 				if (empty($groups))
 				{
@@ -697,7 +698,9 @@ class EmundusModelEvaluation extends JModelList
 						{
 							if (!empty($eel->element_id))
 							{
-								$elements[] = $h_list->getElementsDetailsByID($eel->element_id)[0];
+								$elt = $h_list->getElementsDetailsByID($eel->element_id)[0];
+								$elt->programme_code = $value;
+								$elements[] = $elt;
 							}
 						}
 					}
