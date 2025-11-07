@@ -13,17 +13,10 @@
  */
 
 // No direct access
-use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Log\Log;
-use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\User\UserFactoryInterface;
-use Joomla\CMS\User\UserHelper;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
-use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Traits\TraitTable;
 
 defined('_JEXEC') or die('Restricted access');

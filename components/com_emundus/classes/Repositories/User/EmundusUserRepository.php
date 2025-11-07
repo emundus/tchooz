@@ -11,11 +11,10 @@ namespace Tchooz\Repositories\User;
 
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\User\EmundusUserEntity;
-use Tchooz\Factories\Campaigns\CampaignFactory;
 use Tchooz\Factories\User\EmundusUserFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
-use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_users')]

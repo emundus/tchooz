@@ -36,6 +36,13 @@ readonly class ActionRepository
 	{
 		if (empty($entity->getId()))
 		{
+			// Cannot flush an action with the same name as an existing one
+			$existing = $this->getByName($entity->getName());
+			if(!empty($existing))
+			{
+				throw new \Exception('An action with the name "' . $entity->getName() . '" already exists');
+			}
+
 			$insert = (object) [
 				'name'        => $entity->getName(),
 				'label'       => $entity->getLabel(),
