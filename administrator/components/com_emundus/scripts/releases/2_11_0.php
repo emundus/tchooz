@@ -194,6 +194,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 			'published' => 1,
 			'type' => 'component',
 			'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+			'access' => 8,
 			'params' => [
 				'menu_show' => 1,
 				'menu_image_css' => 'automation'
@@ -207,6 +208,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'menutype' => 'onboardingmenu',
 				'title' => 'Automatisations',
 				'alias' => 'automation-edit',
+				'access' => 8,
 				'link' => 'index.php?option=com_emundus&view=automation&layout=edit',
 				'published' => 1,
 				'type' => 'component',
@@ -299,6 +301,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'link' => 'index.php?option=com_emundus&view=task&layout=history',
 				'published' => 1,
 				'type' => 'component',
+				'access' => 8,
 				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
 				'params' => [
 					'menu_show' => 1,
