@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Component\Emundus\Services\Automation;
+namespace Unit\Component\Emundus\Class\Services\Automation;
 
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;

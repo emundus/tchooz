@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Component\Emundus\Entities\Automation;
+namespace Unit\Component\Emundus\Class\Entities\Automation;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;

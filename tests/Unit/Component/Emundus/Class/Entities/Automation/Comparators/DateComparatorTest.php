@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Component\Emundus\Entities\Automation\Comparators;
+namespace Unit\Component\Emundus\Class\Entities\Automation\Comparators;
 
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\Comparators\DateComparator;

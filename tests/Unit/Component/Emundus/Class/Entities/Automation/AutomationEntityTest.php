@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Component\Emundus\Entities\Automation;
+namespace Unit\Component\Emundus\Class\Entities\Automation;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -13,7 +13,6 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Entities\Automation\TargetPredefinitions\ApplicantCurrentFilePredefinition;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
-use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 

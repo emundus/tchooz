@@ -1,6 +1,6 @@
 <?php
 
-namespace Unit\Component\Emundus\Services\Automation\Condition;
+namespace Unit\Component\Emundus\Class\Services\Automation\Condition;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
