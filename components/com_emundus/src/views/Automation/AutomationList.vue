@@ -128,10 +128,12 @@ export default {
 											value: 'all',
 										},
 									].concat(
-										this.events.map((event) => ({
-											value: event.id,
-											label: event.label,
-										})).sort((a, b) => a.label.localeCompare(b.label)),
+										this.events
+											.map((event) => ({
+												value: event.id,
+												label: event.label,
+											}))
+											.sort((a, b) => a.label.localeCompare(b.label)),
 									),
 									default: 'all',
 								},
@@ -148,10 +150,12 @@ export default {
 											value: 'all',
 										},
 									].concat(
-										this.actions.map((action) => ({
-											value: action.type,
-											label: action.label,
-										})).sort((a, b) => a.label.localeCompare(b.label)),
+										this.actions
+											.map((action) => ({
+												value: action.type,
+												label: action.label,
+											}))
+											.sort((a, b) => a.label.localeCompare(b.label)),
 									),
 									default: 'all',
 								},
