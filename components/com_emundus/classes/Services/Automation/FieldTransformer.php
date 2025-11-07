@@ -11,6 +11,7 @@ use Tchooz\Entities\Fields\DateField;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\FieldGroup;
 use Tchooz\Entities\Fields\StringField;
+use Tchooz\Entities\Fields\YesnoField;
 
 class FieldTransformer
 {
@@ -77,7 +78,7 @@ class FieldTransformer
 					$field = new DateField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
 					break;
 				case 'yesno':
-					$field = new BooleanField($fieldId, $fabrikElement->value, false, $fieldGroup);
+					$field = new YesnoField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
 					break;
 				default:
 					$field = new StringField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
