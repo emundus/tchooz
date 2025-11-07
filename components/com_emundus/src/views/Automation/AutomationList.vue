@@ -131,10 +131,9 @@ export default {
 										this.events.map((event) => ({
 											value: event.id,
 											label: event.label,
-										})),
+										})).sort((a, b) => a.label.localeCompare(b.label)),
 									),
-									default: '',
-									type: 'multiselect',
+									default: 'all',
 								},
 								{
 									label: 'COM_EMUNDUS_AUTOMATION_LIST_FILTER_ACTION',
@@ -152,10 +151,9 @@ export default {
 										this.actions.map((action) => ({
 											value: action.type,
 											label: action.label,
-										})),
+										})).sort((a, b) => a.label.localeCompare(b.label)),
 									),
-									default: '',
-									type: 'multiselect',
+									default: 'all',
 								},
 							],
 						},
