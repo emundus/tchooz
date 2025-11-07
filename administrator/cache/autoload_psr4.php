@@ -259,6 +259,7 @@ return [
 	'Joomla\\Plugin\\System\\ActionLogs\\' => [JPATH_PLUGINS . '/system/actionlogs/src'],
 	'Joomla\\Plugin\\System\\Cache\\' => [JPATH_PLUGINS . '/system/cache/src'],
 	'Joomla\\Plugin\\System\\Debug\\' => [JPATH_PLUGINS . '/system/debug/src'],
+	'Joomla\\Plugin\\System\\EmundusAnalytics\\' => [JPATH_PLUGINS . '/system/emundus_analytics/src'],
 	'Joomla\\Plugin\\System\\Emundus\\' => [JPATH_PLUGINS . '/system/emundus/src'],
 	'Joomla\\Plugin\\System\\Fields\\' => [JPATH_PLUGINS . '/system/fields/src'],
 	'Joomla\\Plugin\\System\\GuidedTours\\' => [JPATH_PLUGINS . '/system/guidedtours/src'],

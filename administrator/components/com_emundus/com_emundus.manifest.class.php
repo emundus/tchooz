@@ -64,7 +64,7 @@ class Com_EmundusInstallerScript
 			exit;
 		}
 
-		$query_str = 'SHOW TABLES LIKE ' . $this->db->quote('#__emundus_version');
+		$query_str = 'SHOW TABLES LIKE ' . $this->db->quote('jos_emundus_version');
 		$this->db->setQuery($query_str);
 		$table_exists = $this->db->loadResult();
 		if(!$table_exists)
