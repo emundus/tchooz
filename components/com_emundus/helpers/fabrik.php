@@ -17,6 +17,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -2574,13 +2575,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 	public static function clearFabrikAliasesCache()
 	{
-		if(!class_exists('EmundusHelperCache'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
-		}
-		$h_cache = new EmundusHelperCache();
-		$h_cache->set('fabrik_aliases', []);
-		$h_cache->set('fabrik_aliases_grouped', []);
+		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+			->createCacheController('output', ['defaultgroup' => 'com_emundus']);
+
+		$cache->remove('fabrik_aliases');
+		$cache->remove('fabrik_aliases_grouped');
+		$cache->remove('fabrik_tags_applicant');
+		$cache->remove('fabrik_tags_management');
 	}
 
 	/**

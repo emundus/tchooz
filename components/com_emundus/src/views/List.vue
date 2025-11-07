@@ -262,7 +262,9 @@
 												style="padding: 0.5rem"
 												:title="translate(editAction.label)"
 											>
-												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">edit</span>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">{{
+													editAction.icon ?? 'edit'
+												}}</span>
 											</button>
 											<button
 												v-else-if="showAction && viewType === 'table'"
@@ -799,6 +801,7 @@ export default {
 										typeof filter.controller !== 'undefined' ? filter.controller : tab.controller,
 										filter,
 										tab.key,
+										tab,
 									);
 								} else {
 									this.filters[tab.key].push({
@@ -831,8 +834,28 @@ export default {
 			});
 		},
 
-		async setFilterOptions(controller, filter, tab) {
-			return await fetch('/index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+		async setFilterOptions(controller, filter, tabKey, tab) {
+			// Pass other filter values as parameters to the request
+			let params = '';
+			if (tab.filters) {
+				tab.filters.forEach((f) => {
+					if (f.key !== filter.key) {
+						// Search if we have a value for this filter in URL parameters
+						let urlParams = new URLSearchParams(window.location.search);
+						let filterValue = '';
+						if (urlParams.has(f.key)) {
+							filterValue = urlParams.get(f.key);
+						}
+
+						if (filterValue !== '' && filterValue !== 'all') {
+							params += '&' + f.key + '=' + filterValue;
+						}
+					}
+				});
+			}
+
+			let url = '/index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter + params;
+			return await fetch(url)
 				.then((response) => response.json())
 				.then((response) => {
 					if (response.status === true) {
@@ -851,7 +874,7 @@ export default {
 							label: this.translate(filter.allLabel),
 						});
 
-						this.filters[tab].find((f) => f.key === filter.key).options = options;
+						this.filters[tabKey].find((f) => f.key === filter.key).options = options;
 					} else {
 						return [];
 					}
@@ -876,7 +899,7 @@ export default {
 				item = this.items[this.selectedListTab].find((item) => item.id === itemId);
 			}
 
-			if (action.name === 'copy_clipboard') {
+			if (action.type === 'copy_clipboard') {
 				if (!item) {
 					console.error('Item not found for copy to clipboard action');
 					return;
