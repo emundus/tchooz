@@ -1,6 +1,8 @@
 <?php
 
 use Joomla\CMS\Application\CMSApplicationInterface;
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\Input\Input;
@@ -304,6 +306,11 @@ class EmundusControllerAutomation extends BaseController
 						$response['code'] = 200;
 						$response['msg'] = Text::_('COM_EMUNDUS_AUTOMATION_SAVED_SUCCESS');
 						$response['data'] = (object)$automationEntity->serialize();
+						$response['redirect'] = Route::_('/index.php?option=com_emundus&view=automation&layout=edit&id=' . $automationEntity->getId());
+						$menuLink = EmundusHelperMenu::routeViaLink('/index.php?option=com_emundus&view=automation&layout=edit&id=' . $automationEntity->getId());
+						if (!empty($menuLink)) {
+							$response['redirect'] = $menuLink;
+						}
 					} else {
 						$response['msg'] = Text::_('COM_EMUNDUS_AUTOMATION_SAVED_ERROR');
 						$response['code'] = 500;

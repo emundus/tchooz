@@ -409,6 +409,11 @@ class EmundusHelperMenu
 			}
 		}
 
+		if (!str_starts_with($link, '/'))
+		{
+			$link = '/' . $link;
+		}
+
 		return $link;
 	}
 }

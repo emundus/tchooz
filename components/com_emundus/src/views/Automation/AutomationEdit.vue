@@ -299,8 +299,8 @@ export default {
 				if (response && response.status) {
 					this.$emit('automation-saved', response.data);
 					this.alertSuccess('COM_EMUNDUS_AUTOMATION_SAVED').then(() => {
-						if (this.automation.id != response.data.id) {
-							window.location.href = 'index.php?option=com_emundus&view=automation&layout=edit&id=' + response.data.id;
+						if (this.automation.id != response.data.id && response.redirect) {
+							window.location.href = response.redirect;
 						}
 					});
 				} else {
