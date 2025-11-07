@@ -151,6 +151,7 @@ import fileService from '@/services/file.js';
 import EvaluationList from '@/components/Files/EvaluationList.vue';
 import Messages from './Messenger/Messages.vue';
 import Synthesis from '@/components/Files/Synthesis.vue';
+import WorkflowStepsTimeline from '@/views/Workflows/WorkflowStepsTimeline.vue';
 
 export default {
 	name: 'ApplicationSingle',
@@ -404,7 +405,24 @@ export default {
 				if (this.$props.type !== 'evaluation') {
 					this.loading = false;
 				}
+
+				this.reloadVue();
 			});
+		},
+		reloadVue() {
+			// in app form html content there are vue components, so we need to compile them
+			const oldScript = document.querySelector(
+				'.em-container-form script[src^="media/com_emundus_vue/app_emundus.js"]',
+			);
+			if (oldScript) {
+				oldScript.parentNode.removeChild(oldScript);
+			}
+
+			// Ajoute le script Vue.js
+			const newScript = document.createElement('script');
+			newScript.type = 'module';
+			newScript.src = 'media/com_emundus_vue/app_emundus.js?' + Date.now();
+			document.body.appendChild(newScript);
 		},
 		getReadonlyEvaluations() {
 			const fnum = typeof this.selectedFile === 'string' ? this.selectedFile : this.selectedFile.fnum;

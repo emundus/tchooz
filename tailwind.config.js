@@ -51,6 +51,9 @@ module.exports = {
             pattern: /tw-border-/
         },
         {
+            pattern: /tw-outline-/
+        },
+        {
             pattern: /tw-bg-/
         },
         {

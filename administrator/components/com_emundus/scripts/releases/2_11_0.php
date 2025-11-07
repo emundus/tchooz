@@ -823,6 +823,9 @@ class Release2_11_0Installer extends ReleaseInstaller
 		// Add code column to step types
 		$this->tasks[] = EmundusHelperUpdate::addColumn('#__emundus_setup_step_types', 'code', 'varchar', 50)['status'];
 
+		$action_id     = EmundusHelperUpdate::createNewAction('application_choices');
+		$this->tasks[] = !empty($action_id);
+
 		$query->clear()
 			->select('id')
 			->from($this->db->quoteName('#__emundus_setup_step_types'))
@@ -837,12 +840,19 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'code'      => 'choices',
 				'class'     => 'purple',
 				'label'     => 'COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHOICES',
-				'action_id' => 1,
+				'action_id' => $action_id,
 				'published' => 0,
 				'system'    => 1,
 			];
 			$insert        = (object) $insert;
 			$this->tasks[] = $this->db->insertObject('#__emundus_setup_step_types', $insert);
+		} else {
+			$query->clear()
+				->update($this->db->quoteName('#__emundus_setup_step_types'))
+				->set($this->db->quoteName('action_id') . ' = ' . $action_id)
+				->where($this->db->quoteName('id') . ' = ' . (int) $step);
+			$this->db->setQuery($query);
+			$this->tasks[] = $this->db->execute();
 		}
 
 		// Update code if payment step type
@@ -904,9 +914,6 @@ class Release2_11_0Installer extends ReleaseInstaller
 		$this->tasks[] = EmundusHelperUpdate::addColumn('jos_emundus_setup_campaigns', 'parent_id', 'int', 11)['status'];
 
 		$this->tasks[] = EmundusHelperUpdate::installExtension('plg_emundus_application_choices', 'application_choices', null, 'plugin', 1, 'emundus');
-
-		$action_id     = EmundusHelperUpdate::createNewAction('application_choices');
-		$this->tasks[] = !empty($action_id);
 
 		$this->tasks[] = EmundusHelperUpdate::installExtension('plg_fabrik_element_application_choices', 'applicationchoices', null, 'plugin', 1, 'fabrik_element');
 

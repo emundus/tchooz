@@ -28,6 +28,22 @@ class StepTypeEntity
 		$this->load();
 	}
 
+	public function getId(): int
+	{
+		return $this->id;
+	}
+
+	public function setId(int $id): void
+	{
+		$this->id = $id;
+		$this->load();
+	}
+
+	public function getCode(): ?string
+	{
+		return $this->code;
+	}
+
 	public function load(): void
 	{
 		$query = $this->db->createQuery();
@@ -46,5 +62,16 @@ class StepTypeEntity
 			$this->action_id = $stepType->action_id;
 			$this->system = $stepType->system;
 		}
+	}
+
+	public function serialize(): array
+	{
+		return [
+			'id' => $this->id,
+			'parent_id' => $this->parent_id,
+			'label' => $this->label,
+			'action_id' => $this->action_id,
+			'system' => $this->system,
+		];
 	}
 }

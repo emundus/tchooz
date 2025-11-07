@@ -8,7 +8,11 @@ jimport('joomla.user.helper');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Traits\TraitResponse;
+use Tchooz\Entities\Workflow\WorkflowEntity;
 
 require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 
@@ -316,6 +320,92 @@ class EmundusControllerWorkflow extends JControllerLegacy
 				$response['data']   = $steps;
 				$response['code']   = 200;
 				$response['status'] = true;
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getstepsfromfnum()
+	{
+		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+		$fnum = $this->app->input->getString('fnum', '');
+
+		if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
+		{
+			$steps = [];
+			$files_infos = $this->model->getCampaignInfosFromFileIdentifier($fnum);
+			$isApplicant = EmundusHelperAccess::isFnumMine($this->user->id, $fnum) && !EmundusHelperAccess::asPartnerAccessLevel($this->user->id);
+
+			try {
+				$workflow_id = $this->model->getWorkflowIdByFnum($fnum);
+				if (!empty($workflow_id)) {
+					$serialized_steps = [];
+					$workflow = new WorkflowEntity($workflow_id);
+					$steps = $workflow->getApplicantSteps();
+				}
+
+				$initialStep = array_filter($steps, function($step) {
+					assert($step instanceof StepEntity);
+					return in_array(0, $step->getEntryStatus()) && $step->getOutputStatus() === 1;
+				});
+
+				if (empty($initialStep))
+				{
+					$campaignRepository = new CampaignRepository();
+					$campaignStep = $campaignRepository->getCampaignDefaultStep($files_infos['campaign_id']);
+					$campaignStep->setWorkflowId($workflow_id);
+
+					// insert the step at the beginning of the steps array
+					array_unshift($steps, $campaignStep);
+				}
+
+				foreach($steps as $step) {
+					assert($step instanceof StepEntity);
+					if ($isApplicant && $step->getType()->getId() != 1) {
+						// display only form steps for applicants
+						continue;
+					}
+
+					$dates = $this->model->calculateStartAndEndDates($step, $fnum, $files_infos['campaign_id']);
+					$serialized_step = $step->serialize();
+					$serialized_step['dates'] = $dates;
+
+					// format dates
+					if (!empty($serialized_step['dates']['start_date'])) {
+						$serialized_step['dates']['start_date_raw'] = $serialized_step['dates']['start_date'];
+						$serialized_step['dates']['start_date'] = EmundusHelperDate::displayDate($serialized_step['dates']['start_date'], 'j F Y');
+					}
+					if (!empty($serialized_step['dates']['end_date'])) {
+						$serialized_step['dates']['end_date_raw'] = $serialized_step['dates']['end_date'];
+						$serialized_step['dates']['end_date'] = EmundusHelperDate::displayDate($serialized_step['dates']['end_date'], 'j F Y');
+					}
+
+					if (!class_exists('EmundusModelApplication'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
+					}
+					$m_application = new EmundusModelApplication();
+					$serialized_step['forms_progress'] = $m_application->getFormsProgressWithProfile($fnum, $step->profile_id);
+					$serialized_step['attachments_progress'] = $m_application->getAttachmentsProgressWithProfile($fnum, $step->profile_id);
+					$serialized_step['completed'] = $serialized_step['forms_progress'] >= 100 && $serialized_step['attachments_progress'] >= 100;
+
+					if ($isApplicant && $serialized_step['completed'] === false && (!in_array($files_infos['status'], $step->getEntryStatus()) || (in_array($files_infos['status'], $step->getEntryStatus()) && $serialized_step['dates']['start_date_raw'] > date('Y-m-d H:i:s')))) {
+						// if applicant, skip non completed steps that are not yet accessible
+						continue;
+					}
+
+					$serialized_steps[] = $serialized_step;
+				}
+
+				usort($serialized_steps, function($a, $b) {
+					return $a['ordering'] <=> $b['ordering'];
+				});
+				$response['data']   = $serialized_steps;
+				$response['code']   = 200;
+			} catch (Exception $e) {
+				$response['code']    = 500;
+				$response['message'] = $e->getMessage();
 			}
 		}
 
