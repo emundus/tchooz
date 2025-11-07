@@ -30,10 +30,13 @@ use Tchooz\Entities\User\UserCategoryEntity;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Enums\Analytics\PeriodEnum;
+use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\Emails\TagRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
+use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -3589,6 +3592,111 @@ class EmundusControllersettings extends BaseController
 			{
 				$response['code']    = 500;
 				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MODALITES_SAVE_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function checkanalyticsenabled()
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
+				$enabled = $analyticsAddonHandler->checkEnabled();
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCHED');
+				$response['data']    = ['enabled' => $enabled];
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function toggleanalytics()
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$enabled = $this->input->getInt('enabled', 0);
+				$enabled = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+
+				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
+				$enabled = $analyticsAddonHandler->toggle($enabled);
+				if ($enabled)
+				{
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_SUCCESS');
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getpagesvisited()
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$period = $this->input->getString('period', 'all_time');
+				$period = PeriodEnum::tryFrom($period);
+				if($period === null)
+				{
+					$period = PeriodEnum::ALL_TIME;
+				}
+
+				$dates = $period->getPeriodDates();
+
+				$pageAnalyticsRepository = new PageAnalyticsRepository();
+				$pages_visited = $pageAnalyticsRepository->get(0, '', null, $dates['start_date'], $dates['end_date'], null);
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_PAGES_VISITED_FETCHED');
+				$response['data']    = ['count' => $pages_visited->getCount()];
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_PAGES_VISITED_FETCH_FAILED') . ': ' . $e->getMessage();
 			}
 		}
 

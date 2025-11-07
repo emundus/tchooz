@@ -654,4 +654,38 @@ export default {
 			};
 		}
 	},
+	async checkAnalyticsEnabled() {
+		try {
+			return await fetchClient.get('checkanalyticsenabled');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async toggleAnalytics(enabled) {
+		try {
+			return await fetchClient.post('toggleanalytics', {
+				enabled: enabled,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async getPagesVisited(period) {
+		try {
+			return await fetchClient.get('getpagesvisited', {
+				period: period,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };
