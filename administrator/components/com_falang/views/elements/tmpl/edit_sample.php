@@ -8,11 +8,12 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
 $contentElement = $this->falangManager->getContentElement($this->element);
-$db = Factory::getDBO();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 $contentTable = $contentElement->getTable();
 ?>
 

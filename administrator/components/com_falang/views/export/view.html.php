@@ -23,7 +23,7 @@ class ExportViewExport extends FalangViewDefault
 
     function display($tpl = null)
     {
-        $document = Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
         $document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' . Text::_('COM_FALANG_TITLE_EXPORT'));
 
         $this->addToolbar();

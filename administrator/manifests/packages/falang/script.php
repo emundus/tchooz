@@ -25,20 +25,14 @@ class pkg_falangInstallerScript
 	 *
 	 * @var   string
 	 */
-	protected $minimumJoomlaVersion = '4.3';
+	protected $minimumJoomlaVersion = '5.0';
 
 	/**
 	 * The maximum Joomla! version required to install this extension
 	 *
 	 * @var   string
 	 */
-
-	/**
-	 * The maximum Joomla! version required to install this extension
-	 *
-	 * @var   string
-	 */
-	protected $maximumJoomlaVersion = '5.4.99';
+	protected $maximumJoomlaVersion = '6.4.99';
 	
 	 
     public function install($parent) {}
@@ -180,7 +174,7 @@ class pkg_falangInstallerScript
             </div> 
              <div class="faboba-installation-right span8">
                 <div class="faboba-installation-texts">
-	                <h2>Falang standard<span>5.22</span></h2>
+	                <h2>Falang standard<span>6.1</span></h2>
 	                <p>The easiest way to build a multilanguage site on Joomla</p>
                 </div>
                 <div class="faboba-installation-footer">

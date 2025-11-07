@@ -8,6 +8,7 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -19,7 +20,7 @@ class  FalangExtensionHelper  {
 	 * @return	true if the FaLang extension is correctly installed, configured and activated
 	 */
 	public static function isFalangActive() {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		if (!is_a($db,"JFalangDatabase")){
 			return false;
 		}

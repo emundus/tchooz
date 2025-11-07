@@ -23,15 +23,11 @@
   	</component>
   </reference>
   <translationfilters>
-      <category>catid</category>
-	  <frontpage>id</frontpage>
+	  <keyword>title</keyword>
   	  <author>created_user_id</author>
-  	  <keyword>title</keyword>
   	  <published>published</published>
   	  <changed>created_time|modified_time</changed>
   	  <trash>published</trash>
-  	  <archive>published</archive>
-  	  <id>id</id>
   </translationfilters>
 </falang>
 

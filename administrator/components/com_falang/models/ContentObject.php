@@ -79,7 +79,7 @@ class ContentObject
 	 */
 	public function __construct($languageID, & $contentElement, $id = -1)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		if ($id > 0) $this->id = $id;
 		$this->language_id = $languageID;
@@ -94,7 +94,7 @@ class ContentObject
 	 */
 	function loadFromContentID($id = null)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		if ($id != null && isset($this->_contentElement) && $this->_contentElement !== false)
 		{
 			$db->setQuery($this->_contentElement->createContentSQL($this->language_id, $id));
@@ -133,8 +133,8 @@ class ContentObject
 	 */
 	function bind($formArray, $prefix = "", $suffix = "", $tryBind = true, $storeOriginalText = false, $skip_params = false)
 	{
-		$user   = Factory::getUser();
-		$db     = Factory::getDBO();
+		$user   = Factory::getApplication()->getIdentity();
+		$db     = Factory::getContainer()->get(DatabaseInterface::class);
 		$jinput = Factory::getApplication()->input;
 
 		if ($tryBind)
@@ -296,7 +296,7 @@ class ContentObject
 		$table->load($pk);
 		$langid = $alias->translationContent->language_id;
 		// Get the path from the node to the root (translated)
-		$db     = Factory::getDBO();
+		$db     = Factory::getContainer()->get(DatabaseInterface::class);
 		$query  = $db->getQuery(true);
 		$select = 'p.*, jfc.value as jfcvalue';
 		$query->select($select);
@@ -546,6 +546,9 @@ class ContentObject
 
 	}
 
+    /*
+     * @update 6.0 remove warning on empty json_decode
+     * */
 	function saveArticleImagesAndUrls(&$introtext, $fields, &$formArray, $prefix, $suffix, $storeOriginalText)
 	{
 		$app     = Factory::getApplication();
@@ -575,10 +578,11 @@ class ContentObject
 		{
 			//we can't use dta from $formArray["jform"]['attribs'] it's the modified data from falang translation.
 			//use orginal and remvoe images and url if exit to strore the original attribs
-			$attribsData = json_decode($formArray['origText_attribs'], true);
+			$attribsData = json_decode($formArray['origText_attribs'], true) ?? [];
+
 			if (isset($formArray['origText_images']))
 			{
-				$imagesData = json_decode($formArray['origText_images'], true);
+				$imagesData = json_decode($formArray['origText_images'], true) ?? [];
 				foreach ($imagesData as $key => $value)
 				{
 					if (array_key_exists($key, $attribsData))
@@ -589,7 +593,7 @@ class ContentObject
 			}
 			if (isset($formArray['origText_urls']))
 			{
-				$urlsData = json_decode($formArray['origText_urls'], true);
+				$urlsData = json_decode($formArray['origText_urls'], true) ?? [];
 				foreach ($urlsData as $key => $value)
 				{
 					if (array_key_exists($key, $attribsData))
@@ -633,7 +637,7 @@ class ContentObject
 	 */
 	function updateMLContent(&$dbObject)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		if ($dbObject === null) return;
 
 		if ($this->published == "") $this->published = 0;
@@ -658,7 +662,7 @@ class ContentObject
 	 */
 	function copyContentToTranslation(&$dbObject, $origObject)
 	{
-		$user = Factory::getUser();
+		$user = Factory::getApplication()->getIdentity();
 
 		// Go thru all the fields of the element and try to copy the content values
 		$elementTable = $this->_contentElement->getTable();
@@ -703,7 +707,7 @@ class ContentObject
 	 */
 	function readFromRow($row)
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$this->id               = $row->id;
 		$this->translation_id   = $row->jfc_id;

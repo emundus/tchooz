@@ -8,11 +8,12 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 ?>
 <?php if ($this->showMessage) : ?>
 <?php echo $this->loadTemplate('message'); ?>

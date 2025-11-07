@@ -18,7 +18,7 @@ use Joomla\CMS\MVC\Controller\AdminController;
 use Joomla\CMS\Pagination\Pagination;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Language\LanguageHelper;
+use Joomla\Database\DatabaseInterface;
 
 
 /**
@@ -101,7 +101,6 @@ class TranslateController extends AdminController   {
 		$model = $this->getModel('Translate','FalangModel');
 
         $this->view->setModel($model, true);
-
 		// Assign data for view
 		$this->view->catid = $this->_catid;
 		$this->view->select_language_id =  $this->_select_language_id;
@@ -178,7 +177,7 @@ class TranslateController extends AdminController   {
 	function showTranslationOverview() {
         $language_id = $this->_select_language_id;
         $catid = $this->_catid;
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
         $app = Factory::getApplication();
         $limit		= $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
@@ -284,8 +283,8 @@ class TranslateController extends AdminController   {
 		$catid=$this->_catid;
 
 		global  $mainframe;
-		$user = Factory::getUser();
-		$db = Factory::getDBO();
+		$user = Factory::getApplication()->getIdentity();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$actContentObject=null;
 
@@ -315,7 +314,7 @@ class TranslateController extends AdminController   {
 		$this->view->setLayout('edit');
 
 		// Need to load com_config language strings!
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
 		$lang->load( 'com_config' );
 
 		// Assign data for view - should really do this as I go along
@@ -369,15 +368,15 @@ class TranslateController extends AdminController   {
 			if ($actContentObject->store() == null)	{
                 //
 				Factory::getApplication()->triggerEvent('onAfterTranslationSave', array($_POST));
-                $this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED');
+                $this->setMessage(Text::_('COM_FALANG_TRANSLATE_SAVED'));
 			}
 			else {
-				$this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR');
+                $this->setMessage(Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR'));
 			}
 
 		}
 		else {
-			$this->view->message = Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR_CATID');
+            $this->setMessage(Text::_('COM_FALANG_TRANSLATE_SAVED_ERROR_CATID'));
 		}
 
 		if ($this->task=="apply"){
@@ -480,8 +479,8 @@ class TranslateController extends AdminController   {
 		$catid=$this->_catid;
 
 		global  $mainframe;
-		$user = Factory::getUser();
-		$db = Factory::getDBO();
+		$user = Factory::getApplication()->getIdentity();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$actContentObject=null;
 
@@ -514,7 +513,7 @@ class TranslateController extends AdminController   {
 		$catid = $this->_catid;
 
       	$app	= Factory::getApplication();
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 
 		$limit		= $app->getUserStateFromRequest('global.list.limit', 'limit', $app->getCfg('list_limit'), 'int');
@@ -597,7 +596,7 @@ class TranslateController extends AdminController   {
 		$contentElement = $this->_falangManager->getContentElement( $this->_catid );
 		$tablename = $contentElement->getTableName();
 
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// read details of orphan translation
 		$sql = "SELECT * FROM #__falang_content WHERE reference_id=$contentid AND language_id='".$language_id."' AND reference_table='".$tablename."'";
@@ -717,10 +716,8 @@ class TranslateController extends AdminController   {
 		$this->view->setLayout('popup_free');
 
 		// Need to load com_config language strings!
-		$lang = Factory::getLanguage();
+		$lang = Factory::getApplication()->getLanguage();
 		$lang->load( 'com_config' );
-
-		$document = Factory::getDocument();
 
 		$this->view->display();
 	}

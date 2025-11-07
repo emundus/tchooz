@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\Database\DatabaseInterface;
 
 class  FalangControllerHelper  {
 
@@ -23,7 +24,7 @@ class  FalangControllerHelper  {
      */
     static function _setupContentElementCache()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         //get installed content elements in database
         $query = $db->getQuery(true);
         $query->select('*')->from('#__falang_tableinfo');
@@ -86,7 +87,7 @@ class  FalangControllerHelper  {
 	}
 
 	public static function _checkDBStructure (){
-		$db =  Factory::getDBO();
+		$db =  Factory::getContainer()->get(DatabaseInterface::class);
 		$sql = "SHOW INDEX FROM #__falang_content";// where key_name = 'jfContent'";
 		$db->setQuery($sql);
 		$data = $db->loadObjectList("Key_name");
@@ -150,7 +151,7 @@ class  FalangControllerHelper  {
 	 */
 	public static function _reorderPlugin(){
 
-		$db     = Factory::getDbo();
+		$db     = Factory::getContainer()->get(DatabaseInterface::class);
 		$query  = $db->getQuery(true);
 
 		//language filter must be before falang database driver
@@ -218,7 +219,7 @@ class  FalangControllerHelper  {
      *
      */
 	public static function _checkPdoDriver(){
-	    $db = Factory::getDbo();
+	    $db = Factory::getContainer()->get(DatabaseInterface::class);
 	    if ($db->getName() == 'pdo' || $db->getName() == 'mysql' ){
             Factory::getApplication()->enqueueMessage(Text::_('COM_FALANG_PDO_DRIVER_NOT_SUPPORTED'), 'error');
         }

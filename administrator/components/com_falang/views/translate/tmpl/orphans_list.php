@@ -10,11 +10,12 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 $wa = Factory::getApplication()->getDocument()->getWebAssetManager();
 $wa->useStyle('searchtools');

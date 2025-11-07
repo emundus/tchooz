@@ -12,6 +12,7 @@ defined('JPATH_PLATFORM') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Form\FormHelper;
+use Joomla\Database\DatabaseInterface;
 
 FormHelper::loadFieldClass('list');
 
@@ -41,7 +42,7 @@ class FrontendlanguageField extends \JFormFieldList
 	protected function getOptions()
 	{
 		// Get the database object and a new query object.
-		$db    = Factory::getDbo();
+		$db    = Factory::getContainer()->get(DatabaseInterface::class);
 		$query = $db->getQuery(true);
 
 		$query->select('a.lang_code AS value, a.title AS text')
@@ -67,7 +68,7 @@ class FrontendlanguageField extends \JFormFieldList
 		{
 			$languages = array();
 
-			if (Factory::getUser()->authorise('core.admin'))
+			if (Factory::getApplication()->getIdentity()->authorise('core.admin'))
 			{
 				Factory::getApplication()->enqueueMessage($e->getMessage(), 'error');
 			}

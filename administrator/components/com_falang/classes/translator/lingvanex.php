@@ -24,7 +24,7 @@ class TranslatorLingvanex extends TranslatorDefault {
 		//region non necessary for global endpoint
 		$script = "var LingvanexKey = '".$params->get('translator_lingvanex')."';\n";
 
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 		
 		$this->script = 'translatorLingvanex.js';
@@ -35,12 +35,12 @@ class TranslatorLingvanex extends TranslatorDefault {
 	public function installScripts ($from, $to) {
 		$script = "var translator = {'from' : '".$from. "','to' : '".$to. "'};\n";
 
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 
 
 		if ($this->script != NULL){
-			$document = Factory::getDocument();
+			$document = Factory::getApplication()->getDocument();
 			$document->addScript('components/com_falang/assets/js/'.$this->script);
 		}
 	}

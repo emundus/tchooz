@@ -9,6 +9,7 @@
 // No direct access to this file
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 
 defined('_JEXEC') or die;
@@ -44,7 +45,7 @@ class StatisticsModelStatistics extends JFModel
 	 * @param string	$message	system message
 	 */
 	function testTranslationStatus( $translationStatus, &$phase, &$statecheck_i, &$message ) {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$jfManager = FalangManager::getInstance();
 
 		$sql = '';
@@ -200,7 +201,7 @@ class StatisticsModelStatistics extends JFModel
 	 * @return array	with resulting rows
 	 */
 	function testOriginalStatus($originalStatus, &$phase, &$statecheck_i, &$message, $languages) {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$jfManager = FalangManager::getInstance();
 		$tranFilters=array();
 		$filterHTML=array();

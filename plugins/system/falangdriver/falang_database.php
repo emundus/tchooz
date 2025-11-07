@@ -11,6 +11,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -18,7 +19,7 @@ require_once( JPATH_SITE.'/components/com_falang/helpers/defines.php' );
 require_once( JPATH_SITE.'/components/com_falang/helpers/falang.class.php' );
 require_once( JPATH_SITE."/administrator/components/com_falang/classes/FalangManager.class.php");
 
-include_once(dirname(__FILE__) . '/drivers/' . strtolower(Factory::getDBO()->getName()) . "x.php");
+include_once(dirname(__FILE__) . '/drivers/' . strtolower(Factory::getContainer()->get(DatabaseInterface::class)->getName()) . "x.php");
 
 class JFalangDatabase extends JOverrideDatabase {
 
