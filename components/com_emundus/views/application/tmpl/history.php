@@ -92,6 +92,7 @@ $icons = [
             emptyElements();
             document.getElementById('application').innerHTML = res;
             toggleLoader();
+            reloadVue();
         });
     }
 
@@ -175,5 +176,20 @@ $icons = [
             loader.style.removeProperty('display');
             loader.classList.add('hidden');
         }
+    }
+
+    function reloadVue()
+    {
+        // Supprime l'ancien script Vue.js
+        const oldScript = document.querySelector('script[src^="media/com_emundus_vue/app_emundus.js"]');
+        if (oldScript) {
+            oldScript.parentNode.removeChild(oldScript);
+        }
+
+        // Ajoute le script Vue.js
+        const newScript = document.createElement('script');
+        newScript.type = 'module';
+        newScript.src = 'media/com_emundus_vue/app_emundus.js?' + Date.now();
+        document.body.appendChild(newScript);
     }
 </script>

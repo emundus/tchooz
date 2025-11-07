@@ -18,6 +18,8 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Entities\List\ListResult;
 use Tchooz\Entities\Programs\ProgramEntity;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Factories\Campaigns\CampaignFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -435,6 +437,34 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return $programs_ids;
+	}
+
+	/**
+	 * @param   int  $campaignId
+	 *
+	 * @return StepEntity|null
+	 */
+	public function getCampaignDefaultStep(int $campaignId): ?StepEntity
+	{
+		$step = null;
+
+		if (!empty($campaignId))
+		{
+			$campaign = $this->getById($campaignId);
+
+			if (!empty($campaign) && !empty($campaign->getProfileId()))
+			{
+				if (!class_exists('EmundusModelForm'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');
+				}
+				$formModel = new \EmundusModelForm();
+				$profile = $formModel->getProfileLabelByProfileId($campaign->getProfileId());
+				$step = new StepEntity(0, 0, $profile->label, new StepTypeEntity(1), $campaign->getProfileId(), 0, [0], 1, 0, 1, 0);
+			}
+		}
+
+		return $step;
 	}
 
 	public function buildQuery(): QueryInterface

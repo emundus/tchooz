@@ -85,6 +85,11 @@ class StepEntity {
 		return $this->workflow_id;
 	}
 
+	public function setWorkflowId(int $workflow_id): void
+	{
+		$this->workflow_id = $workflow_id;
+	}
+
 	public function getLabel(): string
 	{
 		return $this->label;
@@ -172,7 +177,7 @@ class StepEntity {
 
 	public function isApplicantStep(): bool
 	{
-		return $this->type->action_id === 1;
+		return $this->type->action_id === 1 && empty($this->type->getCode());
 	}
 
 	public function isEvaluationStep(): bool
@@ -353,5 +358,24 @@ class StepEntity {
 		}
 
 		return $updated;
+	}
+
+	public function serialize()
+	{
+		return [
+			'id' => $this->getId(),
+			'workflow_id' => $this->workflow_id,
+			'label' => $this->label,
+			'type' => $this->type?->serialize(),
+			'profile_id' => $this->profile_id,
+			'form_id' => $this->form_id,
+			'entry_status' => $this->entry_status,
+			'output_status' => $this->output_status,
+			'multiple' => $this->multiple,
+			'state' => $this->state,
+			'ordering' => $this->ordering,
+			'table' => $this->table,
+			'table_id' => $this->table_id,
+		];
 	}
 }

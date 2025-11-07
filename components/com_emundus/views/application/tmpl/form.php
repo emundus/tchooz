@@ -16,6 +16,24 @@ $app->getSession()->set('application_layout', 'form');
 
 $defaultpid = $this->defaultpid;
 $user = $this->userid;
+$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
+$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
+$emundus_config = ComponentHelper::getParams('com_emundus');
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+$hash = EmundusHelperCache::getCurrentGitHash();
+
+$current_lang = $app->getLanguage();
+$short_lang = substr($current_lang->getTag(), 0 , 2);
+$languages = LanguageHelper::getLanguages();
+if (count($languages) > 1) {
+	$many_languages = '1';
+	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
+	$m_translations = new EmundusModelTranslations();
+	$default_lang = $m_translations->getDefaultLanguage()->lang_code;
+} else {
+	$many_languages = '0';
+	$default_lang = $current_lang;
+}
 ?>
 
 <style type="text/css">
@@ -97,41 +115,19 @@ $user = $this->userid;
                 <div class="panel-body Marginpanel-body em-container-form-body !tw-bg-neutral-100">
                     <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
 
-                    <div id="em-switch-profiles" <?php if(sizeof($this->pids) < 1): ?>style="display: none"<?php endif; ?>>
-
-                        <div class="em_label">
-                            <label class="control-label em-filter-label em-font-size-14" style="margin-left: 0 !important;"><?= Text::_('PROFILE_FORM'); ?></label>
-                        </div>
-
-                        <div class="em-flex-row em-border-bottom-neutral-300" style="overflow:hidden; overflow-x: auto;">
-
-                            <div id="tab_link_<?php echo $defaultpid->pid; ?>" onclick="updateProfileForm(<?php echo $defaultpid->pid ?>)" class="em-mr-16 em-flex-row em-light-tabs profile_tab <?= (sizeof($this->pids) > 1 ? 'em-pointer' : ''); ?> em-light-selected-tab">
-                                <p class="em-font-size-14 em-neutral-900-color" title="<?= $defaultpid->label; ?>" style="white-space: nowrap"> <?= $defaultpid->label; ?></p>
-                            </div>
-
-							<?php foreach($this->pids as $pid) : ?>
-								<?php if(is_array($pid['data'])) : ?>
-									<?php foreach($pid['data'] as $data) : ?>
-										<?php if($data->pid != $defaultpid->pid): ?>
-											<?php if($data->step !== null) : ?>
-                                                <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 em-flex-row profile_tab em-light-tabs em-pointer">
-                                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $data->label; ?>" style="white-space: nowrap"><?php echo $data->label; ?></p>
-                                                </div>
-											<?php else: ?>
-                                                <div id="tab_link_<?php echo $data->pid; ?>" onclick="updateProfileForm(<?php echo $data->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer">
-                                                    <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $data->label; ?>" style="white-space: nowrap"><?php echo $data->label; ?></p>
-                                                </div>
-											<?php endif ?>
-										<?php endif ?>
-									<?php endforeach; ?>
-								<?php else : ?>
-                                    <div id="tab_link_<?php echo $pid['data']->pid; ?>" onclick="updateProfileForm(<?php echo $pid['data']->pid ?>)" class="em-mr-16 profile_tab em-flex-row em-light-tabs em-pointer">
-                                        <p class="em-font-size-14 em-neutral-600-color" title="<?php echo $pid['data']->label; ?>" style="white-space: nowrap"> <?php echo $pid['data']->label; ?></p>
-                                    </div>
-								<?php endif;?>
-							<?php endforeach; ?>
-                        </div>
-
+                    <div id="steps-timeline"
+                         component="Workflows/WorkflowStepsTimeline"
+                         class="com_emundus_vue"
+                         data="<?= htmlspecialchars(json_encode([
+                             'user' => $this->_user->id,
+                                'fnum' => $this->fnum,
+                                'currentLanguage' => $current_lang->getTag(),
+                                'shortLang' => $short_lang,
+                                'coordinatorAccess' => $coordinator_access,
+                                'sysadminAccess' => $sysadmin_access,
+                                'manyLanguages' => $many_languages,
+                         ]), ENT_QUOTES, 'UTF-8'); ?>"
+                    >
                     </div>
 
                     <div class="active content" id="show_profile">
@@ -145,25 +141,6 @@ $user = $this->userid;
 			<?php
 			if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) && $this->euser->applicant != 1 && $this->context === 'default'): ?>
 				<?php
-				$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
-				$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
-				$emundus_config = ComponentHelper::getParams('com_emundus');
-				require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-				$hash = EmundusHelperCache::getCurrentGitHash();
-
-				$current_lang = $app->getLanguage();
-				$short_lang = substr($current_lang->getTag(), 0 , 2);
-				$languages = LanguageHelper::getLanguages();
-				if (count($languages) > 1) {
-					$many_languages = '1';
-					require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-					$m_translations = new EmundusModelTranslations();
-					$default_lang = $m_translations->getDefaultLanguage()->lang_code;
-				} else {
-					$many_languages = '0';
-					$default_lang = $current_lang;
-				}
-
 				$user_comment_access = [
 					'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum),
 					'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $this->fnum),
@@ -198,13 +175,15 @@ $user = $this->userid;
                         >
                         </div>
                     </div>
-                    <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>
                     <script src="media/com_emundus/js/comment.js?<?php echo $hash ?>"></script>
                 </aside>
 			<?php endif; ?>
         </div>
     </div>
 </div>
+
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>
+
 <script>
     $(".chzn-select").chosen();
     var dpid = $('#dpid_hidden').attr('value');

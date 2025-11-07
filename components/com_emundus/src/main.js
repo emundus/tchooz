@@ -81,6 +81,11 @@ if (document) {
 		elements.push(filterElement);
 	}
 
+	const stepsTimeline = document.getElementById('steps-timeline');
+	if (stepsTimeline) {
+		elements.push(stepsTimeline);
+	}
+
 	for (const el of elements) {
 		if (el) {
 			const componentName = el.getAttribute('component');

@@ -22,9 +22,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
-use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Payment\TransactionRepository;
@@ -729,14 +727,9 @@ class EmundusModelWorkflow extends JModelList
 		return $workflowPrograms[$workflowId];
 	}
 
-	/**
-	 * @param   string  $fnum
-	 *
-	 * @return array
-	 */
-	public function getWorkflowByFnum(string $fnum): array
+	public function getWorkflowIdByFnum(string $fnum): int
 	{
-		$workflow = [];
+		$workflow_id = 0;
 
 		if (!empty($fnum))
 		{
@@ -749,19 +742,31 @@ class EmundusModelWorkflow extends JModelList
 				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 				->where('ecc.fnum LIKE ' . $this->db->quote($fnum));
 
-			try
-			{
+			try {
 				$this->db->setQuery($query);
-				$workflow_id = (int) $this->db->loadResult();
-
-				if (!empty($workflow_id))
-				{
-					$workflow = $this->getWorkflow($workflow_id);
-				}
+				$workflow_id = (int)$this->db->loadResult();
+			} catch (Exception $e) {
+				Log::add('Failed to retrieve workflow id from fnum ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
 			}
-			catch (Exception $e)
-			{
-				Log::add('Failed to retrieve workflow from fnum ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+		}
+
+		return $workflow_id;
+	}
+
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return array
+	 */
+	public function getWorkflowByFnum(string $fnum): array
+	{
+		$workflow = [];
+
+		if (!empty($fnum))
+		{
+			$workflow_id = $this->getWorkflowIdByFnum($fnum);
+			if (!empty($workflow_id)) {
+				$workflow = $this->getWorkflow($workflow_id);
 			}
 		}
 
@@ -1098,14 +1103,7 @@ class EmundusModelWorkflow extends JModelList
 		{
 			$query = $this->db->createQuery();
 
-			$query->select('ecc.fnum, ecc.status, esp.id as program_id, ecc.published, ecc.campaign_id')
-				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
-				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
-				->where('ecc.' . $column . ' LIKE ' . $this->db->quote($file_identifier));
-
-			$this->db->setQuery($query);
-			$file_infos = $this->db->loadAssoc();
+			$file_infos = $this->getCampaignInfosFromFileIdentifier($file_identifier, $column);
 
 			if (!empty($file_infos['program_id']))
 			{
@@ -1203,17 +1201,42 @@ class EmundusModelWorkflow extends JModelList
 		return $step;
 	}
 
+	public function getCampaignInfosFromFileIdentifier(string|int $identifier, string $column = 'fnum'): array
+	{
+		$file_infos = [];
+
+		if (!empty($identifier)) {
+			$query = $this->db->createQuery();
+
+			$query->select('ecc.fnum, ecc.status, esp.id as program_id, ecc.published, ecc.campaign_id')
+				->from($this->db->quoteName('#__emundus_campaign_candidature', 'ecc'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.id') . ' = ' . $this->db->quoteName('ecc.campaign_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $this->db->quoteName('esp.code') . ' = ' . $this->db->quoteName('esc.training'))
+				->where('ecc.' . $column . ' LIKE ' . $this->db->quote($identifier));
+
+			try {
+				$this->db->setQuery($query);
+				$file_infos = $this->db->loadAssoc();
+			} catch (Exception $e) {
+				Log::add('Error while fetching campaign infos from file identifier: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+			}
+		}
+
+		return $file_infos;
+	}
+
 	/**
 	 * @param   object  $step
 	 * @param   int     $campaign_id
 	 *
 	 * @return array
 	 */
-	private function calculateStartAndEndDates(object $step, string $fnum, int $campaign_id): array
+	public function calculateStartAndEndDates(object $step, string $fnum, int $campaign_id): array
 	{
 		$dates = [];
 
 		$query = $this->db->createQuery();
+		$stepId = $step instanceof StepEntity ? $step->getId() : $step->id;
 
 		$query->clear()
 			->select('start_date, end_date')
@@ -1223,7 +1246,6 @@ class EmundusModelWorkflow extends JModelList
 		$this->db->setQuery($query);
 		$campaign_dates = $this->db->loadAssoc();
 
-		$dates['infinite']   = false;
 		$dates['start_date'] = $campaign_dates['start_date'];
 		$dates['end_date']   = $campaign_dates['end_date'];
 
@@ -1231,15 +1253,23 @@ class EmundusModelWorkflow extends JModelList
 			->select('*')
 			->from('#__emundus_setup_campaigns_step_dates')
 			->where('campaign_id = ' . $campaign_id)
-			->where('step_id = ' . $step->id);
+			->where('step_id = ' . $stepId);
 
 		$this->db->setQuery($query);
 		$step_date_config       = $this->db->loadObject();
 		$dates['relative_date'] = !empty($step_date_config) && $step_date_config->relative_date == 1;
+		$dates['infinite'] = !empty($step_date_config) && $step_date_config->infinite == 1;
+		$dates['relative_start_date_unit'] = '';
+		$dates['relative_start_date_value'] = 0;
+		$dates['relative_end_date_unit'] = '';
+		$dates['relative_end_date_value'] = 0;
 
 		if (!empty($step_date_config))
 		{
-			$dates['infinite'] = $step_date_config->infinite;
+			$dates['relative_start_date_unit'] = $step_date_config->relative_start_date_unit;
+			$dates['relative_start_date_value'] = $step_date_config->relative_start_date_value;
+			$dates['relative_end_date_unit'] = $step_date_config->relative_end_date_unit;
+			$dates['relative_end_date_value'] = $step_date_config->relative_end_date_value;
 
 			if (!$dates['infinite'])
 			{
@@ -1261,6 +1291,7 @@ class EmundusModelWorkflow extends JModelList
 							$end_date->modify('+' . $step_date_config->relative_end_date_value . ' ' . $step_date_config->relative_end_date_unit);
 						}
 
+						$dates['relative_date_value'] = $relative_date_value;
 						$dates['start_date'] = $start_date->format('Y-m-d H:i:s');
 						$dates['end_date']   = $end_date->format('Y-m-d H:i:s');
 					}

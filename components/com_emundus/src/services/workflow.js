@@ -107,6 +107,18 @@ export default {
 			};
 		}
 	},
+	async getStepsFromFnum(fnum) {
+		try {
+			return await client.get('getstepsfromfnum', {
+				fnum: fnum,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 	async saveCampaignSteps(campaignId, steps) {
 		try {
 			return await client.post('savecampaignstepsdates', {
