@@ -15,10 +15,10 @@ use Tchooz\Enums\Contacts\Gender;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\DBFactory;
 use Tchooz\Factories\EmundusFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactAddressRepository;
 use Tchooz\Repositories\Contacts\ContactCountryRepository;
 use Tchooz\Repositories\Contacts\ContactOrganizationRepository;
-use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 
 class ContactFactory extends EmundusFactory implements DBFactory
 {

@@ -22,10 +22,10 @@ use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
-use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
-use \Tchooz\Traits\TraitResponse;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * Emundus Campaign Controller
@@ -1797,7 +1797,7 @@ class EmundusControllerCampaign extends BaseController
 
 		$choices = [];
 
-		$applicationFileRepository = new ApplicationFileRepository($this->_user->id);
+		$applicationFileRepository = new ApplicationFileRepository();
 		$applicationFile           = $applicationFileRepository->getByFnum($current_fnum);
 		if (empty($applicationFile) || empty($applicationFile->getCampaignId()))
 		{

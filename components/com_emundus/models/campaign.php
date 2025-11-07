@@ -13,24 +13,23 @@
 
 // phpcs:enable PSR1.Files.SideEffects
 
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Entities\Automation\EventContextEntity;
-use Tchooz\Entities\Settings\AddonEntity;
-use Tchooz\Repositories\Campaigns\CampaignRepository;
-use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Language\Text;
-use Component\Emundus\Helpers\HtmlSanitizerSingleton;
-use Tchooz\Factories\ImportFactory;
-
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Factories\ImportFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
@@ -4085,14 +4084,6 @@ class EmundusModelCampaign extends ListModel
 
 				if (!empty($rows_to_import))
 				{
-					if (!class_exists('ApplicationFileEntity'))
-					{
-						require_once(JPATH_ROOT . '/components/com_emundus/classes/Entities/ApplicationFile/ApplicationFileEntity.php');
-					}
-					if (!class_exists('ApplicationFileRepository'))
-					{
-						require_once(JPATH_ROOT . '/components/com_emundus/classes/Repository/ApplicationFile/ApplicationFileRepository.php');
-					}
 					$applicationFileRepository = new ApplicationFileRepository();
 					if (!class_exists('EmundusHelperDate'))
 					{

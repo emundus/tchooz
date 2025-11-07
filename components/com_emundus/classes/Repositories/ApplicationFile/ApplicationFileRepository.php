@@ -1,14 +1,14 @@
 <?php
-namespace Tchooz\Repository\ApplicationFile;
+namespace Tchooz\Repositories\ApplicationFile;
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\User\UserFactoryInterface;
-use Tchooz\Attributes\TableAttribute;
-use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 #[TableAttribute(table: '#__emundus_campaign_candidature')]
 class ApplicationFileRepository

@@ -53,6 +53,8 @@ class Release2_11_0Installer extends ReleaseInstaller
 
 			$this->initChoicesFeature($query);
 
+			$this->fixSetupActionsKeys();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -1085,5 +1087,40 @@ class Release2_11_0Installer extends ReleaseInstaller
 
 		// Install the plugin but do not enable it by default
 		$this->tasks[] = EmundusHelperUpdate::installExtension('plg_emundus_analytics_system', 'emundus_analytics', null, 'plugin', 0, 'system');
+	}
+
+	private function fixSetupActionsKeys(): void
+	{
+		$queryString = 'show indexes from jos_emundus_setup_actions;';
+		$this->db->setQuery($queryString);
+		$indexes = $this->db->loadObjectList();
+		$hasNameIndex = false;
+		$hasLabelIndex = false;
+		foreach ($indexes as $index)
+		{
+			if ($index->Key_name === 'name')
+			{
+				$hasNameIndex = true;
+			}
+
+			if ($index->Key_name === 'label')
+			{
+				$hasLabelIndex = true;
+			}
+		}
+		if (!$hasNameIndex)
+		{
+			$queryString = 'create index name on jos_emundus_setup_actions (name)';
+			$this->db->setQuery($queryString);
+			$this->tasks[] = $this->db->execute();
+		}
+
+		if($hasLabelIndex)
+		{
+			// Get exiting keys on jos_emundus_setup_actions
+			$queryString = 'alter table jos_emundus_setup_actions drop key label;';
+			$this->db->setQuery($queryString);
+			$this->tasks[] = $this->db->execute();
+		}
 	}
 }

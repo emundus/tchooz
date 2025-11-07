@@ -23,7 +23,6 @@ use Tchooz\Factories\ApplicationFile\ApplicationChoicesFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
-use Tchooz\Repository\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_campaign_candidature_choices')]
@@ -387,11 +386,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID'));
 		}
 
-		if (!class_exists('ApplicationFileRepository'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/classes/Repository/ApplicationFile/ApplicationFileRepository.php';
-		}
-		$applicationFileRepository = new ApplicationFileRepository($entity->getUser()->id);
+		$applicationFileRepository = new ApplicationFileRepository();
 		$application_file          = $applicationFileRepository->getByFnum($entity->getFnum());
 
 		if (empty($application_file) || $application_file->getCampaignId() !== $entity->getCampaign()->getParent()->getId())
