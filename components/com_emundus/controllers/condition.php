@@ -16,8 +16,8 @@ class EmundusControllerCondition extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($this->app->getIdentity()->id))
 		{
 			$response = ['code' => 400, 'status' => false, 'msg' => Text::_('MISSING_REQUIRED_PARAMETER'), 'data' => []];
-			$search = $this->input->getString('search', '');
-			$field = $this->input->getString('field', '');
+			$search = $this->input->getString('search_query', '');
+			$field = $this->input->getString('properties', '');
 
 			if (!empty($field) && !empty($search))
 			{
@@ -29,8 +29,11 @@ class EmundusControllerCondition extends BaseController
 				$response = [
 					'code' => 200,
 					'status' => true,
-					'data' => array_map(function ($choice){
-						$choice->toSchema();
+					'data' => array_map(function ($choice) {
+						return [
+							'value' => $choice->getValue(),
+							'label' => $choice->getLabel(),
+						];
 					}, $choices),
 				];
 			}

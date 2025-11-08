@@ -12,7 +12,7 @@ class FieldResearch
 
 	private string $searchInputKey;
 
-	public function __construct(string $controllerName, string $methodName, string $searchInputKey = 'search')
+	public function __construct(string $controllerName, string $methodName, string $searchInputKey = 'search_query')
 	{
 		if (empty($controllerName) || empty($methodName))
 		{

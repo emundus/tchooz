@@ -15,13 +15,27 @@ export default {
 
 			switch (field.type) {
 				case 'choice':
+					console.log(field, 'fromAutomationFieldToParameter');
+
 					parameter.options = field.choices.map((choice) => ({
 						value: choice.value,
 						label: choice.label,
 					}));
 
 					if (field.multiple) {
-						// todo: handle grouped options
+						let asyncRoute = '';
+						let asyncController = '';
+						let asyncAttributes = [];
+						if (field.research) {
+							if (field.research.controller) {
+								asyncController = field.research.controller;
+							}
+
+							if (field.research.method) {
+								asyncRoute = field.research.method;
+							}
+							asyncAttributes.push(field.name);
+						}
 
 						parameter.multiple = true;
 						parameter.type = 'multiselect';
@@ -32,7 +46,9 @@ export default {
 							taggable: false,
 							searchable: true,
 							internalSearch: true,
-							asyncRoute: '',
+							asyncRoute: asyncRoute,
+							asyncController: asyncController,
+							asyncAttributes: asyncAttributes,
 							optionsLimit: 100,
 							optionsPlaceholder: 'COM_EMUNDUS_MULTISELECT_ADDKEYWORDS',
 							selectLabel: 'PRESS_ENTER_TO_SELECT',

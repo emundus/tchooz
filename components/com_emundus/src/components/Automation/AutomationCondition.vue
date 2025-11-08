@@ -373,6 +373,7 @@ export default {
 					'tw-col-span-1': field.param === 'type' || field.param === 'operator',
 				}"
 				@valueUpdated="onParameterValueUpdated"
+				:asyncAttributes="field.multiselectOptions ? field.multiselectOptions.asyncAttributes : []"
 				:multiselectOptions="field.multiselectOptions ? field.multiselectOptions : null"
 			/>
 		</div>

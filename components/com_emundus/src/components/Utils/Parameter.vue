@@ -756,6 +756,8 @@ export default {
 							properties: this.$props.asyncAttributes,
 						};
 
+						console.log(data, 'data before asyncfind ');
+
 						settingsService
 							.getAsyncOptions(
 								this.$props.multiselectOptions.asyncRoute,
