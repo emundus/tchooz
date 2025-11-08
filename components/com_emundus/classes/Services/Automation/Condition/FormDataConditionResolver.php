@@ -6,7 +6,10 @@ use EmundusHelperFabrik;
 use Joomla\CMS\Factory;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Automation\ConditionEntity;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Entities\Automation\TableJoin;
+use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -52,7 +55,11 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 				$automation = $automationRepository->getAutomationById($automationId);
 
 				foreach ($automation->getConditionsGroups() as $conditionGroup) {
+					assert($conditionGroup instanceof ConditionGroupEntity);
+
 					foreach ($conditionGroup->getConditions() as $condition) {
+						assert($condition instanceof ConditionEntity);
+
 						if ($condition->getTargetType() === ConditionTargetTypeEnum::FORMDATA) {
 							$fieldName = $condition->getField();
 							if (!empty($fieldName)) {
@@ -60,7 +67,35 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 								$elements = \EmundusHelperEvents::getFormElements((int)$formId, (int)$elementId, true, [], []);
 								$element = $elements[0] ?? null;
 								if (!empty($element)) {
-									$fields[] = FieldTransformer::transformFabrikElementIntoField($element);
+									$field = FieldTransformer::transformFabrikElementIntoField($element);
+
+									// When research is on, it means that not all options are loaded
+									// But in case of loading condition, we need to get back the condition values stored
+									// so we look for it if missing
+									if ($field instanceof ChoiceField && !empty($field->getResearch()))
+									{
+										$missingOpts = [];
+										$loadedOptIds = array_map(function ($choiceFieldValue) {
+											return $choiceFieldValue->getValue();
+										}, $field->getChoices());
+										foreach ($condition->getValue() as $value)
+										{
+											if (!in_array($value, $loadedOptIds)) {
+												$missingOpts[] = $value;
+											}
+										}
+
+										if (!empty($missingOpts))
+										{
+											$newOptions = FieldTransformer::getElementOptions($element, '', $missingOpts);
+											foreach ($newOptions as $newOption)
+											{
+												$field->addChoice($newOption);
+											}
+										}
+									}
+
+									$fields[] = $field;
 								}
 							}
 						}

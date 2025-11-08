@@ -79,7 +79,7 @@ class FieldTransformer
 	 *
 	 * @return array<ChoiceFieldValue>
 	 */
-	public static function getElementOptions(object $fabrikElement, ?string $search = null): array
+	public static function getElementOptions(object $fabrikElement, ?string $search = null, array $ids = []): array
 	{
 		$choices = [];
 
@@ -101,6 +101,11 @@ class FieldTransformer
 					if (!empty($search))
 					{
 						$query->where($db->quoteName($params->join_val_column) . ' LIKE ' . $db->quote('%' . $search . '%'));
+					}
+
+					if (!empty($ids))
+					{
+						$query->where($db->quoteName($params->join_key_column) . ' IN (' . implode(',', $ids) . ')');
 					}
 
 					$query->setLimit(self::MAX_CHOICES_ITEMS);
