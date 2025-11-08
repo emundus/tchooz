@@ -8,7 +8,8 @@ abstract class Field
 		protected string $name,
 		protected string $label,
 		protected bool $required = false,
-		protected ?FieldGroup $group = null
+		protected ?FieldGroup $group = null,
+		private ?FieldResearch $research = null,
 	) {}
 
 	public function getName(): string
@@ -42,4 +43,16 @@ abstract class Field
 	 * Retourne un tableau utilisable côté front pour construire le formulaire
 	 */
 	abstract public function toSchema(): array;
+
+	public function getResearch(): ?FieldResearch
+	{
+		return $this->research;
+	}
+
+	public function setResearch(?FieldResearch $research): self
+	{
+		$this->research = $research;
+
+		return $this;
+	}
 }

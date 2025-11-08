@@ -7,6 +7,7 @@ use Joomla\CMS\Factory;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\TableJoin;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Fabrik\ElementDatabaseJoinDisplayType;
@@ -89,6 +90,35 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 		}
 
 		return array_values($fields);
+	}
+
+	/**
+	 * @param   string  $fieldName
+	 * @param   string  $search
+	 *
+	 * @return array<ChoiceFieldValue>
+	 */
+	public function searchFieldValues(string $fieldName, string $search)
+	{
+		$values = [];
+
+		if (!empty($fieldName) && !empty($search))
+		{
+			list($formId, $elementId) = explode('.', $fieldName);
+
+			if (!empty($elementId) && !empty($formId))
+			{
+				$elements = \EmundusHelperEvents::getFormElements((int)$formId, (int)$elementId, true, [], []);
+				$element = $elements[0] ?? null;
+
+				if (!empty($element))
+				{
+					$values = FieldTransformer::getElementOptions($element, $search);
+				}
+			}
+		}
+
+		return $values;
 	}
 
 	private function initializeFormIds(): void

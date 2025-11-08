@@ -20,10 +20,8 @@ class ChoiceField extends Field
 		bool $multiple = false,
 		?FieldGroup $group = null,
 		bool $choicesGrouped = false
-		// todo: rules like displayed based on other field values
 	) {
 		parent::__construct($name, $label, $required, $group);
-
 
 		if (!empty($choices)) {
 			if (!$multiple) {
@@ -70,6 +68,10 @@ class ChoiceField extends Field
 		return $this->choicesGrouped;
 	}
 
+	public function isSearchable(): bool
+	{
+		return $this->searchable;
+	}
 
 	public function toSchema(): array
 	{
@@ -80,7 +82,8 @@ class ChoiceField extends Field
 			'choices' => array_map(fn($choice) => $choice->toSchema(), $this->choices),
 			'required' => $this->required,
 			'multiple' => $this->getMultiple(),
-			'group' => $this->getGroup()?->toSchema()
+			'group' => $this->getGroup()?->toSchema(),
+			'research' => $this->getResearch()?->serialize()
 		];
 	}
 }

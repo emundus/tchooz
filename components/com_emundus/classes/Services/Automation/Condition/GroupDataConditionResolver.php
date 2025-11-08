@@ -2,6 +2,7 @@
 
 namespace Tchooz\Services\Automation\Condition;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionTargetEntity;
@@ -51,8 +52,26 @@ class GroupDataConditionResolver implements ConditionTargetResolverInterface
 	{
 		$foundValue = null;
 
-		if (isset($context->getParameters()[$fieldName])) {
-			$foundValue = $context->getParameters()[$fieldName];
+		if (!empty($context->getFile()) || !empty($context->getUserId()))
+		{
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			if (!empty($context->getFile()))
+			{
+				$query->select('DISTINCT ' . $db->quoteName('group_id'))
+					->from($db->quoteName('#__emundus_group_assoc', 'ega'))
+					->where($db->quoteName('ega.fnum') . ' = ' . $db->quote($context->getFile()));
+			}
+			else if (!empty($context->getUserId()))
+			{
+				$query->select('DISTINCT ' . $db->quoteName('group_id'))
+					->from($db->quoteName('#__emundus_groups', 'eg'))
+					->where($db->quoteName('eg.user_id') . ' = ' . $db->quote($context->getUserId()));
+			}
+
+			$db->setQuery($query);
+			$foundValue = $db->loadColumn();
 		}
 
 		return $foundValue;

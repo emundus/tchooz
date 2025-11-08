@@ -6,6 +6,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Services\Automation\Condition\UserDataConditionResolver;
 
@@ -296,5 +297,26 @@ class FormDataConditionResolverTest extends UnitTestCase
 		$valueAfterUpdate = $this->resolver->resolveValue($userTargetContext, $fieldName);
 
 		$this->assertEquals(65, $valueAfterUpdate);
+	}
+
+	/**
+	 * @covers FormDataConditionResolver::searchFieldValues
+	 * @return void
+	 */
+	public function testSearchFieldValues()
+	{
+		$elementId = $this->h_dataset->getFormElementForTest($this->unitTesFormId, $this->h_dataset::FORM_KEYS['ELEMENT_DBJOIN']);
+		$fieldName = $this->unitTesFormId . '.' . $elementId;
+
+		$search = '';
+		$options = $this->resolver->searchFieldValues($fieldName, $search);
+		$this->assertEmpty($options, 'Search term is Required');
+
+		// search through nationality, fra should exist
+		$search = 'Fra';
+		$filteredOptions = $this->resolver->searchFieldValues($fieldName, $search);
+		$this->assertNotEmpty($filteredOptions);
+		$this->assertInstanceOf(ChoiceFieldValue::class, $filteredOptions[0]);
+		$this->assertStringContainsString('Fra', $filteredOptions[0]->getLabel());
 	}
 }
