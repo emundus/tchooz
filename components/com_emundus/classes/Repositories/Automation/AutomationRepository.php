@@ -100,7 +100,7 @@ class AutomationRepository
 
 		foreach ($filters as $field => $value)
 		{
-			if (!in_array($field, ['a.published', 'a.event_id', 'search', 'action.name']) || $value === 'all' || empty($value))
+			if (!in_array($field, ['a.published', 'a.event_id', 'search', 'action.name']) || $value === 'all' || $value === '')
 			{
 				continue;
 			}
