@@ -60,7 +60,7 @@ class StepTypeEntity
 			$this->label = $stepType->label;
 			$this->code = $stepType->code;
 			$this->action_id = $stepType->action_id;
-			$this->system = $stepType->system;
+			$this->system = $stepType->system ?? false;
 		}
 	}
 
