@@ -80,6 +80,18 @@ class ActionUpdateCartAdvanceAmount extends ActionEntity
 						}
 						else
 						{
+							// do not add alteration of type ALTER_ADVANCE_AMOUNT more than once
+							$existingAlterations = array_filter(
+								$cart->getPriceAlterations(),
+								function (AlterationEntity $alteration) {
+									return $alteration->getType() === AlterationType::ALTER_ADVANCE_AMOUNT;
+								}
+							);
+							foreach ($existingAlterations as $alteration)
+							{
+								$cart->removeAlteration($alteration);
+							}
+
 							$alteration = new AlterationEntity(
 								0,
 								$cart->getId(),
@@ -94,7 +106,7 @@ class ActionUpdateCartAdvanceAmount extends ActionEntity
 							$cart->addAlteration($alteration);
 						}
 
-						if ($cartRepository->saveCart($cart))
+						if ($cartRepository->saveCart($cart, $this->getAutomatedTaskUserId(), $executionContext))
 						{
 							$status = ActionExecutionStatusEnum::COMPLETED;
 						}
