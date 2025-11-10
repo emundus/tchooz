@@ -83,7 +83,7 @@ export default {
 									name: 'duplicate',
 								},
 								{
-									action: 'deleteAutomation',
+									action: 'delete',
 									label: 'COM_EMUNDUS_ACTIONS_DELETE',
 									controller: 'automation',
 									type: 'delete',

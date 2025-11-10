@@ -4,21 +4,26 @@ namespace Tchooz\Repositories\Automation;
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\AutomationEntity;
-use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Factories\Automation\AutomationFactory;
+use Tchooz\Repositories\EmundusRepository;
+use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Traits\TraitTable;
 
-
-class AutomationRepository
+#[TableAttribute(
+	table: '#__emundus_automation',
+	alias: 'a'
+)]
+class AutomationRepository extends EmundusRepository implements RepositoryInterface
 {
-	private DatabaseDriver $db;
+	use TraitTable;
 
-	public function __construct(?DatabaseDriver $db = null)
+	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		$this->db = $db ?? Factory::getContainer()->get('DatabaseDriver');
-		Log::addLogger(['text_file' => 'com_emundus.automation.php'], Log::ALL, 'com_emundus.automation');
+		parent::__construct($withRelations, $exceptRelations, 'automation', self::class);
 	}
 
 	/**
@@ -33,8 +38,8 @@ class AutomationRepository
 		try {
 			$query = $this->db->createQuery();
 			$query->select('COUNT(DISTINCT a.id)')
-				->from($this->db->quoteName('#__emundus_automation', 'a'))
-				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName('a.event_id') . ' = ' . $this->db->quoteName('e.id'))
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName($this->alias . '.event_id') . ' = ' . $this->db->quoteName('e.id'))
 				->where('1=1');
 
 			$this->applyFilters($filters, $query);
@@ -60,14 +65,14 @@ class AutomationRepository
 		$automations = [];
 
 		$query = $this->db->createQuery();
-		$query->select('a.*, e.label as event_label, e.description as event_description')
-			->from($this->db->quoteName('#__emundus_automation', 'a'))
-			->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName('a.event_id') . ' = ' . $this->db->quoteName('e.id'))
+		$query->select($this->alias . '.*, e.label as event_label, e.description as event_description')
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName($this->alias . '.event_id') . ' = ' . $this->db->quoteName('e.id'))
 			->where('1=1');
 
 		$this->applyFilters($filters, $query);
 
-		$query->group('a.id')
+		$query->group($this->alias . '.id')
 			->setLimit($limit, ($page - 1) * $limit);
 
 		$this->db->setQuery($query);
@@ -100,7 +105,7 @@ class AutomationRepository
 
 		foreach ($filters as $field => $value)
 		{
-			if (!in_array($field, ['a.published', 'a.event_id', 'search', 'action.name']) || $value === 'all' || $value === '')
+			if (!in_array($field, [$this->alias . '.published', $this->alias . '.event_id', 'search', 'action.name']) || $value === 'all' || $value === '')
 			{
 				continue;
 			}
@@ -129,7 +134,7 @@ class AutomationRepository
 	 *
 	 * @return AutomationEntity|null
 	 */
-	public function getAutomationById(int $id): ?AutomationEntity
+	public function getById(int $id): ?AutomationEntity
 	{
 		$automation = null;
 
@@ -137,9 +142,9 @@ class AutomationRepository
 		{
 			$query = $this->db->createQuery();
 			$query->select('a.*, e.label as event_label, e.description as event_description')
-				->from($this->db->quoteName('#__emundus_automation', 'a'))
-				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName('a.event_id') . ' = ' . $this->db->quoteName('e.id'))
-				->where($this->db->quoteName('a.id') . ' = ' . $id);
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName($this->alias . '.event_id') . ' = ' . $this->db->quoteName('e.id'))
+				->where($this->db->quoteName($this->alias . '.id') . ' = ' . $id);
 
 			$this->db->setQuery($query);
 			$result = $this->db->loadObject();
@@ -165,11 +170,11 @@ class AutomationRepository
 		if (!empty($eventName))
 		{
 			$query = $this->db->createQuery();
-			$query->select('automation.*, event.label as event_label, event.description as event_description')
-				->from($this->db->quoteName('#__emundus_automation', 'automation'))
-				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'event') . ' ON ' . $this->db->quoteName('automation.event_id') . ' = ' . $this->db->quoteName('event.id'))
+			$query->select($this->alias . '.*, event.label as event_label, event.description as event_description')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'event') . ' ON ' . $this->db->quoteName($this->alias . '.event_id') . ' = ' . $this->db->quoteName('event.id'))
 				->where($this->db->quoteName('event.label') . ' = ' . $this->db->quote($eventName))
-				->andWhere($this->db->quoteName('automation.published') . ' = 1');
+				->andWhere($this->db->quoteName($this->alias . '.published') . ' = 1');
 
 			$this->db->setQuery($query);
 			$results = $this->db->loadObjectList();
@@ -201,7 +206,7 @@ class AutomationRepository
 		$query = $this->db->createQuery();
 		if ($automation->getId() > 0)
 		{
-			$query->update($this->db->quoteName('#__emundus_automation'))
+			$query->update($this->db->quoteName($this->tableName))
 				->set($this->db->quoteName('event_id') . ' = ' . $automation->getEvent()->getId())
 				->set($this->db->quoteName('name') . ' = ' . $this->db->quote($automation->getName()))
 				->set($this->db->quoteName('description') . ' = ' . $this->db->quote($automation->getDescription()))
@@ -335,7 +340,7 @@ class AutomationRepository
 				'event_id'    => $automation->getEvent()->getId(),
 				'published'   => $automation->isPublished() ? 1 : 0,
 			];
-			$inserted = $this->db->insertObject('#__emundus_automation', $automationObj);
+			$inserted = $this->db->insertObject($this->tableName, $automationObj);
 
 			if ($inserted)
 			{
@@ -395,7 +400,7 @@ class AutomationRepository
 		if (!empty($ids))
 		{
 			$query = $this->db->createQuery();
-			$query->update($this->db->quoteName('#__emundus_automation'))
+			$query->update($this->db->quoteName($this->tableName))
 				->set($this->db->quoteName('published') . ' = ' . ($published ? 1 : 0))
 				->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
 
@@ -457,20 +462,20 @@ class AutomationRepository
 			$clonedAutomation->setConditionsGroups($clonedConditionGroups);
 
 			if ($this->flush($clonedAutomation)) {
-				$duplicatedAutomation = $this->getAutomationById($clonedAutomation->getId());
+				$duplicatedAutomation = $this->getById($clonedAutomation->getId());
 			}
 		}
 
 		return $duplicatedAutomation;
 	}
 
-	public function deleteAutomation(int $id): bool
+	public function delete(int $id): bool
 	{
 		$deleted = false;
 
 		if (!empty($id) && $id > 0)
 		{
-			$automation = $this->getAutomationById($id);
+			$automation = $this->getById($id);
 			if ($automation)
 			{
 				$conditionRepository = new ConditionRepository($this->db);
@@ -484,7 +489,7 @@ class AutomationRepository
 				}
 
 				$query = $this->db->createQuery();
-				$query->delete($this->db->quoteName('#__emundus_automation'))
+				$query->delete($this->db->quoteName($this->tableName))
 					->where($this->db->quoteName('id') . ' = ' . $id);
 
 				$deleted = (bool) $this->db->setQuery($query)->execute();

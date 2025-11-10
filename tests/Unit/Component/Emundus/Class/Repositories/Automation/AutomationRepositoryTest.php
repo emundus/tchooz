@@ -89,7 +89,7 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertTrue($updated);
 
 		// Retrieve and verify the update
-		$retrievedAutomation = $this->repository->getAutomationById($automation->getId());
+		$retrievedAutomation = $this->repository->getById($automation->getId());
 		$this->assertNotNull($retrievedAutomation);
 		$this->assertEquals('Updated Test Automation', $retrievedAutomation->getName());
 		$this->assertEquals('This is an updated test automation', $retrievedAutomation->getDescription());
@@ -103,7 +103,7 @@ class AutomationRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AutomationRepository::deleteAutomation
+	 * @covers AutomationRepository::delete
 	 * @return void
 	 */
 	public function testDelete()
@@ -121,15 +121,15 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertTrue($saved);
 		$this->assertGreaterThan(0, $automation->getId());
 
-		$deleted = $this->repository->deleteAutomation($automation->getId());
+		$deleted = $this->repository->delete($automation->getId());
 		$this->assertTrue($deleted);
 
-		$retrievedAutomation = $this->repository->getAutomationById($automation->getId());
+		$retrievedAutomation = $this->repository->getById($automation->getId());
 		$this->assertNull($retrievedAutomation);
 	}
 
 	/**
-	 * @covers AutomationRepository::getAutomationById
+	 * @covers AutomationRepository::getById
 	 * @return void
 	 */
 	public function testGetAutomationById()
@@ -151,7 +151,7 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertTrue($saved);
 		$this->assertGreaterThan(0, $automation->getId());
 
-		$retrievedAutomation = $this->repository->getAutomationById($automation->getId());
+		$retrievedAutomation = $this->repository->getById($automation->getId());
 		$this->assertNotNull($retrievedAutomation);
 		$this->assertEquals($automation->getId(), $retrievedAutomation->getId());
 		$this->assertEquals($automation->getName(), $retrievedAutomation->getName());

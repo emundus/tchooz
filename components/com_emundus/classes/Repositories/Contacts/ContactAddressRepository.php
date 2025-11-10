@@ -20,7 +20,7 @@ use Tchooz\Traits\TraitTable;
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitTable.php';
 
 #[TableAttribute(table: '#__emundus_contacts_address')]
-readonly class ContactAddressRepository
+class ContactAddressRepository
 {
 	use TraitTable;
 

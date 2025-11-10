@@ -12,17 +12,35 @@ namespace Tchooz\Repositories;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Traits\TraitTable;
 
 class EmundusRepository
 {
+	use TraitTable;
+
 	protected bool $withRelations;
 	protected array $exceptRelations = [];
 
 	protected DatabaseInterface $db;
 
-	public function __construct($withRelations = true, $exceptRelations = [], $name = '')
+	protected string $tableName = '';
+	protected string $primaryKey = 'id';
+	protected string $alias = 't';
+	protected array $columns = [];
+
+	public function __construct(
+		$withRelations = true,
+		$exceptRelations = [],
+		$name = '',
+		$className = self::class
+	)
 	{
 		$this->db              = Factory::getContainer()->get('DatabaseDriver');
+
+		$this->tableName = $this->getTableName($className);
+		$this->alias 	 = $this->getTableAlias($className);
+		$this->columns   = $this->getTableColumns($className);
+
 		$this->withRelations   = $withRelations;
 		$this->exceptRelations = $exceptRelations;
 

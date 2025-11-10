@@ -19,7 +19,7 @@ use Tchooz\Traits\TraitTable;
 require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitTable.php';
 
 #[TableAttribute(table: '#__emundus_contacts_countries')]
-readonly class ContactCountryRepository
+class ContactCountryRepository
 {
 	use TraitTable;
 

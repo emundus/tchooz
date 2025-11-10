@@ -20,7 +20,7 @@ use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_setup_actions')]
-readonly class ActionRepository
+class ActionRepository
 {
 	use TraitTable;
 

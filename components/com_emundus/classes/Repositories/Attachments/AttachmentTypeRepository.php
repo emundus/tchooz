@@ -15,7 +15,7 @@ use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseInterface;
 
 #[TableAttribute(table: '#__emundus_setup_attachments')]
-readonly class AttachmentTypeRepository
+class AttachmentTypeRepository
 {
 	use TraitTable;
 

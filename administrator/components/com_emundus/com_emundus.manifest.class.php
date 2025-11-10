@@ -85,6 +85,8 @@ class Com_EmundusInstallerScript
 
 			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
 		}
+
+		$this->generateAutoloadTables();
 	}
 
 	public function install(object $parent): bool
@@ -1794,5 +1796,63 @@ class Com_EmundusInstallerScript
 		}
 
 		return $checked;
+	}
+
+	private function generateAutoloadTables(): void
+	{
+		// Regenerate autoload_tables file located in JPATH_CACHE. Check only files in components/com_emundus/classes/Repositories directory
+		$repositoryPath = JPATH_SITE . '/components/com_emundus/classes/Repositories';
+		$outputFile = JPATH_CACHE . '/autoload_tables.php';
+
+		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($repositoryPath));
+		$phpFiles = new RegexIterator($files, '/\.php$/');
+
+		$map = [];
+
+		foreach ($phpFiles as $file)
+		{
+			$contents = file_get_contents($file->getPathname());
+			
+			// Search namespace declaration
+			preg_match('/namespace\s+([^;]+);/', $contents, $namespaceMatches);
+			$namespace = $namespaceMatches[1] ?? '';
+
+			// Search class declaration
+			preg_match('/class\s+([^\s{]+)/', $contents, $classMatches);
+			$class = $classMatches[1] ?? '';
+
+			if (!empty($namespace) && !empty($class))
+			{
+				$fqcn = $namespace . '\\' . $class;
+				try {
+					require_once $file->getPathname();
+					if (!class_exists($fqcn, false)) {
+						continue;
+					}
+
+					$ref = new ReflectionClass($fqcn);
+					$attrs = $ref->getAttributes('Tchooz\Attributes\TableAttribute');
+					if (count($attrs) > 0) {
+						$instance = $attrs[0]->newInstance();
+
+						$map[$fqcn] = [
+							'table' => $instance->table,
+							'alias' => $instance->alias,
+							'columns' => $instance->columns,
+						];
+					}
+
+				} catch (Throwable $e) {
+					// Ignore classes that fail to load during scanning
+				}
+			}
+		}
+
+		$export = var_export($map, true);
+		$export = preg_replace(['/\barray\s*\(/', '/\)(,)?/'], ['[', ']$1'], $export);
+		$php = "<?php\ndefined('_JEXEC') or die;\nreturn $export;\n";
+		$tmp ='autoload_tables.php' . '.tmp';
+		file_put_contents($tmp, $php);
+		rename($tmp, $outputFile);
 	}
 }
