@@ -125,6 +125,7 @@ class ConditionEntity
 				$foundValue = $resolver->resolveValue($context, $this->field);
 			} catch (\Exception $e) {
 				Log::add('Error resolving condition value: ' . $e->getMessage(), Log::ERROR, 'com_emundus.condition.entity');
+				return false;
 			}
 		}
 		else
@@ -154,6 +155,7 @@ class ConditionEntity
 					$this->operator,
 					$this->getMatchMode()
 				);
+				break;
 			}
 		}
 
