@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
+use phpDocumentor\Reflection\Types\Self_;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesState;
@@ -24,26 +25,27 @@ use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Traits\TraitTable;
+use function Symfony\Component\String\s;
 
-#[TableAttribute(table: '#__emundus_campaign_candidature_choices')]
+#[TableAttribute(
+	table: '#__emundus_campaign_candidature_choices',
+	alias: 'eccc',
+	columns: [
+		'id',
+		'campaign_id',
+		'fnum',
+		'user_id',
+		'state',
+		'order',
+	]
+)]
 class ApplicationChoicesRepository extends EmundusRepository implements RepositoryInterface
 {
-	use TraitTable;
-
 	private ApplicationChoicesFactory $factory;
-
-	private const COLUMNS = [
-		't.id',
-		't.campaign_id',
-		't.fnum',
-		't.user_id',
-		't.state',
-		't.order',
-	];
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'application_choices');
+		parent::__construct($withRelations, $exceptRelations, 'application_choices', self::class);
 
 		$this->factory = new ApplicationChoicesFactory();
 	}
@@ -78,7 +80,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			];
 
 
-			if($this->db->insertObject($this->getTableName(self::class), $insert))
+			if($this->db->insertObject($this->tableName, $insert))
 			{
 				$entity->setId($this->db->insertid());
 
@@ -98,7 +100,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 				'order'       => $entity->getOrder(),
 			];
 
-			return $this->db->updateObject($this->getTableName(self::class), $update, 'id');
+			return $this->db->updateObject($this->tableName, $update, 'id');
 		}
 	}
 
@@ -111,7 +113,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			$query = $this->db->getQuery(true);
 
 			$query->clear()
-				->delete($this->getTableName(self::class))
+				->delete($this->tableName)
 				->where('id = ' . $id);
 
 			try
@@ -133,9 +135,9 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		$application_choice_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.id = ' . $this->db->quote($id));
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->alias.'.id = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
 		$application_choice = $this->db->loadAssoc();
 
@@ -319,13 +321,13 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 	{
 		$query = $this->db->getQuery(true);
 
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->order('t.order ASC');
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->order($this->alias.'.order ASC');
 
 		if(!empty($fnum))
 		{
-			$query->where('t.fnum = ' . $this->db->quote($fnum));
+			$query->where($this->alias.'.fnum = ' . $this->db->quote($fnum));
 		}
 
 		if (!empty($user_programs))
@@ -333,17 +335,17 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			$query->leftJoin(
 				$this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') .
 				' ON ' .
-				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName('t.fnum'))
+				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias.'.fnum'))
 				->leftJoin(
 					$this->db->quoteName($this->getTableName(CampaignRepository::class), 'c') .
 					' ON ' .
-					$this->db->quoteName('c.id') . ' = ' . $this->db->quoteName('t.campaign_id'))
+					$this->db->quoteName('c.id') . ' = ' . $this->db->quoteName($this->alias.'.campaign_id'))
 				->where('c.training IN (' . implode(',', array_map([$this->db, 'quote'], $user_programs)) . ')');
 		}
 
 		if (!empty($state))
 		{
-			$query->where('t.state = ' . $this->db->quote($state->value));
+			$query->where($this->alias.'.state = ' . $this->db->quote($state->value));
 		}
 
 		return $query;

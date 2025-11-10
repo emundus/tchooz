@@ -1047,7 +1047,7 @@ class Dataset
 		$repository = new AutomationRepository();
 		$automations = $repository->getAutomations();
 		foreach ($automations as $automation) {
-			$repository->deleteAutomation($automation->getId());
+			$repository->delete($automation->getId());
 		}
 	}
 
@@ -1097,7 +1097,7 @@ class Dataset
 						$repository = new AutomationRepository();
 						foreach ($items as $id)
 						{
-							$repository->deleteAutomation($id);
+							$repository->delete($id);
 						}
 						break;
 					case 'tasks':

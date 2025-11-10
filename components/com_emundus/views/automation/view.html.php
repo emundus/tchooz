@@ -63,7 +63,7 @@ class EmundusViewAutomation extends JViewLegacy
 				$this->eventDefinitions = $eventDefinitionRegistry->getAvailableEventDefinitionsSchema();
 				$automationId = $jinput->getInt('id', 0);
 				if ($automationId > 0) {
-					$automation = $this->automationRepository->getAutomationById($automationId);
+					$automation = $this->automationRepository->getById($automationId);
 					if ($automation) {
 						$this->automation = $automation;
 					} else {

@@ -52,7 +52,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 				// get the automation conditions on this target type to load by default already selected fields
 				$automationId = (int)$contextFilters['automationId'];
 				$automationRepository = new AutomationRepository();
-				$automation = $automationRepository->getAutomationById($automationId);
+				$automation = $automationRepository->getById($automationId);
 
 				foreach ($automation->getConditionsGroups() as $conditionGroup) {
 					assert($conditionGroup instanceof ConditionGroupEntity);

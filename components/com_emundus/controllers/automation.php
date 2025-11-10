@@ -342,7 +342,7 @@ class EmundusControllerAutomation extends BaseController
 
 			if ($automationId > 0)
 			{
-				$deleted = $this->automationRepository->deleteAutomation($automationId);
+				$deleted = $this->automationRepository->delete($automationId);
 
 				if ($deleted) {
 					$response['status'] = true;
@@ -373,7 +373,7 @@ class EmundusControllerAutomation extends BaseController
 
 			if ($id > 0)
 			{
-				$automation = $this->automationRepository->getAutomationById($id);
+				$automation = $this->automationRepository->getById($id);
 
 				if (!empty($automation)) {
 					$newAutomation = $this->automationRepository->duplicateAutomation($automation);
