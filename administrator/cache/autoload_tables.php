@@ -111,6 +111,14 @@ return [
       5 => 'order',
     ],
   ],
+  'Tchooz\\Repositories\\ApplicationFile\\ApplicationFileRepository' => 
+  [
+    'table' => '#__emundus_campaign_candidature',
+    'alias' => '#__emundus_campaign_candidature',
+    'columns' => 
+    [
+    ],
+  ],
   'Tchooz\\Repositories\\User\\EmundusUserRepository' => 
   [
     'table' => '#__emundus_users',
@@ -151,6 +159,14 @@ return [
     [
     ],
   ],
+  'Tchooz\\Repositories\\Automation\\AutomationRepository' => 
+  [
+    'table' => '#__emundus_automation',
+    'alias' => 'a',
+    'columns' => 
+    [
+    ],
+  ],
   'Tchooz\\Repositories\\Automation\\TargetRepository' => 
   [
     'table' => '#__emundus_automation_target',
@@ -171,6 +187,14 @@ return [
   [
     'table' => '#__emundus_setup_attachments',
     'alias' => '#__emundus_setup_attachments',
+    'columns' => 
+    [
+    ],
+  ],
+  'Tchooz\\Repositories\\Analytics\\PageAnalyticsRepository' => 
+  [
+    'table' => '#__emundus_page_analytics',
+    'alias' => '#__emundus_page_analytics',
     'columns' => 
     [
     ],
