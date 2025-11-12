@@ -12,39 +12,43 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\Text;
-use Tchooz\Entities\Payment\CartEntity;
-use Tchooz\Repositories\Payment\CartRepository;
-use Tchooz\Repositories\Payment\PaymentRepository;
-use Tchooz\Repositories\Payment\ProductRepository;
-use Tchooz\Entities\Payment\PaymentStepEntity;
-use Joomla\CMS\Event\GenericEvent;
-use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\MVC\View\HtmlView;
+use Joomla\CMS\User\User;
 
-require_once(JPATH_ROOT . '/components/com_emundus/models/payment.php');
-
-/**
- * eMundus Onboard Campaign View
- *
- * @since  0.0.1
- */
-class EmundusViewApplication_choices extends JViewLegacy
+class EmundusViewApplication_choices extends HtmlView
 {
 
-	public $hash = '';
-	public $user = null;
+	protected string $hash = '';
+
+	protected ?User $user = null;
+
+	protected string $fnum = '';
 
 	public int $item_id = 0;
 
 	function display($tpl = null)
 	{
 		$app = Factory::getApplication();
-		$this->user = $app->getIdentity();
+		$this->user = $this->getCurrentUser();
 
-		require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+		if(!class_exists('EmundusHelperCache'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+		}
 		$this->hash = EmundusHelperCache::getCurrentGitHash();
-		$jinput = $app->input;
-		$layout = $jinput->getString('layout', 'default');
+
+		$this->fnum = $app->input->getString('fnum');
+		if(!empty($this->fnum))
+		{
+			if(!class_exists('EmundusModelProfile'))
+			{
+				require_once JPATH_ROOT . '/components/com_emundus/models/profile.php';
+			}
+			$m_profile = new EmundusModelProfile();
+			$m_profile->initEmundusSession($this->fnum);
+		}
+
+		$layout = $app->input->getString('layout', 'default');
 
 		parent::display($tpl);
 	}

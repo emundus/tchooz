@@ -1766,7 +1766,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			$choicesConfiguration['crud'] = [
 				'r' => EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'r', $this->_user->id, $current_fnum),
-				'c' => empty($confirmed_choices) ? EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'c', $this->_user->id, $current_fnum) : 0,
+				'c' => EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'c', $this->_user->id, $current_fnum),
 				'u' => empty($confirmed_choices) ? EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $current_fnum) : 0,
 				'd' => empty($confirmed_choices) ? EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'd', $this->_user->id, $current_fnum) : 0,
 			];
