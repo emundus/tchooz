@@ -4022,7 +4022,6 @@ class EmundusModelSettings extends ListModel
 					break;
 				case 'anonymous':
 				case 'sms':
-				case 'payment':
 					$query->select('value')
 						->from($this->db->quoteName('#__emundus_setup_config'))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
@@ -4037,36 +4036,7 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
-					if ($type === 'payment')
-					{
-						$payment_repository = new PaymentRepository();
-						$payment_action_id  = $payment_repository->getActionId();
-						$query->clear()
-							->update($this->db->quoteName('#__emundus_setup_step_types'));
-
-						if ($enabled)
-						{
-							$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(1));
-						}
-						else
-						{
-							$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(0));
-						}
-
-						$query->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($payment_action_id));
-
-						$this->db->setQuery($query);
-						$updated = $this->db->execute();
-
-						$query->clear()
-							->update($this->db->quoteName('jos_emundus_plugin_events'))
-							->set($this->db->quoteName('available') . ' = ' . $enabled)
-							->where($this->db->quoteName('label') . ' IN (' . implode(',', $this->db->quote(['onAfterEmundusCartUpdate', 'onBeforeEmundusCartRender', 'onAfterEmundusTransactionUpdate', 'onAfterLoadEmundusPaymentStep'])) . ')');
-
-						$this->db->setQuery($query);
-						$updated = $this->db->execute();
-					}
-					else if ($type === 'anonymous')
+					if ($type === 'anonymous')
 					{
 						$query->clear()
 							->update($this->db->quoteName('#__menu'))

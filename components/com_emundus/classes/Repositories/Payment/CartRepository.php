@@ -12,7 +12,6 @@ use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Entities\Payment\PaymentStepEntity;
-use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
@@ -81,80 +80,100 @@ class CartRepository
 		return $campaign_id;
 	}
 
+	/**
+	 * @param   string  $fnum
+	 * @param   int     $step_id
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
 	public function createCart(string $fnum, int $step_id): int
 	{
 		$cart_id = 0;
 
-		$cart = new CartEntity(0);
-		$cart->setFnum($fnum);
-		$cart->setPublished(1);
-		$file_campaign_id = $this->getCampaignIdFromCart($cart);
+		if (!empty($fnum))
+		{
+			$contact_repository = new ContactRepository();
+			$customer = $contact_repository->getByFnum($fnum);
 
-		if (!empty($step_id)) {
-			$payment_repository = new PaymentRepository();
-			$payment_step = $payment_repository->getPaymentStepById($step_id, $fnum);
-			if (!empty($payment_step)) {
-				$cart->setPaymentMethods($payment_step->getPaymentMethods());
-				$cart->setSelectedPaymentMethod($payment_step->getPaymentMethods()[0]);
-				$cart->setPaymentStep($payment_step);
+			if (empty($customer)) {
+				$applicantId = \EmundusHelperFiles::getApplicantIdFromFnum($fnum);
 
-				foreach ($payment_step->getProducts() as $product) {
-					if ((empty($product->getCampaigns()) || in_array($file_campaign_id, $product->getCampaigns())))
-					{
-						$cart->addAvailableProduct($product);
-						if ($product->getMandatory()) {
-							$cart->addProduct($product);
+				if (!empty($applicantId))
+				{
+					$customer = $this->createCartUser($applicantId);
+				}
+				else
+				{
+					throw new \Exception(Text::_('COM_EMUNDUS_ERROR_CART_CUSTOMER_NOT_FOUND'));
+				}
+			}
+
+			$cart = new CartEntity(
+				id: 0,
+				fnum: $fnum,
+				customer: $customer,
+				published: 1
+			);
+			$file_campaign_id = $this->getCampaignIdFromCart($cart);
+
+			if (!empty($step_id)) {
+				$payment_repository = new PaymentRepository();
+				$payment_step = $payment_repository->getPaymentStepById($step_id, $fnum);
+
+				if (!empty($payment_step)) {
+					$cart->setPaymentMethods($payment_step->getPaymentMethods());
+					$cart->setSelectedPaymentMethod($payment_step->getPaymentMethods()[0]);
+					$cart->setPaymentStep($payment_step);
+
+					foreach ($payment_step->getProducts() as $product) {
+						if ((empty($product->getCampaigns()) || in_array($file_campaign_id, $product->getCampaigns())))
+						{
+							$cart->addAvailableProduct($product);
+							if ($product->getMandatory()) {
+								$cart->addProduct($product);
+							}
 						}
+					}
+
+					switch($payment_step->getAdvanceType()) {
+						case 1: // free choice
+							$cart->setAllowedToPayAdvance(true);
+							$cart->setAdvanceAmount($payment_step->getAdvanceAmount());
+							$cart->setAdvanceAmountType($payment_step->getAdvanceAmountType());
+							break;
+						case 2: // forced to pay advance
+							$cart->setAllowedToPayAdvance(true);
+							$cart->setAdvanceAmount($payment_step->getAdvanceAmount());
+							$cart->setAdvanceAmountType($payment_step->getAdvanceAmountType());
+
+							if ($cart->getPayAdvance() == 0)
+							{
+								$cart->setPayAdvance(1);
+							}
+							break;
+						case 0: // forbidd pay advance
+						default:
+							$cart->setAllowedToPayAdvance(false);
+
+							if ($cart->getPayAdvance() == 1) {
+								$cart->setPayAdvance(0);
+							}
+							break;
 					}
 				}
 
-				switch($payment_step->getAdvanceType()) {
-					case 1: // free choice
-						$cart->setAllowedToPayAdvance(true);
-						$cart->setAdvanceAmount($payment_step->getAdvanceAmount());
-						$cart->setAdvanceAmountType($payment_step->getAdvanceAmountType());
-						break;
-					case 2: // forced to pay advance
-						$cart->setAllowedToPayAdvance(true);
-						$cart->setAdvanceAmount($payment_step->getAdvanceAmount());
-						$cart->setAdvanceAmountType($payment_step->getAdvanceAmountType());
+				$cart->calculateTotal();
+				$saved = $this->saveCart($cart);
 
-						if ($cart->getPayAdvance() == 0)
-						{
-							$cart->setPayAdvance(1);
-						}
-						break;
-					case 0: // forbidd pay advance
-					default:
-						$cart->setAllowedToPayAdvance(false);
-
-						if ($cart->getPayAdvance() == 1) {
-							$cart->setPayAdvance(0);
-						}
-						break;
+				if ($saved) {
+					$cart_id = $cart->getId();
 				}
 			}
-
-			$query = $this->db->createQuery();
-			$query->select($this->db->quoteName(['applicant_id']))
-				->from($this->db->quoteName('jos_emundus_campaign_candidature'))
-				->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($fnum));
-			$this->db->setQuery($query);
-			$user_id = $this->db->loadResult();
-			$contact_repository = new ContactRepository();
-			$customer = $contact_repository->getByUserId($user_id);
-
-			if (empty($customer)) {
-				$customer = $this->createCartUser($user_id);
-			}
-
-			$cart->setCustomer($customer);
-			$cart->calculateTotal();
-			$saved = $this->saveCart($cart);
-
-			if ($saved) {
-				$cart_id = $cart->getId();
-			}
+		}
+		else
+		{
+			throw new \Exception(Text::_('COM_EMUNDUS_ERROR_CART_FNUM_EMPTY'));
 		}
 
 		return $cart_id;
@@ -206,17 +225,12 @@ class CartRepository
 				$this->db->setQuery($query);
 				$product_ids = $this->db->loadColumn();
 
-				if ($product_ids) {
-					foreach ($product_ids as $product_id) {
-						try {
-							$product_entity = new ProductEntity($product_id);
+				if (!empty($product_ids)) {
+					$productRepository = new ProductRepository();
+					$products = $productRepository->getProducts(0, 1, ['p.id' => $product_ids]);
 
-							if (!empty($product_entity->getId())) {
-								$cart_entity->addProduct($product_entity);
-							}
-						} catch (\Exception $e) {
-							Log::add('Error loading cart product : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.cart');
-						}
+					foreach ($products as $product) {
+						$cart_entity->addProduct($product);
 					}
 				}
 				$contact_repository = new ContactRepository();
@@ -261,7 +275,11 @@ class CartRepository
 						}
 
 						if (!empty($alteration->product_id)) {
-							$product = new ProductEntity($alteration->product_id);
+							if (!isset($productRepository))
+							{
+								$productRepository = new ProductRepository();
+							}
+							$product = $productRepository->getProductById($alteration->product_id);
 							$price_alterations[$key]->setProduct($product);
 						}
 					}
@@ -289,6 +307,36 @@ class CartRepository
 						$this->loadAdjustBalanceStep($cart_entity, $payment_step->getAdjustBalanceStepId());
 					} catch (EmundusAdjustBalanceAlreadyAddedException $e) {
 						Log::add('Adjust balance was already in cart : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.cart');
+					}
+				}
+
+				$productRepository = new ProductRepository();
+				if (!empty($payment_step->getMandatoryProductCategories())) {
+					$categoryIds = array_map(function($category) {
+						return $category->getId();
+					}, $payment_step->getMandatoryProductCategories());
+
+					$products = $productRepository->getProducts(0, 1, ['p.category_id' => $categoryIds]);
+					foreach ($products as $product) {
+						if ((empty($product->getCampaigns()) || in_array($file_campaign_id, $product->getCampaigns()))) {
+							$product->setMandatory(1);
+							$cart_entity->addAvailableProduct($product);
+							$cart_entity->addProduct($product);
+						}
+					}
+				}
+
+				if (!empty($payment_step->getOptionalProductCategories()))
+				{
+					$categoryIds = array_map(function($category) {
+						return $category->getId();
+					}, $payment_step->getOptionalProductCategories());
+
+					$products = $productRepository->getProducts(0, 1, ['p.category_id' => $categoryIds]);
+					foreach ($products as $product) {
+						if ((empty($product->getCampaigns()) || in_array($file_campaign_id, $product->getCampaigns()))) {
+							$cart_entity->addAvailableProduct($product);
+						}
 					}
 				}
 
@@ -348,9 +396,10 @@ class CartRepository
 
 			$payment_step = $cart_entity->getPaymentStep();
 			$step_mandatory_products = $payment_step->getProducts();
+			$productRepository = new ProductRepository();
 			foreach ($data['products'] as $product)
 			{
-				$product_entity = new ProductEntity($product['id']);
+				$product_entity = $productRepository->getProductById($product->getId());
 				$product_entity->setMandatory(1);
 				$cart_entity->addAvailableProduct($product_entity);
 				$cart_entity->addProduct($product_entity);
@@ -372,9 +421,10 @@ class CartRepository
 
 			if (!empty($data['alterations'])) {
 				$discount_repository = new DiscountRepository();
+				$product_repository = new ProductRepository();
 				foreach ($data['alterations'] as $alteration) {
 					if (!empty($alteration['product_id'])) {
-						$product = new ProductEntity($alteration['product_id']);
+						$product = $product_repository->getProductById($alteration['product_id']);
 					} else {
 						$product = null;
 					}
@@ -432,7 +482,7 @@ class CartRepository
 			$this->db->setQuery($query);
 			$contact = $this->db->loadObject();
 
-			if ($contact) {
+			if (!empty($contact)) {
 				$contact_entity = new ContactEntity($contact->email, $contact->lastname, $contact->firstname, null, 0, $user_id);
 				$contact_repository->flush($contact_entity);
 			} else {
@@ -449,147 +499,162 @@ class CartRepository
 
 		$query = $this->db->createQuery();
 
-		if (empty($cart_entity->getId())) {
-			$step_value = 'NULL';
+		try {
+			if (empty($cart_entity->getId())) {
+				$values = [
+					$this->db->quote($cart_entity->getFnum()),
+					!empty($cart_entity->getStepId()) ? $this->db->quote($cart_entity->getStepId()) : 'NULL',
+					$this->db->quote($cart_entity->getTotal()),
+					$this->db->quote($cart_entity->getCustomer()->getUserId()),
+					$this->db->quote($cart_entity->getPublished()),
+					$cart_entity->getSelectedPaymentMethod() ? $this->db->quote($cart_entity->getSelectedPaymentMethod()->getId()) : 'NULL',
+					$this->db->quote(date('Y-m-d H:i:s')),
+					$this->db->quote($user_id),
+					$this->db->quote($cart_entity->getPayAdvance()),
+					$this->db->quote($cart_entity->getNumberInstallmentDebit()),
+					$this->db->quote($cart_entity->getInstallmentMonthday())
+				];
 
-			if (!empty($cart_entity->getStepId())) {
-				$step_value = $this->db->quote($cart_entity->getStepId());
-			}
-
-			$query->insert($this->db->quoteName('jos_emundus_cart'))
-				->columns($this->db->quoteName(['fnum', 'step_id', 'total', 'user_id', 'published', 'payment_method_id', 'created_at', 'created_by', 'pay_advance', 'number_installment_debit', 'installment_monthday']))
-				->values($this->db->quote($cart_entity->getFnum()) . ', ' . $step_value . ', ' . $this->db->quote($cart_entity->getTotal()) . ', ' . $this->db->quote($cart_entity->getCustomer()->getUserId()) . ', ' . $this->db->quote($cart_entity->getPublished()) . ', ' . $this->db->quote($cart_entity->getSelectedPaymentMethod()->getId()) . ', ' . $this->db->quote(date('Y-m-d H:i:s')) . ', ' . $this->db->quote($user_id). ', '. $this->db->quote($cart_entity->getPayAdvance()) . ', ' . $this->db->quote($cart_entity->getNumberInstallmentDebit()) . ', ' . $this->db->quote($cart_entity->getInstallmentMonthday()));
-
-			$this->db->setQuery($query);
-			$saved = $this->db->execute();
-
-			if ($saved) {
-				$cart_entity->setId($this->db->insertid());
-
-				// save products
-				foreach ($cart_entity->getProducts() as $product) {
-					$query->clear()
-						->insert($this->db->quoteName('jos_emundus_cart_product'))
-						->columns($this->db->quoteName(['cart_id', 'product_id']))
-						->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()));
-					$this->db->setQuery($query);
-					$this->db->execute();
-				}
-
-				foreach ($cart_entity->getPriceAlterations() as $alteration)
-				{
-					$product_id = null;
-					if (empty($alteration->getProduct()))
-					{
-						$product_id = 'NULL';
-					} else {
-						$product_id = $this->db->quote($alteration->getProduct()->getId());
-					}
-
-					if (empty($alteration->getDiscount()))
-					{
-						$discount_id = 'NULL';
-					} else {
-						$discount_id = $this->db->quote($alteration->getDiscount()->getId());
-					}
-
-					$created_at = empty($alteration->getCreatedAt()) ? date('Y-m-d H:i:s') : $alteration->getCreatedAt()->format('Y-m-d H:i:s');
-					$created_by = empty($alteration->getCreatedBy()) ? $user_id : $alteration->getCreatedBy();
-
-					$query->clear()
-						->insert($this->db->quoteName('jos_emundus_price_alteration'))
-						->columns($this->db->quoteName(['cart_id', 'discount_id', 'amount', 'description', 'type', 'created_at', 'created_by', 'product_id', 'updated_at', 'updated_by']))
-						->values($this->db->quote($cart_entity->getId()) . ', ' . $discount_id . ', ' . $this->db->quote($alteration->getAmount()) . ', ' . $this->db->quote($alteration->getDescription()) . ', ' . $this->db->quote($alteration->getType()->value) . ', ' . $this->db->quote($created_at) . ', ' . $this->db->quote($created_by) . ', ' . $product_id . ', ' . $this->db->quote(date('Y-m-d H:i:s')) . ', ' . $this->db->quote($user_id));
-
-					$this->db->setQuery($query);
-					$this->db->execute();
-				}
-			}
-		}
-		else
-		{
-			$query->update($this->db->quoteName('jos_emundus_cart'))
-				->set($this->db->quoteName('published') . ' = ' . $this->db->quote($cart_entity->published))
-				->set($this->db->quoteName('total') . ' = ' . $this->db->quote($cart_entity->getTotal()))
-				->set($this->db->quoteName('user_id') . ' = ' . $this->db->quote($cart_entity->getCustomer()->getUserId()))
-				->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($cart_entity->fnum))
-				->set($this->db->quoteName('pay_advance') . ' = ' . $this->db->quote($cart_entity->getPayAdvance()))
-				->set($this->db->quoteName('number_installment_debit') . ' = ' . $this->db->quote($cart_entity->getNumberInstallmentDebit()))
-				->set($this->db->quoteName('installment_monthday') . ' = ' . $this->db->quote($cart_entity->getInstallmentMonthday()))
-				->set($this->db->quoteName('updated_at') . ' = ' . $this->db->quote(date('Y-m-d H:i:s')))
-				->set($this->db->quoteName('updated_by') . ' = ' . $this->db->quote($user_id))
-				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($cart_entity->getId()));
-
-			if (!empty($cart_entity->getStepId())) {
-				$query->set($this->db->quoteName('step_id') . ' = ' . $this->db->quote($cart_entity->getStepId()));
-			} else {
-				$query->set($this->db->quoteName('step_id') . ' = NULL');
-			}
-
-			if (!empty($cart_entity->getSelectedPaymentMethod())) {
-				$query->set($this->db->quoteName('payment_method_id') . ' = ' . $this->db->quote($cart_entity->getSelectedPaymentMethod()->getId()));
-			} else {
-				$query->set($this->db->quoteName('payment_method_id') . ' = NULL');
-			}
-
-			$this->db->setQuery($query);
-			$saved = $this->db->execute();
-
-			if ($saved) {
-				// reset products
-				$query->clear()
-					->delete($this->db->quoteName('jos_emundus_cart_product'))
-					->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart_entity->getId()));
+				$query->insert($this->db->quoteName('jos_emundus_cart'))
+					->columns($this->db->quoteName([
+						'fnum', 'step_id', 'total', 'user_id', 'published', 'payment_method_id',
+						'created_at', 'created_by', 'pay_advance', 'number_installment_debit', 'installment_monthday'
+					]))
+					->values(implode(', ', $values));
 
 				$this->db->setQuery($query);
-				$this->db->execute();
+				$saved = $this->db->execute();
 
-				// save products
-				foreach ($cart_entity->getProducts() as $product) {
-					$query->clear()
-						->insert($this->db->quoteName('jos_emundus_cart_product'))
-						->columns($this->db->quoteName(['cart_id', 'product_id']))
-						->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()));
-					$this->db->setQuery($query);
-					$this->db->execute();
-				}
+				if ($saved) {
+					$cart_entity->setId($this->db->insertid());
 
-				// reset price alterations
-				$query->clear()
-					->delete($this->db->quoteName('jos_emundus_price_alteration'))
-					->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart_entity->getId()));
-				$this->db->setQuery($query);
-				$this->db->execute();
-
-				// save price alterations
-				foreach ($cart_entity->getPriceAlterations() as $alteration)
-				{
-					if (empty($alteration->getProduct())) {
-						$product_id = 'NULL';
-					} else {
-						$product_id = $this->db->quote($alteration->getProduct()->getId());
+					// save products
+					foreach ($cart_entity->getProducts() as $product) {
+						$query->clear()
+							->insert($this->db->quoteName('jos_emundus_cart_product'))
+							->columns($this->db->quoteName(['cart_id', 'product_id']))
+							->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()));
+						$this->db->setQuery($query);
+						$this->db->execute();
 					}
 
-					if (empty($alteration->getDiscount())) {
-						$discount_id = 'NULL';
-					} else {
-						$discount_id = $this->db->quote($alteration->getDiscount()->getId());
+					foreach ($cart_entity->getPriceAlterations() as $alteration)
+					{
+						$product_id = null;
+						if (empty($alteration->getProduct()))
+						{
+							$product_id = 'NULL';
+						} else {
+							$product_id = $this->db->quote($alteration->getProduct()->getId());
+						}
+
+						if (empty($alteration->getDiscount()))
+						{
+							$discount_id = 'NULL';
+						} else {
+							$discount_id = $this->db->quote($alteration->getDiscount()->getId());
+						}
+
+						$created_at = empty($alteration->getCreatedAt()) ? date('Y-m-d H:i:s') : $alteration->getCreatedAt()->format('Y-m-d H:i:s');
+						$created_by = empty($alteration->getCreatedBy()) ? $user_id : $alteration->getCreatedBy();
+
+						$query->clear()
+							->insert($this->db->quoteName('jos_emundus_price_alteration'))
+							->columns($this->db->quoteName(['cart_id', 'discount_id', 'amount', 'description', 'type', 'created_at', 'created_by', 'product_id', 'updated_at', 'updated_by']))
+							->values($this->db->quote($cart_entity->getId()) . ', ' . $discount_id . ', ' . $this->db->quote($alteration->getAmount()) . ', ' . $this->db->quote($alteration->getDescription()) . ', ' . $this->db->quote($alteration->getType()->value) . ', ' . $this->db->quote($created_at) . ', ' . $this->db->quote($created_by) . ', ' . $product_id . ', ' . $this->db->quote(date('Y-m-d H:i:s')) . ', ' . $this->db->quote($user_id));
+
+						$this->db->setQuery($query);
+						$this->db->execute();
 					}
-
-					$created_at = !empty($alteration->getCreatedAt()) ? $alteration->getCreatedAt()->format('Y-m-d H:i:s') : date('Y-m-d H:i:s');
-					$created_by = !empty($alteration->getCreatedBy()) ? $alteration->getCreatedBy() : $user_id;
-					$updated_at = date('Y-m-d H:i:s');
-					$updated_by = $user_id;
-
-					$query->clear()
-						->insert($this->db->quoteName('jos_emundus_price_alteration'))
-						->columns($this->db->quoteName(['cart_id', 'discount_id', 'amount', 'description', 'type', 'created_at', 'created_by', 'product_id', 'updated_at', 'updated_by']))
-						->values($this->db->quote($cart_entity->getId()) . ', ' . $discount_id . ', ' . $this->db->quote($alteration->getAmount()) . ', ' . $this->db->quote($alteration->getDescription()) . ', ' . $this->db->quote($alteration->getType()->value) . ', ' . $this->db->quote($created_at) . ', ' . $this->db->quote($created_by) . ', ' . $product_id . ', ' . $this->db->quote($updated_at) . ', ' . $this->db->quote($updated_by));
-
-					$this->db->setQuery($query);
-					$added = $this->db->execute();
 				}
 			}
+			else
+			{
+				$query->update($this->db->quoteName('jos_emundus_cart'))
+					->set($this->db->quoteName('published') . ' = ' . $this->db->quote($cart_entity->published))
+					->set($this->db->quoteName('total') . ' = ' . $this->db->quote($cart_entity->getTotal()))
+					->set($this->db->quoteName('user_id') . ' = ' . $this->db->quote($cart_entity->getCustomer()->getUserId()))
+					->set($this->db->quoteName('fnum') . ' = ' . $this->db->quote($cart_entity->fnum))
+					->set($this->db->quoteName('pay_advance') . ' = ' . $this->db->quote($cart_entity->getPayAdvance()))
+					->set($this->db->quoteName('number_installment_debit') . ' = ' . $this->db->quote($cart_entity->getNumberInstallmentDebit()))
+					->set($this->db->quoteName('installment_monthday') . ' = ' . $this->db->quote($cart_entity->getInstallmentMonthday()))
+					->set($this->db->quoteName('updated_at') . ' = ' . $this->db->quote(date('Y-m-d H:i:s')))
+					->set($this->db->quoteName('updated_by') . ' = ' . $this->db->quote($user_id))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($cart_entity->getId()));
+
+				if (!empty($cart_entity->getStepId())) {
+					$query->set($this->db->quoteName('step_id') . ' = ' . $this->db->quote($cart_entity->getStepId()));
+				} else {
+					$query->set($this->db->quoteName('step_id') . ' = NULL');
+				}
+
+				if (!empty($cart_entity->getSelectedPaymentMethod())) {
+					$query->set($this->db->quoteName('payment_method_id') . ' = ' . $this->db->quote($cart_entity->getSelectedPaymentMethod()->getId()));
+				} else {
+					$query->set($this->db->quoteName('payment_method_id') . ' = NULL');
+				}
+
+				$this->db->setQuery($query);
+				$saved = $this->db->execute();
+
+				if ($saved) {
+					// reset products
+					$query->clear()
+						->delete($this->db->quoteName('jos_emundus_cart_product'))
+						->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart_entity->getId()));
+
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					// save products
+					foreach ($cart_entity->getProducts() as $product) {
+						$query->clear()
+							->insert($this->db->quoteName('jos_emundus_cart_product'))
+							->columns($this->db->quoteName(['cart_id', 'product_id']))
+							->values($this->db->quote($cart_entity->getId()) . ', ' . $this->db->quote($product->getId()));
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+
+					// reset price alterations
+					$query->clear()
+						->delete($this->db->quoteName('jos_emundus_price_alteration'))
+						->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart_entity->getId()));
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					// save price alterations
+					foreach ($cart_entity->getPriceAlterations() as $alteration)
+					{
+						if (empty($alteration->getProduct())) {
+							$product_id = 'NULL';
+						} else {
+							$product_id = $this->db->quote($alteration->getProduct()->getId());
+						}
+
+						if (empty($alteration->getDiscount())) {
+							$discount_id = 'NULL';
+						} else {
+							$discount_id = $this->db->quote($alteration->getDiscount()->getId());
+						}
+
+						$created_at = !empty($alteration->getCreatedAt()) ? $alteration->getCreatedAt()->format('Y-m-d H:i:s') : date('Y-m-d H:i:s');
+						$created_by = !empty($alteration->getCreatedBy()) ? $alteration->getCreatedBy() : $user_id;
+						$updated_at = date('Y-m-d H:i:s');
+						$updated_by = $user_id;
+
+						$query->clear()
+							->insert($this->db->quoteName('jos_emundus_price_alteration'))
+							->columns($this->db->quoteName(['cart_id', 'discount_id', 'amount', 'description', 'type', 'created_at', 'created_by', 'product_id', 'updated_at', 'updated_by']))
+							->values($this->db->quote($cart_entity->getId()) . ', ' . $discount_id . ', ' . $this->db->quote($alteration->getAmount()) . ', ' . $this->db->quote($alteration->getDescription()) . ', ' . $this->db->quote($alteration->getType()->value) . ', ' . $this->db->quote($created_at) . ', ' . $this->db->quote($created_by) . ', ' . $product_id . ', ' . $this->db->quote($updated_at) . ', ' . $this->db->quote($updated_by));
+
+						$this->db->setQuery($query);
+						$added = $this->db->execute();
+					}
+				}
+			}
+		} catch (\Exception $e) {
+			Log::add('Error saving cart: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.cart');
 		}
 
 		if ($saved && empty($executionContext)) { // if execution context is set, we are in an automation, so do not trigger other automations
@@ -642,7 +707,7 @@ class CartRepository
 			$cart_data = $this->db->loadAssoc();
 
 			if (!empty($cart_data['id'])) {
-				$cart = new CartEntity($cart_data['id']);
+				$cart = new CartEntity($cart_data['id'], $fnum);
 				$cart = $this->fillCart($cart, $step_id);
 
 				if (empty($cart_data['step_id'])) {
@@ -692,7 +757,7 @@ class CartRepository
 					$step_id = $step->id;
 				}
 
-				$cart = new CartEntity($cart_id);
+				$cart = new CartEntity($cart_id, $cart_data['fnum']);
 				if (!empty($step_id)) {
 					$cart = $this->fillCart($cart, $step_id);
 
@@ -718,21 +783,25 @@ class CartRepository
 	{
 		$added = false;
 
-		$product = new ProductEntity($product_id);
+		if (!empty($product_id))
+		{
+			$productRepository = new ProductRepository();
+			$product = $productRepository->getProductById($product_id);
 
-		if (!empty($product->getId())) {
-			$query = $this->db->createQuery();
-			$query->insert($this->db->quoteName('jos_emundus_cart_product'))
-				->columns($this->db->quoteName(['cart_id', 'product_id', 'updated_by', 'updated_at']))
-				->values($this->db->quote($cart->getId()) . ', ' . $this->db->quote($product_id) . ', ' .  $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
-			$this->db->setQuery($query);
-			$added = $this->db->execute();
+			if (!empty($product->getId())) {
+				$query = $this->db->createQuery();
+				$query->insert($this->db->quoteName('jos_emundus_cart_product'))
+					->columns($this->db->quoteName(['cart_id', 'product_id', 'updated_by', 'updated_at']))
+					->values($this->db->quote($cart->getId()) . ', ' . $this->db->quote($product_id) . ', ' .  $this->db->quote($user_id) . ', ' . $this->db->quote(date('Y-m-d H:i:s')));
+				$this->db->setQuery($query);
+				$added = $this->db->execute();
 
-			if ($added) {
-				$cart->addProduct($product);
+				if ($added) {
+					$cart->addProduct($product);
 
-				$details = ['updated' => [['element' => $product->getLabel() . ' ' . $product->getDisplayedPrice()]]];
-				\EmundusModelLogs::log($user_id,  $cart->getCustomer()->getUserId(), $cart->getFnum(), $this->payment_repository->getActionId(), 'u', 'COM_EMUNDUS_ADD_PRODUCT_TO_CART', json_encode($details));
+					$details = ['updated' => [['element' => $product->getLabel() . ' ' . $product->getDisplayedPrice()]]];
+					\EmundusModelLogs::log($user_id,  $cart->getCustomer()->getUserId(), $cart->getFnum(), $this->payment_repository->getActionId(), 'u', 'COM_EMUNDUS_ADD_PRODUCT_TO_CART', json_encode($details));
+				}
 			}
 		}
 
@@ -809,6 +878,13 @@ class CartRepository
 
 	}
 
+	/**
+	 * @param   CartEntity  $cart
+	 * @param   int         $product_id
+	 * @param   float       $new_price
+	 *
+	 * @return bool
+	 */
 	public function updateProductPriceForCart(CartEntity $cart, int $product_id, float $new_price): bool
 	{
 		$updated = false;
@@ -827,6 +903,7 @@ class CartRepository
 
 				if ($updated) {
 					$cart->calculateTotal();
+					$updated = $this->saveCart($cart);
 				}
 
 				break;
@@ -1089,6 +1166,18 @@ class CartRepository
 
 				try {
 					$selected = $this->saveCart($cart);
+					if ($selected)
+					{
+						$details = [
+							'updated' => [
+								[
+									'old' => !empty($old_payment_method)  ? $old_payment_method->getLabel() : '',
+									'new' => $new_payment_method->getLabel()
+								]
+							]
+						];
+						\EmundusModelLogs::log($user_id,  $cart->getCustomer()->getUserId(), $cart->getFnum(), $this->payment_repository->getActionId(), 'u', 'COM_EMUNDUS_UPDATE_SELECTED_CART_PAYMENT_METHOD', json_encode($details));
+					}
 				} catch (\Exception $e) {
 					Log::add('Error selecting payment method: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.cart');
 					throw new \Exception(Text::_('COM_EMUNDUS_ERROR_SELECTING_PAYMENT_METHOD'));
@@ -1098,22 +1187,15 @@ class CartRepository
 			}
 		}
 
-		if ($selected)
-		{
-			$details = [
-				'updated' => [
-					[
-						'old' => !empty($old_payment_method)  ? $old_payment_method->getLabel() : '',
-					    'new' => $new_payment_method->getLabel()
-					]
-				]
-			];
-			\EmundusModelLogs::log($user_id,  $cart->getCustomer()->getUserId(), $cart->getFnum(), $this->payment_repository->getActionId(), 'u', 'COM_EMUNDUS_UPDATE_SELECTED_CART_PAYMENT_METHOD', json_encode($details));
-		}
-
 		return $selected;
 	}
 
+	/**
+	 * @param   CartEntity  $cart
+	 * @param   int         $user_id
+	 *
+	 * @return bool
+	 */
 	public function canUserUpdateCart(CartEntity $cart, int $user_id): bool
 	{
 		$can_user_update_cart = true;

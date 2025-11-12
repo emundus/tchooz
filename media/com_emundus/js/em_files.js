@@ -1964,8 +1964,8 @@ $(document).ready(function() {
             case 1 :
             case 4 :
                 addLoader();
-                swal_popup_class = 'em-w-auto'
-                swal_actions_class = 'em-actions-none'
+                swal_popup_class = 'em-w-auto';
+                swal_actions_class = 'em-actions-none';
                 verb = 'c';
 
                 html = '<iframe src="' + url + '" style="width:' + $(window).width() * 0.8 + 'px; height:' + $(window).height() * 0.8 + 'px; border:none" id="em-modal-color"></iframe>';
@@ -4245,6 +4245,27 @@ $(document).ready(function() {
                 multipleSteps = true;
                 break;
 
+            case 'payment':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = '';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_PAYMENT_ALTER_FILES_PRODUCTS_TITLE';
+                html = '<div id="data"></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    $('#data').append(data);
+                    $('#data').removeClass('em-loader');
+                });
+                break;
             default:
                 break;
         }

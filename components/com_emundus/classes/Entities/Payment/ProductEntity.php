@@ -2,9 +2,8 @@
 
 namespace Tchooz\Entities\Payment;
 
-use Joomla\Database\DatabaseDriver;
-use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\Payment\ProductCategoryRepository;
 
 class ProductEntity
 {
@@ -21,19 +20,22 @@ class ProductEntity
 	public array $campaigns = [];
 	public bool $published = true;
 	private ?int $mandatory = null;
-	private DatabaseDriver $db;
 
-	public function __construct(int $id = 0)
+	public function __construct(int $id = 0, string $label = '', string $description = '', float $price = 0.0, ?CurrencyEntity $currency = null, bool $illimited = true, int $quantity = 0, ?ProductCategoryEntity $category = null, ?\DateTime $available_from = null, ?\DateTime $available_to = null, array $campaigns = [], bool $published = true, ?int $mandatory = null)
 	{
-		Log::addLogger(['text_file' => 'com_emundus.entity.product.php'], Log::ALL, ['com_emundus.entity.product']);
-
 		$this->id = $id;
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
-
-		if (!empty($this->id))
-		{
-			$this->load();
-		}
+		$this->label = $label;
+		$this->description = $description;
+		$this->price = $price;
+		$this->currency = $currency;
+		$this->illimited = $illimited;
+		$this->quantity = $quantity;
+		$this->category = $category;
+		$this->available_from = $available_from;
+		$this->available_to = $available_to;
+		$this->campaigns = $campaigns;
+		$this->published = $published;
+		$this->mandatory = $mandatory;
 	}
 
 	public function getId(): int
@@ -129,40 +131,6 @@ class ProductEntity
 	public function getQuantity(): int
 	{
 		return $this->quantity;
-	}
-
-	private function load(): void
-	{
-		$query = $this->db->createQuery();
-
-		$query->select('product.*, GROUP_CONCAT(product_campaigns.campaign_id SEPARATOR ",") as campaigns')
-			->from($this->db->quoteName('jos_emundus_product', 'product'))
-			->leftJoin($this->db->quoteName('jos_emundus_product_campaigns', 'product_campaigns') . ' ON product_campaigns.product_id = product.id')
-			->where($this->db->quoteName('product.id') . ' = ' . $this->db->quote($this->id));
-
-		try {
-			$this->db->setQuery($query);
-			$product = $this->db->loadObject();
-		} catch (\Exception $e) {
-			Log::add('Failed to load entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.entity.product');
-		}
-
-		if (!empty($product) && !empty($product->id))
-		{
-			$this->label = !empty($product->label) ? $product->label : '';
-			$this->description = !empty($product->description) ? $product->description : '';
-			$this->price = !empty($product->price) ? $product->price : 0.0;
-			$this->currency = !empty($product->currency_id) ? new CurrencyEntity($product->currency_id) : new CurrencyEntity(1);
-			$this->quantity = $product->quantity ?? -1;
-			$this->illimited = $product->illimited == 1;
-			$this->available_from = !empty($product->available_from) ? new \DateTime($product->available_from) : null;
-			$this->available_to =  !empty($product->available_to) ? new \DateTime($product->available_to) : null;
-			$this->category = !empty($product->category_id) ? new ProductCategoryEntity($product->category_id) : null;
-			$this->campaigns = !empty($product->campaigns) ? explode(',', $product->campaigns) : [];
-			$this->published = $product->published == 1;
-		} else {
-			throw new \Exception('COM_EMUNDUS_PRODUCT_NOT_FOUND');
-		}
 	}
 
 	public function serialize(): array

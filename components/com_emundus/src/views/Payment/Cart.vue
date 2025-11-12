@@ -403,7 +403,7 @@ export default {
 					})
 				: [];
 		},
-		displayedMehtods() {
+		displayedMethods() {
 			let methods = this.isManager ? this.paymentMethods : this.cart.payment_methods;
 
 			return methods.filter((method) => {
@@ -730,7 +730,7 @@ export default {
 
 					<div
 						v-if="!readOnly"
-						v-for="method in displayedMehtods"
+						v-for="method in displayedMethods"
 						:key="method.id"
 						class="tw-flex tw-flex-row tw-items-center"
 					>
