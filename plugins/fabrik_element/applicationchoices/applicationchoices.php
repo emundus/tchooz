@@ -222,7 +222,8 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			require_once JPATH_SITE . '/components/com_emundus/models/programme.php';
 		}
 		$m_programme = new EmundusModelProgramme();
-		$programs    = $m_programme->getUserPrograms($user->id);
+		$user_programs    = $m_programme->getUserPrograms($user->id);
+		$programs = $user_programs;
 
 		if (!empty($step_id))
 		{
@@ -244,6 +245,10 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 
 		$repository                 = new ApplicationChoicesRepository();
 		$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $programs);
+		if(empty($applicationChoicesEntities))
+		{
+			$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $user_programs);
+		}
 
 		$choices = [];
 		foreach ($applicationChoicesEntities as $entity)
