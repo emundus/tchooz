@@ -52,6 +52,8 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 	public function flush(ApplicationChoicesEntity $entity, ?bool $checkRules = true): bool
 	{
+		$flushed = false;
+
 		if (empty($entity->getCampaign()) || empty($entity->getFnum()))
 		{
 			throw new \InvalidArgumentException('Campaign ID and Fnum are required to flush ApplicationChoicesEntity');
@@ -80,17 +82,18 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			];
 
 
-			if($this->db->insertObject($this->tableName, $insert))
+			if(!$this->db->insertObject($this->tableName, $insert))
 			{
-				$entity->setId($this->db->insertid());
-
-				return true;
+				throw new \Exception('Failed to insert ApplicationChoicesEntity');
 			}
 
-			return false;
+			$entity->setId($this->db->insertid());
+			$flushed = true;
 		}
 		else
 		{
+			$old_data = $this->getById($entity->getId());
+
 			$update = (object) [
 				'id'          => $entity->getId(),
 				'campaign_id' => $entity->getCampaign()->getId(),
@@ -100,8 +103,37 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 				'order'       => $entity->getOrder(),
 			];
 
-			return $this->db->updateObject($this->tableName, $update, 'id');
+			$flushed = $this->db->updateObject($this->tableName, $update, 'id');
 		}
+
+		// If state is confirmed, move application to the campaign confirmed
+		if(
+			$entity->getState() === ChoicesState::CONFIRMED &&
+			(
+				empty($old_data) || ($old_data->getState() !== ChoicesState::CONFIRMED)
+			)
+		)
+		{
+			if (!class_exists('EmundusModelApplication'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+			}
+			$m_application = new \EmundusModelApplication();
+			$m_application->moveApplication($entity->getFnum(), $entity->getFnum(), $entity->getCampaign()->getId());
+		}
+		// If old state was confirmed and new state is not, move application back to parent campaign
+		elseif(
+			!empty($old_data) && $old_data->getState() === ChoicesState::CONFIRMED && $entity->getState() !== ChoicesState::CONFIRMED && !empty($entity->getCampaign()->getParent()))
+		{
+			if (!class_exists('EmundusModelApplication'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+			}
+			$m_application = new \EmundusModelApplication();
+			$m_application->moveApplication($entity->getFnum(), $entity->getFnum(), $entity->getCampaign()->getParent()->getId());
+		}
+
+		return $flushed;
 	}
 
 	public function delete(int $id): bool

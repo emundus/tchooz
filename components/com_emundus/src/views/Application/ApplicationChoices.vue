@@ -253,14 +253,44 @@ export default {
 			});
 		},
 
-		updateStatus(id) {
-			this.alertDropdown('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_TITLE', this.status).then((result) => {
+		async updateStatus(id, currentStatus) {
+			let fnum = this.fnum || '';
+
+			console.log(currentStatus);
+
+			this.alertDropdown(
+				'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_TITLE',
+				this.status,
+				null,
+				'COM_EMUNDUS_OK',
+				'COM_EMUNDUS_ACTIONS_CANCEL',
+				null,
+				currentStatus.name.toLowerCase(),
+			).then(async (result) => {
 				if (result.isConfirmed) {
-					applicationService.updateStatus(id, result.value).then((res) => {
-						const choiceIndex = this.choices.findIndex((choice) => choice.id === id);
-						if (choiceIndex !== -1) {
-							this.choices[choiceIndex].state_html = res.data.state_html;
-						}
+					applicationService.updateStatus(id, result.value).then(async (res) => {
+						this.loading = true;
+						await this.getChoicesConfiguration(fnum);
+						await this.getApplicationChoices(fnum);
+						await this.getAvailableChoices(fnum);
+						this.loading = false;
+
+						/*if(result.value === 'confirmed')
+            {
+              this.loading = true;
+              await this.getChoicesConfiguration(fnum);
+              await this.getApplicationChoices(fnum);
+              await this.getAvailableChoices(fnum);
+              this.loading = false;
+            }
+            else {
+              const choiceIndex = this.choices.findIndex((choice) => choice.id === id);
+              if (choiceIndex !== -1) {
+                this.choices[choiceIndex].state = res.data.state;
+                this.choices[choiceIndex].state_html = res.data.state_html;
+              }
+            }*/
+
 						this.alertSuccess(
 							'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TITLE',
 							'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TEXT',
@@ -308,7 +338,10 @@ export default {
 	computed: {
 		maxChoicesReached: function () {
 			if (this.configuration.max) {
-				return this.choices.length >= this.configuration.max;
+				return (
+					this.choices.length >= this.configuration.max &&
+					!(this.$props.fnum && this.configuration.crud && this.configuration.crud.c)
+				);
 			} else {
 				return false;
 			}
@@ -463,13 +496,14 @@ export default {
 		<hr />
 
 		<h2 v-if="configuration && configuration.max">
-			{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SUBTITLE') }} : {{ choices.length }} / {{ configuration.max }}
+			{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SUBTITLE') }} : {{ choices.length }}
+			{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_SUBTITLE_SELECTED') }}
 		</h2>
 
 		<div class="tw-mt-4" v-if="choices.length > 0">
 			<Card
 				v-for="(choice, index) in choices"
-				:key="choice.id"
+				:key="choice.state.value"
 				:legend-color="programColor(choice.campaign.program)"
 				class="tw-mb-4"
 				:class="{ '!tw-border-main-500 !tw-bg-main-50': choice.state.value === 3 }"
@@ -586,7 +620,12 @@ export default {
 						>
 							{{ translate('COM_EMUNDUS_CAMPAIGNS_MORE_DETAILS') }}
 						</Button>
-						<Button v-if="$props.fnum && canBeUpdate" variant="primary" width="fit" @click="updateStatus(choice.id)">
+						<Button
+							v-if="($props.fnum && canBeUpdate) || ($props.fnum && canBeCreate && choice.state.value === 3)"
+							variant="primary"
+							width="fit"
+							@click="updateStatus(choice.id, choice.state)"
+						>
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS') }}
 						</Button>
 						<Button variant="cancel" width="fit" v-if="canBeDelete" @click="removeChoice(choice.id)">
@@ -595,7 +634,7 @@ export default {
 						<Button
 							variant="primary"
 							width="fit"
-							v-if="canBeConfirm && choice.state.value === 1"
+							v-if="canBeConfirm && choice.state.value === 1 && !$props.fnum"
 							@click="confirmChoice(choice)"
 							:disabled="submitDisabled"
 						>

@@ -88,12 +88,14 @@ const alerts = {
 			confirmText = 'COM_EMUNDUS_OK',
 			cancelText = 'COM_EMUNDUS_ACTIONS_CANCEL',
 			callback = null,
+			defaultValue = null,
 		) {
 			let options = {
 				title: this.translate(title),
 				input: 'select',
 				inputOptions: inputOptions,
 				inputPlaceholder: this.translate(inputPlaceholder),
+				inputValue: defaultValue,
 				showCancelButton: true,
 				confirmButtonText: this.translate(confirmText),
 				cancelButtonText: this.translate(cancelText),

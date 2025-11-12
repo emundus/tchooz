@@ -799,7 +799,7 @@ if (!empty($applications))
 
                                                     <?php if (!empty($application->choices) && !empty($choices_link)) : ?>
                                                         <a class="tw-text-neutral-900 tw-cursor-pointer tw-flex"
-                                                           href="<?= Route::_($choices_link->route); ?>"
+                                                           href="<?= Route::_($choices_link->route.'?fnum='.$application->fnum); ?>"
                                                            id="actions_button_history_<?php echo $application->fnum ?>_card_tab<?php echo $key ?>">
                                                             <span class="material-symbols-outlined tw-mr-2">fork_right</span>
                                                             <?php echo Text::_('MOD_EMUNDUS_APPLICATIONS_VIEW_APPLICATION_CHOICES') ?>
