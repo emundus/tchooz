@@ -36,15 +36,14 @@ class CartRepositoryTest extends UnitTestCase
 
 	private $payment_step = null;
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 		$this->model = new CartRepository();
 		$this->workflow_model = new \EmundusModelWorkflow();
-		$this->initDataSet();
 	}
 
-	public function createWorkflowWithPayment()
+	public function createWorkflowWithPayment(): void
 	{
 		$query = $this->db->createQuery();
 		$query->clear()
@@ -140,13 +139,19 @@ class CartRepositoryTest extends UnitTestCase
 	 * @covers \Tchooz\Repositories\Payment\CartRepository::createCart
 	 * @return void
 	 */
+	public function testCreateCartThrowsErrorIfInvalidFnum()
+	{
+		$this->expectException(\Exception::class);
+		$this->model->createCart('', 0);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::createCart
+	 * @return void
+	 */
 	public function testCreateCart()
 	{
-		$cart_id = $this->model->createCart('', 0);
-		$this->assertEquals(0, $cart_id);
-
 		$this->createWorkflowWithPayment();
-
 		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
 		$this->assertGreaterThan(0, $cart_id);
 		$cart = $this->model->getCartById($cart_id, 0, $this->dataset['coordinator']);

@@ -692,4 +692,32 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		return $deleted;
 	}
 
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return ContactEntity|null
+	 */
+	public function getByFnum(string $fnum): ?ContactEntity
+	{
+		$contact_entity = null;
+
+		if (!empty($fnum))
+		{
+			$query = $this->db->getQuery(true);
+			$query->select('c.*')
+				->from($this->db->quoteName($this->getTableName(self::class), 'c'))
+				->join('inner', $this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quoteName('c.id'))
+				->where('ecc.fnum = ' . $this->db->quote($fnum));
+
+			$this->db->setQuery($query);
+			$contact = $this->db->loadAssoc();
+
+			if (!empty($contact))
+			{
+				$contact_entity = $this->factory->fromDbObject($contact);
+			}
+		}
+
+		return $contact_entity;
+	}
 }

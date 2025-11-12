@@ -35,7 +35,8 @@ class AlterationRepository
 
 			if (!empty($alteration_row)) {
 				if (!empty($alteration_row->product_id)) {
-					$product = new ProductEntity($alteration_row->product_id);
+					$productRepository = new ProductRepository();
+					$product = $productRepository->getProductById($alteration_row->product_id);
 				} else {
 					$product = null;
 				}

@@ -428,6 +428,8 @@ class EmundusModelWorkflow extends JModelList
 		if ($error_occurred)
 		{
 			$updated = false;
+		} else {
+			$this->h_cache->set('workflow_steps', null);
 		}
 
 		return $updated;

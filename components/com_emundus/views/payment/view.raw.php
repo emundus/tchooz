@@ -43,6 +43,7 @@ class EmundusViewPayment extends JViewLegacy
 
 	function display($tpl = null)
 	{
+		$payment_repository = new PaymentRepository();
 		$app = Factory::getApplication();
 		$this->model = new EmundusModelPayment();
 		$this->user = $app->getIdentity();
@@ -52,56 +53,93 @@ class EmundusViewPayment extends JViewLegacy
 		$jinput = $app->input;
 		$layout = $jinput->getString('layout', 'products');
 
-		if ($layout === 'cart') {
-			$fnum = $jinput->getString('fnum', '');
+		try
+		{
+			if ($layout === 'cart') {
+				$fnum = $jinput->getString('fnum', '');
 
-			$payment_repository = new PaymentRepository();
-			if (!empty($fnum) && (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'r', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id))) {
-				if (!class_exists('EmundusModelWorkflow')) {
-					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-				}
-				$m_workflow = new EmundusModelWorkflow();
-				$step = $m_workflow->getPaymentStepFromFnum($fnum);
-
-				if (!empty($step->id)) {
-					$this->cart_repository = new CartRepository();
-					$this->cart = $this->cart_repository->getCartByFnum($fnum, $step->id);
-
-					if (!class_exists('EmundusModelProfile')) {
-						require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+				$payment_repository = new PaymentRepository();
+				if (!empty($fnum) && (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'r', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($fnum, $this->user->id))) {
+					if (!class_exists('EmundusModelWorkflow')) {
+						require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 					}
-					$m_profile = new EmundusModelProfile();
+					$m_workflow = new EmundusModelWorkflow();
+					$step = $m_workflow->getPaymentStepFromFnum($fnum);
 
-					$applicant_profiles = $m_profile->getApplicantsProfiles();
-					$applicant_profile_ids = array_map(function ($profile) {
-						return $profile->id;
-					}, $applicant_profiles);
+					if (!empty($step->id)) {
+						$this->cart_repository = new CartRepository();
+						$this->cart = $this->cart_repository->getCartByFnum($fnum, $step->id);
+
+						if (!class_exists('EmundusModelProfile')) {
+							require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+						}
+						$m_profile = new EmundusModelProfile();
+
+						$applicant_profiles = $m_profile->getApplicantsProfiles();
+						$applicant_profile_ids = array_map(function ($profile) {
+							return $profile->id;
+						}, $applicant_profiles);
 
 
-					$emundus_user = Factory::getApplication()->getSession()->get('emundusUser');
-					if (in_array($emundus_user->profile, $applicant_profile_ids)) {
-						$m_profile->initEmundusSession($fnum);
+						$emundus_user = Factory::getApplication()->getSession()->get('emundusUser');
+						if (in_array($emundus_user->profile, $applicant_profile_ids)) {
+							$m_profile->initEmundusSession($fnum);
+						}
 					}
-				} else {
-					$app->enqueueMessage(Text::_('COM_EMUNDUS_CART_NOT_FOUND'), 'error');
-					$app->redirect('/');
+					else
+					{
+						$app->enqueueMessage(Text::_('COM_EMUNDUS_CART_NOT_FOUND'), 'error');
+						$app->redirect('/');
+					}
 				}
-			} else {
-				$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
-				$app->redirect('/');
+				else
+				{
+					throw new \Exception(Text::_('ACCESS_DENIED'));
+				}
+			}
+			else if ($layout === 'productedit')
+			{
+				$this->product_id = $jinput->getInt('id', 0);
+			}
+			else if ($layout === 'affectproducts')
+			{
+				if (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'u', $this->user->id))
+				{
+					$fnums = $jinput->getString('fnums', '');
+					if (!empty($fnums)) {
+						$fnums = json_decode($fnums, true);
+						$this->fnums = array_map(function ($file) {
+							return $file['fnum'];
+						}, $fnums);
+					}
+
+					if (empty($this->fnums)) {
+						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_ALTER_FILES_PRODUCTS_NO_DATA'));
+					}
+
+					$this->product_repository = new ProductRepository();
+				}
+				else
+				{
+					throw new \Exception(Text::_('ACCESS_DENIED'));
+				}
+			}
+			else
+			{
+				if (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'r', $this->user->id))
+				{
+					$this->product_repository = new ProductRepository();
+				}
+				else
+				{
+					throw new \Exception(Text::_('ACCESS_DENIED'));
+				}
 			}
 		}
-		else if ($layout === 'productedit') {
-			$this->product_id = $jinput->getInt('id', 0);
-		} else {
-			$payment_repository = new PaymentRepository();
-
-			if (EmundusHelperAccess::asAccessAction($payment_repository->getActionId(), 'r', $this->user->id)) {
-				$this->product_repository = new ProductRepository();
-			} else {
-				$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
-				$app->redirect('/');
-			}
+		catch (Exception $e)
+		{
+			$app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+			$app->redirect('/');
 		}
 
 		parent::display($tpl);

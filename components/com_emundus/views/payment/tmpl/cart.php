@@ -58,6 +58,7 @@ $current_lang = $lang->getTag();
 
 $readonly = !$this->cart_repository->canUserUpdateCart($this->cart, $this->user->id);
 
+assert($this->cart instanceof Tchooz\Entities\Payment\CartEntity);
 $datas = [
     'cart' => $this->cart->serialize(),
     'step' => $this->cart->getPaymentStep()->serialize(),
@@ -68,7 +69,7 @@ if ($readonly) {
 	$transaction_repository = new TransactionRepository();
 	$transaction = $transaction_repository->getTransactionByCart($this->cart);
 
-    if ($transaction->getStatus() === TransactionStatus::WAITING) {
+    if (!empty($transaction) && $transaction->getStatus() === TransactionStatus::WAITING) {
         $app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_IS_WAITING_FOR_VALIDATION'));
     }
 }

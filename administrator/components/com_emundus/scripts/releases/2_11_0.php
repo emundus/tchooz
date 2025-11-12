@@ -23,6 +23,7 @@ use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Repositories\Payment\PaymentRepository;
 
 
 class Release2_11_0Installer extends ReleaseInstaller
@@ -54,6 +55,31 @@ class Release2_11_0Installer extends ReleaseInstaller
 			$this->initChoicesFeature($query);
 
 			$this->fixSetupActionsKeys();
+
+			$query->clear()
+				->select('parent_id')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' = ' . $this->db->quote('index.php?option=com_emundus&controller=files&task=getstate'))
+				->andWhere($this->db->quoteName('menutype') . ' = ' . $this->db->quote('actions'));
+
+			$this->db->setQuery($query);
+			$menuId = $this->db->loadResult();
+
+			$paymentRepository = new PaymentRepository();
+			$this->tasks[] = EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'actions',
+				'title' => 'Modifier les produits du panier',
+				'link' => '/index.php?option=com_emundus&view=payment&layout=affectproducts&format=raw&fnums={fnums}',
+				'path' => 'modify-cart-products',
+				'alias' => 'modify-cart-products',
+				'type' => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'access' => 7,
+				'note' => 'payment|c|1',
+				'params'       => [
+					'menu_image_css' => 'payments'
+				]
+			], $menuId, $paymentRepository->activated ? 1 : 0)['status'];
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}

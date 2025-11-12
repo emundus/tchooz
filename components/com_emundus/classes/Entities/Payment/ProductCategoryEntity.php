@@ -2,26 +2,20 @@
 
 namespace Tchooz\Entities\Payment;
 
-use Joomla\Database\DatabaseDriver;
-use Joomla\CMS\Factory;
-
 class ProductCategoryEntity
 {
 	private int $id = 0;
 	private string $label;
-	private int $published;
-	private DatabaseDriver $db;
+	private int $published = 1;
 
+	private ?bool $mandatory = null;
 
-	public function __construct(int $id)
+	public function __construct(int $id, string $label, int $published = 1, ?bool $mandatory = null)
 	{
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->id = $id;
-
-		if (!empty($this->id))
-		{
-			$this->load();
-		}
+		$this->label = $label;
+		$this->published = $published;
+		$this->mandatory = $mandatory;
 	}
 
 	public function getId(): int
@@ -32,32 +26,6 @@ class ProductCategoryEntity
 	public function setId(int $id): void
 	{
 		$this->id = $id;
-	}
-
-	private function load(): void
-	{
-		$query = $this->db->createQuery();
-
-		$query->select($this->db->quoteName(['id', 'label', 'published']))
-			->from($this->db->quoteName('jos_emundus_product_category'))
-			->where($this->db->quoteName('id') . ' = ' . $this->db->quote($this->id));
-
-		try {
-			$this->db->setQuery($query);
-			$category = $this->db->loadObject();
-
-			if ($category)
-			{
-				$this->label = $category->label;
-				$this->published = $category->published;
-			}
-			else
-			{
-				throw new \Exception('Category not found');
-			}
-		} catch (\Exception $e) {
-			throw new \Exception('Error loading category: ' . $e->getMessage());
-		}
 	}
 
 	public function setLabel(string $label): void
@@ -86,6 +54,7 @@ class ProductCategoryEntity
 			'id' => $this->getId(),
 			'label' => $this->getLabel(),
 			'published' => $this->getPublished(),
+			'mandatory' => $this->mandatory,
 		];
 	}
 }
