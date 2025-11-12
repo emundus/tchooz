@@ -2238,7 +2238,7 @@ class EmundusModelWorkflow extends JModelList
 		$cart_repository = new CartRepository();
 		$cart            = $cart_repository->getCartByFnum($fnum, $step->id);
 
-		if (!empty($cart->getId()))
+		if (!empty($cart) && !empty($cart->getId()))
 		{
 			$transaction_repository = new TransactionRepository();
 			$transaction            = $transaction_repository->getTransactionByCart($cart);
