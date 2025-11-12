@@ -65,16 +65,17 @@ class ConditionGroupEntityTest extends UnitTestCase
 		$conditionGroup = new ConditionGroupEntity(1, [$condition1], ConditionsAndorEnum::AND);
 
 		$contextData = new ActionTargetEntity($user, $fnum, 0, ['status' => '1', 'priority' => 'high']);
-		$this->assertTrue($conditionGroup->isSatisfied($contextData, [$subGroup]));
+		$conditionGroup->setSubGroups([$subGroup]);
+		$this->assertTrue($conditionGroup->isSatisfied($contextData));
 
 		$contextDataFail = new ActionTargetEntity($user, $fnum, 0, ['status' => '1', 'priority' => 'low']);
-		$this->assertFalse($conditionGroup->isSatisfied($contextDataFail, [$subGroup]));
+		$this->assertFalse($conditionGroup->isSatisfied($contextDataFail));
 
 		$conditionGroupOr = new ConditionGroupEntity(1, [$condition1], ConditionsAndorEnum::OR);
-		$this->assertTrue($conditionGroupOr->isSatisfied($contextDataFail, [$subGroup]));
+		$this->assertTrue($conditionGroupOr->isSatisfied($contextDataFail));
 
 		$contextDataFail = new ActionTargetEntity($user, $fnum, 0, ['status' => '0', 'priority' => 'low']);
-		$this->assertFalse($conditionGroupOr->isSatisfied($contextDataFail, [$subGroup]));
+		$this->assertFalse($conditionGroupOr->isSatisfied($contextDataFail));
 	}
 
 	/**
@@ -93,18 +94,19 @@ class ConditionGroupEntityTest extends UnitTestCase
 		$conditionGroup = new ConditionGroupEntity(1, [$condition1], ConditionsAndorEnum::AND);
 
 		$contextData = new ActionTargetEntity($user, $fnum, 0, ['status' => '1', 'priority' => 'high', 'category' => 'A']);
-		$this->assertTrue($conditionGroup->isSatisfied($contextData, [$subGroup1, $subGroup2]));
+		$conditionGroup->setSubGroups([$subGroup1, $subGroup2]);
+		$this->assertTrue($conditionGroup->isSatisfied($contextData));
 
 		$contextDataFail = new ActionTargetEntity($user, $fnum, 0, ['status' => '1', 'priority' => 'low', 'category' => 'A']);
-		$this->assertFalse($conditionGroup->isSatisfied($contextDataFail, [$subGroup1, $subGroup2]));
+		$this->assertFalse($conditionGroup->isSatisfied($contextDataFail));
 
 		$contextDataFail2 = new ActionTargetEntity($user, $fnum, 0, ['status' => '1', 'priority' => 'high', 'category' => 'B']);
-		$this->assertFalse($conditionGroup->isSatisfied($contextDataFail2, [$subGroup1, $subGroup2]));
+		$this->assertFalse($conditionGroup->isSatisfied($contextDataFail2));
 
 		$conditionGroupOr = new ConditionGroupEntity(1, [$condition1], ConditionsAndorEnum::OR);
-		$this->assertTrue($conditionGroupOr->isSatisfied($contextDataFail2, [$subGroup1, $subGroup2]));
+		$this->assertTrue($conditionGroupOr->isSatisfied($contextDataFail2));
 
 		$contextDataFailAll = new ActionTargetEntity($user, $fnum, 0, ['status' => '0', 'priority' => 'low', 'category' => 'B']);
-		$this->assertFalse($conditionGroupOr->isSatisfied($contextDataFailAll, [$subGroup1, $subGroup2]));
+		$this->assertFalse($conditionGroupOr->isSatisfied($contextDataFailAll));
 	}
 }

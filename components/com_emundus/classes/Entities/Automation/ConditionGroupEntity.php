@@ -17,7 +17,12 @@ class ConditionGroupEntity
 	 */
 	private array $conditions = [];
 
-	public function __construct(int $id, array $conditions = [], ?ConditionsAndorEnum $operator = null, int $parentId = 0)
+	/**
+	 * @var array<ConditionGroupEntity>
+	 */
+	private array $subGroups = [];
+
+	public function __construct(int $id, array $conditions = [], ?ConditionsAndorEnum $operator = null, int $parentId = 0, $subGroups = [])
 	{
 		$this->id = $id;
 		$this->conditions = $conditions;
@@ -25,6 +30,7 @@ class ConditionGroupEntity
 			$this->operator = $operator;
 		}
 		$this->parent_id = $parentId;
+		$this->subGroups = $subGroups;
 	}
 
 	public function getId(): int
@@ -78,12 +84,27 @@ class ConditionGroupEntity
 	}
 
 	/**
-	 * @param   ActionTargetEntity  $context
-	 * @param   array               $subGroups
-	 *
+	 * @return ConditionGroupEntity[]
+	 */
+	public function getSubGroups(): array
+	{
+		return $this->subGroups;
+	}
+
+	public function setSubGroups(array $subGroups): void
+	{
+		foreach ($subGroups as $subGroup) {
+			assert($subGroup instanceof self);
+		}
+
+		$this->subGroups = $subGroups;
+	}
+
+	/**
+	 * @param   ActionTargetEntity  $context*
 	 * @return bool
 	 */
-	public function isSatisfied(ActionTargetEntity $context, array $subGroups = []): bool
+	public function isSatisfied(ActionTargetEntity $context): bool
 	{
 		$results = [];
 
@@ -108,8 +129,8 @@ class ConditionGroupEntity
 
 
 		// Évaluer les sous-groupes
-		if (!empty($subGroups)) {
-			foreach ($subGroups as $subGroup) {
+		if (!empty($this->getSubGroups())) {
+			foreach ($this->getSubGroups() as $subGroup) {
 				assert($subGroup instanceof self);
 				$results[] = $subGroup->isSatisfied($context);
 			}

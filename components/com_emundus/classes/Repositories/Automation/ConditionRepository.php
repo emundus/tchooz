@@ -190,7 +190,8 @@ class ConditionRepository
 				->from($this->db->quoteName('#__emundus_group_condition', 'gc'))
 				->leftJoin($this->db->quoteName('#__emundus_condition', 'cond') . ' ON ' . $this->db->quoteName('cond.group_id') . ' = ' . $this->db->quoteName('gc.id'))
 				->leftJoin($this->db->quoteName('#__emundus_automation_condition', 'ac') . ' ON ' . $this->db->quoteName('ac.condition_id') . ' = ' . $this->db->quoteName('cond.id'))
-				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId);
+				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId)
+				->andWhere($this->db->quoteName('gc.parent_id') . ' IS NULL');
 
 			$this->db->setQuery($query);
 			$groupRows = $this->db->loadObjectList();
@@ -206,6 +207,43 @@ class ConditionRepository
 					$group->setParentId((int)$groupRow->parent_id);
 				}
 
+				$group->setSubGroups($this->getChildrenGroupsByParentId((int)$groupRow->id));
+				$groups[] = $group;
+			}
+		}
+
+		return $groups;
+	}
+
+	/**
+	 * @param   int  $groupId
+	 *
+	 * @return array
+	 */
+	public function getChildrenGroupsByParentId(int $groupId): array
+	{
+		$groups = [];
+
+		if (!empty($groupId))
+		{
+			$query = $this->db->createQuery()
+				->select('*')
+				->from($this->db->quoteName('#__emundus_group_condition'))
+				->where($this->db->quoteName('parent_id') . ' = ' . $groupId);
+
+			$this->db->setQuery($query);
+			$groupRows = $this->db->loadObjectList();
+
+			foreach ($groupRows as $groupRow)
+			{
+				$conditions = $this->getConditionsByGroupId((int)$groupRow->id);
+
+				$group = new ConditionGroupEntity((int)$groupRow->id, $conditions);
+				$group->setOperator(ConditionsAndorEnum::from($groupRow->operator));
+				$group->setParentId((int)$groupRow->parent_id);
+
+				$subGroups = $this->getChildrenGroupsByParentId((int)$groupRow->id);
+				$group->setSubGroups($subGroups);
 				$groups[] = $group;
 			}
 		}
