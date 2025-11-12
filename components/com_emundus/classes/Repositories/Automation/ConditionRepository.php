@@ -190,8 +190,8 @@ class ConditionRepository
 				->from($this->db->quoteName('#__emundus_group_condition', 'gc'))
 				->leftJoin($this->db->quoteName('#__emundus_condition', 'cond') . ' ON ' . $this->db->quoteName('cond.group_id') . ' = ' . $this->db->quoteName('gc.id'))
 				->leftJoin($this->db->quoteName('#__emundus_automation_condition', 'ac') . ' ON ' . $this->db->quoteName('ac.condition_id') . ' = ' . $this->db->quoteName('cond.id'))
-				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId)
-				->andWhere($this->db->quoteName('gc.parent_id') . ' IS NULL');
+				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId);
+			// todo: get only parent and change front behavior accordingly
 
 			$this->db->setQuery($query);
 			$groupRows = $this->db->loadObjectList();
