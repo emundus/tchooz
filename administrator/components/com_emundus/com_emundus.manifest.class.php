@@ -1855,4 +1855,14 @@ class Com_EmundusInstallerScript
 		file_put_contents($tmp, $php);
 		rename($tmp, $outputFile);
 	}
+
+	#[PostflightAttribute(name: "Update reset password email body")]
+	private function updateResetPasswordBody(): bool
+	{
+		$inserts = [];
+		$inserts[] = EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY', '<div>Madame, Monsieur,<br />Vous avez effectué une demande de réinitialisation du mot de passe de votre compte <b> %s</b>.</div><br /><br />Cliquez sur le lien ci-dessous pour finaliser votre réinitialisation :<br />%3$s<br /><br />Si ce lien ne fonctionne pas, voici le code de vérification à saisir sur la page de réinitialisation de mot de passe :  %2$s<br />');
+		$inserts[] = EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY', 'Hello,</br></br> A request has been made to reset your <b> %s</b> account password.</br></br>To reset your password, click on the link below:</br>%3$s</br></br>If this link doesn\'t match, you will need to submit this token on the password reset page: %2$s</br>', 'override', 0, null, null, 'en-GB');
+
+		return !in_array(false, $inserts);
+	}
 }
