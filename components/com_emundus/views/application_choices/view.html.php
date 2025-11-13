@@ -22,7 +22,7 @@ class EmundusViewApplication_choices extends HtmlView
 
 	protected ?User $user = null;
 
-	protected string $fnum = '';
+	protected ?string $fnum = '';
 
 	public int $item_id = 0;
 
@@ -37,7 +37,7 @@ class EmundusViewApplication_choices extends HtmlView
 		}
 		$this->hash = EmundusHelperCache::getCurrentGitHash();
 
-		$this->fnum = $app->input->getString('fnum');
+		$this->fnum = $app->input->getString('fnum', '');
 		if(!empty($this->fnum))
 		{
 			if(!class_exists('EmundusModelProfile'))
