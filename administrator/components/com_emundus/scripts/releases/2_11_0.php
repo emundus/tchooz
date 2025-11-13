@@ -318,7 +318,8 @@ class Release2_11_0Installer extends ReleaseInstaller
 		$query->clear()
 			->select('id')
 			->from($this->db->quoteName('#__menu'))
-			->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('rapport-d-activite-2'));
+			->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('rapport-d-activite-2'))
+			->orWhere($this->db->quoteName('alias') . ' = ' . $this->db->quote('rapport-d-activite-admin'));
 		$this->db->setQuery($query);
 		$reportMenuId = $this->db->loadResult();
 
@@ -339,8 +340,6 @@ class Release2_11_0Installer extends ReleaseInstaller
 				],
 			], $reportMenuId);
 			$this->tasks[] = $menuResult['status'];
-		} else {
-			$this->tasks[] = false;
 		}
 
 		$params = ComponentHelper::getParams('com_scheduler');
