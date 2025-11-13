@@ -1790,7 +1790,7 @@ class EmundusHelperEvents
 							[$student->id],
 							[
 								onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status,
-								onAfterStatusChangeDefinition::STATUS => $new_status
+								onAfterStatusChangeDefinition::STATUS_PARAMETER => $new_status
 							]
 						)
 					]
