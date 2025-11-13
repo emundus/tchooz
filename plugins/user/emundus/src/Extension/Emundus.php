@@ -552,7 +552,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				&&
 				(
 					(
-						empty($instance->lastResetTime) && strtotime($instance->registerDate) < strtotime($version_date)
+						(empty($instance->lastResetTime) || $instance->lastResetTime == '0000-00-00 00:00:00') && strtotime($instance->registerDate) < strtotime($version_date)
 					)
 					||
 					(
