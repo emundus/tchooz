@@ -35,7 +35,7 @@ class AutomationAddonHandler implements AddonHandlerInterface
 			$tasks[] = $db->execute();
 
 			// toggle menu items
-			$menuAliases = ['emundus-automations', 'emundus-tasks-history'];
+			$menuAliases = ['emundus-automations', 'automation-edit', 'emundus-tasks-history'];
 			$query->clear()
 				->update($db->quoteName('#__menu'))
 				->set($db->quoteName('published') . ' = ' . $db->quote($intState))

@@ -110,7 +110,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'namekey' => 'automation',
 				'value'   => json_encode([
 					'enabled'   => 0,
-					'displayed' => 0,
+					'displayed' => 1,
 					'params'    => new \stdClass()
 				])
 			];
@@ -229,7 +229,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 				'menu_show' => 1,
 				'menu_image_css' => 'automation'
 			],
-		]);
+		], 1, 0);
 		$this->tasks[] = $menuResult['status'];
 
 		if (!empty($menuResult['id'])) {
@@ -247,7 +247,7 @@ class Release2_11_0Installer extends ReleaseInstaller
 					'menu_show' => 1,
 					'menu_image_css' => 'automation'
 				],
-			], $menuResult['id']);
+			], $menuResult['id'], 0);
 			$this->tasks[] = $editmenu['status'];
 		}
 
