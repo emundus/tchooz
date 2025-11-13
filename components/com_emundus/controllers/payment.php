@@ -15,32 +15,34 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Payment\AlterationEntity;
-use Tchooz\Entities\Payment\PaymentMethodEntity;
-use \Tchooz\Repositories\Payment\ProductRepository;
-use \Tchooz\Repositories\Payment\ProductCategoryRepository;
-use \Tchooz\Repositories\Payment\CurrencyRepository;
-use \Tchooz\Repositories\Payment\PaymentRepository;
-use \Tchooz\Repositories\Payment\DiscountRepository;
-use \Tchooz\Repositories\Payment\CartRepository;
-use \Tchooz\Repositories\Contacts\ContactRepository;
-use Tchooz\Repositories\Payment\TransactionRepository;
-use Tchooz\Repositories\Payment\AlterationRepository;
-use \Tchooz\Entities\Payment\ProductEntity;
-use \Tchooz\Entities\Payment\DiscountEntity;
-use \Tchooz\Entities\Payment\CurrencyEntity;
-use \Tchooz\Entities\Payment\ProductCategoryEntity;
-use \Tchooz\Entities\Contacts\ContactEntity;
-use \Tchooz\Entities\Contacts\ContactAddressEntity;
-use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\AlterationType;
+use Tchooz\Entities\Payment\CurrencyEntity;
+use Tchooz\Entities\Payment\DiscountEntity;
+use Tchooz\Entities\Payment\DiscountType;
+use Tchooz\Entities\Payment\PaymentMethodEntity;
+use Tchooz\Entities\Payment\ProductCategoryEntity;
+use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
+use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Payment\AlterationRepository;
+use Tchooz\Repositories\Payment\CartRepository;
+use Tchooz\Repositories\Payment\CurrencyRepository;
+use Tchooz\Repositories\Payment\DiscountRepository;
+use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Repositories\Payment\ProductCategoryRepository;
+use Tchooz\Repositories\Payment\ProductRepository;
+use Tchooz\Repositories\Payment\TransactionRepository;
+use Tchooz\Traits\TraitResponse;
 
 class EmundusControllerPayment extends BaseController
 {
+	use TraitResponse;
+
 	protected $app;
 
 	private $m_payment;
@@ -66,28 +68,6 @@ class EmundusControllerPayment extends BaseController
 		// Attach logging system.
 		jimport('joomla.log.log');
 		JLog::addLogger(['text_file' => 'com_emundus.payment.php'], JLog::ALL, array('com_emundus.payment'));
-	}
-
-	private function sendJsonResponse($response): void
-	{
-		if ($response['code'] === 403)
-		{
-			header('HTTP/1.1 403 Forbidden');
-			echo $response['message'];
-			exit;
-		}
-		else
-		{
-			if ($response['code'] === 500)
-			{
-				header('HTTP/1.1 500 Internal Server Error');
-				echo $response['message'];
-				exit;
-			}
-		}
-
-		echo json_encode($response);
-		exit;
 	}
 
 	/**
@@ -168,7 +148,7 @@ class EmundusControllerPayment extends BaseController
 
 	public function updateFileTransferPayment()
 	{
-		$emundusUser = JFactory::getSession()->get('emundusUser');
+		$emundusUser = $this->app->getSession()->get('emundusUser');
 
 		$updated = $this->m_payment->updateFileTransferPayment($emundusUser);
 
@@ -312,7 +292,6 @@ class EmundusControllerPayment extends BaseController
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id)) {
 			$limit = $this->input->getInt('lim', 0);
 			$page = $this->input->getInt('page', 1);
-			$search = $this->input->getString('recherche', '');
 
 			$filters = [];
 			$category = $this->input->getInt('category', 0);
@@ -320,10 +299,13 @@ class EmundusControllerPayment extends BaseController
 				$filters['category_id'] = $category;
 			}
 
+			$filters['search'] = $this->input->getString('recherche', '');
+
+
 			$product_repository = new ProductRepository();
-			$products = $product_repository->getProducts($limit, $page, $filters, $search);
+			$products = $product_repository->getProducts($limit, $page, $filters);
 			$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => [
-				'count' => $product_repository->countProducts(),
+				'count' => $product_repository->countProducts($filters),
 				'datas' => array_map(function ($product) {
 					return [
 						'id'          => $product->getId(),
@@ -331,8 +313,8 @@ class EmundusControllerPayment extends BaseController
 						'description' => $product->description,
 						'price'       => $product->getDisplayedPrice(),
 						'currency'    => $product->currency->symbol,
-						'category_id' => $product->category ?->getId(),
-						'category'    => $product->category ?->getLabel(),
+						'category_id' => $product->category?->getId(),
+						'category'    => $product->category?->getLabel(),
 						'additional_columns' => [
 							[
 								'key' => Text::_('COM_EMUNDUS_PRODUCT_DESCRIPTION'),
@@ -406,7 +388,7 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function getfiltertransactionsapplicants()
+	public function getfiltertransactionsapplicants(): void
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
@@ -419,7 +401,7 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function getfiltertransactionsfiles()
+	public function getfiltertransactionsfiles(): void
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
@@ -432,7 +414,7 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function gettransactions()
+	public function gettransactions(): void
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 
@@ -628,11 +610,7 @@ class EmundusControllerPayment extends BaseController
 			$campaigns = $this->input->getString('campaigns', '');
 			$campaigns = !empty($campaigns) ? explode(',', $campaigns) : [];
 
-			$product_entity = new ProductEntity();
-			$product_entity->setId($id);
-			$product_entity->setLabel($label);
-			$product_entity->setDescription($description);
-			$product_entity->setPrice($price);
+			$product_entity = new ProductEntity($id, $label, $description, $price);
 			$product_entity->setIllimited($illimited === 1);
 			$product_entity->setQuantity($quantity);
 
@@ -663,15 +641,16 @@ class EmundusControllerPayment extends BaseController
 			}
 
 			if (!empty($category_id)) {
-				$product_entity->category = new ProductCategoryEntity($category_id);
+				$product_category_repository = new ProductCategoryRepository();
+				$product_entity->category = $product_category_repository->getProductCategoryById($category_id);
 			}
 
 			$product_entity->setCampaigns($campaigns);
 
 			$product_repository = new ProductRepository();
-			$product_id = $product_repository->flush($product_entity);
+			$flushed = $product_repository->flush($product_entity);
 
-			if (!empty($product_id)) {
+			if ($flushed) {
 				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_SAVED'), 'status' => true];
 			} else {
 				$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_SAVED'), 'status' => false];
@@ -732,7 +711,12 @@ class EmundusControllerPayment extends BaseController
 			$discount_entity->setAvailableTo(!empty($available_to) ? new \DateTime($available_to) : null);
 
 			if (!empty($currency_id)) {
-				$discount_entity->setCurrency(new CurrencyEntity($currency_id));
+				$currency_repository = new CurrencyRepository();
+				$currency = $currency_repository->getCurrencyById($currency_id);
+
+				if (!empty($currency)) {
+					$discount_entity->setCurrency($currency);
+				}
 			}
 
 			try {
@@ -828,6 +812,11 @@ class EmundusControllerPayment extends BaseController
 					$payment_methods = $this->input->getString('paymentMethods', '');
 					$payment_methods = !empty($payment_methods) ? explode(',', $payment_methods) : [];
 					$synchronizer_id = $this->input->getInt('synchronizerId', 0);
+					$mandatory_categories = $this->input->getString('mandatoryProductCategories', '');
+					$mandatory_categories = !empty($mandatory_categories) ? explode(',', $mandatory_categories) : [];
+					$optional_categories = $this->input->getString('optionalProductCategories', '');
+					$optional_categories = !empty($optional_categories) ? explode(',', $optional_categories) : [];
+
 					if (empty($synchronizer_id)) {
 						throw new \Exception(Text::_('COM_EMUNDUS_PAYMENT_STEP_SYNCHRONIZER_ID_REQUIRED'));
 					}
@@ -875,6 +864,20 @@ class EmundusControllerPayment extends BaseController
 						}
 					}
 					$payment_step_entity->setProducts($products);
+
+					if (!empty($mandatory_categories))
+					{
+						$product_category_repository = new ProductCategoryRepository();
+						$mandatory_categories = $product_category_repository->getProductCategories(['id' => $mandatory_categories]);
+					}
+					$payment_step_entity->setMandatoryProductCategories($mandatory_categories);
+
+					if (!empty($optional_categories))
+					{
+						$product_category_repository = new ProductCategoryRepository();
+						$optional_categories = $product_category_repository->getProductCategories(['id' => $optional_categories]);
+					}
+					$payment_step_entity->setOptionalProductCategories($optional_categories);
 
 					$payment_method_entities = [];
 					foreach($payment_methods as $payment_method_id)
@@ -955,7 +958,7 @@ class EmundusControllerPayment extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function duplicateproduct()
+	public function duplicateproduct(): void
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
@@ -969,9 +972,7 @@ class EmundusControllerPayment extends BaseController
 				if (!empty($product)) {
 					$product->setId(0);
 
-					$duplicated = $product_repository->flush($product);
-
-					if ($duplicated) {
+					if ($product_repository->flush($product)) {
 						$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_DUPLICATED'), 'status' => true];
 					} else {
 						$response = ['code' => 250, 'message' => Text::_('COM_EMUNDUS_PRODUCT_NOT_DUPLICATED'), 'status' => true];
@@ -1074,10 +1075,19 @@ class EmundusControllerPayment extends BaseController
 			if ($cart_repository->canUserUpdateCart($cart, $this->app->getIdentity()->id)) {
 				// is it a removable product by the applicant ?
 				$removable = false;
-				foreach($cart->getAvailableProducts() as $available_product) {
-					if ($available_product->getId() === $product_id && $available_product->getMandatory() === 0) {
-						$removable = true;
-						break;
+
+				$availableProductIds = array_map(function ($product) {
+					return $product->getId();
+				}, $cart->getAvailableProducts());
+
+				if (!in_array($product_id, $availableProductIds)) {
+					$removable = true;
+				} else {
+					foreach($cart->getAvailableProducts() as $available_product) {
+						if ($available_product->getId() === $product_id && $available_product->getMandatory() === 0) {
+							$removable = true;
+							break;
+						}
 					}
 				}
 
@@ -1119,7 +1129,8 @@ class EmundusControllerPayment extends BaseController
 			$description = $this->input->getString('description', '');
 
 			if (!empty($product_id)) {
-				$product = new ProductEntity($product_id);
+				$productRepository = new ProductRepository();
+				$product = $productRepository->getProductById($product_id);
 			} else {
 				$product = null;
 			}
@@ -1175,7 +1186,8 @@ class EmundusControllerPayment extends BaseController
 					$description = $this->input->getString('description', '');
 
 					if (!empty($product_id)) {
-						$product = new ProductEntity($product_id);
+						$product_repository = new ProductRepository();
+						$product = $product_repository->getProductById($product_id);
 					} else {
 						$product = null;
 					}
@@ -1353,7 +1365,8 @@ class EmundusControllerPayment extends BaseController
 
 			if (!empty($id)) {
 				try {
-					$product_category_entity = new ProductCategoryEntity($id);
+					$product_category_repository = new ProductCategoryRepository();
+					$product_category_entity = $product_category_repository->getProductCategoryById($id);
 					$response = ['code' => 200, 'message' => '', 'status' => true, 'data' => $product_category_entity->serialize()];
 				} catch (Exception $e) {
 					$response = ['code' => 404, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_NOT_FOUND'), 'status' => false];
@@ -1392,12 +1405,8 @@ class EmundusControllerPayment extends BaseController
 			$label = $this->input->getString('label', '');
 			$published = $this->input->getInt('published', 1);
 
-			$product_category_entity = new ProductCategoryEntity($id);
-			$product_category_entity->setLabel($label);
-			$product_category_entity->setPublished($published);
-
+			$product_category_entity = new ProductCategoryEntity($id, $label, $published);
 			$product_category_repository = new ProductCategoryRepository();
-
 			if ($product_category_repository->flush($product_category_entity))
 			{
 				$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCT_CATEGORY_SAVED'), 'status' => true];
@@ -1468,10 +1477,7 @@ class EmundusControllerPayment extends BaseController
 			$cart = $cart_repository->getCartById($cart_id);
 
 			if ($cart_repository->canUserUpdateCart($cart, $user_id)) {
-
-				$db = Factory::getContainer()->get('DatabaseDriver');
-
-				$contact_repository = new ContactRepository($db);
+				$contact_repository = new ContactRepository();
 				$contact_entity = $contact_repository->getByUserId($cart->getCustomer()->getUserId());
 
 				if (!empty($contact_entity->getId()) && $contact_entity->getUserId() === $cart->getCustomer()->getUserId())
@@ -1480,11 +1486,11 @@ class EmundusControllerPayment extends BaseController
 					$firstname = $this->input->getString('firstname', '');
 					$lastname = $this->input->getString('lastname', '');
 					$phone = $this->input->getString('phone', '');
-					$address1 = $this->input->getString('address1', '');
-					$address2 = $this->input->getString('address2', '');
-					$zip = $this->input->getString('zip', '');
-					$city = $this->input->getString('city', '');
-					$state = $this->input->getString('state', '');
+					$street_address = $this->input->getString('street_address', '');
+					$extended_address = $this->input->getString('extended_address', '');
+					$postal_code = $this->input->getString('postal_code', '');
+					$locality = $this->input->getString('locality', '');
+					$region = $this->input->getString('region', '');
 					$country = $this->input->getInt('country', 0);
 
 					$contact_entity->setEmail($email);
@@ -1492,24 +1498,34 @@ class EmundusControllerPayment extends BaseController
 					$contact_entity->setLastname($lastname);
 					$contact_entity->setPhone1($phone);
 
-					$address_entity = $contact_entity->getAddress();
-					if (empty($address_entity)) {
-						$address_entity = new ContactAddressEntity($contact_entity->getId(), $address1, $address2, $city, $state, $zip, $country);
+					$addresses_entity = $contact_entity->getAddresses();
+					if (empty($addresses_entity)) {
+						// create a new address entity
+						$address_entity = new AddressEntity(
+							0,
+							$locality,
+							$region,
+							$street_address,
+							$extended_address,
+							$postal_code,
+							null,
+							$country
+						);
+						$addresses_entity = [$address_entity];
 					} else {
-						$address_entity->setContactId($contact_entity->getId());
-						$address_entity->setAddress1($address1);
-						$address_entity->setAddress2($address2);
-						$address_entity->setCity($city);
-						$address_entity->setState($state);
-						$address_entity->setZip($zip);
-						$address_entity->setCountry($country);
+						$addresses_entity[0]->setStreetAddress($street_address);
+						$addresses_entity[0]->setExtendedAddress($extended_address);
+						$addresses_entity[0]->setLocality($locality);
+						$addresses_entity[0]->setRegion($region);
+						$addresses_entity[0]->setPostalCode($postal_code);
+						$addresses_entity[0]->setCountry($country);
 					}
 
-					$contact_entity->setAddress($address_entity);
+					$contact_entity->setAddresses($addresses_entity);
 					try {
-						$contact_id = $contact_repository->flush($contact_entity);
+						$result = $contact_repository->flush($contact_entity);
 
-						if ($contact_id) {
+						if ($result && !empty($contact_entity->getId())) {
 							$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_SAVED'), 'status' => true];
 						} else {
 							$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_CUSTOMER_NOT_SAVED'), 'status' => false];
@@ -1805,6 +1821,84 @@ class EmundusControllerPayment extends BaseController
 				} else {
 					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_TRANSACTION_NOT_UPDATED'), 'status' => false];
 				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function alterFilesProducts(): void
+	{
+		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED')];
+
+		if (EmundusHelperAccess::asAccessAction($this->payment_repository->getActionId(), 'u', $this->app->getIdentity()->id))
+		{
+			$fnums = $this->input->getString('fnums', '');
+			$fnums = explode(',', $fnums);
+			$product_ids = $this->input->getString('product_ids', '');
+			$product_ids = explode(',', $product_ids);
+			$addOrRemove = $this->input->getString('action', 'add');
+
+			if (!in_array($addOrRemove, ['add', 'remove'])) {
+				$addOrRemove = 'add';
+			}
+
+			if (!empty($fnums) && !empty($product_ids)) {
+				$cart_repository = new CartRepository();
+				$product_repository = new ProductRepository();
+
+				if(!class_exists('EmundusModelWorkflow'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+				}
+				$workflowModel = new EmundusModelWorkflow();
+
+				$notAddedToFiles = [];
+				foreach ($fnums as $fnum) {
+					$step = $workflowModel->getPaymentStepFromFnum($fnum);
+
+					if (!empty($step)) {
+						$cart = $cart_repository->getCartByFnum($fnum, $step->id);
+
+						if (!empty($cart)) {
+							foreach ($product_ids as $product_id) {
+								$product = $product_repository->getProductById((int)$product_id);
+
+								if (!empty($product))
+								{
+									switch($addOrRemove)
+									{
+										case 'add':
+											$cart->addProduct($product);
+											break;
+										case 'remove':
+											$cart->removeProduct($product);
+											break;
+									}
+								} else {
+									$notAddedToFiles[] = $fnum;
+								}
+							}
+
+							if (!$cart_repository->saveCart($cart))
+							{
+								$notAddedToFiles[] = $fnum;
+							}
+						} else {
+							$notAddedToFiles[] = $fnum;
+						}
+					} else {
+						$notAddedToFiles[] = $fnum;
+					}
+				}
+
+				if (empty($notAddedToFiles)) {
+					$response = ['code' => 200, 'message' => Text::_('COM_EMUNDUS_PRODUCTS_ADDED_TO_FILES'), 'status' => true];
+				} else {
+					$response = ['code' => 500, 'message' => Text::_('COM_EMUNDUS_PRODUCTS_NOT_ADDED_TO_FILES') . ': ' . implode(', ', $notAddedToFiles), 'status' => false];
+				}
+			} else {
+				$response = ['code' => 400, 'message' => Text::_('COM_EMUNDUS_INVALID_INPUT'), 'status' => false];
 			}
 		}
 

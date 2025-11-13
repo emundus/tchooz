@@ -3,6 +3,7 @@ namespace Falang;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Updater\Updater;
+use Joomla\Database\DatabaseInterface;
 
 class Update
 {
@@ -95,7 +96,7 @@ class Update
         }
 
         // Find the extension ID
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select('*')
             ->from($db->qn('#__extensions'))
@@ -129,7 +130,7 @@ class Update
      */
     public function getUpdates($force = false)
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // Default response (no update)
         $updateResponse = array(
@@ -206,7 +207,7 @@ class Update
      */
     public function getUpdateSiteIds()
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select($db->qn('update_site_id'))
             ->from($db->qn('#__update_sites_extensions'))
@@ -260,7 +261,7 @@ class Update
         );
 
         // Get a reference to the db driver
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // Get the #__update_sites columns
         $columns = $db->getTableColumns('#__update_sites', true);
@@ -382,7 +383,7 @@ class Update
      */
     public function removeObsoleteUpdateSites()
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         // Get update site IDs
         $updateSiteIDs = $this->getUpdateSiteIds();

@@ -76,6 +76,26 @@ export default {
 			return updated;
 		}
 	},
+	renameFilter(filterId, name) {
+		let renamed = false;
+
+		if (filterId && name.length > 0) {
+			return client
+				.post('renamefilter', {
+					id: filterId,
+					name: name,
+				})
+				.then((data) => {
+					if (data.status) {
+						renamed = true;
+					}
+
+					return renamed;
+				});
+		} else {
+			return renamed;
+		}
+	},
 	async deleteFilter(filterId) {
 		let deleted = false;
 
@@ -163,6 +183,102 @@ export default {
 				});
 		} else {
 			throw new Error('Module id is not valid');
+		}
+	},
+	async shareFilter(filter, users, groups) {
+		if (filter > 0) {
+			return client
+				.post('sharefilter', {
+					filter: filter,
+					users: users,
+					groups: groups,
+				})
+				.then((data) => {
+					return data;
+				})
+				.catch((error) => {
+					throw new Error('Error occured while sharing filter : '.error.message);
+				});
+		} else {
+			throw new Error('Filter id is not valid');
+		}
+	},
+	async getAlreadySharedTo(filterId) {
+		let alreadySharedTo = {
+			users: [],
+			groups: [],
+		};
+
+		if (filterId > 0) {
+			return client
+				.get('getalreadysharedto', {
+					filter_id: filterId,
+				})
+				.then((data) => {
+					if (data.status) {
+						alreadySharedTo = data.data;
+					}
+
+					return alreadySharedTo;
+				})
+				.catch((error) => {
+					return alreadySharedTo;
+				});
+		} else {
+			return alreadySharedTo;
+		}
+	},
+	async deleteSharing(filterId, id, type) {
+		if (filterId > 0) {
+			return client
+				.post('deletesharing', {
+					filter_id: filterId,
+					id: id,
+					type: type,
+				})
+				.then((data) => {
+					if (data.status) {
+						return data;
+					}
+				})
+				.catch((error) => {
+					throw new Error('Error occured while deleting sharing : '.error.message);
+				});
+		} else {
+			throw new Error('Filter id is not valid');
+		}
+	},
+	async toggleFilterFavoriteState(filterId, setFavorite) {
+		if (filterId > 0) {
+			return client
+				.post('togglefilterfavorite', {
+					filter_id: filterId,
+					set_favorite: setFavorite,
+				})
+				.then((data) => {
+					if (data.status) {
+						return data;
+					}
+				})
+				.catch((error) => {
+					throw new Error('Error occured while toggling favorite state : '.error.message);
+				});
+		}
+	},
+	async defineAsDefaultFilter(filterId) {
+		if (filterId > 0) {
+			return client
+				.post('defineasdefaultfilter', {
+					filter_id: filterId,
+				})
+				.then((data) => {
+					if (data.status) {
+						return data;
+					}
+				})
+				.catch((error) => {
+					throw new Error('Error occured while defining as default filter : '.error.message);
+				});
 		}
 	},
 };

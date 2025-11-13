@@ -14,7 +14,6 @@ use EmundusModelApplication;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
-use stdClass;
 
 /**
  * @package     Unit\Component\Emundus\Model

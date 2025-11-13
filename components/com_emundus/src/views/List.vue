@@ -6,7 +6,8 @@
 			v-else
 			:title="currentList.title"
 			:introduction="currentList.intro"
-			:add-action="addAction"
+			:primary-action="addAction"
+			:secondary-action="secondaryAction"
 			@action="onClickAction"
 		/>
 
@@ -155,15 +156,41 @@
 										'tw-rounded-s-coordinator-cards': !canCheck && viewType === 'table',
 									}"
 								>
-									<span
-										@click="onClickAction(editAction, item.id, false, $event)"
-										:class="{
-											'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
-											'hover:tw-underline': editAction,
-										}"
-										:title="item.label[params.shortlang]"
-										v-html="item.label[params.shortlang]"
-									></span>
+									<div class="tw-flex tw-w-full tw-justify-between">
+										<span
+											v-if="editAction"
+											@click="onClickAction(editAction, item.id, false, $event)"
+											class="hover:tw-underline"
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<span
+											v-else-if="showAction"
+											@click="onClickAction(showAction, item.id, false, $event)"
+											class="hover:tw-underline"
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<span
+											v-else
+											:class="{
+												'tw-line-clamp-2 tw-min-h-[48px] tw-font-semibold': viewType === 'blocs',
+											}"
+											:title="item.label[params.shortlang]"
+											v-html="item.label[params.shortlang]"
+										></span>
+										<img
+											v-if="item.image && viewType === 'blocs'"
+											:src="item.image"
+											class="tw-h-20 tw-w-20 tw-object-contain"
+										/>
+									</div>
 								</td>
 								<td
 									class="columns tw-p-4"
@@ -183,6 +210,7 @@
 										<span
 											v-for="tag in column.values"
 											:key="tag.key"
+											:title="tag.title ? tag.title : ''"
 											class="tw-mr-2 tw-h-max"
 											:class="tag.classes"
 											v-html="tag.value"
@@ -219,6 +247,13 @@
 										>
 											{{ translate(editAction.label) }}
 										</a>
+										<a
+											v-else-if="viewType === 'blocs' && showAction"
+											@click="onClickAction(showAction, item.id, false, $event)"
+											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
+										>
+											{{ translate(showAction.label) }}
+										</a>
 										<div class="tw-flex tw-items-center tw-justify-end tw-gap-2">
 											<button
 												v-if="editAction && viewType === 'table'"
@@ -227,7 +262,18 @@
 												style="padding: 0.5rem"
 												:title="translate(editAction.label)"
 											>
-												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">edit</span>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">{{
+													editAction.icon ?? 'edit'
+												}}</span>
+											</button>
+											<button
+												v-else-if="showAction && viewType === 'table'"
+												@click="onClickAction(showAction, item.id)"
+												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
+												style="padding: 0.5rem"
+												:title="translate(showAction.label)"
+											>
+												<span class="material-symbols-outlined popover-toggle-btn tw-cursor-pointer">search</span>
 											</button>
 
 											<button
@@ -258,11 +304,12 @@
 											</button>
 
 											<div v-if="showModal && currentComponentElementId === item.id">
-												<Teleport to=".com_emundus_vue">
+												<Teleport to=".com_emundus">
 													<modal
 														:name="'modal-component'"
 														transition="nice-modal-fade"
 														:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+														:height="modalHeight"
 														:width="'600px'"
 														:delay="100"
 														:adaptive="true"
@@ -297,6 +344,7 @@
 															'tw-hidden': !(
 																typeof action.showon === 'undefined' || evaluateShowOn(item, action.showon)
 															),
+															'tw-text-red-500': action.name === 'delete',
 														}"
 														@click="onClickAction(action, item.id, false, $event)"
 														class="tw-cursor-pointer tw-px-2 tw-py-1.5 tw-text-base hover:tw-rounded-coordinator hover:tw-bg-neutral-300"
@@ -385,6 +433,8 @@ import Calendar from '@/views/Events/Calendar.vue';
 import Modal from '@/components/Modal.vue';
 import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
+import ContactDetails from '@/components/Contacts/ContactDetails.vue';
+import OrganizationDetails from '@/components/Organizations/OrganizationDetails.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
 
@@ -414,6 +464,8 @@ export default {
 		EditSlot,
 		Import,
 		AssociateUser,
+		ContactDetails,
+		OrganizationDetails,
 		SaveRequest,
 	},
 	props: {
@@ -437,6 +489,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		modalHeight: {
+			type: String,
+			default: 'auto',
+		},
 	},
 	mixins: [alerts],
 	data() {
@@ -450,6 +506,8 @@ export default {
 			components: {
 				EditSlot,
 				AssociateUser,
+				ContactDetails,
+				OrganizationDetails,
 				Import,
 				SaveRequest,
 			},
@@ -655,14 +713,17 @@ export default {
 								});
 							}
 
-							url += '&view=' + this.viewType;
-
 							if (this.defaultFilter && this.defaultFilter.length > 0) {
 								url += '&' + this.defaultFilter;
 							}
 
 							try {
-								fetch(url)
+								fetch(url, {
+									method: 'GET',
+									headers: {
+										'Content-Type': 'application/json',
+									},
+								})
 									.then((response) => response.json())
 									.then((response) => {
 										if (response.status === true) {
@@ -740,6 +801,7 @@ export default {
 										typeof filter.controller !== 'undefined' ? filter.controller : tab.controller,
 										filter,
 										tab.key,
+										tab,
 									);
 								} else {
 									this.filters[tab.key].push({
@@ -772,8 +834,28 @@ export default {
 			});
 		},
 
-		async setFilterOptions(controller, filter, tab) {
-			return await fetch('/index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter)
+		async setFilterOptions(controller, filter, tabKey, tab) {
+			// Pass other filter values as parameters to the request
+			let params = '';
+			if (tab.filters) {
+				tab.filters.forEach((f) => {
+					if (f.key !== filter.key) {
+						// Search if we have a value for this filter in URL parameters
+						let urlParams = new URLSearchParams(window.location.search);
+						let filterValue = '';
+						if (urlParams.has(f.key)) {
+							filterValue = urlParams.get(f.key);
+						}
+
+						if (filterValue !== '' && filterValue !== 'all') {
+							params += '&' + f.key + '=' + filterValue;
+						}
+					}
+				});
+			}
+
+			let url = '/index.php?option=com_emundus&controller=' + controller + '&task=' + filter.getter + params;
+			return await fetch(url)
 				.then((response) => response.json())
 				.then((response) => {
 					if (response.status === true) {
@@ -792,7 +874,7 @@ export default {
 							label: this.translate(filter.allLabel),
 						});
 
-						this.filters[tab].find((f) => f.key === filter.key).options = options;
+						this.filters[tabKey].find((f) => f.key === filter.key).options = options;
 					} else {
 						return [];
 					}
@@ -817,7 +899,7 @@ export default {
 				item = this.items[this.selectedListTab].find((item) => item.id === itemId);
 			}
 
-			if (action.name === 'copy_clipboard') {
+			if (action.type === 'copy_clipboard') {
 				if (!item) {
 					console.error('Item not found for copy to clipboard action');
 					return;
@@ -1058,7 +1140,8 @@ export default {
 
 				if (method === 'get') {
 					response = await fetchClient.get(task, data).catch((error) => {
-						console.error(error.message);
+						console.log(error);
+
 						this.alertError('COM_EMUNDUS_ERROR', error.message);
 						removeLoader();
 					});
@@ -1122,11 +1205,13 @@ export default {
 			this.loading.items = false;
 		},
 
-		onClickPreview(item) {
+		async onClickPreview(item) {
 			if (this.previewAction && this.previewAction.method) {
+				const html = await this.previewAction.method(item);
+
 				Swal.fire({
 					title: this.translate(this.previewAction.title),
-					html: this.previewAction.method(item),
+					html: html,
 					reverseButtons: true,
 					customClass: {
 						title: 'em-swal-title',
@@ -1287,15 +1372,17 @@ export default {
 				e.stopPropagation();
 			}
 
-			Swal.fire({
-				html: '<div style="text-align: left;">' + html + '</div>',
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
+			if (html) {
+				Swal.fire({
+					html: '<div style="text-align: left;">' + html + '</div>',
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						actions: 'em-swal-single-action',
+					},
+				});
+			}
 		},
 	},
 	computed: {
@@ -1312,7 +1399,7 @@ export default {
 			return typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.filter((action) => {
 						return (
-							!['add', 'edit'].includes(action.name) &&
+							!['add', 'edit', 'secondary-head'].includes(action.name) &&
 							!Object.prototype.hasOwnProperty.call(action, 'icon') &&
 							action.display
 						);
@@ -1328,6 +1415,14 @@ export default {
 				: false;
 		},
 
+		showAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return action.name === 'show' && (action.view === this.viewType || typeof action.view === 'undefined');
+					})
+				: false;
+		},
+
 		editWeekAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {
@@ -1336,6 +1431,13 @@ export default {
 				: false;
 		},
 
+		secondaryAction() {
+			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
+				? this.currentTab.actions.find((action) => {
+						return action.name === 'secondary-head' && action.display;
+					})
+				: false;
+		},
 		addAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {

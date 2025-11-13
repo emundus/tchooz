@@ -44,6 +44,7 @@ enum ElementPlugin: string
 	case PHONENUMBER = 'emundus_phonenumber';
 	case IBAN = 'iban';
 	case PANEL = 'panel';
+	case DISPLAY = 'display';
 
 	public static function tryFromString(?string $plugin): ?self
 	{
@@ -56,6 +57,32 @@ enum ElementPlugin: string
 		$normalized = strtolower(trim($plugin));
 
 		return self::tryFrom($normalized);
+	}
+
+	public function getLabel(): string
+	{
+		return match ($this)
+		{
+			self::ID => 'COM_EMUNDUS_USERNAME',
+			self::FIELD => 'COM_EMUNDUS_ONBOARD_TYPE_FIELD',
+			self::TEXTAREA => 'COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA',
+			self::PASSWORD => 'COM_EMUNDUS_REGISTER_PASSWORD1_LABEL',
+			self::DATE, self::JDATE, self::BIRTHDAY => 'COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY',
+			self::YEARS => 'MOD_EMUNDUS_FILTERS_YEARS',
+			self::CHECKBOX => 'COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX',
+			self::DROPDOWN => 'COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN',
+			self::RADIO => 'COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON',
+			self::DATABASEJOIN => 'COM_EMUNDUS_ONBOARD_TYPE_DATABASEJOIN',
+			self::RATING => 'COM_EMUNDUS_FABRIK_ELEMENT_RATING',
+			self::YESNO => 'COM_EMUNDUS_ONBOARD_TYPE_YESNO',
+			self::FILEUPLOAD, self::EMUNDUS_FILEUPLOAD => 'COM_EMUNDUS_ONBOARD_TYPE_FILE',
+			self::BOOKING => 'COM_EMUNDUS_ONBOARD_TYPE_BOOKING',
+			self::CALC => 'COM_EMUNDUS_ONBOARD_BUILDER_CALC_VALUE',
+			self::CURRENCY => 'COM_EMUNDUS_ONBOARD_TYPE_CURRENCY',
+			self::PHONENUMBER => 'COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER',
+			self::IBAN => 'COM_EMUNDUS_ONBOARD_TYPE_IBAN',
+			self::PANEL => 'COM_EMUNDUS_ONBOARD_TYPE_PANEL',
+		};
 	}
 
 	public function getDateFormatParameter(): string

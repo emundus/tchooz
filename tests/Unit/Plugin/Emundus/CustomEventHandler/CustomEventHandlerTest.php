@@ -11,8 +11,25 @@
 namespace Unit\Plugin\Emundus\CustomEventHandler;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Automation\Actions\ActionUpdateFileTags;
+use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
+use Tchooz\Entities\Automation\AutomationEntity;
+use Tchooz\Entities\Automation\ConditionEntity;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
+use Tchooz\Entities\Automation\TargetEntity;
+use Tchooz\Entities\Automation\TargetPredefinitions\ApplicantCurrentFilePredefinition;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Enums\Automation\ConditionsAndorEnum;
+use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
+use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Repositories\Automation\AutomationRepository;
+use Tchooz\Repositories\Automation\EventsRepository;
+use Tchooz\Services\Automation\ActionRegistry;
 
 
 /**
@@ -293,5 +310,112 @@ class CustomEventHandlerTest extends UnitTestCase
 		$value = 1;
 		$result = self::callPrivateMethod($this->model, 'operateCondition', [$condition, $value]);
 		$this->assertFalse($result, 'The condition should not be met');
+	}
+
+	/**
+	 * This test is to make sure that automations are not re-run if they have already been executed in the same context.
+	 *
+	 * @covers plgEmundusCustom_event_handler::runAutomations
+	 * @return void
+	 */
+	public function testRunAutomations(): void
+	{
+		$this->h_dataset->resetAutomations();
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+
+		$ran = $this->model->runAutomations('', []);
+		$this->assertFalse($ran, 'If no event and no data are passed, the automations should not run.');
+
+		$event = 'onAfterStatusChange';
+		$ran = $this->model->runAutomations($event, []);
+		$this->assertFalse($ran, 'If no data are passed, the automations should not run.');
+
+		$data = ['context' => new EventContextEntity($user, [$fnum], [], [onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => 0, onAfterStatusChangeDefinition::STATUS_PARAMETER => 1])];
+		$ran = $this->model->runAutomations($event, $data);
+		$this->assertTrue($ran, 'If event and data are passed, the automations should run. Even if no automation is set for that event, the method should return true.');
+
+		$automationRepository = new AutomationRepository();
+		$eventRepository = new EventsRepository();
+		$eventStatus = $eventRepository->getEventByName('onAfterStatusChange');
+
+		$condition = new ConditionEntity(1, 1, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(1, [$condition], ConditionsAndorEnum::AND);
+		$updateStateAction = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 2]);
+		$updateStateAction->addTarget(new TargetEntity(1, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition()));
+		$automationUpdateState = new AutomationEntity(0, 'Mis à jour du statut vers 2 si statut 1', '', $eventStatus, [$conditionGroup], [$updateStateAction], true);
+		$automationRepository->flush($automationUpdateState);
+
+		$conditionGroup2 = new ConditionGroupEntity(2, [new ConditionEntity(2, 2, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 2)], ConditionsAndorEnum::AND);
+		$updateStateAction2 = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 3]);
+		$updateStateAction2->addTarget(new TargetEntity(2, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition()));
+		$automationUpdateState2 = new AutomationEntity(0, 'Mis à jour du statut vers 3 si statut 2', '', $eventStatus, [$conditionGroup2], [$updateStateAction2], true);
+		$automationRepository->flush($automationUpdateState2);
+
+		$ran = $this->model->runAutomations($event, $data);
+		$this->assertTrue($ran, 'If event and data are passed, the automations should run.');
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('status'))
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+
+		$db->setQuery($query);
+		$status = $db->loadResult();
+
+		$this->assertEquals(3, $status, 'The status should have been updated to 2 by the first automation.');
+
+		$m_logs = new \EmundusModelLogs();
+		$statusLogs = $m_logs->getActionsOnFnum($fnum, null, 13);
+		$this->assertNotEmpty($statusLogs);
+		$this->assertCount(2, $statusLogs, 'There should be two log entries for the two status updates. If there was more, it would mean that the automations ran more than once.');
+	}
+
+	/**
+	 * If this test does not work, it will do a timeout
+	 * @covers plgEmundusCustom_event_handler::runAutomations
+	 * @return void
+	 */
+	public function testRunAutomationsNoLoopPossible(): void
+	{
+		$this->h_dataset->resetAutomations();
+		$fnum = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['coordinator']);
+
+		// make 2 automations, 1 change status to 1 if 0, the other change status to 0 if 1
+		$automationRepository = new AutomationRepository();
+		$eventRepository = new EventsRepository();
+		$eventStatus = $eventRepository->getEventByName('onAfterStatusChange');
+
+		$condition = new ConditionEntity(1, 1, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 0);
+		$conditionGroup = new ConditionGroupEntity(1, [$condition], ConditionsAndorEnum::AND);
+		$updateStateAction = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
+		$updateStateAction->addTarget(new TargetEntity(1, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition()));
+		$automationUpdateState = new AutomationEntity(0, 'Mis à jour du statut vers 1 si statut 0', '', $eventStatus, [$conditionGroup], [$updateStateAction], true);
+		$automationRepository->flush($automationUpdateState);
+
+		$conditionGroup2 = new ConditionGroupEntity(2, [new ConditionEntity(2, 2, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1)], ConditionsAndorEnum::AND);
+		$updateStateAction2 = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 0]);
+		$updateStateAction2->addTarget(new TargetEntity(2, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition()));
+		$automationUpdateState2 = new AutomationEntity(0, 'Mis à jour du statut vers 0 si statut 1', '', $eventStatus, [$conditionGroup2], [$updateStateAction2], true);
+		$automationRepository->flush($automationUpdateState2);
+
+		$event = 'onAfterStatusChange';
+		$data = ['context' => new EventContextEntity($user, [$fnum], [], [onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => 0, onAfterStatusChangeDefinition::STATUS_PARAMETER => 1])];
+		$ran = $this->model->runAutomations($event, $data);
+		$this->assertTrue($ran, 'If event and data are passed, the automations should run.');
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+		$query->select($db->quoteName('status'))
+			->from($db->quoteName('#__emundus_campaign_candidature'))
+			->where($db->quoteName('fnum') . ' = ' . $db->quote($fnum));
+
+		$db->setQuery($query);
+		$status = $db->loadResult();
+
+		$this->assertEquals(1, $status, 'The status should have been updated to 1 by the two automations, and not looped endlessly.');
+		$this->h_dataset->resetAutomations();
 	}
 }

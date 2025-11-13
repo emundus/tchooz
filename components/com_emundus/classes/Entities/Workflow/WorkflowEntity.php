@@ -10,6 +10,9 @@ class WorkflowEntity {
 
 	public string $label;
 
+	/**
+	 * @var array<StepEntity>
+	 */
 	public array $steps = [];
 
 	public array $program_ids = [];
@@ -38,7 +41,7 @@ class WorkflowEntity {
 	{
 		$query = $this->db->createQuery();
 
-		$query->select('esw.*, GROUP_CONCAT(esws.id) AS steps, GROUP_CONCAT(eswp.program_id) AS program_ids')
+		$query->select('esw.*, GROUP_CONCAT(DISTINCT esws.id) AS steps, GROUP_CONCAT(DISTINCT eswp.program_id) AS program_ids')
 			->from($this->db->quoteName('#__emundus_setup_workflows', 'esw'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws') . ' ON esws.workflow_id = esw.id')
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp') . ' ON eswp.workflow_id = esw.id')
@@ -57,6 +60,8 @@ class WorkflowEntity {
 			}
 
 			$this->program_ids = explode(',', $workflow->program_ids);
+		} else {
+			throw new \Exception('Workflow with ID ' . $this->id . ' not found');
 		}
 	}
 
@@ -99,5 +104,17 @@ class WorkflowEntity {
 		}
 
 		return $added;
+	}
+
+	/**
+	 * @param array  $state
+	 *
+	 * @return array<StepEntity>
+	 */
+	public function getApplicantSteps(array $state = [1]): array
+	{
+		return array_values(array_filter($this->steps, function ($step) use ($state) {
+			return in_array($step->state, $state, true) && $step->isApplicantStep();
+		}));
 	}
 }

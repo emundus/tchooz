@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="plugin" group="task" method="upgrade">
+    <name>plg_task_executeemundusactions</name>
+    <author>eMundus</author>
+    <creationDate>2024-12-23</creationDate>
+    <copyright>(C) 2024 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.io</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.0.0</version>
+    <description>PLG_TASK_EXECUTEEMUNDUSACTION_XML_DESCRIPTION</description>
+    <namespace path="src">Joomla\Plugin\Task\ExecuteEmundusActions</namespace>
+    <files>
+        <folder plugin="executeemundusactions">services</folder>
+        <folder>src</folder>
+    </files>
+    <languages>
+    </languages>
+</extension>

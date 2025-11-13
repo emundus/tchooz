@@ -14,8 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Traits\TraitResponse;
 
 
 /**
@@ -26,6 +27,7 @@ use Joomla\CMS\Language\Text;
  */
 class EmundusControllerGroups extends BaseController
 {
+	use TraitResponse;
 
 	protected $app;
 
@@ -397,4 +399,74 @@ class EmundusControllerGroups extends BaseController
 		exit;
 	}
 
+	public function getuserstoshareto()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (
+			(EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) && EmundusHelperAccess::asAccessAction('share_filters', 'c', $this->_user->id)
+				||
+				EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id)
+			)
+		) {
+			$m_groups = $this->getModel('Groups');
+			$users = $m_groups->getUsersToShareTo($this->_user->id);
+
+			if (!empty($users))
+			{
+				$response['status'] = true;
+				$response['msg']    = Text::_('COM_EMUNDUS_SELECT_USERS');
+				$response['data']   = $users;
+				$response['code']   = 200;
+			}
+			else
+			{
+				$response['msg']  = Text::_('NO_USERS');
+				$response['code'] = 200;
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getgroupstoshareto()
+	{
+		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (
+			(EmundusHelperAccess::asPartnerAccessLevel($this->_user->id) && EmundusHelperAccess::asAccessAction('share_filters', 'c', $this->_user->id)
+				||
+				EmundusHelperAccess::asAdministratorAccessLevel($this->_user->id)
+			)
+		) {
+			$response['msg'] = Text::_('NO_GROUPS');
+			$m_groups = $this->getModel('Groups');
+			$user_groups = $m_groups->getUsersGroups([$this->_user->id]);
+
+			if (!empty($user_groups)) {
+				$emundus_config = JComponentHelper::getParams('com_emundus');
+				$all_rights_grp = $emundus_config->get('all_rights_group', 1);
+
+				$group_ids = array_map(function($user_group) {
+					return $user_group->group_id;
+				}, $user_groups);
+				$group_ids = array_unique($group_ids);
+
+				if (in_array($all_rights_grp, $group_ids)) {
+					$groups = $m_groups->getGroups();
+				} else {
+					$groups = $m_groups->getGroups($group_ids);
+				}
+
+				if (!empty($groups)) {
+					$response['status'] = true;
+					$response['msg'] = Text::_('COM_EMUNDUS_SELECT_GROUPS');
+					$response['data'] = array_values($groups);
+					$response['code'] = 200;
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
 }

@@ -10,7 +10,11 @@ export default {
 			type: String,
 			default: null,
 		},
-		addAction: {
+		primaryAction: {
+			type: Object,
+			default: null,
+		},
+		secondaryAction: {
 			type: Object,
 			default: null,
 		},
@@ -32,13 +36,23 @@ export default {
 	<div class="head tw-py-6">
 		<div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
 			<h1>{{ translate(title) }}</h1>
-			<a
-				v-if="addAction"
-				id="add-action-btn"
-				class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator"
-				@click="onClickAction(addAction)"
-				>{{ translate(addAction.label) }}</a
-			>
+			<div class="tw-flex tw-flex-row tw-items-center tw-gap-2">
+				<a
+					v-if="secondaryAction"
+					id="secondary-action-btn"
+					class="tw-btn-secondary tw-mr-2 tw-w-auto tw-cursor-pointer tw-rounded-coordinator"
+					@click="onClickAction(secondaryAction)"
+				>
+					{{ translate(secondaryAction.label) }}
+				</a>
+				<a
+					v-if="primaryAction"
+					id="primary-action-btn"
+					class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator"
+					@click="onClickAction(primaryAction)"
+					>{{ translate(primaryAction.label) }}</a
+				>
+			</div>
 		</div>
 
 		<div v-if="isHtmlIntro" v-html="translate(introduction)" class="tw-text-neutral-700"></div>

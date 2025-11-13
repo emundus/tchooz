@@ -36,27 +36,22 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetApplicantInfos()
 	{
-		$applicant_email = 'userunittest' . rand(0, 1000) . '@emundus.test.fr';
-		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
+		$applicantId = $this->dataset['applicant'];
 
 		$applicant_infos = $this->model->getApplicantInfos(0, []);
 		$this->assertSame([], $applicant_infos, 'getApplicantInfos should return an empty array if the applicant is not found');
 
-		$applicant_infos = $this->model->getApplicantInfos($applicant, ['u.email', 'u.name']);
+		$applicant_infos = $this->model->getApplicantInfos($applicantId, ['u.email', 'u.name']);
 		$this->assertNotEmpty($applicant_infos, 'getApplicantInfos should return an array of user information');
 		$this->assertArrayHasKey('email', $applicant_infos, 'getApplicantInfos should return an array with email property');
 		$this->assertArrayHasKey('name', $applicant_infos, 'getApplicantInfos should return an array with name property');
-		$this->assertSame($applicant_infos['email'], $applicant_email, 'getApplicantInfos should return the correct email');
+		$this->assertSame($applicant_infos['email'], $this->dataset['applicant_email'], 'getApplicantInfos should return the correct email');
 
-		$applicant_infos = $this->model->getApplicantInfos($applicant, ['u.column_not_existing', 'u.name', 'u.id']);
+		$applicant_infos = $this->model->getApplicantInfos($applicantId, ['u.column_not_existing', 'u.name', 'u.id']);
 		$this->assertEmpty($applicant_infos, 'getApplicantInfos should return an empty array if a column does not exist');
 
-		$applicant_infos = $this->model->getApplicantInfos($applicant, 'u.name');
+		$applicant_infos = $this->model->getApplicantInfos($applicantId, 'u.name');
 		$this->assertNotEmpty($applicant_infos, 'getApplicantInfos should return an array of user information event if columns are not in an array');
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($applicant);
-		//
 	}
 
 	/**
@@ -67,16 +62,14 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetUserCampaigns()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant_email = 'applicanttestgetusercampaigns@emundus.test.fr';
 		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
 		$user_campaigns = $this->model->getUserCampaigns($applicant);
 		$this->assertSame([], $user_campaigns, 'getUserCampaigns should return an empty array if the applicant has no files');
 
-		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
-		$campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$program = $this->h_dataset->createSampleProgram('Programme Test Unitaire',  $this->dataset['coordinator']);
+		$campaign_id = $this->h_dataset->createSampleCampaign($program,  $this->dataset['coordinator']);
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$user_campaigns = $this->model->getUserCampaigns($applicant);
@@ -85,7 +78,7 @@ class ApplicationModelTest extends UnitTestCase
 		$user_campaigns = $this->model->getUserCampaigns($applicant, $campaign_id);
 		$this->assertIsObject($user_campaigns, 'getUserCampaigns should return an object of user campaign pass');
 
-		$second_campaign_id = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
+		$second_campaign_id = $this->h_dataset->createSampleCampaign($program,  $this->dataset['coordinator']);
 		$second_applicant_file = $this->h_dataset->createSampleFile($second_campaign_id, $applicant);
 
 		$user_campaigns = $this->model->getUserCampaigns($applicant);
@@ -108,7 +101,6 @@ class ApplicationModelTest extends UnitTestCase
 		$this->h_dataset->deleteSampleFile($second_applicant_file);
 		$this->h_dataset->deleteSampleProgram($program['programme_id']);
 		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
 		//
 	}
 
@@ -123,23 +115,9 @@ class ApplicationModelTest extends UnitTestCase
 		$campaign = $this->model->getCampaignByFnum('');
 		$this->assertSame([], $campaign);
 
-		// Datasets
-		$user_id             = $this->h_dataset->createSampleUser(1000, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $user_id);
-		//
-
-		$campaign = $this->model->getCampaignByFnum($fnum);
+		$campaign = $this->model->getCampaignByFnum($this->dataset['fnum']);
 		$this->assertNotEmpty($campaign);
-		$this->assertSame($campaign[0]->id, $campaign_id);
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
+		$this->assertSame($campaign[0]->id, $this->dataset['campaign']);
 	}
 
 	/**
@@ -150,33 +128,21 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetUserAttachments()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
-
-		$attachments = $this->model->getUserAttachments($applicant);
+		$attachments = $this->model->getUserAttachments($this->dataset['applicant']);
 		$this->assertSame([], $attachments, 'getUserAttachments should return an empty array if the applicant has no files');
 
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+		$fnum                = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
 		$attachment_id       = $this->h_dataset->createSampleAttachment();
-		$upload              = $this->h_dataset->createSampleUpload($fnum, $campaign_id, $applicant, $attachment_id);
+		$upload              = $this->h_dataset->createSampleUpload($fnum, $this->dataset['campaign'], $this->dataset['applicant'], $attachment_id);
 
-		$attachments = $this->model->getUserAttachments($applicant);
+		$attachments = $this->model->getUserAttachments($this->dataset['applicant']);
 		$this->assertNotEmpty($attachments, 'getUserAttachments should return an array of user attachments');
 
 		$attachments = $this->model->getUserAttachments(0);
 		$this->assertSame([], $attachments, 'getUserAttachments should return an empty array if the applicant does not exist');
 
 		// Clear datasets
-		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		$this->h_dataset->deleteSampleAttachment($attachment_id);
 		$this->h_dataset->deleteSampleUpload($upload);
-		//
 	}
 
 	/**
@@ -195,17 +161,8 @@ class ApplicationModelTest extends UnitTestCase
 		$attachments = $this->model->getUserAttachmentsByFnum('');
 		$this->assertSame([], $attachments);
 
-		// Datasets
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$user_id             = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $user_id);
-		//
-
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $user_id_coordinator);
+		$fnum                = $this->h_dataset->createSampleFile($this->dataset['campaign'], $this->dataset['applicant']);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $this->dataset['coordinator']);
 		$this->assertEmpty($attachments);
 
 		// Datasets
@@ -229,11 +186,11 @@ class ApplicationModelTest extends UnitTestCase
 		$second_attachment_to_profile = (object) $second_attachment_to_profile;
 		$this->db->insertObject('#__emundus_setup_attachment_profiles', $second_attachment_to_profile, 'id');
 
-		$first_upload         = $this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $first_attachment_id);
-		$second_upload        = $this->h_dataset->createSampleUpload($fnum, $campaign_id, $user_id, $second_attachment_id);
+		$first_upload         = $this->h_dataset->createSampleUpload($fnum, $this->dataset['campaign'], $this->dataset['applicant'], $first_attachment_id);
+		$second_upload        = $this->h_dataset->createSampleUpload($fnum, $this->dataset['campaign'], $this->dataset['applicant'], $second_attachment_id);
 		//
 
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $user_id_coordinator);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, '', null, false, $this->dataset['coordinator']);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame(count($attachments), 2);
 
@@ -247,19 +204,15 @@ class ApplicationModelTest extends UnitTestCase
 
 		// if i use search parameter, only pertinent attachments should be returned
 		$search      = $attachments[0]->value;
-		$attachments = $this->model->getUserAttachmentsByFnum($fnum, $search, null, false, $user_id_coordinator);
+		$attachments = $this->model->getUserAttachmentsByFnum($fnum, $search, null, false, $this->dataset['coordinator']);
 		$this->assertNotEmpty($attachments);
 		$this->assertSame($attachments[0]->value, $search);
 		$this->assertSame(count($attachments), 1);
 
-		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		$this->h_dataset->deleteSampleUpload($first_upload);
+		$this->h_dataset->deleteSampleUpload($second_upload);
 		$this->h_dataset->deleteSampleAttachment($first_attachment_id);
-		$this->h_dataset->deleteSampleAttachment($second_attachment_id);
-		//
-	}
+		$this->h_dataset->deleteSampleAttachment($second_attachment_id);}
 
 	/**
 	 * @group application
@@ -269,27 +222,20 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetUsersComments()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
+		$applicant_email = 'applicantgetuserscomments@emundus.test.fr';
 		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
 
 		$comments = $this->model->getUsersComments($applicant);
 		$this->assertSame([], $comments, 'getUsersComments should return an empty array if the applicant has no comments');
 
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
-
-		$comment = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
+		$fnum    = $this->h_dataset->createSampleFile($this->dataset['campaign'], $applicant);
+		$comment = $this->h_dataset->createSampleComment($fnum, $applicant, $this->dataset['coordinator']);
 
 		$comments = $this->model->getUsersComments($applicant);
 		$this->assertNotEmpty($comments, 'getUsersComments should return an array of user comments');
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleComment($comment);
-		//
 	}
 
 	/**
@@ -300,29 +246,12 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetComment()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
-
 		$comment = $this->model->getComment(0);
 		$this->assertSame([], $comment, 'getComment should return an empty array if the comment does not exist');
-
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
-
-		$comment_id = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
+		$comment_id = $this->h_dataset->createSampleComment($this->dataset['fnum'], $this->dataset['applicant'], $this->dataset['coordinator']);
 
 		$comment = $this->model->getComment($comment_id);
 		$this->assertNotEmpty($comment, 'getComment should return an array of comment information');
-
-		// Clear datasets
-		$this->h_dataset->deleteSampleComment($comment_id);
-		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleUser($coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 
 	/**
@@ -333,24 +262,15 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetTag()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
-
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
-
 		$tag = $this->model->getTag(0);
 		$this->assertSame([], $tag, 'getTag should return an empty array if the tag does not exist');
 
 		$tag_id = $this->h_dataset->createSampleTag();
 		$assoc_tag = [
-			'fnum' => $fnum,
+			'fnum' => $this->dataset['fnum'],
 			'id_tag' => $tag_id,
 			'date_time' => Factory::getDate()->toSql(),
-			'user_id' => $coordinator
+			'user_id' => $this->dataset['coordinator']
 		];
 		$assoc_tag = (object) $assoc_tag;
 		$this->db->insertObject('#__emundus_tag_assoc', $assoc_tag, 'id');
@@ -359,14 +279,10 @@ class ApplicationModelTest extends UnitTestCase
 		$tag = $this->model->getTag($assoc_tag_id);
 		$this->assertNotEmpty($tag, 'getTag should return an array of tag information');
 		$this->assertSame($tag['id_tag'], $tag_id, 'getTag should return the correct tag id');
-		$this->assertSame($tag['fnum'], $fnum, 'getTag should return the correct fnum');
+		$this->assertSame($tag['fnum'], $this->dataset['fnum'], 'getTag should return the correct fnum');
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleTag($tag_id);
-		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleUser($coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 
 	/**
@@ -377,19 +293,14 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetFileComments()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
-
 		$comments = $this->model->getFileComments(0);
 		$this->assertSame([], $comments, 'getFileComments should return an empty array if the file does not exist');
 
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
+		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $this->dataset['coordinator']);
+		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $this->dataset['coordinator']);
+		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $this->dataset['coordinator']);
 
-		$comment_id = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
+		$comment_id = $this->h_dataset->createSampleComment($fnum, $this->dataset['applicant'], $this->dataset['coordinator']);
 		$comments = $this->model->getFileComments($fnum);
 		$this->assertNotEmpty($comments, 'getFileComments should return an array of file comments');
 
@@ -399,10 +310,6 @@ class ApplicationModelTest extends UnitTestCase
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleComment($comment_id);
-		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleUser($coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 
 	/**
@@ -413,38 +320,25 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testGetFileOwnComments()
 	{
-		$applicant_email = 'applicant' . rand(0, 1000) . '@emundus.test.fr';
-		$coordinator_email = 'coordinator' . rand(0, 1000) . '@emundus.test.fr';
-		$applicant = $this->h_dataset->createSampleUser(1000, $applicant_email);
-		$coordinator = $this->h_dataset->createSampleUser(2, $coordinator_email);
-
 		$comments = $this->model->getFileOwnComments(0,0);
 		$this->assertEmpty($comments, 'getFileComments should return an empty array if the file does not exist');
 
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $applicant);
-
-		$comment_id = $this->h_dataset->createSampleComment($fnum, $applicant, $coordinator);
-		$comments = $this->model->getFileOwnComments($fnum,0);
+		$comment_id = $this->h_dataset->createSampleComment($this->dataset['fnum'], $this->dataset['applicant'], $this->dataset['coordinator']);
+		$comments = $this->model->getFileOwnComments($this->dataset['fnum'], 0);
 		$this->assertEmpty($comments, 'getFileComments should return an empty array if the user does not exist');
 
-		$comments = $this->model->getFileOwnComments($fnum,$applicant);
+		$comments = $this->model->getFileOwnComments($this->dataset['fnum'], $this->dataset['applicant']);
 		$this->assertEmpty($comments, 'getFileComments should return an empty array if the user has no comments');
 
-		$comments = $this->model->getFileOwnComments($fnum,$coordinator);
+		$comments = $this->model->getFileOwnComments($this->dataset['fnum'], $this->dataset['coordinator']);
 		$this->assertNotEmpty($comments, 'getFileComments should return an array of file comments');
 
 		$this->assertSame('Test unitaire', $comments[0]->reason, 'getFileComments should return the correct reason');
 		$this->assertSame('Commentaire pour un test unitaire', $comments[0]->comment, 'getFileComments should return the correct comment (warning: key is comment and NOT comment_body');
-		$this->assertSame($fnum, $comments[0]->fnum, 'getFileComments should return the correct fnum');
+		$this->assertSame($this->dataset['fnum'], $comments[0]->fnum, 'getFileComments should return the correct fnum');
 
 		// Clear datasets
 		$this->h_dataset->deleteSampleComment($comment_id);
-		$this->h_dataset->deleteSampleUser($applicant);
-		$this->h_dataset->deleteSampleUser($coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
-		//
 	}
 
 	public function testuploadAttachment()
@@ -452,26 +346,18 @@ class ApplicationModelTest extends UnitTestCase
 		$upload = $this->model->uploadAttachment([]);
 		$this->assertSame($upload, false);
 
-		$user_id             = $this->h_dataset->createSampleUser(1000, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-		$program             = $this->h_dataset->createSampleProgram('Programme Test Unitaire', $user_id_coordinator);
-		$campaign_id         = $this->h_dataset->createSampleCampaign($program, $user_id_coordinator);
-		$fnum                = $this->h_dataset->createSampleFile($campaign_id, $user_id);
 		$attachment_id       = $this->h_dataset->createSampleAttachment();
 
 		$data          = [];
 		$data['key']   = ['fnum', 'user_id', 'campaign_id', 'attachment_id', 'filename', 'local_filename', 'timedate', 'can_be_deleted', 'can_be_viewed'];
-		$data['value'] = [$fnum, $user_id, $campaign_id, $attachment_id, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
+		$data['value'] = [$this->dataset['fnum'], $this->dataset['applicant'], $this->dataset['campaign'], $attachment_id, 'test.pdf', 'test.pdf', date('Y-m-d H:i:s'), 1, 1];
 
 		$upload = $this->model->uploadAttachment($data);
 		$this->assertGreaterThan(0, $upload);
 
 		// Clear datasets
-		$this->h_dataset->deleteSampleUser($user_id);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		$this->h_dataset->deleteSampleProgram($program['programme_id']);
+		$this->h_dataset->deleteSampleUpload($upload);
 		$this->h_dataset->deleteSampleAttachment($attachment_id);
-		//
 	}
 
 	public function testgetTabs()
@@ -494,12 +380,10 @@ class ApplicationModelTest extends UnitTestCase
 
 	public function testupdateTabs()
 	{
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-
 		$updated = $this->model->updateTabs([], 0);
 		$this->assertSame(false, $updated, 'No tabs to update');
 
-		$updated = $this->model->updateTabs([], $user_id_coordinator);
+		$updated = $this->model->updateTabs([], $this->dataset['coordinator']);
 		$this->assertSame(false, $updated, 'No tabs to update');
 
 		$tab           = new stdClass();
@@ -510,13 +394,13 @@ class ApplicationModelTest extends UnitTestCase
 		$updated = $this->model->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], 0);
 		$this->assertSame(false, $updated, 'Missing user id');
 
-		$updated = $this->model->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], $user_id_coordinator);
+		$updated = $this->model->updateTabs([['id' => 1, 'name' => 'Test', 'ordering' => 1]], $this->dataset['coordinator']);
 		$this->assertSame(false, $updated,);
 
-		$tab->id = $this->model->createTab('Test', $user_id_coordinator);
+		$tab->id = $this->model->createTab('Test', $this->dataset['coordinator']);
 		$this->assertNotEmpty($tab->id);
 
-		$updated = $this->model->updateTabs([$tab], $user_id_coordinator);
+		$updated = $this->model->updateTabs([$tab], $this->dataset['coordinator']);
 		$this->assertSame(true, $updated, 'Tab updated');
 
 		$origin_tab_id = $tab->id;
@@ -525,9 +409,7 @@ class ApplicationModelTest extends UnitTestCase
 		$this->assertSame(false, $updated, 'SQL Injection impossible');
 
 		// Clear datasets
-		$this->model->deleteTab($origin_tab_id, $user_id_coordinator);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
-		//
+		$this->model->deleteTab($origin_tab_id, $this->dataset['coordinator']);
 	}
 
 	/**
@@ -536,9 +418,7 @@ class ApplicationModelTest extends UnitTestCase
 	 */
 	public function testisTabOwnedByUser()
 	{
-		$user_id_coordinator = $this->h_dataset->createSampleUser(2, 'userunittest' . rand(0, 1000) . '@emundus.test.fr');
-
-		$owned = $this->model->isTabOwnedByUser(0, $user_id_coordinator);
+		$owned = $this->model->isTabOwnedByUser(0, $this->dataset['coordinator']);
 		$this->assertSame(false, $owned, 'An invalid tab id should return false');
 
 		$owned = $this->model->isTabOwnedByUser(1);
@@ -547,21 +427,20 @@ class ApplicationModelTest extends UnitTestCase
 		$tab           = new stdClass();
 		$tab->name     = 'Unit Test ' . time();
 		$tab->ordering = 9999;
-		$tab->id       = $this->model->createTab('Test', $user_id_coordinator);
+		$tab->id       = $this->model->createTab('Test', $this->dataset['coordinator']);
 		$this->assertNotEmpty($tab->id);
 
-		$owned = $this->model->isTabOwnedByUser($tab->id, $user_id_coordinator);
+		$owned = $this->model->isTabOwnedByUser($tab->id, $this->dataset['coordinator']);
 		$this->assertSame(true, $owned, 'Tab is owned by user');
 
 		$owned = $this->model->isTabOwnedByUser($tab->id, 0);
 		$this->assertSame(false, $owned, 'Tab is not owned by user');
 
-		$owned = $this->model->isTabOwnedByUser(9999 . ' OR 1=1', $user_id_coordinator);
+		$owned = $this->model->isTabOwnedByUser(9999 . ' OR 1=1', $this->dataset['coordinator']);
 		$this->assertSame(false, $owned, 'SQL Injection impossible');
 
 		// Clear datasets
-		$this->model->deleteTab($tab->id, $user_id_coordinator);
-		$this->h_dataset->deleteSampleUser($user_id_coordinator);
+		$this->model->deleteTab($tab->id, $this->dataset['coordinator']);
 		//
 	}
 

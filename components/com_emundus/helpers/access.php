@@ -17,6 +17,7 @@ use Joomla\CMS\Access\Access;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
 defined('_JEXEC') or die('Restricted access');
@@ -164,7 +165,7 @@ class EmundusHelperAccess
 	/**
 	 * Get action access right.
 	 *
-	 * @param   int     $action_id  Id of the action.
+	 * @param   int     $action_id  Id or name of the action
 	 * @param   string  $crud       create/read/update/delete.
 	 *
 	 * @param   null    $user_id    The user id.
@@ -175,48 +176,79 @@ class EmundusHelperAccess
 	 */
 	static function asAccessAction($action_id, $crud, $user_id = null, $fnum = null)
 	{
+		$has_access = false;
 		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users   = new EmundusModelUsers();
 
-		if (!empty($fnum))
-		{
-			$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
-			if ($canAccess > 0)
-			{
-				return true;
-			}
-			elseif ($canAccess == 0 || $canAccess === null)
-			{
-				if (!empty($user_id)) {
-                    $groups = $m_users->getUserGroups($user_id, 'Column');
-                } else {
-                    $groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
-                }
+		if (!is_numeric($action_id)) {
+			$action_id = EmundusHelperAccess::getActionIdByName($action_id);
+		}
 
-				if (!empty($groups) && count($groups) > 0)
+		if (!empty($action_id)) {
+			if (!empty($fnum))
+			{
+				$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
+				if ($canAccess > 0)
 				{
-					return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+					$has_access = true;
 				}
-				else
+				elseif ($canAccess == 0 || $canAccess === null)
 				{
-					return false;
+					if (!empty($user_id)) {
+						$groups = $m_users->getUserGroups($user_id, 'Column');
+					} else {
+						$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+					}
+
+					if (!empty($groups) && count($groups) > 0)
+					{
+						$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud, $fnum);
+					}
 				}
 			}
 			else
 			{
-				return false;
+				if (!empty($user_id)) {
+					$groups = $m_users->getUserGroups($user_id, 'Column');
+				} else
+				{
+					$groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
+				}
+
+				$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
 			}
 		}
-		else
-		{
-			if (!empty($user_id)) {
-                $groups = $m_users->getUserGroups($user_id, 'Column');
-            } else {
-                $groups = Factory::getApplication()->getSession()->get('emundusUser')->emGroups;
-            }
 
-			return EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
+		return $has_access;
+	}
+
+	/**
+	 * @param $action_name string
+	 *
+	 * @return int|null
+	 */
+	static function getActionIdByName($action_name)
+	{
+		$action_id = null;
+
+		if (!empty($action_name)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			$query->select('id')
+				->from('#__emundus_setup_actions')
+				->where('name = ' . $db->quote($action_name));
+
+			try {
+				$db->setQuery($query);
+				$action_id = $db->loadResult();
+			} catch (Exception $e) {
+				JLog::add('Can not find action id from name ' . $action_name . ' : ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				$action_id = null;
+			}
 		}
+
+		return $action_id;
 	}
 
 
@@ -672,6 +704,8 @@ class EmundusHelperAccess
 		$reason_cannot_edit = 'READONLY_ACCESS';
 
 		if (!empty($ccid) && !empty($step_data->id)) {
+			$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
 			$app = Factory::getApplication();
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
@@ -682,23 +716,36 @@ class EmundusHelperAccess
 
 			// Verify if this step and this ccid are linked together by workflow
 			$query->clear()
-				->select('esp.id')
+				->select('esp.id, esc.id as campaign_id')
 				->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
 				->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
 				->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 				->where('ecc.id = ' . $ccid);
-
 			$db->setQuery($query);
-			$programme_id = $db->loadResult();
+			$file_infos = $db->loadObject();
+			$programme_id = !empty($file_infos) ? $file_infos->id : null;
+			$campaign_id = !empty($file_infos) ? $file_infos->campaign_id : null;
 
-			if (!empty($programme_id) && in_array($programme_id, $step_data->programs)) {
+			$programs_ids = [$programme_id];
+			if(!empty($campaign_id))
+			{
+				if(!class_exists('CampaignRepository')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
+				}
+				$campaignRepository = new CampaignRepository();
+				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id, $fnum);
+				if(!empty($linked_programs_ids))
+				{
+					$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+				}
+			}
+
+			if (!empty($programs_ids) && !empty(array_intersect($programs_ids, $step_data->programs))) {
 				// verify if user can access to this evaluation form
 				if (EmundusHelperAccess::asCoordinatorAccessLevel($user_id) || EmundusHelperAccess::asAdministratorAccessLevel($user_id)) {
 					$can_see = true;
 					$can_edit = true;
 				} else if (EmundusHelperAccess::asPartnerAccessLevel($user_id)) {
-					$fnum = EmundusHelperFiles::getFnumFromId($ccid);
-
 					// it's the bare minimum to potentially see the evaluation form
 					if (EmundusHelperAccess::asAccessAction(1, 'r', $user_id, $fnum) &&
 						(EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)))
@@ -791,29 +838,40 @@ class EmundusHelperAccess
 		return $granted;
 	}
 
-	public static function getUsersFromGroupsThatCanAccessToFile($filter_group_ids, $fnum): array
+
+	/**
+	 * TODO: put result in cache, it is not changing often
+	 * @param   string  $fnum
+	 * @param   array   $filter_group_ids
+	 *
+	 * @return array
+	 */
+	public static function getUsersThatCanAccessToFile(string $fnum, array $filter_group_ids = []): array
 	{
 		$user_ids = [];
 
-		if (!empty($fnum) && !empty($filter_group_ids)) {
+		if (!empty($fnum)) {
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			try {
 				$query->clear()
-					->select('group_id')
+					->select('DISTINCT group_id')
 					->from($db->quoteName('#__emundus_group_assoc'))
 					->where($db->quoteName('fnum') . ' LIKE ' . $db->quote($fnum))
 					->andWhere($db->quoteName('action_id') . ' = 1')
-					->andWhere($db->quoteName('r') . ' = 1')
-					->andWhere('group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+					->andWhere($db->quoteName('r') . ' = 1');
+
+				if (!empty($filter_group_ids)) {
+					$query->andWhere('group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+				}
 				$db->setQuery($query);
 				$access_group_ids = $db->loadColumn();
 
 				$query->clear()
 					->select('esc.training')
 					->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
-					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
+					->join('INNER', $db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id = ecc.campaign_id')
 					->where($db->quoteName('ecc.fnum') . ' LIKE ' . $db->quote($fnum));
 
 				$db->setQuery($query);
@@ -824,8 +882,11 @@ class EmundusHelperAccess
 					$query->clear()
 						->select('DISTINCT parent_id')
 						->from($db->quoteName('#__emundus_setup_groups_repeat_course', 'esgrc'))
-						->where($db->quoteName('esgrc.course') . ' LIKE ' . $db->quote($program_code))
-						->andWhere($db->quoteName('esgrc.parent_id') . ' IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+						->where($db->quoteName('esgrc.course') . ' LIKE ' . $db->quote($program_code));
+
+					if (!empty($filter_group_ids)) {
+						$query->andWhere($db->quoteName('esgrc.parent_id') . ' IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+					}
 
 					$db->setQuery($query);
 					$program_group_ids = $db->loadColumn();
@@ -836,8 +897,11 @@ class EmundusHelperAccess
 				if (!empty($group_ids)) {
 					$query->clear()
 						->select('DISTINCT ' . $db->quoteName('eg.user_id'))
-						->from($db->quoteName('#__emundus_groups', 'eg'))
-						->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
+						->from($db->quoteName('#__emundus_groups', 'eg'));
+
+					if (!empty($filter_group_ids)) {
+						$query->where('eg.group_id IN (' . implode(',', $db->quote($group_ids)) . ')');
+					}
 
 					$db->setQuery($query);
 					$user_ids = $db->loadColumn();
@@ -849,8 +913,12 @@ class EmundusHelperAccess
 					->leftJoin($db->quoteName('#__emundus_groups', 'eg') . ' ON ' . $db->quoteName('eua.user_id') . ' = ' . $db->quoteName('eg.user_id'))
 					->where($db->quoteName('eua.fnum') . ' LIKE ' . $db->quote($fnum))
 					->andWhere($db->quoteName('eua.action_id') . ' = 1')
-					->andWhere($db->quoteName('eua.r') . ' = 1')
-					->andWhere('eg.group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+					->andWhere($db->quoteName('eua.r') . ' = 1');
+
+				if (!empty($filter_group_ids))
+				{
+					$query->andWhere('eg.group_id IN (' . implode(',', $db->quote($filter_group_ids)) . ')');
+				}
 
 				$db->setQuery($query);
 				$users_directly_associated = $db->loadColumn();
@@ -871,18 +939,37 @@ class EmundusHelperAccess
 		$action_id = 0;
 
 		if (!empty($name)) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->getQuery(true);
+			$cache = new EmundusHelperCache();
+			$cacheActionsList = $cache->get('emundus_actions_list');
 
-			$query->select('id')
-				->from($db->quoteName('#__emundus_setup_actions'))
-				->where($db->quoteName('name') . ' LIKE ' . $db->quote($name));
+			if (!empty($cacheActionsList) && is_array($cacheActionsList)) {
+				foreach ($cacheActionsList as $action) {
+					if ($action['name'] == $name) {
+						$action_id = (int) $action['id'];
+						break;
+					}
+				}
+			}
 
-			try {
-				$db->setQuery($query);
-				$action_id = (int) $db->loadResult();
-			} catch (Exception $e) {
-				Log::add('Error while getting action id from action name ' . $name . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			if (empty($action_id)) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+
+				$query->select('id')
+					->from($db->quoteName('#__emundus_setup_actions'))
+					->where($db->quoteName('name') . ' LIKE ' . $db->quote($name));
+
+				try {
+					$db->setQuery($query);
+					$action_id = (int) $db->loadResult();
+
+					if (!empty($action_id)) {
+						$cacheActionsList[] = ['id' => $action_id, 'name' => $name];
+						$cache->set('emundus_actions_list', $cacheActionsList);
+					}
+				} catch (Exception $e) {
+					Log::add('Error while getting action id from action name ' . $name . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
 			}
 		}
 

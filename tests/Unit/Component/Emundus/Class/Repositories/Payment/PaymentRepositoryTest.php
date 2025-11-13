@@ -96,4 +96,14 @@ class PaymentRepositoryTest extends UnitTestCase
 			$this->assertMatchesRegularExpression('/^\d+(\.\d{1,2})?$/', (string) $amount, "L'itération $iteration a maximum 2 décimales.");
 		}
 	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\PaymentRepository::getPaymentStepById
+	 * @return void
+	 */
+	public function testGetPaymentStepById()
+	{
+		// todo: test this and add test on flush too
+		$this->markTestIncomplete();
+	}
 }

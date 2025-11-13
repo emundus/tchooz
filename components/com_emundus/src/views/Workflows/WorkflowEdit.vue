@@ -59,6 +59,9 @@
 									:class="stepHeaderClass(step)"
 								>
 									<span v-if="isPaymentStep(step)" class="material-symbols-outlined tw-mr-1 tw-text-white">paid</span>
+									<span v-else-if="isChoicesStep(step)" class="material-symbols-outlined tw-mr-1 tw-text-white"
+										>checklist_rtl</span
+									>
 									<span v-else class="material-symbols-outlined tw-mr-1 tw-text-white">group</span>
 									<span class="tw-text-sm tw-text-white"> {{ stepTypeLabel(step.type) }} </span>
 									<span v-if="step.state != 1" class="tw-ml-1 tw-text-sm tw-text-white">
@@ -148,6 +151,34 @@
 											</select>
 										</div>
 
+										<div v-if="isChoicesStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES') }}</label>
+											<input v-model="step.max" type="number" min="1" />
+
+											<span
+												class="tw-text-red-600"
+												v-if="displayErrors && fieldsInError[step.id] && fieldsInError[step.id].includes('max_choices')"
+											>
+												{{ translate('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES_REQUIRED') }}
+											</span>
+										</div>
+
+										<div v-if="isChoicesStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_ORDERING') }}</label>
+											<select v-model="step.can_be_ordering">
+												<option value="0">{{ translate('JNO') }}</option>
+												<option value="1">{{ translate('JYES') }}</option>
+											</select>
+										</div>
+
+										<div v-if="isChoicesStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_CONFIRMED') }}</label>
+											<select v-model="step.can_be_confirmed">
+												<option value="0">{{ translate('JNO') }}</option>
+												<option value="1">{{ translate('JYES') }}</option>
+											</select>
+										</div>
+
 										<div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
 											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
 											<select v-model="step.profile_id">
@@ -203,7 +234,10 @@
 											</span>
 										</div>
 
-										<div v-if="isApplicantStep(step) || isPaymentStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+										<div
+											v-if="isApplicantStep(step) || isPaymentStep(step) || isChoicesStep(step)"
+											class="tw-mb-4 tw-flex tw-flex-col"
+										>
 											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_OUTPUT_STATUS') }}</label>
 											<select v-model="step.output_status">
 												<option value="-1">
@@ -401,6 +435,7 @@ export default {
 				evaluation: ['form_id'],
 				applicant: ['profile_id'],
 				payment: ['output_status'],
+				choices: ['max'],
 			},
 			fieldsInError: {},
 			displayErrors: false,
@@ -771,6 +806,14 @@ export default {
 										this.fieldsInError[step.id].push(field);
 									}
 								});
+							} else if (this.isChoicesStep(step)) {
+								this.mandatoryFieldsByTypes.choices.forEach((field) => {
+									emptyField = this.isFieldEmpty(step, field);
+
+									if (emptyField) {
+										this.fieldsInError[step.id].push(field);
+									}
+								});
 							}
 						}
 
@@ -894,8 +937,19 @@ export default {
 
 			return isEvaluationStep;
 		},
+		isChoicesStep(step) {
+			let stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
+			if (!stepType) {
+				return false;
+			}
+			return stepType.code === 'choices';
+		},
 		isPaymentStep(step) {
-			return !this.isEvaluationStep(step) && !this.isApplicantStep(step);
+			let stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
+			if (!stepType) {
+				return false;
+			}
+			return stepType.code === 'payment';
 		},
 		isProgramAssociatedToAnotherWorkflow(program) {
 			return program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);
@@ -996,7 +1050,14 @@ export default {
 					return this.steps;
 				}
 
-				return this.steps.filter((step) => step.state === 1);
+				return this.steps.filter((step) => {
+					let stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
+					if (!stepType) {
+						return false;
+					}
+
+					return step.state === 1;
+				});
 			},
 			set: function (value) {
 				// Update the original steps array based on the displayedSteps changes but keep archived steps

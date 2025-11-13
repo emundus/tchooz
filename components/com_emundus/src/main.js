@@ -39,6 +39,8 @@ import SMSAppFile from '@/views/SMS/SMSAppFile.vue';
 import SMSSend from '@/views/SMS/SMSSend.vue';
 import Rankings from '@/views/Ranking/rankings.vue';
 import CartAppFile from '@/views/Payment/CartAppFile.vue';
+import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
+import ApplicationChoices from '@/views/Application/ApplicationChoices.vue';
 
 if (document) {
 	let app = null;
@@ -79,6 +81,11 @@ if (document) {
 		elements.push(filterElement);
 	}
 
+	const stepsTimeline = document.getElementById('steps-timeline');
+	if (stepsTimeline) {
+		elements.push(stepsTimeline);
+	}
+
 	for (const el of elements) {
 		if (el) {
 			const componentName = el.getAttribute('component');
@@ -101,6 +108,7 @@ if (document) {
 					'Filters',
 					'Ranking/rankings',
 					'Payment/CartAppFile',
+					'Application/ApplicationChoices',
 				];
 
 				if (filesElement || componentNames.includes(componentName)) {
@@ -213,6 +221,8 @@ if (document) {
 							defaultQuickSearchFilters: JSON.parse(atob(el.getAttribute('data-quick-search-filters'))),
 							countFilterValues: el.getAttribute('data-count-filter-values') === '1',
 							allowAddFilter: el.getAttribute('data-allow-add-filter') === '1',
+							canShareFilters: el.getAttribute('data-can-share-filters') === '1',
+							defaultSelectedRegisteredFilterId: el.getAttribute('data-default-selected-registered-filter-id') || 0,
 						});
 						break;
 					case 'Ranking/rankings':
@@ -230,6 +240,15 @@ if (document) {
 						}
 
 						app = createApp(CartAppFile, {
+							...datas,
+						});
+						break;
+					case 'Application/ApplicationChoices':
+						if (el.getAttribute('data')) {
+							datas = JSON.parse(el.getAttribute('data'));
+						}
+
+						app = createApp(ApplicationChoices, {
 							...datas,
 						});
 						break;

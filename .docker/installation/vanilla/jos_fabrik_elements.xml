@@ -2441,20 +2441,22 @@
     <field name="modified_by">10</field>
     <field name="width">0</field>
     <field name="height">0</field>
-    <field name="default">$app = JFactory::getApplication();
-require_once(JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'models'.DS.'campaign.php');
+    <field name="default">use \Joomla\CMS\Factory;
+require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 $m_campaign = new EmundusModelCampaign();
 
-$user = JFactory::getApplication()-&gt;getIdentity();
 
-if($app-&gt;getInput()-&gt;get('cid', '', 'UINT') != ''){
-  $allowed_campaigns = $m_campaign-&gt;getAllowedCampaign($user-&gt;id);
-  
-  if (!in_array($app-&gt;getInput()-&gt;get('cid', '', 'UINT'), $allowed_campaigns)) {
-      $app-&gt;redirect('index.php', JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
+$app = Factory::getApplication();
+$user = $app->getIdentity();
+
+if ($app->getInput()->get('cid', '', 'UINT') != '') {
+  $allowed_campaigns = $m_campaign->getAllowedCampaign($user->id);
+
+  if (!in_array($app->getInput()->get('cid', '', 'UINT'), $allowed_campaigns)) {
+      $app->redirect('index.php', JText::_('USER_HAS_FILE_FOR_CAMPAIGN'));
   }
-  
-  return $app-&gt;getInput()-&gt;get('cid', '', 'UINT');
+
+  return $app->getInput()->get('cid', '', 'UINT');
 }</field>
     <field name="hidden">0</field>
     <field name="eval">1</field>
@@ -3481,9 +3483,15 @@ return $db-&gt;loadResult()+1;</field>
     <field name="modified_by">62</field>
     <field name="width">30</field>
     <field name="height">0</field>
-    <field name="default"></field>
+    <field name="default">
+    use \Joomla\CMS\Factory;
+
+$user = Factory::getApplication()->getIdentity();
+$campaign_id = '{jos_emundus_campaign_candidature___campaign_id_raw}';
+return date('YmdHis').str_pad($campaign_id, 7, '0', STR_PAD_LEFT).str_pad($user->id, 7, '0', STR_PAD_LEFT);
+    </field>
     <field name="hidden">1</field>
-    <field name="eval">0</field>
+    <field name="eval">1</field>
     <field name="ordering">6</field>
     <field name="show_in_list_summary">0</field>
     <field name="filter_type"></field>

@@ -66,7 +66,7 @@ class ElementsViewElements extends FalangViewDefault
 	function installer($tpl = null)
 	{
 		// browser title
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_CONTENT_ELEMENT_INSTALLER'));
 		
 		// set page title

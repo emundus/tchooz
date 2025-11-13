@@ -1,6 +1,6 @@
 <template>
 	<div id="campaigns-list">
-		<list :default-lists="configString" :default-type="'campaigns'" :key="renderingKey"></list>
+		<list v-if="!loading" :default-lists="configString" :default-type="'campaigns'" :key="renderingKey"></list>
 	</div>
 </template>
 
@@ -8,6 +8,7 @@
 import list from '@/views/list.vue';
 import { useCampaignStore } from '@/stores/campaign.js';
 import campaignService from '@/services/campaign.js';
+import settingsService from '@/services/settings.js';
 
 export default {
 	name: 'Campaigns',
@@ -18,6 +19,8 @@ export default {
 		return {
 			campaignActivated: null,
 			renderingKey: 1,
+
+			loading: true,
 
 			config: {
 				campaigns: {
@@ -194,7 +197,6 @@ export default {
 				if (this.campaignActivated) {
 					useCampaignStore().updateActivated(true);
 					this.config.campaigns.tabs[0].actions.push(this.importAction);
-					this.renderingKey++;
 				} else {
 					useCampaignStore().updateActivated(false);
 				}
@@ -202,6 +204,23 @@ export default {
 		} else {
 			this.campaignActivated = useCampaignStore().getActivated;
 		}
+
+		settingsService.checkAddonStatus('choices').then((response) => {
+			if (response.data.enabled) {
+				// Add a filter on parent campaign
+				this.config.campaigns.tabs[0].filters.push({
+					label: 'COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PARENT',
+					allLabel: 'COM_EMUNDUS_ONBOARD_FILTER_ALL',
+					alwaysDisplay: true,
+					getter: 'getparentcampaignsforfilter',
+					controller: 'campaign',
+					key: 'parent_campaign',
+					values: null,
+				});
+			}
+
+			this.loading = false;
+		});
 	},
 	computed: {
 		configString() {

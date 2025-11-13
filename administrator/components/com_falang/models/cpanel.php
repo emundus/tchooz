@@ -12,6 +12,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -102,7 +103,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 *
 	 */
 	private function _checkSystemState() {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$checkResult = array();
 
@@ -274,7 +275,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 */
 	private function _testOldInstall()
 	{
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$oldInstall = 0;
 
 		$db->setQuery( "SHOW TABLES LIKE '%jf_%'" );
@@ -300,7 +301,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 * @return array with inforation about the system
 	 */
 	private function _getSystemInfo() {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$db->setQuery( 'SELECT count(DISTINCT reference_id, reference_table) FROM #__falang_content');
 		$db->execute();
@@ -320,7 +321,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 
 		$config	= Factory::getConfig();
 		$dbprefix = $config->get("dbprefix");
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$orphans = array();
 		$tranFilters=array();
@@ -374,7 +375,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 */
 	private function _testOriginalStatus($originalStatus, &$phase, &$statecheck_i, &$message, $languages) {
 		$dbprefix = $config->get("dbprefix");
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$tranFilters=array();
 		$filterHTML=array();
 		$sql = '';
@@ -484,7 +485,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 * @param string	$message	system message
 	 */
 	private function _testTranslationStatus( $translationStatus, &$phase, &$statecheck_i, &$message ) {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		$sql = '';
 
@@ -622,7 +623,7 @@ class CPanelModelCPanel extends BaseDatabaseModel
 	 * @return array 	of unpublished translations or null
 	 */
 	private function _testUnpublisedTranslations() {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$unpublishedTranslations = null;
                 //sbou
 		$sql = "select jfc.reference_table, jfc.reference_id, jfc.language_id, jfl.title as language" .

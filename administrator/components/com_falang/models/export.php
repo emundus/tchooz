@@ -12,6 +12,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Form\Form;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\FormModel;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -81,7 +82,7 @@ class ExportModelExport extends FormModel
 		$falangManager = FalangManager::getInstance();
 		//need to reload content element due to quickjump side effect
 		$contentElements = $falangManager->getContentElements(true);
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 
 		// Prepare variables
 		$jform = Factory::getApplication()->input->get('jform', null, 'array');

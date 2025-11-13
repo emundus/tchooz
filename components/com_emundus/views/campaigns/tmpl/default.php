@@ -195,6 +195,7 @@ Text::script('COM_EMUNDUS_ONBOARD_ADD_PROGRAM');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PUBLISH');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PROGRAMS');
 Text::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES_LABEL');
+Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PARENT');
 
 $app = Factory::getApplication();
 $lang = $app->getLanguage();
@@ -225,10 +226,10 @@ $hash = EmundusHelperCache::getCurrentGitHash();
      component="Campaigns"
      coordinatoraccess="1"
      sysadminaccess="1"
-     shortlang="fr"
-     currentlanguage="fr-FR"
+     shortlang="<?php echo $short_lang ?>"
+     currentlanguage="<?php echo $current_lang ?>"
      manylanguages="1"
-     defaultlang="fr-FR">
+     defaultlang="<?php echo $default_lang ?>">
 </div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>

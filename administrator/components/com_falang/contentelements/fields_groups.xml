@@ -9,7 +9,8 @@
   	<table name="fields_groups">
   		<field type="referenceid" name="id" translate="0">ID</field>
   		<field type="titletext" name="title"  length="50" maxlength="250" translate="1">Title</field>
-  	</table>
+        <filter>c.language="*"</filter>
+    </table>
   </reference>
   <translationfilters>
   	  <keyword>title</keyword>

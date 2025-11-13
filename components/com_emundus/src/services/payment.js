@@ -350,4 +350,30 @@ export default {
 			};
 		}
 	},
+
+	async alterFilesProducts(fnums, productIds, addOrRemove) {
+		if (fnums.length > 0 && productIds.length > 0) {
+			if (addOrRemove !== 'add' && addOrRemove !== 'remove') {
+				addOrRemove = 'add';
+			}
+
+			try {
+				return await client.post('alterFilesProducts', {
+					fnums: fnums.join(','),
+					product_ids: productIds.join(','),
+					action: addOrRemove,
+				});
+			} catch (e) {
+				return {
+					status: false,
+					msg: e.message,
+				};
+			}
+		} else {
+			return {
+				status: false,
+				msg: 'Invalid data',
+			};
+		}
+	},
 };

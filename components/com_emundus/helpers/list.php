@@ -1068,7 +1068,7 @@ class EmundusHelperList
 			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 
-			$query->select('concat_ws("___",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, groupe.id AS group_id, groupe.label AS group_label, element.params AS params, element.params, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, forms.label as form_label, tab.created_by_alias, tab.group_by AS tab_group_by')
+			$query->select('concat_ws("___",tab.db_table_name,element.name) as fabrik_element, element.id, element.name AS element_name, element.label AS element_label, element.plugin AS element_plugin, element.ordering, element.hidden, element.published, element.id AS element_id, tab.db_table_name AS tab_name, element.plugin AS element_plugin, groupe.id AS group_id, groupe.label AS group_label, element.params AS params, element.params, tab.id AS table_id, tab.db_table_name AS table_name, tab.label AS table_label, forms.label as form_label, tab.created_by_alias, tab.group_by AS tab_group_by, forms.id AS form_id')
 				->from($db->quoteName('#__fabrik_elements', 'element'))
 				->innerJoin($db->quoteName('#__fabrik_groups', 'groupe') . ' ON ' . $db->quoteName('element.group_id') . ' = ' . $db->quoteName('groupe.id'))
 				->innerJoin($db->quoteName('#__fabrik_formgroup', 'formgroup') . ' ON ' . $db->quoteName('groupe.id') . ' = ' . $db->quoteName('formgroup.group_id'))

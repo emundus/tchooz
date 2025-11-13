@@ -33,6 +33,7 @@ use Smalot\PdfParser\Parser;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
 class EmundusModelSettings extends ListModel
@@ -512,48 +513,44 @@ class EmundusModelSettings extends ListModel
 	 */
 	function updateTags($tag, $label, $color)
 	{
-		$query = $this->db->getQuery(true);
+		$udpated = false;
+
+		$query = $this->db->createQuery();
+
+		$query->clear()
+			->select('id')
+			->from('#__emundus_setup_action_tag')
+			->where('id != ' . $this->db->quote($tag))
+			->andWhere('label = ' . $this->db->quote($label));
+
+		$this->db->setQuery($query);
+		$existing = $this->db->loadResult();
+
+		if ($existing) {
+			throw new \Exception(Text::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS'));
+		}
 
 		try
 		{
 			$query->clear()
-				->select('id')
-				->from('#__emundus_setup_action_tag')
-				->where($this->db->quoteName('label') . ' = ' . $this->db->quote($label));
+				->update('#__emundus_setup_action_tag');
+
+			if (!empty($label))
+			{
+				$query->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label));
+			}
+
+			$query->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
 			$this->db->setQuery($query);
-			$result = $this->db->loadResult();
-
-			if (empty($result))
-			{
-				$query->clear()
-					->update('#__emundus_setup_action_tag')
-					->set($this->db->quoteName('label') . ' = ' . $this->db->quote($label))
-					->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
-				$this->db->setQuery($query);
-
-				return $this->db->execute();
-			}
-			else
-			{
-				// Update only color
-				$query->clear()
-					->update('#__emundus_setup_action_tag')
-					->set($this->db->quoteName('class') . ' = ' . $this->db->quote('label-' . $color))
-					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($tag));
-				$this->db->setQuery($query);
-
-				return $this->db->execute();
-			}
-
-			return false;
+			$udpated = $this->db->execute();
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/models/settings | Cannot update tags : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return false;
 		}
+
+		return $udpated;
 	}
 
 	/**
@@ -1001,9 +998,17 @@ class EmundusModelSettings extends ListModel
 
 			if (move_uploaded_file($new_logo, $target_file))
 			{
-				$regex = '/(logo.(png+|jpeg+|jpg+|svg+|gif+|webp+))|(logo_custom.(png+|jpeg+|jpg+|svg+|gif+|webp+))/m';
+				libxml_use_internal_errors(true); // suppress HTML5 parsing warnings
 
-				$new_content = preg_replace($regex, 'logo_custom.' . $ext, $logo_module->content);
+				// Maybe the logo was already customized by an other name before so we have to search src tag and replace it
+				$dom = new DOMDocument();
+				$dom->loadHTML($logo_module->content, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+				$images = $dom->getElementsByTagName('img');
+				foreach ($images as $img)
+				{
+					$img->setAttribute('src', $target_file);
+				}
+				$new_content = $dom->saveHTML();
 
 				$query->clear()
 					->update($this->db->quoteName('#__modules'))
@@ -3869,6 +3874,64 @@ class EmundusModelSettings extends ListModel
 					1
 				);
 			}
+
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('crc'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+			if ($params['displayed'])
+			{
+				$addons[] = new AddonEntity(
+					'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC',
+					'crc',
+					'sensor_occupied',
+					'COM_EMUNDUS_ONBOARD_SETTINGS_MENU_CRC_DESC',
+					json_encode($params['params']),
+					$params['enabled'] ?? 0,
+					1
+				);
+			}
+
+
+			$choicesAddon = new AddonEntity(
+				'COM_EMUNDUS_ADDONS_CHOICES',
+				'choices',
+				'checklist_rtl',
+				'COM_EMUNDUS_ADDONS_CHOICES_DESC'
+			);
+			$query->clear()
+				->select($this->db->quoteName('value'))
+				->from($this->db->quoteName('#__emundus_setup_config'))
+				->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('choices'));
+
+			$this->db->setQuery($query);
+			$params = json_decode($this->db->loadResult(), true);
+			if ($params['displayed'])
+			{
+				$choicesAddon->setEnabled($params['enabled'] ?? 0);
+				$choicesAddon->setDisplayed(true);
+				$choicesAddon->setConfiguration($params['params'] ?? []);
+				$addons[] = $choicesAddon;
+			}
+
+			$addonRepository = new AddonRepository();
+			$automationAddon = $addonRepository->getByName('automation');
+
+			if ($automationAddon->getValue()->isDisplayed())
+			{
+				$addons[] = new AddonEntity(
+					'COM_EMUNDUS_ADDONS_AUTOMATION',
+					'automation',
+					'automation',
+					'COM_EMUNDUS_ADDONS_AUTOMATION_DESC',
+					json_encode($automationAddon->getValue()->getParams()),
+					$automationAddon->getValue()->isEnabled() ? 1 : 0,
+					1
+				);
+			}
 		}
 		catch (Exception $e)
 		{
@@ -3878,6 +3941,7 @@ class EmundusModelSettings extends ListModel
 		return $addons;
 	}
 
+	// TODO: Move addon management to dedicated repository with factories to handle each addon type
 	public function toggleAddon(string $type, int $enabled): bool
 	{
 		require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
@@ -3958,7 +4022,6 @@ class EmundusModelSettings extends ListModel
 					break;
 				case 'anonymous':
 				case 'sms':
-				case 'payment':
 					$query->select('value')
 						->from($this->db->quoteName('#__emundus_setup_config'))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
@@ -3973,28 +4036,7 @@ class EmundusModelSettings extends ListModel
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 
-					if ($type === 'payment')
-					{
-						$payment_repository = new PaymentRepository();
-						$payment_action_id  = $payment_repository->getActionId();
-						$query->clear()
-							->update($this->db->quoteName('#__emundus_setup_step_types'));
-
-						if ($enabled)
-						{
-							$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(1));
-						}
-						else
-						{
-							$query->set($this->db->quoteName('published') . ' = ' . $this->db->quote(0));
-						}
-
-						$query->where($this->db->quoteName('action_id') . ' = ' . $this->db->quote($payment_action_id));
-
-						$this->db->setQuery($query);
-						$updated = $this->db->execute();
-					}
-					else if ($type === 'anonymous')
+					if ($type === 'anonymous')
 					{
 						$query->clear()
 							->update($this->db->quoteName('#__menu'))
@@ -4075,6 +4117,31 @@ class EmundusModelSettings extends ListModel
 						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
 						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote('import'));
 
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					break;
+				case 'choices':
+					// Enable step type
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_step_types'))
+						->set($this->db->quoteName('published') . ' = ' . $this->db->quote($enabled))
+						->where($this->db->quoteName('label') . ' = ' . $this->db->quote('COM_EMUNDUS_WORKFLOW_STEP_TYPE_CHOICES'));
+					$this->db->setQuery($query);
+					$updated = $this->db->execute();
+
+					$query->clear()
+						->select('value')
+						->from($this->db->quoteName('#__emundus_setup_config'))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
+					$this->db->setQuery($query);
+					$params = json_decode($this->db->loadResult(), true);
+
+					$params['enabled'] = $enabled === 1;
+					$query->clear()
+						->update($this->db->quoteName('#__emundus_setup_config'))
+						->set($this->db->quoteName('value') . ' = ' . $this->db->quote(json_encode($params)))
+						->where($this->db->quoteName('namekey') . ' = ' . $this->db->quote($type));
 					$this->db->setQuery($query);
 					$updated = $this->db->execute();
 

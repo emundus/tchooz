@@ -10,6 +10,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -21,8 +22,8 @@ defined('_JEXEC') or die;
 	 */
 $rows = $this->rows;
 global  $act,  $option;
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 
          ?>
 <form action="index.php" method="post" name="adminForm" id="adminForm">

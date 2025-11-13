@@ -154,8 +154,6 @@ class PlgSystemFalangCF extends CMSPlugin
             //prepare the fields
             FieldsHelper::prepareForm($parts[0] . '.' . $parts[1], $form, $data);
 
-
-            $db = Factory::getDbo();
             $fManager = FalangManager::getInstance();
             $content_element = $fManager->getContentElement($catid);
 
@@ -269,8 +267,8 @@ class PlgSystemFalangCF extends CMSPlugin
         // Get the translated fields data
         $fieldsData = !empty($formData) ? (array)$formData['com_fields'] : array();
 
-        $db = Factory::getDbo();
-        $user = Factory::getUser();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $user = Factory::getApplication()->getIdentity();
 
         $values = array();
         // Loop over the fields
@@ -350,6 +348,7 @@ class PlgSystemFalangCF extends CMSPlugin
      * @since 4.0.7 fix for categories custom fields
      * @update 5.5 add mediajce custom field translation support
      * @update 5.22 move in the falancf plugin
+     * @update 5.23 fix mediajce and legacy system
      *
      * @param $context
      * @param $item
@@ -421,13 +420,18 @@ class PlgSystemFalangCF extends CMSPlugin
                 //mediajce by default is NO , it's mean it's an image with description but yootheme have problem to deal with it
                 //if it's legacy it's just a string without description
                 //Falang translation have to be resave in case of change of lecacy
+                //it's seem the legacy system change the media_src don't exist anymore
                 case 'mediajce' :
                     if ($legacy) {
                         $field->value                = $json_value[$field->name];
                         $field->rawvalue             = $json_value[$field->name];
                     } else {
                         $field->value                = json_encode($json_value[$field->name]);
-                        $field->rawvalue             = $json_value[$field->name]['media_src'];//fix yootheme dynamic field translated with Falnag ???
+                        if (isset($json_value[$field->name]['media_src'])){
+                            $field->rawvalue             = $json_value[$field->name]['media_src'];//fix yootheme dynamic field translated with Falnag ???
+                        } else {
+                            $field->rawvalue             = $json_value[$field->name];
+                        }
                     }
                     break;
                 case 'repeatable':

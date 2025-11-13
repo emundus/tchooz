@@ -23,6 +23,9 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
+use Tchooz\Enums\Crud;
+use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Traits\TraitResponse;
 
 /**
  * Emundus Component Users Controller
@@ -33,6 +36,7 @@ use Joomla\Component\Users\Administrator\Model\MethodsModel;
  */
 class EmundusControllerUsers extends BaseController
 {
+	use TraitResponse;
 	/**
 	 * Emundus user session
 	 *
@@ -693,49 +697,55 @@ class EmundusControllerUsers extends BaseController
 
 	public function affectgroups()
 	{
+		$response = ['code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'status' => false];
 
-		$users = $this->input->getString('users', null);
-
-		$groups  = $this->input->getString('groups', null);
-		$m_users = $this->getModel('Users');
-
-		if ($users === 'all')
+		if (EmundusHelperAccess::asAccessAction(12, 'u', $this->user->id) || EmundusHelperAccess::asAccessAction(12, 'c', $this->user->id))
 		{
-			$us    = $m_users->getUsers(0, 0);
-			$users = array();
-			foreach ($us as $u)
+			$users = $this->input->getString('users', null);
+
+			$groups  = $this->input->getString('groups', null);
+			$m_users = $this->getModel('Users');
+
+			if ($users === 'all')
 			{
-				$users[] = $u->id;
+				$us    = $m_users->getUsers(0, 0);
+				$users = array();
+				foreach ($us as $u)
+				{
+					$users[] = $u->id;
+				}
+			}
+			else
+			{
+				$users = (array) json_decode(stripslashes($users));
+			}
+
+			$users = array_filter($users, function ($user) {
+				return $user !== 'em-check-all' && is_numeric($user);
+			});
+
+			$users = $m_users->getNonApplicantId($users);
+			$res   = $m_users->affectToGroups($users, explode(',', $groups));
+
+			if ($res === true)
+			{
+				$response['code'] = 200;
+				$response['status'] = true;
+				$response['msg'] = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
+			}
+			elseif ($res === 0)
+			{
+				$response['code'] = 200;
+				$response['msg'] = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
+			}
+			else
+			{
+				$response['code'] = 500;
+				$response['msg'] = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 			}
 		}
-		else
-		{
-			$users = (array) json_decode(stripslashes($users));
-		}
 
-		$users = array_filter($users, function ($user) {
-			return $user !== 'em-check-all' && is_numeric($user);
-		});
-
-		$users = $m_users->getNonApplicantId($users);
-		$res   = $m_users->affectToGroups($users, explode(',', $groups));
-
-		if ($res === true)
-		{
-			$res = true;
-			$msg = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
-		}
-		elseif ($res === 0)
-		{
-			$msg = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
-		}
-		else
-		{
-			$msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
-		}
-
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	public function edituser()
@@ -1849,16 +1859,37 @@ class EmundusControllerUsers extends BaseController
 
 	public function getacl()
 	{
+		$right = false;
+
 		$action = $this->input->get('action');
 		$crud   = $this->input->getString('crud', 'r');
 		$fnum   = $this->input->getString('fnum', '');
 
-		if (is_string($action))
+		// Check if CRUD is correct
+		if (!Crud::tryFrom($crud))
 		{
-			$action = EmundusHelperAccess::getActionIdFromActionName($action);
+			echo json_encode(array('status' => false, 'msg' => 'Invalid CRUD parameter', 'right' => false));
+			exit;
 		}
 
-		$right = EmundusHelperAccess::asAccessAction($action, $crud, $this->user->id, $fnum);
+		$action_id = 0;
+		if (is_string($action))
+		{
+			$actionRepository = new ActionRepository();
+			$action = $actionRepository->getByName($action);
+			if(!empty($action->getId()))
+			{
+				$action_id = $action->getId();
+			}
+		}
+		else {
+			$action_id = (int) $action;
+		}
+
+		if(!empty($action_id))
+		{
+			$right = EmundusHelperAccess::asAccessAction($action_id, $crud, $this->user->id, $fnum);
+		}
 
 		echo json_encode(array('status' => true, 'right' => $right));
 		exit;
@@ -1988,5 +2019,53 @@ class EmundusControllerUsers extends BaseController
 
 		echo json_encode((object)$response);
 		exit;
+	}
+
+	public function getuseremail(): void
+	{
+		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$id = $this->input->getInt('id', 0);
+
+		if (empty($id))
+		{
+			$response['code']    = 400;
+			$response['message'] = 'Missing required fields.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		try
+		{
+			$m_users = new EmundusModelUsers();
+			if ($contact = $m_users->getUserEmailById($id))
+			{
+				$response['code']    = 200;
+				$response['status']  = true;
+				$response['message'] = 'User email retrieved successfully.';
+				$response['data']    = $contact->__serialize();
+			}
+			else
+			{
+				throw new \Exception('Failed to retrieve user email.', 500);
+			}
+		}
+		catch (\Exception $e)
+		{
+			$response['code']    = $e->getCode();
+			$response['message'] = $e->getMessage();
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

@@ -8,8 +8,7 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\File;
-use Joomla\CMS\Filesystem\Folder;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Registry\Registry;
 
 defined('_JEXEC') or die;
@@ -52,7 +51,7 @@ class com_falangInstallerScript
                 'show_tpl_lang' => 0,
                 'show_list' => 1,
                 'show_form' => 1,
-                'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article,featured#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed#10#13com_fields#fields#id#default,fields,field#10#13com_fields#fields_groups#id#default,groups,group',
+                'component_list' => 'com_menus#menu#id#items,item#10#13com_content#content#id#default,articles,article,featured#10#13com_categories#categories#id#default,categories,category#10#13com_modules#modules#id#default,modules,module#10#13com_newsfeeds#newsfeeds#id#default,newsfeeds,newsfeed#10#13com_fields#fields#id#default,fields,field#10#13com_fields#fields_groups#id#default,groups,group#10#13com_tags#tags#id#default,tags,tag',
                 'copy_images_and_urls' => 0,
                 'advanced_menu_show' => 0,
                 'update_caching' => 1,
@@ -183,7 +182,7 @@ class com_falangInstallerScript
     {
         $src = $parent->getParent()->getPath('source');
 
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         $status = new stdClass();
         $status->modules = array();
@@ -277,7 +276,7 @@ class com_falangInstallerScript
 
     private function _setDefaultParams($type)
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $updateParams = false;
 
         if (count($this->installation_params['components'])) {
@@ -328,7 +327,7 @@ class com_falangInstallerScript
     private function _setDefaultModuleParams($type){
         //set mod_falang default value
         if ($type == 'install') {
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $query = $db->getQuery(true);
             $query->update($db->quoteName('#__modules'));
             $defaults = '{"dropdown":"0","advanced_dropdown":"advanced_dropdown","inline":"1","show_active":"1","image":"1","show_name":"0","full_name":"1"}'; // JSON format for the parameters
@@ -350,55 +349,53 @@ class com_falangInstallerScript
         // Remove files
         if (!empty($falangRemoveFiles['files'])) foreach ($falangRemoveFiles['files'] as $file) {
             $f = JPATH_ROOT . '/' . $file;
-            if (!File::exists($f)) continue;
-            File::delete($f);
+            if (!file_exists($f)) continue;
+            $this->deleteFile($f);
         }
 
         // Remove folders
         if (!empty($falangRemoveFiles['folders'])) foreach ($falangRemoveFiles['folders'] as $folder) {
             $f = JPATH_ROOT . '/' . $folder;
-            if (!Folder::exists($f)) continue;
-            Folder::delete($f);
+            if (!is_dir($f)) continue;
+            //Joomla 5.1 and probably other don't support Joomla\Filesystem\Folder
+            $this->deleteFolder($f);
+
         }
 
-        //remove joomla 2.X content element
-        if (version_compare(JVERSION, '3.0.0', '<')) {
-            $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/tags.xml';
-            if (File::exists($f)) {
-                File::delete($f);
-            }
-        }
         //remove joomla 3.X content element
         if (version_compare(JVERSION, '3.4', '>=')) {
             $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/weblinks.xml';
-            if (File::exists($f)) {
-                File::delete($f);
+            if (file_exists($f)) {
+                $this->deleteFile($f);
             }
-        }
-
-        //version before 3.7.0 don't support custom fields
-        if (version_compare(JVERSION, '3.7.0', '<')) {
-            $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields.xml';
-            if (File::exists($f)) {
-                File::delete($f);
-            }
-            $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_groups.xml';
-            if (File::exists($f)) {
-                File::delete($f);
-            }
-            $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_values.xml';
-            if (File::exists($f)) {
-                File::delete($f);
-            }
-
         }
 
         //remove custom fiels value
         $f = JPATH_ROOT . '/administrator/components/com_falang/contentelements/fields_values.xml';
-        if (File::exists($f)) {
-            File::delete($f);
+        if (file_exists($f)) {
+            $this->deleteFile($f);
         }
 
+    }
+
+    //delete the file
+    //File delete don't work on Joomla 5.1 with use Joomla\Filesystem\File; (removed in 6.0)
+    private function deleteFile(string $fileName):bool
+    {
+        if (version_compare(JVERSION, '6.0.0', '<')) {
+            return Joomla\CMS\Filesystem\File::delete($fileName);
+        } else {
+            return Joomla\Filesystem\File::delete($fileName);
+        }
+    }
+
+    private function deleteFolder(string $folderName):bool
+    {
+        if (version_compare(JVERSION, '6.0.0', '<')) {
+            return Joomla\CMS\Filesystem\Folder::delete($folderName);
+        } else {
+            return Joomla\Filesystem\Folder::delete($folderName);
+        }
     }
 
 
@@ -408,7 +405,7 @@ class com_falangInstallerScript
     private function _removeUpdateSite()
     {
         // Get some info on all the stuff we've gotta delete
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->select(array(
                 $db->qn('s') . '.' . $db->qn('update_site_id'),
@@ -475,7 +472,7 @@ class com_falangInstallerScript
      */
     private function _removeUpdateSiteFromOtherVersion($versionype)
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         $query = $db->getQuery(true)
             ->delete($db->qn('#__update_sites'));
 
@@ -517,25 +514,35 @@ class com_falangInstallerScript
     }
 
     /*
-         * get a variable from the manifest file (actually, from the manifest cache).
-         */
+     * get a variable from the manifest file (actually, from the manifest cache).
+     * @update 6.0 rewrite querie
+    */
     function getParam($name)
     {
-        $db = Factory::getDbo();
-        $db->setQuery('SELECT manifest_cache FROM #__extensions WHERE name = "com_falang"');
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true);
+        $query->select('manifest_cache')
+            ->from($db->qn('#__extensions'))
+            ->where($db->qn('name') . ' = ' . $db->q('com_falang'));
+        $db->setQuery($query);
         $manifest = json_decode($db->loadResult(), true);
         return $manifest[$name];
     }
 
     /*
-         * sets parameter values in the component's row of the extension table
-         */
+     * sets parameter values in the component's row of the extension table
+     *  @update 6.0 rewrite queries
+    */
     function setParams($param_array)
     {
         if (count($param_array) > 0) {
             // read the existing component value(s)
-            $db = Factory::getDbo();
-            $db->setQuery('SELECT params FROM #__extensions WHERE name = "com_falang"');
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
+            $query = $db->getQuery(true);
+            $query->select('params')
+                ->from($db->qn('#__extensions'))
+                ->where($db->qn('name') . ' = ' . $db->q('com_falang'));
+            $db->setQuery($query);
             $params = json_decode($db->loadResult(), true);
             // add the new variable(s) to the existing one(s)
             foreach ($param_array as $name => $value) {
@@ -544,9 +551,12 @@ class com_falangInstallerScript
             // store the combined new and existing values back as a JSON string
             $paramsString = json_encode($params); // JSON format for the parameters
             $paramsString = str_replace('#10#13', '\r\n', $paramsString);
-            $db->setQuery('UPDATE #__extensions SET params = ' .
-                $db->quote($paramsString) .
-                ' WHERE name = "com_falang"');
+            $query = $db->getQuery(true);
+            $query->update($db->qn('#__extensions'))
+                ->set($db->qn('params').'=:paramsString')
+                ->where($db->qn('name') . ' = ' . $db->q('com_falang'));
+            $query->bind(':paramsString',$paramsString);
+            $db->setQuery($query);
             $db->execute();
         }
     }

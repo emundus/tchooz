@@ -48,6 +48,8 @@ if ($allowed_attachments !== true) {
 		}
 	}
 }
+
+$alias_menu = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=export_select_columns&layout=aliases');
 ?>
 <!-- WYSIWYG Editor -->
 <style>
@@ -339,7 +341,7 @@ if ($allowed_attachments !== true) {
 
             <!-- TIP -->
             <p class="em-text-neutral-600 em-mt-8 em-font-size-14">
-				<?= Text::_('COM_EMUNDUS_ONBOARD_VARIABLESTIP'); ?>
+				<?= Text::sprintf('COM_EMUNDUS_ONBOARD_VARIABLESTIP', $alias_menu); ?>
             </p>
         </div>
 

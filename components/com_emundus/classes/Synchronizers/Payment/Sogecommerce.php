@@ -185,7 +185,13 @@ class Sogecommerce
 
 
 		$contact = $cart->getCustomer();
-		$address = $contact->getAddress();
+
+		$address = null;
+		$addresses = $contact->getAddresses();
+		if(!empty($addresses))
+		{
+			$address = $addresses[0];
+		}
 
 		if (!isset($this->config['mode']) || !in_array($this->config['mode'], ['TEST', 'PRODUCTION'])) {
 			$this->config['mode'] = 'PRODUCTION';
@@ -208,11 +214,11 @@ class Sogecommerce
 			'vads_cust_email' => $contact->getEmail(),
 			'vads_cust_first_name' => $contact->getFirstName(),
 			'vads_cust_last_name' => $contact->getLastName(),
-			'vads_cust_address' => $address->getAddress1(),
-			'vads_cust_address2' => $address->getAddress2(),
-			'vads_cust_city' => $address->getCity(),
-			'vads_cust_zip' => $address->getZip(),
-			'vads_cust_country' => $this->getCountryISO2($address->getCountry()),
+			'vads_cust_address' => $address->getStreetAddress() ?? '',
+			'vads_cust_address2' => $address->getExtendedAddress() ?? '',
+			'vads_cust_city' => $address->getLocality() ?? '',
+			'vads_cust_zip' => $address->getPostalCode() ?? '',
+			'vads_cust_country' => $this->getCountryISO2($address->getCountry() ?? 0),
 			'vads_url_check' => $this->config['return_url'],
 			'vads_url_return' => !empty($this->config['return_url']) ? $this->config['return_url'] . '&transaction_ref=' . $transaction->getExternalReference() : '',
 			'vads_url_cancel' => !empty($this->config['return_url']) ? $this->config['return_url'] . '&transaction_ref=' . $transaction->getExternalReference() : '',

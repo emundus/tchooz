@@ -65,6 +65,11 @@ class EmundusHelperDate
 	{
 		$display_date = '';
 
+		if (empty($format))
+		{
+			$format = 'DATE_FORMAT_LC2';
+		}
+
 		if (!EmundusHelperDate::isNull($date)) {
 			if ($local) {
 				$config = Factory::getApplication()->getConfig();

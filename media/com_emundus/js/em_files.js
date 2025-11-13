@@ -1964,8 +1964,8 @@ $(document).ready(function() {
             case 1 :
             case 4 :
                 addLoader();
-                swal_popup_class = 'em-w-auto'
-                swal_actions_class = 'em-actions-none'
+                swal_popup_class = 'em-w-auto';
+                swal_actions_class = 'em-actions-none';
                 verb = 'c';
 
                 html = '<iframe src="' + url + '" style="width:' + $(window).width() * 0.8 + 'px; height:' + $(window).height() * 0.8 + 'px; border:none" id="em-modal-color"></iframe>';
@@ -4245,6 +4245,27 @@ $(document).ready(function() {
                 multipleSteps = true;
                 break;
 
+            case 'payment':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = '';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_PAYMENT_ALTER_FILES_PRODUCTS_TITLE';
+                html = '<div id="data"></div>';
+
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    $('#data').append(data);
+                    $('#data').removeClass('em-loader');
+                });
+                break;
             default:
                 break;
         }
@@ -5877,28 +5898,6 @@ $(document).ready(function() {
 });
 
 function updateProfileForm(profile){
-    let selectedProfile = 0;
-
-    const alreadySelectedTab = document.querySelector('#em-switch-profiles .em-light-selected-tab');
-    if (alreadySelectedTab) {
-        const match = alreadySelectedTab.id.match(/tab_link_(\d+)/);
-        if (match) {
-            selectedProfile = match[1];
-        }
-    }
-
-    if (selectedProfile == profile) {
-        return;
-    }
-
-    document.querySelector('#em-switch-profiles .em-light-selected-tab p').classList.remove('em-neutral-900-color');
-    document.querySelector('#em-switch-profiles .em-light-selected-tab p').classList.add('em-neutral-600-color');
-    document.querySelector('#em-switch-profiles .em-light-selected-tab').classList.remove('em-light-selected-tab');
-
-    document.querySelector('#tab_link_'+profile).classList.add('em-light-selected-tab');
-    document.querySelector('#tab_link_'+profile+' p').classList.remove('em-neutral-600-color');
-    document.querySelector('#tab_link_'+profile+' p').classList.add('em-neutral-900-color');
-
     if(typeof $ === 'undefined') {
         $ = jQuery;
     }
@@ -5926,9 +5925,14 @@ function updateProfileForm(profile){
         }, error: function(jqXHR) {
             console.log(jqXHR.responseText);
         }
-    })
+    });
 }
 
+window.addEventListener('stepSelected', (e) => {
+    if (e.detail && e.detail.step.profile_id) {
+        updateProfileForm(e.detail.step.profile_id);
+    }
+});
 
 async function sendMailQueue(fnums, nbFiles = 0) {
     const steps = [1, 2];

@@ -294,7 +294,7 @@ export default {
 					if (response.filename == null) {
 						this.imageLink = 'images/custom/logo.png';
 					} else {
-						this.imageLink = 'images/custom/' + response.filename + '?' + new Date().getTime();
+						this.imageLink = response.filename + '?' + new Date().getTime();
 					}
 
 					resolve(true);

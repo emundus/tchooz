@@ -20,7 +20,7 @@ if( !defined('DS') ) {
 $jinput = Factory::getApplication()->input;
 
 // Access check.
-if (!Factory::getUser()->authorise('core.manage', 'com_falang')) {
+if (!Factory::getApplication()->getIdentity()->authorise('core.manage', 'com_falang')) {
     Factory::getApplication()->enqueueMessage(Text::_('JERROR_ALERTNOAUTHOR'), 'warning');
     return;
 }

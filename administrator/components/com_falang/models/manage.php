@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/models/JFModel.php';
@@ -66,7 +67,7 @@ class ManageModelManage extends JFModel
 	 * @return array	Information result array
 	 */
 	function copyOriginalToLanguage($original2languageInfo, &$phase, &$state_catid, $language_id, $overwrite, &$message) {
-		$db = Factory::getDBO();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		$jfManager = FalangManager::getInstance();
 		$sql = '';
 

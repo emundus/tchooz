@@ -86,7 +86,7 @@ class EmailsModelTest extends UnitTestCase
 	 */
 	public function testDeleteEmails()
 	{
-		$lbl  = 'Test de la suppression ' . rand(0, 1000);
+		$lbl  = 'Test de la suppression ' . rand(0, 99999);
 		$data = [
 			'lbl'       => $lbl,
 			'subject'   => 'Test de la création',

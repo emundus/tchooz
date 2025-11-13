@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="[Paiement] Action d'affectation de produits à de dossiers">
+        <message>
+            <![CDATA[[Paiement]  Action d'affectation de produits à de dossiers]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

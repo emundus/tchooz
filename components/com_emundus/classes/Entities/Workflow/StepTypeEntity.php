@@ -12,6 +12,8 @@ class StepTypeEntity
 
 	public string $label;
 
+	public ?string $code;
+
 	public int $action_id;
 
 	public bool $system = false;
@@ -24,6 +26,22 @@ class StepTypeEntity
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 
 		$this->load();
+	}
+
+	public function getId(): int
+	{
+		return $this->id;
+	}
+
+	public function setId(int $id): void
+	{
+		$this->id = $id;
+		$this->load();
+	}
+
+	public function getCode(): ?string
+	{
+		return $this->code;
 	}
 
 	public function load(): void
@@ -40,8 +58,20 @@ class StepTypeEntity
 		if (!empty($stepType)) {
 			$this->parent_id = $stepType->parent_id;
 			$this->label = $stepType->label;
+			$this->code = $stepType->code;
 			$this->action_id = $stepType->action_id;
-			$this->system = $stepType->system;
+			$this->system = $stepType->system ?? false;
 		}
+	}
+
+	public function serialize(): array
+	{
+		return [
+			'id' => $this->id,
+			'parent_id' => $this->parent_id,
+			'label' => $this->label,
+			'action_id' => $this->action_id,
+			'system' => $this->system,
+		];
 	}
 }

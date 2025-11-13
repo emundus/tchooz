@@ -5,8 +5,10 @@ namespace Tchooz\Repositories\Payment;
 use EmundusHelperCache;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Payment\DiscountType;
 use Tchooz\Entities\Payment\PaymentStepEntity;
+use Tchooz\Entities\Payment\ProductCategoryEntity;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
 use Joomla\CMS\Factory;
@@ -14,6 +16,8 @@ use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Settings\AddonEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\Payment\PaymentStepFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
@@ -37,13 +41,21 @@ class PaymentRepository
 		Log::addLogger(['text_file' => 'com_emundus.repository.payment.php'], Log::ALL, ['com_emundus.repository.payment']);
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->h_cache = new \EmundusHelperCache();
-		$this->action_id = \EmundusHelperAccess::getActionIdFromActionName('payment');
+
+		$actionRepository = new ActionRepository();
+		$this->action_id = $actionRepository->getByName('payment')->getId();
+
 		$this->loadAddon();
 		$this->setPaymentStepTypeId();
 
 		if (!empty($this->action_id) && $this->addon->enabled == 1) {
 			$this->activated = true;
 		}
+	}
+
+	public function isActivated(): bool
+	{
+		return $this->activated;
 	}
 
 	public function loadAddon(): void
@@ -141,105 +153,95 @@ class PaymentRepository
 		$payment_step = null;
 
 		if (!empty($step_id)) {
-			if (!class_exists('EmundusModelWorkflow')) {
-				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-			}
-			$m_workflow = new \EmundusModelWorkflow();
-			$step = $m_workflow->getStepData($step_id);
+			$query = $this->db->createQuery();
+			$query->select('
+				step.id as id,
+				step.*, 
+				GROUP_CONCAT(entry_status.status) AS entry_status, 
+				rules.*, 
+				GROUP_CONCAT(DISTINCT method.payment_method) AS payment_methods, 
+				GROUP_CONCAT(DISTINCT mandatory_products.product_id) AS mandatory_product_ids,
+				GROUP_CONCAT(DISTINCT mandatory_product_category.product_category) AS product_category_ids,
+				GROUP_CONCAT(DISTINCT optional_products.product_id) AS optional_product_ids,
+				GROUP_CONCAT(DISTINCT optional_product_category.product_category) AS optional_product_category_ids
+			')
+				->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'step'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'entry_status') . ' ON entry_status.step_id = step.id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'rules') . ' ON rules.step_id = step.id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_method', 'method') . ' ON method.step_id = step.id')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_product', 'mandatory_products') . ' ON mandatory_products.step_id = step.id AND mandatory_products.mandatory = 1')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_product', 'optional_products') . ' ON optional_products.step_id = step.id AND optional_products.mandatory = 0')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_product_category', 'mandatory_product_category') . ' ON mandatory_product_category.step_id = step.id AND mandatory_product_category.mandatory = 1')
+				->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_product_category', 'optional_product_category') . ' ON optional_product_category.step_id = step.id AND optional_product_category.mandatory = 0')
+				->where('step.id = ' . $this->db->quote($step_id))
+				->group('step.id');
 
-			if (!empty($step)) {
-				$payment_step = new PaymentStepEntity($step->id);
-				$payment_step->setWorkflowId($step->workflow_id);
-				$payment_step->setLabel($step->label);
-				if (!empty($step->description)) {
-					$payment_step->setDescription($step->description);
-				}
-				$payment_step->setType($step->type);
-				$payment_step->setState($step->state);
-				$payment_step->setEntryStatus($step->entry_status);
-				$payment_step->setOutputStatus($step->output_status);
-				$query = $this->db->createQuery();
+			$this->db->setQuery($query);
+			$step = $this->db->loadObject();
 
-				$query->clear()
-					->select('product_id, mandatory')
-					->from($this->db->quoteName('jos_emundus_setup_workflow_step_product'))
-					->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($step_id));
+			if (!empty($step))
+			{
+				$step->id = $step_id;
+				$step->installment_rules = $this->getInstallmentRulesByStepId($step_id);
 
-				$this->db->setQuery($query);
-				$step_products = $this->db->loadObjectList();
-
-				$products = [];
-				if (!empty($step_products)) {
-					foreach ($step_products as $step_product) {
-						$product_entity = new ProductEntity($step_product->product_id);
-						$step_product->mandatory = !empty($step_product->mandatory) ? 1 : 0;
-						$product_entity->setMandatory($step_product->mandatory);
-						$products[] = $product_entity;
-					}
-				}
-
-				$payment_step->setProducts($products);
-
-				$query->clear()
-					->select('payment_method')
-					->from($this->db->quoteName('jos_emundus_setup_workflow_step_payment_method'))
-					->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($step_id));
-
-				$this->db->setQuery($query);
-				$step_payment_method_ids = $this->db->loadColumn();
-
-				if (!empty($step_payment_method_ids)) {
-					$payment_methods = [];
-					foreach ($step_payment_method_ids as $payment_method_id) {
-						$payment_method = new PaymentMethodEntity($payment_method_id);
-						$payment_methods[] = $payment_method;
-					}
-					$payment_step->setPaymentMethods($payment_methods);
-				}
-
-				$query->clear()
-					->select('*')
-					->from($this->db->quoteName('jos_emundus_setup_workflow_step_payment_rules'))
-					->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($step_id));
-				$this->db->setQuery($query);
-				$rules = $this->db->loadObject();
-
-				if (!empty($rules)) {
-					$payment_step->setAdjustBalance((int)$rules->adjust_balance);
-					if (!empty($rules->adjust_balance_step_id)) {
-						$payment_step->setAdjustBalanceStepId($rules->adjust_balance_step_id);
-					}
-					$payment_step->setSynchronizerId($rules->synchronizer_id);
-					$payment_step->setAdvanceType($rules->advance_type);
-					$payment_step->setIsAdvanceAmountEditableByApplicant($rules->is_advance_amount_editable_by_applicant);
-					$payment_step->setAdvanceAmount($rules->advance_amount);
-					$payment_step->setAdvanceAmountType(DiscountType::getInstance($rules->advance_amount_type));
-					$payment_step->setInstallmentMonthday($rules->installment_monthday);
-					$payment_step->setInstallmentEffectDate($rules->installment_effect_date);
-				}
-
-				$query->clear()
-					->select('*')
-					->from('#__emundus_setup_workflow_step_installment_rule')
-					->where('step_id = ' . $this->db->quote($step_id));
-
-				$this->db->setQuery($query);
-				$installment_rules = $this->db->loadObjectList();
-
-				if (!empty($installment_rules)) {
-					$payment_step->setInstallmentRules($installment_rules);
-				}
+				$payment_step = PaymentStepFactory::fromDbObjects([$step])[0];
 			}
 		}
 
 		if (!empty($payment_step) && !empty($fnum)) {
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onAfterLoadEmundusPaymentStep = new GenericEvent('onCallEventHandler', ['onAfterLoadEmundusPaymentStep', ['payment_step' => $payment_step, 'rules' => $rules, 'fnum' => $fnum]]);
+			$onAfterLoadEmundusPaymentStep = new GenericEvent(
+				'onCallEventHandler',
+				[
+					'onAfterLoadEmundusPaymentStep',
+					[
+						'payment_step' => $payment_step,
+						'rules' => $payment_step->getInstallmentRules(),
+						'fnum' => $fnum,
+						'context' => new EventContextEntity(
+							null,
+							[$fnum],
+							[],
+							[
+								'payment_step' => $step_id,
+								'rules' => $payment_step->getInstallmentRules(),
+								'payment_step_entity' => $payment_step,
+							]
+						)
+					]
+				]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterLoadEmundusPaymentStep);
 		}
 
 		return $payment_step;
+	}
+
+	/**
+	 * @param   int  $stepId
+	 *
+	 * @return array
+	 */
+	public function getInstallmentRulesByStepId(int $stepId): array
+	{
+		$rules = [];
+
+		if (!empty($stepId))
+		{
+			$query = $this->db->createQuery();
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_workflow_step_installment_rule'))
+				->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($stepId));
+
+			try {
+				$this->db->setQuery($query);
+				$rules = $this->db->loadObjectList();
+			} catch (\Exception $e) {
+				Log::add('Error loading installment rules: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.payment');
+			}
+		}
+
+		return $rules;
 	}
 
 	public function flushPaymentStep(PaymentStepEntity $payment_step): bool
@@ -256,20 +258,17 @@ class PaymentRepository
 			$this->db->setQuery($query);
 			$this->db->execute();
 
-			$query->clear()->delete($this->db->quoteName('jos_emundus_setup_workflow_step_product'))
+			$query->clear()
+				->delete($this->db->quoteName('jos_emundus_setup_workflow_step_product'))
 				->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($payment_step->getId()));
 
 			$this->db->setQuery($query);
-			$this->db->execute();
+			$cleared = $this->db->execute();
 
 			$products = $payment_step->getProducts();
 			$mandatory_products = array_filter($products, function ($product) {
 				return $product->getMandatory() == 1;
 			});
-			$optional_products = array_filter($products, function ($product) {
-				return $product->getMandatory() == 0;
-			});
-
 			foreach ($mandatory_products as $product) {
 				$query->clear()
 					->insert($this->db->quoteName('jos_emundus_setup_workflow_step_product'))
@@ -280,11 +279,34 @@ class PaymentRepository
 				$this->db->execute();
 			}
 
+			$optional_products = array_filter($products, function ($product) {
+				return $product->getMandatory() != 1;
+			});
 			foreach ($optional_products as $product) {
 				$query->clear()
 					->insert($this->db->quoteName('jos_emundus_setup_workflow_step_product'))
 					->columns($this->db->quoteName(['step_id', 'product_id', 'mandatory']))
 					->values(implode(',', [$this->db->quote($payment_step->getId()), $this->db->quote($product->getId()), 0]));
+
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+
+			$query->clear()
+				->delete($this->db->quoteName('jos_emundus_setup_workflow_step_product_category'))
+				->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($payment_step->getId()));
+
+			$this->db->setQuery($query);
+			$this->db->execute();
+
+			$mandatory_categories = $payment_step->getMandatoryProductCategories();
+			foreach ($mandatory_categories as $category) {
+				assert($category instanceof ProductCategoryEntity);
+
+				$query->clear()
+					->insert($this->db->quoteName('jos_emundus_setup_workflow_step_product_category'))
+					->columns($this->db->quoteName(['step_id', 'product_category', 'mandatory']))
+					->values(implode(',', [$this->db->quote($payment_step->getId()), $this->db->quote($category->getId()), 1]));
 
 				$this->db->setQuery($query);
 				$this->db->execute();
@@ -372,7 +394,6 @@ class PaymentRepository
 				$this->db->execute();
 			}
 
-			// TODO: update installment rules
 			$query->clear()
 				->delete($this->db->quoteName('jos_emundus_setup_workflow_step_installment_rule'))
 				->where($this->db->quoteName('step_id') . ' = ' . $this->db->quote($payment_step->getId()));
@@ -400,29 +421,13 @@ class PaymentRepository
 		return $flushed;
 	}
 
+	/**
+	 * @return array<PaymentMethodEntity>
+	 */
 	public function getPaymentMethods(): array
 	{
-		$payment_methods = [];
-
-		try {
-			$query = $this->db->createQuery();
-			$query->select($this->db->quoteName(['id']))
-				->from($this->db->quoteName('jos_emundus_setup_payment_method'))
-				->where($this->db->quoteName('published') . ' = 1');
-
-			$this->db->setQuery($query);
-			$payment_method_ids = $this->db->loadColumn();
-
-			if (!empty($payment_method_ids)) {
-				foreach ($payment_method_ids as $payment_method_id) {
-					$payment_methods[] = new PaymentMethodEntity($payment_method_id);
-				}
-			}
-		} catch (\Exception $e) {
-			Log::add('Error loading payment methods: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.payment');
-		}
-
-		return $payment_methods;
+		$paymentMethodRepository = new PaymentMethodRepository();
+		return $paymentMethodRepository->getAll();
 	}
 
 	public function getPaymentServices(): array

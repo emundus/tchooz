@@ -6,6 +6,7 @@ defined('_JEXEC') or die('Restricted Access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
+use Tchooz\Repositories\Payment\ProductCategoryRepository;
 
 Text::script('SAVE');
 Text::script('COM_EMUNDUS_PAYMENT_STEP_CONFIGURATION');
@@ -42,6 +43,10 @@ Text::script('COM_EMUNDUS_PAYMENT_STEP_PAYMENT_INSTALLMENT_DAY');
 Text::script('COM_EMUNDUS_PAYMENT_STEP_PAYMENT_INSTALLMENT_DAY_HELPTEXT');
 Text::script('COM_EMUNDUS_PAYMENT_STEP_PAYMENT_INSTALLMENT_EFFECT_DATE');
 Text::script('COM_EMUNDUS_PAYMENT_STEP_PAYMENT_INSTALLMENT_EFFECT_DATE_HELPTEXT');
+Text::script('COM_EMUNDUS_PAYMENT_STEP_PRODUCT_CATEGORIES');
+Text::script('COM_EMUNDUS_PAYMENT_STEP_PRODUCT_CATEGORIES_HELPTEXT');
+Text::script('COM_EMUNDUS_PAYMENT_STEP_OPTIONAL_PRODUCT_CATEGORIES');
+Text::script('COM_EMUNDUS_PAYMENT_STEP_OPTIONAL_PRODUCT_CATEGORIES_HELPTEXT');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();
@@ -65,12 +70,16 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
 
 $current_step = $this->step;
 
+$product_category_repository = new ProductCategoryRepository();
 $datas = [
 	'workflow' => $this->current_workflow['workflow'],
 	'step'     => $this->step->serialize(),
     'previous_payment_steps'   => array_values(array_filter($this->current_workflow['steps'], function ($step) use ($current_step) {
         return $step->type == $current_step->getType() && $step->id != $current_step->getId();
     })),
+    'product_categories' => array_map(function ($category) {
+        return $category->serialize();
+    }, $product_category_repository->getProductCategories()),
 ];
 
 ?>

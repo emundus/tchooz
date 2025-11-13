@@ -100,7 +100,7 @@ export default {
 
 		onChangeFilter() {
 			// when we change a filter, we reset the pagination
-			this.$emit('updateItems', 1, this.currentTabKey);
+			this.$emit('updateItems', 1, this.currentTabKey, true);
 		},
 	},
 	watch: {

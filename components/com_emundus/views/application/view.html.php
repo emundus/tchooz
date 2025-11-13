@@ -91,7 +91,7 @@ class EmundusViewApplication extends HtmlView
 		$wa->registerAndUseScript('media/jui/js/jquery.min.js');
 
 
-		if ($layout === 'sms' || $layout === 'cart') {
+		if ($layout === 'sms' || $layout === 'cart' || $layout === 'applicationchoices') {
 			parent::display();
 		}
 		else if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && $layout !== 'history')

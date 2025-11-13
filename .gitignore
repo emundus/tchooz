@@ -39,6 +39,7 @@ workspace.xml
 
 # ADMINISTRATOR
 !/administrator/cache/autoload_psr4.php
+!/administrator/cache/autoload_tables.php
 /administrator/cache/*
 /administrator/language/overrides/*
 ## LOGS
@@ -58,6 +59,8 @@ workspace.xml
 !/images/custom/default_favicon.ico
 images/emundus/import/*
 images/emundus/photo/*
+images/emundus/contacts/*
+images/emundus/organizations/*
 images/stories/*
 /images/emundus/carriere/*
 /images/emundus/files/*

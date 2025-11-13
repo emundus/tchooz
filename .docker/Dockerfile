@@ -1,4 +1,4 @@
-FROM joomla:5.3.0-php8.2-apache
+FROM joomla:5.4.0-php8.2-apache
 
 # Install required packages, PHP extensions
 RUN apt-get update && \

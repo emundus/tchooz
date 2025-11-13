@@ -13,19 +13,17 @@ class PaymentMethodEntity
 	public ?string $description;
 	public int $published;
 	private array $services = [];
-	// TODO: define if the method is manual or handled by a payment gateway
-	private DatabaseDriver $db;
 
-	public function __construct(int $id = 0)
+	public function __construct(int $id = 0, string $name = '', string $label = '', ?string $description = null, int $published = 0, array $services = [])
 	{
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->id = $id;
-
-		if (!empty($this->id))
-		{
-			$this->load();
-		}
+		$this->name = $name;
+		$this->label = $label;
+		$this->description = $description;
+		$this->published = $published;
+		$this->setServices($services);
 	}
+
 	public function getId(): int
 	{
 		return $this->id;
@@ -41,42 +39,37 @@ class PaymentMethodEntity
 		return $this->name;
 	}
 
-	public function load(): void
+	public function getDescription(): string
 	{
-		$query = $this->db->createQuery();
+		return $this->description ?? '';
+	}
 
-		$query->select($this->db->quoteName(['id', 'name', 'label', 'description', 'published']))
-			->from($this->db->quoteName('jos_emundus_setup_payment_method'))
-			->where($this->db->quoteName('id') . ' = ' . $this->db->quote($this->id));
+	public function getPublished(): int
+	{
+		return $this->published;
+	}
 
-		try
-		{
-			$this->db->setQuery($query);
-			$paymentMethod = $this->db->loadObject();
+	/**
+	 * @return array<int>
+	 */
+	public function getServices(): array
+	{
+		return $this->services;
+	}
 
-			if ($paymentMethod)
-			{
-				$this->name        = $paymentMethod->name;
-				$this->label       = $paymentMethod->label;
-				$this->description = $paymentMethod->description;
-				$this->published   = $paymentMethod->published;
+	/**
+	 * @param   array  $services
+	 *
+	 * @return void
+	 */
+	public function setServices(array $services): void
+	{
+		$this->services = array_map('intval', $services);
+	}
 
-				$query->clear()
-					->select('distinct ' . $this->db->quoteName('service_id'))
-					->from($this->db->quoteName('jos_emundus_setup_payment_method_sync'))
-					->where($this->db->quoteName('payment_method_id') . ' = ' . $this->db->quote($this->id));
-				$this->db->setQuery($query);
-				$this->services = $this->db->loadColumn();
-			}
-			else
-			{
-				throw new \Exception('Payment method not found');
-			}
-		}
-		catch (\Exception $e)
-		{
-			throw new \Exception('Error loading payment method: ' . $e->getMessage());
-		}
+	public function isServiceAvailable(int $service_id): bool
+	{
+		return in_array($service_id, $this->services);
 	}
 
 	public function serialize(): array
@@ -89,15 +82,5 @@ class PaymentMethodEntity
 			'published'   => $this->published,
 			'services'    => $this->services,
 		];
-	}
-
-	public function getServices(): array
-	{
-		return $this->services;
-	}
-
-	public function isServiceAvailable(int $service_id): bool
-	{
-		return in_array($service_id, $this->services);
 	}
 }

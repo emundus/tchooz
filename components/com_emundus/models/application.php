@@ -26,7 +26,12 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
 use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 /**
  * Emundus Component Application Model
@@ -667,7 +672,7 @@ class EmundusModelApplication extends ListModel
 
 	}
 
-	public function deleteTag($id_tag, $fnum, $user_id = null, $user_to_log = null)
+	public function deleteTag($id_tag, $fnum, $user_id = null, $user_to_log = null, ?AutomationExecutionContext $executionContext = null)
 	{
 		$query = $this->_db->getQuery(true);
 
@@ -705,6 +710,27 @@ class EmundusModelApplication extends ListModel
             $m_files = new EmundusModelFiles;
             $fnumInfos = $m_files->getFnumInfos($fnum);
 			EmundusModelLogs::log($user_id, (int)$fnumInfos['applicant_id'], $fnum, 14, 'd', 'COM_EMUNDUS_ACCESS_TAGS_DELETE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+
+			PluginHelper::importPlugin('emundus');
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$onCallEventHandler = new GenericEvent(
+				'onCallEventHandler',
+				[
+					'onAfterTagRemove',
+					[
+						'fnums' => [$fnum],
+						'tags' => [$id_tag],
+						'context' => new EventContextEntity(
+							Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+							[$fnum],
+							[],
+							[onAfterTagRemoveDefinition::TAGS_KEY => $id_tag]
+						),
+						'execution_context' => $executionContext
+					]
+				]
+			);
+			$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 		}
 
 		return $res;
@@ -884,6 +910,43 @@ class EmundusModelApplication extends ListModel
 		}
 
 		return $upload;
+	}
+
+	/**
+	 * @param   string    $fnum
+	 * @param   int|null  $attachmentId
+	 *
+	 * @return array
+	 */
+	public function getFileUploadsByAttachmentId(string $fnum, ?int $attachmentId = null): array
+	{
+		$uploads = [];
+
+		if (!empty($fnum))
+		{
+			$query = $this->_db->createQuery();
+
+			try
+			{
+				$query->select('*')
+					->from($this->_db->quoteName('#__emundus_uploads'))
+					->where($this->_db->quoteName('fnum') . ' = ' . $this->_db->quote($fnum));
+
+				if (!empty($attachmentId))
+				{
+					$query->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($attachmentId));
+				}
+
+				$this->_db->setQuery($query);
+				$uploads = $this->_db->loadAssocList();
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error getting file uploads by attachment ID in model/application at query: ' . $query->__toString() . ' - ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $uploads;
 	}
 
 	/**
@@ -1241,6 +1304,10 @@ class EmundusModelApplication extends ListModel
 					}
 
 
+					if ($completion > 100)
+					{
+						$completion = 100;
+					}
 					$this->updateAttachmentProgressByFnum(ceil($completion), $f);
 					$result[$f] = ceil($completion);
 				}
@@ -4278,14 +4345,17 @@ class EmundusModelApplication extends ListModel
 			if (!empty($fnum)) {
 				// get menu related to workflow steps of type evaluator
 				$query->clear()
-					->select('esp.id')
+					->select('esp.id, esc.id as campaign_id')
 					->from($this->_db->quoteName('#__emundus_setup_programmes', 'esp'))
 					->leftJoin($this->_db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.training = esp.code')
 					->leftJoin($this->_db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = esc.id')
 					->where('ecc.fnum LIKE ' . $this->_db->quote($fnum));
 
 				$this->_db->setQuery($query);
-				$program_id = $this->_db->loadResult();
+				$file_infos = $this->_db->loadObject();
+
+				$program_id = $file_infos->id ?? 0;
+				$campaign_id = $file_infos->campaign_id ?? 0;
 
 				if (!empty($program_id)) {
 					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
@@ -4293,7 +4363,22 @@ class EmundusModelApplication extends ListModel
 						require_once(JPATH_ROOT . '/components/com_emundus/helpers/menu.php');
 					}
 					$m_workflow = new EmundusModelWorkflow();
-					$workflows = $m_workflow->getWorkflows([], 0, 0, [$program_id]);
+
+					$programs_ids = [$program_id];
+					if(!empty($campaign_id))
+					{
+						if(!class_exists('CampaignRepository')) {
+							require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Campaigns/CampaignRepository.php');
+						}
+						$campaignRepository = new CampaignRepository();
+						$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id, $fnum);
+						if(!empty($linked_programs_ids))
+						{
+							$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+						}
+					}
+
+					$workflows = $m_workflow->getWorkflows([], 0, 0, $programs_ids);
 
 					$evaluator_link = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=workflows&layout=evaluatorstep');
 
@@ -4755,10 +4840,10 @@ class EmundusModelApplication extends ListModel
 	/**
 	 * @param $fnum string
 	 * @param $gid int
-	 * @param $current_user int If null, the current user will be used
-	 * @return false|mixed
+	 * @param $current_user ?int If null, the current user will be used
+	 * @return false
 	 */
-	public function deleteGroupAccess($fnum, $gid, $current_user = null)
+	public function deleteGroupAccess(string $fnum, int $gid, ?int $current_user = null): bool
 	{
 		$deleted = false;
 

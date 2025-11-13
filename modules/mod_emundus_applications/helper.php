@@ -57,7 +57,8 @@ class modemundusApplicationsHelper
 			'p.color as tag_color',
 			'ecc.tab as tab_id',
 			'ecct.name as tab_name',
-			'ecct.ordering as tab_ordering'
+			'ecct.ordering as tab_ordering',
+			'group_concat(eccc.campaign_id) as choices',
 		];
 
 		// CCI-RS layout needs to get the start and end date of each application
@@ -84,6 +85,7 @@ class modemundusApplicationsHelper
 		$query->clear()
 			->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 			->leftJoin($db->quoteName('#__emundus_campaign_candidature_tabs', 'ecct') . ' ON ecct.id=ecc.tab')
+			->leftJoin($db->quoteName('#__emundus_campaign_candidature_choices', 'eccc') . ' ON eccc.fnum=ecc.fnum')
 			->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON esc.id=ecc.campaign_id')
 			->leftJoin($db->quoteName('#__emundus_setup_status', 'ess') . ' ON ess.step=ecc.status')
 			->leftJoin($db->quoteName('#__emundus_setup_programmes', 'p') . ' ON p.code = esc.training');
@@ -134,8 +136,7 @@ class modemundusApplicationsHelper
 			}
 		}
 
-
-
+		$query->group('ecc.id');
 		$order_by_session = $app->getSession()->get('applications_order_by');
 		switch ($order_by_session) {
 			case 'status':
@@ -165,7 +166,7 @@ class modemundusApplicationsHelper
 		catch (Exception $e) {
 			Log::add('Module emundus applications failed to get applications for user ' . $user->id . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
-
+		
 		return $applications;
 	}
 

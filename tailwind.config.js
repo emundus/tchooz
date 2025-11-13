@@ -51,6 +51,9 @@ module.exports = {
             pattern: /tw-border-/
         },
         {
+            pattern: /tw-outline-/
+        },
+        {
             pattern: /tw-bg-/
         },
         {
@@ -178,6 +181,7 @@ module.exports = {
                 'coordinator-cards': 'var(--em-coordinator-br-cards)',
                 'coordinator-form': 'var(--em-coordinator-form-br)',
                 'applicant': 'var(--em-applicant-br)',
+                'applicant-cards': 'var(--em-applicant-br-cards)',
                 'form': 'var(--em-form-br)',
                 'status': 'var(--em-status-br)',
                 'form-block': 'var(--em-form-br-block)',

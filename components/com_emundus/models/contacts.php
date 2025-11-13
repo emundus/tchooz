@@ -50,7 +50,7 @@ class EmundusModelContacts extends ListModel
 	{
 		try
 		{
-			$contactRepository = new ContactRepository($this->db);
+			$contactRepository = new ContactRepository();
 			if(empty($id))
 			{
 				throw new \Exception('Contact ID is empty.', 400);
@@ -61,32 +61,6 @@ class EmundusModelContacts extends ListModel
 		catch (\Exception $e)
 		{
 			Log::add('Error fetching contact: ' . $e->getMessage(), Log::ERROR, 'com_emundus.contacts');
-			throw $e;
-		}
-	}
-
-	public function saveContact(int $id, string $lastname, string $firstname, string $email, string $phone_1 = ''): int
-	{
-		try
-		{
-			$contactRepository = new ContactRepository($this->db);
-			if(!empty($id))
-			{
-				$contactEntity = $contactRepository->getById($id);
-				$contactEntity->setLastname($lastname);
-				$contactEntity->setFirstname($firstname);
-				$contactEntity->setEmail($email);
-				$contactEntity->setPhone1($phone_1);
-			}
-			else {
-				$contactEntity = new ContactEntity($email, $lastname, $firstname, $phone_1);
-			}
-
-			return $contactRepository->flush($contactEntity);
-		}
-		catch (\Exception $e)
-		{
-			Log::add('Error saving contact: ' . $e->getMessage(), Log::ERROR, 'com_emundus.contacts');
 			throw $e;
 		}
 	}

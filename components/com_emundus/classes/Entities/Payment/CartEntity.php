@@ -14,22 +14,17 @@ use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Exception\EmundusAdjustBalanceAlreadyAddedException;
 
 class CartEntity {
-	private int $id = 0;
-	private ?string $created_at = null;
-	private int $created_by = 0;
-	private ?string $updated_at = null;
-	private int $updated_by = 0;
-	public int $published = 1;
-	private DatabaseDriver $db;
+	private int $id;
 
 	public ?ContactEntity $customer = null;
+
+	public string $fnum = '';
+
 	private array $products = [];
 	private array $available_products = [];
 	private float $total = 0.00;
 	private float $total_advance = 0.00;
 	private int $installment_monthday = 1;
-
-	public string $fnum = '';
 
 	/**
 	 * @var int $step_id
@@ -54,11 +49,57 @@ class CartEntity {
 
 	private PaymentStepEntity|null $payment_step = null;
 
-	public function __construct(int $id)
+	public int $published = 1;
+
+	private ?string $created_at = null;
+
+	private int $created_by = 0;
+
+	private ?string $updated_at = null;
+
+	private int $updated_by = 0;
+
+	public function __construct(
+		int $id,
+		string $fnum,
+		?ContactEntity $customer = null,
+		array $products = [],
+		array $available_products = [],
+		float $total = 0.00,
+		float $total_advance = 0.00,
+		int $step_id = 0,
+		array $payment_methods = [],
+		?PaymentMethodEntity $selected_payment_method = null,
+		array $alterations = [],
+		?CurrencyEntity $currency = null,
+		int $number_installment_debit = 1,
+		int $pay_advance = 0,
+		bool $allowed_to_pay_advance = false,
+		int $advance_amount = 0,
+		?DiscountType $advance_amount_type = null,
+		?PaymentStepEntity $payment_step = null,
+		int $published = 1
+	)
 	{
-		Log::addLogger(['text_file' => 'com_emundus.entity.cart.php'], Log::ALL, ['com_emundus.entity.cart']);
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
 		$this->id = $id;
+		$this->fnum = $fnum;
+		$this->customer = $customer;
+		$this->products = $products;
+		$this->available_products = $available_products;
+		$this->total = $total;
+		$this->total_advance = $total_advance;
+		$this->step_id = $step_id;
+		$this->payment_methods = $payment_methods;
+		$this->selected_payment_method = $selected_payment_method;
+		$this->alterations = $alterations;
+		$this->currency = $currency;
+		$this->number_installment_debit = $number_installment_debit;
+		$this->pay_advance = $pay_advance;
+		$this->allowed_to_pay_advance = $allowed_to_pay_advance;
+		$this->advance_amount = $advance_amount;
+		$this->advance_amount_type = $advance_amount_type;
+		$this->payment_step = $payment_step;
+		$this->published = $published;
 	}
 
 	public function setId(int $id): void
@@ -197,28 +238,11 @@ class CartEntity {
 			$this->calculateTotalAdvance();
 		}
 
-		// Save total to database
-		$query = $this->db->createQuery();
-
-		$query->update($this->db->quoteName('jos_emundus_cart'))
-			->set($this->db->quoteName('total') . ' = ' . $this->db->quote($total))
-			->where($this->db->quoteName('id') . ' = ' . $this->db->quote($this->getId()));
-
-		try {
-			$this->db->setQuery($query);
-			$updated = $this->db->execute();
-
-			if (!$updated) {
-				throw new \Exception('Failed to update cart total in database.');
-			}
-
-			$this->setTotal($total);
-		} catch (\Exception $e) {
-			Log::add('Error calculating total: ' . $e->getMessage(), Log::ERROR, 'com_emundus.entity.cart');
-		}
+		$this->setTotal($total);
 	}
 
-	public function calculateTotalAdvance() {
+	public function calculateTotalAdvance(): self
+	{
 		$total = 0.00;
 
 		if ($this->advance_amount_type == DiscountType::PERCENTAGE) {
@@ -227,7 +251,16 @@ class CartEntity {
 			$total = $this->advance_amount;
 		}
 
+		// if there is an alteration of type alter_advance_amount, apply it, it is supposed to override the advance amount
+		foreach($this->alterations as $alteration) {
+			if ($alteration->getType() === AlterationType::ALTER_ADVANCE_AMOUNT) {
+				$total = $alteration->getAmount();
+			}
+		}
+
 		$this->setTotalAdvance($total);
+
+		return $this;
 	}
 
 	public function setCustomer(ContactEntity $customer): void
@@ -579,7 +612,13 @@ class CartEntity {
 	public function serialize(): array
 	{
 		$customer = $this->customer->__serialize();
-		$customer['address'] = $this->customer->getAddress()?->__serialize();
+
+		$customer['address'] = null;
+		$customer_addresses = $this->customer->getAddresses();
+		if(!empty($customer_addresses))
+		{
+			$customer['address'] = $customer_addresses[0]?->__serialize();
+		}
 
 		return [
 			'id' => $this->getId(),

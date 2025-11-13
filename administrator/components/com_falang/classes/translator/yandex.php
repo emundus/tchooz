@@ -19,7 +19,7 @@ class TranslatorYandex extends TranslatorDefault {
 		
 		$script = "var YandexKey = '".$token."';\n";
 
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 		
 		$this->script = 'translatorYandex.js';

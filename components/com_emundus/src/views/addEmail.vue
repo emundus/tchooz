@@ -63,17 +63,10 @@
 							/>
 							<div class="tw-mt-1">
 								<a
-									href="/export-tags"
-									class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1"
-									target="_blank"
-									>{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}
-									<span class="material-symbols-outlined">open_in_new</span>
-								</a>
-								<a
 									:href="'/' + aliasLink"
 									target="_blank"
 									class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1"
-									>{{ translate('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST') }}
+									>{{ translate('COM_EMUNDUS_EMAIL_SHOW_TAGS') }}
 									<span class="material-symbols-outlined">open_in_new</span>
 								</a>
 							</div>

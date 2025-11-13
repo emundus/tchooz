@@ -105,7 +105,7 @@ class FalangRouter extends Router
 
     public function getArticleSegment($id, $query)
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         if (!strpos($id, ':'))
         {
             $dbquery = $db->getQuery(true);
@@ -145,7 +145,7 @@ class FalangRouter extends Router
 	 */
     public function getArticleId($segment, $query)
     {
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         if ($this->noIDs)
         {
