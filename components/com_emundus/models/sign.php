@@ -98,7 +98,7 @@ class EmundusModelSign extends ListModel
 		return $requests;
 	}
 
-	public function saveRequest(int $id, string $status, int $ccid, int  $userId, string $fnum, int $attachment, string $connector, array $signers, int $upload = 0, int $current_user_id = 0): int
+	public function saveRequest(int $id, string $status, int $ccid, int  $userId, string $fnum, int $attachment, string $connector, array $signers, int $upload = 0, int $current_user_id = 0, bool $ordered = false): int
 	{
 		$query = $this->db->getQuery(true);
 		if(empty($current_user_id))
@@ -169,12 +169,13 @@ class EmundusModelSign extends ListModel
 			}
 
 			$requestEntity->setUploadId($upload);
+			$requestEntity->setOrdered($ordered);
 
 			if($request_id = $requestRepository->flush($requestEntity))
 			{
 				if(!empty($signers))
 				{
-					$contactRepository = new ContactRepository($this->db);
+					$contactRepository = new ContactRepository();
 					foreach ($signers as $signer)
 					{
 						if(is_array($signer))
@@ -217,12 +218,12 @@ class EmundusModelSign extends ListModel
 		{
 			if(!empty($email))
 			{
-				$contactRepository = new ContactRepository($this->db);
+				$contactRepository = new ContactRepository();
 				$contact           = $contactRepository->getByEmail($email);
 				if (empty($contact))
 				{
 					$contact = new ContactEntity($email, $lastname, $firstname, '');
-					$contact->setId($contactRepository->flush($contact));
+					$contactRepository->flush($contact);
 				}
 
 				$requestRepository = new RequestRepository($this->db);

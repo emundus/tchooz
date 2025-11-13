@@ -16,6 +16,7 @@
 use Fabrik\Helpers\ArrayHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -81,10 +82,21 @@ class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
      */
     public function onBeforeLoad() {
         $formModel = $this->getModel();
-
         PluginHelper::importPlugin('emundus');
 
-	    $result = Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeLoad', ['formModel' => $formModel, 'plugin_options' => $this->getParams()]]);
+	    $result = Factory::getApplication()->triggerEvent('onCallEventHandler', [
+			'onBeforeLoad',
+		    [
+				'formModel' => $formModel,
+				'plugin_options' => $this->getParams(),
+			    'context' => new EventContextEntity(
+					$this->user,
+				    [$this->getFnumValue()],
+				    [$this->getFormUser()],
+				    ['form' => $formModel->getId()]
+			    )
+		    ]
+	    ]);
 
         return true;
     }
@@ -204,7 +216,23 @@ class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
         $formModel = $this->getModel();
 
         PluginHelper::importPlugin('emundus','custom_event_handler');
-        Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterProcess', ['formModel' => $formModel, 'plugin_options' => $this->getParams()]]);
+        Factory::getApplication()->triggerEvent('onCallEventHandler',
+	        [
+				'onAfterProcess',
+		        [
+					'formModel' => $formModel,
+					'plugin_options' => $this->getParams(),
+			        'context' => new EventContextEntity(
+						$this->user,
+				        [$this->getFnumValue()],
+				        [$this->getFormUser()],
+				        [
+							'form' => $formModel->getId(),
+				        ]
+			        )
+		        ]
+	        ]
+        );
 
         return true;
     }
@@ -369,4 +397,51 @@ class PlgFabrik_FormEmundustriggers extends PlgFabrik_Form
 
         return true;
     }
+
+	public function getFnumValue(): string
+	{
+		$fnum = '';
+
+		$formModel = $this->getModel();
+		assert ($formModel instanceof \FabrikFEModelForm);
+		$data = $formModel->getData();
+		$tableName = $formModel->getListModel()->getTable()->db_table_name;
+
+		if (!empty($data[$tableName . '___fnum'])) {
+			$fnum = $data[$tableName . '___fnum'];
+		} else {
+			// try to get it from input get
+			$jinput = Factory::getApplication()->getInput();
+			$fnum = $jinput->get('fnum', '', 'STRING');
+		}
+
+		return $fnum;
+	}
+
+	public function getFormUser(): int
+	{
+		$userId = 0;
+
+		$formModel = $this->getModel();
+		assert ($formModel instanceof \FabrikFEModelForm);
+		$data = $formModel->getData();
+		$tableName = $formModel->getListModel()->getTable()->db_table_name;
+		if (!empty($data[$tableName . '___user'])) {
+			$userId = (int)$data[$tableName . '___user'];
+		} else {
+			$fnum = $this->getFnumValue();
+			if (!empty($fnum))
+			{
+				if (!class_exists('EmundusHelperFiles'))
+				{
+					require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
+				}
+
+				$userId = \EmundusHelperFiles::getApplicantIdFromFileId($fnum, 'fnum');
+			}
+		}
+
+		return $userId;
+
+	}
 }

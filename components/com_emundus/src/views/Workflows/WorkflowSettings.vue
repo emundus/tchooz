@@ -42,6 +42,9 @@ export default {
 						type.label = this.translate(type.label);
 						return type;
 					});
+
+					// Filter to not include payment and choices step types
+					this.stepTypes = this.stepTypes.filter((type) => !['payment', 'choices'].includes(type.code));
 				})
 				.catch((error) => {
 					console.log(error);

@@ -102,7 +102,17 @@ export class FetchClient {
 					return response.json();
 				} else {
 					const errorText = await response.text();
-					throw new Error(errorText);
+
+					// if the response is JSON, try to parse it
+					let errorMessage = '';
+					try {
+						const errorData = JSON.parse(errorText);
+						errorMessage = errorData.message || errorData.msg || JSON.stringify(errorData);
+					} catch (e) {
+						errorMessage = errorText;
+					}
+
+					throw new Error(errorMessage);
 				}
 			})
 			.then((data) => {

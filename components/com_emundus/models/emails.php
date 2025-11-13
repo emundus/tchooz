@@ -616,10 +616,6 @@ class EmundusModelEmails extends JModelList
 		$replacements = array();
 		$app          = Factory::getApplication();
 
-		if ($app->getName() === 'cli') {
-			return array('patterns' => $patterns, 'replacements' => $replacements);
-		}
-
 		$current_user = $app->getIdentity();
 		if (!empty($current_user)) {
 			if(!empty($user_id))
@@ -631,7 +627,7 @@ class EmundusModelEmails extends JModelList
 			}
 		}
 		else {
-			$user = !empty($user) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id) : null;
+			$user = !empty($user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id) : null;
 		}
 		$config = $app->getConfig();
 
@@ -641,9 +637,19 @@ class EmundusModelEmails extends JModelList
 			$sitename = $config->get('sitename');
 			$siteurl = $config->get('live_site');
 
-			$base_url = Uri::base();
-			if ($app->isClient('administrator')) {
-				$base_url = Uri::root();
+			if (empty($siteurl)) {
+				if ($app->isClient('site')) {
+					$base_url = Uri::base();
+				} else if ($app->isClient('administrator')) {
+					$base_url = Uri::root();
+				}
+			} else {
+				$base_url = $siteurl;
+			}
+
+			if (!str_ends_with($base_url, '/'))
+			{
+				$base_url .= '/';
 			}
 
 			$activation = $user->get('activation');
@@ -2096,7 +2102,7 @@ class EmundusModelEmails extends JModelList
 	 *
 	 * @since version 1.0
 	 */
-	function getAllEmails($lim, $page, $filter, $sort, $recherche, $category = '', $order_by = 'se.id')
+	function getAllEmails($lim, $page, string $filter = '', string $sort = 'DESC', string $recherche = '', string $category = '', string $order_by = 'se.id')
 	{
 		$query = $this->_db->getQuery(true);
 

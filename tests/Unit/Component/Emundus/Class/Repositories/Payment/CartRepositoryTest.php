@@ -12,6 +12,7 @@ namespace Unit\Component\Emundus\Class\Repositories\Payment;
 use Joomla\Tests\Unit\UnitTestCase;
 use Joomla\CMS\Factory;
 use stdClass;
+use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Entities\Contacts\ContactAddressEntity;
@@ -35,15 +36,14 @@ class CartRepositoryTest extends UnitTestCase
 
 	private $payment_step = null;
 
-	public function __construct(?string $name = null, array $data = [], $dataName = '')
+	public function setUp(): void
 	{
-		parent::__construct();
+		parent::setUp();
 		$this->model = new CartRepository();
 		$this->workflow_model = new \EmundusModelWorkflow();
-		$this->initDataSet();
 	}
 
-	public function createWorkflowWithPayment()
+	public function createWorkflowWithPayment(): void
 	{
 		$query = $this->db->createQuery();
 		$query->clear()
@@ -139,13 +139,19 @@ class CartRepositoryTest extends UnitTestCase
 	 * @covers \Tchooz\Repositories\Payment\CartRepository::createCart
 	 * @return void
 	 */
+	public function testCreateCartThrowsErrorIfInvalidFnum()
+	{
+		$this->expectException(\Exception::class);
+		$this->model->createCart('', 0);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Payment\CartRepository::createCart
+	 * @return void
+	 */
 	public function testCreateCart()
 	{
-		$cart_id = $this->model->createCart('', 0);
-		$this->assertEquals(0, $cart_id);
-
 		$this->createWorkflowWithPayment();
-
 		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
 		$this->assertGreaterThan(0, $cart_id);
 		$cart = $this->model->getCartById($cart_id, 0, $this->dataset['coordinator']);
@@ -216,8 +222,8 @@ class CartRepositoryTest extends UnitTestCase
 		$this->createWorkflowWithPayment();
 		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
 		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
-		$fake_adress = new ContactAddressEntity($cart->getCustomer()->getId(), '10 passage du drakkar', '', 'La Rochelle', '', 17000, 1);
-		$cart->getCustomer()->setAddress($fake_adress);
+		$fake_adress = new AddressEntity(0, 'La Rochelle', 'Nouvelle-Aquitaine', '10 passage du drakkar', '', 17000, 77);
+		$cart->getCustomer()->setAddresses([$fake_adress]);
 
 		$verified = $this->model->verifyCart($cart, $this->dataset['coordinator']);
 		$this->assertTrue($verified, 'Cart is successfully verified when payment method is selected.');
@@ -237,8 +243,8 @@ class CartRepositoryTest extends UnitTestCase
 		$this->createWorkflowWithPayment();
 		$cart_id = $this->model->createCart($this->dataset['fnum'], $this->payment_step->getId());
 		$cart = $this->model->getCartById($cart_id, $this->payment_step->getId(), $this->dataset['coordinator']);
-		$fake_adress = new ContactAddressEntity($cart->getCustomer()->getId(), '10 passage du drakkar', '', 'La Rochelle', '', 17000, 1);
-		$cart->getCustomer()->setAddress($fake_adress);
+		$fake_adress = new AddressEntity(0, 'La Rochelle', 'Nouvelle-Aquitaine', '10 passage du drakkar', '', 17000, 77);
+		$cart->getCustomer()->setAddresses([$fake_adress]);
 
 		$verified = $this->model->verifyCart($cart, $this->dataset['coordinator']);
 		$this->assertTrue($verified, 'Cart is successfully verified with products in it.');

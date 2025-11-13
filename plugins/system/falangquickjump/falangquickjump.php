@@ -9,20 +9,14 @@
 // No direct access to this file
 defined('_JEXEC') or die;
 
-use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Event\Application\AfterDispatchEvent;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\File;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
-use Joomla\CMS\Toolbar\Toolbar;
-use Joomla\CMS\Router\Route;
 use Joomla\CMS\Plugin\PluginHelper;
-use Joomla\CMS\Toolbar\Button\CustomButton;
-use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 use Joomla\CMS\Uri\Uri;
-use Joomla\CMS\HTML\Helpers\Grid;
 
 
 //Global definitions use for front
@@ -30,13 +24,13 @@ if( !defined('DS') ) {
     define( 'DS', DIRECTORY_SEPARATOR );
 }
 
-if (File::exists(JPATH_SITE.'/components/com_falang/helpers/defines.php')){
+//Joomla\Filesystem\File::exists don't work on Joomla 5.1 in the plugin/system
+if (file_exists(JPATH_SITE.'/components/com_falang/helpers/defines.php')){
 	require_once( JPATH_SITE.'/components/com_falang/helpers/defines.php' );
 }
-if (File::exists(JPATH_SITE.'/components/com_falang/helpers/falang.class.php')) {
+if (file_exists(JPATH_SITE.'/components/com_falang/helpers/falang.class.php')) {
 	require_once( JPATH_SITE.'/components/com_falang/helpers/falang.class.php' );
 }
-
 
 
 class plgSystemFalangquickjump extends CMSPlugin
@@ -54,6 +48,16 @@ class plgSystemFalangquickjump extends CMSPlugin
     {
         parent::__construct($subject, $config);
         $this->loadLanguage();
+
+        //load
+        if ($this->app->isClient('administrator')) {
+            //check if the compnent is removed (not the package)
+            if (!file_exists(JPATH_ADMINISTRATOR . '/components/com_falang/classes/FalangManager.class.php')) {
+                return;
+            };
+
+            require_once( JPATH_ADMINISTRATOR."/components/com_falang/classes/FalangManager.class.php");
+        }
     }
 
 	/*
@@ -93,7 +97,8 @@ class plgSystemFalangquickjump extends CMSPlugin
             $params = ComponentHelper::getParams('com_falang');
 
             //get supported component <form></form>
-            $component = $this->loadComponent();
+            $falangManager = FalangManager::getInstance();
+            $component = $falangManager->loadQJComponent();
             if (!isset($component)) {
                 return;
             }
@@ -143,61 +148,84 @@ class plgSystemFalangquickjump extends CMSPlugin
 		$app->appendBody($quickModal);
 	}
 
+    //onAfterRoute : the document is not initalize
     public function onAfterRoute()
+    {
+
+        if ($this->app->isClient('administrator')) {
+
+            $params = ComponentHelper::getParams('com_falang');
+
+            if (!$this->displayQuickJump()){
+                return;
+            }
+
+            // Intercept the grid.id HTML Field to insert translation status
+            // need to be done in the onAfterRoute
+            if ($params->get('show_list', true)) {
+              require_once(JPATH_PLUGINS.'/system/falangquickjump/classes/GridIdHook.php');
+              HTMLHelper::getServiceRegistry()->register('grid', Joomla\CMS\HTML\Helpers\GridIdHook::class, true);
+            }
+        }
+    }
+
+    /*
+     * Document initialize
+     * */
+    public function onAfterDispatch(AfterDispatchEvent $event):void
     {
         if ($this->app->isClient('administrator')) {
 
-            //check if the compnent is removed (not the package)
-            if (!File::exists(JPATH_ADMINISTRATOR . '/components/com_falang/classes/FalangManager.class.php')) {
+            if (!$this->displayQuickJump()){
                 return;
-            };
+            }
 
-            require_once( JPATH_ADMINISTRATOR."/components/com_falang/classes/FalangManager.class.php");
-
-            $falangManager = FalangManager::getInstance();
-            $input = $this->app->input;
-            $option = $input->get('option', null, 'cmd');
-            $view = $input->get('view', 'default', 'cmd');
-            $task = $input->get('task', null, 'cmd');
-
-            jimport('joomla.application.component.helper');
             $params = ComponentHelper::getParams('com_falang');
-
-            //get supported component <form></form>
-            $component = $this->loadComponent();
-            if (!isset($component)){
-                return;
+            if ($params->get('show_list', true)) {
+                $this->addGridHtml();
             }
-
-            if (!is_null($view) || is_null($task)) {
-                if (is_null($view)) {
-                    $view = 'default';
-                }
-                //$view = $jd->getView($option, $view);
-            } elseif (!is_null($task)) {
-                //$view = $jd->getViewByTask($option, $task);
-            }
-
-            //display only on view $taksk is null
-            if (is_null($task)) {
-                $supported_views = explode(',', $component[3]);
-                if (!in_array($view, $supported_views)) {
-                    return;
-                }
-            }
-
-
-            if (isset($view)) {
-                // Intercept the grid.id HTML Field to insert translation status
-                if ($params->get('show_list', true)) {
-                	$this->addGridHtml();
-	                HTMLHelper::register('Grid.id', array($this, 'gridIdHook'));
-                }
-                if ($params->get('show_form',true)) {
-                       $this->addToolbar();
-                }
+            if ($params->get('show_form',true)) {
+                $this->addToolbar();//need to be done in the after dispatch
             }
         }
+    }
+
+    /*
+     * Method to know if the quickjump system need to be displayed on this view
+     *
+     * @since 6.0
+     * */
+    private function displayQuickJump(){
+        $input = $this->app->input;
+        $view = $input->get('view', 'default', 'cmd');
+        $task = $input->get('task', null, 'cmd');
+
+        //get supported component <form></form>
+        $falangManager = FalangManager::getInstance();
+        $component = $falangManager->loadQJComponent();
+        if (!isset($component)){
+            return false;
+        }
+
+        if (!is_null($view) || is_null($task)) {
+            if (is_null($view)) {
+                $view = 'default';
+            }
+        }
+
+        //display only on view $taksk is null
+        if (is_null($task)) {
+            $supported_views = explode(',', $component[3]);
+            if (!in_array($view, $supported_views)) {
+                return false;
+            }
+        }
+
+        if (isset($view)) {
+            return true;
+        }
+
+        return false;
     }
 
     /*
@@ -207,98 +235,19 @@ class plgSystemFalangquickjump extends CMSPlugin
      *
      * */
     public function onBeforeRender(){
-
         $app = Factory::getApplication();
         if ($app->isClient('administrator'))
         {
             HTMLHelper::_('jquery.framework');
             HTMLHelper::_('bootstrap.renderModal');
             Text::script('LIB_FALANG_TRANSLATION');
-            //Text::script('JSTATUS');
-            //Text::script('JGLOBAL_TITLE');
         }
-
-
     }
 
     public function addGridHtml(){
-	    //need to load the language here to be used (joomla 4.0 dev-8 don't work in the constructor)
-	    $this->loadLanguage();
-        //$this->app->getDocument();//don't work here
-
-        Factory::getDocument()->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
-        Factory::getDocument()->addScript(URI::root().'plugins/system/falangquickjump/assets/falangqj.js', array('version' => 'auto', 'relative' => false));
-
-        //HTMLHELPER don't work here because $this->app->getDocument();//don't work here
-        //HTMLHelper::_('script', 'plugins/system/falangquickjump/assets/falangqj.js', array('version' => 'auto', 'relative' => false));
-        //HTMLHelper::_('stylesheet', 'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
-
-    }
-
-    /*
-     * @update 5.9 add id to result / use to select the falang flag to update
-     * @update 5.16 add the FalangContentTable in the use to fix update bug
-     * */
-    public function gridIdHook() {
-        $row = func_get_arg(0);
-        $id = func_get_arg(1);
-        $vars = func_get_args();
-        $res = call_user_func_array('Joomla\CMS\HTML\Helpers\Grid::id', $vars);
-        $ext = Factory::getApplication()->input->get('option', '', 'cmd');
-        //get table by component
-        $component = $this->loadComponent();
-        $table = $component[1];
-        $result = array();
-
-        //$languages = $jd->getLanguages();
-        //on peut mutualiser
-        $falangManager = FalangManager::getInstance();
-        $languages	= $this->getLanguages();
-
-        foreach($languages as $language) {
-            //get Falang Object info
-            $contentElement = $falangManager->getContentElement($component[1]);
-            JLoader::import( 'models.ContentObject',FALANG_ADMINPATH);
-            require_once(FALANG_ADMINPATH.'/src/Table/FalangContentTable.php');
-            $actContentObject = new ContentObject( $language->lang_id, $contentElement );
-            $loaded = $actContentObject->loadFromContentID( $id );
-
-            if (!$loaded){
-                $result['hide'] = 'true';
-                continue;
-            }
-
-            $result['status'][$language->sef] = $actContentObject->state . '|' .$actContentObject->published;
-
-            //free and paid mmust be on 1 line
-            
-            /* >>> [PAID] >>> */$result['link-'.$language->sef] = 'index.php?option=com_falang&task=translate.edit&layout=popup&catid=' . $component[1] .'&cid[]=0|'.$id.'|'.$language->lang_id.'&select_language_id='. $language->lang_id.'&direct=1';/* <<< [PAID] <<< */
-
-        }
-
-        //add id / use to update row status
-        $result['id'] = $id;
-
-        // create array
-        if ($row == 0) {
-            $table = new stdClass;
-            if ($component[0] != 'com_k2') {
-                $table->tableselector = ".table";
-            } else {
-                $table->tableselector = ".adminlist";
-            }
-            if (false) {
-            }
-            $first = 'var jFalangTable = '.json_encode($table).', falang = {}; ';
-        } else {
-            $first = '';
-        }
-        $res .= '<script>'.$first.'falang['.$row.']='.json_encode($result).';</script>';
-
-
-
-        return $res;
-
+        $this->loadLanguage();//necessary to load the javascript language
+        Factory::getApplication()->getDocument()->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
+        Factory::getApplication()->getDocument()->addScript(URI::root().'plugins/system/falangquickjump/assets/falangqj.js', array('version' => 'auto', 'relative' => false));
     }
 
     /**
@@ -306,6 +255,7 @@ class plgSystemFalangquickjump extends CMSPlugin
      * given parameters.
      *
      * @update 5.16 add the FalangContentTable require once need by ContentObject
+     * @update 6.00 stylesheet is loaded in onAfterDispatch
      *
      */
     public function addToolbar() {
@@ -325,7 +275,7 @@ class plgSystemFalangquickjump extends CMSPlugin
             return;
         }
 
-        $mapping = $this->loadComponent();
+        $mapping = $falangManager->loadQJComponent();
 
         if (!isset($mapping)){
             return;
@@ -341,18 +291,11 @@ class plgSystemFalangquickjump extends CMSPlugin
         //Fix for joomla 3.5
         if (is_array($id)){$id = $id[0];}
 
-        //Load ToolBar
-        //sbou5
-        //TODO le ToolbarFactory ne marche pas
-        //$bar = Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar();//not working ????
-        if( version_compare(JVERSION, '5.0') >= 0 ) {
-            $bar = Factory::getDocument()->getToolbar();
-        } else {
-            $bar = ToolBar::getInstance();
-        }
+        $bar    = Factory::getApplication()->getDocument()->getToolbar();
 
         //Load Language
-        $languages	= $this->getLanguages();
+        //$languages	= $this->getLanguages();
+        $languages = $falangManager->getLanguagesForTranslation();
 
         // @deprecated used for Joomla 2.5
 
@@ -362,10 +305,6 @@ class plgSystemFalangquickjump extends CMSPlugin
         $buttontype = 'itrPopup';
         $width = '95%';
         $height = '99%';
-
-        //Add Stylesheet for button icons
-        $document = Factory::getDocument();
-        $document->addStyleSheet(URI::root().'administrator/components/com_falang/assets/css/falang.css', array('version' => 'auto', 'relative' => false));
 
         //Add button by language
         foreach ($languages as $language) {
@@ -419,102 +358,6 @@ class plgSystemFalangquickjump extends CMSPlugin
         }
     }
 
-    /*
-     * @update 5.20 fix bug for some component not laoding the quickjump from xml (like showtime_galleries)
-     *              for long table name
-     *              change load first quickjump and the falang option after for override
-     * */
-    public function loadComponent () {
-        $mapping=null;
-
-        $input = Factory::getApplication()->input;
-        $option = $input->get('option', false, 'cmd');
-        $view = $input->get('view', 'default', 'cmd');
-        //load content element quickjump if exist first
-        $falangManager = FalangManager::getInstance();
-
-        $contentElements = $falangManager->getContentElements(true);
-        $quickjumps = array();
-        foreach ($contentElements as $contentElement){
-            $contentElementQJ = $contentElement->getQuickjumps();
-            if (!empty($contentElementQJ)){
-                $quickjumps = array_merge($quickjumps,$contentElementQJ);
-            }
-        }
-
-        $params = ComponentHelper::getParams('com_falang');
-
-        //Add quickjump from content element to the last element , so they can be overrided.
-        $component_list = $params->get('component_list');
-        $value = explode("\r\n",$component_list);
-
-        //merge falang option and the xml quickjump definition
-        $value = array_merge($quickjumps,$value);
-
-        $components =$value;
-        $mapping=null;
-        foreach ($components as $component){
-            //if empty line go to next
-            if (empty($component)){continue;}
-            $map = explode("#",$component);
-            $mapviews = explode(',',$map[3]);
-            $mpvcnt = count($mapviews);
-            $proceed = false;
-            if (count($map)>=3 && trim($map[0])==$option){
-                for($xx=0; $xx<$mpvcnt; $xx++){if($mapviews[$xx] == $view){$proceed = true;}}
-                if($proceed == true){
-                    if (count($map)>3 && (count($map)-3)%2==0){
-                        $matched=true;
-                        for ($p=0;$p<(count($map)-3)/2;$p++){
-                            //sbou5
-                            //$testParam = JRequest::getVar( trim($map[3+$p*2]), '');
-                            $testParam = $input->getString( trim($map[3+$p*2]), '');
-                            if ((strpos(trim($map[4+$p*2]),"!")!==false && strpos(trim($map[4+$p*2]),"!")==0)){
-                                if ($testParam == substr(trim($map[4+$p*2]),1)){
-                                    $matched=false;
-                                    break;
-                                }
-                            }
-                            else {
-                                if ($testParam != trim($map[4+$p*2])){
-                                    $matched=false;
-                                    break;
-                                }
-                            }
-                        }
-                        if ($matched) {
-                            $mapping=$map;
-                            break;
-                        }
-                    }
-                    else {
-                        $mapping=$map;
-                        break;
-                    }
-
-                }
-            }
-        }
-        return $mapping;
-    }
 
 
-    /*
-     * Get language list use for quickjump
-     *
-     * @update 5.9 fix display content language (published or not)
-     * */
-    public function getLanguages(){
-        $languages = LanguageHelper::getContentLanguages([0,1]);
-        $default_site_language = ComponentHelper::getParams('com_languages')->get("site","en-GB");
-        //remove default language based on falang params
-        $params = ComponentHelper::getParams('com_falang');
-        $showDefaultLanguageAdmin = $params->get("showDefaultLanguageAdmin", false);
-        if (!$showDefaultLanguageAdmin){
-            if (isset($languages[$default_site_language])){
-                unset($languages[$default_site_language]);
-            }
-        }
-        return $languages;
-    }
 }

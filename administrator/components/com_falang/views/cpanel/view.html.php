@@ -14,6 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Toolbar\ToolbarHelper;
+use Joomla\Database\DatabaseInterface;
 
 
 jimport('joomla.html.pane');
@@ -41,7 +42,7 @@ class CPanelViewCpanel extends FalangViewDefault
 
 		//update downloadid
 		$this->getModel()->updateDownloadId();
-        $document = Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_CONTROL_PANEL'));
 		
 		// Set toolbar items for the page
@@ -143,7 +144,7 @@ class CPanelViewCpanel extends FalangViewDefault
             )
 	    );
 
-	    $db = Factory::getDbo();
+	    $db = Factory::getContainer()->get(DatabaseInterface::class);
         foreach ($plugins as $plugin => $values){
             //search if installed
 	        $query = $db->getQuery(true)

@@ -197,7 +197,10 @@ export default {
 
 <template>
 	<section id="tab-filters" class="tw-w-full">
-		<div v-if="availableFilters.length > 0" :class="{ 'tw-mb-4': displayedFilters.length > 0 }">
+		<div
+			v-if="availableFilters.length > 0"
+			:class="{ 'tw-mb-4': displayedFilters.length > 0 || defaultFilters.length > 0 }"
+		>
 			<label class="tw-mb-2 tw-font-medium">
 				{{ translate('COM_EMUNDUS_ADD_FILTER') }}
 			</label>

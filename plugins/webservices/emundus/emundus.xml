@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <extension type="plugin" group="webservices" method="upgrade">
-	<name>Webservices eMundus</name>
+	<name>plg_webservices_emundus</name>
 	<author>eMundus</author>
 	<creationDate>2025-05</creationDate>
 	<copyright>(C) 2025 Open Source Matters, Inc.</copyright>
@@ -17,4 +17,32 @@
 		<language tag="en-GB">language/en-GB/plg_webservices_emundus.ini</language>
 		<language tag="en-GB">language/en-GB/plg_webservices_emundus.sys.ini</language>
 	</languages>
+	<config>
+		<fields name="params">
+			<fieldset name="basic">
+				<field name="ip_restriction"
+					   type="subform"
+					   label="PLG_WEBSERVICES_EMUNDUS_IP_RESTRICTION"
+					   multiple="true"
+					   min="0"
+					   layout="joomla.form.field.subform.repeatable"
+				>
+					<form>
+						<field name="ip"
+							   type="text"
+							   label="IP"
+						/>
+					</form>
+				</field>
+
+				<field name="rate_limit_enabled" label="PLG_WEBSERVICES_EMUNDUS_RATE_LIMIT" type="list" default="1">
+					<option value="0">JNO</option>
+					<option value="1">JYES</option>
+				</field>
+
+				<field name="rate_limit_max_requests" label="PLG_WEBSERVICES_EMUNDUS_RATE_LIMIT_MAX_REQUESTS" type="text" default="60" />
+				<field name="rate_limit_window_seconds" label="PLG_WEBSERVICES_EMUNDUS_RATE_LIMIT_WINDOW_SECONDS" type="text" default="60" />
+			</fieldset>
+		</fields>
+	</config>
 </extension>

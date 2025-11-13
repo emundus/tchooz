@@ -50,6 +50,9 @@ class Com_EmundusInstallerScript
 		$this->schema_version = $this->db->loadResult();
 
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/EmundusTableColumn.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/EmundusColumnTypeEnum.php');
+		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/EmundusTableForeignKey.php');
 		require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/src/Attributes/PostflightAttribute.php');
 	}
 
@@ -61,7 +64,7 @@ class Com_EmundusInstallerScript
 			exit;
 		}
 
-		$query_str = 'SHOW TABLES LIKE ' . $this->db->quote('#__emundus_version');
+		$query_str = 'SHOW TABLES LIKE ' . $this->db->quote('jos_emundus_version');
 		$this->db->setQuery($query_str);
 		$table_exists = $this->db->loadResult();
 		if(!$table_exists)
@@ -82,6 +85,8 @@ class Com_EmundusInstallerScript
 
 			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
 		}
+
+		$this->generateAutoloadTables();
 	}
 
 	public function install(object $parent): bool
@@ -162,10 +167,10 @@ class Com_EmundusInstallerScript
 				}
 			}
 		}
-		
+
 		return $succeed;
 	}
-	
+
 	public function uninstall(object $parent): void
 	{}
 
@@ -1791,5 +1796,73 @@ class Com_EmundusInstallerScript
 		}
 
 		return $checked;
+	}
+
+	private function generateAutoloadTables(): void
+	{
+		// Regenerate autoload_tables file located in JPATH_CACHE. Check only files in components/com_emundus/classes/Repositories directory
+		$repositoryPath = JPATH_SITE . '/components/com_emundus/classes/Repositories';
+		$outputFile = JPATH_CACHE . '/autoload_tables.php';
+
+		$files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($repositoryPath));
+		$phpFiles = new RegexIterator($files, '/\.php$/');
+
+		$map = [];
+
+		foreach ($phpFiles as $file)
+		{
+			$contents = file_get_contents($file->getPathname());
+			
+			// Search namespace declaration
+			preg_match('/namespace\s+([^;]+);/', $contents, $namespaceMatches);
+			$namespace = $namespaceMatches[1] ?? '';
+
+			// Search class declaration
+			preg_match('/class\s+([^\s{]+)/', $contents, $classMatches);
+			$class = $classMatches[1] ?? '';
+
+			if (!empty($namespace) && !empty($class))
+			{
+				$fqcn = $namespace . '\\' . $class;
+				try {
+					require_once $file->getPathname();
+					if (!class_exists($fqcn, false)) {
+						continue;
+					}
+
+					$ref = new ReflectionClass($fqcn);
+					$attrs = $ref->getAttributes('Tchooz\Attributes\TableAttribute');
+					if (count($attrs) > 0) {
+						$instance = $attrs[0]->newInstance();
+
+						$map[$fqcn] = [
+							'table' => $instance->table,
+							'alias' => $instance->alias,
+							'columns' => $instance->columns,
+						];
+					}
+
+				} catch (Throwable $e) {
+					// Ignore classes that fail to load during scanning
+				}
+			}
+		}
+
+		$export = var_export($map, true);
+		$export = preg_replace(['/\barray\s*\(/', '/\)(,)?/'], ['[', ']$1'], $export);
+		$php = "<?php\ndefined('_JEXEC') or die;\nreturn $export;\n";
+		$tmp ='autoload_tables.php' . '.tmp';
+		file_put_contents($tmp, $php);
+		rename($tmp, $outputFile);
+	}
+
+	#[PostflightAttribute(name: "Update reset password email body")]
+	private function updateResetPasswordBody(): bool
+	{
+		$inserts = [];
+		$inserts[] = EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY', '<div>Madame, Monsieur,<br />Vous avez effectué une demande de réinitialisation du mot de passe de votre compte <b> %s</b>.</div><br /><br />Cliquez sur le lien ci-dessous pour finaliser votre réinitialisation :<br />%3$s<br /><br />Si ce lien ne fonctionne pas, voici le code de vérification à saisir sur la page de réinitialisation de mot de passe :  %2$s<br />');
+		$inserts[] = EmundusHelperUpdate::insertTranslationsTag('COM_USERS_EMAIL_PASSWORD_RESET_BODY', 'Hello,</br></br> A request has been made to reset your <b> %s</b> account password.</br></br>To reset your password, click on the link below:</br>%3$s</br></br>If this link doesn\'t match, you will need to submit this token on the password reset page: %2$s</br>', 'override', 0, null, null, 'en-GB');
+
+		return !in_array(false, $inserts);
 	}
 }

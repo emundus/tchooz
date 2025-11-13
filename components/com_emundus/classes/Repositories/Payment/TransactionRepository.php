@@ -5,6 +5,10 @@ namespace Tchooz\Repositories\Payment;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterEmundusTransactionUpdateDefinition;
+use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
@@ -18,9 +22,13 @@ use Tchooz\Entities\Payment\TransactionEntity;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Synchronizers\Payment\Sogecommerce;
 use Tchooz\Synchronizers\Payment\Stripe;
+use Tchooz\Traits\TraitTable;
 
+#[TableAttribute(table: '#__emundus_payment_transaction')]
 class TransactionRepository
 {
+	use TraitTable;
+
 	private DatabaseDriver $db;
 
 	public function __construct()
@@ -37,7 +45,7 @@ class TransactionRepository
 		if (!empty($id)) {
 			$query = $this->db->getQuery(true);
 			$query->select('transaction.*, reference.reference')
-				->from($this->db->quoteName('#__emundus_payment_transaction', 'transaction'))
+				->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
 				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON transaction.id = reference.intern_id AND reference.column = ' .  $this->db->quote('jos_emundus_payment_transaction.id'))
 				->where('transaction.id = ' . $id);
 			$this->db->setQuery($query);
@@ -67,7 +75,7 @@ class TransactionRepository
 		$query = $this->db->createQuery();
 
 		$query->select('COUNT(transaction.id)')
-			->from($this->db->quoteName('jos_emundus_payment_transaction', 'transaction'))
+			->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
 			->where('1=1');
 
 		if (!empty($filters)) {
@@ -118,7 +126,7 @@ class TransactionRepository
 
 		$query = $this->db->getQuery(true);
 		$query->select('transaction.*, external_reference.reference')
-			->from($this->db->quoteName('#__emundus_payment_transaction', 'transaction'))
+			->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
 			->leftJoin($this->db->quoteName('#__emundus_external_reference', 'external_reference') . ' ON external_reference.intern_id = transaction.id AND external_reference.column = ' . $this->db->quote('jos_emundus_payment_transaction.id'))
 			->where('1=1');
 
@@ -237,7 +245,7 @@ class TransactionRepository
 		{
 			$query->clear()
 				->select('transaction.*, reference.reference AS external_reference')
-				->from($this->db->quoteName('jos_emundus_payment_transaction', 'transaction'))
+				->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
 				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'reference') . ' ON transaction.id = reference.intern_id AND reference.column = ' .  $this->db->quote('jos_emundus_payment_transaction.id'))
 				->where($this->db->quoteName('transaction.id') . ' = ' . $this->db->quote($transaction->getId()));
 
@@ -245,7 +253,7 @@ class TransactionRepository
 			$old_data = $this->db->loadAssoc();
 
 			$query->clear()
-				->update($this->db->quoteName('jos_emundus_payment_transaction'))
+				->update($this->db->quoteName($this->getTableName(self::class)))
 				->set($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($transaction->getCartId()))
 				->set($this->db->quoteName('amount') . ' = ' . $this->db->quote($transaction->getAmount()))
 				->set($this->db->quoteName('currency_id') . ' = ' . $this->db->quote($transaction->getCurrency()->getId()))
@@ -339,7 +347,23 @@ class TransactionRepository
 
 			PluginHelper::importPlugin('emundus');
 			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', ['onAfterEmundusTransactionUpdate', ['fnum' => $transaction->getFnum(), 'transaction' => $transaction]]);
+			$onAfterEmundusCartUpdate = new GenericEvent('onCallEventHandler', [
+				'onAfterEmundusTransactionUpdate',
+				[
+					'fnum' => $transaction->getFnum(),
+					'transaction' => $transaction,
+					'context' => new EventContextEntity(
+						Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+						[$transaction->getFnum()],
+						[],
+						[
+							onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STATUS_PARAMETER => $transaction->getStatus()->value,
+							onAfterEmundusTransactionUpdateDefinition::OLD_TRANSACTION_STATUS_PARAMETER => !empty($old_data['status']) ? $old_data['status'] : null,
+							onAfterEmundusTransactionUpdateDefinition::TRANSACTION_STEP_ID_PARAMETER => $transaction->getStepId(),
+						]
+					)
+				]
+			]);
 			$dispatcher->dispatch('onCallEventHandler', $onAfterEmundusCartUpdate);
 		}
 
@@ -398,7 +422,7 @@ class TransactionRepository
 			$query = $this->db->createQuery();
 
 			$query->select('id')
-				->from($this->db->quoteName('#__emundus_payment_transaction'))
+				->from($this->db->quoteName($this->getTableName(self::class)))
 				->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart->getId()))
 				->andWhere($this->db->quoteName('step_id') . ' = ' . $this->db->quote($cart->getPaymentStep()->getId()))
 				->order($this->db->quoteName('created_at') . ' DESC')
@@ -424,7 +448,7 @@ class TransactionRepository
 			$query = $this->db->createQuery();
 
 			$query->select('id')
-				->from($this->db->quoteName('#__emundus_payment_transaction'))
+				->from($this->db->quoteName($this->getTableName(self::class)))
 				->where($this->db->quoteName('cart_id') . ' = ' . $this->db->quote($cart->getId()))
 				->andWhere($this->db->quoteName('step_id') . ' = ' . $this->db->quote($step_id))
 				->andWhere($this->db->quoteName('status') . ' = ' . $this->db->quote($transaction_status->value))
@@ -535,7 +559,7 @@ class TransactionRepository
 				$added = $this->db->execute();
 
 				$query->clear()
-					->update($this->db->quoteName('#__emundus_payment_transaction'))
+					->update($this->db->quoteName($this->getTableName(self::class)))
 					->set($this->db->quoteName('status') . ' = ' . $this->db->quote(TransactionStatus::WAITING->value))
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($transaction_id));
 
@@ -659,7 +683,7 @@ class TransactionRepository
 			$this->db->setQuery($query);
 			$applicant_id = $this->db->loadResult();
 
-			$contact_repository = new ContactRepository($this->db);
+			$contact_repository = new ContactRepository();
 			$customer = $contact_repository->getByUserId($applicant_id);
 		}
 
@@ -695,7 +719,7 @@ class TransactionRepository
 		$query = $this->db->createQuery();
 
 		$query->select('DISTINCT(transaction.fnum) as value, transaction.fnum as label')
-			->from($this->db->quoteName('#__emundus_payment_transaction', 'transaction'))
+			->from($this->db->quoteName($this->getTableName(self::class), 'transaction'))
 			->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'candidature') . ' ON candidature.fnum = transaction.fnum')
 			->where($this->db->quoteName('transaction.fnum') . ' IS NOT NULL')
 			->andWhere('candidature.published = 1');
@@ -795,7 +819,7 @@ class TransactionRepository
 	{
 		$transaction = [];
 		$payment_repository = new PaymentRepository();
-		$contact_repository = new ContactRepository($this->db);
+		$contact_repository = new ContactRepository();
 
 		if(!class_exists('EmundusHelperFiles')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');

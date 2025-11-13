@@ -71,7 +71,7 @@ export default {
 			],
 			addressFields: [
 				{
-					param: 'address1',
+					param: 'street_address',
 					type: 'text',
 					maxlength: 150,
 					placeholder: '',
@@ -81,7 +81,7 @@ export default {
 					displayed: true,
 				},
 				{
-					param: 'address2',
+					param: 'extended_address',
 					type: 'text',
 					maxlength: 150,
 					placeholder: '',
@@ -92,7 +92,7 @@ export default {
 					optional: true,
 				},
 				{
-					param: 'zip',
+					param: 'postal_code',
 					type: 'text',
 					maxlength: 5,
 					placeholder: '',
@@ -102,7 +102,7 @@ export default {
 					displayed: true,
 				},
 				{
-					param: 'city',
+					param: 'locality',
 					type: 'text',
 					placeholder: '',
 					value: '',
@@ -132,9 +132,9 @@ export default {
 		if (
 			!this.readOnly &&
 			(!this.customer.address ||
-				!this.customer.address.address1 ||
-				!this.customer.address.city ||
-				!this.customer.address.zip ||
+				!this.customer.address.street_address ||
+				!this.customer.address.locality ||
+				!this.customer.address.postal_code ||
 				!this.customer.address.country)
 		) {
 			this.mode = 'edit';
@@ -293,27 +293,27 @@ export default {
 					<div v-if="customer.address" class="tw-flex tw-flex-col tw-gap-2">
 						<p class="tw-grid tw-grid-cols-2">
 							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_ADDRESS_1') }}</strong>
-							<span>{{ customer.address.address1 }}</span>
+							<span>{{ customer.address.street_address }}</span>
 						</p>
 						<hr class="tw-m-0" />
 
-						<div v-if="customer.address.address2" class="tw-flex tw-flex-col tw-gap-2">
+						<div v-if="customer.address.extended_address" class="tw-flex tw-flex-col tw-gap-2">
 							<p class="tw-grid tw-grid-cols-2">
 								<strong>{{ translate('COM_EMUNDUS_CUSTOMER_ADDRESS_2') }}</strong>
-								<span>{{ customer.address.address2 }}</span>
+								<span>{{ customer.address.extended_address }}</span>
 							</p>
 							<hr class="tw-m-0" />
 						</div>
 
 						<p class="tw-grid tw-grid-cols-2">
 							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_ZIPCODE') }}</strong>
-							<span>{{ customer.address.zip }}</span>
+							<span>{{ customer.address.postal_code }}</span>
 						</p>
 						<hr class="tw-m-0" />
 
 						<p class="tw-grid tw-grid-cols-2">
 							<strong>{{ translate('COM_EMUNDUS_CUSTOMER_CITY') }}</strong>
-							<span>{{ customer.address.city }}</span>
+							<span>{{ customer.address.locality }}</span>
 						</p>
 						<hr class="tw-m-0" />
 

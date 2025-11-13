@@ -17,6 +17,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Uri\Uri;
 
+require_once JPATH_ROOT . '/components/com_emundus/helpers/cache.php';
+
 /**
  * Emundus Component Profile Model
  *
@@ -30,6 +32,8 @@ class EmundusModelProfile extends ListModel
 	 */
 	protected $_db;
 
+	private EmundusHelperCache $h_cache;
+
 	/**
 	 * Constructor
 	 *
@@ -39,7 +43,7 @@ class EmundusModelProfile extends ListModel
 	{
 		parent::__construct();
 		$this->_db = $this->getDatabase();
-
+		$this->h_cache = new EmundusHelperCache();
 	}
 
 	/**
@@ -257,20 +261,44 @@ class EmundusModelProfile extends ListModel
 
 	function getProfileById($id)
 	{
-		$query = 'SELECT label, menutype, acl_aro_groups, id from jos_emundus_setup_profiles
-						WHERE id =' . $id;
+		$profile = [];
 
-		try
-		{
-			$this->_db->setQuery($query);
+		if (!empty($id)) {
+			$profiles = $this->h_cache->get('emundus_profiles_list');
 
-			return $this->_db->loadAssoc();
+			if (!empty($profiles)) {
+				foreach ($profiles as $p) {
+					if ($p['id'] == $id) {
+						$profile = (array)$p;
+						break;
+					}
+				}
+			}
+
+			if (empty($profile)) {
+				try
+				{
+					$query = $this->_db->createQuery();
+					$query->select('label, menutype, acl_aro_groups, id')
+						->from($this->_db->quoteName('#__emundus_setup_profiles'))
+						->where($this->_db->quoteName('id') . ' = ' . (int) $id);
+
+					$this->_db->setQuery($query);
+					$profile = $this->_db->loadAssoc();
+
+					if (!empty($profile)) {
+						$profiles[] = $profile;
+						$this->h_cache->set('emundus_profiles_list', $profiles);
+					}
+				}
+				catch (Exception $e)
+				{
+					Log::add(Uri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $query->__toString(), Log::ERROR, 'com_emundus.error');
+				}
+			}
 		}
-		catch (Exception $e)
-		{
-			Log::add(Uri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
 
-		}
+		return $profile;
 	}
 
 	// We are getting the profile in setup status table
@@ -1112,6 +1140,13 @@ class EmundusModelProfile extends ListModel
 				else
 				{
 					$res = $this->_db->loadObjectList();
+					foreach ($res as $key => $profile)
+					{
+						if (empty($profile->menutype))
+						{
+							unset($res[$key]);
+						}
+					}
 				}
 			}
 			catch (Exception $e)
@@ -1147,7 +1182,7 @@ class EmundusModelProfile extends ListModel
 						}
 					}
 				}
-
+				
 				if (!empty($workflow_profiles))
 				{
 					$query = $this->_db->getQuery(true);

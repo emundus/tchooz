@@ -9,12 +9,13 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
 global  $act, $task, $option;
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 $contentElement = $this->falangManager->getContentElement( $this->element );
 
 ?>

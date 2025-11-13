@@ -2,31 +2,52 @@
 
 namespace Tchooz\Repositories\Payment;
 
-use Tchooz\Entities\Payment\ProductEntity;
+use Joomla\CMS\Factory;
+use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Payment\CurrencyEntity;
-use Tchooz\Entities\Payment\ProductCategoryEntity;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\DatabaseDriver;
+use Tchooz\Factories\Payment\CurrencyFactory;
+use Tchooz\Traits\TraitTable;
 
+#[TableAttribute(table: 'data_currency')]
 class CurrencyRepository
 {
+	use TraitTable;
 
-	/**
-	 * @var \Joomla\CMS\Factory
-	 */
-	private $db;
+	private DatabaseDriver $db;
 
 	public function __construct()
 	{
 		Log::addLogger(['text_file' => 'com_emundus.repository.currency.php'], Log::ALL, ['com_emundus.repository.currency']);
-		$this->db = \Joomla\CMS\Factory::getContainer()->get('DatabaseDriver');
+		$this->db = Factory::getContainer()->get('DatabaseDriver');
 	}
 
+	/**
+	 * @param   int  $id
+	 *
+	 * @return CurrencyEntity|null
+	 */
 	public function getCurrencyById(int $id): ?CurrencyEntity
 	{
 		$currency = null;
 
 		if (!empty($id)) {
-			$currency = new CurrencyEntity($id);
+			$query = $this->db->createQuery();
+			$query->select('*')
+				->from($this->db->quoteName($this->getTableName(self::class)))
+				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($id));
+
+			try {
+				$this->db->setQuery($query);
+				$object = $this->db->loadObject();
+
+				if ($object) {
+					$currency = CurrencyFactory::fromDbObjects([$object])[0];
+				}
+			} catch (\Exception $e) {
+				Log::add('Failed to load currency entity: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.currency');
+			}
 		}
 
 		return $currency;
@@ -41,7 +62,7 @@ class CurrencyRepository
 		$offset = ($page - 1) * $lim;
 
 		$query->select('*')
-			->from($this->db->quoteName('data_currency'))
+			->from($this->db->quoteName($this->getTableName(self::class)))
 			->where('1=1');
 
 		if (!empty($filters)) {
@@ -62,11 +83,7 @@ class CurrencyRepository
 			$currencies = $this->db->loadObjectList();
 
 			if ($currencies) {
-				foreach ($currencies as $currency) {
-					$currency_entity = new CurrencyEntity(0, $currency->name, $currency->symbol, $currency->iso3, 1);
-					$currency_entity->setId($currency->id);
-					$currency_list[] = $currency_entity;
-				}
+				$currency_list = CurrencyFactory::fromDbObjects($currencies);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error loading currencies: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.currency');

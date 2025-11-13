@@ -401,8 +401,8 @@ button .quicktranslate.unpublished{
 }
 .translation-field-fieldparams td div.btn-group,.translation-field-fieldparams th div.btn-group, .translation-field-fieldparams th:nth-child(3){display: none}
 
-.adminformlist .control-group {
-	margin:0 ;/* reset the select parameter for better display on the select translation button only in falang*/
+.adminformlist .control-group.falang {
+	margin-top:-1rem ;/* the orgininal control-group has a margin-bottom , not possible to change or it's make problem on other tabs fields display*/
 }
 /*end custom field*/
 

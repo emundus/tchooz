@@ -11,6 +11,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\Component\Finder\Administrator\Indexer\Parser\Html;
+use Joomla\Database\DatabaseInterface;
 
 defined('_JEXEC') or die;
 
@@ -31,7 +32,7 @@ class translationContact_details_categoryFilter extends translationFilter
 
         //since joomla 3.0 filter_value can be '' too not only filterNullValue
         if (isset($this->filter_value) && strlen($this->filter_value) > 0  && $this->filter_value!=$this->filterNullValue){
-			$db = Factory::getDBO();
+			$db = Factory::getContainer()->get(DatabaseInterface::class);
 			$filter =  " c.".$this->filterField."=".$db->escape( $this->filter_value, true );
 		}
 		return $filter;

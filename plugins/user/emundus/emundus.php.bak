@@ -22,11 +22,13 @@ use Joomla\CMS\Mail\MailTemplate;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Database\ParameterType;
 use Joomla\Registry\Registry;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 
 /**
  * Joomla User plugin
@@ -764,7 +766,15 @@ class plgUserEmundus extends CMSPlugin
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$this->app->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+			$this->app->triggerEvent('onCallEventHandler',
+				[
+					'onUserLogin',
+					[
+						'user_id' => $user->id,
+						'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user->id), [], [$user->id])
+					]
+				]
+			);
 
 			if (!empty($previous_url)) {
 				Log::add('Log in ' . $user->username . ', user redirected to previous url ' . $previous_url . '.', Log::INFO, 'com_emundus.auth');

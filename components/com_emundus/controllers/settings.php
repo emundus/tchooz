@@ -24,27 +24,30 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
+use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
+use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\Contacts\OrganizationRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Enums\Analytics\PeriodEnum;
+use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
+use Tchooz\Repositories\Emails\TagRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
+use Tchooz\Repositories\CountryRepository;
+use Tchooz\Services\Addons\AddonHandlerResolver;
+use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
 
-/**
- * Settings Controller
- *
- * @package    Joomla
- * @subpackage eMundus
- * @since      5.0.0
- */
 class EmundusControllersettings extends BaseController
 {
 	use TraitResponse;
 
-	protected $app;
-
 	private $user;
-	private $m_settings;
+
+	private EmundusModelSettings $m_settings;
 
 	/**
 	 * Constructor.
@@ -58,9 +61,15 @@ class EmundusControllersettings extends BaseController
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-		$this->m_settings = $this->getModel('settings');
-		$this->app        = Factory::getApplication();
+		if(!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/access.php');
+		}
+		if(!class_exists('EmundusModelSettings'))
+		{
+			require_once(JPATH_BASE . DS . '/components/com_emundus/models/settings.php');
+		}
+		$this->m_settings = new EmundusModelSettings();
 
 		$this->user = $this->app->getIdentity();
 	}
@@ -224,25 +233,30 @@ class EmundusControllersettings extends BaseController
 
 	public function updatetags()
 	{
-		$user = $this->user;
+		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'code' => 403);
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$tag   = $this->input->getInt('tag');
 			$label = $this->input->getString('label');
 			$color = $this->input->getString('color');
 
-			$result         = $this->m_settings->updateTags($tag, $label, $color);
-			$msg            = $result ? JText::_('SUCCESS') : JText::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS');
-			$changeresponse = array('status' => $result, 'msg' => $msg);
+			try {
+				if ($this->m_settings->updateTags($tag, $label, $color)) {
+					$response = array('status' => true, 'msg' => Text::_('SUCCESS'), 'code' => 200);
+				}
+				else
+				{
+					$response['code'] = 400;
+					$response['msg']  = Text::_('FAILED');
+				}
+			} catch (\Exception $e) {
+				$response['code'] = 400;
+				$response['msg'] = $e->getMessage();
+			}
 		}
-		echo json_encode((object) $changeresponse);
-		exit;
+
+		$this->sendJsonResponse($response);
 	}
 
 	public function getarticle()
@@ -374,8 +388,8 @@ class EmundusControllersettings extends BaseController
 		$filename = '';
 		if (!empty($logo))
 		{
-			$logo_path = explode('/', $logo);
-			$filename  = $logo_path[count($logo_path) - 1];
+			$base_url = Uri::base();
+			$filename = str_replace($base_url, '', $logo);
 		}
 
 		$tab = array('status' => 1, 'msg' => JText::_('LOGO_FOUND'), 'filename' => $filename);
@@ -1982,9 +1996,6 @@ class EmundusControllersettings extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
 			$extension    = $this->input->getString('extension', '');
 			$only_pending = $this->input->getString('only_pending', false);
 			$only_pending = filter_var($only_pending, FILTER_VALIDATE_BOOLEAN);
@@ -2500,31 +2511,61 @@ class EmundusControllersettings extends BaseController
 
 	public function toggleaddon()
 	{
-		$this->checkToken('post');
+		$this->checkToken();
 
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$addon_type = $this->input->getString('addon_type', 0);
-			$enabled    = $this->input->getInt('enabled', 1);
-
-			if (!empty($addon_type))
-			{
-				$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
-				if ($response['status'])
-				{
-					$response['code']    = 200;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
-				}
-			}
+			$this->sendJsonResponse($response);
+			return;
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$addon_type = $this->input->getString('addon_type', 0);
+		$enabled    = $this->input->getInt('enabled', 1);
+
+		if(empty($addon_type))
+		{
+			$response['message'] = Text::_('MUST_SELECT_ADDON_TYPE');
+			$response['code']    = 400;
+
+			$this->sendJsonResponse($response);
+			return;
+		}
+
+		if(!class_exists('AddonRepository'))
+		{
+			require_once JPATH_ROOT . '/components/com_emundus/classes/Repositories/Addons/AddonRepository.php';
+		}
+		$addonRepository = new AddonRepository();
+		$addon = $addonRepository->getByName($addon_type);
+
+		if(empty($addon))
+		{
+			$response['message'] = Text::_('ADDON_NOT_FOUND');
+			$response['code']    = 404;
+
+			$this->sendJsonResponse($response);
+			return;
+		}
+
+		// Check if we have a handler for this addon (name must be the same as the factory class)
+		try {
+			$resolver = new AddonHandlerResolver();
+
+			$handler = $resolver->resolve($addon_type, $addon);
+			$response['status'] = $handler->toggle($enabled);
+		} catch (RuntimeException $e) {
+			$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
+		}
+
+		if ($response['status'])
+		{
+			$response['code']    = 200;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
+		}
+
+		$this->sendJsonResponse($response);
 	}
 
 	public function setupmessenger()
@@ -2799,7 +2840,7 @@ class EmundusControllersettings extends BaseController
 				$only_published = filter_var($this->input->getString('only_published', true), FILTER_VALIDATE_BOOLEAN);
 
 				$categoryRepository = new UserCategoryRepository();
-				$categories = $categoryRepository->getAllCategories($only_published);
+				$categories         = $categoryRepository->getAllCategories($only_published);
 
 				$response['status']  = true;
 				$response['code']    = 200;
@@ -2827,14 +2868,14 @@ class EmundusControllersettings extends BaseController
 		{
 			try
 			{
-				$categories  = $this->input->getString('categories');
+				$categories = $this->input->getString('categories');
 				$categories = json_decode($categories);
 
 				$categoryRepository = new UserCategoryRepository();
 
 				foreach ($categories as $category)
 				{
-					if(!empty($category->label))
+					if (!empty($category->label))
 					{
 						$categoryEntity = new UserCategoryEntity(
 							$category->id ?? 0,
@@ -2844,7 +2885,7 @@ class EmundusControllersettings extends BaseController
 
 						$categoryCreated = $categoryRepository->save($categoryEntity);
 
-						if($categoryCreated instanceof UserCategoryEntity === false)
+						if ($categoryCreated instanceof UserCategoryEntity === false)
 						{
 							$response['code']    = 500;
 							$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVE_FAILED');
@@ -2855,7 +2896,7 @@ class EmundusControllersettings extends BaseController
 					}
 				}
 
-				$response['status'] = true;
+				$response['status']  = true;
 				$response['code']    = 200;
 				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_USER_CATEGORIES_SAVED');
 			}
@@ -2881,7 +2922,7 @@ class EmundusControllersettings extends BaseController
 			try
 			{
 				$category_id = $this->input->getInt('id', 0);
-				$publish = filter_var($this->input->getString('publish', true), FILTER_VALIDATE_BOOLEAN);
+				$publish     = filter_var($this->input->getString('publish', true), FILTER_VALIDATE_BOOLEAN);
 
 				if ($category_id > 0)
 				{
@@ -2929,7 +2970,7 @@ class EmundusControllersettings extends BaseController
 				$state = filter_var($state, FILTER_VALIDATE_BOOLEAN);
 
 				// First switch parameter
-				if($this->m_settings->updateEmundusParam('emundus', 'enable_user_categories', $state ? 1 : 0))
+				if ($this->m_settings->updateEmundusParam('emundus', 'enable_user_categories', $state ? 1 : 0))
 				{
 					$cache = Factory::getCache('_system');
 					$cache->clean('_system');
@@ -2939,11 +2980,6 @@ class EmundusControllersettings extends BaseController
 
 					// Enable/disable system plugin
 					$this->m_settings->enableDisableUserCategoryPlugin($state);
-
-					$cache = Factory::getCache('mod_menu');
-					$cache->clean('mod_menu');
-					$cache->clean('com_menus');
-					$cache->clean('com_menus');
 
 					$response['status']  = true;
 					$response['code']    = 200;
@@ -2980,7 +3016,7 @@ class EmundusControllersettings extends BaseController
 				$state = filter_var($state, FILTER_VALIDATE_BOOLEAN);
 
 				// First switch parameter
-				if($this->m_settings->updateEmundusParam('emundus', 'user_category_mandatory', $state ? 1 : 0))
+				if ($this->m_settings->updateEmundusParam('emundus', 'user_category_mandatory', $state ? 1 : 0))
 				{
 					$cache = Factory::getCache('_system');
 					$cache->clean('_system');
@@ -3133,9 +3169,15 @@ class EmundusControllersettings extends BaseController
 			$rows = [];
 			foreach ($aliases['datas'] as $key => $alias)
 			{
+				$elts = [];
+				foreach ($alias['elements'] as $element)
+				{
+					$elts[] = $element['path'] . ' ' . $element['label'];
+				}
+
 				$row    = [
 					$key,
-					implode(' | ', array_column($alias['elements'], 'path'))
+					implode(' | ', $elts)
 				];
 				$rows[] = $row;
 
@@ -3165,6 +3207,501 @@ class EmundusControllersettings extends BaseController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	public function fetchtags()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$sort      = $this->input->getString('sort', 'ASC');
+			$order_by  = $this->input->getString('order_by', '');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 0);
+			$page      = $this->input->getInt('page', 0);
+			$formtype   = $this->input->getString('formtype', 'all');
+			$campaign = $this->input->getInt('campaign', 0);
+			$step = $this->input->getInt('step', 0);
+
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_ALIASES');
+
+			if (!class_exists('TagRepository'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Emails/TagRepository.php');
+			}
+			$tagRepository = new TagRepository();
+			$tags          = $tagRepository->getAllFabrikTags($sort, $recherche, $lim, $page, $formtype, $campaign, $step, $this->user->id);
+			if ($tags['count'] > 0)
+			{
+				// this data formatted is used in onboarding lists
+				foreach ($tags['datas'] as $key => $tag)
+				{
+					$tag->label = ['fr' => $tag->id, 'en' => $tag->id];
+
+					$path_value = !empty($tag->table_label) ? ($tag->table_label . ' > ') : '';
+					if (!empty($tag->form_label))
+					{
+						$path_value .= $tag->form_label . ' > ';
+					}
+					if (!empty($tag->group_label))
+					{
+						$path_value .= $tag->group_label . ' > ';
+					}
+					$path = [
+						[
+							'key'     => $tag->element_name,
+							'value'   => $path_value . '<strong>'.$tag->element_label.'</strong>',
+							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-neutral-300'
+						]
+					];
+
+					$tag->additional_columns = [
+						[
+							'type'    => 'tags',
+							'key'     => Text::_('COM_EMUNDUS_TAG_ELEMENT'),
+							'values'  => $path,
+							'display' => 'table'
+						],
+						[
+							'key'     => Text::_('COM_EMUNDUS_TAG_PLUGIN'),
+							'value'  => $tag->plugin_label,
+							'display' => 'table'
+						]
+					];
+				}
+			}
+
+			$response['data'] = ['datas' => array_values($tags['datas']), 'count' => $tags['count']];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function fetchgeneraltags()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$sort      = $this->input->getString('sort', 'ASC');
+			$order_by  = $this->input->getString('order_by', '');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 0);
+			$page      = $this->input->getInt('page', 0);
+
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_ALIASES');
+
+			if (!class_exists('TagRepository'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/classes/Repositories/Emails/TagRepository.php');
+			}
+			$tagRepository = new TagRepository();
+			$tags          = $tagRepository->getAllOtherTags($sort, $recherche, $lim, $page);
+			if ($tags['count'] > 0)
+			{
+				// this data formatted is used in onboarding lists
+				foreach ($tags['datas'] as $key => $tag)
+				{
+					$tag->label = ['fr' => $tag->tag, 'en' => $tag->tag];
+
+					$tag->additional_columns = [
+						[
+							'key'     => Text::_('COM_EMUNDUS_TAG_DESCRIPTION'),
+							'value'  => Text::_($tag->description),
+							'display' => 'table'
+						]
+					];
+				}
+			}
+
+			$response['data'] = ['datas' => array_values($tags['datas']), 'count' => $tags['count']];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcampaignsfilter()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$current_language    = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_CAMPAIGNS_FILTER');
+
+			if (!class_exists('EmundusModelForm'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
+			}
+			$m_campaigns             = new EmundusModelCampaign();
+			$campaigns = $m_campaigns->getAssociatedCampaigns('', 'DESC', '', 0);
+
+			$campaigns_filters = [];
+			foreach ($campaigns['datas'] as $campaign)
+			{
+				$campaigns_filters[] = [
+					'value' => $campaign->id,
+					'label' => $campaign->label
+				];
+			}
+
+			$response['data'] = $campaigns_filters;
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getstepsfilter()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$campaign = $this->input->getInt('campaign', 0);
+			$formtype = $this->input->getString('formtype', 'all');
+
+			$current_language    = substr(Factory::getApplication()->getLanguage()->getTag(), 0, 2);
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_FETCH_CAMPAIGNS_FILTER');
+
+			if (!class_exists('EmundusModelWorkflow'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow             = new EmundusModelWorkflow();
+
+			$steps = [];
+			if(!empty($campaign))
+			{
+				$steps = $m_workflow->getCampaignSteps($campaign);
+			}
+
+			$steps_filters = [];
+			foreach ($steps as $step)
+			{
+				if(!empty($formtype) && $formtype !== 'all')
+				{
+					if($formtype === 'applicant' && empty($step->profile_id))
+					{
+						continue;
+					}
+
+					if($formtype === 'management' && empty($step->form_id))
+					{
+						continue;
+					}
+				}
+				$steps_filters[] = [
+					'value' => $step->id,
+					'label' => $step->label
+				];
+			}
+
+			$response['data'] = $steps_filters;
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcountries()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_COUNTRIES_LIST');
+
+			// Get current lang to return country names in the right language
+			$lang = Factory::getApplication()->getLanguage();
+			$lang = $lang->getTag();
+			$lang = substr($lang, 0, 2);
+
+			if(!class_exists('CountryRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/CountryRepository.php';
+			}
+			$countryRepository = new CountryRepository();
+			$countries         = $countryRepository->getAllCountries();
+			$data = [];
+			foreach($countries as $country)
+			{
+				// If we found a label_xx property for the current language, we use it
+				$label = $country->label_fr;
+				if(property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
+				{
+					$label = $country->{'label_' . $lang};
+				}
+
+				$data[] = ['value' => $country->id, 'name' => $label];
+			}
+
+			$response['data'] = !empty($data) ? $data : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcountriesforfilters()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_COUNTRIES_LIST');
+
+			// Get current lang to return country names in the right language
+			$lang = Factory::getApplication()->getLanguage();
+			$lang = $lang->getTag();
+			$lang = substr($lang, 0, 2);
+
+			if(!class_exists('CountryRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/CountryRepository.php';
+			}
+			$countryRepository = new CountryRepository();
+			$countries         = $countryRepository->getAllCountries();
+			$data = [];
+			$data[] = ['value' => 'no_nationality', 'label' => Text::_('COM_EMUNDUS_ONBOARD_CONTACT_FILTER_NO_NATIONALITY')];
+			foreach($countries as $country)
+			{
+				// If we found a label_xx property for the current language, we use it
+				$label = $country->label_fr;
+				if(property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
+				{
+					$label = $country->{'label_' . $lang};
+				}
+
+				$data[] = ['value' => $country->id, 'label' => $label];
+			}
+
+			$response['data'] = !empty($data) ? $data : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getorganizations(): void
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ORGANIZATIONS_LIST');
+
+			if (!class_exists('OrganizationRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/OrganizationRepository.php';
+			}
+			$organizationRepository = new OrganizationRepository();
+			$organizations          = $organizationRepository->getAllOrganizations(
+				'DESC',
+				'',
+				25,
+				0,
+				't.id',
+				true
+			);
+			$data = [];
+			foreach($organizations['datas'] as $organization)
+			{
+				if(!$organization instanceof OrganizationEntity)
+				{
+					continue;
+				}
+
+				$data[] = ['value' => $organization->getId(), 'name' => $organization->getName()];
+			}
+
+			$response['data'] = !empty($data) ? $data : [];
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getcontacts(): void
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 200;
+			$response['status']  = true;
+			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_CONTACTS_LIST');
+
+			if (!class_exists('ContactRepository'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/Contacts/ContactRepository.php';
+			}
+			$contactRepository = new ContactRepository();
+			$contacts          = $contactRepository->getAllContacts(
+				'DESC',
+				'',
+				25,
+				0,
+				't.id',
+				true
+			);
+			$data = [];
+			foreach($contacts['datas'] as $contact)
+			{
+				if(!$contact instanceof ContactEntity)
+				{
+					continue;
+				}
+
+				$data[] = ['value' => $contact->getId(), 'name' => $contact->getFullName()];
+			}
+			$response['data'] = !empty($data) ? $data : [];
+		}
+		$this->sendJsonResponse($response);
+	}
+
+	public function savemodalites(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$modalites = $this->input->getString('modalites');
+				$modalites = json_decode($modalites, true);
+
+				$response['status'] = $this->m_settings->saveModalites($modalites);
+
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MODALITES_SAVED');
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MODALITES_SAVE_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function checkanalyticsenabled()
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
+				$enabled = $analyticsAddonHandler->checkEnabled();
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCHED');
+				$response['data']    = ['enabled' => $enabled];
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_STATUS_FETCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function toggleanalytics()
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$enabled = $this->input->getInt('enabled', 0);
+				$enabled = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
+
+				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
+				$enabled = $analyticsAddonHandler->toggle($enabled);
+				if ($enabled)
+				{
+					$response['status']  = true;
+					$response['code']    = 200;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_SUCCESS');
+				}
+				else
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED');
+				}
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_SWITCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function getpagesvisited()
+	{
+		$this->checkToken('get');
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				$period = $this->input->getString('period', 'all_time');
+				$period = PeriodEnum::tryFrom($period);
+				if($period === null)
+				{
+					$period = PeriodEnum::ALL_TIME;
+				}
+
+				$dates = $period->getPeriodDates();
+
+				$pageAnalyticsRepository = new PageAnalyticsRepository();
+				$pages_visited = $pageAnalyticsRepository->get(0, '', null, $dates['start_date'], $dates['end_date'], null);
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_PAGES_VISITED_FETCHED');
+				$response['data']    = ['count' => $pages_visited->getCount()];
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_PAGES_VISITED_FETCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
 	}
 }
 

@@ -2,15 +2,19 @@
 
 namespace Tchooz\Repositories\Payment;
 
+use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Payment\ProductEntity;
-use Tchooz\Entities\Payment\CurrencyEntity;
-use Tchooz\Entities\Payment\ProductCategoryEntity;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Factories\Payment\ProductFactory;
+use Tchooz\Traits\TraitTable;
 
+#[TableAttribute(table: '#__emundus_product')]
 class ProductRepository
 {
+	use TraitTable;
+
 	private DatabaseDriver $db;
 
 	public function __construct()
@@ -25,18 +29,72 @@ class ProductRepository
 		$product = null;
 
 		if (!empty($id)) {
-			$product = new ProductEntity($id);
+			$query = $this->db->createQuery();
+
+			$query->select('product.*, GROUP_CONCAT(product_campaigns.campaign_id SEPARATOR ",") as campaigns')
+				->from($this->db->quoteName($this->getTableName(self::class), 'product'))
+				->leftJoin($this->db->quoteName('jos_emundus_product_campaigns', 'product_campaigns') . ' ON product_campaigns.product_id = product.id')
+				->where($this->db->quoteName('product.id') . ' = ' . $this->db->quote($id));
+
+			try {
+				$this->db->setQuery($query);
+				$object = $this->db->loadObject();
+
+				if (!empty($object))
+				{
+					$product = ProductFactory::fromDbObjects([$object])[0];
+				}
+			} catch (\Exception $e) {
+				Log::add('Failed to load entity ' . $e->getMessage(), Log::ERROR, 'com_emundus.entity.product');
+			}
 		}
 
 		return $product;
 	}
 
-	public function countProducts(): int
+	/**
+	 * @param   array   $filters
+	 * @param   object  $query
+	 *
+	 * @return void
+	 */
+	private function applyFilters(array $filters, object $query): void
+	{
+		if (!empty($filters))
+		{
+			foreach ($filters as $key => $value)
+			{
+				if (!empty($value))
+				{
+					if ($key === 'search') {
+						$query->andWhere($this->db->quoteName('p.description') . ' LIKE ' . $this->db->quote('%' . $value . '%') . ' OR ' . $this->db->quoteName('p.label') . ' LIKE ' . $this->db->quote('%' . $value . '%') . ' OR ' . $this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $value . '%'));
+					} else {
+						if (is_array($value)) {
+							$query->andWhere($this->db->quoteName($key) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+						} else {
+							$query->andWhere($this->db->quoteName($key) . ' = ' . $this->db->quote($value));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param   array  $filters
+	 *
+	 * @return int
+	 */
+	public function countProducts(array $filters = []): int
 	{
 		$query = $this->db->createQuery();
 
 		$query->select('COUNT(*)')
-			->from($this->db->quoteName('jos_emundus_product'));
+			->from($this->db->quoteName($this->getTableName(self::class), 'p'))
+			->leftJoin($this->db->quoteName('jos_emundus_product_category', 'c') . ' ON c.id = p.category_id')
+			->where('1=1');
+
+		$this->applyFilters($filters, $query);
 
 		try {
 			$this->db->setQuery($query);
@@ -49,7 +107,14 @@ class ProductRepository
 		return (int)$count;
 	}
 
-	public function getProducts(int $lim = 10, int $page = 1, array $filters = [], $search = ''): array
+	/**
+	 * @param   int    $lim
+	 * @param   int    $page
+	 * @param   array  $filters
+	 *
+	 * @return array<ProductEntity>
+	 */
+	public function getProducts(int $lim = 10, int $page = 1, array $filters = []): array
 	{
 		$product_list = [];
 
@@ -57,68 +122,31 @@ class ProductRepository
 
 		$offset = ($page - 1) * $lim;
 
-		$query->select('p.*')
-			->from($this->db->quoteName('jos_emundus_product', 'p'))
+		$query->select('p.*, GROUP_CONCAT(pc.campaign_id SEPARATOR ",") as campaigns')
+			->from($this->db->quoteName($this->getTableName(self::class), 'p'))
 			->leftJoin($this->db->quoteName('jos_emundus_product_category', 'c') . ' ON c.id = p.category_id')
+			->leftJoin($this->db->quoteName('jos_emundus_product_campaigns', 'pc') . ' ON pc.product_id = p.id')
 			->where('1=1');
 
-		if (!empty($filters)) {
-			foreach ($filters as $key => $value) {
-				if (is_array($value)) {
-					$query->andWhere($this->db->quoteName($key) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
-				} else {
-					$query->andWhere($this->db->quoteName($key) . ' = ' . $this->db->quote($value));
-				}
-			}
-		}
+		$this->applyFilters($filters, $query);
 
 		if (!empty($search)) {
 			$query->andWhere($this->db->quoteName('p.description') . ' LIKE ' . $this->db->quote('%' . $search . '%') . ' OR ' . $this->db->quoteName('p.label') . ' LIKE ' . $this->db->quote('%' . $search . '%') . ' OR ' . $this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $search . '%'));
 		}
 
-		$query->setLimit($lim, $offset);
+		if ($lim > 0) {
+			$offset = ($page - 1) * $lim;
+			$query->setLimit($lim, $offset);
+		}
 
 		try {
+			$query->group('p.id');
 			$this->db->setQuery($query);
 			$products = $this->db->loadObjectList();
 
 			if ($products)
 			{
-				$currencies = [];
-				$categories = [];
-
-				foreach ($products as $product) {
-					$productEntity = new ProductEntity(0);
-					$productEntity->setId($product->id);
-					$productEntity->label = $product->label;
-					$productEntity->description = $product->description;
-					$productEntity->price = $product->price;
-					$productEntity->quantity = $product->quantity ?? -1;
-					$productEntity->illimited = $product->illimited == 1;
-					$productEntity->available_from = new \DateTime($product->available_from);
-					$productEntity->available_to = new \DateTime($product->available_to);
-					$productEntity->published = $product->published == 1;
-
-					if (!isset($currencies[$product->currency_id])) {
-						$currency = new CurrencyEntity($product->currency_id);
-						$currencies[$product->currency_id] = $currency;
-					} else {
-						$currency = $currencies[$product->currency_id];
-					}
-					$productEntity->setCurrency($currency);
-
-					if (!empty($product->category_id)) {
-						if (!isset($categories[$product->category_id])) {
-							$category = new ProductCategoryEntity($product->category_id);
-							$categories[$product->category_id] = $category;
-						} else {
-							$category = $categories[$product->category_id];
-						}
-						$productEntity->setCategory($category);
-					}
-
-					$product_list[] = $productEntity;
-				};
+				$product_list = ProductFactory::fromDbObjects($products);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error loading products: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.product');
@@ -131,17 +159,17 @@ class ProductRepository
 	/**
 	 * @param   ProductEntity  $product
 	 *
-	 * @return int
+	 * @return bool
 	 */
-	public function flush(ProductEntity $product): int
+	public function flush(ProductEntity $product): bool
 	{
-		$product_id = 0;
+		$saved = false;
 
 		$query = $this->db->createQuery();
 
 		if (!empty($product->getId()))
 		{
-			$query->update($this->db->quoteName('jos_emundus_product'))
+			$query->update($this->db->quoteName($this->getTableName(self::class)))
 				->set($this->db->quoteName('label') . ' = ' . $this->db->quote($product->label))
 				->set($this->db->quoteName('description') . ' = ' . $this->db->quote($product->description))
 				->set($this->db->quoteName('price') . ' = ' . $this->db->quote($product->price))
@@ -239,11 +267,7 @@ class ProductRepository
 			}
 		}
 
-		if ($saved) {
-			$product_id = $product->getId();
-		}
-
-		return $product_id;
+		return $saved;
 	}
 
 	public function delete(int $product_id): bool
@@ -253,7 +277,7 @@ class ProductRepository
 		if (!empty($product_id)) {
 			$query = $this->db->createQuery();
 
-			$query->delete($this->db->quoteName('jos_emundus_product'))
+			$query->delete($this->db->quoteName($this->getTableName(self::class)))
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($product_id));
 
 			try {

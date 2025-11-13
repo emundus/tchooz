@@ -15,12 +15,12 @@ class TranslatorDefault {
 	public function installScripts ($from, $to) {
 		$script = "var translator = {'from' : '".strtolower($from). "','to' : '".strtolower($to). "'};\n";
 		
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->addScriptDeclaration($script,'text/javascript');
 		
 		
 		if ($this->script != NULL){
-			$document = Factory::getDocument();
+			$document = Factory::getApplication()->getDocument();
 			$document->addScript('components/com_falang/assets/js/'.$this->script);
 		}
 	}

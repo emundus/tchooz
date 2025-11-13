@@ -1131,45 +1131,49 @@ class EmundusHelperFiles
 	/**
 	 * @param $elements_id string of elements id separated by comma
 	 *
-	 * @return array|false
+	 * @return array
 	 */
-	public static function getElementsName($elements_id)
+	public static function getElementsName(?string $elements_id): array
 	{
 		$elements = [];
 
-		if (!empty($elements_id) && !empty(ltrim($elements_id)))
-		{
-			$db = Factory::getContainer()->get('DatabaseDriver');
+		if (!empty($elements_id) && !empty(ltrim($elements_id))) {
+			$cache = new EmundusHelperCache();
+			$elementsFromCache = !empty($cache->get('element_names')) ? $cache->get('element_names') : [];
 
-			$query = $db->getQuery(true);
-			$query->select('element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.join_from_table, joins.table_join, joins.table_key, joins.table_join_key')
-				->from('#__fabrik_elements AS element')
-				->join('INNER', '#__fabrik_groups AS groupe ON element.group_id = groupe.id')
-				->join('INNER', '#__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id')
-				->join('INNER', '#__fabrik_forms AS forme ON formgroup.form_id = forme.id')
-				->join('INNER', '#__fabrik_lists AS tab ON tab.form_id = formgroup.form_id')
-				->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND ((groupe.id=joins.group_id AND JSON_EXTRACT(joins.params,"$.type") = "group") OR element.id=joins.element_id))')
-				->where('element.id IN (' . ltrim($elements_id, ',') . ')')
-				->order('find_in_set(element.id, "' . ltrim($elements_id, ',') . '")');
+			$ids = array_map('trim', explode(',', ltrim($elements_id, ',')));
+			$idsToFetch = array_diff($ids, array_keys($elementsFromCache));
 
-			try
-			{
-				$db->setQuery($query);
-				$res = $db->loadObjectList('id');
+			if (!empty($idsToFetch)) {
+				$db = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->getQuery(true);
+				$query->select('element.id, element.name AS element_name, element.label as element_label, element.params AS element_attribs, element.plugin as element_plugin, element.hidden as element_hidden, forme.id as form_id, forme.label as form_label, groupe.id as group_id, groupe.label as group_label, groupe.params as group_attribs,tab.db_table_name AS tab_name, tab.id as table_list_id, tab.created_by_alias AS created_by_alias, joins.join_from_table, joins.table_join, joins.table_key, joins.table_join_key')
+					->from('#__fabrik_elements AS element')
+					->join('INNER', '#__fabrik_groups AS groupe ON element.group_id = groupe.id')
+					->join('INNER', '#__fabrik_formgroup AS formgroup ON groupe.id = formgroup.group_id')
+					->join('INNER', '#__fabrik_forms AS forme ON formgroup.form_id = forme.id')
+					->join('INNER', '#__fabrik_lists AS tab ON tab.form_id = formgroup.form_id')
+					->join('LEFT', '#__fabrik_joins AS joins ON (tab.id = joins.list_id AND (groupe.id=joins.group_id OR element.id=joins.element_id))')
+					->where('element.id IN (' . implode(',', $idsToFetch) . ')')
+					->order('find_in_set(element.id, "' . implode(',', $idsToFetch) . '")');
+
+				try {
+					$db->setQuery($query);
+					$res = $db->loadObjectList('id');
+					foreach ($res as $element) {
+						$elementsFromCache[$element->id] = $element;
+					}
+					$cache->set('element_names', $elementsFromCache);
+				} catch (Exception $e) {
+					// log ou gestion d'erreur
+				}
 			}
-			catch (Exception $e)
-			{
-				Log::add('Could not get Evaluation elements name in query -> ' . $query, Log::ERROR, 'com_emundus');
 
-				return false;
+			foreach ($ids as $id) {
+				if (isset($elementsFromCache[$id])) {
+					$elements[$id] = $elementsFromCache[$id];
+				}
 			}
-
-			$elementsIdTab = array();
-			foreach ($res as $kId => $r)
-			{
-				$elementsIdTab[$kId] = $r;
-			}
-			$elements = $elementsIdTab;
 		}
 
 		return $elements;
@@ -2934,24 +2938,30 @@ class EmundusHelperFiles
 	}
 
 	// get emundus groups for user
-	public function getUserGroups($uid)
+	public static function getUserGroups($uid)
 	{
-		$db = JFactory::getDbo();
+		$groups = [];
 
-		$query = 'select distinct(group_id)
-                    from #__emundus_groups
-                    where user_id=' . $uid;
+		if (!empty($uid)) {
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
-		try
-		{
-			$db->setQuery($query);
+			try
+			{
+				$query->select($db->quoteName(['group_id']))
+					->from($db->quoteName('#__emundus_groups'))
+					->where($db->quoteName('user_id') . ' = ' . (int) $uid);
 
-			return $db->loadColumn();
+				$db->setQuery($query);
+				$groups = $db->loadColumn();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error fetching user groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
 		}
-		catch (Exception $e)
-		{
-			throw $e;
-		}
+
+		return $groups;
 	}
 
 	// getEvaluation
@@ -5287,6 +5297,9 @@ class EmundusHelperFiles
 										}
 									}
 									break;
+								case 'application_choices':
+									$where['q'] .= ' AND ' . $this->writeQueryWithOperator('eccc.campaign_id', $filter['value'], $filter['operator']);
+									break;
 								default:
 									break;
 							}
@@ -6858,6 +6871,8 @@ class EmundusHelperFiles
 	{
 		$applicant_id = 0;
 
+		// todo: cache this ?
+
 		if (!empty($fnum))
 		{
 			$db = Factory::getContainer()->get('DatabaseDriver');
@@ -6991,21 +7006,30 @@ class EmundusHelperFiles
 		return $can_create_new_file;
 	}
 
-	public static function getApplicantIdFromFileId($id)
+	public static function getApplicantIdFromFileId($id, string $type = 'id'): int
 	{
 		$applicant_id = 0;
 
 		if (!empty($id)) {
+			if (!in_array($type, ['id', 'fnum'])) {
+				$type = 'id';
+			}
+
 			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->select('applicant_id')
 				->from('#__emundus_campaign_candidature')
-				->where('id = ' . $db->quote($id));
+				->where($db->quoteName($type) . ' = ' . $db->quote($id));
 
 			try {
 				$db->setQuery($query);
 				$applicant_id = $db->loadResult();
+
+				if (empty($applicant_id))
+				{
+					$applicant_id = 0;
+				}
 			} catch (Exception $e) {
 				$applicant_id = 0;
 			}

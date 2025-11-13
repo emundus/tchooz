@@ -95,7 +95,7 @@ class YousignService
 			{
 				if (empty($yousign_request->getProcedureId()))
 				{
-					$yousign_request = $this->initiateYousignRequest($yousign_request);
+					$yousign_request = $this->initiateYousignRequest($yousign_request, $request->isOrdered());
 					if (!empty($yousign_request->getResponsePayload()))
 					{
 						$api_request = json_decode($yousign_request->getResponsePayload());
@@ -283,11 +283,11 @@ class YousignService
 		return $yousign_request;
 	}
 
-	private function initiateYousignRequest(YousignRequests $yousign_request): YousignRequests
+	private function initiateYousignRequest(YousignRequests $yousign_request, bool $is_ordered = false): YousignRequests
 	{
 		try
 		{
-			$api_request = $this->yousign_synchronizer->initRequest($yousign_request->getName(), 'email', $yousign_request->getExpirationDate());
+			$api_request = $this->yousign_synchronizer->initRequest($yousign_request->getName(), 'email', $yousign_request->getExpirationDate(), $is_ordered);
 			if ($api_request['status'] === 201)
 			{
 				$yousign_request->setProcedureId($api_request['data']->id);

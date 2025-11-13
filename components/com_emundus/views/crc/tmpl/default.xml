@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Liste des contacts/organisations">
+        <message>
+            <![CDATA[Affiche la liste des contacts/organisations]]>
+        </message>
+    </layout>
+
+    <fields name="params">
+    </fields>
+</metadata>

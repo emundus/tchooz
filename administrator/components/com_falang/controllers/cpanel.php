@@ -67,7 +67,7 @@ class CpanelController extends BaseController  {
 
         $updateInfo = FalangManager::getUpdateInfo(true);
         //send json response
-        $document = Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
         $document->setMimeEncoding('application/json');
 
         if ($updateInfo->hasUpdate) {

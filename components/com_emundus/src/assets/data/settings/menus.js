@@ -86,4 +86,12 @@ export default [
 		source: 'manage-users.js',
 		published: true,
 	},
+	{
+		label: 'COM_EMUNDUS_GLOBAL_PARAMS_MENUS_ANALYTICS',
+		name: 'analytics',
+		icon: 'analytics',
+		type: 'component',
+		component: 'AnalyticsSettings',
+		published: true,
+	},
 ];

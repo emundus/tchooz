@@ -17,6 +17,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
 
 use Dompdf\Dompdf;
 use Dompdf\Options;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -1798,6 +1799,84 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $elements;
 	}
 
+	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = []): array
+	{
+		$elements = [];
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		// if label of element is translated, then the search content is in another table,
+
+		$query->clear()
+			->select('reference_id')
+			->from($db->quoteName('#__emundus_setup_languages'))
+			->where($db->quoteName('reference_table') . ' = ' . $db->quote('fabrik_elements'))
+			->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('label'))
+			->andWhere($db->quoteName('override') . ' LIKE ' . $db->quote('%' . $searchName . '%'))
+			->andWhere($db->quoteName('published') . ' = 1');
+
+		$db->setQuery($query);
+		$translatedElementIds = $db->loadColumn();
+
+		if (!empty($searchName))
+		{
+			$searchCondition = '(jfe.name LIKE ' . $db->quote('%' . $searchName . '%') . ' OR jfe.label LIKE ' . $db->quote('%' . $searchName . '%');
+			if (!empty($translatedElementIds))
+			{
+				$searchCondition .= ' OR jfe.id IN (' . implode(',', $translatedElementIds) . ')';
+			}
+			$searchCondition .= ')';
+		}
+
+		$query->clear()
+			->select('jfe.id, jfe.name, jfe.plugin, jfe.label, jfe.params, jffg.form_id as form_id, jff.label as form_label, jfg.label as group_label, jfg.id as group_id, jfg.params as group_params, jfl.db_table_name')
+			->from('jos_fabrik_elements as jfe')
+			->join('inner', 'jos_fabrik_groups as jfg ON jfe.group_id = jfg.id')
+			->join('inner', 'jos_fabrik_formgroup as jffg ON jfg.id = jffg.group_id')
+			->join('inner', 'jos_fabrik_forms as jff ON jffg.form_id = jff.id')
+			->join('inner', 'jos_fabrik_lists as jfl ON jff.id = jfl.form_id')
+			->where('jfe.published = 1')
+			->andWhere('jfe.hidden = 0')
+			->andWhere('jfg.published = 1')
+			->andWhere('jff.published = 1')
+			->andWhere('jfl.published = 1');
+
+		if (!empty($searchName)) {
+			$query->andWhere($searchCondition);
+		}
+
+		if (!empty($formIds))
+		{
+			$query->andWhere('jffg.form_id IN (' . implode(',', $formIds) . ')');
+		}
+
+		if (!empty($excludedPlugins))
+		{
+			$query->andWhere('jfe.plugin NOT IN (' . implode(',', $db->quote($excludedPlugins)) . ')');
+		}
+
+		try
+		{
+			$db->setQuery($query);
+			$elements = $db->loadObjectList();
+
+			foreach ($elements as $element)
+			{
+				$element->label       = Text::_($element->label);
+				$element->form_label  = Text::_($element->form_label);
+				$element->group_label = Text::_($element->group_label);
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to search elements : ' . $e->getMessage(), Log::ERROR, 'com_emundus.filters.error');
+		}
+
+
+		return $elements;
+	}
+
 	// TODO: return an entity to make sure it's always the same structure returned
 	// return type could be FabrikValue or a collection of FabrikValue
 	public function getValueByAlias(
@@ -1872,14 +1951,14 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 							}
 						}
 					}
-
-					if (empty($values) && $load_option == 'result') {
-						$values = ['raw' => '', 'value' => ''];
-					}
 				}
 				catch (Exception $e)
 				{
 					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive value by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				}
+
+				if (empty($values) && $load_option == 'result') {
+					$values = ['raw' => '', 'value' => ''];
 				}
 			}
 		}
@@ -2177,6 +2256,34 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $forms;
 	}
 
+	/**
+	 * @return array
+	 */
+	public static function getFabrikFormsListIntendedToFiles(): array
+	{
+		$h_cache = new EmundusHelperCache();
+		$cached_forms = $h_cache->get('forms_intended_to_files');
+
+		if (empty($cached_forms))
+		{
+			$menu_form_ids = EmundusHelperMenu::getApplicantFormsInMenus();
+			if (!class_exists('EmundusModelWorkflow'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/models/workflow.php');
+			}
+			$step_form_ids = EmundusModelWorkflow::getFormsInSteps();
+
+			$form_ids = array_unique(array_merge($menu_form_ids, $step_form_ids));
+
+			$h_cache->set('forms_intended_to_files', $form_ids);
+		} else {
+			$form_ids = $cached_forms;
+		}
+
+		return $form_ids;
+	}
+
+
 	public static function getAllFabrikAliases(): array
 	{
 		$aliases = [];
@@ -2468,13 +2575,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 	public static function clearFabrikAliasesCache()
 	{
-		if(!class_exists('EmundusHelperCache'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/cache.php';
-		}
-		$h_cache = new EmundusHelperCache();
-		$h_cache->set('fabrik_aliases', []);
-		$h_cache->set('fabrik_aliases_grouped', []);
+		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+			->createCacheController('output', ['defaultgroup' => 'com_emundus']);
+
+		$cache->remove('fabrik_aliases');
+		$cache->remove('fabrik_aliases_grouped');
+		$cache->remove('fabrik_tags_applicant');
+		$cache->remove('fabrik_tags_management');
 	}
 
 	/**
@@ -2881,9 +2988,19 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 		//
 
-		if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
+
+		if (!empty($fnum)) {
+			if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
+			{
+				$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
+			}
+		}
+		else
 		{
-			$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
+			if (!isset($value[$fabrik_element['id']][$user_id]['complex_data']))
+			{
+				$value[$fabrik_element['id']][$user_id]['complex_data'] = false;
+			}
 		}
 
 		return $value;
@@ -2934,19 +3051,20 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		if ($plugin->isDateField())
 		{
+			$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.user_id as user_val';
 			$date_form_format = $this->dateFormatToMysql($date_format);
 
 			if ($return === ValueFormat::BOTH)
 			{
-				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, ' . $select_origin_val;
 			}
 			elseif ($return === ValueFormat::RAW)
 			{
-				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val;
 			}
 			else
 			{
-				$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+				$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, ' . $select_origin_val;
 			}
 		}
 		else
@@ -2957,66 +3075,73 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				// join_key_column = raw, join_val_column = formatted
 				if ($groupRepeat)
 				{
+					$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_table.user_id as user_val';
+
 					if ($return === ValueFormat::BOTH)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 					}
 					elseif ($return === ValueFormat::RAW)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 					}
 					else
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 					}
 				}
 				else
 				{
+
+					$select_origin_val = !empty($fnums) ? 't_elt.fnum' : 't_elt.user_id as user_val';
+
 					if ($isMulti)
 					{
 						if ($return === ValueFormat::BOTH)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormat::RAW)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 						}
 						else
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 						}
 					}
 					else
 					{
 						if ($return === ValueFormat::BOTH)
 						{
-							$select = 't_origin.' . $params->join_key_column . ' as raw, t_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+							$select = 't_origin.' . $params->join_key_column . ' as raw, t_origin.' . $params->join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormat::RAW)
 						{
-							$select = 't_origin.' . $params->join_key_column . ' as val, t_elt.fnum ';
+							$select = 't_origin.' . $params->join_key_column . ' as val, ' . $select_origin_val . ' ';
 						}
 						else
 						{
-							$select = 't_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
+							$select = 't_origin.' . $params->join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
 					}
 				}
 			}
 			else
 			{
+				$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.user_id as user_val';
+
 				if ($return === ValueFormat::BOTH)
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 				}
 				elseif ($return === ValueFormat::RAW)
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 				}
 				else
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 				}
 			}
 		}
@@ -3149,7 +3274,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$query->leftJoin($join);
 		}
 		$query->where($where);
-		if(!empty($group))
+
+		if (!empty($group))
 		{
 			$query->group($group);
 		}
@@ -3168,7 +3294,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			else
 			{
-				$res = $db->loadAssocList();
+				$res = $db->loadAssocList('user_val');
 			}
 
 			return $res;

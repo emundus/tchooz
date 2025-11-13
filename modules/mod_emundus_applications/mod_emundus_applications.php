@@ -157,6 +157,7 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$show_tabs                           = $params->get('mod_em_applications_show_tabs', 1);
 	$actions                             = $params->get('mod_emundus_applications_actions', ['rename','documents','history']);
 	$history_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
+	$choices_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application_choices', true);
 
 	$payment_repository = new PaymentRepository();
 	if ($payment_repository->getAddon()->enabled === 1) {

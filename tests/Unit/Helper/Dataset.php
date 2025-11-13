@@ -36,11 +36,46 @@ use JLog;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
+use Tchooz\Entities\Automation\AutomationEntity;
+use Tchooz\Entities\Automation\ConditionEntity;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
+use Tchooz\Entities\Automation\TargetEntity;
+use Tchooz\Entities\Automation\TargetPredefinitions\ApplicantCurrentFilePredefinition;
+use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
+use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Repositories\Automation\AutomationRepository;
+use Tchooz\Repositories\Automation\EventsRepository;
+use Tchooz\Repositories\Task\TaskRepository;
 
 class Dataset
 {
 	private $db;
-	
+
+	public const FORM_KEYS = [
+		'ELEMENT_FIELD' => 'e_797_7973',
+		'ELEMENT_TEXTAREA' => 'e_797_7974',
+		'ELEMENT_CHECKBOX' => 'e_797_7975',
+		'ELEMENT_RADIO' => 'e_797_7976',
+		'ELEMENT_DROPDOWN' => 'e_797_7977',
+		'ELEMENT_DBJOIN' => 'e_797_7978',
+		'ELEMENT_DISPLAY' => 'e_797_7979',
+		'ELEMENT_DISPLAY_2' => 'e_797_7980',
+		'ELEMENT_YESNO' => 'e_797_7981',
+		'ELEMENT_BIRTHDAY' => 'e_797_7982',
+		'ELEMENT_DATE' => 'e_797_7983',
+		'ELEMENT_DROPDOWN_MULTI' => 'dropdown_multi',
+		'ELEMENT_DBJOIN_MULTI' => 'dbjoin_multi',
+		'ELEMENT_CASCADINGDROPDOWN' => 'cascadingdropdown',
+	];
+
+	private $samples = [
+		'users' => [],
+		'automations' => [],
+		'tasks' => [],
+	];
+
 	public function __construct()
 	{
 		$this->db = Factory::getContainer()->get('DatabaseDriver');
@@ -56,7 +91,7 @@ class Dataset
 		}
 	}
 
-	public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER')
+	public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER', array $groups = []): int
 	{
 		$user_id = 0;
 		$m_users = new EmundusModelUsers;
@@ -96,13 +131,15 @@ class Dataset
 			$other_param['profile'] 		= $profile;
 			$other_param['em_oprofiles'] 	= '';
 			$other_param['univ_id'] 		= 0;
-			$other_param['em_groups'] 		= '';
+			$other_param['em_groups'] 		= $groups;
 			$other_param['em_campaigns'] 	= [];
 			$other_param['news'] 			= '';
 			$m_users->addEmundusUser($user_id, $other_param);
 		} else {
 			error_log('Failed to create sample user');
 		}
+
+		$this->samples['users'][] = $user_id;
 
 		return $user_id;
 	}
@@ -314,7 +351,10 @@ class Dataset
 	public function createSampleProgram($label = 'Programme Test Unitaire',$user_id = 1)
 	{
 		$m_programme = new EmundusModelProgramme;
-		return $m_programme->addProgram(['label' => $label, 'published' => 1],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
+		$program = $m_programme->addProgram(['label' => $label, 'published' => 1],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
+		$m_programme->addProgramToGroup($program['programme_code'], 1);
+
+		return $program;
 	}
 
 	public function deleteSampleProgram($program_id) {
@@ -419,12 +459,17 @@ class Dataset
 		$letter_id = 0;
 
 		if (!empty($attachment_id)) {
+			$file = '';
+			if ($template_type === 1)
+			{
+				$file = '/tests/assets/pdf_test_file.pdf';
+			}
 			
 			$query = $this->db->getQuery(true);
 
 			$query->insert('#__emundus_setup_letters')
-				->columns(['attachment_id', 'template_type', 'header', 'body', 'footer', 'title'])
-				->values($attachment_id . ',' . $template_type . ',' . $this->db->quote('<p>letter_header</p>') . ',' . $this->db->quote('<p>letter_body</p>') . ',' . $this->db->quote('<p>letter_footer</p>') . ',' . $this->db->quote('Lettre Test unitaire'));
+				->columns(['attachment_id', 'template_type', 'header', 'body', 'footer', 'title', 'file'])
+				->values($attachment_id . ',' . $template_type . ',' . $this->db->quote('<p>letter_header</p>') . ',' . $this->db->quote('<p>letter_body</p>') . ',' . $this->db->quote('<p>letter_footer</p>') . ',' . $this->db->quote('Lettre Test unitaire') . ',' . $this->db->quote($file));
 			$this->db->setQuery($query);
 
 			$inserted = $this->db->execute();
@@ -780,6 +825,53 @@ class Dataset
 		return $form_id;
 	}
 
+	public function insertUnitTestFormData($applicant, $fnum, array $values = [])
+	{
+		$row_id = false;
+
+		$query = $this->db->createQuery();
+
+		$query->select('id')
+			->from('jos_emundus_unit_test_form')
+			->where('fnum = ' . $this->db->quote($fnum));
+
+		$this->db->setQuery($query);
+		$exists = $this->db->loadResult();
+
+		if (!$exists) {
+
+			$columns = ['user', 'fnum', 'e_797_7973', 'e_797_7974', 'e_797_7975', 'e_797_7976', 'e_797_7977', 'e_797_7978', 'e_797_7979', 'e_797_7980', 'e_797_7981', 'e_797_7982', 'e_797_7983', 'dropdown_multi', 'dbjoin_multi', 'cascadingdropdown'];
+
+			if (empty($values)) {
+				$values  = array($applicant, $fnum, 'TEST FIELD', 'TEST TEXTAREA', '["1"]', '2', '3', '65', 'Ajoutez du texte personnalisé pour vos candidats', "<p>S'il vous plait taisez vous</p>", '1', '2023-01-01', '2023-07-13 00:00:00', '["0","1"]', 0, '');
+			}
+
+			$query->clear()
+				->insert('jos_emundus_unit_test_form')
+				->columns($columns)
+				->values(implode(',', $this->db->quote($values)));
+
+			$this->db->setQuery($query);
+			$this->db->execute();
+			$insert_id = $this->db->insertid();
+
+			if (!empty($insert_id)) {
+				$row_id = $insert_id;
+				$query->clear()
+					->insert('jos_emundus_unit_test_form_repeat_dbjoin_multi')
+					->columns(['parent_id', 'dbjoin_multi'])
+					->values($insert_id . ', "17"');
+
+				$this->db->setQuery($query);
+				$this->db->execute();
+			}
+		} else {
+			$row_id = $exists;
+		}
+
+		return $row_id;
+	}
+
 	public function deleteSampleLocation($id)
 	{
 		$query = $this->db->getQuery(true);
@@ -906,7 +998,8 @@ class Dataset
 			'email' => $email,
 			'firstname' => $firstname,
 			'lastname' => $lastname,
-			'phone_1' => $phone
+			'phone_1' => $phone,
+			'status' => 'to_be_verified',
 		];
 
 		$query->insert('jos_emundus_contacts')
@@ -932,5 +1025,90 @@ class Dataset
 			->where('id = ' . $id);
 		$this->db->setQuery($query);
 		return $this->db->execute();
+	}
+
+	public function getFormElementForTest(int $formId, string $elementName): ?int
+	{
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->select($db->quoteName('jfe.id'))
+			->from($db->quoteName('#__fabrik_elements', 'jfe'))
+			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jffg.group_id'))
+			->where($db->quoteName('jffg.form_id') . ' = ' . $db->quote($formId))
+			->where($db->quoteName('jfe.name') . ' = ' . $db->quote($elementName));
+
+		$db->setQuery($query);
+		return (int)$db->loadResult();
+	}
+
+	public function resetAutomations(): void
+	{
+		$repository = new AutomationRepository();
+		$automations = $repository->getAutomations();
+		foreach ($automations as $automation) {
+			$repository->delete($automation->getId());
+		}
+	}
+
+	public function createSampleAutomation(): AutomationEntity
+	{
+		$newStatus = 1;
+		$condition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
+		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action->setTargets([$target]);
+
+		$repository = new AutomationRepository();
+		$eventsRepository = new EventsRepository();
+		$event = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
+		$automation->addConditionGroup($conditionGroup);
+		$automation->addAction($action);
+		$automation->setEvent($event);
+		$repository->flush($automation);
+
+		$this->samples['automation'][] = $automation->getId();
+
+		return $automation;
+	}
+
+	public function addToSamples(string $type, $id): void
+	{
+		$this->samples[$type][] = $id;
+	}
+
+	public function deleteSamples()
+	{
+		if (!empty($this->samples))
+		{
+			foreach ($this->samples as $key => $items)
+			{
+				switch ($key)
+				{
+					case 'users':
+						foreach ($items as $userId)
+						{
+							$this->deleteSampleUser($userId);
+						}
+						break;
+					case 'automation':
+						$repository = new AutomationRepository();
+						foreach ($items as $id)
+						{
+							$repository->delete($id);
+						}
+						break;
+					case 'tasks':
+						$taskRepository = new TaskRepository();
+						foreach ($items as $id)
+						{
+							$taskRepository->deleteTaskById($id);
+						}
+						break;
+				}
+			}
+		}
 	}
 }

@@ -32,8 +32,14 @@ use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\ParameterType;
 use \Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Tchooz\Entities\Automation\AutomationExecutionContext;
+use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
+use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
+use Tchooz\Enums\ValueFormat;
 
 /**
  * Class EmundusModelFiles
@@ -688,6 +694,7 @@ class EmundusModelFiles extends JModelLegacy
 		// prevent double left join on query
 		$already_joined_tables = [
 			'jecc' => 'jos_emundus_campaign_candidature',
+			'eccc' => 'jos_emundus_campaign_candidature_choices',
 			'ss'   => 'jos_emundus_setup_status',
 			'esc'  => 'jos_emundus_setup_campaigns',
 			'escm'  => 'jos_emundus_setup_campaigns_more',
@@ -777,6 +784,7 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		$query = ' FROM #__emundus_campaign_candidature as jecc
+                    LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
                     LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
                     LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
@@ -833,9 +841,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getUserGroups($uid)
 	{
-		$h_files = new EmundusHelperFiles;
-
-		return $h_files->getUserGroups($uid);
+		return EmundusHelperFiles::getUserGroups($uid);
 	}
 
 	/**
@@ -1321,14 +1327,20 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $groups
 	 * @param $actions
 	 * @param $fnums
+	 * @param $current_user
 	 *
 	 * @return bool
 	 */
-	public function shareGroups($groups, $actions, $fnums)
+	public function shareGroups($groups, $actions, $fnums, $current_user = null)
 	{
 		$shared = false;
 
 		if (!empty($groups) && !empty($fnums)) {
+			if (empty($current_user))
+			{
+				$current_user = $this->app->getIdentity();
+			}
+
 			try {
 
 				$insert = [];
@@ -1367,12 +1379,12 @@ class EmundusModelFiles extends JModelLegacy
 					foreach ($fnums as $fnum) {
                         $fnumInfos = $this->getFnumInfos($fnum);
 						$logsParams = array('created' => array_unique($group_labels, SORT_REGULAR));
-						EmundusModelLogs::log($this->app->getIdentity()->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
+						EmundusModelLogs::log($current_user->id, (int)$fnumInfos['applicant_id'], $fnum, 11, 'c', 'COM_EMUNDUS_ACCESS_ACCESS_FILE', json_encode($logsParams, JSON_UNESCAPED_UNICODE));
 					}
 				}
 			}
 			catch (Exception $e) {
-				$error = Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . '\n -> ' . $e->getMessage();
+				$error = Uri::getInstance() . ' :: USER ID : ' . $current_user->id . '\n -> ' . $e->getMessage();
 				Log::add($error, Log::ERROR, 'com_emundus');
 				$shared = false;
 			}
@@ -1390,6 +1402,7 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function shareUsers($users, $actions, $fnums, $current_user = null)
 	{
+		$shared = false;
 		$error = null;
 
 		if(empty($current_user)) {
@@ -1688,7 +1701,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool
 	 */
-	public function tagFile($fnums, $tags, $user_id = null)
+	public function tagFile($fnums, $tags, $user_id = null, ?AutomationExecutionContext $executionContext = null)
 	{
 		$tagged = false;
 
@@ -1760,7 +1773,24 @@ class EmundusModelFiles extends JModelLegacy
 				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			}
 
-			\Joomla\CMS\Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterTagAdd', ['fnums' => $fnums, 'tag' => $tags, 'tagged' => $tagged]]);
+			$onAfterTagAddEvtHandler = new GenericEvent(
+				'onCallEventHandler',
+				[
+					'onAfterTagAdd',
+					[
+						'fnums' => $fnums,
+						'tag' => $tags,
+						'tagged' => $tagged,
+						'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id), $fnums, [], [
+							onAfterTagAddDefinition::TAGS_KEY => $tags,
+						]),
+						'execution_context' => $executionContext
+					]
+				]
+			);
+
+			$dispatcher = Factory::getApplication()->getDispatcher();
+			$dispatcher->dispatch('onCallEventHandler', $onAfterTagAddEvtHandler);
 		}
 
 		return $tagged;
@@ -1817,7 +1847,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return bool|mixed
 	 */
-	public function updateState($fnums, $state, $user_id = null)
+	public function updateState($fnums, $state, $user_id = null, ?AutomationExecutionContext $executionContext = null)
 	{
 		$res = false;
 
@@ -1916,7 +1946,21 @@ class EmundusModelFiles extends JModelLegacy
 								'onCallEventHandler',
 								['onAfterStatusChange',
 									// Datas to pass to the event
-									['fnum' => $fnum, 'state' => $state, 'old_state' => $old_status_step]
+									[
+										'fnum' => $fnum,
+									    'state' => $state,
+									    'old_state' => $old_status_step,
+										'context' => new EventContextEntity(
+											Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id),
+											[$fnum],
+											[$fnumInfos['applicant_id']],
+											[
+												onAfterStatusChangeDefinition::STATUS_PARAMETER => $state,
+												onAfterStatusChangeDefinition::OLD_STATUS_PARAMETER => $old_status_step
+											]
+										),
+										'execution_context' => $executionContext
+									]
 								]
 							);
 							$onAfterStatusChange = new GenericEvent(
@@ -4320,149 +4364,24 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param   null  $fnums
 	 * @param         $params
 	 * @param         $groupRepeat
+	 * @param   int   $parent_row_id
+	 * @param   bool  $rawValue if true, return the raw value from the database, else format it according to the element type
 	 *
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id = 0)
+	public function getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id = 0, bool $rawValue = false)
 	{
-
-		if (!is_array($fnums)) {
-			$fnums = [$fnums];
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
+		$helper = new EmundusHelperFabrik();
 
-		$query = $this->_db->getQuery(true);
-
-		$tableName      = $elt['db_table_name'];
-		$tableJoin      = $elt['table_join'];
-		$name           = $elt['name'];
-		$plugin         = $elt['plugin'];
-		$isFnumsNull    = ($fnums === null);
-		$isDatabaseJoin = ($plugin === 'databasejoin');
-		$isMulti        = isset($params->database_join_display_type) && ($params->database_join_display_type == "multilist" || $params->database_join_display_type == "checkbox");
-
-
-		$select = '';
-		$from = '';
-		$leftJoin = [];
-		$where = '';
-		$group = '';
-		if ($plugin === 'date') {
-			$date_form_format = $this->dateFormatToMysql($params->date_form_format);
-
-			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
+		$format = ValueFormat::FORMATTED;
+		if ($rawValue) {
+			$format = ValueFormat::RAW;
 		}
-		else if ($plugin === 'birthday') {
-			$date_form_format = $this->dateFormatToMysql($params->list_date_format);
-			$query = 'select GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format).')  SEPARATOR ", ") as val, t_origin.fnum ';
-		}
-		elseif ($plugin === 'jdate') {
-			$date_form_format = $this->dateFormatToMysql($params->jdate_form_format);
-
-			$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $this->_db->quote($date_form_format) . ')  SEPARATOR ", ") as val, t_origin.fnum ';
-		}
-		elseif ($isDatabaseJoin) {
-			if ($groupRepeat) {
-				$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_table.fnum ';
-			}
-			else {
-				if ($isMulti) {
-					$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, t_elt.fnum ';
-				}
-				else {
-					$select = 't_origin.' . $params->join_val_column . ' as val, t_elt.fnum ';
-				}
-			}
-		}
-		else {
-			$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, t_origin.fnum ';
-		}
-
-		if ($isDatabaseJoin) {
-			if ($groupRepeat) {
-				$tableName2 = $tableJoin;
-				if ($isMulti) {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
-					$leftJoin[] = $this->_db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
-				}
-				else {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
-				}
-			}
-			else {
-				if ($isMulti) {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
-				}
-				else {
-					$from = $this->_db->quoteName($params->join_db_name,'t_origin');
-					$leftJoin[] = $this->_db->quoteName($tableName, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
-				}
-			}
-
-		}
-		else {
-			$from = $this->_db->quoteName($tableJoin, 't_repeat');
-			$leftJoin[] = $this->_db->quoteName($tableName, 't_origin') . ' ON t_origin.id = t_repeat.parent_id';
-		}
-
-		if ($isMulti || $isDatabaseJoin) {
-			if ($groupRepeat) {
-				$where = $this->_db->quoteName('t_table.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
-				$group = $this->_db->quoteName('t_table.fnum');
-			}
-			else {
-				$where = $this->_db->quoteName('t_elt.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
-				$group = $this->_db->quoteName('t_elt.fnum');
-			}
-		}
-		else {
-			$where = $this->_db->quoteName('t_origin.fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')';
-			$group = $this->_db->quoteName('t_origin.fnum');
-		}
-
-		if (!empty($parent_row_id)) {
-			if ($isDatabaseJoin) {
-				if ($groupRepeat) {
-					$where .= ' AND t_table.id = ' . $this->_db->quote($parent_row_id);
-				}
-				else {
-					$where .= ' AND t_elt.id = ' . $this->_db->quote($parent_row_id);
-				}
-			}
-			else {
-				$where .= ' AND t_origin.id = ' . $this->_db->quote($parent_row_id);
-			}
-		}
-
-		$query->select($select)
-			->from($from);
-		foreach ($leftJoin as $join) {
-			$query->leftJoin($join);
-		}
-		$query->where($where)
-			->group($group);
-
-		try {
-			$this->_db->setQuery($query);
-
-			if (!$isFnumsNull) {
-				$res = $this->_db->loadAssocList('fnum');
-			}
-			else {
-				$res = $this->_db->loadAssocList();
-			}
-
-			return $res;
-		}
-		catch (Exception $e) {
-			throw $e;
-		}
+		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format);
 	}
 
 	/**
@@ -4473,75 +4392,18 @@ class EmundusModelFiles extends JModelLegacy
 	 * @return mixed
 	 * @throws Exception
 	 */
-	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0): array
+	public function getFabrikValue($fnums, $tableName, $name, $dateFormat = null, $row_id = 0, bool $rawValue = false): array
 	{
-		$values = [];
-
-		if (!is_array($fnums))
-		{
-			$fnums = [$fnums];
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
+		$helper = new EmundusHelperFabrik();
 
-		$query = $this->_db->getQuery(true);
-
-		// check if column fnum exists
-		$fnum_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('fnum'))->loadResult();
-
-		if (!empty($fnum_column_existing)) {
-			$query->clear()
-				->select('fnum, ' . $this->_db->quoteName($name) . ' as val')
-				->from($this->_db->quoteName($tableName))
-				->where($this->_db->quoteName('fnum') . ' IN (' . implode(',', $this->_db->quote($fnums)) . ')');
-
-			if (!empty($row_id)) {
-				$query->andWhere($this->_db->quoteName('id') . ' = ' . $this->_db->quote($row_id));
-			}
-
-			try {
-				$this->_db->setQuery($query);
-				$values = $this->_db->loadAssocList('fnum');
-
-				if(!empty($dateFormat))
-				{
-					foreach ($values as &$value)
-					{
-						$value['val'] = date($dateFormat, strtotime($value['val']));
-					}
-				}
-			}
-			catch (Exception $e) {
-				throw $e;
-			}
+		$format = ValueFormat::FORMATTED;
+		if ($rawValue) {
+			$format = ValueFormat::RAW;
 		}
-		else
-		{
-			$user_column_existing = $this->_db->setQuery('SHOW COLUMNS FROM ' . $tableName . ' WHERE ' . $this->_db->quoteName('Field') . ' = ' . $this->_db->quote('user_id'))->loadResult();
-
-			if (!empty($user_column_existing))
-			{
-				try {
-					foreach ($fnums as $fnum) {
-						$applicant_id = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
-						$query->clear()
-							->select($this->_db->quoteName($name) . ' as val')
-							->from($this->_db->quoteName($tableName))
-							->where($this->_db->quoteName('user_id') . ' = ' . $this->_db->quote($applicant_id));
-
-						$this->_db->setQuery($query);
-						$value = $this->_db->loadResult();
-
-						$values[$fnum] = [
-							'val' => $value,
-							'fnum' => $fnum
-						];
-					}
-				} catch (Exception $e) {
-					throw $e;
-				}
-			}
-		}
-
-		return $values;
+		return $helper->getFabrikValue($fnums, $tableName, $name, $dateFormat, $row_id, $format);
 	}
 
 	/**
@@ -4557,83 +4419,105 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 	/**
-	 * @param $fnum
+	 * @param        $fnum
+	 * @param   int  $user_id
 	 *
-	 * @return bool|mixed
+	 * @return bool
 	 */
-	public function deleteFile($fnum)
+	public function deleteFile($fnum, int $user_id = 0): bool
 	{
 		$deleted = false;
 
-		$this->app->triggerEvent('onBeforeDeleteFile', ['fnum' => $fnum]);
-		$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
-
-		$query = $this->_db->getQuery(true);
-
-		$query->select($this->_db->quoteName('filename'))
-			->from($this->_db->quoteName('#__emundus_uploads'))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
-		$this->_db->setQuery($query);
-		try {
-			$files = $this->_db->loadColumn();
-		}
-		catch (Exception $e) {
-			// Do not hard fail, delete file data anyways.
-			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-		}
-
-
-		// Remove all files linked to the fnum.
-		$user_id = (int) substr($fnum, -7);
-		$dir     = EMUNDUS_PATH_ABS . $user_id . DS;
-		if ($dh = opendir($dir)) {
-
-			while (false !== ($obj = readdir($dh))) {
-				if (in_array($obj, $files)) {
-					if (!unlink($dir . $obj)) {
-						Log::add(Uri::getInstance() . ' :: Could not delete file -> ' . $obj . ' for fnum -> ' . $fnum, Log::ERROR, 'com_emundus');
-					}
-				}
+		if (!empty($fnum))
+		{
+			if (empty($user_id))
+			{
+				$user_id = Factory::getApplication()->getIdentity()->id;
 			}
 
-			closedir($dh);
-		}
+			$this->app->triggerEvent('onBeforeDeleteFile', ['fnum' => $fnum]);
+			$this->app->triggerEvent('onCallEventHandler', ['onBeforeDeleteFile', ['fnum' => $fnum]]);
 
-		// remove hikashop orders linked to this file
-		$query->clear()
-			->select($this->_db->quoteName('order_id'))
-			->from($this->_db->quoteName('#__emundus_hikashop'))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+			$query = $this->_db->createQuery();
 
-		$this->_db->setQuery($query);
-		$order_ids = $this->_db->loadColumn();
-		if (!empty($order_ids)) {
-			$query->clear()
-				->delete($this->_db->quoteName('#__hikashop_order'))
-				->where($this->_db->quoteName('order_id') . ' IN (' . implode(',', $this->_db->quote($order_ids)) . ')');
+			$query->select($this->_db->quoteName('filename'))
+				->from($this->_db->quoteName('#__emundus_uploads'))
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
 			try {
 				$this->_db->setQuery($query);
-				$this->_db->execute();
+				$files = $this->_db->loadColumn();
 			}
 			catch (Exception $e) {
-				Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				// Do not hard fail, delete file data anyways.
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			}
-		}
 
-		$query->clear()
-			->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
-			->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
 
-		try {
+			// Remove all files linked to the fnum.
+			$fileUserId = EmundusHelperFiles::getApplicantIdFromFnum($fnum);
+			if (!empty($fileUserId))
+			{
+				$dir     = EMUNDUS_PATH_ABS . $fileUserId . DS;
+				if ($dh = opendir($dir)) {
+
+					while (false !== ($obj = readdir($dh))) {
+						if (in_array($obj, $files)) {
+							if (!unlink($dir . $obj)) {
+								Log::add(Uri::getInstance() . ' :: Could not delete file -> ' . $obj . ' for fnum -> ' . $fnum, Log::ERROR, 'com_emundus');
+							}
+						}
+					}
+
+					closedir($dh);
+				}
+			}
+
+			// remove hikashop orders linked to this file
+			$query->clear()
+				->select($this->_db->quoteName('order_id'))
+				->from($this->_db->quoteName('#__emundus_hikashop'))
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
 			$this->_db->setQuery($query);
-			$deleted = $this->_db->execute();
+			$order_ids = $this->_db->loadColumn();
+			if (!empty($order_ids)) {
+				$query->clear()
+					->delete($this->_db->quoteName('#__hikashop_order'))
+					->where($this->_db->quoteName('order_id') . ' IN (' . implode(',', $this->_db->quote($order_ids)) . ')');
 
-			$this->app->triggerEvent('onAfterDeleteFile', ['fnum' => $fnum]);
-			$this->app->triggerEvent('onCallEventHandler', ['onAfterDeleteFile', ['fnum' => $fnum]]);
-		}
-		catch (Exception $e) {
-			Log::add(Uri::getInstance() . ' :: USER ID : ' . $this->app->getIdentity()->id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				try {
+					$this->_db->setQuery($query);
+					$this->_db->execute();
+				}
+				catch (Exception $e) {
+					Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+				}
+			}
+
+			$query->clear()
+				->delete($this->_db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum));
+
+			try {
+				$this->_db->setQuery($query);
+				$deleted = $this->_db->execute();
+
+				$this->app->triggerEvent('onAfterDeleteFile', ['fnum' => $fnum]);
+
+				$onAfterDeleteFile = new GenericEvent('onCallEventHandler', [
+					'onAfterDeleteFile',
+					[
+						'fnum' => $fnum,
+						'context' => new EventContextEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id), [$fnum], [$fileUserId], [])
+					]
+				]);
+				$this->app->getDispatcher()->dispatch('onCallEventHandler', $onAfterDeleteFile);
+			}
+			catch (Exception $e) {
+				Log::add(Uri::getInstance() . ' :: USER ID : ' . $user_id . ' -> ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
 		}
 
 		return $deleted;
@@ -5352,18 +5236,25 @@ class EmundusModelFiles extends JModelLegacy
 		return $saved;
 	}
 
-	public function getSavedFilters($user_id, $item_id)
+	public function getSavedFilters($user_id, $item_id = null, $filter_id = null)
 	{
 		$filters = array();
 
 		if (!empty($user_id)) {
+			$query     = $this->_db->createQuery();
+			$query->select('ef.id, ef.name, ef.constraints, eff.id as favorite')
+				->from($this->_db->quoteName('#__emundus_filters', 'ef'))
+				->leftJoin($this->_db->quoteName('#__emundus_filters_favorites', 'eff') . ' ON ' . $this->_db->quoteName('ef.id') . ' = ' . $this->_db->quoteName('eff.filter_id') . ' AND ' . $this->_db->quoteName('eff.user_id') . ' = ' . $user_id)
+				->where('ef.user = ' . $user_id)
+				->where('ef.mode = ' . $this->_db->quote('search'));
 
-			$query     = $this->_db->getQuery(true);
-			$query->select('id, name, constraints')
-				->from($this->_db->quoteName('#__emundus_filters'))
-				->where('user = ' . $user_id)
-				->where('item_id = ' . $item_id)
-				->where('mode = ' . $this->_db->quote('search'));
+			if (!empty($item_id)) {
+				$query->where('ef.item_id = ' . $item_id);
+			}
+
+			if (!empty($filter_id)) {
+				$query->where('ef.id = ' . $filter_id);
+			}
 
 			try {
 				$this->_db->setQuery($query);
@@ -5375,6 +5266,266 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $filters;
+	}
+
+	/**
+	 * Get filters that are shared with the user, by his group or by his id directly
+	 * @param $user_id
+	 * @param $item_id
+	 *
+	 * @return array
+	 */
+	public function getSharedFilters($user_id, $item_id)
+	{
+		$filters = [];
+
+		if (!empty($user_id)) {
+			$user_groups = [];
+			if (!class_exists('EmundusModelUsers')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+			}
+			$m_users = new EmundusModelUsers();
+			$user_groups = $m_users->getUserGroups($user_id, 'Column');
+
+			if (is_null($this->_db)) {
+				$this->_db = Factory::getContainer()->get('DatabaseDriver');
+			}
+
+			$query = $this->_db->createQuery();
+
+			$query->select('ef.id, ef.name, ef.constraints, efa.shared_by, eff.id as favorite')
+				->from($this->_db->quoteName('#__emundus_filters', 'ef'))
+				->leftJoin($this->_db->quoteName('#__emundus_filters_assoc', 'efa') . ' ON ' . $this->_db->quoteName('efa') . '.filter_id = ' . $this->_db->quoteName('ef') . '.id')
+				->leftJoin($this->_db->quoteName('#__emundus_filters_favorites', 'eff') . ' ON ' . $this->_db->quoteName('ef.id') . ' = ' . $this->_db->quoteName('eff.filter_id') . ' AND ' . $this->_db->quoteName('eff.user_id') . ' = ' . $user_id)
+				->where('mode = ' . $this->_db->quote('search'));
+
+			if (!empty($user_groups)) {
+				$query->where('(' . $this->_db->quoteName('efa') . '.user_id = ' . $user_id . ' OR ' . $this->_db->quoteName('efa') . '.group_id IN (' . implode(',', $user_groups) . '))');
+			} else {
+				$query->where($this->_db->quoteName('efa') . '.user_id = ' . $user_id);
+			}
+
+			$query->where($this->_db->quoteName('ef') . '.item_id = ' . $item_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$filters = $this->_db->loadAssocList();
+			}
+			catch (Exception $e) {
+				JLog::add('Error getting shared filters: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filters;
+	}
+
+	public function getDefaultFilterId($user_id) {
+		$filter_id = 0;
+
+		if (!empty($user_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('filter_id')
+				->from($this->_db->quoteName('#__emundus_filters_user_default_filter'))
+				->where('user_id = ' . $user_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$filter_id = $this->_db->loadResult();
+			}
+			catch (Exception $e) {
+				Log::add('Error getting default filter: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filter_id;
+	}
+
+	public function getDefaultFilter($filter_id, $item_id = null, $user_id = null) {
+		$filter = [];
+
+		if (!empty($filter_id) || !empty($user_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('ef.id, ef.name, ef.constraints')
+				->from($this->_db->quoteName('#__emundus_filters', 'ef'))
+				->where('ef.mode = ' . $this->_db->quote('search'));
+
+			if (!empty($filter_id)) {
+				$query->where('ef.id = ' . $filter_id);
+			}
+
+			if (!empty($user_id)) {
+				$query->leftJoin($this->_db->quoteName('#__emundus_filters_user_default_filter', 'default') . ' ON default.filter_id = ef.id');
+				$query->where('default.user_id = ' . $user_id);
+			}
+
+			if (!empty($item_id)) {
+				$query->where('ef.item_id = ' . $item_id);
+			}
+
+			try {
+				$this->_db->setQuery($query);
+				$filter = $this->_db->loadAssoc();
+			}
+			catch (Exception $e) {
+				Log::add('Error getting saved filters: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $filter;
+
+	}
+
+	/**
+	 * @param $filter_id
+	 *
+	 * @return array
+	 */
+	public function getAlreadySharedTo($user_id, $filter_id)
+	{
+		$already_shared_to = [
+			'users' => [],
+			'groups' => []
+		];
+
+		if (!empty($filter_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('user_id, group_id')
+				->from($this->_db->quoteName('#__emundus_filters_assoc'))
+				->where('filter_id = ' . $filter_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$associations = $this->_db->loadAssocList();
+			}
+			catch (Exception $e) {
+				JLog::add('Error getting already shared to: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+			}
+
+			if (!empty($associations)) {
+				$users = [];
+				$groups = [];
+
+				foreach($associations as $association) {
+					if (!empty($association['user_id'])) {
+						$users[] = $association['user_id'];
+					}
+					if (!empty($association['group_id'])) {
+						$groups[] = $association['group_id'];
+					}
+				}
+
+				if (!empty($users)) {
+					$query->clear()
+						->select('id, name as label')
+						->from($this->_db->quoteName('#__users'))
+						->where('id IN (' . implode(',', $users) . ')');
+
+					try {
+						$this->_db->setQuery($query);
+						$already_shared_to['users'] = $this->_db->loadAssocList();
+					}
+					catch (Exception $e) {
+						JLog::add('Error getting already shared to users: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
+				}
+
+				if (!empty($groups)) {
+					$query->clear()
+						->select('id, label')
+						->from($this->_db->quoteName('#__emundus_setup_groups'))
+						->where('id IN (' . implode(',', $groups) . ')');
+
+					try {
+						$this->_db->setQuery($query);
+						$already_shared_to['groups'] = $this->_db->loadAssocList();
+					}
+					catch (Exception $e) {
+						JLog::add('Error getting already shared to groups: ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					}
+				}
+			}
+		}
+
+		return $already_shared_to;
+	}
+
+	public function shareFilter($filter_id, $user_ids, $group_ids, $shared_by)
+	{
+		$shared = false;
+
+		if (!empty($filter_id) && (!empty($user_ids) || !empty($group_ids))) {
+			$query = $this->_db->createQuery();
+
+			$sharings = [];
+			foreach($user_ids as $user_id) {
+				$query->clear()
+					->insert($this->_db->quoteName('#__emundus_filters_assoc'))
+					->columns(['filter_id', 'user_id', 'shared_by', 'shared_date'])
+					->values($filter_id . ', ' . $user_id . ', ' . $shared_by . ', ' . $this->_db->quote(date('Y-m-d H:i:s')));
+
+				try {
+					$this->_db->setQuery($query);
+					$sharings[] = $this->_db->execute();
+				}
+				catch (Exception $e) {
+					JLog::add('Error sharing filter: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$sharings[] = false;
+				}
+			}
+
+			foreach($group_ids as $group_id) {
+				$query->clear()
+					->insert($this->_db->quoteName('#__emundus_filters_assoc'))
+					->columns(['filter_id', 'group_id', 'shared_by', 'shared_date'])
+					->values($filter_id . ', ' . $group_id . ', ' . $shared_by . ', ' . $this->_db->quote(date('Y-m-d H:i:s')));
+
+				try {
+					$this->_db->setQuery($query);
+					$sharings[] = $this->_db->execute();
+				}
+				catch (Exception $e) {
+					JLog::add('Error sharing filter: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+					$sharings[] = false;
+				}
+			}
+
+			$shared = !in_array(false, $sharings);
+		}
+
+		return $shared;
+	}
+
+	/**
+	 * @param $filter_id int
+	 * @param $share_to_id int user_id or group_id
+	 * @param $column string user_id or group_id
+	 * @param $shared_by int you are the owner of the filter, you can delete the sharing
+	 *
+	 * @return false
+	 */
+	public function deleteSharing($filter_id, $share_to_id, $column, $shared_by)
+	{
+		$deleted = false;
+
+		if (!empty($filter_id) && !empty($share_to_id) && !empty($column) && !empty($shared_by)) {
+			if ($column === 'user_id' || $column === 'group_id') {
+				$query = $this->_db->createQuery();
+				$query->delete($this->_db->quoteName('#__emundus_filters_assoc'))
+					->where('filter_id = ' . $filter_id)
+					->where($column . ' = ' . $share_to_id)
+					->where('shared_by = ' . $shared_by);
+
+				try {
+					$this->_db->setQuery($query);
+					$deleted = $this->_db->execute();
+				}
+				catch (Exception $e) {
+					JLog::add('Error deleting sharing: ' . $e->getMessage(), JLog::ERROR, 'com_emundus.error');
+				}
+			}
+		}
+
+		return $deleted;
 	}
 
 	public function updateFilter($user_id, $filter_id, $filters, $item_id)
@@ -5401,6 +5552,104 @@ class EmundusModelFiles extends JModelLegacy
 		}
 
 		return $updated;
+	}
+
+	public function renameFilter($user_id, $filter_id, $name)
+	{
+		$updated = false;
+
+		if (!empty($user_id) && !empty($filter_id) && !empty($name)) {
+
+			$query     = $this->_db->getQuery(true);
+			$query->update($this->_db->quoteName('#__emundus_filters'))
+				->set('name = ' . $this->_db->quote($name))
+				->where('user = ' . $user_id)
+				->where('id = ' . $filter_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			}
+			catch (Exception $e) {
+				Log::add('Error updating filter name: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * @param $user_id
+	 * @param $filter_id
+	 * @param $set_favorite
+	 *
+	 * @return bool
+	 */
+	public function toggleFilterFavorite($user_id, $filter_id, $set_favorite = 0): bool
+	{
+		$updated = false;
+
+		if (!empty($user_id) && !empty($filter_id)) {
+			$query = $this->_db->createQuery();
+
+			if (!$set_favorite) {
+				$query->delete($this->_db->quoteName('#__emundus_filters_favorites'))
+					->where('user_id = ' . $user_id)
+					->where('filter_id = ' . $filter_id);
+			} else {
+				$query->insert($this->_db->quoteName('#__emundus_filters_favorites'))
+					->columns(['user_id', 'filter_id'])
+					->values($user_id . ', ' . $filter_id);
+			}
+
+			try {
+				$this->_db->setQuery($query);
+				$updated = $this->_db->execute();
+			} catch (Exception $e) {
+				Log::add('Error updating filter favorite: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+
+		}
+
+		return $updated;
+	}
+
+	public function defineAsDefaultFilter($user_id, $filter_id) {
+		$set_default = false;
+
+		if (!empty($user_id) && !empty($filter_id)) {
+			$query = $this->_db->createQuery();
+			$query->select('id')
+				->from('#__emundus_filters_user_default_filter')
+				->where('user_id = ' . $user_id);
+
+			try {
+				$this->_db->setQuery($query);
+				$default_filter_row_id = $this->_db->loadResult();
+
+				if (!empty($default_filter_row_id)) {
+					$query->clear()
+						->update('#__emundus_filters_user_default_filter')
+						->set('filter_id = ' . $filter_id)
+						->where('id = ' . $default_filter_row_id);
+
+					$this->_db->setQuery($query);
+					$set_default = $this->_db->execute();
+				} else {
+					$query->clear()
+						->insert('#__emundus_filters_user_default_filter')
+						->columns(['user_id', 'filter_id'])
+						->values($user_id . ', ' . $filter_id);
+
+					$this->_db->setQuery($query);
+					$set_default = $this->_db->execute();
+				}
+			} catch (Exception $e) {
+				Log::add('Define filter ' . $filter_id . ' as default for user ' . $user_id . ' failed', Log::ERROR, 'com_emundus.error');
+			}
+		}
+
+		return $set_default;
 	}
 
 	public function getStatusByGroup($uid = null)
@@ -6084,99 +6333,12 @@ class EmundusModelFiles extends JModelLegacy
 	 */
 	public function getFabrikElementValue(array $fabrik_element, string $fnum, int $row_id = 0): array
 	{
-		$value = [];
-
-		if (!empty($fabrik_element) && !empty($fnum)) {
-			$params      = json_decode($fabrik_element['params']);
-			$groupParams = json_decode($fabrik_element['group_params']);
-
-			if (!empty($groupParams) && $groupParams->repeat_group_button == 1)
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, true, $row_id);
-			}
-			else if ($fabrik_element['plugin'] === 'databasejoin')
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, [$fnum], $params, $groupParams->repeat_group_button == 1, $row_id);
-			}
-			else if ($fabrik_element['plugin'] == 'date')
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], $params->date_form_format, $row_id);
-			}
-			else if ($fabrik_element['plugin'] == 'jdate')
-			{
-				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], $params->jdate_form_format, $row_id);
-			}
-			else {
-				$value[$fabrik_element['id']] = $this->getFabrikValue([$fnum], $fabrik_element['db_table_name'], $fabrik_element['name'], null, $row_id);
-			}
-
-			if ($fabrik_element['plugin'] == "checkbox" || $fabrik_element['plugin'] == "dropdown" || $fabrik_element['plugin'] == "radiobutton")
-			{
-				foreach ($value[$fabrik_element['id']] as $fnum => $val)
-				{
-					if ($fabrik_element['plugin'] == "checkbox" || (!empty($params->multiple) && $params->multiple == 1))
-					{
-						$val = json_decode($val['val']);
-					}
-					else
-					{
-						$val = explode(',', $val['val']);
-					}
-
-					if (count($val) > 0)
-					{
-						foreach ($val as $k => $v)
-						{
-							$index   = array_search($v, $params->sub_options->sub_values);
-							$val[$k] = Text::_($params->sub_options->sub_labels[$index]);
-						}
-						$value[$fabrik_element['id']][$fnum]['val'] = implode(", ", $val);
-					}
-					else
-					{
-						$value[$fabrik_element['id']][$fnum]['val'] = "";
-					}
-				}
-
-			}
-			elseif ($fabrik_element['plugin'] == "birthday")
-			{
-				foreach ($value[$fabrik_element['id']] as $fnum => $val)
-				{
-					$val = explode(',', $val['val']);
-					foreach ($val as $k => $v)
-					{
-						if (!empty($v))
-						{
-							$val[$k] = date($params->details_date_format, strtotime($v));
-						}
-					}
-					$value[$fabrik_element['id']][$fnum]['val'] = implode(",", $val);
-				}
-
-			}
-			elseif ($fabrik_element['plugin'] == 'emundus_phonenumber')
-			{
-				$value[$fabrik_element['id']][$fnum]['val'] = substr($value[$fabrik_element['id']][$fnum]['val'], 2, strlen($value[$fabrik_element['id']][$fnum]['val']));
-			}
-			elseif ($fabrik_element['plugin'] == 'yesno')
-			{
-				$value[$fabrik_element['id']][$fnum]['val'] = $value[$fabrik_element['id']][$fnum]['val'] == '1' ? Text::_('JYES') : Text::_('JNO');
-			}
-			elseif ($fabrik_element['plugin'] == 'cascadingdropdown')
-			{
-				foreach ($value[$fabrik_element['id']] as $fnum => $val) {
-					//$value[$fabrik_element['id']][$fnum]['val'] = $m_email->getCddLabel($fabrik_element, $val['val']);
-				}
-			}
-
-			if (!isset($value[$fabrik_element['id']][$fnum]['complex_data']))
-			{
-				$value[$fabrik_element['id']][$fnum]['complex_data'] = false;
-			}
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 		}
 
-		return $value;
+		$helper = new EmundusHelperFabrik();
+		return $helper->getFabrikElementValue($fabrik_element, $fnum, $row_id);
 	}
 
 	public function mergeEvaluations(array $fnums_data, array $evaluations_by_fnum_by_step, array $columns): array

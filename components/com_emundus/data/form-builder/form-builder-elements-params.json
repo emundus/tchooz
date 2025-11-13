@@ -772,5 +772,26 @@
         }
       ]
     }
+  ],
+  "applicationchoices": [
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_UPDATE_STATUS",
+      "name": "confirmation_application_choices",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "JNO"
+        },
+        {
+          "value": 1,
+          "label": "JYES"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    }
   ]
 }

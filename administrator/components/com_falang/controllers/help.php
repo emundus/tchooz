@@ -19,6 +19,8 @@ class HelpController extends BaseController {
 
     protected $default_view = 'help';
 
+    var $view = null;
+
 	/**
 	 *
 	 * @param array		configuration
@@ -29,11 +31,12 @@ class HelpController extends BaseController {
 		$this->registerTask( 'show',  'display' );
 		$this->registerTask('postInstall', 'postInstall');
 		$this->registerTask('information', 'information');
+
 	}
 
 	/**
 	 * Standard display control structure
-     * @update 5.0 use default fiew name
+     * @update 5.0 use default view name
 	 * 
 	 */
 	function display($cachable = false, $urlparams = array())

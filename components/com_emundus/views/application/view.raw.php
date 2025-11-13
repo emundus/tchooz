@@ -19,6 +19,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\MVC\View\HtmlView;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Entities\Workflow\WorkflowEntity;
 
 /**
  * HTML View class for the Emundus Component
@@ -602,6 +603,9 @@ class EmundusViewApplication extends HtmlView
 						echo Text::_("ACCESS_DENIED");
 						exit();
 					}
+					break;
+
+				case 'applicationchoices':
 					break;
 
 				case 'admission':

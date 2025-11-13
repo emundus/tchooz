@@ -13,7 +13,7 @@
 					disabled: false,
 				}"
 			>
-				<h1 v-if="title.length > 0" class="tw-text-center">{{ translate(title) }}</h1>
+				<h1 v-if="title.length > 0" class="tw-text-center" :class="titleClasses">{{ translate(title) }}</h1>
 				<slot @close="close"> </slot>
 			</div>
 		</div>
@@ -28,6 +28,10 @@ export default {
 			required: true,
 		},
 		title: {
+			type: String,
+			default: '',
+		},
+		titleClasses: {
 			type: String,
 			default: '',
 		},
@@ -79,6 +83,10 @@ export default {
 			type: Boolean,
 			default: true,
 		},
+		moveToParentWithIdentifier: {
+			type: String,
+			default: '',
+		},
 	},
 	emits: ['beforeOpen', 'closed'],
 	data() {
@@ -87,6 +95,10 @@ export default {
 		};
 	},
 	mounted() {
+		if (this.moveToParentWithIdentifier.length > 0) {
+			this.moveModalToParent();
+		}
+
 		if (this.openOnCreate) {
 			this.open();
 		}
@@ -122,9 +134,14 @@ export default {
 
 			this.$emit('closed');
 		},
+		moveModalToParent() {
+			const parentElement = document.querySelector(this.moveToParentWithIdentifier);
+			if (parentElement) {
+				parentElement.appendChild(this.$el);
+			}
+		},
 		onFocusOut() {
 			if (this.clickToClose) {
-				this.isOpened = false;
 				this.close();
 			}
 		},

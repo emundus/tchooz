@@ -18,6 +18,7 @@ use Joomla\CMS\HTML\Helpers\Sidebar;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Toolbar\Toolbar;
+use Joomla\CMS\Toolbar\ToolbarFactoryInterface;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 
 
@@ -136,7 +137,7 @@ class FalangViewTranslate extends FalangViewDefault
     protected function addToolbar()
 	{
 		// browser title
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_TRANSLATE'));
 
 		// set page title
@@ -169,7 +170,7 @@ class FalangViewTranslate extends FalangViewDefault
 	function edit($tpl = null)
 	{
 		// browser title
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$jinput = Factory::getApplication()->input;
 
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_TRANSLATE'));
@@ -197,7 +198,7 @@ class FalangViewTranslate extends FalangViewDefault
 		// Set toolbar items for the page
 		if ($jinput->get("catid","")=="content"){
 
-            $toolbar =  ToolBar::getInstance();
+            $toolbar =  Factory::getContainer()->get(ToolbarFactoryInterface::class)->createToolbar('toolbar');
 			// Add a special preview button by hand
             $preview_url = 'index.php?option=com_falang&task=translate.preview&tmpl=component';
             $toolbar->preview($preview_url, 'JGLOBAL_PREVIEW')
@@ -219,7 +220,7 @@ class FalangViewTranslate extends FalangViewDefault
 	function orphans($tpl = null)
 	{
 		// browser title
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_CLEANUP_ORPHANS'));
 
 		// set page title
@@ -250,7 +251,7 @@ class FalangViewTranslate extends FalangViewDefault
 	function orphandetail($tpl = null)
 	{
 		// browser title
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_CLEANUP_ORPHANS'));
 
 		// set page title

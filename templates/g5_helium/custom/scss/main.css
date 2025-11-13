@@ -259,7 +259,7 @@ body {
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
-    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
+    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-automation #g-page-surround, .view-task.layout-history #g-page-surround {
         background-size: 90%;
     }
 }
@@ -292,7 +292,7 @@ body {
     }
 
     /* Coin haut droite des pages mentions légales, cookies, indicateurs, groupes, campagnes... */
-    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround {
+    .view-article #g-page-surround, .view-list #g-page-surround, .view-form #g-page-surround, .view-emails #g-page-surround, .view-campaigns #g-page-surround, .view-automation #g-page-surround, .view-task.layout-history #g-page-surround {
         background-size: 100%;
     }
 }

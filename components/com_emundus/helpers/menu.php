@@ -22,24 +22,30 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserFactoryInterface;
 
 class EmundusHelperMenu
 {
 
-	public static function buildMenuQuery($profile, $formids = null, $checklevel = true)
+	public static function buildMenuQuery($profile, $formids = null, $checklevel = true, int $userId = 0)
 	{
 		if (empty($profile)) {
 			return false;
 		}
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
+		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 		$h_cache = new EmundusHelperCache();
 		$list = $h_cache->get('menus_'.$profile);
 
 		if (empty($list) || !empty($formids) || !$checklevel) {
 			$app  = Factory::getApplication();
 			$db   = Factory::getContainer()->get('DatabaseDriver');
-			$user = $app->getIdentity();
+
+			if (empty($userId)) {
+				$user = $app->getIdentity();
+			} else {
+				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
+			}
 
 			$query = $db->getQuery(true);
 
@@ -161,16 +167,51 @@ class EmundusHelperMenu
 		return $lists;
 	}
 
+
+	public static function getApplicantFormsInMenus(): array
+	{
+		$formIds = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		$fabrik_component_id = ComponentHelper::getComponent('com_fabrik')->id;
+
+		$query->clear()
+			->select('link')
+			->from($db->quoteName('#__menu'))
+			->where($db->quoteName('published') . ' = 1')
+			->andWhere($db->quoteName('menutype') . ' LIKE ' . $db->quote('menu-profile%'))
+			->andWhere($db->quoteName('type') . ' = ' . $db->quote('component'))
+			->andWhere($db->quoteName('component_id') . ' = ' . $db->quote($fabrik_component_id));
+
+		try {
+			$db->setQuery($query);
+			$links = $db->loadColumn();
+		}
+		catch (Exception $e) {
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+			return $formIds;
+		}
+
+		if (!empty($links)) {
+			foreach ($links as $link) {
+				preg_match('/formid=([0-9]+)/', $link, $matches);
+				if (isset($matches[1]) && is_numeric($matches[1])) {
+					$formIds[] = (int)$matches[1];
+				}
+			}
+		}
+
+
+		return $formIds;
+	}
+
 	function buildMenuListQuery($profile)
 	{
 		$menu_lists = array();
 
-		if (version_compare(JVERSION, '4.0', '>')) {
-			$db = Factory::getContainer()->get('DatabaseDriver');
-		}
-		else {
-			$db = Factory::getDBO();
-		}
+		$db = Factory::getContainer()->get('DatabaseDriver');
 
 		$query = $db->getQuery(true);
 
@@ -372,6 +413,11 @@ class EmundusHelperMenu
 			{
 				$link .= '?' . http_build_query($options_to_set);
 			}
+		}
+
+		if (!str_starts_with($link, '/'))
+		{
+			$link = '/' . $link;
 		}
 
 		return $link;

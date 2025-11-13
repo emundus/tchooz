@@ -8,7 +8,7 @@
 
 // No direct access to this file
 use Joomla\CMS\Factory;
-use Joomla\CMS\Filesystem\Path;
+use Joomla\Filesystem\Path;
 use Joomla\CMS\Help\Help;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Toolbar\ToolbarHelper;
@@ -35,7 +35,7 @@ class HelpViewHelp extends FalangViewDefault
 	 */
 	function display($tpl = null)
 	{
-		$document = Factory::getDocument();
+		$document = Factory::getApplication()->getDocument();
 		$document->setTitle(Text::_('COM_FALANG_TITLE') . ' :: ' .Text::_('COM_FALANG_TITLE_HELP_AND_HOWTO'));
 		
 		// Set toolbar items for the page

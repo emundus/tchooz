@@ -17,6 +17,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Layout\LayoutHelper;
 use Joomla\CMS\Object\CMSObject;
 use Joomla\Component\Fields\Administrator\Helper\FieldsHelper;
+use Joomla\Database\DatabaseInterface;
 
 function getTranslationFilters($catid, $contentElement)
 {
@@ -139,7 +140,7 @@ class translationFrontpageFilter extends translationFilter
 
         //since joomla 3.0 filter_value can be '' too not only filterNullValue
         if (isset($this->filter_value) && strlen($this->filter_value) > 0 && $this->filter_value!=$this->filterNullValue){
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $sql = "SELECT content_id FROM #__content_frontpage order by ordering";
             $db->setQuery($sql);
             $ids = $db->loadColumn();
@@ -222,7 +223,7 @@ class translationArchiveFilter extends translationFilter
      * @return unknown
      */
     function _createfilterHTML(){
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         if (!$this->filterField) return "";
 
@@ -308,7 +309,7 @@ class translationAuthorFilter extends translationFilter
 
 
     function _createfilterHTML(){
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         if (!$this->filterField) return "";
         $AuthorOptions=array();
@@ -351,7 +352,7 @@ class translationExtensionFilter extends translationFilter
 
 
     function _createfilterHTML(){
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         if (!$this->filterField) return "";
         $ExtensionOptions=array();
@@ -400,7 +401,7 @@ class translationKeywordFilter extends translationFilter
         if (!$this->filterField) return "";
         $filter="";
         if ($this->filter_value!=""){
-            $db = Factory::getDBO();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $filter =  "LOWER(c.".$this->filterField." ) LIKE '%".$db->escape( $this->filter_value, true )."%'";
         }
         return $filter;
@@ -477,8 +478,8 @@ class translationModuletypeFilter  extends translationFilter
     }
 
     function _createfilterHTML(){
-        $db = Factory::getDBO();
-        $lang = Factory::getLanguage();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
+        $lang = Factory::getApplication()->getLanguage();
 
         if (!$this->filterField) return "";
         $MmoduletypeOptions=array();
@@ -533,7 +534,7 @@ class translationMenutypeFilter  extends translationFilter
     }
 
     function _createfilterHTML(){
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         if (!$this->filterField) return "";
         $MenutypeOptions=array();
@@ -596,7 +597,6 @@ class translationChangedFilter extends translationFilter
 
 
     function _createfilterHTML(){
-        $db = Factory::getDBO();
 
         if (!$this->filterField) return "";
         $ChangedOptions=array();
@@ -680,7 +680,6 @@ class translationPublishedFilter extends translationFilter
     }
 
     function _createfilterHTML(){
-        $db = Factory::getDBO();
 
         if (!$this->filterField) return "";
 
@@ -1109,7 +1108,7 @@ class JFContentParams extends CMSObject
                             <?php echo $field->renderField(); ?>
                             <?php if ($field instanceof ('JFormFieldACFGAllery')){continue;} ?>
                             <?php if (in_array($field->type , $supported_original) ) { ?>
-                                <div class="control-group">
+                                <div class="control-group falang">
                                     <div class="control-label">&nbsp;</div>
                                     <div class="controls">
                                         <?php
@@ -1168,7 +1167,7 @@ class TranslateParams_menu extends TranslateParams_xml
     function __construct($original, $translation, $fieldname, $fields=null)
     {
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_menus", JPATH_ADMINISTRATOR);
 
         $jinput = Factory::getApplication()->input;
@@ -1391,7 +1390,7 @@ class TranslateParams_modules extends TranslateParams_xml
             require_once JPATH_ADMINISTRATOR.'/components/com_modules/helpers/modules.php';
         }
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_modules", JPATH_ADMINISTRATOR);
         $jinput = Factory::getApplication()->input;
 
@@ -1483,7 +1482,7 @@ class TranslateParams_tags extends TranslateParams_xml
     function __construct($original, $translation, $fieldname, $fields=null)
     {
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_tags", JPATH_ADMINISTRATOR);
         $jinput = Factory::getApplication()->input;
 
@@ -1578,7 +1577,7 @@ class TranslateParams_fields extends TranslateParams_xml
         //require_once JPATH_ADMINISTRATOR.'/components/com_fields/helpers/fields.php';
 
         parent::__construct($original, $translation, $fieldname, $fields);
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_fields", JPATH_ADMINISTRATOR);
         $jinput = Factory::getApplication()->input;
 
@@ -1826,7 +1825,7 @@ class TranslateParams_components extends TranslateParams_xml
     var $trans_menuModelItem;
 
     public function __construct($original, $translation, $fieldname, $fields=null){
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_config", JPATH_ADMINISTRATOR);
 
         $this->fieldname = $fieldname;
@@ -1981,7 +1980,7 @@ class TranslateParams_categories extends TranslateParams_xml
         parent::__construct($original, $translation, $fieldname, $fields);
         $jinput = Factory::getApplication()->input;
 
-        $lang = Factory::getLanguage();
+        $lang = Factory::getApplication()->getLanguage();
         $lang->load("com_categories", JPATH_ADMINISTRATOR);
 
         $cid = $jinput->get('cid', array(0),'STR');

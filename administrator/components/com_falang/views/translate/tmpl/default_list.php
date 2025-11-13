@@ -13,8 +13,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\HTML\HTMLHelper;
+use Joomla\Database\DatabaseInterface;
 
-$document = Factory::getDocument();
+$document = Factory::getApplication()->getDocument();
 $document->addScript('components/com_falang/assets/js/falang.js', array('version' => 'auto', 'relative' => true));
 
 Factory::getApplication()->getDocument()->getWebAssetManager()
@@ -23,8 +24,8 @@ Factory::getApplication()->getDocument()->getWebAssetManager()
 
 Factory::getDocument()->addScriptOptions('searchtools', array('formSelector' => '#adminForm'));
 
-$user = Factory::getUser();
-$db = Factory::getDBO();
+$user = Factory::getApplication()->getIdentity();
+$db = Factory::getContainer()->get(DatabaseInterface::class);
 $listOrder = $this->escape($this->state->get('list.ordering'));
 $listDirn  = $this->escape($this->state->get('list.direction'));
 //use this workaround because the seachtool is not properly define probably need a LayoutHelper::render('joomla.searchtools.default')

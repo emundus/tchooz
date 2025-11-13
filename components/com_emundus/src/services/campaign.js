@@ -350,4 +350,26 @@ export default {
 			};
 		}
 	},
+
+	async getAvailableChoices(fnum, search, filters = {}) {
+		let filtersJSON = {};
+		for (const filter of filters) {
+			if (filter.value !== '') {
+				filtersJSON[filter.key] = filter.value;
+			}
+		}
+
+		try {
+			return await client.get('getavailablechoices', {
+				fnum: fnum,
+				search: search,
+				filters: JSON.stringify(filtersJSON),
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };

@@ -3,6 +3,7 @@
 namespace Joomla\Plugin\User\Emundus\Extension;
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\AfterDeleteEvent;
 use Joomla\CMS\Event\User\AfterResetCompleteEvent;
 use Joomla\CMS\Event\User\AfterSaveEvent;
@@ -18,12 +19,16 @@ use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryAwareTrait;
+use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Database\ParameterType;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Traits\TraitVersion;
+
+require_once JPATH_SITE . '/components/com_emundus/classes/Traits/TraitVersion.php';
 
 /**
  * @package     ${NAMESPACE}
@@ -78,7 +83,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		foreach ($tables as $table)
 		{
-			if (strpos($table, '_messages') > 0 && !strpos($table, '_eb_'))
+			if ($table === 'jos_messages')
 			{
 				$query->clear()
 					->delete($db->quoteName($table))
@@ -113,24 +118,52 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			{
 				continue;
 			}
+			
+			$columns = $db->getTableColumns($table);
 
-			if (strpos($table, '_files_request') > 0 || strpos($table, '_evaluations') > 0 || strpos($table, '_final_grade') > 0)
+			if (in_array($table, ['jos_emundus_files_request', 'jos_emundus_final_grade', 'jos_emundus_evaluations']))
 			{
+				if(!in_array('student_id', array_keys($columns)))
+				{
+					continue;
+				}
+
 				$query->clear()
 					->delete($db->quoteName($table))
 					->where($db->quoteName('student_id') . ' = ' . $userId);
 			}
-			elseif (strpos($table, '_uploads') > 0 || strpos($table, '_groups') > 0 || strpos($table, '_emundus_users') > 0 || strpos($table, '_emundus_emailalert') > 0)
+			elseif (in_array($table, ['jos_emundus_uploads', 'jos_emundus_groups', 'jos_emundus_users', 'jos_emundus_emailalert']))
 			{
+				if(!in_array('user_id', array_keys($columns)))
+				{
+					continue;
+				}
+
 				$query->clear()
 					->delete($db->quoteName($table))
 					->where($db->quoteName('user_id') . ' = ' . $userId);
 			}
-			elseif (strpos($table, '_emundus_comments') > 0 || strpos($table, '_emundus_campaign_candidature') > 0)
+			elseif (in_array($table, ['jos_emundus_comments', 'jos_emundus_campaign_candidature']))
 			{
+				if(!in_array('applicant_id', array_keys($columns)))
+				{
+					continue;
+				}
+
 				$query->clear()
 					->delete($db->quoteName($table))
 					->where($db->quoteName('applicant_id') . ' = ' . $userId);
+			}
+			elseif (str_contains($table, 'jos_emundus_evaluations_'))
+			{
+				if(!in_array('evaluator', array_keys($columns)))
+				{
+					continue;
+				}
+
+				$query->clear()
+					->delete($db->quoteName($table))
+					->where($db->quoteName('evaluator') . ' = ' . $userId);
 			}
 			else
 			{
@@ -142,7 +175,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$db->setQuery($query);
 				$db->execute();
 			}
-			catch (ExecutionFailureException $e)
+			catch (\Exception $e)
 			{
 				// Do nothing.
 				continue;
@@ -195,7 +228,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			rmdir($dir);
 		}
 
-		if ($this->params->get('send_email_delete', 0) == 1 && !empty($user['email']) && !$this->getApplication()->isClient('cli'))
+		if ($this->getApplication()->get('mailonline', true) && $this->params->get('send_email_delete', 0) == 1 && !empty($user['email']) && !$this->getApplication()->isClient('cli'))
 		{
 			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
 			require_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
@@ -203,6 +236,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$m_emails = new \EmundusModelEmails();
 			$post     = [
 				'NAME'      => $user['name'],
+				'APPLICANT_NAME' => $user['name'],
 				'LOGO'      => \EmundusHelperEmails::getLogo(),
 				'SITE_NAME' => $this->getApplication()->get('sitename'),
 			];
@@ -836,7 +870,21 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 
 			PluginHelper::importPlugin('emundus', 'custom_event_handler');
-			$this->getApplication()->triggerEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $user->id]]);
+
+			$event = new GenericEvent('onCallEventHandler',
+				['onUserLogin',
+					[
+						'user_id' => $user->id,
+						'context' => new EventContextEntity(
+							Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user->id),
+							[],
+							[$user->id],
+							[]
+						)
+					]
+				]
+			);
+			$this->getApplication()->getDispatcher()->dispatch('onCallEventHandler', $event);
 
 			if (!empty($previous_url))
 			{

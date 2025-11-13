@@ -12,6 +12,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\User\User;
@@ -95,61 +96,31 @@ class EmundusControllerContacts extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function savecontact(): void
+	public function savefilteremail()
 	{
-		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
+		$email = $this->input->getString('email', 0);
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
+		$session = Factory::getApplication()->getSession();
+		$session->set('em-quick-search-filters', [
+			[
+				'value' => $email,
+				'scope' => 'u.email'
+			]
+		]);
 
-			return;
+		$menu = Factory::getApplication()->getMenu();
+		$emundusUser      = $this->app->getSession()->get('emundusUser');
+		$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+
+		if(empty($files_menu)) {
+			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 		}
 
-		$id        = $this->input->getInt('id', 0);
-		$lastname  = $this->input->getString('lastname', '');
-		$firstname = $this->input->getString('firstname', '');
-		$email     = $this->input->getString('email', '');
-		$phone_1   = $this->input->getString('phone_1', '');
-
-		if (empty($lastname) || empty($firstname) || empty($email))
-		{
-			$response['code']    = 400;
-			$response['message'] = 'Missing required fields.';
-			$this->sendJsonResponse($response);
-
-			return;
-		}
-
-		try
-		{
-			if ($contact_id = $this->model->saveContact($id, $lastname, $firstname, $email, $phone_1))
-			{
-				$response['code']    = 200;
-				$response['status']  = true;
-				$response['message'] = 'Contact saved successfully.';
-				$response['data']    = $contact_id;
-
-				$this->dispatchJoomlaEvent('onAfterContactSaved', [
-					'contact_id' => $contact_id,
-					'lastname'   => $lastname,
-					'firstname'  => $firstname,
-					'email'      => $email,
-				]);
-			}
-			else
-			{
-				$response['code']    = 500;
-				$response['message'] = 'Failed to save contact.';
-			}
-		}
-		catch (\Exception $e)
-		{
-			$response['code']    = $e->getCode();
-			$response['message'] = $e->getMessage();
-		}
+		$response = [];
+		$response['code']    = 200 ;
+		$response['message'] = 'Filter saved successfully.';
+		$response['data']    = $files_menu->route;
+		$response['status']  = true;
 
 		$this->sendJsonResponse($response);
 	}

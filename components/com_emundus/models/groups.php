@@ -288,17 +288,29 @@ class EmundusModelGroups extends JModelList
 		return $this->db->loadAssocList();
 	}
 
-	function getGroups()
+	function getGroups($ids = [])
 	{
+		$groups = [];
+
 		$query = $this->db->getQuery(true);
 
-		$query->select('esg.id,esg.label')
+		$query->select('esg.id, esg.label')
 			->from($this->db->quoteName('#__emundus_setup_groups', 'esg'))
 			->where($this->db->quoteName('esg.published') . ' = 1')
 			->order('esg.label');
-		$this->db->setQuery($query);
 
-		return $this->db->loadObjectList('id');
+		if (!empty($ids)) {
+			$query->where($this->db->quoteName('esg.id') . ' IN (' . implode(',', $ids) . ')');
+		}
+
+		try {
+			$this->db->setQuery($query);
+			$groups = $this->db->loadObjectList('id');
+		} catch(Exception $e) {
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $groups;
 	}
 
 	function getGroupsByCourse($course)
@@ -342,15 +354,32 @@ class EmundusModelGroups extends JModelList
 		return $this->db->loadObjectList('applicant_id');
 	}
 
-	function getUsersGroups()
+	/**
+	 * Get users groups
+	 * @param $user_ids array of user ids to filter by
+	 *
+	 * @return array
+	 */
+	function getUsersGroups($user_ids = [])
 	{
+		$users_groups = [];
+
 		$query = $this->db->getQuery(true);
-
-		$query->slect('eg.user_id, eg.group_id')
+		$query->select('eg.user_id, eg.group_id')
 			->from($this->db->quoteName('#__emundus_groups', 'eg'));
-		$this->db->setQuery($query);
 
-		return $this->db->loadObjectList();
+		if (!empty($user_ids)) {
+			$query->where($this->db->quoteName('eg.user_id') . ' IN (' . implode(',', $user_ids) . ')');
+		}
+
+		try {
+			$this->db->setQuery($query);
+			$users_groups = $this->db->loadObjectList();
+		} catch (Exception $e) {
+			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+		}
+
+		return $users_groups;
 	}
 
 	function getUsersByGroup($gid)
@@ -621,5 +650,47 @@ class EmundusModelGroups extends JModelList
 		else {
 			return array_keys(array_flip($result));
 		}
+	}
+
+	public function getUsersToShareTo(int $userId)
+	{
+		$users = [];
+
+		if (!empty($userId)) {
+			$user_groups = $this->getUsersGroups([$userId]);
+			$group_ids = array_map(function($user_group) {
+				return $user_group->group_id;
+			}, $user_groups);
+			$group_ids = array_unique($group_ids);
+
+			$emundus_config = ComponentHelper::getParams('com_emundus');
+			$all_rights_grp = $emundus_config->get('all_rights_group', 1);
+
+			if (in_array($all_rights_grp, $group_ids)) {
+				$groups = $this->getGroups();
+
+				$group_ids = array_map(function($group) {
+					return $group->id;
+				}, $groups);
+			}
+
+			$usersByGroups = $this->getUsersByGroups($group_ids);
+			$userIds = array_map(function($user) {
+				return $user['user_id'];
+			}, $usersByGroups);
+
+			$query = $this->db->getQuery(true);
+			$query->select('u.id, u.name')
+				->from($this->db->quoteName('#__users', 'u'))
+				->where($this->db->quoteName('u.id') . ' IN (' . implode(',', $userIds) . ')')
+				->where($this->db->quoteName('u.block') . ' = 0')
+				->where($this->db->quoteName('u.id') . ' != ' . $userId)
+				->order('u.name');
+
+			$this->db->setQuery($query);
+			$users = $this->db->loadAssocList();
+		}
+
+		return $users;
 	}
 }

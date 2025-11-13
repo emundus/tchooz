@@ -3,10 +3,6 @@
 namespace Tchooz\Entities\Payment;
 
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
-use Joomla\CMS\Factory;
-use Joomla\Database\DatabaseDriver;
-use stringEncode\Exception;
-use Tchooz\Entities\Payment\ProductEntity;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 
@@ -15,7 +11,7 @@ class PaymentStepEntity
 	private int $id;
 	private int $workflow_id = 0;
 	private string $label = '';
-	private string $description = '';
+	private ?string $description = '';
 	private int $type = 0;
 	private array $entry_status = [];
 	private ?int $output_status = null;
@@ -27,10 +23,26 @@ class PaymentStepEntity
 	/**
 	 * Current step will adjust the balance of the selected step, if user paid only a part of the total amount (advance)
 	 */
-	private int $adjust_balance_step_id = 0;
+	private ?int $adjust_balance_step_id = 0;
 
+	/**
+	 * @var array<ProductCategoryEntity>
+	 */
+	private array $mandatory_product_categories = [];
+
+	/**
+	 * @var array<ProductCategoryEntity>
+	 */
+	private array $optional_product_categories = [];
+
+	/**
+	 * @var array<ProductEntity>
+	 */
 	private array $products = [];
 
+	/**
+	 * @var array<DiscountEntity>
+	 */
 	private array $discounts = [];
 
 	private array $installment_rules = [];
@@ -61,9 +73,56 @@ class PaymentStepEntity
 
 	private DiscountType $advance_amount_type = DiscountType::FIXED;
 
-	public function __construct(int $id = 0)
+	/**
+	 * @param   int                           $id
+	 * @param   int                           $workflow_id
+	 * @param   string                        $label
+	 * @param   ?string                       $description
+	 * @param   int                           $type
+	 * @param   array                         $entry_status
+	 * @param   int|null                      $output_status
+	 * @param   int                           $state
+	 * @param   int                           $adjust_balance
+	 * @param   ?int                          $adjust_balance_step_id
+	 * @param   array<ProductEntity>          $products
+	 * @param   array<DiscountEntity>         $discounts
+	 * @param   array<ProductCategoryEntity>  $mandatory_product_categories
+	 * @param   array<ProductCategoryEntity>  $optional_product_categories
+	 * @param   array<PaymentMethodEntity>    $payment_methods
+	 * @param   int                           $synchronizer_id
+	 * @param   int                           $advance_type
+	 * @param   int                           $is_advance_amount_editable_by_applicant
+	 * @param   float                         $advance_amount
+	 * @param   DiscountType                  $advance_amount_type
+	 * @param   int                           $installment_monthday
+	 * @param   string|null                   $installment_effect_date
+	 * @param   array                         $installment_rules
+	 */
+	public function __construct(int $id = 0, int $workflow_id = 0, string $label = '', ?string $description = '', int $type = 0, array $entry_status = [], ?int $output_status = null, int $state = 1, int $adjust_balance = 0, ?int $adjust_balance_step_id = 0, array $products = [], array $discounts = [], array $mandatory_product_categories = [], $optional_product_categories = [], array $payment_methods = [], int $synchronizer_id = 0, int $advance_type = 0, int $is_advance_amount_editable_by_applicant = 0, float $advance_amount = 0.00, DiscountType $advance_amount_type = DiscountType::FIXED, int $installment_monthday = 0, ?string $installment_effect_date = null, array $installment_rules = [])
 	{
 		$this->id = $id;
+		$this->workflow_id = $workflow_id;
+		$this->label = $label;
+		$this->setDescription($description);
+		$this->type = $type;
+		$this->setEntryStatus($entry_status);
+		$this->output_status = $output_status;
+		$this->state = $state;
+		$this->adjust_balance = $adjust_balance;
+		$this->adjust_balance_step_id = $adjust_balance_step_id;
+		$this->setProducts($products);
+		$this->mandatory_product_categories = $mandatory_product_categories;
+		$this->optional_product_categories = $optional_product_categories;
+		$this->discounts = $discounts;
+		$this->setPaymentMethods($payment_methods);
+		$this->synchronizer_id = $synchronizer_id;
+		$this->setAdvanceType($advance_type);
+		$this->is_advance_amount_editable_by_applicant = $is_advance_amount_editable_by_applicant;
+		$this->setAdvanceAmount($advance_amount);
+		$this->advance_amount_type = $advance_amount_type;
+		$this->installment_monthday = $installment_monthday;
+		$this->installment_effect_date = $installment_effect_date;
+		$this->installment_rules = $installment_rules;
 	}
 
 	public function getId(): int
@@ -96,7 +155,7 @@ class PaymentStepEntity
 		$this->label = $label;
 	}
 
-	public function setDescription(string $description): void
+	public function setDescription(?string $description): void
 	{
 		if (!empty($description)) {
 			if(!class_exists('HtmlSanitizerSingleton')) {
@@ -105,14 +164,16 @@ class PaymentStepEntity
 
 			$sanitizer = HtmlSanitizerSingleton::getInstance();
 			$description = $sanitizer->sanitizeFor('body', $description);
+		} else {
+			$description = '';
 		}
 
 		$this->description = $description;
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
-		return $this->description;
+		return !empty($this->description) ? $this->description : '';
 	}
 
 	public function getType(): int
@@ -176,7 +237,7 @@ class PaymentStepEntity
 		}
 	}
 
-	public function getAdjustBalanceStepId(): int
+	public function getAdjustBalanceStepId(): ?int
 	{
 		return $this->adjust_balance_step_id;
 	}
@@ -204,6 +265,36 @@ class PaymentStepEntity
 		$this->products = $products;
 	}
 
+	public function getMandatoryProductCategories(): array
+	{
+		return $this->mandatory_product_categories;
+	}
+
+	/**
+	 * @param array<ProductCategoryEntity>  $product_categories
+	 *
+	 * @return void
+	 */
+	public function setMandatoryProductCategories(array $product_categories): void
+	{
+		$this->mandatory_product_categories = $product_categories;
+	}
+
+	public function getOptionalProductCategories(): array
+	{
+		return $this->optional_product_categories;
+	}
+
+	/**
+	 * @param array<ProductCategoryEntity>  $product_categories
+	 *
+	 * @return void
+	 */
+	public function setOptionalProductCategories(array $product_categories): void
+	{
+		$this->optional_product_categories = $product_categories;
+	}
+
 	public function getDiscounts(): array
 	{
 		return $this->discounts;
@@ -219,6 +310,11 @@ class PaymentStepEntity
 		return $this->payment_methods;
 	}
 
+	/**
+	 * @param   array<PaymentMethodEntity>  $payment_methods
+	 *
+	 * @return void
+	 */
 	public function setPaymentMethods(array $payment_methods): void
 	{
 		foreach($payment_methods as $payment_method)
@@ -299,7 +395,7 @@ class PaymentStepEntity
 		foreach ($installment_rules as $installment_rule) {
 			// must bet set from_amount, to_amount, min_installments and max_installments
 			if (!isset($installment_rule->from_amount) || !isset($installment_rule->to_amount) || !isset($installment_rule->min_installments) || !isset($installment_rule->max_installments)) {
-				throw new Exception('COM_EMUNDUS_PAYMENT_STEP_WRONG_INSTALLMENT_RULE');
+				throw new \Exception('COM_EMUNDUS_PAYMENT_STEP_WRONG_INSTALLMENT_RULE');
 			}
 		}
 
@@ -359,7 +455,7 @@ class PaymentStepEntity
 			'id' => $this->id,
 			'workflow_id' => $this->workflow_id,
 			'label' => $this->label,
-			'description' => $this->description,
+			'description' => $this->description ?? '',
 			'type' => $this->type,
 			'entry_status' => $this->entry_status,
 			'output_status' => $this->output_status,
@@ -368,6 +464,8 @@ class PaymentStepEntity
 			'adjust_balance_step_id' => $this->adjust_balance_step_id,
 			'products' => array_map(fn($product) => $product->serialize(), $this->products),
 			'discounts' => array_map(fn($discount) => $discount->serialize(), $this->discounts),
+			'mandatory_product_categories' => array_map(fn($category) => $category->serialize(), $this->mandatory_product_categories),
+			'optional_product_categories' => array_map(fn($category) => $category->serialize(), $this->optional_product_categories),
 			'payment_methods' => array_map(fn($payment_method) => $payment_method->serialize(), $this->payment_methods),
 			'synchronizer_id' => $this->getSynchronizerId(),
 			'advance_type' => $this->getAdvanceType(),

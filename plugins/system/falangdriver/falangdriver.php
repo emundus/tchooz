@@ -15,6 +15,7 @@ use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Form\Form;
+use Joomla\CMS\Language\Multilanguage;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -57,6 +58,7 @@ final class plgSystemFalangdriver extends CMSPlugin
     /*
      * @from 1.0
      * @update 5.4 test site and not administrator
+     * @update 6.1 move displayMessage on onAfterDispach
      * */
     public function __construct(DispatcherInterface $dispatcher, $config = array())
     {
@@ -69,9 +71,6 @@ final class plgSystemFalangdriver extends CMSPlugin
         }
 
         $this->setupCoreFileOverride();
-
-        //use for finder content plugin
-        $this->displayInfoMessage();
 
         // This plugin is only relevant for use within the frontend!
         // need to test site
@@ -88,12 +87,13 @@ final class plgSystemFalangdriver extends CMSPlugin
 
     }
 
+
     /*
      * @since 5.2 set the connection too null fix the mysqli already close event
      *            need to access to the protected var $connection
      * */
     public function onAfterDisconnect(ConnectionEvent $event){
-        $db = Factory::getDbo();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
         if (is_a($db, 'JFalangDatabase')){
             $reflectionClass = new ReflectionClass('JFalangDatabase');
             $reflectionProperty = $reflectionClass->getProperty('connection');
@@ -108,12 +108,18 @@ final class plgSystemFalangdriver extends CMSPlugin
      * @return    string
      *
      * @since 4.5 add fix for admin tools
+     * @update 6.1 remove warnign when language filter not published (not multilanguage)
+     *             use this to be sure it's work with other sef tools
      */
     function onAfterInitialise()
     {
         // This plugin is only relevant for use within the frontend!
         if (Factory::getApplication()->isClient('administrator')) {
             return;
+        }
+        $multilang = Multilanguage::isEnabled();
+        if (!$multilang){
+            return ;
         }
 
         //fix for joomla > 3.4.0
@@ -132,9 +138,9 @@ final class plgSystemFalangdriver extends CMSPlugin
             //fix for admintools , reset the menu
             if (PluginHelper::isEnabled('system', 'admintools'))
             {
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $opt['db'] = $db;
-                $opt['language'] = Factory::getLanguage();
+                $opt['language'] = Factory::getApplication()->getLanguage();
                 $app = Factory::getApplication();
                 $app->getMenu()->__construct($opt);
                 $app->getMenu()->load();
@@ -147,7 +153,7 @@ final class plgSystemFalangdriver extends CMSPlugin
 
     /*
      * @since 4.0.1
-     * @since 4.5 test is_array before $uri->getVar('catid'), sometimes it's an array, why?
+     * @update 4.5 test is_array before $uri->getVar('catid'), sometimes it's an array, why?
      * */
     public function buildRule(&$router, &$uri)
     {
@@ -164,7 +170,7 @@ final class plgSystemFalangdriver extends CMSPlugin
             // Make sure we have the id and the alias
             if (strpos($uri->getVar('id'), ':') > 0) {
                 list($tmp, $id) = explode(':', $uri->getVar('id'), 2);
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true)
                     ->select('fc.value')
                     ->from('#__falang_content fc')
@@ -185,7 +191,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                 if (strpos($uri->getVar('catid'), ':') > 0) {
                     list($tmp2, $catid) = explode(':', $uri->getVar('catid'), 2);
 
-                    $db = Factory::getDbo();
+                    $db = Factory::getContainer()->get(DatabaseInterface::class);
                     $dbQuery = $db->getQuery(true)
                         ->select('fc.value')
                         ->from('#__falang_content fc')
@@ -215,7 +221,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                 // Make sure we have the id and the alias
                 if (strpos($uri->getVar('id'), ':') === false) {
                     //we use id in the query to be translated.
-                    $db = Factory::getDbo();
+                    $db = Factory::getContainer()->get(DatabaseInterface::class);
                     $dbQuery = $db->getQuery(true)
                         ->select('alias,id')
                         ->from('#__content')
@@ -236,7 +242,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                 $fManager = FalangManager::getInstance();
                 $id_lang = $fManager->getLanguageID($lang);
                 $id = $uri->getVar('cid');
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true)
                     ->select('fc.value')
                     ->from('#__falang_content fc')
@@ -255,7 +261,7 @@ final class plgSystemFalangdriver extends CMSPlugin
             } else {
                 // translated languague look in native table
                 $id = $uri->getVar('cid');
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true)
                     ->select('product_alias')
                     ->from('#__hikashop_product')
@@ -275,7 +281,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                 $fManager = FalangManager::getInstance();
                 $id_lang = $fManager->getLanguageID($lang);
                 $id = $uri->getVar('cid');
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true)
                     ->select('fc.value')
                     ->from('#__falang_content fc')
@@ -294,7 +300,7 @@ final class plgSystemFalangdriver extends CMSPlugin
             } else {
                 // translated languague look in native table
                 $id = $uri->getVar('cid');
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true)
                     ->select('category_alias')
                     ->from('#__hikashop_category')
@@ -317,7 +323,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                 // Make sure we have the id and the alias
                 if (strpos($uri->getVar('id'), ':') > 0) {
                     list($tmp, $id) = explode(':', $uri->getVar('id'), 2);
-                    $db = Factory::getDbo();
+                    $db = Factory::getContainer()->get(DatabaseInterface::class);
                     $dbQuery = $db->getQuery(true)
                         ->select('fc.value')
                         ->from('#__falang_content fc')
@@ -341,7 +347,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                     list($tmp, $id) = explode(':', $tmp, 2);
                 }
 
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true)
                     ->select('alias')
                     ->from('#__k2_items')
@@ -380,7 +386,7 @@ final class plgSystemFalangdriver extends CMSPlugin
             // Make sure we have the id and the alias
             if (strpos($uri->getVar('id'), ':') > 0) {
                 list($id, $tmp) = explode(':', $uri->getVar('id'), 2);
-                $db = Factory::getDbo();
+                $db = Factory::getContainer()->get(DatabaseInterface::class);
                 $dbQuery = $db->getQuery(true);
                 $dbQuery->select('fc.value')
                     ->from('#__falang_content fc')
@@ -404,7 +410,7 @@ final class plgSystemFalangdriver extends CMSPlugin
                 list($tmp, $id) = explode(':', $tmp, 2);
             }
 
-            $db = Factory::getDbo();
+            $db = Factory::getContainer()->get(DatabaseInterface::class);
             $dbQuery = $db->getQuery(true);
             $dbQuery->select($dbQuery->qn($alias_name))
                 ->from($dbQuery->qn('#__' . $reference_table))
@@ -426,8 +432,8 @@ final class plgSystemFalangdriver extends CMSPlugin
         static $done = false;
         if (!$done) {
             $done = true;
-            $conf = Factory::getConfig();
-            $lang = Factory::getLanguage();
+            $conf = Factory::getApplication()->getConfig();
+            $lang = Factory::getApplication()->getLanguage();
             $default_lang = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 
             //fix for virtuemart / lang must be reset
@@ -459,12 +465,15 @@ final class plgSystemFalangdriver extends CMSPlugin
 
     public function isFalangDriverActive()
     {
-        $db = Factory::getDBO();
+        $db = Factory::getContainer()->get(DatabaseInterface::class);
 
         return is_a($db, 'JFalangDatabase');
     }
 
 
+    /*
+     * @update 6.1 move the diplay infomessage from constructor to onAfterDispache
+     * */
     function onAfterDispatch()
     {
         if (Factory::getApplication()->isClient('site') && $this->isFalangDriverActive()) {
@@ -475,6 +484,12 @@ final class plgSystemFalangdriver extends CMSPlugin
             }
             return true;
         }
+
+        //use for finder content plugin
+        if (Factory::getApplication()->isClient('administrator')) {
+            $this->displayInfoMessage();
+        }
+
     }
 
     /*
@@ -551,7 +566,7 @@ final class plgSystemFalangdriver extends CMSPlugin
 
     private function setBuffer()
     {
-        $doc = Factory::getDocument();
+        $doc = Factory::getApplication()->getDocument();
         $cacheBuf = $doc->getBuffer('component');
 
         $cacheBuf2 =
@@ -714,9 +729,6 @@ final class plgSystemFalangdriver extends CMSPlugin
      * */
     public function displayInfoMessage()
     {
-        if (Factory::getApplication()->isClient('site')) {
-            return;
-        }
         $input = Factory::getApplication()->input;
         $option = $input->get('option');
         $view = $input->get('view', 'index');

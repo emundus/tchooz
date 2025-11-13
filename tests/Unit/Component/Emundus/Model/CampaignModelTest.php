@@ -219,8 +219,8 @@ class CampaignModelTest extends UnitTestCase
 		}
 		$this->assertTrue(in_array($new_campaign_id, $campaign_ids_by_program), 'Assert campaign is found in getCampaignsByProgramId function');
 
-		$this->assertTrue($this->model->unpublishCampaign([$new_campaign_id]), 'Assert unpublish campaign works');
-		$this->assertTrue($this->model->publishCampaign([$new_campaign_id])['success'], 'Assert publish campaign works');
+		$this->assertTrue($this->model->unpublishCampaign([$new_campaign_id], $this->dataset['coordinator']), 'Assert unpublish campaign works');
+		$this->assertTrue($this->model->publishCampaign([$new_campaign_id], $this->dataset['coordinator'])['success'], 'Assert publish campaign works');
 		$this->assertTrue($this->model->pinCampaign($new_campaign_id), 'Assert pin campaign works properly');
 
 		$deleted = $this->model->deleteCampaign([$new_campaign_id, $new_campaign_id_2]);

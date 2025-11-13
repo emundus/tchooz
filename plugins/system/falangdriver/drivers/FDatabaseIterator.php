@@ -2,6 +2,7 @@
 namespace Falang\Database;
 
 use Joomla\CMS\Factory;
+use Joomla\Database\DatabaseInterface;
 use Joomla\Database\DatabaseIterator;
 use Joomla\Database\FetchMode;
 use Joomla\Database\StatementInterface;
@@ -115,7 +116,7 @@ class FDatabaseIterator extends DatabaseIterator implements \Countable, \Iterato
         $this->key = 0;
         $this->fetched = 1;
 
-        $this->reftable = Factory::getDbo()->getRefTables();
+        $this->reftable = Factory::getContainer()->get(DatabaseInterface::class)->getRefTables();
         $this->current_language_tag = Factory::getLanguage()->getTag();
         $this->default_language_tag = ComponentHelper::getParams('com_languages')->get('site', 'en-GB');
 

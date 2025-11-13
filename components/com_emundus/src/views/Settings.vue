@@ -64,6 +64,7 @@ import Integration from '@/components/Settings/Integration.vue';
 import Info from '@/components/Utils/Info.vue';
 import SectionComponent from '@/components/Settings/SectionComponent.vue';
 import WorkflowSettings from '@/views/Workflows/WorkflowSettings.vue';
+import AnalyticsSettings from '@/components/Settings/Analytics/AnalyticsSettings.vue';
 
 import Swal from 'sweetalert2';
 
@@ -84,6 +85,7 @@ export default {
 		Integration,
 		Info,
 		WorkflowSettings,
+		AnalyticsSettings,
 	},
 	props: {
 		actualLanguage: {

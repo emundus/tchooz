@@ -24,6 +24,7 @@ use Joomla\Database\Exception\ExecutionFailureException;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Utilities\ArrayHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -74,7 +75,8 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 			'onYousignRequestCompleted'      => 'onYousignRequestCompleted',
 			'onYousignError'                 => 'onYousignError',
 			'onYousignSendReminder'          => 'onYousignSendReminder',
-			'onYousignRequestCancelled'      => 'onYousignRequestCancelled'
+			'onYousignRequestCancelled'      => 'onYousignRequestCancelled',
+			'onAfterAutomationProcessed' 	 => 'onAfterAutomationProcessed',
 		];
 	}
 
@@ -432,6 +434,15 @@ final class Emundus extends ActionLogPlugin implements SubscriberInterface
 		$message = $this->setMessage($arguments['yousign_request']->getId(), 'create', 'PLG_ACTIONLOG_EMUNDUS_YOUSIGN_REQUEST_CANCELLED', $arguments['status'], [], $arguments['yousign_request']->__serialize(), $more_data);
 
 		$this->addLog([$message], $messageLanguageKey, $context, $jUser->id);
+	}
+
+	public function onAfterAutomationProcessed(GenericEvent $event)
+	{
+		$arguments = $event->getArguments();
+		assert($arguments['context'] instanceof EventContextEntity);
+
+		$message = $this->setMessage($arguments['context']->getParameters()['automation'], 'process', 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_PROCESSED', 'done', [], [], $arguments['context']->getParameters(), $arguments['context']->getUser()->id);
+		$this->addLog([$message], 'PLG_ACTIONLOG_EMUNDUS_AUTOMATION_PROCESSED', 'com_emundus.automation', $arguments['context']->getUser()->id);
 	}
 
 	private function setMessage($id = 0, $action = 'update', $title = 'PLG_ACTIONLOG_EMUNDUS_UPDATE_CONFIGURATION_TITLE', $status = 'done', $old_data = [], $new_data = [], $more_data = [], int $userId = 0)

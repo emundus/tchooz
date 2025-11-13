@@ -24,7 +24,7 @@ class TranslatorGoogle extends TranslatorDefault {
         //region non necessary for global endpoint
         $script = "var googleKey = '".$params->get('translator_googlekey')."';\n";
 
-        $document = Factory::getDocument();
+        $document = Factory::getApplication()->getDocument();
         $document->addScriptDeclaration($script,'text/javascript');
 
         $this->script = 'translatorGoogle.js';

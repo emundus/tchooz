@@ -15,6 +15,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Table\Table;
+use Joomla\Database\DatabaseInterface;
 
 
 require_once JPATH_ROOT.'/administrator/components/com_falang/models/JFModel.php';
@@ -118,7 +119,7 @@ class FalangModelTranslate extends JFModel
 	 */
 	function _removeTranslation( $catid, $cid ) {
 		$message = '';
-		$db = Factory::getDbo();
+		$db = Factory::getContainer()->get(DatabaseInterface::class);
 		foreach( $cid as $cid_row ) {
 			list($translationid, $contentid, $language_id) = explode('|', $cid_row);
 

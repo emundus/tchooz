@@ -271,6 +271,9 @@ Text::script('COM_EMUNDUS_PUBLISH_ERROR_MORE_INFO_REQUIRED');
 Text::script('COM_EMUNDUS_CAMPAIGN_PUBLISHED_ERROR_SOME');
 Text::script('COM_EMUNDUS_CAMPAIGNS_MORE_INFO');
 
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARENT');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_PARENT');
+
 $app = Factory::getApplication();
 if (version_compare(JVERSION, '4.0', '>')) {
 	$lang = $app->getLanguage();

@@ -10,12 +10,12 @@ if (modFilters) {
 
     const app = createApp(App, {
         moduleId: parseInt(modFilters.getAttribute('data-module-id')),
-        menuId: parseInt(modFilters.getAttribute('data-menu-id')),
         defaultAppliedFilters: appliedFilters,
         defaultFilters: filters,
         defaultQuickSearchFilters: JSON.parse(atob(modFilters.getAttribute('data-quick-search-filters'))),
         countFilterValues: modFilters.getAttribute('data-count-filter-values') === '1',
-        allowAddFilter: modFilters.getAttribute('data-allow-add-filter') === '1',
+        canShareFilters: modFilters.getAttribute('data-can-share-filters') === '1',
+        userId: parseInt(modFilters.getAttribute('data-user-id')),
     }).use(Vuex).mixin(translate);
 
     app.config.productionTip = false;

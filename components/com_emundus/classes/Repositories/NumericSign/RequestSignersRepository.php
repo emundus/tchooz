@@ -20,7 +20,7 @@ use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
 
 #[TableAttribute(table: '#__emundus_sign_requests_signers')]
-readonly class RequestSignersRepository
+class RequestSignersRepository
 {
 	use TraitTable;
 	

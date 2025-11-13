@@ -22,6 +22,10 @@ export default {
 			type: Array,
 			required: true,
 		},
+		product_categories: {
+			type: Array,
+			default: () => [],
+		},
 	},
 	mixins: [alerts],
 	data() {
@@ -64,7 +68,6 @@ export default {
 					displayed: true,
 				},
 			],
-
 			fields: [
 				{
 					param: 'advance_type',
@@ -118,7 +121,6 @@ export default {
 					displayed: true,
 				},
 			],
-
 			installmentFields: [
 				{
 					param: 'installment_monthday',
@@ -148,6 +150,82 @@ export default {
 					allownull: true,
 				},
 			],
+			productCategoryField: {
+				param: 'mandatory_product_categories',
+				type: 'multiselect',
+				placeholder: '',
+				value: this.step.mandatory_product_categories ? this.step.mandatory_product_categories : [],
+				label: 'COM_EMUNDUS_PAYMENT_STEP_PRODUCT_CATEGORIES',
+				helptext: 'COM_EMUNDUS_PAYMENT_STEP_PRODUCT_CATEGORIES_HELPTEXT',
+				multiselectOptions: {
+					options: this.product_categories.map((category) => {
+						return { id: category.id, label: category.label };
+					}),
+					noOptions: false,
+					multiple: true,
+					taggable: false,
+					searchable: true,
+					internalSearch: true,
+					asyncRoute: '',
+					optionsLimit: 100,
+					optionsPlaceholder: 'COM_EMUNDUS_MULTISELECT_ADDKEYWORDS',
+					selectLabel: 'PRESS_ENTER_TO_SELECT',
+					selectGroupLabel: 'PRESS_ENTER_TO_SELECT_GROUP',
+					selectedLabel: 'SELECTED',
+					deselectedLabel: 'PRESS_ENTER_TO_REMOVE',
+					deselectGroupLabel: 'PRESS_ENTER_TO_DESELECT_GROUP',
+					noOptionsText: 'COM_EMUNDUS_MULTISELECT_NOKEYWORDS',
+					noResultsText: 'COM_EMUNDUS_MULTISELECT_NORESULTS',
+					// Can add tag validations (ex. email, phone, regex)
+					tagValidations: [],
+					tagRegex: '',
+					trackBy: 'value',
+					label: 'label',
+				},
+				options: this.product_categories.map((category) => {
+					return { id: category.id, label: category.label };
+				}),
+				displayed: true,
+				optional: true,
+			},
+			optionalProductCategoryField: {
+				param: 'optional_product_categories',
+				type: 'multiselect',
+				placeholder: '',
+				value: this.step.optional_product_categories ? this.step.optional_product_categories : [],
+				label: 'COM_EMUNDUS_PAYMENT_STEP_OPTIONAL_PRODUCT_CATEGORIES',
+				helptext: 'COM_EMUNDUS_PAYMENT_STEP_OPTIONAL_PRODUCT_CATEGORIES_HELPTEXT',
+				multiselectOptions: {
+					options: this.product_categories.map((category) => {
+						return { id: category.id, label: category.label };
+					}),
+					noOptions: false,
+					multiple: true,
+					taggable: false,
+					searchable: true,
+					internalSearch: true,
+					asyncRoute: '',
+					optionsLimit: 100,
+					optionsPlaceholder: 'COM_EMUNDUS_MULTISELECT_ADDKEYWORDS',
+					selectLabel: 'PRESS_ENTER_TO_SELECT',
+					selectGroupLabel: 'PRESS_ENTER_TO_SELECT_GROUP',
+					selectedLabel: 'SELECTED',
+					deselectedLabel: 'PRESS_ENTER_TO_REMOVE',
+					deselectGroupLabel: 'PRESS_ENTER_TO_DESELECT_GROUP',
+					noOptionsText: 'COM_EMUNDUS_MULTISELECT_NOKEYWORDS',
+					noResultsText: 'COM_EMUNDUS_MULTISELECT_NORESULTS',
+					// Can add tag validations (ex. email, phone, regex)
+					tagValidations: [],
+					tagRegex: '',
+					trackBy: 'value',
+					label: 'label',
+				},
+				options: this.product_categories.map((category) => {
+					return { id: category.id, label: category.label };
+				}),
+				displayed: true,
+				optional: true,
+			},
 
 			backUrl: '/index.php?option=com_emundus&view=workflows&layout=edit&wid=' + this.workflow.id,
 		};
@@ -217,6 +295,8 @@ export default {
 				description: this.step.description,
 				mandatoryProducts: this.mandatoryProducts.map((product) => product.id),
 				optionalProducts: this.optionalProducts.map((product) => product.id),
+				mandatoryProductCategories: this.step.mandatory_product_categories.map((category) => category.id),
+				optionalProductCategories: this.step.optional_product_categories.map((category) => category.id),
 				paymentMethods: this.step.payment_methods.map((method) => method.id),
 				synchronizerId: this.step.synchronizer_id,
 				advanceType: this.step.advance_type,
@@ -345,6 +425,16 @@ export default {
 				</div>
 			</div>
 
+			<Parameter
+				:class="{ 'tw-w-full': productCategoryField.param === 'name' }"
+				:ref="'event_' + productCategoryField.param"
+				:key="productCategoryField.reload ? productCategoryField.reload : productCategoryField.param"
+				:parameter-object="productCategoryField"
+				:help-text-type="productCategoryField.helpTextType ? productCategoryField.helpTextType : 'above'"
+				:multiselect-options="productCategoryField.multiselectOptions ? productCategoryField.multiselectOptions : null"
+				@valueUpdated="onFieldUpdate"
+			/>
+
 			<div id="mandatory-products">
 				<label class="tw-flex tw-items-end tw-font-medium">{{
 					translate('COM_EMUNDUS_PAYMENT_STEP_MANDATORY_PRODUCTS')
@@ -361,6 +451,22 @@ export default {
 					track-by="id"
 				></Multiselect>
 			</div>
+
+			<Parameter
+				:class="{ 'tw-w-full': optionalProductCategoryField.param === 'name' }"
+				:ref="'event_' + optionalProductCategoryField.param"
+				:key="
+					optionalProductCategoryField.reload ? optionalProductCategoryField.reload : optionalProductCategoryField.param
+				"
+				:parameter-object="optionalProductCategoryField"
+				:help-text-type="
+					optionalProductCategoryField.helpTextType ? optionalProductCategoryField.helpTextType : 'above'
+				"
+				:multiselect-options="
+					optionalProductCategoryField.multiselectOptions ? optionalProductCategoryField.multiselectOptions : null
+				"
+				@valueUpdated="onFieldUpdate"
+			/>
 
 			<div id="optional-products">
 				<label class="tw-flex tw-items-end tw-font-medium">{{

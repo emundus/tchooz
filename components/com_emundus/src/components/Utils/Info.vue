@@ -26,7 +26,13 @@
 				</div>
 
 				<!-- Contenu affiché ou non -->
-				<div v-if="!accordion || isOpen" v-html="textValueExtracted" :class="[textColor, title ? 'tw-mt-2' : '']"></div>
+				<slot name="content">
+					<div
+						v-if="!accordion || isOpen"
+						v-html="textValueExtracted"
+						:class="[textColor, title ? 'tw-mt-2' : '']"
+					></div>
+				</slot>
 			</div>
 		</div>
 	</div>
@@ -39,7 +45,6 @@ export default {
 	props: {
 		text: {
 			type: String,
-			required: true,
 		},
 		title: {
 			type: String,
