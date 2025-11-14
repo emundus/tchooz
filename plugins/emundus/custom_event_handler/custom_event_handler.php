@@ -1631,7 +1631,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									{
 										$contactRepository = new ContactRepository();
 										$contact           = $contactRepository->getByEmail($informations['email']);
-										$result = false;
+										$result = !empty($contact);
 										if (empty($contact))
 										{
 											$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
