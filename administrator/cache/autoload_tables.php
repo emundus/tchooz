@@ -33,6 +33,46 @@ return [
     [
     ],
   ],
+  'Tchooz\\Repositories\\Payment\\PaymentMethodRepository' => 
+  [
+    'table' => '#__emundus_setup_payment_method',
+    'alias' => '#__emundus_setup_payment_method',
+    'columns' => 
+    [
+    ],
+  ],
+  'Tchooz\\Repositories\\Payment\\TransactionRepository' => 
+  [
+    'table' => '#__emundus_payment_transaction',
+    'alias' => '#__emundus_payment_transaction',
+    'columns' => 
+    [
+    ],
+  ],
+  'Tchooz\\Repositories\\Payment\\ProductRepository' => 
+  [
+    'table' => '#__emundus_product',
+    'alias' => '#__emundus_product',
+    'columns' => 
+    [
+    ],
+  ],
+  'Tchooz\\Repositories\\Payment\\ProductCategoryRepository' => 
+  [
+    'table' => '#__emundus_product_category',
+    'alias' => '#__emundus_product_category',
+    'columns' => 
+    [
+    ],
+  ],
+  'Tchooz\\Repositories\\Payment\\CurrencyRepository' => 
+  [
+    'table' => 'data_currency',
+    'alias' => 'data_currency',
+    'columns' => 
+    [
+    ],
+  ],
   'Tchooz\\Repositories\\Contacts\\ContactAddressRepository' => 
   [
     'table' => '#__emundus_contacts_address',
