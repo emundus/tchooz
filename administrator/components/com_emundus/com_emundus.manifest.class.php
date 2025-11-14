@@ -86,7 +86,7 @@ class Com_EmundusInstallerScript
 			EmundusHelperUpdate::createTable('#__emundus_version', $columns,[], '', [], $primary_key_options);
 		}
 
-		$this->generateAutoloadTables();
+		//$this->generateAutoloadTables();
 	}
 
 	public function install(object $parent): bool
