@@ -18,8 +18,8 @@ use Joomla\Database\QueryInterface;
 use phpDocumentor\Reflection\Types\Self_;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
-use Tchooz\Enums\Campaigns\Status;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Enums\Campaigns\StatusEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationChoicesFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -108,9 +108,9 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 		// If state is confirmed, move application to the campaign confirmed
 		if(
-			$entity->getState() === ChoicesState::CONFIRMED &&
+			$entity->getState() === ChoicesStateEnum::CONFIRMED &&
 			(
-				empty($old_data) || ($old_data->getState() !== ChoicesState::CONFIRMED)
+				empty($old_data) || ($old_data->getState() !== ChoicesStateEnum::CONFIRMED)
 			)
 		)
 		{
@@ -123,7 +123,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		}
 		// If old state was confirmed and new state is not, move application back to parent campaign
 		elseif(
-			!empty($old_data) && $old_data->getState() === ChoicesState::CONFIRMED && $entity->getState() !== ChoicesState::CONFIRMED && !empty($entity->getCampaign()->getParent()))
+			!empty($old_data) && $old_data->getState() === ChoicesStateEnum::CONFIRMED && $entity->getState() !== ChoicesStateEnum::CONFIRMED && !empty($entity->getCampaign()->getParent()))
 		{
 			if (!class_exists('EmundusModelApplication'))
 			{
@@ -184,7 +184,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 	/**
 	 * @return ApplicationChoicesEntity[]
 	 */
-	public function getChoicesByFnum(string $fnum, array $user_programs = [], ChoicesState $state = null, int $more_form_id = 0): array
+	public function getChoicesByFnum(string $fnum, array $user_programs = [], ChoicesStateEnum $state = null, int $more_form_id = 0): array
 	{
 		$application_choices_entity = [];
 
@@ -349,7 +349,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		return !empty($more_data) ? $more_data : [];
 	}
 
-	public function buildQuery(string $fnum = '', array $user_programs = [], ChoicesState $state = null): QueryInterface
+	public function buildQuery(string $fnum = '', array $user_programs = [], ChoicesStateEnum $state = null): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
 
@@ -415,7 +415,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			}
 		}
 
-		if (!$entity->getCampaign()->isPublished() || $entity->getCampaign()->getStatus() === Status::CLOSED)
+		if (!$entity->getCampaign()->isPublished() || $entity->getCampaign()->getStatus() === StatusEnum::CLOSED)
 		{
 			throw new \InvalidArgumentException(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID'));
 		}

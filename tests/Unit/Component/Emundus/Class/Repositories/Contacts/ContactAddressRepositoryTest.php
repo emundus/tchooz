@@ -13,7 +13,7 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\ContactAddressEntity;
-use Tchooz\Enums\Contacts\Gender;
+use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Repositories\Contacts\ContactAddressRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\AddressRepository;
@@ -58,7 +58,7 @@ class ContactAddressRepositoryTest extends UnitTestCase
 			firstname: 'Tester',
 			phone_1: '0123456789',
 			birth: '1990-01-01',
-			gender: Gender::MAN,
+			gender: GenderEnum::MAN,
 			countries: [$frCountry]
 		);
 		$this->contactRepository->flush($contact);

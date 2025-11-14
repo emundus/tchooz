@@ -30,7 +30,7 @@ use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnList;
 use Tchooz\Entities\List\AdditionalColumnPublished;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
-use Tchooz\Enums\Crud;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
@@ -98,7 +98,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 403, 'status' => false, 'message' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-		if (EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::READ->value, $this->user->id))
+		if (EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$order_by = $this->input->getString('order_by', 't.id');
 			$sort     = $this->input->getString('sort', '');
@@ -295,7 +295,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::READ->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -391,7 +391,7 @@ class EmundusControllerCrc extends BaseController
 
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::UPDATE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::UPDATE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -448,7 +448,7 @@ class EmundusControllerCrc extends BaseController
 
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::UPDATE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::UPDATE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -505,7 +505,7 @@ class EmundusControllerCrc extends BaseController
 
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::DELETE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::DELETE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -565,9 +565,9 @@ class EmundusControllerCrc extends BaseController
 		$id = $this->input->getInt('id', 0);
 
 		if (
-			!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::CREATE->value, $this->user->id)
+			!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::CREATE->value, $this->user->id)
 			&&
-			($id > 0 && !EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::UPDATE->value, $this->user->id))
+			($id > 0 && !EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::UPDATE->value, $this->user->id))
 		)
 		{
 			$response['code']    = 403;
@@ -825,7 +825,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::DELETE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::DELETE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -855,7 +855,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::DELETE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::DELETE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -885,7 +885,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::READ->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -991,7 +991,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::READ->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1174,7 +1174,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
 
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::READ->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1258,7 +1258,7 @@ class EmundusControllerCrc extends BaseController
 
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::UPDATE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::UPDATE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1315,7 +1315,7 @@ class EmundusControllerCrc extends BaseController
 
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::UPDATE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::UPDATE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1370,7 +1370,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::DELETE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::DELETE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1430,9 +1430,9 @@ class EmundusControllerCrc extends BaseController
 		$id = $this->input->getInt('id', 0);
 
 		if (
-			!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::CREATE->value, $this->user->id)
+			!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::CREATE->value, $this->user->id)
 			&&
-			($id > 0 && !EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::UPDATE->value, $this->user->id))
+			($id > 0 && !EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::UPDATE->value, $this->user->id))
 		)
 		{
 			$response['code']    = 403;
@@ -1610,7 +1610,7 @@ class EmundusControllerCrc extends BaseController
 
 	public function getfilteredorganizations()
 	{
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::DELETE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::DELETE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1641,7 +1641,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), Crud::DELETE->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->orgAction->getId(), CrudEnum::DELETE->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');
@@ -1670,7 +1670,7 @@ class EmundusControllerCrc extends BaseController
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
 
-		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), Crud::READ->value, $this->user->id))
+		if (!EmundusHelperAccess::asAccessAction($this->contactAction->getId(), CrudEnum::READ->value, $this->user->id))
 		{
 			$response['code']    = 403;
 			$response['message'] = Text::_('ACCESS_DENIED');

@@ -11,7 +11,7 @@ namespace Tchooz\Entities\ApplicationFile;
 
 use Joomla\CMS\User\User;
 use Tchooz\Entities\Campaigns\CampaignEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 
 class ApplicationChoicesEntity
 {
@@ -25,14 +25,14 @@ class ApplicationChoicesEntity
 
 	private User $user;
 
-	private ChoicesState $state;
+	private ChoicesStateEnum $state;
 
 	private int $order;
 
 	// TODO: Refactor when Fabrik was moved into Entities
 	private ?array $moreProperties;
 
-	public function __construct(string $fnum, User $user, ?CampaignEntity $campaign, int $order = 0, ChoicesState $state = ChoicesState::DRAFT, int $id = 0, $moreProperties = [])
+	public function __construct(string $fnum, User $user, ?CampaignEntity $campaign, int $order = 0, ChoicesStateEnum $state = ChoicesStateEnum::DRAFT, int $id = 0, $moreProperties = [])
 	{
 		$this->fnum = $fnum;
 		$this->user = $user;
@@ -93,12 +93,12 @@ class ApplicationChoicesEntity
 		$this->user = $user;
 	}
 
-	public function getState(): ChoicesState
+	public function getState(): ChoicesStateEnum
 	{
 		return $this->state;
 	}
 
-	public function setState(ChoicesState $state): void
+	public function setState(ChoicesStateEnum $state): void
 	{
 		$this->state = $state;
 	}

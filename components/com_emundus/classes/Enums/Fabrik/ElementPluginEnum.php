@@ -11,7 +11,7 @@ declare(strict_types=1);
 
 namespace Tchooz\Enums\Fabrik;
 
-enum ElementPlugin: string
+enum ElementPluginEnum: string
 {
 	// Standard fields
 	case ID = 'internalid';

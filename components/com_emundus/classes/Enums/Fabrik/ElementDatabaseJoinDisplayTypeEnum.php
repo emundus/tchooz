@@ -2,7 +2,7 @@
 
 namespace Tchooz\Enums\Fabrik;
 
-enum ElementDatabaseJoinDisplayType: string
+enum ElementDatabaseJoinDisplayTypeEnum: string
 {
 	case MULTILIST = 'multilist';
 	case CHECKBOX = 'checkbox';
@@ -11,7 +11,7 @@ enum ElementDatabaseJoinDisplayType: string
 
 	public static function isMultiSelect(string $type): bool
 	{
-		$type = ElementDatabaseJoinDisplayType::from($type);
+		$type = ElementDatabaseJoinDisplayTypeEnum::from($type);
 
 		return in_array($type, self::multiselectTypes());
 	}

@@ -23,7 +23,7 @@ use Joomla\CMS\User\User;
 use Joomla\Utilities\ArrayHelper;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -1748,7 +1748,7 @@ class EmundusControllerApplication extends BaseController
 		}
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
-		$confirmed_choices            = $applicationChoicesRepository->getChoicesByFnum($current_fnum, [], ChoicesState::CONFIRMED);
+		$confirmed_choices            = $applicationChoicesRepository->getChoicesByFnum($current_fnum, [], ChoicesStateEnum::CONFIRMED);
 
 		if (!class_exists('EmundusModelWorkflow'))
 		{
@@ -2171,7 +2171,7 @@ class EmundusControllerApplication extends BaseController
 				$m_files->shareGroups($groups, $actions, [$current_fnum]);
 			}
 
-			$choice->setState(ChoicesState::WAITING);
+			$choice->setState(ChoicesStateEnum::WAITING);
 			$repository->flush($choice, false);
 		}
 
@@ -2203,7 +2203,7 @@ class EmundusControllerApplication extends BaseController
 
 		$id     = $this->input->getInt('id', 0);
 		$status = $this->input->getString('status', '');
-		$status = ChoicesState::isValidState($status);
+		$status = ChoicesStateEnum::isValidState($status);
 
 		if (empty($id) || empty($status))
 		{
@@ -2313,7 +2313,7 @@ class EmundusControllerApplication extends BaseController
 			return;
 		}
 
-		$choice->setState(ChoicesState::CONFIRMED);
+		$choice->setState(ChoicesStateEnum::CONFIRMED);
 		$repository->flush($choice, false);
 
 		if (!class_exists('EmundusHelperFiles'))

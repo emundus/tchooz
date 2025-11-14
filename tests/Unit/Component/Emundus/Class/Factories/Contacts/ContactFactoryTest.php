@@ -13,7 +13,7 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
-use Tchooz\Enums\Contacts\Gender;
+use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\Contacts\ContactFactory;
 use Tchooz\Repositories\CountryRepository;
@@ -119,7 +119,7 @@ class ContactFactoryTest extends UnitTestCase
 		$this->assertEquals('John', $entity->getFirstname());
 		$this->assertEquals('0123456789', $entity->getPhone1());
 		$this->assertEquals('1985-04-12', $entity->getBirthdate());
-		$this->assertEquals(Gender::MAN, $entity->getGender());
+		$this->assertEquals(GenderEnum::MAN, $entity->getGender());
 		$this->assertEquals('Developer', $entity->getFonction());
 		$this->assertEquals('IT', $entity->getService());
 		$this->assertEquals(false, $entity->isPublished());

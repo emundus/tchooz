@@ -9,7 +9,7 @@
 
 namespace Tchooz\Enums\Emails;
 
-enum TagType: string
+enum TagTypeEnum: string
 {
 	case STANDARD = 'STANDARD';
 	case FABRIK = 'FABRIK';

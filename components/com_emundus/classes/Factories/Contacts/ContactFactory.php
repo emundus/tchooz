@@ -11,7 +11,7 @@ namespace Tchooz\Factories\Contacts;
 
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Contacts\ContactEntity;
-use Tchooz\Enums\Contacts\Gender;
+use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\DBFactory;
 use Tchooz\Factories\EmundusFactory;
@@ -52,7 +52,7 @@ class ContactFactory extends EmundusFactory implements DBFactory
 			user_id: $dbObject['user_id'] ?? null,
 			addresses: $relations[self::ADDRESSES] ?? [],
 			birth: $dbObject['birthdate'] ?? null,
-			gender: !empty($dbObject['gender']) ? Gender::from($dbObject['gender']) : null,
+			gender: !empty($dbObject['gender']) ? GenderEnum::from($dbObject['gender']) : null,
 			fonction: $dbObject['fonction'] ?? null,
 			service: $dbObject['service'] ?? null,
 			countries: $relations[self::COUNTRIES] ?? [],

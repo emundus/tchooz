@@ -9,10 +9,9 @@
 
 namespace Tchooz\Enums;
 
-enum Crud: string
+enum ValueFormatEnum: string
 {
-	case CREATE = 'c';
-	case READ   = 'r';
-	case UPDATE = 'u';
-	case DELETE = 'd';
+	case RAW = 'raw';
+	case FORMATTED = 'formatted';
+	case BOTH = 'both';
 }

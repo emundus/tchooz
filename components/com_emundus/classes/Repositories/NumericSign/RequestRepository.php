@@ -11,7 +11,7 @@ namespace Tchooz\Repositories\NumericSign;
 
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\NumericSign\Request;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Traits\TraitTable;
@@ -230,7 +230,7 @@ class RequestRepository
 	{
 		try
 		{
-			$signed = SignStatus::SIGNED->value;
+			$signed = SignStatusEnum::SIGNED->value;
 
 			$query = $this->buildQuery(['esr.id']);
 			$query->where($this->db->quoteName('esr.status') . ' <> ' . $this->db->quote($signed))
@@ -282,9 +282,9 @@ class RequestRepository
 
 	}
 
-	public function updateStatus(int $id, SignStatus|string $status): bool
+	public function updateStatus(int $id, SignStatusEnum|string $status): bool
 	{
-		if ($status instanceof SignStatus)
+		if ($status instanceof SignStatusEnum)
 		{
 			$status = $status->value;
 		}

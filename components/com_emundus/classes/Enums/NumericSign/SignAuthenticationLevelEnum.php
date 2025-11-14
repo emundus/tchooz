@@ -11,7 +11,7 @@ namespace Tchooz\Enums\NumericSign;
 
 use Joomla\CMS\Language\Text;
 
-enum SignAuthenticationLevel: string
+enum SignAuthenticationLevelEnum: string
 {
 	case STANDARD = 'electronic_signature';
 	case AES = 'advanced_electronic_signature';

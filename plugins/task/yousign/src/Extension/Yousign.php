@@ -12,8 +12,8 @@ namespace Joomla\Plugin\Task\Yousign\Extension;
 
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\YousignRequests;
-use Tchooz\Enums\ApiStatus;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\ApiStatusEnum;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\NumericSign\YousignRequestsRepository;

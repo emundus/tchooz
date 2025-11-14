@@ -13,7 +13,7 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
-use Tchooz\Enums\Contacts\Gender;
+use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Repositories\Contacts\AddressRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
@@ -60,7 +60,7 @@ class ContactRepositoryTest extends UnitTestCase
 			user_id: $this->dataset['coordinator'],
 			addresses: null,
 			birth: '1990-01-01',
-			gender: Gender::MAN,
+			gender: GenderEnum::MAN,
 			fonction: '',
 			service: '',
 			countries: [],
@@ -105,7 +105,7 @@ class ContactRepositoryTest extends UnitTestCase
 			user_id: $this->dataset['applicant'],
 			addresses: [$addressEntity],
 			birth: '1998-12-21',
-			gender: Gender::WOMAN,
+			gender: GenderEnum::WOMAN,
 			fonction: 'Developer',
 			service: 'IT',
 			countries: [$frCountry],
@@ -181,7 +181,7 @@ class ContactRepositoryTest extends UnitTestCase
 			user_id: $this->dataset['coordinator'],
 			addresses: null,
 			birth: '1990-01-01',
-			gender: Gender::MAN,
+			gender: GenderEnum::MAN,
 			fonction: 'Developer',
 			service: 'IT',
 			countries: [$frCountry],
@@ -218,7 +218,7 @@ class ContactRepositoryTest extends UnitTestCase
 			user_id: $this->dataset['coordinator'],
 			addresses: [$addressEntity],
 			birth: '1980-01-01',
-			gender: Gender::WOMAN
+			gender: GenderEnum::WOMAN
 		);
 		$result = $this->model->flush($contactEntity2);
 		$this->assertTrue($result, 'The result should be true');
@@ -258,7 +258,7 @@ class ContactRepositoryTest extends UnitTestCase
 			user_id: $this->dataset['coordinator'],
 			addresses: [$addressEntity2],
 			birth: '1980-01-01',
-			gender: Gender::WOMAN,
+			gender: GenderEnum::WOMAN,
 			organizations: [$organizationEntity]
 		);
 		$result = $this->model->flush($contactEntity3);
@@ -300,7 +300,7 @@ class ContactRepositoryTest extends UnitTestCase
 			user_id: $this->dataset['coordinator'],
 			addresses: [$addressEntity, $addressEntity2],
 			birth: '1980-01-01',
-			gender: Gender::WOMAN
+			gender: GenderEnum::WOMAN
 		);
 		$result = $this->model->flush($contactEntity2);
 		$this->assertTrue($result, 'The result should be true');

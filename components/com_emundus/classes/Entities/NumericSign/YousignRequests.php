@@ -9,7 +9,7 @@
 
 namespace Tchooz\Entities\NumericSign;
 
-use Tchooz\Enums\ApiStatus;
+use Tchooz\Enums\ApiStatusEnum;
 
 class YousignRequests
 {
@@ -25,7 +25,7 @@ class YousignRequests
 
 	private ?string $signature_field = null;
 
-	private ApiStatus $apiStatus;
+	private ApiStatusEnum $apiStatus;
 
 	private string $requestPayload = '';
 
@@ -107,18 +107,18 @@ class YousignRequests
 		$this->signature_field = $signature_field;
 	}
 
-	public function getApiStatus(): ApiStatus
+	public function getApiStatus(): ApiStatusEnum
 	{
 		return $this->apiStatus;
 	}
 
-	public function setApiStatus(ApiStatus|string $apiStatus): self
+	public function setApiStatus(ApiStatusEnum|string $apiStatus): self
 	{
 		if (is_string($apiStatus))
 		{
-			$apiStatus = ApiStatus::from($apiStatus);
+			$apiStatus = ApiStatusEnum::from($apiStatus);
 		}
-		elseif (!($apiStatus instanceof ApiStatus))
+		elseif (!($apiStatus instanceof ApiStatusEnum))
 		{
 			throw new \InvalidArgumentException('Invalid api status type');
 		}

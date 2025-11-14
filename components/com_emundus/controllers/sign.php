@@ -21,8 +21,8 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
-use Tchooz\Enums\NumericSign\SignConnectors;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignConnectorsEnum;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\NumericSign\YousignRequestsRepository;
@@ -121,20 +121,20 @@ class EmundusControllerSign extends BaseController
 						$signers_signed = 0;
 						foreach ($request->signers as $signer)
 						{
-							$status_tag = SignStatus::from($signer->status)->getHtmlBadge();
+							$status_tag = SignStatusEnum::from($signer->status)->getHtmlBadge();
 
-							$tags .= '<div class="tw-flex tw-justify-between tw-items-center" title="' . SignStatus::from($request->signers[0]->status)->getLabel() . '"><div><label>' . $signer->lastname . ' ' . $signer->firstname . '</label></br><span style="color: var(--neutral-500);">' . $signer->email . '</span>';
+							$tags .= '<div class="tw-flex tw-justify-between tw-items-center" title="' . SignStatusEnum::from($request->signers[0]->status)->getLabel() . '"><div><label>' . $signer->lastname . ' ' . $signer->firstname . '</label></br><span style="color: var(--neutral-500);">' . $signer->email . '</span>';
 							if (!empty($signer->signed_at))
 							{
 								$tags .= '</br><span style="color: var(--neutral-500);">' . Text::_('COM_EMUNDUS_ONBOARD_REQUEST_SIGNERS_SIGNED_AT') . ' ' . EmundusHelperDate::displayDate($signer->signed_at, 'd/m/Y', 0) . '</span>';
 							}
-							elseif($signer->status === SignStatus::REMINDER_SENT->value && !empty($request->last_reminder_at))
+							elseif($signer->status === SignStatusEnum::REMINDER_SENT->value && !empty($request->last_reminder_at))
 							{
 								$tags .= '</br><span style="color: var(--neutral-500);">' . Text::_('COM_EMUNDUS_ONBOARD_REQUEST_SIGNERS_REMINDER_AT') . ' ' . EmundusHelperDate::displayDate($request->last_reminder_at, 'd/m/Y', 0) . '</span>';
 							}
 							$tags .= '</div>' . $status_tag . '</div>';
 
-							if ($signer->status === SignStatus::SIGNED->value)
+							if ($signer->status === SignStatusEnum::SIGNED->value)
 							{
 								$signers_signed++;
 							}
@@ -168,8 +168,8 @@ class EmundusControllerSign extends BaseController
 					$state_values = [
 						[
 							'key'     => Text::_('COM_EMUNDUS_STATE'),
-							'value'   => SignStatus::from($request->status)->getLabel(),
-							'classes' => 'tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold tw-text-white ' . SignStatus::from($request->status)->getClass(),
+							'value'   => SignStatusEnum::from($request->status)->getLabel(),
+							'classes' => 'tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold tw-text-white ' . SignStatusEnum::from($request->status)->getClass(),
 						]
 					];
 
@@ -196,7 +196,7 @@ class EmundusControllerSign extends BaseController
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_ONBOARD_CONNECTOR'),
-							'value'   => SignConnectors::from($request->connector)->getLabel(),
+							'value'   => SignConnectorsEnum::from($request->connector)->getLabel(),
 							'display' => 'table'
 						],
 						$signers_column
@@ -619,8 +619,8 @@ class EmundusControllerSign extends BaseController
 
 									if (!empty($yousign_signer))
 									{
-										$sign_status = SignStatus::from($data['data']['signer']['status']);
-										if ($sign_status instanceof SignStatus)
+										$sign_status = SignStatusEnum::from($data['data']['signer']['status']);
+										if ($sign_status instanceof SignStatusEnum)
 										{
 											if ($request_signers_repository->updateStatus($yousign_signer->request_signer_id, $sign_status->value))
 											{
