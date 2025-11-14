@@ -11,7 +11,7 @@ namespace Tchooz\Enums;
 
 use Joomla\CMS\Language\Text;
 
-enum ApiStatus: string
+enum ApiStatusEnum: string
 {
 	case PENDING = 'pending';
 	case PROCESSING = 'processing';

@@ -9,7 +9,7 @@
 
 namespace Tchooz\Enums\Campaigns;
 
-enum Status: string
+enum StatusEnum: string
 {
 	case UPCCOMING = 'upcoming';
 	case OPEN = 'open';

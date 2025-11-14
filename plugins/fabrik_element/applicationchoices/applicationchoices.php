@@ -13,7 +13,7 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 
@@ -114,11 +114,11 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 
 			// Get choices
 			$displayData->choices            = $this->getChoices($displayData->fnum, $displayData->step_id);
-			$available_statuses              = ChoicesState::cases();
+			$available_statuses              = ChoicesStateEnum::cases();
 			$displayData->available_statuses = [];
 			foreach ($available_statuses as $status)
 			{
-				if($status === ChoicesState::CONFIRMED)
+				if($status === ChoicesStateEnum::CONFIRMED)
 				{
 					continue;
 				}
@@ -198,7 +198,7 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			$parts  = explode('|', $val);
 			$id     = $parts[0];
 			$status = $parts[1];
-			$status = ChoicesState::tryFrom($status);
+			$status = ChoicesStateEnum::tryFrom($status);
 
 			if (!empty($id) && !empty($status))
 			{
@@ -283,9 +283,9 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 class FormattedResult
 {
 	public ?ApplicationChoicesEntity $choice = null;
-	public ?ChoicesState $status = null;
+	public ?ChoicesStateEnum $status = null;
 
-	public function __construct(ApplicationChoicesEntity $choice = null, ChoicesState $status = null)
+	public function __construct(ApplicationChoicesEntity $choice = null, ChoicesStateEnum $status = null)
 	{
 		$this->choice = null;
 		$this->status = null;
@@ -301,12 +301,12 @@ class FormattedResult
 		$this->choice = $choice;
 	}
 
-	public function getStatus(): ?ChoicesState
+	public function getStatus(): ?ChoicesStateEnum
 	{
 		return $this->status;
 	}
 
-	public function setStatus(?ChoicesState $status): void
+	public function setStatus(?ChoicesStateEnum $status): void
 	{
 		$this->status = $status;
 	}

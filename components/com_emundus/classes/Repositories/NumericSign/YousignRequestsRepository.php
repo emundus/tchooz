@@ -12,7 +12,7 @@ namespace Tchooz\Repositories\NumericSign;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\YousignRequests;
-use Tchooz\Enums\ApiStatus;
+use Tchooz\Enums\ApiStatusEnum;
 use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
@@ -122,9 +122,9 @@ class YousignRequestsRepository
 		return null;
 	}
 
-	public function updateApiStatus(int $requst_id, string|ApiStatus $api_status): bool
+	public function updateApiStatus(int $requst_id, string|ApiStatusEnum $api_status): bool
 	{
-		if ($api_status instanceof ApiStatus)
+		if ($api_status instanceof ApiStatusEnum)
 		{
 			$api_status = $api_status->value;
 		}

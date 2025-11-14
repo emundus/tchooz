@@ -14,7 +14,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Factories\DBFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
@@ -69,7 +69,7 @@ class ApplicationChoicesFactory implements DBFactory
 			user: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject['user_id']),
 			campaign: $withRelations ? $campaignRepository->getById((int) $dbObject['campaign_id']) : null,
 			order: (int) $dbObject['order'],
-			state: ChoicesState::tryFrom($dbObject['state']),
+			state: ChoicesStateEnum::tryFrom($dbObject['state']),
 			id: (int) $dbObject['id'],
 			moreProperties: $dbObject['more_properties']
 		);

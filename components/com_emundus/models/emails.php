@@ -27,7 +27,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Registry\Registry;
 use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Entities\Messages\TriggerEntity;
-use Tchooz\Enums\Emails\TagType;
+use Tchooz\Enums\Emails\TagTypeEnum;
 
 class EmundusModelEmails extends JModelList
 {
@@ -1010,7 +1010,7 @@ class EmundusModelEmails extends JModelList
 			}
 
 			foreach ($tags as $val) {
-				$tag = new TagEntity($val, '', [], TagType::FABRIK);
+				$tag = new TagEntity($val, '', [], TagTypeEnum::FABRIK);
 
 				if (!empty($tag->getName()) && is_numeric($tag->getName())) {
 					$idFabrik[] = $tag->getName();

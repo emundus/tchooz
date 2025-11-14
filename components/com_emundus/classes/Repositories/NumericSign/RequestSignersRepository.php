@@ -14,7 +14,7 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
@@ -102,9 +102,9 @@ class RequestSignersRepository
 		return null;
 	}
 
-	public function updateStatus(int $id, SignStatus|string $status): bool
+	public function updateStatus(int $id, SignStatusEnum|string $status): bool
 	{
-		if($status instanceof SignStatus)
+		if($status instanceof SignStatusEnum)
 		{
 			$status = $status->value;
 		}

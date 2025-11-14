@@ -14,7 +14,7 @@ use EmundusModelApplication;
 use Joomla\CMS\Factory;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
 /**
@@ -49,7 +49,7 @@ class SignModelTest extends UnitTestCase
 
 		// Base request
 		$request = [
-			'status' => SignStatus::TO_SIGN->value,
+			'status' => SignStatusEnum::TO_SIGN->value,
 			'ccid' => $this->dataset['ccid'],
 			'user_id' => 0,
 			'fnum' => '',

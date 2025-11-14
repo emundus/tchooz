@@ -30,7 +30,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagRemoveDefinition;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 /**
@@ -347,7 +347,7 @@ class EmundusModelApplication extends ListModel
 							->leftJoin($this->_db->quoteName('#__emundus_sign_requests_signers','esrs') . ' ON ' . $this->_db->quoteName('esrs.request_id') . ' = ' . $this->_db->quoteName('esr.id'))
 							->where($this->_db->quoteName('esr.fnum') . ' = ' . $this->_db->quote($fnum))
 							// Remove cancellation requests
-							->where($this->_db->quoteName('esr.status') . ' != ' . $this->_db->quote(SignStatus::CANCELLED->value));
+							->where($this->_db->quoteName('esr.status') . ' != ' . $this->_db->quote(SignStatusEnum::CANCELLED->value));
 
 						if($attachment->signed_file === 1)
 						{
@@ -373,7 +373,7 @@ class EmundusModelApplication extends ListModel
 						{
 							foreach ($signers as $signer)
 							{
-								if ($signer->status === SignStatus::SIGNED->value)
+								if ($signer->status === SignStatusEnum::SIGNED->value)
 								{
 									$signers_signed++;
 								}

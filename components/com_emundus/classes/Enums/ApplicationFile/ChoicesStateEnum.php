@@ -11,7 +11,7 @@ namespace Tchooz\Enums\ApplicationFile;
 
 use Joomla\CMS\Language\Text;
 
-enum ChoicesState: int
+enum ChoicesStateEnum: int
 {
 	case DRAFT = 0;
 	case ACCEPTED = 1;
@@ -51,7 +51,7 @@ enum ChoicesState: int
 		);
 	}
 
-	public static function isValidState(string $value): ChoicesState|null
+	public static function isValidState(string $value): ChoicesStateEnum|null
 	{
 		return match (strtolower($value))
 		{

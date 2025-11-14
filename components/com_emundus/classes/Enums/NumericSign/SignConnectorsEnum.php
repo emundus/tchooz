@@ -11,7 +11,7 @@ namespace Tchooz\Enums\NumericSign;
 
 use Joomla\CMS\Language\Text;
 
-enum SignConnectors: string
+enum SignConnectorsEnum: string
 {
 	case YOUSIGN = 'yousign';
 

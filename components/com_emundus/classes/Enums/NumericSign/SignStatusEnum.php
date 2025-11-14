@@ -11,7 +11,7 @@ namespace Tchooz\Enums\NumericSign;
 
 use Joomla\CMS\Language\Text;
 
-enum SignStatus: string
+enum SignStatusEnum: string
 {
 	case AWAITING = 'awaiting';
 	case TO_SIGN = 'to_sign';
