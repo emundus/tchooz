@@ -481,4 +481,23 @@ class EmundusControllerTranslations extends BaseController
 		readfile($path);
 		exit;
 	}
+
+	public function reloadtranslations()
+	{
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED')];
+		$user = $this->app->getIdentity();
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+			die(Text::_('ACCESS_DENIED'));
+		}
+
+		if(!class_exists('EmundusHelperUpdate'))
+		{
+			require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
+		}
+		$response = EmundusHelperUpdate::languageBaseToFile();
+
+		echo json_encode($response);
+		exit;
+	}
 }

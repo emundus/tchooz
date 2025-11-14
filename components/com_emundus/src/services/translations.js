@@ -296,4 +296,15 @@ export default {
 			};
 		}
 	},
+
+	async reloadTranslations() {
+		try {
+			return await client().post('index.php?option=com_emundus&controller=translations&task=reloadtranslations');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };
