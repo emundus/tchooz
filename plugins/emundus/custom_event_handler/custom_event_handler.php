@@ -993,7 +993,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										}
 										else
 										{
-											if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_programmes', 'jos_emundus_users']))
+											if (in_array($table_name, ['jos_emundus_setup_campaigns', 'jos_emundus_setup_campaigns_more','jos_emundus_setup_programmes', 'jos_emundus_users']))
 											{
 												$query->clear();
 
@@ -1003,6 +1003,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 													case 'jos_emundus_setup_campaigns':
 														$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'));
 														$table_alias = 'esc';
+														break;
+													case 'jos_emundus_setup_campaigns_more':
+														$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns_more', 'escm') . ' ON ' . $db->quoteName('escm.campaign_id') . ' = ' . $db->quoteName('ecc.campaign_id'));
+														$table_alias = 'escm';
 														break;
 													case 'jos_emundus_setup_programmes':
 														$query->leftJoin($db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
