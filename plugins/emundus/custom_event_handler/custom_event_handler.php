@@ -1575,8 +1575,10 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										'email'     => $signer->signer_email,
 										'firstname' => $signer->signer_firstname,
 										'lastname'  => $signer->signer_lastname,
+										'phonenumber' => $signer->signer_phonenumber
 									];
 
+									$repeat_rows = 0;
 									foreach ($informations as $key => $information)
 									{
 										if (!empty((int) $information))
@@ -1584,28 +1586,63 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 											$fabrik_element = $m_files->getValueFabrikByIds([(int)$information]);
 											if (!empty($fabrik_element))
 											{
-												$raw_value          = $m_files->getFabrikValue([$fnum], $fabrik_element[0]['db_table_name'], $fabrik_element[0]['name']);
-												if(!empty($raw_value[$fnum]['val']))
+												$group_params = json_decode($fabrik_element[0]['group_params']);
+												$h_fabrik = new EmundusHelperFabrik();
+												$raw_value = $h_fabrik->getFabrikElementValue($fabrik_element[0], $fnum);
+												//$raw_value          = $m_files->getFabrikValue([$fnum], $fabrik_element[0]['db_table_name'], $fabrik_element[0]['name']);
+												if(!empty($raw_value[$fabrik_element[0]['id']][$fnum]['val']))
 												{
-													$informations[$key] = EmundusHelperFabrik::formatElementValue($fabrik_element[0]['name'], $raw_value[$fnum]['val']);
+													$informations[$key] = EmundusHelperFabrik::formatElementValue($fabrik_element[0]['name'], $raw_value[$fabrik_element[0]['id']][$fnum]['val']);
+												}
+												else {
+													$informations[$key] = '';
+												}
+
+												if($group_params->repeat_group_button == 1) {
+													$informations[$key] = explode(',', $informations[$key]);
+													$repeat_rows = count($informations[$key]);
 												}
 											}
 										}
 										elseif (in_array($information, $fabrik_aliases))
 										{
+											$fabrik_element = EmundusHelperFabrik::getElementsByAlias($information);
 											$informations[$key] = $h_fabrik->getValueByAlias($information, $fnum)['value'];
+
+											if(!empty($fabrik_element))
+											{
+												$group_params = json_decode($fabrik_element[0]->group_params);
+												if($group_params->repeat_group_button == 1) {
+													$informations[$key] = explode(',', $informations[$key]);
+													$repeat_rows = count($informations[$key]);
+												}
+											}
 										}
 									}
 
 									if (!empty($informations))
 									{
-										$sub_signers[] = $informations;
+										if($repeat_rows > 0) {
+											for($i = 0; $i < $repeat_rows; $i++) {
+												$sub_info = [];
+												foreach ($informations as $key => $information) {
+													if(is_array($information)) {
+														$sub_info[$key] = $information[$i] ?? '';
+													} else {
+														$sub_info[$key] = $information;
+													}
+												}
+												$sub_signers[] = $sub_info;
+											}
+										} else {
+											$sub_signers[] = $informations;
+										}
 									}
 								}
 								elseif ($signer->signer_type === 'applicant')
 								{
 									$query->clear()
-										->select('u.email, eu.firstname, eu.lastname')
+										->select('u.email, eu.firstname, eu.lastname, eu.tel')
 										->from($db->quoteName('#__emundus_campaign_candidature', 'ecc'))
 										->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON eu.user_id = ecc.applicant_id')
 										->leftJoin($db->quoteName('#__users', 'u') . ' ON u.id = ecc.applicant_id')
@@ -1625,6 +1662,7 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 										'email'     => $signer->signer_email,
 										'firstname' => $signer->signer_firstname,
 										'lastname'  => $signer->signer_lastname,
+										'phonenumber' => $signer->signer_phonenumber
 									];
 									$sub_signers[] = $informations;
 								}
@@ -1635,13 +1673,20 @@ class plgEmundusCustom_event_handler extends CMSPlugin
 									{
 										$contactRepository = new ContactRepository();
 										$contact           = $contactRepository->getByEmail($informations['email']);
-										$result = !empty($contact);
-										if (empty($contact))
+										if(empty($contact))
 										{
-											$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], '');
-											$result = $contactRepository->flush($contact);
+											$contact = new ContactEntity($informations['email'], $informations['lastname'], $informations['firstname'], !empty($informations['phonenumber']) ? $informations['phonenumber'] : '');
+										}
+										else {
+											// Update contact
+											$contact->setFirstName($informations['firstname']);
+											$contact->setLastName($informations['lastname']);
+											if (!empty($informations['phonenumber'])) {
+												$contact->setPhone1($informations['phonenumber']);
+											}
 										}
 
+										$result = $contactRepository->flush($contact);
 										if ($result && !empty($contact->getId()))
 										{
 											$signers[] = [
