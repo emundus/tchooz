@@ -259,9 +259,14 @@ class EmundusHelperList
 	// @description get forms list to create action block for each users
 	// @param	int applicant user id
 	// @return 	array Menu links of all forms needed to apply
-	function getFormsList($user_id, $fnum = '0', $formids = null, $profile_id = null, $step_types = [1])
+	function getFormsList($user_id, $fnum = '0', $formids = null, $profile_id = null, $step_types = [1], $current_user_id = 0)
 	{
 		$formsList = [];
+
+		if(empty($current_user_id))
+		{
+			$current_user_id = Factory::getApplication()->getIdentity()->id;
+		}
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 		require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
@@ -332,14 +337,23 @@ class EmundusHelperList
 
 					// if evaluation is multiple and current user can read others evaluations, we need to add the form for each evaluation
 					if ($evaluation_step->multiple) {
+						$db->setQuery('SHOW COLUMNS FROM ' .$db->quoteName($evaluation_step->table).' LIKE '.$db->quote('evaluator'));
+						$evaluator_column = $db->loadResult();
+
 						$query->clear()
 							->select('DISTINCT id')
 							->from($db->quoteName($evaluation_step->table))
 							->where($db->quoteName('fnum') . ' = ' . $fnum)
 							->andWhere($db->quoteName('step_id') . ' = ' . $evaluation_step->id);
 
-						if (!EmundusHelperAccess::asAccessAction($evaluation_step->action_id, 'r', $user_id, $fnum)) {
-							$query->andWhere($db->quoteName('user_id') . ' = ' . $user_id);
+						if (!EmundusHelperAccess::asAccessAction($evaluation_step->action_id, 'r', $current_user_id, $fnum)) {
+							if(!empty($evaluator_column)) {
+								$query->andWhere($db->quoteName('evaluator') . ' = ' . $current_user_id);
+							}
+							else
+							{
+								$query->andWhere($db->quoteName('user_id') . ' = ' . $current_user_id);
+							}
 						}
 
 						$db->setQuery($query);
