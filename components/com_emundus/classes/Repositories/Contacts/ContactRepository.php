@@ -18,6 +18,7 @@ use Tchooz\Entities\Contacts\AddressEntity;
 use Tchooz\Entities\Contacts\ContactAddressEntity;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Country;
+use Tchooz\Enums\Contacts\VerifiedStatusEnum;
 use Tchooz\Factories\Contacts\ContactFactory;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -114,6 +115,9 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		if (!empty($entity->getStatus()))
 		{
 			$contact_object->status = $entity->getStatus()->value;
+		}
+		else {
+			$contact_object->status = VerifiedStatusEnum::TO_BE_VERIFIED->value;
 		}
 
 		if (empty($entity->getId()))
