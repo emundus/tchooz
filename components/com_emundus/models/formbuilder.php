@@ -987,8 +987,25 @@ class EmundusModelFormbuilder extends JModelList
 			);
 			$group       = $this->createGroup($group_label, $formid);
 
-			$eid = $this->createElement('declare', $group['group_id'], 'checkbox', 'Confirmation', '', 0, 0, 0);
-			EmundusHelperFabrik::addOption($eid, 'CONFIRM_POST', 'JYES');
+			// Create a new element for confirmation
+			$elt_name = 'e_'.$group['group_id'].'_declaration';
+			$tag = 'ELEMENT_' . $group['group_id'] . '_DECLARATION';
+			$eid = $this->createElement($elt_name, $group['group_id'], 'checkbox', $tag, '', 0, 1, 0);
+
+			$label = [
+				'fr' => 'Confirmation',
+				'en' => 'Confirmation'
+			];
+			$this->translate($tag, $label, 'fabrik_elements', $eid, 'label', $user->id);
+
+			$tag = 'ELEMENT_' . $group['group_id'] . '_DECLARATION_OPTION';
+			$label_option = [
+				'fr' => 'Je certifie l\'exactitude des données saisies et j\'envoie mon dossier',
+				'en' => 'I certify the accuracy of the data I have entered and I am sending my application.'
+			];
+			$this->translate($tag, $label_option, 'fabrik_elements', $eid, 'sublabel', $user->id);
+
+			EmundusHelperFabrik::addOption($eid, $tag, 'JYES');
 			EmundusHelperFabrik::addNotEmptyValidation($eid);
 
 			//
