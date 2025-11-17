@@ -1009,7 +1009,7 @@ class EmundusHelperEvents
 
 								foreach ($stored as $key => $store)
 								{
-									if (empty($formModel->data[$table->db_table_name . '___' . $key]) || empty($formModel->data[$table->db_table_name . '___' . $key . '_raw']))
+									if (empty($formModel->data[$table->db_table_name . '___' . $key]) || empty($formModel->data[$table->db_table_name . '___' . $key . '_raw']) || str_contains($formModel->data[$table->db_table_name . '___' . $key . '_raw'], '/'))
 									{
 										// get the element plugin, and params
 										$query->clear()
