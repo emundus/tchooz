@@ -14,7 +14,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
-use Tchooz\Enums\Emails\TagType;
+use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Interfaces\TagModifierInterface;
 
 class TagEntity
@@ -32,9 +32,9 @@ class TagEntity
 	 */
 	private array $modifiers;
 
-	private ?TagType $type;
+	private ?TagTypeEnum $type;
 
-	public function __construct(string|int $name, ?string $description = '', array $modifiers = [], ?TagType $type = TagType::STANDARD)
+	public function __construct(string|int $name, ?string $description = '', array $modifiers = [], ?TagTypeEnum $type = TagTypeEnum::STANDARD)
 	{
 		// Check if the name has not a modifier
 		if(str_contains($name, ':')) {
@@ -105,7 +105,7 @@ class TagEntity
 
 	public function getPatternName(): string
 	{
-		if($this->type === TagType::FABRIK) {
+		if($this->type === TagTypeEnum::FABRIK) {
 			return '/\$\{' . $this->name . '\}/';
 		}
 		
@@ -123,7 +123,7 @@ class TagEntity
 		} else {
 			$modifiers = '';
 		}
-		if ($this->type === TagType::FABRIK) {
+		if ($this->type === TagTypeEnum::FABRIK) {
 			return '/\$\{' . $this->name . $modifiers . '\}/';
 		}
 
@@ -181,12 +181,12 @@ class TagEntity
 		$this->modifiers[] = ['modifier' => $modifier, 'params' => $params];
 	}
 
-	public function getType(): ?TagType
+	public function getType(): ?TagTypeEnum
 	{
 		return $this->type;
 	}
 
-	public function setType(?TagType $type): void
+	public function setType(?TagTypeEnum $type): void
 	{
 		$this->type = $type;
 	}
@@ -227,7 +227,7 @@ class TagEntity
 
 		if(!empty($this->request))
 		{
-			if ($this->type === TagType::STANDARD)
+			if ($this->type === TagTypeEnum::STANDARD)
 			{
 				$value = $this->request;
 

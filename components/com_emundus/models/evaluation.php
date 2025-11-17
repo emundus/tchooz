@@ -35,7 +35,7 @@ require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Emails\TagEntity;
-use Tchooz\Enums\Emails\TagType;
+use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Traits\TraitDispatcher;
 
 class EmundusModelEvaluation extends JModelList
@@ -3688,7 +3688,7 @@ class EmundusModelEvaluation extends JModelList
 							$setupTags = [];
 							foreach ($tags as $i => $val)
 							{
-								$tag = new TagEntity($val, null, [], TagType::FABRIK);
+								$tag = new TagEntity($val, null, [], TagTypeEnum::FABRIK);
 								if(!empty($tag->getName()))
 								{
 									if (is_numeric($tag->getName())) {

@@ -13,9 +13,9 @@ use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
-use Tchooz\Enums\Fabrik\ElementDatabaseJoinDisplayType;
-use Tchooz\Enums\Fabrik\ElementPlugin;
-use Tchooz\Enums\ValueFormat;
+use Tchooz\Enums\Fabrik\ElementDatabaseJoinDisplayTypeEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Services\Automation\FieldTransformer;
 use Tchooz\Traits\TraitTable;
@@ -193,7 +193,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 				}
 				$helper = new EmundusHelperFabrik();
 
-				$elementValue = $helper->getFabrikElementValue((array)$element, $context->getFile(), 0, ValueFormat::RAW, $context->getUserId());
+				$elementValue = $helper->getFabrikElementValue((array)$element, $context->getFile(), 0, ValueFormatEnum::RAW, $context->getUserId());
 
 				if (!empty($context->getFile()))
 				{
@@ -212,11 +212,11 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 				{
 					switch($element->plugin)
 					{
-						case ElementPlugin::CHECKBOX->value:
-						case ElementPlugin::DATABASEJOIN->value:
-						case ElementPlugin::DROPDOWN->value:
+						case ElementPluginEnum::CHECKBOX->value:
+						case ElementPluginEnum::DATABASEJOIN->value:
+						case ElementPluginEnum::DROPDOWN->value:
 							$params = json_decode($element->params, true);
-							if ($element->plugin === ElementPlugin::CHECKBOX->value ||  (!empty($params['multiple']) && $params['multiple'] == 1))
+							if ($element->plugin === ElementPluginEnum::CHECKBOX->value ||  (!empty($params['multiple']) && $params['multiple'] == 1))
 							{
 								$foundValue = json_decode($foundValue, true) ?? [];
 							}
@@ -255,10 +255,10 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 
 		if (!empty($element)) {
 			switch ($element->plugin) {
-				case ElementPlugin::DATABASEJOIN->value:
+				case ElementPluginEnum::DATABASEJOIN->value:
 					$elementParams = json_decode($element->params);
 
-					if (ElementDatabaseJoinDisplayType::isMultiSelect($elementParams->database_join_display_type)) {
+					if (ElementDatabaseJoinDisplayTypeEnum::isMultiSelect($elementParams->database_join_display_type)) {
 						if (!empty($element->table_join)) {
 							$columns[] = $element->table_join . '.' . $element->name;
 						}
@@ -285,7 +285,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 			if (!empty($element))
 			{
 				$elementParams = json_decode($element->params);
-				if ($element->plugin === ElementPlugin::DATABASEJOIN->value && ElementDatabaseJoinDisplayType::isMultiSelect($elementParams->database_join_display_type))
+				if ($element->plugin === ElementPluginEnum::DATABASEJOIN->value && ElementDatabaseJoinDisplayTypeEnum::isMultiSelect($elementParams->database_join_display_type))
 				{
 					$joins[] = new TableJoin($element->db_table_name, $element->db_table_name, 'fnum', 'fnum', $this->getTableAlias(self::class), 'INNER');
 

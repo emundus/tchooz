@@ -64,6 +64,12 @@
 			</div>
 		</div>
 
+		<div class="tw-mb-6 tw-flex tw-items-center tw-justify-between">
+			<Button v-if="sysadmin" variant="primary" width="fit" @click="reloadLanguages()">
+				{{ translate('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_RELOAD_LANGUAGES') }}
+			</Button>
+		</div>
+
 		<div class="em-page-loader" v-if="loading"></div>
 	</div>
 </template>
@@ -73,13 +79,19 @@ import client from '@/services/axiosClient';
 import translationsService from '@/services/translations';
 import Multiselect from 'vue-multiselect';
 import Swal from 'sweetalert2';
+import Button from '@/components/Atoms/Button.vue';
+import { useGlobalStore } from '@/stores/global.js';
+
+import alerts from '@/mixins/alerts.js';
 
 export default {
 	name: 'global',
 	props: {},
 	components: {
+		Button,
 		Multiselect,
 	},
+	mixins: [alerts],
 	data() {
 		return {
 			defaultLang: null,
@@ -179,6 +191,21 @@ export default {
 					},
 				});
 			}
+		},
+		async reloadLanguages() {
+			translationsService.reloadTranslations().then(async (response) => {
+				if (response.data.status) {
+					await this.alertSuccess('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_RELOAD_TRANSLATIONS_SUCCESS');
+				} else {
+					await this.alertError('COM_EMUNDUS_ONBOARD_TRANSLATION_TOOL_RELOAD_TRANSLATIONS_ERROR');
+				}
+			});
+		},
+	},
+	computed: {
+		sysadmin: function () {
+			const globalStore = useGlobalStore();
+			return parseInt(globalStore.hasSysadminAccess);
 		},
 	},
 };

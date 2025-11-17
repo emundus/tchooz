@@ -17,7 +17,7 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\QueryInterface;
 use Joomla\Registry\Registry;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Factories\ApplicationFile\ApplicationChoicesFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
@@ -90,7 +90,7 @@ class ChoicesModel extends ListModel
 		$fnum = trim($this->getState('filter.fnum'));
 		$state = trim($this->getState('filter.state'));
 		if(!empty($state)) {
-			$state = ChoicesState::isValidState($state);
+			$state = ChoicesStateEnum::isValidState($state);
 		}
 		else {
 			$state = null;

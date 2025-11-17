@@ -15,7 +15,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Entities\Campaigns\CampaignEntity;
-use Tchooz\Enums\ApplicationFile\ChoicesState;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
@@ -144,7 +144,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->assertTrue($flushed);
 
 		// Update status of choice
-		$applicationChoice->setState(ChoicesState::WAITING);
+		$applicationChoice->setState(ChoicesStateEnum::WAITING);
 		$flushed = $this->model->flush($applicationChoice);
 		$this->assertTrue($flushed);
 
@@ -270,17 +270,17 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->assertEquals($applicationChoice->getId(), $choices[0]->getId());
 
 		// Add another choice
-		$applicationChoice2 = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[1], 0, ChoicesState::ACCEPTED);
+		$applicationChoice2 = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[1], 0, ChoicesStateEnum::ACCEPTED);
 		$this->model->flush($applicationChoice2);
 		$choices = $this->model->getChoicesByFnum($this->dataset['fnum']);
 		$this->assertIsArray($choices);
 		$this->assertCount(2, $choices);
 
 		// Filter on accepted state
-		$acceptedChoices = $this->model->getChoicesByFnum($this->dataset['fnum'], [], ChoicesState::ACCEPTED);
+		$acceptedChoices = $this->model->getChoicesByFnum($this->dataset['fnum'], [], ChoicesStateEnum::ACCEPTED);
 		$this->assertIsArray($acceptedChoices);
 		$this->assertCount(1, $acceptedChoices);
-		$this->assertEquals(ChoicesState::ACCEPTED, $acceptedChoices[0]->getState());
+		$this->assertEquals(ChoicesStateEnum::ACCEPTED, $acceptedChoices[0]->getState());
 
 		$this->clearFixtures();
 	}

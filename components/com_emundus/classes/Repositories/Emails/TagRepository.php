@@ -23,7 +23,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
 use Tchooz\Attributes\TableAttribute;
-use Tchooz\Enums\Fabrik\ElementPlugin;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_setup_tags')]
@@ -300,9 +300,9 @@ final class TagRepository
 								continue;
 							}
 
-							$plugin       = ElementPlugin::tryFrom($value->element_plugin);
+							$plugin       = ElementPluginEnum::tryFrom($value->element_plugin);
 							$plugin_label = !empty($plugin) ? Text::_($plugin->getLabel()) : $value->element_plugin;
-							if ($plugin->value === ElementPlugin::PANEL->value)
+							if ($plugin->value === ElementPluginEnum::PANEL->value)
 							{
 								// Display 25 first characters of default column
 								$default_label = strip_tags($value->element_default);
@@ -394,9 +394,9 @@ final class TagRepository
 								continue;
 							}
 
-							$plugin       = ElementPlugin::tryFrom($value->element_plugin);
+							$plugin       = ElementPluginEnum::tryFrom($value->element_plugin);
 							$plugin_label = !empty($plugin) ? Text::_($plugin->getLabel()) : $value->element_plugin;
-							if ($plugin->value === ElementPlugin::PANEL->value)
+							if ($plugin->value === ElementPluginEnum::PANEL->value)
 							{
 								// Display 25 first characters of default column
 								$default_label = strip_tags($value->element_default);

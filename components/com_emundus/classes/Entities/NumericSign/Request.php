@@ -10,8 +10,8 @@
 namespace Tchooz\Entities\NumericSign;
 
 use Tchooz\Entities\Attachments\AttachmentType;
-use Tchooz\Enums\NumericSign\SignConnectors;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignConnectorsEnum;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 
 class Request
 {
@@ -23,7 +23,7 @@ class Request
 
 	private int $signed_upload_id = 0;
 
-	private SignStatus $status = SignStatus::TO_SIGN;
+	private SignStatusEnum $status = SignStatusEnum::TO_SIGN;
 
 	private int $stepsCount = 0;
 
@@ -33,7 +33,7 @@ class Request
 
 	private string $fnum = '';
 
-	private SignConnectors $connector = SignConnectors::YOUSIGN;
+	private SignConnectorsEnum $connector = SignConnectorsEnum::YOUSIGN;
 
 	private string $createdAt;
 
@@ -97,20 +97,20 @@ class Request
 		$this->signed_upload_id = $signed_upload_id;
 	}
 
-	public function getStatus(): SignStatus
+	public function getStatus(): SignStatusEnum
 	{
 		return $this->status;
 	}
 
-	public function setStatus(SignStatus|string $status): self
+	public function setStatus(SignStatusEnum|string $status): self
 	{
 		try
 		{
 			if (is_string($status))
 			{
-				$status = SignStatus::from($status);
+				$status = SignStatusEnum::from($status);
 			}
-			elseif (!($status instanceof SignStatus))
+			elseif (!($status instanceof SignStatusEnum))
 			{
 				throw new \InvalidArgumentException('Invalid status type');
 			}
@@ -185,20 +185,20 @@ class Request
 		$this->createdBy = $createdBy;
 	}
 
-	public function getConnector(): SignConnectors
+	public function getConnector(): SignConnectorsEnum
 	{
 		return $this->connector;
 	}
 
-	public function setConnector(SignConnectors|string $connector): self
+	public function setConnector(SignConnectorsEnum|string $connector): self
 	{
 		try
 		{
 			if (is_string($connector))
 			{
-				$connector = SignConnectors::from($connector);
+				$connector = SignConnectorsEnum::from($connector);
 			}
-			elseif (!($connector instanceof SignConnectors))
+			elseif (!($connector instanceof SignConnectorsEnum))
 			{
 				throw new \InvalidArgumentException('Invalid connector type');
 			}

@@ -11,7 +11,7 @@ namespace Unit\Component\Emundus\Class\Repositories\Contacts;
 
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Contacts\ContactEntity;
-use Tchooz\Enums\Contacts\Gender;
+use Tchooz\Enums\Contacts\GenderEnum;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\ContactCountryRepository;
 use Tchooz\Repositories\CountryRepository;
@@ -59,7 +59,7 @@ class ContactCountryRepositoryTest extends UnitTestCase
 			firstname: 'Tester',
 			phone_1: '0102030405',
 			birth: '1988-05-14',
-			gender: Gender::MAN,
+			gender: GenderEnum::MAN,
 			countries: []
 		);
 		$this->contactRepository->flush($contact);

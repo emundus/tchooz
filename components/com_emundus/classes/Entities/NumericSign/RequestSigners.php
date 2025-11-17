@@ -10,8 +10,8 @@
 namespace Tchooz\Entities\NumericSign;
 
 use Tchooz\Entities\Contacts\ContactEntity;
-use Tchooz\Enums\NumericSign\SignAuthenticationLevel;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignAuthenticationLevelEnum;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 
 class RequestSigners
 {
@@ -19,7 +19,7 @@ class RequestSigners
 
 	private Request $request;
 
-	private SignStatus $status = SignStatus::TO_SIGN;
+	private SignStatusEnum $status = SignStatusEnum::TO_SIGN;
 
 	private string $signedAt = '';
 
@@ -31,15 +31,15 @@ class RequestSigners
 
 	private string $position = '';
 
-	private SignAuthenticationLevel $authenticationLevel = SignAuthenticationLevel::STANDARD;
+	private SignAuthenticationLevelEnum $authenticationLevel = SignAuthenticationLevelEnum::STANDARD;
 
-	public function __construct(Request $request, ContactEntity $contact, SignStatus|string $status = null)
+	public function __construct(Request $request, ContactEntity $contact, SignStatusEnum|string $status = null)
 	{
 		$this->request = $request;
 		$this->contact = $contact;
 		if (!empty($status))
 		{
-			$this->status = $status instanceof SignStatus ? $status : SignStatus::from($status);
+			$this->status = $status instanceof SignStatusEnum ? $status : SignStatusEnum::from($status);
 		}
 	}
 
@@ -63,18 +63,18 @@ class RequestSigners
 		$this->request = $request;
 	}
 
-	public function getStatus(): SignStatus
+	public function getStatus(): SignStatusEnum
 	{
 		return $this->status;
 	}
 
-	public function setStatus(SignStatus|string $status): self
+	public function setStatus(SignStatusEnum|string $status): self
 	{
 		if (is_string($status))
 		{
-			$status = SignStatus::from($status);
+			$status = SignStatusEnum::from($status);
 		}
-		elseif (!($status instanceof SignStatus))
+		elseif (!($status instanceof SignStatusEnum))
 		{
 			throw new \InvalidArgumentException('Invalid status type');
 		}
@@ -134,18 +134,18 @@ class RequestSigners
 		$this->position = $position;
 	}
 
-	public function getAuthenticationLevel(): SignAuthenticationLevel
+	public function getAuthenticationLevel(): SignAuthenticationLevelEnum
 	{
 		return $this->authenticationLevel;
 	}
 
-	public function setAuthenticationLevel(SignAuthenticationLevel|string $authenticationLevel): self
+	public function setAuthenticationLevel(SignAuthenticationLevelEnum|string $authenticationLevel): self
 	{
 		if (is_string($authenticationLevel))
 		{
-			$authenticationLevel = SignAuthenticationLevel::from($authenticationLevel);
+			$authenticationLevel = SignAuthenticationLevelEnum::from($authenticationLevel);
 		}
-		elseif (!($authenticationLevel instanceof SignAuthenticationLevel))
+		elseif (!($authenticationLevel instanceof SignAuthenticationLevelEnum))
 		{
 			throw new \InvalidArgumentException('Invalid authentication level type');
 		}

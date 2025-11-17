@@ -12,7 +12,7 @@ namespace Tchooz\Entities\Campaigns;
 use DateTime;
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Programs\ProgramEntity;
-use Tchooz\Enums\Campaigns\Status;
+use Tchooz\Enums\Campaigns\StatusEnum;
 
 class CampaignEntity
 {
@@ -44,7 +44,7 @@ class CampaignEntity
 
 	private ?CampaignEntity $parent;
 
-	private Status $status;
+	private StatusEnum $status;
 
 	private string $timezone;
 
@@ -75,11 +75,11 @@ class CampaignEntity
 		
 		$currentDate = new DateTime('now', $timezone);
 		if ($currentDate < $this->start_date) {
-			$this->status = Status::UPCCOMING;
+			$this->status = StatusEnum::UPCCOMING;
 		} elseif ($currentDate >= $this->start_date && $currentDate <= $this->end_date) {
-			$this->status = Status::OPEN;
+			$this->status = StatusEnum::OPEN;
 		} else {
-			$this->status = Status::CLOSED;
+			$this->status = StatusEnum::CLOSED;
 		}
 	}
 
@@ -223,12 +223,12 @@ class CampaignEntity
 		$this->parent = $parent;
 	}
 
-	public function getStatus(): Status
+	public function getStatus(): StatusEnum
 	{
 		return $this->status;
 	}
 
-	public function setStatus(Status $status): void
+	public function setStatus(StatusEnum $status): void
 	{
 		$this->status = $status;
 	}
