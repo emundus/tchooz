@@ -9,7 +9,7 @@
 
 namespace Tchooz\Factories;
 
-use Tchooz\Enums\Fabrik\ElementPlugin;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Interfaces\FabrikTransformerInterface;
 use Tchooz\Transformers\BirthdayTransformer;
 use Tchooz\Transformers\CheckboxTransformer;
@@ -24,16 +24,16 @@ class TransformerFactory
 	public static function make(string $plugin, array $fabrikElementParams = [], array $groupParams = []): FabrikTransformerInterface
 	{
 		$normalized = strtolower(trim($plugin));
-		if(!$pluginElement = ElementPlugin::tryFromString($normalized))
+		if(!$pluginElement = ElementPluginEnum::tryFromString($normalized))
 		{
 			return new DefaultTransformer();
 		}
 
 		return match ($normalized) {
-			ElementPlugin::CHECKBOX->value, ElementPlugin::DROPDOWN->value, ElementPlugin::RADIO->value => new ChoicesTransformer($fabrikElementParams, $pluginElement),
-			ElementPlugin::BIRTHDAY->value => new BirthdayTransformer($fabrikElementParams['details_date_format'] ?? ($fabrikElementParams['list_date_format'] ?? 'Y-m-d')),
-			ElementPlugin::PHONENUMBER->value => new PhoneTransformer(),
-			ElementPlugin::YESNO->value => new YesNoTransformer(),
+			ElementPluginEnum::CHECKBOX->value, ElementPluginEnum::DROPDOWN->value, ElementPluginEnum::RADIO->value => new ChoicesTransformer($fabrikElementParams, $pluginElement),
+			ElementPluginEnum::BIRTHDAY->value => new BirthdayTransformer($fabrikElementParams['details_date_format'] ?? ($fabrikElementParams['list_date_format'] ?? 'Y-m-d')),
+			ElementPluginEnum::PHONENUMBER->value => new PhoneTransformer(),
+			ElementPluginEnum::YESNO->value => new YesNoTransformer(),
 			default => new DefaultTransformer(),
 		};
 	}

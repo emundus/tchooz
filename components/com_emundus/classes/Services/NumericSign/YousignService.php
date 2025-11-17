@@ -14,8 +14,8 @@ use Joomla\CMS\User\User;
 use Smalot\PdfParser\Parser;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\YousignRequests;
-use Tchooz\Enums\ApiStatus;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\ApiStatusEnum;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\NumericSign\YousignRequestsRepository;
@@ -133,9 +133,9 @@ class YousignService
 							$api_request = reset($api_request);
 						}
 
-						if ($request->getStatus() === SignStatus::CANCELLED && $api_request->status !== 'canceled')
+						if ($request->getStatus() === SignStatusEnum::CANCELLED && $api_request->status !== 'canceled')
 						{
-							$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatus::PROCESSING);
+							$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatusEnum::PROCESSING);
 							if ($api_request->status === 'draft')
 							{
 								$this->yousign_synchronizer->deleteRequest($yousign_request->getProcedureId());
@@ -151,7 +151,7 @@ class YousignService
 									'application_file' => $application_file
 								]);
 							}
-							$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatus::CANCELLED);
+							$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatusEnum::CANCELLED);
 
 							$api_request->status = 'canceled';
 						}
@@ -165,7 +165,7 @@ class YousignService
 								case 'ongoing':
 									try
 									{
-										$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatus::PROCESSING);
+										$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatusEnum::PROCESSING);
 
 										// Check if we have documents to sign
 										if (empty($yousign_request->getDocumentId()) && !empty($request->getAttachment()))
@@ -212,11 +212,11 @@ class YousignService
 											}
 										}
 
-										$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatus::COMPLETED);
+										$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatusEnum::COMPLETED);
 									}
 									catch (\Exception $e)
 									{
-										$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatus::FAILED);
+										$this->yousign_repository->updateApiStatus($yousign_request->getId(), ApiStatusEnum::FAILED);
 										throw $e;
 									}
 
@@ -266,7 +266,7 @@ class YousignService
 			$yousign_request_name = $application_file['name'] . ' - ' . $request->getAttachment()->getName();
 			$yousign_request->setName($yousign_request_name);
 			$yousign_request->setRequest($request);
-			$yousign_request->setApiStatus(ApiStatus::PENDING);
+			$yousign_request->setApiStatus(ApiStatusEnum::PENDING);
 			$yousign_request->setId($this->yousign_repository->flush($yousign_request));
 			if(!empty($expiration_date))
 			{
@@ -454,13 +454,13 @@ class YousignService
 							case 'notified':
 								if (!in_array($request_signer->status, ['to_sign', 'reminder_sent']))
 								{
-									$this->request_signers_repository->updateStatus($request_signer->id, SignStatus::TO_SIGN);
+									$this->request_signers_repository->updateStatus($request_signer->id, SignStatusEnum::TO_SIGN);
 								}
 
 								if ($request->getSendReminder() === 1)
 								{
 									$this->yousign_synchronizer->sendReminder($yousign_request->getProcedureId(), $api_signer->id);
-									$this->request_signers_repository->updateStatus($request_signer->id, SignStatus::REMINDER_SENT);
+									$this->request_signers_repository->updateStatus($request_signer->id, SignStatusEnum::REMINDER_SENT);
 
 									$this->dispatchJoomlaEvent('onYousignSendReminder', [
 										'status'           => 'success',
@@ -473,7 +473,7 @@ class YousignService
 							case 'signed':
 								if ($request_signer->status !== 'signed')
 								{
-									$this->request_signers_repository->updateStatus($request_signer->id, SignStatus::SIGNED);
+									$this->request_signers_repository->updateStatus($request_signer->id, SignStatusEnum::SIGNED);
 								}
 								break;
 							default:
@@ -527,14 +527,14 @@ class YousignService
 					{
 						// Create upload row
 						$upload_id = $this->request_repository->uploadFile($filename, $request, $application_file, $this->user, filesize($applicant_path));
-						if ($this->request_repository->updateStatus($request->getId(), SignStatus::SIGNED))
+						if ($this->request_repository->updateStatus($request->getId(), SignStatusEnum::SIGNED))
 						{
 							// Update status of each signers not signed
 							foreach ($request->getSigners() as $signer)
 							{
 								if ($signer->status !== 'signed')
 								{
-									$this->request_signers_repository->updateStatus($signer->id, SignStatus::SIGNED);
+									$this->request_signers_repository->updateStatus($signer->id, SignStatusEnum::SIGNED);
 								}
 							}
 

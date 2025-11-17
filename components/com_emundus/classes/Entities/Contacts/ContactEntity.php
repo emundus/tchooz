@@ -12,7 +12,7 @@ namespace Tchooz\Entities\Contacts;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Country;
 use Tchooz\Enums\Contacts\VerifiedStatusEnum;
-use Tchooz\Enums\Contacts\Gender;
+use Tchooz\Enums\Contacts\GenderEnum;
 
 class ContactEntity
 {
@@ -30,7 +30,7 @@ class ContactEntity
 
 	private ?string $birthdate;
 
-	private ?Gender $gender;
+	private ?GenderEnum $gender;
 
 	private ?VerifiedStatusEnum $status;
 
@@ -50,7 +50,7 @@ class ContactEntity
 
 	private ?string $service;
 
-	public function __construct(string $email, string $lastname, string $firstname, ?string $phone_1 = null, ?int $id = 0, ?int $user_id = 0, ?array $addresses = null, ?string $birth = null, Gender|string|null $gender = null, ?string $fonction = null, ?string $service = null, ?array $countries = null, ?array $organizations = null, ?array $application_files = null, ?string $profile_picture = null, bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED)
+	public function __construct(string $email, string $lastname, string $firstname, ?string $phone_1 = null, ?int $id = 0, ?int $user_id = 0, ?array $addresses = null, ?string $birth = null, GenderEnum|string|null $gender = null, ?string $fonction = null, ?string $service = null, ?array $countries = null, ?array $organizations = null, ?array $application_files = null, ?string $profile_picture = null, bool $published = true, ?VerifiedStatusEnum $status = VerifiedStatusEnum::VERIFIED)
 	{
 		$this->email     = $email;
 		$this->lastname  = $lastname;
@@ -63,11 +63,11 @@ class ContactEntity
 		$this->service  = $service;
 		$this->status = $status;
 
-		if($gender instanceof Gender || is_null($gender)) {
+		if($gender instanceof GenderEnum || is_null($gender)) {
 			$this->gender = $gender;
 		}
 		else {
-			$this->gender = Gender::from($gender) ?? null;
+			$this->gender = GenderEnum::from($gender) ?? null;
 		}
 
 		if(!empty($countries))
@@ -206,12 +206,12 @@ class ContactEntity
 		$this->birthdate = $birthdate;
 	}
 
-	public function getGender(): ?Gender
+	public function getGender(): ?GenderEnum
 	{
 		return $this->gender;
 	}
 
-	public function setGender(?Gender $gender): void
+	public function setGender(?GenderEnum $gender): void
 	{
 		$this->gender = $gender;
 	}

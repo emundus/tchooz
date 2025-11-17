@@ -40,6 +40,13 @@
     />
 
     <field
+            showon="signer_type!:applicant[AND]signer_type!:collaborators"
+            name="signer_phonenumber"
+            type="text"
+            label="PLG_EMUNDUSCUSTOMACTIONS_FIELD_SIGNER_FIXED_PHONENUMBER_LABEL"
+    />
+
+    <field
             showon="signer_connector:yousign"
             name="signer_authentication_level"
             type="list"

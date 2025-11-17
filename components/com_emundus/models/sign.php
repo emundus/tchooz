@@ -16,8 +16,8 @@ use Joomla\CMS\User\User;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
-use Tchooz\Enums\NumericSign\SignAuthenticationLevel;
-use Tchooz\Enums\NumericSign\SignStatus;
+use Tchooz\Enums\NumericSign\SignAuthenticationLevelEnum;
+use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
@@ -192,7 +192,7 @@ class EmundusModelSign extends ListModel
 
 						if(!empty($contact))
 						{
-							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevel::STANDARD->value);
+							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value);
 						}
 					}
 				}
@@ -212,7 +212,7 @@ class EmundusModelSign extends ListModel
 		}
 	}
 
-	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevel::STANDARD->value): int
+	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value): int
 	{
 		try
 		{
@@ -297,7 +297,7 @@ class EmundusModelSign extends ListModel
 				$request_signers_repository = new RequestSignersRepository($this->db);
 				foreach ($signers as $signer)
 				{
-					$cancel = $request_signers_repository->updateStatus($signer->id, SignStatus::CANCELLED);
+					$cancel = $request_signers_repository->updateStatus($signer->id, SignStatusEnum::CANCELLED);
 				}
 			}
 
@@ -610,7 +610,7 @@ class EmundusModelSign extends ListModel
 
 			foreach ($status as $statu)
 			{
-				$statu->label = SignStatus::from($statu->label)->getLabel();
+				$statu->label = SignStatusEnum::from($statu->label)->getLabel();
 			}
 
 			return $status;

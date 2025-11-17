@@ -26,8 +26,8 @@ use Joomla\CMS\Uri\Uri;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
-use Tchooz\Enums\Fabrik\ElementPlugin;
-use Tchooz\Enums\ValueFormat;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
 
 /**
@@ -1922,7 +1922,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						if ((!empty($fnum) && in_array('fnum', $columns)) || (!empty($user_id) && in_array('user', $columns) || in_array('user_id', $columns)))
 						{
 							$element      = (array) $element;
-							$fabrik_value = $this->getFabrikElementValue($element, $fnum, 0, ValueFormat::BOTH, $user_id);
+							$fabrik_value = $this->getFabrikElementValue($element, $fnum, 0, ValueFormatEnum::BOTH, $user_id);
 							if (!empty($fabrik_value[$element['id']]))
 							{
 								if (!empty($fnum) && !empty($fabrik_value[$element['id']][$fnum]) && !is_null($fabrik_value[$element['id']][$fnum]['raw']) && $fabrik_value[$element['id']][$fnum]['raw'] != '')
@@ -2898,14 +2898,14 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 	}
 
 	public function getFabrikElementValue(
-		array       $fabrik_element,
-		?string     $fnum = null,
-		int         $row_id = 0,
-		ValueFormat $return = ValueFormat::FORMATTED,
-		int         $user_id = 0,
+		array           $fabrik_element,
+		?string         $fnum = null,
+		int             $row_id = 0,
+		ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
+		int             $user_id = 0,
 	): array
 	{
-		$isRaw = $return === ValueFormat::RAW;
+		$isRaw = $return === ValueFormatEnum::RAW;
 
 		$value = [
 			'raw' => '',
@@ -2917,7 +2917,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			return $value;
 		}
 
-		$plugin = ElementPlugin::tryFromString($fabrik_element['plugin']);
+		$plugin = ElementPluginEnum::tryFromString($fabrik_element['plugin']);
 		if ($plugin === null || empty($fabrik_element['params']) || empty($fabrik_element['group_params']))
 		{
 			return $value;
@@ -2940,7 +2940,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
 
-		if ($plugin === ElementPlugin::DATABASEJOIN || $isRepeatGroup)
+		if ($plugin === ElementPluginEnum::DATABASEJOIN || $isRepeatGroup)
 		{
 			$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id);
 		}
@@ -2956,7 +2956,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$value[$fabrik_element['id']][$fnumKey]['raw'] = $val['raw'] ?? $val['val'];
 			$value[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
 
-			if ($return === ValueFormat::FORMATTED || $return === ValueFormat::BOTH)
+			if ($return === ValueFormatEnum::FORMATTED || $return === ValueFormatEnum::BOTH)
 			{
 				$formatted_values = [];
 
@@ -2966,7 +2966,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				}
 				foreach ($values as $_value)
 				{
-					if ($plugin === ElementPlugin::CURRENCY)
+					if ($plugin === ElementPluginEnum::CURRENCY)
 					{
 						$formatted_values[] = self::extractNumericValue($_value);
 					}
@@ -3012,7 +3012,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		object            $params,
 		bool              $groupRepeat,
 		int               $parent_row_id = 0,
-		ValueFormat       $return = ValueFormat::FORMATTED,
+		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
 		?string           $date_format = null,
 		int               $user_id = 0
 	)
@@ -3030,7 +3030,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
 
-		$plugin = ElementPlugin::tryFromString($elt['plugin']);
+		$plugin = ElementPluginEnum::tryFromString($elt['plugin']);
 		if ($plugin === null)
 		{
 			return [];
@@ -3040,7 +3040,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$tableJoin      = $elt['table_join'];
 		$name           = $elt['name'];
 		$isFnumsNull    = ($fnums === null || (is_array($fnums) && count($fnums) === 0));
-		$isDatabaseJoin = ($plugin === ElementPlugin::DATABASEJOIN);
+		$isDatabaseJoin = ($plugin === ElementPluginEnum::DATABASEJOIN);
 		$isMulti        = isset($params->database_join_display_type) && ($params->database_join_display_type == 'multilist' || $params->database_join_display_type == 'checkbox');
 
 		$select   = '';
@@ -3054,11 +3054,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.user_id as user_val';
 			$date_form_format = $this->dateFormatToMysql($date_format);
 
-			if ($return === ValueFormat::BOTH)
+			if ($return === ValueFormatEnum::BOTH)
 			{
 				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, ' . $select_origin_val;
 			}
-			elseif ($return === ValueFormat::RAW)
+			elseif ($return === ValueFormatEnum::RAW)
 			{
 				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val;
 			}
@@ -3077,11 +3077,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				{
 					$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_table.user_id as user_val';
 
-					if ($return === ValueFormat::BOTH)
+					if ($return === ValueFormatEnum::BOTH)
 					{
 						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 					}
-					elseif ($return === ValueFormat::RAW)
+					elseif ($return === ValueFormatEnum::RAW)
 					{
 						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 					}
@@ -3097,11 +3097,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 					if ($isMulti)
 					{
-						if ($return === ValueFormat::BOTH)
+						if ($return === ValueFormatEnum::BOTH)
 						{
 							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 						}
-						elseif ($return === ValueFormat::RAW)
+						elseif ($return === ValueFormatEnum::RAW)
 						{
 							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 						}
@@ -3112,11 +3112,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 					else
 					{
-						if ($return === ValueFormat::BOTH)
+						if ($return === ValueFormatEnum::BOTH)
 						{
 							$select = 't_origin.' . $params->join_key_column . ' as raw, t_origin.' . $params->join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
-						elseif ($return === ValueFormat::RAW)
+						elseif ($return === ValueFormatEnum::RAW)
 						{
 							$select = 't_origin.' . $params->join_key_column . ' as val, ' . $select_origin_val . ' ';
 						}
@@ -3131,11 +3131,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			{
 				$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.user_id as user_val';
 
-				if ($return === ValueFormat::BOTH)
+				if ($return === ValueFormatEnum::BOTH)
 				{
 					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 				}
-				elseif ($return === ValueFormat::RAW)
+				elseif ($return === ValueFormatEnum::RAW)
 				{
 					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
 				}
@@ -3311,7 +3311,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		string            $name,
 		?string           $dateFormat = null,
 		int               $row_id = 0,
-		ValueFormat       $return = ValueFormat::FORMATTED,
+		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
 		int               $user_id = 0
 	): array
 	{
@@ -3365,7 +3365,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$db->setQuery($query);
 				$rows = $db->loadAssocList('fnum');
 
-				if ($return === ValueFormat::BOTH)
+				if ($return === ValueFormatEnum::BOTH)
 				{
 					foreach ($rows as $fnumKey => $row)
 					{
@@ -3384,7 +3384,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						];
 					}
 				}
-				elseif ($return === ValueFormat::RAW)
+				elseif ($return === ValueFormatEnum::RAW)
 				{
 					// keep legacy shape: val => raw value
 					foreach ($rows as $fnumKey => $row)
@@ -3442,7 +3442,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					if ($row !== null)
 					{
 						$raw = $row['val'];
-						if ($return === ValueFormat::BOTH)
+						if ($return === ValueFormatEnum::BOTH)
 						{
 							$formatted = $raw;
 							if (!empty($dateFormat) && $raw !== null && $raw !== '')
@@ -3456,7 +3456,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 								'fnum' => $user_id
 							];
 						}
-						elseif ($return === ValueFormat::RAW)
+						elseif ($return === ValueFormatEnum::RAW)
 						{
 							$values[$user_id] = [
 								'val'  => $raw,
@@ -3506,7 +3506,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 							$db->setQuery($query);
 							$value = $db->loadResult();
 
-							if ($return === ValueFormat::BOTH)
+							if ($return === ValueFormatEnum::BOTH)
 							{
 								$raw       = $value;
 								$formatted = $raw;
@@ -3521,7 +3521,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 									'fnum' => $fnum
 								];
 							}
-							elseif ($return === ValueFormat::RAW)
+							elseif ($return === ValueFormatEnum::RAW)
 							{
 								$values[$fnum] = [
 									'val'  => $value,

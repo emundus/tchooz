@@ -39,7 +39,6 @@ workspace.xml
 
 # ADMINISTRATOR
 !/administrator/cache/autoload_psr4.php
-!/administrator/cache/autoload_tables.php
 /administrator/cache/*
 /administrator/language/overrides/*
 ## LOGS

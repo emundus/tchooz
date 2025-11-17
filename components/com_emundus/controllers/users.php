@@ -23,7 +23,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
-use Tchooz\Enums\Crud;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Traits\TraitResponse;
 
@@ -1866,7 +1866,7 @@ class EmundusControllerUsers extends BaseController
 		$fnum   = $this->input->getString('fnum', '');
 
 		// Check if CRUD is correct
-		if (!Crud::tryFrom($crud))
+		if (!CrudEnum::tryFrom($crud))
 		{
 			echo json_encode(array('status' => false, 'msg' => 'Invalid CRUD parameter', 'right' => false));
 			exit;

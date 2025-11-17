@@ -39,7 +39,7 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
-use Tchooz\Enums\ValueFormat;
+use Tchooz\Enums\ValueFormatEnum;
 
 /**
  * Class EmundusModelFiles
@@ -4377,9 +4377,9 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		$helper = new EmundusHelperFabrik();
 
-		$format = ValueFormat::FORMATTED;
+		$format = ValueFormatEnum::FORMATTED;
 		if ($rawValue) {
-			$format = ValueFormat::RAW;
+			$format = ValueFormatEnum::RAW;
 		}
 		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format);
 	}
@@ -4399,9 +4399,9 @@ class EmundusModelFiles extends JModelLegacy
 		}
 		$helper = new EmundusHelperFabrik();
 
-		$format = ValueFormat::FORMATTED;
+		$format = ValueFormatEnum::FORMATTED;
 		if ($rawValue) {
-			$format = ValueFormat::RAW;
+			$format = ValueFormatEnum::RAW;
 		}
 		return $helper->getFabrikValue($fnums, $tableName, $name, $dateFormat, $row_id, $format);
 	}

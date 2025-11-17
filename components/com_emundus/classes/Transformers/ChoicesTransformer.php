@@ -10,16 +10,16 @@
 namespace Tchooz\Transformers;
 
 use Joomla\CMS\Language\Text;
-use Tchooz\Enums\Fabrik\ElementPlugin;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Interfaces\FabrikTransformerInterface;
 
 class ChoicesTransformer implements FabrikTransformerInterface
 {
 	protected array $params;
 
-	protected ElementPlugin $plugin;
+	protected ElementPluginEnum $plugin;
 
-	public function __construct(array $params, ElementPlugin $plugin)
+	public function __construct(array $params, ElementPluginEnum $plugin)
 	{
 		$this->params = $params;
 		$this->plugin = $plugin;
@@ -27,7 +27,7 @@ class ChoicesTransformer implements FabrikTransformerInterface
 
 	public function transform(mixed $value): string
 	{
-		if ($this->plugin === ElementPlugin::CHECKBOX || (!empty($this->params['multiple']) && $this->params['multiple'] == 1))
+		if ($this->plugin === ElementPluginEnum::CHECKBOX || (!empty($this->params['multiple']) && $this->params['multiple'] == 1))
 		{
 			$decoded = json_decode($value);
 			$arr     = is_array($decoded) ? $decoded : [];
