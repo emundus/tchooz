@@ -27,5 +27,4 @@ class ActionTargetFactory
 
 		return $actionTarget;
 	}
-
 }

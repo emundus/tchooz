@@ -111,7 +111,7 @@ export default {
 		});
 
 		if (this.automation.conditions_groups.length === 0) {
-			this.addConditionGroup();
+      this.automation.conditions_groups.push(newConditionGroup());
 		}
 	},
 	methods: {
@@ -135,9 +135,6 @@ export default {
 					this.alertError('COM_EMUNDUS_AUTOMATION_CONDITIONS_ERROR', response.msg);
 				}
 			});
-		},
-		getSubConditionGroups(parentId) {
-			return this.automation.conditions_groups.filter((group) => group.parent_id === parentId);
 		},
 		onSelectEvent(event) {
 			this.automation.event = event;
@@ -175,10 +172,10 @@ export default {
 		},
 		addConditionGroup(group = null) {
 			if (group === null) {
-				group = newConditionGroup();
+				group = newConditionGroup(this.automation.conditions_groups[0].id);
 			}
 
-			this.automation.conditions_groups.push(group);
+			this.automation.conditions_groups[0].subGroups.push(group);
 		},
 		onRemoveAction(action) {
 			this.automation.actions = this.automation.actions.filter((a) => a.id !== action.id);
@@ -189,7 +186,11 @@ export default {
 				return;
 			}
 
-			this.automation.conditions_groups = this.automation.conditions_groups.filter((g) => g.id !== group.id);
+			this.automation.conditions_groups.foreach((g) => {
+				if (g.id === group.parent_id) {
+					g.subGroups = g.subGroups.filter((sg) => sg.id !== group.id);
+				}
+			});
 		},
 		onRemoveCondition(groupId, condition) {
 			// find the group
@@ -318,31 +319,6 @@ export default {
 				(group) => group.parent_id === null || group.parent_id === undefined || group.parent_id === 0,
 			);
 		},
-		subConditionGroups(parentId = null) {
-			const groups = {};
-			const findSubGroups = (pid) => {
-				return this.automation.conditions_groups
-					.filter((group) => group.parent_id === pid)
-					.map((group) => ({
-						...group,
-						subGroups: findSubGroups(group.id),
-					}));
-			};
-
-			this.automation.conditions_groups.forEach((group) => {
-				if (group.parent_id !== null && group.parent_id !== undefined && group.parent_id !== 0) {
-					if (!groups[group.parent_id]) {
-						groups[group.parent_id] = [];
-					}
-					groups[group.parent_id].push({
-						...group,
-						subGroups: findSubGroups(group.id),
-					});
-				}
-			});
-
-			return groups;
-		},
 	},
 };
 </script>
@@ -405,10 +381,8 @@ export default {
 				:key="conditionGroup.id"
 				:condition-group="conditionGroup"
 				:conditions-list="conditionsList"
-				:sub-groups="subConditionGroups[conditionGroup.id]"
 				:operators="operators"
 				:operatorsFieldMapping="operatorsFieldMapping"
-				@add-condition-group="addConditionGroup"
 				@remove-condition-group="onRemoveConditionGroup"
 				@remove-condition="onRemoveCondition"
 				@operator-change="onChangeOperator"

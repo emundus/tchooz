@@ -73,38 +73,7 @@ export default {
 			description: automation.description,
 			published: automation.published,
 			event: automation.event.id,
-			conditions_groups: automation.conditions_groups.map((group) => {
-				return {
-					id: group.id,
-					operator: group.operator,
-					parent_id: group.parent_id,
-					conditions: group.conditions.map((condition) => {
-						let value = null;
-						// if condition value is an array of objects with value and label, convert it to an array of values
-						if (
-							Array.isArray(condition.value) &&
-							condition.value.length > 0 &&
-							typeof condition.value[0] === 'object' &&
-							condition.value[0] !== null &&
-							'value' in condition.value[0]
-						) {
-							value = condition.value.map((v) => v.value);
-						}
-
-						return {
-							id: condition.id,
-							type: condition.type,
-							value: value !== null ? value : condition.value,
-							target:
-								typeof condition.target === 'object' && 'value' in condition.target
-									? condition.target.value
-									: condition.target,
-							operator: condition.operator,
-							group_id: condition.group_id,
-						};
-					}),
-				};
-			}),
+			conditions_groups: this.transformConditionGroups(automation.conditions_groups),
 			actions: automation.actions.map((action) => {
 				return {
 					id: action.id,
@@ -156,5 +125,57 @@ export default {
 				msg: e.message,
 			};
 		}
+	},
+
+	transformConditionGroups(conditionGroups) {
+		let groups = [];
+
+		conditionGroups.forEach((group) => {
+			let conditions = this.transformCondition(group.conditions);
+			groups.push({
+				id: group.id,
+				operator: group.operator,
+				parent_id: group.parent_id,
+				conditions: conditions,
+			});
+
+			if (group.subGroups && group.subGroups.length > 0) {
+				const transformedSubGroupConditions = this.transformConditionGroups(group.subGroups);
+				groups = groups.concat(transformedSubGroupConditions);
+			}
+		});
+
+		return groups;
+	},
+	transformCondition(conditions) {
+		let transformedConditions = [];
+
+		conditions.forEach((condition) => {
+			let value = null;
+			// if condition value is an array of objects with value and label, convert it to an array of values
+			if (
+				Array.isArray(condition.value) &&
+				condition.value.length > 0 &&
+				typeof condition.value[0] === 'object' &&
+				condition.value[0] !== null &&
+				'value' in condition.value[0]
+			) {
+				value = condition.value.map((v) => v.value);
+			}
+
+			transformedConditions.push({
+				id: condition.id,
+				type: condition.type,
+				value: value !== null ? value : condition.value,
+				target:
+					typeof condition.target === 'object' && 'value' in condition.target
+						? condition.target.value
+						: condition.target,
+				operator: condition.operator,
+				group_id: condition.group_id,
+			});
+		});
+
+		return transformedConditions;
 	},
 };

@@ -3509,18 +3509,18 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-dc023a07],
 	font-family: var(--em-profile-font-title), Inter, sans-serif !important;
 }
 
-.and-operator[data-v-dc60f269],
-.or-operator[data-v-dc60f269] {
+.and-operator[data-v-20a3aa86],
+.or-operator[data-v-20a3aa86] {
 	visibility: hidden;
 	width: 0;
 	margin: 0 !important;
 	padding: 0 !important;
 }
 .condition-operators {
-&[data-v-dc60f269] {
+&[data-v-20a3aa86] {
 	transition: all 0.3s ease;
 	}
-& > div[data-v-dc60f269] {
+& > div[data-v-20a3aa86] {
 		transition: all 0.3s ease;
 }
 }
