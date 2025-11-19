@@ -1808,6 +1808,7 @@ class EmundusControllerFiles extends BaseController
 		$excel_file_name                    = $this->input->get('excelfilename', null);
 		$campaign                           = $this->input->getInt('campaign', 0);
 		$opts                               = $this->getcolumn($opts);
+		$treatedFiles                       = $this->input->getInt('treatedFiles', 0);
 
 		// TODO: upper-case is mishandled, remove temporarily until fixed
 		$opts = array_diff($opts, ['upper-case']);
@@ -2557,8 +2558,7 @@ class EmundusControllerFiles extends BaseController
 			}
 
 			$start = $i;
-
-			$dataresult = array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'methode' => $methode, 'elts' => $elts, 'objs' => $objs, 'nbcol' => $nbcol, 'file' => $file, 'excelfilename' => $excel_file_name);
+			$dataresult = array('start' => $start, 'limit' => $limit, 'totalfile' => $totalfile, 'methode' => $methode, 'elts' => $elts, 'objs' => $objs, 'nbcol' => $nbcol, 'file' => $file, 'excelfilename' => $excel_file_name, 'nb_files_to_handle' => sizeof($not_already_handled_fnums));
 			$result     = array('status' => true, 'json' => $dataresult);
 		}
 		else {
