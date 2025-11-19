@@ -21,6 +21,9 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -2084,7 +2087,16 @@ class EmundusModelWorkflow extends JModelList
 		return $newWorkflowId;
 	}
 
-	public function getEvaluationStepDataForFnum(string $fnum, int $step_id, array $elements): array
+	/**
+	 * @param   string          $fnum
+	 * @param   int             $step_id
+	 * @param   array           $elements
+	 * @param   ExportModeEnum  $exportMode
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	public function getEvaluationStepDataForFnum(string $fnum, int $step_id, array $elements, ExportModeEnum $exportMode = ExportModeEnum::GROUP_CONCAT): array
 	{
 		$data = [];
 
@@ -2110,30 +2122,33 @@ class EmundusModelWorkflow extends JModelList
 				$this->db->setQuery($query);
 				$evaluations = $this->db->loadAssocList();
 
-				foreach ($evaluations as $eval_key => $evaluation)
-				{
-					$key        = $evaluation['id'] ?? $fnum . '-' . $eval_key;
-					$data[$key] = [
-						'campaign_id'    => $evaluation['campaign_id'],
-						'step_id'        => $step_data->label,
-						'evaluation_id'  => $evaluation['id'],
-						'evaluator_name' => $evaluation['firstname'] . ' ' . $evaluation['lastname'],
-					];
-
-					$fabrik_elements = $m_files->getValueFabrikByIds($elements);
-					foreach ($fabrik_elements as $fabrik_element)
+				if (!empty($evaluations)) {
+					$helper = new EmundusHelperFabrik();
+					foreach ($evaluations as $eval_key => $evaluation)
 					{
-						$element_name              = !empty($fabrik_element['table_join']) ? $fabrik_element['table_join'] . '___' . $fabrik_element['name'] : $fabrik_element['db_table_name'] . '___' . $fabrik_element['name'];
-						$data[$key][$element_name] = '';
+						$key        = $evaluation['id'] ?? $fnum . '-' . $eval_key;
+						$data[$key] = [
+							'campaign_id'    => $evaluation['campaign_id'],
+							'step_id'        => $step_data->label,
+							'evaluation_id'  => $evaluation['id'],
+							'evaluator_name' => $evaluation['firstname'] . ' ' . $evaluation['lastname'],
+						];
 
-						if (!empty($evaluation['id']))
+						$fabrik_elements = $m_files->getValueFabrikByIds($elements);
+						foreach ($fabrik_elements as $fabrik_element)
 						{
-							$evaluation_row_id = $evaluation['id'];
-							$value             = $m_files->getFabrikElementValue($fabrik_element, $fnum, $evaluation_row_id);
+							$element_name              = !empty($fabrik_element['table_join']) ? $fabrik_element['table_join'] . '___' . $fabrik_element['name'] : $fabrik_element['db_table_name'] . '___' . $fabrik_element['name'];
+							$data[$key][$element_name] = '';
 
-							if (!empty($value) && isset($value[$fabrik_element['id']][$fnum]['val']))
+							if (!empty($evaluation['id']))
 							{
-								$data[$key][$element_name] = $value[$fabrik_element['id']][$fnum]['val'];
+								$evaluation_row_id = $evaluation['id'];
+								$value             = $helper->getFabrikElementValue($fabrik_element, $fnum, $evaluation_row_id, ValueFormatEnum::FORMATTED, 0, $exportMode);
+
+								if (!empty($value) && isset($value[$fabrik_element['id']][$fnum]['val']))
+								{
+									$data[$key][$element_name] = $value[$fabrik_element['id']][$fnum]['val'];
+								}
 							}
 						}
 					}

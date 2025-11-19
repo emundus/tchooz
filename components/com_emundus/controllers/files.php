@@ -10,10 +10,8 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
-use Emundus\Plugin\SampleData\Emundus\Extension\Emundus;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
-
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
@@ -23,8 +21,8 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
-use Tchooz\Traits\TraitDispatcher;
 use \Tchooz\Traits\TraitResponse;
+use Tchooz\Enums\Export\ExportModeEnum;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
@@ -1801,6 +1799,10 @@ class EmundusControllerFiles extends BaseController
 		$nbcol                              = $this->input->get('nbcol', 0);
 		$elts                               = $this->input->getString('elts', null);
 		$step_elts                          = $this->input->getString('step_elts', []);
+		if (!is_array($step_elts)) {
+			$step_elts = json_decode($step_elts, true);
+		}
+
 		$objs                               = $this->input->getString('objs', null);
 		$opts                               = $this->input->getString('opts', null);
 		$methode                            = $this->input->getString('methode', null);
@@ -1867,7 +1869,7 @@ class EmundusControllerFiles extends BaseController
 
 		if ($fnumsArray !== false) {
 			if (!empty($step_elts)) {
-				$evaluations_by_fnum_by_step = $m_files->getEvaluationsArray($fnums, $step_elts);
+				$evaluations_by_fnum_by_step = $m_files->getEvaluationsArray($fnums, $step_elts, ExportModeEnum::getFromId((int) $methode));
 
 				$step_element_ids = [];
 				foreach ($step_elts as $step_id => $step_elements) {
@@ -1881,8 +1883,7 @@ class EmundusControllerFiles extends BaseController
 					$ordered_elements[$element_id] = $step_element_name;
 				}
 
-				$fnumsArray = $m_files->mergeEvaluations($fnumsArray, $evaluations_by_fnum_by_step, $step_elements_name);
-
+				$fnumsArray = $m_files->mergeEvaluations($fnumsArray, $evaluations_by_fnum_by_step, $step_elements_name, ExportModeEnum::getFromId((int) $methode));
 			}
 
 			// On met a jour la liste des fnums traités
