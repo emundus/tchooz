@@ -20,6 +20,12 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 {
 	private OutputInterface $output;
 
+	private const IGNORED_TABLES = [
+		'jos_emundus_evaluations',
+		'jos_emundus_final_grade',
+		'jos_emundus_admission'
+	];
+
 	public function __construct(
 		private readonly object            $logger,
 		private readonly DatabaseService   $databaseServiceSource,
@@ -36,6 +42,8 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 		$this->checkFnumsFields($input);
 
 		$this->checkCalcFields($input);
+
+		$this->checkDatabaseJoinFields($input);
 
 		$this->checkForms($input);
 	}
@@ -118,10 +126,14 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 			->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
 			->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
 			->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+			->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') . ' ON jff.id = jfl.form_id')
 			->where('jfe.plugin = ' . $db->quote('calc'))
 			->where('jfe.published = 1')
 			->andWhere('jfg.published = 1')
-			->andWhere('jff.published = 1');
+			->andWhere('jff.published = 1')
+			->andWhere('jfl.published = 1')
+			->andWhere('jfl.db_table_name NOT IN (' . implode(',', array_map([$db, 'quote'], self::IGNORED_TABLES)) . ')');
+
 		$db->setQuery($query);
 		$calcElementsCount = $db->loadResult();
 
@@ -139,16 +151,8 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 
 			$this->output->writeln('Checking calc fields for PHP 8 compatibility...');
 
-			$query->clear()
-				->select('jfe.id, jfe.label, jfe.params')
-				->from($db->quoteName('jos_fabrik_elements', 'jfe'))
-				->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
-				->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
-				->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
-				->where('jfe.plugin = ' . $db->quote('calc'))
-				->where('jfe.published = 1')
-				->andWhere('jfg.published = 1')
-				->andWhere('jff.published = 1');
+			$query->clear('select')
+				->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name');
 
 			$db->setQuery($query);
 			$calcElements = $db->loadObjectList();
@@ -157,6 +161,7 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 				$this->output->writeln('====================================');
 				$this->output->writeln('Calc Element ID: ' . $calcElement->id);
 				$this->output->writeln('Label: ' . $calcElement->label);
+				$this->output->writeln('Table: ' . $calcElement->db_table_name);
 
 				if (!empty($calcElement->params)) {
 					$params = json_decode($calcElement->params, true);
@@ -184,6 +189,74 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 		}
 	}
 
+	public function checkDatabaseJoinFields(InputInterface $input): void
+	{
+		$db = $this->databaseService->getDatabase();
+		$query = $db->createQuery();
+		$query->clear()
+			->select('COUNT(jfe.id)')
+			->from($db->quoteName('jos_fabrik_elements', 'jfe'))
+			->leftJoin($db->quoteName('jos_fabrik_groups', 'jfg') . ' ON jfe.group_id = jfg.id')
+			->leftJoin($db->quoteName('jos_fabrik_formgroup', 'jffg') . ' ON jfg.id = jffg.group_id')
+			->leftJoin($db->quoteName('jos_fabrik_forms', 'jff') . ' ON jffg.form_id = jff.id')
+			->leftJoin($db->quoteName('jos_fabrik_lists', 'jfl') . ' ON jff.id = jfl.form_id')
+			->where('jfe.plugin = ' . $db->quote('databasejoin'))
+			->andWhere('jfe.published = 1')
+			->andWhere('jfg.published = 1')
+			->andWhere('jff.published = 1')
+			->andWhere('jfl.published = 1')
+			->andWhere('json_extract(jfe.params, \'$.database_join_where_sql\') LIKE ' . $db->quote('%\_\_\_%'))
+			->andWhere('jfl.db_table_name NOT IN (' . implode(',', array_map([$db, 'quote'], self::IGNORED_TABLES)) . ')');
+
+		$db->setQuery($query);
+		$databaseJoinElementsCount = $db->loadResult();
+
+		$this->output->writeln('Database Join with ajax elements elements count : '.$this->colors['bold'].$databaseJoinElementsCount.$this->colors['reset']);
+		if ($databaseJoinElementsCount > 0) {
+			$helper = new QuestionHelper();
+			$question = new ConfirmationQuestion('Do you want to check the database join fields for PHP 8 compatibility? (y/n) ', false);
+
+			if ($helper->ask($input, $this->output, $question)) {
+				$this->output->writeln('Checking database join fields for PHP 8 compatibility...');
+
+				$query->clear('select')
+					->select('jfe.id, jfe.label, jfe.params, jfl.db_table_name');
+
+				$db->setQuery($query);
+				$databaseJoinElements = $db->loadObjectList();
+
+				foreach ($databaseJoinElements as $element) {
+					$this->output->writeln('====================================');
+					$this->output->writeln('Database Join Element ID: ' . $element->id);
+					$this->output->writeln('Label: ' . $element->label);
+					$this->output->writeln('Table: ' . $element->db_table_name);
+
+					if (!empty($element->params)) {
+						$params = json_decode($element->params, true);
+						if (!empty($params['database_join_where_sql'])) {
+							$whereSql = $params['database_join_where_sql'];
+							$whereSql = str_replace(['\n', '\r', '\t'], '', $whereSql);
+							$whereSql = trim($whereSql);
+
+							$this->output->writeln('Where SQL: ' . $whereSql);
+						} else {
+							$this->output->writeln('No where SQL found in params.');
+						}
+					} else {
+						$this->output->writeln('No params found for this database join element.');
+					}
+
+				}
+				$this->output->writeln('Database join fields check completed.');
+			} else
+			{
+				$this->output->writeln('Skipping database join fields check.');
+			}
+		} else {
+			$this->output->writeln('No database join elements with ajax found.');
+		}
+	}
+
 	/**
 	 * @param   InputInterface  $input
 	 *
@@ -194,10 +267,14 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 	{
 		$query = $this->databaseService->getDatabase()->createQuery();
 		$query->clear()
-			->select('COUNT(id)')
-			->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_forms'))
-			->where('published = 1')
-			->andWhere('params LIKE ' . $this->databaseService->getDatabase()->quote('%"php"%'));
+			->select('COUNT(jff.id)')
+			->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_forms', 'jff'))
+			->leftJoin($this->databaseService->getDatabase()->quoteName('jos_fabrik_lists', 'jfl'), 'jfl.form_id = jff.id')
+			->where('jff.published = 1')
+			->andWhere('jff.params LIKE ' . $this->databaseService->getDatabase()->quote('%"php"%'))
+			->andWhere('jfl.published = 1')
+			->andWhere('jfl.db_table_name NOT IN (' . implode(',', array_map([$this->databaseService->getDatabase(), 'quote'], self::IGNORED_TABLES)) . ')');
+
 		$this->databaseService->getDatabase()->setQuery($query);
 		$formsWithPhpCount = $this->databaseService->getDatabase()->loadResult();
 
@@ -215,11 +292,8 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 				$debug = true;
 			}
 
-			$query->clear()
-				->select('id, label, params')
-				->from($this->databaseService->getDatabase()->quoteName('jos_fabrik_forms'))
-				->where('published = 1')
-				->andWhere('params LIKE ' . $this->databaseService->getDatabase()->quote('%"php"%'));
+			$query->clear('select')
+				->select('jff.id, jff.label, jff.params');
 
 			$this->databaseService->getDatabase()->setQuery($query);
 			$forms = $this->databaseService->getDatabase()->loadObjectList();
@@ -234,7 +308,7 @@ class CheckFabrikFieldsJob extends TchoozChecklistJob
 					$phpPluginIndexes = array_keys($params['plugins'], 'php', true);
 
 					if (!empty($phpPluginIndexes)) {
-						$this->output->writeln('PHP plugins found: ' . implode(', ', $phpPluginIndexes));
+						$this->output->writeln('PHP plugins found indexes: ' . implode(', ', $phpPluginIndexes));
 
 						foreach ($phpPluginIndexes as $index) {
 							if (is_array($params['curl_code'])) {
