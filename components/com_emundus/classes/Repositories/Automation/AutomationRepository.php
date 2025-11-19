@@ -8,6 +8,8 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\AutomationEntity;
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Entities\Automation\ConditionEntity;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Factories\Automation\AutomationFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -249,85 +251,13 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 				$allConditionsSaved = true;
 				foreach ($automation->getConditionsGroups() as $conditionGroup)
 				{
-					if ($conditionRepository->saveGroupCondition($conditionGroup)) {
-						foreach ($conditionGroup->getConditions() as $condition)
-						{
-							$condition->setGroupId($conditionGroup->getId());
-							if ($conditionRepository->saveCondition($condition)) {
-								$query->clear()
-									->select('id')
-									->from($this->db->quoteName('#__emundus_automation_condition'))
-									->where($this->db->quoteName('automation_id') . ' = ' . $automation->getId())
-									->where($this->db->quoteName('condition_id') . ' = ' . $condition->getId());
-
-								$exists = $this->db->setQuery($query)->loadResult();
-								if (!$exists) {
-									$query->clear()
-										->insert($this->db->quoteName('#__emundus_automation_condition'))
-										->columns(['automation_id', 'condition_id'])
-										->values($automation->getId() . ', ' . $condition->getId());
-
-									$inserted = $this->db->setQuery($query)->execute();
-
-									if (!$inserted) {
-										$allConditionsSaved = false;
-									}
-								}
-							} else {
-								$allConditionsSaved = false;
-							}
-						}
-					} else {
+					if (!$conditionRepository->saveGroupCondition($conditionGroup, $automation->getId())) {
 						$allConditionsSaved = false;
 					}
 				}
 
-				/**
-				 * foreach ($existingConditionsGroups as $conditionGroup)
-				 * {
-				 * foreach ($conditionGroup->getConditions() as $condition)
-				 * {
-				 * $conditionRepository->deleteCondition($condition->getId());
-				 * }
-				 * $conditionRepository->deleteGroupCondition($conditionGroup->getId());
-				 * }
-				 */
-				// delete condition groups that are not in the current automation anymore
-				foreach ($existingConditionsGroups as $existingGroup) {
-					$found = false;
-					foreach ($automation->getConditionsGroups() as $conditionGroup) {
-						if ($conditionGroup->getId() === $existingGroup->getId()) {
-							$found = true;
-							break;
-						}
-					}
-
-					if (!$found) {
-						foreach ($existingGroup->getConditions() as $condition) {
-							$conditionRepository->deleteCondition($condition->getId());
-						}
-						$conditionRepository->deleteGroupCondition($existingGroup->getId());
-					} else {
-						// delete also the conditions in groups that are not in the current automation anymore
-						foreach ($existingGroup->getConditions() as $existingCondition) {
-							$found = false;
-							foreach ($automation->getConditionsGroups() as $conditionGroup) {
-								if ($conditionGroup->getId() === $existingGroup->getId()) {
-									foreach ($conditionGroup->getConditions() as $condition) {
-										if ($condition->getId() === $existingCondition->getId()) {
-											$found = true;
-											break 2;
-										}
-									}
-								}
-							}
-
-							if (!$found) {
-								$conditionRepository->deleteCondition($existingCondition->getId());
-							}
-						}
-					}
-				}
+				// delete condition groups and conditions that are not in the current automation anymore
+				$this->deleteNonExistingConditions($existingConditionsGroups, $automation->getConditionsGroups());
 
 				$saved = $allActionsSaved && $allConditionsSaved;
 			}
@@ -390,6 +320,90 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 
 
 		return $saved;
+	}
+
+	/**
+	 * @param   array<ConditionGroupEntity>  $existingConditionsGroups
+	 * @param   array<ConditionGroupEntity>  $actualConditionsGroups
+	 *
+	 * @return void
+	 */
+	public function deleteNonExistingConditions(array $existingConditionsGroups, array $actualConditionsGroups): void
+	{
+		$conditionRepository = new ConditionRepository($this->db);
+
+		foreach ($existingConditionsGroups as $existingGroup) {
+			if (!$this->findConditionGroupInConditionGroups($existingGroup, $actualConditionsGroups)) {
+				foreach ($existingGroup->getConditions() as $condition) {
+					$conditionRepository->deleteCondition($condition->getId());
+				}
+				$conditionRepository->deleteGroupCondition($existingGroup->getId());
+			} else {
+				// delete also the conditions in groups that are not in the current automation anymore
+				foreach ($existingGroup->getConditions() as $existingCondition) {
+					if (!$this->findConditionInConditionGroups($existingCondition, $actualConditionsGroups))
+					{
+						$conditionRepository->deleteCondition($existingCondition->getId());
+					}
+				}
+			}
+
+			if (!empty($existingGroup->getSubGroups())) {
+				$this->deleteNonExistingConditions($existingGroup->getSubGroups(), $actualConditionsGroups);
+			}
+		}
+	}
+
+	/**
+	 * @param   ConditionGroupEntity $groupToFind
+	 * @param   array<ConditionGroupEntity>  $groups
+	 *
+	 * @return bool|null
+	 */
+	public function findConditionGroupInConditionGroups(ConditionGroupEntity $groupToFind, array $groups): ?bool
+	{
+		foreach ($groups as $conditionGroup) {
+			if ($conditionGroup->getId() === $groupToFind->getId()) {
+				return true;
+			}
+
+			if (!empty($conditionGroup->getSubGroups())) {
+				$foundInSubGroup = $this->findConditionGroupInConditionGroups($groupToFind, $conditionGroup->getSubGroups());
+
+				if ($foundInSubGroup) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @param   ConditionEntity $conditionEntity
+	 * @param   array<ConditionGroupEntity>  $groups
+	 *
+	 * @return bool|null
+	 */
+	public function findConditionInConditionGroups(ConditionEntity $conditionEntity, array $groups): ?bool
+	{
+		foreach ($groups as $conditionGroup) {
+			foreach ($conditionGroup->getConditions() as $condition) {
+				if ($condition->getId() === $conditionEntity->getId()) {
+					return true;
+				}
+			}
+
+			if (!empty($conditionGroup->getSubGroups())) {
+				$foundInSubGroup = $this->findConditionInConditionGroups($conditionEntity, $conditionGroup->getSubGroups());
+
+				if ($foundInSubGroup) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 
 
