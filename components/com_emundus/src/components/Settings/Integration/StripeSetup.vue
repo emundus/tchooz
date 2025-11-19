@@ -160,9 +160,12 @@ export default {
 			</div>
 
 			<div class="tw-flex tw-flex-col tw-gap-2">
-				<label class="tw-mb-0 tw-flex tw-items-end tw-font-medium" for="webhook-endpoint-url">{{
-					translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL')
-				}}</label>
+				<label class="tw-mb-0 tw-flex tw-items-end tw-font-medium" for="webhook-endpoint-url"
+					>{{ translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL') }}
+				</label>
+				<span class="tw-text-base tw-text-neutral-600"
+					>{{ translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL_HELP') }}
+				</span>
 				<div class="tw-flex tw-items-center tw-gap-2">
 					<input
 						id="webhook-endpoint-url"
