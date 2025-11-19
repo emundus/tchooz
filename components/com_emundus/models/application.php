@@ -5555,7 +5555,10 @@ class EmundusModelApplication extends ListModel
 						if (count($data) > 0) {
 							foreach ($data as $d) {
 								$q     = 3;
-								$query = 'SELECT ' . implode(',', $this->_db->quoteName($d['element_name'])) . ' FROM ' . $d['table'] . ' WHERE parent_id=' . $parent_id;
+                                $query->clear()
+                                    ->select(implode(',', $this->_db->quoteName($d['element_name'])))
+                                    ->from($this->_db->quoteName($d['table']))
+                                    ->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent_id));
 								$this->_db->setQuery($query);
 								$stored = $this->_db->loadAssocList();
 
@@ -5571,7 +5574,10 @@ class EmundusModelApplication extends ListModel
 									$q = 4;
 
 									// update form data
-									$query = 'INSERT INTO ' . $d['table'] . ' (`' . implode('`,`', array_keys($stored[0])) . '`)' . ' VALUES ' . implode(',', $arrayValue);
+                                    $query->clear()
+                                        ->insert($this->_db->quoteName($d['table']))
+                                        ->columns(implode(',', $this->_db->quoteName(array_keys($stored[0]))))
+                                        ->values(implode(',', $arrayValue));
 									$this->_db->setQuery($query);
 									$this->_db->execute();
 								}
