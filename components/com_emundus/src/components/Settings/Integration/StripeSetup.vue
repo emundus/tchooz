@@ -49,7 +49,7 @@ export default {
 				},
 			],
 			selectedTab: 'auth',
-			webhookEndpointUrl : '',
+			webhookEndpointUrl: '',
 		};
 	},
 	created() {
@@ -64,7 +64,8 @@ export default {
 		});
 
 		let site = window.location.origin;
-		this.webhookEndpointUrl = site + '/index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' + this.app.id;
+		this.webhookEndpointUrl =
+			site + '/index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' + this.app.id;
 	},
 	methods: {
 		onChangeTabActive(id) {
@@ -131,7 +132,7 @@ export default {
 					timer: 1500,
 				});
 			});
-		}
+		},
 	},
 };
 </script>
@@ -159,7 +160,9 @@ export default {
 			</div>
 
 			<div class="tw-flex tw-flex-col tw-gap-2">
-				<label class="tw-mb-0 tw-flex tw-items-end tw-font-medium" for="webhook-endpoint-url">{{ translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL') }}</label>
+				<label class="tw-mb-0 tw-flex tw-items-end tw-font-medium" for="webhook-endpoint-url">{{
+					translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL')
+				}}</label>
 				<div class="tw-flex tw-items-center tw-gap-2">
 					<input
 						id="webhook-endpoint-url"
@@ -167,15 +170,10 @@ export default {
 						v-model="webhookEndpointUrl"
 						readonly
 						disabled
-						class="tw-border tw-rounded tw-px-2 tw-py-1 tw-cursor-not-allowed"
-						style="font-size: 0.95em;"
+						class="tw-cursor-not-allowed tw-rounded tw-border tw-px-2 tw-py-1"
+						style="font-size: 0.95em"
 					/>
-					<span
-						class="material-symbols-outlined tw-cursor-copy"
-						@click="copyWebhookUrl"
-					>
-					content_copy
-				</span>
+					<span class="material-symbols-outlined tw-cursor-copy" @click="copyWebhookUrl"> content_copy </span>
 				</div>
 			</div>
 		</div>
