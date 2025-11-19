@@ -33,11 +33,11 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0)
 	{
-		$app                  = Factory::getApplication();
-		$format               = 'hours';
-		$config               = $this->app->getConfig();
-		$timezone             = [];
-		$timezone['name']     = $config->get('offset', 'UTC');
+		$app              = Factory::getApplication();
+		$format           = 'hours';
+		$config           = $this->app->getConfig();
+		$timezone         = [];
+		$timezone['name'] = $config->get('offset', 'UTC');
 
 		$dateTZ = new DateTimeZone($timezone['name']);
 		$date   = new DateTime('now', $dateTZ);
@@ -55,15 +55,16 @@ class PlgFabrik_ElementBooking extends PlgFabrik_Element
 		}
 		$timezone['offset'] = $offset;
 
-		$params                           = $this->getParams();
-		$name                             = $this->getHTMLName($repeatCounter);
-		$layout                           = $this->getLayout('form');
-		$displayData                      = new stdClass;
-		$displayData->name                = $name;
-		$displayData->timezone            = $timezone['name'];
-		$displayData->offset              = $timezone['offset'];
-		$displayData->location_filter_elt = $params->get('location_filter_elt', '');
-		$displayData->is_applicant        = $app->getSession()->get('emundusUser')->applicant;
+		$params                                      = $this->getParams();
+		$name                                        = $this->getHTMLName($repeatCounter);
+		$layout                                      = $this->getLayout('form');
+		$displayData                                 = new stdClass;
+		$displayData->name                           = $name;
+		$displayData->timezone                       = $timezone['name'];
+		$displayData->offset                         = $timezone['offset'];
+		$displayData->location_filter_elt            = $params->get('location_filter_elt', '');
+		$displayData->application_choices_filter_elt = $params->get('application_choices_filter_elt', '');
+		$displayData->is_applicant                   = $app->getSession()->get('emundusUser')->applicant;
 
 		return $layout->render($displayData);
 	}

@@ -19,6 +19,8 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusControllerEvents extends BaseController
@@ -743,7 +745,7 @@ class EmundusControllerEvents extends BaseController
 				$users               = explode(',', $users);
 				$slots               = $this->m_events->saveEventSlot($start_date, $end_date, $room, $slot_capacity, $more_infos, $users, $event_id, $repeat_dates, $id, $parent_slot_id, $mode, $availability_config, $this->user->id);
 
-				$response['data'] = $slots['slots'];
+				$response['data']    = $slots['slots'];
 				$response['status']  = $slots['status'];
 				$response['message'] = $slots['message'];
 			}
@@ -827,12 +829,12 @@ class EmundusControllerEvents extends BaseController
 			'status'  => false,
 			'message' => Text::_('ACCESS_DENIED'),
 			'data'    => [],
-			'code'   => 403
+			'code'    => 403
 		];
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$response['code'] = 500;
+			$response['code']           = 500;
 			$event_id                   = $this->input->getInt('event_id', 0);
 			$applicant_notify           = $this->input->getInt('applicant_notify', 0);
 			$applicant_notify_email     = $this->input->getInt('applicant_notify_email', null);
@@ -850,9 +852,12 @@ class EmundusControllerEvents extends BaseController
 			if (!empty($event_id))
 			{
 
-				if ($applicant_notify && empty($applicant_notify_email)) {
+				if ($applicant_notify && empty($applicant_notify_email))
+				{
 					$response['message'] = Text::_('COM_EMUNDUS_ERROR_EVENT_APPLICANT_NOTIFY_EMAIL_EMPTY');
-				} else {
+				}
+				else
+				{
 					$booking_notifications = [
 						'applicant_notify'           => $applicant_notify,
 						'applicant_notify_email'     => $applicant_notify_email,
@@ -871,7 +876,7 @@ class EmundusControllerEvents extends BaseController
 
 					if ($response['status'])
 					{
-						$response['code'] = 200;
+						$response['code']    = 200;
 						$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
 					}
 					else
@@ -899,11 +904,12 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$start                       = $this->input->getString('start', '');
-			$end                         = $this->input->getString('end', '');
-			$location                    = $this->input->getInt('location', 0);
-			$events_ids                  = $this->input->getString('events_ids', '');
-			$events_ids                  = explode(',', $events_ids);
+			$start              = $this->input->getString('start', '');
+			$end                = $this->input->getString('end', '');
+			$location           = $this->input->getInt('location', 0);
+			$application_choice = $this->input->getInt('application_choice', 0);
+			$events_ids         = $this->input->getString('events_ids', '');
+			$events_ids         = explode(',', $events_ids);
 
 			$events_ids = array_map('trim', $events_ids);
 
@@ -913,11 +919,21 @@ class EmundusControllerEvents extends BaseController
 			if ($user)
 			{
 				$program_code = $user->code;
-				$cid          = $user->campaign_id;
+				$cid = $user->campaign_id;
+			}
+			
+			if(!empty($application_choice))
+			{
+				$applicationChoiceRepository = new ApplicationChoicesRepository();
+				$applicationChoice = $applicationChoiceRepository->getById($application_choice);
+				if(!empty($applicationChoice->getCampaign()->getId()))
+				{
+					$cid = $applicationChoice->getCampaign()->getId();
+				}
 			}
 
-			$check_availables_to_show = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id));
-			$check_booking_limit_reached = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id,'c',$this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id,'u',$this->user->id));
+			$check_availables_to_show    = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'c', $this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id, 'u', $this->user->id));
+			$check_booking_limit_reached = $user->applicant || (!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'c', $this->user->id) && !EmundusHelperAccess::asAccessAction($this->booking_access_id, 'u', $this->user->id));
 
 			$event_availabilities = $this->m_events->getAvailabilitiesByCampaignsAndPrograms($cid, $program_code, $start, $end, $location, $check_booking_limit_reached, $events_ids, $check_availables_to_show);
 			$response['data']     = $event_availabilities;
@@ -991,7 +1007,15 @@ class EmundusControllerEvents extends BaseController
 				}
 			}
 
-			$campaigns_events = $this->m_events->getEventsByCampaignIds($cid);
+			$campaignRepository = new CampaignRepository();
+			$childrenCampaigns = $campaignRepository->getChildrenCampaigns($cid);
+			$cids = [$cid];
+			foreach($childrenCampaigns as $childCampaign)
+			{
+				$cids[] = $childCampaign->getId();
+			}
+
+			$campaigns_events = $this->m_events->getEventsByCampaignIds($cids);
 			$programs_events  = $this->m_events->getEventsByProgramCodes($program_code);
 
 			$events = array_merge($campaigns_events, $programs_events);
@@ -1096,13 +1120,13 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$view              = $this->input->getString('view', '');
-			$filter            = $this->input->getString('filter', '');
-			$sort              = $this->input->getString('sort', 'DESC');
-			$recherche         = $this->input->getString('recherche', '');
-			$lim               = $this->input->getInt('lim', 0);
-			$page              = $this->input->getInt('page', 0);
-			$order_by          = $this->input->getString('order_by', 'er.id');
+			$view      = $this->input->getString('view', '');
+			$filter    = $this->input->getString('filter', '');
+			$sort      = $this->input->getString('sort', 'DESC');
+			$recherche = $this->input->getString('recherche', '');
+			$lim       = $this->input->getInt('lim', 0);
+			$page      = $this->input->getInt('page', 0);
+			$order_by  = $this->input->getString('order_by', 'er.id');
 
 			$event             = $this->input->getInt('event', 0);
 			$location          = $this->input->getInt('location', 0);
@@ -1120,10 +1144,11 @@ class EmundusControllerEvents extends BaseController
 				if (!empty($registrants) && $registrants['count'] > 0)
 				{
 					// Search for a files or evaluation view
-					$menu = Factory::getApplication()->getMenu();
-					$emundusUser      = $this->app->getSession()->get('emundusUser');
-					$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
-					if(empty($files_menu)) {
+					$menu        = Factory::getApplication()->getMenu();
+					$emundusUser = $this->app->getSession()->get('emundusUser');
+					$files_menu  = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+					if (empty($files_menu))
+					{
 						$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
 					}
 
@@ -1146,19 +1171,22 @@ class EmundusControllerEvents extends BaseController
 									$assoc_users[] = $assoc_user[0]->lastname . ' ' . $assoc_user[0]->firstname;
 								}
 							}
-							if($order_by === 'assoc_users')
+							if ($order_by === 'assoc_users')
 							{
-								if($sort === 'ASC')
+								if ($sort === 'ASC')
 								{
-									usort($assoc_users, function($a, $b) {
+									usort($assoc_users, function ($a, $b) {
 										return strcasecmp($a, $b);
 									});
 								}
-								else if($sort === 'DESC')
+								else
 								{
-									usort($assoc_users, function($a, $b) {
-										return strcasecmp($b, $a);
-									});
+									if ($sort === 'DESC')
+									{
+										usort($assoc_users, function ($a, $b) {
+											return strcasecmp($b, $a);
+										});
+									}
 								}
 							}
 						}
@@ -1177,7 +1205,7 @@ class EmundusControllerEvents extends BaseController
 						$registrant->additional_columns = [
 							[
 								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
-								'value'    => !empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="'.$files_menu->route.'#'.$registrant->fnum.'" target="_blank">'.$registrant->user_fullname.'</a>' : $registrant->user_fullname,
+								'value'    => !empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="' . $files_menu->route . '#' . $registrant->fnum . '" target="_blank">' . $registrant->user_fullname . '</a>' : $registrant->user_fullname,
 								'classes'  => '',
 								'display'  => 'table',
 								'order_by' => 'user_fullname'
@@ -1190,10 +1218,10 @@ class EmundusControllerEvents extends BaseController
 								'order_by' => 'esa.start_date'
 							],
 							[
-								'key'     => Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
-								'value'   => $hour,
-								'classes' => '',
-								'display' => 'table',
+								'key'      => Text::_('COM_EMUNDUS_REGISTRANTS_HOUR'),
+								'value'    => $hour,
+								'classes'  => '',
+								'display'  => 'table',
 								'order_by' => 'TIME(esa.start_date)'
 							],
 							[
@@ -1219,8 +1247,9 @@ class EmundusControllerEvents extends BaseController
 							],
 						];
 					}
-					if ($order_by === 'assoc_users') {
-						usort($registrants['datas'], function($a, $b) use ($sort) {
+					if ($order_by === 'assoc_users')
+					{
+						usort($registrants['datas'], function ($a, $b) use ($sort) {
 							$aEmpty = empty($a->assoc_users);
 							$bEmpty = empty($b->assoc_users);
 
@@ -1376,8 +1405,8 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$ids = $this->input->getString('ids', '');
-			$checkboxesValuesFromView = $this->input->getString('checkboxesValuesFromView', '');
+			$ids                         = $this->input->getString('ids', '');
+			$checkboxesValuesFromView    = $this->input->getString('checkboxesValuesFromView', '');
 			$checkboxesValuesFromProfile = $this->input->getString('checkboxesValuesFromProfile', '');
 
 			if (!empty($ids))
@@ -1399,7 +1428,7 @@ class EmundusControllerEvents extends BaseController
 			if (!empty($checkboxesValuesFromProfile) && $checkboxesValuesFromProfile !== "[]")
 			{
 				$checkboxesValuesFromProfile = json_decode($checkboxesValuesFromProfile, true);
-				$m_users = new EmundusModelUsers();
+				$m_users                     = new EmundusModelUsers();
 				$checkboxesValuesFromProfile = $m_users->getColumnsFromProfileForm($checkboxesValuesFromProfile);
 			}
 			else
@@ -1460,8 +1489,8 @@ class EmundusControllerEvents extends BaseController
 		}
 		else
 		{
-			$ids = $this->input->getString('ids', '');
-			$checkboxesValuesFromView = $this->input->getString('checkboxesValuesFromView', '');
+			$ids                         = $this->input->getString('ids', '');
+			$checkboxesValuesFromView    = $this->input->getString('checkboxesValuesFromView', '');
 			$checkboxesValuesFromProfile = $this->input->getString('checkboxesValuesFromProfile', '');
 
 			if (!empty($ids))
@@ -1483,7 +1512,7 @@ class EmundusControllerEvents extends BaseController
 			if (!empty($checkboxesValuesFromProfile) && $checkboxesValuesFromProfile !== "[]")
 			{
 				$checkboxesValuesFromProfile = json_decode($checkboxesValuesFromProfile, true);
-				$m_users = new EmundusModelUsers();
+				$m_users                     = new EmundusModelUsers();
 				$checkboxesValuesFromProfile = $m_users->getColumnsFromProfileForm($checkboxesValuesFromProfile);
 			}
 			else
@@ -1563,23 +1592,27 @@ class EmundusControllerEvents extends BaseController
 		exit();
 	}
 
-	public function assocusers() {
+	public function assocusers()
+	{
 		$response = [
 			'status'  => false,
 			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
 			'data'    => []
 		];
 
-		if(!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'u', $this->user->id)) {
+		if (!EmundusHelperAccess::asAccessAction($this->booking_access_id, 'u', $this->user->id))
+		{
 			header('HTTP/1.1 403 Forbidden');
-		} else {
-			$slots = $this->input->getString('slots');
+		}
+		else
+		{
+			$slots       = $this->input->getString('slots');
 			$assoc_users = $this->input->getString('users');
-			$replace = $this->input->getInt('replace', 1);
+			$replace     = $this->input->getInt('replace', 1);
 
-			if(!empty($slots) && !empty($assoc_users))
+			if (!empty($slots) && !empty($assoc_users))
 			{
-				$slots = explode(',', $slots);
+				$slots       = explode(',', $slots);
 				$assoc_users = explode(',', $assoc_users);
 
 				$response['status'] = $this->m_events->getAssocUsers($slots, $assoc_users, $replace);
