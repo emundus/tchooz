@@ -152,6 +152,7 @@ export default {
 					},
 					value: 0,
 					label: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_USERS',
+					helptext: 'COM_EMUNDUS_SETTINGS_ADDONS_MESSENGER_USERS_HELPTEXT',
 					displayed: false,
 					displayedOn: 'messenger_notifications_on_send',
 					displayedOnValue: 1,

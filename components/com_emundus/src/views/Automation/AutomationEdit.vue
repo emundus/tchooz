@@ -111,7 +111,7 @@ export default {
 		});
 
 		if (this.automation.conditions_groups.length === 0) {
-      this.automation.conditions_groups.push(newConditionGroup());
+			this.automation.conditions_groups.push(newConditionGroup());
 		}
 	},
 	methods: {

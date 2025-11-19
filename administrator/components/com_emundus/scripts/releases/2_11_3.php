@@ -11,6 +11,9 @@
 namespace scripts;
 
 
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\Addons\AddonValue;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 
 class Release2_11_3Installer extends ReleaseInstaller
@@ -47,6 +50,15 @@ class Release2_11_3Installer extends ReleaseInstaller
 				$evaluatorStep->setActionId(5);
 				$evaluatorStep->setCode('evaluator');
 				$this->tasks[] = $stepTypeRepository->flush($evaluatorStep);
+			}
+
+			// Add messenger in setup_config
+			$addonRepository = new AddonRepository();
+			$messenger_addon = $addonRepository->getByName('messenger');
+			if (!$messenger_addon)
+			{
+				$messenger_addon = new AddonEntity('messenger', new AddonValue(false, true, []));
+				$this->tasks[] = $addonRepository->flush($messenger_addon);
 			}
 
 			$result['status'] = !in_array(false, $this->tasks);
