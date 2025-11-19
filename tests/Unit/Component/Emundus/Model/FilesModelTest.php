@@ -17,6 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Export\ExportModeEnum;
 
 require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
@@ -408,5 +409,76 @@ class FilesModelTest extends UnitTestCase
 
 		$this->assertGreaterThanOrEqual($elapsed_new_function_time, $elapsed_old_function_time, 'getFnumArray2 is faster than getFnumArray ' . $elapsed_new_function_time . ' vs ' . $elapsed_old_function_time);
 		*/
+	}
+
+	/**
+	 * @covers EmundusModelFiles::mergeEvaluations (method to merge extracted evaluations data with main data array)
+	 *
+	 */
+	public function testMergeEvaluations(): void
+	{
+		$fnum = $this->dataset['fnum'];
+
+		$fnumsData = [
+			$fnum => [
+				'fnum' => $fnum,
+				'campaign_id' => $this->dataset['campaign'],
+				'code' => $this->dataset['program']['programme_code']
+			]
+		];
+
+		$evaluationsData = [
+			$fnum => [
+				1 => [
+					$fnum . '-0' => [
+						'campaign_id' => $this->dataset['campaign'],
+						'step_id' => 1,
+						'evaluation_id' => 1,
+						'evaluator_name' => 'Evaluator One',
+						'jos_emundus_evaluations_00___field_1' => 'Test'
+					],
+					$fnum . '-1' => [
+						'campaign_id' => $this->dataset['campaign'],
+						'step_id' => 1,
+						'evaluation_id' => 2,
+						'evaluator_name' => 'Evaluator Two',
+						'jos_emundus_evaluations_00___field_1' => 'Test2'
+					]
+				]
+			]
+		];
+
+		$columns = [
+			1 => (object)[
+				"id" => 1,
+				"element_name" => "field_1",
+				"element_label" => "Field 1",
+				"element_plugin" => "field",
+				"tab_name" => "jos_emundus_evaluations_00"
+				// ... other element properties as needed
+			]
+		];
+
+		$data = $this->model->mergeEvaluations($fnumsData, $evaluationsData, $columns);
+		$this->assertNotEmpty($data, 'mergeEvaluations returns a non-empty array');
+		// there should be only 1 row because mergemode is group concat distinct (default)
+
+		$this->assertCount(1, $data, 'mergeEvaluations returns one row for the fnum');
+		$this->assertEquals($this->dataset['fnum'], $data[0]['fnum'], 'fnum is found');
+		// assert columns contains concatenated values separated by comma
+		$this->assertArrayHasKey('jos_emundus_evaluations_00___field_1', $data[0], 'merged data contains evaluation field');
+		$this->assertEquals('Test, Test2', $data[0]['jos_emundus_evaluations_00___field_1'], 'merged evaluation field contains concatenated values');
+
+		$dataOneLinePerEvaluation = $this->model->mergeEvaluations($fnumsData, $evaluationsData, $columns, ExportModeEnum::LEFT_JOIN);
+		$this->assertNotEmpty($dataOneLinePerEvaluation, 'mergeEvaluations returns a non-empty array for one line per evaluation');
+		$this->assertCount(2, $dataOneLinePerEvaluation, 'mergeEvaluations returns two rows for the fnum in one line per evaluation mode');
+		$this->assertEquals($this->dataset['fnum'], $dataOneLinePerEvaluation[0]['fnum']);
+		$this->assertEquals($this->dataset['fnum'], $dataOneLinePerEvaluation[1]['fnum']);
+
+		// verify field 1 column contains correct values
+		$this->assertArrayHasKey('jos_emundus_evaluations_00___field_1', $dataOneLinePerEvaluation[0], 'merged data contains evaluation field in one line per evaluation mode');
+		$this->assertArrayHasKey('jos_emundus_evaluations_00___field_1', $dataOneLinePerEvaluation[1], 'merged data contains evaluation field in one line per evaluation mode');
+		$this->assertEquals('Test', $dataOneLinePerEvaluation[0]['jos_emundus_evaluations_00___field_1'], 'first row contains correct evaluation value');
+		$this->assertEquals('Test2', $dataOneLinePerEvaluation[1]['jos_emundus_evaluations_00___field_1'], 'second row contains correct evaluation value');
 	}
 }

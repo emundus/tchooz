@@ -26,6 +26,7 @@ use Joomla\CMS\Uri\Uri;
 use libphonenumber\PhoneNumberUtil;
 use libphonenumber\PhoneNumberFormat;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
@@ -2903,6 +2904,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		int             $row_id = 0,
 		ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
 		int             $user_id = 0,
+		ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT
 	): array
 	{
 		$isRaw = $return === ValueFormatEnum::RAW;
@@ -2942,7 +2944,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		if ($plugin === ElementPluginEnum::DATABASEJOIN || $isRepeatGroup)
 		{
-			$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id);
+			$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode);
 		}
 		else
 		{
@@ -2960,9 +2962,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			{
 				$formatted_values = [];
 
-				$values = [$val['val']];
-				if ($isRepeatGroup) {
-					$values = explode(',', $val['val']);
+				if (!is_array($val['val']))
+				{
+					$values = [$val['val']];
+
+					if ($isRepeatGroup) {
+						$values = explode(',', $val['val']);
+					}
+				} else {
+					$values = $val['val'];
 				}
 				foreach ($values as $_value)
 				{
@@ -2976,13 +2984,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 				}
 
-				if ($isRepeatGroup)
+				if ($isRepeatGroup && $exportMode !== ExportModeEnum::LEFT_JOIN)
 				{
 					$value[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
 				}
 				else
 				{
-					$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values[0] ?? '';
+					$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
 				}
 			}
 		}
@@ -3014,7 +3022,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		int               $parent_row_id = 0,
 		ValueFormatEnum   $return = ValueFormatEnum::FORMATTED,
 		?string           $date_format = null,
-		int               $user_id = 0
+		int               $user_id = 0,
+		ExportModeEnum    $exportMode = ExportModeEnum::GROUP_CONCAT
 	)
 	{
 		if (!is_array($fnums) && $fnums !== null)
@@ -3025,6 +3034,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		if (empty($fnums) && empty($user_id))
 		{
 			return [];
+		}
+
+		if ($exportMode === ExportModeEnum::LEFT_JOIN)
+		{
+			$separator = '[SEPARATOR]';
+		} else {
+			$separator = ', ';
 		}
 
 		$db    = Factory::getContainer()->get('DatabaseDriver');
@@ -3056,15 +3072,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 			if ($return === ValueFormatEnum::BOTH)
 			{
-				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, ' . $select_origin_val;
+				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
 			}
 			elseif ($return === ValueFormatEnum::RAW)
 			{
-				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val;
+				$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
 			}
 			else
 			{
-				$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR ", ") as val, ' . $select_origin_val;
+				$select = 'GROUP_CONCAT(DATE_FORMAT(t_repeat.' . $name . ', ' . $db->quote($date_form_format) . ')  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val;
 			}
 		}
 		else
@@ -3079,15 +3095,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 					elseif ($return === ValueFormatEnum::RAW)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 					else
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 				}
 				else
@@ -3099,15 +3115,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					{
 						if ($return === ValueFormatEnum::BOTH)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormatEnum::RAW)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 						else
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 					}
 					else
@@ -3133,15 +3149,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 				if ($return === ValueFormatEnum::BOTH)
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 				}
 				elseif ($return === ValueFormatEnum::RAW)
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 				}
 				else
 				{
-					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR ", ") as val, ' . $select_origin_val . ' ';
+					$select = 'GROUP_CONCAT(t_repeat.' . $name . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 				}
 			}
 		}
@@ -3295,6 +3311,21 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			else
 			{
 				$res = $db->loadAssocList('user_val');
+			}
+
+			if ($exportMode === ExportModeEnum::LEFT_JOIN)
+			{
+				foreach ($res as $key => $row)
+				{
+					if (isset($row['val']))
+					{
+						$res[$key]['val'] = explode($separator, $row['val']);
+					}
+					if (isset($row['raw']))
+					{
+						$res[$key]['raw'] = explode($separator, $row['raw']);
+					}
+				}
 			}
 
 			return $res;
