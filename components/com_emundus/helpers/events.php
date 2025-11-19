@@ -13,6 +13,7 @@
  */
 
 // no direct access
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Access\Access;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
@@ -227,6 +228,9 @@ class EmundusHelperEvents
 
 			if ($save)
 			{
+				// Sanitize all data excepted textarea with advanced editor
+				$this->sanitizeData($params);
+
 				$eMConfig          = ComponentHelper::getParams('com_emundus');
 				$enable_forms_logs = $eMConfig->get('log_forms_update', 0);
 				if ($enable_forms_logs)
@@ -249,6 +253,121 @@ class EmundusHelperEvents
 
 			return false;
 		}
+	}
+
+	private function sanitizeData($params): void
+	{
+		$formModel = $params['formModel'];
+		$form_data = $formModel->formData;
+
+		$elements = array();
+		$groups   = $formModel->getGroupsHiarachy();
+		foreach ($groups as $group)
+		{
+			$elements = array_merge($group->getPublishedElements(), $elements);
+		}
+
+		if (!empty($elements))
+		{
+			if (!class_exists('HtmlSanitizerSingleton')) {
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');
+			}
+			$html_sanitizer = HtmlSanitizerSingleton::getInstance();
+
+			foreach ($elements as $elt)
+			{
+				$strong_sanitize = true;
+				if($elt->getElement()->plugin === 'panel')
+				{
+					continue;
+				}
+				elseif($elt->getElement()->plugin === 'textarea')
+				{
+					// If advanced editor, reduce sanitize level to remove only harmful code
+					$wysiwig = $elt->getParams()->get('use_wysiwyg', 0);
+					if($wysiwig == 1)
+					{
+						$strong_sanitize = false;
+					}
+				}
+
+				$name = $elt->getFullname();
+				// Element in repeat groups have [] in name
+				if(strpos($name, '[]') !== false)
+				{
+					$name = str_replace('[]', '', $name);
+				}
+				$raw_name = $name . '_raw';
+
+				if(!empty($form_data[$name]))
+				{
+					$sanitize_data = $this->sanitizeValue($form_data[$name], $strong_sanitize, $html_sanitizer);
+					$formModel->updateFormData($name, $sanitize_data, true);
+					$form_data[$name] = $sanitize_data;
+				}
+
+				if(!empty($form_data[$raw_name]))
+				{
+					$sanitize_data = $this->sanitizeValue($form_data[$raw_name], $strong_sanitize, $html_sanitizer);
+					$formModel->updateFormData($raw_name, $sanitize_data, true);
+					$form_data[$raw_name] = $sanitize_data;
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param   mixed                   $value
+	 * @param   bool                    $strong_sanitize
+	 * @param   HtmlSanitizerSingleton  $html_sanitizer
+	 *
+	 * @return array|mixed|string
+	 */
+	public function sanitizeValue(mixed $value, bool $strong_sanitize, HtmlSanitizerSingleton $html_sanitizer)
+	{
+		if(is_array($value))
+		{
+			$sanitized_values = [];
+			foreach($value as $key => $val)
+			{
+				if(is_string($val))
+				{
+					if ($strong_sanitize)
+					{
+						$sanitized_values[$key] = $html_sanitizer->sanitizeNoHtml($val);
+					}
+					else
+					{
+						$decoded = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+						$sanitized_values[$key] = $html_sanitizer->sanitize($decoded);
+					}
+				}
+				elseif (is_array($val))
+				{
+					$sanitized_values[$key] = $this->sanitizeValue($val, $strong_sanitize, $html_sanitizer);
+				}
+			}
+
+			$sanitize_data = $sanitized_values;
+		}
+		elseif (is_string($value))
+		{
+			if ($strong_sanitize)
+			{
+				$sanitize_data = $html_sanitizer->sanitizeNoHtml($value);
+			}
+			else
+			{
+				$decoded = html_entity_decode($value, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+				$sanitize_data = $html_sanitizer->sanitize($decoded);
+			}
+		}
+		else
+		{
+			$sanitize_data = $value;
+		}
+
+		return $sanitize_data;
 	}
 
 	/**
