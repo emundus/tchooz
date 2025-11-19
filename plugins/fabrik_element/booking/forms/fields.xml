@@ -8,6 +8,11 @@
 				   default=""
 				   description="PLG_ELEMENT_BOOKING_LOCATION_FILTER_DESC"
 				   label="PLG_ELEMENT_BOOKING_LOCATION_FILTER_LABEL"/>
+            <field name="application_choices_filter_elt"
+                   type="text"
+                   default=""
+                   description="PLG_ELEMENT_BOOKING_CAMPAIGN_FILTER_DESC"
+                   label="PLG_ELEMENT_BOOKING_CAMPAIGN_FILTER_LABEL"/>
 		</fieldset>
 	</fields>
 </form>

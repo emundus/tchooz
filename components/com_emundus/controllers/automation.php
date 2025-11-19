@@ -20,6 +20,7 @@ use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
+use Tchooz\Factories\Automation\AutomationFactory;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Repositories\Automation\EventsRepository;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
@@ -224,84 +225,14 @@ class EmundusControllerAutomation extends BaseController
 		if (EmundusHelperAccess::asAccessAction($this->automationActionId, 'c', $this->app->getIdentity()->id))
 		{
 			$data = $this->input->getString('automation', '');
-			$automation = json_decode($data, true);
+			$automation = json_decode($data);
 
-			if (!empty($automation) && !empty($automation['event']) && !empty($automation['name']) && !empty($automation['actions'])) {
-				$eventRepository = new EventsRepository();
-				$event = $eventRepository->getEventById($automation['event']);
+			// todo: automationFactory->fromJson($automationData)
 
-				$conditionGroups = [];
-				if (!empty($automation['conditions_groups']))
-				{
-					foreach ($automation['conditions_groups'] as $group)
-					{
-						$conditionsEntities = [];
-						foreach($group['conditions'] as $condition)
-						{
-							$conditionsEntities[] = new ConditionEntity(
-								$condition['id'],
-								$condition['group_id'],
-								ConditionTargetTypeEnum::from($condition['type']),
-								$condition['target'],
-								ConditionOperatorEnum::from($condition['operator']),
-								$condition['value']
-							);
-						}
+			if (!empty($automation) && !empty($automation->event) && !empty($automation->name) && !empty($automation->actions)) {
 
-						$conditionGroups[] = new ConditionGroupEntity($group['id'], $conditionsEntities, ConditionsAndorEnum::from($group['operator']), $group['parent_id'] ?? 0);
-					}
-				}
-
-				$actions = [];
-				if (is_array($automation['actions']))
-				{
-					$actionRegistry = new ActionRegistry();
-					foreach ($automation['actions'] as $actionData)
-					{
-						$action = $actionRegistry->getActionInstance($actionData['type'], $actionData['parameter_values'] ?? []);
-						if (!empty($action))
-						{
-							$action->setId($actionData['id']);
-							$actions[] = $action;
-						}
-						else
-						{
-							$response['msg']  = Text::sprintf('COM_EMUNDUS_AUTOMATION_INVALID_ACTION_TYPE', $actionData['type']);
-							$response['code'] = 400;
-							$this->sendJsonResponse($response);
-
-							return;
-						}
-
-						if (!empty($actionData['targets'])) {
-							$predefinitionsRegistry = new TargetPredefinitionRegistry();
-							foreach ($actionData['targets'] as $target)
-							{
-								$conditions = [];
-								foreach ($target['conditions'] as $condition)
-								{
-									$conditions[] = new ConditionEntity(
-										$condition['id'],
-										0,
-										ConditionTargetTypeEnum::from($condition['type']),
-										$condition['target'],
-										ConditionOperatorEnum::from($condition['operator']),
-										$condition['value']
-									);
-								}
-
-								$action->addTarget(new TargetEntity(
-									$target['id'],
-									TargetTypeEnum::from($target['type']),
-									!empty($target['predefinition']) ? $predefinitionsRegistry->getTargetPredefinitionInstance($target['predefinition']) : null,
-									$conditions
-								));
-							}
-						}
-					}
-				}
-
-				$automationEntity = new AutomationEntity($automation['id'], $automation['name'], $automation['description'], $event, $conditionGroups, $actions, $automation['published']);
+				$factory = new AutomationFactory();
+				$automationEntity = $factory->fromJson($automation);
 
 				try {
 					$saved = $this->automationRepository->flush($automationEntity);

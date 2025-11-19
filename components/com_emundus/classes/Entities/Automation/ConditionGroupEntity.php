@@ -153,7 +153,10 @@ class ConditionGroupEntity
 			'operator' => $this->operator->value,
 			'conditions' => array_map(function (ConditionEntity $condition) {
 				return $condition->serialize();
-			}, $this->conditions)
+			}, $this->conditions),
+			'subGroups' => array_map(function (ConditionGroupEntity $subGroup) {
+				return $subGroup->serialize();
+			}, $this->subGroups),
 		];
 	}
 }

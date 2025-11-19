@@ -21,7 +21,7 @@ class ConditionRepository
 		$this->db = $db ?? Factory::getContainer()->get('DatabaseDriver');
 	}
 
-	public function saveGroupCondition(ConditionGroupEntity $group): bool
+	public function saveGroupCondition(ConditionGroupEntity $group, int $automationId = 0): bool
 	{
 		$saved = false;
 
@@ -80,10 +80,43 @@ class ConditionRepository
 		} catch (Exception $e) {
 		}
 
+		if ($saved)
+		{
+			$conditionsSaved = true;
+			if (!empty($group->getConditions()))
+			{
+				foreach ($group->getConditions() as $condition)
+				{
+					$condition->setGroupId($group->getId());
+
+					if (!$this->saveCondition($condition, $automationId))
+					{
+						$conditionsSaved = false;
+					}
+				}
+			}
+
+			$subGroupsSaved = true;
+			if (!empty($group->getSubGroups()))
+			{
+				foreach ($group->getSubGroups() as $subGroup)
+				{
+					$subGroup->setParentId($group->getId());
+
+					if (!$this->saveGroupCondition($subGroup, $automationId))
+					{
+						$subGroupsSaved = false;
+					}
+				}
+			}
+
+			$saved = $subGroupsSaved && $conditionsSaved;
+		}
+
 		return $saved;
 	}
 
-	public function saveCondition(ConditionEntity $condition): bool
+	public function saveCondition(ConditionEntity $condition, int $automationId = 0): bool
 	{
 		$saved = false;
 
@@ -142,6 +175,17 @@ class ConditionRepository
 			}
 		}
 
+		if ($saved && $automationId > 0)
+		{
+			// Link condition to automation
+			$query->clear()
+				->insert($this->db->quoteName('#__emundus_automation_condition'))
+				->columns(['automation_id', 'condition_id'])
+				->values($automationId . ', ' . $condition->getId());
+
+			$saved = $this->db->setQuery($query)->execute();
+		}
+
 		return $saved;
 	}
 
@@ -190,8 +234,8 @@ class ConditionRepository
 				->from($this->db->quoteName('#__emundus_group_condition', 'gc'))
 				->leftJoin($this->db->quoteName('#__emundus_condition', 'cond') . ' ON ' . $this->db->quoteName('cond.group_id') . ' = ' . $this->db->quoteName('gc.id'))
 				->leftJoin($this->db->quoteName('#__emundus_automation_condition', 'ac') . ' ON ' . $this->db->quoteName('ac.condition_id') . ' = ' . $this->db->quoteName('cond.id'))
-				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId);
-			// todo: get only parent and change front behavior accordingly
+				->where($this->db->quoteName('ac.automation_id') . ' = ' . $automationId)
+				->andWhere($this->db->quoteName('gc.parent_id') . ' IS NULL');
 
 			$this->db->setQuery($query);
 			$groupRows = $this->db->loadObjectList();

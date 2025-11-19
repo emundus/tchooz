@@ -34,7 +34,7 @@ export default {
 					placeholder: '',
 					value: '',
 					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_STRIPE_SETUP_WEBHOOK_SECRET',
-					helptext: '',
+					helptext: 'COM_EMUNDUS_SETTINGS_INTEGRATION_STRIPE_SETUP_WEBHOOK_SECRET_HELP',
 					displayed: true,
 					configEntry: 'authentication',
 				},
@@ -49,6 +49,7 @@ export default {
 				},
 			],
 			selectedTab: 'auth',
+			webhookEndpointUrl: '',
 		};
 	},
 	created() {
@@ -61,6 +62,10 @@ export default {
 				field.value = config[field.param] || '';
 			}
 		});
+
+		let site = window.location.origin;
+		this.webhookEndpointUrl =
+			site + '/index.php?option=com_emundus&controller=webhook&task=updatePaymentTransaction&sync_id=' + this.app.id;
 	},
 	methods: {
 		onChangeTabActive(id) {
@@ -117,6 +122,17 @@ export default {
 				this.fieldsToSave = this.fieldsToSave.filter((field) => field !== parameter.param);
 			}
 		},
+
+		copyWebhookUrl() {
+			navigator.clipboard.writeText(this.webhookEndpointUrl).then(() => {
+				Swal.fire({
+					icon: 'success',
+					title: this.translate('COM_EMUNDUS_COPIED_TO_CLIPBOARD'),
+					showConfirmButton: false,
+					timer: 1500,
+				});
+			});
+		},
 	},
 };
 </script>
@@ -141,6 +157,27 @@ export default {
 					:help-text-type="'above'"
 					@needSaving="parameterNeedSaving"
 				/>
+			</div>
+
+			<div class="tw-flex tw-flex-col tw-gap-2">
+				<label class="tw-mb-0 tw-flex tw-items-end tw-font-medium" for="webhook-endpoint-url"
+					>{{ translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL') }}
+				</label>
+				<span class="tw-text-base tw-text-neutral-600"
+					>{{ translate('COM_EMUNDUS_STRIPE_SETUP_WEBHOOK_ENDPOINT_LABEL_HELP') }}
+				</span>
+				<div class="tw-flex tw-items-center tw-gap-2">
+					<input
+						id="webhook-endpoint-url"
+						type="text"
+						v-model="webhookEndpointUrl"
+						readonly
+						disabled
+						class="tw-cursor-not-allowed tw-rounded tw-border tw-px-2 tw-py-1"
+						style="font-size: 0.95em"
+					/>
+					<span class="material-symbols-outlined tw-cursor-copy" @click="copyWebhookUrl"> content_copy </span>
+				</div>
 			</div>
 		</div>
 

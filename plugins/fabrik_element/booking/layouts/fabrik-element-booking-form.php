@@ -68,6 +68,7 @@ $d = $displayData;
      isApplicant="<?= $d->is_applicant ?>"
      source="fabrik"
      location_filter_elt="<?= $d->location_filter_elt ?>"
+     application_choices_filter_elt="<?= $d->application_choices_filter_elt ?>"
 >
 </div>
 

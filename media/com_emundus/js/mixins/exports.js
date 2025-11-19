@@ -149,6 +149,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
     var file = json.file;
     var nbcol = json.nbcol;
     var methode = json.methode;
+    var nb_files_to_handle = json.nb_files_to_handle || 0;
 
     $.ajaxQ.abortAll();
 
@@ -181,7 +182,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
                         $('#datasbs').replaceWith('<div id="datasbs" data-start="' + result.json.start + '"><p>' + result.json.start + '</p></div>');
 
                     }
-                    if (start != json.start && totalfile > json.start) {
+                    if (start != json.start && totalfile > json.start || nb_files_to_handle > 0) {
                         generate_csv(json, eltJson, objJson, options, objclass, letter);
                     } else {
                         $('#extractstep').replaceWith('<div id="extractstep"><p>' + Joomla.Text._('COM_EMUNDUS_XLS_GENERATION') + '</p></div>');

@@ -193,7 +193,7 @@ export default {
 		'form.content.col2': function (val, oldVal) {
 			if (oldVal !== null) {
 				if (val !== oldVal) {
-					this.form.content.col1 = val;
+					this.form.content.col2 = val;
 					this.updated = true;
 				}
 			}

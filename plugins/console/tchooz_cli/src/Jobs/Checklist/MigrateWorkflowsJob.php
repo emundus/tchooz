@@ -9,7 +9,6 @@
 
 namespace Emundus\Plugin\Console\Tchooz\Jobs\Checklist;
 
-use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
 use Joomla\CMS\Log\Log;
@@ -17,14 +16,18 @@ use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Input\InputInterface;
+use Tchooz\Entities\Workflow\StepEntity;
+use Tchooz\Entities\Workflow\WorkflowEntity;
+use Tchooz\Factories\Workflow\StepFactory;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 class MigrateWorkflowsJob extends TchoozChecklistJob
 {
-
 	private ?\EmundusModelWorkflow $m_workflow = null;
 	private ?\EmundusModelProgramme $m_program = null;
-
 	private ?\EmundusModelCampaign $m_campaign = null;
+
+	private WorkflowRepository $workflowRepository;
 
 	private OutputInterface $output;
 
@@ -42,6 +45,7 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 		$this->m_workflow = new \EmundusModelWorkflow();
 		$this->m_program = new \EmundusModelProgramme();
 		$this->m_campaign = new \EmundusModelCampaign();
+		$this->workflowRepository = new WorkflowRepository();
 
 		parent::__construct($logger);
 	}
@@ -56,7 +60,6 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 		}
 
 		$old_workflows = $this->getOldWorkflows();
-
 		$old_workflows_with_campaigns = array_filter($old_workflows, function($workflow) {
 			return !empty($workflow['campaign_ids']);
 		});
@@ -133,7 +136,8 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 	}
 
 	/**
-	 * @param   array  $old_workflows
+	 * @param   array  $workflows
+	 * @param   EmundusProgressBar  $progressBar
 	 *
 	 * @return bool
 	 */
@@ -149,17 +153,16 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 			$this->databaseService->startTransaction();
 
 			foreach ($workflows as $step) {
-				$new_step_entity = $this->transformStep($step);
-
+				$newStepEntity = StepFactory::fromV1Step($step);
 				if (empty($step['program_codes']) && empty($step['campaign_ids'])) {
-					$global_steps[] = $new_step_entity;
+					$global_steps[] = $newStepEntity;
 				} else {
 					foreach ($step['program_codes'] as $program_code) {
-						$steps_by_program[$program_code][] = $new_step_entity;
+						$steps_by_program[$program_code][] = $newStepEntity;
 					}
 
 					foreach ($step['campaign_ids'] as $campaign_id) {
-						$steps_by_campaign[$campaign_id][] = $new_step_entity;
+						$steps_by_campaign[$campaign_id][] = $newStepEntity;
 					}
 				}
 			}
@@ -180,6 +183,7 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 						Log::add('Global steps added to program ' . $program['code'], Log::INFO, self::getJobName());
 					} else {
 						Log::add('Error while associating global steps to program ' . $program['code'], Log::ERROR, self::getJobName());
+						$this->output->writeln($this->colors['red'] . 'Error while associating global steps to program ' . $program['code'] . $this->colors['reset']);
 					}
 
 					$tasks[] = $added;
@@ -203,12 +207,14 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 							Log::add('Steps added to program ' . $program_code, Log::INFO, self::getJobName());
 						} else {
 							Log::add('Error while associating steps to program ' . $program_code, Log::ERROR, self::getJobName());
+							$this->output->writeln($this->colors['red'] . 'Error while associating steps to program ' . $program_code . $this->colors['reset']);
 						}
 
 						$tasks[] = $added;
 						$progressBar->advance();
 					} else {
 						Log::add('Error while fetching program by code ' . $program_code, Log::ERROR, self::getJobName());
+						$this->output->writeln($this->colors['red'] . 'Error while fetching program by code ' . $program_code . $this->colors['reset']);
 						$tasks[] = false;
 					}
 				}
@@ -240,30 +246,15 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 
 							if ($updated) {
 								Log::add('Campaign ' . $campaign_id . ' updated with new training code ' . $new_program['code'], Log::INFO, self::getJobName());
-								$program_workflow_data = $this->m_workflow->getWorkflow(0, [$program['id']]);
-								$program_workflow_id = !empty($program_workflow_data['workflow']->id) ? $program_workflow_data['workflow']->id : null;
+								$workflowEntity = $this->workflowRepository->getWorkflowByProgramId($program['id']);
+								$program_workflow_id = !empty($workflowEntity) ? $workflowEntity->getId() : null;
 
 								if (!empty($program_workflow_id)) {
-									$new_workflow_id = $this->m_workflow->duplicateWorkflow($program_workflow_id);
-									Log::add('Workflow ' . $program_workflow_id . ' duplicated to ' . $new_workflow_id, Log::INFO, self::getJobName());
+									$workflowEntity = $this->workflowRepository->getWorkflowById($program_workflow_id);
+									$newWorkflowEntity = $this->workflowRepository->duplicate($workflowEntity, 'Workflow - ' . $new_program['label']);
 
-									$new_workflow = $this->m_workflow->getWorkflow($new_workflow_id);
-									Log::add('Workflow ' . $new_workflow_id . ' fetched', Log::INFO, self::getJobName());
-
-									foreach ($new_workflow['steps'] as $key => $step) {
-										$step->entry_status = array_map(function ($entry_status) {
-											return ['id' => $entry_status, 'label' => ''];
-										}, $step->entry_status);
-
-										$new_workflow['steps'][$key] = (array)$step;
-									}
-
-									$updated = $this->m_workflow->updateWorkflow((array)$new_workflow['workflow'], $new_workflow['steps'], [['id' => $new_program['id']]]);
-
-									if ($updated) {
-										Log::add('Workflow ' . $new_workflow_id . ' updated with new program ' . $new_program['code'], Log::INFO, self::getJobName());
-									} else {
-										Log::add('Error while updating workflow ' . $new_workflow_id . ' with new program ' . $new_program['code'], Log::ERROR, self::getJobName());
+									if (!empty($newWorkflowEntity->getId())) {
+										Log::add('Workflow ' . $program_workflow_id . ' duplicated to ' . $newWorkflowEntity->getId(), Log::INFO, self::getJobName());
 									}
 								}
 
@@ -273,6 +264,7 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 									Log::add('Steps added to program ' . $new_program['code'], Log::INFO, self::getJobName());
 								} else {
 									Log::add('Error while associating steps to program ' . $new_program['code'], Log::ERROR, self::getJobName());
+									$this->output->writeln($this->colors['red'] . 'Error while associating steps to program ' . $new_program['code'] . $this->colors['reset']);
 								}
 
 								$tasks[] = $added;
@@ -283,10 +275,12 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 							}
 						} else {
 							Log::add('Error while duplicating program ' . $program['code'], Log::ERROR, self::getJobName());
+							$this->output->writeln($this->colors['red'] . 'Error while duplicating program ' . $program['code'] . $this->colors['reset']);
 							$tasks[] = false;
 						}
 					} else {
 						Log::add('Error while fetching program by campaign id ' . $campaign_id, Log::ERROR, self::getJobName());
+						$this->output->writeln($this->colors['red'] . 'Error while fetching program by campaign id ' . $campaign_id . $this->colors['reset']);
 						$tasks[] = false;
 					}
 				}
@@ -298,44 +292,6 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 		}
 
 		return $succeeded;
-	}
-
-	/**
-	 * Transform an old J3 workflow step to a new J5 workflow step entity
-	 * @param   array  $step
-	 *
-	 * @return array|int[]
-	 */
-	private function transformStep(array $step): array
-	{
-		$new_step = [];
-
-		if (!empty($step)) {
-			$new_entry_status = [];
-
-			foreach ($step['entry_status'] as $step_entry_status)
-			{
-				$new_entry_status[] = [
-					'id' => $step_entry_status,
-					'label' => ''
-				];
-			}
-
-			$new_step = [
-				'id' => 0,
-				'label' => $this->getProfileLabel($step['profile']) ?? 'Étape [Profile ' . $step['profile'] . ']',
-				'workflow_id' => 0,
-				'type' => 1, // means applicant
-				'profile_id' => $step['profile'],
-				'form_id' => null,
-				'entry_status' => $new_entry_status,
-				'output_status' => $step['output_status'],
-				'multiple' => 0,
-				'state' => 1
-			];
-		}
-
-		return $new_step;
 	}
 
 	private function duplicateProgram($program): array
@@ -359,83 +315,47 @@ class MigrateWorkflowsJob extends TchoozChecklistJob
 	}
 
 	/**
+	 * Add steps to a program's workflow, creating the workflow if it does not exist
 	 * @param   array  $program
-	 * @param   array  $steps
+	 * @param   array<StepEntity>  $newSteps
 	 *
 	 * @return bool
 	 */
-	private function addStepsToProgram(array $program, array $new_steps): bool
+	private function addStepsToProgram(array $program, array $newSteps): bool
 	{
 		$added = false;
 
-		if (!empty($program) && !empty($new_steps)) {
-			$workflow_data = $this->m_workflow->getWorkflow(0, [$program['id']]);
+		if (!empty($program['id']) && !empty($newSteps)) {
+			$workflow = $this->workflowRepository->getWorkflowByProgramId($program['id']);
 
-			if (empty($workflow_data['workflow']->id)) {
-				$workflow_id = $this->m_workflow->add('Workflow - ' . $program['label']);
-
-				if (!empty($workflow_id)) {
-					Log::add('Workflow created with id ' . $workflow_id . ' for program ' . $program['id'], Log::INFO, self::getJobName());
-					$workflow_data = $this->m_workflow->getWorkflow($workflow_id);
-				} else {
-					Log::add('Failed to generate a new workflow for porgram ' . $program['id'], Log::ERROR, self::getJobName());
-				}
-			}
-
-			if (!empty($workflow_data['workflow']->id)) {
-				foreach ($new_steps as $key => $step) {
-					$new_steps[$key]['workflow_id'] = $workflow_data['workflow']->id;
-				}
-
-				foreach ($workflow_data['steps'] as $key => $step) {
-					$step->entry_status = array_map(function ($entry_status) {
-						return ['id' => $entry_status, 'label' => ''];
-					}, $step->entry_status);
-
-					$workflow_data['steps'][$key] = (array)$step;
-				}
-
-				try {
-					$steps = array_merge($workflow_data['steps'], $new_steps);
-					$updated = $this->m_workflow->updateWorkflow((array)$workflow_data['workflow'], $steps, [['id' => $program['id']]]);
-				} catch (\Exception $e) {
-					Log::add('Error while adding steps to workflow ' . $workflow_data['workflow']->id . ' for program ' . $program['id'] . ': ' . $e->getMessage(), Log::ERROR, self::getJobName());
-
-					$this->output->writeln('Error while adding steps to workflow ' . $workflow_data['workflow']->id . ' for program ' . $program['id'] . ': ' . $e->getMessage());
+			if (empty($workflow) || empty($workflow->getId())) {
+				$workflow = new WorkflowEntity(0, 'Workflow - ' . $program['label'], true, $newSteps, [$program['id']]);
+				if ($this->workflowRepository->save($workflow))
+				{
 					$added = true;
 				}
+			} else {
+				$allAdded = true;
+				foreach ($newSteps as $newStep)
+				{
+					if (!$workflow->addStep($newStep))
+					{
+						Log::add('Error while adding step' . $newStep->getId() . ' to existing workflow ' . $workflow->getId() . ' for program ' . $program['id'], Log::ERROR, self::getJobName());
+						$allAdded = false;
+					}
+				}
 
-				if ($updated) {
-					Log::add('Steps added to workflow ' . $workflow_data['workflow']->id, Log::INFO, self::getJobName());
+				if ($allAdded && $this->workflowRepository->save($workflow))
+				{
 					$added = true;
 				} else {
-					Log::add('Error while adding steps to workflow ' . $workflow_data['workflow']->id, Log::ERROR, self::getJobName());
+					$this->output->writeln('Error while adding steps to workflow ' . $workflow->getId(). ' for program ' . $program['id']);
+					Log::add('Error while adding steps to existing workflow ' . $workflow->getId() . ' for program ' . $program['id'], Log::ERROR, self::getJobName());
 				}
 			}
 		}
 
 		return $added;
-	}
-
-	private function getProfileLabel($profile_id) {
-		$profile_label = '';
-
-		if (!empty($profile_id)) {
-			$db = $this->databaseServiceSource->getDatabase();
-			$query = $db->getQuery(true)
-				->select('label')
-				->from($db->quoteName('jos_emundus_setup_profiles'))
-				->where($db->quoteName('id') . ' = ' . $db->quote($profile_id));
-
-			try {
-				$db->setQuery($query);
-				$profile_label = $db->loadResult();
-			} catch (\Exception $e) {
-				Log::add('Error while fetching profile label: ' . $e->getMessage(), Log::ERROR, self::getJobName());
-			}
-		}
-
-		return $profile_label;
 	}
 
 	private function needToDuplicateProgram($program, $campaign_id): bool

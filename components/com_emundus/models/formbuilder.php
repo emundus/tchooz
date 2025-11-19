@@ -987,8 +987,25 @@ class EmundusModelFormbuilder extends JModelList
 			);
 			$group       = $this->createGroup($group_label, $formid);
 
-			$eid = $this->createElement('declare', $group['group_id'], 'checkbox', 'Confirmation', '', 0, 0, 0);
-			EmundusHelperFabrik::addOption($eid, 'CONFIRM_POST', 'JYES');
+			// Create a new element for confirmation
+			$elt_name = 'e_'.$group['group_id'].'_declaration';
+			$tag = 'ELEMENT_' . $group['group_id'] . '_DECLARATION';
+			$eid = $this->createElement($elt_name, $group['group_id'], 'checkbox', $tag, '', 0, 1, 0);
+
+			$label = [
+				'fr' => 'Confirmation',
+				'en' => 'Confirmation'
+			];
+			$this->translate($tag, $label, 'fabrik_elements', $eid, 'label', $user->id);
+
+			$tag = 'ELEMENT_' . $group['group_id'] . '_DECLARATION_OPTION';
+			$label_option = [
+				'fr' => 'Je certifie l\'exactitude des données saisies et j\'envoie mon dossier',
+				'en' => 'I certify the accuracy of the data I have entered and I am sending my application.'
+			];
+			$this->translate($tag, $label_option, 'fabrik_elements', $eid, 'sublabel', $user->id);
+
+			EmundusHelperFabrik::addOption($eid, $tag, 'JYES');
 			EmundusHelperFabrik::addNotEmptyValidation($eid);
 
 			//
@@ -1233,6 +1250,30 @@ class EmundusModelFormbuilder extends JModelList
 		return $group;
 	}
 
+	/**
+	 * @param   int                    $groupId
+	 * @param   \Joomla\CMS\User\User  $user
+	 *
+	 * @return bool
+	 */
+	public function createFormEvalDefaulltElements(int $groupId, \Joomla\CMS\User\User $user): bool
+	{
+		$elementIds = [];
+
+		if (!empty($groupId))
+		{
+			$elementIds[] = $this->createElement('id', $groupId, 'internalid', 'id', '', 1, 0, 1, 1, 0, 20, $user);
+			$elementIds[] = $this->createElement('time_date', $groupId, 'jdate', 'time date', '', 1, 0, 1, 1, 0, 20, $user, 'id');
+			$elementIds[] = $this->createElement('ccid', $groupId, 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44, $user, 'time_date');
+			$elementIds[] = $this->createElement('fnum', $groupId, 'field', 'fnum', '', 1, 0, 1, 1, 0, 44, $user, 'ccid');
+			$elementIds[] = $this->createElement('step_id', $groupId, 'field', 'Phase', '', 1, 1, 1, 1, 0, 44, $user, 'fnum');
+			$elementIds[] = $this->createElement('evaluator', $groupId, 'user', 'user', '{$my->id}', 1, 1, 1, 1, 0, 20, $user, 'step_id');
+			$elementIds[] = $this->createElement('updated_by', $groupId, 'user', 'user', '{$my->id}}', 1, 1, 1, 1, 0, 20, $user, 'evaluator');
+		}
+
+		return !empty($elementIds) && !in_array(false, $elementIds) && !in_array(0, $elementIds);
+	}
+
 	function deleteGroup($group)
 	{
 
@@ -1429,7 +1470,7 @@ class EmundusModelFormbuilder extends JModelList
 		return $created_elements;
 	}
 
-	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 1, $published = 1, $parent_id = 0, $width = 20, $user = null)
+	function createElement($name, $group_id, $plugin, $label, $default = '', $hidden = 0, $create_column = 1, $show_in_list_summary = 1, $published = 1, $parent_id = 0, $width = 20, $user = null, ?string $after = null)
 	{
 		$query = $this->db->getQuery(true);
 
@@ -1438,6 +1479,17 @@ class EmundusModelFormbuilder extends JModelList
 		}
 
 		try {
+			$query->select('*')
+				->from($this->db->quoteName('#__fabrik_elements'))
+				->where($this->db->quoteName('group_id') . ' = ' . $this->db->quote($group_id))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote($name));
+			$this->db->setQuery($query);
+			$existing_element = $this->db->loadObject();
+
+			if (!empty($existing_element)) {
+				return $existing_element->id;
+			}
+
 			//Create element in fabrik_elements
 			$params = $this->h_fabrik->prepareElementParameters($plugin, false);
 
@@ -1466,7 +1518,8 @@ class EmundusModelFormbuilder extends JModelList
 				'params'               => json_encode($params),
 			);
 
-			$query->insert($this->db->quoteName('#__fabrik_elements'))
+			$query->clear()
+				->insert($this->db->quoteName('#__fabrik_elements'))
 				->columns($this->db->quoteName(array_keys($data)))
 				->values(implode(',', $this->db->quote(array_values($data))));
 			$this->db->setQuery($query);
@@ -1500,11 +1553,23 @@ class EmundusModelFormbuilder extends JModelList
 				$result = $this->db->loadObject();
 
 				$query = "ALTER TABLE " . $result->dbtable . " ADD " . $name . " " . $db_type . " NULL";
+
+				if (!empty($after))
+				{
+					$query .= " AFTER " . $after;
+				}
+
 				$this->db->setQuery($query);
 				$this->db->execute();
 				if ($group_params->repeat_group_button == 1 || $fabrik_group->is_join == 1) {
 					$repeat_table_name = $result->dbtable . "_" . $group_id . "_repeat";
 					$query             = "ALTER TABLE " . $repeat_table_name . " ADD " . $name . " " . $db_type . " NULL";
+
+					if (!empty($after))
+					{
+						$query .= " AFTER " . $after;
+					}
+
 					$this->db->setQuery($query);
 					$this->db->execute();
 				}

@@ -50,16 +50,22 @@ class TchoozChecklistJob extends TchoozJob
 			'type'  => 'warning',
 			'word'  => '_emundus_evaluations___',
 			'advice' => 'Table emundus_evaluations used, it has been replaced by emundus_evaluations_n as it can now contain multiple evaluations for the same file.',
+			'group' => 'evaluations',
+			'table' => 'jos_emundus_evaluations'
 		],
 		[
 			'type'  => 'warning',
 			'word'  => 'emundus_final_grade',
 			'advice' => 'Table emundus_final_grade used, it has been replaced by evaluations steps, you should use emundus_evaluations_n instead.',
+			'group' => 'evaluations',
+			'table' => 'jos_emundus_final_grade'
 		],
 		[
 			'type'  => 'warning',
 			'word'  => 'emundus_admission',
 			'advice' => 'Table emundus_admission used, it has been replaced by evaluations steps, you should use emundus_evaluations_n instead.',
+			'group' => 'evaluations',
+			'table' => 'jos_emundus_admission'
 		],
 		[
 			'type'      => 'error',
@@ -136,6 +142,11 @@ class TchoozChecklistJob extends TchoozJob
 				preg_match_all($pattern, $code, $matches);
 
 				$output->writeln('<' . $keyword['type'] . '> Code [' . implode(',', $matches[0]) . ']: ' . $keyword['advice'] . '</' . $keyword['type'] . '>');
+
+				if ($keyword['group'] === 'evaluations')
+				{
+					// todo: search where new element is
+				}
 			}
 		}
 

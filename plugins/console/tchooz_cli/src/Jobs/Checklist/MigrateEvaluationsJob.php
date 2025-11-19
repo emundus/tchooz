@@ -15,6 +15,7 @@ use Gantry\Framework\Exception;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseInterface;
 use Symfony\Component\Console\Input\InputInterface;
@@ -23,6 +24,10 @@ use Tchooz\Entities\Indexer\IndexEntity;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
+use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Workflow\StepRepository;
+use Tchooz\Repositories\Workflow\StepTypeRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');
@@ -36,7 +41,6 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 {
 	private \EmundusModelWorkflow $m_workflow;
 	private \EmundusModelProgramme $m_program;
-	private \EmundusModelForm $m_form;
 	private \EmundusModelFormBuilder $m_form_builder;
 	private \EmundusModelEvaluation $m_evaluation;
 	private OutputInterface $output;
@@ -48,7 +52,6 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 	)
 	{
 		$this->allowFailure = false;
-		$this->m_form = new \EmundusModelForm();
 		$this->m_form_builder = new \EmundusModelFormBuilder();
 		$this->m_program = new \EmundusModelProgramme();
 		$this->m_workflow = new \EmundusModelWorkflow();
@@ -140,50 +143,111 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 							}
 
 							if (empty($evaluations_old_new_mapping[$evaluation_form_id])) {
-								// select $evaluation_form_id label
-								$label = $this->getEvaluationLabel($evaluation_form_id);
-								$intro = $this->getEvaluationIntro($evaluation_form_id);
-								$new_evaluation_form_id = $this->m_form->createFormEval($user, $label, $intro);
+								$new_evaluation_form_id = $this->m_form_builder->duplicateFabrikForm($evaluation_form_id, $user->id, ['keep_structure' => false]);
 
-								if (!empty($new_evaluation_form_id)) {
+								if (!empty($new_evaluation_form_id))
+								{
+									// add columns to new fabrik table
+									if (!$this->addMissingColumnsToNewEvaluationForm($new_evaluation_form_id, $user))
+									{
+										$this->output->writeln($this->colors['red'] . 'Failed to add missing columns to new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
+										throw new \Exception('Failed to add missing columns to new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')');
+									}
+
+									// add emundusstepevaluation as first plugin
+									if (!$this->addEmundusStepEvaluationPluginToForm($new_evaluation_form_id, $user))
+									{
+										$this->output->writeln($this->colors['red'] . 'Failed to add emundusstepevaluation plugin to new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
+										throw new \Exception('Failed to add emundusstepevaluation plugin to new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')');
+									}
+
 									$form_index = new IndexEntity(0, 'fabrik_form_id', $evaluation_form_id, $new_evaluation_form_id);
 									$form_index->save();
-
-									$old_fabrik_list = $this->m_form_builder->getList($evaluation_form_id);
-									$new_fabrik_list = $this->m_form_builder->getList($new_evaluation_form_id);
-									$evaluations_old_new_mapping[$evaluation_form_id] = $new_evaluation_form_id;
-									Log::add('Created new evaluation form with id ' . $new_evaluation_form_id, Log::INFO, self::getJobName());
-
-									$elements_to_exclude = $this->getElementIdsToExclude($evaluation_form_id);
-									$copied = $this->m_form_builder->copyGroups($evaluation_form_id, $new_evaluation_form_id, $new_fabrik_list->id, $old_fabrik_list->db_table_name, '', $user, $elements_to_exclude);
-									if ($copied) {
-										Log::add('Copied groups from old evaluation form to new evaluation form', Log::INFO, self::getJobName());
-
-										$added = $this->addGroupElementsToBDD($new_fabrik_list, $evaluation_form_id, $old_fabrik_list->db_table_name);
-
-										if ($added) {
-											Log::add('Added group elements to new evaluation form ' . $new_evaluation_form_id, Log::ERROR, self::getJobName());
-										} else {
-											Log::add('Failed to add group elements to new evaluation form', Log::ERROR, self::getJobName());
-											$this->output->writeln($this->colors['yellow'] . 'Failed to add group elements to new evaluation form' . $this->colors['reset']);
-										}
-									} else {
-										Log::add('Failed to copy groups from old evaluation form to new evaluation form', Log::ERROR, self::getJobName());
-										$this->output->writeln($this->colors['yellow'] . 'Failed to copy groups from old evaluation form to new evaluation form' . $this->colors['reset']);
-										continue;
-									}
-								} else {
-									Log::add('Failed to create new evaluation form', Log::ERROR, self::getJobName());
-									$this->output->writeln($this->colors['red'] . 'Failed to create new evaluation form' . $this->colors['reset']);
-									continue;
+								}
+								else
+								{
+									$this->output->writeln($this->colors['red'] . 'Failed to duplicate evaluation form ' . $evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
+									throw new \Exception('Failed to duplicate evaluation form ' . $evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')');
 								}
 							} else {
 								$new_evaluation_form_id = $evaluations_old_new_mapping[$evaluation_form_id];
 								Log::add('Evaluation form already created - ' . $new_evaluation_form_id, Log::INFO, self::getJobName());
-
 							}
 
-							$step_id = $this->createWorkflowStepForEvaluation($program->id, $new_evaluation_form_id);
+							if ($new_evaluation_form_id === $evaluation_form_id)
+							{
+								$this->output->writeln($this->colors['red'] . 'New evaluation form id is the same as old evaluation form id for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
+								throw new \Exception('New evaluation form id is the same as old evaluation form id for programme ' . $program->id . ' (' . $program->label . ')');
+							}
+
+							// if old evaluation form id is in table admission or final_grade, then the step type must be decision or admission and not evaluation
+							// if those types does not exist, we create them
+							$list = \EmundusHelperFabrik::getListByFormId($evaluation_form_id);
+
+							$stepTypeRepository = new StepTypeRepository();
+							switch ($list->db_table_name)
+							{
+								case 'jos_emundus_admission':
+									$step_type = $stepTypeRepository->getStepTypeByCode('admission');
+
+									if (empty($step_type))
+									{
+										$step_type = new StepTypeEntity(
+											0,
+											2,
+											'Admission',
+											'admission',
+											32,
+											false
+										);
+
+										$saved = $stepTypeRepository->flush($step_type);
+										if (!$saved) {
+											$this->output->writeln($this->colors['red'] . 'Failed to create admission step type' . $this->colors['reset']);
+											throw new \Exception('Failed to create admission step type');
+										}
+									}
+
+									$actionRepository = new ActionRepository();
+									$crudAction = $actionRepository->getByName('admission');
+									$crudAction->setStatus(true);
+									$actionRepository->flush($crudAction);
+
+									break;
+								case 'jos_emundus_final_grade':
+									$step_type = $stepTypeRepository->getStepTypeByCode('decision');
+
+									if (empty($step_type))
+									{
+										$step_type = new StepTypeEntity(
+											0,
+											2,
+											'Decision',
+											'decision',
+											29,
+											false
+										);
+
+										$saved = $stepTypeRepository->flush($step_type);
+
+										if (!$saved) {
+											$this->output->writeln($this->colors['red'] . 'Failed to create decision step type' . $this->colors['reset']);
+											throw new \Exception('Failed to create decision step type');
+										}
+									}
+
+									$actionRepository = new ActionRepository();
+									$crudAction = $actionRepository->getByName('decision');
+									$crudAction->setStatus(true);
+									$actionRepository->flush($crudAction);
+
+									break;
+								default:
+									$step_type = $stepTypeRepository->getStepTypeById(2);
+									break;
+							}
+
+							$step_id = $this->createWorkflowStepForEvaluation($program->id, $new_evaluation_form_id, $evaluation_form_id, $step_type);
 
 							if (!empty($step_id)) {
 								Log::add('Created evaluation step for programme ' . $program->id . ' (' . $program->label . ')  with id ' . $step_id, Log::INFO, self::getJobName());
@@ -236,17 +300,17 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		return $programs;
 	}
 
-	private function createWorkflowStepForEvaluation(int $program_id, int $evaluation_form_id): int
+	private function createWorkflowStepForEvaluation(int $program_id, int $evaluation_form_id, int $old_evaluation_form_id, StepTypeEntity $evaluationType): int
 	{
 		$step_id = 0;
 
 		if (!empty($program_id) && !empty($evaluation_form_id)) {
-			$workflow_data = $this->m_workflow->getWorkflow(0, [$program_id]);
+			$stepRepository = new StepRepository();
+			$workflowRepository = new WorkflowRepository();
+			$workflow = $workflowRepository->getWorkflowByProgramId($program_id);
 
-			if (empty($workflow_data['workflow']))
+			if (empty($workflow))
 			{
-				Log::add('Creating new workflow for programme ' . $program_id, Log::INFO, self::getJobName());
-
 				$db = $this->databaseService->getDatabase();
 				$query = $db->createQuery();
 				$query->select('label')
@@ -255,57 +319,49 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 				$db->setQuery($query);
 				$program_label = $db->loadResult();
-
-				$workflow_label = 'Workflow - ' . $program_label;
-				$workflow_id = $this->m_workflow->add($workflow_label);
-
-				if (!empty($workflow_id)) {
-					$this->m_workflow->updateWorkflow(
-						['id' => $workflow_id, 'label' => $workflow_label, 'published' => 1],
-						[],
-						[['id' => $program_id]]
-					);
-					$workflow_data = $this->m_workflow->getWorkflow($workflow_id);
-				} else {
-					$this->output->writeln($this->colors['red'] . 'Failed to create new workflow for programme ' . $program_id . $this->colors['reset']);
-					Log::add('Failed to create new workflow for programme ' . $program_id, Log::ERROR, self::getJobName());
-				}
+				$workflow = new WorkflowEntity(0, 'Workflow - ' . $program_label, 1, [], [$program_id]);
+				$workflowRepository->save($workflow);
 			}
 
-			if (!empty($workflow_data['workflow']))
+			if (!empty($workflow))
 			{
-				if ($workflow_data['steps']) {
-					foreach ($workflow_data['steps'] as $step) {
-						if ($step->form_id == $evaluation_form_id) {
-							Log::add('Evaluation step already exists in workflow ' . $workflow_data['workflow']->id, Log::INFO, self::getJobName());
-							return $step->id;
-						}
+				foreach ($workflow->steps as $step)
+				{
+					if ($step->getFormId() === $evaluation_form_id) {
+						Log::add('Evaluation step already exists in workflow ' . $workflow->getId(), Log::INFO, self::getJobName());
+						return $step->getId();
 					}
 				}
 
-				$workflow_entity = new WorkflowEntity($workflow_data['workflow']->id);
-				$step = new StepEntity(0);
-				$step->label = $this->getEvaluationLabel($evaluation_form_id)['fr'];
-				$step->type = new StepTypeEntity(2); // 2 is default evaluation step type id
-				$step->profile_id = 0;
-				$step->form_id = $evaluation_form_id;
-				$step->multiple = $this->wasEvaluationMultiple($evaluation_form_id) ? 1 : 0;
-				$step->state = 1;
-				$step->workflow_id = $workflow_entity->getId();
+				$newStep = new StepEntity(
+					0,
+					$workflow->getId(),
+					$this->getEvaluationLabel($evaluation_form_id)['fr'],
+					$evaluationType,
+					null,
+					$evaluation_form_id,
+					[1],
+					null,
+					$this->wasEvaluationMultiple($old_evaluation_form_id) ? 1 : 0,
+					1,
+					count($workflow->steps) + 1);
 
-				try {
-					$added = $workflow_entity->addStep($step);
+				if ($workflow->addStep($newStep))
+				{
+					Log::add('Added evaluation step to workflow ' . $workflow->getId(), Log::INFO, self::getJobName());
 
-					if ($added) {
-						Log::add('Added evaluation step to workflow ' . $workflow_data['workflow']->id, Log::INFO, self::getJobName());
-						$step_id = $step->getId();
-					} else {
-						$this->output->writeln($this->colors['red'] . 'Failed to add evaluation step to workflow ' . $workflow_data['workflow']->id . $this->colors['reset']);
-						Log::add('Failed to add evaluation step to workflow ' . $workflow_data['workflow']->id, Log::ERROR, self::getJobName());
+					$saved = $stepRepository->save($newStep);
+					if ($saved) {
+						$step_id = $newStep->getId();
 					}
-				} catch (\Exception $e) {
-					$this->output->writeln($this->colors['red'] . 'Failed to add evaluation step to workflow ' . $workflow_data['workflow']->id . ': ' . $e->getMessage() . $this->colors['reset']);
-					Log::add('Failed to add evaluation step to workflow: ' . $e->getMessage(), Log::ERROR, self::getJobName());
+					else
+					{
+						$this->output->writeln($this->colors['red'] . 'Failed to save evaluation step to workflow ' . $workflow->getId() . $this->colors['reset']);
+						Log::add('Failed to save evaluation step to workflow ' . $workflow->getId(), Log::ERROR, self::getJobName());
+					}
+				} else {
+					$this->output->writeln($this->colors['red'] . 'Failed to add evaluation step to workflow ' . $workflow->getId() . $this->colors['reset']);
+					Log::add('Failed to add evaluation step to workflow ' . $workflow->getId(), Log::ERROR, self::getJobName());
 				}
 			}
 		}
@@ -314,271 +370,14 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 	}
 
 	/**
-	 * @param   object  $fabrik_list
-	 * @param   int     $old_form_id
-	 * @param   string  $src_table
+	 * @param   int  $form_id
+	 * @param   int  $group_id
 	 *
-	 * @return bool
+	 * @return array
 	 */
-	private function addGroupElementsToBDD(object $fabrik_list, int $old_form_id, string $src_table): bool
-	{
-		$added = false;
-
-		$groups = $this->m_form->getGroupsByForm($old_form_id);
-
-		if (!empty($groups)) {
-			$target_table = $fabrik_list->db_table_name;
-
-			$db = $this->databaseService->getDatabase();
-			$query = $db->createQuery();
-
-			foreach ($groups as $group_index => $group) {
-				if (empty($group->id)) {
-					Log::add('Group at index ' . $group_index . ' for form id ' . $old_form_id . ' is empty', Log::WARNING, self::getJobName());
-					continue;
-				}
-
-				$groups_added = [];
-				$params = json_decode($group->params);
-
-				if ($params->repeat_group_button == 1) {
-					$new_group_id = $this->searchIndexNewValue($group->id, 'fabrik_group_id');
-
-					$old_repeat_table_name = $src_table . '_' . $group->id . '_repeat';
-					$repeat_table_name = $target_table . '_' . $new_group_id . '_repeat';
-					$columns = [['name' => 'parent_id', 'type' => 'INT', 'null' => 0]];
-					$repeat_table_created = \EmundusHelperUpdate::createTable($repeat_table_name, $columns);
-
-					if ($repeat_table_created) {
-						// update join in jos_fabrik_joins
-						$query->clear()
-							->update($db->quoteName('#__fabrik_joins'))
-							->set('join_from_table = ' . $db->quote($target_table))
-							->set('table_join = ' . $db->quote($repeat_table_name))
-							->set('list_id = ' . $fabrik_list->id)
-							->set('params = ' . $db->quote(json_encode(['type' => 'group', 'pk' => $repeat_table_name . '.id'])))
-							->where('group_id = ' . $new_group_id)
-							->andWhere('element_id = 0 OR element_id IS NULL');
-
-						$db->setQuery($query);
-						$db->execute();
-
-						$groups_added[] = $this->addOldEvalColumnsToNewForm($repeat_table_name, $old_form_id, $old_repeat_table_name, $group->id);
-					} else {
-						$this->output->writeln($this->colors['red'] . 'Failed to create repeatable group table ' . $repeat_table_name . $this->colors['reset']);
-						Log::add('Failed to create repeatable group table ' . $repeat_table_name, Log::ERROR, self::getJobName());
-					}
-				} else {
-					// this is basic table, just add columns
-					$groups_added[] = $this->addOldEvalColumnsToNewForm($target_table, $old_form_id, $src_table, $group->id);
-				}
-
-				$added = !in_array(false, $groups_added);
-			}
-		}
-
-		return $added;
-	}
-
-	/**
-	 * @param   string  $target_table
-	 * @param   int     $old_form_id
-	 * @param   string  $source_table
-	 *
-	 * @return bool
-	 */
-	private function addOldEvalColumnsToNewForm(string $target_table, int $old_form_id, string $source_table, int $group_id = 0): bool
-	{
-		$added = false;
-
-		Log::add('Adding columns to table ' . $target_table . ' from table ' . $source_table . ', form ' . $old_form_id . ' and group ' . $group_id, Log::INFO, self::getJobName());
-		if (!empty($old_form_id) && !empty($target_table) && !empty($source_table)) {
-			$elements = $this->getElementsToCopy($old_form_id, $group_id);
-
-			if (!empty($elements)) {
-				$h_files = new \EmundusHelperFiles();
-				$elements_added = [];
-
-				$db = $this->databaseService->getDatabase();
-				$query = $db->createQuery();
-
-				$columns = $db->getTableColumns($target_table);
-				$columns = array_map('strtolower', $columns);
-
-				foreach ($elements as $element) {
-					$is_repeat = $this->isElementRepeatable($element);
-					$new_group_id = $this->searchIndexNewValue($group_id, 'fabrik_group_id');
-					$new_element_id = $this->searchIndexNewValue($element['id'], 'fabrik_element_id');
-
-					if ($is_repeat) {
-						$element_target_table = $target_table . '_repeat_' . $element['name'];
-						$element_source_table = $source_table . '_repeat_' . $element['name'];
-
-						$query->clear()
-							->select('COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH')
-							->from('information_schema.COLUMNS')
-							->where('TABLE_NAME = ' . $db->quote($element_source_table))
-							->andWhere('COLUMN_NAME = ' . $db->quote($element['name']));
-
-						$db->setQuery($query);
-						$column_infos = $db->loadAssoc();
-						$columns = [
-							['name' => 'parent_id', 'type' => 'INT', 'null' => 0],
-							['name' => $element['name'], 'type' => $column_infos['DATA_TYPE'], 'null' => $column_infos['IS_NULLABLE'] === 'YES' ? 1 : 0, 'default' => $column_infos['COLUMN_DEFAULT']]
-						];
-						$element_table_created = \EmundusHelperUpdate::createTable($element_target_table, $columns);
-
-						if ($element_table_created) {
-
-							$query->clear()
-								->update($db->quoteName('#__fabrik_joins'))
-								->set('join_from_table =' . $db->quote($target_table))
-								->set('table_join =' . $db->quote($element_target_table))
-								->set('params = ' . $db->quote(json_encode(['type' => 'repeatElement', 'pk' => $element_target_table . '.id'])))
-								->where('element_id = ' . $new_element_id)
-								->andWhere('group_id = ' . $new_group_id);
-
-							try {
-								$db->setQuery($query);
-								$db->execute();
-							} catch (\Exception $e) {
-								$this->output->writeln($e->getMessage() .  ' '  . $query->__toString());
-								Log::add($e->getMessage() .  ' '  . $query->__toString(), Log::ERROR, self::getJobName());
-							}
-
-							$elements_added[] = true;
-						} else {
-							Log::add('Failed to create repeatable element table ' . $element_target_table, Log::WARNING, self::getJobName());
-						}
-					} else {
-						$column_name = strtolower($element['name']);
-						if (!in_array($column_name, $columns)) {
-							$query->clear()
-								->select('COLUMN_NAME, COLUMN_DEFAULT, IS_NULLABLE, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH')
-								->from('information_schema.COLUMNS')
-								->where('TABLE_NAME = ' . $db->quote($source_table))
-								->andWhere('COLUMN_NAME = ' . $db->quote($element['name']));
-
-							$db->setQuery($query);
-							$column_infos = $db->loadAssoc();
-							if (!empty($column_infos)) {
-								if ($column_infos['DATA_TYPE'] !== 'varchar') {
-									$column_infos['CHARACTER_MAXIMUM_LENGTH'] = null;
-								}
-
-								$result = \EmundusHelperUpdate::addColumn($target_table, $column_name, $column_infos['DATA_TYPE'], $column_infos['CHARACTER_MAXIMUM_LENGTH'], $column_infos['IS_NULLABLE'] === 'YES' ? 1 : 0, $column_infos['COLUMN_DEFAULT']);
-								$column_added = $result['status'];
-
-								if ($column_added) {
-									$columns[] = $column_name;
-									Log::add('Added column ' . $column_name . ' to table ' . $target_table, Log::INFO, self::getJobName());
-									$elements_added[] = true;
-								} else {
-									Log::add('Failed to add column ' . $column_name . ' to table ' . $target_table . ' : ' . $result['message'], Log::ERROR, self::getJobName());
-									$elements_added[] = false;
-								}
-							} else {
-								$this->output->writeln($this->colors['yellow'] . 'Failed to add column ' . $column_name . ' to table ' . $target_table . $this->colors['reset']);
-								Log::add('Failed to add column ' . $column_name . ' to table ' . $target_table, Log::ERROR, self::getJobName());
-							}
-						}
-					}
-
-					$this->replaceOldTableOccurrenceInElement($element, $target_table, $source_table);
-				}
-
-				$added = !in_array(false, $elements_added);
-			}
-		}
-
-		return $added;
-	}
-
-	/**
-	 * @param   array   $element
-	 * @param   string  $target_table
-	 * @param   string  $source_table
-	 *
-	 * @return void
-	 */
-	private function replaceOldTableOccurrenceInElement(array $element, string $target_table, string $source_table): void
-	{
-		$db = $this->databaseService->getDatabase();
-		$query = $db->createQuery();
-
-		// TODO: maybe it is necessary to do things about default values and databasejoin elements too
-
-		if ($element['plugin'] === 'calc') {
-			// calcs are used to make a result upon other elements in form
-			// it is written as "{table___element_name}"
-			// problem is table has now changed, we must find those, and change it
-
-			if(!empty($element['params']))
-			{
-				$decoded_params = json_decode($element['params'], true);
-				$code = $decoded_params['calc_calculation'];
-
-				// replace every occurrences in code
-				if (str_contains($code, '{' . $source_table . '___')) {
-					$new_code = str_replace('{' . $source_table . '___', '{' . $target_table . '___', $code);
-					$decoded_params['calc_calculation'] = $code;
-
-					$query->clear()
-						->update('#__fabrik_elements')
-						->set('params = ' . $db->quote(json_encode($decoded_params)))
-						->set('parent_id = 0')
-						->where('id = ' . $element['id']);
-
-					try {
-						$db->setQuery($query);
-						$db->execute();
-					} catch (Exception $e) {
-						Log::add($e->getMessage() .  ' ' . $e->getTraceAsString(), Log::ERROR, self::getJobName());
-					}
-				}
-			}
-		}
-
-		// check if there are js associated with this element
-		$query->clear()
-			->select('*')
-			->from('#__fabrik_jsactions')
-			->where('element_id = ' . $element['id']);
-
-		$db->setQuery($query);
-		$js_actions = $db->loadObjectList();
-
-		if (!empty($js_actions)) {
-			foreach ($js_actions as $js_action) {
-				if (str_contains($js_action->code, '{' . $source_table . '___')) {
-					$js_action->code = str_replace('{' . $source_table . '___', '{' . $target_table . '___', $js_action->code);
-
-					$query->clear()
-						->update('#__fabrik_jsactions')
-						->set('code = ' . $db->quote($js_action->code))
-						->where('id = ' . $js_action->id);
-
-					try {
-						$db->setQuery($query);
-						$updated = $db->execute();
-
-						if ($updated) {
-							Log::add('Updated JS action code for element ' . $element['name'] . ' in table ' . $target_table, Log::INFO, self::getJobName());
-						} else {
-							Log::add('Failed to update JS action code for element ' . $element['name'] . ' in table ' . $target_table, Log::ERROR, self::getJobName());
-						}
-
-					} catch (Exception $e) {
-						Log::add($e->getMessage() .  ' ' . $e->getTraceAsString(), Log::ERROR, self::getJobName());
-					}
-				}
-			}
-		}
-	}
-
 	private function getElementsToCopy(int $form_id, int $group_id = 0): array
 	{
-		$elements = [];
+		$elementsToCopy = [];
 
 		if (!empty($form_id)) {
 			$db = $this->databaseService->getDatabase();
@@ -599,74 +398,19 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 			}
 
 			$db->setQuery($query);
-			$elements = $db->loadAssocList();
+			$elementsToCopy = $db->loadAssocList();
 		}
 
-		return $elements;
+		return $elementsToCopy;
 	}
 
-	private function getElementIdsToExclude($form_id): array
-	{
-		$ids = [];
-
-		// remove first element id, fnum, user, student_id, campaign_id
-		$db = $this->databaseService->getDatabase();
-		$query = $db->createQuery();
-
-		$query->clear()
-			->select('jfe.id, jfe.name')
-			->from($db->quoteName('#__fabrik_elements', 'jfe'))
-			->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
-			->where('jffg.form_id = ' . $form_id)
-			->andWhere('jfe.published = 1')
-			->andWhere('jfe.name IN (' . $db->quote('id') . ', ' . $db->quote('fnum') . ', ' . $db->quote('user') . ', ' . $db->quote('student_id') . ', ' . $db->quote('campaign_id') . ')')
-			->order('jfe.id ASC');
-
-		$db->setQuery($query);
-		$elements = $db->loadAssocList();
-
-		if (!empty($elements)) {
-			$already_found_id = false;
-			foreach ($elements as $element) {
-				if ($element['name'] == 'id') {
-					if (!$already_found_id) {
-						$ids[] = $element['id'];
-						$already_found_id = true;
-					}
-				} else {
-					$ids[] = $element['id'];
-				}
-			}
-		}
-
-		return $ids;
-	}
-
-	private function isElementRepeatable(array $element): bool
-	{
-		$is_repeat = false;
-
-		if (!empty($element)) {
-			switch($element['plugin']) {
-				case 'databasejoin':
-					$params = json_decode($element['params'], true);
-					$is_repeat = $params['database_join_display_type'] === 'checkbox' || $params['database_join_display_type'] === 'multilist';
-					break;
-				default:
-					break;
-			}
-		}
-
-		return $is_repeat;
-	}
-
-	// TODO: migrate data from old tables to new tables
 	private function migrateDataFromOldToNewTables(int $old_evaluation_form_id, int $evaluation_step_id, int $program_id): bool
 	{
 		$migrated_task = [];
 
-		$step_data = new StepEntity($evaluation_step_id);
-		if (!empty($step_data->table)) {
+		$stepRepository = new StepRepository();
+		$stepEntity = $stepRepository->getStepById($evaluation_step_id);
+		if (!empty($stepEntity->getTable())) {
 			$db = $this->databaseService->getDatabase();
 			$query = $db->createQuery();
 
@@ -682,7 +426,17 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 			if (!empty($elements)) {
 				Log::add('Found ' . count($elements) . ' elements in old evaluation form ' . $old_evaluation_form_id, Log::INFO, self::getJobName());
 
-				$elements_names = array_column($elements, 'name');
+				$elements_names = [];
+				foreach ($elements as $element)
+				{
+					$groupParams = json_decode($element['group_params'], true);
+					if ($groupParams['repeat_group_button'] == 1) {
+						continue;
+					}
+
+					$elements_names[] = $element['name'];
+				}
+
 				$query->clear()
 					->select('old_eval_table.id, old_eval_table.fnum, old_eval_table.user as evaluator,  ' . implode(',', array_map(fn($element_name) => 'old_eval_table.' . $element_name, $elements_names)))
 					->from($db->quoteName($old_fabrik_table, 'old_eval_table'))
@@ -703,7 +457,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 							'old_table' => $old_fabrik_table,
 						]);
 						if (!empty($already_inserted)) {
-							// $this->output->writeln('Row id ' . $old_evaluation->id. ' already inserted in table ' . $old_fabrik_table);
+							Log::add('Row id ' . $old_evaluation->id. ' already inserted in table ' . $old_fabrik_table, Log::INFO, self::getJobName());
 							continue;
 						}
 
@@ -720,7 +474,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 						unset($evaluation_data['id']);
 						$evaluation_data = (object) $evaluation_data;
 						try {
-							$inserted = $db->insertObject($step_data->table, $evaluation_data);
+							$inserted = $db->insertObject($stepEntity->getTable(), $evaluation_data);
 							if ($inserted) {
 								$migrated_task[] = true;
 								$new_row_id = $db->insertid();
@@ -728,16 +482,16 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 								$evaluation_row_index = new IndexEntity(0, 'evaluation_row_id', $old_evaluation->id, $new_row_id, [
 									'old_table' => $old_fabrik_table,
-									'new_table' => $step_data->table
+									'new_table' => $stepEntity->getTable()
 								]);
 								$evaluation_row_index->save();
 							} else {
 								$migrated_task[] = false;
-								$this->output->writeln($this->colors['red'] . 'Failed to insert evaluation data of row id ' . $old_evaluation->id  . ' found in table ' . $old_fabrik_table . ' to new table ' . $step_data->table . $this->colors['reset']);
+								$this->output->writeln($this->colors['red'] . 'Failed to insert evaluation data of row id ' . $old_evaluation->id  . ' found in table ' . $old_fabrik_table . ' to new table ' . $stepEntity->getTable() . $this->colors['reset']);
 								Log::add('Failed to insert evaluation data of row id ' . $old_evaluation->id  . ' in table ' . $old_fabrik_table, Log::ERROR, self::getJobName());
 							}
 						} catch (\Exception $e) {
-							$this->output->writeln('Failed to insert evaluation data of row id ' . $old_evaluation->id  . ' found in table ' . $old_fabrik_table . ' to new table ' . $step_data->table . ': ' . $e->getMessage());
+							$this->output->writeln('Failed to insert evaluation data of row id ' . $old_evaluation->id  . ' found in table ' . $old_fabrik_table . ' to new table ' . $stepEntity->getTable(). ': ' . $e->getMessage());
 
 							$migrated_task[] = false;
 							Log::add('Failed to insert evaluation data: ' . $e->getMessage(), Log::ERROR, self::getJobName());
@@ -745,10 +499,10 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 					}
 
 					$group_ids = array_unique(array_column($elements, 'group_id'));
-					$migrated_task[] = $this->migrateDataFromRepeatableGroups($group_ids, $step_data, $mapping_old_row_id_new_row_id);
+					$migrated_task[] = $this->migrateDataFromRepeatableGroups($group_ids, $stepEntity, $mapping_old_row_id_new_row_id);
 
 					// do the same with repeatable elements
-					$migrated_task[] = $this->migrateDataFromRepeatableElements($step_data, $elements, $mapping_old_row_id_new_row_id);
+					$migrated_task[] = $this->migrateDataFromRepeatableElements($stepEntity, $elements, $mapping_old_row_id_new_row_id);
 				}
 			}
 		}
@@ -826,6 +580,11 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 							}
 						}
 					}
+					else
+					{
+						$this->output->writeln('[' . $this->colors['red'] . 'Failed to find corresponding group table for old group id ' . $group_join['group_id'] . ' and new form id ' . $step->form_id . $this->colors['reset'] . ']');
+						throw new \Exception('Failed to find corresponding group table for old group id ' . $group_join['group_id'] . ' and new form id ' . $step->form_id);
+					}
 				}
 			}
 
@@ -845,11 +604,26 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		$query = $db->createQuery();
 
 		try {
-			$query->select('ei.new_index')
-				->from($db->quoteName('#__emundus_indexes', 'ei'))
-				->where('ei.old_index = ' .  $db->quote($old_group_id))
-				->andWhere('JSON_EXTRACT(ei.params, "$.new_form_id") = ' . $new_form_id)
-				->andWhere('ei.label = ' . $db->quote('fabrik_group_id'));
+			// get old group elements names to find the new group
+			$query->clear()
+				->select('jfe.name')
+				->from($db->quoteName('#__fabrik_elements', 'jfe'))
+				->where('jfe.group_id = ' . $old_group_id)
+				->where('jfe.published = 1');
+			$db->setQuery($query);
+			$old_group_elements_names = $db->loadColumn();
+
+			// find new group id by searching a group having the same elements names
+			$query->clear()
+				->select('jfg.id')
+				->from($db->quoteName('#__fabrik_groups', 'jfg'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfg.id')
+				->leftJoin($db->quoteName('#__fabrik_elements', 'jfe') . ' ON jfe.group_id = jfg.id')
+				->where('jffg.form_id = ' . $new_form_id)
+				->where('jfe.name IN (' . implode(',', $db->quote($old_group_elements_names)) . ')')
+				->where('jfe.published = 1')
+				->group('jfg.id')
+				->having('COUNT(DISTINCT jfe.name) = ' . count($old_group_elements_names));
 
 			$db->setQuery($query);
 			$new_group_id = $db->loadResult();
@@ -964,8 +738,9 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 	/**
 	 * @param   string|int  $index
 	 * @param   string      $label
+	 * @param   array       $more_parameters
 	 *
-	 * @return bool
+	 * @return string
 	 */
 	private function searchIndexNewValue(string|int $index, string $label, array $more_parameters = []): string
 	{
@@ -1031,28 +806,19 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		return $index;
 	}
 
-	private function wasEvaluationMultiple(int $new_evaluation_id): bool
+	private function wasEvaluationMultiple(int $old_form_id): bool
 	{
 		$multiple = false;
 
-		if (!empty($new_evaluation_id)) {
-			$old_form_id = $this->searchIndex($new_evaluation_id, 'fabrik_form_id', 'old');
+		if (!empty($old_form_id))
+		{
+			$list = \EmundusHelperFabrik::getListByFormId($old_form_id);
 
-			if (!empty($old_form_id)) {
-				$db = $this->databaseService->getDatabase();
-				$query = $db->createQuery();
-				$query->select('db_table_name')
-					->from($db->quoteName('#__fabrik_lists'))
-					->where('form_id = ' . $old_form_id);
-
-				$db->setQuery($query);
-				$old_table = $db->loadResult();
-
-				if ($old_table === 'jos_emundus_evaluations') {
-					$em_config = ComponentHelper::getParams('com_emundus');
-					$multi_eval_parameter = $em_config->get('multi_eval', 0);
-					$multiple = $multi_eval_parameter == 1;
-				}
+			if ($list->db_table_name === 'jos_emundus_evaluations')
+			{
+				$em_config            = ComponentHelper::getParams('com_emundus');
+				$multi_eval_parameter = $em_config->get('multi_eval', 0);
+				$multiple             = $multi_eval_parameter == 1;
 			}
 		}
 
@@ -1100,46 +866,135 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		return $label;
 	}
 
-	private function getEvaluationIntro(int $formid)
+	/**
+	 * Add missing columns to new evaluation table if any
+	 *
+	 * @param   int   $formId
+	 * @param   User  $user
+	 *
+	 * @return  bool
+	 */
+	private function addMissingColumnsToNewEvaluationForm(int $formId, User $user): bool
 	{
-		$intro = [
-			'fr' => '',
-			'en' => ''
-		];
+		$added = false;
 
-		if (!empty($formid)) {
+		if (!empty($formId))
+		{
 			$db = $this->databaseService->getDatabase();
 			$query = $db->createQuery();
-			$query->select('intro')
-				->from($db->quoteName('#__fabrik_forms'))
-				->where('id = ' . $formid);
 
+			$query->select('jfe.group_id')
+				->from($db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+				->where('jffg.form_id = ' . $formId)
+				->where('jfe.name = ' . $db->quote('id'));
 			$db->setQuery($query);
-			$form_intro = $db->loadResult();
+			$group_id = $db->loadResult();
 
-			if (!empty($form_intro)) {
-				$form_intro = strip_tags($form_intro);
-				if (!class_exists('EmundusModelTranslations')) {
-					require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
-				}
-
-				$m_translations = new \EmundusModelTranslations();
-				$translations = $m_translations->getTranslations('override', '*', '', '', '', 0,'', $form_intro);
-
-				foreach($translations as $translation) {
-					if ($translation->lang_code == 'fr-FR') {
-						$intro['fr'] =  $translation->override;
-					} elseif ($translation->lang_code == 'en-GB') {
-						$intro['en'] =  $translation->override;
-					} else {
-						$short_code = substr($translation->lang_code, 0, 2);
-						$intro[$short_code] =  $translation->override;
-					}
-				}
+			if (!empty($group_id))
+			{
+				$added = $this->m_form_builder->createFormEvalDefaulltElements($group_id, $user);
 			}
 		}
 
-		return $intro;
+		return $added;
+	}
+
+	/**
+	 * @param   int   $formId
+	 * @param   User  $user
+	 *
+	 * @return bool
+	 */
+	private function addEmundusStepEvaluationPluginToForm(int $formId, User $user): bool
+	{
+		$added = false;
+
+		if (!empty($formId))
+		{
+			$query = $this->databaseService->getDatabase()->createQuery();
+			$query->select('jff.params')
+				->from($this->databaseService->getDatabase()->quoteName('#__fabrik_forms', 'jff'))
+				->where('jff.id = ' . $formId);
+			$this->databaseService->getDatabase()->setQuery($query);
+			$json = $this->databaseService->getDatabase()->loadResult();
+			$data = json_decode($json, true);
+
+			// Valeurs à ajouter
+			$new_plugin = 'emundusstepevaluation';
+			$new_plugin_location = 'both';
+			$new_plugin_event = 'both';
+			$new_plugin_description = '';
+
+			// Ajout en première position
+			array_unshift($data['plugins'], $new_plugin);
+			array_unshift($data['plugin_locations'], $new_plugin_location);
+			array_unshift($data['plugin_events'], $new_plugin_event);
+			array_unshift($data['plugin_description'], $new_plugin_description);
+			array_unshift($data['plugin_state'], 1);
+
+			// move indexes if any curl_code
+			if (!empty($data['plugins_indexes'])) {
+				$data['plugins_indexes'] = array_map(fn($index) => $index + 1, $data['plugins_indexes']);
+			}
+
+			if (!empty($data['only_process_curl']))
+			{
+				$new_only_process_curl = [];
+				foreach ($data['only_process_curl'] as $index => $value) {
+					$new_only_process_curl[$index + 1] = $value;
+				}
+				$data['only_process_curl'] = $new_only_process_curl;
+
+			}
+
+			if (!empty($data['form_php_file']))
+			{
+				$new_form_php_file = [];
+				foreach ($data['form_php_file'] as $index => $value)
+				{
+					$new_form_php_file[$index + 1] = $value;
+				}
+				$data['form_php_file'] = $new_form_php_file;
+			}
+
+			if (!empty($data['form_php_require_once']))
+			{
+				$new_form_php_require_once = [];
+				foreach ($data['form_php_require_once'] as $index => $value)
+				{
+					$new_form_php_require_once[$index + 1] = $value;
+				}
+				$data['form_php_require_once'] = $new_form_php_require_once;
+			}
+
+			if (!empty($data['curl_code']))
+			{
+				$new_curl_code = [];
+				foreach ($data['curl_code'] as $index => $value)
+				{
+					$new_curl_code[$index + 1] = $value;
+				}
+				$data['curl_code'] = $new_curl_code;
+			}
+
+			// unpublish emundusisevaluatedbyme plugin if exists
+			$indexEvaluatedByMe = array_search('emundusisevaluatedbyme', $data['plugins']);
+			if ($indexEvaluatedByMe !== false)
+			{
+				$data['plugin_state'][$indexEvaluatedByMe] = 0;
+			}
+
+			// Mise à jour de la base de données
+			$query->clear()
+				->update($this->databaseService->getDatabase()->quoteName('#__fabrik_forms'))
+				->set('params = ' . $this->databaseService->getDatabase()->quote(json_encode($data)))
+				->where('id = ' . $formId);
+			$this->databaseService->getDatabase()->setQuery($query);
+			$added = $this->databaseService->getDatabase()->execute();
+		}
+
+		return $added;
 	}
 
 	public static function getJobName(): string {
