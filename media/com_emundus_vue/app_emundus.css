@@ -1547,19 +1547,19 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-030efbba],
 	transform: translate(-50%, -50%);
 	top: 50%;
 }
-#modalAddTriggercandidate .v--modal[data-v-0158a17e],
-#modalAddTriggermanual .v--modal[data-v-0158a17e],
-span[id*=modalEmailPreview_] .v--modal[data-v-0158a17e],
-#modalUpdateLogo .v--modal[data-v-0158a17e],
-#modalUpdateIcon .v--modal[data-v-0158a17e],
-#modalUpdateColors .v--modal[data-v-0158a17e] {
+#modalAddTriggercandidate .v--modal[data-v-1054e3cd],
+#modalAddTriggermanual .v--modal[data-v-1054e3cd],
+span[id*=modalEmailPreview_] .v--modal[data-v-1054e3cd],
+#modalUpdateLogo .v--modal[data-v-1054e3cd],
+#modalUpdateIcon .v--modal[data-v-1054e3cd],
+#modalUpdateColors .v--modal[data-v-1054e3cd] {
   padding: 32px !important;
 }
-span[id*=modalEditElement] .v--modal[data-v-0158a17e],
-#modalAddDocuments .v--modal[data-v-0158a17e],
-#modalAffectCampaign .v--modal[data-v-0158a17e],
-#modalMenu .v--modal[data-v-0158a17e],
-#modalSide .v--modal[data-v-0158a17e] {
+span[id*=modalEditElement] .v--modal[data-v-1054e3cd],
+#modalAddDocuments .v--modal[data-v-1054e3cd],
+#modalAffectCampaign .v--modal[data-v-1054e3cd],
+#modalMenu .v--modal[data-v-1054e3cd],
+#modalSide .v--modal[data-v-1054e3cd] {
   position: fixed;
   right: 0;
   left: unset !important;
@@ -1568,15 +1568,15 @@ span[id*=modalEditElement] .v--modal[data-v-0158a17e],
   top: 0 !important;
   overflow: scroll;
 }
-span[id*=modalEditElement] .v--modal-overlay[data-v-0158a17e],
-#modalAddDocuments .v--modal-overlay[data-v-0158a17e],
-#modalMenu .v--modal-overlay[data-v-0158a17e],
-#modalSide .v--modal-overlay[data-v-0158a17e] {
+span[id*=modalEditElement] .v--modal-overlay[data-v-1054e3cd],
+#modalAddDocuments .v--modal-overlay[data-v-1054e3cd],
+#modalMenu .v--modal-overlay[data-v-1054e3cd],
+#modalSide .v--modal-overlay[data-v-1054e3cd] {
   background: unset;
 }
 
 /**** CUSTOM VUE DROPZONE ****/
-#customdropzone[data-v-0158a17e] {
+#customdropzone[data-v-1054e3cd] {
   letter-spacing: 0.2px;
   background: #fff;
   color: #c5c8ce;
@@ -1590,42 +1590,42 @@ span[id*=modalEditElement] .v--modal-overlay[data-v-0158a17e],
   display: flex;
   cursor: pointer;
 }
-.dz-preview[data-v-0158a17e] {
+.dz-preview[data-v-1054e3cd] {
   width: 100%;
   display: inline-block;
   text-align: center;
 }
-.dz-image[data-v-0158a17e] {
+.dz-image[data-v-1054e3cd] {
   width: auto;
   height: 100px;
   margin-bottom: 10px;
 }
-.dz-image > div[data-v-0158a17e] {
+.dz-image > div[data-v-1054e3cd] {
   height: 100px;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
 }
-.dz-details[data-v-0158a17e] {
+.dz-details[data-v-1054e3cd] {
   color: black;
   transition: opacity 0.2s linear;
   text-align: center;
 }
-.dz-success-mark[data-v-0158a17e] {
+.dz-success-mark[data-v-1054e3cd] {
   display: none;
 }
-.dz-default.dz-message[data-v-0158a17e] {
+.dz-default.dz-message[data-v-1054e3cd] {
   text-align: center !important;
 }
-.dz-error-mark[data-v-0158a17e] {
+.dz-error-mark[data-v-1054e3cd] {
   display: none;
 }
-.dz-remove[data-v-0158a17e] {
+.dz-remove[data-v-1054e3cd] {
   color: #1c6ef2;
 }
 
 /**** END ****/
-.placement-center[data-v-0158a17e] {
+.placement-center[data-v-1054e3cd] {
 	position: fixed;
 	left: 50%;
 	transform: translate(-50%, -50%);

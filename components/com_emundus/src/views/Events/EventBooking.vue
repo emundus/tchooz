@@ -38,6 +38,7 @@ export default {
 			},
 
 			location: 0,
+			application_choice: 0,
 			source: null,
 			registrantsLink: '',
 			isApplicant: false,
@@ -90,6 +91,18 @@ export default {
 				location_filter_elt = document.getElementById(location_filter_elt);
 			}
 
+			// If we want to filter the slots by campaign
+			let application_choices_filter_elt = useGlobalStore().getDatas.application_choices_filter_elt
+				? useGlobalStore().getDatas.application_choices_filter_elt.value
+				: null;
+			if (
+				application_choices_filter_elt &&
+				application_choices_filter_elt !== '' &&
+				document.getElementById(application_choices_filter_elt)
+			) {
+				application_choices_filter_elt = document.getElementById(application_choices_filter_elt);
+			}
+
 			this.getMyBookings().then((bookings) => {
 				this.myBookings = bookings;
 
@@ -98,24 +111,60 @@ export default {
 					this.slotSelected = this.myBookings[0].availability;
 				}
 
-				if (this.myBookings.length === 0 && location_filter_elt) {
-					location_filter_elt.addEventListener('change', (event) => {
-						this.location = event.target.value;
+				if (this.myBookings.length === 0 && (location_filter_elt || application_choices_filter_elt)) {
+					if (location_filter_elt) {
+						location_filter_elt.addEventListener('change', (event) => {
+							this.location = event.target.value;
 
-						this.currentStartIndex = 0;
+							this.currentStartIndex = 0;
 
-						if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
-							this.getSlots();
-						} else {
-							this.slots = [];
-							this.availableDates = [];
+							if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+								this.getSlots();
+							} else {
+								this.slots = [];
+								this.availableDates = [];
+							}
+						});
+					}
+
+					if (application_choices_filter_elt) {
+						application_choices_filter_elt.addEventListener('change', (event) => {
+							this.application_choice = event.target.value;
+
+							this.currentStartIndex = 0;
+
+							if (
+								this.application_choice &&
+								this.application_choice !== 0 &&
+								this.application_choice !== '0' &&
+								this.application_choice !== ''
+							) {
+								this.getSlots();
+							} else {
+								this.slots = [];
+								this.availableDates = [];
+							}
+						});
+
+						if (application_choices_filter_elt.value) {
+							this.application_choice = application_choices_filter_elt.value;
 						}
-					});
+					}
 
-					if (this.location && this.location !== 0 && this.location !== '0' && this.location !== '') {
+					if (
+						(this.location && this.location !== 0 && this.location !== '0' && this.location !== '') ||
+						(this.application_choice &&
+							this.application_choice !== 0 &&
+							this.application_choice !== '0' &&
+							this.application_choice !== '')
+					) {
 						this.getSlots();
 					}
 				} else {
+					if (application_choices_filter_elt && application_choices_filter_elt.value) {
+						this.application_choice = application_choices_filter_elt.value;
+					}
+
 					this.getSlots();
 				}
 			});
@@ -142,6 +191,7 @@ export default {
 					'',
 					this.location,
 					this.$props.componentsProps ? [this.$props.componentsProps.event_id] : [],
+					this.application_choice,
 				);
 				let slots = responseSlots.data;
 
