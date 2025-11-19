@@ -2,9 +2,6 @@
 
 namespace Tchooz\Entities\Workflow;
 
-use Joomla\CMS\Factory;
-use Joomla\Database\DatabaseDriver;
-
 class StepTypeEntity
 {
 	public int $id;
@@ -16,16 +13,22 @@ class StepTypeEntity
 
 	public int $action_id;
 
-	public bool $system = false;
+	public bool $system;
 
-	private DatabaseDriver $db;
+	public bool $published;
 
-	public function __construct(int $id)
+	private ?string $class;
+
+	public function __construct(int $id, int $parent_id = 0, string $label = '', ?string $code = null,  int $action_id = 0, bool $system = false, bool $published = true, ?string $class = null)
 	{
 		$this->id = $id;
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
-
-		$this->load();
+		$this->parent_id = $parent_id;
+		$this->label = $label;
+		$this->code = $code;
+		$this->action_id = $action_id;
+		$this->system = $system;
+		$this->published = $published;
+		$this->class = $class;
 	}
 
 	public function getId(): int
@@ -36,7 +39,41 @@ class StepTypeEntity
 	public function setId(int $id): void
 	{
 		$this->id = $id;
-		$this->load();
+	}
+
+	public function getParentId(): int
+	{
+		return $this->parent_id;
+	}
+
+	public function setParentId(int $parent_id): void
+	{
+		$this->parent_id = $parent_id;
+	}
+
+	public function getLabel(): string
+	{
+		return $this->label;
+	}
+
+	public function setLabel(string $label): void
+	{
+		$this->label = $label;
+	}
+
+	public function isSystem(): bool
+	{
+		return $this->system;
+	}
+
+	public function setSystem(bool $system): void
+	{
+		$this->system = $system;
+	}
+
+	public function setCode(string $code): void
+	{
+		$this->code = $code;
 	}
 
 	public function getCode(): ?string
@@ -44,24 +81,34 @@ class StepTypeEntity
 		return $this->code;
 	}
 
-	public function load(): void
+	public function getActionId(): int
 	{
-		$query = $this->db->createQuery();
+		return $this->action_id;
+	}
 
-		$query->select('est.*')
-			->from($this->db->quoteName('#__emundus_setup_step_types', 'est'))
-			->where('est.id = ' . $this->id);
+	public function setActionId(int $action_id): void
+	{
+		$this->action_id = $action_id;
+	}
 
-		$this->db->setQuery($query);
-		$stepType = $this->db->loadObject();
+	public function isPublished(): bool
+	{
+		return $this->published;
+	}
 
-		if (!empty($stepType)) {
-			$this->parent_id = $stepType->parent_id;
-			$this->label = $stepType->label;
-			$this->code = $stepType->code;
-			$this->action_id = $stepType->action_id;
-			$this->system = $stepType->system ?? false;
-		}
+	public function setPublished(bool $published): void
+	{
+		$this->published = $published;
+	}
+
+	public function getClass(): ?string
+	{
+		return $this->class;
+	}
+
+	public function setClass(?string $class): void
+	{
+		$this->class = $class;
 	}
 
 	public function serialize(): array
@@ -71,7 +118,10 @@ class StepTypeEntity
 			'parent_id' => $this->parent_id,
 			'label' => $this->label,
 			'action_id' => $this->action_id,
+			'code' => $this->code,
 			'system' => $this->system,
+			'published' => $this->published,
+			'class' => $this->class,
 		];
 	}
 }

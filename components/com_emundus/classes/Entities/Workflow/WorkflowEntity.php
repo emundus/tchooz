@@ -2,13 +2,14 @@
 
 namespace Tchooz\Entities\Workflow;
 
-use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
 
 class WorkflowEntity {
 	private int $id;
 
 	public string $label;
+
+	public int $published;
 
 	/**
 	 * @var array<StepEntity>
@@ -17,13 +18,20 @@ class WorkflowEntity {
 
 	public array $program_ids = [];
 
-	private DatabaseDriver $db;
-
-	public function __construct(int $id) {
+	/**
+	 * @param   int     $id
+	 * @param   string  $label
+	 * @param   int     $published
+	 * @param   array<StepEntity>   $steps
+	 * @param   array<int>   $program_ids
+	 */
+	public function __construct(int $id, string $label = '', int $published = 1, array $steps = [], array $program_ids = [])
+	{
 		$this->id = $id;
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
-
-		$this->load();
+		$this->label = $label;
+		$this->published = $published;
+		$this->steps = $steps;
+		$this->program_ids = $program_ids;
 	}
 
 	public function getId(): int
@@ -34,42 +42,68 @@ class WorkflowEntity {
 	public function setId(int $id): void
 	{
 		$this->id = $id;
-		$this->load();
 	}
 
-	private function load(): void
+	public function getLabel(): string
 	{
-		$query = $this->db->createQuery();
+		return $this->label;
+	}
 
-		$query->select('esw.*, GROUP_CONCAT(DISTINCT esws.id) AS steps, GROUP_CONCAT(DISTINCT eswp.program_id) AS program_ids')
-			->from($this->db->quoteName('#__emundus_setup_workflows', 'esw'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws') . ' ON esws.workflow_id = esw.id')
-			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_programs', 'eswp') . ' ON eswp.workflow_id = esw.id')
-			->where('esw.id = ' . $this->id)
-			->group('esw.id');
+	public function setLabel(string $label): void
+	{
+		$this->label = $label;
+	}
 
-		$this->db->setQuery($query);
-		$workflow = $this->db->loadObject();
+	public function isPublished(): bool
+	{
+		return $this->published === 1;
+	}
 
-		if (!empty($workflow)) {
-			$this->label = $workflow->label;
-			$step_ids = explode(',', $workflow->steps);
+	public function setPublished(bool $published): void
+	{
+		$this->published = $published ? 1 : 0;
+	}
 
-			foreach ($step_ids as $step_id) {
-				$this->steps[] = new StepEntity((int)$step_id);
-			}
+	/**
+	 * @return array<StepEntity>
+	 */
+	public function getSteps(): array
+	{
+		return $this->steps;
+	}
 
-			$this->program_ids = explode(',', $workflow->program_ids);
-		} else {
-			throw new \Exception('Workflow with ID ' . $this->id . ' not found');
-		}
+	/**
+	 * @param   array<StepEntity>  $steps
+	 *
+	 * @return void
+	 */
+	public function setSteps(array $steps): void
+	{
+		$this->steps = $steps;
+	}
+
+	/**
+	 * @return array<int>
+	 */
+	public function getProgramIds(): array
+	{
+		return $this->program_ids;
+	}
+
+	/**
+	 * @param   array<int>  $program_ids
+	 *
+	 * @return void
+	 */
+	public function setProgramIds(array $program_ids): void
+	{
+		$this->program_ids = $program_ids;
 	}
 
 	/**
 	 * @param   StepEntity  $step
 	 *
 	 * @return bool
-	 * @throws \Exception
 	 */
 	public function addStep(StepEntity $step): bool
 	{
@@ -86,21 +120,12 @@ class WorkflowEntity {
 			$intersect = array_intersect($already_used_entry_status, $step->entry_status);
 
 			if (empty($intersect)) {
-
-				$added = $step->save();
-
-				if ($added) {
-					$this->steps[] = $step;
-				}
-			} else {
-				throw new \Exception('Step with same entry status already exists');
+				$this->steps[] = $step;
+				$added = true;
 			}
 		} else {
-			$added = $step->save();
-
-			if ($added) {
-				$this->steps[] = $step;
-			}
+			$this->steps[] = $step;
+			$added = true;
 		}
 
 		return $added;
