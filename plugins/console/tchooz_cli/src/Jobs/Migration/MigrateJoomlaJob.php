@@ -12,6 +12,7 @@ namespace Emundus\Plugin\Console\Tchooz\Jobs\Migration;
 use Emundus\Plugin\Console\Tchooz\Jobs\TchoozJob;
 use Emundus\Plugin\Console\Tchooz\Services\DatabaseService;
 use Emundus\Plugin\Console\Tchooz\Style\EmundusProgressBar;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -160,6 +161,15 @@ class MigrateJoomlaJob extends TchoozJob
 							$this->databaseService->getDatabase()->transactionRollback();
 
 							throw new \RuntimeException('Error while merging modules');
+						}
+
+						if (!$this->verifyModules($output->section()))
+						{
+							Log::add('Error while verifying modules', Log::ERROR, self::getJobName());
+
+							$this->databaseService->getDatabase()->transactionRollback();
+
+							throw new \RuntimeException('Error while verifying modules');
 						}
 
 						Log::add('Modules migrated to destination database', Log::INFO, self::getJobName());
@@ -563,6 +573,44 @@ class MigrateJoomlaJob extends TchoozJob
 		}
 
 		return $merged;
+	}
+
+	private function verifyModules(OutputInterface $outputSection): bool
+	{
+		$verified = true;
+
+		// component emundus, param form_builder_page_creation_modules must have Flow and Forms modules
+		$tchoozParams = ComponentHelper::getParams('com_emundus');
+		$form_builder_page_creation_modules = $tchoozParams->get('form_builder_page_creation_modules', []);
+
+		$query = $this->databaseService->getDatabase()->createQuery();
+		$query->select('id')
+			->from($this->databaseService->getDatabase()->quoteName('jos_modules'))
+			->where($this->databaseService->getDatabase()->quoteName('module') . ' IN (' . implode(',', $this->databaseService->getDatabase()->quote(['mod_emundus_checklist', 'mod_emundusflow'])) . ')')
+			->andWhere($this->databaseService->getDatabase()->quoteName('published') . ' = 1');
+
+		$this->databaseService->getDatabase()->setQuery($query);
+		$requiredModules = $this->databaseService->getDatabase()->loadColumn();
+		$missingModules = array_diff($requiredModules, $form_builder_page_creation_modules);
+
+		if (!empty($missingModules)) {
+			$tchoozParams->set('form_builder_page_creation_modules', $requiredModules);
+
+			$query->clear()
+				->update($this->databaseService->getDatabase()->quoteName('#__extensions'))
+				->set($this->databaseService->getDatabase()->quoteName('params') . ' = ' . $this->databaseService->getDatabase()->quote((string)$tchoozParams))
+				->where($this->databaseService->getDatabase()->quoteName('element') . ' = ' . $this->databaseService->getDatabase()->quote('com_emundus'))
+				->andWhere($this->databaseService->getDatabase()->quoteName('type') . ' = ' . $this->databaseService->getDatabase()->quote('component'));
+
+			$this->databaseService->getDatabase()->setQuery($query);
+			$updated = $this->databaseService->getDatabase()->execute();
+
+			if (!$updated) {
+				$verified = false;
+			}
+		}
+
+		return $verified;
 	}
 
 	private function fixContentPublishDownNull(): bool
