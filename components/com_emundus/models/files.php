@@ -40,6 +40,7 @@ use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterTagAddDefinition;
 use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Enums\Export\ExportModeEnum;
 
 /**
  * Class EmundusModelFiles
@@ -6305,7 +6306,7 @@ class EmundusModelFiles extends JModelLegacy
 	}
 
 
-	public function getEvaluationsArray(array $fnums, array $steps_elements): array
+	public function getEvaluationsArray(array $fnums, array $steps_elements, ExportModeEnum $exportMode = ExportModeEnum::GROUP_CONCAT_DISTINCT): array
 	{
 		$data_by_fnum = [];
 
@@ -6315,7 +6316,7 @@ class EmundusModelFiles extends JModelLegacy
 			foreach($fnums as $fnum) {
 				foreach ($steps_elements as $step_id => $step_elements_array) {
 					if (!empty($step_id) && !empty($step_elements_array)) {
-						$data_by_fnum[$fnum][$step_id] = $m_workflow->getEvaluationStepDataForFnum($fnum, $step_id, $step_elements_array);
+						$data_by_fnum[$fnum][$step_id] = $m_workflow->getEvaluationStepDataForFnum($fnum, $step_id, $step_elements_array, $exportMode);
 					}
 				}
 			}
@@ -6341,32 +6342,52 @@ class EmundusModelFiles extends JModelLegacy
 		return $helper->getFabrikElementValue($fabrik_element, $fnum, $row_id);
 	}
 
-	public function mergeEvaluations(array $fnums_data, array $evaluations_by_fnum_by_step, array $columns): array
+	/**
+	 * @param   array           $fnums_data
+	 * @param   array           $evaluations_by_fnum_by_step
+	 * @param   array           $columns
+	 * @param   ExportModeEnum  $exportMode
+	 *
+	 * @return array
+	 */
+	public function mergeEvaluations(array $fnums_data, array $evaluations_by_fnum_by_step, array $columns, ExportModeEnum $exportMode = ExportModeEnum::GROUP_CONCAT_DISTINCT): array
 	{
 		$new_fnums_data = [];
 
 		$temporary_fnums_data = [];
-		if (!empty($fnums_data)) {
-			foreach ($fnums_data as $data) {
-				if (isset($evaluations_by_fnum_by_step[$data['fnum']])) {
+		if (!empty($fnums_data))
+		{
+			foreach ($fnums_data as $data)
+			{
+				if (isset($evaluations_by_fnum_by_step[$data['fnum']]))
+				{
 					// each fnum can have multiple evaluations $evaluations_by_fnums[$fnum] is an array of evaluations
-					foreach ($evaluations_by_fnum_by_step[$data['fnum']] as $step_id => $evaluations_by_steps) {
-						foreach($evaluations_by_steps as $step_id => $evaluation) {
+					foreach ($evaluations_by_fnum_by_step[$data['fnum']] as $evaluations_by_steps)
+					{
+						foreach ($evaluations_by_steps as $evaluation)
+						{
 							$temporary_fnums_data[] = array_merge($data, $evaluation);
 						}
 					}
-				} else {
+				}
+				else
+				{
 					$temporary_fnums_data[] = $data;
 				}
 			}
-		} else {
-			foreach($evaluations_by_fnum_by_step as $fnum => $evaluations_by_steps) {
-				foreach ($evaluations_by_steps as $step_id => $evaluations) {
-					foreach($evaluations as $evaluation) {
+		}
+		else
+		{
+			foreach ($evaluations_by_fnum_by_step as $fnum => $evaluations_by_steps)
+			{
+				foreach ($evaluations_by_steps as $evaluations)
+				{
+					foreach ($evaluations as $evaluation)
+					{
 						$temporary_fnums_data[] = array_merge([
-							'fnum' => $fnum,
-							'email' => '',
-							'label' => '',
+							'fnum'        => $fnum,
+							'email'       => '',
+							'label'       => '',
 							'campaign_id' => '',
 						], $evaluation);
 					}
@@ -6374,25 +6395,32 @@ class EmundusModelFiles extends JModelLegacy
 			}
 		}
 
-		foreach($temporary_fnums_data as $key => $fnum_data) {
-			foreach($columns as $column) {
-				$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name :  $column->tab_name . '___' . $column->element_name;
+		foreach ($temporary_fnums_data as $key => $fnum_data)
+		{
+			foreach ($columns as $column)
+			{
+				$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name : $column->tab_name . '___' . $column->element_name;
 
-				if (!isset($fnum_data[$column_name])) {
+				if (!isset($fnum_data[$column_name]))
+				{
 					$temporary_fnums_data[$key][$column_name] = '';
 				}
 			}
 		}
 
 		// columns must be in the same order as the columns in the table
-
-		if (!empty($temporary_fnums_data)) {
+		if (!empty($temporary_fnums_data))
+		{
 			$default_fnums_data_columns = [];
-			if (!empty($fnums_data)) {
-				foreach ($fnums_data as $fnum_data) {
+			if (!empty($fnums_data))
+			{
+				foreach ($fnums_data as $fnum_data)
+				{
 					$default_fnums_data_columns = array_merge($default_fnums_data_columns, array_keys($fnum_data));
 				}
-			} else {
+			}
+			else
+			{
 				$default_fnums_data_columns = ['fnum', 'email', 'label', 'campaign_id'];
 			}
 
@@ -6401,24 +6429,120 @@ class EmundusModelFiles extends JModelLegacy
 				'evaluation_id',
 				'evaluator_name',
 			];
-			if (!empty($columns)) {
-				foreach ($columns as $column) {
-					$column_name = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name :  $column->tab_name . '___' . $column->element_name;
+			if (!empty($columns))
+			{
+				foreach ($columns as $column)
+				{
+					$column_name                   = !empty($column->table_join) ? $column->table_join . '___' . $column->element_name : $column->tab_name . '___' . $column->element_name;
 					$evaluation_columns_in_order[] = $column_name;
 				}
 			}
 
 			$columns_in_order = array_merge($default_fnums_data_columns, $evaluation_columns_in_order);
 
+			switch($exportMode)
+			{
+				case ExportModeEnum::GROUP_CONCAT_DISTINCT:
+				case ExportModeEnum::GROUP_CONCAT:
+					// only one line per fnum with distinct values concatenated
+					$fnum_grouped_data = [];
+					foreach ($temporary_fnums_data as $fnum_data)
+					{
+						$fnum = $fnum_data['fnum'];
 
-			foreach ($temporary_fnums_data as $fnum_data) {
-				$final_array = [];
+						if (!isset($fnum_grouped_data[$fnum]))
+						{
+							$fnum_grouped_data[$fnum] = [];
+							foreach ($columns_in_order as $column_name)
+							{
+								$fnum_grouped_data[$fnum][$column_name] = [];
+							}
+						}
 
-				foreach($columns_in_order as $column_name) {
-					$final_array[$column_name] = $fnum_data[$column_name];
-				}
+						foreach ($columns_in_order as $column_name)
+						{
+							$value = $fnum_data[$column_name];
+							if ($value !== '')
+							{
+								if ($exportMode === ExportModeEnum::GROUP_CONCAT_DISTINCT)
+								{
+									if (!in_array($value, $fnum_grouped_data[$fnum][$column_name], true))
+									{
+										$fnum_grouped_data[$fnum][$column_name][] = $value;
+									}
+								}
+								else
+								{
+									$fnum_grouped_data[$fnum][$column_name][] = $value;
+								}
+							}
+						}
+					}
 
-				$new_fnums_data[] = $final_array;
+					// build final array
+					foreach ($fnum_grouped_data as $fnum => $columns_data)
+					{
+						$final_array = [];
+						foreach ($columns_in_order as $column_name)
+						{
+							$final_array[$column_name] = implode(', ', $columns_data[$column_name]);
+						}
+
+						$new_fnums_data[] = $final_array;
+					}
+
+					break;
+
+				case ExportModeEnum::LEFT_JOIN:
+					// todo: repeat group data is concatenated instead of having multiple lines
+					// if a column has multiple values, it is an array
+					// if so, we have to make multiple rows for as much entries as there is ?
+
+					foreach ($temporary_fnums_data as $fnum_data)
+					{
+						$max_index = null;
+
+						foreach ($columns_in_order as $column_name)
+						{
+							if (is_array($fnum_data[$column_name]))
+							{
+								$max_index = max($max_index, count($fnum_data[$column_name]));
+							}
+						}
+
+						$final_array = [];
+
+						if (empty($max_index))
+						{
+							foreach ($columns_in_order as $column_name)
+							{
+								$final_array[$column_name] = $fnum_data[$column_name];
+							}
+
+							$new_fnums_data[] = $final_array;
+						}
+						else
+						{
+							for ($i = 0; $i < $max_index; $i++)
+							{
+								foreach ($columns_in_order as $column_name)
+								{
+									if (is_array($fnum_data[$column_name]))
+									{
+										$final_array[$column_name] = $fnum_data[$column_name][$i] ?? '';
+									}
+									else
+									{
+										$final_array[$column_name] = $fnum_data[$column_name];
+									}
+								}
+
+								$new_fnums_data[] = $final_array;
+							}
+						}
+					}
+
+					break;
 			}
 		}
 

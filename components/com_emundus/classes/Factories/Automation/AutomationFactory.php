@@ -8,6 +8,7 @@ use Tchooz\Entities\Automation\EventEntity;
 use Tchooz\Repositories\Automation\ActionRepository;
 use Tchooz\Repositories\Automation\ConditionRepository;
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Repositories\Automation\EventsRepository;
 
 class AutomationFactory
 {
@@ -38,5 +39,55 @@ class AutomationFactory
 		}
 
 		return $automations;
+	}
+
+	/**
+	 * @param   object  $json
+	 *
+	 * @return ?AutomationEntity
+	 */
+	public function fromJson(object $json): ?AutomationEntity
+	{
+		$automation = null;
+
+		if (!empty($json->event) && !empty($json->name) && !empty($json->actions))
+		{
+			$eventRepository = new EventsRepository();
+			$event = $eventRepository->getEventById($json->event);
+
+			$conditionGroups = [];
+			if (!empty($json->conditions_groups)) {
+				$conditionGroupFactory = new ConditionGroupFactory();
+
+				foreach ($json->conditions_groups as $conditionGroup)
+				{
+					if (isset($conditionGroup->parent_id) && $conditionGroup->parent_id != 0) {
+						continue;
+					}
+
+					$conditionGroups[] = $conditionGroupFactory->fromJson($conditionGroup, $json->conditions_groups);
+				}
+			}
+
+			$actions = [];
+			$actionFactory = new ActionFactory();
+
+			foreach ($json->actions as $action)
+			{
+				$actions[] = $actionFactory->fromJson($action);
+			}
+
+			$automation = new AutomationEntity(
+				$json->id,
+				$json->name,
+				$json->description,
+				$event,
+				$conditionGroups,
+				$actions,
+				$json->published
+			);
+		}
+
+		return $automation;
 	}
 }

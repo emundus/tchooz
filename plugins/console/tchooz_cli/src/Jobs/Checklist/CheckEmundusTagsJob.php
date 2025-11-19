@@ -50,7 +50,7 @@ class CheckEmundusTagsJob extends TchoozChecklistJob
 
 			if (!empty($tags))
 			{
-				$this->output->writeln(sizeof($tags) . ' custom event handlers found:');
+				$this->output->writeln(sizeof($tags) . ' tags found:');
 
 				foreach ($tags as $tag)
 				{

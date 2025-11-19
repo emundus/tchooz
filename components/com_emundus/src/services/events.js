@@ -221,12 +221,19 @@ export default {
 		}
 	},
 
-	async getAvailabilitiesByCampaignsAndPrograms(start = '', end = '', location = 0, events_ids = []) {
+	async getAvailabilitiesByCampaignsAndPrograms(
+		start = '',
+		end = '',
+		location = 0,
+		events_ids = [],
+		application_choice = 0,
+	) {
 		try {
 			return await fetchClient.get('getavailabilitiesbycampaignsandprograms', {
 				start: start,
 				end: end,
 				location: location,
+				application_choice: application_choice,
 				events_ids: events_ids,
 			});
 		} catch (e) {

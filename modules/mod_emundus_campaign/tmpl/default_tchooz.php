@@ -1587,12 +1587,4 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
             });
         }
     })
-
-    document.addEventListener("DOMContentLoaded", function() {
-	    <?php if(empty($campaigns)) : ?>
-        document.title = "<?php echo JText::_('EMPTY_CAMPAIGNS'); ?>";
-	    <?php endif; ?>
-    });
-
-
 </script>

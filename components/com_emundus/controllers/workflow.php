@@ -11,6 +11,7 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Traits\TraitResponse;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 
@@ -338,12 +339,9 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			$isApplicant = EmundusHelperAccess::isFnumMine($this->user->id, $fnum) && !EmundusHelperAccess::asPartnerAccessLevel($this->user->id);
 
 			try {
-				$workflow_id = $this->model->getWorkflowIdByFnum($fnum);
-				if (!empty($workflow_id)) {
-					$serialized_steps = [];
-					$workflow = new WorkflowEntity($workflow_id);
-					$steps = $workflow->getApplicantSteps();
-				}
+				$workflowRepository = new WorkflowRepository();
+				$workflow = $workflowRepository->getWorkflowByFnum($fnum);
+				$steps = $workflow->getApplicantSteps();
 
 				$initialStep = array_filter($steps, function($step) {
 					assert($step instanceof StepEntity);
@@ -354,7 +352,7 @@ class EmundusControllerWorkflow extends JControllerLegacy
 				{
 					$campaignRepository = new CampaignRepository();
 					$campaignStep = $campaignRepository->getCampaignDefaultStep($files_infos['campaign_id']);
-					$campaignStep->setWorkflowId($workflow_id);
+					$campaignStep->setWorkflowId($workflow->getId());
 
 					// insert the step at the beginning of the steps array
 					array_unshift($steps, $campaignStep);
@@ -386,8 +384,8 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 					}
 					$m_application = new EmundusModelApplication();
-					$serialized_step['forms_progress'] = $m_application->getFormsProgressWithProfile($fnum, $step->profile_id);
-					$serialized_step['attachments_progress'] = $m_application->getAttachmentsProgressWithProfile($fnum, $step->profile_id);
+					$serialized_step['forms_progress'] = $m_application->getFormsProgressWithProfile($fnum, $step->getProfileId());
+					$serialized_step['attachments_progress'] = $m_application->getAttachmentsProgressWithProfile($fnum, $step->getProfileId());
 					$serialized_step['completed'] = $serialized_step['forms_progress'] >= 100 && $serialized_step['attachments_progress'] >= 100;
 
 					if ($isApplicant && $serialized_step['completed'] === false && (!in_array($files_infos['status'], $step->getEntryStatus()) || (in_array($files_infos['status'], $step->getEntryStatus()) && $serialized_step['dates']['start_date_raw'] > date('Y-m-d H:i:s')))) {
@@ -547,13 +545,25 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 			if (!empty($workflow_id))
 			{
-				$new_workflow_id = $this->model->duplicateWorkflow($workflow_id);
+				$workflowRepository = new WorkflowRepository();
+				$workflowToDuplicate = $workflowRepository->getWorkflowById($workflow_id);
 
-				if (!empty($new_workflow_id))
+				if (!empty($workflowToDuplicate))
 				{
-					$response['code']   = 200;
-					$response['status'] = true;
+					$new_workflow_id = $workflowRepository->duplicate($workflowToDuplicate);
+
+					if (!empty($new_workflow_id))
+					{
+						$response['code']   = 200;
+						$response['status'] = true;
+					}
+				} else {
+					$response['code']    = 500;
+					$response['message'] = Text::_('ERROR_WHILE_DUPLICATING_WORKFLOW');
 				}
+			} else {
+				$response['code']    = 500;
+				$response['message'] = Text::_('ERROR_WHILE_DUPLICATING_WORKFLOW');
 			}
 		}
 

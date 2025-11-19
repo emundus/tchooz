@@ -44,6 +44,23 @@ class HtmlSanitizerSingleton
 		return $this->sanitizer->sanitize($input);
 	}
 
+	public function sanitizeNoHtml(?string $input): string
+	{
+		if (empty($input)) {
+			return '';
+		}
+
+		// For excel we need to remove = signs if they are at the start of the string to prevent formula injection
+		if (str_starts_with($input, '=')) {
+			$input = substr($input, 1);
+		}
+
+		// Strip all HTML tags, remove all content between script/style tags
+		$input = preg_replace('#<(script|style)\b[^>]*>.*?</\1>#is', '', $input);
+
+		return strip_tags($input);
+	}
+
 	public function sanitizeFor(?string $section, string $input): string
 	{
 		if (empty($input)) {

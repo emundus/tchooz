@@ -8,6 +8,12 @@ if (!class_exists('EmundusModelUsers'))
 }
 $m_users   = new EmundusModelUsers;
 $applicant = $m_users->getUserById($this->sid)[0];
+$profile_form_id = $m_users->getProfileForm();
+if(empty($profile_form_id))
+{
+    echo '<p class="tw-text-red-600 tw-font-semibold">No profile form assigned. Please contact the administrator.</p>';
+    return;
+}
 
 ?>
 
@@ -30,7 +36,7 @@ $applicant = $m_users->getUserById($this->sid)[0];
         </div>
     </div>
     <iframe id="iframe"
-            src="<?php echo Uri::base(); ?>index.php?option=com_fabrik&view=details&formid=374&tmpl=component&iframe=1&rowid=<?php echo $applicant->id; ?>"
+            src="<?php echo Uri::base(); ?>index.php?option=com_fabrik&view=details&formid=<?php echo $profile_form_id; ?>&tmpl=component&iframe=1&rowid=<?php echo $applicant->id; ?>"
             height="600" width="100%"
     </iframe>
 </div>

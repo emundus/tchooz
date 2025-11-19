@@ -8,5 +8,6 @@ export function newConditionGroup(parentId = null) {
 		parent_id: parentId,
 		conditions: [],
 		operator: 'AND',
+		subGroups: [],
 	};
 }

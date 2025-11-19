@@ -1340,29 +1340,37 @@ class EmundusModelApplication extends ListModel
 		$m_profile         = new EmundusModelProfile;
 		$profile_by_status = $m_profile->getProfileByStatus($fnum);
 
-		$query = 'SELECT COUNT(profiles.id)
+		try {
+			$query = 'SELECT COUNT(profiles.id)
             FROM #__emundus_setup_attachment_profiles AS profiles
             WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1';
 
-		$this->_db->setQuery($query);
-		$attachments = $this->_db->loadResult();
+			$this->_db->setQuery($query);
+			$attachments = $this->_db->loadResult();
 
-		if (intval($attachments) == 0) {
-			$query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+			if (intval($attachments) == 0)
+			{
+				$query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
             FROM #__emundus_setup_attachment_profiles AS profiles
             LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
             WHERE profiles.profile_id = ' . $profile_id . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-		}
-		else {
-			$query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
+			}
+			else
+			{
+				$query = 'SELECT IF(COUNT(profiles.attachment_id)=0, 100, 100*COUNT(uploads.attachment_id>0)/COUNT(profiles.attachment_id))
             FROM #__emundus_setup_attachment_profiles AS profiles
             LEFT JOIN #__emundus_uploads AS uploads ON uploads.attachment_id = profiles.attachment_id AND uploads.fnum like ' . $this->_db->Quote($fnum) . '
-            WHERE profiles.campaign_id = ' . $profile_by_status["campaign_id"] . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
-		}
+            WHERE profiles.campaign_id = ' . intval($profile_by_status["campaign_id"]) . ' AND profiles.displayed = 1 AND profiles.mandatory = 1';
+			}
 
-		$this->_db->setQuery($query);
-		$doc_result = $this->_db->loadResult();
-		$this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
+			$this->_db->setQuery($query);
+			$doc_result = $this->_db->loadResult();
+
+			$this->updateAttachmentProgressByFnum(floor($doc_result), $fnum);
+		}
+		catch (\Exception $e)
+		{
+		}
 
 		return floor($doc_result);
 	}
@@ -5547,7 +5555,10 @@ class EmundusModelApplication extends ListModel
 						if (count($data) > 0) {
 							foreach ($data as $d) {
 								$q     = 3;
-								$query = 'SELECT ' . implode(',', $this->_db->quoteName($d['element_name'])) . ' FROM ' . $d['table'] . ' WHERE parent_id=' . $parent_id;
+                                $query->clear()
+                                    ->select(implode(',', $this->_db->quoteName($d['element_name'])))
+                                    ->from($this->_db->quoteName($d['table']))
+                                    ->where($this->_db->quoteName('parent_id') . ' = ' . $this->_db->quote($parent_id));
 								$this->_db->setQuery($query);
 								$stored = $this->_db->loadAssocList();
 
@@ -5563,7 +5574,10 @@ class EmundusModelApplication extends ListModel
 									$q = 4;
 
 									// update form data
-									$query = 'INSERT INTO ' . $d['table'] . ' (`' . implode('`,`', array_keys($stored[0])) . '`)' . ' VALUES ' . implode(',', $arrayValue);
+                                    $query->clear()
+                                        ->insert($this->_db->quoteName($d['table']))
+                                        ->columns(implode(',', $this->_db->quoteName(array_keys($stored[0]))))
+                                        ->values(implode(',', $arrayValue));
 									$this->_db->setQuery($query);
 									$this->_db->execute();
 								}

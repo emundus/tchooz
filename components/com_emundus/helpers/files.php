@@ -5471,9 +5471,9 @@ class EmundusHelperFiles
 	{
 		$joins = [];
 
+		$found_from_cache = false;
 		if (!empty($searched_table) && !empty($base_table) && $searched_table != $base_table)
 		{
-			$found_from_cache = false;
 			if ($i === 0)
 			{
 				if (!class_exists('EmundusHelperCache'))
@@ -5563,7 +5563,10 @@ class EmundusHelperFiles
 		{
 			if (!empty($joins))
 			{
-				$joins = array_reverse($joins);
+				if (!$found_from_cache)
+				{
+					$joins = array_reverse($joins);
+				}
 
 				// if last join is not the searched table, then it's not a valid join, we weren't able to find a path between the two tables
 				// so we return an empty array

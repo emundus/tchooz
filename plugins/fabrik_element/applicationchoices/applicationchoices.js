@@ -20,10 +20,12 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 });
 
                 var statuses = document.getElementById(this.element.id + '_status');
-                statuses.addEventListener('change', (e) => {
-                    this.status = e.target.value;
-                    this.updateValue(e);
-                });
+                if(statuses) {
+                    statuses.addEventListener('change', (e) => {
+                        this.status = e.target.value;
+                        this.updateValue(e);
+                    });
+                }
             }
         },
 

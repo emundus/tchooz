@@ -10,11 +10,6 @@ export default {
 			type: Object,
 			required: true,
 		},
-		subGroups: {
-			type: Array,
-			required: false,
-			default: () => [],
-		},
 		conditionsList: {
 			type: Array,
 			required: true,
@@ -41,19 +36,14 @@ export default {
 			this.conditionGroup.conditions.push(newCondition);
 		},
 		addConditionGroup(conditionGroupId = null) {
-			if (conditionGroupId === null) {
-				this.$emit('add-condition-group', newConditionGroup(conditionGroupId));
-			} else if (typeof conditionGroupId === 'number') {
-				this.$emit('add-condition-group', newConditionGroup(conditionGroupId));
-			} else {
-				this.$emit('add-condition-group', conditionGroupId);
-			}
+			this.conditionGroup.subGroups.push(newConditionGroup(conditionGroupId));
 		},
 		onRemoveCondition(condition) {
 			this.conditionGroup.conditions = this.conditionGroup.conditions.filter((c) => c.id !== condition.id);
 			this.$emit('remove-condition', this.conditionGroup.id, condition);
 		},
 		removeConditionGroup(group) {
+			this.conditionGroup.subGroups = this.conditionGroup.subGroups.filter((g) => g.id !== group.id);
 			this.$emit('remove-condition-group', group);
 		},
 		onOperatorChange() {
@@ -89,8 +79,8 @@ export default {
 		multipleConditions() {
 			return (
 				this.conditionGroup.conditions.length > 1 ||
-				this.subGroups.length > 1 ||
-				(this.conditionGroup.conditions.length > 0 && this.subGroups.length > 0)
+				this.conditionGroup.subGroups.length > 1 ||
+				(this.conditionGroup.conditions.length > 0 && this.conditionGroup.subGroups.length > 0)
 			);
 		},
 	},
@@ -176,7 +166,7 @@ export default {
 					/>
 				</div>
 
-				<div v-for="(group, index) in subGroups" :key="group.id" class="tw-w-full">
+				<div v-for="(group, index) in conditionGroup.subGroups" :key="group.id" class="tw-w-full">
 					<div
 						v-if="(index > 0 || conditionGroup.conditions.length > 0) && multipleConditions"
 						class="tw-mb-2 tw-text-sm tw-font-medium tw-text-gray-500"
