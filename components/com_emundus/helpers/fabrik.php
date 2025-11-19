@@ -3579,4 +3579,36 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		return !empty($res);
 	}
+
+	/**
+	 * @param   int  $formId
+	 *
+	 * @return object|null
+	 */
+	public static function getListByFormId(int $formId): ?object
+	{
+		$list = null;
+
+		if (!empty($formId))
+		{
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery()
+				->select('jfl.*')
+				->from($db->quoteName('#__fabrik_forms', 'jff'))
+				->join('INNER', $db->quoteName('#__fabrik_lists', 'jfl') . ' ON ' . $db->quoteName('jfl.form_id') . ' = ' . $db->quoteName('jff.id'))
+				->where($db->quoteName('jff.id') . ' = ' . $db->quote($formId));
+
+			try
+			{
+				$db->setQuery($query);
+				$list = $db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				Log::add('Error getting list by form id: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $list;
+	}
 }

@@ -11,8 +11,16 @@ class EvaluationTableCreator implements TableFromReferenceCreatorInterface
 
 	public function supports(string $tableName): bool
 	{
-		if (str_starts_with($tableName, 'jos_emundus_evaluations_')) {
-			return true;
+		$allowedTableNamesPrefixes = [
+			'jos_emundus_evaluations',
+			'jos_emundus_final_grade',
+			'jos_emundus_admission'
+		];
+
+		foreach ($allowedTableNamesPrefixes as $prefix) {
+			if (str_starts_with($tableName, $prefix)) {
+				return true;
+			}
 		}
 
 		return false;

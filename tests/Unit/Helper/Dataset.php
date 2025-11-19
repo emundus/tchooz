@@ -36,6 +36,7 @@ use JLog;
 use Joomla\CMS\Factory;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
 use Tchooz\Entities\Automation\AutomationEntity;
 use Tchooz\Entities\Automation\ConditionEntity;
@@ -464,7 +465,7 @@ class Dataset
 			{
 				$file = '/tests/assets/pdf_test_file.pdf';
 			}
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->insert('#__emundus_setup_letters')
@@ -1025,6 +1026,17 @@ class Dataset
 			->where('id = ' . $id);
 		$this->db->setQuery($query);
 		return $this->db->execute();
+	}
+
+	public function resetWorkflows(): void
+	{
+		$repository = new WorkflowRepository();
+		$workflows = $repository->getWorkflows();
+
+		foreach ($workflows as $workflow)
+		{
+			$repository->delete($workflow);
+		}
 	}
 
 	public function getFormElementForTest(int $formId, string $elementName): ?int

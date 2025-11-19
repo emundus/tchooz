@@ -1383,13 +1383,7 @@ class EmundusModelForm extends JModelList
 			if (!empty($group))
 			{
 				// Create hidden group
-				$m_formbuilder->createElement('id', $group['group_id'], 'internalid', 'id', '', 1, 0, 1, 1, 0, 20, $user);
-				$m_formbuilder->createElement('time_date', $group['group_id'], 'jdate', 'time date', '', 1, 0, 1, 1, 0, 20, $user);
-				$m_formbuilder->createElement('ccid', $group['group_id'], 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44, $user);
-				$m_formbuilder->createElement('fnum', $group['group_id'], 'field', 'fnum', '', 1, 0, 1, 1, 0, 44, $user);
-				$m_formbuilder->createElement('step_id', $group['group_id'], 'field', 'Phase', '', 1, 1, 1, 1, 0, 44, $user);
-				$m_formbuilder->createElement('evaluator', $group['group_id'], 'user', 'user', '{$my->id}', 1, 1, 1, 1, 0, 20, $user);
-				$m_formbuilder->createElement('updated_by', $group['group_id'], 'user', 'user', '{$my->id}}', 1, 1, 1, 1, 0, 20, $user);
+				$m_formbuilder->createFormEvalDefaulltElements($group['group_id'], $user);
 			}
 
 			$list = $m_formbuilder->createFabrikList('evaluations', $form_id, 6, 'eval', $user);

@@ -300,8 +300,8 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertNotEmpty($new_workflow_id, 'Duplicating an existing workflow should return a new workflow id');
 
 		$workflow_data = $this->model->getWorkflow($new_workflow_id);
-		$this->assertSame('Workflow qui doit être dupliqué - Copie', $workflow_data['workflow']->label, 'The label of the duplicated workflow should be the same as the original one, with a suffix');
-
+		$this->assertStringStartsWith('Workflow qui doit être dupliqué', $workflow_data['workflow']->label, 'The label of the duplicated workflow should be the same as the original one, with a suffix');
+		$this->assertNotEquals('Workflow qui doit être dupliqué', $workflow_data['workflow']->label, 'The label of the duplicated workflow should be different from the original one');
 	}
 
 	/**

@@ -21,7 +21,6 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Workflow\StepEntity;
-use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Enums\Workflow\WorkflowStepDatesRelativeUnitsEnum;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
@@ -29,6 +28,8 @@ use Tchooz\Repositories\Payment\TransactionRepository;
 use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Enums\Workflow\WorkflowStepDateRelativeToEnum;
+use Tchooz\Repositories\Workflow\StepRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 
@@ -1656,7 +1657,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array
 	 */
-	public function getCampaignSteps($campaign_id): array
+	public function getCampaignSteps(int $campaign_id): array
 	{
 		$steps = [];
 
@@ -2061,81 +2062,26 @@ class EmundusModelWorkflow extends JModelList
 	 * @param $workflow_id
 	 *
 	 * @return int
+	 * @deprecated Please use WorkflowRepository::duplicate instead
 	 */
-	public function duplicateWorkflow($workflow_id): int
+	public function duplicateWorkflow($workflowId): int
 	{
-		$new_workflow_id = 0;
+		$newWorkflowId = 0;
 
-		if (!empty($workflow_id))
+		if (!empty($workflowId))
 		{
-			$workflow_data = $this->getWorkflow($workflow_id);
+			$repository = new WorkflowRepository();
+			$workflow = $repository->getWorkflowById($workflowId);
 
-			try
+			if (!empty($workflow))
 			{
-				if (!empty($workflow_data))
-				{
-					$new_workflow_id = $this->add();
+				$newWorkflow = $repository->duplicate($workflow);
 
-					$query = $this->db->getQuery(true);
-
-					$query->update('#__emundus_setup_workflows')
-						->set('label = ' . $this->db->quote($workflow_data['workflow']->label . ' - Copie'))
-						->where('id = ' . $new_workflow_id);
-
-					$this->db->setQuery($query);
-					$this->db->execute();
-
-					$steps = $workflow_data['steps'];
-
-					foreach ($steps as $step)
-					{
-						$step->multiple = empty($step->multiple) ? 0 : $step->multiple;
-						$columns        = ['workflow_id', 'label', 'type', 'multiple', 'state', 'output_status'];
-						$values         = [$new_workflow_id, $this->db->quote($step->label), $step->type, $step->multiple, $step->state, $step->output_status];
-
-						if ($this->isEvaluationStep($step->type))
-						{
-							$columns[] = 'form_id';
-							$values[]  = $step->form_id;
-						}
-						else
-						{
-							$columns[] = 'profile_id';
-							$values[]  = $step->profile_id;
-						}
-
-						$query->clear()
-							->insert('#__emundus_setup_workflows_steps')
-							->columns($columns)
-							->values(implode(',', $values));
-
-						$this->db->setQuery($query);
-						$this->db->execute();
-						$new_step_id = $this->db->insertid();
-
-						if (!empty($new_step_id))
-						{
-							foreach ($step->entry_status as $status)
-							{
-								$query->clear()
-									->insert('#__emundus_setup_workflows_steps_entry_status')
-									->columns('step_id, status')
-									->values($new_step_id . ', ' . $status);
-
-								$this->db->setQuery($query);
-								$this->db->execute();
-							}
-						}
-					}
-				}
-			}
-			catch (Exception $e)
-			{
-				Log::add('Error while duplicating workflow: ' . $e->getMessage(), Log::ERROR, 'com_emundus.workflow');
+				$newWorkflowId = $newWorkflow->getId();
 			}
 		}
 
-		return $new_workflow_id;
+		return $newWorkflowId;
 	}
 
 	public function getEvaluationStepDataForFnum(string $fnum, int $step_id, array $elements): array
@@ -2233,6 +2179,13 @@ class EmundusModelWorkflow extends JModelList
 		return $step;
 	}
 
+	/**
+	 * TODO: move to PaymentRepository ?
+	 * @param   string  $fnum
+	 * @param   object  $step
+	 *
+	 * @return bool
+	 */
 	public function isPaymentStepCompleted(string $fnum, object $step): bool
 	{
 		$completed = false;
@@ -2429,56 +2382,15 @@ class EmundusModelWorkflow extends JModelList
 
 	/**
 	 * @return array<StepEntity>
+	 * @throws Exception
 	 */
 	public function getSteps(int $workflowId = 0, $types = []): array
 	{
-		$steps = [];
+		$stepRepository = new StepRepository();
 
-		$query = $this->db->getQuery(true);
-		$query->select('steps.*, GROUP_CONCAT(entry_status.status) as entry_status')
-			->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'steps'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_workflows', 'workflows') . ' ON ' . $this->db->quoteName('workflows.id') . ' = ' . $this->db->quoteName('steps.workflow_id'))
-			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'entry_status') . ' ON ' . $this->db->quoteName('entry_status.step_id') . ' = ' . $this->db->quoteName('steps.id'))
-			->where('workflows.published = 1')
-			->andWhere('steps.state = 1');
-
-		if (!empty($types)) {
-			$query->andWhere('steps.type IN (' . implode(',', $types) . ')');
-		}
-
-		if (!empty($workflowId)) {
-			$query->andWhere('steps.workflow_id = ' . $workflowId);
-		}
-
-		$query->group('steps.id');
-		$this->db->setQuery($query);
-		$steps_data = $this->db->loadObjectList();
-
-		if (!empty($steps_data)) {
-
-			$stepTypes = [];
-
-			foreach ($steps_data as $step_data) {
-				if (!isset($stepTypes[$step_data->type])) {
-					$stepTypes[$step_data->type] = new StepTypeEntity($step_data->type);
-				}
-
-				$steps[] = new StepEntity(
-					$step_data->id,
-					$step_data->workflow_id,
-					$step_data->label,
-					$stepTypes[$step_data->type],
-					$step_data->profile_id,
-					$step_data->form_id,
-					explode(',', $step_data->entry_status),
-					$step_data->output_status,
-					$step_data->multiple ?? 0,
-					$step_data->state,
-					$step_data->ordering
-				);
-			}
-		}
-
-		return $steps;
+		return $stepRepository->getAll([
+			's.workflow_id' => $workflowId,
+			's.type'        => $types,
+		]);
 	}
 }
