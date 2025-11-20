@@ -22,8 +22,11 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 
 use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Authentication\Authentication;
+use Joomla\CMS\Authentication\AuthenticationResponse;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
+use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
@@ -1400,20 +1403,37 @@ class EmundusModelUsers extends ListModel
 		return $this->db->loadColumn();
 	}
 
+	/**
+	 * Login user by user id, bypassing the authentication plugins, make sure to use it carefully
+	 * @param $uid
+	 *
+	 * @return User|void
+	 * @throws Exception
+	 */
 	public function login($uid) {
 		$app     = Factory::getApplication();
 		$db      = Factory::getContainer()->get('DatabaseDriver');
 		$session = $app->getSession();
 
-		$instance   = Factory::getUser($uid);
+		$instance   = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($uid);
+		assert($instance instanceof User);
 
-		$instance->set('guest', 0);
+		// Mark the user as logged in
+		$instance->guest = 0;
+
+		// Load the logged in user to the application
+		$app->loadIdentity($instance);
+
+		// Fork the session
+		$session->fork();
 
 		// Register the needed session variables
 		$session->set('user', $instance);
 
-		// Check to see the the session already exists.
-		$app->checkSession();
+		// Update the user related fields for the Joomla sessions table if tracking session metadata.
+		if ($app->get('session_metadata', true)) {
+			$app->checkSession();
+		}
 
 		// Update the user related fields for the Joomla sessions table.
 		$query = 'UPDATE #__session
@@ -1434,12 +1454,22 @@ class EmundusModelUsers extends ListModel
 		$options = array();
 		$options['action'] = 'core.login.site';
 
-		$response['username'] = $instance->get('username');
+		$response = new AuthenticationResponse();
+		$response->status = Authentication::STATUS_SUCCESS;
+		$response->username = $instance->username;
+		$response->email = $instance->email;
+		$response->type = 'emundus';
 
 		$dispatcher = $app->getDispatcher();
-		$onUserLoginEvent = new GenericEvent('onUserLogin', array($response, $options));
+		$onUserLoginEvent = new LoginEvent('onUserLogin', array('subject' => (array)$response, 'options' => $options));
 		$dispatcher->dispatch('onUserLogin', $onUserLoginEvent);
-		$cehEvent = new GenericEvent('onCallEventHandler', ['onUserLogin', ['user_id' => $uid]]);
+		$cehEvent = new GenericEvent('onCallEventHandler', [
+			'onUserLogin',
+			[
+				'user_id' => $uid,
+				'context' => new EventContextEntity($instance, [], [$uid], [])
+			]
+		]);
 		$dispatcher->dispatch('onCallEventHandler', $cehEvent);
 
 		return $instance;
