@@ -2984,13 +2984,17 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					}
 				}
 
-				if ($isRepeatGroup && $exportMode !== ExportModeEnum::LEFT_JOIN)
+				if ($isRepeatGroup)
 				{
-					$value[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
+					if ($exportMode !== ExportModeEnum::LEFT_JOIN) {
+						$value[$fabrik_element['id']][$fnumKey]['val'] = implode(', ', $formatted_values);
+					} else {
+						$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
+					}
 				}
 				else
 				{
-					$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values;
+					$value[$fabrik_element['id']][$fnumKey]['val'] = $formatted_values[0] ?? '';
 				}
 			}
 		}
