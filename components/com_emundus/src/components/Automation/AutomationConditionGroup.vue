@@ -26,7 +26,7 @@ export default {
 	methods: {
 		addCondition() {
 			const newCondition = {
-				id: Date.now(),
+				id: Math.floor(Math.random() * 1000000000),
 				group_id: this.conditionGroup.id,
 				target: null,
 				type: null,

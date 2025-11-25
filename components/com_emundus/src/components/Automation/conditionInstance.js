@@ -1,6 +1,6 @@
 export default function conditionInstance(groupId) {
 	return {
-		id: groupId + 1,
+		id: Math.floor(Math.random() * 1000000000),
 		group_id: groupId,
 		target: null,
 		type: null,
