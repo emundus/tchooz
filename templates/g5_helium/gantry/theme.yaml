@@ -59,6 +59,23 @@ configuration:
       400: 'gantry-theme://fonts/lato/lato-regular/lato-regular-webfont'
       200italic: 'gantry-theme://fonts/lato/lato-lightitalic/lato-lightitalic-webfont'
       200: 'gantry-theme://fonts/lato/lato-light/lato-light-webfont'
+    Graphie:
+      800italic: 'gantry-theme://fonts/graphie/graphie-extrabold/graphie-extrabold-italic-webfont'
+      800: 'gantry-theme://fonts/graphie/graphie-extrabold/graphie-extrabold-webfont'
+      700italic: 'gantry-theme://fonts/graphie/graphie-bold/graphie-bold-italic-webfont'
+      700: 'gantry-theme://fonts/graphie/graphie-bold/graphie-bold-webfont'
+      600italic: 'gantry-theme://fonts/graphie/graphi-semibold/graphie-semibold-italic-webfont'
+      600: 'gantry-theme://fonts/graphie/graphi-semibold/graphie-semibold-webfont'
+      500italic: 'gantry-theme://fonts/graphie/graphie-medium/graphie-medium-italic-webfont'
+      500: 'gantry-theme://fonts/graphie/graphie-medium/graphie-medium-webfont'
+      400italic: 'gantry-theme://fonts/graphie/graphie-regular/graphie-regular-italic-webfont'
+      400: 'gantry-theme://fonts/graphie/graphie-regular/graphie-regular-webfont'
+      300italic: 'gantry-theme://fonts/graphie/graphie-light/graphie-light-italic-webfont'
+      300: 'gantry-theme://fonts/graphie/graphie-light/graphie-light-webfont'
+      200italic: 'gantry-theme://fonts/graphie/graphie-extralight/graphie-extralight-italic-webfont'
+      200: 'gantry-theme://fonts/graphie/graphie-extralight/graphie-extralight-webfont'
+      100italic: 'gantry-theme://fonts/graphie/graphie-thin/graphie-thin-italic-webfont'
+      100: 'gantry-theme://fonts/graphie/graphie-thin/graphie-thin-webfont'
 
   css:
     compiler: '\Gantry\Component\Stylesheet\ScssCompiler'
