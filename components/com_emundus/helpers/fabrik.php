@@ -1815,7 +1815,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			->where($db->quoteName('reference_table') . ' = ' . $db->quote('fabrik_elements'))
 			->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('label'))
 			->andWhere($db->quoteName('override') . ' LIKE ' . $db->quote('%' . $searchName . '%'))
-			->andWhere($db->quoteName('published') . ' = 1');
+			->andWhere($db->quoteName('published') . ' = 1')
+			->andWhere($db->quoteName('reference_id') . ' IS NOT NULL');
 
 		$db->setQuery($query);
 		$translatedElementIds = $db->loadColumn();
