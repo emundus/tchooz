@@ -1037,28 +1037,15 @@ class EmundusControllerUsers extends BaseController
 
 			$return = $m_users->passwordReset($data);
 
-			// Check for a hard error.
-			if ($return->status === false)
+			$message = Text::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
+			$menu    = $this->app->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+			if (!empty($menu))
 			{
-				// The request failed.
-				// Go back to the request form.
-				$message = Text::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
-				$menu    = $this->app->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
-				if (!empty($menu))
-				{
-					$this->setRedirect($menu->alias, $message, 'notice');
-				}
-				else
-				{
-					$this->setRedirect(Route('index.php?option=com_users&view=reset&layout=confirm'), $message, 'notice');
-				}
-
+				$this->setRedirect($menu->alias, $message, 'notice');
 			}
 			else
 			{
-				// The request succeeded.
-				// Proceed to step two.
-				$this->setRedirect(JRoute::_('index.php?option=com_users&view=reset&layout=confirm'));
+				$this->setRedirect(Route('index.php?option=com_users&view=reset&layout=confirm'), $message, 'notice');
 			}
 		}
 		elseif (EmundusHelperAccess::asAccessAction(12, 'u') || EmundusHelperAccess::asAccessAction(20, 'u'))
