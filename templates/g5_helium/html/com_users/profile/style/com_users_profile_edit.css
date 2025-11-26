@@ -1,5 +1,25 @@
-#jform_name,#jform_name-lbl, #jform_username,#jform_username-lbl,#jform_username-desc,#jform_params_editor-lbl,#jform_params_editor,#jform_params_language,#jform_params_language-lbl,#jform_params_admin_style,#jform_params_admin_style-lbl,#jform_params_admin_language,#jform_params_admin_language-lbl {
-    display: none;
+.control-group:has(#jform_name) {
+    display: none !important;
+}
+
+.control-group:has(#jform_username) {
+    display: none !important;
+}
+
+.control-group:has(#jform_params_editor) {
+    display: none !important;
+}
+
+.control-group:has(#jform_params_language) {
+    display: none !important;
+}
+
+.control-group:has(#jform_params_admin_style) {
+    display: none !important;
+}
+
+.control-group:has(#jform_params_admin_language) {
+    display: none !important;
 }
 
 .password-group .input-group .input-password-toggle {

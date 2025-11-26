@@ -7,6 +7,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\AfterDeleteEvent;
 use Joomla\CMS\Event\User\AfterResetCompleteEvent;
 use Joomla\CMS\Event\User\AfterSaveEvent;
+use Joomla\CMS\Event\User\BeforeSaveEvent;
 use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Event\User\LogoutEvent;
 use Joomla\CMS\Factory;
@@ -49,12 +50,32 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
+			'onUserBeforeSave'     => 'onUserBeforeSave',
 			'onUserAfterDelete'        => 'onUserAfterDelete',
 			'onUserAfterSave'          => 'onUserAfterSave',
 			'onUserLogin'              => 'onUserLogin',
 			'onUserLogout'             => 'onUserLogout',
-			'onUserAfterResetComplete' => 'onUserAfterResetComplete'
+			'onUserAfterResetComplete' => 'onUserAfterResetComplete',
 		];
+	}
+
+	public function onUserBeforeSave(BeforeSaveEvent $event)
+	{
+		$data = $event->getData();
+
+		if(!empty($data['password1']) && !empty($data['password2']) && isset($data['old_password']))
+		{
+			$user = $this->getUserFactory()->loadUserById($data['id']);
+
+			$this->loadLanguage();
+
+			$result = UserHelper::verifyPassword($data['old_password'], $user->password, $data['id']);
+			if(!$result)
+			{
+				$this->getApplication()->enqueueMessage(Text::_('PLG_USER_EMUNDUS_WRONG_OLD_PASSWORD'), 'error');
+				$event->addResult(false);
+			}
+		}
 	}
 
 	public function onUserAfterDelete(AfterDeleteEvent $event): void
