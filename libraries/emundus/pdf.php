@@ -1500,7 +1500,9 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 	    $options->set('defaultFont', 'helvetica');
 		$options->set('isPhpEnabled', true);
 	    $dompdf = new Dompdf($options);
-		
+	    $dompdf->addInfo('Producer', '');
+	    $dompdf->addInfo('Creator', '');
+
 	    try {
 		    $dompdf->loadHtml($htmldata);
 		    $dompdf->render();
