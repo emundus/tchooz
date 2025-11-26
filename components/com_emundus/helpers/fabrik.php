@@ -3096,7 +3096,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				// join_key_column = raw, join_val_column = formatted
 				if ($groupRepeat)
 				{
-					$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_table.user_id as user_val';
+					$select_origin_val = !empty($fnums) ? 't_table.fnum' : 't_table.user_id as user_val';
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
