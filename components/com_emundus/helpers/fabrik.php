@@ -3521,6 +3521,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			else
 			{
+				$user_column_existing = $this->tableHasColumn($tableName, 'user_id');
+
+
 				if (!empty($user_column_existing))
 				{
 					try
