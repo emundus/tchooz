@@ -3168,8 +3168,9 @@ class EmundusModelFormbuilder extends JModelList
 						'keep_structure' => $keep_structure,
 						'label'          => $label,
 						'intro'          => $intro,
-						'prid'           => $prid
-					]);
+						'prid'           => $prid,
+						'profile_id' 	 => $prid
+					], '');
 
 					$newList = $this->getList($newformid);
 
@@ -4854,11 +4855,12 @@ class EmundusModelFormbuilder extends JModelList
 	/**
 	 * @param   int    $formId
 	 * @param   int    $userId
-	 * @param   array  $args
+	 * @param   array  $args an array of options, like profile_id, keep_structure etc
+	 * @param   string   $labelPrefix the prefix used for the form labels
 	 *
 	 * @return int
 	 */
-	public function duplicateFabrikForm(int $formId, int $userId, array $args = []): int
+	public function duplicateFabrikForm(int $formId, int $userId, array $args = [], string $labelPrefix = 'COPY_OF'): int
 	{
 		$newFormId = 0;
 
@@ -4890,8 +4892,19 @@ class EmundusModelFormbuilder extends JModelList
 				assert($fabrikFormModel instanceof FabrikFEModelForm);
 				$fabrikFormModel->setId($formId);
 
-				$keyPrefix = str_starts_with('jos_emundus_evaluations', $fabrikFormModel->getListModel()->db_table_name) ? 'FORM_EVALUATION_' : 'FORM_' . $args['profile_id'] . '_';
-				$this->updateFabrikLabel($newFormId, $keyPrefix, '', Text::_('COPY_OF') . ' ');
+				if (str_starts_with('jos_emundus_evaluations', $fabrikFormModel->getListModel()->getTable()->db_table_name))
+				{
+					$keyPrefix = 'FORM_EVALUATION_';
+				} else {
+					if (!empty($args['profile_id'])) {
+						$keyPrefix = 'FORM_' . $args['profile_id'] . '_';
+					} else {
+						$keyPrefix = 'FORM_' . $newFormId;
+					}
+				}
+
+				$labelPrefix = !empty($labelPrefix ) ? Text::_($labelPrefix) : '';
+				$this->updateFabrikLabel($newFormId, $keyPrefix, '', $labelPrefix);
 				$this->updateFabrikLabel($newFormId, $keyPrefix, '_INTRO', '', 'fabrik_forms', 'intro');
 
 				$newListId = $this->duplicateFabrikList($fabrikFormModel->getListModel()->getId(), $newFormId, $args, $userId);
