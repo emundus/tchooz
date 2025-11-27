@@ -28,6 +28,15 @@
 			validate="username"
 		/>
 
+        <field
+                name="old_password"
+                type="password"
+                label="COM_EMUNDUS_USERS_OLD_PASSWORD_LABEL"
+                class="validate-password"
+                filter="raw"
+                size="30"
+        />
+
 		<field
 			name="password1"
 			type="password"

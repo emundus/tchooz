@@ -8,16 +8,16 @@
     "packages": [
         {
             "name": "composer/ca-bundle",
-            "version": "1.5.8",
+            "version": "1.5.9",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-                "reference": "719026bb30813accb68271fee7e39552a58e9f65"
+                "reference": "1905981ee626e6f852448b7aaa978f8666c5bc54"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/719026bb30813accb68271fee7e39552a58e9f65",
-                "reference": "719026bb30813accb68271fee7e39552a58e9f65",
+                "url": "https://api.github.com/repos/composer/ca-bundle/zipball/1905981ee626e6f852448b7aaa978f8666c5bc54",
+                "reference": "1905981ee626e6f852448b7aaa978f8666c5bc54",
                 "shasum": ""
             },
             "require": {
@@ -64,7 +64,7 @@
             "support": {
                 "irc": "irc://irc.freenode.org/composer",
                 "issues": "https://github.com/composer/ca-bundle/issues",
-                "source": "https://github.com/composer/ca-bundle/tree/1.5.8"
+                "source": "https://github.com/composer/ca-bundle/tree/1.5.9"
             },
             "funding": [
                 {
@@ -76,7 +76,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-08-20T18:49:47+00:00"
+            "time": "2025-11-06T11:46:17+00:00"
         },
         {
             "name": "composer/pcre",
@@ -236,16 +236,16 @@
         },
         {
             "name": "dompdf/dompdf",
-            "version": "v3.1.0",
+            "version": "v3.1.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/dompdf/dompdf.git",
-                "reference": "a51bd7a063a65499446919286fb18b518177155a"
+                "reference": "db712c90c5b9868df3600e64e68da62e78a34623"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/a51bd7a063a65499446919286fb18b518177155a",
-                "reference": "a51bd7a063a65499446919286fb18b518177155a",
+                "url": "https://api.github.com/repos/dompdf/dompdf/zipball/db712c90c5b9868df3600e64e68da62e78a34623",
+                "reference": "db712c90c5b9868df3600e64e68da62e78a34623",
                 "shasum": ""
             },
             "require": {
@@ -294,9 +294,9 @@
             "homepage": "https://github.com/dompdf/dompdf",
             "support": {
                 "issues": "https://github.com/dompdf/dompdf/issues",
-                "source": "https://github.com/dompdf/dompdf/tree/v3.1.0"
+                "source": "https://github.com/dompdf/dompdf/tree/v3.1.4"
             },
-            "time": "2025-01-15T14:09:04+00:00"
+            "time": "2025-10-29T12:43:30+00:00"
         },
         {
             "name": "dompdf/php-font-lib",
@@ -663,16 +663,16 @@
         },
         {
             "name": "gotenberg/gotenberg-php",
-            "version": "v2.14.0",
+            "version": "v2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/gotenberg/gotenberg-php.git",
-                "reference": "748efe0a981b3e8eb676593246a75925448324ad"
+                "reference": "7b4a56a9e85cde11001f757eb812bad1ed2545fd"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/gotenberg/gotenberg-php/zipball/748efe0a981b3e8eb676593246a75925448324ad",
-                "reference": "748efe0a981b3e8eb676593246a75925448324ad",
+                "url": "https://api.github.com/repos/gotenberg/gotenberg-php/zipball/7b4a56a9e85cde11001f757eb812bad1ed2545fd",
+                "reference": "7b4a56a9e85cde11001f757eb812bad1ed2545fd",
                 "shasum": ""
             },
             "require": {
@@ -685,10 +685,10 @@
                 "psr/http-message": "^1.0|^2.0"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^12.0",
-                "pestphp/pest": "^2.28",
+                "doctrine/coding-standard": "^14.0",
+                "pestphp/pest": "^2.36",
                 "phpstan/phpstan": "^1.12",
-                "squizlabs/php_codesniffer": "^3.10"
+                "squizlabs/php_codesniffer": "^4.0"
             },
             "type": "library",
             "autoload": {
@@ -732,7 +732,7 @@
             ],
             "support": {
                 "issues": "https://github.com/gotenberg/gotenberg-php/issues",
-                "source": "https://github.com/gotenberg/gotenberg-php/tree/v2.14.0"
+                "source": "https://github.com/gotenberg/gotenberg-php/tree/v2.15.0"
             },
             "funding": [
                 {
@@ -740,7 +740,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-20T10:00:34+00:00"
+            "time": "2025-11-13T19:44:32+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -1224,16 +1224,16 @@
         },
         {
             "name": "joomla/filter",
-            "version": "3.0.4",
+            "version": "3.0.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/filter.git",
-                "reference": "5bbb666ffefdbb32a7ced83bb83c99d1faffbc45"
+                "reference": "06c9e672d15099622dbb56c8e2a7461ce26d37f6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/filter/zipball/5bbb666ffefdbb32a7ced83bb83c99d1faffbc45",
-                "reference": "5bbb666ffefdbb32a7ced83bb83c99d1faffbc45",
+                "url": "https://api.github.com/repos/joomla-framework/filter/zipball/06c9e672d15099622dbb56c8e2a7461ce26d37f6",
+                "reference": "06c9e672d15099622dbb56c8e2a7461ce26d37f6",
                 "shasum": ""
             },
             "require": {
@@ -1275,22 +1275,22 @@
             ],
             "support": {
                 "issues": "https://github.com/joomla-framework/filter/issues",
-                "source": "https://github.com/joomla-framework/filter/tree/3.0.4"
+                "source": "https://github.com/joomla-framework/filter/tree/3.0.5"
             },
-            "time": "2025-07-19T18:49:49+00:00"
+            "time": "2025-09-30T15:42:09+00:00"
         },
         {
             "name": "joomla/http",
-            "version": "3.1.2",
+            "version": "3.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/joomla-framework/http.git",
-                "reference": "a06323db9d0a55fa0f63236f14d3e3d767c7fb0c"
+                "reference": "10cc3c03280b69eacfb7b65a2822edeeb03d3452"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/joomla-framework/http/zipball/a06323db9d0a55fa0f63236f14d3e3d767c7fb0c",
-                "reference": "a06323db9d0a55fa0f63236f14d3e3d767c7fb0c",
+                "url": "https://api.github.com/repos/joomla-framework/http/zipball/10cc3c03280b69eacfb7b65a2822edeeb03d3452",
+                "reference": "10cc3c03280b69eacfb7b65a2822edeeb03d3452",
                 "shasum": ""
             },
             "require": {
@@ -1336,9 +1336,9 @@
             ],
             "support": {
                 "issues": "https://github.com/joomla-framework/http/issues",
-                "source": "https://github.com/joomla-framework/http/tree/3.1.2"
+                "source": "https://github.com/joomla-framework/http/tree/3.1.3"
             },
-            "time": "2025-07-19T16:19:01+00:00"
+            "time": "2025-10-16T08:32:44+00:00"
         },
         {
             "name": "joomla/input",
@@ -1928,33 +1928,38 @@
         },
         {
             "name": "league/uri",
-            "version": "7.5.1",
+            "version": "7.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri.git",
-                "reference": "81fb5145d2644324614cc532b28efd0215bda430"
+                "reference": "f625804987a0a9112d954f9209d91fec52182344"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri/zipball/81fb5145d2644324614cc532b28efd0215bda430",
-                "reference": "81fb5145d2644324614cc532b28efd0215bda430",
+                "url": "https://api.github.com/repos/thephpleague/uri/zipball/f625804987a0a9112d954f9209d91fec52182344",
+                "reference": "f625804987a0a9112d954f9209d91fec52182344",
                 "shasum": ""
             },
             "require": {
-                "league/uri-interfaces": "^7.5",
-                "php": "^8.1"
+                "league/uri-interfaces": "^7.6",
+                "php": "^8.1",
+                "psr/http-factory": "^1"
             },
             "conflict": {
                 "league/uri-schemes": "^1.0"
             },
             "suggest": {
                 "ext-bcmath": "to improve IPV4 host parsing",
+                "ext-dom": "to convert the URI into an HTML anchor tag",
                 "ext-fileinfo": "to create Data URI from file contennts",
                 "ext-gmp": "to improve IPV4 host parsing",
                 "ext-intl": "to handle IDN host with the best performance",
+                "ext-uri": "to use the PHP native URI class",
                 "jeremykendall/php-domain-parser": "to resolve Public Suffix and Top Level Domain",
                 "league/uri-components": "Needed to easily manipulate URI objects components",
+                "league/uri-polyfill": "Needed to backport the PHP URI extension for older versions of PHP",
                 "php-64bit": "to improve IPV4 host parsing",
+                "rowbot/url": "to handle WHATWG URL",
                 "symfony/polyfill-intl-idn": "to handle IDN host via the Symfony polyfill if ext-intl is not present"
             },
             "type": "library",
@@ -1982,6 +1987,7 @@
             "description": "URI manipulation library",
             "homepage": "https://uri.thephpleague.com",
             "keywords": [
+                "URN",
                 "data-uri",
                 "file-uri",
                 "ftp",
@@ -1994,9 +2000,11 @@
                 "psr-7",
                 "query-string",
                 "querystring",
+                "rfc2141",
                 "rfc3986",
                 "rfc3987",
                 "rfc6570",
+                "rfc8141",
                 "uri",
                 "uri-template",
                 "url",
@@ -2006,7 +2014,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri/tree/7.5.1"
+                "source": "https://github.com/thephpleague/uri/tree/7.6.0"
             },
             "funding": [
                 {
@@ -2014,26 +2022,25 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-08T08:40:02+00:00"
+            "time": "2025-11-18T12:17:23+00:00"
         },
         {
             "name": "league/uri-interfaces",
-            "version": "7.5.0",
+            "version": "7.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/uri-interfaces.git",
-                "reference": "08cfc6c4f3d811584fb09c37e2849e6a7f9b0742"
+                "reference": "ccbfb51c0445298e7e0b7f4481b942f589665368"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/08cfc6c4f3d811584fb09c37e2849e6a7f9b0742",
-                "reference": "08cfc6c4f3d811584fb09c37e2849e6a7f9b0742",
+                "url": "https://api.github.com/repos/thephpleague/uri-interfaces/zipball/ccbfb51c0445298e7e0b7f4481b942f589665368",
+                "reference": "ccbfb51c0445298e7e0b7f4481b942f589665368",
                 "shasum": ""
             },
             "require": {
                 "ext-filter": "*",
                 "php": "^8.1",
-                "psr/http-factory": "^1",
                 "psr/http-message": "^1.1 || ^2.0"
             },
             "suggest": {
@@ -2041,6 +2048,7 @@
                 "ext-gmp": "to improve IPV4 host parsing",
                 "ext-intl": "to handle IDN host with the best performance",
                 "php-64bit": "to improve IPV4 host parsing",
+                "rowbot/url": "to handle WHATWG URL",
                 "symfony/polyfill-intl-idn": "to handle IDN host via the Symfony polyfill if ext-intl is not present"
             },
             "type": "library",
@@ -2065,7 +2073,7 @@
                     "homepage": "https://nyamsprod.com"
                 }
             ],
-            "description": "Common interfaces and classes for URI representation and interaction",
+            "description": "Common tools for parsing and resolving RFC3987/RFC3986 URI",
             "homepage": "https://uri.thephpleague.com",
             "keywords": [
                 "data-uri",
@@ -2090,7 +2098,7 @@
                 "docs": "https://uri.thephpleague.com",
                 "forum": "https://thephpleague.slack.com",
                 "issues": "https://github.com/thephpleague/uri-src/issues",
-                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.5.0"
+                "source": "https://github.com/thephpleague/uri-interfaces/tree/7.6.0"
             },
             "funding": [
                 {
@@ -2098,7 +2106,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-12-08T08:18:47+00:00"
+            "time": "2025-11-18T12:17:23+00:00"
         },
         {
             "name": "maennchen/zipstream-php",
@@ -3431,16 +3439,16 @@
         },
         {
             "name": "smalot/pdfparser",
-            "version": "v2.12.1",
+            "version": "v2.12.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/smalot/pdfparser.git",
-                "reference": "98d31ba34ef5b5a98897ef4b6c3925d502ea53b1"
+                "reference": "370b7e983fafecb787a9bcfd73baab8038212ad1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/98d31ba34ef5b5a98897ef4b6c3925d502ea53b1",
-                "reference": "98d31ba34ef5b5a98897ef4b6c3925d502ea53b1",
+                "url": "https://api.github.com/repos/smalot/pdfparser/zipball/370b7e983fafecb787a9bcfd73baab8038212ad1",
+                "reference": "370b7e983fafecb787a9bcfd73baab8038212ad1",
                 "shasum": ""
             },
             "require": {
@@ -3476,9 +3484,9 @@
             ],
             "support": {
                 "issues": "https://github.com/smalot/pdfparser/issues",
-                "source": "https://github.com/smalot/pdfparser/tree/v2.12.1"
+                "source": "https://github.com/smalot/pdfparser/tree/v2.12.2"
             },
-            "time": "2025-07-31T06:19:56+00:00"
+            "time": "2025-09-04T08:49:09+00:00"
         },
         {
             "name": "stripe/stripe-php",
@@ -3661,16 +3669,16 @@
         },
         {
             "name": "symfony/html-sanitizer",
-            "version": "v7.3.3",
+            "version": "v7.3.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/html-sanitizer.git",
-                "reference": "8740fc48979f649dee8b8fc51a2698e5c190bf12"
+                "reference": "3855e827adb1b675adcb98ad7f92681e293f2d77"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/html-sanitizer/zipball/8740fc48979f649dee8b8fc51a2698e5c190bf12",
-                "reference": "8740fc48979f649dee8b8fc51a2698e5c190bf12",
+                "url": "https://api.github.com/repos/symfony/html-sanitizer/zipball/3855e827adb1b675adcb98ad7f92681e293f2d77",
+                "reference": "3855e827adb1b675adcb98ad7f92681e293f2d77",
                 "shasum": ""
             },
             "require": {
@@ -3710,7 +3718,7 @@
                 "sanitizer"
             ],
             "support": {
-                "source": "https://github.com/symfony/html-sanitizer/tree/v7.3.3"
+                "source": "https://github.com/symfony/html-sanitizer/tree/v7.3.6"
             },
             "funding": [
                 {
@@ -3730,7 +3738,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-12T10:34:03+00:00"
+            "time": "2025-10-30T13:22:58+00:00"
         },
         {
             "name": "symfony/polyfill-intl-idn",
@@ -3991,16 +3999,16 @@
         },
         {
             "name": "tecnickcom/tcpdf",
-            "version": "6.10.0",
+            "version": "6.10.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/tecnickcom/TCPDF.git",
-                "reference": "ca5b6de294512145db96bcbc94e61696599c391d"
+                "reference": "7a2701251e5d52fc3d508fd71704683eb54f5939"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/ca5b6de294512145db96bcbc94e61696599c391d",
-                "reference": "ca5b6de294512145db96bcbc94e61696599c391d",
+                "url": "https://api.github.com/repos/tecnickcom/TCPDF/zipball/7a2701251e5d52fc3d508fd71704683eb54f5939",
+                "reference": "7a2701251e5d52fc3d508fd71704683eb54f5939",
                 "shasum": ""
             },
             "require": {
@@ -4050,7 +4058,7 @@
             ],
             "support": {
                 "issues": "https://github.com/tecnickcom/TCPDF/issues",
-                "source": "https://github.com/tecnickcom/TCPDF/tree/6.10.0"
+                "source": "https://github.com/tecnickcom/TCPDF/tree/6.10.1"
             },
             "funding": [
                 {
@@ -4058,22 +4066,17 @@
                     "type": "custom"
                 }
             ],
-            "time": "2025-05-27T18:02:28+00:00"
+            "time": "2025-11-21T10:58:21+00:00"
         }
     ],
     "packages-dev": [
         {
             "name": "phpstan/phpstan",
-            "version": "2.1.22",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4"
-            },
+            "version": "2.1.32",
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/41600c8379eb5aee63e9413fe9e97273e25d57e4",
-                "reference": "41600c8379eb5aee63e9413fe9e97273e25d57e4",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/e126cad1e30a99b137b8ed75a85a676450ebb227",
+                "reference": "e126cad1e30a99b137b8ed75a85a676450ebb227",
                 "shasum": ""
             },
             "require": {
@@ -4118,20 +4121,20 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-08-04T19:17:37+00:00"
+            "time": "2025-11-11T15:18:17+00:00"
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v7.3.3",
+            "version": "v7.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "34d8d4c4b9597347306d1ec8eb4e1319b1e6986f"
+                "reference": "476c4ae17f43a9a36650c69879dcf5b1e6ae724d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/34d8d4c4b9597347306d1ec8eb4e1319b1e6986f",
-                "reference": "34d8d4c4b9597347306d1ec8eb4e1319b1e6986f",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/476c4ae17f43a9a36650c69879dcf5b1e6ae724d",
+                "reference": "476c4ae17f43a9a36650c69879dcf5b1e6ae724d",
                 "shasum": ""
             },
             "require": {
@@ -4185,7 +4188,7 @@
                 "dump"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-dumper/tree/v7.3.3"
+                "source": "https://github.com/symfony/var-dumper/tree/v7.3.5"
             },
             "funding": [
                 {
@@ -4205,7 +4208,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-13T11:49:31+00:00"
+            "time": "2025-09-27T09:00:46+00:00"
         }
     ],
     "aliases": [],

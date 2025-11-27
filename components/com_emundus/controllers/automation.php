@@ -263,7 +263,7 @@ class EmundusControllerAutomation extends BaseController
 		$this->sendJsonResponse($response);
 	}
 
-	public function deleteAutomation(): void
+	public function delete(): void
 	{
 		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 

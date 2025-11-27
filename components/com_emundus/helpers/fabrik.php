@@ -1815,7 +1815,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			->where($db->quoteName('reference_table') . ' = ' . $db->quote('fabrik_elements'))
 			->andWhere($db->quoteName('reference_field') . ' = ' . $db->quote('label'))
 			->andWhere($db->quoteName('override') . ' LIKE ' . $db->quote('%' . $searchName . '%'))
-			->andWhere($db->quoteName('published') . ' = 1');
+			->andWhere($db->quoteName('published') . ' = 1')
+			->andWhere($db->quoteName('reference_id') . ' IS NOT NULL');
 
 		$db->setQuery($query);
 		$translatedElementIds = $db->loadColumn();
@@ -3095,7 +3096,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				// join_key_column = raw, join_val_column = formatted
 				if ($groupRepeat)
 				{
-					$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_table.user_id as user_val';
+					$select_origin_val = !empty($fnums) ? 't_table.fnum' : 't_table.user_id as user_val';
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
@@ -3377,6 +3378,10 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			$user_column = 'user_id';
 		}
 
+		if (!empty($dateFormat))
+		{
+			$dateTransformer = TransformerFactory::make(ElementPluginEnum::DATE->value, ['date_format' => $dateFormat]);
+		}
 
 		if ($fnum_column_existing && !empty($fnums))
 		{
@@ -3407,9 +3412,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						$raw       = $row['val'];
 						$formatted = $raw;
 
-						if (!empty($dateFormat) && $raw !== null && $raw !== '')
+						if (!empty($dateFormat))
 						{
-							$formatted = date($dateFormat, strtotime($raw));
+							$formatted = $dateTransformer->transform($raw);
 						}
 
 						$values[$fnumKey] = [
@@ -3435,9 +3440,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					foreach ($rows as $fnumKey => $row)
 					{
 						$val = $row['val'];
-						if (!empty($dateFormat) && $val !== null && $val !== '')
+						if (!empty($dateFormat) && !empty($val))
 						{
-							$val = date($dateFormat, strtotime($val));
+							$val = $dateTransformer->transform($val);
 						}
 
 						$values[$fnumKey] = [
@@ -3480,9 +3485,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						if ($return === ValueFormatEnum::BOTH)
 						{
 							$formatted = $raw;
-							if (!empty($dateFormat) && $raw !== null && $raw !== '')
+							if (!empty($dateFormat))
 							{
-								$formatted = date($dateFormat, strtotime($raw));
+								$formatted = $dateTransformer->transform($raw);
 							}
 
 							$values[$user_id] = [
@@ -3501,9 +3506,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						else
 						{
 							$val = $raw;
-							if (!empty($dateFormat) && $val !== null && $val !== '')
+							if (!empty($dateFormat))
 							{
-								$val = date($dateFormat, strtotime($val));
+								$val = $dateTransformer->transform($val);
 							}
 
 							$values[$user_id] = [
@@ -3520,6 +3525,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			else
 			{
+				$user_column_existing = $this->tableHasColumn($tableName, 'user_id');
+
+
 				if (!empty($user_column_existing))
 				{
 					try
@@ -3545,9 +3553,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 							{
 								$raw       = $value;
 								$formatted = $raw;
-								if (!empty($dateFormat) && $raw !== null && $raw !== '')
+								if (!empty($dateFormat))
 								{
-									$formatted = date($dateFormat, strtotime($raw));
+									$formatted = $dateTransformer->transform($raw);
 								}
 
 								$values[$fnum] = [
@@ -3566,9 +3574,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 							else // formatted
 							{
 								$val = $value;
-								if (!empty($dateFormat) && $val !== null && $val !== '')
+								if (!empty($dateFormat))
 								{
-									$val = date($dateFormat, strtotime($val));
+									$val = $dateTransformer->transform($val);
 								}
 
 								$values[$fnum] = [

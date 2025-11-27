@@ -24,7 +24,7 @@ PDF files, and more!
 | `6.x`               | [thecodingmachine/gotenberg-php-client](https://github.com/thecodingmachine/gotenberg-php-client) |
 
 > [!TIP]
-> An experimental [Symfony Bundle](https://github.com/sensiolabs/GotenbergBundle) is also available!
+> A [Symfony Bundle](https://github.com/sensiolabs/GotenbergBundle) is also available!
 
 ## Quick Examples
 
@@ -204,7 +204,7 @@ $filename = Gotenberg::save($request, '/path/to/saving/directory');
 ```
 
 It returns the filename of the resulting file. By default, Gotenberg creates a *UUID* filename (i.e., 
-`95cd9945-484f-4f89-8bdb-23dbdd0bdea9`) with either a `.zip` or a `.pdf` file extension.
+`95cd9945-484f-4f89-8bdb-23dbdd0bdea9`) with either a `.zip` or a `.pdf` file extension (or image formats for screenshots).
 
 You may also explicitly set the HTTP client:
 

@@ -1,5 +1,5 @@
 FROM joomla:5-php8.2-apache
-LABEL maintainer="Wilfried MAILLET <wilfried.maillet@emundus.fr>, EMUNDUS Development Team <support@emundus.fr>"
+LABEL maintainer="eMundus <dev@emundus.fr>, EMUNDUS Development Team <support@emundus.fr>"
 
 # Enable Apache Rewrite Module
 RUN a2enmod rewrite
