@@ -22,13 +22,33 @@ class BirthdayTransformer implements FabrikTransformerInterface
 
 	public function transform(mixed $value): string
 	{
-		$parts = $value === '' ? [] : explode(',', $value);
-		foreach ($parts as $i => $v) {
-			if (!empty($v)) {
-				$parts[$i] = date($this->detailsDateFormat, strtotime($v));
+		$transformedParts = [];
+
+		$parts = explode(',', $value);
+		foreach ($parts as $i => $v)
+		{
+			if (!empty($v) && $this->isValidDate($v))
+			{
+				$transformedParts[$i] = date($this->detailsDateFormat, strtotime($v));
+			}
+			else
+			{
+				$transformedParts[$i] = '';
 			}
 		}
 
-		return implode(',', $parts);
+		return implode(',', $transformedParts);
+	}
+
+	public function isValidDate(string $date): bool
+	{
+		$valid = true;
+
+		if (empty($date) || $date === '0000-00-00' || $date === '0000-00-00 00:00:00' || strtotime($date) === false)
+		{
+			$valid = false;
+		}
+
+		return $valid;
 	}
 }

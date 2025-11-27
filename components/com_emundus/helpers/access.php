@@ -187,6 +187,11 @@ class EmundusHelperAccess
 		if (!empty($action_id)) {
 			if (!empty($fnum))
 			{
+				if(!empty($user_id) && !self::isUserAllowedToAccessFnum($user_id, $fnum))
+				{
+					return false;
+				}
+
 				$canAccess = $m_users->getUserActionByFnum($action_id, $fnum, $user_id, $crud);
 				if ($canAccess > 0)
 				{

@@ -1683,7 +1683,7 @@ class EmundusControllerFiles extends BaseController
 
 		$validFnums = array();
 		foreach ($fnums as $fnum) {
-            if ($fnum != 'em-check-all-all' && $fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+            if ($fnum != 'em-check-all-all' && $fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(6, 'c', $this->_user->id, $fnum)) {
 				$validFnums[] = $fnum;
 			}
 		}
