@@ -181,12 +181,6 @@
       "version": "1.0.6"
     },
     {
-      "name": "plg_editors_codemirror",
-      "type": "style",
-      "uri": "plg_editors_codemirror/codemirror.css",
-      "version": "ace1a2"
-    },
-    {
       "name": "codemirror",
       "type": "script",
       "uri": "plg_editors_codemirror/codemirror.min.js",
@@ -219,6 +213,12 @@
         "@lezer/xml"
       ],
       "version": "32671a"
+    },
+    {
+      "name": "plg_editors_codemirror",
+      "type": "style",
+      "uri": "plg_editors_codemirror/codemirror.css",
+      "version": "ace1a2"
     },
     {
       "name": "webcomponent.editor-codemirror",

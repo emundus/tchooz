@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInit80faf005f2cef80140dceb49f0f66b38
+class ComposerStaticInita0bbac1380e2021808fa2a026d589486
 {
     public static $files = array (
         '6e3fae29631ef280660b3cdad06f25a8' => __DIR__ . '/..' . '/symfony/deprecation-contracts/function.php',
@@ -203,8 +203,8 @@ class ComposerStaticInit80faf005f2cef80140dceb49f0f66b38
     public static $prefixDirsPsr4 = array (
         'voku\\' => 
         array (
-            0 => __DIR__ . '/..' . '/voku/portable-utf8/src/voku',
-            1 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
+            0 => __DIR__ . '/..' . '/voku/portable-ascii/src/voku',
+            1 => __DIR__ . '/..' . '/voku/portable-utf8/src/voku',
         ),
         'phpseclib3\\' => 
         array (
@@ -493,8 +493,8 @@ class ComposerStaticInit80faf005f2cef80140dceb49f0f66b38
         ),
         'Jfcherng\\Utility\\' => 
         array (
-            0 => __DIR__ . '/..' . '/jfcherng/php-mb-string/src',
-            1 => __DIR__ . '/..' . '/jfcherng/php-color-output/src',
+            0 => __DIR__ . '/..' . '/jfcherng/php-color-output/src',
+            1 => __DIR__ . '/..' . '/jfcherng/php-mb-string/src',
         ),
         'Jfcherng\\Diff\\' => 
         array (
@@ -4042,9 +4042,9 @@ class ComposerStaticInit80faf005f2cef80140dceb49f0f66b38
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInit80faf005f2cef80140dceb49f0f66b38::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInit80faf005f2cef80140dceb49f0f66b38::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInit80faf005f2cef80140dceb49f0f66b38::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInita0bbac1380e2021808fa2a026d589486::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInita0bbac1380e2021808fa2a026d589486::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInita0bbac1380e2021808fa2a026d589486::$classMap;
 
         }, null, ClassLoader::class);
     }
