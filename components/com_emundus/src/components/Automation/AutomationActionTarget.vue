@@ -105,7 +105,7 @@ export default {
 			}
 		},
 		addCondition() {
-			this.target.conditions.push(conditionInstance(Date.now()));
+			this.target.conditions.push(conditionInstance(0));
 		},
 		onRemoveCondition(conditionToRemove) {
 			this.target.conditions = this.target.conditions.filter((condition) => {

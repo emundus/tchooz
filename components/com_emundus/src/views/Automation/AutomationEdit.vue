@@ -164,7 +164,7 @@ export default {
 		onSelectAction(action) {
 			this.closeModal('actionsListModal');
 			this.automation.actions.push({
-				id: Date.now(),
+				id: Math.floor(Math.random() * 1000000000),
 				...action,
 				parameter_values: {},
 				targets: [],

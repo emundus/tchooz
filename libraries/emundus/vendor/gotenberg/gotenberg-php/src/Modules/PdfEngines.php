@@ -82,6 +82,30 @@ class PdfEngines
     }
 
     /**
+     * Defines whether the resulting PDF should be encrypted.
+     * Prefer the encrypt method if you only want to encrypt one or more PDFs.
+     */
+    public function encrypting(string $userPassword, string $ownerPassword = ''): self
+    {
+        $this->formValue('userPassword', $userPassword);
+        $this->formValue('ownerPassword', $ownerPassword);
+
+        return $this;
+    }
+
+    /**
+     * Sets the file to embed in the resulting PDF.
+     */
+    public function embeds(Stream ...$embeds): self
+    {
+        foreach ($embeds as $embed) {
+            $this->formFile($embed->getFilename(), $embed->getStream(), 'embeds');
+        }
+
+        return $this;
+    }
+
+    /**
      * Merges PDFs into a unique PDF.
      *
      * Note: the merging order is determined by the order of the arguments.
@@ -183,6 +207,44 @@ class PdfEngines
         }
 
         $this->endpoint = '/forms/pdfengines/metadata/write';
+
+        return $this->request();
+    }
+
+    /**
+     * Allows encrypting one or more PDF.
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function encrypt(string $userPassword, string $ownerPassword = '', Stream ...$pdfs): RequestInterface
+    {
+        $this->encrypting($userPassword, $ownerPassword);
+
+        foreach ($pdfs as $pdf) {
+            $this->formFile($pdf->getFilename(), $pdf->getStream());
+        }
+
+        $this->endpoint = '/forms/pdfengines/encrypt';
+
+        return $this->request();
+    }
+
+    /**
+     * Allows embedding one or more files to one or more PDF.
+     *
+     * @param Stream[] $embeds
+     *
+     * @throws NativeFunctionErrored
+     */
+    public function embed(array $embeds, Stream ...$pdfs): RequestInterface
+    {
+        foreach ($pdfs as $pdf) {
+            $this->formFile($pdf->getFilename(), $pdf->getStream());
+        }
+
+        $this->embeds(...$embeds);
+
+        $this->endpoint = '/forms/pdfengines/embed';
 
         return $this->request();
     }
