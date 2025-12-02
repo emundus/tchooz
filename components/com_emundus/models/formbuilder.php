@@ -4892,14 +4892,18 @@ class EmundusModelFormbuilder extends JModelList
 				assert($fabrikFormModel instanceof FabrikFEModelForm);
 				$fabrikFormModel->setId($formId);
 
-				if (str_starts_with('jos_emundus_evaluations', $fabrikFormModel->getListModel()->getTable()->db_table_name))
+				if (
+					str_starts_with('jos_emundus_evaluations', $fabrikFormModel->getListModel()->getTable()->db_table_name)
+					|| str_starts_with('jos_emundus_final_grade', $fabrikFormModel->getListModel()->getTable()->db_table_name)
+					|| str_starts_with('jos_emundus_admission', $fabrikFormModel->getListModel()->getTable()->db_table_name)
+				)
 				{
 					$keyPrefix = 'FORM_EVALUATION_';
 				} else {
 					if (!empty($args['profile_id'])) {
 						$keyPrefix = 'FORM_' . $args['profile_id'] . '_';
 					} else {
-						$keyPrefix = 'FORM_' . $newFormId;
+						$keyPrefix = 'FORM_';
 					}
 				}
 
