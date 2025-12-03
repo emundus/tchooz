@@ -143,7 +143,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 							}
 
 							if (empty($evaluations_old_new_mapping[$evaluation_form_id])) {
-								$new_evaluation_form_id = $this->m_form_builder->duplicateFabrikForm($evaluation_form_id, $user->id, ['keep_structure' => false]);
+								$new_evaluation_form_id = $this->m_form_builder->duplicateFabrikForm($evaluation_form_id, $user->id, ['keep_structure' => false, 'model_prefix' => '', 'profile_id' => null], '');
 
 								if (!empty($new_evaluation_form_id))
 								{

@@ -491,3 +491,19 @@
 .choices__heading {
   font-size: 1.2rem;
 }
+
+.choices[data-type*="select-multiple"] .choices__item.is-selected:before {
+  top: 50%;
+  color: var(--success);
+  content: " ✓";
+  background: var(--body-bg);
+  opacity: 1;
+  border-radius: 2.5px;
+  padding: 0 .2em;
+  font-size: 1.2em;
+  font-weight: bold;
+  display: block;
+  position: absolute;
+  inset-inline-end: .2em;
+  transform: translateY(-50%);
+}

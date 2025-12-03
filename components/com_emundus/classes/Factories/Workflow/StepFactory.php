@@ -71,7 +71,7 @@ class StepFactory
 
 		if (!empty($formId))
 		{
-			$db = Factory::getContainer();
+			$db = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 			$query->select('db_table_name, id')
 				->from('#__fabrik_lists')

@@ -22,6 +22,8 @@ use \setasign\Fpdi\Fpdi;
 use \setasign\Fpdi\PdfReader;
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 /**
  * eMundus Component Controller
@@ -1834,7 +1836,7 @@ class EmundusController extends JControllerLegacy
 			$fnums = array_keys($current_user->fnums);
 		}
 
-
+		
 		// This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
 		if (!empty(JFactory::getUser($uid)->id)) {
             $query = 'SELECT can_be_viewed, fnum, local_filename FROM #__emundus_uploads';
@@ -1863,21 +1865,46 @@ class EmundusController extends JControllerLegacy
 				$fileInfo->can_be_viewed = 1;
 			}
 		}
+		
+		if(str_starts_with($file, 'export_users'))
+		{
+			$actionRepository = new ActionRepository();
+			$userAction = $actionRepository->getByName('user');
 
-		// Check if the user is an applicant and it is his file.
-		if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id)) {
-			if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo)) {
+			$file_parts = explode('_', $file);
+			$uid = (int) $file_parts[2];
+
+			if(empty($uid))
+			{
+				die (Text::_('ACCESS_DENIED'));
+			}
+
+			if($current_user->id != $uid && !EmundusHelperAccess::asAccessAction($userAction->getId(), CrudEnum::READ->value, $current_user->id))
+			{
 				die (Text::_('ACCESS_DENIED'));
 			}
 		}
-		// If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
-		elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id, $fileInfo->fnum))) {
-			die (Text::_('ACCESS_DENIED'));
+		else
+		{
+			// Check if the user is an applicant and it is his file.
+			if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+			{
+				if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo))
+				{
+					die (Text::_('ACCESS_DENIED'));
+				}
+			}
+			// If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
+			elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id, $fileInfo->fnum)))
+			{
+				die (Text::_('ACCESS_DENIED'));
+			}
+			elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id)))
+			{
+				die (Text::_('ACCESS_DENIED'));
+			}
 		}
-		elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r') && !EmundusHelperAccess::asAccessAction(8, 'c'))) {
-			die (Text::_('ACCESS_DENIED'));
-		}
-
+		
 		// Otherwise, open the file if it exists.
 		$file = JPATH_BASE . DS . $url;
 		if (is_file($file)) {
