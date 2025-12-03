@@ -2,6 +2,7 @@
 
 namespace Tchooz\Entities\Workflow;
 
+use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 
 class WorkflowEntity {
@@ -32,6 +33,8 @@ class WorkflowEntity {
 		$this->published = $published;
 		$this->steps = $steps;
 		$this->program_ids = $program_ids;
+
+		Log::addLogger(['text_file' => 'com_emundus.entity.workflow.php'], Log::ALL, ['com_emundus.entity.workflow']);
 	}
 
 	public function getId(): int
@@ -109,26 +112,51 @@ class WorkflowEntity {
 	{
 		$added = false;
 
-		if (!$step->isEvaluationStep()) {
+		if ($step->isApplicantStep()) {
 			// two steps of same type cannot be on same entry_status, if not evaluation type
 			// check if step on same entry_status already exists
 			$already_used_entry_status = [];
-			foreach ($this->steps as $existing_step) {
-				$already_used_entry_status = array_merge($already_used_entry_status, $existing_step->entry_status);
+			foreach ($this->getApplicantSteps() as $existingApplicantStep) {
+				$already_used_entry_status = array_merge($already_used_entry_status, $existingApplicantStep->entry_status);
 			}
 
 			$intersect = array_intersect($already_used_entry_status, $step->entry_status);
 
 			if (empty($intersect)) {
+				$step->setWorkflowId($this->getId());
 				$this->steps[] = $step;
 				$added = true;
+			} else {
+				$alreadyUsingSteps = [];
+
+				foreach ($this->getApplicantSteps() as $step)
+				{
+					if (array_intersect($step->getEntryStatus(), $intersect)) {
+						$alreadyUsingSteps[] = $step->getLabel() . '[' . $step->getId() . ']';
+					}
+				}
+
+				Log::add('Can not add step on entry status ' . implode(', ', $intersect) . ' already have steps using it : ' . implode(', ', $alreadyUsingSteps), Log::WARNING, 'com_emundus.entity.workflow');
 			}
 		} else {
+			$step->setWorkflowId($this->getId());
 			$this->steps[] = $step;
 			$added = true;
 		}
 
 		return $added;
+	}
+
+	/**
+	 * @param   int  $stepId
+	 *
+	 * @return void
+	 */
+	public function removeStep(int $stepId): void
+	{
+		$this->steps = array_filter($this->steps, function ($step) use ($stepId) {
+			return $step->getId() !== $stepId;
+		});
 	}
 
 	/**

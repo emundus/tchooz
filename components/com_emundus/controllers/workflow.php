@@ -341,18 +341,24 @@ class EmundusControllerWorkflow extends JControllerLegacy
 			try {
 				$workflowRepository = new WorkflowRepository();
 				$workflow = $workflowRepository->getWorkflowByFnum($fnum);
-				$steps = $workflow->getApplicantSteps();
 
-				$initialStep = array_filter($steps, function($step) {
-					assert($step instanceof StepEntity);
-					return in_array(0, $step->getEntryStatus()) && $step->getOutputStatus() === 1;
-				});
+				if (!empty($workflow)) {
+					$steps = $workflow->getApplicantSteps();
+
+					$initialStep = array_filter($steps, function($step) {
+						assert($step instanceof StepEntity);
+						return in_array(0, $step->getEntryStatus()) && $step->getOutputStatus() === 1;
+					});
+				}
 
 				if (empty($initialStep))
 				{
 					$campaignRepository = new CampaignRepository();
 					$campaignStep = $campaignRepository->getCampaignDefaultStep($files_infos['campaign_id']);
-					$campaignStep->setWorkflowId($workflow->getId());
+
+					if (!empty($workflow)) {
+						$campaignStep->setWorkflowId($workflow->getId());
+					}
 
 					// insert the step at the beginning of the steps array
 					array_unshift($steps, $campaignStep);

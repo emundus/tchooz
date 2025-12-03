@@ -601,9 +601,9 @@ class EmundusModelTranslations extends ListModel
 					$this->_db->quote($reference_table),
 					$this->_db->quote($reference_field),
 					1,
-					$user_id,
+					$user_id ?? 0,
 					$this->_db->quote(date('Y-m-d H:i:s')),
-					$user_id,
+					$user_id ?? 0,
 					$this->_db->quote(date('Y-m-d H:i:s'))
 				];
 

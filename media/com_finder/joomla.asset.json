@@ -37,12 +37,6 @@
     },
     {
       "name": "com_finder.finder",
-      "type": "style",
-      "uri": "com_finder/finder.min.css",
-      "version": "ab077f"
-    },
-    {
-      "name": "com_finder.finder",
       "type": "script",
       "uri": "com_finder/finder.min.js",
       "dependencies": [
@@ -52,6 +46,12 @@
         "type": "module"
       },
       "version": "755761"
+    },
+    {
+      "name": "com_finder.finder",
+      "type": "style",
+      "uri": "com_finder/finder.min.css",
+      "version": "ab077f"
     },
     {
       "name": "com_finder.finder-edit",
