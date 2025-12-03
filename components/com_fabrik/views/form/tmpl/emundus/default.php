@@ -88,7 +88,7 @@ if (($allow_to_comment || $is_applicant === 0) && !$is_preview)
             ->from('#__menu')
             ->where('menutype IN (' . implode(',', $db->quote($applicant_profiles_menus)) . ')')
             ->andWhere('published = 1')
-            ->andWhere('link LIKE "%com_fabrik&view=form&formid=' . $form->id . '%"');
+            ->andWhere('link LIKE "%com_fabrik&view=form&formid=' . $form->id . '"');
 
         try {
             $db->setQuery($query);
