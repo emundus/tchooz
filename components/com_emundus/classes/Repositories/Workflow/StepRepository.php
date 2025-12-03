@@ -64,6 +64,7 @@ class StepRepository
 	 * @param   int  $workflowId
 	 *
 	 * @return array<StepEntity>
+	 * @throws \Exception
 	 */
 	public function getStepsByWorkflowId(int $workflowId): array
 	{

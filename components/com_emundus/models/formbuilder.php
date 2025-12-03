@@ -1263,7 +1263,7 @@ class EmundusModelFormbuilder extends JModelList
 		if (!empty($groupId))
 		{
 			$elementIds[] = $this->createElement('id', $groupId, 'internalid', 'id', '', 1, 0, 1, 1, 0, 20, $user);
-			$elementIds[] = $this->createElement('time_date', $groupId, 'jdate', 'time date', '', 1, 0, 1, 1, 0, 20, $user, 'id');
+			$elementIds[] = $this->createElement('time_date', $groupId, 'jdate', 'time date', '', 1, 1, 1, 1, 0, 20, $user, 'id');
 			$elementIds[] = $this->createElement('ccid', $groupId, 'field', 'Identifiant du dossier', '', 1, 1, 1, 1, 0, 44, $user, 'time_date');
 			$elementIds[] = $this->createElement('fnum', $groupId, 'field', 'fnum', '', 1, 0, 1, 1, 0, 44, $user, 'ccid');
 			$elementIds[] = $this->createElement('step_id', $groupId, 'field', 'Phase', '', 1, 1, 1, 1, 0, 44, $user, 'fnum');
@@ -1551,6 +1551,12 @@ class EmundusModelFormbuilder extends JModelList
 					->where($this->db->quoteName('fg.group_id') . ' = ' . $this->db->quote($group_id));
 				$this->db->setQuery($query);
 				$result = $this->db->loadObject();
+
+				$column_existing = $this->db->setQuery('SHOW COLUMNS FROM ' . $result->dbtable . ' WHERE ' . $this->db->quoteName('Field') . ' = ' . $this->db->quote($name))->loadResult();
+				if (!empty($column_existing))
+				{
+					return $eid;
+				}
 
 				$query = "ALTER TABLE " . $result->dbtable . " ADD " . $name . " " . $db_type . " NULL";
 

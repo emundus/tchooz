@@ -158,6 +158,7 @@ class WorkflowRepository
 	 * @param   WorkflowEntity  $workflow
 	 *
 	 * @return bool
+	 * @throws \Exception
 	 */
 	public function save(WorkflowEntity $workflow): bool
 	{
@@ -175,7 +176,7 @@ class WorkflowRepository
 					$intersect = array_intersect($already_used_entry_status, $step->getEntryStatus());
 					if (!empty($intersect))
 					{
-						throw new \InvalidArgumentException('Two steps of the same type cannot have the same entry status: ' . implode(',', $intersect));
+						throw new \InvalidArgumentException('Two steps of the same type cannot have the same entry status: ' . implode(',', $intersect) . ' in workflow ' . $workflow->getLabel() . ' and step ' . $step->getLabel());
 					} else
 					{
 						$already_used_entry_status = array_merge($already_used_entry_status, $step->getEntryStatus());
@@ -184,111 +185,120 @@ class WorkflowRepository
 			}
 		}
 
-		if (empty($workflow->getId()))
-		{
-			$query->insert($this->db->quoteName($this->getTableName(self::class)))
-				->columns([
-					$this->db->quoteName('label'),
-					$this->db->quoteName('published')
-				])
-				->values(
-					$this->db->quote($workflow->getLabel()) . ', ' .
-					(int) $workflow->isPublished()
-				);
-
-			$this->db->setQuery($query);
-			$saved = $this->db->execute();
-
-			if ($saved)
+		try {
+			if (empty($workflow->getId()))
 			{
-				$workflowId = (int) $this->db->insertid();
-				$workflow->setId($workflowId);
-			}
-		} else
-		{
-			$query->update($this->db->quoteName($this->getTableName(self::class)))
-				->set([
-					$this->db->quoteName('label') . ' = ' . $this->db->quote($workflow->getLabel()),
-					$this->db->quoteName('published') . ' = ' . (int) $workflow->isPublished()
-				])
-				->where($this->db->quoteName('id') . ' = ' . $workflow->getId());
+				$query->insert($this->db->quoteName($this->getTableName(self::class)))
+					->columns([
+						$this->db->quoteName('label'),
+						$this->db->quoteName('published')
+					])
+					->values(
+						$this->db->quote($workflow->getLabel()) . ', ' .
+						(int) $workflow->isPublished()
+					);
 
-			$this->db->setQuery($query);
-			$saved = $this->db->execute();
-		}
+				$this->db->setQuery($query);
+				$saved = $this->db->execute();
 
-		if ($saved && !empty($workflow->getId()))
-		{
-			// First, delete existing program associations
-			$query->clear()
-				->delete($this->db->quoteName('jos_emundus_setup_workflows_programs'))
-				->where($this->db->quoteName('workflow_id') . ' = ' . $workflow->getId());
-
-
-			if (!empty($workflow->getProgramIds())) {
-				$query->orWhere($this->db->quoteName('program_id') . ' IN (' . implode(',', $workflow->getProgramIds()) . ')'); // program can only be associated with one workflow
-			}
-
-			$this->db->setQuery($query);
-			$this->db->execute();
-
-			if (!empty($workflow->getProgramIds()))
-			{
-				// Now, insert new program associations
-				$insertedAll = [];
-				foreach ($workflow->getProgramIds() as $programId)
+				if ($saved)
 				{
-					$query->clear()
-						->insert($this->db->quoteName('jos_emundus_setup_workflows_programs'))
-						->columns([
-							$this->db->quoteName('workflow_id'),
-							$this->db->quoteName('program_id')
-						])
-						->values(
-							$workflow->getId() . ', ' . $programId
-						);
+					$workflowId = (int) $this->db->insertid();
+					$workflow->setId($workflowId);
+				}
+			} else
+			{
+				$query->update($this->db->quoteName($this->getTableName(self::class)))
+					->set([
+						$this->db->quoteName('label') . ' = ' . $this->db->quote($workflow->getLabel()),
+						$this->db->quoteName('published') . ' = ' . (int) $workflow->isPublished()
+					])
+					->where($this->db->quoteName('id') . ' = ' . $workflow->getId());
 
-					$this->db->setQuery($query);
-					$insertedAll[] = $this->db->execute();
+				$this->db->setQuery($query);
+				$saved = $this->db->execute();
+			}
+
+			if ($saved && !empty($workflow->getId()))
+			{
+				// First, delete existing program associations
+				$query->clear()
+					->delete($this->db->quoteName('jos_emundus_setup_workflows_programs'))
+					->where($this->db->quoteName('workflow_id') . ' = ' . $workflow->getId());
+
+
+				if (!empty($workflow->getProgramIds())) {
+					$query->orWhere($this->db->quoteName('program_id') . ' IN (' . implode(',', $workflow->getProgramIds()) . ')'); // program can only be associated with one workflow
 				}
 
-				if (in_array(false, $insertedAll, true))
+				$this->db->setQuery($query);
+				$this->db->execute();
+
+				if (!empty($workflow->getProgramIds()))
 				{
-					$saved = false;
+					// Now, insert new program associations
+					$insertedAll = [];
+					foreach ($workflow->getProgramIds() as $programId)
+					{
+						$query->clear()
+							->insert($this->db->quoteName('jos_emundus_setup_workflows_programs'))
+							->columns([
+								$this->db->quoteName('workflow_id'),
+								$this->db->quoteName('program_id')
+							])
+							->values(
+								$workflow->getId() . ', ' . $programId
+							);
+
+						$this->db->setQuery($query);
+						$insertedAll[] = $this->db->execute();
+					}
+
+					if (in_array(false, $insertedAll, true))
+					{
+						$saved = false;
+					}
 				}
-			}
 
-			if (!empty($workflow->getSteps()))
-			{
-				$stepRepository = new StepRepository();
+				if (!empty($workflow->getSteps()))
+				{
+					$stepRepository = new StepRepository();
 
-				$existingSteps = $stepRepository->getStepsByWorkflowId($workflow->getId());
-				foreach ($existingSteps as $existingStep){
-					$found = false;
-					foreach ($workflow->getSteps() as $step){
-						if ($existingStep->getId() === $step->getId()){
-							$found = true;
-							break;
+					$existingSteps = $stepRepository->getStepsByWorkflowId($workflow->getId());
+					foreach ($existingSteps as $existingStep)
+					{
+						$found = false;
+						foreach ($workflow->getSteps() as $step){
+							if ($existingStep->getId() === $step->getId()){
+								$found = true;
+								break;
+							}
+						}
+						if (!$found)
+						{
+							$stepRepository->delete($existingStep);
 						}
 					}
-					if (!$found)
+
+					$savedAll = [];
+					foreach ($workflow->getSteps() as $step)
 					{
-						$stepRepository->delete($existingStep);
+						$step->setWorkflowId($workflow->getId());
+						$savedAll[] = $stepRepository->save($step);
+					}
+
+					if (empty($savedAll) || in_array(false, $savedAll, true))
+					{
+						$saved = false;
 					}
 				}
-
-				$savedAll = [];
-				foreach ($workflow->getSteps() as $step)
-				{
-					$step->setWorkflowId($workflow->getId());
-					$savedAll[] = $stepRepository->save($step);
-				}
-
-				if (empty($savedAll) || in_array(false, $savedAll, true))
-				{
-					$saved = false;
-				}
+			} else {
+				Log::add('Error saving workflow ' . $workflow->getLabel(), Log::ERROR, 'com_emundus.repository.workflow');
 			}
+		} catch (\Exception $e)
+		{
+			Log::add('Exception saving workflow ' . $workflow->getLabel() . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.workflow');
+			$saved = false;
 		}
 
 		return $saved;
@@ -333,7 +343,7 @@ class WorkflowRepository
 		return $deleted;
 	}
 
-	public function duplicate(WorkflowEntity $workflow, string $newLabel = ''): ?WorkflowEntity
+	public function duplicate(WorkflowEntity $workflow, string $newLabel = '', array $newPrograms = []): ?WorkflowEntity
 	{
 		$duplicatedWorkflow = null;
 
@@ -357,12 +367,11 @@ class WorkflowRepository
 				label: !empty($newLabel) ? $newLabel : $workflow->getLabel() . ' (Copy)',
 				published: $workflow->isPublished() ? 1 : 0,
 				steps: $workflow->getSteps(),
-				program_ids: [] // Do not duplicate program associations
+				program_ids: $newPrograms // Do not duplicate program associations
 			);
 
-			$saved = $this->save($newWorkflow);
-
-			if ($saved)
+			$this->save($newWorkflow);
+			if (!empty($newWorkflow->getId()))
 			{
 				$duplicatedWorkflow = $newWorkflow;
 			}
