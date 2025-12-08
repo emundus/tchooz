@@ -15,13 +15,13 @@ if ($d->showNav) :
 	?>
 <div class="list-footer">
 	<div class="limit">
-		<div class="em-flex-row em-flex-space-between">
-            <span class="em-text-neutral-600">
+		<div class="tw-flex tw-items-center tw-gap-6">
+            <span class="tw-text-neutral-600">
                 <?php echo $d->pagesCounter; ?>
 			</span>
-            <div class="em-flex-row em-flex-space-between em-flex-gap-8">
+            <div class="tw-flex tw-items-center tw-gap-2">
                 <span class="add-on">
-                    <label class="em-mb-0" for="<?php echo $d->listName;?>">
+                    <label class="tw-mb-0" for="<?php echo $d->listName;?>">
                         <small>
                         <?php echo $d->label; ?>
                         </small>
