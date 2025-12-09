@@ -14,19 +14,6 @@ class NumericField extends Field
 		return 'numeric';
 	}
 
-	public function toSchema(): array
-	{
-		return [
-			'type' => NumericField::getType(),
-			'name' => $this->getName(),
-			'label' => $this->getLabel(),
-			'required' => $this->isRequired(),
-			'min' => $this->getMin(),
-			'max' => $this->getMax(),
-			'group' => $this->getGroup()?->toSchema()
-		];
-	}
-
 	public function setMax(int|float $max): self
 	{
 		$this->max = (float)$max;
@@ -47,5 +34,19 @@ class NumericField extends Field
 	public function getMin(): ?float
 	{
 		return $this->min;
+	}
+
+	public function toSchema(): array
+	{
+		return [
+			'type' => NumericField::getType(),
+			'name' => $this->getName(),
+			'label' => $this->getLabel(),
+			'required' => $this->isRequired(),
+			'min' => $this->getMin(),
+			'max' => $this->getMax(),
+			'group' => $this->getGroup()?->toSchema(),
+			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
+		];
 	}
 }

@@ -20,7 +20,8 @@ class BooleanField extends Field
 			'label' => $this->label,
 			'type' => $this->getType(),
 			'required' => $this->required,
-			'group' => $this->getGroup()?->toSchema()
+			'group' => $this->getGroup()?->toSchema(),
+			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
 		];
 	}
 }

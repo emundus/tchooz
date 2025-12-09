@@ -5,6 +5,7 @@ namespace Tchooz\Entities\Automation;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceField;
+use Tchooz\Entities\Fields\Field;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -89,48 +90,158 @@ abstract class ActionEntity
 	abstract public function getLabelForLog(): string;
 
 	/**
-	 * Retourne la valeur d’un paramètre d’instance
+	 * @param   string  $name
+	 *
+	 * @return Field|null
 	 */
-	public function getParameterValue(string $name): mixed
+	public function getParameter(string $name): ?Field
 	{
-		return $this->parameterValues[$name] ?? null;
-	}
-
-	public function setParameterValues(string $name, mixed $value): void
-	{
-		$parameter = null;
 		foreach ($this->getParameters() as $param) {
 			if ($param->getName() === $name) {
-				$parameter = $param;
-				break;
+				return $param;
 			}
 		}
-		if (!empty($parameter)) {
-			if ($parameter instanceof ChoiceField) {
-				$availableValues = array_map(fn($choice) => $choice->getValue(), $parameter->getChoices());
 
-				if ($parameter->getMultiple()) {
-					if (!is_array($value)) {
-						$value = [$value];
+		return null;
+	}
+
+	/**
+	 * @param   string    $name
+	 * @param   int|null  $row
+	 *
+	 * @return mixed
+	 */
+	public function getParameterValue(string $name, ?int $row = null): mixed
+	{
+		$value = null;
+
+		$parameter = $this->getParameter($name);
+
+		if (!empty($parameter))
+		{
+			if (!empty($parameter->getGroup()) && $parameter->getGroup()->isRepeatable())
+			{
+				// parameter will be stored in group name entry as array of rows
+				$groupName = $parameter->getGroup()->getName();
+				if (isset($this->parameterValues[$groupName]) && is_array($this->parameterValues[$groupName]))
+				{
+					$groupValues = $this->parameterValues[$groupName];
+
+					if (!empty($row))
+					{
+						// specific row requested
+						$value = $groupValues[$row][$name] ?? null;
 					}
-					foreach ($value as $val) {
-						if (!in_array($val, $availableValues)) {
-							Log::add('Invalid value "' . $val . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ',  array_map(fn($choice) => $choice->toSchema(), $parameter->getChoices())), Log::ERROR, 'automation');
-							$value = array_filter($value, fn($v) => $v !== $val);
+					else
+					{
+						// return all rows
+						$allValues = [];
+						foreach ($groupValues as $rowValues) {
+							$allValues[] = $rowValues[$name] ?? null;
 						}
-					}
-				} else {
-					if (!in_array($value, $availableValues)) {
-						Log::add('Invalid value "' . $value . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ',  array_map(fn($choice) => $choice->toSchema(), $parameter->getChoices())), Log::ERROR, 'automation');
-						$value = null;
+						$value = $allValues;
 					}
 				}
+			} else
+			{
+				$value = $this->parameterValues[$name] ?? null;
+			}
+		}
+
+		return $value;
+	}
+
+	/**
+	 * @param   string    $name
+	 * @param   mixed     $value
+	 * @param   int|null  $row used for repeatable group parameters
+	 *
+	 * @return void
+	 */
+	public function setParameterValues(string $name, mixed $value, ?int $row = null): void
+	{
+		$parameter = $this->getParameter($name);
+
+		if (!empty($parameter)) {
+			if ($parameter instanceof ChoiceField) {
+				if (empty($parameter->getResearch()))
+				{
+					$availableValues = array_map(fn($choice) => $choice->getValue(), $parameter->getChoices());
+					if ($parameter->getMultiple()) {
+						if (!is_array($value)) {
+							$value = [$value];
+						}
+						foreach ($value as $val) {
+							if (!in_array($val, $availableValues)) {
+								Log::add('Invalid value "' . $val . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ',  array_map(fn($choice) => $choice->toSchema(), $parameter->getChoices())), Log::ERROR, 'com_emundus.action');
+								$value = array_filter($value, fn($v) => $v !== $val);
+							}
+						}
+					} else {
+						if (!in_array($value, $availableValues)) {
+							Log::add('Invalid value "' . $value . '" for parameter "' . $name . '". Allowed values are: ' . implode(', ',  array_map(fn($choice) => $choice->toSchema(), $parameter->getChoices())), Log::ERROR, 'com_emundus.action');
+							$value = null;
+						}
+					}
+				}
+			}
+
+			if (!empty($parameter->getGroup()) && $parameter->getGroup()->isRepeatable())
+			{
+				$groupName = $parameter->getGroup()->getName();
+				if (!isset($this->parameterValues[$groupName]) || !is_array($this->parameterValues[$groupName])) {
+					$this->parameterValues[$groupName] = [];
+				}
+				if (!isset($row)) {
+					throw new \InvalidArgumentException("Row must be specified for repeatable group parameter '$name'");
+				}
+				if (!isset($this->parameterValues[$groupName][$row]) || !is_array($this->parameterValues[$groupName][$row])) {
+					$this->parameterValues[$groupName][$row] = [];
+				}
+				$this->parameterValues[$groupName][$row][$name] = $value;
+			}
+			else
+			{
+				$this->parameterValues[$name] = $value;
 			}
 		} else {
 			throw new \InvalidArgumentException("Parameter '$name' not found for action type '" . static::getType() . "'");
 		}
+	}
 
-		$this->parameterValues[$name] = $value;
+	/**
+	 * @param   array  $parameterValues
+	 *
+	 * @return void
+	 */
+	public function setParametersValuesFromArray(array $parameterValues = []): void
+	{
+		$parameters = $this->getParameters();
+
+		foreach($parameters as $parameter)
+		{
+			if ($parameter->getGroup() && $parameter->getGroup()->isRepeatable())
+			{
+				$groupName = $parameter->getGroup()->getName();
+				if (isset($parameterValues[$groupName]) && is_array($parameterValues[$groupName]))
+				{
+					foreach ($parameterValues[$groupName] as $rowIndex => $rowValues)
+					{
+						if (isset($rowValues[$parameter->getName()]))
+						{
+							$this->setParameterValues($parameter->getName(), $rowValues[$parameter->getName()], $rowIndex);
+						}
+					}
+				}
+			}
+			else
+			{
+				if (isset($parameterValues[$parameter->getName()]))
+				{
+					$this->setParameterValues($parameter->getName(), $parameterValues[$parameter->getName()]);
+				}
+			}
+		}
 	}
 
 	public function getParameterValues(): array
@@ -213,7 +324,39 @@ abstract class ActionEntity
 	public function verifyRequiredParameters(): void
 	{
 		foreach ($this->getParameters() as $parameter) {
-			if ($parameter->isRequired() && !isset($this->parameterValues[$parameter->getName()])) {
+			assert($parameter instanceof Field);
+			if (!empty($parameter->getDisplayRules()))
+			{
+				foreach ($parameter->getDisplayRules() as $rule)
+				{
+					// todo: handle more operators than equal
+					if ($this->getParameterValue($rule->getField()->getName()) != $rule->getValue())
+					{
+						// parameter is not displayed, skip required check
+						continue 2;
+					}
+				}
+			}
+
+			if ($parameter->getGroup() && $parameter->getGroup()->isRepeatable()) {
+				$groupName = $parameter->getGroup()->getName();
+
+				if ($parameter->isRequired()) {
+					if (!isset($this->parameterValues[$groupName]) || !is_array($this->parameterValues[$groupName]) || empty($this->parameterValues[$groupName])) {
+						throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
+					}
+					$hasValue = false;
+					foreach ($this->parameterValues[$groupName] as $rowValues) {
+						if (isset($rowValues[$parameter->getName()]) && !empty($rowValues[$parameter->getName()])) {
+							$hasValue = true;
+							break;
+						}
+					}
+					if (!$hasValue) {
+						throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
+					}
+				}
+			} else if ($parameter->isRequired() && !isset($this->parameterValues[$parameter->getName()])) {
 				throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
 			}
 		}

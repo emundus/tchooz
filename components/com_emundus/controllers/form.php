@@ -19,6 +19,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Traits\TraitResponse;
 
 /**
@@ -1448,6 +1449,40 @@ class EmundusControllerForm extends BaseController
 
 		echo json_encode((object) $response);
 		exit;
+	}
+
+	public function getFabrikElementOptions()
+	{
+		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->app->getIdentity()->id))
+		{
+			$response = ['code' => 400, 'status' => false, 'msg' => Text::_('MISSING_REQUIRED_PARAMETER'), 'data' => []];
+			$search = $this->input->getString('search_query', '');
+
+			if (!empty($search))
+			{
+				$resolver = new FormDataConditionResolver();
+				$choices = $resolver->getAvailableElementsOptions($search);
+
+				$response = [
+					'code' => 200,
+					'status' => true,
+					'data' => array_map(function ($choice) {
+						return [
+							'value' => $choice->getValue(),
+							'label' => $choice->getLabel(),
+						];
+					}, $choices),
+				];
+			} else {
+				$response['code'] = 200;
+				$response['data'] = [];
+				$response['msg'] = Text::_('NO_OPTIONS_FOUND');
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }
 

@@ -26,7 +26,10 @@ class ActionFactory
 	public function fromJson(object $json): ActionEntity
 	{
 		$actionRegistry = new ActionRegistry();
-		$action = $actionRegistry->getActionInstance($json->type, (array)$json->parameter_values ?? []);
+
+		// Convert parameter values to associative array
+		$parameterValues = json_decode(json_encode($json->parameter_values), true);
+		$action = $actionRegistry->getActionInstance($json->type, $parameterValues?? []);
 
 		if (empty($action))
 		{

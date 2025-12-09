@@ -30,7 +30,7 @@ class FieldResearch
 
 	public function getSearchInputKey(): string { return $this->searchInputKey; }
 
-	public function serialize(): array
+	public function toSchema(): array
 	{
 		return [
 			'controller' => $this->getControllerName(),

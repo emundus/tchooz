@@ -252,7 +252,7 @@ export default {
 						// Update the value field
 						let valueField = this.fields.find((f) => f.param === 'value');
 						if (valueField) {
-							const parameterFieldFromAutomationField = this.fromAutomationFieldToParameter(field, null);
+							const parameterFieldFromAutomationField = this.fromFieldEntityToParameter(field, null);
 							Object.assign(valueField, parameterFieldFromAutomationField);
 							valueField.param = 'value';
 							valueField.displayed = true;

@@ -15,6 +15,7 @@ use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
+use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
@@ -24,9 +25,17 @@ class RequestSignersRepository
 {
 	use TraitTable;
 	
-	public function __construct(private DatabaseInterface $db)
-	{}
+	public function __construct(private ?DatabaseInterface $db = null)
+	{
+		$this->db ??= Factory::getContainer()->get('DatabaseDriver');
+	}
 
+	/**
+	 * @param   RequestSigners  $signer
+	 *
+	 * @return int
+	 * @throws \Exception
+	 */
 	public function flush(RequestSigners $signer): int
 	{
 		$signer_object = $signer->__serialize();
@@ -130,5 +139,31 @@ class RequestSignersRepository
 			->bind(':id', $id, ParameterType::INTEGER);
 
 		return $this->db->setQuery($query)->execute();
+	}
+
+	/**
+	 * @param   Request  $request
+	 *
+	 * @return array<RequestSigners>
+	 * @throws \Exception
+	 */
+	public function getByRequest(Request $request): array
+	{
+		$signers = [];
+
+		if (empty($request->getId()))
+		{
+			throw new \Exception('Request not set.', 400);
+		}
+
+		foreach ($request->getSigners() as $signer_object)
+		{
+			$contactRepository = new ContactRepository();
+			$contact           = $contactRepository->getByEmail($signer_object->email);
+
+			$signers[] = $this->loadSignerByRequestAndContact($request, $contact);
+		}
+
+		return $signers;
 	}
 }

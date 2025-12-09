@@ -170,7 +170,17 @@ export default {
 				label: 'COM_EMUNDUS_ONBOARD_REQUEST_EDIT_CONNECTOR',
 				placeholder: 'COM_EMUNDUS_ONBOARD_REQUEST_EDIT_CONNECTOR_PLACEHOLDER',
 				displayed: true,
-				hidden: true,
+				hidden: false,
+			},
+			{
+				param: 'subject',
+				type: 'text',
+				label: 'COM_EMUNDUS_ONBOARD_REQUEST_EDIT_SUBJECT',
+				placeholder: 'COM_EMUNDUS_ONBOARD_REQUEST_EDIT_SUBJECT_PLACEHOLDER',
+				maxlength: 255,
+				value: '',
+				displayed: true,
+				reload: 0,
 			},
 		],
 

@@ -4,6 +4,7 @@ namespace Tchooz\Services\Automation\Condition;
 
 use EmundusHelperFabrik;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\ConditionEntity;
@@ -35,6 +36,13 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 	public static function getTargetType(): string
 	{
 		return ConditionTargetTypeEnum::FORMDATA->value;
+	}
+
+	public function getFormIds(): array
+	{
+		$this->initializeFormIds();
+
+		return $this->formIds;
 	}
 
 	/**
@@ -125,6 +133,29 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 		}
 
 		return array_values($fields);
+	}
+
+	/**
+	 * @return array<ChoiceFieldValue>
+	 */
+	public function getAvailableElementsOptions(string $search = ''): array
+	{
+		$options = [];
+
+		if (!empty($this->getFormIds()))
+		{
+			$elements = \EmundusHelperFabrik::searchFabrikElements($search, $this->formIds);
+
+			foreach ($elements as $element)
+			{
+				$options[] = new ChoiceFieldValue(
+					$element->form_id . '.' . $element->id,
+					Text::_($element->label) . ' (' . Text::_($element->form_label) . ')'
+				);
+			}
+		}
+
+		return $options;
 	}
 
 	/**

@@ -15,19 +15,19 @@ use Joomla\CMS\Plugin\PluginHelper;
 
 trait TraitDispatcher
 {
-	public function dispatchJoomlaEvent(string $event, array $arguments = [], bool $dispatch_event_handler = true, $plugin_folder = 'emundus'): void
+	public function dispatchJoomlaEvent(string $event, array $arguments = [], bool $dispatch_event_handler = true, $plugin_folder = 'emundus', bool $dispatch_default_event = true): void
 	{
 		PluginHelper::importPlugin('emundus');
 		PluginHelper::importPlugin('actionlog');
 
 		$dispatcher = Factory::getApplication()->getDispatcher();
 
-		if(empty($event))
+		if (empty($event))
 		{
 			return;
 		}
 
-		if($dispatch_event_handler)
+		if ($dispatch_event_handler)
 		{
 			$onCallEventHandler = new GenericEvent(
 				'onCallEventHandler',
@@ -38,16 +38,19 @@ trait TraitDispatcher
 			);
 		}
 
-		$onEvent            = new GenericEvent(
+		$onEvent = new GenericEvent(
 			$event,
 			$arguments
 		);
 
-		if($dispatch_event_handler)
+		if ($dispatch_event_handler)
 		{
 			$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 		}
 
-		$dispatcher->dispatch($event, $onEvent);
+		if ($dispatch_default_event)
+		{
+			$dispatcher->dispatch($event, $onEvent);
+		}
 	}
 }

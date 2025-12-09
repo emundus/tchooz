@@ -137,6 +137,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'F' => 
         array (
             'FontLib\\' => 8,
+            'Firebase\\JWT\\' => 13,
         ),
         'E' => 
         array (
@@ -146,6 +147,7 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'D' => 
         array (
             'Dompdf\\' => 7,
+            'DocuSign\\eSign\\' => 15,
             'Doctrine\\Common\\Lexer\\' => 22,
         ),
         'C' => 
@@ -347,6 +349,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-font-lib/src/FontLib',
         ),
+        'Firebase\\JWT\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/firebase/php-jwt/src',
+        ),
         'Emundus\\OAuth2\\' => 
         array (
             0 => __DIR__ . '/..' . '/emundus/oauth2/src',
@@ -358,6 +364,10 @@ class ComposerStaticInita630d70f349917b86402eea08130995c
         'Dompdf\\' => 
         array (
             0 => __DIR__ . '/..' . '/dompdf/dompdf/src',
+        ),
+        'DocuSign\\eSign\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/docusign/esign-client/src',
         ),
         'Doctrine\\Common\\Lexer\\' => 
         array (

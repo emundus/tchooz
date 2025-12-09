@@ -85,12 +85,11 @@ class ActionRepository
 					$parameters = json_decode($result->params, true) ?? [];
 					$action = $registry->getActionInstance($result->name);
 					$action->setId($result->id);
+					$action->setParametersValuesFromArray($parameters);
 
-					foreach ($parameters as $parameter => $value)
-					{
-						$action->setParameterValues($parameter, $value);
+					if (method_exists($action, 'setParametersOptionsWithValues')) {
+						$action->setParametersOptionsWithValues();
 					}
-
 					$action->setTargets($this->targetRepository->getTargetsByActionId($result->id));
 
 					$actions[] = $action;
@@ -107,7 +106,7 @@ class ActionRepository
 	 *
 	 * @return bool
 	 */
-	public function saveAction(ActionEntity $action, int $automationId): bool
+	public function flush(ActionEntity $action, int $automationId): bool
 	{
 		$saved = false;
 

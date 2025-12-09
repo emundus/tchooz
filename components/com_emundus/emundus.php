@@ -90,6 +90,8 @@ Text::script('COM_EMUNDUS_CLOSE');
 Text::script('COM_EMUNDUS_SAVE');
 Text::script('COM_EMUNDUS_REMOVE');
 Text::script('SAVE');
+Text::script('COM_EMUNDUS_ADD_ROW');
+Text::script('COM_EMUNDUS_REMOVE_ROW');
 
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION');
@@ -1331,7 +1333,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || $task === 'yousigncallback')) {
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task,  ['yousigncallback', 'docusigncallback']))) {
 	$controller->execute($task);
 }
 else if ($user->guest && $app->input->getString('controller') === 'webhook' && $task === 'updatePaymentTransaction')

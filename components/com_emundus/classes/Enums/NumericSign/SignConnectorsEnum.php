@@ -14,12 +14,14 @@ use Joomla\CMS\Language\Text;
 enum SignConnectorsEnum: string
 {
 	case YOUSIGN = 'yousign';
+	case DOCUSIGN = 'docusign';
 
 	public function getLabel(): string
 	{
 		return match ($this)
 		{
-			self::YOUSIGN => 'Yousign'
+			self::YOUSIGN => 'Yousign',
+			self::DOCUSIGN => 'Docusign',
 		};
 	}
 }

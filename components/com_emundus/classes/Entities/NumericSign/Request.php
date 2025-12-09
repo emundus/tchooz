@@ -39,6 +39,8 @@ class Request
 
 	private int $createdBy;
 
+	private string $subject = '';
+
 	private string $cancelReason = '';
 
 	private string $cancelAt = '';
@@ -50,6 +52,8 @@ class Request
 	private array $signers = [];
 
 	private bool $ordered = false;
+
+	private ?string $externalReference = null;
 
 	public function __construct($createdBy)
 	{
@@ -213,6 +217,16 @@ class Request
 		}
 	}
 
+	public function getSubject(): string
+	{
+		return $this->subject;
+	}
+
+	public function setSubject(string $subject): void
+	{
+		$this->subject = $subject;
+	}
+
 	public function getCancelReason(): string
 	{
 		return $this->cancelReason;
@@ -278,6 +292,16 @@ class Request
 		$this->ordered = $ordered;
 	}
 
+	public function setExternalReference(?string $externalReference): void
+	{
+		$this->externalReference = $externalReference;
+	}
+
+	public function getExternalReference(): ?string
+	{
+		return $this->externalReference;
+	}
+
 	public function __serialize(): array
 	{
 		return [
@@ -292,12 +316,14 @@ class Request
 			'fnum'             => $this->fnum,
 			'connector'        => $this->connector->value,
 			'cancel_reason'    => $this->cancelReason,
-			'cancel_at'        => $this->cancelAt,
+			'subject'          => $this->subject,
+			'cancel_at'        => !empty($this->cancelAt) ? $this->cancelAt : null,
 			'send_reminder'    => $this->sendReminder,
-			'last_reminder_at' => $this->lastReminderAt,
+			'last_reminder_at' => !empty($this->lastReminderAt) ? $this->lastReminderAt : null,
 			'created_at'       => $this->createdAt,
 			'created_by'       => $this->createdBy,
 			'ordered'          => $this->ordered ? 1 : 0,
+			'external_reference' => $this->externalReference,
 		];
 	}
 }
