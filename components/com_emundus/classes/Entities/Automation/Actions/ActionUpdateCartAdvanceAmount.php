@@ -12,6 +12,7 @@ use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Entities\Payment\AlterationType;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\PaymentStepEntity;
+use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -43,7 +44,7 @@ class ActionUpdateCartAdvanceAmount extends ActionEntity
 	}
 
 	// todo: define a counter execute (if condition not met, reset what the current action is setting ?
-	public function execute(ActionTargetEntity $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
+	public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
 	{
 		$status = ActionExecutionStatusEnum::FAILED;
 

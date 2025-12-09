@@ -1,25 +1,77 @@
 <?php
+
 namespace Tchooz\Entities\ApplicationFile;
 
 use Joomla\CMS\User\User;
+use Tchooz\Entities\Campaigns\CampaignEntity;
 
 class ApplicationFileEntity
 {
+	private int $id;
+
 	private User $user;
 
 	private string $fnum;
 
-	private int $status = 0;
+	private int $status;
 
 	private int $campaign_id;
 
-	private int $published = 1;
+	private ?CampaignEntity $campaign;
 
-	private array $data = [];
+	private ?\DateTime $date_submitted;
 
-	public function __construct(User $user)
+	private int $published;
+
+	private int $formProgress;
+
+	private int $attachmentProgress;
+
+	private array $data;
+
+	private ?\DateTime $updated_at;
+
+	private ?User $updated_by;
+
+	public function __construct(
+		User           $user,
+		string         $fnum = '',
+		int            $status = 0,
+		int            $campaign_id = 0,
+		int            $published = 1,
+		array          $data = [],
+		int            $id = 0,
+		CampaignEntity $campaign = null,
+		\DateTime      $date_submitted = null,
+		int            $formProgress = 0,
+		int            $attachmentProgress = 0,
+		\DateTime      $updated_at = null,
+		User           $updated_by = null,
+	)
 	{
-		$this->user = $user;
+		$this->user               = $user;
+		$this->fnum               = $fnum;
+		$this->status             = $status;
+		$this->campaign_id        = $campaign_id;
+		$this->published          = $published;
+		$this->data               = $data;
+		$this->id                 = $id;
+		$this->campaign           = $campaign;
+		$this->date_submitted     = $date_submitted;
+		$this->formProgress       = $formProgress;
+		$this->attachmentProgress = $attachmentProgress;
+		$this->updated_at         = $updated_at;
+		$this->updated_by         = $updated_by;
+	}
+
+	public function getId(): int
+	{
+		return $this->id;
+	}
+
+	public function setId(int $id): void
+	{
+		$this->id = $id;
 	}
 
 	public function getUser(): User
@@ -45,6 +97,7 @@ class ApplicationFileEntity
 	public function generateFnum(int $campaign_id): string
 	{
 		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($this->user->id, 7, '0', STR_PAD_LEFT);
+
 		return $this->fnum;
 	}
 
@@ -86,5 +139,65 @@ class ApplicationFileEntity
 	public function setData(array $data): void
 	{
 		$this->data = $data;
+	}
+
+	public function getCampaign(): ?CampaignEntity
+	{
+		return $this->campaign;
+	}
+
+	public function setCampaign(?CampaignEntity $campaign): void
+	{
+		$this->campaign = $campaign;
+	}
+
+	public function getDateSubmitted(): ?\DateTime
+	{
+		return $this->date_submitted;
+	}
+
+	public function setDateSubmitted(?\DateTime $date_submitted): void
+	{
+		$this->date_submitted = $date_submitted;
+	}
+
+	public function getFormProgress(): int
+	{
+		return $this->formProgress;
+	}
+
+	public function setFormProgress(int $formProgress): void
+	{
+		$this->formProgress = $formProgress;
+	}
+
+	public function getAttachmentProgress(): int
+	{
+		return $this->attachmentProgress;
+	}
+
+	public function setAttachmentProgress(int $attachmentProgress): void
+	{
+		$this->attachmentProgress = $attachmentProgress;
+	}
+
+	public function getUpdatedAt(): \DateTime
+	{
+		return $this->updated_at;
+	}
+
+	public function setUpdatedAt(\DateTime $updated_at): void
+	{
+		$this->updated_at = $updated_at;
+	}
+
+	public function getUpdatedBy(): User
+	{
+		return $this->updated_by;
+	}
+
+	public function setUpdatedBy(User $updated_by): void
+	{
+		$this->updated_by = $updated_by;
 	}
 }

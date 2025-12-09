@@ -140,7 +140,7 @@ function export_excel(fnums, letter) {
     });
 }
 
-function generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, campaign) {
+function generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, campaign, timeout = 10000, async = false) {
     const maxcsv = 65000;
     const maxxls = 65000;
     var start = json.start;
@@ -153,7 +153,104 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
 
     $.ajaxQ.abortAll();
 
-    if (start+limit <= maxcsv) {
+    var data = {
+        format: 'xlsx',
+        file: file,
+        totalfile: totalfile,
+        start: start,
+        limit: limit,
+        nbcol: nbcol,
+        methode: methode,
+        elts: eltJson,
+        step_elts: JSON.stringify(stepElements),
+        objs: objJson,
+        opts: options,
+        objclass: objclass,
+        excelfilename: json.excelfilename,
+        campaign: campaign ? campaign : 0,
+        async: async
+    };
+    var formData = new FormData();
+    for (var key in data) {
+        formData.append(key, data[key]);
+    }
+
+    var parameters = {
+        method: 'POST',
+        body: formData,
+    };
+
+    var allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
+    if(allowAsync == 0)
+    {
+        timeout = null;
+    }
+
+    var timeoutId = null;
+    if (timeout) {
+        const controller = new AbortController();
+        timeoutId = setTimeout(() => controller.abort(), timeout);
+        parameters.signal = controller.signal;
+    }
+
+    fetch('index.php?option=com_emundus&controller=export&task=export', parameters)
+    .then(async (response) => {
+        if (timeout && timeoutId) {
+            clearTimeout(timeoutId);
+        }
+        if (response.ok) {
+            return response.json();
+        }
+    })
+    .then(result => {
+        if(result.status)
+        {
+            if(result.data.task_id) {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: Joomla.Text._('COM_EMUNDUS_EXPORT_IN_PROGRESS_TITLE'),
+                    text: result.msg,
+                    showConfirmButton: true,
+                    reverseButtons: true,
+                    customClass: {
+                        title: 'em-swal-title',
+                        confirmButton: 'em-swal-confirm-button',
+                        actions: 'em-swal-single-action'
+                    }
+                });
+            }
+            else {
+                Swal.fire({
+                    position: 'center',
+                    icon: 'success',
+                    title: Joomla.Text._('COM_EMUNDUS_EXPORT_SUCCESS_TITLE'),
+                    text: result.msg,
+                    showConfirmButton: true,
+                    confirmButtonText: Joomla.Text._('LINK_TO_DOWNLOAD'),
+                    reverseButtons: true,
+                    customClass: {
+                        title: 'em-swal-title',
+                        confirmButton: 'em-swal-confirm-button',
+                        actions: 'em-swal-single-action'
+                    },
+                }).then((result_sw) => {
+                    if (result_sw.isConfirmed) {
+                        window.open('/'+result.data.filename, '_blank');
+                    }
+                });
+            }
+        }
+    })
+        .catch((error) => {
+            if (timeout && timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+                generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, campaign, 0, true);
+            }
+        });
+    /*if (start+limit <= maxcsv) {
         $.ajax({
             type: 'post',
             url: 'index.php?option=com_emundus&controller=files&task=generate_array',
@@ -315,7 +412,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
     } else {
         $('#loadingimg').empty();
         $('#extractstep').replaceWith('<div class="alert alert-info" role="alert">'+Joomla.Text._('COM_EMUNDUS_ERROR_CAPACITY_XLS')+'</div><a class="btn btn-link" title="'+Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION')+'" href="index.php?option=com_emundus&controller='+$('#view').val()+'&task=download&format=xls&name='+file+'"><span class="glyphicon glyphicon-download-alt"></span>  <span>'+Joomla.Text._('COM_EMUNDUS_DOWNLOAD_EXTRACTION')+'</span></a>');
-    }
+    }*/
 }
 
 function export_pdf(fnums, ids, default_export = '', default_form_ids = '', pdf_elements = {profiles: [], tables: [], groups: [], elements: []}) {

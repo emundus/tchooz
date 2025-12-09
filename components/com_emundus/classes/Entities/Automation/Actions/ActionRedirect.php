@@ -11,6 +11,7 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\StringField;
+use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 
@@ -43,7 +44,10 @@ class ActionRedirect extends ActionEntity
 		return Text::_('TCHOOZ_AUTOMATION_ACTION_REDIRECT_LABEL');
 	}
 
-	public function execute(ActionTargetEntity $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
+	/**
+	 * @inheritDoc
+	 */
+	public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
 	{
 		if (empty($this->getParameterValue('url')) && empty($this->getParameterValue('custom_url'))) {
 			return ActionExecutionStatusEnum::FAILED;

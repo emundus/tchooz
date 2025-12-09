@@ -683,6 +683,8 @@ export default {
 					this.setTabFilters(tab, refreshFilters).then(() => {
 						if (typeof tab.getter !== 'undefined') {
 							let url =
+								'/' +
+								useGlobalStore().getShortLang +
 								'/index.php?option=com_emundus&controller=' +
 								tab.controller +
 								'&task=' +
@@ -1154,7 +1156,7 @@ export default {
 
 				if (response) {
 					if (response.status === true || response.status === 1) {
-						if (response.download_file) {
+						if (response.download_file || (response.data && response.data.download_file)) {
 							Swal.fire({
 								position: 'center',
 								icon: 'success',
@@ -1171,8 +1173,13 @@ export default {
 									title: 'w-full justify-center',
 								},
 								preConfirm: () => {
+									var downloadUrl = response.download_file;
+									if (!downloadUrl && response.data) {
+										downloadUrl = response.data.download_file;
+									}
+
 									var link = document.createElement('a');
-									link.href = response.download_file;
+									link.href = downloadUrl;
 									link.download = '';
 									link.click();
 								},

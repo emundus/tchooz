@@ -24,6 +24,7 @@ use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Export\ExportRepository;
 
 /**
  * eMundus Component Controller
@@ -1805,106 +1806,133 @@ class EmundusController extends JControllerLegacy
 	{
 
 		// Get the filename and user ID from the URL.
-
 		$url = $this->input->get->get('u', null, 'RAW');
 
-		$eMConfig             = JComponentHelper::getParams('com_emundus');
-		$applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
-		if (strpos($url, $applicant_files_path) !== 0 && strpos($url, 'tmp/') !== 0) {
-			die (Text::_('ACCESS_DENIED'));
-		}
-
-		$urltab = explode('/', $url);
-
-		// Split the URL into different parts.
-		$cpt = count($urltab);
-		$uid = (int) $urltab[$cpt - 2];
-		if (empty($uid)) {
-			// Manage subdirectories
-			$uid = (int) $urltab[$cpt - 3];
-		}
-		$file = $urltab[$cpt - 1];
-
-		$current_user = $this->app->getSession()->get('emundusUser');
-
-		$fnum = '';
-		if($current_user->id == $uid && !empty($current_user->fnum)) {
-			$fnum = $current_user->fnum;
-		}
-		$fnums = [];
-		if (!empty($current_user->fnums)) {
-			$fnums = array_keys($current_user->fnums);
-		}
-
-		
-		// This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
-		if (!empty(JFactory::getUser($uid)->id)) {
-            $query = 'SELECT can_be_viewed, fnum, local_filename FROM #__emundus_uploads';
-
-			if (EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums)) {
-				$query .= " WHERE fnum IN (" . implode(',', $this->_db->quote($fnums)) . ')';
-				$query .= " AND filename like " . $this->_db->Quote($file);
-			}
-			else {
-				if (!empty($fnum)) {
-					$query .= " WHERE fnum like " . $this->_db->quote($fnum);
-				}
-				else {
-					$query .= " WHERE user_id = " . $uid;
-				}
-				// TODO: adapt for all cases, KIT needs OR filename (ROAD-918)
-				$query .= " AND filename like " . $this->_db->Quote($file);
-			}
-			$this->_db->setQuery($query);
-			$fileInfo = $this->_db->loadObject();
-
-			$first_part_of_filename = explode('_', $file)[0];
-			if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28) {
-				$fileInfo                = new stdClass();
-				$fileInfo->fnum          = $first_part_of_filename;
-				$fileInfo->can_be_viewed = 1;
-			}
-		}
-		
-		if(str_starts_with($file, 'export_users'))
-		{
-			$actionRepository = new ActionRepository();
-			$userAction = $actionRepository->getByName('user');
-
-			$file_parts = explode('_', $file);
-			$uid = (int) $file_parts[2];
-
-			if(empty($uid))
-			{
+		// If we try to download export file check if the user is owner of the file and has partner access level
+		if (strpos($url, 'images/emundus/exports') !== false) {
+			$user = Factory::getApplication()->getIdentity();
+			if (empty($user->id)) {
 				die (Text::_('ACCESS_DENIED'));
 			}
 
-			if($current_user->id != $uid && !EmundusHelperAccess::asAccessAction($userAction->getId(), CrudEnum::READ->value, $current_user->id))
+			// Check access to export file
+			$exportRepository = new ExportRepository();
+			$export = $exportRepository->getByFilenameAndUser($url, $user->id);
+			if(empty($export) || $export->getCreatedBy()->id != $user->id || !EmundusHelperAccess::asPartnerAccessLevel($user->id))
 			{
 				die (Text::_('ACCESS_DENIED'));
 			}
 		}
+		// Otherwise, check if the user has the rights to open the file.
 		else
 		{
-			// Check if the user is an applicant and it is his file.
-			if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+			$eMConfig             = JComponentHelper::getParams('com_emundus');
+			$applicant_files_path = $eMConfig->get('applicant_files_path', 'images/emundus/files/');
+			if (strpos($url, $applicant_files_path) !== 0 && strpos($url, 'tmp/') !== 0)
 			{
-				if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo))
+				die (Text::_('ACCESS_DENIED'));
+			}
+
+			$urltab = explode('/', $url);
+
+			// Split the URL into different parts.
+			$cpt = count($urltab);
+			$uid = (int) $urltab[$cpt - 2];
+			if (empty($uid))
+			{
+				// Manage subdirectories
+				$uid = (int) $urltab[$cpt - 3];
+			}
+			$file = $urltab[$cpt - 1];
+
+			$current_user = $this->app->getSession()->get('emundusUser');
+
+			$fnum = '';
+			if ($current_user->id == $uid && !empty($current_user->fnum))
+			{
+				$fnum = $current_user->fnum;
+			}
+			$fnums = [];
+			if (!empty($current_user->fnums))
+			{
+				$fnums = array_keys($current_user->fnums);
+			}
+
+			// This query checks if the file can actually be viewed by the user, in the case a file uploaded to his file by a coordniator is opened.
+			if (!empty(JFactory::getUser($uid)->id))
+			{
+				$query = 'SELECT can_be_viewed, fnum, local_filename FROM #__emundus_uploads';
+
+				if (EmundusHelperAccess::isApplicant($current_user->id) && !empty($fnums))
+				{
+					$query .= " WHERE fnum IN (" . implode(',', $this->_db->quote($fnums)) . ')';
+					$query .= " AND filename like " . $this->_db->Quote($file);
+				}
+				else
+				{
+					if (!empty($fnum))
+					{
+						$query .= " WHERE fnum like " . $this->_db->quote($fnum);
+					}
+					else
+					{
+						$query .= " WHERE user_id = " . $uid;
+					}
+					// TODO: adapt for all cases, KIT needs OR filename (ROAD-918)
+					$query .= " AND filename like " . $this->_db->Quote($file);
+				}
+				$this->_db->setQuery($query);
+				$fileInfo = $this->_db->loadObject();
+
+				$first_part_of_filename = explode('_', $file)[0];
+				if (empty($fileInfo) && is_numeric($first_part_of_filename) && strlen($first_part_of_filename) === 28)
+				{
+					$fileInfo                = new stdClass();
+					$fileInfo->fnum          = $first_part_of_filename;
+					$fileInfo->can_be_viewed = 1;
+				}
+			}
+
+			if (str_starts_with($file, 'export_users'))
+			{
+				$actionRepository = new ActionRepository();
+				$userAction       = $actionRepository->getByName('user');
+
+				$file_parts = explode('_', $file);
+				$uid        = (int) $file_parts[2];
+
+				if (empty($uid))
+				{
+					die (Text::_('ACCESS_DENIED'));
+				}
+
+				if ($current_user->id != $uid && !EmundusHelperAccess::asAccessAction($userAction->getId(), CrudEnum::READ->value, $current_user->id))
 				{
 					die (Text::_('ACCESS_DENIED'));
 				}
 			}
-			// If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
-			elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id, $fileInfo->fnum)))
+			else
 			{
-				die (Text::_('ACCESS_DENIED'));
-			}
-			elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id)))
-			{
-				die (Text::_('ACCESS_DENIED'));
+				// Check if the user is an applicant and it is his file.
+				if (!EmundusHelperAccess::isFnumMine($fnum, $current_user->id) && !EmundusHelperAccess::asPartnerAccessLevel($current_user->id))
+				{
+					if ($fileInfo->can_be_viewed != 1 && !empty($fileInfo))
+					{
+						die (Text::_('ACCESS_DENIED'));
+					}
+				}
+				// If the user has the rights to open attachments, or to create a PDF export (he needs to be able to open it, even if he can't access the documents).
+				elseif (!empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id, $fileInfo->fnum) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id, $fileInfo->fnum)))
+				{
+					die (Text::_('ACCESS_DENIED'));
+				}
+				elseif (empty($fileInfo) && (!EmundusHelperAccess::asAccessAction(4, 'r', $current_user->id) && !EmundusHelperAccess::asAccessAction(8, 'c', $current_user->id)))
+				{
+					die (Text::_('ACCESS_DENIED'));
+				}
 			}
 		}
-		
+
 		// Otherwise, open the file if it exists.
 		$file = JPATH_BASE . DS . $url;
 		if (is_file($file)) {

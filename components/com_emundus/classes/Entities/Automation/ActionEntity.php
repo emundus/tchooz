@@ -6,6 +6,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\Field;
+use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -29,6 +30,8 @@ abstract class ActionEntity
 	 * @var array<TargetEntity>
 	 */
 	private array $targets = [];
+
+	private array $withEntities = [];
 
 	public function __construct(array $parameterValues = [])
 	{
@@ -83,11 +86,72 @@ abstract class ActionEntity
 		return '';
 	}
 
-	abstract public function execute(ActionTargetEntity $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum;
+	/**
+	 * Execute the action
+	 *
+	 * @param   ActionTargetEntity|ActionTargetEntity[]  $context           The context entity or an array of context entities, some actions may NOT support an array of context entities
+	 * @param   AutomationExecutionContext|null          $executionContext  The execution context
+	 *
+	 * @return ActionExecutionStatusEnum
+	 */
+	abstract public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum;
 
 	abstract public function getParameters(): array;
 
 	abstract public function getLabelForLog(): string;
+
+	/**
+	 * Associate an entity to the action instance
+	 * @param   object  $entity
+	 *
+	 * @return $this
+	 */
+	public function with(object $entity): self
+	{
+		if (!empty($entity) && !in_array($entity, $this->withEntities, true))
+		{
+			$this->withEntities[] = $entity;
+		}
+
+		return $this;
+	}
+
+	/**
+	 * Vérifie si une entité d’un type donné est associée à l’action
+	 */
+	public function isExecutedWith(string $entityClass): bool
+	{
+		foreach ($this->withEntities as $entity) {
+			if ($entity instanceof $entityClass) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/**
+	 * @return array<object>
+	 */
+	public function getWithEntities(): array
+	{
+		return $this->withEntities;
+	}
+
+	/**
+	 * @return array<object>
+	 */
+	public function getWithOfType(string $entityClass): array
+	{
+		$entities = [];
+		foreach ($this->withEntities as $entity) {
+			if ($entity instanceof $entityClass) {
+				$entities[] = $entity;
+			}
+		}
+
+		return $entities;
+	}
 
 	/**
 	 * @param   string  $name

@@ -11,6 +11,7 @@
 				}"
 			>
 				<span
+					v-if="tab.icon"
 					class="material-symbols-outlined tw-mr-2"
 					:class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'"
 					>{{ tab.icon }}</span

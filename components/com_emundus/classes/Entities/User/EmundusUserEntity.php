@@ -25,13 +25,16 @@ class EmundusUserEntity
 
 	private ?UserCategoryEntity $user_category;
 
+	private bool $anonym;
+
 	public function __construct(
 		int $id,
 		User $user,
 		string $firstname,
 		string $lastname,
 		string $profile_picture = null,
-		UserCategoryEntity $user_category = null
+		UserCategoryEntity $user_category = null,
+		bool $is_anonym = false
 	) {
 		$this->id = $id;
 		$this->user = $user;
@@ -39,6 +42,7 @@ class EmundusUserEntity
 		$this->lastname = $lastname;
 		$this->profile_picture = $profile_picture;
 		$this->user_category = $user_category;
+		$this->anonym = $is_anonym;
 	}
 
 	public function getId(): int
@@ -99,5 +103,15 @@ class EmundusUserEntity
 	public function setUserCategory(?UserCategoryEntity $user_category): void
 	{
 		$this->user_category = $user_category;
+	}
+
+	public function isAnonym(): bool
+	{
+		return $this->anonym;
+	}
+
+	public function setAnonym(bool $anonym): void
+	{
+		$this->anonym = $anonym;
 	}
 }

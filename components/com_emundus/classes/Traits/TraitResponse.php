@@ -9,36 +9,26 @@
 
 namespace Tchooz\Traits;
 
+use Tchooz\Response;
+
 trait TraitResponse
 {
-	public function sendJsonResponse(array $response): void
+	public function sendJsonResponse(array|Response $response): void
 	{
 		header('Content-Type: application/json; charset=utf-8');
 
-		if ($response['code'] === 400)
-		{
-			header('HTTP/1.1 400 Bad Request');
+		$code = 400;
+		if ($response instanceof Response) {
+			$code = $response->code;
 		}
-		elseif ($response['code'] === 401)
-		{
-			header('HTTP/1.1 401 Unauthorized');
+		else {
+			if (isset($response['code'])) {
+				$code = $response['code'];
+			}
 		}
-		elseif ($response['code'] === 402)
-		{
-			header('HTTP/1.1 402 Payment Required');
-		}
-		elseif ($response['code'] === 403)
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		elseif ($response['code'] === 404)
-		{
-			header('HTTP/1.1 404 Not Found');
-		}
-		elseif ($response['code'] === 500)
-		{
-			header('HTTP/1.1 500 Internal Server Error');
-		}
+
+		$header = 'HTTP/1.1 ' . $code . ' ' . Response::$statusTexts[$code];
+		header($header);
 
 		echo json_encode($response);
 		exit;

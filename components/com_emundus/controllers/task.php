@@ -56,7 +56,7 @@ class EmundusControllerTask extends BaseController
 						try
 						{
 							$this->taskRepository->executeTask($task);
-							if ($task->getStatus() !== TaskStatusEnum::COMPLETED)
+							if ($task->getStatus() === TaskStatusEnum::FAILED)
 							{
 								$allExecuted = false;
 							}
@@ -134,7 +134,7 @@ class EmundusControllerTask extends BaseController
 
 				$serializedTask          = $task->serialize();
 				$serializedTask['label'] = [
-					'fr' => '[#' . $task->getId() . '] ' . $task->getAction()->getLabelForLog() . (!empty($to) ? Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to : ''),
+					'fr' => '[#' . $task->getId() . '] ' . (!empty($task->getAction()) ? $task->getAction()->getLabelForLog() : '') . (!empty($to) ? Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to : ''),
 				];
 
 				$createdAt = EmundusHelperDate::displayDate($task->getCreatedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0);

@@ -4,10 +4,10 @@ namespace Tchooz\Factories\Automation;
 
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Services\Automation\ActionRegistry;
 use Tchooz\Services\Automation\TargetPredefinitionRegistry;
-use Tchooz\Entities\Automation\TargetEntity;
 
 class ActionFactory
 {
@@ -17,6 +17,19 @@ class ActionFactory
 		return [];
 	}
 
+
+	public static function fromSerialized(array $serialized): ?ActionEntity
+	{
+		$action = null;
+
+		if (!empty($serialized) && !empty($serialized['type']))
+		{
+			$actionRegistry = new ActionRegistry();
+			$action = $actionRegistry->getActionInstance($serialized['type'], $serialized['parameter_values']);
+		}
+
+		return $action;
+	}
 
 	/**
 	 * @param   object  $json

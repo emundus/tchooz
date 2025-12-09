@@ -60,7 +60,7 @@ class ActionGenerateSignatureRequest extends ActionEntity
 		return [];
 	}
 
-	public function execute(ActionTargetEntity $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
+	public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
 	{
 		$status = ActionExecutionStatusEnum::FAILED;
 
