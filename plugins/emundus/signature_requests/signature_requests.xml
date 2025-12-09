@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="emundus" method="upgrade">
+    <name>plg_emundus_signature_requests</name>
+    <version>1.0.0</version>
+    <creationDate>November 2025</creationDate>
+    <author>eMundus</author>
+    <description>Plugin to integrate Signature Requests Management on some events</description>
+    <namespace path="src">Joomla\Plugin\Emundus\SignatureRequests</namespace>
+    <files>
+        <folder plugin="signature_requests">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+    </files>
+</extension>

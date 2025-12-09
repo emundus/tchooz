@@ -37,6 +37,7 @@ use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
+use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Traits\TraitResponse;
@@ -2372,6 +2373,15 @@ class EmundusControllersettings extends BaseController
 							break;
 						case 'sogecommerce':
 						case 'stripe':
+							break;
+
+						case 'docusign':
+							try {
+								$docusignSynchronizer = new DocuSignSynchronizer();
+							} catch (Exception $e) {
+								$response['status'] = false;
+								break;
+							}
 							break;
 						default:
 							require_once JPATH_ROOT . '/components/com_emundus/models/sync.php';

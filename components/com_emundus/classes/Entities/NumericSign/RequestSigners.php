@@ -31,6 +31,10 @@ class RequestSigners
 
 	private string $position = '';
 
+	private ?int $order = null;
+
+	private ?string $anchor = null;
+
 	private SignAuthenticationLevelEnum $authenticationLevel = SignAuthenticationLevelEnum::STANDARD;
 
 	public function __construct(Request $request, ContactEntity $contact, SignStatusEnum|string $status = null)
@@ -134,6 +138,30 @@ class RequestSigners
 		$this->position = $position;
 	}
 
+	public function getOrder(): ?int
+	{
+		return $this->order;
+	}
+
+	public function setOrder(?int $order): self
+	{
+		$this->order = $order;
+
+		return $this;
+	}
+
+	public function getAnchor(): ?string
+	{
+		return $this->anchor;
+	}
+
+	public function setAnchor(?string $anchor): self
+	{
+		$this->anchor = $anchor;
+
+		return $this;
+	}
+
 	public function getAuthenticationLevel(): SignAuthenticationLevelEnum
 	{
 		return $this->authenticationLevel;
@@ -166,6 +194,8 @@ class RequestSigners
 			'step'                 => $this->step,
 			'page'                 => $this->page,
 			'position'             => $this->position,
+			'order'                => $this->order,
+			'anchor'               => $this->anchor,
 			'authentication_level' => $this->authenticationLevel->value,
 		];
 	}

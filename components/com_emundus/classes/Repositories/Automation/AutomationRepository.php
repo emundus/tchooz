@@ -224,7 +224,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 				$allActionsSaved = true;
 				foreach ($automation->getActions() as $action)
 				{
-					if (!$actionRepository->saveAction($action, $automation->getId()))
+					if (!$actionRepository->flush($action, $automation->getId()))
 					{
 						$allActionsSaved = false;
 					}
@@ -308,7 +308,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 				$actionRepository = new ActionRepository($this->db);
 				foreach ($automation->getActions() as $action)
 				{
-					if (!$actionRepository->saveAction($action, $automation->getId()))
+					if (!$actionRepository->flush($action, $automation->getId()))
 					{
 						$allActionsSaved = false;
 					}

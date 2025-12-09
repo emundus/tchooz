@@ -1,6 +1,6 @@
 export default {
 	methods: {
-		fromAutomationFieldToParameter(field, value = null) {
+		fromFieldEntityToParameter(field, value = null) {
 			if (!field) {
 				return null;
 			}
@@ -11,18 +11,17 @@ export default {
 				optional: !field.required,
 				value: value,
 				displayed: true,
+				displayRules: field.displayRules ? field.displayRules : null,
 			};
 
 			switch (field.type) {
 				case 'choice':
-					console.log(field, 'fromAutomationFieldToParameter');
-
 					parameter.options = field.choices.map((choice) => ({
 						value: choice.value,
 						label: choice.label,
 					}));
 
-					if (field.multiple) {
+					if (field.multiple || (field.research && field.research.controller && field.research.method)) {
 						let asyncRoute = '';
 						let asyncController = '';
 						let asyncAttributes = [];
@@ -37,12 +36,12 @@ export default {
 							asyncAttributes.push(field.name);
 						}
 
-						parameter.multiple = true;
+						parameter.multiple = field.multiple;
 						parameter.type = 'multiselect';
 						parameter.multiselectOptions = {
 							options: parameter.options,
 							noOptions: false,
-							multiple: true,
+							multiple: field.multiple,
 							taggable: false,
 							searchable: true,
 							internalSearch: true,
@@ -76,6 +75,9 @@ export default {
 					parameter.type = 'number';
 					parameter.max = field.max ? field.max : null;
 					parameter.min = field.min ? field.min : null;
+					break;
+				case 'password':
+					parameter.type = 'password';
 					break;
 				default:
 					parameter.type = 'text';

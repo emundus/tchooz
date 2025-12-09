@@ -32,9 +32,12 @@ use PHPMailer\PHPMailer\Exception as phpMailerException;
 use Smalot\PdfParser\Parser;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
+use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Settings\AddonEntity;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
+use Tchooz\Services\Integrations\IntegrationConfigurationRegistry;
 
 class EmundusModelSettings extends ListModel
 {
@@ -2899,6 +2902,7 @@ class EmundusModelSettings extends ListModel
 			foreach ($apps as $app)
 			{
 				$app->config = json_decode($app->config);
+
 				if (!empty($app->config->authentication))
 				{
 					if (!empty($app->config->authentication->client_secret))
@@ -2914,8 +2918,31 @@ class EmundusModelSettings extends ListModel
 						$app->config->authentication->password = '************';
 					}
 				}
+				
+				$registry = new IntegrationConfigurationRegistry();
+				$integrationConfiguration = $registry->getConfiguration($app->type);
+				if (!empty($integrationConfiguration))
+				{
+					foreach ($integrationConfiguration->getParameters() as $parameter)
+					{
+						if ($parameter instanceof PasswordField)
+						{
+							if (isset($app->config->{$parameter->getGroup()->getName()}->{$parameter->getName()}))
+							{
+								$app->config->{$parameter->getGroup()->getName()}->{$parameter->getName()} = '************';
+							}
+						}
+					}
 
-				$app->config = json_encode($app->config);
+					$app->parameters = array_map(function ($param) {
+						return $param->toSchema();
+					}, $integrationConfiguration->getParameters());
+				}
+				else
+				{
+					$app->config = json_encode($app->config);
+					$app->parameters = [];
+				}
 			}
 		}
 		catch (Exception $e)
@@ -2994,6 +3021,7 @@ class EmundusModelSettings extends ListModel
 						case 'yousign':
 							$updated = $this->setupYousign($app, $setup);
 						default:
+							$updated = $this->defaultSetup($app, $setup);
 							break;
 					}
 				}
@@ -4557,6 +4585,58 @@ class EmundusModelSettings extends ListModel
 		catch (Exception $e)
 		{
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
+	/**
+	 * @param   object  $app
+	 * @param   object  $setup
+	 *
+	 * @return bool
+	 * @throws Exception
+	 */
+	private function defaultSetup(object $app, object $setup): bool
+	{
+		$updated = false;
+
+		if (!empty($app) && !empty($setup))
+		{
+			$synchronizerRepository = new SynchronizerRepository();
+			$synchronizer = $synchronizerRepository->getById($app->id);
+			$registry = new IntegrationConfigurationRegistry();
+			$integrationConfiguration = $registry->getConfiguration($synchronizer->getType());
+
+			$config = $synchronizer->getConfig();
+			foreach ($setup as $key => $group)
+			{
+				foreach ($group as $field => $value)
+				{
+					$parameter = $integrationConfiguration->getParameter($field);
+
+					if ($parameter->isRequired() && empty($value))
+					{
+						throw new Exception(Text::_('COM_EMUNDUS_INTEGRATION_PARAMETER_REQUIRED'));
+					}
+
+					if ($parameter instanceof PasswordField)
+					{
+						// if value is only ***** do not update it
+						if (preg_match('/^\*+$/', $value))
+						{
+							continue;
+						}
+
+						$value = EmundusHelperFabrik::encryptDatas($value);
+					}
+
+					$config[$key][$field] = $value;
+				}
+			}
+			$synchronizer->setConfig($config);
+
+			$updated = $synchronizerRepository->flush($synchronizer);
 		}
 
 		return $updated;

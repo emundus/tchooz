@@ -9,11 +9,15 @@
 
 namespace Tchooz\Repositories\NumericSign;
 
+use Joomla\CMS\Factory;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
 use Tchooz\Entities\NumericSign\Request;
+use Tchooz\Enums\NumericSign\SignConnectorsEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
 use Tchooz\Traits\TraitTable;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseInterface;
@@ -27,13 +31,18 @@ class RequestRepository
 
 	private array $filters = [];
 
-	public function __construct(private DatabaseInterface $db)
+	public function __construct(private ?DatabaseInterface $db = null)
 	{
+		if ($db === null)
+		{
+			$this->db = Factory::getContainer()->get(DatabaseInterface::class);
+		}
 	}
 
 	public function flush(Request $sign_request): int
 	{
 		$request_object = $sign_request->__serialize();
+		unset($request_object['external_reference']);
 		$request_object = (object) $request_object;
 
 		if (empty($request_object->id))
@@ -74,6 +83,17 @@ class RequestRepository
 			}
 		}
 
+		if (!empty($sign_request->getExternalReference()))
+		{
+			$external_reference_repository = new ExternalReferenceRepository();
+			$external_reference_repository->flush(new ExternalReferenceEntity(
+				0,
+				$this->getTableName(self::class) . '.id',
+				$sign_request->getId(),
+				$sign_request->getExternalReference()
+			));
+		}
+
 		return $sign_request->getId();
 	}
 
@@ -83,9 +103,10 @@ class RequestRepository
 
 		try
 		{
-			$query->select('*')
-				->from($this->db->quoteName($this->getTableName(self::class)))
-				->where($this->db->quoteName('id') . ' = :id')
+			$query->select('esr.*, eer.reference')
+				->from($this->db->quoteName($this->getTableName(self::class), 'esr'))
+				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'eer') . ' ON ' . $this->db->quoteName('eer.intern_id') . ' = ' . $this->db->quoteName('esr.id') . ' AND ' . $this->db->quoteName('eer.column') . ' = ' . $this->db->quote($this->getTableName(self::class) . '.id'))
+				->where($this->db->quoteName('esr.id') . ' = :id')
 				->bind(':id', $id, ParameterType::INTEGER);
 			$this->db->setQuery($query);
 			$request_db = $this->db->loadAssoc();
@@ -94,6 +115,7 @@ class RequestRepository
 			{
 				$request = new Request($request_db['created_by']);
 				$request->setId($request_db['id']);
+				$request->setConnector(SignConnectorsEnum::from($request_db['connector']));
 				$attachmentTypeRepository = new AttachmentTypeRepository($this->db);
 				$request->setAttachment($attachmentTypeRepository->loadAttachmentTypeById($request_db['attachment_id']));
 				if (!empty($request_db['upload_id']))
@@ -120,8 +142,10 @@ class RequestRepository
 				{
 					$request->setLastReminderAt($request_db['last_reminder_at']);
 				}
+				$request->setSubject($request_db['subject'] ?? '');
 				$ordered = $request_db['ordered'] == 1;
 				$request->setOrdered($ordered);
+				$request->setExternalReference($request_db['reference'] ?? null);
 
 				return $request;
 			}
@@ -193,6 +217,12 @@ class RequestRepository
 		}
 	}
 
+	/**
+	 * @param   int  $request_id
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
 	public function loadRequestSigners(int $request_id): array
 	{
 		try
@@ -218,6 +248,7 @@ class RequestRepository
 				->bind(':request_id', $request_id, ParameterType::INTEGER);
 			$this->db->setQuery($query);
 
+			// todo: why are not RequestSigners entities returned here?
 			return $this->db->loadObjectList();
 		}
 		catch (\Exception $e)
@@ -226,7 +257,66 @@ class RequestRepository
 		}
 	}
 
-	public function getNotSignedRequests(string $connector): array
+	/**
+	 * TODO: Create a RequestFactory to avoid loading Request entities in the repository
+	 * @param   array  $filters
+	 * @param   int    $limit
+	 * @param   int    $page
+	 *
+	 * @return array<Request>
+	 * @throws \Exception
+	 */
+	public function getRequests(array $filters = [], int $limit = 0, int $page = 1): array
+	{
+		$requests = [];
+
+		$query = $this->db->createQuery();
+		$query->select('esr.id')
+			->from($this->db->quoteName($this->getTableName(self::class), 'esr'));
+
+		if (!empty($filters))
+		{
+			$this->applyFilters($query, $filters);
+		}
+
+		if ($limit > 0)
+		{
+			$offset = ($page - 1) * $limit;
+			$query->setLimit($limit, $offset);
+		}
+
+		$this->db->setQuery($query);
+		$request_ids = $this->db->loadColumn();
+
+		foreach ($request_ids as $request_id)
+		{
+			$request = $this->loadRequestById($request_id);
+			if ($request !== null)
+			{
+				$requests[] = $request;
+			}
+		}
+
+		return $requests;
+	}
+
+	private function applyFilters(QueryInterface $query, array $filters): void
+	{
+		foreach ($filters as $field => $value)
+		{
+			if (is_array($value))
+			{
+				$query->whereIn($this->db->quoteName($field), $value, ParameterType::STRING);
+			}
+			else
+			{
+				$query->where($this->db->quoteName($field) . ' = :'.str_replace('.','_',$field))
+					->bind(':'.str_replace('.','_',$field), $value, ParameterType::STRING);
+			}
+		}
+	}
+
+	public function getNotSignedRequests(string $connector, int $limit = 0): array
 	{
 		try
 		{
@@ -236,6 +326,11 @@ class RequestRepository
 			$query->where($this->db->quoteName('esr.status') . ' <> ' . $this->db->quote($signed))
 				->where($this->db->quoteName('esr.connector') . ' = :connector')
 				->bind(':connector', $connector, ParameterType::STRING);
+
+			if ($limit > 0)
+			{
+				$query->setLimit($limit);
+			}
 
 			$this->db->setQuery($query);
 			$not_signed_requests = $this->db->loadObjectList();
@@ -512,5 +607,38 @@ class RequestRepository
 		}
 
 		return $query;
+	}
+
+	/**
+	 * @param   string  $external_reference
+	 *
+	 * @return Request|null
+	 * @throws \Exception
+	 */
+	public function getByExternalReference(string $external_reference): ?Request
+	{
+		$query = $this->db->createQuery();
+
+		try
+		{
+			$query->select('esr.id')
+				->from($this->db->quoteName($this->getTableName(self::class), 'esr'))
+				->leftJoin($this->db->quoteName('#__emundus_external_reference', 'eer') . ' ON ' . $this->db->quoteName('eer.intern_id') . ' = ' . $this->db->quoteName('esr.id') . ' AND ' . $this->db->quoteName('eer.column') . ' = ' . $this->db->quote($this->getTableName(self::class) . '.id'))
+				->where($this->db->quoteName('eer.reference') . ' = :external_reference')
+				->bind(':external_reference', $external_reference, ParameterType::STRING);
+			$this->db->setQuery($query);
+			$request_id = $this->db->loadResult();
+
+			if (!empty($request_id))
+			{
+				return $this->loadRequestById($request_id);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Failed to load request by external reference ' . $external_reference . ' : ' . $e->getMessage(), $e->getCode());
+		}
+
+		return null;
 	}
 }

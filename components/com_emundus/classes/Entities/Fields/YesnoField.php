@@ -16,6 +16,7 @@ class YesnoField extends ChoiceField
 			$required,
 			false,
 			$group,
+			false,
 			false
 		);
 	}
