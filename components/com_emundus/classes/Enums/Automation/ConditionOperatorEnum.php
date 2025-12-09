@@ -5,6 +5,7 @@ namespace Tchooz\Enums\Automation;
 use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\DateField;
+use Tchooz\Entities\Fields\MixedField;
 use Tchooz\Entities\Fields\NumericField;
 use Tchooz\Entities\Fields\StringField;
 
@@ -73,6 +74,18 @@ enum ConditionOperatorEnum: string
 			DateField::getType() => [
 				self::EQUALS,
 				self::NOT_EQUALS,
+				self::GREATER_THAN,
+				self::GREATER_THAN_OR_EQUAL,
+				self::LESS_THAN,
+				self::LESS_THAN_OR_EQUAL,
+				self::IS_EMPTY,
+				self::IS_NOT_EMPTY
+			],
+			MixedField::getType() => [
+				self::EQUALS,
+				self::NOT_EQUALS,
+				self::CONTAINS,
+				self::NOT_CONTAINS,
 				self::GREATER_THAN,
 				self::GREATER_THAN_OR_EQUAL,
 				self::LESS_THAN,
