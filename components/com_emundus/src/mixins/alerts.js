@@ -2,13 +2,13 @@ import Swal from 'sweetalert2';
 
 const alerts = {
 	methods: {
-		async alertSuccess(title, text = '', textIsHTML = false, callback = null) {
+		async alertSuccess(title, text = '', textIsHTML = false, callback = null, timer = 1500) {
 			let options = {
 				title: this.translate(title),
 				icon: 'success',
 				showCancelButton: false,
 				showConfirmButton: false,
-				timer: 1500,
+				timer: timer,
 				customClass: {
 					title: 'em-swal-title',
 				},
@@ -56,10 +56,10 @@ const alerts = {
 			confirmText = 'COM_EMUNDUS_OK',
 			cancelText = 'COM_EMUNDUS_ACTIONS_CANCEL',
 			callback = null,
+			showIcon = true,
 		) {
 			let options = {
 				title: this.translate(title),
-				icon: 'warning',
 				showCancelButton: true,
 				confirmButtonText: this.translate(confirmText),
 				cancelButtonText: this.translate(cancelText),
@@ -70,6 +70,10 @@ const alerts = {
 					confirmButton: 'em-swal-confirm-button',
 				},
 			};
+
+			if (showIcon) {
+				options.icon = 'warning';
+			}
 
 			if (text.length > 0) {
 				if (textIsHTML) {

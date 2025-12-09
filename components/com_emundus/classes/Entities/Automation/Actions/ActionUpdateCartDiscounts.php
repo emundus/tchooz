@@ -11,6 +11,7 @@ use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Payment\AlterationEntity;
 use Tchooz\Entities\Payment\AlterationType;
 use Tchooz\Entities\Payment\DiscountEntity;
+use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -49,7 +50,10 @@ class ActionUpdateCartDiscounts extends ActionEntity
 		return Text::_('COM_EMUNDUS_ACTION_UPDATE_CART_DISCOUNTS_DESCRIPTION');
 	}
 
-	public function execute(ActionTargetEntity $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
+	/**
+	 * @inheritDoc
+	 */
+	public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
 	{
 		$actionDiscountIds = $this->getParameterValue('discounts');
 		$fnum = $context->getFile();

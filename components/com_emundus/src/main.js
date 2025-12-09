@@ -41,6 +41,7 @@ import Rankings from '@/views/Ranking/rankings.vue';
 import CartAppFile from '@/views/Payment/CartAppFile.vue';
 import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
 import ApplicationChoices from '@/views/Application/ApplicationChoices.vue';
+import Exports from '@/views/Exports/Exports.vue';
 
 if (document) {
 	let app = null;
@@ -80,10 +81,13 @@ if (document) {
 	if (filterElement) {
 		elements.push(filterElement);
 	}
-
 	const stepsTimeline = document.getElementById('steps-timeline');
 	if (stepsTimeline) {
 		elements.push(stepsTimeline);
+	}
+	const exportsElement = document.getElementById('em-exports');
+	if (exportsElement) {
+		elements.push(exportsElement);
 	}
 
 	for (const el of elements) {
@@ -102,6 +106,7 @@ if (document) {
 					'Program/ProgramEdit',
 					'History',
 					'Expert/Expert',
+					'Exports/Exports',
 					'SMS/SMSEdit',
 					'SMS/SMSAppFile',
 					'SMS/SMSSend',
@@ -198,6 +203,9 @@ if (document) {
 						break;
 					case 'Expert/Expert':
 						app = createApp(Expert, {});
+						break;
+					case 'Exports/Exports':
+						app = createApp(Exports, {});
 						break;
 					case 'Dashboard/Dashboard':
 						if (el.getAttribute('data')) {

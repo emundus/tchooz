@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="Liste des exports effectués">
+        <message>
+            Affiche la liste des exports que j'ai effectués sur la plateforme
+        </message>
+    </layout>
+</metadata>

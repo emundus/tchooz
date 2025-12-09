@@ -58,7 +58,7 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 			foreach ($tasks as $task) {
 				try {
 					$repository->executeTask($task);
-					if ($task->getStatus() !== TaskStatusEnum::COMPLETED)
+					if ($task->getStatus() === TaskStatusEnum::FAILED)
 					{
 						$failed = true;
 					} else {

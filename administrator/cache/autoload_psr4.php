@@ -300,6 +300,7 @@ return [
 	'Joomla\\Plugin\\Task\\Parcoursup\\' => [JPATH_PLUGINS . '/task/parcoursup/src'],
 	'Joomla\\Plugin\\Task\\Payment\\' => [JPATH_PLUGINS . '/task/payment/src'],
 	'Joomla\\Plugin\\Task\\PrivacyConsent\\' => [JPATH_PLUGINS . '/task/privacyconsent/src'],
+	'Joomla\\Plugin\\Task\\PurgeExports\\' => [JPATH_PLUGINS . '/task/purgeexports/src'],
 	'Joomla\\Plugin\\Task\\Requests\\' => [JPATH_PLUGINS . '/task/requests/src'],
 	'Joomla\\Plugin\\Task\\RotateLogs\\' => [JPATH_PLUGINS . '/task/rotatelogs/src'],
 	'Joomla\\Plugin\\Task\\Securitycheckprocron\\' => [JPATH_PLUGINS . '/task/securitycheckprocron/src'],

@@ -198,6 +198,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			$currentLangPath = '';
 		}
 
+		$emConfig = ComponentHelper::getParams('com_emundus');
+		$allowAsync = $emConfig->get('async_export', 0);
+
 		$options = [
 			'current'     => $currentLanguage,
 			'default'     => $defaultLanguage,
@@ -205,6 +208,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		];
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.language', $options);
 		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.user_details', $profile_data);
+		$this->getApplication()->getDocument()->addScriptOptions('plg_system_emundus.async_export', $allowAsync);
 
 		// Load and injection directive
 		$wa->getRegistry()->addExtensionRegistryFile('plg_system_emundus');

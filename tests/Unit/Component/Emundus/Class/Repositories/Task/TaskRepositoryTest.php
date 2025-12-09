@@ -118,7 +118,7 @@ class TaskRepositoryTest extends UnitTestCase
 		$this->h_dataset->addToSamples('tasks', $task->getId());
 
 		$this->repository->executeTask($task);
-		$this->assertContains($task->getStatus(), [TaskStatusEnum::COMPLETED], 'Task status should be either COMPLETED after execution.');
+		$this->assertEquals(TaskStatusEnum::COMPLETED, $task->getStatus(), 'Task status should be completed.');
 		$this->assertNotNull($task->getStartedAt(), 'Task started at should not be null.');
 		$this->assertNotNull($task->getFinishedAt(), 'Task finished at should not be null.');
 
