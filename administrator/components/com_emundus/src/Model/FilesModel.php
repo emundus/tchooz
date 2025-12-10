@@ -200,6 +200,7 @@ class FilesModel extends ListModel
 	public function getItems()
 	{
 		$items = parent::getItems();
+		$query = $this->getDatabase()->getQuery(true);
 
 		if (!empty($items)) {
 			foreach ($items as $item) {
@@ -209,6 +210,18 @@ class FilesModel extends ListModel
 					$registry       = new Registry($item->metadata);
 					$item->metadata = $registry->toArray();
 				}
+
+				// Add tags
+				$query->clear()
+					->select('esat.id, esat.label')
+					->from($this->getDatabase()->quoteName('#__emundus_setup_action_tag', 'esat'))
+					->leftJoin(
+						$this->getDatabase()->quoteName('#__emundus_tag_assoc', 'eta')
+						. ' ON ' . $this->getDatabase()->quoteName('esat.id') . ' = ' . $this->getDatabase()->quoteName('eta.id_tag')
+					)
+					->where($this->getDatabase()->quoteName('eta.fnum') . ' = ' . $this->getDatabase()->quote($item->fnum));
+				$this->getDatabase()->setQuery($query);
+				$item->stickers = $this->getDatabase()->loadObjectList();
 
 				// transform the profile ids into an array
 				/*if (!empty($item->profile_ids)) {
