@@ -31,6 +31,30 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		$this->factory = new ApplicationFileFactory();
 	}
 
+	public function getById(int $id): ?ApplicationFileEntity
+	{
+		$applicationFileEntity = null;
+
+		$this->query->clear()
+			->select('*')
+			->from('#__emundus_campaign_candidature')
+			->where('id = :id')
+			->bind(':id', $id, ParameterType::INTEGER);
+		$this->db->setQuery($this->query);
+		$result = $this->db->loadObject();
+
+		if(!empty($result))
+		{
+			$applicationFileEntity = new ApplicationFileEntity(Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($result->applicant_id));
+			$applicationFileEntity->setFnum($result->fnum);
+			$applicationFileEntity->setCampaignId($result->campaign_id);
+			$applicationFileEntity->setStatus($result->status);
+			$applicationFileEntity->setPublished($result->published);
+		}
+
+		return $applicationFileEntity;
+	}
+
 	public function getByFnum(string $fnum): ?ApplicationFileEntity
 	{
 		$applicationFileEntity = null;
@@ -87,18 +111,20 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 				throw new \Exception('Invalid fnum');
 			}
 
-			$ccid = $this->createCampaignCandidature($applicationFileEntity, $user_id);
-			if (empty($ccid))
+			if(empty($applicationFileEntity->getId()))
 			{
-				throw new \Exception('Failed to create campaign candidature');
+				$ccid = $this->createCampaignCandidature($applicationFileEntity, $user_id);
+				if (empty($ccid))
+				{
+					throw new \Exception('Failed to create campaign candidature');
+				}
+
+				$applicationFileEntity->setId($ccid);
 			}
 
-			if (!empty($applicationFileEntity->getData()))
-			{
-				foreach ($applicationFileEntity->getData() as $table => $data)
-				{
-					if (!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $ccid, $user_id))
-					{
+			if(!empty($applicationFileEntity->getData())) {
+				foreach ($applicationFileEntity->getData() as $table => $data) {
+					if(!$this->insertDatas($data, $table, $applicationFileEntity->getFnum(), $applicationFileEntity->getId(), $user_id)) {
 						throw new \Exception('Failed to insert data into ' . $table);
 					}
 				}
@@ -472,10 +498,5 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 	public function delete(int $id): bool
 	{
 		// TODO: Implement delete() method.
-	}
-
-	public function getById(int $id): mixed
-	{
-		// TODO: Implement getById() method.
 	}
 }

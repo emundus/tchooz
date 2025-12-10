@@ -7,7 +7,7 @@ use Tchooz\Entities\Campaigns\CampaignEntity;
 
 class ApplicationFileEntity
 {
-	private int $id;
+	private int $id = 0;
 
 	private User $user;
 
@@ -94,10 +94,17 @@ class ApplicationFileEntity
 		$this->fnum = $fnum;
 	}
 
-	public function generateFnum(int $campaign_id): string
+	public function generateFnum(int $campaign_id = 0, int $user_id = 0): string
 	{
-		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($this->user->id, 7, '0', STR_PAD_LEFT);
-
+		if(empty($campaign_id))
+		{
+			$campaign_id = $this->getCampaignId();
+		}
+		if(empty($user_id))
+		{
+			$user_id = $this->user->id;
+		}
+		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
 		return $this->fnum;
 	}
 

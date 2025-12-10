@@ -54,6 +54,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
     public function onBeforeApiRoute(BeforeApiRouteEvent $event): void
     {
 		$params = $this->params;
+		
+		// Allowed verbs
+	    $allowedVerbs = (array) $params->get('allowed_verbs', ['GET']);
 
 		// IP Restriction
 	    $clientIp = $event->getApplication()->input->server->getString('REMOTE_ADDR', '0.0.0.0');
@@ -81,16 +84,25 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		//
 
         $router = $event->getRouter();
-	    $routes = [
-		    new Route(['GET'], 'v1/emundus/campaigns', 'campaigns.displayList', [], ['component' => 'com_emundus', 'public' => true]),
-		    new Route(['GET'], 'v1/emundus/transactions', 'transactions.displayList', [], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/transactions/:id', 'transactions.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/files', 'files.displayList', [], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/files/:fnum', 'files.displayItem', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/fileuploads', 'fileuploads.displayList', [], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/fileuploads/:id', 'fileuploads.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/choices/', 'choices.displayList', [], ['component' => 'com_emundus']),
-	    ];
+	    $routes = [];
+		if(in_array('GET', $allowedVerbs)) {
+		    $routes = array_merge($routes, [
+			    new Route(['GET'], 'v1/emundus/campaigns', 'campaigns.displayList', [], ['component' => 'com_emundus', 'public' => true]),
+			    new Route(['GET'], 'v1/emundus/transactions', 'transactions.displayList', [], ['component' => 'com_emundus']),
+			    new Route(['GET'], 'v1/emundus/transactions/:id', 'transactions.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
+			    new Route(['GET'], 'v1/emundus/files', 'files.displayList', [], ['component' => 'com_emundus']),
+			    new Route(['GET'], 'v1/emundus/files/:fnum', 'files.displayItem', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus']),
+			    new Route(['GET'], 'v1/emundus/fileuploads', 'fileuploads.displayList', [], ['component' => 'com_emundus']),
+			    new Route(['GET'], 'v1/emundus/fileuploads/:id', 'fileuploads.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
+			    new Route(['GET'], 'v1/emundus/choices/', 'choices.displayList', [], ['component' => 'com_emundus']),
+		    ]);
+		}
+		if(in_array('POST', $allowedVerbs)) {
+			$routes = array_merge($routes, [
+				new Route(['POST'], 'v1/emundus/files', 'files.submit', [], ['component' => 'com_emundus', 'format' => ['application/json']]),
+				new Route(['PATCH'], 'v1/emundus/files/:fnum', 'files.submit', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus', 'format' => ['application/json']]),
+			]);
+		}
 
 	    $router->addRoutes($routes);
 	}
