@@ -349,6 +349,15 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$eMConfig = ComponentHelper::getParams('com_emundus');
 				$profile  = $eMConfig->get('saml_default_profile', 1000);
 			}
+
+			if(empty($details))
+			{
+				$username        = explode(' ', $user["name"]);
+				$details['name'] = count($username) > 2 ? implode(' ', array_slice($username, 1)) : $username[1];
+
+				$details['emundus_profile']['lastname']  = $details['name'];
+				$details['emundus_profile']['firstname'] = $username[0];
+			}
 		}
 
 		$query = $db->getQuery(true);

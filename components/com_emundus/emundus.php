@@ -90,6 +90,8 @@ Text::script('COM_EMUNDUS_CLOSE');
 Text::script('COM_EMUNDUS_SAVE');
 Text::script('COM_EMUNDUS_REMOVE');
 Text::script('SAVE');
+Text::script('COM_EMUNDUS_ADD_ROW');
+Text::script('COM_EMUNDUS_REMOVE_ROW');
 
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL_UPLOAD_CONFIRMATION');
@@ -615,6 +617,7 @@ Text::script('COM_EMUNDUS_ACCESS_PAYMENT');
 Text::script('COM_EMUNDUS_ACCESS_PAYMENT_DESC');
 Text::script('COM_EMUNDUS_ACL_IMPORT');
 Text::script('COM_EMUNDUS_ACL_IMPORT_DESC');
+Text::script('COM_EMUNDUS_ACL_EXPORT');
 
 
 // EXPORT EXCEL MODEL
@@ -1254,6 +1257,24 @@ Text::script('COM_EMUNDUS_ACTION_UPDATE_CART_PRODUCTS');
 Text::script('COM_EMUNDUS_ACTION_UPDATE_CART_DISCOUNTS');
 Text::script('COM_EMUNDUS_ACTION_UPDATE_CART_ADVANCE_AMOUNT');
 
+Text::script('COM_EMUNDUS_ACCESS_EXPORT');
+Text::script('COM_EMUNDUS_EXPORT_RUN');
+Text::script('COM_EMUNDUS_EXPORT_FORMAT_XLSX');
+Text::script('COM_EMUNDUS_EXPORT_FORMAT_PDF');
+Text::script('COM_EMUNDUS_EXPORT_SUCCESS_TITLE');
+Text::script('COM_EMUNDUS_EXPORT_IN_PROGRESS_TITLE');
+Text::script('COM_EMUNDUS_EXPORT_CONTENT');
+Text::script('COM_EMUNDUS_EXPORTS_FORMAT');
+Text::script('COM_EMUNDUS_EXPORT_OPTIONS');
+Text::script('COM_EMUNDUS_EXPORT_RESUME');
+Text::script('COM_EMUNDUS_EXPORT_NEXT_STEP');
+Text::script('COM_EMUNDUS_EXPORT_PREVIOUS_STEP');
+Text::script('COM_EMUNDUS_EXPORT_AVAILABLE_CONTENT');
+Text::script('COM_EMUNDUS_EXPORT_EXPORTING_CONTENT');
+Text::script('COM_EMUNDUS_EXPORTS_APPLICANTS_TAB');
+Text::script('COM_EMUNDUS_EXPORTS_MANAGEMENTS_TAB');
+Text::script('COM_EMUNDUS_EXPORTS_OTHER_TAB');
+
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
 foreach ($actionlog_translation_tags as $tag => $translation)
@@ -1331,7 +1352,7 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || $task === 'yousigncallback')) {
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task,  ['yousigncallback', 'docusigncallback']))) {
 	$controller->execute($task);
 }
 else if ($user->guest && $app->input->getString('controller') === 'webhook' && $task === 'updatePaymentTransaction')

@@ -19,12 +19,13 @@ class ChoiceField extends Field
 		bool $required = false,
 		bool $multiple = false,
 		?FieldGroup $group = null,
-		bool $choicesGrouped = false
+		bool $choicesGrouped = false,
+		bool $addSelectOption = true
 	) {
 		parent::__construct($name, $label, $required, $group);
 
 		if (!empty($choices)) {
-			if (!$multiple) {
+			if (!$multiple && $addSelectOption) {
 				$this->addChoice(new ChoiceFieldValue(null, Text::_('TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION')));
 			}
 
@@ -53,6 +54,11 @@ class ChoiceField extends Field
 		return $this->choices;
 	}
 
+	public function setChoices(array $choices): void
+	{
+		$this->choices = $choices;
+	}
+
 	public function getMultiple(): bool
 	{
 		return $this->multiple;
@@ -68,11 +74,6 @@ class ChoiceField extends Field
 		return $this->choicesGrouped;
 	}
 
-	public function isSearchable(): bool
-	{
-		return $this->searchable;
-	}
-
 	public function toSchema(): array
 	{
 		return [
@@ -83,7 +84,8 @@ class ChoiceField extends Field
 			'required' => $this->required,
 			'multiple' => $this->getMultiple(),
 			'group' => $this->getGroup()?->toSchema(),
-			'research' => $this->getResearch()?->serialize()
+			'research' => $this->getResearch()?->toSchema(),
+			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
 		];
 	}
 }

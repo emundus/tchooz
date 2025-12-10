@@ -3,11 +3,10 @@
 namespace Tchooz\Entities\Task;
 
 use Tchooz\Entities\Automation\ActionEntity;
-use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Factories\Automation\ActionFactory;
 use Tchooz\Factories\Automation\ActionTargetFactory;
-use Tchooz\Repositories\Task\TaskRepository;
 
 class TaskEntity
 {
@@ -15,7 +14,7 @@ class TaskEntity
 
 	private TaskStatusEnum $status;
 
-	private ActionEntity $action;
+	private ?ActionEntity $action;
 
 	private ?int $userId = null;
 
@@ -31,7 +30,7 @@ class TaskEntity
 
 	private int $attempts = 0;
 
-	public function __construct(int $id, TaskStatusEnum $status, ActionEntity $action, int $userId = null, array $metadata = [], ?\DateTimeImmutable $createdAt = null, ?\DateTimeImmutable $updatedAt = null, ?\DateTimeImmutable $startedAt = null, ?\DateTimeImmutable $finishedAt = null, int $attempts = 0)
+	public function __construct(int $id, TaskStatusEnum $status, ?ActionEntity $action = null, int $userId = null, array $metadata = [], ?\DateTimeImmutable $createdAt = null, ?\DateTimeImmutable $updatedAt = null, ?\DateTimeImmutable $startedAt = null, ?\DateTimeImmutable $finishedAt = null, int $attempts = 0)
 	{
 		$this->id = $id;
 		$this->status = $status;
@@ -69,7 +68,7 @@ class TaskEntity
 		return $this;
 	}
 
-	public function getAction(): ActionEntity
+	public function getAction(): ?ActionEntity
 	{
 		return $this->action;
 	}
@@ -166,26 +165,51 @@ class TaskEntity
 		try
 		{
 			$actionTargetEntityData = $this->metadata['actionTargetEntity'] ?? null;
-			if ($actionTargetEntityData === null) {
+			$actionTargetEntitiesData = $this->metadata['actionTargetEntities'] ?? null;
+
+			if (empty($actionTargetEntityData) && empty($actionTargetEntitiesData)) {
 				throw new \Exception('Action target entity data is missing in task metadata.');
 			}
 
-			$actionTargetEntity = ActionTargetFactory::fromSerialized($actionTargetEntityData);
-			if ($actionTargetEntity === null) {
-				throw new \Exception('Failed to create ActionTargetEntity from metadata.');
+			if (!empty($actionTargetEntityData)) {
+				$actionTargetEntity = ActionTargetFactory::fromSerialized($actionTargetEntityData);
+				if (empty($actionTargetEntity)) {
+					throw new \Exception('Failed to create ActionTargetEntity from metadata.');
+				}
 			}
 
-			$action = $this->getAction();
-			if (empty($action->getId()))
+			if (!empty($actionTargetEntitiesData) && is_array($actionTargetEntitiesData)) {
+				$actionTargetEntities = [];
+				foreach ($actionTargetEntitiesData as $entityData) {
+					$entity = ActionTargetFactory::fromSerialized($entityData);
+					if (empty($entity)) {
+						throw new \Exception('Failed to create one of the ActionTargetEntities from metadata.');
+					}
+					$actionTargetEntities[] = $entity;
+				}
+			}
+			
+			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? null);
+			if (empty($action))
 			{
 				throw new \Exception('Action not found for task id ' . $this->getId());
 			}
 
-			$actionResult = $action->execute($actionTargetEntity);
+			if (isset($actionTargetEntity)) {
+				$actionResult = $action->execute($actionTargetEntity, null);
+			} elseif (isset($actionTargetEntities)) {
+				$actionResult = $action->execute($actionTargetEntities, null);
+			} else {
+				throw new \Exception('No valid action target entity/entities found for task id ' . $this->getId());
+			}
 
 			if ($actionResult === ActionExecutionStatusEnum::COMPLETED)
 			{
 				$this->setStatus(TaskStatusEnum::COMPLETED);
+			}
+			elseif ($actionResult === ActionExecutionStatusEnum::PENDING)
+			{
+				$this->setStatus(TaskStatusEnum::PENDING);
 			}
 			else
 			{
@@ -206,7 +230,7 @@ class TaskEntity
 		return [
 			'id' => $this->id,
 			'status' => $this->status->value,
-			'action' => $this->action->serialize(),
+			'action' => !empty($this->action) ? $this->action->serialize() : null,
 			'userId' => $this->userId,
 			'metadata' => $this->metadata,
 			'createdAt' => $this->createdAt?->format('d/m/Y H:i:s'),

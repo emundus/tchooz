@@ -374,6 +374,38 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 		return $toggled;
 	}
 
+	/**
+	 * @param   int  $user_id
+	 *
+	 * @return ContactEntity if found, just return it, else create a new contact from user data and return it
+	 * @throws \Exception
+	 */
+	public function getOrCreateContactFromUserId(int $user_id): ContactEntity
+	{
+		$contact = $this->getByUserId($user_id);
+
+		if (empty($contact))
+		{
+			$query = $this->db->createQuery();
+
+			$query->select($this->db->quoteName(['jeu.user_id', 'jeu.firstname', 'jeu.lastname', 'ju.email']))
+				->from($this->db->quoteName('jos_emundus_users', 'jeu'))
+				->leftJoin($this->db->quoteName('jos_users', 'ju') . ' ON ' . $this->db->quoteName('jeu.user_id') . ' = ' . $this->db->quoteName('ju.id'))
+				->where($this->db->quoteName('user_id') . ' = ' . $this->db->quote($user_id));
+
+			$this->db->setQuery($query);
+			$contactObject = $this->db->loadObject();
+
+			if (!empty($contactObject))
+			{
+				$contact = new ContactEntity($contactObject->email, $contactObject->lastname, $contactObject->firstname, null, 0, $user_id);
+				$this->flush($contact);
+			}
+		}
+
+		return $contact;
+	}
+
 	public function getAllContacts(
 		$sort = 'DESC',
 		$search = '',
@@ -710,7 +742,7 @@ class ContactRepository extends EmundusRepository implements RepositoryInterface
 			$query = $this->db->getQuery(true);
 			$query->select('c.*')
 				->from($this->db->quoteName($this->getTableName(self::class), 'c'))
-				->join('inner', $this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quoteName('c.id'))
+				->join('inner', $this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.applicant_id') . ' = ' . $this->db->quoteName('c.user_id'))
 				->where('ecc.fnum = ' . $this->db->quote($fnum));
 
 			$this->db->setQuery($query);

@@ -10,6 +10,7 @@ abstract class Field
 		protected bool $required = false,
 		protected ?FieldGroup $group = null,
 		private ?FieldResearch $research = null,
+		private array $displayRules = []
 	) {}
 
 	public function getName(): string
@@ -52,6 +53,31 @@ abstract class Field
 	public function setResearch(?FieldResearch $research): self
 	{
 		$this->research = $research;
+
+		return $this;
+	}
+
+	/**
+	 * @return   array<DisplayRule>
+	 */
+	public function getDisplayRules(): array
+	{
+		return $this->displayRules;
+	}
+
+	/**
+	 * @param   array<DisplayRule>  $displayRules
+	 *
+	 * @return $this
+	 */
+	public function setDisplayRules(array $displayRules): self
+	{
+		foreach ($displayRules as $rule)
+		{
+			assert($rule instanceof DisplayRule);
+		}
+
+		$this->displayRules = $displayRules;
 
 		return $this;
 	}

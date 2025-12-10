@@ -4241,6 +4241,29 @@ $(document).ready(function() {
                 });
                 break;
 
+            case 'export':
+                fnums = getUserCheckArray();
+
+                swal_popup_class = 'em-w-auto';
+                swal_show_confirm_button = false;
+                swal_show_cancel_button = false;
+                title = 'COM_EMUNDUS_ACCESS_EXPORT';
+                html = '<div id="data"></div>';
+
+                // Replace by fetch
+                fetch(url, {
+                    method: 'POST',
+                    body: JSON.stringify({fnums: fnums}),
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    cache: "no-cache"
+                }).then(response => response.text()).then(data => {
+                    $('#data').append(data);
+                    $('#data').removeClass('em-loader');
+                });
+                break;
+
             case 'crm':
                 multipleSteps = true;
                 break;

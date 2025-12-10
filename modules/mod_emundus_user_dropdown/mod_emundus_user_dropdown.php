@@ -10,14 +10,17 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Router\Route;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 $layout = $params->get('layout', 'default');
 
 // Include the syndicate functions only once
 require_once dirname(__FILE__) . '/helper.php';
 include_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
-include_once(JPATH_BASE.'/components/com_emundus/models/users.php');
-require_once (JPATH_SITE.DS.'components'.DS.'com_emundus'.DS.'helpers'.DS.'menu.php');
+include_once(JPATH_BASE . '/components/com_emundus/models/users.php');
+require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
 
 $app = Factory::getApplication();
 
@@ -43,45 +46,73 @@ $link_login              = $params->get('link_login', 'index.php?option=com_user
 $link_register           = $params->get('link_register', 'index.php?option=com_fabrik&view=form&formid=307&Itemid=1136');
 $link_forgotten_password = $params->get('link_forgotten_password', 'index.php?option=com_users&view=reset&Itemid=2833');
 $show_registration       = $params->get('show_registration', '0');
-$link_edit_profile       = JRoute::_('index.php?Itemid=' . $params->get('link_edit_profile', 2805));
-$custom_actions          = $params->get('custom_actions', []);
+$link_edit_profile       = Route::_('index.php?Itemid=' . $params->get('link_edit_profile', 2805));
 
-if (!empty($custom_actions) && !empty($user->id)) {
-	foreach ($custom_actions as $key => $action) {
+$link_exports            = '';
+$actionRepository = new ActionRepository();
+if(!empty($user->id))
+{
+	$exportActionExcel = $actionRepository->getByName('export_excel');
+	$exportActionPdf   = $actionRepository->getByName('export_zip');
+	$exportActionZip   = $actionRepository->getByName('export_pdf');
+
+	$exportAction = EmundusHelperAccess::asAccessAction($exportActionExcel->getId(), CrudEnum::CREATE->value, $user->id) || EmundusHelperAccess::asAccessAction($exportActionPdf->getId(), CrudEnum::CREATE->value, $user->id) || EmundusHelperAccess::asAccessAction($exportActionZip->getId(), CrudEnum::CREATE->value, $user->id);
+
+	if($exportAction)
+	{
+		$link_exports = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=export_select_columns&layout=exports');
+	}
+}
+
+$custom_actions = $params->get('custom_actions', []);
+
+if (!empty($custom_actions) && !empty($user->id))
+{
+	foreach ($custom_actions as $key => $action)
+	{
 		$pass = true;
 
-		if (!empty($action->condition)) {
-			try {
+		if (!empty($action->condition))
+		{
+			try
+			{
 				$pass = eval($action->condition);
 			}
-			catch (Exception $e) {
+			catch (Exception $e)
+			{
 				$pass = false;
 			}
 		}
 
-		if (!$pass) {
+		if (!$pass)
+		{
 			unset($custom_actions->$key);
 			continue;
 		}
 
-		if (!empty($action->link) && strpos($action->link, '{fnum}') !== false) {
+		if (!empty($action->link) && strpos($action->link, '{fnum}') !== false)
+		{
 			$action->link = str_replace('{fnum}', $user->fnum, $action->link);
 		}
 	}
 }
 
 
-if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0') {
+if ($jooomla_menu_name !== 0 || $jooomla_menu_name !== '0')
+{
 	$list = modEmundusUserDropdownHelper::getList($jooomla_menu_name);
 }
 
-if ($show_registration == 0 || ($show_registration == 1 && $user === null && modEmundusUserDropdownHelper::isCampaignActive())) {
+if ($show_registration == 0 || ($show_registration == 1 && $user === null && modEmundusUserDropdownHelper::isCampaignActive()))
+{
 	$show_registration = true;
 }
-elseif ($show_registration == 2) {
+elseif ($show_registration == 2)
+{
 	$show_registration = false;
 }
-else {
+else
+{
 	$show_registration = false;
 }
 
@@ -89,7 +120,8 @@ else {
 $m_profiles = new EmundusModelProfile;
 $app_prof   = $m_profiles->getApplicantsProfilesArray();
 
-if (!empty($user->profile)) {
+if (!empty($user->profile))
+{
 	$user_profile  = $m_profiles->getProfileById($user->profile);
 	$profile_label = in_array($user->profile, $app_prof) ? JText::_('APPLICANT') : $user_profile['label'];
 }
@@ -97,7 +129,8 @@ if (!empty($user->profile)) {
 $user_profiles = $m_profiles->getUserProfiles($user->id);
 
 $user_prof = [];
-foreach ($user->emProfiles as $prof) {
+foreach ($user->emProfiles as $prof)
+{
 	$user_prof[] = $prof->id;
 }
 
@@ -111,34 +144,42 @@ $menu      = $app->getMenu();
 $active    = $menu->getActive();
 $active_id = isset($active) ? $active->id : $menu->getDefault()->id;
 
-if (!$only_applicant) {
+if (!$only_applicant)
+{
 	$first_logged = $user->first_logged;
 }
 
 $profile_picture = '';
-if ($show_profile_picture) {
+if ($show_profile_picture)
+{
 	$profile_picture = modEmundusUserDropdownHelper::getProfilePicture();
 }
 
 // Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
-$is_anonym_user     = $user->anonym;
-if (!class_exists('EmundusModelSettings')) {
+$is_anonym_user = $user->anonym;
+if (!class_exists('EmundusModelSettings'))
+{
 	require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
 }
-$m_settings = new EmundusModelSettings();
-$addon_status = $m_settings->getAddonStatus('anonymous');
+$m_settings         = new EmundusModelSettings();
+$addon_status       = $m_settings->getAddonStatus('anonymous');
 $allow_anonym_files = $addon_status['enabled'];
-if ($is_anonym_user && !$allow_anonym_files) {
+if ($is_anonym_user && !$allow_anonym_files)
+{
 	return;
 }
 
-$m_users = new EmundusModelUsers;
+$m_users         = new EmundusModelUsers;
 $profile_details = new stdClass();
-if (!JFactory::getUser()->guest) {
-	if (!empty($user->profile)) {
+if (!JFactory::getUser()->guest)
+{
+	if (!empty($user->profile))
+	{
 		$profile_details = $m_users->getProfileDetails($user->profile);
-	} else {
-		$profile_details->class = '';
+	}
+	else
+	{
+		$profile_details->class     = '';
 		$profile_details->published = '';
 	}
 }

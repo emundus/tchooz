@@ -1788,6 +1788,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				{
 					$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
 				}
+				$query->group('fe.name,fl.db_table_name');
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();
 			}
@@ -1798,6 +1799,42 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 
 		return $elements;
+	}
+
+	static function getElementById(int $id): ?object
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$element = null;
+
+		if (!empty($id))
+		{
+			try
+			{
+				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join')
+					->from($db->quoteName('#__fabrik_elements', 'fe'))
+					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
+					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
+					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+					->leftJoin($db->quoteName('#__fabrik_joins', 'fj') . ' ON ' . $db->quoteName('fl.id') . ' = ' . $db->quoteName('fj.list_id') . ' AND ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fj.group_id'))
+					->where($db->quoteName('fe.id') . ' = ' . $db->quote($id))
+					->where($db->quoteName('fe.published') . ' = 1')
+					->where($db->quoteName('fg.published') . ' = 1')
+					->where($db->quoteName('fl.published') . ' = 1')
+					->where($db->quoteName('ff.published') . ' = 1');
+				$query->group('fe.name,fl.db_table_name');
+				$db->setQuery($query);
+				$element = $db->loadObject();
+			}
+			catch (Exception $e)
+			{
+				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $element;
 	}
 
 	public static function searchFabrikElements(string $searchName, array $formIds = [], array $excludedPlugins = []): array

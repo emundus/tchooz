@@ -9,6 +9,7 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -46,15 +47,9 @@ class ActionUpdateStatus extends ActionEntity
 	}
 
 	/**
-	 * Execute the action with the given parameters.
-	 *
-	 *
-	 * @param   ActionTargetEntity               $context
-	 * @param   AutomationExecutionContext|null  $executionContext  *
-	 *
-* @return ActionExecutionStatusEnum  The status of the action execution.
+	 * @inheritDoc
 	 */
-	public function execute(ActionTargetEntity $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
+	public function execute(ActionTargetEntity|array $context, ?AutomationExecutionContext $executionContext = null): ActionExecutionStatusEnum
 	{
 		$actionStatus = ActionExecutionStatusEnum::FAILED;
 

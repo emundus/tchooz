@@ -263,13 +263,32 @@ export default {
 
 			this.automation.actions.forEach((action, index) => {
 				action.parameters.forEach((param) => {
-					if (
+					// todo: consider display rules
+					if (param.displayed === false || param.hidden === true || param.displayRules.length > 0) {
+						return;
+					}
+
+					if (param.group && param.group.isRepeatable) {
+						if (action.parameter_values[param.group.name]) {
+							action.parameter_values[param.group.name].forEach((row, rowIndex) => {
+								if (
+									param.required &&
+									(row[param.name] === undefined || row[param.name] === null || row[param.name] === '')
+								) {
+									throw new AlertError(
+										'COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR',
+										`${param.label} (Row ${rowIndex + 1})`,
+									);
+								}
+							});
+						}
+					} else if (
 						param.required &&
 						(action.parameter_values[param.name] === undefined ||
 							action.parameter_values[param.name] === null ||
 							action.parameter_values[param.name] === '')
 					) {
-						throw new AlertError('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR');
+						throw new AlertError('COM_EMUNDUS_AUTOMATION_ACTION_PARAM_REQUIRED_ERROR', param.label);
 					}
 				});
 

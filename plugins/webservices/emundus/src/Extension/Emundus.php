@@ -1,11 +1,11 @@
 <?php
 
 /**
- * @package     Joomla.Plugin
- * @subpackage  Webservices.content
+ * @package         Joomla.Plugin
+ * @subpackage      Webservices.content
  *
  * @copyright   (C) 2019 Open Source Matters, Inc. <https://www.joomla.org>
- * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ * @license         GNU General Public License version 2 or later; see LICENSE.txt
  */
 
 namespace Joomla\Plugin\WebServices\Emundus\Extension;
@@ -28,76 +28,99 @@ use Joomla\Router\Route;
  */
 final class Emundus extends CMSPlugin implements SubscriberInterface
 {
-    /**
-     * Returns an array of events this subscriber will listen to.
-     *
-     * @return  array
-     *
-     * @since   5.1.0
-     */
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            'onBeforeApiRoute' => 'onBeforeApiRoute',
-        ];
-    }
+	/**
+	 * Returns an array of events this subscriber will listen to.
+	 *
+	 * @return  array
+	 *
+	 * @since   5.1.0
+	 */
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			'onBeforeApiRoute' => 'onBeforeApiRoute',
+		];
+	}
 
-    /**
-     * Registers com_emundus's API's routes in the application
-     *
-     * @param   BeforeApiRouteEvent  $event  The event object
-     *
-     * @return  void
-     *
-     * @since   4.0.0
-     */
-    public function onBeforeApiRoute(BeforeApiRouteEvent $event): void
-    {
+	/**
+	 * Registers com_emundus's API's routes in the application
+	 *
+	 * @param   BeforeApiRouteEvent  $event  The event object
+	 *
+	 * @return  void
+	 *
+	 * @since   4.0.0
+	 */
+	public function onBeforeApiRoute(BeforeApiRouteEvent $event): void
+	{
 		$params = $this->params;
 
-		// IP Restriction
-	    $clientIp = $event->getApplication()->input->server->getString('REMOTE_ADDR', '0.0.0.0');
-		$ipRestriction = $params->get('ip_restriction', '');
-	    if(!empty($ipRestriction))
-		{
-			$allowedIps = array_column((array)$ipRestriction, 'ip');
+		// Allowed verbs
+	    $allowedVerbs = (array) $params->get('allowed_verbs', ['GET']);
 
-			if(!in_array($clientIp, $allowedIps))
+		// Allowed verbs
+		$allowedVerbs = (array) $params->get('allowed_verbs', ['GET']);
+
+		// IP Restriction
+		$clientIp      = $event->getApplication()->input->server->getString('REMOTE_ADDR', '0.0.0.0');
+		$ipRestriction = $params->get('ip_restriction', '');
+		if (!empty($ipRestriction))
+		{
+			$allowedIps = array_column((array) $ipRestriction, 'ip');
+
+			if (!in_array($clientIp, $allowedIps))
 			{
 				return;
 			}
 		}
 		//
 
-	    // Rate Limiting
-	    $limitEnabled = (bool) $params->get('rate_limit_enabled', true);
-	    if ($limitEnabled)
-	    {
-			$maxRequests = (int) $params->get('rate_limit_max_requests', 60);
-		    $windowSeconds = (int) $params->get('rate_limit_window_seconds', 60);
+		// Rate Limiting
+		$limitEnabled = (bool) $params->get('rate_limit_enabled', true);
+		if ($limitEnabled)
+		{
+			$maxRequests   = (int) $params->get('rate_limit_max_requests', 60);
+			$windowSeconds = (int) $params->get('rate_limit_window_seconds', 60);
 
-		    $this->enforceRateLimit($event, $maxRequests, $windowSeconds, $clientIp);
-	    }
+			$this->enforceRateLimit($event, $maxRequests, $windowSeconds, $clientIp);
+		}
 		//
 
-        $router = $event->getRouter();
-	    $routes = [
-		    new Route(['GET'], 'v1/emundus/campaigns', 'campaigns.displayList', [], ['component' => 'com_emundus', 'public' => true]),
-		    new Route(['GET'], 'v1/emundus/transactions', 'transactions.displayList', [], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/transactions/:id', 'transactions.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/files', 'files.displayList', [], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/files/:fnum', 'files.displayItem', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/fileuploads', 'fileuploads.displayList', [], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/fileuploads/:id', 'fileuploads.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
-		    new Route(['GET'], 'v1/emundus/choices/', 'choices.displayList', [], ['component' => 'com_emundus']),
-	    ];
+		$router = $event->getRouter();
+		$routes = [];
+		if (in_array('GET', $allowedVerbs))
+		{
+			$routes = array_merge($routes, [
+				new Route(['GET'], 'v1/emundus/campaigns', 'campaigns.displayList', [], ['component' => 'com_emundus', 'public' => true]),
+				new Route(['GET'], 'v1/emundus/programs', 'programs.displayList', [], ['component' => 'com_emundus', 'public' => true]),
+				new Route(['GET'], 'v1/emundus/users', 'users.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/transactions', 'transactions.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/transactions/:id', 'transactions.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/files', 'files.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/files/:fnum', 'files.displayItem', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/fileuploads', 'fileuploads.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/fileuploads/:id', 'fileuploads.displayItem', ['id' => '(\d+)'], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/choices/', 'choices.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/profiles', 'profiles.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/statistics', 'statistics.displayItem', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/actions', 'actions.displayList', [], ['component' => 'com_emundus']),
+				new Route(['GET'], 'v1/emundus/status', 'status.displayList', [], ['component' => 'com_emundus']),
+			]);
+		}
+		if (in_array('POST', $allowedVerbs))
+		{
+			$routes = array_merge($routes, [
+				new Route(['POST'], 'v1/emundus/files', 'files.submit', [], ['component' => 'com_emundus', 'format' => ['application/json']]),
+				new Route(['PATCH'], 'v1/emundus/files/:fnum', 'files.submit', ['fnum' => '([0-9]{28})'], ['component' => 'com_emundus', 'format' => ['application/json']]),
+			]);
+		}
 
-	    $router->addRoutes($routes);
+		$router->addRoutes($routes);
 	}
 
 	private function enforceRateLimit(BeforeApiRouteEvent $event, int $maxRequests, int $windowSeconds, string $clientIp): void
 	{
-		if(empty($clientIp))
+		if (empty($clientIp))
 		{
 			$app      = $event->getApplication();
 			$clientIp = $app->input->server->getString('REMOTE_ADDR', '0.0.0.0');
@@ -106,17 +129,18 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		$key = 'rate_limit_' . md5($clientIp);
 
 		$lifetime = $windowSeconds;
-		$cache = Factory::getContainer()
+		$cache    = Factory::getContainer()
 			->get(CacheControllerFactoryInterface::class)
 			->createCacheController('output', [
 				'defaultgroup' => 'com_emundus',
-				'lifetime' => $lifetime
+				'lifetime'     => $lifetime
 			]);
 
 		$now = time();
 
 		$timestamps = $cache->get($key);
-		if (!is_array($timestamps)) {
+		if (!is_array($timestamps))
+		{
 			$timestamps = [];
 		}
 
@@ -126,7 +150,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 		$timestamps[] = $now;
 
-		$used = count($timestamps);
+		$used      = count($timestamps);
 		$remaining = max(0, $maxRequests - $used);
 		$resetTime = ($timestamps[0] ?? $now) + $windowSeconds; // window reset timestamp
 
@@ -134,9 +158,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		header('X-RateLimit-Remaining: ' . $remaining);
 		header('X-RateLimit-Reset: ' . $resetTime);
 
-		if ($used > $maxRequests) {
+		if ($used > $maxRequests)
+		{
 			$retryAfter = $resetTime - $now;
-			if ($retryAfter < 0) {
+			if ($retryAfter < 0)
+			{
 				$retryAfter = 0;
 			}
 
@@ -145,11 +171,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			header('Retry-After: ' . (int) $retryAfter);
 
 			echo json_encode([
-				'status' => 429,
-				'message' => 'Too many requests. Try again after ' . $retryAfter . ' seconds.',
-				'limit' => $maxRequests,
+				'status'    => 429,
+				'message'   => 'Too many requests. Try again after ' . $retryAfter . ' seconds.',
+				'limit'     => $maxRequests,
 				'remaining' => 0,
-				'reset' => $resetTime,
+				'reset'     => $resetTime,
 			]);
 
 			exit;
