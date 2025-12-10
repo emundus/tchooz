@@ -46,8 +46,8 @@ class ActionExport extends ActionEntity
 	/**
 	 * Execute the action with the given parameters.
 	 *
-	 * @param   ActionTargetEntity|ActionTargetEntity[]         $context
-	 * @param   AutomationExecutionContext|null  $executionContext
+	 * @param   ActionTargetEntity|ActionTargetEntity[]  $context
+	 * @param   AutomationExecutionContext|null          $executionContext
 	 *
 	 * @return ActionExecutionStatusEnum  The status of the action execution.
 	 */
@@ -59,7 +59,7 @@ class ActionExport extends ActionEntity
 
 			if (is_array($context))
 			{
-				$fnums = array_map(function($target) {
+				$fnums = array_map(function ($target) {
 					return $target->getFile();
 				}, $context);
 			}
@@ -84,17 +84,18 @@ class ActionExport extends ActionEntity
 			{
 				throw new \Exception('Invalid export format specified.');
 			}
-			
-			$langCode = $this->getParameterValue('lang');
 
-			$lang        = Factory::getApplication()->getLanguage();
+			$parameters = $this->getParameterValues();
+			$langCode   = $parameters['lang'];
+
+			$lang = Factory::getApplication()->getLanguage();
 			$lang->setDefault($langCode);
 			$lang->load('com_emundus', JPATH_SITE . '/components/com_emundus', $langCode);
 			$lang->load('', JPATH_SITE, $langCode);
-			
+
 			$exportRepository = new ExportRepository();
-			$exportEntity = null;
-			$task = null;
+			$exportEntity     = null;
+			$task             = null;
 
 			if ($this->isExecutedWith(ExportEntity::class))
 			{
@@ -102,7 +103,7 @@ class ActionExport extends ActionEntity
 			}
 			elseif ($this->isExecutedWith(TaskEntity::class))
 			{
-				$task = $this->getWithOfType(TaskEntity::class)[0];
+				$task         = $this->getWithOfType(TaskEntity::class)[0];
 				$exportEntity = $exportRepository->getExportByTask($task->getId());
 			}
 
