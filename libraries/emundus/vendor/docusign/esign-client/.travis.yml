@@ -1,0 +1,9 @@
+branches:
+  only: 
+    - master
+language: php
+sudo: false
+php:
+    - 7.4
+before_install: "composer install --ignore-platform-reqs"
+script: "cd test && phpunit UnitTests.php"

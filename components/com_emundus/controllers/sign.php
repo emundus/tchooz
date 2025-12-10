@@ -27,6 +27,7 @@ use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\NumericSign\YousignRequestsRepository;
 use Tchooz\Services\NumericSign\YousignService;
+use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitResponse;
@@ -248,6 +249,7 @@ class EmundusControllerSign extends BaseController
 		$attachment = $this->input->getInt('attachment', 0);
 		$upload     = $this->input->getInt('upload', 0);
 		$connector  = $this->input->getString('connector', 'yousign');
+		$subject    = $this->input->getString('subject', '');
 		$signers    = $this->input->getString('signers');
 		if (!empty($signers))
 		{
@@ -265,7 +267,7 @@ class EmundusControllerSign extends BaseController
 
 		try
 		{
-			if ($request_id = $this->model->saveRequest($id, $status, $ccid, $user_id, $fnum, $attachment, $connector, $signers, $upload))
+			if ($request_id = $this->model->saveRequest($id, $status, $ccid, $user_id, $fnum, $attachment, $connector, $signers, $upload, 0, false, $subject))
 			{
 				$response['code']    = 200;
 				$response['status']  = true;
@@ -502,9 +504,8 @@ class EmundusControllerSign extends BaseController
 		if (empty($request_id))
 		{
 			$response['code']    = 400;
-			$response['message'] = 'Missing required fields.';
+			$response['message'] = Text::_('COM_EMUNDUS_MISSING_PARAMETERS');
 			$this->sendJsonResponse($response);
-
 			return;
 		}
 
@@ -670,6 +671,42 @@ class EmundusControllerSign extends BaseController
 		{
 			$response['code']    = $e->getCode();
 			$response['message'] = $e->getMessage();
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+
+	public function docusigncallback(): void
+	{
+		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => 0];
+
+		try
+		{
+			$rawBody = file_get_contents('php://input');
+			$synchronizer = new DocuSignSynchronizer();
+
+			if (!$synchronizer->verifySignature($_SERVER['HTTP_X_DOCUSIGN_SIGNATURE_1'], $rawBody))
+			{
+				$response['code']    = 400;
+				$response['message'] = 'Invalid signature.';
+				Log::add('Invalid DocuSign signature', Log::ERROR, 'com_emundus.sign');
+			}
+			else
+			{
+				Log::add('Received DocuSign callback: ' . $rawBody, Log::INFO, 'com_emundus.sign');
+				$synchronizer->processCallback($rawBody);
+
+				$response['code']    = 200;
+				$response['status']  = true;
+				$response['message'] = 'DocuSign callback processed successfully.';
+			}
+		}
+		catch (\Exception $e)
+		{
+			$response['code']    = $e->getCode();
+			$response['message'] = $e->getMessage();
+			Log::add('DocuSign callback error: ' . $e->getMessage(), Log::ERROR, 'com_emundus.sign');
 		}
 
 		$this->sendJsonResponse($response);

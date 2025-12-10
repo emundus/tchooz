@@ -85,12 +85,11 @@ class ActionRepository
 					$parameters = json_decode($result->params, true) ?? [];
 					$action = $registry->getActionInstance($result->name);
 					$action->setId($result->id);
+					$action->setParametersValuesFromArray($parameters);
 
-					foreach ($parameters as $parameter => $value)
-					{
-						$action->setParameterValues($parameter, $value);
+					if (method_exists($action, 'setParametersOptionsWithValues')) {
+						$action->setParametersOptionsWithValues();
 					}
-
 					$action->setTargets($this->targetRepository->getTargetsByActionId($result->id));
 
 					$actions[] = $action;
@@ -103,11 +102,11 @@ class ActionRepository
 
 	/**
 	 * @param   ActionEntity  $action
-	 * @param   int           $automationId
+	 * @param   ?int           $automationId
 	 *
 	 * @return bool
 	 */
-	public function saveAction(ActionEntity $action, int $automationId): bool
+	public function flush(ActionEntity $action, int $automationId): bool
 	{
 		$saved = false;
 
@@ -128,26 +127,23 @@ class ActionRepository
 
 		if ($action->getId() > 0)
 		{
-			$query->clear()
-				->update($this->db->quoteName('#__emundus_action'))
-				->set($this->db->quoteName('automation_id') . ' = ' . $automationId)
-				->set($this->db->quoteName('name') . ' = ' . $this->db->quote($action->getType()))
-				->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($action->getParameterValues())))
-				->where($this->db->quoteName('id') . ' = ' . $action->getId());
+			$update = (object)[
+				'id' => $action->getId(),
+				'name' => $action->getType(),
+				'automation_id' => $automationId,
+				'params' => json_encode($action->getParameterValues()),
+			];
 
-			$this->db->setQuery($query);
-			$saved = $this->db->execute();
+			$saved = $this->db->updateObject('#__emundus_action', $update, 'id');
 		}
 		else
 		{
-			$query->clear()
-				->insert($this->db->quoteName('#__emundus_action'))
-				->columns(['automation_id', 'name', 'params'])
-				->values($automationId . ', ' . $this->db->quote($action->getType()) . ', ' . $this->db->quote(json_encode($action->getParameterValues())));
-
-			$this->db->setQuery($query);
-			$saved = $this->db->execute();
-			if ($saved)
+			$insert = (object)[
+				'name' => $action->getType(),
+				'params' => json_encode($action->getParameterValues()),
+				'automation_id' => $automationId
+			];
+			if ($saved = $this->db->insertObject('#__emundus_action', $insert))
 			{
 				$action->setId((int) $this->db->insertid());
 			}

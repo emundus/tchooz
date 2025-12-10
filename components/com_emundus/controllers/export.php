@@ -6,81 +6,624 @@
  * @license         GNU General Public License
  */
 
-// ensure this file is being included by a parent file
-defined('_JEXEC') or die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/export.php');
+defined('_JEXEC') or die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
-//client api for file conversion
-
-use Joomla\CMS\MVC\Controller\BaseController;
-use Joomla\CMS\Factory;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\User\User;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\Entities\Actions\ActionEntity as AccessActionEntity;
+use Tchooz\Entities\Automation\Actions\ActionExport;
+use Tchooz\Entities\Automation\ActionTargetEntity;
+use Tchooz\Entities\Export\ExportEntity;
+use Tchooz\Entities\List\AdditionalColumn;
+use Tchooz\Entities\List\AdditionalColumnTag;
+use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Export\ExportFormatEnum;
+use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\List\ListColumnTypesEnum;
+use Tchooz\Enums\List\ListDisplayEnum;
+use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Task\TaskRepository;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
+use Tchooz\Response;
+use Tchooz\Traits\TraitResponse;
 
-/**
- * Custom report controller
- * @package     Emundus
- */
 class EmundusControllerExport extends BaseController
 {
-	protected $app;
+	use TraitResponse;
 
-	private $_user;
+	private ?User $_user;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
-	public function __construct($config = array())
+	private bool $exportAction;
+
+	private AccessActionEntity $exportActionExcel;
+
+	private AccessActionEntity $exportActionPdf;
+
+	private AccessActionEntity $exportActionZip;
+
+	private ExportRepository $exportRepository;
+
+	public function __construct(array $config = array())
 	{
 		parent::__construct($config);
 
-		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
+
+		if (!class_exists('EmundusHelperAccess'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+		}
+		if (!class_exists('EmundusHelperExport'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/export.php');
+		}
+
+		$actionRepository = new AccessActionRepository();
+		//$this->exportAction      = $actionRepository->getByName('export');
+
+		$this->exportActionExcel = $actionRepository->getByName('export_excel');
+		$this->exportActionPdf   = $actionRepository->getByName('export_zip');
+		$this->exportActionZip   = $actionRepository->getByName('export_pdf');
+
+		$this->exportAction = EmundusHelperAccess::asAccessAction($this->exportActionExcel->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionPdf->getId(), CrudEnum::CREATE->value, $this->_user->id) || EmundusHelperAccess::asAccessAction($this->exportActionZip->getId(), CrudEnum::CREATE->value, $this->_user->id);
+
+		$this->exportRepository = new ExportRepository();
 	}
 
-	/**
-	 * Method to display a view.
-	 *
-	 * @param   boolean  $cachable   If true, the view output will be cached.
-	 * @param   boolean  $urlparams  An array of safe URL parameters and their variable types.
-	 *                   @see        \Joomla\CMS\Filter\InputFilter::clean() for valid values.
-	 *
-	 * @return  DisplayController  This object to support chaining.
-	 *
-	 * @since   1.0.0
-	 */
-	public function display($cachable = false, $urlparams = false)
+	public function display($cachable = false, $urlparams = false): void
 	{
 		// Set a default view if none exists
-		if (!$this->input->get('view')) {
+		if (!$this->input->get('view'))
+		{
 			$default = 'application_form';
 			$this->input->set('view', $default);
 		}
+
 		parent::display();
 	}
 
-	public function getprofiles()
+	/**
+	 * @depecated Need to be removed after migration of exports to task system
+	 */
+	public function getprofiles(): void
 	{
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id)) {
-			die(JText::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
-		} else {
-			$code = $this->input->getVar('code', null);
-			$camp = $this->input->getVar('camp', null);
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
+		}
+		else
+		{
+			$code = $this->input->getString('code', '');
+			$camp = $this->input->getString('camp', '');
 
 			$code = explode(',', $code);
 			$camp = explode(',', $camp);
 
-			require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
-			$m_profile = $this->getModel('Profile');
+			if (!class_exists('EmundusModelProfile'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+			}
+			$m_profile = new EmundusModelProfile();
 			$profiles  = $m_profile->getProfileIDByCampaigns($camp, $code);
 
 			echo json_encode((object) $profiles);
 			exit();
 		}
+	}
+
+	public function formats(): void
+	{
+		try
+		{
+			if (!$this->exportAction)
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			$formats       = [];
+			$exportFormats = ExportFormatEnum::cases();
+			foreach ($exportFormats as $format)
+			{
+				$formats[] = [
+					'value' => $format->value,
+					'label' => $format->getLabel(),
+					'image' => $format->getImage(),
+				];
+			}
+
+			$response = Response::ok($formats, Text::_('COM_EMUNDUS_EXPORT_FORMATS_RETRIEVED_SUCCESSFULLY'));
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function elements(): void
+	{
+		try
+		{
+			if (!$this->exportAction)
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			$type = $this->input->getString('type', 'applicant');
+
+			$fnums = $this->input->post->getString('fnums');
+			if (empty($fnums))
+			{
+				$fnums = $this->app->getUserState('com_emundus.files.export.fnums');
+			}
+			
+			$applicationFileRepository = new ApplicationFileRepository();
+			$campaignIds = $applicationFileRepository->getCampaignIds($fnums);
+			
+			// Get campaigns of fnums and keep the campaign with max occurrences
+			$campaignIdCounts = array_count_values($campaignIds);
+			arsort($campaignIdCounts);
+			$selectedCampaignId = key($campaignIdCounts);
+
+			if($type === 'applicant' || $type === 'management')
+			{
+				// Get workflows for the selected campaign
+				$campaignRepository = new CampaignRepository();
+				$campaign = $campaignRepository->getById($selectedCampaignId);
+				$programIds = [$campaign->getProgram()->getId()];
+				
+				$programIds = array_merge($programIds, $campaignRepository->getLinkedProgramsIds($campaign->getId()));
+				
+				$workflowRepository = new WorkflowRepository();
+				$workflows = [];
+				foreach ($programIds as $programId)
+				{
+					$workflows[] = $workflowRepository->getWorkflowByProgramId($programId);
+				}
+
+				// if type applicants, get applicants steps (1)
+				if($type === 'applicant')
+				{
+					$profileIds = [];
+					foreach ($workflows as $workflow)
+					{
+						foreach ($workflow->getSteps() as $step)
+						{
+							if($step->getType()->getCode() === 'applicant' && !empty($step->getProfileId()))
+							{
+								$profileIds[] = $step->getProfileId();
+							}
+						}
+					}
+
+					// Find fabrik forms by profile ids
+					$fabrikRepository = new FabrikRepository();
+					foreach ($profileIds as $profileId)
+					{
+						$forms = $fabrikRepository->getFormsByProfileId($profileId);
+						echo '<pre>'; var_dump($forms); echo '</pre>'; die;
+					}
+				}
+			}
+
+			$elements = [];
+			$response = Response::ok($elements, Text::_('COM_EMUNDUS_EXPORT_ELEMENTS_RETRIEVED_SUCCESSFULLY'));
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function export(): void
+	{
+		try
+		{
+			if (!$this->exportAction)
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+			
+			$currentLang = $this->app->getLanguage()->getTag();
+
+			$emConfig   = ComponentHelper::getParams('com_emundus');
+			$allowAsync = $emConfig->get('async_export', 0);
+
+			$async = false;
+			if ($allowAsync)
+			{
+				$async = $this->input->getString('async', false);
+				$async = filter_var($async, FILTER_VALIDATE_BOOLEAN);
+			}
+
+			$format = $this->input->getString('format');
+			$format = ExportFormatEnum::tryFrom($format);
+			if (empty($format))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), Response::HTTP_BAD_REQUEST);
+			}
+
+			$fnums = $this->input->post->getString('fnums');
+			if (empty($fnums))
+			{
+				$fnums = $this->app->getUserState('com_emundus.files.export.fnums');
+			}
+			// Filter fnums that we can actually export
+			$validFnums = [];
+
+			if (!is_array($fnums))
+			{
+				$fnums = explode(',', $fnums);
+			}
+			foreach ($fnums as $fnum)
+			{
+				if (is_string($fnum) && EmundusHelperAccess::asAccessAction($format->getAccessName(), CrudEnum::CREATE->value, $this->_user->id, $fnum))
+				{
+					$validFnums[] = $fnum;
+				}
+			}
+
+			if (empty($validFnums))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), Response::HTTP_BAD_REQUEST);
+			}
+
+			$parameters = [
+				'format' => $format->value
+			];
+
+			if ($format === ExportFormatEnum::XLSX)
+			{
+				$file      = $this->input->getString('file');
+				$totalfile = $this->input->getInt('totalfile', 0);
+				$start     = $this->input->getInt('start', 0);
+				$limit     = $this->input->getInt('limit', 100);
+				$nbcol     = $this->input->getInt('nbcol', 0);
+				$elts      = $this->input->getString('elts', '');
+				$step_elts = $this->input->getString('step_elts', []);
+				if (!is_array($step_elts))
+				{
+					$step_elts = json_decode($step_elts, true);
+				}
+				$objs           = $this->input->getString('objs', null);
+				$opts           = $this->input->getString('opts', null);
+				$method         = $this->input->getInt('methode', 0);
+				$objclass       = $this->input->get('objclass', null);
+				$excel_filename = $this->input->getString('excelfilename', 'export.xlsx');
+				$campaign       = $this->input->getInt('campaign', 0);
+
+				$parameters = array_merge($parameters, [
+					'tmp_file'       => $file,
+					'totalfile'      => $totalfile,
+					'start'          => $start,
+					'limit'          => $limit,
+					'nbcol'          => $nbcol,
+					'elts'           => $elts,
+					'step_elts'      => $step_elts,
+					'objs'           => $objs,
+					'opts'           => $opts,
+					'method'         => $method,
+					'objclass'       => $objclass,
+					'excel_filename' => $excel_filename,
+					'campaign'       => $campaign,
+					'lang'           => $currentLang,
+				]);
+
+				// Delete tmp file if exists
+				$tmpFilename = 'tmp/' . $file;
+				$tmpFile     = JPATH_SITE . '/' . $tmpFilename;
+				if (file_exists($tmpFile))
+				{
+					unlink($tmpFile);
+				}
+			}
+
+			$exportEntity = null;
+			if (isset($tmpFilename))
+			{
+				$exportEntity = $this->exportRepository->getByFilenameAndUser($tmpFilename, $this->_user->id);
+			}
+
+			if (empty($exportEntity))
+			{
+				$exportEntity = new ExportEntity(
+					id: 0,
+					createdAt: new \DateTime(),
+					createdBy: $this->_user,
+					filename: $tmpFilename ?? '',
+					format: $format,
+					expiredAt: null,
+					task: null,
+					hits: 0,
+					progress: 0
+				);
+				if (!$this->exportRepository->flush($exportEntity))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_EXPORT_RECORD'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+			}
+
+			$exportAction = new ActionExport($parameters);
+			$targets = array_map(function($fnum) use ($exportEntity) {
+				return new ActionTargetEntity($this->_user, $fnum, null, ['export_id' => $exportEntity->getId()]);
+			}, $validFnums);
+
+			if ($async)
+			{
+				// If export asynchronous, create a task
+				$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'actionTargetEntities' => array_map(function($target) { return $target->serialize(); }, $targets)]);
+
+				$taskRepository = new TaskRepository();
+				if (!$taskRepository->saveTask($task))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+
+				$exportEntity->setCancelled(true);
+				$exportEntity->setTask($task);
+				if (!$this->exportRepository->flush($exportEntity))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+
+				$response = Response::ok(['task_id' => $task->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
+				//
+			}
+			else
+			{
+				// Synchronous export
+				if ($exportAction->with($exportEntity)->execute($targets) !== ActionExecutionStatusEnum::COMPLETED)
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+
+				// Get last export for user
+				$exportRepository = new ExportRepository();
+				$exportResult     = $exportRepository->getLastExportByUser($this->_user->id);
+
+				$response = Response::ok($exportResult->__serialize(), Text::_('COM_EMUNDUS_EXPORT_COMPLETED_SUCCESSFULLY'));
+			}
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getexports(): void
+	{
+		try
+		{
+			if (!$this->exportAction)
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			$lim     = $this->input->getInt('lim', 0);
+			$page    = $this->input->getInt('page', 0);
+			$status  = $this->input->getString('status', 'all');
+			if(!in_array($status, ['all', 'in_progress', 'completed']))
+			{
+				$status = 'all';
+			}
+			$sortDir = $this->input->getString('sort', 'DESC');
+			if (!in_array($sortDir, ['ASC', 'DESC']))
+			{
+				$sortDir = 'DESC';
+			}
+
+			$exports = $this->exportRepository->getAll($lim, $page, $sortDir, $status, $this->_user->id);
+
+			if ($exports->getTotalItems() > 0)
+			{
+				$exportsSerialized = array_map(function ($exportEntity) {
+					assert($exportEntity instanceof ExportEntity);
+					$export = (object) $exportEntity->__serialize();
+
+					$createdAt = EmundusHelperDate::displayDate($exportEntity->getCreatedAt()->format('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0);
+
+					if (!empty($exportEntity->getTask()))
+					{
+						$metadata = $exportEntity->getTask()->getMetadata();
+						if (!empty($metadata['actionEntity']['parameter_values']['time_estimate']))
+						{
+							// Calculate end time based on created at + time estimate
+							$timeEstimateSeconds = (int) $metadata['actionEntity']['parameter_values']['time_estimate'];
+							$endTime             = clone $exportEntity->getCreatedAt();
+							$endTime->modify('+' . $timeEstimateSeconds . ' seconds');
+							$export->estimated_end_time = EmundusHelperDate::displayDate($endTime->format('Y-m-d H:i:s'), 'DATE_FORMAT_LC2', 0);
+						}
+					}
+
+					$export->label = ['fr' => 'Export du ' . $createdAt, 'en' => 'Export of ' . $createdAt];
+
+					$status = (Text::_('COM_EMUNDUS_EXPORTS_STATUS_IN_PROGRESS') . ' (' . $exportEntity->getProgress() . '%)');
+					$class = 'tw-bg-blue-500';
+					if($exportEntity->isFailed())
+					{
+						$status = Text::_('COM_EMUNDUS_EXPORTS_STATUS_FAILED');
+						$class  = 'tw-bg-red-500';
+					}
+					elseif($exportEntity->getProgress() >= 100)
+					{
+						$status = Text::_('COM_EMUNDUS_EXPORTS_STATUS_COMPLETED');
+						$class  = 'tw-bg-green-500';
+					}
+
+					$export->additional_columns = [
+						new AdditionalColumn(
+							Text::_('COM_EMUNDUS_EXPORTS_FORMAT'),
+							'',
+							ListDisplayEnum::ALL,
+							'',
+							Text::_($exportEntity->getFormat()->getLabel()),
+						),
+						new AdditionalColumn(
+							Text::_('COM_EMUNDUS_EXPORTS_STATUS'),
+							'',
+							ListDisplayEnum::ALL,
+							'',
+							'',
+							[new AdditionalColumnTag(
+								Text::_('COM_EMUNDUS_EXPORTS_STATUS'),
+								$status,
+								$exportEntity->getProgress(),
+								'tw-mr-2 tw-h-max tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-text-white ' . $class
+							)],
+							ListColumnTypesEnum::TAGS
+						),
+						new AdditionalColumn(
+							Text::_('COM_EMUNDUS_EXPORTS_END_TIME_ESTIMATE'),
+							'',
+							ListDisplayEnum::ALL,
+							'',
+							$exportEntity->getProgress() < 100 ? ($export->estimated_end_time ?? Text::_('COM_EMUNDUS_EXPORTS_END_TIME_ESTIMATE_NOT_AVAILABLE')) : '-',
+						),
+						new AdditionalColumn(
+							Text::_('COM_EMUNDUS_EXPORTS_HITS'),
+							'',
+							ListDisplayEnum::ALL,
+							'',
+							$exportEntity->getHits(),
+						),
+					];
+
+					return $export;
+				}, $exports->getItems());
+
+				$response = Response::ok(
+					['datas' => $exportsSerialized, 'count' => $exports->getTotalItems()],
+					Text::_('COM_EMUNDUS_EXPORTS_RETRIEVED_SUCCESSFULLY')
+				);
+			}
+			else
+			{
+				$response = Response::ok(
+					['datas' => [], 'count' => 0],
+					Text::_('COM_EMUNDUS_EXPORTS_NO_EXPORTS_FOUND')
+				);
+			}
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function downloadexport(): void
+	{
+		try
+		{
+			$id = $this->input->getInt('id', 0);
+
+			// Get link to export file
+			$export = $this->exportRepository->getById($id);
+			if (empty($export))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+			}
+
+			// Check if user has access to download this export
+			if ($export->getCreatedBy() !== $this->_user->id && !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			// Update hits
+			$export->setHits($export->getHits() + 1);
+			if (!$this->exportRepository->flush($export))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_HITS'), Response::HTTP_INTERNAL_SERVER_ERROR);
+			}
+
+			$response = Response::ok(
+				['download_file' => '/' . $export->getFilename()],
+				Text::_('COM_EMUNDUS_EXPORT_RETRIEVED_SUCCESSFULLY')
+			);
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function delete(): void
+	{
+		try
+		{
+			$exports_ids = [];
+			$ids         = $this->input->getString('ids', '');
+			if (!empty($ids))
+			{
+				$exports_ids = explode(',', $ids);
+			}
+			$id = $this->input->getInt('id', 0);
+			if ($id > 0)
+			{
+				$exports_ids[] = $id;
+			}
+
+			foreach ($exports_ids as $id)
+			{
+				$export = $this->exportRepository->getById($id);
+				if (empty($export))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+				}
+
+				// Check if user has access to download this export
+				if ($export->getCreatedBy() !== $this->_user->id && !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+				{
+					throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				}
+
+				// Delete export record and task associated if any
+				$task = $export->getTask();
+				if (!empty($task))
+				{
+					$taskRepository = new TaskRepository();
+					if (!$taskRepository->deleteTaskById($task->getId()))
+					{
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_ASSOCIATED_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					}
+				}
+
+				if (!$this->exportRepository->delete($export->getId()))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+			}
+
+			$response = Response::ok(
+				[],
+				Text::_('COM_EMUNDUS_EXPORT_DELETED_SUCCESSFULLY')
+			);
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
+		$this->sendJsonResponse($response);
 	}
 }

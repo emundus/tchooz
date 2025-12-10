@@ -11,6 +11,7 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Task\TaskFactory;
+use Tchooz\Response;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: 'jos_emundus_task')]
@@ -18,7 +19,7 @@ class TaskRepository
 {
 	use TraitTable;
 
-	private CONST MAX_PENDING_TASKS = 100;
+	private const MAX_PENDING_TASKS = 100;
 
 
 	private DatabaseDriver $db;
@@ -46,7 +47,7 @@ class TaskRepository
 			if (!empty($dbObject))
 			{
 				$tasks = TaskFactory::fromDbObjects([$dbObject], $this->db);
-				$task = $tasks[0] ?? null;
+				$task  = $tasks[0] ?? null;
 			}
 		}
 
@@ -57,7 +58,8 @@ class TaskRepository
 	{
 		$pendingTasks = [];
 
-		if ($limit > self::MAX_PENDING_TASKS) {
+		if ($limit > self::MAX_PENDING_TASKS)
+		{
 			$limit = self::MAX_PENDING_TASKS;
 		}
 
@@ -71,7 +73,8 @@ class TaskRepository
 		$this->db->setQuery($query);
 		$dbObjects = $this->db->loadObjectList();
 
-		if (!empty($dbObjects)) {
+		if (!empty($dbObjects))
+		{
 			$pendingTasks = TaskFactory::fromDbObjects($dbObjects, $this->db);
 		}
 
@@ -87,7 +90,8 @@ class TaskRepository
 	{
 		$count = 0;
 
-		try {
+		try
+		{
 			$query = $this->db->createQuery();
 			$query->select('COUNT(id)')
 				->from($this->getTableName(self::class));
@@ -96,7 +100,9 @@ class TaskRepository
 
 			$this->db->setQuery($query);
 			$count = (int) $this->db->loadResult();
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e)
+		{
 			Log::add('Error getting tasks count: ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
 		}
 
@@ -122,7 +128,8 @@ class TaskRepository
 
 		$this->applyFilters($filters, $query);
 
-		if ($page < 1) {
+		if ($page < 1)
+		{
 			$page = 1;
 		}
 
@@ -151,14 +158,18 @@ class TaskRepository
 		{
 			foreach ($filters as $field => $value)
 			{
-				if (!in_array($field, ['status', 'action_id', 'user_id', 'id'], true)) {
+				if (!in_array($field, ['status', 'action_id', 'user_id', 'id'], true))
+				{
 					continue;
 				}
 
-				if (str_contains($value, ',')) {
+				if (str_contains($value, ','))
+				{
 					$values = explode(',', $value);
 					$query->where($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $values)) . ')');
-				} else {
+				}
+				else
+				{
 					$query->where($this->db->quoteName($field) . ' = ' . $this->db->quote($value));
 				}
 			}
@@ -174,60 +185,51 @@ class TaskRepository
 	{
 		$saved = false;
 
-		if (empty($task->getUserId()) || empty($task->getAction()) || empty($task->getAction()->getId()))
+		if (empty($task->getUserId()))
 		{
-			throw new \InvalidArgumentException('Task must have a valid user ID and action before saving.');
+			throw new \InvalidArgumentException('Task must have a valid user ID and action before saving.', Response::HTTP_BAD_REQUEST);
 		}
 
-		try {
+		try
+		{
 			$query = $this->db->createQuery();
 			if (!empty($task->getId()))
 			{
-				$query->clear()
-					->update($this->getTableName(self::class))
-					->set($this->db->quoteName('status') . ' = ' . $this->db->quote($task->getStatus()->value))
-					->set($this->db->quoteName('action_id') . ' = ' . $this->db->quote($task->getAction()->getId()))
-					->set($this->db->quoteName('user_id') . ' = ' . $this->db->quote($task->getUserId()))
-					->set($this->db->quoteName('updated_at') . ' = ' . $this->db->quote((new \DateTimeImmutable())->format('Y-m-d H:i:s')))
-					->set($this->db->quoteName('started_at') . ' = ' . ($task->getStartedAt() ? $this->db->quote($task->getStartedAt()->format('Y-m-d H:i:s')) : 'NULL'))
-					->set($this->db->quoteName('finished_at') . ' = ' . ($task->getFinishedAt() ? $this->db->quote($task->getFinishedAt()->format('Y-m-d H:i:s')) : 'NULL'))
-					->set($this->db->quoteName('metadata') . ' = ' . $this->db->quote(json_encode($task->getMetadata())))
-					->set($this->db->quoteName('attempts') . ' = ' . $this->db->quote($task->getAttempts()))
-					->where($this->db->quoteName('id') . ' = ' . $task->getId());
-
-				$this->db->setQuery($query);
-				$saved = $this->db->execute();
+				$update = (object)[
+					'id' => $task->getId(),
+					'status'      => $task->getStatus()->value,
+					'user_id'     => $task->getUserId(),
+					'updated_at'  => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+					'started_at'  => ($task->getStartedAt() ? $task->getStartedAt()->format('Y-m-d H:i:s') : null),
+					'finished_at' => ($task->getFinishedAt() ? $task->getFinishedAt()->format('Y-m-d H:i:s') : null),
+					'metadata'    => json_encode($task->getMetadata()),
+					'attempts'    => $task->getAttempts(),
+				];
+				if(!empty($task->getAction()) && !empty($task->getAction()->getId()))
+				{
+					$update->action_id = $task->getAction()->getId();
+				}
+				
+				$saved = $this->db->updateObject($this->getTableName(self::class), $update, 'id');
 			}
 			else
 			{
-				$query->clear()
-					->insert($this->getTableName(self::class))
-					->columns([
-						$this->db->quoteName('status'),
-						$this->db->quoteName('action_id'),
-						$this->db->quoteName('user_id'),
-						$this->db->quoteName('metadata'),
-						$this->db->quoteName('created_at'),
-						$this->db->quoteName('updated_at'),
-						$this->db->quoteName('started_at'),
-						$this->db->quoteName('finished_at'),
-						$this->db->quoteName('attempts'),
-					])
-					->values(
-						$this->db->quote($task->getStatus()->value) . ', ' .
-						$this->db->quote($task->getAction()->getId()) . ', ' .
-						$this->db->quote($task->getUserId()) . ', ' .
-						$this->db->quote(json_encode($task->getMetadata())) . ', ' .
-						$this->db->quote((new \DateTimeImmutable())->format('Y-m-d H:i:s')) . ', ' .
-						$this->db->quote((new \DateTimeImmutable())->format('Y-m-d H:i:s')) . ', ' .
-						($task->getStartedAt() ? $this->db->quote($task->getStartedAt()->format('Y-m-d H:i:s')) : 'NULL') . ', ' .
-						($task->getFinishedAt() ? $this->db->quote($task->getFinishedAt()->format('Y-m-d H:i:s')) : 'NULL') . ', ' .
-						$this->db->quote($task->getAttempts())
-					);
+				$insert = (object)[
+					'status'      => $task->getStatus()->value,
+					'user_id'     => $task->getUserId(),
+					'metadata'    => json_encode($task->getMetadata()),
+					'created_at'  => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+					'updated_at'  => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
+					'started_at'  => ($task->getStartedAt() ? $task->getStartedAt()->format('Y-m-d H:i:s') : null),
+					'finished_at' => ($task->getFinishedAt() ? $task->getFinishedAt()->format('Y-m-d H:i:s') : null),
+					'attempts'    => $task->getAttempts(),
+				];
+				if(!empty($task->getAction()) && !empty($task->getAction()->getId()))
+				{
+					$insert->action_id = $task->getAction()->getId();
+				}
 
-				$this->db->setQuery($query);
-				$saved = $this->db->execute();
-				if ($saved)
+				if ($saved = $this->db->insertObject($this->getTableName(self::class), $insert))
 				{
 					$task->setId((int) $this->db->insertid());
 				}
@@ -243,7 +245,7 @@ class TaskRepository
 	}
 
 	/**
-	 * @param int  $id
+	 * @param   int  $id
 	 *
 	 * @return bool
 	 */
@@ -253,14 +255,17 @@ class TaskRepository
 
 		if (!empty($id))
 		{
-			try {
+			try
+			{
 				$query = $this->db->createQuery()
 					->delete($this->getTableName(self::class))
 					->where($this->db->quoteName('id') . ' = ' . $id);
 
 				$this->db->setQuery($query);
 				$deleted = $this->db->execute();
-			} catch (\Exception $e) {
+			}
+			catch (\Exception $e)
+			{
 				Log::add('Error deleting task: ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
 			}
 		}
@@ -277,13 +282,16 @@ class TaskRepository
 	{
 		$deleted = false;
 
-		try {
+		try
+		{
 			$query = $this->db->createQuery();
 			$query->delete($this->getTableName(self::class))
 				->where($this->db->quoteName('id') . ' IN (' . implode(',', array_map(fn($task) => (int) $task->getId(), $tasks)) . ')');
 			$this->db->setQuery($query);
 			$deleted = $this->db->execute();
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e)
+		{
 			Log::add('Error deleting tasks: ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
 		}
 
@@ -301,11 +309,13 @@ class TaskRepository
 	{
 		$task = null;
 
-		if (!empty($action->getId())) {
-			$task = new TaskEntity(0, TaskStatusEnum::PENDING, $action, $userId, ['actionTargetEntity' => $actionTargetEntity->serialize()]);
+		if (!empty($action->getId()))
+		{
+			$task  = new TaskEntity(0, TaskStatusEnum::PENDING, $action, $userId, ['actionTargetEntity' => $actionTargetEntity->serialize()]);
 			$saved = $this->saveTask($task);
 
-			if (!$saved) {
+			if (!$saved)
+			{
 				$task = null;
 			}
 		}
@@ -325,9 +335,12 @@ class TaskRepository
 		$task->setUpdatedAt(new \DateTimeImmutable());
 		$this->saveTask($task);
 
-		try {
+		try
+		{
 			$task->execute();
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e)
+		{
 			Log::add('Error executing task ID ' . $task->getId() . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
 			$task->setStatus(TaskStatusEnum::FAILED);
 		}

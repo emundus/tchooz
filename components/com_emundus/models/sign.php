@@ -98,7 +98,7 @@ class EmundusModelSign extends ListModel
 		return $requests;
 	}
 
-	public function saveRequest(int $id, string $status, int $ccid, int  $userId, string $fnum, int $attachment, string $connector, array $signers, int $upload = 0, int $current_user_id = 0, bool $ordered = false): int
+	public function saveRequest(int $id, string $status, int $ccid, int $userId, string $fnum, int $attachment, string $connector, array $signers, int $upload = 0, int $current_user_id = 0, bool $ordered = false, string $subject = ''): int
 	{
 		$query = $this->db->getQuery(true);
 		if(empty($current_user_id))
@@ -170,6 +170,7 @@ class EmundusModelSign extends ListModel
 
 			$requestEntity->setUploadId($upload);
 			$requestEntity->setOrdered($ordered);
+			$requestEntity->setSubject($subject);
 
 			if($request_id = $requestRepository->flush($requestEntity))
 			{
@@ -192,13 +193,13 @@ class EmundusModelSign extends ListModel
 
 						if(!empty($contact))
 						{
-							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value);
+							$this->addSigner($request_id, $contact->getEmail(), $contact->getFirstname(), $contact->getLastname(), 'to_sign', 1, $signer['page'] ?? 0, $signer['position'] ?? '', $signer['authentication_level'] ?? SignAuthenticationLevelEnum::STANDARD->value, $signer['anchor'] ?? '', $signer['order'] ?? 0);
 						}
 					}
 				}
 			}
 
-			if(!empty($request_id))
+			if (!empty($request_id))
 			{
 				EmundusModelLogs::log($current_user_id, EmundusHelperFiles::getApplicantIdFromFileId($ccid), $fnum, $this->getSignActionId(), 'c', 'COM_EMUNDUS_SIGN_REQUEST_CREATED', json_encode(['created' => ['filename' => $requestEntity->getAttachment()->getName()]]));
 			}
@@ -212,7 +213,7 @@ class EmundusModelSign extends ListModel
 		}
 	}
 
-	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value): int
+	public function addSigner(int $request_id, string $email, string $firstname, string $lastname, ?string $status = 'to_sign', ?int $step = 1, ?int $page = 0, ?string $position = '', ?string $authentication_level = SignAuthenticationLevelEnum::STANDARD->value, ?string $anchor = '', ?int $order = 0): int
 	{
 		try
 		{
@@ -262,6 +263,16 @@ class EmundusModelSign extends ListModel
 					$signer->setAuthenticationLevel($authentication_level);
 				}
 
+				if(!empty($anchor))
+				{
+					$signer->setAnchor($anchor);
+				}
+
+				if (!empty($order))
+				{
+					$signer->setOrder($order);
+				}
+
 				return $signerRepository->flush($signer);
 			}
 			else {
@@ -270,7 +281,7 @@ class EmundusModelSign extends ListModel
 		}
 		catch (\Exception $e)
 		{
-			Log::add($e->getMessage(), Log::ERROR);
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus.sign');
 			throw $e;
 		}
 	}

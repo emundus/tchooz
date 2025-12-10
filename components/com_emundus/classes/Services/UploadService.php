@@ -13,8 +13,7 @@ use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use enshrined\svgSanitize\Sanitizer;
 use RuntimeException;
 use InvalidArgumentException;
-
-class UploadException extends RuntimeException {}
+use Tchooz\Enums\Upload\UploadFormatEnum;
 
 class UploadService
 {
@@ -42,23 +41,46 @@ class UploadService
 		];
 	}
 
+	public function createTemporaryFile(string $prefix, UploadFormatEnum $format): string
+	{
+		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir))
+		{
+			throw new RuntimeException('Failed to create upload directory.');
+		}
+
+		$safePrefix    = $this->sanitizeFilename($prefix);
+		$unique        = uniqid($safePrefix . '_', true);
+		$ext           = strtolower($format->value);
+		$finalFilename = $unique . '.' . $ext;
+		$destination   = $this->uploadDir . $finalFilename;
+
+		$handle = fopen($destination, 'w');
+		if ($handle === false)
+		{
+			throw new RuntimeException('Failed to create temporary file.');
+		}
+		fclose($handle);
+
+		return $this->toRelativePath($destination);
+	}
+
 	public function upload(array $file, ?string $nameForFilename = null, ?string $prefix = null): string
 	{
 		if (!isset($file['error']) || is_array($file['error'])) {
-			throw new UploadException('Invalid file upload parameters.');
+			throw new RuntimeException('Invalid file upload parameters.');
 		}
 
 		if ($file['error'] !== UPLOAD_ERR_OK) {
-			throw new UploadException($this->codeToMessage($file['error']));
+			throw new RuntimeException($this->codeToMessage($file['error']));
 		}
 
 		if (!in_array($file['type'], $this->validMimeTypes, true)) {
-			throw new UploadException('Invalid file type.');
+			throw new RuntimeException('Invalid file type.');
 		}
 
 		$bytes = $this->maxFilesizeMB * 1024 * 1024;
 		if ($file['size'] > $bytes) {
-			throw new UploadException(sprintf('File size exceeds %dMB', $this->maxFilesizeMB));
+			throw new RuntimeException(sprintf('File size exceeds %dMB', $this->maxFilesizeMB));
 		}
 
 		$basename = $this->sanitizeFilename($file['name']);
@@ -67,7 +89,7 @@ class UploadService
 		$mimetype = $this->detectMimeType($ext, $file['tmp_name']);
 
 		if ($file['type'] !== $mimetype) {
-			throw new UploadException('File type does not match file content/extension.');
+			throw new RuntimeException('File type does not match file content/extension.');
 		}
 
 		if ($mimetype === 'image/svg+xml') {
@@ -79,7 +101,7 @@ class UploadService
 		}
 
 		if (!is_dir($this->uploadDir) && !mkdir($this->uploadDir, 0755, true) && !is_dir($this->uploadDir)) {
-			throw new UploadException('Failed to create upload directory.');
+			throw new RuntimeException('Failed to create upload directory.');
 		}
 
 		$safeNamePart = $nameForFilename ? $this->sanitizeFilename($nameForFilename) : '';
@@ -98,7 +120,7 @@ class UploadService
 		$destination = $this->uploadDir . $finalFilename;
 
 		if (!move_uploaded_file($file['tmp_name'], $destination)) {
-			throw new UploadException('Failed to move uploaded file.');
+			throw new RuntimeException('Failed to move uploaded file.');
 		}
 
 		return $this->toRelativePath($destination);
@@ -155,7 +177,7 @@ class UploadService
 			return $mimetype;
 		}
 
-		throw new UploadException('Unable to determine file MIME type.');
+		throw new RuntimeException('Unable to determine file MIME type.');
 	}
 
 	private function sanitizeSvgFile(string $tmpName): void
@@ -163,12 +185,12 @@ class UploadService
 		$sanitizer = new Sanitizer();
 		$svg = file_get_contents($tmpName);
 		if ($svg === false) {
-			throw new UploadException('Failed to read uploaded SVG.');
+			throw new RuntimeException('Failed to read uploaded SVG.');
 		}
 
 		$clean = $sanitizer->sanitize($svg);
 		if ($clean === null) {
-			throw new UploadException('SVG sanitization failed.');
+			throw new RuntimeException('SVG sanitization failed.');
 		}
 
 		file_put_contents($tmpName, $clean);

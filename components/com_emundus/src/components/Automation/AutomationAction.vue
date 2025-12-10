@@ -2,6 +2,7 @@
 import fromAutomationFieldToParameter from '@/mixins/transformIntoParameterField.js';
 import Parameter from '@/components/Utils/Parameter.vue';
 import AutomationActionTargets from '@/components/Automation/AutomationActionTargets.vue';
+import ParameterForm from '@/components/Utils/Form/ParameterForm.vue';
 
 export default {
 	name: 'AutomationAction',
@@ -20,35 +21,120 @@ export default {
 		},
 	},
 	mixins: [fromAutomationFieldToParameter],
-	components: { AutomationActionTargets, Parameter },
+	components: { AutomationActionTargets, Parameter, ParameterForm },
 	data() {
 		return {
-			actionParameters: [],
+			formGroups: [],
 		};
 	},
 	created() {
+		let defaultFroup = {
+			id: 'default-group',
+			title: '',
+			description: '',
+			parameters: [],
+			isRepeatable: false,
+		};
+
 		this.action.parameters.forEach((param) => {
 			if (Array.isArray(this.action.parameter_values)) {
 				this.action.parameter_values = {};
 			}
 
-			this.actionParameters.push(
-				this.fromAutomationFieldToParameter(param, this.action.parameter_values[param.name] ?? null),
-			);
+			if (param.group) {
+				// group is an object with name, label and isRepeatable
+				let group = this.formGroups.find((g) => g.id === param.group.name);
+				if (!group) {
+					group = {
+						id: param.group.name,
+						title: param.group.label || '',
+						description: param.group.description || '',
+						parameters: [],
+						isRepeatable: param.group.isRepeatable || false,
+						rows: [],
+					};
+					this.formGroups.push(group);
+				}
+
+				group.parameters.push(this.fromFieldEntityToParameter(param, this.action.parameter_values[param.name] ?? null));
+			} else {
+				defaultFroup.parameters.push(
+					this.fromFieldEntityToParameter(param, this.action.parameter_values[param.name] ?? null),
+				);
+			}
+		});
+
+		// if default group has parameters, add it
+		if (defaultFroup.parameters.length > 0) {
+			this.formGroups.unshift(defaultFroup);
+		}
+
+		// foreach group, if action parameter_values has group.id array of rows, set them
+		this.formGroups.forEach((group) => {
+			if (group.isRepeatable) {
+				if (this.action.parameter_values[group.id] && Array.isArray(this.action.parameter_values[group.id])) {
+					group.rows = this.action.parameter_values[group.id].map((rowValues) => {
+						return {
+							parameters: group.parameters.map((parameter) => {
+								let paramCopy = JSON.parse(JSON.stringify(parameter));
+								// set value from rowValues
+								if (rowValues && rowValues.hasOwnProperty(paramCopy.param)) {
+									paramCopy.value = rowValues[paramCopy.param];
+								} else {
+									paramCopy.value = null;
+								}
+								return paramCopy;
+							}),
+						};
+					});
+				} else {
+					group.rows = [];
+				}
+			}
 		});
 	},
 	methods: {
 		removeAction(action) {
 			this.$emit('remove-action', action);
 		},
-		onParameterValueUpdated(parameter) {
-			switch (parameter.type) {
-				case 'multiselect':
-					this.action.parameter_values[parameter.param] = parameter.value.map((item) => item.value);
-					break;
-				default:
-					this.action.parameter_values[parameter.param] = parameter.value;
-					break;
+		onParameterValueUpdated(parameter, group = null, rowIndex = null) {
+			if (group.isRepeatable) {
+				if (!this.action.parameter_values[group.id]) {
+					this.action.parameter_values[group.id] = [];
+				}
+				if (!this.action.parameter_values[group.id][rowIndex]) {
+					this.action.parameter_values[group.id][rowIndex] = {};
+				}
+
+				switch (parameter.type) {
+					case 'multiselect':
+						if (parameter.multiple === false) {
+							this.action.parameter_values[group.id][rowIndex][parameter.param] = parameter.value
+								? parameter.value.value
+								: null;
+						} else {
+							this.action.parameter_values[group.id][rowIndex][parameter.param] = parameter.value.map(
+								(item) => item.value,
+							);
+						}
+						break;
+					default:
+						this.action.parameter_values[group.id][rowIndex][parameter.param] = parameter.value;
+						break;
+				}
+			} else {
+				switch (parameter.type) {
+					case 'multiselect':
+						if (parameter.multiple === false) {
+							this.action.parameter_values[parameter.param] = parameter.value ? parameter.value.value : null;
+						} else {
+							this.action.parameter_values[parameter.param] = parameter.value.map((item) => item.value);
+						}
+						break;
+					default:
+						this.action.parameter_values[parameter.param] = parameter.value;
+						break;
+				}
 			}
 		},
 	},
@@ -75,15 +161,14 @@ export default {
 		</div>
 		<p class="tw-mb-2">{{ translate(action.description) }}</p>
 
-		<!-- display parameters if any -->
-		<Parameter
-			v-for="(field, index) in actionParameters"
-			:key="index"
-			:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
-			:parameter-object="field"
-			class="tw-mt-4"
-			@valueUpdated="onParameterValueUpdated"
-		/>
+		<ParameterForm
+			:id="'action-form-' + action.id"
+			:title="null"
+			:description="null"
+			:groups="formGroups"
+			@parameterValueUpdated="onParameterValueUpdated"
+		>
+		</ParameterForm>
 
 		<AutomationActionTargets :event="event" :action="action" :target-predefinitions="targetPredefinitions" />
 	</div>

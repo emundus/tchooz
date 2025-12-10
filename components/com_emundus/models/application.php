@@ -2945,8 +2945,13 @@ class EmundusModelApplication extends ListModel
 	}
 
 
-	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1])
+	public function getFormsPDF($aid, $fnum = 0, $fids = null, $gids = 0, $profile_id = null, $eids = null, $attachments = true, $step_types = [1], $current_user_id = 0)
 	{
+		if(empty($current_user_id))
+		{
+			$current_user_id = $this->_user->id;
+		}
+
 		/* COULEURS*/
 		$eMConfig          = JComponentHelper::getParams('com_emundus');
 		$show_empty_fields = $eMConfig->get('show_empty_fields', 1);
@@ -2954,7 +2959,7 @@ class EmundusModelApplication extends ListModel
 
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/list.php');
 		$h_list    = new EmundusHelperList();
-		$tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id, $step_types);
+		$tableuser = $h_list->getFormsList($aid, $fnum, $fids, $profile_id, $step_types, $current_user_id);
 		$forms     = '';
 
 		if (isset($tableuser)) {
@@ -3028,7 +3033,7 @@ class EmundusModelApplication extends ListModel
 					$query    = $this->_db->getQuery(true);
 					$g_params = json_decode($itemg->params);
 
-					if (!EmundusHelperAccess::isAllowedAccessLevel($this->_user->id, (int) $g_params->access)) {
+					if (!EmundusHelperAccess::isAllowedAccessLevel($current_user_id, (int) $g_params->access)) {
 						continue;
 					}
 

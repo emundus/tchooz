@@ -10,10 +10,20 @@ import OVHSetup from '@/components/Settings/Integration/OVHSetup.vue';
 import YousignSetup from '@/components/Settings/Integration/YousignSetup.vue';
 import SogecommerceSetup from '@/components/Settings/Integration/SogecommerceSetup.vue';
 import StripeSetup from '@/components/Settings/Integration/StripeSetup.vue';
+import IntegrationSetup from '@/components/Settings/Integration/IntegrationSetup.vue';
 
 export default {
 	name: 'Integration',
-	components: { DynamicsSetup, TeamsSetup, AmmonSetup, OVHSetup, YousignSetup, SogecommerceSetup, StripeSetup },
+	components: {
+		IntegrationSetup,
+		DynamicsSetup,
+		TeamsSetup,
+		AmmonSetup,
+		OVHSetup,
+		YousignSetup,
+		SogecommerceSetup,
+		StripeSetup,
+	},
 	data() {
 		return {
 			loading: true,
@@ -49,7 +59,7 @@ export default {
 				class="tw-mb-6 tw-flex tw-w-full tw-flex-col tw-justify-between tw-gap-3 tw-rounded-[15px] tw-border tw-border-neutral-300 tw-bg-white tw-p-4 tw-font-medium tw-text-black rtl:tw-text-right"
 			>
 				<div class="tw-flex tw-items-center tw-justify-between">
-					<img class="tw-w-[45px]" :src="'/images/emundus/icons/' + app.icon" :alt="app.type" />
+					<img class="tw-h-[45px]" :src="'/images/emundus/icons/' + app.icon" :alt="app.type" />
 					<div class="tw-flex tw-items-center" v-if="app.config !== '{}'">
 						<div class="em-toggle">
 							<input
@@ -152,6 +162,8 @@ export default {
 					getApps();
 				"
 			/>
+
+			<IntegrationSetup v-else-if="currentApp.type !== ''" :app="currentApp" :name="currentApp.name" />
 		</div>
 
 		<div class="em-page-loader" v-if="loading"></div>

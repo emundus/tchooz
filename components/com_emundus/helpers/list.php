@@ -279,7 +279,7 @@ class EmundusHelperList
 			$profile['profile_id'] = $profile_id;
 		}
 
-		$formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids);
+		$formsList = $h_menu->buildMenuQuery($profile['profile_id'], $formids, true, $current_user_id);
 
 		if (empty($profile_id)) {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
@@ -292,7 +292,7 @@ class EmundusHelperList
 
 			foreach ($steps as $step) {
 				if ($step->profile != $profile['profile_id']) {
-					$step_form_list = $h_menu->buildMenuQuery($step->profile, $formids);
+					$step_form_list = $h_menu->buildMenuQuery($step->profile, $formids, true, $current_user_id);
 
 					if (!empty($step_form_list)) {
 						$formsList = array_merge($formsList, $step_form_list);
@@ -311,7 +311,7 @@ class EmundusHelperList
 			}
 		}
 
-		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel(Factory::getApplication()->getIdentity()->id) && in_array(2, $step_types)) {
+		if (!empty($infos['campaign_id']) && EmundusHelperAccess::asPartnerAccessLevel($current_user_id) && in_array(2, $step_types)) {
 			require_once(JPATH_SITE . '/components/com_emundus/models/campaign.php');
 			$m_campaign = new EmundusModelCampaign();
 			$evaluation_steps = $m_campaign->getAllCampaignWorkflows($infos['campaign_id'], [2]);

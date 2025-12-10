@@ -13,10 +13,14 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\User\User;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Entities\Contacts\ContactEntity;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Traits\TraitDispatcher;
 use Tchooz\Traits\TraitResponse;
 
@@ -121,6 +125,42 @@ class EmundusControllerContacts extends BaseController
 		$response['message'] = 'Filter saved successfully.';
 		$response['data']    = $files_menu->route;
 		$response['status']  = true;
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getContactOptions(): void
+	{
+		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response = ['code' => 400, 'status' => false, 'msg' => Text::_('MISSING_REQUIRED_PARAMETER'), 'data' => []];
+			$search = $this->input->getString('search_query', '');
+
+			if (!empty($search))
+			{
+				$repository = new ContactRepository();
+				$contactsData = $repository->getAllContacts('DESC', $search);
+
+				$options = [];
+				foreach ($contactsData['datas'] as $contact)
+				{
+					assert($contact instanceof ContactEntity);
+					$options[] = new ChoiceFieldValue($contact->getId(), $contact->getLastname() . ' ' . $contact->getFirstname() . ' (' . $contact->getEmail() . ')');
+				}
+
+				$response['code'] = 200;
+				$response['data'] = array_map(fn($option) => $option->toSchema(), $options);
+				$response['msg'] = Text::_('OPTIONS_RETRIEVED_SUCCESSFULLY');
+			}
+			else
+			{
+				$response['code'] = 200;
+				$response['data'] = [];
+				$response['msg'] = Text::_('NO_OPTIONS_FOUND');
+			}
+		}
 
 		$this->sendJsonResponse($response);
 	}

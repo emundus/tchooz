@@ -4,8 +4,11 @@ namespace Tchooz\Services\Automation;
 
 use EmundusHelperCache;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
+use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 class ActionRegistry
 {
@@ -67,6 +70,10 @@ class ActionRegistry
 		foreach ($this->actions as $type => $class) {
 			assert($class instanceof ActionEntity);
 
+			if(!$class->isAvailable())
+			{
+				continue; // skip this action
+			}
 
 			switch($class::getCategory())
 			{
@@ -77,6 +84,27 @@ class ActionRegistry
 					{
 						continue 2; // skip this action
 					}
+					break;
+				case ActionCategoryEnum::SIGN:
+					$synchronizerRepository = new SynchronizerRepository();
+
+					$synchronizers = $synchronizerRepository->getBy('context', SynchronizerContextEnum::NUMERIC_SIGN->value);
+					$atLeastOneActive = false;
+					foreach ($synchronizers as $synchronizer)
+					{
+						assert($synchronizer instanceof SynchronizerEntity);
+						if ($synchronizer->isPublished() && $synchronizer->isEnabled())
+						{
+							$atLeastOneActive = true;
+							break;
+						}
+					}
+
+					if (!$atLeastOneActive)
+					{
+						continue 2; // skip this action
+					}
+
 					break;
 				default:
 					break;

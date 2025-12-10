@@ -24,6 +24,7 @@ require_once(JPATH_SITE . '/components/com_emundus/models/logs.php');
 use Joomla\CMS\Application\ApplicationHelper;
 use Joomla\CMS\Authentication\Authentication;
 use Joomla\CMS\Authentication\AuthenticationResponse;
+use Joomla\CMS\Application\SiteApplication;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\LoginEvent;
@@ -32,6 +33,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\UserFactoryInterface;
@@ -147,7 +149,7 @@ class EmundusModelUsers extends ListModel
 	{
 		$session = $this->app->getSession();
 		$params  = $session->get('filt_params');
-		
+
 
 		$final_grade  = $params['finalgrade'];
 		$search       = $params['s'];
@@ -515,7 +517,7 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function getProfilesByIDs($ids)
 	{
-		
+
 		$query = 'SELECT esp.id, esp.label, esp.acl_aro_groups, esp.published, caag.lft
         FROM #__emundus_setup_profiles esp
         INNER JOIN #__usergroups caag on esp.acl_aro_groups=caag.id
@@ -528,7 +530,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getEditProfiles()
 	{
-		
+
 		$current_user  = JFactory::getUser();
 		$current_group = 0;
 		foreach ($current_user->groups as $group) {
@@ -542,7 +544,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getApplicantProfiles()
 	{
-		
+
 		$query = 'SELECT * FROM #__emundus_setup_profiles WHERE published=1';
 		$this->db->setQuery($query);
 
@@ -630,7 +632,7 @@ class EmundusModelUsers extends ListModel
 
 	public function changeCurrentUserProfile($uid, $pid)
 	{
-		
+
 		$query = 'UPDATE #__emundus_users SET profile ="' . (int) $pid . '" WHERE user_id=' . (int) $uid;
 		$this->db->setQuery($query);
 		$this->db->execute() or die($this->db->getErrorMsg());
@@ -638,7 +640,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getUniversities()
 	{
-		
+
 		$query = 'SELECT c.id, c.title
         FROM #__categories as c
         WHERE c.published=1 AND c.extension like "com_contact"
@@ -1167,7 +1169,7 @@ class EmundusModelUsers extends ListModel
 			else {
 				$config = Factory::getConfig();
 			}
-			
+
 			$config_offset = $config->get('offset');
 			$offset        = $config_offset ?: 'Europe/Paris';
 			$timezone      = new DateTimeZone($offset);
@@ -3192,7 +3194,7 @@ class EmundusModelUsers extends ListModel
 
 		$groups = [];
 
-		
+
 		$query = $this->db->getQuery(true);
 
 		$query->select($this->db->quoteName('sg.id'))
@@ -3299,7 +3301,7 @@ class EmundusModelUsers extends ListModel
 		$groupActions = [];
 
 		if (!empty($gids) && !empty($fnum) && !empty($aid) && !empty($crud)) {
-			
+
 			$query = "select " . $crud . " from #__emundus_group_assoc where action_id = " . $aid . " and group_id in (" . implode(',', $gids) . ") and fnum like " . $this->db->quote($fnum);
 			$this->db->setQuery($query);
 
@@ -3322,7 +3324,7 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function setNewPasswd($uid, $passwd)
 	{
-		
+
 		$query = 'UPDATE #__users SET password = ' . $this->db->Quote($passwd) . ' WHERE id=' . $uid;
 		$this->db->setQuery($query);
 
@@ -3367,7 +3369,7 @@ class EmundusModelUsers extends ListModel
 		$users = [];
 
 		if (!empty($uid)) {
-			
+
 			$query = $this->db->getQuery(true);
 			$query->select('eu.*,u.email, u.username, u.registerDate, u.lastvisitDate, case when u.password = ' . $this->db->quote('') . ' then ' . $this->db->quote('external') . ' else ' . $this->db->quote('internal') . ' end as login_type,u.block,u.activation,u.params')
 				->from('#__emundus_users as eu')
@@ -3391,7 +3393,7 @@ class EmundusModelUsers extends ListModel
 		$username = [];
 
 		if (!empty($id)) {
-			
+
 			$query = $this->db->getQuery(true);
 
 			$query->select('eu.firstname, eu.lastname, eu.user_id')
@@ -3412,7 +3414,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getUsersById($id)
 	{ //user of application
-		
+
 		$query = 'SELECT * FROM #__users WHERE id = ' . $id;
 		$this->db->setQuery($query);
 
@@ -3461,43 +3463,49 @@ class EmundusModelUsers extends ListModel
 	 */
 	public function passwordReset($data, $subject = 'COM_USERS_EMAIL_PASSWORD_RESET_SUBJECT', $body = 'COM_USERS_EMAIL_PASSWORD_RESET_BODY', $new_account = false, $email_tmpl = null, $current_user = null)
 	{
+		$app = Factory::getApplication();
+		$siteApplication = Factory::getContainer()->get(SiteApplication::class);
 		if(empty($current_user))
 		{
-			$current_user = Factory::getApplication()->getIdentity();
+			$current_user = $app->getIdentity();
 		}
 
-		$config = Factory::getApplication()->getConfig();
+		$baseUrl = Uri::base();
+		if($app->isClient('api'))
+		{
+			// Remove /api from base URL
+			$baseUrl = rtrim(str_ireplace('/api', '', $baseUrl), '/').'/';
+		}
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
+		$config = $app->getConfig();
+
+		if(!class_exists('EmundusModelEmails'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+		}
 		$m_emails = new EmundusModelEmails();
 
 		// Load the com_users language tags in order to call the Joomla user JText.
-		$language     = Factory::getApplication()->getLanguage();
+		$language     = $app->getLanguage();
 		$extension    = 'com_users';
-		$base_dir     = JPATH_SITE;
-		$language_tag = $language->getTag(); // loads the current language-tag
-		$language->load($extension, $base_dir, $language_tag, true);
+		$language_tag = $language->getTag();
+		$language->load($extension, JPATH_SITE, $language_tag, true);
 
 		$return = new stdClass();
 
-		$data['email'] = filter_var(JStringPunycode::emailToPunycode($data['email']), FILTER_VALIDATE_EMAIL);
-
-		// Check the validation results.
+		$data['email'] = filter_var(PunycodeHelper::emailToPunycode($data['email']), FILTER_VALIDATE_EMAIL);
 		if (empty($data['email'])) {
-			$return->message = JText::_('COM_USERS_DESIRED_USERNAME');
+			$return->message = Text::_('COM_USERS_DESIRED_USERNAME');
 			$return->status  = false;
 
 			return $return;
 		}
 
-		// Find the user id for the given email address.
-		
+		// Find the user id for the given email address
 		$query = $this->db->getQuery(true)
 			->select('id')
 			->from($this->db->quoteName('#__users'))
 			->where($this->db->quoteName('email') . ' = ' . $this->db->quote($data['email']));
-
-		// Get the user object.
 		$this->db->setQuery($query);
 
 		try {
@@ -3519,7 +3527,7 @@ class EmundusModelUsers extends ListModel
 		}
 
 		// Get the user object.
-		$user  = Factory::getUser($userId);
+		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 		$table = Table::getInstance('user', 'JTable');
 		$table->load($user->id);
 
@@ -3566,7 +3574,7 @@ class EmundusModelUsers extends ListModel
 		$m_juser_reset = new ResetModel();
 
 		// Make sure the user has not exceeded the reset limit
-		if (!$m_juser_reset->checkResetLimit($user)) {
+		if (!$this->app->isClient('api') && !$m_juser_reset->checkResetLimit($user)) {
 			$resetLimit      = (int) $this->app->getParams()->get('reset_time');
 			$return->message = Text::plural('COM_USERS_REMIND_LIMIT_ERROR_N_HOURS', $resetLimit);
 			$return->status  = false;
@@ -3588,12 +3596,12 @@ class EmundusModelUsers extends ListModel
 		// Assemble the password reset confirmation link.
 		$mode = $config->get('force_ssl', 0) == 2 ? 1 : (-1);
 
-		$menu_item = Factory::getApplication()->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+		$menu_item = $siteApplication->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
 		if($new_account)
 		{
 			$account_menu_id = ComponentHelper::getComponent('com_emundus')->getParams()->get('account_creation_link',0);
 			if(!empty($account_menu_id)) {
-				$menu_item = Factory::getApplication()->getMenu()->getItem($account_menu_id);
+				$menu_item = $siteApplication->getMenu()->getItem($account_menu_id);
 			}
 		}
 
@@ -3611,17 +3619,17 @@ class EmundusModelUsers extends ListModel
 		// Put together the email template data.
 		$data              = $user->getProperties();
 		$data['sitename']  = $config->get('sitename');
-		$data['link_text'] = Uri::base() . $link;
-		$data['link_html'] = '<a href=' . Uri::base() . $link . '> ' . Uri::base() . $link . '</a>';
+		$data['link_text'] = $baseUrl . $link;
+		$data['link_html'] = '<a href=' . $baseUrl . $link . '> ' . $baseUrl . $link . '</a>';
 		$data['token']     = $token;
 
 
 		$post = [
 			'USER_NAME'  => $user->name,
-			'SITE_URL'   => Uri::base(),
+			'SITE_URL'   => $baseUrl,
 			'SITE_NAME'  => $config->get('sitename'),
 			'USER_EMAIL' => $user->email,
-			'ACCOUNT_CREATION_URL' => Uri::base() . $link,
+			'ACCOUNT_CREATION_URL' => $baseUrl . $link,
 		];
 
 		if(!empty($email_tmpl))
@@ -3725,7 +3733,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getProfileGroups($formid)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3747,7 +3755,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getProfileElements($group)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3790,7 +3798,7 @@ class EmundusModelUsers extends ListModel
 	public function saveUser($user, $uid)
 	{
 		$saved = false;
-		
+
 		$query = $this->db->getQuery(true);
 
 		$columns = array();
@@ -3841,7 +3849,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getProfileAttachments($user_id, $fnum = null)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3866,7 +3874,7 @@ class EmundusModelUsers extends ListModel
 
 	public function getProfileAttachmentsAllowed()
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		try {
@@ -3886,7 +3894,7 @@ class EmundusModelUsers extends ListModel
 
 	public function addDefaultAttachment($user_id, $attachment_id, $filename)
 	{
-		
+
 		$query = $this->db->getQuery(true);
 
 		$six_month_in_future = strtotime(date('Y-m-d') . "+6 month");

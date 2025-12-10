@@ -356,6 +356,12 @@ if ($user != null)
                                 class="material-symbols-outlined tw-mr-2">person_outline</span><?= JText::_('COM_EMUNDUS_USER_MENU_PROFILE_LABEL') ?>
                     </a></li>
 			<?php endif; ?>
+            <?php if (!empty($link_exports)) : ?>
+            <li><a class="edit-button-user em-flex-row em-flex-important em-flex-center"
+                   href="<?= $link_exports ?>" style="margin-top: 0"><span
+                        class="material-symbols-outlined tw-mr-2">archive</span><?= Text::_('COM_EMUNDUS_USER_MENU_EXPORTS_LABEL') ?>
+                </a></li>
+            <?php endif; ?>
 			<?php if (!empty($custom_actions))
 			{
 				foreach ($custom_actions as $custom_action)

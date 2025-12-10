@@ -20,6 +20,8 @@ jimport('joomla.application.component.view');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
 
 /**
  * HTML View class for the Emundus Component
@@ -111,6 +113,48 @@ class EmundusViewFiles extends JViewLegacy
 
 		switch ($layout)
 		{
+			case 'export':
+				$actionRepository   = new AccessActionRepository();
+				$exportAction = $actionRepository->getByName('export');
+
+				$fnum_array = [];
+
+				$post = file_get_contents("php://input");
+				$post = json_decode($post, true);
+				$fnums = $post['fnums'];
+
+				if ($fnums == 'all')
+				{
+					$m_files     = new EmundusModelFiles;
+					$fnums       = $m_files->getAllFnums();
+					$fnums_infos = $m_files->getFnumsInfos($fnums, 'object');
+					$fnums       = $fnums_infos;
+				}
+				else
+				{
+					$fnums = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);
+				}
+
+
+				foreach ($fnums as $key => $fnum)
+				{
+
+					if ($fnum->fnum === 'em-check-all')
+					{
+						unset($fnums[$key]);
+						continue;
+					}
+
+					if (EmundusHelperAccess::asAccessAction($exportAction->getId(), CrudEnum::CREATE->value, $this->user->id, $fnum->fnum))
+					{
+						$fnum_array[] = $fnum->fnum;
+					}
+				}
+
+				// Store the fnums in the session
+				$this->app->setUserState('com_emundus.files.export.fnums', $fnum_array);
+				
+				break;
 			case 'access':
 				$fnums     = $this->app->input->getString('users', null);
 				$fnums_obj = (array) json_decode(stripslashes($fnums), false, 512, JSON_BIGINT_AS_STRING);

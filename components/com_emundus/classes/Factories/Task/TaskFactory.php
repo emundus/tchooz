@@ -29,7 +29,11 @@ class TaskFactory
 			$actionRepository = new ActionRepository($db);
 
 			foreach ($dbObjects as $obj) {
-				$action = $actionRepository->getActionById($obj->action_id);
+				$action = null;
+				if(!empty($obj->action_id))
+				{
+					$action = $actionRepository->getActionById($obj->action_id);
+				}
 
 				$tasks[] = new TaskEntity(
 					$obj->id,

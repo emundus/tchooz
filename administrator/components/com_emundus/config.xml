@@ -523,6 +523,11 @@
                label="COM_EMUNDUS_EXPORT_ELEMENTS_TO_ESCAPE"
                description="COM_EMUNDUS_EXPORT_ELEMENTS_TO_ESCAPE_DESC"
         />
+        <field name="async_export" type="radio" default="0" label="COM_EMUNDUS_EXPORT_ASYNC"
+               description="COM_EMUNDUS_EXPORT_ASYNC_DESC">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
 
         <field
                 name="spacer1"

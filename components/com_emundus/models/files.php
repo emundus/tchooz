@@ -3402,6 +3402,9 @@ class EmundusModelFiles extends JModelLegacy
 			if (!empty($limit)) {
 				$where .= ' LIMIT ' . $limit . ' OFFSET ' . $start;
 			}
+			else {
+				$where .= ' LIMIT 10000 OFFSET ' . $start; // to avoid memory limit issues
+			}
 
 			try {
 				$this->_db->setQuery($query . $from . $leftJoin . $where);
@@ -3472,7 +3475,12 @@ class EmundusModelFiles extends JModelLegacy
 		         */
 				if (!empty($limit) && count($rows) == $limit && (count($data) < $limit || $method === 1)) {
 					// it means that we have repeated rows, so we need to retrieve last row all entries, because it may be incomplete (chunked by the limit)
+
 					$last_row                = array_pop($rows);
+					unset($rows);
+
+					gc_collect_cycles();
+
 					$last_row_data = $this->getFnumArray2([$last_row['fnum']], $elements, $start, 0, $method);
 
 					if ($method !== 1) {

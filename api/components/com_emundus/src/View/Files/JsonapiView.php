@@ -35,6 +35,7 @@ class JsonapiView extends BaseApiView
 		'id',
 		'fnum',
 		'status',
+		'stickers',
 		'campaign_id',
 		'program_id',
 		'steps'
@@ -50,6 +51,7 @@ class JsonapiView extends BaseApiView
 		'id',
 		'fnum',
 		'status',
+		'stickers',
 		'campaign_id',
 		'applicant_id',
 		'program_id',

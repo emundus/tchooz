@@ -1694,6 +1694,7 @@ class EmundusControllerFiles extends BaseController
 
 		$session = $this->app->getSession();
 		$session->set('fnums_export', $validFnums);
+		$this->app->setUserState('com_emundus.files.export.fnums', $validFnums);
 		$result = array('status' => true, 'totalfile' => count($validFnums), 'valid_fnums' => $validFnums);
 		echo json_encode((object) $result);
 		exit();
@@ -1761,6 +1762,7 @@ class EmundusControllerFiles extends BaseController
 	 * Add lines to temp CSV file
 	 * @return String json
 	 * @throws Exception
+	 * @depecated use ExcelService instead
 	 */
 	public function generate_array()
 	{
@@ -1806,7 +1808,7 @@ class EmundusControllerFiles extends BaseController
 		$objs                               = $this->input->getString('objs', null);
 		$opts                               = $this->input->getString('opts', null);
 		$methode                            = $this->input->getString('methode', null);
-		$objclass                           = $this->input->get('objclass', null);
+
 		$excel_file_name                    = $this->input->get('excelfilename', null);
 		$campaign                           = $this->input->getInt('campaign', 0);
 		$opts                               = $this->getcolumn($opts);

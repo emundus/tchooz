@@ -20,6 +20,11 @@
 	<config>
 		<fields name="params">
 			<fieldset name="basic">
+                <field name="allowed_verbs" label="PLG_WEBSERVICES_EMUNDUS_VERBS_ALLOWED" type="list" multiple="true" layout="joomla.form.field.list-fancy-select" default="GET">
+                    <option value="GET">GET</option>
+                    <option value="POST">POST</option>
+                </field>
+
 				<field name="ip_restriction"
 					   type="subform"
 					   label="PLG_WEBSERVICES_EMUNDUS_IP_RESTRICTION"

@@ -19,8 +19,6 @@ use Tchooz\Traits\TraitTable;
 #[TableAttribute(table: '#__emundus_setup_config')]
 class AddonRepository extends EmundusRepository implements RepositoryInterface
 {
-	use TraitTable;
-
 	const COLUMNS = [
 		't.namekey',
 		't.value',

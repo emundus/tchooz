@@ -286,6 +286,18 @@ class TagEntity
 			}
 		}
 
+		if(is_array($result))
+		{
+			if(isset($result['value']))
+			{
+				$result = $result['value'];
+			}
+			else
+			{
+				$result = implode(',', $result);
+			}
+		}
+
 		$this->value = $result;
 	}
 }
