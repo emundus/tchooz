@@ -426,6 +426,25 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		return $campaign_entity;
 	}
 
+	public function getByLabel(string $label): ?CampaignEntity
+	{
+		$campaign_entity = null;
+
+		$query = $this->db->getQuery(true);
+		$query->select(self::COLUMNS)
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->where('t.label = ' . $this->db->quote($label));
+		$this->db->setQuery($query);
+		$campaign = $this->db->loadAssoc();
+
+		if (!empty($campaign))
+		{
+			$campaign_entity = $this->factory->fromDbObject($campaign, $this->withRelations);
+		}
+
+		return $campaign_entity;
+	}
+
 	public function getLinkedProgramsIds(int $campaign_id, string $fnum = ''): array
 	{
 		$programs_ids = [];
@@ -494,6 +513,34 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return $step;
+	}
+
+	public function getDbTablesByCampaignId(int $campaignId): array
+	{
+		$tables = [];
+
+		if (!empty($campaignId))
+		{
+			$campaign = $this->getById($campaignId);
+
+			if (!empty($campaign) && !empty($campaign->getProfileId()))
+			{
+				$query = $this->db->getQuery(true);
+
+				$query->select('fl.db_table_name')
+					->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+					->leftJoin($this->db->quoteName('#__menu', 'm') . ' ON ' . $this->db->quoteName('m.menutype') . ' = ' . $this->db->quoteName('esp.menutype'))
+					->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = SUBSTRING_INDEX(SUBSTRING(' . $this->db->quoteName('m.link') . ', LOCATE("formid=",' . $this->db->quoteName('m.link') . ')+7, 4), "&", 1)')
+					->where($this->db->quoteName('esp.id') . ' = ' . $this->db->quote($campaign->getProfileId()))
+					->where($this->db->quoteName('fl.db_table_name') . ' IS NOT NULL');
+				$this->db->setQuery($query);
+				$tables = $this->db->loadColumn();
+
+				// TODO: Get tables from workflows
+			}
+		}
+
+		return $tables;
 	}
 
 	public function buildQuery(): QueryInterface
