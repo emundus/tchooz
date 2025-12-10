@@ -70,6 +70,10 @@ class ActionRegistry
 		foreach ($this->actions as $type => $class) {
 			assert($class instanceof ActionEntity);
 
+			if(!$class->isAvailable())
+			{
+				continue; // skip this action
+			}
 
 			switch($class::getCategory())
 			{

@@ -242,4 +242,9 @@ class ActionExport extends ActionEntity
 	{
 		return $this->getLabel();
 	}
+
+	public function isAvailable(): bool
+	{
+		return false;
+	}
 }

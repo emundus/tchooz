@@ -425,4 +425,9 @@ abstract class ActionEntity
 			}
 		}
 	}
+
+	public function isAvailable(): bool
+	{
+		return true;
+	}
 }
