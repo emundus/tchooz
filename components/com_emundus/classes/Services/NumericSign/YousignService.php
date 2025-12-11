@@ -9,6 +9,7 @@
 
 namespace Tchooz\Services\NumericSign;
 
+use EmundusModelEmails;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Smalot\PdfParser\Parser;
@@ -49,7 +50,7 @@ class YousignService
 			throw new \Exception('Request ID is empty.', 400);
 		}
 
-		if(empty($yousign_api))
+		if (empty($yousign_api))
 		{
 			// Get yousign setup
 			if (!class_exists('EmundusModelSync'))
@@ -61,11 +62,11 @@ class YousignService
 		}
 
 		$config = (!empty($api) && !empty($api->config)) ? json_decode($api->config) : null;
-		if(!empty($config) && !empty($config->signature_level))
+		if (!empty($config) && !empty($config->signature_level))
 		{
 			$this->global_signature_level = $config->signature_level;
 		}
-		if(!empty($config) && !empty($config->signature_authentication_mode))
+		if (!empty($config) && !empty($config->signature_authentication_mode))
 		{
 			$this->global_signature_authentication_mode = $config->signature_authentication_mode;
 		}
@@ -88,7 +89,8 @@ class YousignService
 			if (empty($yousign_request))
 			{
 				$expiration_date = (!empty($config) && !empty($config->expiration_date)) ? $config->expiration_date : '';
-				$yousign_request = $this->flushYousignRequest($application_file, $request, $this->user, $expiration_date);
+				$request_name    = (!empty($config) && !empty($config->request_name)) ? $config->request_name : '';
+				$yousign_request = $this->flushYousignRequest($application_file, $request, $this->user, $expiration_date, $request_name);
 			}
 
 			if (!empty($yousign_request->getId()))
@@ -257,25 +259,41 @@ class YousignService
 		return true;
 	}
 
-	private function flushYousignRequest(array $application_file, Request $request, User $user, string $expiration_date = ''): YousignRequests
+	public function flushYousignRequest(array $application_file, Request $request, User $user, string $expiration_date = '', string $request_name = ''): YousignRequests
 	{
 		$yousign_request = new YousignRequests($user->id);
 
 		try
 		{
-			$yousign_request_name = $application_file['name'] . ' - ' . $request->getAttachment()->getName();
-			$yousign_request->setName($yousign_request_name);
+			if (!empty($request_name))
+			{
+				if (!class_exists('EmundusModelEmails'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/models/emails.php';
+				}
+				$m_emails = new EmundusModelEmails();
+				
+				$tags         = $m_emails->setTags($application_file['applicant_id'], null, $application_file['fnum'], '', $request_name);
+				$request_name = preg_replace($tags['patterns'], $tags['replacements'], $request_name);
+				$request_name = $m_emails->setTagsFabrik($request_name, array($application_file['fnum']));
+			}
+			else
+			{
+				$request_name = $application_file['name'] . ' - ' . $request->getAttachment()->getName();
+			}
+
+			$yousign_request->setName($request_name);
 			$yousign_request->setRequest($request);
 			$yousign_request->setApiStatus(ApiStatusEnum::PENDING);
 			$yousign_request->setId($this->yousign_repository->flush($yousign_request));
-			if(!empty($expiration_date))
+			if (!empty($expiration_date))
 			{
 				$yousign_request->setExpirationDate($expiration_date);
 			}
 
 			return $yousign_request;
 		}
-		catch (\Exception)
+		catch (\Exception $e)
 		{
 			Log::add('Failed to flush yousign request.', Log::ERROR, 'com_emundus.yousign');
 		}
@@ -415,7 +433,7 @@ class YousignService
 					}
 				}
 
-				$signature_level = !empty($signer->authentication_level) ? $signer->authentication_level : $this->global_signature_level;
+				$signature_level               = !empty($signer->authentication_level) ? $signer->authentication_level : $this->global_signature_level;
 				$signature_authentication_mode = !empty($signer->authentication_mode) ? $signer->authentication_mode : $this->global_signature_authentication_mode;
 
 				$api_signer = $this->yousign_synchronizer->addSigner($yousign_request->getProcedureId(), $signer, $yousign_request->getDocumentId(), $signature_position, $signature_level, $signature_authentication_mode);
