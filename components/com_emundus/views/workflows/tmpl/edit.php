@@ -68,6 +68,7 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_MAX_CHOICES_REQUIRED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_ORDERING');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_CONFIRMED');
+Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_SENT');
 
 $app          = Factory::getApplication();
 $lang         = $app->getLanguage();

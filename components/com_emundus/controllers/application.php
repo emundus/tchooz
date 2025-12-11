@@ -1760,6 +1760,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			$choicesConfiguration['can_be_updated']   = 0;
 			$choicesConfiguration['can_be_confirmed'] = 0;
+			$choicesConfiguration['can_be_sent'] = 0;
 		}
 		$choicesConfiguration['crud'] = [];
 		if (!empty($fnum))

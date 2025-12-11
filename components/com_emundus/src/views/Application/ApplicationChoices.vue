@@ -417,6 +417,9 @@ export default {
 				return !this.$props.fnum && this.configuration.can_be_confirmed === 1;
 			}
 		},
+		canBeSent: function () {
+			return this.configuration.can_be_sent === 1;
+		},
 		fabrikFormUrl() {
 			if (
 				this.selectedChoice.moreProperties &&
@@ -699,7 +702,7 @@ export default {
 			<Button
 				variant="primary"
 				width="fit"
-				v-if="canBeUpdate && !canBeConfirm"
+				v-if="canBeUpdate && !canBeConfirm && canBeSent"
 				@click="sendChoiceStep"
 				:disabled="submitDisabled"
 			>

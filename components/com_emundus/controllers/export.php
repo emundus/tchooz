@@ -8,6 +8,7 @@
 
 defined('_JEXEC') or die(Text::_('COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS'));
 
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
@@ -306,6 +307,18 @@ class EmundusControllerExport extends BaseController
 				$excel_filename = $this->input->getString('excelfilename', 'export.xlsx');
 				$campaign       = $this->input->getInt('campaign', 0);
 
+				// Sanitize excel_filename
+				if (!class_exists('HtmlSanitizerSingleton')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+				}
+				$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+				$excel_filename = $htmlSanitizer->sanitize($excel_filename);
+				
+				// Remove /\ and whitespace characters from filename
+				$excel_filename = preg_replace('/[\/\\\\]+/', '_', $excel_filename);
+				$excel_filename = preg_replace('/\s+/', '_', $excel_filename);
+				$excel_filename = strtolower($excel_filename);
+				
 				$parameters = array_merge($parameters, [
 					'tmp_file'       => $file,
 					'totalfile'      => $totalfile,
