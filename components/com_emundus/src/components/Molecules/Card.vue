@@ -15,7 +15,7 @@ export default {
 		class="tw-flex tw-h-full tw-min-h-[290px] tw-flex-col tw-justify-between tw-rounded-applicant-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
 	>
 		<div class="card-content">
-			<div class="tw-flex tw-items-center tw-justify-between">
+			<div class="tw-mb-3 tw-flex tw-items-center tw-justify-between" v-if="$slots.legend || $slots.legend_2">
 				<div class="legend-tag tw-min-h-[38px]" :style="{ color: legendColor }">
 					<slot name="legend" />
 				</div>

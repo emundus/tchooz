@@ -3,6 +3,7 @@
 namespace Tchooz\Services\Automation;
 
 use EmundusHelperCache;
+use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
@@ -108,6 +109,16 @@ class ActionRegistry
 					break;
 				default:
 					break;
+			}
+
+			switch ($type) {
+				case 'print_application':
+					$eMConfig              = ComponentHelper::getParams('com_emundus');
+					$export_pdf              = $eMConfig->get('export_application_pdf', 0);
+					if($export_pdf == 0)
+					{
+						continue 2; // skip this action
+					}
 			}
 
 			$schema[] = [

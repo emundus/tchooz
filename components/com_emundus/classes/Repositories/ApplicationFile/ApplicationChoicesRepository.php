@@ -320,7 +320,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 				->where('t.parent_id = ' . $this->db->quote($parent_id));
 			$this->db->setQuery($query);
 			$more_data = $this->db->loadAssoc();
-
+			
 			foreach ($elements as $element)
 			{
 				if (in_array($element['id'], array_keys($join_tables)))
@@ -332,7 +332,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 						->bind(':id', $more_data['id'], ParameterType::INTEGER);
 					$this->db->setQuery($query);
 					$values = $this->db->loadColumn();
-
+					
 					$more_data[$element['name']] = [];
 					foreach ($values as $value)
 					{

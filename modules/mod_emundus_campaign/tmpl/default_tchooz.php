@@ -192,7 +192,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
     </div>
 <?php endif; ?>
 
-
+<?php if($mod_em_campaign_display_campaigns == 1) : ?>
 <form action="<?php echo $CurPageURL ?>" method="post" id="search_program">
 	<?php if (sizeof($campaigns) == 0 && empty($codes_filters) && empty($categories_filters) && empty($reseaux_filters) && empty($searchword)) : ?>
         <div class="mod_emundus_campaign__list_content--default">
@@ -1239,6 +1239,7 @@ $campaigns_not_pinned = array_filter($tmp_campaigns, function ($campaign) {
                 </div>
 				<?php endif; ?>
 </form>
+<?php endif; ?>
 <script type="text/javascript">
     jQuery(document).ready(function () {
 

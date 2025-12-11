@@ -836,7 +836,8 @@ class EmundusModelEmails extends JModelList
 
 			if (!empty($tags_content)) {
 				$tags_content = array_unique($tags_content);
-				$query->andWhere('t.tag IN ("' . implode('","', $tags_content) . '")');
+				// Escape tags to prevent SQL injection
+				$query->andWhere('t.tag IN (' . implode(',', $db->quote($tags_content)) . ')');
 			}
 			elseif ($check_content) {
 				return array('patterns' => array(), 'replacements' => array());
@@ -872,7 +873,7 @@ class EmundusModelEmails extends JModelList
 			}
 
 			$tagEntity->setRequest($request);
-			$tagEntity->calculateValue($user_id, $base64);
+			$tagEntity->calculateValue($user_id, $base64, $fnum);
 
 			$patterns[] = $tagEntity->getFullPatternName();
 			$replacements[] = $tagEntity->getValue();
@@ -919,7 +920,7 @@ class EmundusModelEmails extends JModelList
 						}
 
 						$tagEntity->setRequest($request);
-						$tagEntity->calculateValue($user_id, $base64);
+						$tagEntity->calculateValue($user_id, $base64, $fnum);
 					}
 
 					// Add tag with modifier to patterns and replacements
@@ -960,7 +961,7 @@ class EmundusModelEmails extends JModelList
 				$request = 'php|' . $request;
 			}
 			$tagEntity->setRequest($request);
-			$tagEntity->calculateValue($user_id);
+			$tagEntity->calculateValue($user_id, false, $fnum);
 
 			$patterns[] = $tagEntity->getFullName();
 			$replacements[] = $tagEntity->getValue();

@@ -787,7 +787,7 @@ class EmundusModelFiles extends JModelLegacy
 		$query = ' FROM #__emundus_campaign_candidature as jecc
                     LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
                     LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-                    LEFT JOIN #__emundus_setup_campaigns as esc on esc.id = jecc.campaign_id
+                    LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
                     LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
                     LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
                     LEFT JOIN #__users as u on u.id = jecc.applicant_id

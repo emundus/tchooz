@@ -9,6 +9,7 @@
 // no direct access
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 defined('_JEXEC') or die;
 
@@ -598,6 +599,24 @@ if (!empty($applications))
                                                                     class="em-applicant-default-font em-text-neutral-600">N°<?php echo $application->fnum ?></span>
                                                             </div>
 														<?php endif; ?>
+                                                        <?php if ($show_application_choices == 1) 
+                                                        {
+                                                            $applicationChoicesRepository = new ApplicationChoicesRepository();
+                                                            $choices = $applicationChoicesRepository->getChoicesByFnum($application->fnum);
+                                                            if(!empty($choices))
+                                                            {
+                                                                foreach ($choices as $key => $choice)
+                                                                {
+                                                                    ?>
+                                                                    <div class="em-mb-4">
+                                                                        <span
+                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo Text::sprintf('APPLICATION_CHOICE_NO',($key+1)) . ' : ' . $choice->getCampaign()->getLabel(); ?></span>
+                                                                    </div>
+                                                                    <?php
+                                                                }
+                                                            }
+                                                        }
+                                                        ?>
 														<?php if (!empty($application->file_tags_display)) : ?>
                                                             <div class="em-mt-8">
                                                             <span class="em-tags-display em-text-neutral-900">

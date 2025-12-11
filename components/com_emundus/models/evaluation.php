@@ -1426,8 +1426,9 @@ class EmundusModelEvaluation extends JModelList
 			$query .= ', ' . implode(',', $this->_elements_default);
 		}
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
+					LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.parent_id = jecc.campaign_id)
+					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
 					LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id

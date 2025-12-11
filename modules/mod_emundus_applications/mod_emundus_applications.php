@@ -30,21 +30,25 @@ $wa->registerAndUseStyle('com_emundus_selectize', 'media/com_emundus/lib/selecti
 $wa->useScript('jquery');
 $user = $app->getSession()->get('emundusUser');
 
-if (empty($user->firstname) && empty($user->lastname)) {
+if (empty($user->firstname) && empty($user->lastname))
+{
 	$m_profile->initEmundusSession();
 	$user = $app->getSession()->get('emundusUser');
 }
 $applicant_profiles = $m_profile->getApplicantsProfilesArray();
 
 $specific_profiles = $params->get('for_specific_profiles', '');
-if (!empty($specific_profiles)) {
+if (!empty($specific_profiles))
+{
 	$specific_profiles = explode(',', $specific_profiles);
 }
-else {
+else
+{
 	$specific_profiles = [];
 }
 
-if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles))) {
+if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!empty($specific_profiles) && in_array($user->profile, $specific_profiles)))
+{
 	require_once dirname(__FILE__) . '/helper.php';
 	include_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 	include_once(JPATH_ROOT . '/components/com_emundus/helpers/list.php');
@@ -64,20 +68,23 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$eMConfig = ComponentHelper::getParams('com_emundus');
 
 	// Vérifier si il s'agit d'une session  anonyme et ci celles ci sont autorisés
-	$is_anonym_user     = $user->anonym;
-	if (!class_exists('EmundusModelSettings')) {
+	$is_anonym_user = $user->anonym;
+	if (!class_exists('EmundusModelSettings'))
+	{
 		require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
 	}
-	$m_settings = new EmundusModelSettings();
-	$addon_status = $m_settings->getAddonStatus('anonymous');
+	$m_settings         = new EmundusModelSettings();
+	$addon_status       = $m_settings->getAddonStatus('anonymous');
 	$allow_anonym_files = $addon_status['enabled'];
-	if ($is_anonym_user && !$allow_anonym_files) {
+	if ($is_anonym_user && !$allow_anonym_files)
+	{
 		return;
 	}
 
 	$status_for_send   = explode(',', $eMConfig->get('status_for_send', 0));
 	$status_for_delete = $eMConfig->get('status_for_delete', 0);
-	if (!empty($status_for_delete) || $status_for_delete == '0') {
+	if (!empty($status_for_delete) || $status_for_delete == '0')
+	{
 		$status_for_delete = explode(',', $status_for_delete);
 	}
 
@@ -87,10 +94,12 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$id_applicants       = $eMConfig->get('id_applicants', null);
 	$id_profiles         = $eMConfig->get('id_profiles', '');
 	$applicants          = !empty($id_applicants) ? explode(',', $id_applicants) : [];
-	if (!empty($id_profiles)) {
+	if (!empty($id_profiles))
+	{
 		$id_profiles = explode(',', $id_profiles);
 	}
-	else {
+	else
+	{
 		$id_profiles = [];
 	}
 
@@ -113,25 +122,29 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$admission_status                        = $params->get('admission_status') ? explode(',', $params->get('admission_status')) : [];
 	$add_admission_prefix                    = $params->get('add_admission_prefix', 1);
 	$absolute_urls                           = $params->get('absolute_urls', 1);
-	$available_views 					   = $params->get('mod_em_application_views_available', ['grid','list']);
+	$available_views                         = $params->get('mod_em_application_views_available', ['grid', 'list']);
 
 	$show_status = $params->get('show_status', '') !== '' ? explode(',', $params->get('show_status', '')) : null;
 
-	$show_remove_files   = $params->get('show_remove_files', 1);
-	$show_archive_files  = $params->get('show_archived_files', 1);
+	$show_remove_files        = $params->get('show_remove_files', 1);
+	$show_archive_files       = $params->get('show_archived_files', 1);
 	$show_collaboration_files = $params->get('show_collaboration_files', 1);
-	$show_state_files    = $params->get('show_state_files', 0);
-	$show_payment_status = $params->get('show_payment_status', 0);
-	$show_nb_comments = $params->get('show_nb_comments', 0) &&  $eMConfig->get('allow_applicant_to_comment', 0);
-	if ($show_nb_comments) {
+	$show_state_files         = $params->get('show_state_files', 0);
+	$show_payment_status      = $params->get('show_payment_status', 0);
+	$show_nb_comments         = $params->get('show_nb_comments', 0) && $eMConfig->get('allow_applicant_to_comment', 0);
+	if ($show_nb_comments)
+	{
 		$comments_page_alias = modemundusApplicationsHelper::getCommentsPageBaseUrl();
 	}
+	$show_application_choices = $params->get('show_application_choices', 0);
 
-	$visible_status      = $params->get('visible_status', '');
-	if ($visible_status != "") {
+	$visible_status = $params->get('visible_status', '');
+	if ($visible_status != "")
+	{
 		$visible_status = explode(',', $params->get('visible_status', ''));
 	}
-	else {
+	else
+	{
 		$visible_status = [];
 	}
 	$selected_campaigns = $params->get('selected_campaigns', []);
@@ -144,10 +157,10 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$applications_as_desc = $params->get('order_applications_asc_des', 'DESC');
 	$query_order_by       = $order_applications . ' ' . $applications_as_desc;
 
-	$file_status = $params->get('file_status', 1);
+	$file_status    = $params->get('file_status', 1);
 	$title_override = Text::_($params->get('title_override', ''));
-	$file_tags   = Text::_($params->get('tags', ''));
-	$cc_list_url = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
+	$file_tags      = Text::_($params->get('tags', ''));
+	$cc_list_url    = $params->get('cc_list_url', 'index.php?option=com_fabrik&view=form&formid=102');
 
 	$groups                              = $params->get('mod_em_application_group', null);
 	$title_other_section                 = $params->get('mod_em_application_group_title_other', 'MOD_EMUNDUS_APPLICATIONS_OTHER_FILES');
@@ -155,43 +168,49 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$mod_em_applications_show_hello_text = $params->get('mod_em_applications_show_hello_text', 1);
 	$custom_actions                      = $params->get('mod_em_application_custom_actions');
 	$show_tabs                           = $params->get('mod_em_applications_show_tabs', 1);
-	$actions                             = $params->get('mod_emundus_applications_actions', ['rename','documents','history']);
-	$history_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
-	$choices_link = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application_choices', true);
+	$actions                             = $params->get('mod_emundus_applications_actions', ['rename', 'documents', 'history']);
+	$history_link                        = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application&layout=history', true);
+	$choices_link                        = $app->getMenu()->getItems('link', 'index.php?option=com_emundus&view=application_choices', true);
 
 	$payment_repository = new PaymentRepository();
-	if ($payment_repository->getAddon()->enabled === 1) {
+	if ($payment_repository->getAddon()->enabled === 1)
+	{
 		$actions[] = 'transactions';
 	}
 
 	// Due to the face that ccirs-drh is totally different, we use a different method all together to avoid further complicating the existing one.
-	if ($layout == '_:ccirs-drh') {
+	if ($layout == '_:ccirs-drh')
+	{
 		$cc_list_url  = $params->get('cc_list_url', 'index.php');
 		$applications = modemundusApplicationsHelper::getDrhApplications();
 	}
-	elseif ($layout == '_:ccirs') {
+	elseif ($layout == '_:ccirs')
+	{
 		$cc_list_url  = $params->get('cc_list_url', 'index.php');
 		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by);
 	}
-	else {
-		$collaborate = in_array('collaborate',$actions);
+	else
+	{
+		$collaborate = in_array('collaborate', $actions);
 		// We send the layout as a param because Hesam needs different information.
-		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params,$collaborate);
+		$applications = modemundusApplicationsHelper::getApplications($layout, $query_order_by, $params, $collaborate);
 		modemundusApplicationsHelper::getCollaborators($applications);
-		$tabs         = $m_application->getTabs($user->id);
+		$tabs = $m_application->getTabs($user->id);
 	}
 
 	$linknames       = $params->get('linknames', 0);
 	$moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
 
-	if (empty($user)) {
+	if (empty($user))
+	{
 		$user     = new stdClass();
 		$user->id = $app->getIdentity()->id;
 	}
 
 	$user->fnums = $applications;
 
-	if (empty($user->profile)) {
+	if (empty($user->profile))
+	{
 		$h_list        = new EmundusHelperList();
 		$user->profile = $h_list->getProfile($user->id);
 	}
@@ -207,13 +226,18 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	$attachments = $progress['attachments'];
 	$forms       = $progress['forms'];
 
-	if ($show_add_application || in_array('copy', $actions)) {
-		if (EmundusHelperAccess::asAccessAction(1, 'c')) {
+	if ($show_add_application || in_array('copy', $actions))
+	{
+		if (EmundusHelperAccess::asAccessAction(1, 'c'))
+		{
 			$applicant_can_renew = 1;
 		}
-		else {
-			foreach ($user->emProfiles as $profile) {
-				if (in_array($profile->id, $id_profiles)) {
+		else
+		{
+			foreach ($user->emProfiles as $profile)
+			{
+				if (in_array($profile->id, $id_profiles))
+				{
 					$applicant_can_renew = 1;
 					break;
 				}
@@ -222,14 +246,15 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 
 		$available_campaigns = [];
 		// Check to see if the applicant meets the criteria to renew a file.
-		switch ($applicant_can_renew) {
+		switch ($applicant_can_renew)
+		{
 			// Applicant can apply only once.
 			case 0:
 				// We need to check if there are any available campaigns.
 				$publishedApplications = array_filter($applications, function ($application) {
 					return $application->published == 1;
 				});
-				$available_campaigns = empty($publishedApplications) ? modemundusApplicationsHelper::getAvailableCampaigns() : [];
+				$available_campaigns   = empty($publishedApplications) ? modemundusApplicationsHelper::getAvailableCampaigns() : [];
 				break;
 			// Applicants can apply as many times as they like
 			case 1:
@@ -254,34 +279,42 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	}
 
 
-	if ($display_poll == 1 && $display_poll_id > 0 && !empty($user->fnum)) {
+	if ($display_poll == 1 && $display_poll_id > 0 && !empty($user->fnum))
+	{
 		$filled_poll_id = modemundusApplicationsHelper::getPoll();
 		$poll_url       = 'index.php?option=com_fabrik&view=form&formid=' . $display_poll_id . '&usekey=fnum&rowid=' . $user->fnum . '&tmpl=component';
 	}
-	else {
+	else
+	{
 		$poll_url       = '';
 		$filled_poll_id = 0;
 	}
 
 	$offset = $app->get('offset', 'UTC');
-	try {
+	try
+	{
 		$dateTime = new DateTime(gmdate("Y-m-d H:i:s"), new DateTimeZone('UTC'));
 		$dateTime = $dateTime->setTimezone(new DateTimeZone($offset));
 		$now      = $dateTime->format('Y-m-d H:i:s');
 	}
-	catch (Exception $e) {
+	catch (Exception $e)
+	{
 		echo $e->getMessage() . '<br />';
 	}
 
-	if (!empty($user->end_date)) {
+	if (!empty($user->end_date))
+	{
 		$is_dead_line_passed = (strtotime(date($now)) > strtotime($user->end_date));
 	}
-	if (!empty($user->status)) {
+	if (!empty($user->status))
+	{
 		$is_app_sent = ($user->status != 0);
 	}
 
-	if (!empty($show_payment_status)) {
-		foreach ($applications as $application => $val) {
+	if (!empty($show_payment_status))
+	{
+		foreach ($applications as $application => $val)
+		{
 			$order_status                             = modemundusApplicationsHelper::getHikashopOrder($applications[$application]);
 			$applications[$application]->order_status = $order_status->orderstatus_namekey;
 			$applications[$application]->order_color  = $order_status->orderstatus_color;
@@ -289,13 +322,16 @@ if (empty($user->profile) || in_array($user->profile, $applicant_profiles) || (!
 	}
 
 	$override_default_content = JText::_($params->get('override_default_content', ''));
-	if (!empty($override_default_content)) {
-		try {
+	if (!empty($override_default_content))
+	{
+		try
+		{
 			$post                     = array('APPLICANT_ID' => $user->id, 'FNUM' => '');
 			$tags                     = $m_email->setTags($user->id, $post, null, '', $override_default_content);
 			$override_default_content = preg_replace($tags['patterns'], $tags['replacements'], $override_default_content);
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			$override_default_content = JText::_($params->get('override_default_content', ''));
 		}
 	}
