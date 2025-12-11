@@ -1677,7 +1677,15 @@ class EmundusModelWorkflow extends JModelList
 
 			if (!empty($program_id))
 			{
-				$workflows = $this->getWorkflows([], 0, 0, [$program_id]);
+				$programs_ids = [$program_id];
+				$campaignRepository = new CampaignRepository();
+				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id);
+				if(!empty($linked_programs_ids))
+				{
+					$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+				}
+
+				$workflows = $this->getWorkflows([], 0, 0, $programs_ids);
 
 				foreach ($workflows as $workflow)
 				{

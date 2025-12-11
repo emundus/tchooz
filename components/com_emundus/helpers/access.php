@@ -756,7 +756,8 @@ class EmundusHelperAccess
 						(EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user_id) || EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id)))
 					{
 						$can_see = true;
-						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id, $fnum))
+						// TODO: Check why create access not working if my group is associated to the file but not to the programme
+						if (EmundusHelperAccess::asAccessAction($step_data->action_id, 'c', $user_id))
 						{
 							if ($verify_campaign_infos) {
 								// verify step is not closed
@@ -798,7 +799,10 @@ class EmundusHelperAccess
 					}
 				}
 			} else {
-				throw new Exception(Text::_('ERROR_INCOHERENT_STEP_FOR_CCID'));
+				//throw new Exception(Text::_('ERROR_INCOHERENT_STEP_FOR_CCID'));
+				$can_see = false;
+				$can_edit = false;
+				$reason_cannot_edit = Text::_('ERROR_INCOHERENT_STEP_FOR_CCID');
 			}
 		}
 

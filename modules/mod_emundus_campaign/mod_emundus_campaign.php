@@ -78,6 +78,7 @@ if ($user->guest || in_array($e_user->profile, $app_prof))
 
 	$mod_em_campaign_show_search             = $params->get('mod_em_campaign_show_search', 1);
 	$mod_em_campaign_show_results            = $params->get('mod_em_campaign_show_results', 1);
+	$mod_em_campaign_display_campaigns       = $params->get('mod_em_campaign_display_campaigns', 1);
 	$mod_em_campaign_list_tab                = $params->get('mod_em_campaign_list_tab');
 	$mod_em_campaign_list_show_programme     = $params->get('mod_em_campaign_show_programme', 1);
 	$mod_em_campaign_show_programme_logo     = $params->get('mod_em_campaign_show_programme_logo', 0);
