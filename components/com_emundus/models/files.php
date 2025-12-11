@@ -2971,7 +2971,7 @@ class EmundusModelFiles extends JModelLegacy
 	 *
 	 * @return array|false
 	 */
-	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0, $user_id = null)
+	public function getFnumArray2($fnums, $elements, $start = 0, $limit = 0, $method = 0, $user_id = null, array $translations = [])
 	{
 		$data = [];
 
@@ -2979,6 +2979,15 @@ class EmundusModelFiles extends JModelLegacy
 			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
 			$fnums = array_unique($fnums);
 			$method = (int) $method;
+
+			$jno_translation = Text::_('JNO');
+			if(!empty($translations) && isset($translations['JNO'])) {
+				$jno_translation = $translations['JNO'];
+			}
+			$jyes_translation = Text::_('JYES');
+			if(!empty($translations) && isset($translations['JYES'])) {
+				$jyes_translation = $translations['JYES'];
+			}
 
 			$h_files      = new EmundusHelperFiles;
 			$current_lang = substr(JFactory::getLanguage()->getTag(), 0, 2);
@@ -3186,7 +3195,13 @@ class EmundusModelFiles extends JModelLegacy
 							}
 
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								if(!empty($translations) && isset($translations[$element_params['sub_options']['sub_labels'][$sub_key]])) {
+									$sub_label = $translations[$element_params['sub_options']['sub_labels'][$sub_key]];
+								}
+								else {
+									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								}
+
 								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
@@ -3225,7 +3240,13 @@ class EmundusModelFiles extends JModelLegacy
 						$element_params = json_decode($element->element_attribs, true);
 						if (!empty($element_params['sub_options']['sub_values'])) {
 							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-								$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								if(!empty($translations) && isset($translations[$element_params['sub_options']['sub_labels'][$sub_key]])) {
+									$sub_label = $translations[$element_params['sub_options']['sub_labels'][$sub_key]];
+								}
+								else
+								{
+									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								}
 								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 								$sub_value = str_replace("'", "\'", $sub_value);
@@ -3267,7 +3288,13 @@ class EmundusModelFiles extends JModelLegacy
 
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value)
 								{
-									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+									if(!empty($translations) && isset($translations[$element_params['sub_options']['sub_labels'][$sub_key]])) {
+										$sub_label = $translations[$element_params['sub_options']['sub_labels'][$sub_key]];
+									}
+									else
+									{
+										$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+									}
 									$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
@@ -3299,7 +3326,13 @@ class EmundusModelFiles extends JModelLegacy
 
 							if (!empty($element_params['sub_options']['sub_values'])) {
 								foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
-									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+									if(!empty($translations) && isset($translations[$element_params['sub_options']['sub_labels'][$sub_key]])) {
+										$sub_label = $translations[$element_params['sub_options']['sub_labels'][$sub_key]];
+									}
+									else
+									{
+										$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+									}
 									$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
 									$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
 									$sub_value = str_replace("'", "\'", $sub_value);
@@ -3351,11 +3384,11 @@ class EmundusModelFiles extends JModelLegacy
 						break;
 					case 'yesno':
 						if ($is_repeat) {
-							$query            .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . Text::_('JNO') . '\' WHEN 1 THEN \'' . Text::_('JYES') . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
+							$query            .= ', CASE ' . $child_element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . $jno_translation . '\' WHEN 1 THEN \'' . $jyes_translation . '\' ELSE ' . $child_element_table_alias . '.' . $element->element_name . ' END AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 							$saved_element_as = $already_joined[$child_element_table_alias] . '___' . $element->element_name;
 						}
 						else {
-							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . Text::_('JNO') . '\' WHEN 1 THEN \'' . Text::_('JYES') . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
+							$query .= ', CASE ' . $element_table_alias . '.' . $element->element_name . ' WHEN 0 THEN \'' . $jno_translation . '\' WHEN 1 THEN \'' . $jyes_translation . '\' ELSE ' . $element_table_alias . '.' . $element->element_name . ' END AS ' . $element->tab_name . '___' . $element->element_name;
 						}
 						break;
 					case 'booking':
