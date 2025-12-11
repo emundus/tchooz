@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="4">
+  <name>plg_fabrik_element_action</name>
+  <author>eMundus</author>
+  <creationDate>2025-12-10</creationDate>
+  <copyright>Copyright (C) 2005-2025 Fabrikar - All rights reserved.</copyright>
+  <license>GNU General Public License version 3 or later; see software_license.txt</license>
+  <authorEmail>dev@emundus.fr</authorEmail>
+  <authorUrl>https://www.emundus.fr</authorUrl>
+  <version>4.5.6</version>
+  <description>PLG_ELEMENT_ACTION_DESCRIPTION</description>
+  <files>
+    <filename plugin="action">action.php</filename>
+    <filename>index.html</filename>
+    <filename>action.js</filename>
+    <filename>action-min.js</filename>
+    <folder>layouts</folder>
+    <folder>forms</folder>
+    <folder>language</folder>
+  </files>
+</extension>

@@ -3726,11 +3726,11 @@ class EmundusModelEvaluation extends JModelList
 								$fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
 							}
 
+							$textarea_elements = [];
 							if (!empty($fabrikElts)) {
 								$h_files = new EmundusHelperFiles();
 								$encrypted_tables = $h_files->getEncryptedTables();
 								$fabrikValues = [];
-								$textarea_elements = [];
 
 								// TODO: Move this to a global method by passing the fabrik element
 								foreach ($fabrikElts as $elt)
@@ -3913,7 +3913,7 @@ class EmundusModelEvaluation extends JModelList
 										$preprocess->setValue($fabrikTagFullName, $value);
 									}
 								}
-
+								
 								$tags = $_mEmail->setTagsWord($fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 
 								foreach ($setupTags as $tag)
@@ -3997,7 +3997,7 @@ class EmundusModelEvaluation extends JModelList
 										}
 									}
 								}
-
+								
 								$preprocess->saveAs($dest);
 								if ($gotenberg_activation == 1 && $letter->pdf == 1)
 								{
