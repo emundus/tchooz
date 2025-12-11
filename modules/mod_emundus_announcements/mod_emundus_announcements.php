@@ -12,5 +12,6 @@ use Joomla\CMS\Helper\ModuleHelper;
 defined('_JEXEC') or die;
 
 $announcement_content = $params->get('announcement_content', '');
+$announcement_type = $params->get('announcement_type', 'urgency');
 
 require ModuleHelper::getLayoutPath('mod_emundus_announcements', 'default');

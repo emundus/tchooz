@@ -89,7 +89,7 @@ class PlgFabrik_FormEmundusCampaign extends plgFabrik_Form
 
 			if (!in_array($cid, $allowed_campaigns))
 			{
-				$message = match ($applicant_can_renew)
+				$message = match ((int)$applicant_can_renew)
 				{
 					0 => Text::_('CANNOT_HAVE_MULTI_FILE'),
 					2 => Text::_('USER_HAS_FILE_FOR_CAMPAIGN'),
