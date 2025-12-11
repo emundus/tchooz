@@ -196,9 +196,9 @@ class TaskEntity
 			}
 
 			if (isset($actionTargetEntity)) {
-				$actionResult = $action->execute($actionTargetEntity, null);
+				$actionResult = $action->with($this)->execute($actionTargetEntity, null);
 			} elseif (isset($actionTargetEntities)) {
-				$actionResult = $action->execute($actionTargetEntities, null);
+				$actionResult = $action->with($this)->execute($actionTargetEntities, null);
 			} else {
 				throw new \Exception('No valid action target entity/entities found for task id ' . $this->getId());
 			}
