@@ -110,7 +110,8 @@ list-style: none;
     
 
 .catalogue_content_container {
-    overflow: auto;
+    overflow-y: auto;
+    overflow-x: hidden;
     display: flex;
     flex-direction: row !important;
 	flex-wrap: wrap;
@@ -193,7 +194,8 @@ list-style: none;
 }
 
 #catalogue_container.cards .mod_emundus_campaign__list_content {
-    height: 300px;
+    min-height: 300px;
+    height: 100%;
 }
 
 #catalogue_container.cards .fabrik_element p {
@@ -204,7 +206,6 @@ list-style: none;
 }
 
 #catalogue_container.cards .mod_emundus_campaign__list_content #background-shapes {
-    width: 100% !important;
     height: 76% !important;
     transform: scale(1.4) !important;
 }
@@ -307,8 +308,6 @@ list-style: none;
 }
 
 #catalogue_container.tabs .mod_emundus_campaign__list_content #background-shapes {
-    width: 27% !important;
-    height: 200% !important;
     transform: scale(1.2) !important;
 }
 
@@ -354,7 +353,10 @@ list-style: none;
 }
 
 .pagination .pagination-list a {
-	height: 32px;
+	height: 24px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
 }
 
 form.fabrikForm select {

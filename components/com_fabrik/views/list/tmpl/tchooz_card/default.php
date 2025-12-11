@@ -56,7 +56,6 @@ endif;
 	<?php echo $this->table->intro; ?>
 </div>
 
-
 <form class="fabrikForm form-search em-mt-32 em-flex-column <?php if ($this->showFilters) : ?>catalogue_content_container<?php endif; ?>" action="<?php echo $this->table->action; ?>" method="post"
       id="<?php echo $this->formid; ?>" name="fabrikList">
 	<?php
@@ -74,6 +73,10 @@ endif;
     <div class="mod_emundus_campaign__content em-w-100 tabs" id="<?php if ($this->showFilters) : ?>catalogue_container<?php endif; ?>">
         <div id="current_1" class="mod_emundus_campaign__list">
             <div class="fabrikDataContainer">
+                <button type="button" onclick="history.go(-1)" class="tw-mt-4 tw-text-link-regular tw-cursor-pointer tw-font-semibold tw-flex tw-items-center tw-group">
+                    <span class="material-symbols-outlined tw-mr-1 tw-text-link-regular" aria-hidden="true">navigate_before</span>
+                    <span class="group-hover:tw-underline"><?php echo Text::_('GO_BACK'); ?></span>
+                </button>
 	            <?php if ($this->showFilters) : ?>
                 <div class="em-flex-row em-flex-space-between em-mb-16">
 	                <h1><?php $title = explode(' - ', $this->table->label); echo $title = !empty($title[1])?JText::_(trim($title[1])):JText::_(trim($title[0])); ?></h1>
