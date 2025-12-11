@@ -5,6 +5,7 @@ namespace Emundus\Plugin\Console\Tchooz\Extension;
 \defined('_JEXEC') or die;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozApiTokenCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozFixCollations;
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
@@ -44,5 +45,6 @@ class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 		$app->addCommand(new TchoozMigrateCheckReqsCommand($db));
 		$app->addCommand(new TchoozMigrateChecklistCommand($db));
 		$app->addCommand(new TchoozApiTokenCommand($db));
+		$app->addCommand(new TchoozFixCollations($db));
 	}
 }
