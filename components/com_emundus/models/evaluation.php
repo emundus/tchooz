@@ -2945,7 +2945,11 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$generated_letters = $_mEval->getLetterTemplateForFnum($fnum, $templates);
 			try {
-				$res->files = $this->generateFileLetters($fnum, $generated_letters, $user, $force_replace_document, $canSee, $_mFile, $_mEmail);
+				$generated = $this->generateFileLetters($fnum, $generated_letters, $user, $force_replace_document, $canSee, $_mFile, $_mEmail);
+
+				if (!empty($generated) && is_array($generated)) {
+					$res->files = array_merge($res->files, $generated);
+				}
 			} catch (\Exception $e)
 			{
 				Log::add('Error generating letters for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
