@@ -1,4 +1,7 @@
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
+    console.log('changes ' + Date.now());
+
+
     window.FbEmundusFileUpload = new Class({
         Extends: FbElement,
 
@@ -380,7 +383,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             var input = document.querySelector('input#file_' + this.element.id);
             let div = input.parentElement;
             let divAttachment = document.getElementById(this.element.id + '_attachment');
-            let divList = document.getElementById('attachments_list');
+            let divList = divAttachment.querySelector('#attachments_list');
 
             if (files.length > 0) {
                 if (!div.querySelector('.em-fileAttachmentTitle')) {
@@ -399,8 +402,6 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 for (var i = 0; i < files.length; i++) {
                     // Build unique id for each file
                     var filename = files[i].filename.replace(/\W+/g, '-').toLowerCase();
-                    console.log(filename);
-
                     var divFile = document.createElement('div');
                     divFile.setAttribute("id", this.element.id + '_attachment' + filename);
 
