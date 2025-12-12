@@ -1760,6 +1760,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			$choicesConfiguration['can_be_updated']   = 0;
 			$choicesConfiguration['can_be_confirmed'] = 0;
+			$choicesConfiguration['can_be_sent'] = 0;
 		}
 		$choicesConfiguration['crud'] = [];
 		if (!empty($fnum))
@@ -1873,9 +1874,11 @@ class EmundusControllerApplication extends BaseController
 			return;
 		}
 
+		$checkRules = true;
 		$fnum = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'c', $this->_user->id, $fnum))
 		{
+			$checkRules = false;
 			$current_fnum = $fnum;
 		}
 		else
@@ -1915,7 +1918,7 @@ class EmundusControllerApplication extends BaseController
 
 		$applicationChoicesRepository = new ApplicationChoicesRepository();
 
-		if (!$applicationChoicesRepository->flush($applicationChoicesEntity))
+		if (!$applicationChoicesRepository->flush($applicationChoicesEntity, $checkRules))
 		{
 			$response['code']    = 500;
 			$response['message'] = 'Failed to add choice.';
@@ -2316,6 +2319,17 @@ class EmundusControllerApplication extends BaseController
 		$choice->setState(ChoicesStateEnum::CONFIRMED);
 		$repository->flush($choice, false);
 
+		// Set other choices to rejected
+		$other_choices = $repository->getChoicesByFnum($current_fnum);
+		foreach ($other_choices as $other_choice)
+		{
+			if ($other_choice->getId() != $choice->getId() && $other_choice->getState() != ChoicesStateEnum::REJECTED)
+			{
+				$other_choice->setState(ChoicesStateEnum::REJECTED);
+				$repository->flush($other_choice, false);
+			}
+		}
+
 		if (!class_exists('EmundusHelperFiles'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/helpers/files.php';
@@ -2352,6 +2366,72 @@ class EmundusControllerApplication extends BaseController
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice confirmed successfully.';
 		$response['redirect'] = $redirect_url;
+		$this->sendJsonResponse($response);
+	}
+
+	public function refusechoice(): void
+	{
+		if ($this->_user->guest)
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$id = $this->input->getInt('id', 0);
+		if (empty($id))
+		{
+			$response['code']    = 400;
+			$response['message'] = 'Missing id parameter.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$fnum = $this->input->getString('fnum', '');
+		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $fnum))
+		{
+			$current_fnum = $fnum;
+		}
+		else
+		{
+			$e_session    = Factory::getApplication()->getSession()->get('emundusUser');
+			$current_fnum = $e_session->fnum;
+		}
+
+		if (empty($current_fnum))
+		{
+			$response['code']    = 400;
+			$response['message'] = 'Missing fnum parameter.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$repository = new ApplicationChoicesRepository();
+		$choice     = $repository->getById($id);
+
+		if (empty($choice))
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$choice->setState(ChoicesStateEnum::REJECTED);
+		$repository->flush($choice, false);
+
+		$choiceObject               = $choice->__serialize();
+		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
+
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['data']    = $choiceObject;
+		$response['message'] = 'Choice refused successfully.';
 		$this->sendJsonResponse($response);
 	}
 }

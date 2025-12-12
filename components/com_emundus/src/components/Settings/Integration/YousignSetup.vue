@@ -133,6 +133,15 @@ export default {
 					],
 					optional: true,
 				},
+				{
+					param: 'request_name',
+					type: 'text',
+					placeholder: '',
+					value: '',
+					label: 'COM_EMUNDUS_SETTINGS_INTEGRATION_YOUSIGN_REQUEST_NAME',
+					helptext: '',
+					displayed: true,
+				},
 			],
 		};
 	},

@@ -7,6 +7,8 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Router\Route;
 use Joomla\Input\Input;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationEntity;
 use Tchooz\Entities\Automation\ConditionEntity;
 use Tchooz\Entities\Automation\ConditionGroupEntity;
@@ -14,6 +16,7 @@ use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnPublished;
 use Tchooz\Entities\List\AdditionalColumnTag;
+use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
@@ -23,6 +26,7 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Factories\Automation\AutomationFactory;
 use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Repositories\Automation\EventsRepository;
+use Tchooz\Response;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Services\Automation\ConditionRegistry;
 use Tchooz\Services\Automation\TargetPredefinitionRegistry;
@@ -575,6 +579,55 @@ class EmundusControllerAutomation extends BaseController
 				$response['msg'] = Text::_('COM_EMUNDUS_AUTOMATION_INVALID_CONDITION_TARGET_TYPE');
 				$response['code'] = 400;
 			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+	
+	public function performaction(): void
+	{
+		try
+		{
+			$typesAllowed = ['generate_letter'];
+
+			$user = $this->app->getIdentity();
+			
+			$type = $this->input->getString('type', '');
+			$options = $this->input->getString('options');
+			$options = json_decode($options, true) ?? [];
+
+			$eSession = $this->app->getSession()->get('emundusUser');
+
+			if($user->guest || empty($eSession) || empty($eSession->fnum) || !in_array($type, $typesAllowed, true))
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			$fnum = $eSession->fnum;
+
+			$actionRegistry = new ActionRegistry();
+			$actionInstance = $actionRegistry->getActionInstance($type, $options);
+
+			if(!$actionInstance)
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+			}
+
+			$actionTarget = new ActionTargetEntity($user, $fnum);
+			$executed = $actionInstance->execute($actionTarget);
+
+			if($executed !== ActionExecutionStatusEnum::COMPLETED)
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXECUTION_FAILED'), Response::HTTP_INTERNAL_SERVER_ERROR);
+			}
+
+			$result = $actionInstance->getResult();
+
+			$response = Response::ok($result, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXECUTED_SUCCESS'));
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);

@@ -33,6 +33,8 @@ abstract class ActionEntity
 
 	private array $withEntities = [];
 
+	private string|array|null $result = null;
+
 	public function __construct(array $parameterValues = [])
 	{
 		$this->parameterValues = $parameterValues;
@@ -429,5 +431,15 @@ abstract class ActionEntity
 	public function isAvailable(): bool
 	{
 		return true;
+	}
+
+	public function getResult(): array|string|null
+	{
+		return $this->result;
+	}
+
+	public function setResult(array|string|null $result): void
+	{
+		$this->result = $result;
 	}
 }

@@ -10,6 +10,7 @@
 namespace Tchooz\Repositories\Campaigns;
 
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
@@ -161,13 +162,13 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			foreach ($campaigns as $key => $campaign)
 			{
 				$campaign->more_data = $this->getMoreData((int) $campaign->id, $elements);
-				if(!empty($filters))
+				if (!empty($filters))
 				{
 					foreach ($filters as $filter_key => $filter)
 					{
 						if (isset($campaign->more_data[$filter_key]))
 						{
-							if(is_array($campaign->more_data[$filter_key]))
+							if (is_array($campaign->more_data[$filter_key]))
 							{
 								if (!in_array($filter, $campaign->more_data[$filter_key]))
 								{
@@ -186,7 +187,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 						}
 					}
 				}
-				$campaigns[$key]     = $this->factory->fromDbObject($campaign, $this->withRelations, [], null, $elements);
+				$campaigns[$key] = $this->factory->fromDbObject($campaign, $this->withRelations, [], null, $elements);
 			}
 
 			$result->setItems($campaigns);
@@ -287,7 +288,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	public function getMoreData(int $campaign_id, array $elements = []): array
 	{
 		$more_data = [];
-		
+
 		$query = $this->db->getQuery(true);
 
 		try
@@ -399,7 +400,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		{
 			foreach ($campaigns as $campaign)
 			{
-				$campaign_entity     = $this->factory->fromDbObject($campaign, $this->withRelations);
+				$campaign_entity      = $this->factory->fromDbObject($campaign, $this->withRelations);
 				$children_campaigns[] = $campaign_entity;
 			}
 		}
@@ -507,8 +508,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					require_once(JPATH_ROOT . '/components/com_emundus/models/form.php');
 				}
 				$formModel = new \EmundusModelForm();
-				$profile = $formModel->getProfileLabelByProfileId($campaign->getProfileId());
-				$step = new StepEntity(0, 0, $profile->label, new StepTypeEntity(1), $campaign->getProfileId(), 0, [0], 1, 0, 1, 0);
+				$profile   = $formModel->getProfileLabelByProfileId($campaign->getProfileId());
+				$step      = new StepEntity(0, 0, $profile->label, new StepTypeEntity(1), $campaign->getProfileId(), 0, [0], 1, 0, 1, 0);
 			}
 		}
 
@@ -556,5 +557,18 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	public function delete(int $id): bool
 	{
 		// TODO: Implement delete() method.
+	}
+
+	public function getParameters(): array
+	{
+		$emConfig = ComponentHelper::getParams('com_emundus');
+
+		return [
+			'campaign_date_format'     => $emConfig->get('campaign_date_format', 'd/m/Y H:i'),
+			'campaign_show_start_date' => $emConfig->get('campaign_show_start_date', 1),
+			'campaign_show_end_date'   => $emConfig->get('campaign_show_end_date', 1),
+			'campaign_show_timezone'   => $emConfig->get('campaign_show_timezone', 1),
+			'campaign_show_programme'  => $emConfig->get('campaign_show_programme', 1)
+		];
 	}
 }

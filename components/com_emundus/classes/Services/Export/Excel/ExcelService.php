@@ -182,7 +182,7 @@ class ExcelService implements ExportInterface
 		if ($method != 2 || $failed_with_old_method)
 		{
 			$not_already_handled_fnums = $this->fnums;
-			$fnumsArray                = $this->m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $method, $this->user->id);
+			$fnumsArray                = $this->m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $method, $this->user->id, $this->translations);
 		}
 
 		// Fill csv

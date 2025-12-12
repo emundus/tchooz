@@ -11,11 +11,14 @@ namespace Tchooz\Entities\Emails;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
-use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
+use Tchooz\Entities\Emails\Modifiers\ChoiceStatusModifier;
+use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Interfaces\TagModifierInterface;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 class TagEntity
 {
@@ -66,7 +69,7 @@ class TagEntity
 
 		if (str_contains($part, '(') && str_contains($part, ')')) {
 			$modifierName = substr($part, 0, strpos($part, '('));
-
+			
 			$paramsStr = substr($part, strpos($part, '(') + 1, -1);
 
 			preg_match_all('/"([^"]*)"/', $paramsStr, $matches);
@@ -211,7 +214,7 @@ class TagEntity
 		$this->request = $request;
 	}
 
-	public function calculateValue(?int $user_id = 0, bool $base64 = false): void
+	public function calculateValue(?int $user_id = 0, bool $base64 = false, ?string $fnum = ''): void
 	{
 		$result = '';
 		$db = Factory::getContainer()->get('DatabaseDriver');
@@ -267,6 +270,44 @@ class TagEntity
 							$type   = pathinfo($result, PATHINFO_EXTENSION);
 							$data   = file_get_contents($result);
 							$result = 'data:image/' . $type . ';base64,' . base64_encode($data);
+						}
+					}
+					elseif ($this->name === 'VOEU')
+					{
+						$result = '';
+						$applicationChoices = [];
+						if(!empty($fnum))
+						{
+							$applicationChoicesRepository = new ApplicationChoicesRepository();
+							$applicationChoices = $applicationChoicesRepository->getChoicesByFnum($fnum);
+						}
+
+						if(!empty($applicationChoices))
+						{
+							$applicationChoiceState = null;
+							if (!empty($this->modifiers))
+							{
+								// Apply Status modifier now
+								foreach ($this->modifiers as $modifier)
+								{
+									if ($modifier['modifier'] instanceof ChoiceStatusModifier)
+									{
+										$applicationChoiceState = ChoicesStateEnum::isValidState($modifier['params'][0] ?? '');
+									}
+								}
+							}
+
+							foreach ($applicationChoices as $key => $choice)
+							{
+								if (!empty($applicationChoiceState))
+								{
+									if ($choice->getState() !== $applicationChoiceState)
+									{
+										continue;
+									}
+								}
+								$result .= '<p>' . Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key + 1)) . ' : ' . $choice->getCampaign()->getLabel() . '</p>';
+							}
 						}
 					}
 				}

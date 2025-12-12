@@ -1426,8 +1426,9 @@ class EmundusModelEvaluation extends JModelList
 			$query .= ', ' . implode(',', $this->_elements_default);
 		}
 		$query .= ' FROM #__emundus_campaign_candidature as jecc
+					LEFT JOIN #__emundus_campaign_candidature_choices as eccc on eccc.fnum = jecc.fnum
 					LEFT JOIN #__emundus_setup_status as ss on ss.step = jecc.status
-					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.parent_id = jecc.campaign_id)
+					LEFT JOIN #__emundus_setup_campaigns as esc on (esc.id = jecc.campaign_id OR esc.id = eccc.campaign_id)
 					LEFT JOIN #__emundus_setup_campaigns_more as escm on escm.campaign_id = esc.id
 					LEFT JOIN #__emundus_setup_programmes as sp on sp.code = esc.training
 					LEFT JOIN #__emundus_users as eu on eu.user_id = jecc.applicant_id
@@ -2945,7 +2946,11 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$generated_letters = $_mEval->getLetterTemplateForFnum($fnum, $templates);
 			try {
-				$res->files = $this->generateFileLetters($fnum, $generated_letters, $user, $force_replace_document, $canSee, $_mFile, $_mEmail);
+				$generated = $this->generateFileLetters($fnum, $generated_letters, $user, $force_replace_document, $canSee, $_mFile, $_mEmail);
+
+				if (!empty($generated) && is_array($generated)) {
+					$res->files = array_merge($res->files, $generated);
+				}
 			} catch (\Exception $e)
 			{
 				Log::add('Error generating letters for fnum ' . $fnum . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
@@ -3726,11 +3731,11 @@ class EmundusModelEvaluation extends JModelList
 								$fabrikElts = $_mFile->getValueFabrikByIds($idFabrik);
 							}
 
+							$textarea_elements = [];
 							if (!empty($fabrikElts)) {
 								$h_files = new EmundusHelperFiles();
 								$encrypted_tables = $h_files->getEncryptedTables();
 								$fabrikValues = [];
-								$textarea_elements = [];
 
 								// TODO: Move this to a global method by passing the fabrik element
 								foreach ($fabrikElts as $elt)
@@ -3913,7 +3918,7 @@ class EmundusModelEvaluation extends JModelList
 										$preprocess->setValue($fabrikTagFullName, $value);
 									}
 								}
-
+								
 								$tags = $_mEmail->setTagsWord($fnumInfo[$fnum]['applicant_id'], ['FNUM' => $fnum], $fnum, '');
 
 								foreach ($setupTags as $tag)
@@ -3997,7 +4002,7 @@ class EmundusModelEvaluation extends JModelList
 										}
 									}
 								}
-
+								
 								$preprocess->saveAs($dest);
 								if ($gotenberg_activation == 1 && $letter->pdf == 1)
 								{

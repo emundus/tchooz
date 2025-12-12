@@ -6,7 +6,7 @@ export default {
 		variant: {
 			type: String,
 			default: 'primary',
-			validator: (v) => ['primary', 'secondary', 'cancel', 'disabled'].includes(v),
+			validator: (v) => ['primary', 'secondary', 'link', 'cancel', 'disabled'].includes(v),
 		},
 		type: {
 			type: String,
@@ -37,6 +37,8 @@ export default {
 			switch (this.variant) {
 				case 'secondary':
 					return 'tw-btn-secondary';
+				case 'link':
+					return 'tw-underline';
 				case 'cancel':
 					return 'tw-btn-cancel';
 				case 'disabled':

@@ -106,4 +106,18 @@ export default {
 			};
 		}
 	},
+
+	async refuseChoice(choice_id, fnum) {
+		try {
+			return await client.post('refusechoice', {
+				id: choice_id,
+				fnum: fnum,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };

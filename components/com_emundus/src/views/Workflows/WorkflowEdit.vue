@@ -179,6 +179,14 @@
 											</select>
 										</div>
 
+										<div v-if="isChoicesStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
+											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_SENT') }}</label>
+											<select v-model="step.can_be_sent">
+												<option value="0">{{ translate('JNO') }}</option>
+												<option value="1">{{ translate('JYES') }}</option>
+											</select>
+										</div>
+
 										<div v-if="isApplicantStep(step)" class="tw-mb-4 tw-flex tw-flex-col">
 											<label class="tw-mb-2">{{ translate('COM_EMUNDUS_WORKFLOW_STEP_PROFILE') }}</label>
 											<select v-model="step.profile_id">

@@ -8,9 +8,16 @@
  */
 
 defined('_JEXEC') or die;
+
+$class = 'tw-bg-red-600';
+if($announcement_type === 'info') {
+    $class = 'tw-bg-blue-600';
+} elseif($announcement_type === 'warning') {
+    $class = 'tw-bg-orange-500';
+}
 ?>
 
-<div class="alerte-message-container tw-text-center tw-w-full tw-bg-red-600" style="padding: 8px 24px;">
+<div class="alerte-message-container tw-text-center tw-w-full <?php echo $class; ?>" style="padding: 8px 24px;">
     <p style="font-weight: 500; color: #fff;">
         <span style="font-size: 16pt;"><?php echo $announcement_content ?></span>
     </p>

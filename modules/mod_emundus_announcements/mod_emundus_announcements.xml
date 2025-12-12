@@ -29,6 +29,15 @@
                        label="MOD_EMUNDUS_ANNOUNCEMENTS_CONTENT"
                        description="MOD_EMUNDUS_ANNOUNCEMENTS_CONTENT_DESC">
                 </field>
+
+                <field name="announcement_type"
+                       type="list"
+                       default="urgency"
+                       label="MOD_EMUNDUS_ANNOUNCEMENTS_TYPE">
+                    <option value="info">MOD_EMUNDUS_ANNOUNCEMENTS_TYPE_INFORMATIONS</option>
+                    <option value="warning">MOD_EMUNDUS_ANNOUNCEMENTS_TYPE_WARNING</option>
+                    <option value="urgency">MOD_EMUNDUS_ANNOUNCEMENTS_TYPE_URGENT</option>
+                </field>
             </fieldset>
         </fields>
     </config>

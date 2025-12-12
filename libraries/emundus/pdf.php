@@ -14,6 +14,8 @@ use Dompdf\Css;
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 if(!function_exists('get_mime_type'))
 {
@@ -984,6 +986,21 @@ function application_form_pdf($user_id, $fnum = null, $output = true, $form_post
 					$files_updated = count($uploads) > 1 ? Text::_('COM_EMUNDUS_ATTACHMENTS_FILES_UPLOADED') : Text::_('COM_EMUNDUS_ATTACHMENTS_FILE_UPLOADED');
 		            $htmldata .= '<tr class="sent"><td><b>' . $files_updated . ' :</b>' . ' ' . count($uploads) . '</a></td></tr>';
 	            }
+
+				$addonRepository = new AddonRepository();
+				$choicesAddon = $addonRepository->getByName('choices');
+				if(!empty($choicesAddon) && $choicesAddon->getValue()->isEnabled()){
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$applicationChoices = $applicationChoicesRepository->getChoicesByFnum($fnum);
+
+					if(!empty($applicationChoices)){
+						$htmldata .= '<tr><td><h3>' . Text::_('COM_EMUNDUS_APPLICATION_CHOICES') . '</h3></td></tr>';
+						foreach ($applicationChoices as $key => $choice) {
+							$htmldata .= '<tr class="sent"><td><b>' . Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key + 1)) . ' :</b> ' . $choice->getCampaign()->getLabel() . '</td></tr>';
+						}
+					}
+				}
+
 
 				$htmldata .= '</table>';
 

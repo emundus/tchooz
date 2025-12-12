@@ -27,6 +27,7 @@ export default {
 		return {
 			campaigns: [],
 			filters: [],
+			parameters: {},
 			search: '',
 
 			choices: [],
@@ -78,6 +79,7 @@ export default {
 
 					this.campaigns = res.data;
 					this.filters = res.filters || [];
+					this.parameters = res.parameters || {};
 
 					if (this.campaigns && this.campaigns.length > 0) {
 						this.choices.forEach((choice) => {
@@ -253,10 +255,35 @@ export default {
 			});
 		},
 
-		async updateStatus(id, currentStatus) {
+		refuseChoice(choice) {
 			let fnum = this.fnum || '';
 
-			console.log(currentStatus);
+			this.alertConfirm(
+				'COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_CONFIRM_TITLE',
+				'COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_CONFIRM_TEXT',
+				false,
+				'COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_CONFIRM_BUTTON',
+				'COM_EMUNDUS_ONBOARD_CANCEL',
+			).then((result) => {
+				if (result.isConfirmed) {
+					this.loading = true;
+					applicationService.refuseChoice(choice.id, fnum).then((response) => {
+						this.alertSuccess('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE_CHOICE_SUCCESS_TITLE').then(() => {
+							const choiceIndex = this.choices.findIndex((choiceOption) => choiceOption.id === choice.id);
+							if (choiceIndex !== -1) {
+								this.choices[choiceIndex].state = response.data.state;
+								this.choices[choiceIndex].state_html = response.data.state_html;
+							}
+
+							this.loading = false;
+						});
+					});
+				}
+			});
+		},
+
+		async updateStatus(id, currentStatus) {
+			let fnum = this.fnum || '';
 
 			this.alertDropdown(
 				'COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_TITLE',
@@ -333,6 +360,17 @@ export default {
 
 			return false;
 		},
+
+		confirmDisabled(choice) {
+			if (this.choices.length > 0 && this.configuration.form_id > 0) {
+				// Each choices must have more informations filled
+				if (!(choice.moreProperties && choice.moreProperties.id && choice.moreProperties.id.value > 0)) {
+					return true;
+				}
+			}
+
+			return this.loading || this.choices.length === 0;
+		},
 	},
 
 	computed: {
@@ -378,6 +416,9 @@ export default {
 			} else {
 				return !this.$props.fnum && this.configuration.can_be_confirmed === 1;
 			}
+		},
+		canBeSent: function () {
+			return this.configuration.can_be_sent === 1;
 		},
 		fabrikFormUrl() {
 			if (
@@ -442,6 +483,7 @@ export default {
 			</div>
 			<CampaignsList
 				:campaigns="campaigns"
+				:parameters="parameters"
 				:filters="filters"
 				apply-text="COM_EMUNDUS_APPLICATION_CHOICES_SELECT_IT"
 				@apply="applyCampaign"
@@ -493,6 +535,14 @@ export default {
 			</p>
 		</div>
 
+		<!-- Intro -->
+		<div class="tw-mt-4">
+			<p>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION').replace('%s', configuration.max) }}</p>
+			<p v-if="configuration.can_be_ordering === 1">
+				{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_REORDER') }}
+			</p>
+		</div>
+
 		<hr />
 
 		<h2 v-if="configuration && configuration.max">
@@ -535,7 +585,7 @@ export default {
 						</div>
 					</div>
 				</template>
-				<template #title>
+				<template #title class="tw-mt-4">
 					{{ choice.campaign.label }}
 				</template>
 				<template #information_1>
@@ -592,9 +642,9 @@ export default {
 								<p v-else>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_MORE_INFORMATIONS') }}</p>
 								<Button
 									v-if="canMoreBeEdited(choice)"
-									variant="primary"
+									variant="link"
 									width="fit"
-									class="tw-mt-1"
+									class="tw-mt-1 tw-font-bold"
 									@click="
 										selectedChoice = choice;
 										openFabrikFormModal = true;
@@ -611,16 +661,6 @@ export default {
 					</div>
 					<div class="tw-flex tw-justify-end tw-gap-2">
 						<Button
-							v-if="!$props.fnum"
-							variant="secondary"
-							width="fit"
-							icon="open_in_new"
-							icon-position="right"
-							@click="openCampaignDetailsWithAlias(choice.campaign.alias)"
-						>
-							{{ translate('COM_EMUNDUS_CAMPAIGNS_MORE_DETAILS') }}
-						</Button>
-						<Button
 							v-if="($props.fnum && canBeUpdate) || ($props.fnum && canBeCreate && choice.state.value === 3)"
 							variant="primary"
 							width="fit"
@@ -632,11 +672,19 @@ export default {
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_CANCEL') }}
 						</Button>
 						<Button
+							variant="cancel"
+							width="fit"
+							v-if="canBeConfirm && choice.state.value === 1 && !$props.fnum"
+							@click="refuseChoice(choice)"
+						>
+							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_REFUSE') }}
+						</Button>
+						<Button
 							variant="primary"
 							width="fit"
 							v-if="canBeConfirm && choice.state.value === 1 && !$props.fnum"
 							@click="confirmChoice(choice)"
-							:disabled="submitDisabled"
+							:disabled="confirmDisabled(choice)"
 						>
 							{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM') }}
 						</Button>
@@ -648,11 +696,13 @@ export default {
 			<h3>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_EMPTY') }}</h3>
 		</div>
 
+		<hr />
+
 		<div class="tw-mb-4 tw-flex tw-justify-end" v-if="!$props.fnum">
 			<Button
 				variant="primary"
 				width="fit"
-				v-if="canBeUpdate && !canBeConfirm"
+				v-if="canBeUpdate && !canBeConfirm && canBeSent"
 				@click="sendChoiceStep"
 				:disabled="submitDisabled"
 			>

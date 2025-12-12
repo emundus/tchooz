@@ -93,10 +93,11 @@ class ActionGenerateLetter extends ActionEntity
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 					}
 					$evaluationModel = new \EmundusModelEvaluation();
-					$generatedLetters = $evaluationModel->generateFileLetters($context->getFile(), $letters, $context->getTriggeredBy(), true, 0);
+					$generatedLetters = $evaluationModel->generateFileLetters($context->getFile(), $letters, $context->getTriggeredBy(), true, 1);
 
 					if (!empty($generatedLetters))
 					{
+						$this->setResult($generatedLetters);
 						$executed = ActionExecutionStatusEnum::COMPLETED;
 					}
 				}
