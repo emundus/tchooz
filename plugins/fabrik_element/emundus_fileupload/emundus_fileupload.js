@@ -1,7 +1,4 @@
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
-    console.log('changes ' + Date.now());
-
-
     window.FbEmundusFileUpload = new Class({
         Extends: FbElement,
 
