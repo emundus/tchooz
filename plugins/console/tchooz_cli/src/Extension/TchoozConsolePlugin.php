@@ -1,8 +1,11 @@
 <?php
+
 namespace Emundus\Plugin\Console\Tchooz\Extension;
 
 \defined('_JEXEC') or die;
 
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozApiTokenCommand;
+use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozFixCollations;
 use Joomla\Application\ApplicationEvents;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Event\SubscriberInterface;
@@ -20,26 +23,28 @@ use Emundus\Plugin\Console\Tchooz\CliCommand\Commands\TchoozMigrateChecklistComm
 
 class TchoozConsolePlugin extends CMSPlugin implements SubscriberInterface
 {
-    public static function getSubscribedEvents(): array
-    {
-        return [
-            ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
-        ];
-    }
+	public static function getSubscribedEvents(): array
+	{
+		return [
+			ApplicationEvents::BEFORE_EXECUTE => 'registerCommands',
+		];
+	}
 
-    public function registerCommands(): void
-    {
-        $app = Factory::getApplication();
-		$db = Factory::getContainer()->get('DatabaseDriver');
+	public function registerCommands(): void
+	{
+		$app = Factory::getApplication();
+		$db  = Factory::getContainer()->get('DatabaseDriver');
 
-        $app->addCommand(new TchoozUserAddCommand($db));
-        $app->addCommand(new TchoozUpdateCommand($db));
-	    $app->addCommand(new TchoozMigrateCommand($db));
+		$app->addCommand(new TchoozUserAddCommand($db));
+		$app->addCommand(new TchoozUpdateCommand($db));
+		$app->addCommand(new TchoozMigrateCommand($db));
 		$app->addCommand(new TchoozResetFabrikConnectionCommand($db));
 		$app->addCommand(new TchoozVanillaCommand($db));
 		$app->addCommand(new TchoozConfigCommand($db));
 		$app->addCommand(new TchoozKeycloakCommand($db));
 		$app->addCommand(new TchoozMigrateCheckReqsCommand($db));
-	    $app->addCommand(new TchoozMigrateChecklistCommand($db));
-    }
+		$app->addCommand(new TchoozMigrateChecklistCommand($db));
+		$app->addCommand(new TchoozApiTokenCommand($db));
+		$app->addCommand(new TchoozFixCollations($db));
+	}
 }

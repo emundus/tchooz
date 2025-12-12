@@ -62,7 +62,7 @@ final class EmundusUserCategory extends CMSPlugin implements SubscriberInterface
 		$currentMenu = $this->getApplication()->getMenu()->getActive();
 
 		// Only for logged in users and in site application
-		if($user->guest || empty($user->id) || !$this->getApplication()->isClient('site')){
+		if($user->guest || empty($user->id) || !$this->getApplication()->isClient('site') || $user->activation == -1 || $user->block == 1){
 			return;
 		}
 

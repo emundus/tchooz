@@ -232,6 +232,32 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+
+        <field type="note" label="COM_EMUNDUS_CAMPAIGNS_NEW_PARAMETERS" />
+
+        <field type="text" name="campaign_date_format" label="COM_EMUNDUS_CAMPAIGNS_DATE_FORMAT"
+               description="COM_EMUNDUS_CAMPAIGNS_DATE_FORMAT_DESC" default="d/m/Y H:i" hint="d/m/Y H:i"/>
+
+        <field type="list" name="campaign_show_start_date" label="COM_EMUNDUS_CAMPAIGNS_SHOW_START_DATE" default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field type="list" name="campaign_show_end_date" label="COM_EMUNDUS_CAMPAIGNS_SHOW_END_DATE" default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field type="list" name="campaign_show_timezone" label="COM_EMUNDUS_CAMPAIGNS_SHOW_TIMEZONE" default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+
+        <field type="list" name="campaign_show_programme"
+               label="COM_EMUNDUS_CAMPAIGNS_SHOW_PROGRAMME" default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
     </fieldset>
 
     <fieldset label="COM_EMUNDUS_APPLICANTS" name="applicants" description="COM_EMUNDUS_APPLICANTS_DESC">

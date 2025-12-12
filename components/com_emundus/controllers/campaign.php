@@ -1684,13 +1684,13 @@ class EmundusControllerCampaign extends BaseController
 			return;
 		}
 
-		$search = $this->input->getString('search', '');
+		$search  = $this->input->getString('search', '');
 		$filters = $this->input->getRaw('filters');
-		if(!empty($filters))
+		if (!empty($filters))
 		{
 			$filters = json_decode($filters, true);
 		}
-		$fnum   = $this->input->getString('fnum');
+		$fnum = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'r', $this->_user->id, $fnum))
 		{
 			$current_fnum = $fnum;
@@ -1711,9 +1711,9 @@ class EmundusControllerCampaign extends BaseController
 		}
 
 		// TODO: refactor this with a Filter object
-		$built_filters       = [];
+		$built_filters      = [];
 		$campaignRepository = new CampaignRepository();
-		$more_elements = $campaignRepository->getCampaignMoreElements();
+		$more_elements      = $campaignRepository->getCampaignMoreElements();
 		if (!class_exists('EmundusModelForm'))
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/form.php';
@@ -1721,7 +1721,7 @@ class EmundusControllerCampaign extends BaseController
 		$m_form = new EmundusModelForm();
 		foreach ($more_elements as $element)
 		{
-			if($element['hidden'])
+			if ($element['hidden'])
 			{
 				continue;
 			}
@@ -1730,11 +1730,11 @@ class EmundusControllerCampaign extends BaseController
 			$params = json_decode($element['params']);
 
 			$filter = [
-				'key'    => $element['name'],
-				'label'  => $element['label'],
-				'type'   => $type,
+				'key'           => $element['name'],
+				'label'         => $element['label'],
+				'type'          => $type,
 				'alwaysDisplay' => true,
-				'value' => '',
+				'value'         => '',
 			];
 
 			if ($element['plugin'] === 'databasejoin')
@@ -1743,13 +1743,13 @@ class EmundusControllerCampaign extends BaseController
 				try
 				{
 					$databasejoin_options = $m_form->getDatabaseJoinOptions($params->join_db_name, $params->join_key_column, $params->join_val_column);
-					$options[] = (object) ['value' => '', 'label' => Text::_('PLEASE_SELECT')];
+					$options[]            = (object) ['value' => '', 'label' => Text::_('PLEASE_SELECT')];
 					foreach ($databasejoin_options as $db_option)
 					{
-						$option = new stdClass();
+						$option        = new stdClass();
 						$option->value = $db_option->primary_key;
 						$option->label = $db_option->value;
-						$options[] = $option;
+						$options[]     = $option;
 					}
 					$filter['type']    = 'select';
 					$filter['options'] = $options;
@@ -1762,7 +1762,7 @@ class EmundusControllerCampaign extends BaseController
 
 			if ($element['plugin'] === 'yesno')
 			{
-				$options = [
+				$options           = [
 					['value' => '', 'label' => Text::_('PLEASE_SELECT')],
 					['value' => 1, 'label' => Text::_('JYES')],
 					['value' => 0, 'label' => Text::_('JNO')],
@@ -1812,7 +1812,8 @@ class EmundusControllerCampaign extends BaseController
 		$emundusUser           = $emundusUserRepository->getByFnum($current_fnum);
 		$categoryUser          = $emundusUser->getUserCategory();
 
-		$campaign_choices   = $campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 't.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), [], $filters);
+		$campaign_parameters = $campaignRepository->getParameters();
+		$campaign_choices    = $campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 't.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), [], $filters);
 		if ($campaign_choices->getTotalItems() > 0)
 		{
 			foreach ($campaign_choices->getItems() as $choice)
@@ -1824,11 +1825,12 @@ class EmundusControllerCampaign extends BaseController
 			}
 		}
 
-		$response['code']    = 200;
-		$response['data']    = $choices;
-		$response['filters'] = $built_filters;
-		$response['status']  = true;
-		$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
+		$response['code']       = 200;
+		$response['data']       = $choices;
+		$response['filters']    = $built_filters;
+		$response['parameters'] = $campaign_parameters;
+		$response['status']     = true;
+		$response['message']    = Text::_('COM_EMUNDUS_ONBOARD_SUCCESS');
 
 		$this->sendJsonResponse($response);
 	}

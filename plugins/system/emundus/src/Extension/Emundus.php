@@ -31,6 +31,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterRenderDefinition;
 use Tchooz\Entities\Emails\Modifiers\CapitalizeModifier;
+use Tchooz\Entities\Emails\Modifiers\ChoiceStatusModifier;
 use Tchooz\Entities\Emails\Modifiers\LettersModifier;
 use Tchooz\Entities\Emails\Modifiers\LowercaseModifier;
 use Tchooz\Entities\Emails\Modifiers\NumberModifier;
@@ -99,6 +100,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/TrimModifier.php';
 			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/LettersModifier.php';
 			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/NumberModifier.php';
+			require_once JPATH_SITE . '/components/com_emundus/classes/Entities/Emails/Modifiers/ChoiceStatusModifier.php';
 		}
 
 		TagModifierRegistry::register(new UppercaseModifier());
@@ -107,6 +109,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		TagModifierRegistry::register(new TrimModifier());
 		TagModifierRegistry::register(new LettersModifier());
 		TagModifierRegistry::register(new NumberModifier());
+		TagModifierRegistry::register(new ChoiceStatusModifier());
 	}
 
 	public function injectLazyJS(EventInterface $event): void

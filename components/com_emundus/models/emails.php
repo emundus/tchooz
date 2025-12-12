@@ -628,6 +628,7 @@ class EmundusModelEmails extends JModelList
 		}
 		else {
 			$user = !empty($user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id) : null;
+			$current_user = $user;
 		}
 		$config = $app->getConfig();
 
@@ -836,7 +837,8 @@ class EmundusModelEmails extends JModelList
 
 			if (!empty($tags_content)) {
 				$tags_content = array_unique($tags_content);
-				$query->andWhere('t.tag IN ("' . implode('","', $tags_content) . '")');
+				// Escape tags to prevent SQL injection
+				$query->andWhere('t.tag IN (' . implode(',', $db->quote($tags_content)) . ')');
 			}
 			elseif ($check_content) {
 				return array('patterns' => array(), 'replacements' => array());
@@ -872,7 +874,7 @@ class EmundusModelEmails extends JModelList
 			}
 
 			$tagEntity->setRequest($request);
-			$tagEntity->calculateValue($user_id, $base64);
+			$tagEntity->calculateValue($user_id, $base64, $fnum);
 
 			$patterns[] = $tagEntity->getFullPatternName();
 			$replacements[] = $tagEntity->getValue();
@@ -919,7 +921,7 @@ class EmundusModelEmails extends JModelList
 						}
 
 						$tagEntity->setRequest($request);
-						$tagEntity->calculateValue($user_id, $base64);
+						$tagEntity->calculateValue($user_id, $base64, $fnum);
 					}
 
 					// Add tag with modifier to patterns and replacements
@@ -960,7 +962,7 @@ class EmundusModelEmails extends JModelList
 				$request = 'php|' . $request;
 			}
 			$tagEntity->setRequest($request);
-			$tagEntity->calculateValue($user_id);
+			$tagEntity->calculateValue($user_id, false, $fnum);
 
 			$patterns[] = $tagEntity->getFullName();
 			$replacements[] = $tagEntity->getValue();
@@ -1018,13 +1020,16 @@ class EmundusModelEmails extends JModelList
 				}
 				elseif (in_array($tag->getName(), $fabrik_aliases))
 				{
-					$elt = EmundusHelperFabrik::getElementsByAlias($tag->getName());
+					$elts = EmundusHelperFabrik::getElementsByAlias($tag->getName());
 
-					if(!empty($elt[0]))
+					if(!empty($elts))
 					{
-						$idFabrik[] = $elt[0]->id;
-						$aliasFabrik[$tag->getName()] = $elt[0]->id;
 						$fabrikTags[] = $tag;
+						$aliasFabrik[$tag->getName()] = [];
+						foreach($elts as $elt) {
+							$idFabrik[] = $elt->id;
+							$aliasFabrik[$tag->getName()][] = $elt->id;
+						}
 					}
 				}
 			}
@@ -1136,9 +1141,9 @@ class EmundusModelEmails extends JModelList
 					}
 				}
 			}
-			
+
 			$preg = array('patterns' => array(), 'replacements' => array());
-			
+
 			foreach ($fnumsArray as $fnum) {
 				foreach ($idFabrik as $id) {
 					$preg['patterns'][] = '/\$\{' . $id . '\}/';
@@ -1149,17 +1154,25 @@ class EmundusModelEmails extends JModelList
 						$preg['replacements'][] = '';
 					}
 				}
-				
-				foreach ($aliasFabrik as $alias => $id) {
+
+
+				foreach ($aliasFabrik as $alias => $ids) {
+					$value_found = false;
 					$preg['patterns'][] = '/\$\{' . $alias . '\}/';
-					if (isset($fabrikValues[$id][$fnum])) {
-						$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+					foreach($ids as $id) {
+						if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
+							$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+							$value_found = true;
+							break;
+						}
 					}
-					else {
+
+					if(!$value_found)
+					{
 						$preg['replacements'][] = '';
 					}
 				}
-				
+
 				foreach ($fabrikTags as $fabrikTag) {
 					if(!empty($fabrikTag->getModifiers()))
 					{

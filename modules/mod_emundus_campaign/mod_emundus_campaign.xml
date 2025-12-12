@@ -232,6 +232,11 @@
                         type="note"
                         label="MOD_EM_CAMPAIGN_LIST_CAMPAIGNS"
                 />
+                <field showon="mod_em_campaign_layout:default_tchooz" type="list" name="mod_em_campaign_display_campaigns"
+                       label="MOD_EM_CAMPAIGN_LIST_DISPLAY_CAMPAIGNS" default="1">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
                 <field type="checkboxes" name="mod_em_campaign_list_tab" label="MOD_EM_CAMPAIGN_LIST_TAB"
                        description="MOD_EM_CAMPAIGN_LIST_TAB_DESC">
                     <option checked="true" value="current">MOD_EM_CAMPAIGN_LIST_CURRENT</option>

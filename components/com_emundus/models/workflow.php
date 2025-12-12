@@ -798,7 +798,7 @@ class EmundusModelWorkflow extends JModelList
 
 		$query = $this->db->createQuery();
 		$query->clear()
-			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed, choices_rules.form_id as choices_form_id')
+			->select('esws.*, GROUP_CONCAT(DISTINCT eswses.status) AS entry_status, payment_rules.adjust_balance_step_id, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed,choices_rules.can_be_sent, choices_rules.form_id as choices_form_id')
 			->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_payment_rules', 'payment_rules') . ' ON ' . $this->db->quoteName('payment_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
@@ -1132,7 +1132,7 @@ class EmundusModelWorkflow extends JModelList
 				if (!empty($workflow_ids))
 				{
 					$query->clear()
-						->select('esws.*, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed, choices_rules.form_id as choices_form_id')
+						->select('esws.*, choices_rules.max, choices_rules.can_be_ordering, choices_rules.can_be_confirmed, choices_rules.can_be_sent, choices_rules.form_id as choices_form_id')
 						->from($this->db->quoteName('#__emundus_setup_workflows_steps', 'esws'))
 						->leftJoin($this->db->quoteName('#__emundus_setup_workflows_steps_entry_status', 'eswses') . ' ON ' . $this->db->quoteName('eswses.step_id') . ' = ' . $this->db->quoteName('esws.id'))
 						->leftJoin($this->db->quoteName('#__emundus_setup_workflow_step_choices_rules', 'choices_rules') . ' ON ' . $this->db->quoteName('choices_rules.step_id') . ' = ' . $this->db->quoteName('esws.id'))
@@ -1677,7 +1677,15 @@ class EmundusModelWorkflow extends JModelList
 
 			if (!empty($program_id))
 			{
-				$workflows = $this->getWorkflows([], 0, 0, [$program_id]);
+				$programs_ids = [$program_id];
+				$campaignRepository = new CampaignRepository();
+				$linked_programs_ids = $campaignRepository->getLinkedProgramsIds($campaign_id);
+				if(!empty($linked_programs_ids))
+				{
+					$programs_ids = array_unique(array_merge($programs_ids, $linked_programs_ids));
+				}
+
+				$workflows = $this->getWorkflows([], 0, 0, $programs_ids);
 
 				foreach ($workflows as $workflow)
 				{
@@ -2299,6 +2307,7 @@ class EmundusModelWorkflow extends JModelList
 					'max'              => (int) $step['max'] ?? 1,
 					'can_be_ordering'  => (int) $step['can_be_ordering'] ?? 0,
 					'can_be_confirmed' => (int) $step['can_be_confirmed'] ?? 0,
+					'can_be_sent' => (int) $step['can_be_sent'] ?? 0,
 				];
 
 				$query->select('id')
@@ -2336,6 +2345,7 @@ class EmundusModelWorkflow extends JModelList
 			'max'              => 1,
 			'can_be_ordering'  => 1,
 			'can_be_confirmed' => 0,
+			'can_be_sent' => 0,
 			'can_be_updated'   => 0,
 			'form_id'          => 0,
 		];
@@ -2356,6 +2366,7 @@ class EmundusModelWorkflow extends JModelList
 				$config['max']              = $choices_step->max;
 				$config['can_be_ordering']  = $choices_step->can_be_ordering ?? 0;
 				$config['can_be_confirmed'] = $choices_step->can_be_confirmed ?? 0;
+				$config['can_be_sent'] = $choices_step->can_be_sent ?? 0;
 				$config['can_be_updated']   = in_array($file_status, $choices_step->entry_status) ? 1 : 0;
 				$config['form_id']          = $choices_step->choices_form_id;
 			}

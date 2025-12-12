@@ -39,7 +39,7 @@ foreach ($nav_mapping as $position => $nav) {
 
 ?>
 <div class="pagination">
-	<ul class="pagination-list em-flex-row">
+	<ul class="pagination-list tw-flex tw-items-center tw-gap-2">
 		<li class="pagination-prev<?php echo $prevClass; ?>">
 			<?php echo $list['previous']['data']; ?>
 		</li>

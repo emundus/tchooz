@@ -529,7 +529,8 @@ class EmundusModelSettings extends ListModel
 		$this->db->setQuery($query);
 		$existing = $this->db->loadResult();
 
-		if ($existing) {
+		if ($existing)
+		{
 			throw new \Exception(Text::_('COM_EMUNDUS_SETTINGS_NAME_TAG_ALREADY_EXISTS'));
 		}
 
@@ -2006,8 +2007,8 @@ class EmundusModelSettings extends ListModel
 		// Users params
 		$params['emundus']['disable_inactive_accounts_after_delay'] = $emundus_parameters->get('disable_inactive_accounts_after_delay', 12);
 		$params['emundus']['delete_testing_accounts_after_delay']   = $emundus_parameters->get('delete_testing_accounts_after_delay', 12);
-		$params['emundus']['enable_user_categories']                         = $emundus_parameters->get('enable_user_categories', 0);
-		$params['emundus']['user_category_mandatory']                     = $emundus_parameters->get('user_category_mandatory', 0);
+		$params['emundus']['enable_user_categories']                = $emundus_parameters->get('enable_user_categories', 0);
+		$params['emundus']['user_category_mandatory']               = $emundus_parameters->get('user_category_mandatory', 0);
 
 		foreach ($settings_applicants as $settings_applicant)
 		{
@@ -2188,11 +2189,12 @@ class EmundusModelSettings extends ListModel
 
 		if ($updated)
 		{
-			if(empty($user_id))
+			if (empty($user_id))
 			{
 				$user = Factory::getApplication()->getIdentity();
 			}
-			else {
+			else
+			{
 				$user = Factory::getUser($user_id);
 			}
 
@@ -4485,6 +4487,7 @@ class EmundusModelSettings extends ListModel
 				'create_webhook'                => $setup->create_webhook,
 				'signature_level'               => $setup->signature_level,
 				'signature_authentication_mode' => $setup->signature_authentication_mode,
+				'request_name'                  => $setup->request_name,
 				'authentication'                => [
 					'type'          => 'bearer',
 					'token_storage' => 'database',
@@ -4521,6 +4524,7 @@ class EmundusModelSettings extends ListModel
 			$config['create_webhook']                = $setup->create_webhook;
 			$config['signature_level']               = $setup->signature_level;
 			$config['signature_authentication_mode'] = $setup->signature_authentication_mode;
+			$config['request_name']                  = $setup->request_name;
 			$config['mode']                          = $setup->mode;
 
 			if (!empty($setup->expiration_date) && $setup->expiration_date != 'Invalid Date')
@@ -4931,8 +4935,8 @@ class EmundusModelSettings extends ListModel
 			if (!empty($profile_form))
 			{
 				$query->clear()
-					->update($this->db->quoteName('#__fabrik_elements','fe'))
-					->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
+					->update($this->db->quoteName('#__fabrik_elements', 'fe'))
+					->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->db->quoteName('fe.group_id') . ' = ' . $this->db->quoteName('ffg.group_id'))
 					->set($this->db->quoteName('published') . ' = ' . $this->db->quote($state ? 1 : 0))
 					->where($this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quote($profile_form))
 					->where($this->db->quoteName('fe.name') . ' = ' . $this->db->quote('user_category'));

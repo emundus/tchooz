@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+	<fields name="params">
+		<fieldset name="plg-access">
+            <field type="text" name="button_label" label="PLG_ELEMENT_ACTION_BUTTON_LABEL" />
+
+            <field type="list" name="action_to_perform" label="PLG_ELEMENT_ACTION_TO_PERFORM">
+                <option value="generate_letter">PLG_ELEMENT_ACTION_GENERATE_LETTER</option>
+            </field>
+
+            <field showon="action_to_perform:generate_letter" name="generate_letter_id"
+                   label="PLG_ELEMENT_ACTION_GENERATE_LETTER_TEMPLATE"
+                   type="sql"
+                   query="SELECT id, title FROM #__emundus_setup_letters"
+                   key_field="id"
+                   value_field="title"
+            >
+            </field>
+		</fieldset>
+	</fields>
+</form>

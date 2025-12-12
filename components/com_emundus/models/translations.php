@@ -619,7 +619,7 @@ class EmundusModelTranslations extends ListModel
 						$override_file = JPATH_SITE . '/language/overrides/' . $location;
 						if (file_exists($override_file))
 						{
-							$parsed_file       = LanguageHelper::parseIniFile($override_file);
+							$parsed_file       = LanguageHelper::parseIniFile($override_file, true);
 							$parsed_file[$tag] = $override;
 							$inserted          = LanguageHelper::saveToIniFile($override_file, $parsed_file);
 						}
@@ -744,10 +744,9 @@ class EmundusModelTranslations extends ListModel
 						$override_file = JPATH_BASE . '/language/overrides/' . $location;
 						if (file_exists($override_file))
 						{
-							$parsed_file       = LanguageHelper::parseIniFile($override_file);
+							$parsed_file       = LanguageHelper::parseIniFile($override_file, true);
 							$parsed_file[$tag] = $override;
-							$saved             = LanguageHelper::saveToIniFile($override_file, $parsed_file);
-
+							$saved          = LanguageHelper::saveToIniFile($override_file, $parsed_file);
 						}
 					}
 					else
@@ -829,7 +828,7 @@ class EmundusModelTranslations extends ListModel
 					$override_file = JPATH_SITE . '/language/overrides/' . $location;
 					if (file_exists($override_file))
 					{
-						$parsed_file = LanguageHelper::parseIniFile($override_file);
+						$parsed_file = LanguageHelper::parseIniFile($override_file, true);
 						unset($parsed_file[$tag]);
 						LanguageHelper::saveToIniFile($override_file, $parsed_file);
 					}
@@ -841,7 +840,7 @@ class EmundusModelTranslations extends ListModel
 				$override_file = JPATH_SITE . '/language/overrides/' . $location;
 				if (file_exists($override_file))
 				{
-					$parsed_file = LanguageHelper::parseIniFile($override_file);
+					$parsed_file = LanguageHelper::parseIniFile($override_file, true);
 					unset($parsed_file[$tag]);
 					LanguageHelper::saveToIniFile($override_file, $parsed_file);
 				}

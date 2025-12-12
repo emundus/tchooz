@@ -94,7 +94,7 @@ foreach ($this->headings as $heading => $label) {
                         }
 
                         ?>
-                        <div class="<?php echo $this->cellClass[$heading]['class'] ?> flex em-flex-align-start" <?php echo $style ?>>
+                        <div class="<?php echo $this->cellClass[$heading]['class'] ?> tw-flex tw-items-start tw-gap-2" <?php echo $style ?>>
                             <?php if (!empty($icon)) : ?>
                                 <span class="material-symbols-outlined mr-2"><?php echo $icon ?></span>
                             <?php endif; ?>
@@ -125,14 +125,14 @@ foreach ($this->headings as $heading => $label) {
             <?php if (!empty($this->_row->data->fabrik_view_url && !empty($detail_url))) : ?>
                 <a class="tw-btn tw-btn-tertiary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_view_url ?>">
-                    <span class="em-mb-8"><?php echo $detail_label; ?></span>
+                    <span><?php echo $detail_label; ?></span>
                 </a>
             <?php endif; ?>
 
             <?php if(!$this->showFilters) : if (!empty($this->_row->data->fabrik_edit_url && !empty($edit_url))) : ?>
                 <a class="tw-btn tw-btn-primary em-w-100 em-mt-8 em-applicant-default-font em-flex-column"
                    href="<?php echo $this->_row->data->fabrik_edit_url ?>">
-                    <span class="em-mb-8"><?php echo $edit_label; ?></span>
+                    <span><?php echo $edit_label; ?></span>
                 </a>
             <?php endif; endif; ?>
         </div>

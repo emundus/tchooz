@@ -126,7 +126,6 @@ class MigrateJoomlaJob extends TchoozJob
 				switch ($table)
 				{
 					case 'jos_assets':
-					case 'jos_messages':
 						Log::add('Assets and messages tables will be ignored, we rebuild them after', Log::INFO, self::getJobName());
 						break;
 					case 'jos_extensions':
