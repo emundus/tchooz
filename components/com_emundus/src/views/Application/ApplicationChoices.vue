@@ -588,7 +588,7 @@ export default {
 				<template #title class="tw-mt-4">
 					{{ choice.campaign.label }}
 				</template>
-				<template #information_1>
+				<template #information_1 v-if="this.parameters.campaign_show_end_date == 1">
 					<div class="tw-flex tw-items-center tw-gap-1">
 						<span class="material-symbols-outlined tw-text-neutral-600" aria-hidden="true">schedule</span>
 						<p class="tw-text-neutral-600">
