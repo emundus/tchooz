@@ -537,7 +537,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	public function onUserLogin(LoginEvent $event): void
 	{
 		// Do not run in CLI mode
-		if ($this->getApplication()->isClient('cli'))
+		if ($this->getApplication()->isClient('cli') || $this->getApplication()->isClient('api'))
 		{
 			return;
 		}
