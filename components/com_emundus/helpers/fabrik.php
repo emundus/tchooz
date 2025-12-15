@@ -1788,7 +1788,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				{
 					$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
 				}
-				$query->group('fe.name,fl.db_table_name');
+				$query->group('fe.id, fe.name, fl.db_table_name');
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();
 			}
