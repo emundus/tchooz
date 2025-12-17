@@ -203,6 +203,14 @@ class FilesModel extends ListModel
 		$query = $this->getDatabase()->getQuery(true);
 
 		if (!empty($items)) {
+
+			$query->clear()
+				->select('step as id, value, class, ordering')
+				->from($this->getDatabase()->quoteName('#__emundus_setup_status', 'ess'))
+				->order('ordering ASC');
+			$this->getDatabase()->setQuery($query);
+			$statuses = $this->getDatabase()->loadObjectList();
+
 			foreach ($items as $item) {
 				$item->typeAlias = 'com_emundus.files';
 
@@ -222,6 +230,13 @@ class FilesModel extends ListModel
 					->where($this->getDatabase()->quoteName('eta.fnum') . ' = ' . $this->getDatabase()->quote($item->fnum));
 				$this->getDatabase()->setQuery($query);
 				$item->stickers = $this->getDatabase()->loadObjectList();
+
+				foreach ($statuses as $status) {
+					if ($status->id == $item->status) {
+						$item->status = $status;
+						break;
+					}
+				}
 
 				// transform the profile ids into an array
 				/*if (!empty($item->profile_ids)) {
