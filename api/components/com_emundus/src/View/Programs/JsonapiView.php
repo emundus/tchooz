@@ -37,6 +37,7 @@ class JsonapiView extends BaseApiView
         'description',
 	    'category',
 	    'published',
+	    'link'
     ];
 
     /**
@@ -52,6 +53,7 @@ class JsonapiView extends BaseApiView
 	    'description',
 	    'category',
 	    'published',
+	    'link'
     ];
 
     /**

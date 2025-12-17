@@ -99,7 +99,8 @@ class ProgramsModel extends ListModel
                     $db->quoteName('sp.label'),
                     $db->quoteName('sp.notes', 'description'),
                     $db->quoteName('sp.published'),
-                    $db->quoteName('sp.programmes', 'category')
+                    $db->quoteName('sp.programmes', 'category'),
+                    $db->quoteName('sp.link')
                 ]
             )
         )
