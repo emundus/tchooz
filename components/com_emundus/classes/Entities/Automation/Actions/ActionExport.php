@@ -172,12 +172,6 @@ class ActionExport extends ActionEntity
 		}
 		catch (\Exception $e)
 		{
-			if (isset($exportEntity) && !empty($exportEntity->getId()))
-			{
-				$exportEntity->setFailed(true);
-				$exportRepository->flush($exportEntity);
-			}
-
 			Log::add('Export action failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
 
 			return ActionExecutionStatusEnum::FAILED;
