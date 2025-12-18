@@ -3894,7 +3894,15 @@ class EmundusModelEvaluation extends JModelList
 
 									$fabrikTagFullName = $fabrikTag->getFullName();
 
-									if (in_array($fabrikTagFullName, $textarea_elements) && isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
+									// Detect html content in $fabrikValues[$fabrikTagFullName][$fnum]['val']
+									if(isset($fabrikValues[$fabrikTagFullName][$fnum]['val']))
+									{
+										$containsHtml = $fabrikValues[$fabrikTagFullName][$fnum]['val'] != strip_tags($fabrikValues[$fabrikTagFullName][$fnum]['val']);
+									} else {
+										$containsHtml = false;
+									}
+
+									if ((in_array($fabrikTagFullName, $textarea_elements) || $containsHtml) && isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
 										$html = $fabrikValues[$fabrikTagFullName][$fnum]['val'];
 										$section = $phpWord->addSection();
 										\PhpOffice\PhpWord\Shared\Html::addHtml($section, $html);
