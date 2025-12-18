@@ -60,7 +60,7 @@
 						</span>
 					</div>
 
-					<div class="tw-mt-6">
+					<div class="tw-mt-6" v-if="conditionData.state !== 'empty' && conditionData.state !== '!empty'">
 						<multiselect
 							v-if="
 								conditionData.field &&
@@ -166,6 +166,16 @@ export default {
 					id: 6,
 					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_LESS_THAN_OR_EQUALS',
 					value: '<=',
+				},
+				{
+					id: 7,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EMPTY',
+					value: 'empty',
+				},
+				{
+					id: 8,
+					label: 'COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EMPTY',
+					value: '!empty',
 				},
 			],
 			options: [],
