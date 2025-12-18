@@ -72,6 +72,17 @@ class FileModel extends AdminModel
 						$this->getDatabase()->setQuery($query);
 						$item->status = $this->getDatabase()->loadObject();
 
+						$query->clear()
+							->select('esat.id, esat.label')
+							->from($this->getDatabase()->quoteName('#__emundus_setup_action_tag', 'esat'))
+							->leftJoin(
+								$this->getDatabase()->quoteName('#__emundus_tag_assoc', 'eta')
+								. ' ON ' . $this->getDatabase()->quoteName('esat.id') . ' = ' . $this->getDatabase()->quoteName('eta.id_tag')
+							)
+							->where($this->getDatabase()->quoteName('eta.fnum') . ' = ' . $this->getDatabase()->quote($item->fnum));
+						$this->getDatabase()->setQuery($query);
+						$item->stickers = $this->getDatabase()->loadObjectList();
+
 						$profile_ids = [$item->profile_id];
 
 						if (!class_exists('EmundusHelperFabrik'))
