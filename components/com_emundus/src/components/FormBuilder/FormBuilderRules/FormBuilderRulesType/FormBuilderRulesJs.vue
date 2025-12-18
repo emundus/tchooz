@@ -189,14 +189,24 @@ export default {
 			this.conditions.forEach((grouped_condition) => {
 				let tmp_conditions = [];
 				grouped_condition.forEach((condition) => {
-					if (condition.field && condition.values) {
-						tmp_conditions.push({
-							field: condition.field.name,
-							values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
-							state: condition.state,
-							group_type: condition.group_type,
-							type: condition.type,
-						});
+					if (condition.field) {
+						if (condition.state === 'empty' || condition.state === '!empty') {
+							tmp_conditions.push({
+								field: condition.field.name,
+								values: [],
+								state: condition.state,
+								group_type: condition.group_type,
+								type: condition.type,
+							});
+						} else if (condition.values) {
+							tmp_conditions.push({
+								field: condition.field.name,
+								values: typeof condition.values === 'object' ? condition.values.primary_key : condition.values,
+								state: condition.state,
+								group_type: condition.group_type,
+								type: condition.type,
+							});
+						}
 					}
 				});
 
