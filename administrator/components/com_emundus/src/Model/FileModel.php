@@ -9,6 +9,7 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Filter\InputFilter;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 
 class FileModel extends AdminModel
 {
@@ -64,13 +65,9 @@ class FileModel extends AdminModel
 					$item = $db->loadObject();
 
 					if (!empty($item)) {
-						$query->clear()
-							->select('step as id, value, class, ordering')
-							->from($this->getDatabase()->quoteName('#__emundus_setup_status', 'ess'))
-							->where('ess.step = ' . $db->quote($item->status))
-							->order('ordering ASC');
-						$this->getDatabase()->setQuery($query);
-						$item->status = $this->getDatabase()->loadObject();
+						$statusRepository = new StatusRepository();
+						$status = $statusRepository->getByStep($item->status);
+						$item->status = $status->__serialize();
 
 						$query->clear()
 							->select('esat.id, esat.label')
