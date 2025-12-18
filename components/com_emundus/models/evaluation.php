@@ -3702,13 +3702,16 @@ class EmundusModelEvaluation extends JModelList
 									}
 									elseif(in_array($tag->getName(), $fabrik_aliases))
 									{
-										$elt = EmundusHelperFabrik::getElementsByAlias($tag->getName());
+										$elts = EmundusHelperFabrik::getElementsByAlias($tag->getName());
 
-										if(!empty($elt[0]))
+										if(!empty($elts))
 										{
-											$idFabrik[] = $elt[0]->id;
-											$aliasFabrik[$tag->getName()] = $elt[0]->id;
 											$fabrikTags[] = $tag;
+											$aliasFabrik[$tag->getName()] = [];
+											foreach($elts as $elt) {
+												$idFabrik[] = $elt->id;
+												$aliasFabrik[$tag->getName()][] = $elt->id;
+											}
 										}
 									}
 									else
@@ -3904,9 +3907,17 @@ class EmundusModelEvaluation extends JModelList
 									} else if(!empty($fabrikValues[$fabrikTagFullName][$fnum]['complex_data'])) {
 										$preprocess->setComplexValue($fabrikTagFullName, $fabrikValues[$fabrikTagFullName][$fnum]['val']);
 									} else {
-										if(in_array($fabrikTagFullName, array_keys($aliasFabrik)) && isset($fabrikValues[$aliasFabrik[$fabrikTagFullName]][$fnum]['val']))
+										if(in_array($fabrikTagFullName, array_keys($aliasFabrik)))
 										{
-											$value = str_replace('\n', ', ', $fabrikValues[$aliasFabrik[$fabrikTagFullName]][$fnum]['val']);
+											$value = '';
+											foreach ($aliasFabrik[$fabrikTagFullName] as $id)
+											{
+												if(!empty($fabrikValues[$id]) && !empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val']))
+												{
+													$value = str_replace('\n', ', ', $fabrikValues[$id][$fnum]['val']);
+													break;
+												}
+											}
 										}
 										else if(isset($fabrikValues[$fabrikTagFullName][$fnum]['val'])) {
 											$value = str_replace('\n', ', ', $fabrikValues[$fabrikTagFullName][$fnum]['val']);
