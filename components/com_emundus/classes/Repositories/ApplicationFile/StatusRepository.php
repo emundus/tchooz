@@ -36,6 +36,28 @@ class StatusRepository extends EmundusRepository implements RepositoryInterface
 		// TODO: Implement delete() method.
 	}
 
+	/**
+	 *
+	 * @return array<StatusEntity>
+	 */
+	public function getAll(): array
+	{
+		$statuses = [];
+
+		$query = $this->db->getQuery(true)
+			->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->order($this->db->quoteName('ordering') . ' ASC');
+		$this->db->setQuery($query);
+		$results = $this->db->loadObjectList();
+
+		foreach ($results as $status) {
+			$statuses[] = $this->factory->fromDbObject($status, $this->withRelations);
+		}
+
+		return $statuses;
+	}
+
 	public function getById(int $id): ?StatusEntity
 	{
 		$status_entity = null;

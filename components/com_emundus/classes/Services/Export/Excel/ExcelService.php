@@ -182,7 +182,7 @@ class ExcelService implements ExportInterface
 		if ($method != 2 || $failed_with_old_method)
 		{
 			$not_already_handled_fnums = $this->fnums;
-			$fnumsArray                = $this->m_files->getFnumArray2($not_already_handled_fnums, $ordered_elements, 0, $limit, $method, $this->user->id, $this->translations);
+			$fnumsArray                = $this->m_files->getFnumArray2([$not_already_handled_fnums[0]], $ordered_elements, 0, $limit, $method, $this->user->id, $this->translations);
 		}
 
 		// Fill csv
@@ -220,7 +220,24 @@ class ExcelService implements ExportInterface
 
 			if (!empty($task))
 			{
-				$metadata['actionTargetEntity']['parameters']['fnums'] = array_values($not_already_handled_fnums);
+				$targetToRemoves = [];
+				foreach ($metadata['actionTargetEntities'] as $key => $target)
+				{
+					if(in_array($target['file'], $fnums))
+					{
+						$targetToRemoves[] = $key;
+					}
+				}
+
+				foreach ($targetToRemoves as $key)
+				{
+					unset($metadata['actionTargetEntities'][$key]);
+				}
+
+				$metadata['actionTargetEntities'] = array_values($metadata['actionTargetEntities']);
+
+				// Remove fnum
+				//$metadata['actionTargetEntity']['parameters']['fnums'] = array_values($not_already_handled_fnums);
 			}
 
 			foreach ($colsup as $colsupkey => $col)
@@ -1084,16 +1101,12 @@ class ExcelService implements ExportInterface
 			}
 
 			// Estimate total time based on current progress
-			$estimatedTotalTime = $this->options['time_estimate'] ?? 0;
-			if (empty($estimatedTotalTime))
-			{
-				$estimatedTotalTime                                            = ($executionTime / $result->getProgress()) * 100;
-				// multiply estimated time by number of chunks
-				$estimatedTotalTime                                            *= ceil($totalfile / ($filesCanBeProcessed > 0 ? $filesCanBeProcessed : 1));
-				$estimatedTotalTime                                            = (int) round($estimatedTotalTime);
-				$this->options['time_estimate']                                = $estimatedTotalTime;
-				$metadata['actionEntity']['parameter_values']['time_estimate'] = $estimatedTotalTime;
-			}
+			$estimatedTotalTime                                            = ($executionTime / $result->getProgress()) * 100;
+			// multiply estimated time by number of chunks
+			$estimatedTotalTime                                            *= ceil($totalfile / ($filesCanBeProcessed > 0 ? $filesCanBeProcessed : 1));
+			$estimatedTotalTime                                            = (int) round($estimatedTotalTime);
+			$this->options['time_estimate']                                = $estimatedTotalTime;
+			$metadata['actionEntity']['parameter_values']['time_estimate'] = $estimatedTotalTime;
 
 			if ($this->filesProcessed < $filesCanBeProcessed && $this->totalExecutionTime < self::TIME_LIMIT)
 			{

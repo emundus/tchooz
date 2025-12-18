@@ -114,11 +114,8 @@ function export_excel(fnums, letter) {
                                 excelfilename: excel_file_name
                             };
 
-                            if (Number(methode) === 0 && $('#view').val() !== 'evaluation') {
-                                $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0 / ' + totalfile + '</p></div>');
-                            } else {
-                                $('#datasbs').replaceWith('<div id="datasbs" data-start="0"><p>0</p></div>');
-                            }
+                            $('#datasbs').replaceWith('<div id="datasbs" class="em-loader tw-m-auto tw-mt-2" data-start="0"></div>');
+
                             generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, selectedOption.value);
                         } else {
                             $('#extractstep').replaceWith('<div class="alert alert-danger" role="alert">' + Joomla.Text._(result.msg) + '</div>');

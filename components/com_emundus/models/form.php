@@ -3208,7 +3208,7 @@ class EmundusModelForm extends JModelList
 
 	private function addCondition($rule_id, $condition)
 	{
-		$operators = ['=', '!=', '<', '>', '<=', '>='];
+		$operators = ['=', '!=', '<', '>', '<=', '>=', 'empty', '!empty'];
 
 		try
 		{

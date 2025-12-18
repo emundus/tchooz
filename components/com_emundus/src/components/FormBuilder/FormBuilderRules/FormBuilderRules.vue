@@ -128,7 +128,9 @@
 											<span class="label-darkblue tw-ml-1 tw-mr-2 tw-rounded-md tw-p-1">{{
 												operator(condition.state)
 											}}</span>
-											<span>{{ getvalues(condition) }}</span>
+											<span v-if="condition.state !== 'empty' && condition.state !== '!empty'">{{
+												getvalues(condition)
+											}}</span>
 										</div>
 									</div>
 								</div>
@@ -308,6 +310,10 @@ export default {
 					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_GREATER_THAN_OR_EQUALS');
 				case '<=':
 					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_LESS_THAN_OR_EQUALS');
+				case 'empty':
+					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EMPTY');
+				case '!empty':
+					return this.translate('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EMPTY');
 			}
 		},
 

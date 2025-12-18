@@ -15,9 +15,9 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Associations;
 use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
-use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Joomla\Registry\Registry;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -203,6 +203,9 @@ class FilesModel extends ListModel
 		$query = $this->getDatabase()->getQuery(true);
 
 		if (!empty($items)) {
+			$statusRepository = new StatusRepository();
+			$statuses = $statusRepository->getAll();
+
 			foreach ($items as $item) {
 				$item->typeAlias = 'com_emundus.files';
 
@@ -223,12 +226,12 @@ class FilesModel extends ListModel
 				$this->getDatabase()->setQuery($query);
 				$item->stickers = $this->getDatabase()->loadObjectList();
 
-				// transform the profile ids into an array
-				/*if (!empty($item->profile_ids)) {
-					$item->profile_ids = explode(',', $item->profile_ids);
-				} else {
-					$item->profile_ids = [];
-				}*/
+				foreach ($statuses as $status) {
+					if ($status->getStep() == $item->status) {
+						$item->status = $status->__serialize();
+						break;
+					}
+				}
 			}
 		}
 
