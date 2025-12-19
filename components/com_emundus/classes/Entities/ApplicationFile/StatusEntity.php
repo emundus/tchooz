@@ -79,4 +79,14 @@ class StatusEntity
 	{
 		$this->color = $color;
 	}
+
+	public function __serialize(): array
+	{
+		return [
+			'id'       => $this->step,
+			'label'    => $this->label,
+			'ordering' => $this->ordering,
+			'color'    => $this->color,
+		];
+	}
 }

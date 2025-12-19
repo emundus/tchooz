@@ -94,6 +94,24 @@ requirejs(['fab/fabrik'], function () {
       } else {
         return false; // Not applicable for arrays
       }
+    },
+    'empty': function (a, b, plugin) {
+      // check if a is empty
+        if (!Array.isArray(a)) {
+          return (a === null || a === undefined || a === '' || a === 0 || a === false || a === '0');
+        }
+        else {
+          return a.length === 0;
+        }
+    },
+    '!empty': function (a, b, plugin) {
+        // check if a is not empty
+        if (!Array.isArray(a)) {
+            return (a !== null && a !== undefined && a !== '' && a !== 0 && a !== false && a !== '0');
+        }
+        else {
+            return a.length > 0;
+        }
     }
     // ...
   };

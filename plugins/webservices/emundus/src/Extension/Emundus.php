@@ -53,6 +53,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	 */
 	public function onBeforeApiRoute(BeforeApiRouteEvent $event): void
 	{
+		if(file_exists(JPATH_SITE.'/libraries/emundus/vendor/autoload.php'))
+		{
+			require_once JPATH_SITE.'/libraries/emundus/vendor/autoload.php';
+		}
+		
 		$params = $this->params;
 
 		// Allowed verbs

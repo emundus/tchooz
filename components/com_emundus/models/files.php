@@ -2453,7 +2453,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			else {
 				$query = 'select jos_emundus_campaign_candidature.fnum,' .
-					'CASE WHEN eu.is_anonym = 0 THEN u.email ELSE ' . $this->_db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as u.email, '
+					'CASE WHEN eu.is_anonym = 0 THEN u.email ELSE ' . $this->_db->quote(Text::_('COM_EMUNDUS_ANONYM_ACCOUNT')) . ' END as email'
 				.', esc.label, sp.code, esc.id as campaign_id';
 			}
 		}
@@ -2975,7 +2975,7 @@ class EmundusModelFiles extends JModelLegacy
 	{
 		$data = [];
 
-		if (!empty($fnums) && !empty($elements)) {
+		if (!empty($fnums)) {
 			$fnums = !is_array($fnums) ? [$fnums] : $fnums;
 			$fnums = array_unique($fnums);
 			$method = (int) $method;
@@ -3437,6 +3437,7 @@ class EmundusModelFiles extends JModelLegacy
 			}
 			else {
 				$where .= ' LIMIT 10000 OFFSET ' . $start; // to avoid memory limit issues
+				$start += 10000;
 			}
 
 			try {
@@ -6505,7 +6506,7 @@ class EmundusModelFiles extends JModelLegacy
 							$value = $fnum_data[$column_name];
 							if ($value !== '')
 							{
-								if ($exportMode === ExportModeEnum::GROUP_CONCAT_DISTINCT)
+								if ($exportMode === ExportModeEnum::GROUP_CONCAT_DISTINCT || !in_array($column_name, $evaluation_columns_in_order))
 								{
 									if (!in_array($value, $fnum_grouped_data[$fnum][$column_name], true))
 									{
