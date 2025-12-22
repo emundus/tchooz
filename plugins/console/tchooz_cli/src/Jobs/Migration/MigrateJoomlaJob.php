@@ -292,6 +292,7 @@ class MigrateJoomlaJob extends TchoozJob
 					->update($this->databaseService->getDatabase()->quoteName('jos_extensions'))
 					->set($this->databaseService->getDatabase()->quoteName('params') . ' = ' . $this->databaseService->getDatabase()->quote($extension['params']))
 					->set($this->databaseService->getDatabase()->quoteName('enabled') . ' = ' . $this->databaseService->getDatabase()->quote($extension['enabled']))
+					->set($this->databaseService->getDatabase()->quoteName('state') . ' = ' . $this->databaseService->getDatabase()->quote($extension['state']))
 					->set($this->databaseService->getDatabase()->quoteName('custom_data') . ' = ' . $this->databaseService->getDatabase()->quote($extension['custom_data']))
 					->where($this->databaseService->getDatabase()->quoteName('extension_id') . ' = ' . $this->databaseService->getDatabase()->quote($extension_id));
 				$this->databaseService->getDatabase()->setQuery($query);
