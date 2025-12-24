@@ -9,6 +9,8 @@
 
 // no direct access
 
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.view');
@@ -218,7 +220,10 @@ class EmundusViewUsers extends JViewLegacy
 				$edit_profile = 1;
 				break;
 			default :
-				JHTML::script('media/com_emundus/js/em_user.js');
+				$document = Factory::getApplication()->getDocument();
+				$wa = $document->getWebAssetManager();
+				$wa->registerAndUseScript('em_user', 'media/com_emundus/js/em_user.js');
+
 				@EmundusHelperFiles::clear();
 				$m_users = new EmundusModelUsers();
 				$actions = $m_users->getActions("19,20,21,22,23,24,25,26");
