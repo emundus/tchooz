@@ -387,6 +387,11 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 					// catch any database errors.
 					Log::add($e->getMessage(), Log::WARNING, 'com_emundus');
 				}
+				
+				if($task === 'adduser')
+				{
+					$profile = $input->getInt('profile', 0);
+				}
 
 				if (!empty($campaign_id))
 				{
