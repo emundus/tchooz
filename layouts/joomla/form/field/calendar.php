@@ -148,7 +148,7 @@ $document->getWebAssetManager()
 ?>
 <div class="field-calendar">
     <?php if (!$readonly && !$disabled) : ?>
-    <div class="input-group tw-gap-3">
+    <div class="input-group">
     <?php endif; ?>
         <input
             type="text"
@@ -159,7 +159,7 @@ $document->getWebAssetManager()
             <?php echo $attributes; ?>
             <?php echo $dataAttribute ?? ''; ?>
             <?php echo !empty($hint) ? 'placeholder="' . htmlspecialchars($hint, ENT_COMPAT, 'UTF-8') . '"' : ''; ?>
-            data-alt-value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>" autocomplete="off" style="border-radius: var(--em-form-br)">
+            data-alt-value="<?php echo htmlspecialchars($value, ENT_COMPAT, 'UTF-8'); ?>" autocomplete="off">
         <button type="button" class="<?php echo ($readonly || $disabled) ? 'hidden ' : ''; ?>btn btn-primary"
             id="<?php echo $id; ?>_btn"
             title="<?php echo Text::_('JLIB_HTML_BEHAVIOR_OPEN_CALENDAR'); ?>"
