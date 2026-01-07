@@ -803,13 +803,17 @@ class EmundusControllerUsers extends BaseController
 		}
 
 		$res     = $m_users->editUser($newuser);
-
+		
 		if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', $current_user->id) && !empty($newuser['profile']))
 		{
 			$other_profiles = explode(',', $newuser['em_oprofiles']);
+			$other_profiles = array_values(array_filter($other_profiles));
+			
 			$user_groups = explode(',', $newuser['em_groups']);
-			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
+			$user_groups = array_values(array_filter($user_groups));
 
+			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
+			
 			if ($edited === false)
 			{
 				$res = false;
