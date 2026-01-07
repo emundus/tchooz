@@ -4,6 +4,7 @@ namespace Tchooz\Repositories\Automation;
 
 use Joomla\CMS\Factory;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Exception\EmundusUnknownActionException;
 use Tchooz\Services\Automation\ActionRegistry;
 use Joomla\Database\DatabaseDriver;
 
@@ -84,6 +85,11 @@ class ActionRepository
 				{
 					$parameters = json_decode($result->params, true) ?? [];
 					$action = $registry->getActionInstance($result->name);
+
+					if (!$action) {
+						throw new EmundusUnknownActionException('Action type "' . $result->name . '" not found in registry.');
+					}
+
 					$action->setId($result->id);
 					$action->setParametersValuesFromArray($parameters);
 
