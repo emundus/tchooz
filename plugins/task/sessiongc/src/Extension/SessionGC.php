@@ -16,7 +16,6 @@ use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
 use Joomla\DI\Container;
-use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -114,11 +113,11 @@ final class SessionGC extends CMSPlugin implements SubscriberInterface
 
 	    if ($enableGC) {
 		    $session->gc();
-	    }
+        }
 
         $enableMetadata = (int) $event->getArgument('params')->enable_session_metadata_gc ?? 1;
 
-        if ($this->getApplication()->get('session_handler', 'none') !== 'database' && $enableMetadata) {
+        if ($enableMetadata) {
             $this->metadataManager->deletePriorTo(time() - $session->getExpire());
         }
 

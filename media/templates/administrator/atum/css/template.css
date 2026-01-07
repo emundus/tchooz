@@ -13338,146 +13338,146 @@ textarea.form-control-lg {
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff?v=176625") format("woff");
   font-weight: 400;
   font-style: normal;
 }
 
 @font-face {
   font-family: Roboto-Regular;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Regular.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff?v=176625") format("woff");
   font-weight: 400;
   font-style: italic;
 }
 
 @font-face {
   font-family: Roboto-RegularItalic;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-RegularItalic.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff?v=176625") format("woff");
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
   font-family: Roboto-Light;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Light.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff?v=176625") format("woff");
   font-weight: 300;
   font-style: italic;
 }
 
 @font-face {
   font-family: Roboto-LightItalic;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-LightItalic.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff?v=176625") format("woff");
   font-weight: 100;
   font-style: normal;
 }
 
 @font-face {
   font-family: Roboto-Thin;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Thin.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff?v=176625") format("woff");
   font-weight: 100;
   font-style: italic;
 }
 
 @font-face {
   font-family: Roboto-ThinItalic;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-ThinItalic.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff?v=176625") format("woff");
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
   font-family: Roboto-Medium;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Medium.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff?v=176625") format("woff");
   font-weight: 500;
   font-style: italic;
 }
 
 @font-face {
   font-family: Roboto-MediumItalic;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-MediumItalic.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff?v=176625") format("woff");
   font-weight: 700;
   font-style: normal;
 }
 
 @font-face {
   font-family: Roboto-Bold;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Bold.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff?v=176625") format("woff");
   font-weight: 700;
   font-style: italic;
 }
 
 @font-face {
   font-family: Roboto-BoldItalic;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BoldItalic.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff?v=176625") format("woff");
   font-weight: 900;
   font-style: normal;
 }
 
 @font-face {
   font-family: Roboto-Black;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-Black.woff?v=176625") format("woff");
 }
 
 @font-face {
   font-family: Roboto;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff?v=176625") format("woff");
   font-weight: 900;
   font-style: italic;
 }
 
 @font-face {
   font-family: Roboto-BlackItalic;
-  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff2?v=176349") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff?v=176349") format("woff");
+  src: url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff2?v=176625") format("woff2"), url("../../../../../media/vendor/roboto-fontface/fonts/roboto/Roboto-BlackItalic.woff?v=176625") format("woff");
 }
 
 html {
@@ -16128,8 +16128,7 @@ joomla-dialog.loaded .joomla-dialog-body {
 }
 
 [data-bs-theme="dark"] .sidebar-wrapper {
-  box-shadow: none;
-  border: 1px solid #ffffff0d;
+  --atum-box-shadow: 1px 0 0 0 #ffffff0d;
 }
 
 [data-bs-theme="dark"] .sidebar-wrapper .main-nav .badge {
@@ -17039,8 +17038,7 @@ joomla-editor-codemirror.fullscreen .cm-editor {
 }
 
 [data-bs-theme="dark"] .com_cpanel .card, [data-bs-theme="dark"] .com_cpanel .com_users.view-user .com-users-methods-list-method, .com_users.view-user [data-bs-theme="dark"] .com_cpanel .com-users-methods-list-method, [data-bs-theme="dark"] .com_cpanel .com_users.view-methods .com-users-methods-list-method, .com_users.view-methods [data-bs-theme="dark"] .com_cpanel .com-users-methods-list-method, [data-bs-theme="dark"] .com_cpanel .com_users.view-captive .com-users-methods-list-method, .com_users.view-captive [data-bs-theme="dark"] .com_cpanel .com-users-methods-list-method {
-  border: 1px solid #ffffff1a;
-  box-shadow: 1px 1px 2px #0000001a;
+  box-shadow: 0 0 0 1px #ffffff1a, 1px 1px 2px #0000001a;
 }
 
 [data-bs-theme="dark"] .com_cpanel .card .list-group-item:last-child, [data-bs-theme="dark"] .com_cpanel .com_users.view-user .com-users-methods-list-method .list-group-item:last-child, .com_users.view-user [data-bs-theme="dark"] .com_cpanel .com-users-methods-list-method .list-group-item:last-child, [data-bs-theme="dark"] .com_cpanel .com_users.view-methods .com-users-methods-list-method .list-group-item:last-child, .com_users.view-methods [data-bs-theme="dark"] .com_cpanel .com-users-methods-list-method .list-group-item:last-child, [data-bs-theme="dark"] .com_cpanel .com_users.view-captive .com-users-methods-list-method .list-group-item:last-child, .com_users.view-captive [data-bs-theme="dark"] .com_cpanel .com-users-methods-list-method .list-group-item:last-child {
@@ -17770,8 +17768,8 @@ joomla-editor-codemirror.fullscreen .cm-editor {
   --atum-calendar-disabled-color: #999;
   --atum-calendar-disabled-bg: #fff;
   --atum-calendar-select-bg: var(--template-bg-light);
-  --atum-calendar-select-bg-url: url("../../images/select-bg.svg?v=176349");
-  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-rtl.svg?v=176349");
+  --atum-calendar-select-bg-url: url("../../images/select-bg.svg?v=176625");
+  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-rtl.svg?v=176625");
   --permissions-sliders-oddCol-bg: var(--template-bg-light);
   --respTable-border-bottom: 1em solid var(--template-bg-dark-80);
   --treeselect-line-color: hsl(var(--hue), 40%, 93%);
@@ -18118,8 +18116,8 @@ joomla-editor-codemirror.fullscreen .cm-editor {
   --atum-calendar-disabled-color: #4b4b4b;
   --atum-calendar-disabled-bg: #00000080;
   --atum-calendar-select-bg: #007db0;
-  --atum-calendar-select-bg-url: url("../../images/select-bg-dark.svg?v=176349");
-  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-dark-rtl.svg?v=176349");
+  --atum-calendar-select-bg-url: url("../../images/select-bg-dark.svg?v=176625");
+  --atum-calendar-select-bg-url-rtl: url("../../images/select-bg-dark-rtl.svg?v=176625");
   --permissions-sliders-oddCol-bg: var(--template-bg-dark);
   --respTable-border-bottom: 1em solid #007db0;
   --treeselect-line-color: #fff6;
