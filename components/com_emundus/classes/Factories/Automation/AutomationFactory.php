@@ -3,8 +3,10 @@
 namespace Tchooz\Factories\Automation;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\AutomationEntity;
 use Tchooz\Entities\Automation\EventEntity;
+use Tchooz\Exception\EmundusUnknownActionException;
 use Tchooz\Repositories\Automation\ActionRepository;
 use Tchooz\Repositories\Automation\ConditionRepository;
 use Joomla\Database\DatabaseDriver;
@@ -12,6 +14,12 @@ use Tchooz\Repositories\Automation\EventsRepository;
 
 class AutomationFactory
 {
+	public function __construct()
+	{
+		Log::addLogger(['text_file' => 'com_emundus.automation.factory.log.php'], Log::ALL, ['com_emundus.automation.factory']);
+	}
+
+
 	public static function fromDbObjects(array $dbObjects, ?DatabaseDriver $db = null): array
 	{
 		$automations = [];
@@ -23,18 +31,26 @@ class AutomationFactory
 			$actionRepo = new ActionRepository($db);
 
 			foreach ($dbObjects as $obj) {
-				$event = new EventEntity($obj->event_id, $obj->event_label, $obj->event_description);
-				$automation = new AutomationEntity(
-					$obj->id,
-					$obj->name,
-					$obj->description,
-					$event,
-					$conditionRepo->getConditionsGroupsByAutomationId($obj->id),
-					$actionRepo->getActionsByAutomationId($obj->id),
-					$obj->published == 1
-				);
+				try
+				{
+					$event = new EventEntity($obj->event_id, $obj->event_label, $obj->event_description);
+					$automation = new AutomationEntity(
+						$obj->id,
+						$obj->name,
+						$obj->description,
+						$event,
+						$conditionRepo->getConditionsGroupsByAutomationId($obj->id),
+						$actionRepo->getActionsByAutomationId($obj->id),
+						$obj->published == 1
+					);
 
-				$automations[] = $automation;
+					$automations[] = $automation;
+				}
+				catch (EmundusUnknownActionException $e)
+				{
+					Log::add('Failed to create AutomationEntity from DB object ID ' . $obj->id . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.automation.factory');
+					continue;
+				}
 			}
 		}
 
