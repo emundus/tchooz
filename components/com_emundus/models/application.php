@@ -202,6 +202,16 @@ class EmundusModelApplication extends ListModel
 		return $this->_db->loadObjectList();
 	}
 
+	/**
+	 * @param $fnum
+	 * @param $search
+	 * @param $profile
+	 * @param $applicant
+	 * @param $user_id current user id
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
 	function getUserAttachmentsByFnum($fnum, $search = '', $profile = null, $applicant = false, $user_id = null)
 	{
 		$attachments = [];
@@ -401,6 +411,15 @@ class EmundusModelApplication extends ListModel
 
 				if ($attachments !== array_values($attachments)) {
 					$attachments = array_values($attachments);
+				}
+
+				if (EmundusHelperAccess::isDataAnonymized($user_id))
+				{
+					foreach ($attachments as $attachment)
+					{
+						$attachment->user_name = Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
+						$attachment->modified_user_name = !empty($attachment->modified_user_name) ?  Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : '';
+					}
 				}
 			}
 		}
