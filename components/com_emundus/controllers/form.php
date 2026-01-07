@@ -257,11 +257,27 @@ class EmundusControllerForm extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 		{
-			$form_id = $this->input->getInt('id', 0);
-
-			if ($form_id > 0)
+			$ids = $this->input->getString('ids', '');
+			if (!empty($ids))
 			{
-				$unpublished = $this->m_form->unpublishFabrikForm($form_id);
+				$ids = explode(',', $ids);
+			}
+			else
+			{
+				$id = $this->input->getInt('id', 0);
+				$ids = [$id];
+			}
+
+
+			if (!empty($ids))
+			{
+				$unpublishedAll = [];
+
+				foreach($ids as $id)
+				{
+					$unpublishedAll[] = $this->m_form->unpublishFabrikForm((int)$id);
+				}
+				$unpublished = !in_array(false, $unpublishedAll, true);
 
 				if ($unpublished)
 				{
@@ -310,11 +326,27 @@ class EmundusControllerForm extends BaseController
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
 		{
-			$form_id = $this->input->getInt('id', 0);
+			$ids = $this->input->getString('ids', '');
 
-			if ($form_id > 0)
+			if (!empty($ids))
 			{
-				$published = $this->m_form->publishFabrikForm($form_id);
+				$ids = explode(',', $ids);
+			}
+			else
+			{
+				$id = $this->input->getInt('id', 0);
+				$ids = [$id];
+			}
+
+			if (!empty($ids))
+			{
+				$publishedAll = [];
+
+				foreach($ids as $id)
+				{
+					$publishedAll[] = $this->m_form->publishFabrikForm((int)$id);
+				}
+				$published = !in_array(false, $publishedAll, true);
 
 				if ($published)
 				{
