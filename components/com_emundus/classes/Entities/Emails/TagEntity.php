@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Emails\Modifiers\ChoiceStatusModifier;
+use Tchooz\Entities\Emails\Modifiers\IndexModifier;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Interfaces\TagModifierInterface;
@@ -23,6 +24,8 @@ use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 class TagEntity
 {
 	private string|int $name;
+
+	private string|int $fullName;
 
 	private ?string $description;
 
@@ -39,6 +42,8 @@ class TagEntity
 
 	public function __construct(string|int $name, ?string $description = '', array $modifiers = [], ?TagTypeEnum $type = TagTypeEnum::STANDARD)
 	{
+		$this->fullName = $name;
+
 		// Check if the name has not a modifier
 		if(str_contains($name, ':')) {
 			$parts = explode(':', $name);
@@ -67,13 +72,34 @@ class TagEntity
 		$modifierName = $part;
 		$params = [];
 
-		if (str_contains($part, '(') && str_contains($part, ')')) {
+		/*if (str_contains($part, '(') && str_contains($part, ')')) {
 			$modifierName = substr($part, 0, strpos($part, '('));
-			
+
 			$paramsStr = substr($part, strpos($part, '(') + 1, -1);
+			// Interpret html quotes
+			$paramsStr = html_entity_decode($paramsStr);
 
 			preg_match_all('/"([^"]*)"/', $paramsStr, $matches);
 			$params = $matches[1];
+		}*/
+
+		if (preg_match('/^([^(]+)\((.*)\)$/', $part, $matches)) {
+			$modifierName = $matches[1];
+			$paramsStr = $matches[2];
+
+			preg_match_all(
+				'/"([^"]*)"|([^,\s]+)/',
+				$paramsStr,
+				$matchesParams
+			);
+
+			$params = array_filter(
+				array_merge($matchesParams[1], $matchesParams[2])
+			);
+
+			// array values cleanup
+			$params = array_map('trim', $params);
+			$params = array_values($params);
 		}
 
 		$modifier = TagModifierRegistry::get($modifierName);
@@ -92,7 +118,7 @@ class TagEntity
 
 	public function getFullName(): string
 	{
-		if (!empty($this->modifiers)) {
+		/*if (!empty($this->modifiers)) {
 			$modifiers = array_map(
 				fn($m) => $m['modifier']->getName() .
 					(!empty($m['params']) ?
@@ -103,7 +129,9 @@ class TagEntity
 		} else {
 			$modifiers = '';
 		}
-		return $this->name . $modifiers;
+		return $this->name . $modifiers;*/
+
+		return $this->fullName;
 	}
 
 	public function getPatternName(): string
@@ -111,7 +139,7 @@ class TagEntity
 		if($this->type === TagTypeEnum::FABRIK) {
 			return '/\$\{' . $this->name . '\}/';
 		}
-		
+
 		return '/\[' . $this->name . '\]/';
 	}
 
@@ -145,10 +173,6 @@ class TagEntity
 
 	public function getValueModified(): ?string
 	{
-		if (empty($this->value)) {
-			return null;
-		}
-
 		$modified_value = $this->value;
 
 		if (!empty($this->modifiers)) {
@@ -228,6 +252,13 @@ class TagEntity
 			}
 		}
 
+		// TOOD: Ugly fix for VOEU tag need to be refactored
+		if ($this->name === 'VOEU')
+		{
+			$this->request = 'VOEU';
+			$this->type = TagTypeEnum::STANDARD;
+		}
+
 		if(!empty($this->request))
 		{
 			if ($this->type === TagTypeEnum::STANDARD)
@@ -285,6 +316,7 @@ class TagEntity
 						if(!empty($applicationChoices))
 						{
 							$applicationChoiceState = null;
+							$index = null;
 							if (!empty($this->modifiers))
 							{
 								// Apply Status modifier now
@@ -293,6 +325,19 @@ class TagEntity
 									if ($modifier['modifier'] instanceof ChoiceStatusModifier)
 									{
 										$applicationChoiceState = ChoicesStateEnum::isValidState($modifier['params'][0] ?? '');
+									}
+
+									if($modifier['modifier'] instanceof IndexModifier)
+									{
+										$index = (int)($modifier['params'][0] ?? -1);
+										if(isset($applicationChoices[$index-1]))
+										{
+											$applicationChoices = [$applicationChoices[$index-1]];
+										}
+										else
+										{
+											$applicationChoices = [];
+										}
 									}
 								}
 							}
@@ -306,7 +351,13 @@ class TagEntity
 										continue;
 									}
 								}
-								$result .= '<p>' . Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key + 1)) . ' : ' . $choice->getCampaign()->getLabel() . '</p>';
+
+								if(sizeof($applicationChoices) > 1 || empty($index))
+								{
+									$index = $key + 1;
+								}
+
+								$result .= Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $index) . ' : ' . $choice->getCampaign()->getLabel();
 							}
 						}
 					}
