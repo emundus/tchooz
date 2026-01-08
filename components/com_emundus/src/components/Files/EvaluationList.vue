@@ -1,14 +1,18 @@
 <template>
 	<div :id="'evaluation-step-' + step.id + '-list'">
-		<h2 class="tw-mb-4">{{ translate('COM_EMUNDUS_EVALUATIONS_LIST') }}</h2>
-		<div v-if="evaluations.length > 0" class="tw-h-full tw-p-4">
+		<div v-if="evaluations.length > 0" class="tw-ml-4 tw-mt-4 tw-h-full">
 			<Tabs
 				:tabs="evaluationsTabs"
 				:classes="'tw-overflow-x-scroll tw-flex tw-items-center tw-justify-start tw-gap-2'"
 				@changeTabActive="onChangeTab"
 			></Tabs>
 
-			<iframe :src="selectedEvaluation.url" :key="selectedEvaluation.id" class="iframe-selected-evaluation tw-w-full">
+			<iframe
+				:src="selectedEvaluation.url"
+				:key="selectedEvaluation.id"
+				@load="iframeLoaded($event)"
+				class="iframe-selected-evaluation tw-w-full tw-rounded-coordinator-cards tw-shadow-card"
+			>
 			</iframe>
 		</div>
 		<p
@@ -35,38 +39,38 @@ export default {
 			type: Object,
 			required: true,
 		},
+		evaluations: [],
 	},
 	data: () => {
 		return {
-			evaluations: [],
 			selectedEvaluation: 0,
 		};
+	},
+	created() {
+		if (this.evaluations.length > 0) {
+			this.selectedEvaluation = this.evaluations[0];
+		}
 	},
 	components: {
 		Tabs,
 	},
-	created() {
-		this.getEvaluations();
-	},
 	methods: {
-		getEvaluations() {
-			evaluationService
-				.getEvaluations(this.step.id, this.ccid)
-				.then((response) => {
-					this.evaluations = response.data;
-
-					if (this.evaluations.length > 0) {
-						this.selectedEvaluation = this.evaluations[0];
-					}
-				})
-				.catch((error) => {
-					console.log(error);
-				});
-		},
 		onChangeTab(tabId) {
 			this.selectedEvaluation = this.evaluations.find((evaluation) => {
-				return evaluation.id == tabId;
+				return evaluation.id === tabId;
 			});
+		},
+
+		iframeLoaded(event) {
+			this.loading = false;
+			let iframeDoc = event.target.contentDocument || event.target.contentWindow.document;
+			if (iframeDoc.querySelector('.emundus-form')) {
+				iframeDoc.querySelector('.emundus-form').classList.add('eval-form-split-view', 'tw-m-4');
+				iframeDoc.querySelector('body').classList.add('tw-bg-white');
+				iframeDoc
+					.querySelector('body .platform-content > div')
+					.classList.add('eval-form-split-view-container', 'tw-bg-white');
+			}
 		},
 	},
 	computed: {
@@ -76,7 +80,7 @@ export default {
 					id: evaluation.id,
 					name: evaluation.evaluator_name,
 					displayed: true,
-					active: index == 0,
+					active: index === 0,
 					icon: null,
 				};
 			});
@@ -88,5 +92,6 @@ export default {
 <style scoped>
 .iframe-selected-evaluation {
 	height: calc(100vh - 258px);
+	width: 95%;
 }
 </style>

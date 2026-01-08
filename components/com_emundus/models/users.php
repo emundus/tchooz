@@ -1212,9 +1212,34 @@ class EmundusModelUsers extends ListModel
 				$values[]  = $this->db->quote($user_category);
 			}
 
-			$query->insert($this->db->quoteName('#__emundus_users'))
-				->columns($this->db->quoteName($columns))
-				->values(implode(',', $values));
+			// check if emundus user not already inserted
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_users'))
+				->where('user_id = ' . (int) $user_id);
+
+			$this->db->setQuery($query);
+			$emundusUserId = $this->db->loadResult();
+
+			if (empty($emundusUserId)) {
+				$query->clear()
+					->insert($this->db->quoteName('#__emundus_users'))
+					->columns($this->db->quoteName($columns))
+					->values(implode(',', $values));
+			}
+			else
+			{
+				$query->clear()
+					->update($this->db->quoteName('#__emundus_users'));
+
+				foreach ($columns as $key => $column)
+				{
+					$query->set($this->db->quoteName($column) . ' = ' . $values[$key]);
+				}
+
+				$query->where('user_id = ' . (int) $user_id);
+			}
+
 			$this->db->setQuery($query);
 			$this->db->execute();
 

@@ -70,6 +70,10 @@
     color: var(--em-default-text-color-1);
 }
 
+.mod_emundus_campaign__intro p:empty::before {
+    content: "\00a0";
+}
+
 .mod_emundus_campaign__intro a {
     text-decoration: underline;
 }

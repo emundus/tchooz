@@ -3984,10 +3984,14 @@ class EmundusModelEvaluation extends JModelList
 										$i = 0;
 										foreach ($tags['patterns'] as $value)
 										{
-											if ($value == $tag->getName())
+											if ($value == $tag->getName() && empty($tag->getModifiers()))
 											{
 												$tag->setValue($tags['replacements'][$i]);
 												break;
+											}
+											elseif ($value == $tag->getName() && !empty($tag->getModifiers()))
+											{
+												$tag->calculateValue($user->id, false, $fnum);
 											}
 											$i++;
 										}

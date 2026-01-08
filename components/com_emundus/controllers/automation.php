@@ -584,7 +584,7 @@ class EmundusControllerAutomation extends BaseController
 		$this->sendJsonResponse($response);
 	}
 	
-	public function performaction(): void
+	public function runaction(): void
 	{
 		try
 		{

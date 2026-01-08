@@ -25,6 +25,7 @@ use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Response;
 use Tchooz\Traits\TraitResponse;
 
 /**
@@ -114,6 +115,8 @@ class EmundusControllerUsers extends BaseController
 
 	public function adduser()
 	{
+		$this->checkToken();
+
 		if (!EmundusHelperAccess::asAccessAction(12, 'c'))
 		{
 			echo json_encode((object) array('status' => false, 'uid' => $this->user->id, 'msg' => Text::_('ACCESS_DENIED')));
@@ -562,77 +565,71 @@ class EmundusControllerUsers extends BaseController
 		exit;
 	}
 
-	public function changeblock()
+	public function changeblock(): void
 	{
-		$user = $this->user;
+		$this->checkToken();
+		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
 
-		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id) || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$this->setRedirect('index.php', Text::_('ACCESS_DENIED'), 'error');
+			$users = $this->input->getString('users', null);
+			$state = $this->input->getInt('state', null);
+			$m_users = $this->getModel('Users');
 
-			return;
-		}
-
-
-		$users = $this->input->getString('users', null);
-		$state = $this->input->getInt('state', null);
-
-		$m_users = $this->getModel('Users');
-
-
-		if ($users === 'all')
-		{
-
-			$us    = $m_users->getUsers(0, 0);
-			$users = array();
-
-			foreach ($us as $u)
+			if ($users === 'all')
 			{
-				$users[] = $u->id;
-			}
+				$us    = $m_users->getUsers(0, 0);
+				$users = array();
 
-		}
-		else
-		{
-			$users = (array) json_decode(stripslashes($users));
-		}
-
-		$res = $m_users->changeBlock($users, $state);
-
-		if ($res !== false)
-		{
-			$res = true;
-			if (count($users) > 1)
-			{
-				if ($state === 1)
+				foreach ($us as $u)
 				{
-					$msg = Text::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_MULTI');
-				}
-				else
-				{
-					$msg = Text::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_MULTI');
+					$users[] = $u->id;
 				}
 			}
 			else
 			{
-				if ($state === 1)
+				$users = (array) json_decode(stripslashes($users));
+			}
+
+			$res = $m_users->changeBlock($users, $state);
+
+			if ($res !== false)
+			{
+				if (count($users) > 1)
 				{
-					$msg = Text::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE');
+					if ($state === 1)
+					{
+						$msg = Text::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_MULTI');
+					}
+					else
+					{
+						$msg = Text::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_MULTI');
+					}
 				}
 				else
 				{
-					$msg = Text::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_SINGLE');
+					if ($state === 1)
+					{
+						$msg = Text::_('COM_EMUNDUS_USERS_BLOCK_ACCOUNT_SINGLE');
+					}
+					else
+					{
+						$msg = Text::_('COM_EMUNDUS_USERS_UNBLOCK_ACCOUNT_SINGLE');
+					}
 				}
+
+				$response = new Response(true, $msg, 200);
+			} else {
+				$response = new Response(false, Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500);
 			}
 		}
-		else $msg = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 
-		echo json_encode((object) (array('status' => $res, 'msg' => $msg)));
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	public function changeactivation()
 	{
+		$this->checkToken();
 		$user = $this->user;
 
 		if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
@@ -697,6 +694,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function affectgroups()
 	{
+		$this->checkToken();
 		$response = ['code' => 403, 'msg' => Text::_('ACCESS_DENIED'), 'status' => false];
 
 		if (EmundusHelperAccess::asAccessAction(12, 'u', $this->user->id) || EmundusHelperAccess::asAccessAction(12, 'c', $this->user->id))
@@ -750,6 +748,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function edituser()
 	{
+		$this->checkToken();
 		$current_user = $this->app->getIdentity();
 
 		if (!EmundusHelperAccess::isAdministrator($current_user->id) && !EmundusHelperAccess::isCoordinator($current_user->id) && !EmundusHelperAccess::asAccessAction(12, 'u') && !EmundusHelperAccess::asAccessAction(20, 'u'))
@@ -803,13 +802,17 @@ class EmundusControllerUsers extends BaseController
 		}
 
 		$res     = $m_users->editUser($newuser);
-
+		
 		if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', $current_user->id) && !empty($newuser['profile']))
 		{
 			$other_profiles = explode(',', $newuser['em_oprofiles']);
+			$other_profiles = array_values(array_filter($other_profiles));
+			
 			$user_groups = explode(',', $newuser['em_groups']);
-			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
+			$user_groups = array_values(array_filter($user_groups));
 
+			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
+			
 			if ($edited === false)
 			{
 				$res = false;
@@ -849,6 +852,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function deleteusers()
 	{
+		$this->checkToken();
 
 		if (!EmundusHelperAccess::asAccessAction(12, 'd') && !EmundusHelperAccess::asAccessAction(20, 'd'))
 		{

@@ -1069,7 +1069,15 @@ class EmundusModelWorkflow extends JModelList
 		return $evaluated;
 	}
 
-	public function getStepEvaluationsForFile($step_id, $ccid)
+	/**
+	 * @param   int     $step_id
+	 * @param   int     $ccid
+	 * @param   string  $view
+	 * @param   int     $evaluatorId
+	 *
+	 * @return array
+	 */
+	public function getStepEvaluationsForFile(int $step_id, int $ccid, string $view = 'details', int $evaluatorId = 0): array
 	{
 		$evaluations = [];
 
@@ -1084,12 +1092,17 @@ class EmundusModelWorkflow extends JModelList
 				->where('evaluation_table.ccid = ' . $ccid)
 				->andWhere('evaluation_table.step_id = ' . $step_id);
 
+			if (!empty($evaluatorId))
+			{
+				$query->andWhere('evaluation_table.evaluator = ' . $evaluatorId);
+			}
+
 			$this->db->setQuery($query);
 			$evaluations = $this->db->loadAssocList();
 
 			foreach ($evaluations as $key => $evaluation)
 			{
-				$evaluations[$key]['url'] = '/evaluation-step-form?view=details&rowid=' . $evaluation['id'] . '&formid=' . $step->form_id . '&' . $step->table . '___ccid=' . $ccid . '&' . $step->table . '___step_id=' . $step->id . '&tmpl=component&iframe=1';
+				$evaluations[$key]['url'] = '/evaluation-step-form?view=' . $view . '&rowid=' . $evaluation['id'] . '&formid=' . $step->form_id . '&' . $step->table . '___ccid=' . $ccid . '&' . $step->table . '___step_id=' . $step->id . '&tmpl=component&iframe=1';
 			}
 		}
 
@@ -1252,8 +1265,8 @@ class EmundusModelWorkflow extends JModelList
 		$this->db->setQuery($query);
 		$campaign_dates = $this->db->loadAssoc();
 
-		$dates['start_date'] = $campaign_dates['start_date'];
-		$dates['end_date']   = $campaign_dates['end_date'];
+		$dates['start_date'] = EmundusHelperDate::displayDate($campaign_dates['start_date'], 'Y-m-d H:i:s', 1);
+		$dates['end_date']   = EmundusHelperDate::displayDate($campaign_dates['end_date'], 'Y-m-d H:i:s', 1);
 
 		$query->clear()
 			->select('*')

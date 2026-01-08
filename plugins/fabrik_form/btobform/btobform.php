@@ -318,6 +318,7 @@ class PlgFabrik_FormBtobForm extends plgFabrik_Form
 					'accomodation_yesno'               => !empty($data['jos_emundus_btob_1237_repeat___btob_amenagements'][$key]) ? 1 : 0,
 					'accomodation_specify'             => $data['jos_emundus_btob_1237_repeat___amenagements_details'][$key],
 					'registration_email'               => $data['jos_emundus_btob_1237_repeat___email'][$key],
+					'registration_phone'               => $data['jos_emundus_btob_1237_repeat___phone'][$key],
 					'correspondence_different_contact' => 0,
 					'correspondence_different_email'   => '',
 					'correspondence_phone'             => '',

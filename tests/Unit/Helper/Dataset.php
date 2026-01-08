@@ -923,9 +923,19 @@ class Dataset
 		return $this->db->execute();
 	}
 
-	public function createEvent($location_id,$user_id,$start = '2026-01-01 00:00:00', $end = '2026-01-01 06:00:00', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [], $users = [], $slot_duration = '30 minutes', $slot_break_every = 0, $slot_break_time = '0 minutes')
+	public function createEvent($location_id, $user_id, $start = '', $end = '', $name = 'Event test',$available_for = 1,$campaigns = [],$programs = [], $users = [], $slot_duration = '30 minutes', $slot_break_every = 0, $slot_break_time = '0 minutes')
 	{
 		$m_events = new \EmundusModelEvents();
+
+		if (!is_null($start) && empty($start))
+		{
+			$start = date('Y-m-d H:i:s', strtotime('first day of january next year 00:00'));
+		}
+
+		if (!is_null($end) && empty($end))
+		{
+			$end = date('Y-m-d H:i:s', strtotime('first day of january next year 06:00'));
+		}
 
 		$event = [
 			'name' => $name,

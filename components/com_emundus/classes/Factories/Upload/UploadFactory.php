@@ -37,7 +37,7 @@ class UploadFactory
 
 			$entity->setTimedate(isset($dbObject->timedate) ? new DateTimeImmutable($dbObject->timedate) : new \DateTimeImmutable());
 			$entity->setModified(isset($dbObject->modified) ? new DateTimeImmutable($dbObject->modified) : null);
-			$entity->setModifiedBy($dbObject->modified_by ?? 0);
+			$entity->setModifiedBy($dbObject->modified_by ?? null);
 
 			$entities[] = $entity;
 		}

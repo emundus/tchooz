@@ -72,7 +72,7 @@ class EmundusViewWorkflows extends JViewLegacy
 
 					try {
 						$this->access = EmundusHelperAccess::getUserEvaluationStepAccess($this->ccid, $this->step, $this->user->id);
-						$evaluation_rows = $this->model->getStepEvaluationsForFile($this->step->id, $this->ccid);
+						$evaluation_rows = $this->model->getStepEvaluationsForFile((int)$this->step->id, $this->ccid);
 						if (!empty($evaluation_rows)) {
 							if ($this->step->multiple) {
 								foreach ($evaluation_rows as $evalaution_row) {

@@ -15,6 +15,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterSubmitEvaluationDefinition;
+use Tchooz\Repositories\Workflow\StepRepository;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -62,6 +63,13 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 		$step_id        = $input->getInt($db_table_name . '___step_id', 0);
 		$view           = $input->getString('view', 'form');
 		$current_row_id = $input->getInt('rowid', 0);
+		$fnum = EmundusHelperFiles::getFnumFromId($ccid);
+
+		if (empty($fnum) || !EmundusHelperAccess::asAccessAction(1, 'r', $user->id, $fnum))
+		{
+			$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+			$this->app->redirect('/');
+		}
 
 		$campaign_id = null;
 		if (!empty($ccid))
@@ -74,95 +82,125 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			$campaign_id = $db->loadResult();
 		}
 
-		$m_workflow = new EmundusModelWorkflow();
-		$step_data  = $m_workflow->getStepData($step_id, $campaign_id);
-		try
-		{
-			$access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $user->id);
-		}
-		catch (Exception $e)
-		{
-			$this->app->enqueueMessage($e->getMessage(), 'error');
-			$this->app->redirect('/');
-		}
+		$stepRepository = new StepRepository();
+		$step = $stepRepository->getStepById($step_id);
 
-		$can_see  = $access['can_see'];
-		$can_edit = $access['can_edit'];
-
-		if (!$can_see)
+		if (empty($step))
 		{
 			$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
 			$this->app->redirect('/');
 		}
 
-		$current_url = $currentLangPath.'/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id . '&rowid=' . $current_row_id;
-		$final_url   = $current_url;
+		$current_url = $currentLangPath . '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id;
+		if (!empty($current_row_id))
+		{
+			$current_url .= '&rowid=' . $current_row_id;
+		}
 
-        if (!empty($step_data)) {
-            if ($step_data->multiple == 0)
-            {
-                // if step_data is not multiple, we need to redirect to the unique row for this ccid
-                $query->clear()
-                    ->select('id')
-                    ->from($db_table_name)
-                    ->where($db->quoteName('ccid') . ' = ' . $ccid)
-                    ->andWhere($db->quoteName('step_id') . ' = ' . $step_id);
 
-                $db->setQuery($query);
-                $row_id = $db->loadResult();
-            }
-            else
-            {
-                // if multiple, we need to redirect to the row of the current user if it exists
-                $query->clear()
-                    ->select('id')
-                    ->from($db_table_name)
-                    ->where($db->quoteName('ccid') . ' = ' . $ccid)
-                    ->andWhere($db->quoteName('step_id') . ' = ' . $step_id)
-                    ->where($db->quoteName('evaluator') . ' = ' . $user->id);
-
-                $db->setQuery($query);
-                $row_id = $db->loadResult();
-            }
-        }
-
-        if (!empty($step_data) && (($can_edit && $view === 'form') || (!$can_edit && $view !== 'details')))
-        {
-            if (!empty($row_id))
-            {
-                // if coord or admin, he is allowed to edit all rows, so if rowid is not 0, keep it
-                // if not, replace it with the rowid
-
-                if ($current_row_id == 0 || EmundusHelperAccess::asAccessAction($step_data->action_id, 'r', $user->id))
-                {
-                    $final_url = preg_replace('/&rowid=\d+/', '&rowid=' . $row_id, $final_url);
-                    if (!str_contains($final_url, 'rowid'))
-                    {
-                        $final_url .= '&rowid=' . $row_id;
-                    }
-                }
-            }
-        }
-
-        if (!$can_edit && $view !== 'details') {
-            $this->app->enqueueMessage(Text::_($access['reason_cannot_edit']));
-            $final_url = str_replace('view=form', 'view=details', $final_url);
-        }
-
-		if(!empty($step_data) && $step_data->lock == 1 && $view === 'form' && !empty($row_id))
+		if (!empty($current_row_id))
 		{
 			$query->clear()
-				->select('evaluator')
-				->from($db_table_name)
-				->where('id = ' . $row_id);
-			$db->setQuery($query);
-			$evaluator = $db->loadResult();
+				->select('*')
+				->from($step->getTable())
+				->where('id = ' . $current_row_id);
 
-			// I can edit form only if i have update right and i'm not the evaluator
-			if(!EmundusHelperAccess::asAccessAction($step_data->action_id, 'u', $user->id) || $evaluator === $user->id)
+			$db->setQuery($query);
+			$evaluationRow = $db->loadObject();
+
+			if (empty($evaluationRow->id))
 			{
-				$final_url = str_replace('view=form', 'view=details', $final_url);
+				$this->app->enqueueMessage(Text::_('ERROR_NOT_FOUND'), 'error');
+				$this->app->redirect('/');
 			}
+
+			if ($evaluationRow->evaluator != $user->id)
+			{
+				if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'u', $user->id, $fnum))
+				{
+					// nothing to do, user can access
+				}
+				else
+				{
+					if ($step->getMultiple() === 0)
+					{
+						if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'c', $user->id, $fnum))
+						{
+							// case 1, nothing to do, redirect will be done later
+						}
+						else if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $user->id, $fnum))
+						{
+							$view = 'details';
+						}
+						else
+						{
+							$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+							$this->app->redirect('/');
+						}
+					}
+					else
+					{
+						if (EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $user->id, $fnum))
+						{
+							$view = 'details';
+						}
+						else
+						{
+							$this->app->enqueueMessage(Text::_('ACCESS_DENIED'), 'error');
+							$this->app->redirect('/');
+						}
+					}
+				}
+			}
+		} else
+		{
+			// no current row id, try to find existing evaluation for this user
+			$query->clear()
+				->select('*')
+				->from($step->getTable())
+				->where('evaluator = ' . $user->id)
+				->where('step_id = ' . $step->getId())
+				->where('ccid = ' . $ccid);
+
+			$db->setQuery($query);
+			$evaluationRow = $db->loadObject();
+
+			if (!empty($evaluationRow->id))
+			{
+				$current_row_id = $evaluationRow->id;
+			}
+		}
+
+		if ($view === 'form')
+		{
+			/**
+			 * administrator and coordinator can always access the evaluation form
+			 * other users can access the form only if they are in the date range
+			 */
+			if (!EmundusHelperAccess::asAdministratorAccessLevel($user->id) && !EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+			{
+				$workflowModel = new EmundusModelWorkflow();
+				$dates = $workflowModel->calculateStartAndEndDates($step, $fnum, $campaign_id);
+
+				if (!$dates['infinite'])
+				{
+					$now = EmundusHelperDate::getNow(Factory::getApplication()->get('offset', 'UTC'));
+					$startDate = $dates['start_date'];
+					$endDate = $dates['end_date'];
+
+					if ($now < $startDate || $now > $endDate)
+					{
+						$this->app->enqueueMessage(Text::_('COM_EMUNDUS_EVALUATION_NOT_IN_DATE_RANGE'), 'error');
+						$view = 'details';
+					}
+				}
+			}
+		}
+
+		$final_url   = $currentLangPath . '/evaluation-step-form?view=' . $view . '&formid=' . $form_model->getId() . '&tmpl=component&iframe=1&' . $db_table_name . '___ccid=' . $ccid . '&' . $db_table_name . '___step_id=' . $step_id;
+		if (!empty($current_row_id))
+		{
+			$final_url .= '&rowid=' . $current_row_id;
 		}
 
 		if ($current_url !== $final_url)
@@ -170,16 +208,14 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			$this->app->redirect($final_url);
 		}
 
-		$fnum                                         = EmundusHelperFiles::getFnumFromId($ccid);
 		$form_model->data[$db_table_name . '___fnum'] = $fnum;
-
 		// log user access to evaluation
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 		$m_files      = new EmundusModelFiles();
 		$applicant_id = $m_files->getFnumInfos($fnum)['applicant_id'];
 
 		require_once(JPATH_ROOT . '/components/com_emundus/models/logs.php');
-		EmundusModelLogs::log($user->id, $applicant_id, $fnum, $step_data->action_id, 'r', 'COM_EMUNDUS_ACCESS_EVALUATION', json_encode(array('step_id' => $step_id)));
+		EmundusModelLogs::log($user->id, $applicant_id, $fnum, $step->getType()->getActionId(), 'r', 'COM_EMUNDUS_ACCESS_EVALUATION', json_encode(array('step_id' => $step_id)));
 
 		if (!empty($fnum) && empty($form_model->getRowId()))
 		{

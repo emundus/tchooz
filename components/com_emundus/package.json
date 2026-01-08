@@ -23,6 +23,7 @@
     "@schedule-x/vue": "^3.4.0",
     "autoprefixer": "^10.4.22",
     "axios": "^1.13.2",
+    "dompurify": "^3.3.1",
     "fusioncharts": "^4.2.0",
     "libphonenumber-js": "^1.12.31",
     "maska": "^3.2.0",
@@ -64,5 +65,8 @@
   },
   "jshintConfig": {
     "esversion": 10
-  }
+  },
+	"overrides": {
+		"jspdf": "^4.0.0"
+	}
 }
