@@ -3107,9 +3107,19 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$where    = '';
 		$group    = '';
 
+        $userColumn = null;
+        if ($this->tableHasColumn($tableName, 'user_id'))
+        {
+            $userColumn = 'user_id';
+        }
+        elseif ($this->tableHasColumn($tableName, 'user'))
+        {
+            $userColumn = 'user';
+        }
+
 		if ($plugin->isDateField())
 		{
-			$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.user_id as user_val';
+			$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.'.$userColumn.' as user_val';
 			$date_form_format = $this->dateFormatToMysql($date_format);
 
 			if ($return === ValueFormatEnum::BOTH)
@@ -3133,7 +3143,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				// join_key_column = raw, join_val_column = formatted
 				if ($groupRepeat)
 				{
-					$select_origin_val = !empty($fnums) ? 't_table.fnum' : 't_table.user_id as user_val';
+					$select_origin_val = !empty($fnums) ? 't_table.fnum' : 't_table.'.$userColumn.' as user_val';
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
@@ -3151,7 +3161,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				else
 				{
 
-					$select_origin_val = !empty($fnums) ? 't_elt.fnum' : 't_elt.user_id as user_val';
+					$select_origin_val = !empty($fnums) ? 't_elt.fnum' : 't_elt.'.$userColumn.' as user_val';
 
 					if ($isMulti)
 					{
@@ -3187,7 +3197,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 			else
 			{
-				$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.user_id as user_val';
+				$select_origin_val = !empty($fnums) ? 't_origin.fnum' : 't_elt.'.$userColumn.' as user_val';
 
 				if ($return === ValueFormatEnum::BOTH)
 				{
@@ -3270,18 +3280,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			}
 		}
 
-		$userColumn = null;
 		if (!empty($user_id))
 		{
-			if ($this->tableHasColumn($tableName, 'user'))
-			{
-				$userColumn = 'user';
-			}
-			elseif ($this->tableHasColumn($tableName, 'user_id'))
-			{
-				$userColumn = 'user_id';
-			}
-
 			if ($userColumn !== null)
 			{
 				$table_key = $isDatabaseJoin ? 't_elt' : 't_origin';
@@ -3406,13 +3406,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		// check if column fnum exists
 		$fnum_column_existing = $this->tableHasColumn($tableName, 'fnum');
 		$user_column           = null;
-		if ($this->tableHasColumn($tableName, 'user'))
-		{
-			$user_column = 'user';
-		}
-		elseif ($this->tableHasColumn($tableName, 'user_id'))
+		if ($this->tableHasColumn($tableName, 'user_id'))
 		{
 			$user_column = 'user_id';
+		}
+		elseif ($this->tableHasColumn($tableName, 'user'))
+		{
+			$user_column = 'user';
 		}
 
 		if (!empty($dateFormat))
