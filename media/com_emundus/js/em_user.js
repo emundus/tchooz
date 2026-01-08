@@ -711,6 +711,16 @@ $(document).ready(function () {
 				break;
 		}
 
+		let headers = {};
+		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions('csrf.token', '');
+			if (csrf) {
+				headers = {
+					'X-CSRF-Token': csrf,
+				};
+			}
+		}
+
 		switch (id) {
 
 			case 19:
@@ -723,6 +733,7 @@ $(document).ready(function () {
 
 				fetch(url, {
 					method: 'GET',
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.text();
@@ -768,6 +779,7 @@ $(document).ready(function () {
 				fetch(url, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -800,6 +812,7 @@ $(document).ready(function () {
 				fetch(url, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -832,6 +845,7 @@ $(document).ready(function () {
 				await fetch(url, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.text();
@@ -852,16 +866,6 @@ $(document).ready(function () {
 				var formData = new FormData();
 				formData.append('users', checkInput);
 				formData.append('state', 1);
-
-				let headers = {};
-				if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
-					var csrf = Joomla.getOptions('csrf.token', '');
-					if (csrf) {
-						headers = {
-							'X-CSRF-Token': csrf,
-						};
-					}
-				}
 
 				fetch(url, {
 					method: 'POST',
@@ -970,6 +974,7 @@ $(document).ready(function () {
 						fetch(url, {
 							method: 'POST',
 							body: formData,
+							headers: headers,
 						}).then((response) => {
 							if (response.ok) {
 								return response.json();
@@ -1147,6 +1152,16 @@ $(document).ready(function () {
 	function runAction(id, url = '', option = '') {
 		var formData = new FormData();
 
+		let headers = {};
+		if (typeof Joomla !== 'undefined' && Joomla && Joomla.getOptions) {
+			var csrf = Joomla.getOptions('csrf.token', '');
+			if (csrf) {
+				headers = {
+					'X-CSRF-Token': csrf,
+				};
+			}
+		}
+
 		if ($('#em-check-all-all').is(':checked')) {
 			var checkInput = 'all';
 		} else {
@@ -1191,7 +1206,8 @@ $(document).ready(function () {
 
 				fetch('/index.php?option=com_emundus&controller=users&task=affectuserscategory&Itemid=' + itemId, {
 					method: 'POST',
-					body: formData
+					body: formData,
+					headers: headers
 				})
 					.then(function (response) {
 						if (!response.ok) {
@@ -1247,7 +1263,8 @@ $(document).ready(function () {
 
 				fetch('/index.php?option=com_emundus&controller=users&task=exportusers&Itemid=' + itemId, {
 					method: 'POST',
-					body: formData
+					body: formData,
+					headers: headers
 				})
 					.then(function (response) {
 						if (!response.ok) {
@@ -1314,6 +1331,7 @@ $(document).ready(function () {
 				fetch(action, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -1412,6 +1430,7 @@ $(document).ready(function () {
 				fetch(action, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -1473,6 +1492,7 @@ $(document).ready(function () {
 				fetch(action, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -1574,6 +1594,7 @@ $(document).ready(function () {
 				fetch(action, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();
@@ -1637,6 +1658,7 @@ $(document).ready(function () {
 				fetch(action, {
 					method: 'POST',
 					body: formData,
+					headers: headers
 				}).then((response) => {
 					if (response.ok) {
 						return response.json();

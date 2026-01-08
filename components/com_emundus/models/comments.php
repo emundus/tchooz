@@ -403,6 +403,11 @@ class EmundusModelComments extends BaseDatabaseModel
             }
         }
 
+		// sanitize comment bodies
+	    foreach ($comments as $key => $comment) {
+			$comments[$key]['comment_body'] = $this->sanitizer->sanitizeNoHtml($comment['comment_body']);
+		}
+
         return $comments;
     }
 

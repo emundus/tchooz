@@ -115,13 +115,6 @@
 							<div v-if="tab.type && tab.type === 'iframe' && selected === tab.name">
 								<iframe :id="tab.name" :src="replaceTagsIframeUrl(tab.url)" class="tw-h-screen tw-w-full"></iframe>
 							</div>
-
-							<evaluation-list
-								v-if="tab.type && tab.type === 'evaluation-list' && selected === tab.name"
-								:step="tab.step"
-								:ccid="this.ccid"
-							>
-							</evaluation-list>
 						</div>
 					</div>
 				</div>
@@ -158,7 +151,6 @@ export default {
 	components: {
 		Synthesis,
 		Messages,
-		EvaluationList,
 		Comments,
 		Attachments,
 		Modal,
@@ -339,7 +331,6 @@ export default {
 
 						this.updateURL(this.selectedFile.fnum);
 						this.getApplicationForm();
-						this.getReadonlyEvaluations();
 
 						this.showModal = true;
 						this.hidden = false;
@@ -423,52 +414,6 @@ export default {
 			newScript.type = 'module';
 			newScript.src = 'media/com_emundus_vue/app_emundus.js?' + Date.now();
 			document.body.appendChild(newScript);
-		},
-		getReadonlyEvaluations() {
-			const fnum = typeof this.selectedFile === 'string' ? this.selectedFile : this.selectedFile.fnum;
-
-			fileService.getFileIdFromFnum(fnum).then((response) => {
-				if (response.status) {
-					this.ccid = response.data;
-
-					evaluationService
-						.getEvaluationsForms(fnum, true)
-						.then((response) => {
-							response.data.forEach((step) => {
-								this.access[step.action_id] = {
-									r: true,
-									c: false,
-								};
-
-								// check if the tab already exists
-								if (this.tabs.find((tab) => tab.name === 'step-' + step.id)) {
-									return;
-								}
-
-								if (step.url) {
-									this.tabs.push({
-										label: step.label,
-										name: 'step-' + step.id,
-										access: step.action_id,
-										type: 'iframe',
-										url: step.url,
-									});
-								} else if (step.multiple) {
-									this.tabs.push({
-										label: step.label,
-										name: 'step-' + step.id,
-										access: step.action_id,
-										type: 'evaluation-list',
-										step: step,
-									});
-								}
-							});
-						})
-						.catch((error) => {
-							console.log(error);
-						});
-				}
-			});
 		},
 		updateURL(fnum = '') {
 			let url = window.location.href;

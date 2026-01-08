@@ -605,12 +605,12 @@ if (!empty($applications))
                                                             $choices = $applicationChoicesRepository->getChoicesByFnum($application->fnum);
                                                             if(!empty($choices))
                                                             {
-                                                                foreach ($choices as $key => $choice)
+                                                                foreach ($choices as $index => $choice)
                                                                 {
                                                                     ?>
                                                                     <div class="em-mb-4">
                                                                         <span
-                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo Text::sprintf('APPLICATION_CHOICE_NO',($key+1)) . ' : ' . $choice->getCampaign()->getLabel(); ?></span>
+                                                                            class="em-applicant-default-font tw-text-neutral-800"><?php echo Text::sprintf('APPLICATION_CHOICE_NO',($index+1)) . ' : ' . $choice->getCampaign()->getLabel(); ?></span>
                                                                     </div>
                                                                     <?php
                                                                 }

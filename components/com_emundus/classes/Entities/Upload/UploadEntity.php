@@ -242,7 +242,7 @@ class UploadEntity
 		return $this->modifiedBy;
 	}
 
-	public function setModifiedBy(int $modifiedBy): void
+	public function setModifiedBy(?int $modifiedBy): void
 	{
 		$this->modifiedBy = $modifiedBy;
 	}

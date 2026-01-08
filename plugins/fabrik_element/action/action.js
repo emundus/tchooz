@@ -42,7 +42,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     body: formData,
                 };
 
-                fetch('/index.php?option=com_emundus&controller=automation&task=performaction', parameters).then((response) => {
+                fetch('/index.php?option=com_emundus&controller=automation&task=runaction', parameters).then((response) => {
                     if(loader)
                     {
                         loader.style.display = 'none';

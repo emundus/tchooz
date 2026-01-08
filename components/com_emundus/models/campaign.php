@@ -2091,6 +2091,12 @@ class EmundusModelCampaign extends ListModel
 				switch ($key)
 				{
 					case 'label':
+						$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+						foreach ($data['label'] as $lang_code => $label)
+						{
+							$data['label'][$lang_code] = $htmlSanitizer->sanitizeNoHtml($label);
+						}
+
 						$labels        = $data['label'];
 						$data['label'] = $data['label'][$actualLanguage];
 						$fields[$key]  = $data['label'];

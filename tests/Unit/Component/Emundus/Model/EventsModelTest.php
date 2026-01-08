@@ -24,9 +24,13 @@ use stdClass;
  */
 class EventsModelTest extends UnitTestCase
 {
+	private int $nextYear;
+
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct('events', $data, $dataName, 'EmundusModelEvents');
+
+		$this->nextYear = (int)date('Y') + 1;
 	}
 
 	/**
@@ -260,8 +264,8 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($this->dataset['campaign'], $applicant, true);
 
 		$event_slot = [
-			'start_date' => '2026-01-01 12:00:00',
-			'end_date' => '2026-01-01 18:00:00',
+			'start_date' => $this->nextYear . '-01-01 12:00:00',
+			'end_date' => $this->nextYear . '-01-01 18:00:00',
 			'room' => null,
 			'slot_capacity' => 2,
 			'more_infos' => '',
@@ -406,8 +410,8 @@ class EventsModelTest extends UnitTestCase
 		$event_id_2 = $event_2['event_id'];
 
 		$event_slots_2 = [
-			'start_date' => '2026-01-01 11:00:00',
-			'end_date' => '2026-01-01 18:00:00',
+			'start_date' => $this->nextYear . '-01-01 11:00:00',
+			'end_date' => $this->nextYear . '-01-01 18:00:00',
 			'room' => null,
 			'slot_capacity' => 2,
 			'more_infos' => '',
@@ -505,7 +509,7 @@ class EventsModelTest extends UnitTestCase
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
 
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,$this->dataset['campaign']);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,$this->dataset['campaign']);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
@@ -517,7 +521,7 @@ class EventsModelTest extends UnitTestCase
 			'slots_availables_to_show' => 0,
 			'slot_can_book_until' => '3 days',
 			'slot_can_cancel' => 1,
-			'slot_can_cancel_until' => '2026-01-01 date',
+			'slot_can_cancel_until' => $this->nextYear . '-01-01 date',
 			'user_id' => $this->dataset['coordinator'],
 		];
 		$setuped = $this->model->setupSlot($setup_slot['event_id'], $setup_slot['slot_duration'], $setup_slot['slot_break_every'], $setup_slot['slot_break_time'], $setup_slot['slots_availables_to_show'], $setup_slot['slot_can_book_until'], $setup_slot['slot_can_cancel'], $setup_slot['slot_can_cancel_until'], $setup_slot['user_id']);
@@ -526,7 +530,7 @@ class EventsModelTest extends UnitTestCase
 	    $this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS',$setuped['message'], 'The method setupSlot status should return success message');
 
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file[0]);
 		$this->assertNotEmpty($registrant_id, 'The method createAvailabilityRegistrant should return a registrant id');
@@ -539,7 +543,7 @@ class EventsModelTest extends UnitTestCase
 			'slots_availables_to_show' => 0,
 			'slot_can_book_until' => '3 days',
 			'slot_can_cancel' => 1,
-			'slot_can_cancel_until' => '2026-01-01 date',
+			'slot_can_cancel_until' => $this->nextYear . '-01-01 date',
 			'user_id' => $this->dataset['coordinator'],
 		];
 
@@ -556,7 +560,7 @@ class EventsModelTest extends UnitTestCase
 			'slots_availables_to_show' => 0,
 			'slot_can_book_until' => '3 days',
 			'slot_can_cancel' => 1,
-			'slot_can_cancel_until' => '2026-01-01 date',
+			'slot_can_cancel_until' => $this->nextYear . '-01-01 date',
 			'user_id' => $this->dataset['coordinator'],
 		];
 
@@ -573,7 +577,7 @@ class EventsModelTest extends UnitTestCase
 			'slots_availables_to_show' => 0,
 			'slot_can_book_until' => '3 days',
 			'slot_can_cancel' => 1,
-			'slot_can_cancel_until' => '2026-01-01 date',
+			'slot_can_cancel_until' => $this->nextYear . '-01-01 date',
 			'user_id' => $this->dataset['coordinator'],
 		];
 
@@ -601,11 +605,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant, true);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
-		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file[0]);
@@ -733,20 +737,20 @@ class EventsModelTest extends UnitTestCase
 		$this->assertObjectHasProperty('capacity',$availabilities[0], 'The availability object should have a capacity property');
 		$this->assertObjectHasProperty('slot',$availabilities[0], 'The availability object should have a slot property');
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00');
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00');
 		$this->assertIsArray($availabilities, 'The method getEventsAvailabilities should return an array');
 		$this->assertNotEmpty($availabilities, 'The method getEventsAvailabilities should return a non empty array');
 		
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$this->assertIsArray($availabilities, 'The method getEventsAvailabilities should return an array');
 		$this->assertNotEmpty($availabilities, 'The method getEventsAvailabilities should return a non empty array');
-		$this->assertSame('2026-01-01 00:00', $availabilities[0]->start, 'The availability start should be "2026-01-01 00:00"');
+		$this->assertSame($this->nextYear . '-01-01 00:00', $availabilities[0]->start, 'The availability start should be "2026-01-01 00:00"');
 		$availability_id = $availabilities[0]->id;
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [], $availability_id);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [], $availability_id);
 		$this->assertSame(1, count($availabilities), 'The method getEventsAvailabilities should return an array with one element');
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 00:30:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 00:30:00', [$event_id]);
 		$this->assertSame(1, count($availabilities), 'The method getEventsAvailabilities should return an array with one element');
 
 		$availabilities = $this->model->getEventsAvailabilities('2025-01-01 00:00:00', '2025-01-01 06:00:00', [$event_id]);
@@ -765,7 +769,7 @@ class EventsModelTest extends UnitTestCase
 		$campaign_id_2 = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id, $this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
@@ -784,10 +788,10 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return an array');
 		$this->assertEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return an empty array');
 
-		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00');
+		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'',$this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00');
 		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
 
-		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2026-01-01 00:00:00', '2026-01-01 06:00:00', 0, 1, [$event_id]);
+		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'',$this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 0, 1, [$event_id]);
 		$this->assertNotEmpty($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return a non empty array');
 
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id,'','2025-01-01 00:00:00', '2025-01-01 06:00:00');
@@ -892,11 +896,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id, $this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id, $this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -926,11 +930,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -983,11 +987,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -1036,11 +1040,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -1070,11 +1074,11 @@ class EventsModelTest extends UnitTestCase
 //		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 //
 //		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
-//		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id], [$program]);
+//		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id], [$program]);
 //		$event_id = $event['event_id'];
 //		$event_slots = $event['event_slots'];
 //
-//		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+//		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 //		$availability_id = $availabilities[0]->id;
 //
 //		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -1103,11 +1107,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -1128,7 +1132,7 @@ class EventsModelTest extends UnitTestCase
 	public function testDuplicateEvent()
 	{
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
@@ -1150,7 +1154,7 @@ class EventsModelTest extends UnitTestCase
 	{
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id, $this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
+		$event = $this->h_dataset->createEvent($location_id, $this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
@@ -1170,11 +1174,11 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($this->dataset['campaign'], $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
 		$event_id = $event['event_id'];
 		$event_slots = $event['event_slots']['slots'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file);
@@ -1193,7 +1197,7 @@ class EventsModelTest extends UnitTestCase
 	public function testGetEventsNotifications()
 	{
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $this->dataset['coordinator']);
-		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
+		$event = $this->h_dataset->createEvent($location_id,$this->dataset['coordinator'], $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$this->dataset['campaign']]);
 
 		$notifications = $this->model->getEventsNotifications([$event['event_id']]);
 
@@ -1233,10 +1237,10 @@ class EventsModelTest extends UnitTestCase
 		$applicant_file = $this->h_dataset->createSampleFile($campaign_id, $applicant);
 
 		$location_id = $this->model->saveLocation('Lieu de test', 'Adresse de test', 'Description de test', [], $user_id_coordinator);
-		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, '2026-01-01 00:00:00', '2026-01-01 06:00:00', 'Event test',1,[$campaign_id], [], [$evaluator_1]);
+		$event = $this->h_dataset->createEvent($location_id,$user_id_coordinator, $this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', 'Event test',1,[$campaign_id], [], [$evaluator_1]);
 		$event_id = $event['event_id'];
 
-		$availabilities = $this->model->getEventsAvailabilities('2026-01-01 00:00:00', '2026-01-01 06:00:00', [$event_id]);
+		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
 
 		$registrant_id = $this->model->createAvailabilityRegistrant($availability_id, $applicant_file, [$evaluator_2]);

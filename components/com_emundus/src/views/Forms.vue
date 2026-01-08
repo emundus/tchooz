@@ -125,6 +125,7 @@ export default {
 										operator: '=',
 										value: '0',
 									},
+									multiple: true,
 								},
 								{
 									action: 'unpublishFabrikForm',
@@ -138,6 +139,7 @@ export default {
 										operator: '=',
 										value: '1',
 									},
+									multiple: true,
 								},
 								{
 									action: 'duplicateFabrikForm',

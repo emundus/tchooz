@@ -151,11 +151,13 @@ class EmundusModelForm extends JModelList
 	/**
 	 * TODO: Add filters / recherche etc./.. At the moment, it's not working
 	 *
-	 * @param $filter
-	 * @param $sort
-	 * @param $recherche
-	 * @param $lim
-	 * @param $page
+	 * @param   string  $filter
+	 * @param   string  $sort
+	 * @param   string  $recherche
+	 * @param   int     $lim
+	 * @param   int     $page
+	 * @param   int     $user_id
+	 * @param   string  $order_by
 	 *
 	 * @return array
 	 */
@@ -165,7 +167,7 @@ class EmundusModelForm extends JModelList
 
 		$query    = $this->db->getQuery(true);
 
-		if(empty($user_id)) {
+		if (empty($user_id)) {
 			$user_id = $this->app->getIdentity()->id;
 		}
 
@@ -184,6 +186,8 @@ class EmundusModelForm extends JModelList
 			else {
 				$query->andWhere($this->db->quoteName('ff.published') . ' = 1');
 			}
+
+			$query->andWhere($this->db->quoteName('fl.published') . ' = 1');
 
 			$this->db->setQuery($query);
 			$evaluation_forms = $this->db->loadObjectList();
@@ -215,9 +219,15 @@ class EmundusModelForm extends JModelList
 				$query->clear()
 					->select('ff.id')
 					->from($this->db->quoteName('#__fabrik_forms', 'ff'))
-					->where('ff.id IN (' . implode(',', $evaluation_form_ids) . ')')
-					->andWhere($this->db->quoteName('ff.created_by') . ' = ' . $user_id .
+					->where('ff.id IN (' . implode(',', $evaluation_form_ids) . ')');
+
+
+				// if user as Admin Access, he can see all forms
+				if (!EmundusHelperAccess::asAdministratorAccessLevel($user_id))
+				{
+					$query->andWhere($this->db->quoteName('ff.created_by') . ' = ' . $user_id .
 						(!empty($steps_form_ids) ? ' OR ff.id IN (' . implode(',', $steps_form_ids) . ')' : ''));
+				}
 
 				$this->db->setQuery($query);
 				$evaluation_forms_user_can_access_to = $this->db->loadColumn();

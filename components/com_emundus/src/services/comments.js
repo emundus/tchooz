@@ -1,5 +1,6 @@
 /* jshint esversion: 8 */
 import { FetchClient } from './fetchClient.js';
+import DOMPurify from 'dompurify';
 
 const client = new FetchClient('comments');
 
@@ -7,9 +8,21 @@ export default {
 	async getComments(ccid) {
 		if (ccid > 0) {
 			try {
-				return await client.get('getcomments', {
+				const response = await client.get('getcomments', {
 					ccid: ccid,
 				});
+
+				if (response.status) {
+					response.data = response.data.map((comment) => {
+						comment.comment_body = DOMPurify.sanitize(comment.comment_body, {
+							ALLOWED_TAGS: [],
+							ALLOWED_ATTR: [],
+						});
+						return comment;
+					});
+				}
+
+				return response;
 			} catch (e) {
 				return {
 					status: false,

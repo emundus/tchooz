@@ -799,7 +799,6 @@ class EmundusHelperAccess
 					}
 				}
 			} else {
-				//throw new Exception(Text::_('ERROR_INCOHERENT_STEP_FOR_CCID'));
 				$can_see = false;
 				$can_edit = false;
 				$reason_cannot_edit = Text::_('ERROR_INCOHERENT_STEP_FOR_CCID');
