@@ -230,6 +230,24 @@ class StepEntity {
 		$this->campaignsDates = $campaignsDates;
 	}
 
+	public function getDatesForCampaign(int $campaignId): ?CampaignStepDateEntity
+	{
+		if (empty($this->campaignsDates))
+		{
+			return null;
+		}
+
+		foreach ($this->campaignsDates as $campaignStepDate)
+		{
+			if ($campaignStepDate->campaign_id === $campaignId)
+			{
+				return $campaignStepDate;
+			}
+		}
+
+		return null;
+	}
+
 	public function serialize()
 	{
 		return [

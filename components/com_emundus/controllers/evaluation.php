@@ -1248,62 +1248,120 @@ class EmundusControllerEvaluation extends BaseController
 		$fnum = $this->input->getString('fnum', null);
 
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
-			$readonly =  $this->input->getString('readonly', 0);
+			$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
+			/*
+			 * 3 cases possible
+			 *
+			 * Evaluator has only Create Access right -> can only see his own evaluations
+			 * Evaluator has Read Access right -> can see all evaluations
+			 * Evaluator has Update Access right -> can see and edit all evaluations
+			 */
+			$workflowRepository = new \Tchooz\Repositories\Workflow\WorkflowRepository();
+			$workflow = $workflowRepository->getWorkflowByFnum($fnum);
 
-			$db = Factory::getContainer()->get('DatabaseDriver');
-			$query = $db->createQuery();
 
-			$query->select('campaign_id')
-				->from('#__emundus_campaign_candidature')
-				->where('fnum = ' . $db->quote($fnum));
-			$db->setQuery($query);
-			$campaign_id = $db->loadResult();
+			if (!class_exists('EmundusModelWorkflow')) {
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$workflowModel = new EmundusModelWorkflow();
 
-			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-			$m_workflow = new EmundusModelWorkflow();
-			$steps = $m_workflow->getCampaignSteps($campaign_id);
+			$stepsWithEvaluations = [];
+			foreach ($workflow->getSteps() as $step)
+			{
+				assert($step instanceof Tchooz\Entities\Workflow\StepEntity);
 
-			if (!empty($steps)) {
-				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
-				$response['data'] = [];
+				if ($step->isEvaluationStep())
+				{
+					$updateAccess = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'u', $this->_user->id, $fnum);
+					$readAccess = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $this->_user->id, $fnum);
+					$createAccess = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'c', $this->_user->id, $fnum);
 
-				foreach ($steps as $step) {
-					$step_data = $m_workflow->getStepData($step->id, $campaign_id);
-					if (!$m_workflow->isEvaluationStep($step_data->type)) {
+					if (!$readAccess && !$createAccess && !$updateAccess) {
 						continue;
 					}
 
-					$user_access = EmundusHelperAccess::getUserEvaluationStepAccess($ccid, $step_data, $this->_user->id, false);
-					if ($user_access['can_see']) {
-						if ($readonly && $user_access['can_edit']) {
-							continue;
+					$stepWithEvaluations = $step->serialize();
+					$stepWithEvaluations['default_evaluation_form_url'] = '/evaluation-step-form?view=form&formid=' . $step->getFormId() . '&' . $step->getTable() . '___ccid=' . $ccid . '&' . $step->getTable() . '___step_id=' . $step->getId() . '&tmpl=component&iframe=1';
+
+					if (!$updateAccess && !$readAccess)
+					{
+						$allEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid, 'form', $this->_user->id);
+						// get only user's evaluations
+						$userEvaluations = array_filter($allEvaluations, function($eval) {
+							return $eval->evaluator == $this->_user->id;
+						});
+						$stepWithEvaluations['evaluations'] = array_values($userEvaluations);
+					} else
+					{
+						if ($updateAccess)
+						{
+							$allEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid, 'form');
 						}
-						$step_data->user_access = $user_access;
+						else
+						{
+							$allEvaluations = [];
 
-						if ($user_access['can_edit'] || !$step_data->multiple) {
-							if (!$user_access['can_edit']) {
-								// get the evaluation row id
-								$row_id = 0;
-								$evaluations = $m_workflow->getStepEvaluationsForFile($step_data->id, $ccid);
+							if ($createAccess)
+							{
+								$allEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid, 'form', $this->_user->id);
 
-								if (!empty($evaluations)) {
-									$row_id = $evaluations[0]['id'];
+							}
+
+							$otherEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid);
+							// keep only evaluation ids not already in allEvaluations
+							$existingEvalIds = array_map(function($eval) {
+								return $eval['id'];
+							}, $allEvaluations);
+
+							foreach ($otherEvaluations as $otherEval)
+							{
+								if (!in_array($otherEval['id'], $existingEvalIds))
+								{
+									$allEvaluations[] = $otherEval;
 								}
-
-								$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1&rowid=' . $row_id;
-							} else {
-								$step_data->url = '/evaluation-step-form?view=form&formid=' . $step_data->form_id . '&' . $step_data->table . '___ccid=' . $ccid . '&' . $step_data->table . '___step_id=' . $step_data->id . '&tmpl=component&iframe=1';
 							}
 						}
 
-						$response['status'] = true;
-						$response['code'] = 200;
-						$response['data'][] = $step_data;
+						$stepWithEvaluations['evaluations'] = $allEvaluations;
 					}
+
+					if ($createAccess || $updateAccess)
+					{
+						// make sure there's a line for creating a new evaluation, if none exists yet for this user
+						$hasUserEvaluation = false;
+						foreach ($stepWithEvaluations['evaluations'] as $eval) {
+							if ($eval['evaluator'] == $this->_user->id) {
+								$hasUserEvaluation = true;
+								break;
+							}
+						}
+
+						if (!$hasUserEvaluation) {
+							$currentUserEvaluation = (object) [
+								'id' => 0,
+								'evaluator' => $this->_user->id,
+								'ccid' => $ccid,
+								'fnum' => $fnum,
+								'step_id' => $step->getId(),
+								'evaluator_name' => $this->_user->name,
+								'url' => '/evaluation-step-form?view=form&formid=' . $step->getFormId() . '&' . $step->getTable() . '___ccid=' . $ccid . '&' . $step->getTable() . '___step_id=' . $step->getId() . '&tmpl=component&iframe=1'
+							];
+
+							// add at the beginning of evaluations array
+							array_unshift($stepWithEvaluations['evaluations'], $currentUserEvaluation);
+						}
+					}
+
+					$stepsWithEvaluations[] = $stepWithEvaluations;
 				}
-			} else {
-				$response['msg'] = Text::_('COM_EMUNDUS_EVALUATION_NO_STEPS');
 			}
+
+			$response = [
+				'status' => true,
+				'code' => 200,
+				'msg' => Text::_('SUCCESS'),
+				'data' => $stepsWithEvaluations
+			];
 		}
 
 		echo json_encode((object) $response);
