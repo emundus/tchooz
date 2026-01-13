@@ -9,6 +9,8 @@
 // no direct access
 defined('_JEXEC') or die();
 
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+$h_files = new EmundusHelperFiles();
 
 JHTML::_('script', 'system/multiselect.js', false, true);
 // Import CSS
@@ -31,7 +33,7 @@ $canDelete  = $user->authorise('core.delete', 'com_emundus');
 $canView    = $user->authorise('core.viewjob', 'com_emundus');
 
 //dropdown values for $item->domaine
-$domaines = @EmundusHelperFiles::getElementsValuesOther(2262);
+$domaines = $h_files->getElementsValuesOther(2262);
 $values   = $domaines->sub_values;
 $labels   = $domaines->sub_labels;
 ?>
@@ -99,7 +101,7 @@ $labels   = $domaines->sub_labels;
                         </a>
                     </td>
                     <td>
-						<?php echo $labels[$item->domaine - 1]; ?>
+                        <?php echo $labels[$i]; ?>
                     </td>
                     <td>
 						<?php echo $item->etablissement; ?>
