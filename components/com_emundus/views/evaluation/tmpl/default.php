@@ -16,6 +16,8 @@ defined('_JEXEC') or die('Restricted access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Fields\ChoiceField;
+use Tchooz\Entities\Fields\FieldResearch;
 
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
@@ -59,6 +61,18 @@ if ($this->open_file_in_modal)
 	Text::script('COM_EMUNDUS_FILES_FILTER_NO_ELEMENTS_FOUND');
 	Text::script('COM_EMUNDUS_EVALUATION_NO_FORM_FOUND');
 }
+
+$addFilterField = (new ChoiceField('add_filter', Text::_('MOD_EMUNDUS_FILTERS_SELECT_FILTER_LABEL'), []))->setResearch(new FieldResearch('files', 'getFiltersAvailable', 'menu_id=' . $this->itemId . '&search_query'));
+$datas = [
+    'menuId' => $this->itemId,
+    'defaultAppliedFilters' => $this->applied_filters,
+    'quickSearchFilters' => $this->quick_search_filters,
+    'countFilterValues' => $this->count_filter_values == 1,
+    'allowAddFilter' => $this->allow_add_filter == 1,
+    'defaultSelectedRegisteredFilterId' => $this->default_filter_id ?? 0,
+    'canShareFilters' => $this->can_share_filters == 1,
+    'addFilterField' => $addFilterField->toSchema(),
+];
 ?>
 
 <input type="hidden" id="view" name="view" value="evaluation">
@@ -73,7 +87,7 @@ if ($this->open_file_in_modal)
                 </div>
 
                 <div class="panel-body em-containerFilter-body">
-                    <div id="em_filters"
+                    <!-- <div id="em_filters"
                          component="Filters"
                          data-module-id="<?= $this->itemId ?>"
                          data-menu-id="<?= $this->itemId ?>"
@@ -82,7 +96,15 @@ if ($this->open_file_in_modal)
                          data-quick-search-filters='<?= base64_encode(json_encode($this->quick_search_filters)) ?>'
                          data-count-filter-values='<?= $this->count_filter_values ?>'
                          data-allow-add-filter='<?= $this->allow_add_filter ?>'
-                    ></div>
+                    ></div>-->
+
+
+                    <div
+                        id="em_filters"
+                        component="Filters"
+                        data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
+                    >
+                    </div>
 
                     <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
                 </div>
