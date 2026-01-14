@@ -69,7 +69,6 @@ class EmundusViewFiles extends JViewLegacy
 
 	/** FILTERS */
 	protected $applied_filters;
-	protected $filters;
 	protected $quick_search_filters;
 	protected int $count_filter_values;
 	protected int $allow_add_filter;

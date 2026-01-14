@@ -12,6 +12,7 @@ export default {
 				value: value,
 				displayed: true,
 				displayRules: field.displayRules ? field.displayRules : null,
+				hideLabel: false,
 			};
 
 			switch (field.type) {

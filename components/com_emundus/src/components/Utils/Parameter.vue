@@ -753,8 +753,20 @@ export default {
 						let data = {
 							search_query: search_query,
 							limit: this.$props.multiselectOptions.optionsLimit,
-							properties: this.$props.asyncAttributes,
 						};
+
+						if (this.$props.asyncAttributes) {
+							// if asyncAttributes is an object entry value, loop through and add to data
+							// else, just add the single attribute as "properties": data
+							if (typeof this.$props.asyncAttributes === 'object' && !Array.isArray(this.$props.asyncAttributes)) {
+								for (const [key, value] of Object.entries(this.$props.asyncAttributes)) {
+									data[key] = value;
+								}
+							} else {
+								let attr = this.$props.asyncAttributes;
+								data['properties'] = this.$props.asyncAttributes;
+							}
+						}
 
 						settingsService
 							.getAsyncOptions(
