@@ -570,7 +570,7 @@ export default {
 								filter.values = [];
 								this.appliedFilters.forEach((defaultFilter) => {
 									if (defaultFilter.id === filter.id) {
-										filter.values = defaultFilter.values;
+										filter.values = defaultFilter.values || [];
 									}
 								});
 
