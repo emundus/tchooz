@@ -4520,8 +4520,9 @@ class EmundusControllerFiles extends BaseController
 		if (EmundusHelperAccess::asPartnerAccessLevel($user->id)) {
 			$response['msg'] = Text::_('MISSING_PARAMS');
 			$menu_id = $app->input->getInt('menu_id', 0);
+			$search_query = $app->input->getString('search_query', '');
 
-			if (!empty($menu_id)) {
+			if (!empty($menu_id) && !empty($search_query)) {
 				$response['msg'] = Text::_('NO_CALCULATION_FOR_THIS_MODULE');
 
 				$db = Factory::getContainer()->get('DatabaseDriver');
@@ -4539,15 +4540,18 @@ class EmundusControllerFiles extends BaseController
 					if (!class_exists('EmundusFiltersFiles')) {
 						require_once(JPATH_ROOT . '/components/com_emundus/classes/filters/EmundusFiltersFiles.php');
 					}
-					$m_filters = new EmundusFiltersFiles($menu_params, false, true);
+					$m_filters = new EmundusFiltersFiles($menu_params, true, true);
+					$filters = $m_filters->getFilters($search_query);
 
-					$response['data'] = $m_filters->getFilters();
+					$response['data'] = $filters;
 					$response['status'] = true;
 					$response['code'] = 200;
 				} catch (Exception $e) {
 					$response['code'] = 500;
 					$response['msg'] = $e->getMessage();
 				}
+			} else {
+				$response = ['status' => true, 'code' => 200, 'msg' => Text::_('SUCCESS'), 'data' => []];
 			}
 		}
 

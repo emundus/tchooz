@@ -69,10 +69,32 @@ class EmundusFilters
 
 			foreach($elements as $element) {
                 $label = strip_tags(Text::_($element['label']));
+				$label = !empty($label) ? $label : 'ELEMENT ' .  $element['id'];
+
+
+				if (!empty($element['element_form_label']) || !empty($element['element_group_label'])) {
+					$label .= ' (';
+				}
+
+				if (!empty($element['element_form_label'])) {
+					$label .= strip_tags(Text::_($element['element_form_label']));
+				}
+
+				if (!empty($element['element_group_label'])) {
+					if (!empty($element['element_form_label'])) {
+						$label .= ' > ';
+					}
+
+					$label .= strip_tags(Text::_($element['element_group_label']));
+				}
+
+				if (!empty($element['element_form_label']) || !empty($element['element_group_label'])) {
+					$label .= ')';
+				}
 
 				$filter = [
 					'id' => $element['id'],
-					'label' => !empty($label) ? $label : 'ELEMENT ' .  $element['id'],
+					'label' => $label,
 					'type' => 'text',
 					'values' => [],
 					'form_label' => $element['element_form_label'],
