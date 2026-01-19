@@ -24,6 +24,7 @@
 						:step="selectedEvaluationStep"
 						:ccid="ccid"
 						:evaluations="selectedEvaluationStep.evaluations"
+						:key="selectedTab"
 					/>
 				</div>
 				<iframe

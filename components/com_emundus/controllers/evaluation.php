@@ -1327,7 +1327,7 @@ class EmundusControllerEvaluation extends BaseController
 
 					if ($createAccess || $updateAccess)
 					{
-						// make sure there's a line for creating a new evaluation, if none exists yet for this user
+						// make sure there's a line for creating a new evaluation, if none exists yet for this user, unless step is not multiple evaluations
 						$hasUserEvaluation = false;
 						foreach ($stepWithEvaluations['evaluations'] as $eval) {
 							if ($eval['evaluator'] == $this->_user->id) {
@@ -1336,7 +1336,7 @@ class EmundusControllerEvaluation extends BaseController
 							}
 						}
 
-						if (!$hasUserEvaluation) {
+						if (!$hasUserEvaluation && ($step->getMultiple() || count($stepWithEvaluations['evaluations']) === 0)) {
 							$currentUserEvaluation = (object) [
 								'id' => 0,
 								'evaluator' => $this->_user->id,
@@ -1349,6 +1349,13 @@ class EmundusControllerEvaluation extends BaseController
 
 							// add at the beginning of evaluations array
 							array_unshift($stepWithEvaluations['evaluations'], $currentUserEvaluation);
+						}
+						else if (!$step->getMultiple())
+						{
+							// for non-multiple evaluation steps, ensure the current user's evaluation has the form URL
+							foreach ($stepWithEvaluations['evaluations'] as &$eval) {
+								$eval['url'] = str_replace('details', 'form', $eval['url'] ?? '');
+							}
 						}
 					}
 
