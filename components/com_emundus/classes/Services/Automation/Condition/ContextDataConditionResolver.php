@@ -5,6 +5,7 @@ namespace Tchooz\Services\Automation\Condition;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Services\Automation\EventDefinitionRegistry;
 
 class ContextDataConditionResolver implements ConditionTargetResolverInterface
@@ -40,7 +41,7 @@ class ContextDataConditionResolver implements ConditionTargetResolverInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$foundValue = null;
 

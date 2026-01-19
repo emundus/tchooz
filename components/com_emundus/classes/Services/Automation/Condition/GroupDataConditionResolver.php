@@ -10,6 +10,7 @@ use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_setup_groups', alias: 'esg')]
@@ -48,7 +49,7 @@ class GroupDataConditionResolver implements ConditionTargetResolverInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$foundValue = null;
 

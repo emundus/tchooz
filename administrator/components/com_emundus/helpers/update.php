@@ -3173,6 +3173,11 @@ class EmundusHelperUpdate
 							$row .= ', ' . $db->quote('');
 						}
 
+						if (isset($event['available']))
+						{
+							$row .= ', ' . $event['available'];
+						}
+
 						$rows[] = $row;
 					}
 				}
@@ -3181,6 +3186,12 @@ class EmundusHelperUpdate
 			if (!empty($rows))
 			{
 				$columns = ['label', 'published', 'category', 'description'];
+
+				if (isset($event['available']))
+				{
+					$columns[] = 'available';
+				}
+
 				$query->clear()
 					->insert('#__emundus_plugin_events')
 					->columns($columns)

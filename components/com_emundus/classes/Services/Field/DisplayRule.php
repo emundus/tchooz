@@ -1,7 +1,8 @@
 <?php
 
-namespace Tchooz\Entities\Fields;
+namespace Tchooz\Services\Field;
 
+use Tchooz\Entities\Fields\Field;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 
 class DisplayRule

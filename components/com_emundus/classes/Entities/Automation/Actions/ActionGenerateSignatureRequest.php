@@ -13,9 +13,7 @@ use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
-use Tchooz\Entities\Fields\DisplayRule;
 use Tchooz\Entities\Fields\FieldGroup;
-use Tchooz\Entities\Fields\FieldResearch;
 use Tchooz\Entities\Fields\NumericField;
 use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Fields\YesnoField;
@@ -24,13 +22,16 @@ use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\NumericSign\SignConnectorsEnum;
+use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
+use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
+use Tchooz\Services\Field\DisplayRule;
+use Tchooz\Services\Field\FieldResearch;
 use Tchooz\Services\Automation\ConditionRegistry;
 
 class ActionGenerateSignatureRequest extends ActionEntity
 {
-
 	public static function getIcon(): ?string
 	{
 		return 'signature';
@@ -264,7 +265,7 @@ class ActionGenerateSignatureRequest extends ActionEntity
 				(new ChoiceField('phone_element_alias', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PARAMETER_SIGNATURE_SIGNER_PHONE'), $aliasesOptions, false, false, $signersGroup))->setDisplayRules($displayAliasFieldRules)
 			];
 
-			$fieldsToFillGroup = new FieldGroup('fields_to_fill', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PARAMETER_SIGNATURE_FIELDS_TO_FILL'), true);
+			//$fieldsToFillGroup = new FieldGroup('fields_to_fill', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PARAMETER_SIGNATURE_FIELDS_TO_FILL'), true);
 			$this->parameters  = [
 				new ChoiceField('synchronizer', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PARAMETER_SIGNATURE_SYNCHRONIZER'), $this->getNumericSignSynchronizerOptions(), true),
 				new ChoiceField('attachment', Text::_('COM_EMUNDUS_AUTOMATION_ACTION_PARAMETER_SIGNATURE_ATTACHMENTS'), $this->getAttachmentFieldOptions(), true, false),
@@ -291,50 +292,9 @@ class ActionGenerateSignatureRequest extends ActionEntity
 		return $this->parameters;
 	}
 
-	/**
-	 * @return array<ChoiceFieldValue>
-	 */
-	public function getNumericSignSynchronizerOptions(): array
-	{
-		$options = [];
-
-		foreach (SignConnectorsEnum::cases() as $connector)
-		{
-			$options[] = new ChoiceFieldValue($connector->value, Text::_($connector->getLabel()));
-		}
-
-		return $options;
-	}
-
 	public static function getLabel(): string
 	{
 		return Text::_('COM_EMUNDUS_AUTOMATION_ACTION_GENERATE_SIGNATURE_REQUEST');
-	}
-
-	/**
-	 * @return array<ChoiceFieldValue>
-	 */
-	public function getAttachmentFieldOptions(): array
-	{
-		$options = [];
-
-		$db    = Factory::getContainer()->get('DatabaseDriver');
-		$query = $db->createQuery()
-			->select('id, value')
-			->from($db->quoteName('#__emundus_setup_attachments'))
-			->where($db->quoteName('published') . ' = 1');
-		$db->setQuery($query);
-		$results = $db->loadObjectList();
-
-		if (!empty($results))
-		{
-			foreach ($results as $result)
-			{
-				$options[] = new ChoiceFieldValue($result->id, $result->value);
-			}
-		}
-
-		return $options;
 	}
 
 	/**
@@ -419,5 +379,39 @@ class ActionGenerateSignatureRequest extends ActionEntity
 	public function getLabelForLog(): string
 	{
 		return '';
+	}
+
+	/**
+	 * @return array<ChoiceFieldValue>
+	 */
+	public function getNumericSignSynchronizerOptions(): array
+	{
+		$options = [];
+
+		foreach (SignConnectorsEnum::cases() as $connector)
+		{
+			$options[] = new ChoiceFieldValue($connector->value, Text::_($connector->getLabel()));
+		}
+
+		return $options;
+	}
+
+	/**
+	 * @return array<ChoiceFieldValue>
+	 */
+	public function getAttachmentFieldOptions(): array
+	{
+		$options = [];
+
+		$attachmentTypeRepository = new AttachmentTypeRepository();
+		$results = $attachmentTypeRepository->get(['published' => 1], 0);
+
+		if (!empty($results)) {
+			foreach ($results as $result) {
+				$options[] = new ChoiceFieldValue($result->getId(), $result->getName());
+			}
+		}
+
+		return $options;
 	}
 }
