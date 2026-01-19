@@ -746,6 +746,15 @@
       ],
       "multiple": false
     },
+		{
+			"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_OVER",
+			"name": "average_over",
+			"type": "number",
+			"placeholder": "",
+			"published": true,
+			"sysadmin_only": false,
+			"default": 20
+		},
     {
       "label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS",
       "name": "average_multiple_elements",
@@ -769,7 +778,16 @@
           "placeholder": "",
           "published": true,
           "sysadmin_only": false
-        }
+        },
+				{
+					"label": "COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_MAX",
+					"name": "average_multiple_max",
+					"type": "number",
+					"helptext": "",
+					"placeholder": "",
+					"published": true,
+					"sysadmin_only": false
+				}
       ]
     }
   ],
