@@ -114,7 +114,7 @@ export default {
 			return this.filters.filter((filter) => {
 				return (
 					filter.label.toLowerCase().includes(this.search.toLowerCase()) ||
-					filter.form_label.toLowerCase().includes(this.search.toLowerCase())
+					(filter.form_label && filter.form_label.toLowerCase().includes(this.search.toLowerCase()))
 				);
 			});
 		},

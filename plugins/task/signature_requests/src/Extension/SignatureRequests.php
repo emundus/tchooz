@@ -21,7 +21,7 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 	private RequestRepository $repository;
 
 	protected const TASKS_MAP = [
-		'yousign.api' => [
+		'numeric_sign.api' => [
 			'langConstPrefix' => 'PLG_TASK_SIGNATURE_REQUESTS',
 			'form'            => 'signatureRequestsForm',
 			'method'          => 'manageSignatureRequests',

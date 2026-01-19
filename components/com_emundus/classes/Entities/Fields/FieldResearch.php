@@ -12,7 +12,9 @@ class FieldResearch
 
 	private string $searchInputKey;
 
-	public function __construct(string $controllerName, string $methodName, string $searchInputKey = 'search_query')
+	private array $params = [];
+
+	public function __construct(string $controllerName, string $methodName, string $searchInputKey = 'search_query', array $params = [])
 	{
 		if (empty($controllerName) || empty($methodName))
 		{
@@ -22,6 +24,7 @@ class FieldResearch
 		$this->controllerName = $controllerName;
 		$this->methodName = $methodName;
 		$this->searchInputKey = $searchInputKey;
+		$this->params = $params;
 	}
 
 	public function getControllerName(): string { return $this->controllerName; }
@@ -30,12 +33,15 @@ class FieldResearch
 
 	public function getSearchInputKey(): string { return $this->searchInputKey; }
 
+	public function getParams(): array { return $this->params; }
+
 	public function toSchema(): array
 	{
 		return [
 			'controller' => $this->getControllerName(),
 			'method' => $this->getMethodName(),
 			'input' => $this->getSearchInputKey(),
+			'params' => $this->getParams(),
 		];
 	}
 }

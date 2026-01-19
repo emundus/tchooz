@@ -186,6 +186,7 @@ export default {
 							:key="field.param + '-' + rowIndex + '-' + field.reload"
 							:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 							:parameter-object="row.parameters[index]"
+							:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 							@valueUpdated="onParameterValueUpdated(row.parameters[index], group, rowIndex)"
 						/>
 					</div>
@@ -205,6 +206,7 @@ export default {
 						:key="field.param + '-' + field.reload"
 						:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 						:parameter-object="field"
+						:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 						@valueUpdated="onParameterValueUpdated(field, group)"
 					/>
 				</div>

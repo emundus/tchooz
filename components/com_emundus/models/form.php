@@ -20,9 +20,12 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Response;
+use Tchooz\Traits\TraitResponse;
 
 class EmundusModelForm extends JModelList
 {
+	use TraitResponse;
 
 	private $app;
 	private $db;
