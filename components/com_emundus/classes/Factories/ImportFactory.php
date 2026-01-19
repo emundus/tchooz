@@ -19,6 +19,7 @@ use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Tchooz\Factories\Language\LanguageFactory;
 
 class ImportFactory
 {
@@ -327,13 +328,7 @@ class ImportFactory
 		
 		try
 		{
-			if(!class_exists('EmundusModelFormbuilder'))
-			{
-				require_once(JPATH_BASE . '/components/com_emundus/models/formbuilder.php');
-			}
-			$m_formbuilder  = new EmundusModelFormbuilder();
-
-			$campaign_label = $m_formbuilder->replaceAccents($campaign['label']);
+			$campaign_label = LanguageFactory::replaceAccents($campaign['label']);
 			$campaign_label = preg_replace('/\s+|-/', '_', $campaign_label);
 
 			$spreadsheet = new Spreadsheet();
@@ -447,12 +442,9 @@ class ImportFactory
 	{
 		try
 		{
-			require_once(JPATH_BASE . '/components/com_emundus/models/formbuilder.php');
-			$m_formbuilder = new EmundusModelFormbuilder();
-
 			$dataSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet);
 
-			$sheet_name = $m_formbuilder->replaceAccents($label);
+			$sheet_name = LanguageFactory::replaceAccents($label);
 			$newSheet      = $spreadsheet->addSheet($dataSheet);
 			$newSheetIndex = $newSheet->getParent()->getIndex($newSheet);
 			$spreadsheet->setActiveSheetIndex($newSheetIndex);

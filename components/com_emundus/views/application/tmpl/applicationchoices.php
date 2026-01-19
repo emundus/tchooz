@@ -2,20 +2,14 @@
 
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
+$data = LayoutFactory::prepareVueData();
 
 $datas = [
 	'fnum' => $this->fnum
 ];
-
-require_once(JPATH_SITE . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
 ?>
 <div class="row">
     <div class="panel panel-default widget em-container-cart em-container-form">
@@ -37,11 +31,11 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
 <div class="tw-p-6">
     <div id="em-component-vue"
          component="Application/ApplicationChoices"
-         shortLang="<?= $short_lang ?>"
-         currentLanguage="<?= $current_lang ?>"
+         shortLang="<?= $data['short_lang'] ?>"
+         currentLanguage="<?= $data['current_lang'] ?>"
          data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
     >
     </div>
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

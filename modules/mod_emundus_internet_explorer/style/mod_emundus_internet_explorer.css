@@ -1,9 +1,0 @@
-.alerte-message-container a {
-    font-size: inherit;
-    color: white;
-    text-decoration: underline;
-}
-
-.alerte-message-container a:hover {
-    color: var(--blue-500);
-}

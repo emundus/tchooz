@@ -19,6 +19,7 @@ if ($just_logged && !$only_applicant) {
             justify-content: center;
             height: 300px;
             padding: 20px 0 20px 0;
+            display: flex;
         }
 
         .em-switch-profile-img img {

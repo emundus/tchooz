@@ -12,13 +12,15 @@
 defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Component\ComponentHelper;
-use Joomla\CMS\Language\Text;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
-$app = Factory::getApplication();
+$app  = Factory::getApplication();
 $user = $app->getIdentity();
 
-if (empty($user->id)) {
+if (empty($user->id))
+{
     $app->redirect(JRoute::_('index.php?option=com_users&view=login', false));
 }
 
@@ -208,6 +210,9 @@ Text::script('COM_EMUNDUS_ONBOARD_TYPE_FIRSTNAME');
 Text::script('COM_EMUNDUS_ONBOARD_TYPE_EMAIL');
 Text::script('COM_EMUNDUS_ONBOARD_TYPE_YESNO');
 Text::script('COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER');
+Text::script('COM_EMUNDUS_ONBOARD_TYPE_CALC');
+Text::script('COM_EMUNDUS_ONBOARD_TYPE_ACTION');
+Text::script('COM_EMUNDUS_ONBOARD_TYPE_EMUNDUS_PHONENUMBER');
 Text::script('COM_EMUNDUS_FORM_BUILDER_PUBLISH');
 Text::script('COM_EMUNDUS_FORM_BUILDER_SECTION');
 Text::script('COM_EMUNDUS_FORM_BUILDER_SECTIONS');
@@ -439,6 +444,9 @@ Text::script('COM_EMUNDUS_FORM_BUILDER_AVERAGE_ELEMENTS_MAX');
 Text::script('COM_EMUNDUS_FORM_BUILDER_AVERAGE_OVER');
 Text::script('COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION');
 Text::script('COM_EMUNDUS_FORM_BUILDER_AVERAGE_USED_AS_TOTAL_FOR_EXTRACTION_HELP');
+Text::script('COM_EMUNDUS_ONBOARD_BUILDER_DROPDOWN_OPTIONS');
+Text::script('COM_EMUNDUS_ONBOARD_BUILDER_DROPDOWN_OPTIONS_VALUE');
+Text::script('COM_EMUNDUS_ONBOARD_BUILDER_DROPDOWN_OPTIONS_LABEL');
 ## END ##
 
 ## TRANSLATION ##
@@ -589,64 +597,54 @@ Text::script('COM_EMUNDUS_ONBOARD_ALIASES_EXPORTS_EXCEL');
 Text::script('COM_EMUNDUS_ONBOARD_TYPE_APPLICATIONCHOICES');
 Text::script('COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_UPDATE_STATUS');
 Text::script('COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_ELEMENT_PREVIEW');
+Text::script('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION');
+
+Text::script('COM_EMUNDUS_CLOSE');
 
 $vue = 'em-formBuilder-vue';
-if ($this->eval != 0) {
-	$vue = 'em-evaluationBuilder-vue';
-}
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = JLanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else {
-	$many_languages = '0';
-	$default_lang   = $current_lang;
+if ($this->eval != 0)
+{
+    $vue = 'em-evaluationBuilder-vue';
 }
 
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($user->id);
 $component = $app->input->get('evaluation') ? 'evaluationbuilder' : 'formBuilder';
 
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
 $mode = $app->input->get('mode', '');
 
 $settings_menu_alias = '';
-$menus = $app->getMenu();
-$items = $menus->getItems('component', 'com_emundus');
-foreach ($items as $item) {
-	if ($item->query['view'] == 'settings') {
-		$settings_menu_alias = $item->alias;
-		break;
-	}
+$menus               = $app->getMenu();
+$items               = $menus->getItems('component', 'com_emundus');
+foreach ($items as $item)
+{
+    if ($item->query['view'] == 'settings')
+    {
+        $settings_menu_alias = $item->alias;
+        break;
+    }
 }
 
 $condition_builder = ComponentHelper::getParams('com_emundus')->get('condition_builder', 0);
 
 JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
+
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
      component="Formbuilder"
-     prid="<?= JFactory::getApplication()->input->get('prid') ?>"
-     index="<?= JFactory::getApplication()->input->get('index') ?>"
-     cid="<?= JFactory::getApplication()->input->get('cid') ?>"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
-     manyLanguages="<?= $many_languages ?>"
-     defaultLang="<?= $default_lang ?>"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
+     prid="<?= Factory::getApplication()->input->get('prid') ?>"
+     index="<?= Factory::getApplication()->input->get('index') ?>"
+     cid="<?= Factory::getApplication()->input->get('cid') ?>"
+     shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>"
+     defaultLang="<?= $data['default_lang'] ?>"
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
      settingsMenuAlias="<?= $settings_menu_alias ?>"
      enableConditionBuilder="<?= $condition_builder ?>"
     <?php if (!empty($mode)) : ?>
         mode="<?= $mode ?>"
-	<?php endif; ?>
+    <?php endif; ?>
 ></div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

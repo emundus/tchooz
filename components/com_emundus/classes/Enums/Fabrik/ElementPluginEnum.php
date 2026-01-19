@@ -49,6 +49,13 @@ enum ElementPluginEnum: string
 	case DISPLAY = 'display';
 	case COLORPICKER = 'emundus_colorpicker';
 	case CAPTCHA = 'captcha';
+	case AVERAGE = 'average';
+	case ACTION = 'action';
+	case APPLICATION_CHOICES = 'applicationchoices';
+	case GEOLOCATION = 'emundus_geolocalisation';
+
+	// DEPRECATED
+	case REFERENT = 'emundusreferent';
 
 	public static function tryFromString(?string $plugin): ?self
 	{
@@ -94,6 +101,13 @@ enum ElementPluginEnum: string
 			self::PANEL, self::DISPLAY => 'COM_EMUNDUS_ONBOARD_TYPE_PANEL',
 			self::COLORPICKER => 'COM_EMUNDUS_ONBOARD_TYPE_COLORPICKER',
 			self::CAPTCHA => 'COM_EMUNDUS_ONBOARD_TYPE_CAPTCHA',
+			self::AVERAGE => 'COM_EMUNDUS_FABRIK_ELEMENT_AVERAGE',
+			self::ACTION => 'COM_EMUNDUS_FABRIK_ELEMENT_ACTION',
+			self::APPLICATION_CHOICES => 'COM_EMUNDUS_ONBOARD_TYPE_APPLICATIONCHOICES',
+			self::GEOLOCATION => 'COM_EMUNDUS_ONBOARD_TYPE_GEOLOCATION',
+
+			// DEPRECATED
+			self::REFERENT => 'COM_EMUNDUS_ONBOARD_TYPE_REFERENT',
 
 			default => 'COM_EMUNDUS_UNKNOWN',
 		};

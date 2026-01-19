@@ -88,6 +88,8 @@ class FabrikElementEntity
 		string            $tableJoin = '',
 		string            $groupParams = '',
 		string            $alias = '',
+		string            $default = '',
+		int               $eval = 0
 	)
 	{
 		$this->id             = $id;
@@ -102,6 +104,8 @@ class FabrikElementEntity
 		$this->tableJoin      = $tableJoin;
 		$this->groupParamsRaw = $groupParams;
 		$this->alias          = $alias;
+		$this->default        = $default;
+		$this->eval           = $eval;
 	}
 
 	public function getId(): int

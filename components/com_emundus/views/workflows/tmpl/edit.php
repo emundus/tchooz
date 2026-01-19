@@ -3,9 +3,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Language\LanguageHelper;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('SAVE');
 Text::script('BACK');
@@ -70,32 +69,14 @@ Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_ORDERING');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_CONFIRMED');
 Text::script('COM_EMUNDUS_WORKFLOW_STEP_CAN_BE_SENT');
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1)
-{
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else
-{
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
+$data = LayoutFactory::prepareVueData();
 
 ?>
 
 <div id="em-component-vue" component="Workflows/WorkflowEdit"
      workflowId="<?= $this->current_workflow_id; ?>"
-     shortLang="<?= $short_lang ?>"
-     currentLanguage="<?= $current_lang ?>"
+     shortLang="<?= $data['short_lang'] ?>"
+     currentLanguage="<?= $data['current_lang'] ?>"
 >
 </div>
 

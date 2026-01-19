@@ -7,31 +7,11 @@ use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Mapping\MappingEntity;
+use Tchooz\Factories\LayoutFactory;
 use Tchooz\Factories\Mapping\MappingFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Automation\ConditionRegistry;use Tchooz\Services\Mapping\MappingTransformationsRegistry;
-
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-
-if (count($languages) > 1)
-{
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else
-{
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
 
 $app = Factory::getApplication();
 $mappingId = $app->getInput()->getInt('id', 0);
@@ -62,20 +42,16 @@ $dataResolvers = array_filter($conditionsRegistry->getAvailableConditionSchemas(
 });
 $dataResolvers = array_values($dataResolvers);
 
+$defaultData = LayoutFactory::prepareVueData();
 $datas = [
-	'mapping' 		     => $mapping->serialize(),
-	'fields'             => array_map(function ($field) {
-		assert($field instanceof Field);
-		return $field->toSchema();
-	}, $mappingFactory->getFormFields()),
+    'mapping' 		     => $mapping->serialize(),
+    'fields'             => array_map(function ($field) {
+        assert($field instanceof Field);
+        return $field->toSchema();
+    }, $mappingFactory->getFormFields()),
     'dataResolvers'      => $dataResolvers,
     'transformers'       => $mappingTransformationsRegistry->getTransformersSchemas(),
-	'shortLang'          => $short_lang,
-	'currentLanguage'    => $current_lang,
-	'defaultLang'        => $default_lang,
-	'manyLanguages'      => $many_languages,
-	'coordinatorAccess'  => $coordinator_access,
-	'sysadminAccess'     => $sysadmin_access,
+    ...$defaultData
 ];
 
 Text::script('COM_EMUNDUS_MAPPINGS');

@@ -37,6 +37,7 @@ use Joomla\Event\SubscriberInterface;
 use Joomla\Filesystem\Path;
 use Joomla\Registry\Registry;
 use Joomla\String\StringHelper;
+use Tchooz\Factories\Language\DbLanguageFactory;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -507,7 +508,8 @@ final class LanguageFilter extends CMSPlugin implements SubscriberInterface
         $language = $app->getLanguage();
 
         if ($language->getTag() !== $lang_code) {
-            $language_new = $this->languageFactory->createLanguage($lang_code, (bool) $app->get('debug_lang'));
+	        $container = Factory::getContainer();
+            $language_new = $container->get(DbLanguageFactory::class)->createLanguage($lang_code, (bool) $app->get('debug_lang'));
 
             foreach ($language->getPaths() as $extension => $files) {
                 if (str_starts_with($extension, 'plg_system')) {

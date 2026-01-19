@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @package     scripts
  * @subpackage
@@ -8,6 +9,7 @@
  */
 
 namespace scripts;
+
 
 use Joomla\CMS\Component\ComponentHelper;
 use EmundusHelperUpdate;
@@ -241,6 +243,43 @@ class Release2_13_0Installer extends ReleaseInstaller
 				];
 
 				\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'default_synthesis_excel', $excelDefaultSynthesis);
+			}
+
+			$this->tasks[] = \EmundusHelperUpdate::installExtension('plg_task_synctranslations', 'synctranslations', null, 'plugin', 1, 'task');
+
+			// Create scheduler task for gantry mode
+			$execution_rules = [
+				'rule-type'     => 'interval-days',
+				'interval-days' => '1',
+				'exec-day'      => date('d'),
+				'exec-time'     => '23:30',
+			];
+			$cron_rules      = [
+				'type' => 'interval',
+				'exp'  => 'P1D',
+			];
+
+			$this->tasks[] = \EmundusHelperUpdate::createSchedulerTask('Sync translations between database and files', 'plg_task_synctranslations', $execution_rules, $cron_rules);
+
+			// Check if indexes exist and create them if not
+			$queryStr = 'show index from jos_emundus_setup_languages where key_name = "jos_emundus_setup_languages_reference_id_index";';
+			$this->db->setQuery($queryStr);
+			$index1 = $this->db->loadObject();
+			if(empty($index1))
+			{
+				$queryStr = 'create index jos_emundus_setup_languages_reference_id_index on jos_emundus_setup_languages (reference_id);';
+				$this->db->setQuery($queryStr);
+				$this->tasks[] = $this->db->execute();
+			}
+
+			$queryStr = 'show index from jos_emundus_setup_languages where key_name = "jos_emundus_setup_languages_created_by_index";';
+			$this->db->setQuery($queryStr);
+			$index2 = $this->db->loadObject();
+			if(empty($index2))
+			{
+				$queryStr = 'create index jos_emundus_setup_languages_created_by_index on jos_emundus_setup_languages (created_by);';
+				$this->db->setQuery($queryStr);
+				$this->tasks[] = $this->db->execute();
 			}
 
 			$this->installDocaposte();

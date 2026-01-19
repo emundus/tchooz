@@ -15,22 +15,27 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 jimport('joomla.database.table');
 
+use Joomla\CMS\Application\CMSApplicationInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\CMS\MVC\Model\ListModel;
+use Joomla\Database\DatabaseDriver;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Response;
 use Tchooz\Traits\TraitResponse;
 
-class EmundusModelForm extends JModelList
+class EmundusModelForm extends ListModel
 {
 	use TraitResponse;
 
-	private $app;
-	private $db;
+	private CMSApplicationInterface $app;
 
-	public function __construct($config = array())
+	private DatabaseDriver $db;
+
+	public function __construct(array $config = [])
 	{
 		parent::__construct($config);
 
@@ -122,22 +127,12 @@ class EmundusModelForm extends JModelList
 			$data['datas'] = $this->db->loadObjectList();
 
 			if (!empty($data['datas'])) {
-				$path_to_file   = basename(__FILE__) . '/../language/overrides/';
-				$path_to_files  = array();
-				$Content_Folder = array();
-				$languages      = JLanguageHelper::getLanguages();
+				$languages      = LanguageHelper::getLanguages();
 				if (!empty($languages)) {
-					foreach ($languages as $language) {
-						$path_to_files[$language->sef]  = $path_to_file . $language->lang_code . '.override.ini';
-						$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-					}
-
-					require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
-					$formbuilder = new EmundusModelFormbuilder;
 					foreach ($data['datas'] as $key => $form) {
 						$label = [];
 						foreach ($languages as $language) {
-							$label[$language->sef] = $formbuilder->getTranslation($form->label, $language->lang_code) ?: $form->label;
+							$label[$language->sef] = LanguageFactory::getTranslation($form->label, $language->lang_code) ?: $form->label;
 						}
 						$data['datas'][$key]->label = $label;
 					}
@@ -242,24 +237,14 @@ class EmundusModelForm extends JModelList
 			}
 
 			if (!empty($evaluation_forms)) {
-				require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
-				$m_form_builder = new EmundusModelFormbuilder();
-
-				$path_to_file   = basename(__FILE__) . '/../language/overrides/';
-				$path_to_files  = array();
-				$Content_Folder = array();
-				$languages      = JLanguageHelper::getLanguages();
+				$languages      = LanguageHelper::getLanguages();
 				$current_language = $this->app->getLanguage()->getTag();
 				$current_language = substr($current_language, 0, 2);
-				foreach ($languages as $language) {
-					$path_to_files[$language->sef]  = $path_to_file . $language->lang_code . '.override.ini';
-					$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-				}
 
 				foreach ($evaluation_forms as $evaluation_form) {
 					$label = [];
 					foreach ($languages as $language) {
-						$label[$language->sef] = $m_form_builder->getTranslation($evaluation_form->label, $language->lang_code) ?: $evaluation_form->label;
+						$label[$language->sef] = LanguageFactory::getTranslation($evaluation_form->label, $language->lang_code) ?: $evaluation_form->label;
 					}
 					$evaluation_form->label = $label;
 					$evaluation_form->programs_count = count($this->getProgramsByForm($evaluation_form->id));
@@ -896,23 +881,6 @@ class EmundusModelForm extends JModelList
 
 			$query = $this->db->getQuery(true);
 
-			// Prepare languages
-			$path_to_file   = basename(__FILE__) . '/../language/overrides/';
-			$path_to_files  = array();
-			$Content_Folder = array();
-
-			$languages = JLanguageHelper::getLanguages();
-			foreach ($languages as $language) {
-				$path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-
-				if (file_exists($path_to_files[$language->sef])) {
-					$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
-				}
-				else {
-					$Content_Folder[$language->sef] = '';
-				}
-			}
-
 			require_once(JPATH_SITE . '/components/com_emundus/models/formbuilder.php');
 			$formbuilder = new EmundusModelFormbuilder();
 
@@ -1046,6 +1014,7 @@ class EmundusModelForm extends JModelList
 										$label = array();
 										$intro = array();
 
+										$languages = LanguageHelper::getLanguages();
 										foreach ($languages as $language) {
 											# Fabrik has a functionnality that adds <p> tags around the intro text, we need to remove them
 											$stripped_intro = strip_tags($form->intro);
@@ -1053,13 +1022,13 @@ class EmundusModelForm extends JModelList
 												$form->intro = $stripped_intro;
 											}
 
-											$label[$language->sef] = $formbuilder->getTranslation($form->label, $language->lang_code);
-											$intro[$language->sef] = $formbuilder->getTranslation($form->intro, $language->lang_code);
+											$label[$language->sef] = LanguageFactory::getTranslation($form->label, $language->lang_code);
+											$intro[$language->sef] = LanguageFactory::getTranslation($form->intro, $language->lang_code);
 
-											if ($label[$language->sef] == '') {
-												$label[$language->sef] = $form->label;
+											if (empty($label[$language->sef])) {
+												$label[$language->sef] = '';
 											}
-											if (!isset($intro[$language->sef])) {
+											if (empty($intro[$language->sef])) {
 												$intro[$language->sef] = '';
 											}
 										}
@@ -1098,6 +1067,8 @@ class EmundusModelForm extends JModelList
 				Log::add('component/com_emundus/models/form | Error when duplicate forms : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 			}
 		}
+
+		LanguageFactory::cleanCache();
 
 		return $duplicated;
 	}
@@ -1367,6 +1338,8 @@ class EmundusModelForm extends JModelList
 			$this->addChecklistMenu($newprofile);
 			//
 
+			LanguageFactory::cleanCache();
+
 			return $newprofile;
 		}
 		catch (Exception $e) {
@@ -1408,6 +1381,8 @@ class EmundusModelForm extends JModelList
 			Log::add('component/com_emundus/models/form | Error when create a form for evaluation form', Log::WARNING, 'com_emundus.error');
 			throw new Exception('Error when create a form for evaluation form');
 		}
+
+		LanguageFactory::cleanCache();
 
 		return $new_form_id;
 	}
@@ -2223,12 +2198,15 @@ class EmundusModelForm extends JModelList
 				$form->id = $link[sizeof($link) - 1];
 
 				$query->clear()
-					->select('label')
+					->select('label, intro')
 					->from($this->db->quoteName('#__fabrik_forms'))
 					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($form->id));
 				$this->db->setQuery($query);
-				$form->label = $formbuilder->getJText($this->db->loadResult());
-				print_r($forms->label);
+				$formObject = $this->db->loadObject();
+
+				$form->label = Text::_($formObject->label);
+				$form->intro = Text::_(strip_tags($formObject->intro));
+				$form->intro = strip_tags($form->intro);
 			}
 
 			return $forms;
@@ -2289,7 +2267,7 @@ class EmundusModelForm extends JModelList
 				if ($params['repeat_group_show_first'] == -1) {
 					array_splice($groups, $key, 1);
 				}
-				$group->label = $formbuilder->getJText($group->label);
+				$group->label = Text::_($group->label);
 			}
 
 			return $groups;
@@ -3305,12 +3283,6 @@ class EmundusModelForm extends JModelList
 		{
 			$languages = LanguageHelper::getLanguages();
 
-			if(!class_exists('EmundusModelFormbuilder'))
-			{
-				require_once JPATH_SITE . '/components/com_emundus/models/formbuilder.php';
-			}
-			$m_formbuilder = new EmundusModelFormbuilder;
-
 			// Get profile form id
 			$query = $this->db->getQuery(true);
 
@@ -3349,7 +3321,7 @@ class EmundusModelForm extends JModelList
 					$element->label     = [];
 					foreach ($languages as $language)
 					{
-						$element->label[$language->sef] = $m_formbuilder->getTranslation($element->label_tag, $language->lang_code);
+						$element->label[$language->sef] = LanguageFactory::getTranslation($element->label_tag, $language->lang_code);
 					}
 					$element->params = $params;
 				}

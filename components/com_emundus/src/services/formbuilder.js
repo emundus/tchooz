@@ -281,8 +281,9 @@ export default {
 			};
 		}
 	},
-	async updateGroupParams(group_id, params, lang = null) {
+	async updateGroupParams(label, group_id, params, lang = null) {
 		const formData = new FormData();
+		formData.append('label', label);
 		formData.append('group_id', group_id);
 		formData.append('params', JSON.stringify(params));
 		if (lang != null) {
@@ -291,6 +292,34 @@ export default {
 
 		try {
 			return fetch('/index.php?option=com_emundus&controller=formbuilder&task=updategroupparams', {
+				method: 'POST',
+				body: formData,
+			})
+				.then((response) => response.json())
+				.then((response) => {
+					return response;
+				})
+				.catch((error) => {
+					throw error;
+				});
+		} catch (e) {
+			return {
+				status: false,
+				message: e.message,
+			};
+		}
+	},
+	async updatePageParams(label, intro, page_id, lang = null) {
+		const formData = new FormData();
+		formData.append('label', label);
+		formData.append('intro', intro);
+		formData.append('page_id', page_id);
+		if (lang != null) {
+			formData.append('lang', lang);
+		}
+
+		try {
+			return fetch('/index.php?option=com_emundus&controller=formbuilder&task=updatepageparams', {
 				method: 'POST',
 				body: formData,
 			})

@@ -205,6 +205,32 @@ class FabrikRepository
 		return $groups;
 	}
 
+	public function getGroupsOrdering(int $formId): array
+	{
+		$groupOrder = [];
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select($this->db->quoteName('fg.id'))
+				->from($this->db->quoteName('#__fabrik_groups', 'fg'))
+				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'ff') . ' ON ' . $this->db->quoteName('ff.group_id') . ' = ' . $this->db->quoteName('fg.id'))
+				->where($this->db->quoteName('ff.form_id') . ' = ' . $this->db->quote($formId))
+				->where($this->db->quoteName('fg.published') . ' = 1')
+				->order('ff.ordering');
+
+			$this->db->setQuery($query);
+			$groupOrder = $this->db->loadColumn();
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return $groupOrder;
+	}
+
 	/**
 	 * @param   int  $groupId
 	 *
@@ -363,9 +389,12 @@ class FabrikRepository
 		}
 
 		$query->where($this->db->quoteName('fe.published') . ' = 1')
-			->where($this->db->quoteName('fe.hidden') . ' = 0')
-			// TODO: Move this to filter parameter but with a custom operator
-			->where($this->db->quoteName('fe.plugin') . ' NOT IN (' . $this->db->quote('panel') . ', ' . $this->db->quote('display') . ', ' . $this->db->quote('emundus_fileupload') . ')');
+			->where($this->db->quoteName('fe.hidden') . ' = 0');
+
+		if (in_array('exluded_elements', array_keys($filters)))
+		{
+			$query->where($this->db->quoteName('fe.plugin') . ' NOT IN (' . implode(',', array_map([$this->db, 'quote'], $filters['exluded_elements'])) . ')');
+		}
 	}
 
 	public function getElementAlias(int $id): string
@@ -441,6 +470,30 @@ class FabrikRepository
 		}
 
 		return $deleted;
+	}
+
+	public function getMenuItemIdByFormId(int $formId): ?int
+	{
+		$menuItemId = null;
+
+		$query = $this->db->getQuery(true);
+
+		try
+		{
+			$query->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_fabrik&view=form&formid=' . $formId))
+				->where($this->db->quoteName('published') . ' = 1');
+
+			$this->db->setQuery($query);
+			$menuItemId = (int) $this->db->loadResult();
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Failed to get menu item id by fabrik form id ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+		}
+
+		return !empty($menuItemId) ? $menuItemId : null;
 	}
 
 	public function setFactory(FabrikFactory $factory = null): void

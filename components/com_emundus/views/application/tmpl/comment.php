@@ -6,32 +6,19 @@
  * Time: 11:24
  */
 
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
+use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 defined('_JEXEC') or die('Restricted access');
 
+$data = LayoutFactory::prepareVueData();
+
 $app = Factory::getApplication();
 $app->getSession()->set('application_layout', 'comment');
-$current_lang = $app->getLanguage();
-$short_lang = substr($current_lang->getTag(), 0 , 2);
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
-$em_config = JComponentHelper::getParams('com_emundus');
-
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-
-$languages = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-	$many_languages = '0';
-	$default_lang = $current_lang;
-}
+$em_config = ComponentHelper::getParams('com_emundus');
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
 $m_users = new EmundusModelUsers();
@@ -56,7 +43,7 @@ $user_comment_access = [
         <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
             <h3 class="panel-title">
                 <span class="material-symbols-outlined">comment</span>
-				<?= JText::_('COM_EMUNDUS_COMMENTS') ?>
+				<?= Text::_('COM_EMUNDUS_COMMENTS') ?>
             </h3>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
@@ -76,11 +63,11 @@ $user_comment_access = [
      is_applicant="<?= $is_applicant; ?>"
      applicants_allowed_to_comment="<?= ($em_config->get('allow_applicant_to_comment', false) ? 1 : 0); ?>"
      current_form="<?= 0 ?>"
-     currentLanguage="<?= $current_lang->getTag() ?>"
-     shortLang="<?= $short_lang ?>"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
-     manyLanguages="<?= $many_languages ?>"
+     currentLanguage="<?= $data['current_lang'] ?>"
+     shortLang="<?= $data['short_lang'] ?>"
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>"
      border="0"
 >
 </div>

@@ -12,8 +12,8 @@ defined('_JEXEC') or die('Restricted Access');
 
 
 use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('COM_EMUNDUS_ONBOARD_REGISTRANTS_EXPORTS_EMARGEMENT');
 Text::script('COM_EMUNDUS_ONBOARD_REGISTRANTS_EXPORTS_EXCEL');
@@ -93,32 +93,10 @@ Text::script('COM_EMUNDUS_ONBOARD_REGISTRANT_CANCEL_EXPORT');
 Text::script('COM_EMUNDUS_REGISTRANT_NO_PERMISSION');
 Text::script('COM_EMUNDUS_ONBOARD_ERROR');
 
-require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
+$data = LayoutFactory::prepareVueData();
 
-$lang         = Factory::getApplication()->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else {
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-
-$user               = Factory::getApplication()->getIdentity();
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::asAdministratorAccessLevel($user->id);
-
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-
-$format           = 'hours';
-$config           = Factory::getApplication()->getConfig();
+$format       = 'hours';
+$config       = Factory::getApplication()->getConfig();
 $timezoneName = $config->get('offset', 'UTC');
 
 $dateTZ = new DateTimeZone($timezoneName);
@@ -126,28 +104,28 @@ $date   = new DateTime('now', $dateTZ);
 $offset = $dateTZ->getOffset($date);
 if (!empty($offset))
 {
-	if ($format == 'hours')
-	{
-		$offset = $offset / 3600;
-	}
+    if ($format == 'hours')
+    {
+        $offset = $offset / 3600;
+    }
     elseif ($format == 'minutes')
-	{
-		$offset = $offset / 60;
-	}
+    {
+        $offset = $offset / 60;
+    }
 }
 ?>
 
-<style link="media/com_emundus_vue/app_emundus.css?<?php echo $hash ?>"></style>
+<style link="media/com_emundus_vue/app_emundus.css?<?php echo $data['hash'] ?>"></style>
 
 <div id="em-component-vue"
      component="Events/Registrants"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
-     defaultLang="<?= $default_lang ?>"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
-     manyLanguages="<?= $many_languages ?>"
+     shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
+     defaultLang="<?= $data['default_lang'] ?>"
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>"
      offset="<?= $offset; ?>"
      timezone="<?= $timezoneName; ?>"
 ></div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

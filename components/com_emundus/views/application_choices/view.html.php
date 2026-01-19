@@ -17,9 +17,6 @@ use Joomla\CMS\User\User;
 
 class EmundusViewApplication_choices extends HtmlView
 {
-
-	protected string $hash = '';
-
 	protected ?User $user = null;
 
 	protected ?string $fnum = '';
@@ -30,12 +27,6 @@ class EmundusViewApplication_choices extends HtmlView
 	{
 		$app = Factory::getApplication();
 		$this->user = $this->getCurrentUser();
-
-		if(!class_exists('EmundusHelperCache'))
-		{
-			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-		}
-		$this->hash = EmundusHelperCache::getCurrentGitHash();
 
 		$this->fnum = $app->input->getString('fnum', '');
 		if(!empty($this->fnum))

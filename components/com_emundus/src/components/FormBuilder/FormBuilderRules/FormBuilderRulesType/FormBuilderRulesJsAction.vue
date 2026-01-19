@@ -200,7 +200,7 @@ export default {
 	},
 	methods: {
 		labelTranslate({ label, name, group_id, elements, plugin, default: isDefault }) {
-			let labelTranslated = label ? label[useGlobalStore().getShortLang] : '';
+			let labelTranslated = label ? label : '';
 
 			// If labelTranslated is empty, we try to find an other language
 			if (labelTranslated === '') {
@@ -216,17 +216,12 @@ export default {
 				return labelTranslated;
 			} else if (group_id && elements) {
 				let groupElements = Object.values(elements);
-				let element = groupElements.find(
-					(element) => !element.hidden && element.label && element.label[useGlobalStore().getShortLang] !== '',
-				);
-				return this.translate('COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT').replace(
-					'%s',
-					element.label[useGlobalStore().getShortLang],
-				);
+				let element = groupElements.find((element) => !element.hidden && element.label && element.label !== '');
+				return this.translate('COM_EMUNDUS_FORM_BUILDER_RULES_GROUP_WITH_ELEMENT').replace('%s', element.label);
 			} else if (plugin === 'panel' && isDefault) {
 				let text = isDefault;
 				if (typeof text === 'object') {
-					text = isDefault[useGlobalStore().getShortLang] ?? Object.values(isDefault)[0] ?? '';
+					text = isDefault ?? Object.values(isDefault)[0] ?? '';
 				}
 
 				if (text && typeof text === 'string') {
@@ -262,21 +257,13 @@ export default {
 							}
 						});
 					} else {
-						formBuilderService.getJTEXTA(val.params.sub_options.sub_labels).then((response) => {
-							if (response) {
-								val.params.sub_options.sub_labels.forEach((label, index) => {
-									val.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-								});
-							}
+						Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
+							let new_option = {
+								primary_key: option,
+								value: val.params.sub_options.sub_labels[key],
+							};
 
-							Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
-								let new_option = {
-									primary_key: option,
-									value: val.params.sub_options.sub_labels[key],
-								};
-
-								this.options.push(new_option);
-							});
+							this.options.push(new_option);
 						});
 					}
 				}

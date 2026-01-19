@@ -58,12 +58,14 @@ class FabrikFormEntity
 	public function __construct(
 		int $id,
 		string $label,
+		string $intro,
 		\DateTime $created,
 		User $createdBy
 	)
 	{
 		$this->id        = $id;
 		$this->label     = $label;
+		$this->intro     = $intro;
 		$this->created   = $created;
 		$this->createdBy = $createdBy;
 	}

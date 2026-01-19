@@ -1,42 +1,38 @@
 <template>
 	<div
-		class="form-builder-page-section-element"
+		class="form-builder-page-section-element tw-my-3 tw-flex tw-cursor-pointer tw-flex-col tw-items-start tw-justify-start tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-3 hover:tw-border-profile-full hover:tw-bg-neutral-300"
 		:id="'element_' + element.id"
 		v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
 		:class="{
 			unpublished: !element.publish || element.hidden,
-			'properties-active': propertiesOpened === element.id,
 		}"
 	>
 		<div class="tw-mb-2 tw-flex tw-w-full tw-items-start tw-justify-between">
-			<div class="tw-w-11/12">
-				<label
-					class="fabrikLabel control-label tw-mb-0 tw-flex tw-w-full tw-items-center"
-					@click="triggerElementProperties"
-				>
+			<div class="tw-w-11/12" @click="triggerElementProperties">
+				<label class="fabrikLabel control-label tw-mb-0 tw-flex tw-w-full tw-cursor-pointer tw-items-center">
 					<span
 						v-if="element.FRequire"
 						class="material-symbols-outlined tw-mr-0 !tw-text-xs tw-text-red-600"
 						style="top: -5px; position: relative"
 						>emergency</span
 					>
-					<input
-						v-if="element.label_value && element.labelsAbove != 2"
+					<span
+						v-if="element.label_tag"
 						:ref="'element-label-' + element.id"
 						:id="'element-label-' + element.id"
-						class="element-title editable-data tw-ml-2"
-						:name="'element-label-' + element.id"
-						type="text"
-						v-model="element.label[shortDefaultLang]"
-						:placeholder="translate('COM_EMUNDUS_ONBOARD_TYPE_' + element.plugin.toUpperCase())"
-						@focusout="updateLabel"
-						@keyup.enter="updateLabelKeyup"
-					/>
+						class="element-title tw-ml-2"
+						:class="element.label === '' ? 'tw-italic tw-text-neutral-500' : ''"
+						>{{
+							element.label !== ''
+								? element.label
+								: translate('COM_EMUNDUS_ONBOARD_TYPE_' + element.plugin.toUpperCase())
+						}}</span
+					>
 				</label>
 				<span
 					class="fabrikElementTip fabrikElementTipAbove"
-					v-if="element.params.rollover && element.params.rollover[shortDefaultLang]"
-					>{{ element.params.rollover[shortDefaultLang].replace(/(<([^>]+)>)/gi, '') }}</span
+					v-if="element.params.rollover && element.params.rollover"
+					>{{ element.params.rollover.replace(/(<([^>]+)>)/gi, '') }}</span
 				>
 			</div>
 			<div id="element-action-icons" class="tw-mt-2 tw-flex tw-items-end">
@@ -53,44 +49,78 @@
 			</div>
 		</div>
 		<div :class="'element-field fabrikElement' + element.plugin" @click="triggerElementProperties">
-			<form-builder-element-options
-				v-if="['radiobutton', 'checkbox'].includes(element.plugin) || (displayOptions && element.plugin === 'dropdown')"
-				:element="element"
-				:type="element.plugin == 'radiobutton' ? 'radio' : element.plugin"
-				@update-element="$emit('update-element')"
-			></form-builder-element-options>
 			<form-builder-element-wysiwig
-				v-else-if="element.plugin === 'display'"
+				v-if="element.plugin === 'display'"
 				:element="element"
 				type="display"
 				@update-element="$emit('update-element')"
 			></form-builder-element-wysiwig>
+
 			<form-builder-element-phone-number
 				v-else-if="element.plugin === 'emundus_phonenumber'"
 				type="phonenumber"
 				:element="element"
 			></form-builder-element-phone-number>
+
 			<form-builder-element-currency
 				v-else-if="element.plugin === 'currency'"
 				type="currency"
 				:element="element"
 			></form-builder-element-currency>
+
 			<form-builder-element-geolocation
 				v-else-if="element.plugin === 'emundus_geolocalisation'"
 				type="geolocation"
 				:element="element"
 			></form-builder-element-geolocation>
+
 			<form-builder-element-booking
 				v-else-if="element.plugin === 'booking'"
 				type="booking"
 				:element="element"
 			></form-builder-element-booking>
+
 			<form-builder-element-application-choices
 				v-else-if="element.plugin === 'applicationchoices'"
 				type="applicationchoices"
 				:element="element"
 			></form-builder-element-application-choices>
-			<div v-else v-html="element.element" class="fabrikElement"></div>
+
+			<form-builder-element-radio v-else-if="element.plugin === 'radiobutton'" type="radio" :element="element" />
+
+			<form-builder-element-checkbox v-else-if="element.plugin === 'checkbox'" type="checkbox" :element="element" />
+
+			<form-builder-element-databasejoin
+				v-else-if="element.plugin === 'databasejoin'"
+				type="databasejoin"
+				:element="element"
+			/>
+
+			<form-builder-element-dropdown v-else-if="element.plugin === 'dropdown'" type="dropdown" :element="element" />
+
+			<form-builder-element-textarea v-else-if="element.plugin === 'textarea'" type="textarea" :element="element" />
+
+			<form-builder-element-date
+				v-else-if="element.plugin === 'date' || element.plugin === 'jdate'"
+				type="date"
+				:element="element"
+			/>
+
+			<form-builder-element-birthday v-else-if="element.plugin === 'birthday'" type="birthday" :element="element" />
+
+			<form-builder-element-yesno v-else-if="element.plugin === 'yesno'" type="yesno" :element="element" />
+
+			<form-builder-element-panel v-else-if="element.plugin === 'panel'" type="panel" :element="element" />
+
+			<form-builder-element-action v-else-if="element.plugin === 'action'" type="action" :element="element" />
+
+			<div v-else-if="element.plugin === 'average' || element.plugin === 'calc'">
+				<span>0</span>
+			</div>
+
+			<!-- TODO: Manage rating, file and colorpicker elements preview -->
+
+			<form-builder-element-field v-else type="field" :element="element" />
 		</div>
 	</div>
 </template>
@@ -108,9 +138,31 @@ import FormBuilderElementGeolocation from '@/components/FormBuilder/FormBuilderS
 import { useGlobalStore } from '@/stores/global.js';
 import FormBuilderElementBooking from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementBooking.vue';
 import FormBuilderElementApplicationChoices from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementApplicationChoices.vue';
+import FormBuilderElementField from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementField.vue';
+import FormBuilderElementRadio from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementRadio.vue';
+import FormBuilderElementDatabasejoin from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementDatabasejoin.vue';
+import FormBuilderElementTextarea from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementTextarea.vue';
+import FormBuilderElementCheckbox from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementCheckbox.vue';
+import FormBuilderElementDropdown from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementDropdown.vue';
+import FormBuilderElementDate from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementDate.vue';
+import FormBuilderElementBirthday from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementBirthday.vue';
+import FormBuilderElementYesno from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementYesno.vue';
+import FormBuilderElementPanel from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPanel.vue';
+import FormBuilderElementAction from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementAction.vue';
 
 export default {
 	components: {
+		FormBuilderElementAction,
+		FormBuilderElementPanel,
+		FormBuilderElementYesno,
+		FormBuilderElementBirthday,
+		FormBuilderElementDate,
+		FormBuilderElementDropdown,
+		FormBuilderElementCheckbox,
+		FormBuilderElementTextarea,
+		FormBuilderElementDatabasejoin,
+		FormBuilderElementRadio,
+		FormBuilderElementField,
 		FormBuilderElementBooking,
 		FormBuilderElementGeolocation,
 		FormBuilderElementCurrency,
@@ -138,37 +190,6 @@ export default {
 		};
 	},
 	methods: {
-		updateLabel() {
-			this.element.label[this.shortDefaultLang] = this.$refs['element-label-' + this.element.id].value
-				.trim()
-				.replace(/[\r\n]/gm, '');
-
-			formBuilderService
-				.updateTranslation(
-					{
-						value: this.element.id,
-						key: 'element',
-					},
-					this.element.label_tag,
-					this.element.label,
-				)
-				.then((response) => {
-					if (response.data.status) {
-						this.element.label_tag = response.data.data;
-						this.updateLastSave();
-					} else {
-						Swal.fire({
-							title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-							text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-							icon: 'error',
-							cancelButtonText: this.translate('OK'),
-						});
-					}
-				});
-		},
-		updateLabelKeyup() {
-			document.activeElement.blur();
-		},
 		updateElement() {
 			formBuilderService.updateParams(this.element).then((response) => {
 				if (response.data.status) {
@@ -239,35 +260,13 @@ export default {
 		sysadmin: function () {
 			return parseInt(this.globalStore.hasSysadminAccess);
 		},
-		displayOptions: function () {
-			return (
-				this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement !== null &&
-				this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement.id ==
-					this.element.id
-			);
-		},
-		propertiesOpened: function () {
-			if (this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement !== null) {
-				return this.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$parent.$data.selectedElement.id;
-			} else {
-				return 0;
-			}
-		},
 	},
 };
 </script>
 
 <style lang="scss">
 .form-builder-page-section-element {
-	display: flex;
-	flex-direction: column;
-	align-items: flex-start;
-	justify-content: flex-start;
-	margin: 12px 0;
-	padding: 12px;
-	border-radius: 4px;
 	transition: 0.3s all;
-	border: 2px solid transparent;
 
 	.element-title {
 		border: none !important;
@@ -281,12 +280,20 @@ export default {
 		}
 	}
 
+	.form-check .form-check-input {
+		float: unset;
+		margin-left: unset;
+		height: auto;
+	}
+
 	.element-field.fabrikElementbirthday {
 		table {
 			border: none;
 			width: auto;
+
 			tr td {
 				padding: 0;
+
 				select {
 					min-width: 90px;
 				}
@@ -301,9 +308,11 @@ export default {
 			gap: 8px;
 			width: fit-content;
 		}
+
 		input {
 			display: none;
 		}
+
 		input[value='0'] + label {
 			align-items: center;
 			-webkit-box-shadow: none;
@@ -322,6 +331,7 @@ export default {
 			color: var(--neutral-0);
 			height: var(--em-form-height);
 		}
+
 		input[value='1'] + label {
 			align-items: center;
 			-webkit-box-shadow: none;
@@ -383,6 +393,7 @@ export default {
 
 	&.properties-active {
 		border: 2px solid #1c6ef2 !important;
+		background-color: var(--neutral-300);
 	}
 
 	&:hover {
@@ -618,12 +629,18 @@ export default {
 		.fabrikElementContent {
 			margin-left: var(--em-spacing-3);
 			line-height: 24px;
+
 			p:after {
 				content: '';
 				display: inline-block;
 				width: 0px;
 			}
 		}
+	}
+
+	.form-control:disabled,
+	.form-control[readonly] {
+		background-color: unset !important;
 	}
 }
 </style>

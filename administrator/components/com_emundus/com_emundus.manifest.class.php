@@ -18,6 +18,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Emundus\Administrator\Attributes\PostflightAttribute;
 use Joomla\Database\DatabaseInterface;
+use Tchooz\Services\Language\DbLanguage;
 use Tchooz\Traits\TraitVersion;
 
 class Com_EmundusInstallerScript
@@ -188,9 +189,23 @@ class Com_EmundusInstallerScript
 			}
 		}
 
-		if (!EmundusHelperUpdate::languageBaseToFile()['status'])
+		$cachingMethod = Factory::getApplication()->get('caching');
+		if($cachingMethod === 1)
 		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour des fichiers de langue.', 'error');
+			// Update to 2
+			$options['caching'] = 2;
+			EmundusHelperUpdate::updateConfigurationFile($options);
+		}
+
+		$dbLanguage = new DbLanguage();
+		if (!$dbLanguage->filesToDatabase())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour de la base de données des langue.', 'error');
+		}
+
+		if (!$dbLanguage->repairOrphans())
+		{
+			EmundusHelperUpdate::displayMessage('Erreur lors de la réparation des entrées orphelines de la base de données des langues.', 'error');
 		}
 
 		if (!EmundusHelperUpdate::clearJoomlaCache())

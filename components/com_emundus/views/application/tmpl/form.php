@@ -10,34 +10,22 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Factories\LayoutFactory;
+
+$data = LayoutFactory::prepareVueData();
 
 $app = Factory::getApplication();
 $app->getSession()->set('application_layout', 'form');
 
-$defaultpid = $this->defaultpid;
-$user = $this->userid;
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($this->_user->id);
+$defaultpid     = $this->defaultpid;
+$user           = $this->userid;
 $emundus_config = ComponentHelper::getParams('com_emundus');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-
-$current_lang = $app->getLanguage();
-$short_lang = substr($current_lang->getTag(), 0 , 2);
-$languages = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-	$many_languages = '0';
-	$default_lang = $current_lang;
-}
 ?>
 
 <style type="text/css">
-    .group-result { color: #16afe1 !important; }
+    .group-result {
+        color: #16afe1 !important;
+    }
 
     .profile_tab p {
         overflow: hidden;
@@ -65,12 +53,12 @@ if (count($languages) > 1) {
 
 <div class="row">
     <div class="panel panel-default widget em-container-form">
-		<?php if ($this->header == 1) : ?>
+        <?php if ($this->header == 1) : ?>
             <div class="panel-heading em-container-form-heading !tw-bg-profile-full">
                 <h3 class="panel-title">
                     <span class="material-symbols-outlined">list_alt</span>
-					<?php echo Text::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM').' - '.$this->formsProgress." % ".Text::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
-					<?php if (EmundusHelperAccess::asAccessAction(8, 'c', $app->getIdentity()->id, $this->fnum)):?>
+                    <?php echo Text::_('COM_EMUNDUS_APPLICATION_APPLICATION_FORM') . ' - ' . $this->formsProgress . " % " . Text::_("COM_EMUNDUS_APPLICATION_COMPLETED"); ?>
+                    <?php if (EmundusHelperAccess::asAccessAction(8, 'c', $app->getIdentity()->id, $this->fnum)): ?>
                         <button id="download-all-phase-pdf"
                                 class="em-mt-8 em-ml-8"
                                 data-fnum="<?= $this->fnum ?>"
@@ -80,14 +68,16 @@ if (count($languages) > 1) {
                         >
                             <span class="material-symbols-outlined" data-fnum="<?= $this->fnum ?>">file_download</span>
                         </button>
-					<?php endif;?>
+                    <?php endif; ?>
                 </h3>
                 <div class="btn-group pull-right">
-                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span></button>
-                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span></button>
+                    <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
+                    </button>
+                    <button id="em-next-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_forward</span>
+                    </button>
                 </div>
             </div>
-		<?php endif; ?>
+        <?php endif; ?>
         <div id="application-form-container" class="tw-relative tw-flex tw-flex-row tw-bg-neutral-100">
             <div id="application-form-container-content" class="tw-w-full">
 
@@ -113,48 +103,53 @@ if (count($languages) > 1) {
                 <?php endif; ?>
 
                 <div class="panel-body Marginpanel-body em-container-form-body !tw-bg-neutral-100">
-                    <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>"/>
+                    <input type="hidden" id="dpid_hidden" value="<?php echo $defaultpid->pid ?>" />
 
                     <div id="steps-timeline"
                          component="Workflows/WorkflowStepsTimeline"
                          class="com_emundus_vue"
                          data="<?= htmlspecialchars(json_encode([
-                             'user' => $this->_user->id,
-                                'fnum' => $this->fnum,
-                                'currentLanguage' => $current_lang->getTag(),
-                                'shortLang' => $short_lang,
-                                'coordinatorAccess' => $coordinator_access,
-                                'sysadminAccess' => $sysadmin_access,
-                                'manyLanguages' => $many_languages,
+                             'user'              => $this->_user->id,
+                             'fnum'              => $this->fnum,
+                             'currentLanguage'   => $data['current_lang'],
+                             'shortLang'         => $data['short_lang'],
+                             'coordinatorAccess' => $data['coordinator_access'],
+                             'sysadminAccess'    => $data['sysadmin_access'],
+                             'manyLanguages'     => $data['many_languages'],
                          ]), ENT_QUOTES, 'UTF-8'); ?>"
                     >
                     </div>
 
                     <div class="active content" id="show_profile">
-						<?php echo $this->forms; ?>
+                        <?php echo $this->forms; ?>
                     </div>
 
                     <input type="hidden" id="user_hidden" value="<?php echo $user ?>">
                     <input type="hidden" id="fnum_hidden" value="<?php echo $this->fnum ?>">
                 </div>
             </div>
-			<?php
-			if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) && $this->euser->applicant != 1 && $this->context === 'default'): ?>
-				<?php
-				$user_comment_access = [
-					'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum),
-					'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $this->fnum),
-					'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum),
-					'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum),
-				];
-				?>
-                <aside id="aside-comment-section" class="tw-fixed tw-right-0 tw-bg-[#f8f8f8] tw-shadow tw-ease-out closed">
+            <?php
+            if (EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum) && $this->euser->applicant != 1 && $this->context === 'default'): ?>
+                <?php
+                $user_comment_access = [
+                    'c' => EmundusHelperAccess::asAccessAction(10, 'c', $this->_user->id, $this->fnum),
+                    'r' => EmundusHelperAccess::asAccessAction(10, 'r', $this->_user->id, $this->fnum),
+                    'u' => EmundusHelperAccess::asAccessAction(10, 'u', $this->_user->id, $this->fnum),
+                    'd' => EmundusHelperAccess::asAccessAction(10, 'd', $this->_user->id, $this->fnum),
+                ];
+                ?>
+                <aside id="aside-comment-section"
+                       class="tw-fixed tw-right-0 tw-bg-[#f8f8f8] tw-shadow tw-ease-out closed">
                     <!-- Comments -->
                     <div class="flex flex-row relative">
-                        <span class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">
+                        <span
+                            class="open-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300"
+                            onclick="openCommentAside()">
                             comment
                         </span>
-                        <span class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300" onclick="openCommentAside()">
+                        <span
+                            class="close-comment material-symbols-outlined tw-cursor-pointer tw-absolute tw-top-28 tw-bg-profile-full tw-rounded-l-lg tw-text-neutral-300"
+                            onclick="openCommentAside()">
                             close
                         </span>
                         <div id="em-component-vue"
@@ -167,17 +162,17 @@ if (count($languages) > 1) {
                              is_applicant="<?= 0 ?>"
                              current_form="<?= 0 ?>"
                              applicants_allowed_to_comment="<?= $emundus_config->get('allow_applicant_to_comment', false) ? 1 : 0 ?>"
-                             currentLanguage="<?= $current_lang->getTag() ?>"
-                             shortLang="<?= $short_lang ?>"
-                             coordinatorAccess="<?= $coordinator_access ?>"
-                             sysadminAccess="<?= $sysadmin_access ?>"
-                             manyLanguages="<?= $many_languages ?>"
+                             currentLanguage="<?= $data['current_lang'] ?>"
+                             shortLang="<?= $data['short_lang'] ?>"
+                             coordinatorAccess="<?= $data['coordinator_access'] ?>"
+                             sysadminAccess="<?= $data['sysadmin_access'] ?>"
+                             manyLanguages="<?= $data['many_languages'] ?>"
                         >
                         </div>
                     </div>
-                    <script src="media/com_emundus/js/comment.js?<?php echo $hash ?>"></script>
+                    <script src="media/com_emundus/js/comment.js?<?php echo $data['hash'] ?>"></script>
                 </aside>
-			<?php endif; ?>
+            <?php endif; ?>
         </div>
     </div>
 </div>
@@ -185,20 +180,20 @@ if (count($languages) > 1) {
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>
 
 <script>
-    $(".chzn-select").chosen();
-    var dpid = $('#dpid_hidden').attr('value');
+    $('.chzn-select').chosen()
+    var dpid = $('#dpid_hidden').attr('value')
 
-    if($('#select_profile option').length == 1) {
-        $('#em-switch-profiles').remove();
+    if ($('#select_profile option').length == 1) {
+        $('#em-switch-profiles').remove()
     }
 
-    document.getElementById('download-all-phase-pdf').addEventListener('click', function (e) {
+    document.getElementById('download-all-phase-pdf').addEventListener('click', function(e) {
         if (typeof export_pdf === 'function') {
-            export_pdf(JSON.stringify({0: "<?= $this->fnum ?>"}), null, 'forms');
+            export_pdf(JSON.stringify({ 0: "<?= $this->fnum ?>" }), null, 'forms')
         } else {
-            console.error('Function export_pdf does not exist');
+            console.error('Function export_pdf does not exist')
         }
-    });
+    })
 </script>
 
 <style>
@@ -237,6 +232,7 @@ if (count($languages) > 1) {
         .open-comment {
             display: none;
         }
+
         .close-comment {
             display: block;
         }
@@ -247,6 +243,7 @@ if (count($languages) > 1) {
             .open-comment {
                 display: block;
             }
+
             .close-comment {
                 display: none;
             }

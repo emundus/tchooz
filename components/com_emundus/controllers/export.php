@@ -236,6 +236,7 @@ class EmundusControllerExport extends BaseController
 					// TODO: Improve readability of the code below
 					if ($type === 'applicant')
 					{
+						$workflows = array_filter($workflows);
 						foreach ($workflows as $workflow)
 						{
 							foreach ($workflow->getSteps() as $step)
@@ -273,6 +274,7 @@ class EmundusControllerExport extends BaseController
 					}
 					elseif ($type === 'management')
 					{
+						$workflows = array_filter($workflows);
 						foreach ($workflows as $workflow)
 						{
 							foreach ($workflow->getSteps() as $step)
@@ -1071,7 +1073,7 @@ class EmundusControllerExport extends BaseController
 					}
 				}
 			}
-			
+
 			$attachmentRepository = new AttachmentTypeRepository(Factory::getContainer()->get('DatabaseDriver'));
 			$attachments = json_decode($constraints->attachments);
 			foreach ($attachments as $attachmentId)
