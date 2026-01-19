@@ -7,6 +7,7 @@ module.exports = {
         "./templates/g5_helium/html/**/*.{html,js,php}",
         "./modules/**/src/**/*.{html,js,php,vue}",
         "./modules/**/tmpl/*.{html,js,php}",
+        "!./**/node_modules/**",
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./plugins/fabrik_list/js/scripts/*.{html,js}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",

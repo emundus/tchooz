@@ -551,6 +551,32 @@ class EmundusModelUsers extends ListModel
 		return $this->db->loadObjectList();
 	}
 
+	/**
+	 * @return array<object>
+	 */
+	public function getNonApplicantProfiles()
+	{
+		$profiles = [];
+
+		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
+
+		try {
+			$query->select('*')
+				->from($db->quoteName('#__emundus_setup_profiles'))
+				->where($db->quoteName('published') . ' = 0')
+				->andWhere($db->quoteName('id') . ' != 1')
+				->andWhere($db->quoteName('menutype') . ' != ' . $db->quote('adminmenu'));
+
+			$db->setQuery($query);
+			$profiles = $db->loadObjectList();
+		} catch (Exception $e){
+			Log::add('component/com_emundus/models/users | Error when try to get non applicant profiles : ' . preg_replace("/[\r\n]/"," ",$query->__toString().' -> '.$e->getMessage()), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $profiles;
+	}
+
 	public function getUsersProfiles()
 	{
 		$user = JFactory::getUser();
@@ -1407,7 +1433,7 @@ class EmundusModelUsers extends ListModel
 			}
 		}
 		catch (Exception $e) {
-			$this->app->enqueueMessage(JText::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
+			$this->app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_CAN_NOT_SAVE_USER') . '<br />' . $e->getMessage(), 'error');
 			Log::add('Failed to create user : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 	}
@@ -1964,9 +1990,14 @@ class EmundusModelUsers extends ListModel
 		return $ids;
 	}
 
-	public function affectToGroups($users, $groups)
+	public function affectToGroups($users, $groups, $currentUser = null)
 	{
-		$affected = 0;
+		$affected = false;
+
+		if (empty($currentUser))
+		{
+			$currentUser = $this->user;
+		}
 
 		if (!empty($users) && !empty($groups)) {
 
@@ -1997,7 +2028,7 @@ class EmundusModelUsers extends ListModel
 								'onAfterAddUserToGroup',
 								[
 									'context' => new EventContextEntity(
-										$this->user,
+										$currentUser,
 										[],
 										$userIds,
 										[
@@ -2011,6 +2042,7 @@ class EmundusModelUsers extends ListModel
 					}
 				}
 				catch (Exception $e) {
+					dd($query->__toString(), $e->getMessage());
 					Log::add('Error on affecting users to groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 					$affected = false;
 				}
@@ -2018,6 +2050,28 @@ class EmundusModelUsers extends ListModel
 		}
 
 		return $affected;
+	}
+
+	public function removeFromGroups($users, $groups): bool
+	{
+		$removed = false;
+
+		try {
+			if (!empty($users) && !empty($groups)) {
+				$query = $this->db->getQuery(true);
+
+				$query->delete($this->db->quoteName('#__emundus_groups'))
+					->where('user_id IN (' . implode(',', $users) . ')')
+					->where('group_id IN (' . implode(',', $groups) . ')');
+				$this->db->setQuery($query);
+				$removed = $this->db->execute();
+			}
+		}
+		catch (Exception $e) {
+			Log::add('Error on removing users from groups: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $removed;
 	}
 
 	public function affectToJoomlaGroups($users, $groups)
@@ -2515,21 +2569,20 @@ class EmundusModelUsers extends ListModel
 	public function addProfileToUser($uid, $pid)
 	{
 		$result = true;
-		$config = $this->app->getConfig();
 
-		$timezone = new DateTimeZone($config->get('offset'));
+		$config = $this->app->getConfig();
+		$timezone = new DateTimeZone($config->get('offset', 'Europe/Paris'));
 		$now      = Factory::getDate()->setTimezone($timezone);
 
 		try
 		{
-			$query = $this->db->getQuery(true);
-
+			$query = $this->db->createQuery();
 			$query->select($this->db->quoteName('id'))
 				->from($this->db->quoteName('#__emundus_users_profiles'))
 				->where($this->db->quoteName('user_id') . ' = ' . $uid . ' AND ' . $this->db->quoteName('profile_id') . ' = ' . $pid);
 			$this->db->setQuery($query);
 
-			if(empty($this->db->loadResult()))
+			if (empty($this->db->loadResult()))
 			{
 				$columns = array('date_time', 'user_id', 'profile_id');
 				$values  = array($now, $uid, $pid);
@@ -2547,7 +2600,6 @@ class EmundusModelUsers extends ListModel
 				// Associate Emundus default groups
 				$this->addProfileGroupsToUser($uid, $pid);
 				//
-
 			}
 		}
 		catch (Exception $e)
@@ -2555,7 +2607,6 @@ class EmundusModelUsers extends ListModel
 			Log::add('Error on adding profile to user: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 			$result = false;
 		}
-
 
 		return $result;
 	}
@@ -2735,7 +2786,13 @@ class EmundusModelUsers extends ListModel
 		return $checked;
 	}
 
-	public function addProfileAclToUser($uid, $pid)
+	/**
+	 * @param $uid
+	 * @param $pid
+	 *
+	 * @return bool
+	 */
+	public function addProfileAclToUser($uid, $pid): bool
 	{
 		$added = true;
 		$query = $this->db->getQuery(true);
@@ -2792,13 +2849,19 @@ class EmundusModelUsers extends ListModel
 		return $added;
 	}
 
-	public function addProfileGroupsToUser($uid, $pid)
+	/**
+	 * @param $uid
+	 * @param $pid
+	 *
+	 * @return bool
+	 */
+	public function addProfileGroupsToUser($uid, $pid): bool
 	{
 		$added = true;
-		$query = $this->db->getQuery(true);
 
 		try
 		{
+			$query = $this->db->createQuery();
 			$query->clear()
 				->select($this->db->quoteName('emundus_groups'))
 				->from($this->db->quoteName('#__emundus_setup_profiles_repeat_emundus_groups'))
@@ -2806,7 +2869,8 @@ class EmundusModelUsers extends ListModel
 			$this->db->setQuery($query);
 			$emundus_groups = $this->db->loadColumn();
 
-			foreach ($emundus_groups as $emundusGroup) {
+			foreach ($emundus_groups as $emundusGroup)
+			{
 				$query->clear()
 					->select($this->db->quoteName('id'))
 					->from($this->db->quoteName('#__emundus_setup_groups'))

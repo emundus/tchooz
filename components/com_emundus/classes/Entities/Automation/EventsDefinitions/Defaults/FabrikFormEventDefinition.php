@@ -27,12 +27,12 @@ class FabrikFormEventDefinition extends EventDefinition
 		$options = [];
 
 		$h_cache = new EmundusHelperCache();
-		$forms = $h_cache->get('fabrik_forms_list_with_label');
+		$forms   = $h_cache->get('fabrik_forms_list_with_label');
 
 		if (empty($forms))
 		{
-			$formIds = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
-			$db = Factory::getContainer()->get('DatabaseDriver');
+			$formIds   = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->createQuery();
 			$query->select('id, label')
 				->from($db->quoteName('#__fabrik_forms'))
@@ -57,6 +57,10 @@ class FabrikFormEventDefinition extends EventDefinition
 				if (!empty($menuTitle))
 				{
 					$form->label = Text::_($form->label) . ' (' . Text::_($menuTitle) . ')';
+				}
+				else
+				{
+					$form->label = Text::_($form->label);
 				}
 			}
 

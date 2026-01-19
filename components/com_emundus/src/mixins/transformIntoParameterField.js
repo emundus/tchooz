@@ -80,6 +80,13 @@ export default {
 						parameter.type = 'select';
 					}
 					break;
+				case 'radio':
+					parameter.type = 'radiobutton';
+					parameter.options = field.choices.map((choice) => ({
+						value: choice.value,
+						label: choice.label,
+					}));
+					break;
 				case 'date':
 					parameter.type = 'datetime';
 					break;

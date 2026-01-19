@@ -1,10 +1,23 @@
 <?php
 
+/**
+ * @package     scripts
+ * @subpackage
+ *
+ * @copyright   A copyright
+ * @license     A "Slug" license name e.g. GPL2
+ */
+
 namespace scripts;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
+
+use Tchooz\Entities\Addons\AddonEntity;
+use Tchooz\Entities\Addons\AddonValue;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\Workflow\StepTypeRepository;
 
 class Release2_13_0Installer extends ReleaseInstaller
 {
@@ -123,6 +136,16 @@ class Release2_13_0Installer extends ReleaseInstaller
 			// add event onUserActivation
 			$this->tasks[] = \EmundusHelperUpdate::addCustomEvents([['label' => 'onAfterUserActivation', 'published' => 1, 'available' => 1, 'category' => 'User']])['status'];
 
+			$eventNames = ['onAfterSaveEmundusUser'];
+			$query->clear()
+				->update($this->db->quoteName('jos_emundus_plugin_events'))
+				->set($this->db->quoteName('available') . ' = 1')
+				->set($this->db->quoteName('description') . ' = ' . $this->db->quote(''))
+				->where($this->db->quoteName('label') . ' IN (' . implode(',', $this->db->quote($eventNames)) . ')');
+
+			$this->db->setQuery($query);
+			$this->tasks[] = $this->db->execute();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -130,7 +153,6 @@ class Release2_13_0Installer extends ReleaseInstaller
 			$result['status']  = false;
 			$result['message'] = $e->getMessage();
 		}
-
 
 		return $result;
 	}
