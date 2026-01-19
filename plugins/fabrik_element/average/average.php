@@ -34,14 +34,14 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 	 */
 	public function render($data, $repeatCounter = 0): string
 	{
-		$name = $this->getHTMLName($repeatCounter);
-		$layout = $this->getLayout('form');
-		$displayData = new stdClass;
+		$name              = $this->getHTMLName($repeatCounter);
+		$layout            = $this->getLayout('form');
+		$displayData       = new stdClass;
 		$displayData->name = $name;
 		$displayData->type = 'text';
-		$displayData->id = $this->getHTMLId($repeatCounter);
+		$displayData->id   = $this->getHTMLId($repeatCounter);
 
-		$value = $this->getValue($data, $repeatCounter);
+		$value              = $this->getValue($data, $repeatCounter);
 		$displayData->value = !empty($value) ? $value : "0.00";
 
 		return $layout->render($displayData);
@@ -57,14 +57,43 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 	public function elementJavascript($repeatCounter): array
 	{
 		$params = $this->getParams();
-		$id = $this->getHTMLId($repeatCounter);
-		$opts = $this->getElementJSOptions($repeatCounter);
+		$id     = $this->getHTMLId($repeatCounter);
+		$opts   = $this->getElementJSOptions($repeatCounter);
 
-		$elements_to_observe = [];
-
+		$opts->average_over = (int) $params->get('average_over', 20);
 		$opts->elements_to_observe = $this->getObservedFields();
 
 		return array('FbAverage', $id, $opts);
+	}
+
+	private function getObservedFields(): array
+	{
+		$fields = [];
+
+		$params                    = $this->getParams();
+		$average_multiple_elements = $params->get('average_multiple_elements');
+		$average_multiple_elements = json_decode($average_multiple_elements);
+
+		foreach ($average_multiple_elements->average_multiple_element as $key => $element)
+		{
+			$repeat = false;
+
+			if (preg_match('/_repeat___(.*)_[0-9]+$/', $element))
+			{
+				// remove last digit
+				$element = preg_replace('/_[0-9]+$/', '', $element);
+				$repeat  = true;
+			}
+
+			$fields[] = [
+				'element' => $element,
+				'repeat'  => $repeat,
+				'weight'  => $average_multiple_elements->average_multiple_weight[$key],
+				'max'     => $average_multiple_elements->average_multiple_max[$key]
+			];
+		}
+
+		return $fields;
 	}
 
 	public function onStoreRow(&$data, $repeatCounter = 0): bool
@@ -78,20 +107,20 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 
 		if ($this->encryptMe())
 		{
-			$shortName = $element->name;
-			$listModel = $this->getListModel();
+			$shortName            = $element->name;
+			$listModel            = $this->getListModel();
 			$listModel->encrypt[] = $shortName;
 		}
 
-		$formModel = $this->getFormModel();
+		$formModel            = $this->getFormModel();
 		$data[$element->name] = $this->getAverage($formModel->formDataWithTableName, $repeatCounter);
 
 		return true;
 	}
 
 	/**
-	 * @param $data
-	 * @param $repeatCounter
+	 * @param   array  $data
+	 * @param   int    $repeatCounter
 	 *
 	 * @return float
 	 */
@@ -99,66 +128,77 @@ class PlgFabrik_ElementAverage extends PlgFabrik_Element
 	{
 		$average = 0.00;
 
+		$params         = $this->getParams();
+		$averageOver    = $params->get('average_over', 20);
 		$observedFields = $this->getObservedFields();
 
+		$fieldValues = [];
 		if (!empty($observedFields))
 		{
-			$total_weight = 0;
-			$sum = 0;
-
 			foreach ($observedFields as $field)
 			{
 				$element = $field['element'];
-				$weight = $field['weight'];
-				$total_weight += $weight;
 
-				$value   = ArrayHelper::getValue($data, $element . '_raw');
+				$value = ArrayHelper::getValue($data, $element . '_raw');
 				if ($this->getGroup()->canRepeat())
 				{
 					$value = ArrayHelper::getValue($value, $repeatCounter);
 				}
 
-				if (is_array($value) && !empty($value))
+				if (is_array($value))
 				{
 					$value = array_sum($value) / count($value);
 				}
 
-				$sum += $value * $weight;
+				$fieldValues[] = [
+					'value'  => (float) $value,
+					'max'    => (float) $field['max'],
+					'weight' => (float) $field['weight']
+				];
 			}
 
-			$average = $sum / $total_weight;
-			$average = round($average, 2);
+			$average = self::calculateAverage($fieldValues, $averageOver);
 		}
 
 		return $average;
 	}
 
-	private function getObservedFields(): array
+	/**
+	 * @param   array  $fields
+	 * @param   int    $averageOver
+	 *
+	 * @return float
+	 */
+	public static function calculateAverage(array $fields, int $averageOver): float
 	{
-		$fields = [];
+		$average = 0.00;
 
-		$params = $this->getParams();
-		$average_multiple_elements = $params->get('average_multiple_elements');
-		$average_multiple_elements = json_decode($average_multiple_elements);
-
-		foreach ($average_multiple_elements->average_multiple_element as $key => $element)
+		$totalWeights = 0;
+		foreach ($fields as $field)
 		{
-			$repeat = false;
-
-			if (preg_match('/_repeat___(.*)_[0-9]+$/', $element))
+			if ($field['max'] > 0)
 			{
-				// remove last digit
-				$element = preg_replace('/_[0-9]+$/', '', $element);
-				$repeat = true;
+				if ($field['value'] > $field['max'])
+				{
+					$field['value'] = $field['max'];
+				}
+
+				$fieldValueNormalized = ($field['value'] / $field['max']) * $averageOver;
+			}
+			else
+			{
+				$fieldValueNormalized = $field['value'];
 			}
 
-			$fields[] = [
-				'element' => $element,
-				'repeat' => $repeat,
-				'weight' => $average_multiple_elements->average_multiple_weight[$key]
-			];
+			$average      += $fieldValueNormalized * $field['weight'];
+			$totalWeights += $field['weight'];
 		}
 
-		return $fields;
+		if ($totalWeights > 0)
+		{
+			$average = $average / $totalWeights;
+		}
+
+		return $average;
 	}
 }
