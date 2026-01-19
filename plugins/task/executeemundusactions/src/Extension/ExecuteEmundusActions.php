@@ -50,6 +50,7 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 		$failed = false;
 		$repository = new TaskRepository();
 		$tasks = $repository->getPendingTasks();
+
 		Log::addLogger(['text_file' => 'task_executeemundusactions.log.php'], Log::ALL, ['task_executeemundusactions']);
 
 		if (!empty($tasks))
@@ -76,6 +77,10 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 			}
 		} else {
 			Log::add('No pending tasks found to execute.', Log::DEBUG, 'task_executeemundusactions');
+
+			// No tasks to process, consider it a success and check health of in progress tasks to ensure no tasks are stuck
+			// check only here, because when there are tasks to process, they are prioritized
+			$repository->checkInProgressTasksHealth();
 		}
 
 		return $failed ? TaskStatus::INVALID_EXIT : TaskStatus::OK;
