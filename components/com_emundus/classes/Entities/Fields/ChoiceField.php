@@ -24,11 +24,11 @@ class ChoiceField extends Field
 	) {
 		parent::__construct($name, $label, $required, $group);
 
-		if (!empty($choices)) {
-			if (!$multiple && $addSelectOption) {
-				$this->addChoice(new ChoiceFieldValue(null, Text::_('TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION')));
-			}
+		if (!$multiple && $addSelectOption) {
+			$this->addChoice(new ChoiceFieldValue(null, Text::_('TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION')));
+		}
 
+		if (!empty($choices)) {
 			foreach ($choices as $choice) {
 				assert($choice instanceof ChoiceFieldValue);
 				$this->addChoice($choice);

@@ -25,7 +25,7 @@ export default {
 					if (field.multiple || (field.research && field.research.controller && field.research.method)) {
 						let asyncRoute = '';
 						let asyncController = '';
-						let asyncAttributes = [];
+						let asyncAttributes = null;
 						if (field.research) {
 							if (field.research.controller) {
 								asyncController = field.research.controller;
@@ -34,7 +34,15 @@ export default {
 							if (field.research.method) {
 								asyncRoute = field.research.method;
 							}
-							asyncAttributes.push(field.name);
+
+							if (field.research.params) {
+								asyncAttributes = {};
+								Object.keys(field.research.params).forEach((key) => {
+									asyncAttributes[key] = field.research.params[key];
+								});
+							} else {
+								asyncAttributes = [field.name];
+							}
 						}
 
 						parameter.multiple = field.multiple;

@@ -12,6 +12,7 @@
     <files>
         <folder plugin="signature_requests">services</folder>
         <folder>src</folder>
+        <folder>language</folder>
     </files>
     <languages>
         <language tag="fr-FR">language/fr-FR/plg_task_signature_requests.ini</language>

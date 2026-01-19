@@ -1,5 +1,10 @@
 <template>
-	<div class="tw-flex tw-flex-col tw-gap-2">
+	<div
+		class="tw-flex tw-flex-col tw-gap-2"
+		:class="{
+			'tw-hidden': parameter.hidden,
+		}"
+	>
 		<!-- LABEL -->
 		<label
 			v-if="parameter.hideLabel !== true"
