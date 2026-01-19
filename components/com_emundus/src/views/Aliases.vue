@@ -12,7 +12,6 @@
 			:default-lists="configString"
 			:default-type="'aliases'"
 			:key="renderingKey"
-			:can-check="false"
 		></list>
 	</div>
 </template>
@@ -65,6 +64,15 @@ export default {
 									type: 'copy_clipboard',
 									successMessage: 'COM_EMUNDUS_ALIAS_COPIED',
 									icon: 'content_copy',
+								},
+								{
+									action: 'deletealias',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_DELETE',
+									controller: 'settings',
+									name: 'delete',
+									multiple: true,
+									method: 'delete',
+									confirm: 'COM_EMUNDUS_ONBOARD_ALIAS_DELETE',
 								},
 							],
 							exports: [

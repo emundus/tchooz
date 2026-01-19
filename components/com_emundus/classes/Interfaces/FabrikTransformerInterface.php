@@ -11,5 +11,5 @@ namespace Tchooz\Interfaces;
 
 interface FabrikTransformerInterface
 {
-	public function transform(mixed $value): mixed;
+	public function transform(mixed $value, array $options = []): mixed;
 }

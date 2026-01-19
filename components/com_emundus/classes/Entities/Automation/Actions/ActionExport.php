@@ -124,7 +124,7 @@ class ActionExport extends ActionEntity
 			if ($result->isStatus() && !empty($result->getFilePath()))
 			{
 				$expiredAt = null;
-				if ($result->getProgress() === 100)
+				if ($result->getProgress() === floatval(100))
 				{
 					// Set expired_date to +7 days
 					$expiredAt = new \DateTime();
@@ -133,6 +133,9 @@ class ActionExport extends ActionEntity
 
 				if ($exportEntity)
 				{
+					// Reload the entity to avoid stale data
+					$exportEntity = $exportRepository->getById($exportEntity->getId());
+
 					$exportEntity->setFilename($result->getFilePath());
 					$exportEntity->setProgress($result->getProgress());
 					if ($expiredAt)
@@ -160,7 +163,7 @@ class ActionExport extends ActionEntity
 					throw new \Exception('Failed to save export record.');
 				}
 
-				if ($result->getProgress() !== 100)
+				if ($result->getProgress() !== floatval(100))
 				{
 					return ActionExecutionStatusEnum::PENDING;
 				}

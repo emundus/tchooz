@@ -14,7 +14,7 @@ class DateTransformer implements FabrikTransformerInterface
 		$this->detailsDateFormat = $detailsDateFormat;
 	}
 
-	public function transform(mixed $value): string
+	public function transform(mixed $value, array $options = []): string
 	{
 		$transformedValue = '';
 		$dates = explode(',', $value);

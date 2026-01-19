@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -205,6 +206,27 @@ class EmundusModelFormbuilder extends JModelList
 
 					$this->db->setQuery($query);
 					$this->db->execute();
+				}
+
+				$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+					->createCacheController('output', ['defaultgroup' => 'com_emundus']);
+				$cache_key = 'fabrik_element_' . $element;
+				if ($cache->contains($cache_key))
+				{
+					$cache->remove($cache_key);
+				}
+
+				$query->clear()
+					->select('group_id')
+					->from($this->db->quoteName('#__fabrik_elements'))
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($element));
+				$this->db->setQuery($query);
+				$group_id = $this->db->loadResult();
+
+				$cache_key = 'fabrik_elements_group_' . $group_id;
+				if ($cache->contains($cache_key))
+				{
+					$cache->remove($cache_key);
 				}
 			}
 			elseif (!empty($group)) {
@@ -1701,16 +1723,6 @@ class EmundusModelFormbuilder extends JModelList
 						}
 						//
 
-						$params['alias'] = !empty($label['fr']) ? $label['fr'] : "";
-						$params['alias'] = str_replace(' ', '_', $params['alias']);
-						$params['alias'] = htmlentities($params['alias'], ENT_COMPAT, "UTF-8");
-						$params['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $params['alias']);
-						$params['alias'] = html_entity_decode($params['alias']);
-						$params['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $params['alias']);
-						$params['alias'] = strtolower($params['alias']);
-
-						$params['alias'] = $params['alias'] === "" ? strtolower($name) . "_alias" : $params['alias'];
-
 						// Init a default subvalue for checkboxes
 						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown') {
 							$sub_values = [];
@@ -2429,18 +2441,13 @@ class EmundusModelFormbuilder extends JModelList
 			}
 
 			// Manage alias
-			if(($element['params']['alias'] === "" || $element['params']['alias'] === "element_sans_titre") && isset($element['label']['fr'])){
-				$element['params']['alias'] =  $element['label']['fr'];
-			}
-			$element['params']['alias'] = str_replace(' ', '_', $element['params']['alias']);
-			$element['params']['alias'] = htmlentities($element['params']['alias'], ENT_COMPAT, "UTF-8");
-			$element['params']['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $element['params']['alias']);
-			$element['params']['alias'] = html_entity_decode($element['params']['alias']);
-			$element['params']['alias'] = preg_replace('/[^\x20-\x7E]/','', $element['params']['alias']);
-			$element['params']['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $element['params']['alias']);
-			$element['params']['alias'] = strtolower($element['params']['alias']);
-
-			$element['params']['alias'] = $element['params']['alias'] === "" ? (!empty($element['name']) ? strtolower($element['name']) . "_alias" : "alias") :  $element['params']['alias'];
+			$element['alias'] = str_replace(' ', '_', $element['alias']);
+			$element['alias'] = htmlentities($element['alias'], ENT_COMPAT, "UTF-8");
+			$element['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $element['alias']);
+			$element['alias'] = html_entity_decode($element['alias']);
+			$element['alias'] = preg_replace('/[^\x20-\x7E]/','', $element['alias']);
+			$element['alias'] = preg_replace('/[^a-zA-Z0-9_]/', '', $element['alias']);
+			$element['alias'] = strtolower($element['alias']);
 			//
 			
 			// Manage translations for helptext (rollover)
@@ -2493,6 +2500,7 @@ class EmundusModelFormbuilder extends JModelList
 				$this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($element['params'])),
 				$this->db->quoteName('modified_by') . ' = ' . $this->db->quote($user),
 				$this->db->quoteName('modified') . ' = ' . $this->db->quote($date),
+				$this->db->quoteName('alias') . ' = ' . $this->db->quote($element['alias']),
 			);
 
 			if($element['plugin'] === 'panel' && is_array($element['default'])) {
@@ -2526,7 +2534,22 @@ class EmundusModelFormbuilder extends JModelList
 			{
 				require_once (JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
 			}
-			EmundusHelperFabrik::clearFabrikAliasesCache();
+			EmundusHelperFabrik::clearFabrikAliasesCache($element['id']);
+
+			// Delete element from cache
+			$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+				->createCacheController('output', ['defaultgroup' => 'com_emundus']);
+			$cache_key = 'fabrik_element_' . $element['id'];
+			if ($cache->contains($cache_key))
+			{
+				$cache->remove($cache_key);
+			}
+
+			$cache_key = 'fabrik_elements_group_' . $element['group_id'];
+			if ($cache->contains($cache_key))
+			{
+				$cache->remove($cache_key);
+			}
 
 			return $this->db->execute();
 		}

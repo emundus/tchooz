@@ -19,13 +19,16 @@ class ChoicesTransformer implements FabrikTransformerInterface
 
 	protected ElementPluginEnum $plugin;
 
-	public function __construct(array $params, ElementPluginEnum $plugin)
+	protected array $translations;
+
+	public function __construct(array $params, ElementPluginEnum $plugin, array $translations = [])
 	{
 		$this->params = $params;
 		$this->plugin = $plugin;
+		$this->translations = $translations;
 	}
 
-	public function transform(mixed $value): string
+	public function transform(mixed $value, array $options = []): string
 	{
 		if ($this->plugin === ElementPluginEnum::CHECKBOX || (!empty($this->params['multiple']) && $this->params['multiple'] == 1))
 		{
@@ -37,12 +40,17 @@ class ChoicesTransformer implements FabrikTransformerInterface
 			$arr = $value === '' ? [] : explode(',', $value);
 		}
 
-		if (count($arr) > 0)
+		if (count($arr) > 0 && !empty($this->params['sub_options']))
 		{
+			if(is_array($this->params['sub_options']))
+			{
+				$this->params['sub_options'] = (object) $this->params['sub_options'];
+			}
+
 			foreach ($arr as $k => $v)
 			{
 				$index   = array_search($v, $this->params['sub_options']->sub_values);
-				$arr[$k] = Text::_($this->params['sub_options']->sub_labels[$index]);
+				$arr[$k] = $this->getTranslation($this->params['sub_options']->sub_labels[$index]);
 			}
 
 			return implode(', ', $arr);
@@ -51,5 +59,10 @@ class ChoicesTransformer implements FabrikTransformerInterface
 		{
 			return '';
 		}
+	}
+
+	private function getTranslation(string $key): string
+	{
+		return $this->translations[$key] ?? Text::_($key);
 	}
 }

@@ -73,6 +73,9 @@ class EmundusViewFiles extends JViewLegacy
 	protected int $count_filter_values;
 	protected int $allow_add_filter;
 
+	/** Export */
+	protected int $fnumsCount;
+
 
 	public function __construct($config = array())
 	{
@@ -152,6 +155,8 @@ class EmundusViewFiles extends JViewLegacy
 
 				// Store the fnums in the session
 				$this->app->setUserState('com_emundus.files.export.fnums', $fnum_array);
+
+				$this->fnumsCount = count($fnum_array);
 				
 				break;
 			case 'access':

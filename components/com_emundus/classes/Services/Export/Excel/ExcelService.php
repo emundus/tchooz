@@ -10,6 +10,7 @@
 namespace Tchooz\Services\Export\Excel;
 
 
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
@@ -27,18 +28,33 @@ use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
+use Tchooz\Enums\Upload\UploadFormatEnum;
+use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Factories\Fabrik\FabrikFactory;
+use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\Task\TaskRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Services\Export\Export;
 use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
+use Tchooz\Services\Export\HeadersEnum;
+use Tchooz\Services\UploadService;
 
-class ExcelService implements ExportInterface
+class ExcelService extends Export implements ExportInterface
 {
 	private array $fnums;
 
 	private ?User $user;
 
-	private array $options;
+	private ?ExcelOptions $options;
+
+	private ?array $oldOptions;
 
 	private ?ExportEntity $exportEntity;
 
@@ -58,51 +74,460 @@ class ExcelService implements ExportInterface
 
 	private ExportRepository $exportRepository;
 
-	private array|false $translations = [];
+	private ApplicationFileRepository $applicationFileRepository;
+
+	private EmundusUserRepository $emundusUserRepository;
 
 	private int $filesProcessed = 0;
 
 	private int $totalExecutionTime = 0;
 
-	const TIME_LIMIT = 45; //seconds
+	const TIME_LIMIT = 20; //seconds
 
 	public function __construct(array $fnums = [], User $user = null, array|object $options = null, ExportEntity $exportEntity = null)
 	{
 		$this->fnums = $fnums;
 		$this->user  = $user;
 
-		if (is_object($options))
+		// TODO: Manage old version options
+		if ($options['export_version'] === 'next')
 		{
-			$options = (array) $options;
+			if (is_array($options))
+			{
+				$options = (object) $options;
+			}
+			$this->options = !empty($options) ? ExcelOptions::fromObject($options) : new ExcelOptions();
+			$this->oldOptions = null;
 		}
-		$this->options      = $options ?? [];
+		else
+		{
+			$this->oldOptions = $options;
+			$this->options    = null;
+		}
+
 		$this->exportEntity = $exportEntity;
 	}
 
 	public function export(string $exportPath, ?TaskEntity $task, ?string $langCode = 'fr-FR'): ExportResult
 	{
-		$this->registerClasses();
+		try
+		{
+			// Need to initialize parent only here because of langCode
+			parent::__construct($langCode);
 
-		$this->loadOverrideTranslations($langCode);
+			$db            = Factory::getContainer()->get('DatabaseDriver');
+			$exportVersion = !empty($this->options) ? $this->options->getExportVersion() : $this->oldOptions['export_version'];
+
+			$this->registerClasses($exportVersion);
+
+			$result = new ExportResult(false);
+			if (empty($this->fnums) || empty($this->user))
+			{
+				return $result;
+			}
+
+			if (!empty($this->exportEntity) && (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())))
+			{
+				throw new \Exception('Export has been cancelled.');
+			}
+
+			$metadata = [];
+			if (!empty($task))
+			{
+				$metadata = $task->getMetadata();
+			}
+
+			if ($exportVersion === 'default')
+			{
+				return $this->exportOld($exportPath, $metadata);
+			}
+			// Next verion export logic here
+			else
+			{
+				$json = [];
+				if (!empty($this->exportEntity->getFilename()) && str_ends_with($this->exportEntity->getFilename(), '.json'))
+				{
+					$jsonFilePath = JPATH_SITE . '/' . $this->exportEntity->getFilename();
+					if (file_exists($jsonFilePath))
+					{
+						$jsonContent = file_get_contents($jsonFilePath);
+						if ($jsonContent !== false)
+						{
+							$json = json_decode($jsonContent, true);
+						}
+					}
+				}
+
+				$files = $this->applicationFileRepository->getAll(['fnum' => $this->fnums]);
+
+				if (empty($json))
+				{
+					$json['headers'] = [];
+					foreach ($this->options->getSynthesis() as $synthesis)
+					{
+						$key = 'header_'.$synthesis;
+						$customHeaderData = $this->getData($synthesis, $files);
+							
+						$json['headers'][$key] = $customHeaderData['label'];
+						foreach ($files as $file)
+						{
+							$json['files'][$file->getFnum()][$key] = $customHeaderData['data'][$file->getFnum()];
+						}
+					}
+					
+					if (!empty($this->exportEntity))
+					{
+						// Store json file in export path
+						$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
+						$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;
+						$jsonContent  = json_encode($json);
+						file_put_contents($jsonFilePath, $jsonContent);
+						$this->exportEntity->setFilename($exportPath . $jsonFileName);
+
+						$this->exportRepository->flush($this->exportEntity);
+					}
+				}
+
+				// Fill elements data
+				$elementIds    = $this->options->getElements() ?? [];
+				$totalElements = count($elementIds);
+
+				$last_element_key = 0;
+				$last_header      = $json['headers'] ? array_key_last($json['headers']) : null;
+				if ($last_header)
+				{
+					$last_element_id = $last_header;
+					if (str_starts_with($last_header, 'element_'))
+					{
+						$last_element_id = (int) str_replace('element_', '', $last_header);
+					}
+
+					$last_element_key = array_search($last_element_id, $elementIds);
+					if ($last_element_key !== false)
+					{
+						$elementIds = array_slice($elementIds, $last_element_key + 1);
+					}
+				}
+
+				$campaignMoreData = [];
+
+				$processStartTime = microtime(true);
+				foreach ($elementIds as $key => $elementId)
+				{
+					if (
+						(microtime(true) - $processStartTime) >= self::TIME_LIMIT ||
+						(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
+					)
+					{
+						// Store json file in export path
+						$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
+						$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;
+						$jsonContent  = json_encode($json);
+						file_put_contents($jsonFilePath, $jsonContent);
+
+						$result->setStatus(true);
+						$result->setFilePath($exportPath . $jsonFileName);
+
+						return $result;
+					}
+
+					$data = $this->getData($elementId, $files);
+					$json['headers'][$elementId] = $data['label'];
+					foreach ($files as $file)
+					{
+						$json['files'][$file->getFnum()][$elementId] = $data['data'][$file->getFnum()];
+					}
+
+					$progress = round((($key + 1 + $last_element_key + 1) / $totalElements) * 100, 2);
+					$result->setProgress($progress);
+				}
+
+				$csvFile = $this->fillCsv($exportPath, $json);
+
+				$excelFilename = 'export';
+
+				if (!$exportPath = $this->convertToXlsx($csvFile, $excelFilename, $exportPath, count($json['files']), count($json['headers'])))
+				{
+					throw new \Exception('Excel conversion failed.');
+				}
+
+				// Delete temporary csv and json file
+				unlink(JPATH_SITE . '/' . $csvFile);
+				if (!empty($this->exportEntity->getFilename()) && str_ends_with($this->exportEntity->getFilename(), '.json'))
+				{
+					$jsonFilePath = JPATH_SITE . '/' . $this->exportEntity->getFilename();
+					if (file_exists($jsonFilePath))
+					{
+						unlink($jsonFilePath);
+					}
+				}
+
+				$result->setFilePath($exportPath);
+				$result->setStatus(true);
+				$result->setProgress(100);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw $e;
+		}
+
+		return $result;
+	}
+
+	public function fillCsv(string $exportPath, array $json): string
+	{
+		// Fill csv file if all fnums are processed
+		$csvFormat = UploadFormatEnum::CSV;
+
+		$uploaderService = new UploadService($exportPath, 10, $csvFormat->getMimeTypes());
+
+		$csvFile = $uploaderService->createTemporaryFile('export_', $csvFormat);
+
+		// Add line for each fnum
+		$handle = fopen(JPATH_SITE . '/' . $csvFile, 'w');
+		if ($handle === false)
+		{
+			throw new \Exception('Failed to open export file for writing.');
+		}
+
+		// Fill header
+		$header   = array_values($json['headers']);
+		$inserted = fputcsv($handle, $header, '	');
+		if ($inserted === false)
+		{
+			throw new \Exception('Failed to insert header into export file.');
+		}
+
+		// Fill rows
+		foreach ($json['files'] as $file)
+		{
+			$row = [];
+			foreach ($json['headers'] as $key => $label)
+			{
+				$row[] = $file[$key] ?? '';
+			}
+
+			$inserted = fputcsv($handle, $row, '	');
+			if ($inserted === false)
+			{
+				throw new \Exception('Failed to insert row into export file.');
+			}
+		}
+
+		fclose($handle);
+
+		return $csvFile;
+	}
+
+	private function convertToXlsx(string $csvPath, string $excelFilename, string $destinationPath, int $nbrow, int $nbcol): bool|string
+	{
+		$converted = false;
+
+		try
+		{
+			// Convert csv to xlsx
+			require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
+
+			$objReader = IOFactory::createReader("Csv");
+			$objReader->setDelimiter("\t");
+			$objPHPExcel = new Spreadsheet();
+
+			// Excel colonne
+			$colonne_by_id = array();
+			for ($i = ord("A"); $i <= ord("Z"); $i++)
+			{
+				$colonne_by_id[] = chr($i);
+			}
+
+			for ($i = ord("A"); $i <= ord("Z"); $i++)
+			{
+				for ($j = ord("A"); $j <= ord("Z"); $j++)
+				{
+					$colonne_by_id[] = chr($i) . chr($j);
+					if (count($colonne_by_id) == $nbrow) break;
+				}
+			}
+
+			// Set properties
+			$objPHPExcel->getProperties()->setCreator("eMundus SAS : https://www.emundus.fr/");
+			$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
+			$objPHPExcel->getProperties()->setTitle("eMmundus Report");
+			$objPHPExcel->getProperties()->setSubject("eMmundus Report");
+			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : https://www.emundus.fr/");
+			$objPHPExcel->setActiveSheetIndex(0);
+			$objPHPExcel->getActiveSheet()->setTitle('Extraction');
+			$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
+
+			$objPHPExcel->getActiveSheet()->freezePane('A2');
+
+			$objReader->loadIntoExisting($csvPath, $objPHPExcel);
+
+			$objConditional1 = new Conditional();
+			$objConditional1->setConditionType(Conditional::CONDITION_CELLIS)
+				->setOperatorType(Conditional::OPERATOR_EQUAL)
+				->addCondition('0');
+			$objConditional1->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
+
+			$objConditional2 = new Conditional();
+			$objConditional2->setConditionType(Conditional::CONDITION_CELLIS)
+				->setOperatorType(Conditional::OPERATOR_EQUAL)
+				->addCondition('100');
+			$objConditional2->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
+
+			$objConditional3 = new Conditional();
+			$objConditional3->setConditionType(Conditional::CONDITION_CELLIS)
+				->setOperatorType(Conditional::OPERATOR_EQUAL)
+				->addCondition('50');
+			$objConditional3->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
+
+			$i = 0;
+			//FNUM
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+			$objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
+			$i++;
+			//STATUS
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+			$i++;
+			//LASTNAME
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+			$i++;
+			//FIRSTNAME
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
+			$i++;
+			//EMAIL
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+			//$objPHPExcel->getActiveSheet()->getStyle('E2:E'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_Font::UNDERLINE_SINGLE );
+			$i++;
+			//CAMPAIGN
+			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
+			$i++;
+
+			for ($i; $i < $nbcol; $i++)
+			{
+				$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
+
+				if (strpos($value, '(%)'))
+				{
+					$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
+					array_push($conditionalStyles, $objConditional1);
+					array_push($conditionalStyles, $objConditional2);
+					array_push($conditionalStyles, $objConditional3);
+					$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
+					$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
+				}
+				$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
+			}
+
+			$timestamp      = Factory::getDate()->format('Ymd_His');
+			$excel_filename = $excelFilename . '_' . $nbrow . 'rows_' . $timestamp . '.xlsx';
+			// Check if export path directory exists
+			if (!is_dir(JPATH_SITE . '/' . $destinationPath))
+			{
+				mkdir(JPATH_SITE . '/' . $destinationPath, 0755, true);
+			}
+			$destinationPath = $destinationPath . $excel_filename;
+
+			$objWriter = IOFactory::createWriter($objPHPExcel, "Xlsx");
+
+			$objWriter->save(JPATH_SITE . '/' . $destinationPath);
+			$objPHPExcel->disconnectWorksheets();
+			unset($objPHPExcel);
+
+			return $destinationPath;
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Excel conversion failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+
+			return false;
+		}
+	}
+
+	private function registerClasses(string $exportVersion = 'default'): void
+	{
+		if ($exportVersion == 'default')
+		{
+			if (!class_exists('EmundusHelperAccess'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
+			}
+			if (!class_exists('EmundusHelperFiles'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
+			}
+			if (!class_exists('EmundusHelperFabrik'))
+			{
+				require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
+			}
+			if (!class_exists('EmundusModelFiles'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/files.php';
+			}
+			if (!class_exists('EmundusModelApplication'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/application.php';
+			}
+			if (!class_exists('EmundusModelEvaluation'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
+			}
+			if (!class_exists('EmundusModelWorkflow'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
+			}
+			if (!class_exists('EmundusModelUsers'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/users.php';
+			}
+			if (!class_exists('EmundusModelRanking'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/models/ranking.php';
+			}
+
+			$this->m_files       = new \EmundusModelFiles();
+			$this->m_application = new \EmundusModelApplication();
+			$this->m_evaluation  = new \EmundusModelEvaluation();
+			$this->m_workflow    = new \EmundusModelWorkflow();
+			$this->m_users       = new \EmundusModelUsers();
+			$this->m_ranking     = new \EmundusModelRanking();
+		}
+
+		$this->taskRepository            = new TaskRepository();
+		$this->exportRepository          = new ExportRepository();
+		$this->applicationFileRepository = new ApplicationFileRepository();
+		$this->emundusUserRepository     = new EmundusUserRepository();
+
+		$this->fabrikRepository = new FabrikRepository();
+		$fabrikFactory          = new FabrikFactory($this->fabrikRepository);
+		$this->fabrikRepository->setFactory($fabrikFactory);
+
+		$this->campaignRepository = new CampaignRepository();
+		$this->labelRepository    = new LabelRepository();
+
+		$this->helperFabrik = new \EmundusHelperFabrik();
+	}
+
+	public static function getType(): string
+	{
+		return 'excel';
+	}
+
+	/**
+	 * @param   string  $exportPath
+	 * @param   array   $metadata
+	 *
+	 * @return ExportResult
+	 *
+	 * @throws \Exception
+	 * @depecated use exportVersion "next" instead
+	 */
+	public function exportOld(string $exportPath, array $metadata): ExportResult
+	{
+		$processStartTime = microtime(true);
 
 		$result = new ExportResult(false);
-
-		if (empty($this->fnums) || empty($this->user))
-		{
-			return $result;
-		}
-
-		if (!empty($this->exportEntity) && (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())))
-		{
-			throw new \Exception('Export has been cancelled.');
-		}
-
-		if (!empty($task))
-		{
-			$metadata = $task->getMetadata();
-		}
-
-		$processStartTime = microtime(true);
 
 		$db    = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->getQuery(true);
@@ -112,26 +537,26 @@ class ExcelService implements ExportInterface
 
 		$anonymize_data = \EmundusHelperAccess::isDataAnonymized($this->user->id);
 
-		$tmpFile = $this->options['tmp_file'] ?? '';
+		$tmpFile = $this->oldOptions['tmp_file'] ?? '';
 		if (empty($tmpFile))
 		{
 			return $result;
 		}
 
-		$totalfile = $this->options['totalfile'] ?? 0;
-		$start     = $this->options['start'] ?? 0;
-		$limit     = $this->options['limit'] ?? 0;
-		$nbcol     = $this->options['nbcol'] ?? 0;
-		$campaign  = $this->options['campaign'] ?? 0;
+		$totalfile = $this->oldOptions['totalfile'] ?? 0;
+		$start     = $this->oldOptions['start'] ?? 0;
+		$limit     = $this->oldOptions['limit'] ?? 0;
+		$nbcol     = $this->oldOptions['nbcol'] ?? 0;
+		$campaign  = $this->oldOptions['campaign'] ?? 0;
 
-		$method = $this->options['method'] ?? 0;
+		$method = $this->oldOptions['method'] ?? 0;
 
-		$step_elts = $this->options['step_elts'] ?? [];
-		$col       = $this->getcolumn($this->options['elts'] ?? '{}');
-		$colsup    = $this->getcolumn($this->options['objs'] ?? '{}');
+		$step_elts = $this->oldOptions['step_elts'] ?? [];
+		$col       = $this->getcolumn($this->oldOptions['elts'] ?? '{}');
+		$colsup    = $this->getcolumn($this->oldOptions['objs'] ?? '{}');
 		$colOpt    = array();
 
-		$opts = $this->getcolumn($this->options['opts'] ?? '{}');
+		$opts = $this->getcolumn($this->oldOptions['opts'] ?? '{}');
 		// TODO: upper-case is mishandled, remove temporarily until fixed
 		$opts = array_diff($opts, ['upper-case']);
 
@@ -140,7 +565,7 @@ class ExcelService implements ExportInterface
 			throw new \Exception('Could not open temporary file for writing.');
 		}
 
-		$excel_filename = $this->options['excel_filename'] ?? 'export';
+		$excel_filename = $this->oldOptions['excel_filename'] ?? 'export';
 
 		$h_files  = new \EmundusHelperFiles();
 		$elements = $h_files->getElementsName(implode(',', $col));
@@ -223,7 +648,7 @@ class ExcelService implements ExportInterface
 				$targetToRemoves = [];
 				foreach ($metadata['actionTargetEntities'] as $key => $target)
 				{
-					if(in_array($target['file'], $fnums))
+					if (in_array($target['file'], $fnums))
 					{
 						$targetToRemoves[] = $key;
 					}
@@ -1044,8 +1469,8 @@ class ExcelService implements ExportInterface
 				throw new \Exception(Text::_('COM_EMUNDUS_EXPORTS_ERROR_CANNOT_CLOSE_CSV_FILE'));
 			}
 
-			$start                  = $i;
-			$this->options['start'] = $start;
+			$start                     = $i;
+			$this->oldOptions['start'] = $start;
 
 			if (!empty($task))
 			{
@@ -1067,7 +1492,7 @@ class ExcelService implements ExportInterface
 		{
 			$csvPath = JPATH_SITE . '/tmp/' . $tmpFile;
 
-			if(!$exportPath = $this->convertToXlsx($csvPath, $excel_filename, $exportPath, $totalfile, $nbcol))
+			if (!$exportPath = $this->convertToXlsx($csvPath, $excel_filename, $exportPath, $totalfile, $nbcol))
 			{
 				$result->setStatus(false);
 
@@ -1088,24 +1513,24 @@ class ExcelService implements ExportInterface
 		}
 		else
 		{
-			$processEndTime = microtime(true);
-			$executionTime  = $processEndTime - $processStartTime;
+			$processEndTime           = microtime(true);
+			$executionTime            = $processEndTime - $processStartTime;
 			$this->totalExecutionTime += $executionTime;
 
-			$filesCanBeProcessed = $this->options['files_can_be_processed'] ?? 0;
+			$filesCanBeProcessed = $this->oldOptions['files_can_be_processed'] ?? 0;
 			if (empty($filesCanBeProcessed))
 			{
 				$filesCanBeProcessed                                                    = floor(self::TIME_LIMIT / $executionTime);
-				$this->options['files_can_be_processed']                                = $filesCanBeProcessed;
+				$this->oldOptions['files_can_be_processed']                             = $filesCanBeProcessed;
 				$metadata['actionEntity']['parameter_values']['files_can_be_processed'] = $filesCanBeProcessed;
 			}
 
 			// Estimate total time based on current progress
-			$estimatedTotalTime                                            = ($executionTime / $result->getProgress()) * 100;
+			$estimatedTotalTime = ($executionTime / $result->getProgress()) * 100;
 			// multiply estimated time by number of chunks
 			$estimatedTotalTime                                            *= ceil($totalfile / ($filesCanBeProcessed > 0 ? $filesCanBeProcessed : 1));
 			$estimatedTotalTime                                            = (int) round($estimatedTotalTime);
-			$this->options['time_estimate']                                = $estimatedTotalTime;
+			$this->oldOptions['time_estimate']                             = $estimatedTotalTime;
 			$metadata['actionEntity']['parameter_values']['time_estimate'] = $estimatedTotalTime;
 
 			if ($this->filesProcessed < $filesCanBeProcessed && $this->totalExecutionTime < self::TIME_LIMIT)
@@ -1159,214 +1584,5 @@ class ExcelService implements ExportInterface
 	private function getcolumn($elts): array
 	{
 		return (array) json_decode(stripcslashes($elts));
-	}
-
-	private function convertToXlsx(string $csvPath, string $excelFilename, string $destinationPath, int $nbrow, int $nbcol): bool|string
-	{
-		$converted = false;
-
-		try
-		{
-			// Convert csv to xlsx
-			require_once(JPATH_LIBRARIES . '/emundus/vendor/autoload.php');
-
-			$objReader = IOFactory::createReader("Csv");
-			$objReader->setDelimiter("\t");
-			$objPHPExcel = new Spreadsheet();
-
-			// Excel colonne
-			$colonne_by_id = array();
-			for ($i = ord("A"); $i <= ord("Z"); $i++)
-			{
-				$colonne_by_id[] = chr($i);
-			}
-
-			for ($i = ord("A"); $i <= ord("Z"); $i++)
-			{
-				for ($j = ord("A"); $j <= ord("Z"); $j++)
-				{
-					$colonne_by_id[] = chr($i) . chr($j);
-					if (count($colonne_by_id) == $nbrow) break;
-				}
-			}
-
-			// Set properties
-			$objPHPExcel->getProperties()->setCreator("eMundus SAS : https://www.emundus.fr/");
-			$objPHPExcel->getProperties()->setLastModifiedBy("eMundus SAS");
-			$objPHPExcel->getProperties()->setTitle("eMmundus Report");
-			$objPHPExcel->getProperties()->setSubject("eMmundus Report");
-			$objPHPExcel->getProperties()->setDescription("Report from open source eMundus plateform : https://www.emundus.fr/");
-			$objPHPExcel->setActiveSheetIndex(0);
-			$objPHPExcel->getActiveSheet()->setTitle('Extraction');
-			$objPHPExcel->getDefaultStyle()->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-			$objPHPExcel->getDefaultStyle()->getAlignment()->setVertical(Alignment::VERTICAL_CENTER);
-
-			$objPHPExcel->getActiveSheet()->freezePane('A2');
-
-			$objReader->loadIntoExisting($csvPath, $objPHPExcel);
-
-			$objConditional1 = new Conditional();
-			$objConditional1->setConditionType(Conditional::CONDITION_CELLIS)
-				->setOperatorType(Conditional::OPERATOR_EQUAL)
-				->addCondition('0');
-			$objConditional1->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFF0000');
-
-			$objConditional2 = new Conditional();
-			$objConditional2->setConditionType(Conditional::CONDITION_CELLIS)
-				->setOperatorType(Conditional::OPERATOR_EQUAL)
-				->addCondition('100');
-			$objConditional2->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FF00FF00');
-
-			$objConditional3 = new Conditional();
-			$objConditional3->setConditionType(Conditional::CONDITION_CELLIS)
-				->setOperatorType(Conditional::OPERATOR_EQUAL)
-				->addCondition('50');
-			$objConditional3->getStyle()->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setARGB('FFFFFF00');
-
-			$i = 0;
-			//FNUM
-			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
-			$objPHPExcel->getActiveSheet()->getStyle('A2:A' . ($nbrow + 1))->getNumberFormat()->setFormatCode(NumberFormat::FORMAT_NUMBER_COMMA_SEPARATED1);
-			$i++;
-			//STATUS
-			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
-			$i++;
-			//LASTNAME
-			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
-			$i++;
-			//FIRSTNAME
-			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('20');
-			$i++;
-			//EMAIL
-			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
-			//$objPHPExcel->getActiveSheet()->getStyle('E2:E'.($nbrow+ 1))->getNumberFormat()->setFormatCode( PHPExcel_Style_Font::UNDERLINE_SINGLE );
-			$i++;
-			//CAMPAIGN
-			$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('40');
-			$i++;
-
-			for ($i; $i < $nbcol; $i++)
-			{
-				$value = $objPHPExcel->getActiveSheet()->getCell(Coordinate::stringFromColumnIndex($i) . '1')->getValue();
-
-				if (strpos($value, '(%)'))
-				{
-					$conditionalStyles = $objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->getConditionalStyles();
-					array_push($conditionalStyles, $objConditional1);
-					array_push($conditionalStyles, $objConditional2);
-					array_push($conditionalStyles, $objConditional3);
-					$objPHPExcel->getActiveSheet()->getStyle($colonne_by_id[$i] . '1')->setConditionalStyles($conditionalStyles);
-					$objPHPExcel->getActiveSheet()->duplicateConditionalStyle($conditionalStyles, $colonne_by_id[$i] . '1:' . $colonne_by_id[$i] . ($nbrow + 1));
-				}
-				$objPHPExcel->getActiveSheet()->getColumnDimensionByColumn($i)->setWidth('30');
-			}
-
-			$randomString   = UserHelper::genRandomPassword(20);
-			$excel_filename = $excelFilename . '_' . $nbrow . 'rows_' . $randomString . '.xlsx';
-			// Check if export path directory exists
-			if (!is_dir(JPATH_SITE . '/' . $destinationPath))
-			{
-				mkdir(JPATH_SITE . '/' . $destinationPath, 0755, true);
-			}
-			$destinationPath     = $destinationPath . $excel_filename;
-
-			$objWriter = IOFactory::createWriter($objPHPExcel, "Xlsx");
-
-			$objWriter->save(JPATH_SITE . '/' . $destinationPath);
-			$objPHPExcel->disconnectWorksheets();
-			unset($objPHPExcel);
-
-			return $destinationPath;
-		}
-		catch (\Exception $e)
-		{
-			Log::add('Excel conversion failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
-
-			return false;
-		}
-	}
-
-	private function loadOverrideTranslations(string $code = 'fr-FR'): void
-	{
-		try
-		{
-			$file = JPATH_ROOT . '/language/overrides/'. $code .'.override.ini';
-			if (file_exists($file)) {
-				$this->translations = parse_ini_file($file);
-
-				if($this->translations === false)
-				{
-					$this->translations = [];
-				}
-			}
-		}
-		catch (\Exception $e)
-		{
-			$this->translations = [];
-		}
-	}
-
-	private function getTranslation(string $key): string
-	{
-		if (isset($this->translations[$key]))
-		{
-			return $this->translations[$key];
-		}
-
-		return Text::_($key);
-	}
-
-	private function registerClasses(): void
-	{
-		if (!class_exists('EmundusHelperAccess'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/helpers/access.php';
-		}
-		if (!class_exists('EmundusHelperFiles'))
-		{
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/files.php');
-		}
-		if (!class_exists('EmundusHelperFabrik'))
-		{
-			require_once(JPATH_SITE . '/components/com_emundus/helpers/fabrik.php');
-		}
-		if (!class_exists('EmundusModelFiles'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/files.php';
-		}
-		if (!class_exists('EmundusModelApplication'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/application.php';
-		}
-		if (!class_exists('EmundusModelEvaluation'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/evaluation.php';
-		}
-		if (!class_exists('EmundusModelWorkflow'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
-		}
-		if (!class_exists('EmundusModelUsers'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/users.php';
-		}
-		if (!class_exists('EmundusModelRanking'))
-		{
-			require_once JPATH_SITE . '/components/com_emundus/models/ranking.php';
-		}
-
-		$this->m_files          = new \EmundusModelFiles();
-		$this->m_application    = new \EmundusModelApplication();
-		$this->m_evaluation     = new \EmundusModelEvaluation();
-		$this->m_workflow       = new \EmundusModelWorkflow();
-		$this->m_users          = new \EmundusModelUsers();
-		$this->m_ranking        = new \EmundusModelRanking();
-		$this->taskRepository   = new TaskRepository();
-		$this->exportRepository = new ExportRepository();
-	}
-
-	public static function getType(): string
-	{
-		return 'excel';
 	}
 }

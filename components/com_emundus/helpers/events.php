@@ -26,6 +26,7 @@ use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Automation\EventsDefinitions\onAfterStatusChangeDefinition;
 use Tchooz\Exception\EmundusException;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 
 defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.helper');
@@ -165,16 +166,18 @@ class EmundusHelperEvents
 			}
 
 			if (!empty($elements)) {
+				$fabrikRepository = new FabrikRepository();
 				$elements = array_filter($elements, function ($element) use ($table) {
 					return $element->getElement()->name !== 'parent_id';
 				});
 
 				foreach ($elements as $elt)
 				{
-					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
+					$alias = $fabrikRepository->getElementAlias($elt->getId());
+					if (!empty($alias))
 					{
 						$h_fabrik = new EmundusHelperFabrik();
-						$alias_value = $h_fabrik->getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id);
+						$alias_value = $h_fabrik->getValueByAlias($alias, $fnum, $user_id);
 
 						if (!empty($alias_value['raw']))
 						{
@@ -1063,14 +1066,16 @@ class EmundusHelperEvents
 
 				if (empty($formModel->getRowId()) && ($copy_application_form == 1 && isset($user->fnum) && ($check_forms || !empty($fnum_linked))))
 				{
+					$fabrikRepository = new FabrikRepository();
 					// Check if we fill an other alias element
 					foreach ($elements as $elt)
 					{
-						if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
+						$alias = $fabrikRepository->getElementAlias($elt->getId());
+						if (!empty($alias))
 						{
 							//TODO: Manage alias from evaluation forms
 							$h_fabrik = new EmundusHelperFabrik();
-							$alias_value = $h_fabrik->getValueByAlias($elt->getParams()->get('alias'), null, $user->id);
+							$alias_value = $h_fabrik->getValueByAlias($alias, null, $user->id);
 
 							if (!empty($alias_value['raw']))
 							{

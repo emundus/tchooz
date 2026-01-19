@@ -29,15 +29,17 @@ class ExportEntity
 
 	private int $hits;
 
-	private int $progress;
+	private float $progress;
 
 	private ExportFormatEnum $format;
 
-	private bool $cancelled = false;
+	private bool $cancelled;
 
-	private bool $failed = false;
+	private bool $failed;
 
-	public function __construct(int $id, \DateTime $createdAt, User $createdBy, string $filename, ExportFormatEnum $format, ?\DateTime $expiredAt, ?TaskEntity $task, int $hits, int $progress = 0, bool $cancelled = false, bool $failed = false)
+	private array $result = [];
+
+	public function __construct(int $id, \DateTime $createdAt, User $createdBy, string $filename, ExportFormatEnum $format, ?\DateTime $expiredAt, ?TaskEntity $task, int $hits, float $progress = 0, bool $cancelled = false, bool $failed = false)
 	{
 		$this->id        = $id;
 		$this->createdAt = $createdAt;
@@ -132,12 +134,12 @@ class ExportEntity
 		$this->hits = $hits;
 	}
 
-	public function getProgress(): int
+	public function getProgress(): float
 	{
 		return $this->progress;
 	}
 
-	public function setProgress(int $progress): void
+	public function setProgress(float $progress): void
 	{
 		$this->progress = $progress;
 	}
@@ -160,6 +162,16 @@ class ExportEntity
 	public function setFailed(bool $failed): void
 	{
 		$this->failed = $failed;
+	}
+
+	public function getResult(): array
+	{
+		return $this->result;
+	}
+
+	public function setResult(array $result): void
+	{
+		$this->result = $result;
 	}
 
 	public function __serialize(): array

@@ -15,20 +15,118 @@ use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 
-#[TableAttribute(table: '#__emundus_campaign_candidature')]
+#[TableAttribute(
+	table: '#__emundus_campaign_candidature',
+	alias: 'ecc',
+	columns: [
+		'id',
+		'applicant_id',
+		'campaign_id',
+		'fnum',
+		'status',
+		'published',
+		'date_time',
+		'date_submitted',
+		'user_id',
+		'form_progress',
+		'attachment_progress'
+	]
+)]
 class ApplicationFileRepository extends EmundusRepository implements RepositoryInterface
 {
-
 	private QueryInterface $query;
 
 	private ApplicationFileFactory $factory;
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'applicationrepository');
+		parent::__construct($withRelations, $exceptRelations, 'applicationrepository', self::class);
 
 		$this->query   = $this->db->getQuery(true);
 		$this->factory = new ApplicationFileFactory();
+	}
+
+	/**
+	 * @param   array  $filters
+	 *
+	 * @return array<ApplicationFileEntity>
+	 */
+	public function getAll(array $filters = []): array
+	{
+		try
+		{
+			$results = [];
+
+			$query = $this->buildQuery();
+			$this->applyFilters($query, $filters);
+
+			$this->db->setQuery($query);
+			$dbObjects = $this->db->loadObjectList();
+
+			if (!empty($dbObjects))
+			{
+				$results = $this->factory->fromDbObjects($dbObjects, $this->withRelations);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw new \RuntimeException('Error fetching all application files: ' . $e->getMessage());
+		}
+
+		return $results;
+	}
+
+	public function buildQuery(): QueryInterface
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias));
+
+		return $query;
+	}
+
+	public function applyFilters(QueryInterface $query, array $filters = []): void
+	{
+		// Implement filter application logic here
+		if(in_array('status', array_keys($filters)))
+		{
+			$query->where('status = :status')
+				->bind(':status', $filters['status'], ParameterType::INTEGER);
+		}
+
+		if(in_array('published', array_keys($filters)))
+		{
+			$query->where('published = :published')
+				->bind(':published', $filters['published'], ParameterType::INTEGER);
+		}
+
+		if(in_array('campaign_id', array_keys($filters)))
+		{
+			$query->where('campaign_id = :campaign_id')
+				->bind(':campaign_id', $filters['campaign_id'], ParameterType::INTEGER);
+		}
+
+		if(in_array('applicant_id', array_keys($filters)))
+		{
+			$query->where('applicant_id = :applicant_id')
+				->bind(':applicant_id', $filters['applicant_id'], ParameterType::INTEGER);
+		}
+
+		if(in_array('fnum', array_keys($filters)))
+		{
+			if(is_array($filters['fnum']))
+			{
+				$fnums = implode(',', $this->db->quote($filters['fnum']));
+
+				$query->where('fnum IN (' . $fnums . ')');
+			}
+			else
+			{
+				$query->where('fnum = :fnum')
+					->bind(':fnum', $filters['fnum']);
+			}
+		}
 	}
 
 	public function getById(int $id): ?ApplicationFileEntity

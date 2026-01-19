@@ -3019,6 +3019,7 @@ class EmundusModelApplication extends ListModel
 				}
 				$page_title .= '</h2>';
 				$page_title_inserted = false;
+				$evaluator_inserted   = false;
 
 				// HANDLE CASE OF EVALUATION STEP, DISPLAY THE EVALUATOR NAME
 				if (!empty($itemt->step_id)) {
@@ -3036,14 +3037,6 @@ class EmundusModelApplication extends ListModel
 
 					$this->_db->setQuery($evaluation_step_query);
 					$evaluator_name = $this->_db->loadResult();
-
-					if(!$page_title_inserted)
-					{
-						$forms               .= $page_title;
-						$page_title_inserted = true;
-					}
-
-					$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
 				}
 
 				/*-- Liste des groupes -- */
@@ -3098,6 +3091,18 @@ class EmundusModelApplication extends ListModel
 					}
 
 					if (count($elements) > 0) {
+
+						if(!$page_title_inserted)
+						{
+							$forms               .= $page_title;
+							$page_title_inserted = true;
+						}
+
+						if(!$evaluator_inserted && !empty($evaluator_name))
+						{
+							$forms .= '<h3>' . Text::_('EVALUATOR') . ': ' . $evaluator_name . '</h3>';
+							$evaluator_inserted = true;
+						}
 
 						$asTextArea = false;
 						foreach ($elements as $key => $element) {
@@ -3964,9 +3969,9 @@ class EmundusModelApplication extends ListModel
 								$forms .= '</table><div></div>';
 							}
 						}
+						$forms .= '<p></p>';
 					}
 				}
-				$forms .= '<p></p>';
 			}
 		}
 		$forms .= '<p></p>';

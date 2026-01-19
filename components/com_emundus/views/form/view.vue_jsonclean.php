@@ -35,7 +35,8 @@ class EmundusViewForm extends FabrikViewFormBase
 	 */
 	public function display($tpl = null)
 	{
-		try {
+		try
+		{
 			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_fabrik/models');
 			JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
@@ -60,14 +61,18 @@ class EmundusViewForm extends FabrikViewFormBase
 			$Content_Folder = array();
 
 			$languages = JLanguageHelper::getLanguages();
-			foreach ($languages as $language) {
+			foreach ($languages as $language)
+			{
 				$path_to_files[$language->sef] = $path_to_file . $language->lang_code . '.override.ini';
-				try {
-					if (file_exists($path_to_files[$language->sef])) {
+				try
+				{
+					if (file_exists($path_to_files[$language->sef]))
+					{
 						$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
 					}
 				}
-				catch (Exception $e) {
+				catch (Exception $e)
+				{
 					JLog::add('component/com_emundus/view/vue_jsonclean | Cannot find ' . $language->sef . 'language override file : ', JLog::ERROR, 'com_emundus');
 					continue;
 				}
@@ -100,7 +105,8 @@ class EmundusViewForm extends FabrikViewFormBase
 				$show_title->titleraw = $form->form->label;
 				$show_title->value    = $form->getLabel();
 				$show_title->label    = new stdClass;
-				foreach ($languages as $language) {
+				foreach ($languages as $language)
+				{
 					$show_title->label->{$language->sef} = $formbuilder->getTranslation($form->form->label, $language->lang_code);
 				}
 				$returnObject->show_title = $show_title;
@@ -109,7 +115,8 @@ class EmundusViewForm extends FabrikViewFormBase
 				$show_title->titleraw = '';
 				$show_title->value    = '';
 				$show_title->label    = new stdClass;
-				foreach ($languages as $language) {
+				foreach ($languages as $language)
+				{
 					$show_title->label->{$language->sef} = '';
 				}
 				$returnObject->show_title = $show_title;
@@ -118,7 +125,8 @@ class EmundusViewForm extends FabrikViewFormBase
 			if ($form->getIntro()) :
 				$returnObject->intro_value = $form->getIntro();
 				$returnObject->intro       = new stdClass;
-				foreach ($languages as $language) {
+				foreach ($languages as $language)
+				{
 					$returnObject->intro->{$language->sef} = $formbuilder->getTranslation($form->form->intro, $language->lang_code);
 				}
 				$returnObject->intro_raw = strip_tags($form->form->intro);
@@ -159,7 +167,8 @@ class EmundusViewForm extends FabrikViewFormBase
 				${"group_" . $GroupProperties->id}->group_showLegend = $GroupProperties->title;
 				${"group_" . $GroupProperties->id}->group_tag        = $group_infos->label != '' ? $group_infos->label : strtoupper($formbuilder->replaceAccents($GroupProperties->name));
 				${"group_" . $GroupProperties->id}->label            = new stdClass;
-				foreach ($languages as $language) {
+				foreach ($languages as $language)
+				{
 					${"group_" . $GroupProperties->id}->label->{$language->sef} = $formbuilder->getTranslation($group_infos->label, $language->lang_code);
 				}
 
@@ -177,16 +186,19 @@ class EmundusViewForm extends FabrikViewFormBase
 				endif;
 
 				${"group_" . $GroupProperties->id}->repeat_group = false;
-				if ($GroupProperties->canRepeat == 1) {
+				if ($GroupProperties->canRepeat == 1)
+				{
 					${"group_" . $GroupProperties->id}->repeat_group = true;
 				}
 
 				$elements = new stdClass();
 
-				if (sizeof($groupElement) > 0) {
+				if (sizeof($groupElement) > 0)
+				{
 					$display_group = false;
 				}
-				else {
+				else
+				{
 					$display_group = true;
 				}
 
@@ -194,22 +206,28 @@ class EmundusViewForm extends FabrikViewFormBase
 					$this->element = $element;
 					$d_element     = $this->element;
 					$o_element     = $d_element->element;
-					if (in_array($o_element->name, ['id', 'user', 'time_date', 'fnum', 'date_time'])) {
+					if (in_array($o_element->name, ['id', 'user', 'time_date', 'fnum', 'date_time']))
+					{
 						${"group_" . $GroupProperties->id}->cannot_delete = true;
-						if (!$display_group) {
+						if (!$display_group)
+						{
 							continue;
 						}
 					}
-					else {
+					else
+					{
 						$display_group = true;
 					}
-					if ($o_element->plugin != 'emundusreferent') {
+					if ($o_element->plugin != 'emundusreferent')
+					{
 						//if($o_element->plugin != 'calc') {
 						$el_parmas = json_decode($o_element->params);
-						if ($o_element->plugin != 'calc') {
+						if ($o_element->plugin != 'calc')
+						{
 							$content_element = $element->preRender('0', '1', 'emundus');
 						}
-						else {
+						else
+						{
 							// We build the calc element because we don't want to execute the preRender function
 							$content_element                 = new stdClass();
 							$content_element->startRow       = 0;
@@ -236,55 +254,65 @@ class EmundusViewForm extends FabrikViewFormBase
 						}
 						${"element" . $o_element->id} = new stdClass();
 
-						$labelsAbove                               = $content_element->labels;
-						${"element" . $o_element->id}->id          = $o_element->id;
-						${"element" . $o_element->id}->name        = $o_element->name;
-						${"element" . $o_element->id}->group_id    = $GroupProperties->id;
-						${"element" . $o_element->id}->hidden      = $content_element->hidden;
-						if($o_element->plugin === 'panel')
+						$labelsAbove                            = $content_element->labels;
+						${"element" . $o_element->id}->id       = $o_element->id;
+						${"element" . $o_element->id}->name     = $o_element->name;
+						${"element" . $o_element->id}->alias    = $o_element->alias;
+						${"element" . $o_element->id}->group_id = $GroupProperties->id;
+						${"element" . $o_element->id}->hidden   = $content_element->hidden;
+						if ($o_element->plugin === 'panel')
 						{
 							${"element" . $o_element->id}->default_tag = $o_element->default;
 							${"element" . $o_element->id}->default     = new stdClass;
-							foreach ($languages as $language) {
+							foreach ($languages as $language)
+							{
 								${"element" . $o_element->id}->default->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->default_tag, $language->lang_code);
 							}
 						}
-						else {
-							${"element" . $o_element->id}->default     = $o_element->default;
+						else
+						{
+							${"element" . $o_element->id}->default = $o_element->default;
 						}
 
-						${"element" . $o_element->id}->eval = $o_element->eval;
+						${"element" . $o_element->id}->eval        = $o_element->eval;
 						${"element" . $o_element->id}->labelsAbove = $labelsAbove;
 						${"element" . $o_element->id}->plugin      = $o_element->plugin;
-						if ($el_parmas->validations->plugin != null) {
-							if (is_array($el_parmas->validations->plugin)) {
+						if ($el_parmas->validations->plugin != null)
+						{
+							if (is_array($el_parmas->validations->plugin))
+							{
 								$FRequire = in_array('notempty', $el_parmas->validations->plugin);
 							}
-							elseif ($el_parmas->validations->plugin == 'notempty') {
+							elseif ($el_parmas->validations->plugin == 'notempty')
+							{
 								$FRequire = true;
 							}
-							else {
+							else
+							{
 								$FRequire = false;
 							}
 						}
-						else {
+						else
+						{
 							$FRequire = false;
 						}
 
-						if(!empty($el_parmas->database_join_where_sql)) {
+						if (!empty($el_parmas->database_join_where_sql))
+						{
 							preg_match_all("/\bwhere(.*) not in\b(.*)/i", $el_parmas->database_join_where_sql, $el_parmas->database_join_exclude, PREG_SET_ORDER, 0);
-							if(!empty($el_parmas->database_join_exclude)) {
+							if (!empty($el_parmas->database_join_exclude))
+							{
 								preg_match_all("/\((.*)\)/i", $el_parmas->database_join_exclude[0][0], $ids, PREG_SET_ORDER, 0);
 
-								if(!empty($ids))
+								if (!empty($ids))
 								{
 									$el_parmas->database_join_exclude = $ids[0][1];
 								}
 							}
 						}
-						
+
 						// Translate rollover parameter
-						if(!empty($el_parmas->rollover))
+						if (!empty($el_parmas->rollover))
 						{
 							${"element" . $o_element->id}->rollover_tag = $el_parmas->rollover;
 							$el_parmas->rollover                        = new stdClass;
@@ -293,7 +321,8 @@ class EmundusViewForm extends FabrikViewFormBase
 								$el_parmas->rollover->{$language->sef} = htmlspecialchars_decode($formbuilder->getTranslation(${"element" . $o_element->id}->rollover_tag, $language->lang_code));
 							}
 						}
-						else {
+						else
+						{
 							$el_parmas->rollover = new stdClass;
 							foreach ($languages as $language)
 							{
@@ -306,22 +335,26 @@ class EmundusViewForm extends FabrikViewFormBase
 						${"element" . $o_element->id}->params    = $el_parmas;
 						${"element" . $o_element->id}->label_tag = $o_element->label;
 						${"element" . $o_element->id}->label     = new stdClass;
-						foreach ($languages as $language) {
+						foreach ($languages as $language)
+						{
 							${"element" . $o_element->id}->label->{$language->sef} = $formbuilder->getTranslation(${"element" . $o_element->id}->label_tag, $language->lang_code);
 						}
-						${"element" . $o_element->id}->labelToFind = $element->label;
-						${"element" . $o_element->id}->publish     = $element->isPublished();
+						${"element" . $o_element->id}->labelToFind          = $element->label;
+						${"element" . $o_element->id}->publish              = $element->isPublished();
 						${"element" . $o_element->id}->show_in_list_summary = $element->getElement()->show_in_list_summary;
 
-						if ($labelsAbove == 2) {
+						if ($labelsAbove == 2)
+						{
 							if ($el_parmas->tipLocation == 'above') :
 								${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
 							endif;
 							if ($content_element->element) :
-								if (in_array($o_element->plugin,['date','jdate'])) {
+								if (in_array($o_element->plugin, ['date', 'jdate']))
+								{
 									${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
 								}
-								else {
+								else
+								{
 									${"element" . $o_element->id}->element = $content_element->element;
 								}
 							endif;
@@ -336,17 +369,20 @@ class EmundusViewForm extends FabrikViewFormBase
 								${"element" . $o_element->id}->tipBelow = $content_element->tipBelow;
 							endif;
 						}
-						else {
+						else
+						{
 							${"element" . $o_element->id}->label_value = $content_element->label;
 
 							if ($el_parmas->tipLocation == 'above') :
 								${"element" . $o_element->id}->tipAbove = $content_element->tipAbove;
 							endif;
 							if ($content_element->element) :
-								if (in_array($o_element->plugin,['date','jdate'])) {
+								if (in_array($o_element->plugin, ['date', 'jdate']))
+								{
 									${"element" . $o_element->id}->element = '<input data-v-8d3bb2fa="" class="form-control" type="date">';
 								}
-								else {
+								else
+								{
 									${"element" . $o_element->id}->element = $content_element->element;
 								}
 							endif;
@@ -373,15 +409,18 @@ class EmundusViewForm extends FabrikViewFormBase
 					${"group_" . $GroupProperties->id}->group_outro = $GroupProperties->outro;
 				endif;
 
-				if (${"group_" . $GroupProperties->id}->group_css === ";display:none;") {
+				if (${"group_" . $GroupProperties->id}->group_css === ";display:none;")
+				{
 					${"group_" . $GroupProperties->id}->hidden_group = -1;
 					${"group_" . $GroupProperties->id}->group_css    = '';
 				}
-				else {
+				else
+				{
 					${"group_" . $GroupProperties->id}->hidden_group = 1;
 				}
 
-				if ($display_group) {
+				if ($display_group)
+				{
 					$Groups->{"group_" . $GroupProperties->id} = ${"group_" . $GroupProperties->id};
 				}
 			endforeach;
@@ -394,7 +433,8 @@ class EmundusViewForm extends FabrikViewFormBase
 
 			echo json_encode($returnObject);
 		}
-		catch (Exception $e) {
+		catch (Exception $e)
+		{
 			JLog::add('component/com_emundus/views/view.vue_jsonclean | Cannot getting the form datas : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), JLog::ERROR, 'com_emundus');
 
 			return 0;

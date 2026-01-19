@@ -9,11 +9,14 @@
 * {
     font-family: Inter, Arial, sans-serif;
 }
-header { position: fixed; top: -120px; left: 0px; right: 0px; }
+header { position: fixed; right: 0;width: 100%}
 header hr {
     border: none;
     height: 1px;
     background-color: #A4A4A4;
+}
+header table {
+    text-align: right;
 }
 .page-break { page-break-before: always; }
 hr {
