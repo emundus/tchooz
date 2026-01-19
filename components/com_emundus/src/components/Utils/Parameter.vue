@@ -9,7 +9,7 @@
 		<label
 			v-if="parameter.hideLabel !== true"
 			:for="paramId"
-			class="tw-mb-0 tw-flex tw-items-end tw-font-medium"
+			class="parameter-label tw-mb-0 tw-flex tw-items-end tw-font-medium"
 			:class="parameter.helptext && helpTextType === 'above' ? 'tw-mb-0' : ''"
 		>
 			{{ translate(parameter.label) }}

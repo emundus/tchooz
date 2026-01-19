@@ -15,6 +15,7 @@ use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Services\Automation\FieldTransformer;
 use Tchooz\Traits\TraitTable;
 
@@ -83,7 +84,7 @@ class CampaignDataConditionResolver implements ConditionTargetResolverInterface
 	 *
 	 * @return mixed
 	 */
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$value = null;
 

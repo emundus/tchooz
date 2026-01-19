@@ -1,6 +1,6 @@
 <?php
 
-namespace Tchooz\Entities\Fields;
+namespace Tchooz\Services\Field;
 
 use Joomla\CMS\Language\Text;
 

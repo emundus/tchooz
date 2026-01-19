@@ -289,7 +289,12 @@ class Api
 				}
 			}
 
-			$request = $this->client->patch($this->baseUrl . '/' . $url, $params);
+			if (!str_contains($url, 'https'))
+			{
+				$url = $this->baseUrl . '/' . $url;
+			}
+
+			$request = $this->client->patch($url, $params);
 
 			$response['status'] = $request->getStatusCode();
 			$response['data']   = json_decode($request->getBody());

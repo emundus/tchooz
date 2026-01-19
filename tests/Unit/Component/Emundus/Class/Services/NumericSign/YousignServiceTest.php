@@ -55,7 +55,7 @@ class YousignServiceTest extends UnitTestCase
 
 		$this->application_file = $this->m_files->getFnumInfos($this->dataset['fnum']);
 
-		$attachmentRepository  = new AttachmentTypeRepository($this->db);
+		$attachmentRepository  = new AttachmentTypeRepository();
 		$attachment_id         = $this->h_dataset->createSampleAttachment();
 		$attachment_type = $attachmentRepository->loadAttachmentTypeById($attachment_id);
 

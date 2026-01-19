@@ -17,7 +17,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
 use Tchooz\Entities\Fields\ChoiceField;
-use Tchooz\Entities\Fields\FieldResearch;
+use Tchooz\Services\Field\FieldResearch;
 
 require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();

@@ -56,6 +56,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 
 		if (empty($contextFilters['search']))
 		{
+			// todo: replace this to use "storedValues" only and remove automationId usage, to make it generic
 			if (!empty($contextFilters['automationId'])) {
 				// get the automation conditions on this target type to load by default already selected fields
 				$automationId = (int)$contextFilters['automationId'];
@@ -107,6 +108,21 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 								}
 							}
 						}
+					}
+				}
+			}
+
+			if (!empty($contextFilters['storedValues']))
+			{
+				$storedValues = $contextFilters['storedValues'];
+				foreach ($storedValues as $storedValue) {
+					list($formId, $elementId) = explode('.', $storedValue);
+					$elements = \EmundusHelperEvents::getFormElements((int)$formId, (int)$elementId, true, [], []);
+					$element = $elements[0] ?? null;
+					if (!empty($element)) {
+						$field = FieldTransformer::transformFabrikElementIntoField($element);
+
+						$fields[] = $field;
 					}
 				}
 			}
@@ -198,7 +214,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$foundValue = null;
 
@@ -224,7 +240,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 				}
 				$helper = new EmundusHelperFabrik();
 
-				$elementValue = $helper->getFabrikElementValue((array)$element, $context->getFile(), 0, ValueFormatEnum::RAW, $context->getUserId());
+				$elementValue = $helper->getFabrikElementValue((array)$element, $context->getFile(), 0, $format, $context->getUserId());
 
 				if (!empty($context->getFile()))
 				{

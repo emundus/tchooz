@@ -10,12 +10,6 @@
 
 namespace scripts;
 
-
-use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Entities\Addons\AddonValue;
-use Tchooz\Repositories\Addons\AddonRepository;
-use Tchooz\Repositories\Workflow\StepTypeRepository;
-
 class Release2_12_1Installer extends ReleaseInstaller
 {
 	private array $tasks = [];

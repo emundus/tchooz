@@ -8,6 +8,7 @@
  */
 
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
@@ -15,6 +16,7 @@ use Joomla\CMS\Router\Route;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Entities\Automation\EventContextEntity;
 
 // phpcs:disable PSR1.Files.SideEffects
 defined('_JEXEC') or die('Restricted access');
@@ -90,6 +92,23 @@ class plgUserEmundus_registration_email extends CMSPlugin
 
 					// save user data
 					if ($table->store()) {
+						// dispatch event First Login
+						$dispatcher = Factory::getApplication()->getDispatcher();
+						PluginHelper::importPlugin('emundus');
+						$onCallEventHandler = new GenericEvent(
+							'onCallEventHandler',
+							[
+								'onAfterUserActivation',
+								[
+									'context' => new EventContextEntity(
+										$user,
+										[],
+										[$user->id]
+									)
+								]
+							]
+						);
+						$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 						$this->app->enqueueMessage(Text::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'), 'success');
 					}
 					else {

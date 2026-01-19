@@ -38,15 +38,10 @@ class NumericField extends Field
 
 	public function toSchema(): array
 	{
-		return [
-			'type' => NumericField::getType(),
-			'name' => $this->getName(),
-			'label' => $this->getLabel(),
-			'required' => $this->isRequired(),
-			'min' => $this->getMin(),
-			'max' => $this->getMax(),
-			'group' => $this->getGroup()?->toSchema(),
-			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
-		];
+		$schema = $this->defaultSchema();
+		$schema['min'] = $this->getMin();
+		$schema['max'] = $this->getMax();
+
+		return $schema;
 	}
 }

@@ -104,4 +104,40 @@ class EmundusRepository
 
 		return $items;
 	}
+
+	/**
+	 * @param   array  $fields
+	 *
+	 * @return array
+	 */
+	public function getItemsByFields(array $fields): array
+	{
+		$items = [];
+
+		$query = $this->db->getQuery(true)
+			->select($this->alias . '.*')
+			->from($this->db->quoteName($this->tableName, $this->alias));
+
+		foreach ($fields as $field => $value) {
+			if (!in_array($field, $this->columns) && !in_array($this->alias . '.' . $field, $this->columns))
+			{
+				throw new \InvalidArgumentException("Field '{$field}' not allowed.");
+			}
+
+			if (is_array($value)) {
+				$query->where($this->db->quoteName($this->alias . '.' . $field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+			} else {
+				$query->where($this->db->quoteName($this->alias . '.' . $field) . ' = ' . $this->db->quote($value));
+			}
+		}
+
+		try {
+			$this->db->setQuery($query);
+			$items = $this->db->loadObjectList();
+		} catch (\Exception $e) {
+			Log::add('Error on fetching items by fields for table ' . $this->tableName . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository');
+		}
+
+		return $items;
+	}
 }

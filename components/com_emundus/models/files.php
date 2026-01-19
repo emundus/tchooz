@@ -1945,7 +1945,8 @@ class EmundusModelFiles extends JModelLegacy
 
 							$onAfterStatusChangeEventHandler = new GenericEvent(
 								'onCallEventHandler',
-								['onAfterStatusChange',
+								[
+									'onAfterStatusChange',
 									// Datas to pass to the event
 									[
 										'fnum' => $fnum,
