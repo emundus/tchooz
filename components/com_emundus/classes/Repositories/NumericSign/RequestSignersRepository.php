@@ -14,6 +14,7 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\RequestSigners;
+use Tchooz\Enums\NumericSign\SignAuthenticationLevelEnum;
 use Tchooz\Enums\NumericSign\SignStatusEnum;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Traits\TraitTable;
@@ -99,12 +100,17 @@ class RequestSignersRepository
 		{
 			$signer = new RequestSigners(
 				$request,
-				$contact
+				$contact,
+				SignStatusEnum::from($signer_object->status),
+				$signer_object->id,
+				$signer_object->signed_at,
+				$signer_object->step,
+				$signer_object->page,
+				$signer_object->position,
+				$signer_object->order,
+				$signer_object->anchor,
+				SignAuthenticationLevelEnum::from($signer_object->authentication_level)
 			);
-			$signer->setId($signer_object->id);
-			$signer->setStatus($signer_object->status);
-			$signer->setStep($signer_object->step);
-
 			return $signer;
 		}
 

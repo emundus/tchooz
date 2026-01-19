@@ -4,5 +4,9 @@
         "phpmetrics/phpmetrics": "^2.8",
         "php-parallel-lint/php-parallel-lint": "^1.4",
         "phpstan/phpstan": "^2.0"
-    }
+    },
+  "require": {
+    "ext-libxml": "*",
+    "ext-simplexml": "*"
+  }
 }

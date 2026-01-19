@@ -12,6 +12,7 @@ namespace Tchooz\api;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\ClientException;
 use Joomla\CMS\Log\Log;
+use Tchooz\Transformers\XMLTransformer;
 
 defined('_JEXEC') or die('Restricted access');
 
@@ -166,6 +167,13 @@ class Api
 			{
 				$response['data'] = json_decode($request->getBody());
 			}
+			elseif (
+				str_contains($contentType, 'application/xml') ||
+				str_contains($contentType, 'text/xml')
+			)
+			{
+				$response['data'] = XMLTransformer::fromXMLtoObject($request->getBody());
+			}
 			else
 			{
 				$response['data']         = $request->getBody()->getContents();
@@ -240,12 +248,20 @@ class Api
 				{
 					unset($params['headers']['Content-Type']);
 				}
-
 				$request = $this->client->post($this->baseUrl . '/' . $url, $params);
 			}
-
+			
 			$response['status'] = $request->getStatusCode();
-			$response['data']   = json_decode($request->getBody());
+		    if (
+				str_contains($request->getHeaderLine('Content-Type'), 'application/xml') ||
+				str_contains($request->getHeaderLine('Content-Type'), 'text/xml')
+			)
+			{
+				$response['data'] = XMLTransformer::fromXMLtoObject($request->getBody());
+			}
+			else {
+				$response['data']   = json_decode($request->getBody());
+			}
 		}
 		catch (ClientException $e)
 		{
@@ -289,10 +305,24 @@ class Api
 				}
 			}
 
-			$request = $this->client->patch($this->baseUrl . '/' . $url, $params);
+			if (!str_contains($url, 'https'))
+			{
+				$url = $this->baseUrl . '/' . $url;
+			}
+
+			$request = $this->client->patch($url, $params);
 
 			$response['status'] = $request->getStatusCode();
-			$response['data']   = json_decode($request->getBody());
+			if (
+				str_contains($request->getHeaderLine('Content-Type'), 'application/xml') ||
+				str_contains($request->getHeaderLine('Content-Type'), 'text/xml')
+			)
+			{
+				$response['data'] = XMLTransformer::fromXMLtoObject($request->getBody());
+			}
+			else {
+				$response['data']   = json_decode($request->getBody());
+			}
 		}
 		catch (ClientException $e)
 		{
@@ -323,7 +353,16 @@ class Api
 
 			$request            = $this->client->delete($this->baseUrl . '/' . $url, ['headers' => $this->getHeaders()]);
 			$response['status'] = $request->getStatusCode();
-			$response['data']   = json_decode($request->getBody());
+			if (
+				str_contains($request->getHeaderLine('Content-Type'), 'application/xml') ||
+				str_contains($request->getHeaderLine('Content-Type'), 'text/xml')
+			)
+			{
+				$response['data'] = XMLTransformer::fromXMLtoObject($request->getBody());
+			}
+			else {
+				$response['data']   = json_decode($request->getBody());
+			}
 		}
 		catch (ClientException $e)
 		{
@@ -343,4 +382,12 @@ class Api
 
 		return $response;
 	}
+
+	protected function hasRequestFailed($response): bool
+	{
+		return in_array($response['status'], [
+			400, 401, 403, 404, 405, 429, 500, 503
+		], true);
+	}
+
 }

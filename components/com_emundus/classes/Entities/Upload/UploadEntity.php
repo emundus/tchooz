@@ -22,7 +22,7 @@ class UploadEntity
 
 	private string $filename;
 
-	private string $description;
+	private ?string $description;
 
 	private UploadValidationStatusEnum $validationStatus = UploadValidationStatusEnum::TO_BE_VALIDATED;
 
@@ -49,7 +49,7 @@ class UploadEntity
 		string $fnum,
 		int $attachmentId,
 		string $filename,
-		string $description,
+		?string $description,
 		?string $localFilename,
 		?int $campaignId = null,
 		?int $size = null,
@@ -147,12 +147,12 @@ class UploadEntity
 		$this->filename = $filename;
 	}
 
-	public function getDescription(): string
+	public function getDescription(): ?string
 	{
 		return $this->description;
 	}
 
-	public function setDescription(string $description): void
+	public function setDescription(?string $description): void
 	{
 		$this->description = $description;
 	}

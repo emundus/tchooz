@@ -9,31 +9,62 @@
 
 namespace Tchooz\Services\Export\Excel;
 
-use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Services\Export\ExportOptions;
+use Tchooz\Services\Export\HeadersEnum;
 
-class ExcelOptions
+class ExcelOptions extends ExportOptions
 {
-	private ExportModeEnum $mode;
+	private array $synthesis = [];
 
-	public function __construct(ExportModeEnum $mode)
+	const DEFAULT_SYNTHESIS = [
+		HeadersEnum::FNUM,
+		HeadersEnum::STATUS,
+		HeadersEnum::LASTNAME,
+		HeadersEnum::FIRSTNAME,
+		HeadersEnum::EMAIL,
+	];
+
+	public function __construct(array $synthesis = [])
 	{
-		$this->mode = $mode;
+		parent::__construct(
+			'xlsx',
+			0,
+			'default',
+			[],
+			'en-GB'
+		);
+		$this->synthesis = $synthesis;
 	}
 
 	public static function fromObject(object $options): ExcelOptions
 	{
-		$mode = ExportModeEnum::from($options->mode ?? ExportModeEnum::GROUP_CONCAT->value);
+		$campaign           = $options->campaign ?? 0;
+		$exportVersion      = $options->export_version ?? 'default';
+		$elements           = $options->elements ? explode(',', $options->elements) : [];
+		$lang               = $options->lang ?? 'en-GB';
 
-		return new ExcelOptions($mode);
+		if(!empty($options->synthesis) && is_string($options->synthesis)) {
+			$options->synthesis = explode(',', $options->synthesis);
+		}
+		$synthesis            = $options->synthesis ? $options->synthesis : [];
+
+		$excelOptions = new ExcelOptions($synthesis);
+
+		$excelOptions->setCampaign($campaign);
+		$excelOptions->setExportVersion($exportVersion);
+		$excelOptions->setElements($elements);
+		$excelOptions->setLang($lang);
+
+		return $excelOptions;
 	}
 
-	public function getMode(): ExportModeEnum
+	public function getSynthesis(): array
 	{
-		return $this->mode;
+		return $this->synthesis;
 	}
 
-	public function setMode(ExportModeEnum $mode): void
+	public function setSynthesis(array $synthesis): void
 	{
-		$this->mode = $mode;
+		$this->synthesis = $synthesis;
 	}
 }

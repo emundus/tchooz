@@ -710,7 +710,7 @@ export default {
 											: filter.value;
 
 									if (filterValue !== '' && filterValue !== 'all') {
-										url += '&' + filter.key + '=' + filterValue;
+										url += '&' + filter.key + '=' + encodeURIComponent(filterValue);
 									}
 								});
 							}

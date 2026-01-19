@@ -23,6 +23,11 @@
                                type="number"
                                default="1"
                         />
+                        <field name="average_multiple_max"
+                               label="PLG_ELEMENT_AVERAGE_ELEMENT_MAXIMUM"
+                               type="number"
+                               default="20"
+                        />
                     </fieldset>
                 </fields>
             </field>
@@ -35,6 +40,13 @@
                     label="PLG_ELEMENT_AVERAGE_USED_AS_TOTAL"
                     description="PLG_ELEMENT_AVERAGE_USED_AS_TOTAL_DESC"
                     default="0"
+            />
+            <field
+                    type="field"
+                    name="average_over"
+                    label="PLG_ELEMENT_AVERAGE_AVERAGE_OVER"
+                    description="PLG_ELEMENT_AVERAGE_AVERAGE_OVER"
+                    default="100"
             />
         </fieldset>
     </fields>

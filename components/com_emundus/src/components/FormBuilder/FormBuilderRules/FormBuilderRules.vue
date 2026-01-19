@@ -488,7 +488,7 @@ export default {
 		searchedRules() {
 			if (this.keywords) {
 				let elements_found = this.elements.filter((element) =>
-					element.label[useGlobalStore().getShortLang].toLowerCase().includes(this.keywords.toLowerCase()),
+					element.label.toLowerCase().includes(this.keywords.toLowerCase()),
 				);
 				return this.rules.filter((rule) => {
 					let found = false;

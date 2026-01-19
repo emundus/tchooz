@@ -4,6 +4,7 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('COM_EMUNDUS_SMS_LABEL');
 Text::script('COM_EMUNDUS_SMS_MESSAGE');
@@ -18,11 +19,7 @@ Text::script('COM_EMUNDUS_SMS_TEMPLATE_PLACEHOLDER');
 Text::script('COM_EMUNDUS_SMS_RECIPIENTS');
 Text::script('COM_EMUNDUS_EMAILS_MESSAGE_FROM');
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
+$data = LayoutFactory::prepareVueData();
 
 ?>
 
@@ -47,10 +44,10 @@ $hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
     <div id="em-component-vue"
          component="SMS/SMSAppFile"
          fnum="<?= $this->fnum ?>"
-         shortLang="<?= $short_lang ?>"
-         currentLanguage="<?= $current_lang ?>"
+         shortLang="<?= $data['short_lang'] ?>"
+         currentLanguage="<?= $data['current_lang'] ?>"
     >
     </div>
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

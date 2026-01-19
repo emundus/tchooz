@@ -1,9 +1,9 @@
 <?php
+
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
 use Tchooz\Entities\Automation\EventEntity;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('COM_EMUNDUS_AUTOMATION_ADD');
 Text::script('COM_EMUNDUS_AUTOMATION_EDIT');
@@ -96,10 +96,8 @@ foreach (ConditionOperatorEnum::cases() as $operator) {
 	];
 }
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
+$data = LayoutFactory::prepareVueData();
+
 $datas = [
 	'automation' => $this->automation ? $this->automation->serialize() : null,
     'operators' => $operators,
@@ -109,8 +107,8 @@ $datas = [
     }, $this->events),
     'targetPredefinitions' => $this->targetPredefinitions,
     'eventDefinitions' => $this->eventDefinitions,
-	'shortLang' => $short_lang,
-	'currentLanguage' => $current_lang
+	'shortLang' => $data['short_lang'],
+	'currentLanguage' => $data['current_lang']
 ];
 ?>
 
@@ -119,4 +117,4 @@ $datas = [
 >
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $this->hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

@@ -1,5 +1,6 @@
 <script>
 import Parameter from '@/components/Utils/Parameter.vue';
+import transformIntoParameterField from '@/mixins/transformIntoParameterField.js';
 
 export default {
 	name: 'ParameterForm',
@@ -20,10 +21,15 @@ export default {
 			type: Array,
 			required: true,
 		},
+		fields: {
+			type: Array,
+			default: () => [],
+		},
 	},
 	components: {
 		Parameter,
 	},
+	mixins: [transformIntoParameterField],
 	data() {
 		return {
 			initialized: false,
@@ -41,6 +47,27 @@ export default {
 
 			if (this.initialized) {
 				this.reloadParametersRules();
+
+				this.fields.forEach((field) => {
+					if (field.watchers && field.watchers.length > 0) {
+						field.watchers.forEach(async (watcher) => {
+							if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
+								let values = {};
+								let fieldParameter = this.findParameterByName(field.name);
+
+								if (fieldParameter.type === 'select') {
+									group.parameters.forEach(function (param) {
+										// key is the parameter name, value is the parameter value
+										values[param.param] = param.value;
+									});
+
+									fieldParameter.options = await this.provideParameterOptions(field, values);
+									fieldParameter.reload += 1;
+								}
+							}
+						});
+					}
+				});
 			}
 		},
 		findParameterByName(name) {
@@ -156,7 +183,7 @@ export default {
 	<div :id="'form-' + id" class="form-container">
 		<h2 v-if="title">{{ title }}</h2>
 		<p v-if="description">{{ description }}</p>
-		<div v-for="group in groups" :key="group.id" class="form-group">
+		<div v-for="group in groups" :key="group.id" class="form-group tw-mt-4">
 			<div v-if="group.isRepeatable">
 				<h3>{{ group.title }}</h3>
 				<p v-if="group.description">{{ group.description }}</p>
@@ -167,27 +194,69 @@ export default {
 					</button>
 				</div>
 
-				<div
-					v-for="(row, rowIndex) in group.rows"
-					:key="rowIndex"
-					class="repeatable-row tw-mb-4 tw-mt-4 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
-				>
-					<div class="tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between">
-						<h3>{{ group.title }} - {{ rowIndex + 1 }}</h3>
-						<span
-							class="material-symbols-outlined tw-cursor-pointer tw-text-red-500"
-							@click="removeRow(group, rowIndex)"
-							>close</span
-						>
-					</div>
-					<div class="tw-flex tw-w-full tw-flex-col tw-gap-4">
-						<Parameter
-							v-for="(field, index) in group.parameters"
-							:key="field.param + '-' + rowIndex + '-' + field.reload"
-							:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
-							:parameter-object="row.parameters[index]"
-							@valueUpdated="onParameterValueUpdated(row.parameters[index], group, rowIndex)"
-						/>
+				<div v-if="group.display === 'table'" class="group-table tw-mt-4">
+					<table class="tw-w-full tw-border-collapse">
+						<thead>
+							<tr>
+								<th
+									v-for="(field, index) in group.parameters"
+									:key="field.param + '-header-' + index"
+									class="tw-border tw-border-neutral-300 tw-bg-neutral-100 tw-px-4 tw-py-2 tw-text-left"
+								>
+									{{ field.label }}
+								</th>
+								<th class="tw-border tw-border-neutral-300 tw-bg-neutral-100 tw-px-4 tw-py-2"></th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(row, rowIndex) in group.rows" :key="rowIndex" class="tw-border-b tw-border-neutral-300">
+								<td
+									v-for="(field, index) in group.parameters"
+									:key="field.param + '-' + rowIndex + '-' + field.reload"
+									class="tw-border tw-border-neutral-300 tw-px-4 tw-py-2"
+								>
+									<Parameter
+										:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
+										:parameter-object="row.parameters[index]"
+										:key="row.parameters[index].param + '-' + rowIndex + '-' + index"
+										@valueUpdated="onParameterValueUpdated(row.parameters[index], group, rowIndex)"
+									/>
+								</td>
+								<td class="tw-border tw-border-neutral-300 tw-px-4 tw-py-2 tw-text-center">
+									<span
+										class="material-symbols-outlined not-to-close-modal tw-cursor-pointer tw-text-red-500"
+										@click="removeRow(group, rowIndex)"
+										>close</span
+									>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div v-else>
+					<div
+						v-for="(row, rowIndex) in group.rows"
+						:key="rowIndex"
+						class="repeatable-row tw-mb-4 tw-mt-4 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 tw-bg-white tw-p-6 tw-shadow-card"
+					>
+						<div class="tw-flex tw-w-full tw-flex-row tw-items-center tw-justify-between">
+							<h3>{{ group.title }} - {{ rowIndex + 1 }}</h3>
+							<span
+								class="material-symbols-outlined not-to-close-modal tw-cursor-pointer tw-text-red-500"
+								@click="removeRow(group, rowIndex)"
+								>close</span
+							>
+						</div>
+						<div class="tw-flex tw-w-full tw-flex-col tw-gap-4">
+							<Parameter
+								v-for="(field, index) in group.parameters"
+								:key="field.param + '-' + rowIndex + '-' + field.reload"
+								:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
+								:parameter-object="row.parameters[index]"
+								:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
+								@valueUpdated="onParameterValueUpdated(row.parameters[index], group, rowIndex)"
+							/>
+						</div>
 					</div>
 				</div>
 				<div class="tw-mt-4 tw-flex tw-w-full tw-flex-row tw-justify-end">
@@ -205,6 +274,7 @@ export default {
 						:key="field.param + '-' + field.reload"
 						:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 						:parameter-object="field"
+						:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
 						@valueUpdated="onParameterValueUpdated(field, group)"
 					/>
 				</div>
@@ -213,4 +283,12 @@ export default {
 	</div>
 </template>
 
-<style scoped></style>
+<style>
+.group-table label {
+	display: none !important;
+}
+
+td .parameter-label {
+	display: none !important;
+}
+</style>

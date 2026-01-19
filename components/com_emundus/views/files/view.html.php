@@ -108,7 +108,6 @@ class EmundusViewFiles extends HtmlView
 			try
 			{
 				$m_filters                  = new EmundusFiltersFiles($menu_params->toArray());
-				$this->filters              = $m_filters->getFilters();
 				$this->applied_filters      = $m_filters->getAppliedFilters();
 				$this->quick_search_filters = $m_filters->getQuickSearchFilters();
 				$this->count_filter_values  = $menu_params->get('count_filter_values', 0);

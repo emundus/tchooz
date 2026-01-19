@@ -10,9 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -75,32 +74,13 @@ Text::script('COM_EMUNDUS_ONBOARD_ADD_ORG_OTHER_CONTACT');
 Text::script('COM_EMUNDUS_REGISTRANTS_FILE_READY');
 Text::script('COM_EMUNDUS_URL_UNVERIFIED_AND_UNSECURED');
 
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1)
-{
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else
-{
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
+$data = LayoutFactory::prepareVueData();
 
 $datas = [
-	'shortLang' => $short_lang,
-	'currentLanguage' => $current_lang,
-	'defaultLang' => $default_lang,
-	'manyLanguages' => $many_languages,
+    'shortLang'       => $data['short_lang'],
+    'currentLanguage' => $data['current_lang'],
+    'defaultLang'     => $data['default_lang'],
+    'manyLanguages'   => $data['many_languages'],
 ];
 ?>
 
@@ -110,4 +90,4 @@ $datas = [
 >
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

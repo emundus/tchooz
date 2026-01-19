@@ -38,7 +38,7 @@ export default {
 				case 'secondary':
 					return 'tw-btn-secondary';
 				case 'link':
-					return 'tw-underline';
+					return 'tw-underline tw-border-0';
 				case 'cancel':
 					return 'tw-btn-cancel';
 				case 'disabled':

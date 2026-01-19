@@ -3,6 +3,7 @@
 namespace Tchooz\Entities\Fields;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Services\Field\FieldOptionProvider;
 
 class ChoiceField extends Field
 {
@@ -11,6 +12,8 @@ class ChoiceField extends Field
 	private bool $multiple = false;
 
 	private bool $choicesGrouped = false;
+
+	private ?FieldOptionProvider $optionsProvider = null;
 
 	public function __construct(
 		string $name,
@@ -24,11 +27,11 @@ class ChoiceField extends Field
 	) {
 		parent::__construct($name, $label, $required, $group);
 
-		if (!empty($choices)) {
-			if (!$multiple && $addSelectOption) {
-				$this->addChoice(new ChoiceFieldValue(null, Text::_('TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION')));
-			}
+		if (!$multiple && $addSelectOption) {
+			$this->addChoice(new ChoiceFieldValue(null, Text::_('TCHOOZ_AUTOMATION_FIELD_CHOICE_SELECT_OPTION')));
+		}
 
+		if (!empty($choices)) {
 			foreach ($choices as $choice) {
 				assert($choice instanceof ChoiceFieldValue);
 				$this->addChoice($choice);
@@ -74,18 +77,30 @@ class ChoiceField extends Field
 		return $this->choicesGrouped;
 	}
 
+	public function setOptionsProvider(FieldOptionProvider $provider): self
+	{
+		$this->optionsProvider = $provider;
+
+		return $this;
+	}
+
+	public function getOptionsProvider(): ?FieldOptionProvider
+	{
+		return $this->optionsProvider;
+	}
+
 	public function toSchema(): array
 	{
-		return [
-			'name' => $this->name,
-			'label' => $this->label,
-			'type' => $this->getType(),
-			'choices' => array_map(fn($choice) => $choice->toSchema(), $this->choices),
-			'required' => $this->required,
-			'multiple' => $this->getMultiple(),
-			'group' => $this->getGroup()?->toSchema(),
-			'research' => $this->getResearch()?->toSchema(),
-			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
-		];
+		$schema = $this->defaultSchema();
+		$schema['choices'] = array_map(fn($choice) => $choice->toSchema(), $this->choices);
+		$schema['multiple'] = $this->getMultiple();
+
+		if (!empty($this->getOptionsProvider()))
+		{
+			$schema['optionsProvider'] = $this->getOptionsProvider()->toSchema();
+		}
+
+		return $schema;
+
 	}
 }

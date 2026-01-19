@@ -14,8 +14,9 @@ enum ConditionTargetTypeEnum: string
 	case DATE_RANGE = 'date_range';
 	case CALCULATED = 'calculated';
 	case FILEDATA = 'file_data';
-
+	case FILEATTACHMENTDATA = 'file_attachment_data';
 	case ALIASDATA = 'alias_data';
+	case STATICVALUE = 'static_value';
 
 	public function getLabel(): string
 	{
@@ -30,7 +31,9 @@ enum ConditionTargetTypeEnum: string
 			self::DATE_RANGE => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_DATE_RANGE'),
 			self::CALCULATED => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_CALCULATED'),
 			self::FILEDATA => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FILEDATA'),
+			self::FILEATTACHMENTDATA => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_FILEATTACHMENTDATA'),
 			self::ALIASDATA => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_ALIASDATA'),
+			self::STATICVALUE => Text::_('COM_EMUNDUS_ENUM_CONDITION_TARGET_TYPE_STATICVALUE'),
 		};
 	}
 }

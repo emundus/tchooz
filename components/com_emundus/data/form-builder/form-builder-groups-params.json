@@ -1,6 +1,15 @@
 {
   "parameters": [
     {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_INTRO",
+      "name": "intro",
+      "type": "textarea",
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
+    },
+    {
       "label": "COM_EMUNDUS_ONBOARD_BUILDER_SECTIONS_OUTRO",
       "name": "outro",
       "type": "textarea",

@@ -38,5 +38,4 @@ class FieldGroup
 			'isRepeatable' => $this->isRepeatable,
 		];
 	}
-
 }

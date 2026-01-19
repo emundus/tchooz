@@ -24,6 +24,7 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
@@ -33,10 +34,13 @@ use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Enums\Analytics\PeriodEnum;
 use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\Emails\TagRepository;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
+use Tchooz\Response;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
+use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
@@ -2373,11 +2377,29 @@ class EmundusControllersettings extends BaseController
 							break;
 						case 'sogecommerce':
 						case 'stripe':
+						case 'hubspot':
 							break;
 
 						case 'docusign':
 							try {
 								$docusignSynchronizer = new DocuSignSynchronizer();
+							} catch (Exception $e) {
+								$response['status'] = false;
+								break;
+							}
+							break;
+
+						case 'docusign':
+							try {
+								$docusignSynchronizer = new DocuSignSynchronizer();
+							} catch (Exception $e) {
+								$response['status'] = false;
+								break;
+							}
+							break;
+						case 'docaposte':
+							try {
+								$docaposteSynchronizer = new DocaposteSynchronizer();
 							} catch (Exception $e) {
 								$response['status'] = false;
 								break;
@@ -3214,6 +3236,43 @@ class EmundusControllersettings extends BaseController
 			header('Content-Length: ' . filesize($excel_filepath));
 
 			$response['download_file'] = Uri::root() . 'tmp/' . basename($excel_filepath);
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function deletealias()
+	{
+		try
+		{
+			if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			$alias = $this->input->getString('id', 0);
+			if (empty($alias))
+			{
+				$aliases = $this->input->getString('ids');
+				$aliases = explode(',', $aliases);
+			}
+			else {
+				$aliases = [$alias];
+			}
+
+			if (empty($aliases))
+			{
+				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ALIAS_DELETE_NO_ID'), Response::HTTP_BAD_REQUEST);
+			}
+
+			$fabrikRepository = new FabrikRepository();
+			$deleted = $fabrikRepository->deleteAliases($aliases);
+
+			$response = Response::ok($deleted, Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ALIAS_DELETED'));
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);

@@ -2,6 +2,8 @@
 
 namespace Tchooz\Entities\Fields;
 
+use Tchooz\Services\Field\FieldResearch;
+
 class StringField extends Field
 {
 	private ?int $minLength = null;

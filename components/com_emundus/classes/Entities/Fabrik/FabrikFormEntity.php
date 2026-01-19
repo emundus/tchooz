@@ -9,6 +9,7 @@
 
 namespace Tchooz\Entities\Fabrik;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
 
 class FabrikFormEntity
@@ -47,19 +48,24 @@ class FabrikFormEntity
 
 	private string $paramsRaw = '';
 
-	// TODO: Link FabrikGroupEntity[] $groups;
+	/**
+	 * @var array<FabrikGroupEntity>
+	 */
+	private array $groups = [];
 
 	// TODO: Link FabrikListEntity $list;
 
 	public function __construct(
 		int $id,
 		string $label,
+		string $intro,
 		\DateTime $created,
 		User $createdBy
 	)
 	{
 		$this->id        = $id;
 		$this->label     = $label;
+		$this->intro     = $intro;
 		$this->created   = $created;
 		$this->createdBy = $createdBy;
 	}
@@ -232,5 +238,34 @@ class FabrikFormEntity
 	public function setParamsRaw(string $paramsRaw): void
 	{
 		$this->paramsRaw = $paramsRaw;
+	}
+
+	public function getGroups(): array
+	{
+		return $this->groups;
+	}
+
+	public function setGroups(array $groups): void
+	{
+		$this->groups = $groups;
+	}
+
+	public function __serialize(): array
+	{
+		$serialized = [
+			'id' => $this->id,
+			'label' => Text::_($this->label),
+		];
+
+		if(!empty($this->groups))
+		{
+			foreach($this->groups as $group)
+			{
+				assert($group instanceof FabrikGroupEntity);
+				$serialized['groups'][] = $group->__serialize();
+			}
+		}
+
+		return $serialized;
 	}
 }

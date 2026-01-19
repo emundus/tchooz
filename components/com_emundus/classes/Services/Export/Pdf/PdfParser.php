@@ -41,6 +41,37 @@ class PdfParser
 				</head>';
 	}
 
+	public function createHeader(int $columns): string
+	{
+		$topMargin = 120;
+
+		// Columns is between 1 and 5
+		switch ($columns) {
+			case 1:
+				$topMargin = 80;
+				break;
+			case 2:
+				$topMargin = 100;
+				break;
+			case 3:
+				$topMargin = 120;
+				break;
+			case 4:
+				$topMargin = 130;
+				break;
+			case 5:
+				$topMargin = 160;
+				break;
+		}
+
+		$pageMargin = $topMargin + 10;
+
+		$header = '<style>@page { margin-top: ' . $pageMargin . 'px !important; }</style>';
+		$header .= '<header style="top: -' . $topMargin . 'px;">';
+
+		return $header;
+	}
+
 	public function createTable(int $width = 100): string
 	{
 		return '<table style="width:' . $width . '%;">';

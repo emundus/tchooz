@@ -10,8 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('BACK');
 Text::script('COM_EMUNDUS_ONBOARD_EXPORTS_LIST');
@@ -30,19 +30,13 @@ Text::script('COM_EMUNDUS_ONBOARD_ACTION_DELETE');
 Text::script('COM_EMUNDUS_ONBOARD_EXPORT_DELETE');
 Text::script('COM_EMUNDUS_ONBOARD_FILTER_ALL');
 
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-
-$app = Factory::getApplication();
-$lang = $app->getLanguage();
-
-$short_lang   = substr($lang->getTag(), 0, 2);
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
      component="Exports/ExportsList"
-     shortlang="<?php echo $short_lang ?>"
+     shortlang="<?php echo $data['short_lang'] ?>"
 >
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

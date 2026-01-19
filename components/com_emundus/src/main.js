@@ -110,7 +110,6 @@ if (document) {
 					'SMS/SMSEdit',
 					'SMS/SMSAppFile',
 					'SMS/SMSSend',
-					'Filters',
 					'Ranking/rankings',
 					'Payment/CartAppFile',
 					'Application/ApplicationChoices',
@@ -205,7 +204,10 @@ if (document) {
 						app = createApp(Expert, {});
 						break;
 					case 'Exports/Exports':
-						app = createApp(Exports, {});
+						console.log(datas);
+						app = createApp(Exports, {
+							fnumsCount: parseInt(datas.fnums_count),
+						});
 						break;
 					case 'Dashboard/Dashboard':
 						if (el.getAttribute('data')) {
@@ -217,21 +219,6 @@ if (document) {
 						});
 
 						app.use(VueFusionCharts, FusionCharts, Charts, FusionTheme);
-						break;
-					case 'Filters':
-						const appliedFilters = JSON.parse(atob(el.getAttribute('data-applied-filters')));
-						const filters = JSON.parse(atob(el.getAttribute('data-filters')));
-
-						app = createApp(Filters, {
-							menuId: parseInt(el.getAttribute('data-menu-id')),
-							defaultAppliedFilters: appliedFilters,
-							defaultFilters: filters,
-							defaultQuickSearchFilters: JSON.parse(atob(el.getAttribute('data-quick-search-filters'))),
-							countFilterValues: el.getAttribute('data-count-filter-values') === '1',
-							allowAddFilter: el.getAttribute('data-allow-add-filter') === '1',
-							canShareFilters: el.getAttribute('data-can-share-filters') === '1',
-							defaultSelectedRegisteredFilterId: el.getAttribute('data-default-selected-registered-filter-id') || 0,
-						});
 						break;
 					case 'Ranking/rankings':
 						app = createApp(Rankings, {

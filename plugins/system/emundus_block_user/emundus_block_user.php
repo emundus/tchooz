@@ -16,10 +16,13 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.plugin.plugin');
 
+use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Entities\Automation\EventContextEntity;
 
 class plgSystemEmundus_block_user extends CMSPlugin
 {
@@ -88,6 +91,24 @@ class plgSystemEmundus_block_user extends CMSPlugin
 					$this->app->enqueueMessage(Text::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATION_ERROR'), 'error');
 					return;
 				}
+
+				// dispatch event First Login
+				$dispatcher = $this->app->getDispatcher();
+				PluginHelper::importPlugin('emundus');
+				$onCallEventHandler = new GenericEvent(
+					'onCallEventHandler',
+					[
+						'onAfterUserActivation',
+						[
+							'context' => new EventContextEntity(
+								$user,
+								[],
+								[$user->id]
+							)
+						]
+					]
+				);
+				$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 
 				$this->app->enqueueMessage(Text::_('PLG_EMUNDUS_REGISTRATION_EMAIL_ACTIVATED'), 'success');
 

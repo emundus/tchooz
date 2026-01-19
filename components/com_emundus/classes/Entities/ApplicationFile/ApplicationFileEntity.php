@@ -13,7 +13,7 @@ class ApplicationFileEntity
 
 	private string $fnum;
 
-	private int $status;
+	private StatusEntity|int|null $status;
 
 	private int $campaign_id;
 
@@ -34,19 +34,19 @@ class ApplicationFileEntity
 	private ?User $updated_by;
 
 	public function __construct(
-		User           $user,
-		string         $fnum = '',
-		int            $status = 0,
-		int            $campaign_id = 0,
-		int            $published = 1,
-		array          $data = [],
-		int            $id = 0,
-		CampaignEntity $campaign = null,
-		\DateTime      $date_submitted = null,
-		int            $formProgress = 0,
-		int            $attachmentProgress = 0,
-		\DateTime      $updated_at = null,
-		User           $updated_by = null,
+		User                  $user,
+		string                $fnum = '',
+		StatusEntity|int|null $status = 0,
+		int                   $campaign_id = 0,
+		int                   $published = 1,
+		array                 $data = [],
+		int                   $id = 0,
+		CampaignEntity        $campaign = null,
+		\DateTime             $date_submitted = null,
+		int                   $formProgress = 0,
+		int                   $attachmentProgress = 0,
+		\DateTime             $updated_at = null,
+		User                  $updated_by = null,
 	)
 	{
 		$this->user               = $user;
@@ -96,24 +96,25 @@ class ApplicationFileEntity
 
 	public function generateFnum(int $campaign_id = 0, int $user_id = 0): string
 	{
-		if(empty($campaign_id))
+		if (empty($campaign_id))
 		{
 			$campaign_id = $this->getCampaignId();
 		}
-		if(empty($user_id))
+		if (empty($user_id))
 		{
 			$user_id = $this->user->id;
 		}
 		$this->fnum = date('YmdHis') . str_pad($campaign_id, 7, '0', STR_PAD_LEFT) . str_pad($user_id, 7, '0', STR_PAD_LEFT);
+
 		return $this->fnum;
 	}
 
-	public function getStatus(): int
+	public function getStatus(): StatusEntity|int|null
 	{
 		return $this->status;
 	}
 
-	public function setStatus(int $status): void
+	public function setStatus(StatusEntity|int|null $status): void
 	{
 		$this->status = $status;
 	}
@@ -206,5 +207,24 @@ class ApplicationFileEntity
 	public function setUpdatedBy(User $updated_by): void
 	{
 		$this->updated_by = $updated_by;
+	}
+
+	public function __serialize(): array
+	{
+		return [
+			'id'                 => $this->id,
+			'user'               => $this->user->name,
+			'fnum'               => $this->fnum,
+			'status'             => $this->status,
+			'campaign_id'        => $this->campaign_id,
+			'campaign'           => $this->campaign,
+			'date_submitted'     => $this->date_submitted,
+			'published'          => $this->published,
+			'data'               => $this->data,
+			'formProgress'       => $this->formProgress,
+			'attachmentProgress' => $this->attachmentProgress,
+			'updated_at'         => $this->updated_at,
+			'updated_by'         => $this->updated_by,
+		];
 	}
 }

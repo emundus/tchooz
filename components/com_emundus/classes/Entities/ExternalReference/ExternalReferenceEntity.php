@@ -12,12 +12,21 @@ class ExternalReferenceEntity
 
 	private string $reference; // e.g., UUID from external system
 
-	public function __construct(int $id, string $column, string $internId, string $reference)
+	private ?int $synchronizerId = null; // e.g., HubSpot Synchronizer ID
+
+	private ?string $referenceObject = null; // e.g., 'contacts', 'deals', etc.
+
+	private ?string $referenceAttribute = null; // e.g., 'hs_object_id', 'dealId', etc.
+
+	public function __construct(int $id, string $column, string $internId, string $reference, ?int $synchronizerId = null, ?string $referenceObject = null, ?string $referenceAttribute = null)
 	{
 		$this->id = $id;
 		$this->column = $column;
 		$this->internId = $internId;
 		$this->reference = $reference;
+		$this->synchronizerId = $synchronizerId;
+		$this->referenceObject = $referenceObject;
+		$this->referenceAttribute = $referenceAttribute;
 	}
 
 	public function getId(): int
@@ -43,5 +52,20 @@ class ExternalReferenceEntity
 	public function getReference(): string
 	{
 		return $this->reference;
+	}
+
+	public function getSynchronizerId(): ?int
+	{
+		return $this->synchronizerId;
+	}
+
+	public function getReferenceObject(): ?string
+	{
+		return $this->referenceObject;
+	}
+
+	public function getReferenceAttribute(): ?string
+	{
+		return $this->referenceAttribute;
 	}
 }

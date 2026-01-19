@@ -4248,7 +4248,7 @@ $(document).ready(function() {
                 swal_show_confirm_button = false;
                 swal_show_cancel_button = false;
                 title = 'COM_EMUNDUS_ACCESS_EXPORT';
-                html = '<div id="data"></div>';
+                html = '<div id="data" class="tw-flex tw-flex-col tw-items-center tw-justify-center tw-min-w-[20vw] tw-min-h-[20vh]"><div id="export-loader" class="em-loader"></div><span id="export-loader-message" class="tw-mt-1">' + Joomla.Text._('COM_EMUNDUS_EXPORT_ACCESS_LOADER') + '</span></div>';
 
                 // Replace by fetch
                 fetch(url, {
@@ -4259,8 +4259,9 @@ $(document).ready(function() {
                     },
                     cache: "no-cache"
                 }).then(response => response.text()).then(data => {
+                    document.getElementById("export-loader").remove();
+                    document.getElementById("export-loader-message").remove();
                     $('#data').append(data);
-                    $('#data').removeClass('em-loader');
                 });
                 break;
 

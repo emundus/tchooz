@@ -108,7 +108,7 @@ class ConditionRegistry
 		foreach ($availableResolvers as $type => $resolver) {
 			$schemas[] = [
 				'targetType' => $type,
-				'label' => ConditionTargetTypeEnum::from($type)->getLabel(),
+				'label' => Text::_(ConditionTargetTypeEnum::from($type)->getLabel()),
 				'fields' => array_map(function ($field) {
 					return $field->toSchema();
 				}, $resolver->getAvailableFields($contextFilters)),

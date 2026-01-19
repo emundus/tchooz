@@ -13,11 +13,13 @@ class ExportResult
 {
 	private bool $status;
 
-	private int $progress;
+	private float $progress;
 
 	private string $filePath;
 
-	public function __construct(bool $status, int $progress = 0, string $filePath = '')
+	private array $result = [];
+
+	public function __construct(bool $status, float $progress = 0, string $filePath = '')
 	{
 		$this->status = $status;
 		$this->progress = $progress;
@@ -34,12 +36,12 @@ class ExportResult
 		$this->status = $status;
 	}
 
-	public function getProgress(): int
+	public function getProgress(): float
 	{
 		return $this->progress;
 	}
 
-	public function setProgress(int $progress): void
+	public function setProgress(float $progress): void
 	{
 		$this->progress = $progress;
 	}
@@ -52,5 +54,15 @@ class ExportResult
 	public function setFilePath(string $filePath): void
 	{
 		$this->filePath = $filePath;
+	}
+
+	public function getResult(): array
+	{
+		return $this->result;
+	}
+
+	public function setResult(array $result): void
+	{
+		$this->result = $result;
 	}
 }

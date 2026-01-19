@@ -12,6 +12,7 @@ namespace Tchooz\Enums\Fabrik;
 enum FabrikObjectsEnum: string
 {
 	case FORM = 'form';
+	case GROUP = 'group';
 	case LIST = 'list';
 	case ELEMENT = 'element';
 	case CRON = 'cron';
@@ -20,14 +21,15 @@ enum FabrikObjectsEnum: string
 
 	public function getTable(): string
 	{
-		return match($this)
+		return match ($this)
 		{
-			self::FORM    => '#__fabrik_forms',
-			self::LIST    => '#__fabrik_lists',
+			self::FORM => '#__fabrik_forms',
+			self::GROUP => '#__fabrik_groups',
+			self::LIST => '#__fabrik_lists',
 			self::ELEMENT => '#__fabrik_elements',
-			self::CRON    => '#__fabrik_cron',
-			self::JOIN    => '#__fabrik_joins',
-			self::JS      => '#__fabrik_jsactions',
+			self::CRON => '#__fabrik_cron',
+			self::JOIN => '#__fabrik_joins',
+			self::JS => '#__fabrik_jsactions',
 		};
 	}
 }

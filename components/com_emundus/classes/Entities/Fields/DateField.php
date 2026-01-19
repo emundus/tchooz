@@ -15,13 +15,6 @@ class DateField extends Field
 	 */
 	public function toSchema(): array
 	{
-		return [
-			'name' => $this->name,
-			'label' => $this->label,
-			'type' => $this->getType(),
-			'required' => $this->required,
-			'group' => $this->getGroup()?->toSchema(),
-			'displayRules' => array_map(fn($rule) => $rule->toSchema(), $this->getDisplayRules())
-		];
+		return $this->defaultSchema();
 	}
 }

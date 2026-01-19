@@ -9,9 +9,8 @@
  */
 
 // No direct access to this file
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 defined('_JEXEC') or die('Restricted Access');
 
@@ -171,35 +170,16 @@ Text::script('COM_EMUNDUS_ONBOARD_ADD_SMS');
 Text::script('COM_EMUNDUS_ONBOARD_NOSMS');
 Text::script('COM_EMUNDUS_SMS_PLACEHOLDER');
 
-require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
-require_once(JPATH_BASE . '/components/com_emundus/helpers/cache.php');
-
-$app = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-}
-else {
-	$many_languages = '0';
-}
-
-$user               = $app->getIdentity();
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
-
-$hash = EmundusHelperCache::getCurrentGitHash();
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
-      component="Emails"
-      coordinatorAccess="<?= $coordinator_access ?>"
-      sysadminAccess="<?= $sysadmin_access ?>"
-      shortLang="<?= $short_lang ?>"
-      currentLanguage="<?= $current_lang ?>"
-      manyLanguages="<?= $many_languages ?>">
+     component="Emails"
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     shortLang="<?= $data['short_lang'] ?>"
+     currentLanguage="<?= $data['current_lang'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>">
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

@@ -17,6 +17,7 @@ use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Entities\List\ListResult;
+use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Factories\Export\ExportFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
@@ -51,44 +52,37 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 
 	public function flush(ExportEntity $export): bool
 	{
-		$flushed = false;
-
 		if (empty($export->getCreatedAt()))
 		{
 			$export->setCreatedAt(new \DateTime());
 		}
 
+		$object = (object) [
+			'filename'   => $export->getFilename(),
+			'expired_at' => $export->getExpiredAt()?->format('Y-m-d H:i:s'),
+			'task_id'    => $export->getTask()?->getId(),
+			'hits'       => $export->getHits(),
+			'progress'   => $export->getProgress(),
+			'cancelled'  => $export->isCancelled() ? 1 : 0,
+			'result'     => !empty($export->getResult()) ? json_encode($export->getResult()) : null,
+		];
+
 		if (empty($export->getId()))
 		{
-			$insert = (object) [
-				'created_at' => $export->getCreatedAt()->format('Y-m-d H:i:s'),
-				'created_by' => $export->getCreatedBy()->id,
-				'filename'   => $export->getFilename(),
-				'format'     => $export->getFormat()->value,
-				'expired_at' => $export->getExpiredAt()?->format('Y-m-d H:i:s'),
-				'task_id'    => $export->getTask()?->getId(),
-				'hits'       => $export->getHits(),
-				'progress'   => $export->getProgress(),
-				'cancelled'  => $export->isCancelled() ? 1 : 0,
-			];
+			$object->created_at = $export->getCreatedAt()->format('Y-m-d H:i:s');
+			$object->created_by = $export->getCreatedBy()->id;
+			$object->format     = $export->getFormat()->value;
 
-			if ($flushed = $this->db->insertObject($this->tableName, $insert))
+			if ($flushed = $this->db->insertObject($this->tableName, $object))
 			{
 				$export->setId((int) $this->db->insertid());
 			}
 		}
 		else
 		{
-			$updated = (object) [
-				'id'         => $export->getId(),
-				'filename'   => $export->getFilename(),
-				'expired_at' => $export->getExpiredAt()?->format('Y-m-d H:i:s'),
-				'task_id'    => $export->getTask()?->getId(),
-				'hits'       => $export->getHits(),
-				'progress'   => $export->getProgress(),
-				'cancelled'  => $export->isCancelled() ? 1 : 0,
-			];
-			$flushed = $this->db->updateObject($this->tableName, $updated, 'id');
+			$object->id = $export->getId();
+
+			$flushed = $this->db->updateObject($this->tableName, $object, 'id');
 		}
 
 		return $flushed;
@@ -340,5 +334,115 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		$query->order('created_at ' . $sortDir);
 
 		return $query;
+	}
+
+	public function getAllExportTemplates(int $user_id): array
+	{
+		$query = $this->db->getQuery(true);
+
+		$mode = 'export';
+
+		$query->select('*')
+			->from($this->db->qn('#__emundus_filters'))
+			->where('user = :user_id')
+			->where('mode = :mode')
+			->bind(':user_id', $user_id, ParameterType::INTEGER)
+			->bind(':mode', $mode)
+			->order('time_date DESC');
+		$this->db->setQuery($query);
+		$templates = $this->db->loadObjectList();
+
+		if (!empty($templates))
+		{
+			foreach ($templates as $key => $template)
+			{
+				// Decode constraints
+				$constraints         = json_decode($template->constraints, true);
+				$template->format    = $constraints['format'] ?? null;
+				$template->elements  = $constraints['elements'] ? json_decode($constraints['elements'], true) : [];
+				$template->headers   = $constraints['headers'] ?? [];
+				$template->synthesis = $constraints['synthesis'] ?? [];
+			}
+		}
+
+		return $templates ?: [];
+	}
+
+	public function getExportTemplate(int $id): ?object
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select('*')
+			->from($this->db->qn('#__emundus_filters'))
+			->where('id = :id')
+			->bind(':id', $id, ParameterType::INTEGER);
+		$this->db->setQuery($query);
+		$template = $this->db->loadObject();
+
+		return $template ?: null;
+	}
+
+	public function saveExportTemplate(string $name, ExportFormatEnum $format, array $elements, array $headers, array $synthesis, array $attachments, int $user_id, int $id = 0): int
+	{
+		$constraints = [
+			'format'    => $format->value,
+			'elements'  => json_encode($elements),
+			'headers'   => json_encode($headers),
+			'synthesis' => json_encode($synthesis),
+			'attachments' => json_encode($attachments),
+		];
+
+		$template = (object) [
+			'name'        => $name,
+			'constraints' => json_encode($constraints),
+			'item_id'     => 0,
+			'mode'        => 'export'
+		];
+
+		if (!empty($id))
+		{
+			$template->id = $id;
+			if (!$this->db->updateObject('#__emundus_filters', $template, 'id'))
+			{
+				throw new InvalidArgumentException('Could not update export template with ID ' . $id);
+			}
+		}
+		else
+		{
+			$template->time_date = new \DateTime();
+			$template->user      = $user_id;
+			if (!$this->db->insertObject('#__emundus_filters', $template))
+			{
+				throw new InvalidArgumentException('Could not insert new export template');
+			}
+
+			$id = (int) $this->db->insertid();
+		}
+
+		return $id;
+	}
+
+	public function deleteExportTemplate(int $id): bool
+	{
+		$deleted = false;
+
+		if (!empty($id))
+		{
+			try
+			{
+				$query = $this->db->getQuery(true)
+					->delete($this->db->qn('#__emundus_filters'))
+					->where('id = :id')
+					->bind(':id', $id, ParameterType::INTEGER);
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error deleting export template with ID ' . $id . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.export.repository');
+			}
+		}
+
+		return $deleted;
 	}
 }

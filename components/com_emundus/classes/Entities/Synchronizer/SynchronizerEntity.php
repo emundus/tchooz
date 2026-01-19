@@ -163,4 +163,19 @@ class SynchronizerEntity
 	{
 		$this->context = $context;
 	}
+
+	public function serialize(): array
+	{
+		return [
+			'id'           => $this->getId(),
+			'type'         => $this->getType(),
+			'name'         => $this->getName(),
+			'description'  => $this->getDescription(),
+			'published'    => $this->isPublished(),
+			'enabled'      => $this->isEnabled(),
+			'icon'         => $this->getIcon(),
+			'consumptions' => $this->getConsumptions(),
+			'context'      => $this->getContext()?->value,
+		];
+	}
 }

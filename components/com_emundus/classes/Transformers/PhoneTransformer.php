@@ -13,7 +13,7 @@ use Tchooz\Interfaces\FabrikTransformerInterface;
 
 class PhoneTransformer implements FabrikTransformerInterface
 {
-	public function transform(mixed $value): string
+	public function transform(mixed $value, array $options = []): string
 	{
 		$v = (string) $value;
 		$v = trim($v);

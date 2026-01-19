@@ -4,15 +4,14 @@ namespace Tchooz\Services\Automation;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Tchooz\Entities\Fields\BooleanField;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\DateField;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\FieldGroup;
-use Tchooz\Entities\Fields\FieldResearch;
 use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Fields\YesnoField;
+use Tchooz\Services\Field\FieldResearch;
 
 class FieldTransformer
 {
@@ -68,8 +67,10 @@ class FieldTransformer
 				default:
 					$field = new StringField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
 			}
+
+			$field->setOriginalType($fabrikElement->plugin);
 		}
-		
+
 		return $field;
 	}
 

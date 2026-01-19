@@ -46,7 +46,7 @@ class ExportFactory implements DBFactory
 			createdBy: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject['created_by']),
 			filename: $dbObject['filename'],
 			format: $format,
-			expiredAt: !empty($dbObject['expired_date']) ? new \DateTime($dbObject['expired_at']) : null,
+			expiredAt: !empty($dbObject['expired_at']) ? new \DateTime($dbObject['expired_at']) : null,
 			task: $task,
 			hits: $dbObject['hits'],
 			progress: $dbObject['progress'],

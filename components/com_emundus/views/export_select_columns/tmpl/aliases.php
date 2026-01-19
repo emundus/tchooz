@@ -42,6 +42,7 @@ Text::script('COM_EMUNDUS_ONBOARD_GENERAL_TAGS_LIST');
 Text::script('COM_EMUNDUS_TAG_DESCRIPTION');
 Text::script('COM_EMUNDUS_REGISTRANTS_FILE_READY');
 Text::script('COM_EMUNDUS_ONBOARD_ALIAS_TAGS_LIST_INTRO');
+Text::script('COM_EMUNDUS_ONBOARD_ALIAS_DELETE');
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();

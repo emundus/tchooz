@@ -19,6 +19,10 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\Factories\Fabrik\FabrikFactory;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Response;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Traits\TraitResponse;
 
@@ -38,6 +42,8 @@ class EmundusControllerForm extends BaseController
 	private $_user;
 	private $m_form;
 
+	private FabrikRepository $fabrikRepository;
+
 	/**
 	 * Constructor.
 	 *
@@ -56,6 +62,10 @@ class EmundusControllerForm extends BaseController
 		$this->_user = $this->app->getIdentity();
 
 		$this->m_form = $this->getModel('Form');
+
+		$this->fabrikRepository = new FabrikRepository();
+		$fabrikFactory    = new FabrikFactory($this->fabrikRepository);
+		$this->fabrikRepository->setFactory($fabrikFactory);
 	}
 
 	public function getallform()
@@ -848,30 +858,33 @@ class EmundusControllerForm extends BaseController
 
 	public function getFormsByProfileId()
 	{
+		try
+		{
+			if(!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => Text::_("ACCESS_DENIED"));
-		}
-		else
-		{
 			$profile_id = $this->input->getInt('profile_id');
-
-			$form = $this->m_form->getFormsByProfileId($profile_id);
-
-			if (!empty($form))
+			if(empty($profile_id))
 			{
-				$tab = array('status' => 1, 'msg' => 'worked', 'data' => $form);
+				throw new InvalidArgumentException(Text::_('MISSING_PARAMS'), Response::HTTP_BAD_REQUEST);
 			}
-			else
+
+			$forms = $this->m_form->getFormsByProfileId($profile_id);
+			if(empty($forms))
 			{
-				$tab = array('status' => 0, 'msg' => 'Doesn t worked', 'data' => $form);
+				throw new RuntimeException(Text::_('ERROR_CANNOT_RETRIEVE_FORM'), Response::HTTP_INTERNAL_SERVER_ERROR);
 			}
+
+			$response = Response::ok($forms);
+		}
+		catch (Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
 		}
 
-		echo json_encode((object) $tab);
-		exit;
+		$this->sendJsonResponse($response);
 	}
 
 	public function getDocuments()

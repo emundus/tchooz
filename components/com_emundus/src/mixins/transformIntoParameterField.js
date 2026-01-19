@@ -1,3 +1,5 @@
+import providerService from '../services/provider.js';
+
 export default {
 	methods: {
 		fromFieldEntityToParameter(field, value = null) {
@@ -12,6 +14,8 @@ export default {
 				value: value,
 				displayed: true,
 				displayRules: field.displayRules ? field.displayRules : null,
+				hideLabel: false,
+				watchers: field.watchers ? field.watchers : [],
 			};
 
 			switch (field.type) {
@@ -24,7 +28,7 @@ export default {
 					if (field.multiple || (field.research && field.research.controller && field.research.method)) {
 						let asyncRoute = '';
 						let asyncController = '';
-						let asyncAttributes = [];
+						let asyncAttributes = null;
 						if (field.research) {
 							if (field.research.controller) {
 								asyncController = field.research.controller;
@@ -33,7 +37,15 @@ export default {
 							if (field.research.method) {
 								asyncRoute = field.research.method;
 							}
-							asyncAttributes.push(field.name);
+
+							if (field.research.params) {
+								asyncAttributes = {};
+								Object.keys(field.research.params).forEach((key) => {
+									asyncAttributes[key] = field.research.params[key];
+								});
+							} else {
+								asyncAttributes = [field.name];
+							}
 						}
 
 						parameter.multiple = field.multiple;
@@ -68,6 +80,13 @@ export default {
 						parameter.type = 'select';
 					}
 					break;
+				case 'radio':
+					parameter.type = 'radiobutton';
+					parameter.options = field.choices.map((choice) => ({
+						value: choice.value,
+						label: choice.label,
+					}));
+					break;
 				case 'date':
 					parameter.type = 'datetime';
 					break;
@@ -85,6 +104,184 @@ export default {
 			}
 
 			return parameter;
+		},
+
+		async fieldsToParameterFormGroups(fields, values, display = 'block') {
+			let defaultGroup = {
+				id: 'default-group',
+				title: '',
+				description: '',
+				parameters: [],
+				display: display,
+				isRepeatable: false,
+			};
+			let groups = [];
+
+			if (Array.isArray(values)) {
+				values = {};
+			}
+
+			const asyncRequests = [];
+
+			fields.forEach((param) => {
+				if (param.type === 'choice' && param.choices.length === 0 && param.optionsProvider) {
+					let dependenciesValues = {};
+					if (param.optionsProvider.dependencies.length > 0) {
+						Object.keys(values).forEach((key) => {
+							if (param.optionsProvider.dependencies.includes(key)) {
+								if (values[key] !== null && values[key] !== undefined) {
+									if (typeof values[key] === 'object' && values[key].hasOwnProperty('value')) {
+										dependenciesValues[key] = values[key].value;
+									} else {
+										dependenciesValues[key] = values[key];
+									}
+								} else {
+									dependenciesValues[key] = null;
+								}
+							}
+						});
+					}
+
+					if (param.optionsProvider.method && param.optionsProvider.controller) {
+						const req = providerService
+							.requestData(param.optionsProvider.controller, param.optionsProvider.method, dependenciesValues)
+							.then((response) => {
+								if (response.status) {
+									param.choices = response.data.map((item) => ({
+										value: item.value,
+										label: item.label,
+									}));
+								} else {
+									param.choices = [];
+								}
+
+								if (param.group) {
+									// group is an object with name, label and isRepeatable
+									let group = groups.find((g) => g.id === param.group.name);
+									if (!group) {
+										group = {
+											id: param.group.name,
+											title: param.group.label || '',
+											description: param.group.description || '',
+											parameters: [],
+											isRepeatable: param.group.isRepeatable || false,
+											display: display,
+											rows: [],
+										};
+										groups.push(group);
+									}
+
+									group.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
+								} else {
+									defaultGroup.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
+								}
+							})
+							.catch((error) => {
+								console.error(error);
+							});
+
+						asyncRequests.push(req);
+					}
+				} else {
+					if (param.group) {
+						// group is an object with name, label and isRepeatable
+						let group = groups.find((g) => g.id === param.group.name);
+						if (!group) {
+							group = {
+								id: param.group.name,
+								title: param.group.label || '',
+								description: param.group.description || '',
+								parameters: [],
+								isRepeatable: param.group.isRepeatable || false,
+								display: display,
+								rows: [],
+							};
+							groups.push(group);
+						}
+
+						group.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
+					} else {
+						defaultGroup.parameters.push(this.fromFieldEntityToParameter(param, values[param.name] ?? null));
+					}
+				}
+			});
+
+			await Promise.all(asyncRequests);
+
+			if (defaultGroup.parameters.length > 0) {
+				groups.unshift(defaultGroup);
+			}
+
+			groups.forEach((group) => {
+				if (group.isRepeatable) {
+					if (values[group.id] && Array.isArray(values[group.id])) {
+						group.rows = values[group.id].map((rowValues) => {
+							return {
+								parameters: group.parameters.map((parameter) => {
+									let paramCopy = JSON.parse(JSON.stringify(parameter));
+									// set value from rowValues
+									if (rowValues && rowValues.hasOwnProperty(paramCopy.param)) {
+										paramCopy.value = rowValues[paramCopy.param];
+									} else {
+										paramCopy.value = null;
+									}
+									return paramCopy;
+								}),
+							};
+						});
+					} else {
+						group.rows = [];
+					}
+				}
+			});
+
+			return groups;
+		},
+
+		async provideParameterOptions(param, values) {
+			let dependenciesValues = {};
+			if (param.optionsProvider.dependencies.length > 0) {
+				console.log(Object.keys(values), 'object keys');
+				console.log(values, 'values');
+
+				Object.keys(values).forEach((key) => {
+					if (param.optionsProvider.dependencies.includes(key)) {
+						if (values[key] !== null && values[key] !== undefined) {
+							if (typeof values[key] === 'object' && values[key].hasOwnProperty('value')) {
+								dependenciesValues[key] = values[key].value;
+							} else {
+								dependenciesValues[key] = values[key];
+							}
+						} else {
+							dependenciesValues[key] = null;
+						}
+					}
+				});
+			}
+
+			if (param.optionsProvider.method && param.optionsProvider.controller) {
+				const promise = providerService
+					.requestData(param.optionsProvider.controller, param.optionsProvider.method, dependenciesValues)
+					.then((response) => {
+						if (response.status) {
+							param.choices = response.data.map((item) => ({
+								value: item.value,
+								label: item.label,
+							}));
+						}
+
+						return param.choices;
+					})
+					.catch((error) => {
+						console.error(error);
+						return [];
+					});
+
+				// await the promise and return the result
+				return await promise;
+			} else {
+				return [];
+			}
 		},
 	},
 };

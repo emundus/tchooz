@@ -28,17 +28,9 @@ class AliasDataConditionResolverTest extends UnitTestCase
 		$db = Factory::getContainer()->get('DatabaseDriver');
 		$query = $db->createQuery();
 
-		$query->select('params')
-			->from($db->quoteName('#__fabrik_elements'))
-			->where($db->quoteName('id') . ' = ' . (int)$fnumElementId);
-		$db->setQuery($query);
-		$paramsJson = $db->loadResult();
-		$params = json_decode($paramsJson, true);
-		$params['alias'] = 'fnum';
-
 		$query->clear()
 			->update($db->quoteName('#__fabrik_elements'))
-			->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+			->set($db->quoteName('alias') . ' = ' . $db->quote('fnum'))
 			->where($db->quoteName('id') . ' = ' . (int)$fnumElementId);
 		$db->setQuery($query);
 		$db->execute();

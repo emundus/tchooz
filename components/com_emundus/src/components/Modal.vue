@@ -13,7 +13,7 @@
 					disabled: false,
 				}"
 			>
-				<h1 v-if="title.length > 0" class="tw-text-center" :class="titleClasses">{{ translate(title) }}</h1>
+				<h1 v-if="title.length > 0" class="tw-mb-4 tw-text-center" :class="titleClasses">{{ translate(title) }}</h1>
 				<slot @close="close"> </slot>
 			</div>
 		</div>
@@ -186,5 +186,7 @@ export default {
 	width: 0;
 	background-color: white;
 	opacity: 0;
+	max-height: 100%;
+	overflow-y: auto;
 }
 </style>

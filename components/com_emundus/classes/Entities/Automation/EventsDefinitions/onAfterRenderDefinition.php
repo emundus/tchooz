@@ -10,8 +10,6 @@ use Tchooz\Enums\Automation\TargetTypeEnum;
 class onAfterRenderDefinition extends EventDefinition
 {
 	public const KEY_LOGGED_IN = 'guest';
-
-
 	public function __construct()
 	{
 		parent::__construct('onAfterRender',
@@ -20,7 +18,6 @@ class onAfterRenderDefinition extends EventDefinition
 			]
 		);
 	}
-
 	public function supportTargetPredefinitionsCategories(): array
 	{
 		return [TargetTypeEnum::USER];

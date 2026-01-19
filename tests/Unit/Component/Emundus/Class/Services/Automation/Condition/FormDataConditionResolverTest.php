@@ -7,6 +7,7 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Services\Automation\Condition\FormDataConditionResolver;
 use Tchooz\Services\Automation\Condition\UserDataConditionResolver;
 
@@ -78,6 +79,26 @@ class FormDataConditionResolverTest extends UnitTestCase
 		try {
 			$campaignIdValue = $this->resolver->resolveValue($this->context, $fieldName);
 			$this->assertEquals($this->dataset['campaign'], $campaignIdValue);
+		} catch (\Exception $e) {
+			$this->fail("Exception thrown during resolveValue for database join element: " . $e->getMessage());
+		}
+	}
+
+	/**
+	 * @covers FormDataConditionResolver::resolveValue
+	 * @return void
+	 */
+	public function testResolveValueFormattedDatabaseJoinElement(): void
+	{
+		$elementId = $this->h_dataset->getFormElementForTest(102, 'campaign_id');
+		$fieldName = '102.' . $elementId;
+
+		try {
+			$campaignLabelValue = $this->resolver->resolveValue($this->context, $fieldName, ValueFormatEnum::FORMATTED);
+			$this->assertNotEmpty($campaignLabelValue);
+			$this->assertNotEquals($this->dataset['campaign'], $campaignLabelValue);
+			$this->assertIsString($campaignLabelValue);
+			$this->assertIsNotNumeric($campaignLabelValue);
 		} catch (\Exception $e) {
 			$this->fail("Exception thrown during resolveValue for database join element: " . $e->getMessage());
 		}

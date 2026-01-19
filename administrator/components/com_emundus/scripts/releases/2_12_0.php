@@ -10,14 +10,15 @@
 
 namespace scripts;
 
+use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
+
 use EmundusTableColumn;
 use EmundusTableForeignKey;
 use EmundusTableForeignKeyOnEnum;
 use EmundusColumnTypeEnum;
-use Joomla\CMS\Component\ComponentHelper;
 
 class Release2_12_0Installer extends ReleaseInstaller
 {
