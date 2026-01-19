@@ -63,6 +63,9 @@ module.exports = {
         {
             pattern: /tw-text-main-500/
         },
+        {
+            pattern: /tw-opacity-60/
+        },
     ],
     theme: {
         extend: {

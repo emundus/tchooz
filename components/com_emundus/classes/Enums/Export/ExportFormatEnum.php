@@ -49,4 +49,13 @@ enum ExportFormatEnum: string
 			ExportFormatEnum::PDF => 'export_pdf',
 		};
 	}
+
+	public function getSynthesisParameterKey(): string
+	{
+		return match ($this)
+		{
+			ExportFormatEnum::XLSX => 'default_synthesis_excel',
+			ExportFormatEnum::PDF => 'default_synthesis_pdf',
+		};
+	}
 }

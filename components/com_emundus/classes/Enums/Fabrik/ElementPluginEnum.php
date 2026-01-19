@@ -18,6 +18,7 @@ enum ElementPluginEnum: string
 	case FIELD = 'field';
 	case TEXTAREA = 'textarea';
 	case PASSWORD = 'password';
+	case USER = 'user';
 
 	// Date fields
 	case DATE = 'date';
@@ -30,6 +31,7 @@ enum ElementPluginEnum: string
 	case DROPDOWN = 'dropdown';
 	case RADIO = 'radiobutton';
 	case DATABASEJOIN = 'databasejoin';
+	case CASCADINGDROPDOWN = 'cascadingdropdown';
 	case RATING = 'rating';
 	case YESNO = 'yesno';
 
@@ -45,6 +47,8 @@ enum ElementPluginEnum: string
 	case IBAN = 'iban';
 	case PANEL = 'panel';
 	case DISPLAY = 'display';
+	case COLORPICKER = 'emundus_colorpicker';
+	case CAPTCHA = 'captcha';
 
 	public static function tryFromString(?string $plugin): ?self
 	{
@@ -67,21 +71,31 @@ enum ElementPluginEnum: string
 			self::FIELD => 'COM_EMUNDUS_ONBOARD_TYPE_FIELD',
 			self::TEXTAREA => 'COM_EMUNDUS_ONBOARD_TYPE_TEXTAREA',
 			self::PASSWORD => 'COM_EMUNDUS_REGISTER_PASSWORD1_LABEL',
+			self::USER => 'COM_EMUNDUS_ONBOARD_TYPE_USER',
+
 			self::DATE, self::JDATE, self::BIRTHDAY => 'COM_EMUNDUS_ONBOARD_TYPE_BIRTHDAY',
 			self::YEARS => 'MOD_EMUNDUS_FILTERS_YEARS',
+
 			self::CHECKBOX => 'COM_EMUNDUS_ONBOARD_TYPE_CHECKBOX',
 			self::DROPDOWN => 'COM_EMUNDUS_ONBOARD_TYPE_DROPDOWN',
 			self::RADIO => 'COM_EMUNDUS_ONBOARD_TYPE_RADIOBUTTON',
 			self::DATABASEJOIN => 'COM_EMUNDUS_ONBOARD_TYPE_DATABASEJOIN',
+			self::CASCADINGDROPDOWN => 'COM_EMUNDUS_ONBOARD_TYPE_CASCADINGDROPDOWN',
 			self::RATING => 'COM_EMUNDUS_FABRIK_ELEMENT_RATING',
 			self::YESNO => 'COM_EMUNDUS_ONBOARD_TYPE_YESNO',
+
 			self::FILEUPLOAD, self::EMUNDUS_FILEUPLOAD => 'COM_EMUNDUS_ONBOARD_TYPE_FILE',
+
 			self::BOOKING => 'COM_EMUNDUS_ONBOARD_TYPE_BOOKING',
 			self::CALC => 'COM_EMUNDUS_ONBOARD_BUILDER_CALC_VALUE',
 			self::CURRENCY => 'COM_EMUNDUS_ONBOARD_TYPE_CURRENCY',
 			self::PHONENUMBER => 'COM_EMUNDUS_ONBOARD_TYPE_PHONE_NUMBER',
 			self::IBAN => 'COM_EMUNDUS_ONBOARD_TYPE_IBAN',
-			self::PANEL => 'COM_EMUNDUS_ONBOARD_TYPE_PANEL',
+			self::PANEL, self::DISPLAY => 'COM_EMUNDUS_ONBOARD_TYPE_PANEL',
+			self::COLORPICKER => 'COM_EMUNDUS_ONBOARD_TYPE_COLORPICKER',
+			self::CAPTCHA => 'COM_EMUNDUS_ONBOARD_TYPE_CAPTCHA',
+
+			default => 'COM_EMUNDUS_UNKNOWN',
 		};
 	}
 

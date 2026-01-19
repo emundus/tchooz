@@ -204,7 +204,10 @@ if (document) {
 						app = createApp(Expert, {});
 						break;
 					case 'Exports/Exports':
-						app = createApp(Exports, {});
+						console.log(datas);
+						app = createApp(Exports, {
+							fnumsCount: parseInt(datas.fnums_count),
+						});
 						break;
 					case 'Dashboard/Dashboard':
 						if (el.getAttribute('data')) {

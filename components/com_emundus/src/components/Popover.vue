@@ -1,5 +1,5 @@
 <template>
-	<div :id="id" class="popover-container" @focusout="onFocusOut">
+	<div :id="id" class="popover-container tw-h-full" @focusout="onFocusOut">
 		<button
 			v-if="button"
 			@click="onClickToggle"
@@ -23,8 +23,8 @@
 		<span
 			v-else
 			@click="onClickToggle"
-			class="material-symbols-outlined popover-toggle-btn not-to-close-modal tw-cursor-pointer tw-rounded-coordinator-form tw-p-1 hover:tw-bg-neutral-300"
-			:class="iconClass"
+			class="material-symbols-outlined popover-toggle-btn not-to-close-modal !tw-flex tw-h-full tw-items-center tw-rounded-coordinator-form tw-p-1 hover:tw-bg-neutral-300"
+			:class="[iconClass, disabledClass]"
 		>
 			{{ icon }}
 		</span>
@@ -85,6 +85,10 @@ export default {
 			default: () => {},
 		},
 		absolute: {
+			type: Boolean,
+			default: false,
+		},
+		disabled: {
 			type: Boolean,
 			default: false,
 		},
@@ -223,6 +227,10 @@ export default {
 			}
 		},
 		onClickToggle() {
+			if (this.disabled) {
+				return;
+			}
+
 			this.isOpen = !this.isOpen;
 
 			if (this.isOpen) {
@@ -247,6 +255,11 @@ export default {
 		},
 		close() {
 			this.isOpen = false;
+		},
+	},
+	computed: {
+		disabledClass() {
+			return this.disabled ? 'tw-opacity-60 tw-cursor-not-allowed' : 'tw-cursor-pointer';
 		},
 	},
 };

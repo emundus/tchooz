@@ -97,18 +97,17 @@ class FabrikHelperTest extends UnitTestCase
 		$elements = $db->loadObjectList();
 
 		foreach ($elements as $element) {
-			$params = json_decode($element->params, true);
-			$params['alias'] = 'alias_' . $element->id;
+			$alias = 'alias_' . $element->id;
 
 			$query->clear()
 				->update($db->quoteName('#__fabrik_elements'))
-				->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+				->set($db->quoteName('alias') . ' = ' . $db->quote($alias))
 				->where($db->quoteName('id') . ' = ' . $element->id)
 				->setLimit(1);
 			$db->setQuery($query);
 			$db->execute();
 
-			$elements_by_alias = $this->helper::getElementsByAlias($params["alias"], $form_id);
+			$elements_by_alias = $this->helper::getElementsByAlias($alias, $form_id);
 			$this->assertEquals($element->name, $elements_by_alias[0]->name, 'The element name obtained should be the same as the element name in the database.');
 			$this->assertEquals($element->db_table_name, $elements_by_alias[0]->db_table_name, 'The database table name storage obtained should be the same as the database table name storage in the database.');
 		}
@@ -196,40 +195,10 @@ class FabrikHelperTest extends UnitTestCase
 
 	public function testgetAllFabrikAliases()
 	{
-		$start_time = microtime(true);
 		$fabrik_aliases = $this->helper::getAllFabrikAliases();
-		$end_time = microtime(true);
-		$execution_time = $end_time - $start_time;
-
-		// Old method for comparison
-		$start_time = microtime(true);
-		$query = $this->db->getQuery(true);
-		$query->select("replace(json_extract(params,'$.alias'),'\"', '')")
-			->from($this->db->quoteName('#__fabrik_elements'))
-			->where($this->db->quoteName('published') . ' = 1')
-			->where("json_extract(params,'$.alias') <> '' and json_extract(params,'$.alias') is not null");
-		$query->group('json_extract(params,"$.alias")');
-		$this->db->setQuery($query);
-		$old_method_aliases = $this->db->loadColumn();
-		$end_time = microtime(true);
-		$old_execution_time = $end_time - $start_time;
 		//
 
-		$this->assertSame($fabrik_aliases, $old_method_aliases);
 		$this->assertIsArray($fabrik_aliases, 'The aliases should be returned as an array');
-
-		// Allow a tolerance margin (e.g. 10% slower is acceptable)
-		$allowed_time = $old_execution_time * 1.1;
-
-		$this->assertLessThanOrEqual(
-			$allowed_time,
-			$execution_time,
-			sprintf(
-				'The new method should not be significantly slower than the old one. Old: %.6f, New: %.6f',
-				$old_execution_time,
-				$execution_time
-			)
-		);
 	}
 
 	public function testGetAllFabrikAliasesGrouped()

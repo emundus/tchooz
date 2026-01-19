@@ -51,6 +51,7 @@ $sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
 
 <div id="em-exports"
      component="Exports/Exports"
+     fnums_count="<?= $this->fnumsCount; ?>"
 ></div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>

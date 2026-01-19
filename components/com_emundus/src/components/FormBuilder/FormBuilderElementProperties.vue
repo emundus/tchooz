@@ -123,15 +123,9 @@
 
 			<!-- Advanced settings -->
 			<div v-if="tabs[1].active" class="tw-flex tw-flex-col tw-gap-3 tw-p-4">
-				<div v-if="element.params">
+				<div>
 					<label for="element-alias">{{ translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS') }}</label>
-					<input
-						id="element-alias"
-						name="element-alias"
-						type="text"
-						v-model="element.params.alias"
-						@keyup="formatAlias"
-					/>
+					<input id="element-alias" name="element-alias" type="text" v-model="element.alias" @keyup="formatAlias" />
 					<!--            <span class="mt-2" style="font-size: small;">{{translate('COM_EMUNDUS_FORM_BUILDER_ELEMENT_ALIAS_HELPTEXT')}}</span>-->
 				</div>
 
@@ -344,9 +338,9 @@ export default {
 			}
 		},
 		formatAlias() {
-			this.element.params.alias = this.element.params.alias.toLowerCase().replace(/ /g, '_');
-			this.element.params.alias = this.element.params.alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-			this.element.params.alias = this.element.params.alias.replace(/[^a-z0-9_]/g, '');
+			this.element.alias = this.element.alias.toLowerCase().replace(/ /g, '_');
+			this.element.alias = this.element.alias.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+			this.element.alias = this.element.alias.replace(/[^a-z0-9_]/g, '');
 		},
 	},
 	computed: {

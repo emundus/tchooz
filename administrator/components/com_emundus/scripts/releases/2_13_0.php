@@ -15,11 +15,6 @@ use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
-use Tchooz\Entities\Addons\AddonEntity;
-use Tchooz\Entities\Addons\AddonValue;
-use Tchooz\Repositories\Addons\AddonRepository;
-use Tchooz\Repositories\Workflow\StepTypeRepository;
-
 class Release2_13_0Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
@@ -146,6 +141,107 @@ class Release2_13_0Installer extends ReleaseInstaller
 
 			$this->db->setQuery($query);
 			$this->tasks[] = $this->db->execute();
+
+			$this->tasks[] = \EmundusHelperUpdate::addColumn('jos_emundus_exports', 'result', 'LONGTEXT')['status'];
+			$this->tasks[] = \EmundusHelperUpdate::addColumn('jos_fabrik_elements', 'alias', 'VARCHAR', 255)['status'];
+
+			// Move all aliases from params to the new column
+			$query->clear()
+				->select($this->db->quoteName(['id', 'params', 'alias']))
+				->from($this->db->quoteName('jos_fabrik_elements'));
+			$this->db->setQuery($query);
+			$elements = $this->db->loadObjectList();
+
+			foreach($elements as $element)
+			{
+				$params = json_decode($element->params);
+				if (!empty($params->alias) && empty($element->alias))
+				{
+					$element->alias = $params->alias;
+					$this->tasks[] = $this->db->updateObject('jos_fabrik_elements', $element, 'id');
+				}
+			}
+
+			// Prefill new params
+			$query->clear()
+				->select('params')
+				->from($this->db->quoteName('#__extensions'))
+				->where($this->db->quoteName('name') . ' = ' . $this->db->quote('com_emundus'));
+			$this->db->setQuery($query);
+			$emundusParams = $this->db->loadResult();
+
+			$params = json_decode($emundusParams);
+			$pdfDefaultSynthesis = $params->default_synthesis_pdf ?? [];
+			if(empty($pdfDefaultSynthesis))
+			{
+				$pdfDefaultSynthesis = [
+					'default_synthesis_pdf0' => (object)[
+						'element' => 'id'
+					],
+					'default_synthesis_pdf1' => (object)[
+						'element' => 'fnum'
+					],
+					'default_synthesis_pdf2' => (object)[
+						'element' => 'email'
+					],
+					'default_synthesis_pdf3' => (object)[
+						'element' => 'submitted_date'
+					],
+					'default_synthesis_pdf4' => (object)[
+						'element' => 'printed_date'
+					],
+					'default_synthesis_pdf5' => (object)[
+						'element' => 'status'
+					],
+					'default_synthesis_pdf6' => (object)[
+						'element' => 'stickers'
+					],
+				];
+
+				\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'default_synthesis_pdf', $pdfDefaultSynthesis);
+			}
+
+			$pdfDefaultHeader = $params->default_header_pdf ?? [];
+			if(empty($pdfDefaultHeader))
+			{
+				$pdfDefaultHeader = [
+					'default_header_pdf0' => (object)[
+						'element' => 'fullname'
+					],
+					'default_header_pdf1' => (object)[
+						'element' => 'email'
+					],
+					'default_header_pdf2' => (object)[
+						'element' => 'fnum'
+					],
+				];
+
+				\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'default_header_pdf', $pdfDefaultHeader);
+			}
+
+			$excelDefaultSynthesis = $params->default_synthesis_excel ?? [];
+			if(empty($excelDefaultSynthesis))
+			{
+				$excelDefaultSynthesis = [
+					'default_synthesis_excel0' => (object)[
+						'element' => 'fnum'
+					],
+					'default_synthesis_excel1' => (object)[
+						'element' => 'status'
+					],
+					'default_synthesis_excel2' => (object)[
+						'element' => 'lastname'
+					],
+					'default_synthesis_excel3' => (object)[
+						'element' => 'firstname'
+					],
+					'default_synthesis_excel4' => (object)[
+						'element' => 'email'
+					],
+				];
+
+				\EmundusHelperUpdate::updateComponentParameter('com_emundus', 'default_synthesis_excel', $excelDefaultSynthesis);
+			}
 
 			$this->installDocaposte();
 
