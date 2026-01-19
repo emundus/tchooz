@@ -521,6 +521,21 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				//$this->onUserLogin($user);
 			}
 		}
+
+		PluginHelper::importPlugin('emundus','custom_event_handler');
+		$app = Factory::getApplication();
+		$event = new GenericEvent('onCallEventHandler', [
+			'onAfterSaveEmundusUser',
+			[
+				'context'    => new EventContextEntity(
+					$this->getApplication()->getIdentity(),
+					[],
+					[$user['id']],
+					[]
+				)
+			]
+		]);
+		$app->getDispatcher()->dispatch('onCallEventHandler', $event);
 	}
 	
 	public function onUserAfterResetComplete(AfterResetCompleteEvent $event): void

@@ -104,8 +104,16 @@ class EmundusModelProfile extends ListModel
 		return $array_p;
 	}
 
-	function getUserProfiles($uid)
+	/**
+	 * @param $uid
+	 *
+	 * @return array
+	 * @throws Exception
+	 */
+	function getUserProfiles($uid): array
 	{
+		$profiles = [];
+
 		$query = $this->_db->getQuery(true);
 		$query->select('esp.id, esp.label, esp.published, esp.status')
 			->from($this->_db->quoteName('#__emundus_setup_profiles', 'esp'))
@@ -115,13 +123,14 @@ class EmundusModelProfile extends ListModel
 		try
 		{
 			$this->_db->setQuery($query);
-			return $this->_db->loadObjectList();
+			$profiles = $this->_db->loadObjectList();
 		}
 		catch (Exception $e)
 		{
-			Log::add(Uri::getInstance() . ' :: USER ID : ' . JFactory::getUser()->id . ' -> ' . $query, Log::ERROR, 'com_emundus.error');
-
+			Log::add(Uri::getInstance() . ' :: USER ID : ' . Factory::getApplication()->getIdentity()->id . ' -> ' . $query . ' ' .  $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
+
+		return $profiles;
 	}
 
 	public function getUsersByProfiles($pids): array

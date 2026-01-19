@@ -217,7 +217,7 @@
 							type="radio"
 							class="fabrikinput !tw-mr-0 !tw-h-fit tw-cursor-pointer"
 							:class="parameter.hideRadio ? '!tw-hidden' : ''"
-							:name="paramName"
+							:name="paramName + '_' + paramId"
 							:id="paramId + '_input_' + option.value"
 							:value="option.value"
 							:checked="value === option.value"
@@ -1041,7 +1041,7 @@ export default {
 			);
 		},
 		paramId() {
-			return 'param_' + this.parameter.param + '_' + Math.floor(Math.random() * 100);
+			return 'param_' + this.parameter.param + '_' + Math.floor(Math.random() * 10000);
 		},
 		paramName() {
 			return 'param_' + this.parameter.param + '[]';
