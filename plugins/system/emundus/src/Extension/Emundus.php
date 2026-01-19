@@ -14,9 +14,11 @@ use EmundusModelForm;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\Application\AfterInitialiseEvent;
 use Joomla\CMS\Event\Application\AfterRenderEvent;
+use Joomla\CMS\Event\Application\AfterRouteEvent;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\LoginEvent;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageFactoryInterface;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Router\Route;
@@ -25,6 +27,7 @@ use Joomla\CMS\User\UserFactoryAwareTrait;
 use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\ParameterType;
+use Joomla\DI\Container;
 use Joomla\Event\EventInterface;
 use Joomla\Event\SubscriberInterface;
 use Joomla\Registry\Registry;
@@ -39,6 +42,7 @@ use Tchooz\Entities\Emails\Modifiers\NumberModifier;
 use Tchooz\Entities\Emails\Modifiers\TrimModifier;
 use Tchooz\Entities\Emails\Modifiers\UppercaseModifier;
 use Tchooz\Entities\Emails\TagModifierRegistry;
+use Tchooz\Factories\Language\DbLanguageFactory;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -113,6 +117,36 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		TagModifierRegistry::register(new NumberModifier());
 		TagModifierRegistry::register(new ChoiceStatusModifier());
 		TagModifierRegistry::register(new IndexModifier());
+
+		if($this->getApplication()->isClient('site'))
+		{
+			if (!class_exists('DbLanguageFactory'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Factories/Language/DbLanguageFactory.php';
+			}
+			if (!class_exists('DbLanguage'))
+			{
+				require_once JPATH_SITE . '/components/com_emundus/classes/Services/Language/DbLanguage.php';
+			}
+
+			$currentLang = Factory::getApplication()->getLanguage();
+
+			$container = Factory::getContainer();
+			$container->alias('language.factory', DbLanguageFactory::class)
+				->share(
+					DbLanguageFactory::class,
+					function (Container $container) {
+						return new DbLanguageFactory();
+					},
+					true
+				);
+
+			$lang = $container->get(DbLanguageFactory::class)->createLanguage($currentLang->getTag(), false, $currentLang);
+
+			// Register the language object with Factory
+			$this->getApplication()->loadLanguage($lang);
+			Factory::$language = $lang;
+		}
 	}
 
 	public function injectLazyJS(EventInterface $event): void

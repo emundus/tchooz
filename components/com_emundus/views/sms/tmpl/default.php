@@ -2,8 +2,8 @@
 
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('COM_EMUNDUS_ONBOARD_SMS');
 Text::script('COM_EMUNDUS_ONBOARD_RESULTS');
@@ -15,16 +15,13 @@ Text::script('COM_EMUNDUS_SMS_MESSAGE');
 Text::script('COM_EMUNDUS_SMS_UPDATED_SUCCESSFULLY');
 Text::script('COM_EMUNDUS_SMS_TEMPLATE_ADDED');
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
      component="SMS/SMS"
-     shortLang="<?= $short_lang ?>"
-     currentLanguage="<?= $current_lang ?>"
+     shortLang="<?= $data['short_lang'] ?>"
+     currentLanguage="<?= $data['current_lang'] ?>"
 >
 </div>
 

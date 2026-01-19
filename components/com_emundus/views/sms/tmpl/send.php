@@ -2,8 +2,8 @@
 
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('COM_EMUNDUS_SMS_LABEL');
 Text::script('COM_EMUNDUS_SMS_MESSAGE');
@@ -17,19 +17,15 @@ Text::script('COM_EMUNDUS_SMS_TEMPLATE');
 Text::script('COM_EMUNDUS_SMS_TEMPLATE_PLACEHOLDER');
 Text::script('COM_EMUNDUS_SMS_RECIPIENTS');
 Text::script('COM_EMUNDUS_EMAILS_MESSAGE_FROM');
-
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
+$data = LayoutFactory::prepareVueData();
 
 ?>
 <div class="tw-p-6">
     <div id="em-sms-send"
          component="SMS/SMSSend"
          fnums="<?= base64_encode(json_encode($this->fnums)) ?>"
-         shortLang="<?= $short_lang ?>"
-         currentLanguage="<?= $current_lang ?>"
+         shortLang="<?= $data['short_lang'] ?>"
+         currentLanguage="<?= $data['current_lang'] ?>"
     >
     </div>
 </div>

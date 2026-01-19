@@ -2,28 +2,10 @@
 
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
-require_once (JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
-
-$lang = Factory::getLanguage();
-$short_lang = substr($lang->getTag(), 0 , 2);
-$current_lang = $lang->getTag();
-$languages = JLanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang = $m_translations->getDefaultLanguage()->lang_code;
-} else {
-	$many_languages = '0';
-	$default_lang = $current_lang;
-}
-
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
-$sysadmin_access = EmundusHelperAccess::isAdministrator($this->user->id);
+$data = LayoutFactory::prepareVueData();
 
 Text::script('COM_EMUNDUS_RANKING_NO_FILES');
 Text::script('COM_EMUNDUS_CLASSEMENT_ASK_LOCK_RANKING');
@@ -119,36 +101,36 @@ Text::script('COM_EMUNDUS_RANKING_RANKER_NAME');
 ?>
 <div class="em-flex-row em-w-100 em-h-100 em-flex-align-start">
 
-	<?php if ($this->display_filters): ?>
-		<aside class="em-left-panel filters em-h-100">
-			<div class="content">
-				<h3>Filtres</h3>
-				<?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
-			</div>
-			<div class="em-left-panel-opener em-pointer em-flex-row">
-				<span>Filtres</span>
-				<span class="material-icons-outlined">arrow_drop_down</span>
-			</div>
-		</aside>
-	<?php endif; ?>
+    <?php if ($this->display_filters): ?>
+        <aside class="em-left-panel filters em-h-100">
+            <div class="content">
+                <h3>Filtres</h3>
+                <?php echo JHtml::_('content.prepare', '{loadposition emundus_filters}'); ?>
+            </div>
+            <div class="em-left-panel-opener em-pointer em-flex-row">
+                <span>Filtres</span>
+                <span class="material-icons-outlined">arrow_drop_down</span>
+            </div>
+        </aside>
+    <?php endif; ?>
 
-	<div class="em-p-0-12 em-w-100 em-h-100">
-		<h2><?= Text::_($this->title) ?></h2>
-		<section id="ranking-introduction">
-			<?= Text::_($this->introduction) ?>
-		</section>
+    <div class="em-p-0-12 em-w-100 em-h-100">
+        <h2><?= Text::_($this->title) ?></h2>
+        <section id="ranking-introduction">
+            <?= Text::_($this->introduction) ?>
+        </section>
 
-		<div id="em-component-vue"
-			 component="Ranking/allRankings"
-			 hash="<?= $hash ?>"
-			 shortLang="<?= $short_lang ?>"
-			 currentLanguage="<?= $current_lang ?>"
-			 defaultLang="<?= $default_lang ?>"
-			 manyLanguages="<?= $many_languages ?>"
-			 coordinatorAccess="<?= $coordinator_access ?>"
-			 sysadminAccess="<?= $sysadmin_access ?>"
-		></div>
-	</div>
+        <div id="em-component-vue"
+             component="Ranking/allRankings"
+             hash="<?= $data['hash'] ?>"
+             shortLang="<?= $data['short_lang'] ?>"
+             currentLanguage="<?= $data['current_lang'] ?>"
+             defaultLang="<?= $data['default_lang'] ?>"
+             manyLanguages="<?= $data['many_languages'] ?>"
+             coordinatorAccess="<?= $data['coordinator_access'] ?>"
+             sysadminAccess="<?= $data['sysadmin_access'] ?>"
+        ></div>
+    </div>
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

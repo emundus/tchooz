@@ -817,6 +817,7 @@ export default defineComponent({
 															v-for="field in group.elements"
 															:key="field.id"
 															class="tw-flex tw-cursor-pointer tw-items-center tw-gap-3 tw-px-4 tw-py-2"
+															v-show="!['panel', 'display', 'emundus_fileupload'].includes(field.plugin)"
 														>
 															<span class="tw-w-full" v-if="field.label !== ''">{{ field.label }}</span>
 															<span class="tw-w-full" v-else>{{ field.plugin_name }}</span>

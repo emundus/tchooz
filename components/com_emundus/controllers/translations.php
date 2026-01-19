@@ -18,6 +18,11 @@ use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Uri\Uri;
+use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Language\LanguageRepository;
+use Tchooz\Services\Language\DbLanguage;
+use Tchooz\Services\Language\ObjectsRegistry;
 
 /**
  * campaign Controller
@@ -32,6 +37,8 @@ class EmundusControllerTranslations extends BaseController
 	protected $app;
 
 	private $model;
+
+	private LanguageRepository $languageRepository;
 
 	/**
 	 * Constructor.
@@ -50,107 +57,83 @@ class EmundusControllerTranslations extends BaseController
 
 		$this->app   = Factory::getApplication();
 		$this->model = $this->getModel('Translations');
+
+		$this->languageRepository = new LanguageRepository();
 	}
 
-	public function checksetup()
+	public function getdefaultlanguage(): void
 	{
 		$user = $this->app->getIdentity();
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
-		$result = $this->model->checkSetup();
-
-		echo $result;
+		echo json_encode($this->languageRepository->getDefaultLanguage());
 		exit;
 	}
 
-	public function configuresetup()
+	public function getlanguages(): void
 	{
 		$user = $this->app->getIdentity();
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
-		$result = $this->model->configureSetup();
-
-		echo $result;
-		exit;
-	}
-
-	public function getdefaultlanguage()
-	{
-		$user = $this->app->getIdentity();
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			die(Text::_('ACCESS_DENIED'));
-		}
-
-		$result = $this->model->getDefaultLanguage();
+		$result = $this->languageRepository->getLanguages();
 
 		echo json_encode($result);
 		exit;
 	}
 
-	public function getlanguages()
+	public function updatelanguage(): void
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
-
-		$result = $this->model->getAllLanguages();
-
-		echo json_encode($result);
-		exit;
-	}
-
-	public function updatelanguage()
-	{
-		$user = $this->app->getIdentity();
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			die(Text::_('ACCESS_DENIED'));
-		}
-
 
 		$published = $this->input->getInt('published', 1);
 		$lang_code = $this->input->getString('lang_code', null);
 		$default   = $this->input->getInt('default_lang', 0);
 
-		$result              = $this->model->updateLanguage($lang_code, $published, $default);
-		$default_language    = $this->model->getDefaultLanguage();
-		$secondary_languages = $this->model->getPlatformLanguages();
-		foreach ($secondary_languages as $key => $language) {
-			if ($default_language->lang_code == $language) {
+		$result              = $this->languageRepository->updateContentLanguage($lang_code, $published, $default);
+		$default_language    = $this->languageRepository->getDefaultLanguage();
+		$secondary_languages = $this->languageRepository->getPlatformLanguages();
+		foreach ($secondary_languages as $key => $language)
+		{
+			if ($default_language->lang_code == $language)
+			{
 				unset($secondary_languages[$key]);
 			}
 		}
-		if (empty($secondary_languages)) {
-			$this->model->updateFalangModule(0);
+
+		if (empty($secondary_languages))
+		{
+			$this->languageRepository->updateFalangModule(0);
 		}
-		else {
-			$this->model->updateFalangModule(1);
+		else
+		{
+			$this->languageRepository->updateFalangModule(1);
 		}
 
 		echo json_encode($result);
 		exit;
 	}
 
-	public function gettranslationsobjects()
+	public function gettranslationsobjects(): void
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
-		$result = $this->model->getTranslationsObject();
-
-		echo json_encode($result);
+		echo json_encode(LanguageFactory::getTranslationsObjects());
 		exit;
 	}
 
@@ -158,17 +141,31 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
 
-		$table        = $this->input->get->getString('table', null);
-		$reference_id = $this->input->get->getString('reference_id', null);
-		$label        = $this->input->get->getString('label', null);
-		$filters      = $this->input->get->getString('filters', null);
+		$table   = $this->input->get->getString('table', '');
+		$filters = $this->input->get->getString('filters', '');
+		if (!empty($filters))
+		{
+			$filters = explode(',', $filters);
+		}
+		else
+		{
+			$filters = [];
+		}
 
-		$result = $this->model->getDatas($table, $reference_id, $label, $filters);
+		$result = [];
+
+		$objectsRegistry = new ObjectsRegistry();
+		$object          = $objectsRegistry->getObjectByType($table);
+		if ($object)
+		{
+			$result = $object->getDatas($filters);
+		}
 
 		echo json_encode($result);
 		exit;
@@ -178,17 +175,25 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
 
-		$table        = $this->input->get->getString('table', null);
-		$reference_id = $this->input->get->getInt('reference_id', null);
-		$label        = $this->input->get->getString('label', null);
-		$parent_table = $this->input->get->getString('parent_table', null);
+		$table        = $this->input->get->getString('table', '');
+		$reference_id = $this->input->get->getInt('reference_id', '');
+		$label        = $this->input->get->getString('label', '');
+		$parent_table = $this->input->get->getString('parent_table', '');
 
-		$result = $this->model->getChildrens($table, $reference_id, $label, $parent_table);
+		$result = [];
+
+		$objectsRegistry = new ObjectsRegistry();
+		$object          = $objectsRegistry->getObjectByType($parent_table);
+		if ($object && method_exists($object, 'getChildrens'))
+		{
+			$result = $object->getChildrens($table, $reference_id, $label, $parent_table);
+		}
 
 		echo json_encode($result);
 		exit;
@@ -198,46 +203,70 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
-
 
 		$default_lang     = $this->input->get->getString('default_lang', null);
 		$lang_to          = $this->input->get->getString('lang_to', null);
 		$references_table = $this->input->get->get('reference_table', null);
 		$reference_id     = $this->input->get->getString('reference_id', null);
+		$parent_table     = $this->input->get->getString('parent_table', null);
+
+		$objectsRegistry = new ObjectsRegistry();
+		$object          = $objectsRegistry->getObjectByType($parent_table);
 
 		$translations = array();
 
-		foreach ($references_table as $reference_table) {
-			if (!empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column'])) {
-				$join_reference_id = $this->model->getJoinReferenceId($reference_table['table'], $reference_table['reference_column'], $reference_table['join_table'], $reference_table['join_column'], $reference_id);
+		foreach ($references_table as $reference_table)
+		{
+			if (method_exists($object, 'getJoinReferenceId') && !empty($reference_table['join_table']) && !empty($reference_table['join_column']) && !empty($reference_table['reference_column']))
+			{
+				$join_reference_id = $object->getJoinReferenceId($reference_table['table'], $reference_table['reference_column'], $reference_table['join_table'], $reference_table['join_column'], $reference_id);
 
-				if (!empty($join_reference_id)) {
+				if (!empty($join_reference_id))
+				{
 					$reference_id = $join_reference_id;
 				}
 			}
-			$results = $this->model->getTranslations('override', '*', '', '', $reference_table['table'], $reference_id, $reference_table['fields']);
 
-			foreach ($results as $result) {
-				if (!empty($translations[$result->reference_id]) && in_array($result->tag, array_keys($translations[$result->reference_id]))) {
-					if ($result->lang_code == $default_lang) {
-						$translations[$result->reference_id][$result->tag]->default_lang = $result->override;
+			$filters = [
+				'type'             => 'override',
+				'reference_table'  => $reference_table['table'],
+				'reference_id'     => $reference_id,
+				'reference_fields' => $reference_table['fields'],
+				'lang_code'        => 'all'
+			];
+
+			$results = $this->languageRepository->getAll($filters, false);
+
+			foreach ($results as $result)
+			{
+				if (!empty($translations[$result->getReferenceId()]) && in_array($result->getTag(), array_keys($translations[$result->getReferenceId()])))
+				{
+					if ($result->getLangCode() == $default_lang)
+					{
+						$translations[$result->getReferenceId()][$result->getTag()]->default_lang = $result->getOverride();
 					}
-					elseif ($result->lang_code == $lang_to) {
-						$translations[$result->reference_id][$result->tag]->lang_to = $result->override;
+					elseif ($result->getLangCode() == $lang_to)
+					{
+						$translations[$result->getReferenceId()][$result->getTag()]->lang_to = $result->getOverride();
 					}
 				}
-				else {
-					$translation = $result;
-					if ($result->lang_code == $default_lang) {
-						$translation->default_lang = $result->override;
+				else
+				{
+					$translation = $result->toObject();
+
+					if ($result->getLangCode() == $default_lang)
+					{
+						$translation->default_lang = $result->getOverride();
 					}
-					elseif ($result->lang_code == $lang_to) {
-						$translation->lang_to = $result->override;
+					elseif ($result->getLangCode() == $lang_to)
+					{
+						$translation->lang_to = $result->getOverride();
 					}
-					$translations[$result->reference_id][$result->tag] = $translation;
+					$translations[$result->getReferenceId()][$result->getTag()] = $translation;
 				}
 			}
 		}
@@ -250,18 +279,26 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
-
-		$override        = $this->input->getString('value', null);
-		$lang_to         = $this->input->getString('lang_to', null);
-		$reference_table = $this->input->getString('reference_table', null);
+		$override        = $this->input->getString('value', '');
+		$lang_to         = $this->input->getString('lang_to', '');
+		$reference_table = $this->input->getString('reference_table', '');
 		$reference_id    = $this->input->getInt('reference_id', 0);
-		$tag             = $this->input->getString('tag', null);
+		$tag             = $this->input->getString('tag', '');
 
-		$result = $this->model->insertTranslation($tag, $override, $lang_to, '', 'override', $reference_table, $reference_id);
+		// Sanitize override to avoid XSS
+		if (!class_exists('HtmlSanitizerSingleton'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+		}
+		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
+		$override      = $htmlSanitizer->sanitize($override);
+
+		$result = LanguageFactory::translate($tag, [$lang_to => $override], $reference_table, $reference_id);
 
 		echo json_encode($result);
 		exit;
@@ -271,10 +308,10 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
-
 
 		$override        = $this->input->getRaw('value', null);
 		$lang_to         = $this->input->getString('lang_to', null);
@@ -282,15 +319,16 @@ class EmundusControllerTranslations extends BaseController
 		$reference_id    = $this->input->getInt('reference_id', 0);
 		$reference_field = $this->input->getString('reference_field', null);
 		$tag             = $this->input->getString('tag', null);
-		
+
 		// Sanitize override to avoid XSS
-		if (!class_exists('HtmlSanitizerSingleton')) {
+		if (!class_exists('HtmlSanitizerSingleton'))
+		{
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 		}
 		$htmlSanitizer = HtmlSanitizerSingleton::getInstance();
-		$override = $htmlSanitizer->sanitize($override);
+		$override      = $htmlSanitizer->sanitize($override);
 
-		$result = $this->model->updateTranslation($tag, $override, $lang_to, 'override', $reference_table, $reference_id, $reference_field);
+		$result = LanguageFactory::translate($tag, [$lang_to => $override], $reference_table, $reference_id, $reference_field);
 
 		echo json_encode($result);
 		exit;
@@ -299,9 +337,10 @@ class EmundusControllerTranslations extends BaseController
 	public function getfalangtranslations()
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED')];
-		$user = Factory::getApplication()->getIdentity();
+		$user     = Factory::getApplication()->getIdentity();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			$default_lang    = $this->input->get->getString('default_lang', null);
 			$lang_to         = $this->input->get->getString('lang_to', null);
 			$reference_table = $this->input->get->getString('reference_table', null);
@@ -310,9 +349,12 @@ class EmundusControllerTranslations extends BaseController
 
 			$translation = $this->model->getTranslationsFalang($default_lang, $lang_to, $reference_id, $fields, $reference_table);
 
-			if (!empty($translation)) {
+			if (!empty($translation))
+			{
 				$response = ['status' => true, 'message' => Text::_('SUCCESS'), 'data' => $translation];
-			} else {
+			}
+			else
+			{
 				$response['message'] = Text::_('NO_TRANSLATION_FOUND');
 			}
 		}
@@ -324,9 +366,10 @@ class EmundusControllerTranslations extends BaseController
 	public function updatefalangtranslation()
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED')];
-		$user = Factory::getApplication()->getIdentity();
+		$user     = Factory::getApplication()->getIdentity();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			$value           = $this->input->getRaw('value', null);
 			$lang_to         = $this->input->getString('lang_to', null);
 			$reference_table = $this->input->getString('reference_table', null);
@@ -335,10 +378,13 @@ class EmundusControllerTranslations extends BaseController
 
 			$updated = $this->model->updateFalangTranslation($value, $lang_to, $reference_table, $reference_id, $field, $user->id);
 
-			if ($updated) {
-				$response['status'] = true;
+			if ($updated)
+			{
+				$response['status']  = true;
 				$response['message'] = Text::_('COM_EMUNDUS_TRANSLATION_UPDATED');
-			} else {
+			}
+			else
+			{
 				$response['message'] = Text::_('COM_EMUNDUS_TRANSLATION_NOT_UPDATED');
 			}
 		}
@@ -351,15 +397,15 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
+		$default_lang = $this->input->getString('default_lang', '');
+		$lang_to      = $this->input->getString('lang_to', '');
 
-		$default_lang = $this->input->getString('default_lang', null);
-		$lang_to      = $this->input->getString('lang_to', null);
-
-		$result = $this->model->getOrphelins($default_lang, $lang_to);
+		$result = $this->languageRepository->getOrphans($default_lang, $lang_to);
 
 		echo json_encode($result);
 		exit;
@@ -369,15 +415,34 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
-
 
 		$language = $this->input->getString('suggest_language', null);
 		$comment  = $this->input->getString('comment', null);
 
-		$result = $this->model->sendPurposeNewLanguage($language, $comment);
+		if (!class_exists('EmundusHelperEmails'))
+		{
+			include_once(JPATH_SITE . '/components/com_emundus/helpers/emails.php');
+		}
+		if (!class_exists('EmundusModelEmails'))
+		{
+			include_once(JPATH_SITE . '/components/com_emundus/models/emails.php');
+		}
+		$m_emails = new EmundusModelEmails();
+
+		$config = Factory::getApplication()->getConfig();
+
+		$post = [
+			'SITE_NAME'      => $config->get('sitename'),
+			'SITE_URL'       => Uri::base(),
+			'LANGUAGE_FIELD' => $language,
+			'LOGO'           => EmundusHelperEmails::getLogo()
+		];
+
+		$result = $m_emails->sendEmailNoFnum('support@emundus.fr', 'installation_new_language', $post);
 
 		echo json_encode($result);
 		exit;
@@ -387,115 +452,106 @@ class EmundusControllerTranslations extends BaseController
 	{
 		$user = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
-		$profile = $this->input->getString('profile', null);
+		$profile         = $this->input->getString('profile', null);
+		$reference_table = $this->input->getString('reference_table', null);
 
-		$reference_ids = [];
-		if (!empty($profile)) {
-			$forms_ids  = [];
-			$groups_ids = [];
-			$elts_id    = [];
-			$forms      = $this->model->getChildrens('fabrik_forms', $profile, 'label');
-			foreach ($forms as $form) {
-				$forms_ids[] = $form->id;
+		$objectsRegistry = new ObjectsRegistry();
+		$object          = $objectsRegistry->getObjectByType($reference_table);
+		if ($object && method_exists($object, 'getTablesToExport') && method_exists($object, 'getReferencesIds'))
+		{
+			$languages = $this->languageRepository->getPlatformLanguages();
+
+			$tables_to_export = $object->getTablesToExport();
+			$reference_ids    = $object->getReferencesIds($profile);
+
+			$results = array();
+			foreach ($tables_to_export as $table)
+			{
+				$filters = [
+					'type'            => 'override',
+					'reference_table' => $table,
+					'reference_id'    => $reference_ids,
+					'lang_code'       => 'all'
+				];
+
+				$results = array_merge($this->languageRepository->getAll($filters, false), $results);
 			}
-			foreach ($forms_ids as $form_id) {
-				$groups = $this->model->getJoinReferenceId('fabrik_groups', 'group_id', 'fabrik_formgroup', 'form_id', $form_id);
-				foreach ($groups as $group) {
-					$groups_ids[] = $group;
 
-					$elements = $this->model->getJoinReferenceId('fabrik_elements', 'id', 'fabrik_elements', 'group_id', $group);
-
-					foreach ($elements as $element) {
-						$elts_id[] = $element;
+			$results_to_export = array();
+			foreach ($results as $result)
+			{
+				$results_to_export[$result->getTag()][0]                      = $result->getTag();
+				$results_to_export[$result->getTag()][$result->getLangCode()] = $result->getOverride();
+				foreach ($languages as $language)
+				{
+					if (!isset($results_to_export[$result->getTag()][$language]))
+					{
+						$results_to_export[$result->getTag()][$language] = '';
 					}
-
 				}
+				ksort($results_to_export[$result->getTag()]);
 			}
 
-			$reference_ids = array_merge($forms_ids, $groups_ids, $elts_id);
-		}
+			$filename = 'export_translation_' . date('Y-m-d H:i') . '.csv';
+			$path     = JPATH_SITE . '/tmp/' . $filename;
+			$f        = fopen($path, 'w');
 
-		$tables_to_export = array(
-			'fabrik_elements',
-			'fabrik_groups',
-			'fabrik_forms',
-		);
-		$results          = array();
-		foreach ($tables_to_export as $table) {
-			$results = array_merge($this->model->getTranslations('override', '*', '', '', $table), $results);
-		}
+			// Manage UTF-8 in Excel
+			fputs($f, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
 
-		$languages = $this->model->getPlatformLanguages();
-
-		$results_to_export = array();
-		foreach ($results as $result) {
-			if (empty($result->reference_id) || !empty($reference_ids) && !in_array($result->reference_id, $reference_ids)) {
-				continue;
+			$header = array(Text::_('COM_EMUNDUS_ONBOARD_TRANSLATION_TAG_EXPORT'));
+			foreach ($languages as $language)
+			{
+				$header[] = $language;
 			}
+			fputcsv($f, $header, ';');
 
-			$results_to_export[$result->tag][0]                  = $result->tag;
-			$results_to_export[$result->tag][$result->lang_code] = $result->override;
-			foreach ($languages as $language) {
-				if (!isset($results_to_export[$result->tag][$language])) {
-					$results_to_export[$result->tag][$language] = '';
-				}
+			foreach ($results_to_export as $line)
+			{
+				// generate csv lines from the inner arrays
+				fputcsv($f, (array) $line, ';');
 			}
-			ksort($results_to_export[$result->tag]);
+			// reset the file pointer to the start of the file
+			fseek($f, 0);
+
+			header('Content-type: text/csv');
+			header('Content-Disposition: attachment; filename=' . $filename);
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
+			header('Cache-Control: no-store, no-cache, must-revalidate');
+			header('Cache-Control: pre-check=0, post-check=0, max-age=0');
+			header('Pragma: anytextexeptno-cache', true);
+			header('Cache-control: private');
+			header('Expires: 0');
+
+			ob_clean();
+			ob_end_flush();
+			readfile($path);
+		}
+		else
+		{
+			die(Text::_('ACCESS_DENIED'));
 		}
 
-		$filename = 'export_translation_' . date('Y-m-d H:i') . '.csv';
-		$path     = JPATH_SITE . '/tmp/' . $filename;
-		$f        = fopen($path, 'w');
-
-		// Manage UTF-8 in Excel
-		fputs($f, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
-
-		$header = array(Text::_('COM_EMUNDUS_ONBOARD_TRANSLATION_TAG_EXPORT'));
-		foreach ($languages as $language) {
-			$header[] = $language;
-		}
-		fputcsv($f, $header, ';');
-
-		foreach ($results_to_export as $line) {
-			// generate csv lines from the inner arrays
-			fputcsv($f, (array) $line, ';');
-		}
-		// reset the file pointer to the start of the file
-		fseek($f, 0);
-
-		header('Content-type: text/csv');
-		header('Content-Disposition: attachment; filename=' . $filename);
-		header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT');
-		header('Cache-Control: no-store, no-cache, must-revalidate');
-		header('Cache-Control: pre-check=0, post-check=0, max-age=0');
-		header('Pragma: anytextexeptno-cache', true);
-		header('Cache-control: private');
-		header('Expires: 0');
-
-		ob_clean();
-		ob_end_flush();
-		readfile($path);
 		exit;
 	}
 
-	public function reloadtranslations()
+	public function reloadtranslations(): void
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED')];
-		$user = $this->app->getIdentity();
+		$user     = $this->app->getIdentity();
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		{
 			die(Text::_('ACCESS_DENIED'));
 		}
 
-		if(!class_exists('EmundusHelperUpdate'))
-		{
-			require_once(JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php');
-		}
-		$response = EmundusHelperUpdate::languageBaseToFile();
+		$dbLanguage = new DbLanguage();
+		$response   = $dbLanguage->databaseToFiles();
 
 		echo json_encode($response);
 		exit;

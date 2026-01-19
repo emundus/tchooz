@@ -12,52 +12,54 @@
 				<span class="material-symbols-outlined tw-ml-2 tw-text-white" v-show="closedSection">unfold_more</span>
 			</div>
 			<div class="section-content em-p-32 tw-w-full" :class="{ closed: closedSection }">
-				<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
-					<input
-						id="section-title"
-						class="editable-data tw-w-full"
-						:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_PAGE_TITLE_ADD')"
-						v-model="section.label[shortDefaultLang]"
-						@focusout="updateTitle"
-						@keyup.enter="blurElement('#section-title')"
-						maxlength="100"
-					/>
-					<div class="section-actions-wrapper">
-						<span
-							class="material-symbols-outlined hover-opacity tw-cursor-pointer"
-							@click="moveSection('up')"
-							title="Move section upwards"
-							>keyboard_double_arrow_up</span
-						>
-						<span
-							class="material-symbols-outlined hover-opacity tw-cursor-pointer"
-							@click="moveSection('down')"
-							title="Move section downwards"
-							>keyboard_double_arrow_down</span
-						>
-						<span
-							class="material-symbols-outlined delete hover-opacity tw-cursor-pointer tw-text-red-600"
-							@click="deleteSection"
-							>delete</span
-						>
-						<span
-							class="material-symbols-outlined hover-opacity tw-cursor-pointer"
+				<div
+					class="tw-flex tw-cursor-pointer tw-flex-col tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
+				>
+					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
+						<label
+							id="section-title"
+							class="tw-w-full tw-cursor-pointer tw-rounded-coordinator"
+							:class="section.label === '' ? 'tw-italic tw-text-neutral-500' : ''"
 							@click="$emit('open-section-properties')"
-							>settings</span
+							>{{ section.label !== '' ? section.label : translate('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION') }}</label
 						>
+
+						<div class="section-actions-wrapper">
+							<span
+								class="material-symbols-outlined hover-opacity tw-cursor-pointer"
+								@click="moveSection('up')"
+								title="Move section upwards"
+								>keyboard_double_arrow_up</span
+							>
+							<span
+								class="material-symbols-outlined hover-opacity tw-cursor-pointer"
+								@click="moveSection('down')"
+								title="Move section downwards"
+								>keyboard_double_arrow_down</span
+							>
+							<span
+								class="material-symbols-outlined delete hover-opacity tw-cursor-pointer tw-text-red-600"
+								@click="deleteSection"
+								>delete</span
+							>
+							<span
+								class="material-symbols-outlined hover-opacity tw-cursor-pointer"
+								@click="$emit('open-section-properties')"
+								>settings</span
+							>
+						</div>
 					</div>
+					<div
+						@click="$emit('open-section-properties')"
+						id="section-intro"
+						class="description"
+						ref="sectionIntro"
+						v-html="section.params.intro"
+					></div>
 				</div>
+
 				<transition name="slide-down">
 					<div v-show="!closedSection">
-						<span
-							id="section-intro"
-							class="editable-data description"
-							ref="sectionIntro"
-							contenteditable="true"
-							@focusout="updateIntro"
-							v-html="section.group_intro"
-						>
-						</span>
 						<draggable
 							v-model="elements"
 							group="form-builder-section-elements"
@@ -166,51 +168,8 @@ export default {
 		getElements() {
 			this.elements = Object.values(this.section.elements).length > 0 ? Object.values(this.section.elements) : [];
 		},
-		updateTitle() {
-			this.section.label[this.shortDefaultLang] = this.section.label[this.shortDefaultLang].trim();
-			formBuilderService
-				.updateTranslation(
-					{
-						value: this.section.group_id,
-						key: 'group',
-					},
-					this.section.group_tag,
-					this.section.label,
-				)
-				.then((response) => {
-					if (response.data.status) {
-						this.section.group_tag = response.data.data;
-						this.updateLastSave();
-					} else {
-						Swal.fire({
-							title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-							text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_SAVE_TRANSLATION'),
-							icon: 'error',
-							cancelButtonText: this.translate('OK'),
-						});
-					}
-				});
-		},
 		blurElement(selector) {
 			document.querySelector(selector).blur();
-		},
-		updateIntro() {
-			this.$refs.sectionIntro.innerHTML = this.$refs.sectionIntro.innerHTML.trim().replace(/[\r\n]/gm, '<br/>');
-			this.section.group_intro = this.$refs.sectionIntro.innerHTML;
-			formBuilderService
-				.updateGroupParams(this.section.group_id, { intro: this.section.group_intro }, this.shortDefaultLang)
-				.then((response) => {
-					if (response.status) {
-						this.updateLastSave();
-					} else {
-						Swal.fire({
-							title: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'),
-							text: this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR_UPDATE_GROUP_PARAMS'),
-							icon: 'error',
-							cancelButtonText: this.translate('OK'),
-						});
-					}
-				});
 		},
 		onDragEnd(e) {
 			const toGroup = e.to.getAttribute('data-sid');

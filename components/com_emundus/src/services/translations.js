@@ -109,7 +109,15 @@ export default {
 		}
 	},
 
-	async getTranslations(type, default_lang, lang_to, reference_id = '', fields = '', reference_table = '') {
+	async getTranslations(
+		type,
+		default_lang,
+		lang_to,
+		reference_id = '',
+		fields = '',
+		reference_table = '',
+		parent_table = '',
+	) {
 		switch (type) {
 			case 'falang':
 				try {
@@ -139,6 +147,7 @@ export default {
 					reference_table: reference_table,
 					reference_id: reference_id,
 					fields: fields,
+					parent_table: parent_table,
 				};
 
 				var myAxios = axios.create({

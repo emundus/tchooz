@@ -28,7 +28,7 @@ class FabrikGroupEntity
 
 	private User $createdBy;
 
-	private \DateTime $modified;
+	private ?\DateTime $modified = null;
 
 	private ?User $modifiedBy = null;
 
@@ -52,14 +52,24 @@ class FabrikGroupEntity
 		string $name,
 		string $label,
 		\DateTime $created,
-		User $createdBy
+		User      $createdBy,
+		\DateTime $modified,
+		?User     $modifiedBy = null,
+		bool      $isJoin = false,
+		int       $private = 0,
+		string    $paramsRaw = '',
 	)
 	{
-		$this->id        = $id;
-		$this->name     = $name;
-		$this->label     = $label;
-		$this->created   = $created;
-		$this->createdBy = $createdBy;
+		$this->id         = $id;
+		$this->name       = $name;
+		$this->label      = $label;
+		$this->created    = $created;
+		$this->createdBy  = $createdBy;
+		$this->modified   = $modified;
+		$this->modifiedBy = $modifiedBy;
+		$this->isJoin     = $isJoin;
+		$this->private    = $private;
+		$this->paramsRaw  = $paramsRaw;
 	}
 
 	public function getId(): int
@@ -132,12 +142,12 @@ class FabrikGroupEntity
 		$this->createdBy = $createdBy;
 	}
 
-	public function getModified(): \DateTime
+	public function getModified(): ?\DateTime
 	{
 		return $this->modified;
 	}
 
-	public function setModified(\DateTime $modified): void
+	public function setModified(?\DateTime $modified): void
 	{
 		$this->modified = $modified;
 	}

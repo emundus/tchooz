@@ -84,6 +84,7 @@ class FabrikFactory
 		$fabrikFormEntity = new FabrikFormEntity(
 			$dbObject->id,
 			$dbObject->label,
+			$dbObject->intro,
 			$created,
 			$user,
 		);
@@ -108,6 +109,11 @@ class FabrikFactory
 			$dbObject->label,
 			$created,
 			$user,
+			$dbObject->modified ? new \DateTime($dbObject->modified) : new \DateTime(),
+			!empty($dbObject->modified_by) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->modified_by) : null,
+			(bool) $dbObject->is_join,
+			(int) $dbObject->private,
+			$dbObject->params ?? '',
 		);
 
 		if ($withRelations)
@@ -142,6 +148,8 @@ class FabrikFactory
 			$dbObject->table_join ?? '',
 			$dbObject->group_params ?? '',
 			$dbObject->alias ?? '',
+			$dbObject->default ?? '',
+			(int) ($dbObject->eval ?? 0)
 		);
 	}
 }

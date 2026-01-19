@@ -28,6 +28,7 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Settings\AddonEntity;
 use Tchooz\Factories\ImportFactory;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
@@ -2659,13 +2660,10 @@ class EmundusModelCampaign extends ListModel
 		else
 		{
 			$query          = $this->_db->getQuery(true);
-			if (!class_exists('EmundusModelTranslations'))
-			{
-				require_once(JPATH_ROOT . '/components/com_emundus/models/translations.php');
-			}
-			$m_translations = new EmundusModelTranslations();
-			$default_language = $m_translations->getDefaultLanguage();
-			$default_short_code = substr($default_language->lang_code, 0, 2);
+
+			$default_language = LanguageFactory::getDefaultLanguageCode();
+			$default_short_code = substr($default_language, 0, 2);
+
 			$types          = implode(";", array_values($types));
 
 			if (empty($document['name'][$default_short_code]) || empty($types))

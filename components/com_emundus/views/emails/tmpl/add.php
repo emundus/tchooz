@@ -8,118 +8,106 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
+
 defined('_JEXEC') or die('Restricted Access');
 
-JText::script('COM_EMUNDUS_ONBOARD_ADD_EMAIL');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION');
-JText::script('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY');
-JText::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
-JText::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CATEGORY');
-JText::script('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE');
-JText::script('COM_EMUNDUS_ONBOARD_EMAILTYPE');
-JText::script('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING');
-JText::script('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_BODY_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT');
-JText::script('COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_VARIABLESTIP');
-JText::script('COM_EMUNDUS_ONBOARD_TIP');
-JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER');
-JText::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERTARGET');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS');
-JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS');
-JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES');
-JText::script('COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED');
-JText::script('COM_EMUNDUS_ONBOARD_SEARCH_USERS');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGERMODEL');
-JText::script('COM_EMUNDUS_ONBOARD_THE_CANDIDATE');
-JText::script('COM_EMUNDUS_ONBOARD_MANUAL');
-JText::script('COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS');
-JText::script('COM_EMUNDUS_EMAIL_SHOW_TAGS');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_EMAIL');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CHOOSETYPE');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_NAME');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RECEIVER');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESS');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_ADDRESTIP');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARAMETER');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_INFORMATION');
+Text::script('COM_EMUNDUS_ONBOARD_CHOOSECATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_RETOUR');
+Text::script('COM_EMUNDUS_ONBOARD_ADD_CONTINUER');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_RESUME');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_CATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_REQUIRED_FIELDS_INDICATE');
+Text::script('COM_EMUNDUS_ONBOARD_EMAILTYPE');
+Text::script('COM_EMUNDUS_ONBOARD_ADVANCED_CUSTOMING');
+Text::script('COM_EMUNDUS_ONBOARD_SUBJECT_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_BODY_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BODY');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT');
+Text::script('COM_EMUNDUS_ONBOARD_BUTTON_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_BUTTON_TEXT_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_VARIABLESTIP');
+Text::script('COM_EMUNDUS_ONBOARD_TIP');
+Text::script('COM_EMUNDUS_ONBOARD_EMAIL_TRIGGER');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERMODEL_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERSTATUS_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERTARGET');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERTARGET_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_ADMINISTRATORS');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_EVALUATORS');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_CANDIDATES');
+Text::script('COM_EMUNDUS_ONBOARD_PROGRAM_DEFINED_USERS');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGER_CHOOSE_USERS');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGER_USERS_REQUIRED');
+Text::script('COM_EMUNDUS_ONBOARD_SEARCH_USERS');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGERMODEL');
+Text::script('COM_EMUNDUS_ONBOARD_THE_CANDIDATE');
+Text::script('COM_EMUNDUS_ONBOARD_MANUAL');
+Text::script('COM_EMUNDUS_ONBOARD_TRIGGER_ACTIONS');
+Text::script('COM_EMUNDUS_EMAIL_SHOW_TAGS');
 
 ## TUTORIAL ##
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
-JText::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_CAMPAIGN');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORM');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_FORMBUILDER');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_DOCUMENTS');
+Text::script('COM_EMUNDUS_ONBOARD_TUTORIAL_PROGRAM');
 ## END ##
 
-JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
-JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
+Text::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+Text::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 
 # receiver
-JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS');
-JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS');
+Text::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS');
+Text::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS');
 
-JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER');
-JText::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER');
+Text::script('COM_EMUNDUS_ONBOARD_RECEIVER_CC_TAGS_PLACEHOLDER');
+Text::script('COM_EMUNDUS_ONBOARD_RECEIVER_BCC_TAGS_PLACEHOLDER');
 
-JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT');
+Text::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_DOCUMENT');
 
-JText::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
+Text::script('COM_EMUNDUS_ONBOARD_EMAIL_DOCUMENT');
 
-JText::script('COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS');
+Text::script('COM_EMUNDUS_ONBOARD_CC_BCC_TOOLTIPS');
 
-JText::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
-JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS');
+Text::script('COM_EMUNDUS_ONBOARD_EMAIL_TAGS');
+Text::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_EMAIL_TAGS');
 
-JText::script('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS');
-JText::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
+Text::script('COM_EMUNDUS_ONBOARD_CANDIDAT_ATTACHMENTS');
+Text::script('COM_EMUNDUS_ONBOARD_PLACEHOLDER_CANDIDAT_ATTACHMENTS');
 
-JText::script('COM_EMUNDUS_ONBOARD_ERROR');
-JText::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
-JText::script('COM_EMUNDUS_ONBOARD_OK');
-JText::script('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE');
-JText::script('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE');
+Text::script('COM_EMUNDUS_ONBOARD_ERROR');
+Text::script('COM_EMUNDUS_ONBOARD_ERROR_MESSAGE');
+Text::script('COM_EMUNDUS_ONBOARD_OK');
+Text::script('COM_EMUNDUS_FORM_BUILDER_NEW_VALUE');
+Text::script('COM_EMUNDUS_FORM_BUILDER_EXISTING_VALUE');
 
-JText::script('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST');
+Text::script('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST');
 
-$lang         = JFactory::getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = JLanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-}
-else {
-	$many_languages = '0';
-}
-
-$user               = JFactory::getUser();
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
-
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
-     email="<?= JFactory::getApplication()->input->get('eid'); ?>"
+     email="<?= Factory::getApplication()->input->get('eid'); ?>"
      component="addEmail"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
-     shortLang="<?= $short_lang ?>"
-     currentLanguage="<?= $current_lang ?>"
-     manyLanguages="<?= $many_languages ?>">
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     shortLang="<?= $data['short_lang'] ?>"
+     currentLanguage="<?= $data['current_lang'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>">
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

@@ -121,7 +121,7 @@ export default {
 		},
 
 		labelTranslate({ label }) {
-			return label ? label[useGlobalStore().getShortLang] : '';
+			return label ? label : '';
 		},
 	},
 	computed: {
