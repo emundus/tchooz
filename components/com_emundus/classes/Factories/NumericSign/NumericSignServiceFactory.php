@@ -11,6 +11,7 @@ use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\NumericSign\YousignRequestsRepository;
 use Tchooz\Services\NumericSign\YousignService;
+use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 
@@ -47,6 +48,9 @@ class NumericSignServiceFactory
 					$user,
 				);
 
+				break;
+			case SignConnectorsEnum::DOCAPOSTE:
+				$serviceInstance = new DocaposteSynchronizer();
 				break;
 			// Ajouter d'autres cas pour d'autres services de signature numérique
 			default:

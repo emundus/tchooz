@@ -1,5 +1,4 @@
 <?php
-
 /**
  * @package     scripts
  * @subpackage
@@ -11,7 +10,9 @@
 namespace scripts;
 
 use Joomla\CMS\Component\ComponentHelper;
+use EmundusHelperUpdate;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
+use Tchooz\Enums\Synchronizer\SynchronizerContextEnum;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 
 use Tchooz\Entities\Addons\AddonEntity;
@@ -146,6 +147,8 @@ class Release2_13_0Installer extends ReleaseInstaller
 			$this->db->setQuery($query);
 			$this->tasks[] = $this->db->execute();
 
+			$this->installDocaposte();
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -155,5 +158,169 @@ class Release2_13_0Installer extends ReleaseInstaller
 		}
 
 		return $result;
+	}
+
+	private function installDocaposte(): void
+	{
+		$query = $this->db->createQuery();
+
+		$synchronizerRepository = new SynchronizerRepository();
+		$docaposteSynchronizer  = $synchronizerRepository->getByType('docaposte');
+		if (empty($docaposteSynchronizer))
+		{
+			$docaposteSynchronizer = new SynchronizerEntity(
+				0,
+				'docaposte',
+				'Docaposte',
+				'Signature électronique via Docaposte',
+				[],
+				[
+					'authentication' => [],
+					'configuration'  => []
+				],
+				false,
+				false,
+				'docaposte.svg',
+				null,
+				SynchronizerContextEnum::NUMERIC_SIGN
+			);
+		}
+
+		$this->tasks[] = $synchronizerRepository->flush($docaposteSynchronizer);
+
+		// Emails
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('docaposte_transaction_initiation'));
+		$this->db->setQuery($query);
+		$docaposte_transaction_initiation_email = $this->db->loadResult();
+
+		if (empty($docaposte_transaction_initiation_email))
+		{
+			$docaposte_transaction_initiation_email = [
+				'lbl'        => 'docaposte_transaction_initiation',
+				'subject'    => 'Demande de signature électronique sur la plateforme [SITE_NAME] / Electronic signature request on the [SITE_NAME] platform',
+				'emailfrom'  => '',
+				'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/docaposte/transaction_initiation_template.html'),
+				'type'       => 1,
+				'published'  => 0,
+				'email_tmpl' => 1,
+				'category'   => 'Système',
+				'button'     => ''
+			];
+			$docaposte_transaction_initiation_email = (object) $docaposte_transaction_initiation_email;
+			$this->db->insertObject('#__emundus_setup_emails', $docaposte_transaction_initiation_email);
+		}
+
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('docaposte_transaction_reminder'));
+		$this->db->setQuery($query);
+		$docaposte_transaction_reminder_email = $this->db->loadResult();
+
+		if (empty($docaposte_transaction_reminder_email))
+		{
+			$docaposte_transaction_reminder_email = [
+				'lbl'        => 'docaposte_transaction_reminder',
+				'subject'    => 'Rappel – Signature de document en attente sur la plateforme [SITE_NAME] / Reminder – Document signature pending on the [SITE_NAME] platform',
+				'emailfrom'  => '',
+				'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/docaposte/transaction_reminder_template.html'),
+				'type'       => 1,
+				'published'  => 0,
+				'email_tmpl' => 1,
+				'category'   => 'Système',
+				'button'     => ''
+			];
+			$docaposte_transaction_reminder_email = (object) $docaposte_transaction_reminder_email;
+			$this->tasks[]                        = $this->db->insertObject('#__emundus_setup_emails', $docaposte_transaction_reminder_email);
+		}
+
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('docaposte_transaction_cancellation'));
+		$this->db->setQuery($query);
+		$docaposte_transaction_cancellation_email = $this->db->loadResult();
+
+		if (empty($docaposte_transaction_cancellation_email))
+		{
+			$docaposte_transaction_cancellation_email = [
+				'lbl'        => 'docaposte_transaction_cancellation',
+				'subject'    => 'Procédure de signature annulée sur la plateforme [SITE_NAME] / Signature process cancelled on the [SITE_NAME] platform',
+				'emailfrom'  => '',
+				'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/docaposte/transaction_cancellation_template.html'),
+				'type'       => 1,
+				'published'  => 0,
+				'email_tmpl' => 1,
+				'category'   => 'Système',
+				'button'     => ''
+			];
+			$docaposte_transaction_cancellation_email = (object) $docaposte_transaction_cancellation_email;
+			$this->tasks[]                            = $this->db->insertObject('#__emundus_setup_emails', $docaposte_transaction_cancellation_email);
+		}
+
+		$query->clear()
+			->select('id')
+			->from($this->db->quoteName('#__emundus_setup_emails'))
+			->where($this->db->quoteName('lbl') . ' LIKE ' . $this->db->quote('docaposte_transaction_completion'));
+		$this->db->setQuery($query);
+		$docaposte_transaction_completion_email = $this->db->loadResult();
+
+		if (empty($docaposte_transaction_completion_email))
+		{
+			$docaposte_transaction_completion_email = [
+				'lbl'        => 'docaposte_transaction_completion',
+				'subject'    => 'Procédure de signature finalisée sur la plateforme [SITE_NAME] / Signature process completed on the [SITE_NAME] platform',
+				'emailfrom'  => '',
+				'message'    => file_get_contents(JPATH_ROOT . '/administrator/components/com_emundus/scripts/html/docaposte/transaction_completion_template.html'),
+				'type'       => 1,
+				'published'  => 0,
+				'email_tmpl' => 1,
+				'category'   => 'Système',
+				'button'     => ''
+			];
+			$docaposte_transaction_completion_email = (object) $docaposte_transaction_completion_email;
+			$this->tasks[]                          = $this->db->insertObject('#__emundus_setup_emails', $docaposte_transaction_completion_email);
+		}
+
+		$tags = [
+			['tag' => 'DOCAPOSTE_URL_SIGN', 'request' => '[DOCAPOSTE_URL_SIGN]', 'description' => 'Lien Docaposte vers le document à signer', 'published' => 0],
+			['tag' => 'DOCAPOSTE_DOCUMENT_NAME', 'request' => '[DOCAPOSTE_DOCUMENT_NAME]', 'description' => 'Nom du document Docaposte à signer', 'published' => 0]
+		];
+
+		// add new default tag
+		foreach ($tags as $tag)
+		{
+			$query->clear()
+				->select('COUNT(id)')
+				->from($this->db->quoteName('#__emundus_setup_tags'))
+				->where($this->db->quoteName('tag') . ' = ' . $this->db->quote($tag['tag']));
+
+			$count = $this->db->setQuery($query)->loadResult();
+			if ($count > 0)
+			{
+				continue;
+			}
+
+			$query->clear()
+				->insert($this->db->quoteName('#__emundus_setup_tags'))
+				->columns($this->db->quoteName(['tag', 'request', 'description', 'published']))
+				->values(
+					$this->db->quote($tag['tag']) . ', ' .
+					$this->db->quote($tag['request']) . ', ' .
+					$this->db->quote($tag['description']) . ', ' .
+					$this->db->quote($tag['published'])
+				);
+
+			$this->tasks[] = $this->db->setQuery($query)->execute();
+		}
+
+		$event_added = EmundusHelperUpdate::addCustomEvents([
+			['label' => 'onAfterSignRequestCreated', 'published' => 0, 'category' => 'Sign'],
+			['label' => 'onAfterSignRequestCancelled', 'published' => 0, 'category' => 'Sign'],
+		]);
+		$this->tasks[] = $event_added['status'];
 	}
 }

@@ -37,6 +37,7 @@ use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
+use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
@@ -2388,6 +2389,14 @@ class EmundusControllersettings extends BaseController
 						case 'docusign':
 							try {
 								$docusignSynchronizer = new DocuSignSynchronizer();
+							} catch (Exception $e) {
+								$response['status'] = false;
+								break;
+							}
+							break;
+						case 'docaposte':
+							try {
+								$docaposteSynchronizer = new DocaposteSynchronizer();
 							} catch (Exception $e) {
 								$response['status'] = false;
 								break;
