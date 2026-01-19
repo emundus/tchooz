@@ -3022,6 +3022,13 @@ class EmundusModelSettings extends ListModel
 							break;
 						case 'yousign':
 							$updated = $this->setupYousign($app, $setup);
+							break;
+						case 'docaposte':
+							$updated = $this->defaultSetup($app, $setup);
+							if($updated) {
+								$updated = $this->setupDocaposte();
+							}
+							break;
 						default:
 							$updated = $this->defaultSetup($app, $setup);
 							break;
@@ -3636,6 +3643,51 @@ class EmundusModelSettings extends ListModel
 					if ($app_type === 'yousign')
 					{
 						// Enable scheduler task
+						$query->clear()
+							->update($this->db->quoteName('#__scheduler_tasks'))
+							->set($this->db->quoteName('state') . ' = ' . $enabled)
+							->where($this->db->quoteName('type') . ' = ' . $this->db->quote('yousign.api'));
+						$this->db->setQuery($query);
+						$this->db->execute();
+					}
+					// TODO handle with a EmundusIntegrationConfiguration class toggle method
+					if($app_type === 'docaposte')
+					{
+						// Update publish state email template
+						$labels = [
+							'docaposte_transaction_initiation',
+							'docaposte_transaction_reminder',
+							'docaposte_transaction_cancellation',
+							'docaposte_transaction_completion'
+						];
+
+						$labels = array_map([$this->db, 'quote'], $labels);
+
+						$query->clear()
+							->update($this->db->quoteName('#__emundus_setup_emails'))
+							->set($this->db->quoteName('published') . ' = ' . $enabled)
+							->where($this->db->quoteName('lbl') . ' IN (' . implode(',', $labels) . ')');
+
+						$this->db->setQuery($query);
+						$this->db->execute();
+
+						// Update publish state tags
+						$tagLabels = [
+							'DOCAPOSTE_URL_SIGN',
+							'DOCAPOSTE_DOCUMENT_NAME'
+						];
+
+						$tagLabels = array_map([$this->db, 'quote'], $tagLabels);
+
+						$query->clear()
+							->update($this->db->quoteName('#__emundus_setup_tags'))
+							->set($this->db->quoteName('published') . ' = ' . (int) $enabled)
+							->where($this->db->quoteName('tag') . ' IN (' . implode(',', $tagLabels) . ')');
+
+						$this->db->setQuery($query);
+						$this->db->execute();
+
+						// Update cron task state
 						$query->clear()
 							->update($this->db->quoteName('#__scheduler_tasks'))
 							->set($this->db->quoteName('state') . ' = ' . $enabled)
@@ -4593,6 +4645,61 @@ class EmundusModelSettings extends ListModel
 
 		return $updated;
 	}
+
+	public function setupDocaposte()
+	{
+		$updated = false;
+		try
+		{
+			$query = $this->db->getQuery(true);
+
+			// Create scheduled task if not exists
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__scheduler_tasks'))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('yousign.api'));
+			$this->db->setQuery($query);
+			$task_id = $this->db->loadResult();
+
+			if (empty($task_id))
+			{
+				$execution_rules = [
+					'rule-type'        => 'interval-minutes',
+					'interval-minutes' => 30,
+					'exec-day'         => 01,
+					'exec-time'        => '12:00'
+				];
+				$cron_rules      = [
+					'type' => 'interval',
+					'exp'  => 'PT30M'
+				];
+
+				if (!class_exists('EmundusHelperUpdate'))
+				{
+					require_once JPATH_ADMINISTRATOR . '/components/com_emundus/helpers/update.php';
+				}
+				$updated = EmundusHelperUpdate::createSchedulerTask('Yousign', 'yousign.api', $execution_rules, $cron_rules);
+
+			}
+			else
+			{
+				// Just enable it
+				$query->clear()
+					->update($this->db->quoteName('#__scheduler_tasks'))
+					->set($this->db->quoteName('state') . ' = 1')
+					->where($this->db->quoteName('id') . ' = ' . $this->db->quote($task_id));
+				$this->db->setQuery($query);
+				$updated = $this->db->execute();
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $updated;
+	}
+
 
 	/**
 	 * @param   object  $app

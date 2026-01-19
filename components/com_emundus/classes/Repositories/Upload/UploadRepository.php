@@ -155,7 +155,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 				'can_be_deleted' => (int) $entity->canBeDeleted(),
 				'can_be_viewed' => (int) $entity->canBeViewed(),
 				'modified' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-				'modified_by' => $entity->getModifiedBy() ?? null,
+				'modified_by' => $entity->getModifiedBy() ?: null,
 			];
 
 			$flushed = $this->db->updateObject($this->tableName, $object, 'id');

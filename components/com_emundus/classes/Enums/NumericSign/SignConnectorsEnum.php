@@ -9,12 +9,11 @@
 
 namespace Tchooz\Enums\NumericSign;
 
-use Joomla\CMS\Language\Text;
-
 enum SignConnectorsEnum: string
 {
 	case YOUSIGN = 'yousign';
 	case DOCUSIGN = 'docusign';
+	case DOCAPOSTE = 'docaposte';
 
 	public function getLabel(): string
 	{
@@ -22,6 +21,7 @@ enum SignConnectorsEnum: string
 		{
 			self::YOUSIGN => 'Yousign',
 			self::DOCUSIGN => 'Docusign',
+			self::DOCAPOSTE => 'Docaposte',
 		};
 	}
 }

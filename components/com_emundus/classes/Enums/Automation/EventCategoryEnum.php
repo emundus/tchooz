@@ -18,6 +18,7 @@ enum EventCategoryEnum: string
 	case EMAIL = 'Email';
 	case LETTERS = 'Files';
 	case JOOMLA = 'Joomla';
+	case SIGN = 'Sign';
 
 	public function getLabel(): string
 	{
@@ -41,6 +42,7 @@ enum EventCategoryEnum: string
 			self::EMAIL => 'mail',
 			self::LETTERS => 'drafts',
 			self::JOOMLA => 'extension',
+			self::SIGN => 'signature',
 		};
 	}
 }
