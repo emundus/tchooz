@@ -263,10 +263,13 @@ export default {
 			};
 		}
 	},
-	async getPageObject(formId) {
+	async getPageObject(formId, cleanCache = false) {
 		try {
 			const response = await client().get(
-				'/index.php?option=com_emundus&view=form&formid=' + formId + '&format=vue_jsonclean',
+				'/index.php?option=com_emundus&view=form&formid=' +
+					formId +
+					'&format=vue_jsonclean&cleancache=' +
+					(cleanCache ? 1 : 0),
 			);
 
 			if (typeof response.data !== 'object') {

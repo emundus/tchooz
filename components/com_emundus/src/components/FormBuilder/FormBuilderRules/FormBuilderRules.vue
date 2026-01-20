@@ -253,7 +253,7 @@ export default {
 		if (this.page.id) {
 			this.getConditions();
 
-			formService.getPageObject(this.page.id).then((response) => {
+			formService.getPageObject(this.page.id, true).then((response) => {
 				if (response.status && response.data != '') {
 					this.fabrikPage = response.data;
 				} else {

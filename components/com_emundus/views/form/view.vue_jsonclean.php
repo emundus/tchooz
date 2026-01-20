@@ -11,6 +11,7 @@
 // No direct access
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
@@ -58,6 +59,14 @@ class EmundusViewForm extends JsonView
 			$fabrikRepository = new FabrikRepository();
 			$fabrikFactory    = new FabrikFactory($fabrikRepository);
 			$fabrikRepository->setFactory($fabrikFactory);
+
+			$elementsFilters = [];
+			$user = Factory::getApplication()->getIdentity();
+			if(!EmundusHelperAccess::asAdministratorAccessLevel($user->id))
+			{
+				$elementsFilters['hidden'] = 0;
+			}
+			$fabrikRepository->setElementFilters($elementsFilters);
 
 			$languageRepository = new LanguageRepository();
 			$languages          = LanguageHelper::getLanguages();
@@ -178,6 +187,11 @@ class EmundusViewForm extends JsonView
 					{
 						$elementObject->rollover_tag = $elementParams->rollover;
 						$elementParams->rollover     = Text::_($elementParams->rollover);
+					}
+
+					if(!empty($element->getAlias()))
+					{
+						$elementParams->alias = $element->getAlias();
 					}
 
 					// If sub_labels available translate them

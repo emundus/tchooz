@@ -3281,8 +3281,6 @@ class EmundusModelForm extends ListModel
 
 		try
 		{
-			$languages = LanguageHelper::getLanguages();
-
 			// Get profile form id
 			$query = $this->db->getQuery(true);
 
@@ -3318,11 +3316,7 @@ class EmundusModelForm extends ListModel
 						$element->FRequire = true;
 					}
 					$element->label_tag = $element->label;
-					$element->label     = [];
-					foreach ($languages as $language)
-					{
-						$element->label[$language->sef] = LanguageFactory::getTranslation($element->label_tag, $language->lang_code);
-					}
+					$element->label     = Text::_($element->label);
 					$element->params = $params;
 				}
 			}

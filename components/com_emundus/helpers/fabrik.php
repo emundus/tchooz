@@ -2444,6 +2444,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
+					->where($db->quoteName('ff.published') . ' = 1')
+					->where($db->quoteName('fg.published') . ' = 1')
 					->where($db->quoteName('fe.published') . ' = 1')
 					->where($db->quoteName('fe.alias') . ' IS NOT NULL');
 				$db->setQuery($query);
