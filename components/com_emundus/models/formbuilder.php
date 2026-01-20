@@ -1257,7 +1257,7 @@ class EmundusModelFormbuilder extends ListModel
 		try
 		{
 			$query->update($this->db->quoteName('#__fabrik_groups'))
-				->set($this->db->quoteName('published') . ' = ' . 0)
+				->set($this->db->quoteName('published') . ' = -2')
 				->where($this->db->quoteName('id') . ' = ' . $this->db->quote($group));
 			$this->db->setQuery($query);
 			$this->db->execute();
@@ -2575,7 +2575,7 @@ class EmundusModelFormbuilder extends ListModel
 			}
 
 			// Manage alias
-			$element['alias'] = str_replace(' ', '_', $element['alias']);
+			$element['alias'] = str_replace(' ', '_', $element['params']['alias']);
 			$element['alias'] = htmlentities($element['alias'], ENT_COMPAT, "UTF-8");
 			$element['alias'] = preg_replace('/&([a-zA-Z])(uml|acute|grave|circ|tilde|cedil);/', '$1', $element['alias']);
 			$element['alias'] = html_entity_decode($element['alias']);
@@ -2645,7 +2645,7 @@ class EmundusModelFormbuilder extends ListModel
 			{
 				$show_in_list_summary = $element['show_in_list_summary'] ? 1 : 0;
 			}
-
+			
 			// Update the element
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),

@@ -30,6 +30,8 @@ export default defineComponent({
 			reloadForm: 0,
 			message: '',
 
+			queryController: null,
+
 			exportTemplates: [],
 			displayExportSavedContent: false,
 			exportName: '',
@@ -215,17 +217,26 @@ export default defineComponent({
 			this.subLoading = true;
 			this.elementsLoading = true;
 
+			if (this.queryController) {
+				this.queryController.abort();
+			}
+			this.queryController = new AbortController();
+
 			if (this.selectedMenuItem.code === 'attachments') {
 				this.tabsPdf.find((tab) => tab.code === 'attachments').active = true;
 			}
 
 			return new Promise((resolve) => {
-				exportService.getElements(this.selectedMenuItem.code, this.selectedFormat).then((response) => {
-					this.elements = response.data;
-					this.subLoading = false;
-					this.elementsLoading = false;
-					resolve(this.elements);
-				});
+				exportService
+					.getElements(this.selectedMenuItem.code, this.selectedFormat, this.queryController)
+					.then((response) => {
+						this.elements = response.data;
+						this.subLoading = false;
+						this.elementsLoading = false;
+						this.queryController = null;
+
+						resolve(this.elements);
+					});
 			});
 		},
 

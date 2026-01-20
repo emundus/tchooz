@@ -43,6 +43,8 @@ class FabrikRepository
 		'fe.*'
 	];
 
+	private array $elementFilters = [];
+
 	public function __construct($withRelations = true)
 	{
 		$this->withRelations = $withRelations;
@@ -267,8 +269,8 @@ class FabrikRepository
 			if (empty($elements))
 			{
 				$query   = $this->buildElementQuery();
-				$filters = ['group_id' => $groupId];
-				$this->applyElementFilters($query, $filters);
+				$this->elementFilters = array_merge($this->elementFilters, ['group_id' => $groupId]);
+				$this->applyElementFilters($query);
 
 				$this->db->setQuery($query);
 				$elementObjects = $this->db->loadObjectList();
@@ -316,9 +318,9 @@ class FabrikRepository
 
 			if (empty($element))
 			{
-				$filters = ['id' => $id];
+				$this->elementFilters = array_merge($this->elementFilters, ['id' => $id]);
 				$query   = $this->buildElementQuery(true);
-				$this->applyElementFilters($query, $filters, true);
+				$this->applyElementFilters($query, true);
 
 				$this->db->setQuery($query);
 				$elementObject = $this->db->loadObject();
@@ -370,8 +372,9 @@ class FabrikRepository
 		return $query;
 	}
 
-	public function applyElementFilters(QueryInterface $query, array $filters, bool $withJoins = false): void
+	public function applyElementFilters(QueryInterface $query, bool $withJoins = false): void
 	{
+		$filters = $this->elementFilters;
 		if (in_array('id', array_keys($filters)))
 		{
 			$query->where($this->db->quoteName('fe.id') . ' = ' . $this->db->quote($filters['id']));
@@ -388,8 +391,18 @@ class FabrikRepository
 				->where($this->db->quoteName('fl.published') . ' = 1');
 		}
 
-		$query->where($this->db->quoteName('fe.published') . ' = 1')
-			->where($this->db->quoteName('fe.hidden') . ' = 0');
+		if (in_array('published', array_keys($filters)))
+		{
+			$query->where($this->db->quoteName('fe.published') . ' = ' . $this->db->quote($filters['published']));
+		}
+		else {
+			$query->where($this->db->quoteName('fe.published') . ' <> -2');
+		}
+
+		if (in_array('hidden', array_keys($filters)))
+		{
+			$query->where($this->db->quoteName('fe.hidden') . ' = ' . $this->db->quote($filters['hidden']));
+		}
 
 		if (in_array('exluded_elements', array_keys($filters)))
 		{
@@ -445,23 +458,11 @@ class FabrikRepository
 				$this->db->setQuery($query);
 				$deleted = $this->db->execute();
 
-				$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
-					->createCacheController('output', ['defaultgroup' => 'com_emundus']);
-				$cache_key = 'fabrik_aliases_grouped';
-				if ($cache->contains($cache_key))
+				if(!class_exists('EmundusHelperFabrik'))
 				{
-					$cachedAliases = $cache->get($cache_key);
-
-					foreach ($aliases as $alias)
-					{
-						// Search by key and remove
-						if (!empty($cachedAliases) && is_array($cachedAliases) && array_key_exists($alias, $cachedAliases))
-						{
-							unset($cachedAliases[$alias]);
-							$cache->store($cachedAliases, $cache_key);
-						}
-					}
+					require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
 				}
+				\EmundusHelperFabrik::clearFabrikAliasesCache();
 			}
 			catch (\Exception $e)
 			{
@@ -499,5 +500,15 @@ class FabrikRepository
 	public function setFactory(FabrikFactory $factory = null): void
 	{
 		$this->factory = $factory;
+	}
+
+	public function getElementFilters(): array
+	{
+		return $this->elementFilters;
+	}
+
+	public function setElementFilters(array $elementFilters): void
+	{
+		$this->elementFilters = $elementFilters;
 	}
 }

@@ -369,7 +369,7 @@ export default {
 			return !this.element.publish;
 		},
 		isHidden() {
-			return this.element.hidden;
+			return this.element.hidden == 1;
 		},
 		sysadmin: function () {
 			return parseInt(this.globalStore.hasSysadminAccess);
