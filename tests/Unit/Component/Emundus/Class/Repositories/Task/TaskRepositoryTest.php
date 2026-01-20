@@ -101,6 +101,87 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
+	 * @covers TaskRepository::getPendingTasks
+	 * @return void
+	 */
+	public function testGetPendingTasksThatFailed(): void
+	{
+		$actionTargetEntity = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);
+
+		// a task that failed is retried and should be returned by getPendingTasks if nb attempts is under 3, and it was done more than 5 minutes ago
+		$moreThan5MinutesAgo = new \DateTimeImmutable('-10 minutes');
+		$failedTaskToBeRetried = new TaskEntity(
+			0,
+			TaskStatusEnum::FAILED,
+			$this->automationEntity->getActions()[0],
+			$this->dataset['coordinator'],
+			['actionTargetEntity' => $actionTargetEntity->serialize()],
+			$moreThan5MinutesAgo,
+			$moreThan5MinutesAgo,
+			$moreThan5MinutesAgo,
+			$moreThan5MinutesAgo,
+			1
+		);
+		$this->repository->saveTask($failedTaskToBeRetried);
+		$this->h_dataset->addToSamples('tasks', $failedTaskToBeRetried->getId());
+
+		$failedTaskNotToBeRetriedBecauseTooManyAttempts = new TaskEntity(
+			0,
+			TaskStatusEnum::FAILED,
+			$this->automationEntity->getActions()[0],
+			$this->dataset['coordinator'],
+			['actionTargetEntity' => $actionTargetEntity->serialize()],
+			$moreThan5MinutesAgo,
+			$moreThan5MinutesAgo,
+			$moreThan5MinutesAgo,
+			$moreThan5MinutesAgo,
+			4
+		);
+		$this->repository->saveTask($failedTaskNotToBeRetriedBecauseTooManyAttempts);
+		$this->h_dataset->addToSamples('tasks', $failedTaskNotToBeRetriedBecauseTooManyAttempts->getId());
+
+		$failedTaskNotToBeRetriedBecauseTooRecent = new TaskEntity(
+			0,
+			TaskStatusEnum::FAILED,
+			$this->automationEntity->getActions()[0],
+			$this->dataset['coordinator'],
+			['actionTargetEntity' => $actionTargetEntity->serialize()],
+			new \DateTimeImmutable('-2 minutes'),
+			new \DateTimeImmutable('-2 minutes'),
+			new \DateTimeImmutable('-2 minutes'),
+			new \DateTimeImmutable('-2 minutes'),
+			2
+		);
+		$this->repository->saveTask($failedTaskNotToBeRetriedBecauseTooRecent);
+		$this->h_dataset->addToSamples('tasks', $failedTaskNotToBeRetriedBecauseTooRecent->getId());
+
+		$pendingTasks = $this->repository->getPendingTasks();
+		$this->assertIsArray($pendingTasks, 'Pending tasks should be returned as an array.');
+		$foundFailedTaskToBeRetried = false;
+		$foundFailedTaskNotToBeRetried = false;
+
+		foreach ($pendingTasks as $task) {
+			$this->assertInstanceOf(TaskEntity::class, $task, 'Each pending task should be an instance of TaskEntity.');
+			// assert status is either PENDING or FAILED
+			$this->assertTrue($task->getStatus() === TaskStatusEnum::PENDING || $task->getStatus() === TaskStatusEnum::FAILED, 'Each pending task should have status PENDING or FAILED.');
+			$this->assertNotEmpty($task->getUserId());
+			if ($task->getId() === $failedTaskToBeRetried->getId()) {
+				$foundFailedTaskToBeRetried = true;
+			}
+
+			if ($task->getId() === $failedTaskNotToBeRetriedBecauseTooManyAttempts->getId()) {
+				$foundFailedTaskNotToBeRetried = true;
+			}
+			if ($task->getId() === $failedTaskNotToBeRetriedBecauseTooRecent->getId())
+			{
+				$foundFailedTaskNotToBeRetried = true;
+			}
+		}
+		$this->assertTrue($foundFailedTaskToBeRetried, 'The failed task that should be retried was not found in pending tasks.');
+		$this->assertFalse($foundFailedTaskNotToBeRetried, 'The failed task that should not be retried was found in pending tasks.');
+	}
+
+	/**
 	 * @covers TaskRepository::executeTask
 	 * @return void
 	 */
@@ -132,5 +213,55 @@ class TaskRepositoryTest extends UnitTestCase
 		$status = $this->db->loadResult();
 
 		$this->assertEquals($action->getParameterValue($action::STATUS_PARAMETER), $status, 'Candidature status should be updated to 1 after task execution.');
+	}
+
+	/**
+	 * @covers TaskRepository::checkInProgressTasksHealth
+	 * @return void
+	 */
+	public function testCheckInProgressTasksHealth(): void
+	{
+		$actionTargetEntity = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);
+		$metadata = ['actionTargetEntity' => $actionTargetEntity->serialize()];
+
+		$stuckTask = new TaskEntity(
+			0,
+			TaskStatusEnum::IN_PROGRESS,
+			$this->automationEntity->getActions()[0],
+			$this->dataset['coordinator'],
+			$metadata,
+			new \DateTimeImmutable('-2 hour'),
+			new \DateTimeImmutable('-2 hour'),
+			null,
+			null,
+			1
+		);
+		$this->repository->saveTask($stuckTask);
+		$this->h_dataset->addToSamples('tasks', $stuckTask->getId());
+
+		$notStuckTask = new TaskEntity(
+			0,
+			TaskStatusEnum::IN_PROGRESS,
+			$this->automationEntity->getActions()[0],
+			$this->dataset['coordinator'],
+			$metadata,
+			new \DateTimeImmutable('-10 minutes'),
+			new \DateTimeImmutable('-10 minutes'),
+			null,
+			null,
+			1
+		);
+		$this->repository->saveTask($notStuckTask);
+		$this->h_dataset->addToSamples('tasks', $notStuckTask->getId());
+
+		$this->repository->checkInProgressTasksHealth();
+
+		$retrievedTask = $this->repository->getTaskById($stuckTask->getId());
+		$this->assertInstanceOf(TaskEntity::class, $retrievedTask, 'Retrieved task should be an instance of TaskEntity.');
+		$this->assertEquals(TaskStatusEnum::FAILED, $retrievedTask->getStatus(), 'Stuck task status should be set to FAILED after health check.');
+
+		$retrievedTask = $this->repository->getTaskById($notStuckTask->getId());
+		$this->assertInstanceOf(TaskEntity::class, $retrievedTask, 'Retrieved task should be an instance of TaskEntity.');
+		$this->assertEquals(TaskStatusEnum::IN_PROGRESS, $retrievedTask->getStatus(), 'Not stuck task status should remain IN_PROGRESS after health check.');
 	}
 }

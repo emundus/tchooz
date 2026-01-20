@@ -89,7 +89,9 @@ class FabrikElementEntity
 		string            $groupParams = '',
 		string            $alias = '',
 		string            $default = '',
-		int               $eval = 0
+		int               $eval = 0,
+		bool $published = true,
+		int $hidden = 0
 	)
 	{
 		$this->id             = $id;
@@ -106,6 +108,8 @@ class FabrikElementEntity
 		$this->alias          = $alias;
 		$this->default        = $default;
 		$this->eval           = $eval;
+		$this->published      = $published;
+		$this->hidden         = $hidden;
 	}
 
 	public function getId(): int

@@ -14,9 +14,13 @@ export default {
 		}
 	},
 
-	async getElements(type, format) {
+	async getElements(type, format, abortController = null) {
 		try {
-			return await client.get('elements', { type: type, format: format });
+			return await client.get(
+				'elements',
+				{ type: type, format: format },
+				abortController.signal ? abortController.signal : null,
+			);
 		} catch (e) {
 			return {
 				status: false,

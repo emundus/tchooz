@@ -94,6 +94,9 @@ class FilesController extends ApiController
 		$externalReferenceRepository = new ExternalReferenceRepository();
 		$campaignRepository          = new CampaignRepository();
 		$userFactory                 = Factory::getContainer()->get(UserFactoryInterface::class);
+		if (!class_exists('EmundusHelperFabrik')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+		}
 
 		if ($fnum === null)
 		{

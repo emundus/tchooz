@@ -408,13 +408,10 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 		try
 		{
 			$cache_key = 'emundus_translations_' . LanguageFactory::getShortLangCode($this->getLangCode());
-			$results   = $this->getFromCache($cache_key);
-			if (!empty($results) && !empty($results[$tag]))
+			$cached   = $this->getFromCache($cache_key);
+			if (!empty($cached) && !empty($cached[$tag]))
 			{
-				return $this->factory->fromDbObject($results[$tag]);
-			}
-			else {
-				$results = [];
+				return $this->factory->fromDbObject($cached[$tag]);
 			}
 
 			$query = $this->buildQuery();
@@ -428,8 +425,7 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 			{
 				if (Factory::getApplication()->isClient('site'))
 				{
-					$results[$tag] = $dbObject;
-					$this->cache->store($results, $cache_key);
+					$this->cache->clean();
 				}
 
 				return $this->factory->fromDbObject($dbObject);
