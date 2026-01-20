@@ -22,6 +22,8 @@ use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Entities\Automation\EventContextEntity;
+use Tchooz\Factories\Language\LanguageFactory;
+
 class EmundusModelProgramme extends ListModel
 {
 	private $app;
@@ -1681,10 +1683,6 @@ class EmundusModelProgramme extends ListModel
 			$Content_Folder[$language->sef] = file_get_contents($path_to_files[$language->sef]);
 		}
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'formbuilder.php');
-
-		$formbuilder = new EmundusModelFormbuilder;
-
 		$new_groups = [];
 
 
@@ -1712,8 +1710,8 @@ class EmundusModelProgramme extends ListModel
 			$query->clear();
 			$query->update($this->_db->quoteName('#__fabrik_forms'));
 
-			$formbuilder->translate('FORM_' . $pid . '_' . $formid, $label, 'fabrik_forms', $formid, 'label');
-			$formbuilder->translate('FORM_' . $pid . '_INTRO_' . $formid, $intro, 'fabrik_forms', $formid, 'intro');
+			LanguageFactory::translate('FORM_' . $pid . '_' . $formid, $label, 'fabrik_forms', $formid, 'label');
+			LanguageFactory::translate('FORM_' . $pid . '_INTRO_' . $formid, $intro, 'fabrik_forms', $formid, 'intro');
 			//
 
 			$query->set('label = ' . $this->_db->quote('FORM_' . $pid . '_' . $formid));
@@ -1783,8 +1781,8 @@ class EmundusModelProgramme extends ListModel
 				$query->update($this->_db->quoteName('#__fabrik_groups'));
 
 				$labels_to_duplicate = array(
-					'fr' => $formbuilder->getTranslation($group_model->label, 'fr-FR'),
-					'en' => $formbuilder->getTranslation($group_model->label, 'en-GB')
+					'fr' => LanguageFactory::getTranslation($group_model->label, 'fr-FR'),
+					'en' => LanguageFactory::getTranslation($group_model->label, 'en-GB')
 				);
 				if ($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
 					$labels_to_duplicate = array(
@@ -1792,7 +1790,7 @@ class EmundusModelProgramme extends ListModel
 						'en' => $group_model->label
 					);
 				}
-				$formbuilder->translate('GROUP_' . $formid . '_' . $newgroupid, $labels_to_duplicate, 'fabrik_groups', $newgroupid, 'label');
+				LanguageFactory::translate('GROUP_' . $formid . '_' . $newgroupid, $labels_to_duplicate, 'fabrik_groups', $newgroupid, 'label');
 
 				$query->set('label = ' . $this->_db->quote('GROUP_' . $formid . '_' . $newgroupid));
 				$query->set('name = ' . $this->_db->quote('GROUP_' . $formid . '_' . $newgroupid));
@@ -1840,8 +1838,8 @@ class EmundusModelProgramme extends ListModel
 							$sub_labels = [];
 							foreach ($el_params->sub_options->sub_labels as $index => $sub_label) {
 								$labels_to_duplicate = array(
-									'fr' => $formbuilder->getTranslation($sub_label, 'fr-FR'),
-									'en' => $formbuilder->getTranslation($sub_label, 'en-GB')
+									'fr' => LanguageFactory::getTranslation($sub_label, 'fr-FR'),
+									'en' => LanguageFactory::getTranslation($sub_label, 'en-GB')
 								);
 								if ($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
 									$labels_to_duplicate = array(
@@ -1849,7 +1847,7 @@ class EmundusModelProgramme extends ListModel
 										'en' => $sub_label
 									);
 								}
-								$formbuilder->translate('SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'sub_labels');
+								LanguageFactory::translate('SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'sub_labels');
 								$sub_labels[] = 'SUBLABEL_' . $newgroupid . '_' . $newelementid . '_' . $index;
 							}
 							$el_params->sub_options->sub_labels = $sub_labels;
@@ -1858,8 +1856,8 @@ class EmundusModelProgramme extends ListModel
 						$query->update($this->_db->quoteName('#__fabrik_elements'));
 
 						$labels_to_duplicate = array(
-							'fr' => $formbuilder->getTranslation($element->element->label, 'fr-FR'),
-							'en' => $formbuilder->getTranslation($element->element->label, 'en-GB')
+							'fr' => LanguageFactory::getTranslation($element->element->label, 'fr-FR'),
+							'en' => LanguageFactory::getTranslation($element->element->label, 'en-GB')
 						);
 						if ($labels_to_duplicate['fr'] == false && $labels_to_duplicate['en'] == false) {
 							$labels_to_duplicate = array(
@@ -1867,7 +1865,7 @@ class EmundusModelProgramme extends ListModel
 								'en' => $element->element->label
 							);
 						}
-						$formbuilder->translate('ELEMENT_' . $newgroupid . '_' . $newelementid, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'label');
+						LanguageFactory::translate('ELEMENT_' . $newgroupid . '_' . $newelementid, $labels_to_duplicate, 'fabrik_elements', $newelementid, 'label');
 						//
 
 						$query->set('label = ' . $this->_db->quote('ELEMENT_' . $newgroupid . '_' . $newelementid));
@@ -2005,8 +2003,8 @@ class EmundusModelProgramme extends ListModel
 			$this->_db->setQuery($query);
 			$this->_db->execute();
 
-			$formbuilder->translate('FORM_' . $pid . '_' . $formid, $label, 'fabrik_forms', $formid, 'label');
-			$formbuilder->translate('FORM_' . $pid . '_INTRO_' . $formid, $intro, 'fabrik_forms', $formid, 'intro');
+			LanguageFactory::translate('FORM_' . $pid . '_' . $formid, $label, 'fabrik_forms', $formid, 'label');
+			LanguageFactory::translate('FORM_' . $pid . '_INTRO_' . $formid, $intro, 'fabrik_forms', $formid, 'intro');
 			//
 
 			// INSERT FABRIK LIST

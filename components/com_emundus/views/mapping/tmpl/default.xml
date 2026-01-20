@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<metadata>
+    <layout title="[Mapping] Liste des mappings d'interconnexions">
+        <message>
+            <![CDATA[Liste des mappings]]>
+        </message>
+    </layout>
+    <fields name="params">
+    </fields>
+</metadata>

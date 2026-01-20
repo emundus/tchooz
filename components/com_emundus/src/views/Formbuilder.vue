@@ -9,77 +9,84 @@
 			:clickToClose="false"
 			ref="modal"
 		>
-			<div
-				v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang"
-				class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-bg-[#FEF6EE] tw-p-2"
-			>
-				<span class="material-symbols-outlined text-[#EF681F]">warning_amber</span>
-				<span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
-			</div>
-			<header class="tw-grid tw-min-h-[48px] tw-grid-cols-3 tw-items-center">
-				<div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
-					<p
-						class="tw-group tw-ml-4 tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
-						@click="clickGoBack"
-					>
-						<span id="go-back" class="material-symbols-outlined tw-mr-1 tw-text-link-regular"> navigate_before </span>
-						<span class="group-hover:tw-underline">{{ translate('COM_EMUNDUS_ACTIONS_BACK') }}</span>
-					</p>
-					<p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
-						{{ translate('COM_EMUNDUS_FORM_BUILDER_SAVED_AT') }} {{ lastSave }}
-					</p>
-				</div>
-				<span
-					class="editable-data tw-text-center tw-text-sm tw-font-semibold"
-					contenteditable="true"
-					ref="formTitle"
-					@focusout="updateFormTitle"
-					@keyup.enter="updateFormTitleKeyup"
-					@keydown="(event) => checkMaxMinlength(event, 100, 3)"
-					:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD')"
+			<div id="form-builder-header">
+				<div
+					v-if="this.globalStore.currentLanguage !== this.globalStore.defaultLang"
+					class="tw-flex tw-items-center tw-justify-center tw-gap-3 tw-bg-[#FEF6EE] tw-p-2"
 				>
-					{{ title }}
-				</span>
-				<div class="tw-flex tw-items-center tw-justify-end tw-gap-3">
-					<a
-						:href="'/' + this.aliasLink"
-						target="_blank"
-						class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap"
-						>{{ translate('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST') }}
-						<span class="material-symbols-outlined">open_in_new</span>
-					</a>
-					<div class="tw-flex tw-flex-col tw-items-end">
-						<button
-							class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-rounded-coordinator tw-px-3 tw-py-2"
-							v-if="
-								this.mode !== 'eval' &&
-								this.mode !== 'models' &&
-								!previewForm &&
-								['page', 'rules'].includes(showInSection)
-							"
-							@click="previewForm = true"
-						>
-							<span class="material-symbols-outlined tw-text-white"> remove_red_eye </span>
-							<label class="tw-mb-0 tw-cursor-pointer" for="previewform">{{
-								translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW')
-							}}</label>
-						</button>
-						<button
-							class="em-w-auto tw-btn-primary tw-gap-3 tw-rounded-coordinator tw-px-6 tw-py-3"
-							v-if="previewForm"
-							@click="previewForm = false"
-						>
-							<span class="material-symbols-outlined tw-text-white"> handyman </span>
-							<label class="tw-mb-0" for="previewform">{{
-								translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER')
-							}}</label>
-						</button>
-					</div>
+					<span class="material-symbols-outlined text-[#EF681F]">warning_amber</span>
+					<span>{{ translate('COM_EMUNDUS_ONBOARD_FORMBUILDER_EDIT_DEFAULT_LANG') }}{{ defaultLangLabel }}</span>
 				</div>
-			</header>
+
+				<header class="tw-grid tw-min-h-[48px] tw-grid-cols-3 tw-items-center">
+					<div class="right-actions tw-flex tw-items-center tw-justify-start tw-gap-2">
+						<p
+							class="tw-group tw-ml-4 tw-flex tw-cursor-pointer tw-items-center tw-font-semibold tw-text-link-regular"
+							@click="clickGoBack"
+						>
+							<span id="go-back" class="material-symbols-outlined tw-mr-1 tw-text-link-regular"> navigate_before </span>
+							<span class="group-hover:tw-underline">{{ translate('COM_EMUNDUS_ACTIONS_BACK') }}</span>
+						</p>
+						<p v-if="lastSave" id="saved-at" class="em-font-size-14 em-main-500-color">
+							{{ translate('COM_EMUNDUS_FORM_BUILDER_SAVED_AT') }} {{ lastSave }}
+						</p>
+					</div>
+					<span
+						class="editable-data tw-text-center tw-text-sm tw-font-semibold"
+						contenteditable="true"
+						ref="formTitle"
+						@focusout="updateFormTitle"
+						@keyup.enter="updateFormTitleKeyup"
+						@keydown="(event) => checkMaxMinlength(event, 100, 3)"
+						:placeholder="translate('COM_EMUNDUS_FORM_BUILDER_ADD_FORM_TITLE_ADD')"
+					>
+						{{ title }}
+					</span>
+					<div class="tw-flex tw-items-center tw-justify-end tw-gap-3">
+						<a
+							:href="'/' + this.aliasLink"
+							target="_blank"
+							class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap"
+							>{{ translate('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST') }}
+							<span class="material-symbols-outlined">open_in_new</span>
+						</a>
+						<div class="tw-flex tw-flex-col tw-items-end">
+							<button
+								class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-rounded-coordinator tw-px-3 tw-py-2"
+								v-if="
+									this.mode !== 'eval' &&
+									this.mode !== 'models' &&
+									!previewForm &&
+									['page', 'rules'].includes(showInSection)
+								"
+								@click="previewForm = true"
+							>
+								<span class="material-symbols-outlined tw-text-white"> remove_red_eye </span>
+								<label class="tw-mb-0 tw-cursor-pointer" for="previewform">{{
+									translate('COM_EMUNDUS_FORMBUILDER_GO_TO_PREVIEW')
+								}}</label>
+							</button>
+							<button
+								class="em-w-auto tw-btn-primary tw-gap-3 tw-rounded-coordinator tw-px-6 tw-py-3"
+								v-if="previewForm"
+								@click="previewForm = false"
+							>
+								<span class="material-symbols-outlined tw-text-white"> handyman </span>
+								<label class="tw-mb-0" for="previewform">{{
+									translate('COM_EMUNDUS_FORMBUILDER_GO_BACK_FORMBUILDER')
+								}}</label>
+							</button>
+						</div>
+					</div>
+				</header>
+			</div>
 
 			<div v-if="principalContainer === 'default'" class="body tw-flex tw-items-center tw-justify-between">
-				<aside class="left-panel tw-relative tw-flex tw-h-full tw-justify-start" v-show="!previewForm">
+				<aside
+					class="left-panel tw-relative tw-flex tw-h-full tw-justify-start"
+					v-show="!previewForm"
+					:class="leftPanelClasses"
+				>
 					<div class="tabs tw-flex tw-h-full tw-flex-col tw-justify-start tw-gap-3 tw-p-3">
 						<div
 							v-for="(tab, i) in displayedLeftPanels"
@@ -142,6 +149,7 @@
 				<section
 					v-if="!previewForm && (activeTab === '' || activeTab === 'Elements')"
 					class="tw-flex tw-h-full tw-w-full tw-flex-col"
+					:class="centerPanelClasses"
 					id="center_content"
 				>
 					<transition name="fade" mode="out-in">
@@ -154,6 +162,7 @@
 							:profile_id="parseInt(profile_id)"
 							@open-element-properties="onOpenElementProperties"
 							@open-section-properties="onOpenSectionProperties"
+							@open-page-properties="onOpenPageProperties"
 							@open-create-model="onOpenCreateModel"
 							@update-page-title="getPages(currentPage.id)"
 						></form-builder-page>
@@ -223,11 +232,14 @@
 				<transition name="slide-fade" mode="out-in">
 					<aside
 						v-if="(rightPanel.tabs.includes(showInRightPanel) && activeTab === '') || activeTab === 'Elements'"
-						class="right-panel tw-relative tw-flex tw-h-full tw-flex-col"
+						class="right-panel tw-flex tw-h-full tw-flex-col"
+						:class="rightPanelClasses"
+						:style="rightPanelStyle"
 						@mouseover="showMinimizedRight = true"
 						@mouseleave="showMinimizedRight = false"
 					>
 						<div
+							v-if="!['section-properties', 'element-properties', 'page-properties'].includes(showInRightPanel)"
 							class="!tw-h-0 tw-w-[16px]"
 							@mouseover="showMinimizedRight = true"
 							@mouseleave="showMinimizedRight = false"
@@ -241,10 +253,7 @@
 							>
 						</div>
 						<transition name="fade" mode="out-in">
-							<div
-								:class="minimizedRight === true ? 'tw-max-w-0' : 'tw-min-w-[22rem] tw-max-w-md'"
-								class="tw-transition-all tw-duration-300"
-							>
+							<div :class="rightPanelContainerClass" class="tw-transition-all tw-duration-300">
 								<div
 									id="form-hierarchy"
 									v-if="showInRightPanel === 'hierarchy' && rightPanel.tabs.includes('hierarchy')"
@@ -270,6 +279,7 @@
 										@open-create-document="onOpenCreateDocument"
 									></form-builder-documents>
 								</div>
+
 								<form-builder-element-properties
 									v-if="showInRightPanel === 'element-properties'"
 									@close="onCloseElementProperties"
@@ -282,6 +292,12 @@
 									:section_id="selectedSection.group_id"
 									:profile_id="parseInt(profile_id)"
 								></form-builder-section-properties>
+								<form-builder-page-properties
+									v-else-if="showInRightPanel === 'page-properties'"
+									@close="onClosePageProperties"
+									:profile_id="parseInt(profile_id)"
+									:page="selectedPageProperties"
+								></form-builder-page-properties>
 								<form-builder-create-model
 									v-else-if="showInRightPanel === 'create-model'"
 									:page="selectedPage"
@@ -322,6 +338,7 @@ import { watch } from 'vue';
 import FormBuilderElements from '@/components/FormBuilder/FormBuilderElements.vue';
 import FormBuilderElementProperties from '@/components/FormBuilder/FormBuilderElementProperties.vue';
 import FormBuilderSectionProperties from '@/components/FormBuilder/FormBuilderSectionProperties.vue';
+import FormBuilderPageProperties from '@/components/FormBuilder/FormBuilderPageProperties.vue';
 import FormBuilderPage from '@/components/FormBuilder/FormBuilderPage.vue';
 import FormBuilderCreatePage from '@/components/FormBuilder/FormBuilderCreatePage.vue';
 import FormBuilderPages from '@/components/FormBuilder/FormBuilderPages.vue';
@@ -355,6 +372,7 @@ import ContactForm from '@/views/Contacts/ContactForm.vue';
 export default {
 	name: 'FormBuilder',
 	components: {
+		FormBuilderPageProperties,
 		ContactForm,
 		History,
 		Translations,
@@ -386,12 +404,20 @@ export default {
 			principalContainer: 'default',
 			showInSection: 'page',
 			selectedPage: 0,
+			selectedPageProperties: null,
 			selectedSection: null,
 			selectedElement: null,
 			optionsSelectedElement: false,
 			selectedDocument: null,
 			rightPanel: {
-				tabs: ['hierarchy', 'element-properties', 'section-properties', 'create-model', 'create-document'],
+				tabs: [
+					'hierarchy',
+					'element-properties',
+					'section-properties',
+					'page-properties',
+					'create-model',
+					'create-document',
+				],
 			},
 			showInRightPanel: 'hierarchy',
 			createDocumentMandatory: '1',
@@ -630,20 +656,16 @@ export default {
 			this.$refs.formBuilderDocuments.getDocuments();
 			this.$refs.formBuilderDocumentList.getDocuments();
 		},
+		onOpenPageProperties(event) {
+			this.selectedPageProperties = event;
+			this.showInRightPanel = 'page-properties';
+		},
 		onOpenSectionProperties(event) {
 			this.selectedSection = event;
 			this.showInRightPanel = 'section-properties';
 		},
 		onOpenElementProperties(event) {
 			this.selectedElement = event;
-			if (this.selectedElement.plugin === 'dropdown') {
-				this.optionsSelectedElement = true;
-			} else {
-				if (this.optionsSelectedElement === true) {
-					this.$refs.formBuilderPage.getSections();
-				}
-				this.optionsSelectedElement = false;
-			}
 			this.showInRightPanel = 'element-properties';
 		},
 		onUpdateDocument() {
@@ -660,12 +682,21 @@ export default {
 			this.showInRightPanel = 'hierarchy';
 			this.$refs.formBuilderPage.getSections();
 		},
+		onClosePageProperties() {
+			this.selectedPageProperties = null;
+			this.showInRightPanel = 'hierarchy';
+		},
 		onCloseCreatePage(response) {
 			if (response.reload) {
 				this.getPages(response.newSelected);
 			} else {
 				this.principalContainer = 'default';
 			}
+		},
+		onCloseRightPanel() {
+			this.selectedElement = null;
+			this.selectedSection = null;
+			this.showInRightPanel = 'hierarchy';
 		},
 		onOpenCreateModel(pageId) {
 			if (pageId > 0) {
@@ -765,10 +796,6 @@ export default {
 			}
 			this.showInSection = 'rules-add';
 		},
-		clickTab(tab) {
-			//todo display the composant translation
-			this.activeTab = tab.code;
-		},
 		handleSidebarSize(position = 'left') {
 			if (position === 'left') {
 				this.minimizedLeft = !this.minimizedLeft;
@@ -813,6 +840,46 @@ export default {
 
 			return label;
 		},
+		rightPanelClasses() {
+			if (['section-properties', 'element-properties', 'page-properties'].includes(this.showInRightPanel)) {
+				return 'tw-fixed tw-right-0 tw-w-[50rem] tw-shadow';
+			}
+
+			return '';
+		},
+		rightPanelStyle() {
+			if (['section-properties', 'element-properties', 'page-properties'].includes(this.showInRightPanel)) {
+				return {
+					top: document.getElementById('form-builder-header').offsetHeight + 'px',
+					paddingBottom: document.getElementById('form-builder-header').offsetHeight + 16 + 'px',
+				};
+			}
+		},
+		rightPanelContainerClass() {
+			if (!['section-properties', 'element-properties', 'page-properties'].includes(this.showInRightPanel)) {
+				if (this.minimizedRight === true) {
+					return 'tw-max-w-0';
+				} else {
+					return 'tw-min-w-[22rem] tw-max-w-md';
+				}
+			} else {
+				return 'tw-bg-white';
+			}
+		},
+		centerPanelClasses() {
+			if (['section-properties', 'element-properties', 'page-properties'].includes(this.showInRightPanel)) {
+				return 'tw-opacity-60 tw-blur-[0.5px]';
+			}
+
+			return '';
+		},
+		leftPanelClasses() {
+			if (['section-properties', 'element-properties', 'page-properties'].includes(this.showInRightPanel)) {
+				return 'tw-opacity-60 tw-blur-[0.5px]';
+			}
+
+			return '';
+		},
 	},
 	watch: {
 		previewForm(newValue) {
@@ -856,6 +923,7 @@ export default {
 		button {
 			margin: 8px 16px;
 			height: 32px;
+
 			&:hover {
 				span {
 					color: var(--em-profile-color) !important;
@@ -910,6 +978,7 @@ export default {
 
 					&.active {
 						background-color: var(--em-profile-color);
+
 						span {
 							color: white !important;
 						}
@@ -972,6 +1041,7 @@ export default {
 .fade-leave-to {
 	opacity: 0;
 }
+
 .fabrikActions {
 	display: none;
 }

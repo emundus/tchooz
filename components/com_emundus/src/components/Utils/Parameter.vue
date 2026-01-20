@@ -1,10 +1,15 @@
 <template>
-	<div class="tw-flex tw-flex-col tw-gap-2">
+	<div
+		class="tw-flex tw-flex-col tw-gap-2"
+		:class="{
+			'tw-hidden': parameter.hidden,
+		}"
+	>
 		<!-- LABEL -->
 		<label
 			v-if="parameter.hideLabel !== true"
 			:for="paramId"
-			class="tw-mb-0 tw-flex tw-items-end tw-font-medium"
+			class="parameter-label tw-mb-0 tw-flex tw-items-end tw-font-medium"
 			:class="parameter.helptext && helpTextType === 'above' ? 'tw-mb-0' : ''"
 		>
 			{{ translate(parameter.label) }}
@@ -212,7 +217,7 @@
 							type="radio"
 							class="fabrikinput !tw-mr-0 !tw-h-fit tw-cursor-pointer"
 							:class="parameter.hideRadio ? '!tw-hidden' : ''"
-							:name="paramName"
+							:name="paramName + '_' + paramId"
 							:id="paramId + '_input_' + option.value"
 							:value="option.value"
 							:checked="value === option.value"
@@ -753,8 +758,20 @@ export default {
 						let data = {
 							search_query: search_query,
 							limit: this.$props.multiselectOptions.optionsLimit,
-							properties: this.$props.asyncAttributes,
 						};
+
+						if (this.$props.asyncAttributes) {
+							// if asyncAttributes is an object entry value, loop through and add to data
+							// else, just add the single attribute as "properties": data
+							if (typeof this.$props.asyncAttributes === 'object' && !Array.isArray(this.$props.asyncAttributes)) {
+								for (const [key, value] of Object.entries(this.$props.asyncAttributes)) {
+									data[key] = value;
+								}
+							} else {
+								let attr = this.$props.asyncAttributes;
+								data['properties'] = this.$props.asyncAttributes;
+							}
+						}
 
 						settingsService
 							.getAsyncOptions(
@@ -1024,7 +1041,7 @@ export default {
 			);
 		},
 		paramId() {
-			return 'param_' + this.parameter.param + '_' + Math.floor(Math.random() * 100);
+			return 'param_' + this.parameter.param + '_' + Math.floor(Math.random() * 10000);
 		},
 		paramName() {
 			return 'param_' + this.parameter.param + '[]';

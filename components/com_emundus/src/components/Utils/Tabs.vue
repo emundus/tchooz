@@ -19,7 +19,7 @@
 				<span
 					:class="tab.active ? 'tw-text-profile-full' : 'tw-text-neutral-700'"
 					class="em-profile-font tw-whitespace-nowrap"
-					>{{ translate(tab.name) }}</span
+					>{{ tabName(tab) }}</span
 				>
 			</div>
 		</div>
@@ -84,6 +84,14 @@ export default {
 					this.$emit('click-disabled-tab', tab);
 				}
 			}
+		},
+		tabName(tab) {
+			let tabName = this.translate(tab.name);
+			if (tab.suffix) {
+				tabName += ' ' + tab.suffix;
+			}
+
+			return tabName;
 		},
 	},
 	computed: {

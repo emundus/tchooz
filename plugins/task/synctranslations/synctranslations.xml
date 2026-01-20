@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="plugin" group="task" method="upgrade">
+    <name>plg_task_synctranslations</name>
+    <author>eMundus</author>
+    <creationDate>2025-12</creationDate>
+    <copyright>(C) 2025 Open Source Matters, Inc.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>dev@emundus.fr</authorEmail>
+    <authorUrl>www.emundus.fr</authorUrl>
+    <version>2.12.0</version>
+    <namespace path="src">Joomla\Plugin\Task\SyncTranslations</namespace>
+    <files>
+        <folder plugin="synctranslations">services</folder>
+        <folder>src</folder>
+    </files>
+    <languages>
+        <language tag="fr-FR">language/fr-FR/plg_task_synctranslations.ini</language>
+        <language tag="fr-FR">language/fr-FR/plg_task_synctranslations.sys.ini</language>
+    </languages>
+</extension>

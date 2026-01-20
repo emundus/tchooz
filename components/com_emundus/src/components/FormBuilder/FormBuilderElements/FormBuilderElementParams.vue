@@ -184,6 +184,53 @@
 				</select>
 			</div>
 
+			<div v-else-if="param.type === 'fabrikmodalrepeat'">
+				<div v-for="i in element.params[param.name][Object.keys(element.params[param.name])[0]].length" :key="i">
+					<hr />
+					<div class="tw-flex tw-items-center tw-justify-between">
+						<label>-- {{ i }} --</label>
+						<button
+							v-if="i != 1"
+							type="button"
+							@click="removeFBModalRepeatableField(param.name, i)"
+							class="mt-2 w-auto"
+						>
+							<span class="material-symbols-outlined tw-text-red-600">close</span>
+						</button>
+					</div>
+
+					<form-builder-element-params
+						v-for="sub_field in param.fields"
+						:key="sub_field.name"
+						:element="element"
+						:parent_param="param"
+						:params="[sub_field]"
+						:databases="databases"
+						:repeat_name="param.name"
+						:index="i"
+					></form-builder-element-params>
+				</div>
+
+				<div class="tw-flex tw-justify-end">
+					<button
+						type="button"
+						@click="addFBModalRepeatableField(param.name)"
+						class="tw-btn-tertiary tw-mt-2 tw-w-auto"
+					>
+						{{ translate('COM_EMUNDUS_ONBOARD_PARAMS_ADD_REPEATABLE') }}
+					</button>
+				</div>
+			</div>
+
+			<!-- ELEMENT SELECTOR -->
+			<div v-else-if="param.type === 'listfields'">
+				<select v-model="element.params[parent_param.name][param.name][index - 1]" class="tw-w-full">
+					<option v-for="option in listFieldsOptions" :key="option.value" :value="option.value">
+						{{ option.label }}
+					</option>
+				</select>
+			</div>
+
 			<!-- INPUT (TEXT,NUMBER) -->
 			<input
 				v-else-if="parent_param && parent_param.name"
@@ -222,10 +269,11 @@ import Multiselect from 'vue-multiselect';
 import formBuilderService from '@/services/formbuilder';
 import { useGlobalStore } from '@/stores/global.js';
 import { useFormBuilderStore } from '@/stores/formbuilder.js';
+import FormBuilderElementOptions from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementOptions.vue';
 
 export default {
 	name: 'FormBuilderElementParams',
-	components: { Multiselect },
+	components: { FormBuilderElementOptions, Multiselect },
 	props: {
 		element: {
 			type: Object,

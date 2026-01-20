@@ -1,28 +1,10 @@
 <?php
-use Joomla\CMS\Factory;
-use Joomla\CMS\Language\LanguageHelper;
+
 use Joomla\CMS\Language\Text;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Factories\LayoutFactory;
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1)
-{
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else
-{
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
+$data = LayoutFactory::prepareVueData();
 
 Text::script('COM_EMUNDUS_TASKS');
 Text::script('COM_EMUNDUS_TASKS_INTRO');
@@ -44,12 +26,12 @@ $datas = [
 <div id="em-component-vue"
      component="Task/TaskHistoryList"
      data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
-     shortLang="<?= $short_lang ?>"
-     currentLanguage="<?= $current_lang ?>"
-     defaultLang="<?= $default_lang ?>"
-     manyLanguages="<?= $many_languages ?>"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
+     shortLang="<?= $data['short_lang'] ?>"
+     currentLanguage="<?= $data['current_lang'] ?>"
+     defaultLang="<?= $data['default_lang'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>"
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
 >
 </div>
 

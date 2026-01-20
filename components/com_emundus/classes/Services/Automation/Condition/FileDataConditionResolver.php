@@ -11,6 +11,7 @@ use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Traits\TraitAutomatedTask;
 use Tchooz\Traits\TraitTable;
 
@@ -56,7 +57,7 @@ class FileDataConditionResolver implements ConditionTargetResolverInterface
 	/**
 	 * @inheritDoc
 	 */
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$value = null;
 

@@ -21,6 +21,9 @@ class TaskRepository
 
 	private const MAX_PENDING_TASKS = 100;
 
+	private const RETRY_AFTER_MINUTES = 5;
+
+	private const IN_PROGRESS_TIMEOUT_MINUTES = 60;
 
 	private DatabaseDriver $db;
 
@@ -54,7 +57,7 @@ class TaskRepository
 		return $task;
 	}
 
-	public function getPendingTasks(int $limit = 100): array
+	public function getPendingTasks(int $limit = 100, ?int $retryAfterMin = null): array
 	{
 		$pendingTasks = [];
 
@@ -63,22 +66,68 @@ class TaskRepository
 			$limit = self::MAX_PENDING_TASKS;
 		}
 
-		$query = $this->db->createQuery();
-		$query->select('*')
-			->from($this->getTableName(self::class))
-			->where($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::PENDING->value))
-			->order($this->db->quoteName('created_at') . ' ASC')
-			->setLimit($limit);
+		$retryAfterMin = $retryAfterMin ?? self::RETRY_AFTER_MINUTES;
 
-		$this->db->setQuery($query);
-		$dbObjects = $this->db->loadObjectList();
+		try {
+			$query = $this->db->createQuery();
+			$query->select('*')
+				->from($this->getTableName(self::class))
+				->where($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::PENDING->value))
+				->orWhere($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::FAILED->value)
+					. ' AND ' . $this->db->quoteName('attempts') . ' < 3'
+					. ' AND ' . $this->db->quoteName('updated_at') . ' <= ' . $this->db->quote((new \DateTimeImmutable('-' . $retryAfterMin . ' minutes'))->format('Y-m-d H:i:s'))
+				)
+				->order($this->db->quoteName('created_at') . ' ASC')
+				->setLimit($limit);
 
-		if (!empty($dbObjects))
-		{
-			$pendingTasks = TaskFactory::fromDbObjects($dbObjects, $this->db);
+			$this->db->setQuery($query);
+			$dbObjects = $this->db->loadObjectList();
+
+			if (!empty($dbObjects))
+			{
+				$pendingTasks = TaskFactory::fromDbObjects($dbObjects, $this->db);
+			}
+		} catch (\Exception $e) {
+			Log::add('Error getting pending tasks: ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
 		}
 
 		return $pendingTasks;
+	}
+
+	/**
+	 * Check health of in-progress tasks
+	 * Foreach task that has been in progress for more than a threshold, mark it as failed
+	 * @return void
+	 */
+	public function checkInProgressTasksHealth(): void
+	{
+		try
+		{
+			$query = $this->db->createQuery();
+			$query->select('*')
+				->from($this->getTableName(self::class))
+				->where($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::IN_PROGRESS->value))
+				->where($this->db->quoteName('updated_at') . ' <= ' . $this->db->quote((new \DateTimeImmutable('-' . self::IN_PROGRESS_TIMEOUT_MINUTES . ' minutes'))->format('Y-m-d H:i:s')));
+
+			$this->db->setQuery($query);
+			$dbObjects = $this->db->loadObjectList();
+
+			if (!empty($dbObjects))
+			{
+				$inProgressTasks = TaskFactory::fromDbObjects($dbObjects, $this->db);
+				foreach ($inProgressTasks as $task)
+				{
+					$task->setStatus(TaskStatusEnum::FAILED);
+					$task->setUpdatedAt(new \DateTimeImmutable('now'));
+					$this->saveTask($task);
+					Log::add('Marked in-progress task ID ' . $task->getId() . ' as failed due to timeout.', Log::WARNING, 'com_emundus.task.repository');
+				}
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error checking in-progress tasks health: ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
+		}
 	}
 
 	/**
@@ -200,12 +249,12 @@ class TaskRepository
 					'status'      => $task->getStatus()->value,
 					'user_id'     => $task->getUserId(),
 					'updated_at'  => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-					'started_at'  => ($task->getStartedAt() ? $task->getStartedAt()->format('Y-m-d H:i:s') : null),
-					'finished_at' => ($task->getFinishedAt() ? $task->getFinishedAt()->format('Y-m-d H:i:s') : null),
+					'started_at'  => ($task->getStartedAt()?->format('Y-m-d H:i:s')),
+					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'metadata'    => json_encode($task->getMetadata()),
 					'attempts'    => $task->getAttempts(),
 				];
-				if(!empty($task->getAction()) && !empty($task->getAction()->getId()))
+				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
 				{
 					$update->action_id = $task->getAction()->getId();
 				}
@@ -214,17 +263,19 @@ class TaskRepository
 			}
 			else
 			{
+				$now = new \DateTimeImmutable();
 				$insert = (object)[
 					'status'      => $task->getStatus()->value,
 					'user_id'     => $task->getUserId(),
 					'metadata'    => json_encode($task->getMetadata()),
-					'created_at'  => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-					'updated_at'  => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-					'started_at'  => ($task->getStartedAt() ? $task->getStartedAt()->format('Y-m-d H:i:s') : null),
-					'finished_at' => ($task->getFinishedAt() ? $task->getFinishedAt()->format('Y-m-d H:i:s') : null),
+					'created_at'  => $now->format('Y-m-d H:i:s'),
+					'updated_at'  => $task->getUpdatedAt() ? $task->getUpdatedAt()->format('Y-m-d H:i:s') : $now->format('Y-m-d H:i:s'),
+					'started_at'  => ($task->getStartedAt()?->format('Y-m-d H:i:s')),
+					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'attempts'    => $task->getAttempts(),
 				];
-				if(!empty($task->getAction()) && !empty($task->getAction()->getId()))
+
+				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
 				{
 					$insert->action_id = $task->getAction()->getId();
 				}

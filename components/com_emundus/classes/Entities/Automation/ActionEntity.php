@@ -6,9 +6,9 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\Field;
-use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
 use Tchooz\Traits\TraitAutomatedTask;
 
@@ -34,6 +34,11 @@ abstract class ActionEntity
 	private array $withEntities = [];
 
 	private string|array|null $result = null;
+
+	/**
+	 * @var array<ActionExecutionMessage>
+	 */
+	private array $executionMessages = [];
 
 	public function __construct(array $parameterValues = [])
 	{
@@ -428,6 +433,42 @@ abstract class ActionEntity
 		}
 	}
 
+	public function verifyParameterValueIsValid(string $name): bool
+	{
+		$parameter = $this->getParameter($name);
+
+		if (empty($parameter)) {
+			throw new \InvalidArgumentException("Parameter '$name' not found for action type '" . static::getType() . "'");
+		}
+
+		$value = $this->getParameterValue($name);
+
+		if ($parameter instanceof ChoiceField) {
+			if (empty($parameter->getResearch()))
+			{
+				$availableValues = array_map(fn($choice) => $choice->getValue(), $parameter->getChoices());
+				if ($parameter->getMultiple()) {
+					if (!is_array($value)) {
+						$value = [$value];
+					}
+					foreach ($value as $val) {
+						if (!in_array($val, $availableValues)) {
+							Log::add('Invalid value "' . $val . '" for parameter "' . $name, Log::ERROR, 'com_emundus.action');
+							throw new \InvalidArgumentException("Invalid value $val for parameter $name");
+						}
+					}
+				} else {
+					if (!in_array($value, $availableValues)) {
+						Log::add('Invalid value "' . $value . '" for parameter "' . $name, Log::ERROR, 'com_emundus.action');
+						throw new \InvalidArgumentException("Invalid value $value for parameter $name");
+					}
+				}
+			}
+		}
+
+		return true;
+	}
+
 	public function isAvailable(): bool
 	{
 		return true;
@@ -441,5 +482,20 @@ abstract class ActionEntity
 	public function setResult(array|string|null $result): void
 	{
 		$this->result = $result;
+	}
+
+	public function addExecutionMessage(ActionExecutionMessage $message): void
+	{
+		$this->executionMessages[] = $message;
+	}
+
+	public function getExecutionMessages(?ActionMessageTypeEnum $type = null): array
+	{
+		if (!empty($type))
+		{
+			return array_filter($this->executionMessages, fn($msg) => $msg->getType() === $type);
+		}
+
+		return $this->executionMessages;
 	}
 }

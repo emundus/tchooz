@@ -128,12 +128,11 @@ class CustomEventHandlerTest extends UnitTestCase
 
 		$element = $db->setQuery($query)->loadAssoc();
 
-		$params = json_decode($element['params']);
-		$params->alias = 'test_alias_fnum';
+		$alias = 'test_alias_fnum';
 
 		$query = $db->getQuery(true);
 		$query->update($db->quoteName('#__fabrik_elements'))
-			->set('params = ' . $db->quote(json_encode($params)))
+			->set('alias = ' . $db->quote($alias))
 			->where('id = ' . $element['id']);
 
 		$executed = $db->setQuery($query)->execute();

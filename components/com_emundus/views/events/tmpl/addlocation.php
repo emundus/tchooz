@@ -8,7 +8,9 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\LayoutFactory;
 
 defined('_JEXEC') or die('Restricted Access');
 
@@ -30,32 +32,16 @@ Text::script('COM_EMUNDUS_ONBOARD_ADD_LOCATION_ROOM_SPECS');
 Text::script('COM_EMUNDUS_ONBOARD_EDIT_LOCATION');
 Text::script('COM_EMUNDUS_ONBOARD_ADD_LOCATION_DESCRIPTION');
 
-$lang         = JFactory::getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = JLanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-}
-else {
-	$many_languages = '0';
-}
-
-$user               = JFactory::getUser();
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
-
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
-     locationId="<?= JFactory::getApplication()->input->get('location'); ?>"
+     locationId="<?= Factory::getApplication()->input->get('location'); ?>"
      component="Events/LocationForm"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
-     manyLanguages="<?= $many_languages ?>">
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>">
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

@@ -92,10 +92,16 @@ class Dataset
 		}
 	}
 
-	public function createSampleUser($profile = 9, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER', array $groups = []): int
+	public function createSampleUser($profile = null, $username = 'user.test@emundus.fr', $password = 'test1234', $j_groups = [2], $firstname = 'Test', $lastname = 'USER', array $groups = []): int
 	{
-		$user_id = 0;
 		$m_users = new EmundusModelUsers;
+
+		if (empty($profile)) {
+			$applicantProfiles = $m_users->getApplicantProfiles();
+			$profile = !empty($applicantProfiles) ? $applicantProfiles[0]->id : 1000;
+		}
+
+		$user_id = 0;
 		$query = $this->db->getQuery(true);
 
 		$query->insert('#__users')

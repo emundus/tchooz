@@ -10,9 +10,12 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\TableJoin;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
+use Tchooz\Entities\Fields\DateField;
 use Tchooz\Entities\Fields\StringField;
+use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Services\Automation\FieldTransformer;
 use Tchooz\Traits\TraitTable;
 
@@ -34,6 +37,7 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 			new StringField('firstname', Text::_('COM_EMUNDUS_USER_FIELD_FIRSTNAME'), false),
 			new StringField('lastname', Text::_('COM_EMUNDUS_USER_FIELD_LASTNAME'), false),
 			new StringField('email', Text::_('COM_EMUNDUS_USER_FIELD_EMAIL'), false),
+			new DateField('lastvisitDate', Text::_('COM_EMUNDUS_USER_FIELD_LASTVISITDATE'), false)
 		];
 		$formId = $this->getProfileAreaFormId();
 
@@ -58,7 +62,7 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 		return $fields;
 	}
 
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$value = null;
 		$userId = $context->getUserId();
@@ -97,6 +101,7 @@ class UserDataConditionResolver implements ConditionTargetResolverInterface
 						$value = \EmundusHelperFiles::getUserGroups($userId);
 						break;
 					case 'email':
+					case 'lastvisitDate':
 						$query->select($db->quoteName('u.' . $fieldName))
 							->from($db->quoteName('#__users', 'u'))
 							->where($db->quoteName('u.id') . ' = ' . $db->quote($userId));

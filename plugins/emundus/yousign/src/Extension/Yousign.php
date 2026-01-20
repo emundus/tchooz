@@ -24,11 +24,13 @@ use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Event\DispatcherInterface;
 use Joomla\Event\SubscriberInterface;
+use Tchooz\Enums\NumericSign\SignConnectorsEnum;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 use Tchooz\Repositories\NumericSign\RequestSignersRepository;
 use Tchooz\Repositories\NumericSign\YousignRequestsRepository;
 use Tchooz\Services\NumericSign\YousignService;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
+use Tchooz\Traits\TraitAutomatedTask;
 use Tchooz\Traits\TraitDispatcher;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -41,6 +43,7 @@ final class Yousign extends CMSPlugin implements SubscriberInterface
 	use DatabaseAwareTrait;
 	use UserFactoryAwareTrait;
 	use TraitDispatcher;
+	use TraitAutomatedTask;
 
 	public function __construct(DispatcherInterface $dispatcher, array $config)
 	{
@@ -59,26 +62,21 @@ final class Yousign extends CMSPlugin implements SubscriberInterface
 	{
 		try
 		{
-			$app = Factory::getApplication();
-			$name = $event->getName();
-			$data = $event->getArguments();
+			$data              = $event->getArguments();
+			$requestRepository = new RequestRepository();
+			$request           = $requestRepository->loadRequestById($data['request_id']);
+
+			if ($request->getConnector() !== SignConnectorsEnum::YOUSIGN)
+			{
+				return;
+			}
 
 			if (empty($data['request_id']))
 			{
 				return;
 			}
 
-			$em_config = ComponentHelper::getParams('com_emundus');
-			$user      = $app->getIdentity();
-			if (empty($user))
-			{
-				$automated_user_id = $em_config->get('automated_task_user', 1);
-				if (!empty($automated_user_id))
-				{
-					$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($automated_user_id);
-				}
-			}
-
+			$user                       = $this->getAutomatedTaskUser();
 			$db                         = $this->getDatabase();
 			$request_repository         = new RequestRepository($db);
 			$request_signers_repository = new RequestSignersRepository($db);
@@ -144,9 +142,9 @@ final class Yousign extends CMSPlugin implements SubscriberInterface
 						throw new \Exception($api_cancel['message'], $api_cancel['status']);
 					}
 
-					if(!class_exists('EmundusModelFiles'))
+					if (!class_exists('EmundusModelFiles'))
 					{
-						require_once JPATH_SITE.'/components/com_emundus/models/files.php';
+						require_once JPATH_SITE . '/components/com_emundus/models/files.php';
 					}
 					$m_files = new \EmundusModelFiles();
 

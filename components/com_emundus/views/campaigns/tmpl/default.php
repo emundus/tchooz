@@ -10,9 +10,8 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Language\LanguageHelper;
+use Tchooz\Factories\LayoutFactory;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -197,39 +196,17 @@ Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PROGRAMS');
 Text::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES_LABEL');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PARENT');
 
-$app = Factory::getApplication();
-$lang = $app->getLanguage();
-$user = $app->getIdentity();
-
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else {
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
-
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
      component="Campaigns"
-     coordinatoraccess="1"
-     sysadminaccess="1"
-     shortlang="<?php echo $short_lang ?>"
-     currentlanguage="<?php echo $current_lang ?>"
-     manylanguages="1"
-     defaultlang="<?php echo $default_lang ?>">
+     coordinatoraccess="<?php echo $data['coordinator_access'] ?>"
+     sysadminaccess="<?php echo $data['sysadmin_access'] ?>"
+     shortlang="<?php echo $data['short_lang'] ?>"
+     currentlanguage="<?php echo $data['current_lang'] ?>"
+     manylanguages="<?php echo $data['many_languages'] ?>"
+     defaultlang="<?php echo $data['default_lang'] ?>">
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

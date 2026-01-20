@@ -377,7 +377,10 @@ export default {
 
 		async exportToCsv() {
 			window.open(
-				'/index.php?option=com_emundus&controller=translations&task=export&profile=' + this.data.id,
+				'/index.php?option=com_emundus&controller=translations&task=export&profile=' +
+					this.data.id +
+					'&reference_table=' +
+					this.object.table.name,
 				'_blank',
 			);
 		},
@@ -486,6 +489,7 @@ export default {
 						value.id,
 						'',
 						tables,
+						this.object.table.name,
 					)
 					.then((response) => {
 						this.translations = response.data;

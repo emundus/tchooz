@@ -28,72 +28,12 @@ export default {
 		};
 	},
 	created() {
-		let defaultFroup = {
-			id: 'default-group',
-			title: '',
-			description: '',
-			parameters: [],
-			isRepeatable: false,
-		};
-
-		this.action.parameters.forEach((param) => {
-			if (Array.isArray(this.action.parameter_values)) {
-				this.action.parameter_values = {};
-			}
-
-			if (param.group) {
-				// group is an object with name, label and isRepeatable
-				let group = this.formGroups.find((g) => g.id === param.group.name);
-				if (!group) {
-					group = {
-						id: param.group.name,
-						title: param.group.label || '',
-						description: param.group.description || '',
-						parameters: [],
-						isRepeatable: param.group.isRepeatable || false,
-						rows: [],
-					};
-					this.formGroups.push(group);
-				}
-
-				group.parameters.push(this.fromFieldEntityToParameter(param, this.action.parameter_values[param.name] ?? null));
-			} else {
-				defaultFroup.parameters.push(
-					this.fromFieldEntityToParameter(param, this.action.parameter_values[param.name] ?? null),
-				);
-			}
-		});
-
-		// if default group has parameters, add it
-		if (defaultFroup.parameters.length > 0) {
-			this.formGroups.unshift(defaultFroup);
-		}
-
-		// foreach group, if action parameter_values has group.id array of rows, set them
-		this.formGroups.forEach((group) => {
-			if (group.isRepeatable) {
-				if (this.action.parameter_values[group.id] && Array.isArray(this.action.parameter_values[group.id])) {
-					group.rows = this.action.parameter_values[group.id].map((rowValues) => {
-						return {
-							parameters: group.parameters.map((parameter) => {
-								let paramCopy = JSON.parse(JSON.stringify(parameter));
-								// set value from rowValues
-								if (rowValues && rowValues.hasOwnProperty(paramCopy.param)) {
-									paramCopy.value = rowValues[paramCopy.param];
-								} else {
-									paramCopy.value = null;
-								}
-								return paramCopy;
-							}),
-						};
-					});
-				} else {
-					group.rows = [];
-				}
-			}
-		});
+		this.mountForm();
 	},
 	methods: {
+		async mountForm() {
+			this.formGroups = await this.fieldsToParameterFormGroups(this.action.parameters, this.action.parameter_values);
+		},
 		removeAction(action) {
 			this.$emit('remove-action', action);
 		},

@@ -2,6 +2,8 @@
 
 namespace Joomla\Plugin\Task\SignatureRequests\Extension;
 
+use Exception;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
@@ -21,7 +23,7 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 	private RequestRepository $repository;
 
 	protected const TASKS_MAP = [
-		'yousign.api' => [
+		'numeric_sign.api' => [
 			'langConstPrefix' => 'PLG_TASK_SIGNATURE_REQUESTS',
 			'form'            => 'signatureRequestsForm',
 			'method'          => 'manageSignatureRequests',
@@ -72,12 +74,16 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 				{
 					$service = NumericSignServiceFactory::fromRequest($request);
 
-					if (!$service->managesRequest($request))
-					{
-						$failed = true;
+					if (method_exists($service, 'managesRequest')) {
+						if (!$service->managesRequest($request))
+						{
+							$failed = true;
+						}
+					} else {
+						throw new Exception(Text::_('COM_EMUNDUS_MANAGES_REQUEST_METHOD_NOT_IMPLEMENTED'));
 					}
 				}
-				catch (\Exception $e)
+				catch (Exception $e)
 				{
 					Log::add($e->getMessage(), Log::ERROR, 'plg_emundus_signature_requests');
 					$failed = true;

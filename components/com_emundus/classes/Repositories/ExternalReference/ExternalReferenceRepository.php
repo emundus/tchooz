@@ -2,13 +2,24 @@
 
 namespace Tchooz\Repositories\ExternalReference;
 
+use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
 use Tchooz\Factories\ExternalReference\ExternalReferenceFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 
-#[TableAttribute(table: '#__emundus_external_reference', alias: 'reference')]
+#[TableAttribute(table: '#__emundus_external_reference', alias: 'reference',
+	columns: [
+		'id',
+		'column',
+		'intern_id',
+		'reference',
+		'sync_id',
+		'reference_object',
+		'reference_attribute',
+	]
+)]
 class ExternalReferenceRepository extends EmundusRepository implements RepositoryInterface
 {
 	private ExternalReferenceFactory $factory;
@@ -87,6 +98,9 @@ class ExternalReferenceRepository extends EmundusRepository implements Repositor
 				'column'    => $externalReference->getColumn(),
 				'intern_id' => $externalReference->getInternId(),
 				'reference' => $externalReference->getReference(),
+				'sync_id' => $externalReference->getSynchronizerId(),
+				'reference_object' => $externalReference->getReferenceObject(),
+				'reference_attribute' => $externalReference->getReferenceAttribute(),
 			];
 			$saved  = $this->db->insertObject($this->tableName, $object);
 		}
@@ -97,10 +111,82 @@ class ExternalReferenceRepository extends EmundusRepository implements Repositor
 				'column'    => $externalReference->getColumn(),
 				'intern_id' => $externalReference->getInternId(),
 				'reference' => $externalReference->getReference(),
+				'sync_id' => $externalReference->getSynchronizerId(),
+				'reference_object' => $externalReference->getReferenceObject(),
+				'reference_attribute' => $externalReference->getReferenceAttribute(),
 			];
 			$saved = $this->db->updateObject($this->tableName, $object, 'id');
 		}
 
 		return $saved;
+	}
+
+
+	private function applyFilters(\Joomla\Database\Mysqli\MysqliQuery $query, array $filters): void
+	{
+		if (!empty($filters))
+		{
+			$query->where('1 = 1');
+
+			foreach ($filters as $field => $value)
+			{
+				if (!str_starts_with($field, $this->alias . '.') && !str_contains($field, '.')) {
+					$field = $this->alias . '.' . $field;
+				}
+
+				if (!in_array($field, $this->columns))
+				{
+					throw new \InvalidArgumentException("Invalid filter field: {$field}");
+				}
+
+				if (is_array($value))
+				{
+					$query->andWhere($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+				}
+				else
+				{
+					$query->andWhere($this->db->quoteName( $field) . ' = ' . $this->db->quote($value));
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param   array  $filters
+	 * @param   int    $limit
+	 * @param   int    $page
+	 *
+	 * @return array<ExternalReferenceEntity>
+	 */
+	public function getAll(array $filters, int $limit = 25, int $page = 1): array
+	{
+		$externalReferences = [];
+
+		$query = $this->db->createQuery()
+			->select($this->alias . '.*')
+			->from($this->db->quoteName($this->tableName, $this->alias));
+
+		// Apply filters
+		$this->applyFilters($query, $filters);
+
+		if (!empty($limit))
+		{
+			$offset = ($page - 1) * $limit;
+			$query->setLimit($limit, $offset);
+		}
+
+		try {
+			$this->db->setQuery($query);
+			$dbObjects = $this->db->loadObjectList();
+
+			if ($dbObjects)
+			{
+				$externalReferences = $this->factory->fromDbObjects($dbObjects);
+			}
+		} catch (\Exception $e) {
+			Log::add('Error fetching external references: ' . $e->getMessage(), Log::ERROR, 'com_emundus.external_reference');
+		}
+
+		return $externalReferences;
 	}
 }

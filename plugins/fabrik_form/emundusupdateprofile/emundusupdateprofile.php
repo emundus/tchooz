@@ -71,7 +71,6 @@ class PlgFabrik_FormEmundusupdateprofile extends plgFabrik_Form
 
 
 		$alias = $this->getParams()->get('emundusupdateprofile_field_alias', '');
-
 		if (empty($alias))
 		{
 			$item = $menu->getItems('link', 'index.php?option=com_fabrik&view=form&formid=' . $formModel->id, true);

@@ -1,5 +1,5 @@
 <template>
-	<div id="form-builder-currency">
+	<div id="form-builder-application-choices">
 		<div v-if="loading" class="em-loader"></div>
 		<p>
 			{{ translate('COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_ELEMENT_PREVIEW') }}
@@ -32,11 +32,3 @@ export default {
 	computed: {},
 };
 </script>
-
-<style lang="scss">
-#form-builder-booking {
-	.fabrikEmundusGeolocalisation {
-		height: 150px;
-	}
-}
-</style>

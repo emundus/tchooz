@@ -7,6 +7,8 @@ use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\MixedField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Services\Automation\FieldTransformer;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 
@@ -16,7 +18,6 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 	public static function getTargetType(): string
 	{
 		return ConditionTargetTypeEnum::ALIASDATA->value;
-
 	}
 
 	public static function getAllowedActionTargetTypes(): array
@@ -27,9 +28,7 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 	}
 
 	/**
-	 * @param   array  $contextFilters
-	 *
-	 * @return Field[]
+	 * @inheritDoc
 	 */
 	public function getAvailableFields(array $contextFilters): array
 	{
@@ -45,7 +44,7 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 			$aliases = array_slice($aliases, 0, $sizeLimit);
 			foreach ($aliases as $alias)
 			{
-				$fields[] = new MixedField($alias, $alias);
+				$fields[] = $this->getFieldFromAlias($alias);
 			}
 		}
 		else
@@ -56,10 +55,33 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 			{
 				if (str_contains(strtolower($alias), $searchTerm))
 				{
-					$fields[] = new MixedField($alias, $alias);
+					$fields[] = $this->getFieldFromAlias($alias);
 				}
 			}
 		}
+
+		if (!empty($contextFilters['storedValues']))
+		{
+			$storedValues = $contextFilters['storedValues'];
+			foreach ($storedValues as $storedValue)
+			{
+				$found = false;
+				foreach ($fields as $field)
+				{
+					if ($field->getName() === $storedValue)
+					{
+						$found = true;
+						break;
+					}
+				}
+
+				if (!$found)
+				{
+					$fields[] = $this->getFieldFromAlias($storedValue);
+				}
+			}
+		}
+		$fields = array_filter($fields);
 
 		usort($fields, function (Field $a, Field $b) {
 			return strcmp($a->getLabel(), $b->getLabel());
@@ -68,7 +90,60 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 		return $fields;
 	}
 
-	public function resolveValue(ActionTargetEntity $context, string $fieldName): mixed
+	/**
+	 * @param   string  $alias
+	 *
+	 * @return Field|null
+	 */
+	private function getFieldFromAlias(string $alias): ?Field
+	{
+		$field = null;
+
+		if (!empty($alias))
+		{
+			$elements = \EmundusHelperFabrik::getElementsByAlias($alias);
+
+			if (sizeof($elements) === 1)
+			{
+				$field = FieldTransformer::transformFabrikElementIntoField($elements[0]);
+				$field->setName($alias);
+				$field->setLabel($alias);
+				$field->setGroup(null);
+			}
+			else if (sizeof($elements) > 1)
+			{
+				// check if all elements are of the same type
+				$firstElementType = $elements[0]->plugin;
+				$sameType = true;
+
+				foreach ($elements as $element)
+				{
+					if ($element->plugin !== $firstElementType)
+					{
+						$sameType = false;
+						break;
+					}
+				}
+
+				if ($sameType)
+				{
+					$field = FieldTransformer::transformFabrikElementIntoField($elements[0]);
+					$field->setName($alias);
+					$field->setLabel($alias);
+					$field->setGroup(null);
+				}
+			}
+
+			if (empty($field))
+			{
+				$field = new MixedField($alias, $alias);
+			}
+		}
+
+		return $field;
+	}
+
+	public function resolveValue(ActionTargetEntity $context, string $fieldName, ValueFormatEnum $format = ValueFormatEnum::RAW): mixed
 	{
 		$value = null;
 
@@ -77,7 +152,11 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 			$fabrikHelper = new \EmundusHelperFabrik();
 			$value = $fabrikHelper->getValueByAlias($fieldName, $context->getFile(), $context->getUserId());
 
-			if (isset($value['raw']))
+			if ($format === ValueFormatEnum::FORMATTED)
+			{
+				$value = $value['value'];
+			}
+			else if (isset($value['raw']))
 			{
 				$value = $value['raw'];
 			}

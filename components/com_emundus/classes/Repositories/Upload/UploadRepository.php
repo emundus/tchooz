@@ -9,7 +9,7 @@ use Tchooz\Factories\Upload\UploadFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 
-#[TableAttribute('#__emundus_uploads', 'upload')]
+#[TableAttribute(table: '#__emundus_uploads', alias: 'upload', columns: ['id', 'fnum', 'attachment_id'])]
 class UploadRepository extends EmundusRepository implements RepositoryInterface
 {
 	private UploadFactory $factory;
@@ -54,6 +54,24 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		$entities = [];
 		$objects = $this->getItemsByField('fnum', $fnum);
 
+		if (!empty($objects))
+		{
+			$entities = $this->factory->fromDbObjects($objects);
+		}
+
+		return $entities;
+	}
+
+	/**
+	 * @param   array  $params
+	 *
+	 * @return array<UploadEntity>
+	 */
+	public function getBy(array $params): array
+	{
+		$entities = [];
+
+		$objects = $this->getItemsByFields($params);
 		if (!empty($objects))
 		{
 			$entities = $this->factory->fromDbObjects($objects);
@@ -137,7 +155,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 				'can_be_deleted' => (int) $entity->canBeDeleted(),
 				'can_be_viewed' => (int) $entity->canBeViewed(),
 				'modified' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
-				'modified_by' => $entity->getModifiedBy() ?? null,
+				'modified_by' => $entity->getModifiedBy() ?: null,
 			];
 
 			$flushed = $this->db->updateObject($this->tableName, $object, 'id');

@@ -5,6 +5,7 @@ use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Factories\LayoutFactory;
 use Tchooz\Repositories\Payment\CartRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 
@@ -45,11 +46,8 @@ Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE_OR_TOTAL_LABEL');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_ADVANCE');
 Text::script('COM_EMUNDUS_CART_PAYMENT_PAY_TOTAL');
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$hash = EmundusHelperCache::getCurrentGitHash() . rand(0, 99999);
+$data = LayoutFactory::prepareVueData();
+
 $cart_repository = new CartRepository();
 $payment_repository = new PaymentRepository();
 
@@ -65,6 +63,7 @@ $datas = [
 	'cart' => $cart->serialize(),
     'paymentMethods' => array_map(function ($method) { return $method->serialize(); }, $payment_repository->getPaymentMethods()),
     'readOnly' => !$cart_repository->canUserUpdateCart($cart, Factory::getApplication()->getIdentity()->id),
+    ...$data
 ];
 PluginHelper::importPlugin('emundus');
 $dispatcher         = Factory::getApplication()->getDispatcher();
@@ -93,10 +92,8 @@ $dispatcher->dispatch('onCallEventHandler', $onBeforeRenderCart);
     <div id="em-component-vue"
          component="Payment/CartAppFile"
          data="<?= htmlspecialchars(json_encode($datas), ENT_QUOTES, 'UTF-8'); ?>"
-         shortLang="<?= $short_lang ?>"
-         currentLanguage="<?= $current_lang ?>"
     >
     </div>
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

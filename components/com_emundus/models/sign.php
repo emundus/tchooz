@@ -137,7 +137,7 @@ class EmundusModelSign extends ListModel
 				$fnum = EmundusHelperFiles::getFnumFromId($ccid);
 			}
 			if(!empty($attachment)) {
-				$attachmentTypeRepository = new AttachmentTypeRepository($this->db);
+				$attachmentTypeRepository = new AttachmentTypeRepository();
 				$attachmentTypeEntity = $attachmentTypeRepository->loadAttachmentTypeById($attachment);
 
 				$requestEntity->setAttachment($attachmentTypeEntity);

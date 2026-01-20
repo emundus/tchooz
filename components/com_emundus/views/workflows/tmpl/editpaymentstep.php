@@ -3,9 +3,7 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Language\LanguageHelper;
 use Tchooz\Repositories\Payment\ProductCategoryRepository;
 
 Text::script('SAVE');
@@ -48,36 +46,16 @@ Text::script('COM_EMUNDUS_PAYMENT_STEP_PRODUCT_CATEGORIES_HELPTEXT');
 Text::script('COM_EMUNDUS_PAYMENT_STEP_OPTIONAL_PRODUCT_CATEGORIES');
 Text::script('COM_EMUNDUS_PAYMENT_STEP_OPTIONAL_PRODUCT_CATEGORIES_HELPTEXT');
 
-$app          = Factory::getApplication();
-$lang         = $app->getLanguage();
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1)
-{
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else
-{
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($this->user->id);
-
 $current_step = $this->step;
 
 $product_category_repository = new ProductCategoryRepository();
-$datas = [
-	'workflow' => $this->current_workflow['workflow'],
-	'step'     => $this->step->serialize(),
-    'previous_payment_steps'   => array_values(array_filter($this->current_workflow['steps'], function ($step) use ($current_step) {
+$datas                       = [
+    'workflow'               => $this->current_workflow['workflow'],
+    'step'                   => $this->step->serialize(),
+    'previous_payment_steps' => array_values(array_filter($this->current_workflow['steps'], function ($step) use ($current_step) {
         return $step->type == $current_step->getType() && $step->id != $current_step->getId();
     })),
-    'product_categories' => array_map(function ($category) {
+    'product_categories'     => array_map(function ($category) {
         return $category->serialize();
     }, $product_category_repository->getProductCategories()),
 ];

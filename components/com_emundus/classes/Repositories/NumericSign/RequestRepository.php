@@ -116,7 +116,7 @@ class RequestRepository
 				$request = new Request($request_db['created_by']);
 				$request->setId($request_db['id']);
 				$request->setConnector(SignConnectorsEnum::from($request_db['connector']));
-				$attachmentTypeRepository = new AttachmentTypeRepository($this->db);
+				$attachmentTypeRepository = new AttachmentTypeRepository();
 				$request->setAttachment($attachmentTypeRepository->loadAttachmentTypeById($request_db['attachment_id']));
 				if (!empty($request_db['upload_id']))
 				{

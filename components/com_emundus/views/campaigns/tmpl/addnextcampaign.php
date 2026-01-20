@@ -12,7 +12,7 @@ defined('_JEXEC') or die('Restricted Access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\Language\LanguageHelper;
+use Tchooz\Factories\LayoutFactory;
 
 Text::script('COM_EMUNDUS_ONBOARD_FROM');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
@@ -275,46 +275,20 @@ Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARENT');
 Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_PARENT');
 
 $app = Factory::getApplication();
-if (version_compare(JVERSION, '4.0', '>')) {
-	$lang = $app->getLanguage();
-	$user = $app->getIdentity();
-}
-else {
-	$lang = Factory::getLanguage();
-	$user = Factory::getUser();
-}
 
-$short_lang   = substr($lang->getTag(), 0, 2);
-$current_lang = $lang->getTag();
-$languages    = LanguageHelper::getLanguages();
-if (count($languages) > 1) {
-	$many_languages = '1';
-	require_once JPATH_SITE . '/components/com_emundus/models/translations.php';
-	$m_translations = new EmundusModelTranslations();
-	$default_lang   = $m_translations->getDefaultLanguage()->lang_code;
-}
-else {
-	$many_languages = '0';
-	$default_lang   = $current_lang;
-}
-
-$coordinator_access = EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
-$sysadmin_access    = EmundusHelperAccess::isAdministrator($user->id);
-
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-$hash = EmundusHelperCache::getCurrentGitHash();
+$data = LayoutFactory::prepareVueData();
 ?>
 
 <div id="em-component-vue"
      component="CampaignEdition"
      campaignId="<?= $app->input->get('cid') ?>"
-     shortLang="<?= $short_lang ?>" currentLanguage="<?= $current_lang ?>"
-     manyLanguages="<?= $many_languages ?>"
-     defaultLang="<?= $default_lang ?>"
-     coordinatorAccess="<?= $coordinator_access ?>"
-     sysadminAccess="<?= $sysadmin_access ?>"
+     shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
+     manyLanguages="<?= $data['many_languages'] ?>"
+     defaultLang="<?= $data['default_lang'] ?>"
+     coordinatorAccess="<?= $data['coordinator_access'] ?>"
+     sysadminAccess="<?= $data['sysadmin_access'] ?>"
      index="<?= $app->input->get('index') ?>"
      tabs="<?= $this->tabs_to_display ?>"
 ></div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $hash ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

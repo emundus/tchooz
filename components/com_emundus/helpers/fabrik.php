@@ -30,6 +30,7 @@ use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\TransformerFactory;
+use Tchooz\Repositories\Fabrik\FabrikRepository;
 
 /**
  * Emundus Fabrik Helper
@@ -1770,31 +1771,52 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		if (!empty($alias))
 		{
-			try
+			$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+				->createCacheController('output', ['defaultgroup' => 'com_emundus']);
+			$key = $alias;
+			if(!empty($form_id))
 			{
-				$query->select('fl.db_table_name,fe.name,fe.id, fe.plugin, fe.params, fg.params as group_params, fg.id as group_id, fj.table_join')
-					->from($db->quoteName('#__fabrik_elements', 'fe'))
-					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
-					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
-					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
-					->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
-					->leftJoin($db->quoteName('#__fabrik_joins', 'fj') . ' ON ' . $db->quoteName('fl.id') . ' = ' . $db->quoteName('fj.list_id') . ' AND ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fj.group_id'))
-					->where("JSON_EXTRACT(fe.params, '$.alias') = " . $db->quote($alias))
-					->where($db->quoteName('fe.published') . ' = 1')
-					->where($db->quoteName('fg.published') . ' = 1')
-					->where($db->quoteName('fl.published') . ' = 1')
-					->where($db->quoteName('ff.published') . ' = 1');
-				if (!empty($form_id))
-				{
-					$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
-				}
-				$query->group('fe.id, fe.name, fl.db_table_name');
-				$db->setQuery($query);
-				$elements = $db->loadObjectList();
+				$key .= '_' . $form_id;
 			}
-			catch (Exception $e)
+			$key = 'fabrik_elements_by_alias_' . md5($key);
+			if($cache->contains($key))
 			{
-				Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				$elements = $cache->get($key);
+			}
+
+			if(empty($elements))
+			{
+				try
+				{
+					$query->select('fl.db_table_name, fe.name, fe.label, fe.id, fe.plugin, fe.params, fg.params as group_params, ff.id as form_id, fg.id as group_id, fj.table_join, ff.label as form_label, fg.label as group_label')
+						->from($db->quoteName('#__fabrik_elements', 'fe'))
+						->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
+						->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('ffg.group_id'))
+						->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
+						->leftJoin($db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $db->quoteName('fl.form_id') . ' = ' . $db->quoteName('ffg.form_id'))
+						->leftJoin($db->quoteName('#__fabrik_joins', 'fj') . ' ON ' . $db->quoteName('fl.id') . ' = ' . $db->quoteName('fj.list_id') . ' AND ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fj.group_id'))
+						->where($db->quoteName('fe.published') . ' = 1')
+						->where($db->quoteName('fg.published') . ' = 1')
+						->where($db->quoteName('fl.published') . ' = 1')
+						->where($db->quoteName('ff.published') . ' = 1')
+						->where($db->quoteName('fe.alias') . ' = ' . $db->quote($alias));
+					if (!empty($form_id))
+					{
+						$query->where($db->quoteName('fl.form_id') . ' = ' . $db->quote($form_id));
+					}
+					$query->group('fe.id, fe.name, fl.db_table_name');
+					$db->setQuery($query);
+					$elements = $db->loadObjectList();
+
+					if(!empty($elements))
+					{
+						$cache->store($key, $elements);
+					}
+				}
+				catch (Exception $e)
+				{
+					Log::add('component/com_emundus/helpers/fabrik | Cannot retrive elements by alias : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+				}
 			}
 		}
 
@@ -2341,18 +2363,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$db    = Factory::getContainer()->get('DatabaseDriver');
 				$query = $db->getQuery(true);
 
-				$query->select('params')
+				$query->select('alias')
 					->from($db->quoteName('#__fabrik_elements'))
-					->where($db->quoteName('published') . ' = 1');
+					->where($db->quoteName('published') . ' = 1')
+					->where($db->quoteName('alias') . ' IS NOT NULL');
 				$db->setQuery($query);
-				$elements = $db->loadColumn();
+				$aliases = $db->loadColumn();
 
-				// Extract aliases from element params
-				$aliases = array_map(function ($params) {
-					$params = json_decode($params, true);
-
-					return !empty($params['alias']) ? $params['alias'] : '';
-				}, $elements);
 				// Filter out empty aliases
 				$aliases = array_filter($aliases, function ($alias) {
 					return !empty($alias);
@@ -2422,13 +2439,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$evaluation_form_ids = $db->loadAssocList('form_id');
 
 				$query->clear()
-					->select('fe.name, fe.label, fe.params, ff.label as form_label, fg.label as group_label, ff.id as form_id')
+					->select('fe.name, fe.label, fe.params, ff.label as form_label, fg.label as group_label, ff.id as form_id, fe.alias')
 					->from($db->quoteName('#__fabrik_elements', 'fe'))
 					->leftJoin($db->quoteName('#__fabrik_groups', 'fg') . ' ON ' . $db->quoteName('fg.id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $db->quoteName('ffg.group_id') . ' = ' . $db->quoteName('fe.group_id'))
 					->leftJoin($db->quoteName('#__fabrik_forms', 'ff') . ' ON ' . $db->quoteName('ff.id') . ' = ' . $db->quoteName('ffg.form_id'))
 					->where($db->quoteName('fe.published') . ' = 1')
-					->where('JSON_EXTRACT(fe.params, \'$.alias\') IS NOT NULL');
+					->where($db->quoteName('fe.alias') . ' IS NOT NULL');
 				$db->setQuery($query);
 				$elements = $db->loadObjectList();
 
@@ -2444,8 +2461,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$available_profiles = array_keys(array_column($available_profiles['datas'], null, 'id'));
 
 				$aliases = array_map(function ($element) use ($db, $query, $evaluation_form_ids, &$profiles, $available_profiles) {
-					$params = json_decode($element->params, true);
-					if (!empty($params['alias']))
+					if (!empty($element->alias))
 					{
 						// Get group label, form label and profile label for element context
 						$profile = null;
@@ -2492,7 +2508,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 							'label'         => $element->label,
 							'profile_id'    => $profile_id,
 							'profile_label' => $profile_label,
-							'alias'         => $params['alias'],
+							'alias'         => $element->alias,
 							'form_label'    => $element->form_label,
 							'group_label'   => $element->group_label,
 						];
@@ -2502,6 +2518,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						return null;
 					}
 				}, $elements);
+
 				// Filter out empty aliases
 				$aliases = array_filter($aliases, function ($alias) {
 					return !empty($alias);
@@ -2612,7 +2629,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $datas;
 	}
 
-	public static function clearFabrikAliasesCache()
+	public static function clearFabrikAliasesCache(int $elementId = 0): void
 	{
 		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
 			->createCacheController('output', ['defaultgroup' => 'com_emundus']);
@@ -2621,6 +2638,11 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$cache->remove('fabrik_aliases_grouped');
 		$cache->remove('fabrik_tags_applicant');
 		$cache->remove('fabrik_tags_management');
+
+		if(!empty($elementId))
+		{
+			$cache->remove('fabrik_alias_' . $elementId);
+		}
 	}
 
 	/**
@@ -2646,16 +2668,18 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 			if (!empty($elements))
 			{
+				$fabrikRepository = new FabrikRepository();
 				$elements = array_filter($elements, function ($element) use ($table) {
 					return $element->getElement()->name !== 'parent_id';
 				});
 
 				foreach ($elements as $elt)
 				{
-					if (!empty($elt->getParams()) && !empty($elt->getParams()->get('alias')))
+					$alias = $fabrikRepository->getElementAlias($elt->getId());
+					if (!empty($alias))
 					{
 						$h_fabrik    = new EmundusHelperFabrik();
-						$alias_value = $h_fabrik->getValueByAlias($elt->getParams()->get('alias'), $fnum, $user_id, 'result', null, false);
+						$alias_value = $h_fabrik->getValueByAlias($alias, $fnum, $user_id, 'result', null, false);
 
 						if (!empty($alias_value['raw']))
 						{
@@ -2942,7 +2966,8 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		int             $row_id = 0,
 		ValueFormatEnum $return = ValueFormatEnum::FORMATTED,
 		int             $user_id = 0,
-		ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT
+		ExportModeEnum  $exportMode = ExportModeEnum::GROUP_CONCAT,
+		array $translations = []
 	): array
 	{
 		$isRaw = $return === ValueFormatEnum::RAW;
@@ -2966,6 +2991,9 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$params      = json_decode($fabrik_element['params']);
 		$groupParams = json_decode($fabrik_element['group_params']);
 
+		$fabrikRepository = new FabrikRepository();
+		$encrypted_tables = $fabrikRepository->getEncryptedTables();
+
 		$fnums = !empty($fnum) ? [$fnum] : null;
 
 		$date_format = null;
@@ -2980,7 +3008,7 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 		$isRepeatGroup = !empty($groupParams) && isset($groupParams->repeat_group_button) && $groupParams->repeat_group_button == 1;
 
-		if ($plugin === ElementPluginEnum::DATABASEJOIN || $isRepeatGroup)
+		if (in_array($plugin, [ElementPluginEnum::DATABASEJOIN, ElementPluginEnum::CASCADINGDROPDOWN]) || $isRepeatGroup)
 		{
 			$value[$fabrik_element['id']] = $this->getFabrikValueRepeat($fabrik_element, $fnums, $params, $isRepeatGroup, $row_id, $return, $date_format, $user_id, $exportMode);
 		}
@@ -2990,25 +3018,49 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		}
 
 		// Transform value if needed
-		$transformer = TransformerFactory::make($plugin->value, (array)$params, (array)$groupParams);
+		$transformer = TransformerFactory::make($plugin->value, (array)$params, (array)$groupParams, $translations);
 		foreach ($value[$fabrik_element['id']] as $fnumKey => $val)
 		{
 			$value[$fabrik_element['id']][$fnumKey]['raw'] = $val['raw'] ?? $val['val'];
-			$value[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
+
+			if(in_array($fabrik_element['db_table_name'], $encrypted_tables))
+			{
+				$decoded_value = json_decode($value[$fabrik_element['id']][$fnumKey]['raw'], true);
+
+				if (!empty($decoded_value))
+				{
+					$all_decrypted_data = [];
+					foreach ($decoded_value as $decoded_sub_value)
+					{
+						$all_decrypted_data[] = \EmundusHelperFabrik::decryptDatas($decoded_sub_value);
+					}
+
+					$value[$fabrik_element['id']][$fnumKey]['raw'] = '[' . implode(',', $all_decrypted_data) . ']';
+				}
+				else
+				{
+					$value[$fabrik_element['id']][$fnumKey]['raw'] = self::decryptDatas($value[$fabrik_element['id']][$fnumKey]['raw']);
+				}
+
+				$value[$fabrik_element['id']][$fnumKey]['val'] = $value[$fabrik_element['id']][$fnumKey]['raw'];
+			}
+			else {
+				$value[$fabrik_element['id']][$fnumKey]['val'] = $val['val'];
+			}
 
 			if ($return === ValueFormatEnum::FORMATTED || $return === ValueFormatEnum::BOTH)
 			{
 				$formatted_values = [];
 
-				if (!is_array($val['val']))
+				if (!is_array($value[$fabrik_element['id']][$fnumKey]['val']))
 				{
-					$values = [$val['val']];
+					$values = [$value[$fabrik_element['id']][$fnumKey]['val']];
 
 					if ($isRepeatGroup) {
-						$values = explode(',', $val['val']);
+						$values = explode(',', $value[$fabrik_element['id']][$fnumKey]['val']);
 					}
 				} else {
-					$values = $val['val'];
+					$values = $value[$fabrik_element['id']][$fnumKey]['val'];
 				}
 				foreach ($values as $_value)
 				{
@@ -3098,8 +3150,14 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		$tableJoin      = $elt['table_join'];
 		$name           = $elt['name'];
 		$isFnumsNull    = ($fnums === null || (is_array($fnums) && count($fnums) === 0));
-		$isDatabaseJoin = ($plugin === ElementPluginEnum::DATABASEJOIN);
-		$isMulti        = isset($params->database_join_display_type) && ($params->database_join_display_type == 'multilist' || $params->database_join_display_type == 'checkbox');
+		$isDatabaseJoin = ($plugin === ElementPluginEnum::DATABASEJOIN || $plugin === ElementPluginEnum::CASCADINGDROPDOWN);
+		if($plugin === ElementPluginEnum::CASCADINGDROPDOWN) {
+			$isMulti = isset($params->cdd_display_type) && ($params->cdd_display_type == 'multilist' || $params->cdd_display_type == 'checkbox');
+		}
+		else
+		{
+			$isMulti = isset($params->database_join_display_type) && ($params->database_join_display_type == 'multilist' || $params->database_join_display_type == 'checkbox');
+		}
 
 		$select   = '';
 		$from     = '';
@@ -3140,6 +3198,18 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			// TODO: Manage join_val_column_concat
 			if ($isDatabaseJoin)
 			{
+				$join_key_column = $params->join_key_column;
+				if($plugin === ElementPluginEnum::CASCADINGDROPDOWN) {
+					$cascadingdropdown_id    = explode('___', $params->cascadingdropdown_id);
+					$join_key_column = $cascadingdropdown_id[1];
+				}
+
+				$join_val_column = $params->join_val_column;
+				if($plugin === ElementPluginEnum::CASCADINGDROPDOWN) {
+					$cascadingdropdown_label    = explode('___', $params->cascadingdropdown_label);
+					$join_val_column = $cascadingdropdown_label[1];
+				}
+
 				// join_key_column = raw, join_val_column = formatted
 				if ($groupRepeat)
 				{
@@ -3147,15 +3217,15 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 
 					if ($return === ValueFormatEnum::BOTH)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 					elseif ($return === ValueFormatEnum::RAW)
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 					else
 					{
-						$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+						$select = 'GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 					}
 				}
 				else
@@ -3167,30 +3237,30 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 					{
 						if ($return === ValueFormatEnum::BOTH)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as raw, GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormatEnum::RAW)
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $join_key_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 						else
 						{
-							$select = 'GROUP_CONCAT(t_origin.' . $params->join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
+							$select = 'GROUP_CONCAT(t_origin.' . $join_val_column . '  SEPARATOR "' . $separator . '") as val, ' . $select_origin_val . ' ';
 						}
 					}
 					else
 					{
 						if ($return === ValueFormatEnum::BOTH)
 						{
-							$select = 't_origin.' . $params->join_key_column . ' as raw, t_origin.' . $params->join_val_column . ' as val, ' . $select_origin_val . ' ';
+							$select = 't_origin.' . $join_key_column . ' as raw, t_origin.' . $join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
 						elseif ($return === ValueFormatEnum::RAW)
 						{
-							$select = 't_origin.' . $params->join_key_column . ' as val, ' . $select_origin_val . ' ';
+							$select = 't_origin.' . $join_key_column . ' as val, ' . $select_origin_val . ' ';
 						}
 						else
 						{
-							$select = 't_origin.' . $params->join_val_column . ' as val, ' . $select_origin_val . ' ';
+							$select = 't_origin.' . $join_val_column . ' as val, ' . $select_origin_val . ' ';
 						}
 					}
 				}
@@ -3221,15 +3291,29 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				$tableName2 = $tableJoin;
 				if ($isMulti)
 				{
-					$from       = $db->quoteName($params->join_db_name, 't_origin');
-					$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
+					$joinDbName = $params->join_db_name;
+					if(ElementPluginEnum::CASCADINGDROPDOWN)
+					{
+						$cascadingdropdown_join_db_name    = explode('___', $params->cascadingdropdown_id);
+						$joinDbName = $cascadingdropdown_join_db_name[0];
+					}
+
+					$from       = $db->quoteName($joinDbName, 't_origin');
+					if(ElementPluginEnum::CASCADINGDROPDOWN)
+					{
+						$leftJoin[] = $db->quoteName($tableName2 . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
+					}
+					else
+					{
+						$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
+					}
 					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
 					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
 				}
 				else
 				{
 					$from       = $db->quoteName($params->join_db_name, 't_origin');
-					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
+					$leftJoin[] = $db->quoteName($tableName2, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $join_key_column;
 					$leftJoin[] = $db->quoteName($tableName, 't_table') . ' ON t_table.id = t_elt.parent_id';
 				}
 			}
@@ -3238,13 +3322,13 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 				if ($isMulti)
 				{
 					$from       = $db->quoteName($params->join_db_name, 't_origin');
-					$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $params->join_key_column;
+					$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
 					$leftJoin[] = $db->quoteName($tableName, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
 				}
 				else
 				{
 					$from       = $db->quoteName($params->join_db_name, 't_origin');
-					$leftJoin[] = $db->quoteName($tableName, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $params->join_key_column;
+					$leftJoin[] = $db->quoteName($tableName, 't_elt') . ' ON t_elt.' . $name . " = t_origin." . $join_key_column;
 				}
 			}
 

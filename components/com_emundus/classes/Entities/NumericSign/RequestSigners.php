@@ -21,7 +21,7 @@ class RequestSigners
 
 	private SignStatusEnum $status = SignStatusEnum::TO_SIGN;
 
-	private string $signedAt = '';
+	private ?string $signedAt = '';
 
 	private ContactEntity $contact;
 
@@ -37,7 +37,19 @@ class RequestSigners
 
 	private SignAuthenticationLevelEnum $authenticationLevel = SignAuthenticationLevelEnum::STANDARD;
 
-	public function __construct(Request $request, ContactEntity $contact, SignStatusEnum|string $status = null)
+	public function __construct(
+		Request $request,
+		ContactEntity $contact,
+		SignStatusEnum|string $status = null,
+		int $id = 0,
+		?string $signedAt = '',
+		int $step = 1,
+		int $page = 0,
+		string $position = '',
+		?int $order = null,
+		?string $anchor = null,
+		SignAuthenticationLevelEnum $authenticationLevel = SignAuthenticationLevelEnum::STANDARD
+	)
 	{
 		$this->request = $request;
 		$this->contact = $contact;
@@ -45,6 +57,14 @@ class RequestSigners
 		{
 			$this->status = $status instanceof SignStatusEnum ? $status : SignStatusEnum::from($status);
 		}
+		$this->id = $id;
+		$this->signedAt = $signedAt;
+		$this->step = $step;
+		$this->page = $page;
+		$this->position = $position;
+		$this->order = $order;
+		$this->anchor = $anchor;
+		$this->authenticationLevel = $authenticationLevel;
 	}
 
 	public function getId(): int
@@ -88,12 +108,12 @@ class RequestSigners
 		return $this;
 	}
 
-	public function getSignedAt(): string
+	public function getSignedAt(): ?string
 	{
 		return $this->signedAt;
 	}
 
-	public function setSignedAt(string $signedAt): void
+	public function setSignedAt(?string $signedAt): void
 	{
 		$this->signedAt = $signedAt;
 	}

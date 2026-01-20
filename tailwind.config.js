@@ -7,6 +7,7 @@ module.exports = {
         "./templates/g5_helium/html/**/*.{html,js,php}",
         "./modules/**/src/**/*.{html,js,php,vue}",
         "./modules/**/tmpl/*.{html,js,php}",
+        "!./**/node_modules/**",
         "./plugins/fabrik_element/**/*.{html,js,php}",
         "./plugins/fabrik_list/js/scripts/*.{html,js}",
         "./components/com_emundus/helpers/**/*.{html,js,php,vue}",
@@ -62,6 +63,12 @@ module.exports = {
         {
             pattern: /tw-text-main-500/
         },
+        {
+            pattern: /tw-opacity-60/
+        },
+        {
+            pattern: /tw-blur-[0.5px]/
+        },
     ],
     theme: {
         extend: {
@@ -83,9 +90,10 @@ module.exports = {
                     medium: 'hsl(from var(--em-profile-color) h s l / 30%)',
                     dark: 'color-mix(in srgb,var(--em-profile-color),#000 15%)',
                 },
+
                 link: {
                     regular: 'var(--link-regular)',
-                } ,
+                },
 
                 coordinator: {
                     bg: 'var(--em-coordinator-bg)',
@@ -159,6 +167,24 @@ module.exports = {
                 green: {
                     500: 'var(--green-500)',
                     700: 'var(--green-700)'
+                },
+                alert: {
+                    'error': 'var(--em-alert-error-color)',
+                    'error-bg': 'var(--em-alert-error-bgc)',
+                    'error-icon': 'var(--em-alert-error-icon)',
+                    'error-border': 'var(--em-alert-error-border)',
+                    'warning': 'var(--em-alert-warning-color)',
+                    'warning-bg': 'var(--em-alert-warning-bgc)',
+                    'warning-icon': 'var(--em-alert-warning-icon)',
+                    'warning-border': 'var(--em-alert-warning-border)',
+                    'info': 'var(--em-alert-info-color)',
+                    'info-bg': 'var(--em-alert-info-bgc)',
+                    'info-icon': 'var(--em-alert-info-icon)',
+                    'info-border': 'var(--em-alert-info-border)',
+                    'success': 'var(--em-alert-success-color)',
+                    'success-bg': 'var(--em-alert-success-bgc)',
+                    'success-icon': 'var(--em-alert-success-icon)',
+                    'success-border': 'var(--em-alert-success-border)',
                 }
             },
             spacing: {

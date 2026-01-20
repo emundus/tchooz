@@ -9,6 +9,7 @@
 
 namespace Tchooz\Entities\User;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\User;
 
 class EmundusUserEntity
@@ -67,7 +68,7 @@ class EmundusUserEntity
 
 	public function getFirstname(): string
 	{
-		return $this->firstname;
+		return !$this->anonym ? $this->firstname : Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
 	}
 
 	public function setFirstname(string $firstname): void
@@ -77,7 +78,7 @@ class EmundusUserEntity
 
 	public function getLastname(): string
 	{
-		return $this->lastname;
+		return !$this->anonym ? $this->lastname : Text::_('COM_EMUNDUS_ANONYM_ACCOUNT');
 	}
 
 	public function setLastname(string $lastname): void

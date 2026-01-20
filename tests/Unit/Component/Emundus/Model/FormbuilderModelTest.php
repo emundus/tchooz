@@ -52,7 +52,8 @@ class FormbuilderModelTest extends UnitTestCase
 		$new_trad     = "Mon élément modifié";
 		$reference_id = 999999;
 
-		$this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id, '', $this->dataset['coordinator']);
+		$inserted = $this->m_translations->insertTranslation('ELEMENT_TEST', 'Mon élément de test', 'fr-FR', '', 'override', 'fabrik_elements', $reference_id, '', $this->dataset['coordinator']);
+		$this->assertTrue($inserted, 'La traduction initiale a bien été insérée en BDD.');
 		$new_key = $this->model->formsTrad('ELEMENT_TEST', ['fr' => $new_trad, 'en' => 'My test element'], $reference_id, null, null, $this->dataset['coordinator']);
 		$this->assertNotFalse($new_key, 'La fonction de traduction a fonctionné');
 		
@@ -71,7 +72,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$override_new_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
 		$this->assertGreaterThanOrEqual($override_original_file_size, $override_new_file_size, 'New override file size is greater or equal than original override file');
 
-		$this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
+		$this->deleteTranslation($reference_id);
 	}
 
 	/**
@@ -106,7 +107,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$override_new_file_size = filesize(JPATH_SITE . '/language/overrides/fr-FR.override.ini');
 		$this->assertGreaterThanOrEqual($override_original_file_size, $override_new_file_size, 'New override file size is greater or equal than original override file');
 
-		$this->m_translations->deleteTranslation('ELEMENT_TEST', 'fr-FR', '', $reference_id);
+		$this->deleteTranslation($reference_id);
 	}
 
 	/**
@@ -523,5 +524,28 @@ class FormbuilderModelTest extends UnitTestCase
 				$this->assertNotEmpty($table_exists, 'createDatabaseTableFromTemplate truly creates the new table');
 			}
 		}
+	}
+
+	private function deleteTranslation($reference_id): bool
+	{
+		$deleted = false;
+
+		if (!empty($reference_id))
+		{
+			$query = $this->db->createQuery();
+
+			try {
+				$query->delete('#__emundus_setup_languages')
+					->where('reference_id = ' . $reference_id);
+
+				$this->db->setQuery($query);
+				$deleted = $this->db->execute();
+			} catch (Exception $e)
+			{
+				dump('Failed to delete translation for unit tests ' . $e->getMessage());
+			}
+		}
+
+		return $deleted;
 	}
 }

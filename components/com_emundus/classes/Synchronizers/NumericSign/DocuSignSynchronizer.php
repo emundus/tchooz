@@ -5,6 +5,7 @@ namespace Tchooz\Synchronizers\NumericSign;
 use DocuSign\eSign\Api\EnvelopesApi;
 use DocuSign\eSign\Client\ApiClient;
 use DocuSign\eSign\Client\ApiException;
+use DocuSign\eSign\Model\Checkbox;
 use DocuSign\eSign\Model\Document;
 use DocuSign\eSign\Model\Envelope;
 use DocuSign\eSign\Model\EnvelopeDefinition;
@@ -49,11 +50,11 @@ class DocuSignSynchronizer
 		try
 		{
 			$this->auth = $this->getAuthenticationInfos();
-			$jwt = new DocuSignJwtAuthenticator([
+			$jwt        = new DocuSignJwtAuthenticator([
 				'integration_key' => $this->auth['integration_key'],
 				'user_id'         => $this->auth['user_id'],
 				'private_key'     => $this->auth['private_key'],
-				'secret_key' 	  => $this->auth['secret_key'],
+				'secret_key'      => $this->auth['secret_key'],
 				'mode'            => $this->auth['mode'],
 			]);
 
@@ -68,44 +69,6 @@ class DocuSignSynchronizer
 	}
 
 	/**
-	 * @param   string  $docusignSignature
-	 * @param   string  $content
-	 *
-	 * @return bool
-	 */
-	public function verifySignature(string $docusignSignature, string $content): bool
-	{
-		$verified = false;
-
-		if (!empty($docusignSignature) && !empty($content))
-		{
-			// DocuSign signatures are base64-encoded SHA256 hashes of the document content
-			$calculatedSignature = base64_encode(hash_hmac('sha256', $content, $this->auth['secret_key'], true));
-			$verified = hash_equals($calculatedSignature, $docusignSignature);
-		}
-
-		return $verified;
-	}
-
-	/**
-	 * @param   string  $accountId
-	 *
-	 * @return void
-	 */
-	public function setAccountId(string $accountId): void
-	{
-		$this->accountId = $accountId;
-	}
-
-	/**
-	 * @return string
-	 */
-	public function getAccountId(): string
-	{
-		return $this->accountId;
-	}
-
-	/**
 	 * @return array
 	 * @throws \Exception
 	 */
@@ -114,7 +77,7 @@ class DocuSignSynchronizer
 		$auth = [];
 
 		$syncRepository = new SynchronizerRepository();
-		$syncEntity = $syncRepository->getByType('docusign');
+		$syncEntity     = $syncRepository->getByType('docusign');
 
 		$params                  = $syncEntity->getConfig() ?? [];
 		$auth['integration_key'] = !empty($params['authentication']['integration_key'])
@@ -151,149 +114,107 @@ class DocuSignSynchronizer
 	}
 
 	/**
-	 * @param   Request  $request
+	 * @param   string  $docusignSignature
+	 * @param   string  $content
 	 *
-	 * @return EnvelopeDefinition
-	 * @throws \Exception
+	 * @return bool
 	 */
-	public function makeEnvelope(Request $request): EnvelopeDefinition
+	public function verifySignature(string $docusignSignature, string $content): bool
 	{
-		$envelopeDefinition = new EnvelopeDefinition([
-			'email_subject' => $request->getSubject() ?? Text::_('COM_EMUNDUS_DOCUSIGN_EMAIL_SUBJECT'),
-		]);
+		$verified = false;
 
-		$eventNotification = new EventNotification([
-			'url' => JUri::base() . DS . 'index.php?option=com_emundus&controller=sign&task=docusigncallback&format=raw',
-			'logging_enabled' => 'true',
-		    'require_acknowledgment' => 'true',
-		    'envelope_events' => [
-		        new EnvelopeEvent([
-		            'envelope_event_status_code' => 'completed', // envelope.completed
-		            'include_documents' => true
-		        ])
-		    ],
-		    'recipient_events' => [
-		        new RecipientEvent([
-		            'recipient_event_status_code' => 'completed', // recipient.completed
-		            'include_documents' => true
-		        ])
-		    ]
-		]);
-
-		$envelopeDefinition->setEventNotification($eventNotification);
-
-		$uploadRepository = new UploadRepository();
-		$upload = $uploadRepository->getById($request->getUploadId());
-		$content = $upload->getContent();
-
-		// File to sign
-		$document = new Document([
-			'document_base64' => base64_encode($content),
-			'name' => $request->getAttachment()->getName(),
-			'file_extension' => $upload->getExtension(),
-			'document_id' => $upload->getId(),
-		]);
-		$envelopeDefinition->setDocuments([$document]);
-
-		// Signers
-		$docusignSigners = [];
-		$requestSignersRepository = new RequestSignersRepository();
-		$contactRepository = new ContactRepository();
-		foreach ($request->getSigners() as $index => $signer)
+		if (!empty($docusignSignature) && !empty($content))
 		{
-			$contact = $contactRepository->getByEmail($signer->email);
-
-			$requestSigner =  $requestSignersRepository->loadSignerByRequestAndContact($request, $contact);
-
-			if (!empty($requestSigner->getAnchor()))
-			{
-				$signHere = new SignHere([
-					'document_id' => $upload->getId(),
-					'page_number' => !empty($requestSigner->getPage()) ? $requestSigner->getPage() : 1,
-					'anchor_string' => $requestSigner->getAnchor(),
-					'anchor_units' => 'inches',
-					'anchor_x_offset' => '0',
-					'anchor_y_offset' => $index * 0.2,
-					'anchor_allow_white_space_in_characters' => 'true',
-					'anchor_ignore_if_not_present' => 'false',
-				]);
-			}
-			else
-			{
-				$signHere = new SignHere([
-					'document_id' => $upload->getId(),
-					'page_number' => !empty($requestSigner->getPage()) ? $requestSigner->getPage() : 1,
-					'x_position' => $this->getCoordinates($requestSigner->getPosition())['x'],
-					'y_position' => $this->getCoordinates($requestSigner->getPosition())['y'] + $index * 20,
-				]);
-			}
-
-			$signerTabs = new Tabs([
-				'sign_here_tabs' => [$signHere],
-			]);
-
-			$newSigner = new Signer([
-				'email' => $requestSigner->getContact()->getEmail(),
-				'name' => $requestSigner->getContact()->getFullName(),
-				'recipient_id' => $index + 1,
-				'routing_order' => '1',
-				'tabs' => $signerTabs,
-			]);
-
-			if ($request->isOrdered())
-			{
-				$newSigner->setRoutingOrder($requestSigner->getOrder() ?? ($index + 1));
-			}
-
-			if ($requestSigner->getAuthenticationLevel() !== SignAuthenticationLevelEnum::STANDARD) {
-				// TODO: Advanced or Qualified Electronic Signature - to be implemented use RecipientIdentityVerification
-			}
-
-			$docusignSigners[] = $newSigner;
+			// DocuSign signatures are base64-encoded SHA256 hashes of the document content
+			$calculatedSignature = base64_encode(hash_hmac('sha256', $content, $this->auth['secret_key'], true));
+			$verified            = hash_equals($calculatedSignature, $docusignSignature);
 		}
 
-		$recipients = new Recipients([
-			'signers' => $docusignSigners,
-		]);
-
-		$envelopeDefinition->setRecipients($recipients);
-		$envelopeDefinition->setStatus('sent');
-
-		return $envelopeDefinition;
+		return $verified;
 	}
 
 	/**
 	 * @param   Request  $request
+	 * @param   string   $reason
+	 *
 	 * @return bool
 	 */
-	public function sendRequest(Request $request): bool
+	public function cancelRequest(Request $request, string $reason): bool
 	{
-		$sent = false;
+		$cancelled = false;
 
-		try {
-			$envelopeDefinition = $this->makeEnvelope($request);
+		try
+		{
 			$envelopeApi = new EnvelopesApi($this->client);
-			$envelopeSummary = $envelopeApi->createEnvelope($this->getAccountId(), $envelopeDefinition);
+			$envelope    = new Envelope();
+			$envelope->setStatus('voided');
+			$envelope->setVoidedReason($reason);
 
-			if (!empty($envelopeSummary->getEnvelopeId())) {
-				$request->setExternalReference($envelopeSummary->getEnvelopeId());
-
+			if ($envelopeApi->update($this->getAccountId(), $request->getExternalReference(), $envelope))
+			{
 				$requestRepository = new RequestRepository();
-				$sent = $requestRepository->flush($request);
-			} else {
-				Log::add('DocuSign envelope creation failed, no envelope ID returned.', Log::ERROR, 'com_emundus.docusign');
+				$request->setStatus(SignStatusEnum::CANCELLED);
+				$cancelled = $requestRepository->flush($request);
 			}
-		} catch (ApiException $e) {
-			$sent = false;
-			Log::add('Api Error on sending DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+		}
+		catch (ApiException $e)
+		{
+			Log::add('Api Error on cancelling DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
 		}
 		catch (\Exception $e)
 		{
-			$sent = false;
-			Log::add('General error on sending DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+			Log::add('General error on cancelling DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
 		}
 
-		return $sent;
+		return $cancelled;
+	}
+
+	/**
+	 * @return string
+	 */
+	public function getAccountId(): string
+	{
+		return $this->accountId;
+	}
+
+	/**
+	 * @param   string  $accountId
+	 *
+	 * @return void
+	 */
+	public function setAccountId(string $accountId): void
+	{
+		$this->accountId = $accountId;
+	}
+
+	/**
+	 * @param   string  $content
+	 *
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function processCallback(string $content): void
+	{
+		$data       = json_decode($content, true);
+		$envelopeId = $data['envelopeId'] ?? null;
+
+		if (!empty($envelopeId))
+		{
+			$requestRepository = new RequestRepository();
+			$request           = $requestRepository->getByExternalReference($envelopeId);
+
+			if (!empty($request))
+			{
+				try
+				{
+					$this->managesRequest($request);
+				}
+				catch (\Exception $e)
+				{
+					Log::add('Error processing DocuSign callback for envelope ID ' . $envelopeId . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+				}
+			}
+		}
 	}
 
 	/**
@@ -320,17 +241,17 @@ class DocuSignSynchronizer
 
 				/// get recipients to check their status
 				$envelopeApi = new EnvelopesApi($this->client);
-				$recipients = $envelopeApi->listRecipients($this->getAccountId(), $envelope->getEnvelopeId());
+				$recipients  = $envelopeApi->listRecipients($this->getAccountId(), $envelope->getEnvelopeId());
 
 				$requestSigners = $requestSignerRepository->getByRequest($request);
 
 				foreach ($recipients->getSigners() as $docusignSigner)
 				{
-					foreach($requestSigners as $requestSigner)
+					foreach ($requestSigners as $requestSigner)
 					{
 						if ($docusignSigner->getEmail() == $requestSigner->getContact()->getEmail())
 						{
-							switch($docusignSigner->getStatus())
+							switch ($docusignSigner->getStatus())
 							{
 								case 'sent':
 								case 'delivered':
@@ -345,10 +266,11 @@ class DocuSignSynchronizer
 
 									$date = date('Y-m-d H:i:s', strtotime($docusignSigner->getSignedDateTime()));
 									$requestSigner->setSignedAt($date);
-								break;
+									break;
 							}
 
-							try {
+							try
+							{
 								$requestSignerRepository->flush($requestSigner);
 							}
 							catch (\Exception $e)
@@ -359,7 +281,7 @@ class DocuSignSynchronizer
 					}
 				}
 
-				switch($envelope->getStatus())
+				switch ($envelope->getStatus())
 				{
 					case 'declined':
 						$request->setStatus(SignStatusEnum::DECLINED);
@@ -382,7 +304,8 @@ class DocuSignSynchronizer
 				{
 					if ($request->getSendReminder() === 1)
 					{
-						try {
+						try
+						{
 							$options = new EnvelopesApi\UpdateOptions();
 							$options->setResendEnvelope('true');
 							$response = $envelopeApi->update($this->getAccountId(), $envelope->getEnvelopeId(), '{}', $options);
@@ -403,7 +326,7 @@ class DocuSignSynchronizer
 				}
 
 				$requestRepository = new RequestRepository();
-				$managed = $requestRepository->flush($request);
+				$managed           = $requestRepository->flush($request);
 			}
 		}
 
@@ -413,114 +336,158 @@ class DocuSignSynchronizer
 	/**
 	 * @param   Request  $request
 	 *
-	 * @return void
-	 * @throws ApiException
-	 */
-	public function onAfterRequestCompleted(Request $request): void
-	{
-		// get signed document and save it locally
-		$envelope = $this->getEnvelope($request);
-		$envelopeApi   = new EnvelopesApi($this->client);
-		$documentsList = $envelopeApi->listDocuments($this->getAccountId(), $envelope->getEnvelopeId());
-
-		foreach ($documentsList->getEnvelopeDocuments() as $docInfo)
-		{
-			if ($docInfo->getDocumentId() != 'certificate')
-			{
-				$documentBytes = $envelopeApi->getDocument($this->getAccountId(), $docInfo->getDocumentId(), $envelope->getEnvelopeId());
-				if (!empty($request->getUploadId()))
-				{
-					$content = '';
-					while (!$documentBytes->eof()) {
-						$content .= $documentBytes->fgets();
-					}
-
-					$uploadRepository = new UploadRepository();
-					$upload           = $uploadRepository->getById($request->getUploadId());
-
-					if (file_put_contents($upload->getFileInternalPath(), $content) === false) {
-						throw new \RuntimeException("Failed to write signed document to file.");
-					} else {
-						$upload->setIsSigned(true);
-
-						if (!$uploadRepository->flush($upload))
-						{
-							throw new \RuntimeException("Failed to update upload as signed.");
-						} else
-						{
-							$request->setSignedUploadId($upload->getId());
-							$requestRepository = new RequestRepository();
-
-							if (!$requestRepository->flush($request))
-							{
-								throw new \RuntimeException("Failed to update request with signed upload ID.");
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
-	/**
-	 * @param   Request  $request
-	 * @param   string   $reason
-	 *
 	 * @return bool
 	 */
-	public function cancelRequest(Request $request, string $reason): bool
+	public function sendRequest(Request $request): bool
 	{
-		$cancelled = false;
+		$sent = false;
 
 		try
 		{
-			$envelopeApi = new EnvelopesApi($this->client);
-			$envelope = new Envelope();
-			$envelope->setStatus('voided');
-			$envelope->setVoidedReason($reason);
+			$envelopeDefinition = $this->makeEnvelope($request);
+			$envelopeApi        = new EnvelopesApi($this->client);
+			$envelopeSummary    = $envelopeApi->createEnvelope($this->getAccountId(), $envelopeDefinition);
 
-			if ($envelopeApi->update($this->getAccountId(), $request->getExternalReference(), $envelope))
+			if (!empty($envelopeSummary->getEnvelopeId()))
 			{
+				$request->setExternalReference($envelopeSummary->getEnvelopeId());
+
 				$requestRepository = new RequestRepository();
-				$request->setStatus(SignStatusEnum::CANCELLED);
-				$cancelled = $requestRepository->flush($request);
+				$sent              = $requestRepository->flush($request);
+			}
+			else
+			{
+				Log::add('DocuSign envelope creation failed, no envelope ID returned.', Log::ERROR, 'com_emundus.docusign');
 			}
 		}
 		catch (ApiException $e)
 		{
-			Log::add('Api Error on cancelling DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+			$sent = false;
+			Log::add('Api Error on sending DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
 		}
 		catch (\Exception $e)
 		{
-			Log::add('General error on cancelling DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+			$sent = false;
+			Log::add('General error on sending DocuSign request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
 		}
 
-		return $cancelled;
+		return $sent;
 	}
 
 	/**
 	 * @param   Request  $request
 	 *
-	 * @return Envelope|null
+	 * @return EnvelopeDefinition
+	 * @throws \Exception
 	 */
-	public function getEnvelope(Request $request): ?Envelope
+	public function makeEnvelope(Request $request): EnvelopeDefinition
 	{
-		$envelope = null;
+		$envelopeDefinition = new EnvelopeDefinition([
+			'email_subject' => $request->getSubject() ?? Text::_('COM_EMUNDUS_DOCUSIGN_EMAIL_SUBJECT'),
+		]);
 
-		try {
-			$envelopeApi = new EnvelopesApi($this->client);
-			$envelope = $envelopeApi->getEnvelope($this->getAccountId(), $request->getExternalReference());
-		} catch (ApiException $e) {
-			Log::add('Api Error on retrieving DocuSign envelope : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
-		}
-		catch (\Exception $e)
+		$eventNotification = new EventNotification([
+			'url'                    => JUri::base() . DS . 'index.php?option=com_emundus&controller=sign&task=docusigncallback&format=raw',
+			'logging_enabled'        => 'true',
+			'require_acknowledgment' => 'true',
+			'envelope_events'        => [
+				new EnvelopeEvent([
+					'envelope_event_status_code' => 'completed', // envelope.completed
+					'include_documents'          => true
+				])
+			],
+			'recipient_events'       => [
+				new RecipientEvent([
+					'recipient_event_status_code' => 'completed', // recipient.completed
+					'include_documents'           => true
+				])
+			]
+		]);
+
+		$envelopeDefinition->setEventNotification($eventNotification);
+
+		$uploadRepository = new UploadRepository();
+		$upload           = $uploadRepository->getById($request->getUploadId());
+		$content          = $upload->getContent();
+
+		// File to sign
+		$document = new Document([
+			'document_base64' => base64_encode($content),
+			'name'            => $request->getAttachment()->getName(),
+			'file_extension'  => $upload->getExtension(),
+			'document_id'     => $upload->getId(),
+		]);
+		$envelopeDefinition->setDocuments([$document]);
+
+		// Signers
+		$docusignSigners          = [];
+		$requestSignersRepository = new RequestSignersRepository();
+		$contactRepository        = new ContactRepository();
+		foreach ($request->getSigners() as $index => $signer)
 		{
-			Log::add('General error on retrieving DocuSign envelope : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+			$recipientId   = $index + 1;
+			$contact       = $contactRepository->getByEmail($signer->email);
+			$requestSigner = $requestSignersRepository->loadSignerByRequestAndContact($request, $contact);
+
+			if (!empty($requestSigner->getAnchor()))
+			{
+				$signHere = new SignHere([
+					'document_id'                            => $upload->getId(),
+					'page_number'                            => !empty($requestSigner->getPage()) ? $requestSigner->getPage() : 1,
+					'anchor_string'                          => $requestSigner->getAnchor(),
+					'anchor_units'                           => 'inches',
+					'anchor_x_offset'                        => '0',
+					'anchor_y_offset'                        => '0',
+					'anchor_allow_white_space_in_characters' => 'true',
+					'anchor_ignore_if_not_present'           => 'false',
+				]);
+			}
+			else
+			{
+				$signHere = new SignHere([
+					'document_id' => $upload->getId(),
+					'page_number' => !empty($requestSigner->getPage()) ? $requestSigner->getPage() : 1,
+					'x_position'  => $this->getCoordinates($requestSigner->getPosition())['x'],
+					'y_position'  => $this->getCoordinates($requestSigner->getPosition())['y'] + $index * 20,
+				]);
+			}
+
+			// todo: handle custom fields to fill by signers
+
+			$signerTabs = new Tabs([
+				'sign_here_tabs' => [$signHere],
+			]);
+
+			$newSigner = new Signer([
+				'email'         => $requestSigner->getContact()->getEmail(),
+				'name'          => $requestSigner->getContact()->getFullName(),
+				'recipient_id'  => $recipientId,
+				'routing_order' => '1',
+				'tabs'          => $signerTabs,
+			]);
+
+			if ($request->isOrdered())
+			{
+				$newSigner->setRoutingOrder($requestSigner->getOrder() ?? ($index + 1));
+			}
+
+			if ($requestSigner->getAuthenticationLevel() !== SignAuthenticationLevelEnum::STANDARD)
+			{
+				// TODO: Advanced or Qualified Electronic Signature - to be implemented use RecipientIdentityVerification
+			}
+
+			$docusignSigners[] = $newSigner;
 		}
 
-		return $envelope;
-	}
+		$recipients = new Recipients([
+			'signers' => $docusignSigners,
+		]);
 
+		$envelopeDefinition->setRecipients($recipients);
+		$envelopeDefinition->setStatus('sent');
+
+		return $envelopeDefinition;
+	}
 
 	/**
 	 * @param   string  $position
@@ -533,7 +500,7 @@ class DocuSignSynchronizer
 		$yUnit = 100;
 
 		$coordinate = [
-			'x' => $Xunit*3,
+			'x' => $Xunit * 3,
 			'y' => $yUnit
 		];
 
@@ -581,30 +548,83 @@ class DocuSignSynchronizer
 	}
 
 	/**
-	 * @param   string  $content
+	 * @param   Request  $request
+	 *
+	 * @return Envelope|null
+	 */
+	public function getEnvelope(Request $request): ?Envelope
+	{
+		$envelope = null;
+
+		try
+		{
+			$envelopeApi = new EnvelopesApi($this->client);
+			$envelope    = $envelopeApi->getEnvelope($this->getAccountId(), $request->getExternalReference());
+		}
+		catch (ApiException $e)
+		{
+			Log::add('Api Error on retrieving DocuSign envelope : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+		}
+		catch (\Exception $e)
+		{
+			Log::add('General error on retrieving DocuSign envelope : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+		}
+
+		return $envelope;
+	}
+
+	/**
+	 * @param   Request  $request
 	 *
 	 * @return void
-	 * @throws \Exception
+	 * @throws ApiException
 	 */
-	public function processCallback(string $content): void
+	public function onAfterRequestCompleted(Request $request): void
 	{
-		$data = json_decode($content, true);
-		$envelopeId = $data['envelopeId'] ?? null;
+		// get signed document and save it locally
+		$envelope      = $this->getEnvelope($request);
+		$envelopeApi   = new EnvelopesApi($this->client);
+		$documentsList = $envelopeApi->listDocuments($this->getAccountId(), $envelope->getEnvelopeId());
 
-		if (!empty($envelopeId))
+		foreach ($documentsList->getEnvelopeDocuments() as $docInfo)
 		{
-			$requestRepository = new RequestRepository();
-			$request = $requestRepository->getByExternalReference($envelopeId);
-
-			if (!empty($request))
+			if ($docInfo->getDocumentId() != 'certificate')
 			{
-				try
+				$documentBytes = $envelopeApi->getDocument($this->getAccountId(), $docInfo->getDocumentId(), $envelope->getEnvelopeId());
+				if (!empty($request->getUploadId()))
 				{
-					$this->managesRequest($request);
-				}
-				catch (\Exception $e)
-				{
-					Log::add('Error processing DocuSign callback for envelope ID ' . $envelopeId . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.docusign');
+					$content = '';
+					while (!$documentBytes->eof())
+					{
+						$content .= $documentBytes->fgets();
+					}
+
+					$uploadRepository = new UploadRepository();
+					$upload           = $uploadRepository->getById($request->getUploadId());
+
+					if (file_put_contents($upload->getFileInternalPath(), $content) === false)
+					{
+						throw new \RuntimeException("Failed to write signed document to file.");
+					}
+					else
+					{
+						$upload->setIsSigned(true);
+
+						if (!$uploadRepository->flush($upload))
+						{
+							throw new \RuntimeException("Failed to update upload as signed.");
+						}
+						else
+						{
+							$request->setSignedUploadId($upload->getId());
+							$requestRepository = new RequestRepository();
+
+							if (!$requestRepository->flush($request))
+							{
+								throw new \RuntimeException("Failed to update request with signed upload ID.");
+							}
+						}
+					}
 				}
 			}
 		}

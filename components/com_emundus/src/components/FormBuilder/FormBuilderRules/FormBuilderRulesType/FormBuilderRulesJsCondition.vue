@@ -219,7 +219,7 @@ export default {
 	},
 	methods: {
 		labelTranslate({ label }) {
-			let labelTranslated = label ? label[useGlobalStore().getShortLang] : '';
+			let labelTranslated = label ? label : '';
 
 			// If labelTranslated is empty, we try to find an other language
 			if (labelTranslated === '' && label) {
@@ -258,31 +258,23 @@ export default {
 						this.loading = false;
 					});
 				} else {
-					formBuilderService.getJTEXTA(val.params.sub_options.sub_labels).then((response) => {
-						if (response) {
-							val.params.sub_options.sub_labels.forEach((label, index) => {
-								val.params.sub_options.sub_labels[index] = Object.values(response.data)[index];
-							});
-						}
+					var ctr = 0;
+					Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
+						let new_option = {
+							primary_key: option,
+							value: val.params.sub_options.sub_labels[key],
+						};
 
-						var ctr = 0;
-						Object.values(val.params.sub_options.sub_values).forEach((option, key) => {
-							let new_option = {
-								primary_key: option,
-								value: val.params.sub_options.sub_labels[key],
-							};
+						this.options.push(new_option);
 
-							this.options.push(new_option);
-
-							ctr++;
-							if (ctr === val.params.sub_options.sub_values.length) {
-								if (this.conditionData.values) {
-									this.conditionData.values = this.options.find(
-										(option) => option.primary_key == this.conditionData.values,
-									);
-								}
+						ctr++;
+						if (ctr === val.params.sub_options.sub_values.length) {
+							if (this.conditionData.values) {
+								this.conditionData.values = this.options.find(
+									(option) => option.primary_key == this.conditionData.values,
+								);
 							}
-						});
+						}
 
 						this.loading = false;
 					});

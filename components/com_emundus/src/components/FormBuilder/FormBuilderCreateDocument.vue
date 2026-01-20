@@ -11,9 +11,10 @@
 				v-for="tab in activeTabs"
 				:key="tab.id"
 				:class="{
-					'is-active': tab.active,
-					'tw-w-2/4': activeTabs.length == 2,
-					'tw-w-full': activeTabs.length == 1,
+					'em-light-tabs em-light-selected-tab': tab.active,
+					'em-light-tabs': !tab.active,
+					'tw-w-2/4': activeTabs.length === 2,
+					'tw-w-full': activeTabs.length === 1,
 				}"
 				class="tw-cursor-pointer tw-p-4"
 				@click="selectTab(tab)"

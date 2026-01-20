@@ -9,6 +9,8 @@
  */
 
 // No direct access to this file
+use Tchooz\Factories\Language\LanguageFactory;
+
 defined('_JEXEC') or die('Restricted access');
 
 /**
@@ -42,6 +44,9 @@ class EmundusViewForm extends JViewLegacy
 
 			$this->layout = $layout;
 		}
+
+		LanguageFactory::cleanCache();
+
 		// Display the template
 		parent::display($tpl);
 	}

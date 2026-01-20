@@ -554,6 +554,75 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        <field
+                name="more_export_elements"
+                type="subform"
+                label="COM_EMUNDUS_EXPORT_MORE_ELEMENTS"
+                multiple="true"
+                buttons="add,remove"
+        >
+            <form>
+                <field
+                        name="element"
+                        type="text"
+                        label="COM_EMUNDUS_EXPORT_MORE_ELEMENTS_ELEMENT"
+                />
+                <field
+                        name="fnum_column"
+                        type="text"
+                        label="COM_EMUNDUS_EXPORT_MORE_ELEMENTS_FNUM_COLUMN"
+                        default="fnum"
+                />
+            </form>
+        </field>
+
+        <field
+                name="default_synthesis_pdf"
+                type="subform"
+                label="COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_PDF"
+                multiple="true"
+                buttons="add,remove"
+        >
+            <form>
+                <field
+                        name="element"
+                        type="text"
+                        label="COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_ELEMENT"
+                />
+            </form>
+        </field>
+
+        <field
+                name="default_header_pdf"
+                type="subform"
+                label="COM_EMUNDUS_EXPORT_DEFAULT_HEADER_PDF"
+                multiple="true"
+                buttons="add,remove"
+        >
+            <form>
+                <field
+                        name="element"
+                        type="text"
+                        label="COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_ELEMENT"
+                />
+            </form>
+        </field>
+
+        <field
+                name="default_synthesis_excel"
+                type="subform"
+                label="COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_EXCEL"
+                multiple="true"
+                buttons="add,remove"
+        >
+            <form>
+                <field
+                        name="element"
+                        type="text"
+                        label="COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_ELEMENT"
+                />
+            </form>
+        </field>
 
         <field
                 name="spacer1"

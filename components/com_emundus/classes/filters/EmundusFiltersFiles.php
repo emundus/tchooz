@@ -311,6 +311,55 @@ class EmundusFiltersFiles extends EmundusFilters
 		$this->filters = $this->createFiltersFromFabrikElements($elements);
 	}
 
+	public function getFilters(string $search = ''): array
+	{
+		if (!empty($this->filters))
+		{
+			if (!empty($search))
+			{
+				$filtered_filters = [];
+				foreach ($this->filters as $filter) {
+					if (stripos($filter['label'], $search) !== false) {
+						$filtered_filters[] = $filter;
+					}
+				}
+
+				return $filtered_filters;
+			}
+
+			return $this->filters;
+		}
+
+		if (empty($search))
+		{
+			$elements      = $this->getAllAssociatedElements();
+		}
+		else
+		{
+			$formIds = \EmundusHelperFabrik::getFabrikFormsListIntendedToFiles();
+			$fabrikElements = \EmundusHelperFabrik::searchFabrikElements($search, $formIds, ['panel', 'display']);
+
+			$elements = [];
+			foreach ($fabrikElements as $element)
+			{
+				$elements[] = [
+					'id' => $element->id,
+					'plugin' => $element->plugin,
+					'label' => $element->label,
+					'params' => $element->params,
+					'element_form_id' => $element->form_id,
+					'element_form_label' => $element->form_label,
+					'element_group_id' => $element->group_id,
+					'element_group_label' => $element->group_label
+				];
+			}
+		}
+
+		$this->filters = $this->createFiltersFromFabrikElements($elements);
+
+		return $this->filters;
+	}
+
 	protected function getAllAssociatedElements($element_id = null): array
 	{
 		$elements = [];
