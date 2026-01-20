@@ -149,7 +149,9 @@ class FabrikFactory
 			$dbObject->group_params ?? '',
 			$dbObject->alias ?? '',
 			$dbObject->default ?? '',
-			(int) ($dbObject->eval ?? 0)
+			(int) ($dbObject->eval ?? 0),
+			(bool) ($dbObject->published ?? true),
+			(int) ($dbObject->hidden ?? 0)
 		);
 	}
 }

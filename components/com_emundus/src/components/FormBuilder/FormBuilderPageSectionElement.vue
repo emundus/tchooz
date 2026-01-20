@@ -114,6 +114,12 @@
 
 			<form-builder-element-action v-else-if="element.plugin === 'action'" type="action" :element="element" />
 
+			<form-builder-element-file-upload
+				v-else-if="element.plugin === 'emundus_fileupload'"
+				type="emundus_fileupload"
+				:element="element"
+			/>
+
 			<div v-else-if="element.plugin === 'average' || element.plugin === 'calc'">
 				<span>0</span>
 			</div>
@@ -149,9 +155,11 @@ import FormBuilderElementBirthday from '@/components/FormBuilder/FormBuilderSect
 import FormBuilderElementYesno from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementYesno.vue';
 import FormBuilderElementPanel from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPanel.vue';
 import FormBuilderElementAction from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementAction.vue';
+import FormBuilderElementFileUpload from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementFileUpload.vue';
 
 export default {
 	components: {
+		FormBuilderElementFileUpload,
 		FormBuilderElementAction,
 		FormBuilderElementPanel,
 		FormBuilderElementYesno,

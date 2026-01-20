@@ -193,6 +193,13 @@ class EmundusControllerExport extends BaseController
 			$fabrikFactory    = new FabrikFactory($fabrikRepository);
 			$fabrikRepository->setFactory($fabrikFactory);
 
+			$elmentsFilters = [
+				'published' => 1,
+				'hidden' => 0,
+				'exluded_elements' => ['panel', 'display', 'emundus_fileupload']
+			];
+			$fabrikRepository->setElementFilters($elmentsFilters);
+
 			$campaignRepository = new CampaignRepository();
 
 			if ($type === 'applicant' || $type === 'management' || $type === 'attachments')
@@ -232,11 +239,11 @@ class EmundusControllerExport extends BaseController
 					{
 						$workflows[] = $workflowRepository->getWorkflowByProgramId($programId);
 					}
+					$workflows = array_filter($workflows);
 
 					// TODO: Improve readability of the code below
 					if ($type === 'applicant')
 					{
-						$workflows = array_filter($workflows);
 						foreach ($workflows as $workflow)
 						{
 							foreach ($workflow->getSteps() as $step)
