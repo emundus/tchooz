@@ -4,8 +4,10 @@ namespace Tchooz\Services\Automation;
 
 use EmundusHelperCache;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Repositories\Automation\AutomationRepository;
 use Tchooz\Services\Automation\Condition\ConditionTargetResolverInterface;
 
 class ConditionRegistry
@@ -105,7 +107,40 @@ class ConditionRegistry
 			}
 		}
 
+		$storedValuesByTypes = [];
+		if (!empty($contextFilters['automationId']))
+		{
+			$automationRepo = new AutomationRepository();
+			$automation = $automationRepo->getById($contextFilters['automationId']);
+
+			foreach ($automation->getConditionsGroups() as $conditionGroup)
+			{
+				foreach ($conditionGroup->getConditions() as $condition)
+				{
+					assert($conditionGroup instanceof ConditionGroupEntity);
+					foreach ($conditionGroup->getSubGroups() as $subGroup)
+					{
+						foreach ($subGroup->getConditions() as $subCondition)
+						{
+							if (!isset($storedValuesByTypes[$subCondition->getTargetType()->value])) {
+								$storedValuesByTypes[$subCondition->getTargetType()->value] = [];
+							}
+
+							$storedValuesByTypes[$subCondition->getTargetType()->value][] = $subCondition->getField();
+						}
+					}
+
+					if (!isset($storedValuesByTypes[$condition->getTargetType()->value])) {
+						$storedValuesByTypes[$condition->getTargetType()->value] = [];
+					}
+					$storedValuesByTypes[$condition->getTargetType()->value][] = $condition->getField();
+				}
+			}
+		}
+
 		foreach ($availableResolvers as $type => $resolver) {
+			$contextFilters['storedValues'] = $storedValuesByTypes[$type] ?? [];
+
 			$schemas[] = [
 				'targetType' => $type,
 				'label' => Text::_(ConditionTargetTypeEnum::from($type)->getLabel()),
