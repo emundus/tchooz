@@ -41,7 +41,7 @@ $base_url = JUri::base(true);
                             <p><?= JText::_('MOD_EMUNDUS_HELP_ARTICLES'); ?></p>
                         </a>
 					<?php endif; ?>
-                    <a href='https://support.client.emundus.fr/' target='_blank'
+                    <a href='https://support.client.emundus.fr/servicedesk/customer/portal/3' target='_blank'
                        class="tw-flex tw-items-center tw-gap-2 tw-py-2 tw-px-3 hover:tw-bg-neutral-300">
                         <img
                             class='icone-aide-tchoozy'
