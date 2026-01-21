@@ -3880,13 +3880,43 @@ class EmundusModelEvaluation extends JModelList
 							$preprocess = new TemplateProcessor($letter_file);
 							if (isset($fnumInfo[$fnum]))
 							{
+								foreach ($idFabrik as $id) {
+									$preg['patterns'][] = '/\$\{' . $id . '\}/';
+									if (isset($fabrikValues[$id][$fnum])) {
+										$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+									}
+									else {
+										$preg['replacements'][] = '';
+									}
+								}
+
+								foreach ($aliasFabrik as $alias => $ids) {
+									$value_found = false;
+									$preg['patterns'][] = '/\$\{' . $alias . '\}/';
+									foreach($ids as $id) {
+										if (!empty($fabrikValues[$id][$fnum]) && !empty($fabrikValues[$id][$fnum]['val'])) {
+											$preg['replacements'][] = Text::_($fabrikValues[$id][$fnum]['val']);
+											$value_found = true;
+											break;
+										}
+									}
+
+									if(!$value_found)
+									{
+										$preg['replacements'][] = '';
+									}
+								}
+
 								foreach ($fabrikTags as $fabrikTag) {
 									if(!empty($fabrikTag->getModifiers()))
 									{
-										$patternKey = array_search($fabrikTag->getName(), $fabrikValues);
-										if(isset($fabrikValues[$fabrikTag->getName()][$fnum]['val']))
+										$patternKey = array_search($fabrikTag->getPatternName(), $preg['patterns']);
+										if($patternKey !== false && !empty($preg['replacements'][$patternKey]))
 										{
-											$fabrikTag->setValue($fabrikValues[$fabrikTag->getName()][$fnum]['val']);
+											$fabrikTag->setValue($preg['replacements'][$patternKey]);
+
+											$preg['patterns'][] = $fabrikTag->getFullPatternName();
+											$preg['replacements'][] = $fabrikTag->getValueModified();
 
 											$fabrikValues[$fabrikTag->getFullName()][$fnum]['val'] = $fabrikTag->getValueModified();
 										}
