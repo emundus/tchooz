@@ -16,6 +16,8 @@ use Joomla\CMS\Language\Text;
 $notes = $this->params->get('note', '');
 if(!empty($notes)){
     $notes = explode(',',$notes);
+} else {
+    $notes = [];
 }
 ?>
 <?php if(!in_array('details',$notes)) : ?>

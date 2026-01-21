@@ -48,6 +48,8 @@ $headingsHtml = $this->loadTemplate('headings');
 $notes = $this->params->get('note', '');
 if(!empty($notes)){
     $notes = explode(',',$notes);
+} else {
+    $notes = [];
 }
 $showTitle = $this->params->get('show-title');
 echo $this->loadTemplate('tabs');
