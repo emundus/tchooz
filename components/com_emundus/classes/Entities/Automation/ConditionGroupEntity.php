@@ -13,7 +13,7 @@ class ConditionGroupEntity
 	private ConditionsAndorEnum $operator = ConditionsAndorEnum::AND;
 
 	/**
-	 * @var array <ConditionEntity>
+	 * @var array<ConditionEntity>
 	 */
 	private array $conditions = [];
 
