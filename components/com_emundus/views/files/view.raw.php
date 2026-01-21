@@ -22,6 +22,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 /**
  * HTML View class for the Emundus Component
@@ -76,6 +77,7 @@ class EmundusViewFiles extends JViewLegacy
 	/** Export */
 	protected int $fnumsCount;
 
+	private ApplicationChoicesRepository $applicationChoicesRepository;
 
 	public function __construct($config = array())
 	{
@@ -86,6 +88,7 @@ class EmundusViewFiles extends JViewLegacy
 		require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');
 		require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
 
+		$this->applicationChoicesRepository = new ApplicationChoicesRepository();
 
 		$this->app  = Factory::getApplication();
 		$this->user = $this->app->getIdentity();
@@ -157,7 +160,7 @@ class EmundusViewFiles extends JViewLegacy
 				$this->app->setUserState('com_emundus.files.export.fnums', $fnum_array);
 
 				$this->fnumsCount = count($fnum_array);
-				
+
 				break;
 			case 'access':
 				$fnums     = $this->app->input->getString('users', null);
@@ -411,6 +414,10 @@ class EmundusViewFiles extends JViewLegacy
 								$data[0]['commentaire'] = Text::_('COM_EMUNDUS_COMMENTAIRE');
 								$colsSup['commentaire'] = array();
 								break;
+							case 'application_choices':
+								$data[0]['application_choices'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES');
+								$colsSup['application_choices'] = array();
+								break;
 							case 'module':
 								// Get every module without a positon.
 								$mod_emundus_custom = array();
@@ -586,6 +593,23 @@ class EmundusViewFiles extends JViewLegacy
 						{
 							$notifications_comments        = sizeof($m_files->getCommentsByFnum([$fnum]));
 							$colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">' . $notifications_comments . '</p> ';
+						}
+					}
+
+					if (isset($colsSup['application_choices']))
+					{
+						foreach ($fnumArray as $fnum)
+						{
+							$applicationChoices = $this->applicationChoicesRepository->getChoicesByFnum($fnum);
+
+							$choicesHtml = '<ul>';
+							foreach ($applicationChoices as $key => $choice)
+							{
+								$choicesHtml .= '<li>' .Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key+1)) . ' : ' . htmlspecialchars($choice->getCampaign()->getLabel()) . '</li>';
+							}
+							$choicesHtml .= '</ul>';
+
+							$colsSup['application_choices'][$fnum] = $choicesHtml;
 						}
 					}
 

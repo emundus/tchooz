@@ -1907,7 +1907,7 @@ class EmundusControllerUsers extends BaseController
 			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 		$user   = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
 
-		if (!MfaHelper::canDeleteMethod($user))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 		}
