@@ -194,6 +194,7 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 		$names               = explode(',', $this->getParam('names', 'jos_emundus_references___Last_Name_1,jos_emundus_references___Last_Name_2,jos_emundus_references___Last_Name_3,jos_emundus_references___Last_Name_4'));
 		$firstnames          = explode(',', $this->getParam('firstnames', 'jos_emundus_references___First_Name_1,jos_emundus_references___First_Name_2,jos_emundus_references___First_Name_3,jos_emundus_references___First_Name_4'));
 		$default_attachments = [4, 6, 21, 19];
+        $send_file_pdf = $this->getParam('send_file_pdf', 'false');
 
 		$recipients = array();
 		foreach ($emails as $key => $email)
@@ -245,6 +246,55 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 		$m_files     = new EmundusModelFiles;
 		$fnum_detail = $m_files->getFnumInfos($fnum);
+
+        $applicant_pdf = array();
+        if($send_file_pdf == 'true'){
+            // GENERATE PDF
+            $last_file = null;
+
+            try{
+                include_once (JPATH_BASE.'/components/com_emundus/helpers/menu.php');
+                $h_menu = new EmundusHelperMenu;
+                $getformids = $h_menu->getUserApplicationMenu($fnum_detail['profile_id']);
+
+                foreach ($getformids as $getformid) {
+                    $formid[] = $getformid->form_id;
+                }
+
+                $file = JPATH_LIBRARIES.DS.'emundus'.DS.'pdf.php';
+
+                if (!file_exists(EMUNDUS_PATH_ABS.$student_id)) {
+                    mkdir(EMUNDUS_PATH_ABS.$student_id);
+                    chmod(EMUNDUS_PATH_ABS.$student_id, 0755);
+                }
+
+                require_once($file);
+
+                // Here we call the profile by campaign function, which will get the profile of the campaign's initial phase
+                $profile_id = $m_profiles->getProfileByCampaign($fnum_detail['campaign_id'])['profile_id'];
+
+                $applicant_pdf[] = application_form_pdf($student->id, $fnum, false, 1, $formid, null, null, $profile_id);
+
+                $query_pdf = $this->_db->getQuery(true);
+                $query_pdf->clear()
+                    ->select($this->_db->quoteName('filename'))
+                    ->from($this->_db->quoteName('#__emundus_uploads'))
+                    ->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($fnum))
+                    ->order($this->_db->quoteName('timedate') . ' DESC');
+                $this->_db->setQuery($query_pdf);
+                $files = $this->_db->loadColumn();
+
+                if(!empty($files)){
+                    $last_file = $files[0];
+
+                    $applicant_pdf[] = JPATH_BASE.str_replace("\\", "/", '/images/emundus/files/'.$student->id.'/'.$last_file);
+                }
+            } catch (Exception $e) {
+                JLog::add('Cannot generate pdf to send to referent = '.$e->getMessage(), JLog::ERROR, 'com_emundus');
+            }
+        }
+        //
+
 		$m_emails    = new EmundusModelEmails;
 
 		// setup mail
@@ -375,7 +425,12 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 						$mailer->isHTML(true);
 						$mailer->Encoding = 'base64';
 						$mailer->setBody($body);
-						$mailer->addAttachment($attachment);
+                        if (!empty($attachment)) {
+                            $mailer->addAttachment($attachment);
+                        }
+                        if (!empty($applicant_pdf)) {
+                            $mailer->addAttachment($applicant_pdf);
+                        }
 
 						if ($mailer->Send() !== true)
 						{
