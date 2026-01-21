@@ -157,7 +157,7 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
 
         $attachments = explode(',',$this->getParam('attachments','jos_emundus_references___attachment_id_1,jos_emundus_references___attachment_id_2,jos_emundus_references___attachment_id_3,jos_emundus_references___attachment_id_4'));
         $default_attachments = [4,6,21,19];
-        $emails = explode(';',$this->getParam('emails','jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
+        $emails = explode(',',$this->getParam('emails','jos_emundus_references___Email_1,jos_emundus_references___Email_2,jos_emundus_references___Email_3,jos_emundus_references___Email_4'));
         $names = explode(',',$this->getParam('names','jos_emundus_references___Last_Name_1,jos_emundus_references___Last_Name_2,jos_emundus_references___Last_Name_3,jos_emundus_references___Last_Name_4'));
         $firstnames = explode(',',$this->getParam('firstnames','jos_emundus_references___First_Name_1,jos_emundus_references___First_Name_2,jos_emundus_references___First_Name_3,jos_emundus_references___First_Name_4'));
 
@@ -234,10 +234,9 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
         $applicant_pdf = array();
 
         if($this->getParam('send_attachement') == 'true'){
-
             // GENERATE PDF
-            $base_url = "https://" . $_SERVER['SERVER_NAME'];
             $last_file = null;
+
             try{
                 $infos 		= $m_profile->getFnumDetails($current_user->fnum);
                 $profile 	= !empty($infos['profile']) ? $infos['profile'] : $infos['profile_id'];
@@ -262,13 +261,15 @@ class PlgFabrik_FormEmundusReferentLetterHopitauxParis extends plgFabrik_Form
 
                 application_form_pdf($student->id, $current_user->fnum, true, 1, $formid, null, null, $profile_id);
 
-                $query_pdf = 'SELECT filename
-				FROM #__emundus_uploads
-				WHERE fnum="'.$current_user->fnum.'"
-				ORDER BY timedate DESC';
+                $query_pdf = $this->_db->getQuery(true);
+                $query_pdf->clear()
+                    ->select($this->_db->quoteName('filename'))
+                    ->from($this->_db->quoteName('#__emundus_uploads'))
+                    ->where($this->_db->quoteName('fnum') . ' LIKE ' . $this->_db->quote($current_user->fnum))
+                    ->order($this->_db->quoteName('timedate') . ' DESC');
+                $this->_db->setQuery($query_pdf);
+                $files = $this->_db->loadColumn();
 
-                $db->setQuery($query_pdf);
-                $files = $db->loadColumn();
                 if(!empty($files)){
                     $last_file = $files[0];
 
