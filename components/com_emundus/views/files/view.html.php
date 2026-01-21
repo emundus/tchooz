@@ -16,6 +16,7 @@ use Joomla\CMS\Helper\ModuleHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\View\HtmlView;
 use Joomla\CMS\User\UserFactoryInterface;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 defined('_JEXEC') or die('Restricted access');
 //error_reporting(E_ALL);
@@ -41,6 +42,8 @@ class EmundusViewFiles extends HtmlView
 	private EmundusModelEvaluation $m_evaluation;
 	private EmundusModelFiles $m_files;
 	private EmundusModelUsers $m_users;
+
+	private ApplicationChoicesRepository $applicationChoicesRepository;
 
 	public function __construct($config = array())
 	{
@@ -70,6 +73,8 @@ class EmundusViewFiles extends HtmlView
 			require_once JPATH_SITE . '/components/com_emundus/models/users.php';
 		}
 		$this->m_users = new EmundusModelUsers();
+
+		$this->applicationChoicesRepository = new ApplicationChoicesRepository();
 
 		parent::__construct($config);
 	}
@@ -143,7 +148,7 @@ class EmundusViewFiles extends HtmlView
 		$menu_params = $menu->getParams($Itemid);
 
 		$columnSupl = explode(',', $menu_params->get('em_other_columns'));
-		
+
 		$groups = $this->m_users->getUserGroups($this->user->id, 'Column', $e_user->profile);
 
 		// get all fnums manually associated to user
@@ -251,6 +256,10 @@ class EmundusViewFiles extends HtmlView
 					case 'commentaire':
 						$data[0]['commentaire'] = Text::_('COM_EMUNDUS_COMMENTAIRE');
 						$colsSup['commentaire'] = array();
+						break;
+					case 'application_choices':
+						$data[0]['application_choices'] = Text::_('COM_EMUNDUS_APPLICATION_CHOICES');
+						$colsSup['application_choices'] = array();
 						break;
 					case 'module':
 						// Get every module without a positon.
@@ -421,6 +430,23 @@ class EmundusViewFiles extends HtmlView
 				{
 					$notifications_comments        = sizeof($this->m_files->getCommentsByFnum([$fnum]));
 					$colsSup['commentaire'][$fnum] = '<p class="messenger__notifications_counter">' . $notifications_comments . '</p> ';
+				}
+			}
+
+			if (isset($colsSup['application_choices']))
+			{
+				foreach ($fnumArray as $fnum)
+				{
+					$applicationChoices = $this->applicationChoicesRepository->getChoicesByFnum($fnum);
+
+					$choicesHtml = '<ul>';
+					foreach ($applicationChoices as $key => $choice)
+					{
+						$choicesHtml .= '<li>' .Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', ($key+1)) . ' : ' . htmlspecialchars($choice->getCampaign()->getLabel()) . '</li>';
+					}
+					$choicesHtml .= '</ul>';
+
+					$colsSup['application_choices'][$fnum] = $choicesHtml;
 				}
 			}
 
