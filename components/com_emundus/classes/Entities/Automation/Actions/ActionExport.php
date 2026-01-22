@@ -6,6 +6,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\Filesystem\Folder;
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
@@ -110,6 +111,16 @@ class ActionExport extends ActionEntity
 			$triggeredBy = is_array($context) ? $context[0]->getTriggeredBy() : $context->getTriggeredBy();
 
 			$exportPath = self::EXPORT_BASE_PATH . $triggeredBy->id . '/';
+			// Ensure the export directory exists
+			$fullExportPath = JPATH_SITE . '/' . $exportPath;
+			if (!is_dir($fullExportPath))
+			{
+				jimport('joomla.filesystem.folder');
+				if (!Folder::create($fullExportPath, 0755, true))
+				{
+					throw new \Exception('Failed to create export directory: ' . $fullExportPath);
+				}
+			}
 
 			$exportRegistry = new ExportRegistry();
 			$exportService  = $exportRegistry->getExportServiceInstance(

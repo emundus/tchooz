@@ -97,6 +97,7 @@ class WorkflowRepository
 	{
 		$workflow = null;
 
+		// TODO: Add caching here if performance becomes an issue
 		if (!empty($programId))
 		{
 			$query = $this->db->createQuery();

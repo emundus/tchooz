@@ -19,6 +19,10 @@ export default defineComponent({
 			type: Number,
 			default: 0,
 		},
+		exportLink: {
+			type: String,
+			default: '',
+		},
 	},
 	data() {
 		return {
@@ -299,8 +303,10 @@ export default defineComponent({
 					this.exportLoading = false;
 
 					let confirmMessage = 'LINK_TO_DOWNLOAD';
+					let closeMessage = 'COM_EMUNDUS_CLOSE';
 					if (async) {
-						confirmMessage = 'COM_EMUNDUS_OK';
+						confirmMessage = 'COM_EMUNDUS_GO_TO_EXPORTS_PAGE';
+						closeMessage = 'COM_EMUNDUS_STAY_ON_PAGE';
 					}
 
 					if (response.status) {
@@ -309,16 +315,16 @@ export default defineComponent({
 							response.msg,
 							false,
 							confirmMessage,
-							'COM_EMUNDUS_ACTIONS_CANCEL',
+							closeMessage,
 							null,
 							false,
 						).then((result) => {
 							if (result.isConfirmed) {
 								if (async) {
-									return;
+									window.open(this.exportLink, '_self');
+								} else {
+									window.open(response.data.filename, '_blank');
 								}
-
-								window.open(response.data.filename, '_blank');
 							}
 						});
 					} else {

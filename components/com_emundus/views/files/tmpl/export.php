@@ -13,12 +13,15 @@ defined('_JEXEC') or die('Restricted Access');
 use Tchooz\Factories\LayoutFactory;
 
 $data = LayoutFactory::prepareVueData();
+
+$link_exports = EmundusHelperMenu::getSefAliasByLink('index.php?option=com_emundus&view=export_select_columns&layout=exports');
 ?>
 
 
 <div id="em-exports"
      component="Exports/Exports"
      fnums_count="<?= $this->fnumsCount; ?>"
+     export_link="<?= $link_exports; ?>"
 ></div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo uniqid(); ?>"></script>
