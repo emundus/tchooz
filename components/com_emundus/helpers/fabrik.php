@@ -3330,6 +3330,10 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 						->where($db->quoteName('element_id') . ' = ' . (int) $elt['id']);
 					$db->setQuery($queryJoins);
 					$joinTableName = $db->loadResult();
+					if(empty($joinTableName))
+					{
+						$joinTableName = $tableName . '_repeat_' . $name;
+					}
 
 					$from       = $db->quoteName($params->join_db_name, 't_origin');
 					$leftJoin[] = $db->quoteName($joinTableName, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
