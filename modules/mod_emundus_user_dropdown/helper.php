@@ -133,7 +133,7 @@ class modEmundusUserDropdownHelper
 			$emundusUserRepository = new EmundusUserRepository();
 			$emundusUser = $emundusUserRepository->getByUserId(Factory::getApplication()->getIdentity()->id);
 
-			if (!empty($emundusUser->getProfilePicture())) {
+			if (!empty($emundusUser) && !empty($emundusUser->getProfilePicture())) {
 				$pp = $emundusUser->getProfilePicture();
 			}
 		}
