@@ -2,6 +2,8 @@
 import { shallowRef, nextTick } from 'vue';
 import Swal from 'sweetalert2';
 
+import date from '@/mixins/date';
+
 /* Components */
 import CalendarSlotPopup from '@/components/Events/Popup/CalendarSlotPopup.vue';
 import EventDay from '@/components/Events/EventDay.vue';
@@ -74,6 +76,7 @@ export default {
 		event: Object,
 	},
 	emits: ['go-back'],
+	mixins: [date],
 	data() {
 		return {
 			calendarApp: shallowRef(null),
@@ -120,10 +123,6 @@ export default {
 		// Initialize calendarApp with shallowRef
 		this.calendarApp = createCalendar(createCalendarConfig(vm));
 
-		for (const slot of this.$props.event.slots) {
-			slot.color = this.event.color;
-		}
-
 		// Set selected date corresponding to first slot in future
 		if (this.$props.event.slots.length > 0) {
 			let key = 0;
@@ -138,7 +137,16 @@ export default {
 
 			//let selectedDate = new Date(this.$props.event.slots[0].start);
 			selectedDate = selectedDate.toISOString().split('T')[0];
-			calendarControls.setDate(selectedDate);
+			let plainDate = Temporal.PlainDate.from(selectedDate);
+			calendarControls.setDate(plainDate);
+		}
+
+		for (const slot of this.$props.event.slots) {
+			slot.color = this.event.color;
+
+			// Now start and end should be in Temporal.PlainDateTime format
+			slot.start = this.convertOldDateTimeStringToZonedDateTime(slot.start);
+			slot.end = this.convertOldDateTimeStringToZonedDateTime(slot.end);
 		}
 
 		eventsServicePlugin.set(this.$props.event.slots);
@@ -221,6 +229,10 @@ export default {
 
 			for (const slot of normalizedSlots) {
 				let existingSlot = eventsServicePlugin.get(slot.id);
+
+				// Now start and end should be in Temporal.PlainDateTime format
+				slot.start = this.convertOldDateTimeStringToZonedDateTime(slot.start);
+				slot.end = this.convertOldDateTimeStringToZonedDateTime(slot.end);
 
 				if (existingSlot) {
 					eventsServicePlugin.update(slot);
@@ -313,13 +325,14 @@ export default {
 					top: eventRect.top + window.scrollY - header * 2 - 60,
 					left: eventRect.left - 97,
 				};
+
 				this.tooltip.hours =
-					new Date(calendarEvent.start).toLocaleTimeString(this.actualLanguage, {
+					calendarEvent.start.toLocaleString(this.actualLanguage, {
 						hour: '2-digit',
 						minute: '2-digit',
 					}) +
 					' - ' +
-					new Date(calendarEvent.end).toLocaleTimeString(this.actualLanguage, {
+					calendarEvent.end.toLocaleString(this.actualLanguage, {
 						hour: '2-digit',
 						minute: '2-digit',
 					});
@@ -430,6 +443,7 @@ export default {
 	border-radius: 4px;
 	cursor: pointer;
 }
+
 .sx-vue-calendar-wrapper {
 	height: 100% !important;
 	max-height: unset !important;
