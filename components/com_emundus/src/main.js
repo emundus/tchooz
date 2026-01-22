@@ -18,6 +18,7 @@ import VueFusionCharts from 'vue-fusioncharts';
 import FusionCharts from 'fusioncharts';
 import Charts from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
+import 'temporal-polyfill/global';
 
 /** DIRECTIVES **/
 import clickOutside from '@/directives/clickOutside.js';

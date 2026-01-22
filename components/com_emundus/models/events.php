@@ -587,6 +587,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		try
 		{
+			$timezone = $this->app->get('offset', 'Europe/Paris');
 			$query = $this->db->getQuery(true);
 
 			$columns = [
@@ -621,13 +622,17 @@ class EmundusModelEvents extends BaseDatabaseModel
 				->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'));
 			if (!empty($start))
 			{
-				$timezone = $this->app->get('offset', 'Europe/Paris');
-				$query->where($this->db->quoteName('esa.start_date') . ' >= ' . $this->db->quote(Factory::getDate($start, $timezone)->toSql()));
+				$startDate = Factory::getDate($start, $timezone)->toSql();
+				$query->where($this->db->quoteName('esa.start_date') . ' >= ' . $this->db->quote($startDate));
 			}
 			if (!empty($end))
 			{
-				$timezone = $this->app->get('offset', 'Europe/Paris');
-				$query->where($this->db->quoteName('esa.end_date') . ' <= ' . $this->db->quote(Factory::getDate($end, $timezone)->toSql()));
+				if($end === $start)
+				{
+					$end = date('Y-m-d H:i', strtotime($end . ' +1 day'));
+				}
+				$endDate = Factory::getDate($end, $timezone)->toSql();
+				$query->where($this->db->quoteName('esa.end_date') . ' <= ' . $this->db->quote($endDate));
 			}
 			if (!empty($events_ids))
 			{
@@ -1673,7 +1678,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 								->where($this->db->quoteName('end_date') . ' = ' . $this->db->quote($availability['end']));
 							$this->db->setQuery($check_query);
 							$availability_id = $this->db->loadResult();
-
+							
 							if (empty($availability_id))
 							{
 								$insert_availabilities[] = $slot->id . ', ' . $event_id . ', ' . $this->db->quote($availability['start']) . ', ' . $this->db->quote($availability['end']) . ', ' . $this->db->quote($slot->slot_capacity);
@@ -2064,7 +2069,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 		$timezone = $this->app->get('offset', 'Europe/Paris');
 
 		$events_availabilities = [];
-
+		
 		try
 		{
 			$query = $this->db->getQuery(true);
@@ -2099,7 +2104,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 			$this->_db->setQuery($query);
 			$events_availabilities = $this->_db->loadObjectList();
-
+			
 			if ($convert_dates)
 			{
 				foreach ($events_availabilities as $slot)
@@ -2906,6 +2911,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('er.id'),
 				$this->db->quoteName('er.ccid'),
 				$this->db->quoteName('er.fnum'),
+				$this->db->quoteName('er.slot', 'slot_id'),
 				$this->db->quoteName('ese.id', 'event_id'),
 				$this->db->quoteName('ese.is_conference_link'),
 				$this->db->quoteName('ese.name', 'label'),
@@ -2920,6 +2926,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('er.link', 'conference_link'),
 				'GROUP_CONCAT(DISTINCT COALESCE(esru.user, essu.user)) as assoc_user_id',
 				$this->db->quoteName('er.availability'),
+				$this->db->quoteName('ese.color'),
 			];
 
 			$query->select('count(distinct er.id)')

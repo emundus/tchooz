@@ -24,5 +24,19 @@ export default {
 			const minutes = String(date.getMinutes()).padStart(2, '0');
 			return `${day}/${month}/${year} à ${hours}h${minutes}`;
 		},
+
+		convertOldDateTimeStringToZonedDateTime(dateString) {
+			const [date, time] = dateString.split(' ');
+			const [year, month, day] = date.split('-');
+			const [hour, minute] = time.split(':');
+			return Temporal.ZonedDateTime.from({
+				year: parseInt(year),
+				month: parseInt(month),
+				day: parseInt(day),
+				hour: parseInt(hour),
+				minute: parseInt(minute),
+				timeZone: 'UTC',
+			});
+		},
 	},
 };
