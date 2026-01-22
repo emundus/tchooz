@@ -8,6 +8,8 @@
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 /**
  * @package        Joomla.Site
@@ -125,20 +127,20 @@ class modEmundusUserDropdownHelper
 
 	static function getProfilePicture()
 	{
-		$db = JFactory::getDBO();
+		$pp = '';
 
 		try {
-			$query = $db->getQuery(true);
-			$query->select('profile_picture')
-				->from($db->quoteName('#__emundus_users'))
-				->where($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-			$db->setQuery($query);
+			$emundusUserRepository = new EmundusUserRepository();
+			$emundusUser = $emundusUserRepository->getByUserId(Factory::getApplication()->getIdentity()->id);
 
-			return $db->loadResult();
-
+			if (!empty($emundusUser->getProfilePicture())) {
+				$pp = $emundusUser->getProfilePicture();
+			}
 		}
 		catch (Exception $e) {
-			return null;
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
+
+		return $pp;
 	}
 }

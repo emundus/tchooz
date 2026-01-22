@@ -9,6 +9,7 @@
 
 namespace Tchooz\Repositories\User;
 
+use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Factories\User\EmundusUserFactory;
@@ -17,7 +18,15 @@ use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Traits\TraitTable;
 
-#[TableAttribute(table: '#__emundus_users')]
+#[TableAttribute(table: 'jos_emundus_users', alias: 't', columns: [
+	'id',
+	'user_id',
+	'firstname',
+	'lastname',
+	'profile_picture',
+	'user_category',
+	'is_anonym'
+])]
 class EmundusUserRepository extends EmundusRepository implements RepositoryInterface
 {
 	use TraitTable;
@@ -30,19 +39,62 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		't.firstname',
 		't.lastname',
 		't.profile_picture',
-		't.user_category'
+		't.user_category',
+		't.is_anonym'
 	];
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'emundususer');
+		parent::__construct($withRelations, $exceptRelations, 'emundususer', self::class);
 
 		$this->factory = new EmundusUserFactory();
 	}
 
-	public function flush($entity): mixed
+	public function flush(EmundusUserEntity $emundusUserEntity): bool
 	{
-		// TODO: Implement flush() method.
+		$flushed = false;
+
+		if (empty($emundusUserEntity->getUser()) || empty($emundusUserEntity->getUser()->id))
+		{
+			throw new \Exception('EmundusUserEntity must have a valid User associated to flush.');
+		}
+
+		try {
+			if (empty($emundusUserEntity->getId()))
+			{
+				$insert = (object)[
+					'user_id'       => $emundusUserEntity->getUser()->id,
+					'firstname'     => $emundusUserEntity->getFirstname(),
+					'lastname'      => $emundusUserEntity->getLastname(),
+					'profile_picture' => $emundusUserEntity->getProfilePicture(),
+					'user_category' => $emundusUserEntity->getUserCategory()?->getId(),
+					'is_anonym'     => $emundusUserEntity->isAnonym() ? 1 : 0
+				];
+
+				if ($flushed = $this->db->insertObject($this->getTableName(self::class), $insert))
+				{
+					$emundusUserEntity->setId((int)$this->db->insertid());
+				}
+			}
+			else
+			{
+				$update = (object)[
+					'id'            => $emundusUserEntity->getId(),
+					'user_id'       => $emundusUserEntity->getUser()->id,
+					'firstname'     => $emundusUserEntity->getFirstname(),
+					'lastname'      => $emundusUserEntity->getLastname(),
+					'profile_picture' => $emundusUserEntity->getProfilePicture(),
+					'user_category' => $emundusUserEntity->getUserCategory()?->getId(),
+					'is_anonym'     => $emundusUserEntity->isAnonym() ? 1 : 0
+				];
+
+				$flushed = $this->db->updateObject($this->getTableName(self::class), $update, 'id');
+			}
+		} catch (\Exception $e) {
+			Log::add('Error flushing EmundusUserEntity: ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.emundususer');
+		}
+
+		return $flushed;
 	}
 
 	public function delete(int $id): bool
