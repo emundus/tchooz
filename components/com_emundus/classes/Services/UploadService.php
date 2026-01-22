@@ -77,7 +77,7 @@ class UploadService
 		if (!in_array($file['type'], $this->validMimeTypes, true)) {
 			throw new RuntimeException('Invalid file type.');
 		}
-
+		
 		$bytes = $this->maxFilesizeMB * 1024 * 1024;
 		if ($file['size'] > $bytes) {
 			throw new RuntimeException(sprintf('File size exceeds %dMB', $this->maxFilesizeMB));

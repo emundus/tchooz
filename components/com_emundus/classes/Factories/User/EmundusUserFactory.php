@@ -55,7 +55,7 @@ class EmundusUserFactory implements DBFactory
 			lastname: $dbObject['lastname'],
 			profile_picture: $dbObject['profile_picture'] ?? null,
 			user_category: $userCategory,
-			is_anonym: $dbObject['is_anonym'] == 1,
+			is_anonym: isset($dbObject['is_anonym']) && $dbObject['is_anonym'] == 1
 		);
 	}
 }

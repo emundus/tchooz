@@ -4170,6 +4170,13 @@ class EmundusModelUsers extends ListModel
 		}
 	}
 
+	/**
+	 * @deprecated Use EmundusUserRepository::flush() instead
+	 * @param $user_id
+	 * @param $target_file
+	 *
+	 * @return bool
+	 */
 	public function updateProfilePicture($user_id, $target_file)
 	{
 
