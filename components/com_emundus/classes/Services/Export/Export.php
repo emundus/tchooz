@@ -136,9 +136,12 @@ class Export
 		$result = [
 			'label' => '',
 			'data'  => [],
+			'is_evaluation' => false,
+			'db_table_name' => '',
 		];
 
 		$db = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
 
 		if (empty((int) $elementId))
 		{
@@ -207,10 +210,38 @@ class Export
 				}
 
 				$result['label'] = $this->getTranslation($element->getLabel());
+				$result['db_table_name'] = $element->getDbTableName();
 
 				foreach ($files as $file)
 				{
-					$elementValue = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+					if(str_starts_with($element->getDbTableName(), 'jos_emundus_evaluations_')) {
+						$result['is_evaluation'] = true;
+
+						// Get row(s) id
+						$query->clear()
+							->select($db->quoteName('id'))
+							->from($db->quoteName($element->getDbTableName()))
+							->where($db->quoteName('fnum') . ' = ' . $db->quote($file->getFnum()))
+							->order('evaluator ASC');
+						$db->setQuery($query);
+						$rowIds = $db->loadColumn();
+
+						$evaluationValues = [];
+						foreach ($rowIds as $rowId)
+						{
+							$elementValuePart = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), $rowId, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+							if ($elementValuePart && !empty($elementValuePart[$element->getId()]) && !empty($elementValuePart[$element->getId()][$file->getFnum()]))
+							{
+								$evaluationValues[$rowId] = $elementValuePart[$element->getId()][$file->getFnum()]['val'];
+							}
+						}
+
+						$elementValue[$element->getId()][$file->getFnum()]['val'] = implode(',', $evaluationValues);
+					}
+					else
+					{
+						$elementValue = $this->helperFabrik->getFabrikElementValue($elementSerialized, $file->getFnum(), 0, ValueFormatEnum::FORMATTED, 0, ExportModeEnum::GROUP_CONCAT, $this->translations);
+					}
 
 					$result['data'][$file->getFnum()] = '';
 					if ($elementValue && !empty($elementValue[$element->getId()]) && !empty($elementValue[$element->getId()][$file->getFnum()]))

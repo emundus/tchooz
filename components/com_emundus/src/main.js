@@ -205,9 +205,9 @@ if (document) {
 						app = createApp(Expert, {});
 						break;
 					case 'Exports/Exports':
-						console.log(datas);
 						app = createApp(Exports, {
 							fnumsCount: parseInt(datas.fnums_count),
+							exportLink: datas.export_link,
 						});
 						break;
 					case 'Dashboard/Dashboard':
