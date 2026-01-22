@@ -446,6 +446,28 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		return $campaign_entity;
 	}
 
+	public function getCampaignIdsByPrograms(array $programs): array
+	{
+		$campaign_ids = [];
+
+		$query = $this->db->getQuery(true);
+
+		$query->select('t.id')
+			->from($this->db->quoteName($this->getTableName(self::class), 't'))
+			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = t.training')
+			->where('p.id IN (' . implode(',', array_map('intval', $programs)) . ')');
+
+		$this->db->setQuery($query);
+		$campaigns = $this->db->loadColumn();
+
+		if (!empty($campaigns))
+		{
+			$campaign_ids = array_map('intval', $campaigns);
+		}
+
+		return $campaign_ids;
+	}
+
 	public function getLinkedProgramsIds(int $campaign_id, string $fnum = ''): array
 	{
 		$programs_ids = [];
@@ -549,9 +571,61 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 	}
 
-	public function flush($entity): mixed
+	public function flush(CampaignEntity $campaignEntity): bool
 	{
-		// TODO: Implement flush() method.
+		$flushed = false;
+
+		try {
+			if (empty($campaignEntity->getId()))
+			{
+				$insert = (object)[
+					'label'             => $campaignEntity->getLabel(),
+					'short_description' => $campaignEntity->getShortDescription(),
+					'description'       => $campaignEntity->getDescription(),
+					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
+					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
+					'profile_id'        => $campaignEntity->getProfileId(),
+					'training'         => $campaignEntity->getProgram()->getCode(),
+					'year'              => $campaignEntity->getYear(),
+					'published'        => $campaignEntity->isPublished() ? 1 : 0,
+					'pinned'           => $campaignEntity->isPinned() ? 1 : 0,
+					'alias'             => $campaignEntity->getAlias(),
+					'visible'           => $campaignEntity->isVisible() ? 1 : 0,
+					'parent_id'         => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null
+				];
+				if ($flushed = $this->db->insertObject('#__emundus_setup_campaigns', $insert))
+				{
+					$campaignEntity->setId((int) $this->db->insertid());
+				}
+			}
+			else
+			{
+				$update = (object)[
+					'id'                => $campaignEntity->getId(),
+					'label'             => $campaignEntity->getLabel(),
+					'short_description' => $campaignEntity->getShortDescription(),
+					'description'       => $campaignEntity->getDescription(),
+					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
+					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
+					'profile_id'        => $campaignEntity->getProfileId(),
+					'training'         => $campaignEntity->getProgram()->getCode(),
+					'year'              => $campaignEntity->getYear(),
+					'published'        => $campaignEntity->isPublished() ? 1 : 0,
+					'pinned'           => $campaignEntity->isPinned() ? 1 : 0,
+					'alias'             => $campaignEntity->getAlias(),
+					'visible'           => $campaignEntity->isVisible() ? 1 : 0,
+					'parent_id'         => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null
+				];
+
+				$flushed = $this->db->updateObject('#__emundus_setup_campaigns', $update, 'id');
+			}
+		}
+		catch (\Exception $exception)
+		{
+			Log::add('Error on flush campaign : ' . $exception->getMessage(), Log::ERROR, 'com_emundus.repository.campaign');
+		}
+
+		return $flushed;
 	}
 
 	public function delete(int $id): bool
