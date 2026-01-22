@@ -83,16 +83,18 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			$displayData->id           = $id;
 			$displayData->name         = $name;
 			$displayData->confirmation = $params->get('confirmation_application_choices', 0);
+			$displayData->status       = $params->get('application_choices_status', '');
 			$displayData->fnum         = !empty($data[$db_table_name . '___fnum']) ? $data[$db_table_name . '___fnum'] : '';
 			$displayData->step_id      = !empty($data[$db_table_name . '___step_id']) ? $data[$db_table_name . '___step_id'] : 0;
 			$displayData->value        = $this->getValue($data, $repeatCounter);
 			$formatted_value           = $this->formatData($displayData->value);
 
 			$displayData->selected_choice = !empty($formatted_value->getChoice()) ? $formatted_value->getChoice()->getId() : 0;
-			if(!empty($formatted_value->getStatus())) {
+			if (!empty($formatted_value->getStatus()))
+			{
 				$displayData->selected_status = $formatted_value->getStatus()->value;
 			}
-			elseif(!empty($formatted_value->getChoice()))
+			elseif (!empty($formatted_value->getChoice()))
 			{
 				$displayData->selected_status = $formatted_value->getChoice()->getState()->value;
 			}
@@ -113,12 +115,12 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			}
 
 			// Get choices
-			$displayData->choices            = $this->getChoices($displayData->fnum, $displayData->step_id);
+			$displayData->choices            = $this->getChoices($displayData->fnum, $displayData->step_id, $displayData->status);
 			$available_statuses              = ChoicesStateEnum::cases();
 			$displayData->available_statuses = [];
 			foreach ($available_statuses as $status)
 			{
-				if($status === ChoicesStateEnum::CONFIRMED)
+				if ($status === ChoicesStateEnum::CONFIRMED)
 				{
 					continue;
 				}
@@ -129,7 +131,7 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 				];
 			}
 
-			if(empty($displayData->selected_choice) && !empty($displayData->choices))
+			if (empty($displayData->selected_choice) && !empty($displayData->choices))
 			{
 				$displayData->selected_choice = $displayData->choices[0]['id'];
 			}
@@ -213,7 +215,7 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		return $formatted;
 	}
 
-	private function getChoices(string $fnum, int $step_id = 0): array
+	private function getChoices(string $fnum, int $step_id = 0, int|string $status): array
 	{
 		$user = $this->app->getIdentity();
 
@@ -221,9 +223,9 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/programme.php';
 		}
-		$m_programme = new EmundusModelProgramme();
-		$user_programs    = $m_programme->getUserPrograms($user->id);
-		$programs = $user_programs;
+		$m_programme   = new EmundusModelProgramme();
+		$user_programs = $m_programme->getUserPrograms($user->id);
+		$programs      = $user_programs;
 
 		if (!empty($step_id))
 		{
@@ -243,11 +245,20 @@ class PlgFabrik_ElementApplicationchoices extends PlgFabrik_Element
 			}
 		}
 
-		$repository                 = new ApplicationChoicesRepository();
-		$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $programs);
-		if(empty($applicationChoicesEntities))
+		if(!empty($status))
 		{
-			$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $user_programs);
+			$status = (int) $status;
+			$status = ChoicesStateEnum::tryFrom($status);
+		}
+		else {
+			$status = null;
+		}
+
+		$repository                 = new ApplicationChoicesRepository();
+		$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $programs, $status);
+		if (empty($applicationChoicesEntities))
+		{
+			$applicationChoicesEntities = $repository->getChoicesByFnum($fnum, $user_programs, $status);
 		}
 
 		$choices = [];

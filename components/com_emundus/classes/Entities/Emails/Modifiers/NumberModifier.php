@@ -9,6 +9,7 @@
 
 namespace Tchooz\Entities\Emails\Modifiers;
 
+use EmundusHelperFabrik;
 use Tchooz\Interfaces\TagModifierInterface;
 
 class NumberModifier implements TagModifierInterface
@@ -31,10 +32,22 @@ class NumberModifier implements TagModifierInterface
 			$value = \EmundusHelperFabrik::extractNumericValue($value);
 		}
 
+		foreach ($params as $key => $param) {
+			if ($param === "‘’")
+			{
+				$params[$key] = null;
+			}
+		}
+
+		if (!empty($params[0]) && !is_numeric($params[0]))
+		{
+			$params[0] = \EmundusHelperFabrik::extractNumericValue($params[0]);
+		}
+
 		$decimalCount = $params[0] ?? 2;
 		$decimalSeparator = $params[1] ?? ',';
-		$thousandsSeparator = $params[2] ?? '';
-		
+		$thousandsSeparator = $params[2] ?? ' ';
+
 		return $this->formatAmount($value, (int) $decimalCount, $decimalSeparator, $thousandsSeparator);
 	}
 

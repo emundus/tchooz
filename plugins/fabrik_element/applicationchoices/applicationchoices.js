@@ -82,6 +82,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
             }
 
             document.getElementById(id).value = combinedValue;
+
+            var event = new Event('change');
+            document.getElementById(id).dispatchEvent(event);
         }
     });
 

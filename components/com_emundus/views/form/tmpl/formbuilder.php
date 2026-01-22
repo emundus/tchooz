@@ -601,6 +601,7 @@ Text::script('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION');
 
 Text::script('COM_EMUNDUS_CLOSE');
 Text::script('COM_EMUNDUS_FABRIK_ELEMENT_FILEUPLOAD_TEXT');
+Text::script('COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_DISPLAY_STATUS');
 
 $vue = 'em-formBuilder-vue';
 if ($this->eval != 0)

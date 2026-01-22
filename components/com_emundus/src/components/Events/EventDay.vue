@@ -47,8 +47,8 @@ export default {
 		const globalStore = useGlobalStore();
 		this.actualLanguage = globalStore.getCurrentLang;
 
-		this.eventStartDate = new Date(this.calendarEvent.start);
-		this.eventEndDate = new Date(this.calendarEvent.end);
+		this.eventStartDate = this.calendarEvent.start;
+		this.eventEndDate = this.calendarEvent.end;
 	},
 	methods: {
 		openModal(slot, registrant = null) {
@@ -96,8 +96,8 @@ export default {
 	watch: {
 		calendarEvent: {
 			handler() {
-				this.eventStartDate = new Date(this.calendarEvent.start);
-				this.eventEndDate = new Date(this.calendarEvent.end);
+				this.eventStartDate = this.calendarEvent.start;
+				this.eventEndDate = this.calendarEvent.end;
 
 				this.$nextTick(() => {
 					this.applyEventStyles();
@@ -109,12 +109,12 @@ export default {
 	computed: {
 		eventHours() {
 			return (
-				this.eventStartDate.toLocaleTimeString(this.actualLanguage, {
+				this.eventStartDate.toLocaleString(this.actualLanguage, {
 					hour: '2-digit',
 					minute: '2-digit',
 				}) +
 				' - ' +
-				this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+				this.eventEndDate.toLocaleString(this.actualLanguage, {
 					hour: '2-digit',
 					minute: '2-digit',
 				})

@@ -17,15 +17,17 @@ use Joomla\CMS\Event\MultiFactor\NotifyActionLog;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
-use Joomla\Component\Users\Administrator\Helper\Mfa as MfaHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Response;
+use Tchooz\Services\UploadService;
 use Tchooz\Traits\TraitResponse;
 
 /**
@@ -1353,44 +1355,42 @@ class EmundusControllerUsers extends BaseController
 
 	public function updateprofilepicture()
 	{
-		$user = $this->user;
+		$result = array('status' => false, 'profile_picture' => '');
 
-
-		$file = $this->input->files->get('file');
-
-		if (isset($file))
+		try
 		{
-			$root_dir   = "images/emundus/files/" . $user->id;
-			$target_dir = $root_dir . '/profile/';
-			if (!file_exists($root_dir))
+			$user = $this->user;
+
+			$file = $this->input->files->get('file');
+
+			if (isset($file))
 			{
-				mkdir($root_dir);
-			}
-			if (!file_exists($target_dir))
-			{
-				mkdir($target_dir);
-			}
+				$root_dir   = "images/emundus/files/" . $user->id;
+				$target_dir = $root_dir . '/profile/';
 
-			$ext = pathinfo($file['name'], PATHINFO_EXTENSION);
+				$uploadService = new UploadService($target_dir);
+				$uploaded = $uploadService->upload($file);
+				if (!empty($uploaded))
+				{
+					$userRepository = new EmundusUserRepository();
+					$emundusUser = $userRepository->getByUserId($user->id);
+					$emundusUser->setProfilePicture($uploaded);
+					$flushed = $userRepository->flush($emundusUser);
 
-			$target_file = $target_dir . basename('profile.' . $ext);
-
-			if (move_uploaded_file($file["tmp_name"], $target_file))
-			{
-				$m_users  = $this->getModel('Users');
-				$uploaded = $m_users->updateProfilePicture($user->id, $target_file);
-
-				$result = array('status' => $uploaded, 'profile_picture' => $target_file);
+					$result = array('status' => $flushed, 'profile_picture' => $uploaded);
+				}
 			}
 			else
 			{
 				$result = array('status' => false);
 			}
 		}
-		else
+		catch (Exception $e)
 		{
+			Log::add('Error uploading profile picture : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 			$result = array('status' => false);
 		}
+
 		echo json_encode((object) $result);
 		exit;
 	}
@@ -1907,7 +1907,7 @@ class EmundusControllerUsers extends BaseController
 			: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 		$user   = $user ?? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById(0);
 
-		if (!MfaHelper::canDeleteMethod($user))
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			throw new \RuntimeException(Text::_('JERROR_ALERTNOAUTHOR'), 403);
 		}

@@ -194,13 +194,14 @@ class EmundusControllerExport extends BaseController
 			$fabrikRepository->setFactory($fabrikFactory);
 
 			$elmentsFilters = [
-				'published' => 1,
-				'hidden' => 0,
+				'published'        => 1,
+				'hidden'           => 0,
 				'exluded_elements' => ['panel', 'display', 'emundus_fileupload']
 			];
 			$fabrikRepository->setElementFilters($elmentsFilters);
 
 			$campaignRepository = new CampaignRepository();
+			$hFiles             = new EmundusHelperFiles();
 
 			if ($type === 'applicant' || $type === 'management' || $type === 'attachments')
 			{
@@ -210,7 +211,7 @@ class EmundusControllerExport extends BaseController
 					$campaign   = $campaignRepository->getById($selectedCampaignId);
 					$programIds = [$campaign->getProgram()->getId()];
 
-					if (!empty($campaign->getProfileId()) && $type === 'applicant')
+					if (!empty($campaign->getProfileId()))
 					{
 						if (!class_exists('EmundusModelProfile'))
 						{
@@ -221,13 +222,40 @@ class EmundusControllerExport extends BaseController
 
 						if (!empty($campaignStep))
 						{
-							$elements[$campaign->getProfileId()] = [
-								'label'          => $campaignStep['label'],
-								'profile_id'     => $campaign->getProfileId(),
-								'campaign_id'    => $campaign->getId(),
-								'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
-								'campaign_count' => 1,
-							];
+							if ($type === 'applicant')
+							{
+								$elements[$campaign->getProfileId()] = [
+									'label'          => $campaignStep['label'],
+									'profile_id'     => $campaign->getProfileId(),
+									'campaign_id'    => $campaign->getId(),
+									'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
+									'campaign_count' => 1,
+								];
+							}
+							elseif ($type === 'attachments')
+							{
+								$attachments = $hFiles->getAttachmentsTypesByProfileID([$campaign->getProfileId()]);
+
+								if (!empty($attachments))
+								{
+									$elements[$campaign->getProfileId()] = [
+										'label'          => $campaignStep['label'],
+										'profile_id'     => $campaign->getProfileId(),
+										'campaign_id'    => $campaign->getId(),
+										'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
+										'campaign_count' => 1,
+										'forms'          => ['attachments' => ['id' => 'attachments', 'label' => '', 'groups' => [1 => ['label' => '', 'elements' => []]]]]
+									];
+
+									foreach ($attachments as $attachment)
+									{
+										$attachmentObject                                                                       = new stdClass();
+										$attachmentObject->id                                                                   = $attachment->id;
+										$attachmentObject->label                                                                = $attachment->value;
+										$elements[$campaign->getProfileId()]['forms']['attachments']['groups'][1]['elements'][] = $attachmentObject;
+									}
+								}
+							}
 						}
 					}
 
@@ -310,12 +338,10 @@ class EmundusControllerExport extends BaseController
 
 							assert($form instanceof FabrikFormEntity);
 							$elements[$step]['forms']['form_' . $form->getId()] = $form->__serialize();
-
 						}
 					}
 					elseif ($type === 'attachments')
 					{
-						$hFiles = new EmundusHelperFiles();
 						foreach ($workflows as $workflow)
 						{
 							foreach ($workflow->getSteps() as $step)
@@ -1011,11 +1037,12 @@ class EmundusControllerExport extends BaseController
 			$constraints = json_decode($exportTemplate->constraints);
 
 			$data = [
-				'elements'  => [],
-				'headers'   => [],
-				'synthesis' => [],
-				'format'    => $constraints->format,
-				'name'      => $exportTemplate->name
+				'elements'    => [],
+				'headers'     => [],
+				'synthesis'   => [],
+				'attachments' => [],
+				'format'      => $constraints->format,
+				'name'        => $exportTemplate->name
 			];
 
 			$elements = json_decode($constraints->elements);
@@ -1081,17 +1108,17 @@ class EmundusControllerExport extends BaseController
 				}
 			}
 
-			$attachmentRepository = new AttachmentTypeRepository(Factory::getContainer()->get('DatabaseDriver'));
-			$attachments = json_decode($constraints->attachments);
+			$attachmentRepository = new AttachmentTypeRepository();
+			$attachments          = json_decode($constraints->attachments);
 			foreach ($attachments as $attachmentId)
 			{
 				if (is_numeric($attachmentId))
 				{
 					$attachment = $attachmentRepository->loadAttachmentTypeById($attachmentId);
-					if(!empty($attachment))
+					if (!empty($attachment))
 					{
-						$attachmentObject = new stdClass();
-						$attachmentObject->id = $attachment->getId();
+						$attachmentObject        = new stdClass();
+						$attachmentObject->id    = $attachment->getId();
 						$attachmentObject->label = $attachment->getName();
 
 						$data['attachments'][] = $attachmentObject;
@@ -1147,12 +1174,12 @@ class EmundusControllerExport extends BaseController
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), Response::HTTP_BAD_REQUEST);
 			}
 
-			$elements  = $this->input->getString('elements', '');
-			$elements  = !empty($elements) ? explode(',', $elements) : [];
-			$headers   = $this->input->getString('headers', '');
-			$headers   = !empty($headers) ? explode(',', $headers) : [];
-			$synthesis = $this->input->getString('synthesis', '');
-			$synthesis = !empty($synthesis) ? explode(',', $synthesis) : [];
+			$elements    = $this->input->getString('elements', '');
+			$elements    = !empty($elements) ? explode(',', $elements) : [];
+			$headers     = $this->input->getString('headers', '');
+			$headers     = !empty($headers) ? explode(',', $headers) : [];
+			$synthesis   = $this->input->getString('synthesis', '');
+			$synthesis   = !empty($synthesis) ? explode(',', $synthesis) : [];
 			$attachments = $this->input->getString('attachments', '');
 			$attachments = !empty($attachments) ? explode(',', $attachments) : [];
 
