@@ -3323,8 +3323,20 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 			{
 				if ($isMulti)
 				{
+					// TODO: Need to query fabrik_joins table to get the correct join table name, improve by caching this info
+					$queryJoins = $db->getQuery(true)
+						->select($db->quoteName('table_join'))
+						->from($db->quoteName('#__fabrik_joins'))
+						->where($db->quoteName('element_id') . ' = ' . (int) $elt['id']);
+					$db->setQuery($queryJoins);
+					$joinTableName = $db->loadResult();
+					if(empty($joinTableName))
+					{
+						$joinTableName = $tableName . '_repeat_' . $name;
+					}
+
 					$from       = $db->quoteName($params->join_db_name, 't_origin');
-					$leftJoin[] = $db->quoteName($tableName . '_repeat_' . $name, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
+					$leftJoin[] = $db->quoteName($joinTableName, 't_repeat') . ' ON t_repeat.' . $name . ' = t_origin.' . $join_key_column;
 					$leftJoin[] = $db->quoteName($tableName, 't_elt') . ' ON t_elt.id = t_repeat.parent_id';
 				}
 				else

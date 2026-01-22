@@ -116,6 +116,7 @@ class ExcelService extends Export implements ExportInterface
 			parent::__construct($langCode);
 
 			$db            = Factory::getContainer()->get('DatabaseDriver');
+			$query         = $db->getQuery(true);
 			$exportVersion = !empty($this->options) ? $this->options->getExportVersion() : $this->oldOptions['export_version'];
 
 			$this->registerClasses($exportVersion);
@@ -232,6 +233,29 @@ class ExcelService extends Export implements ExportInterface
 					}
 
 					$data = $this->getData($elementId, $files);
+
+					// If data is from evaluation check if we have a evaluator_db_table_name
+					if($data['is_evaluation'] && !array_key_exists(('evaluator_'.$data['db_table_name']), $json['headers']))
+					{
+						$evaluatorElementId = 'evaluator_'.$data['db_table_name'];
+
+						$json['headers'][$evaluatorElementId] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
+						foreach ($files as $file)
+						{
+							// Get evaluators name
+							$query->clear()
+								->select('u.name')
+								->from($db->quoteName('#__users', 'u'))
+								->leftJoin($db->quoteName($data['db_table_name'], 'd') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
+								->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
+								->order('d.evaluator ASC');
+							$db->setQuery($query);
+							$evaluatorsName = $db->loadColumn();
+
+							$json['files'][$file->getFnum()][$evaluatorElementId] = !empty($evaluatorsName) ? implode(', ', $evaluatorsName) : '';
+						}
+					}
+
 					$json['headers'][$elementId] = $data['label'];
 					foreach ($files as $file)
 					{

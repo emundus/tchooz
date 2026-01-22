@@ -35,6 +35,10 @@ if (!empty($checkout_url)) {
 	$pages_no++;
 }
 
+if ($index_form > $pages_no) {
+    $index_form = $pages_no;
+}
+
 if ($show_preliminary_documents && !empty($preliminary_documents)): ?>
     <div class="mod_emundus_checklist em-mb-24 ">
         <div class="em-flex-row em-flex-space-between em-pointer mod_emundus_checklist_expand">

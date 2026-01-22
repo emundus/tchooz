@@ -12,11 +12,6 @@
 				<option value="1">JYES</option>
 			</field>
 
-			<field name="default"
-				   type="fabrikeditor"
-				   mode="php"
-				   label="PLG_ELEMENT_EMUNDUS_PHONENUMBER_DEFAULT_LABEL" />
-
 			<field name="confirmation_application_choices"
 				type="radio"
 				default="0"
@@ -25,6 +20,19 @@
 				label="PLG_ELEMENT_APPLICATION_CHOICES_CONFIRMATION_LABEL">
 					<option value="0">JNO</option>
 					<option value="1">JYES</option>
+			</field>
+
+			<field name="application_choices_status"
+				   type="list"
+				   default=""
+				   label="PLG_ELEMENT_APPLICATION_CHOICES_STATUS_LABEL"
+				   description="PLG_ELEMENT_APPLICATION_CHOICES_STATUS_DESC">
+				<option value="">JALL</option>
+				<option value="0">COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_DRAFT</option>
+				<option value="4">COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_WAITING</option>
+				<option value="1">COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_ACCEPTED</option>
+				<option value="2">COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_REJECTED</option>
+				<option value="3">COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CONFIRMED</option>
 			</field>
 
 		</fieldset>

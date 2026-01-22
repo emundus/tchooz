@@ -2,6 +2,7 @@
 import { shallowRef } from 'vue';
 import { useGlobalStore } from '@/stores/global.js';
 import colors from '@/mixins/colors';
+import date from '@/mixins/date';
 
 /* COMPONENTS */
 import EventModal from '@/components/Events/EventModal.vue';
@@ -66,29 +67,35 @@ const createCalendarConfig = (vm) => ({
 				}
 			}
 
+			let plainDate = Temporal.PlainDate.from(startString);
 			if (vm.startDate) {
-				calendarControls.setDate(vm.startDate.split(' ')[0]);
-			} else {
-				calendarControls.setDate(startString);
+				plainDate = Temporal.PlainDate.from(vm.startDate.split(' ')[0]);
 			}
 
+			calendarControls.setDate(plainDate);
+
 			// If startString is between range dispatch onRangeUpdate event
+			let rangeStartDate = range.start.toString().split('T')[0];
+			let rangeEndDate = range.end.toString().split('T')[0];
 			if (
-				vm.normalizeDate(startString) >= vm.normalizeDate(range.start) &&
-				vm.normalizeDate(startString) <= vm.normalizeDate(range.end)
+				vm.normalizeDate(startString) >= vm.normalizeDate(rangeStartDate) &&
+				vm.normalizeDate(startString) <= vm.normalizeDate(rangeEndDate)
 			) {
 				if (calendarControls.getView() === 'day') {
-					vm.getEventsAvailabilities(range.start, range.end);
+					vm.getEventsAvailabilities(rangeStartDate, rangeEndDate);
 				} else {
-					vm.getEventsSlots(range.start, range.end);
+					vm.getEventsSlots(rangeStartDate, rangeEndDate);
 				}
 			}
 		},
 		onRangeUpdate(range) {
+			let rangeStartDate = range.start.toString().split('T')[0];
+			let rangeEndDate = range.end.toString().split('T')[0];
+
 			if (calendarControls.getView() === 'day') {
-				vm.getEventsAvailabilities(range.start, range.end);
+				vm.getEventsAvailabilities(rangeStartDate, rangeEndDate);
 			} else {
-				vm.getEventsSlots(range.start, range.end);
+				vm.getEventsSlots(rangeStartDate, rangeEndDate);
 			}
 		},
 	},
@@ -130,7 +137,7 @@ export default {
 			required: false,
 		},
 	},
-	mixins: [colors],
+	mixins: [colors, date],
 	emits: ['valueUpdated', 'update-items', 'calendarCreated'],
 	data() {
 		return {
@@ -189,7 +196,9 @@ export default {
 			this.calendars = {};
 
 			if (this.items.registrants && this.items.registrants.length > 0) {
-				let eventsIds = this.items.registrants.map((event) => event.id);
+				let eventsIds = this.items.registrants.map((registrant) => registrant.event_id);
+				// Remove duplicates
+				eventsIds = [...new Set(eventsIds)];
 				eventsIds = eventsIds.join(',');
 
 				eventsService.getEventsSlots(start, end, eventsIds).then(async (response) => {
@@ -199,7 +208,7 @@ export default {
 								continue;
 							}
 
-							this.calendars['calendar_' + item.id] = this.buildCalendar(item, true);
+							this.calendars['calendar_' + item.event_id] = this.buildCalendar(item, true);
 						}
 
 						let events = await this.prepareEvents(response.data);
@@ -226,7 +235,9 @@ export default {
 			this.calendars = {};
 
 			if (this.items.registrants && this.items.registrants.length > 0) {
-				let eventsIds = this.items.registrants.map((event) => event.id);
+				let eventsIds = this.items.registrants.map((registrant) => registrant.event_id);
+				// Remove duplicates
+				eventsIds = [...new Set(eventsIds)];
 				eventsIds = eventsIds.join(',');
 
 				eventsService.getEventsAvailabilities(start, end, eventsIds).then(async (response) => {
@@ -236,7 +247,7 @@ export default {
 								continue;
 							}
 
-							this.calendars['calendar_' + item.id] = this.buildCalendar(item);
+							this.calendars['calendar_' + item.event_id] = this.buildCalendar(item);
 						}
 
 						let events = await this.prepareEvents(response.data, false);
@@ -365,6 +376,12 @@ export default {
 						this.calendars[calendarKey].columnSize = calendarSizes[event_id];
 					}
 				});
+
+				for (const event in events) {
+					// Convert start and end to Temporal.PlainDateTime
+					events[event].start = this.convertOldDateTimeStringToZonedDateTime(events[event].start);
+					events[event].end = this.convertOldDateTimeStringToZonedDateTime(events[event].end);
+				}
 
 				resolve(events);
 			});

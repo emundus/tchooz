@@ -810,6 +810,37 @@
       "placeholder": "",
       "published": true,
       "sysadmin_only": false
+    },
+    {
+      "label": "COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_DISPLAY_STATUS",
+      "name": "application_choices_status",
+      "type": "dropdown",
+      "options" : [
+        {
+          "value": 0,
+          "label": "COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_DRAFT"
+        },
+        {
+          "value": 4,
+          "label": "COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_WAITING"
+        },
+        {
+          "value": 1,
+          "label": "COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_ACCEPTED"
+        },
+        {
+          "value": 2,
+          "label": "COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_REJECTED"
+        },
+        {
+          "value": 3,
+          "label": "COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CONFIRMED"
+        }
+      ],
+      "helptext": "",
+      "placeholder": "",
+      "published": true,
+      "sysadmin_only": false
     }
   ]
 }

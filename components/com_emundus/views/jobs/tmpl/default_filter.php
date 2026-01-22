@@ -2,6 +2,9 @@
 
 defined('JPATH_BASE') or die;
 
+require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
+$h_files = new EmundusHelperFiles();
+
 $input = JFactory::getApplication()->input;
 $db    = JFactory::getDBO();
 
@@ -39,7 +42,7 @@ endforeach;
 
 //filter for domain
 $selected_domaine = $input->get('filter_etablissement', $this->state->get('filter.domaine'));
-$domaines         = @EmundusHelperFiles::getElementsValuesOther(2262);
+$domaines = $h_files->getElementsValuesOther(2262);
 $values           = $domaines->sub_values;
 $labels           = $domaines->sub_labels;
 $options          = array();

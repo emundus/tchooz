@@ -166,7 +166,8 @@ export default {
 		this.actualLanguage = globalStore.getShortLang;
 
 		if (!this.$props.slot) {
-			this.fields.find((field) => field.param === 'start_date').value = this.roundToQuarter(this.date);
+			let dateClicked = this.date.toString().split('+')[0];
+			this.fields.find((field) => field.param === 'start_date').value = this.roundToQuarter(dateClicked);
 
 			const date = new Date(this.fields.find((field) => field.param === 'start_date').value);
 			if (this.$props.duration_type === 'minutes') {
@@ -181,9 +182,11 @@ export default {
 			this.minDate = new Date(date);
 			this.minDate.setDate(this.minDate.getDate() + 1);
 		} else {
-			this.fields.find((field) => field.param === 'start_date').value = this.$props.slot.start;
-			this.fields.find((field) => field.param === 'end_date').value = this.$props.slot.end;
-			this.minDate = new Date(this.$props.slot.end);
+			let startDate = this.$props.slot.start.toString().split('+')[0];
+			let endDate = this.$props.slot.end.toString().split('+')[0];
+			this.fields.find((field) => field.param === 'start_date').value = startDate;
+			this.fields.find((field) => field.param === 'end_date').value = endDate;
+			this.minDate = new Date(endDate);
 
 			this.fields.forEach((field) => {
 				if (this.$props.slot[field.param] && field.param !== 'start_date' && field.param !== 'end_date') {
@@ -231,7 +234,7 @@ export default {
 						this.registrantsLink = '/' + response.data + '?event=' + this.$props.eventId;
 						if (this.$props.slot) {
 							if (this.$props.slot.start) {
-								this.registrantsLink += '&day=' + this.$props.slot.start.split(' ')[0];
+								this.registrantsLink += '&day=' + this.$props.slot.start.toString().split(' ')[0];
 							}
 						}
 					}

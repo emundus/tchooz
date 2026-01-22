@@ -18,6 +18,7 @@ import VueFusionCharts from 'vue-fusioncharts';
 import FusionCharts from 'fusioncharts';
 import Charts from 'fusioncharts/fusioncharts.charts';
 import FusionTheme from 'fusioncharts/themes/fusioncharts.theme.fusion';
+import 'temporal-polyfill/global';
 
 /** DIRECTIVES **/
 import clickOutside from '@/directives/clickOutside.js';
@@ -204,9 +205,9 @@ if (document) {
 						app = createApp(Expert, {});
 						break;
 					case 'Exports/Exports':
-						console.log(datas);
 						app = createApp(Exports, {
 							fnumsCount: parseInt(datas.fnums_count),
+							exportLink: datas.export_link,
 						});
 						break;
 					case 'Dashboard/Dashboard':

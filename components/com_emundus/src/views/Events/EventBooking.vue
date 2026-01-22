@@ -129,6 +129,7 @@ export default {
 
 					if (application_choices_filter_elt) {
 						application_choices_filter_elt.addEventListener('change', (event) => {
+							console.log(event);
 							this.application_choice = event.target.value;
 
 							this.currentStartIndex = 0;

@@ -193,12 +193,12 @@ class CampaignEntity
 		$this->pinned = $pinned;
 	}
 
-	public function getAlias(): string
+	public function getAlias(): ?string
 	{
 		return $this->alias;
 	}
 
-	public function setAlias(string $alias): void
+	public function setAlias(?string $alias): void
 	{
 		$this->alias = $alias;
 	}

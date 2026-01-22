@@ -29,10 +29,10 @@ export default {
 		this.actualLanguage = globalStore.getCurrentLang;
 
 		if (this.calendarEvent.start) {
-			this.eventStartDate = new Date(this.calendarEvent.start);
+			this.eventStartDate = this.calendarEvent.start;
 		}
 		if (this.calendarEvent.end) {
-			this.eventEndDate = new Date(this.calendarEvent.end);
+			this.eventEndDate = this.calendarEvent.end;
 		}
 	},
 	methods: {
@@ -42,7 +42,7 @@ export default {
 	},
 	computed: {
 		eventDay() {
-			return this.eventStartDate.toLocaleDateString(this.actualLanguage, {
+			return this.eventStartDate.toLocaleString(this.actualLanguage, {
 				weekday: 'long',
 				year: 'numeric',
 				month: 'long',
@@ -51,12 +51,12 @@ export default {
 		},
 		eventHours() {
 			return (
-				this.eventStartDate.toLocaleTimeString(this.actualLanguage, {
+				this.eventStartDate.toLocaleString(this.actualLanguage, {
 					hour: '2-digit',
 					minute: '2-digit',
 				}) +
 				' - ' +
-				this.eventEndDate.toLocaleTimeString(this.actualLanguage, {
+				this.eventEndDate.toLocaleString(this.actualLanguage, {
 					hour: '2-digit',
 					minute: '2-digit',
 				})

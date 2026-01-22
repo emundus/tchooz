@@ -86,6 +86,7 @@ class TagEntity
 		if (preg_match('/^([^(]+)\((.*)\)$/', $part, $matches)) {
 			$modifierName = $matches[1];
 			$paramsStr = $matches[2];
+			$paramsStr = html_entity_decode($paramsStr, ENT_QUOTES | ENT_HTML5);
 
 			preg_match_all(
 				'/"([^"]*)"|([^,\s]+)/',
@@ -94,11 +95,17 @@ class TagEntity
 			);
 
 			$params = array_filter(
-				array_merge($matchesParams[1], $matchesParams[2])
+				array_merge($matchesParams[1], $matchesParams[2]), function($value)
+				{
+					return $value !== '' && $value !== null;
+				}
 			);
 
 			// array values cleanup
-			$params = array_map('trim', $params);
+			$params = array_map(function($value) {
+				// Keep single space params as is (to allow space params)
+				return $value !== " " ? trim($value) : $value;
+			}, $params);
 			$params = array_values($params);
 		}
 

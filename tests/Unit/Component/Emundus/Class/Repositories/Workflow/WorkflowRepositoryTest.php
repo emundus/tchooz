@@ -6,6 +6,7 @@ use Joomla\Tests\Unit\UnitTestCase;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Entities\Workflow\WorkflowEntity;
+use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Workflow\StepTypeRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 
@@ -137,5 +138,46 @@ class WorkflowRepositoryTest extends UnitTestCase
 
 		$foundWorkflow = $this->repository->getWorkflowById($workflow->getId());
 		$this->assertNull($foundWorkflow, 'Deleted workflow should not be found.');
+	}
+
+	/**
+	 * @covers WorkflowRepository::getWorkflowByFnum
+	 * @return void
+	 */
+	public function testGetWorkflowWithChildrenLoaded(): void
+	{
+		$campaign1 = $this->dataset['campaign'];
+		$program1 = $this->dataset['program'];
+
+		$program2 = $this->h_dataset->createSampleProgram();
+		$campaign2 = $this->h_dataset->createSampleCampaign($program2);
+
+		$campaignRepository = new CampaignRepository();
+		$campaignEntity1 = $campaignRepository->getById($campaign1);
+		$campaignEntity2 = $campaignRepository->getById($campaign2);
+
+		$campaignEntity2->setParent($campaignEntity1);
+		$flushed = $campaignRepository->flush($campaignEntity2);
+		$this->assertTrue($flushed, 'Campaign parent relationship should be saved successfully.');
+
+		$workflowParent = new WorkflowEntity(0, 'Parent Workflow', 1, [], [$program1['programme_id']]);
+		$saved = $this->repository->save($workflowParent);
+		$this->assertTrue($saved, 'Parent workflow should be saved successfully.');
+
+		$workflowChild = new WorkflowEntity(0, 'Child Workflow', 1, [], [$program2['programme_id']]);
+		$saved = $this->repository->save($workflowChild);
+		$this->assertTrue($saved, 'Child workflow should be saved successfully.');
+
+		$retrievedWorkflow = $this->repository->getWorkflowByFnum($this->dataset['fnum'], true);
+
+		$this->assertNotNull($retrievedWorkflow, 'Workflow should be retrieved successfully.');
+		$this->assertEquals($workflowParent->getId(), $retrievedWorkflow->getId(), 'Workflow ID should match the saved workflow ID.');
+		$this->assertNotEmpty($retrievedWorkflow->getChildWorkflows(), 'Child workflows should be loaded.');
+		$this->assertCount(1, $retrievedWorkflow->getChildWorkflows(), 'There should be exactly one child workflow.');
+		$retrievedChildWorkflow = current($retrievedWorkflow->getChildWorkflows());
+		$this->assertEquals($workflowChild->getId(), $retrievedChildWorkflow->getId(), 'Child workflow ID should match the saved child workflow ID.');
+
+		$retrievedWorkflow = $this->repository->getWorkflowByFnum($this->dataset['fnum'], false);
+		$this->assertEmpty($retrievedWorkflow->getChildWorkflows(), 'Child workflows should not be loaded when not requested.');
 	}
 }

@@ -176,7 +176,7 @@ class PdfService extends Export implements ExportInterface
 				if (!empty($attachments))
 				{
 					$tmpArray = array();
-					$uploads = $this->m_application->getAttachmentsByFnum($fnum, null, $attachments);
+					$uploads  = $this->m_application->getAttachmentsByFnum($fnum, null, $attachments);
 					\EmundusHelperExport::getAttachmentPDF($files, $tmpArray, $uploads, $applicationFile->getUser()->id);
 				}
 			}
@@ -267,7 +267,7 @@ class PdfService extends Export implements ExportInterface
 		$columns[] = $this->parser->createImg($logo_base64, 'auto', 60);
 
 		// Fixed header
-		$sub_column     = [];
+		$sub_column          = [];
 		$custom_page_headers = $this->options->getPageHeaders();
 		foreach ($custom_page_headers as $custom_page_header)
 		{
@@ -321,15 +321,16 @@ class PdfService extends Export implements ExportInterface
 			{
 				$customHeaderData = $this->getData($custom_header, [$applicationFile], ValueFormatEnum::FORMATTED);
 
-				if($custom_header === 'stickers') {
-					$header   .= $this->parser->createTable();
+				if ($custom_header === 'stickers')
+				{
+					$header .= $this->parser->createTable();
 
 					$header .= $this->parser->addTableRow([$customHeaderData['data'][$applicationFile->getFnum()]]);
 					$header .= $this->parser::TABLE_CLOSE_TAG;
 					continue;
 				}
 
-				$header           .= $this->parser->addTableRow([$this->parser->createContentBlock($customHeaderData['label'] . ' : ') . $customHeaderData['data'][$applicationFile->getFnum()]]);
+				$header .= $this->parser->addTableRow([$this->parser->createContentBlock($customHeaderData['label'] . ' : ') . $customHeaderData['data'][$applicationFile->getFnum()]]);
 			}
 
 			$header .= $this->parser::TABLE_CLOSE_TAG;
@@ -422,39 +423,27 @@ class PdfService extends Export implements ExportInterface
 
 	private function mergePdfs(array $files, string $exportFilename): bool
 	{
-		$merged = false;
-
-		$emConfig                   = ComponentHelper::getParams('com_emundus');
-		$gotenberg_merge_activation = $emConfig->get('gotenberg_merge_activation', 0);
-
-		/* DEPRECATED: Use Gotenberg service instead of FPDI for merging PDFs */
-		if (!$gotenberg_merge_activation)
+		try
 		{
+			$merged = false;
+
+			$emConfig = ComponentHelper::getParams('com_emundus');
+
 			require_once(JPATH_LIBRARIES . '/emundus/fpdi.php');
 
-			$pdf = new \ConcatPdf();
-			$pdf->setFiles($files);
-			$pdf->concat();
-
-			if (isset($tmpArray))
-			{
-				foreach ($tmpArray as $fn)
-				{
-					unlink($fn);
-				}
-			}
-
-			if (!empty($pdf->Output($exportFilename, 'F')))
-			{
-				$merged = true;
-			}
-
-		}
-		else
-		{
+			$gotenberg_merge_activation = $emConfig->get('gotenberg_merge_activation', 0);
 			$gotenberg_url = $emConfig->get('gotenberg_url', 'http://localhost:3000');
 
-			if (!empty($gotenberg_url))
+			if(!$gotenberg_merge_activation)
+			{
+				$pdf = new \ConcatPdf();
+				$pdf->setFiles($files);
+				$pdf->concat();
+				$pdf->Output($exportFilename, 'F');
+
+				$merged = true;
+			}
+			elseif (!empty($gotenberg_url))
 			{
 				$got_files = [];
 				foreach ($files as $item)
@@ -477,6 +466,11 @@ class PdfService extends Export implements ExportInterface
 					}
 				}
 			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR);
+			$merged = false;
 		}
 
 		return $merged;

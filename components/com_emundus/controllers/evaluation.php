@@ -1257,20 +1257,26 @@ class EmundusControllerEvaluation extends BaseController
 			 * Evaluator has Update Access right -> can see and edit all evaluations
 			 */
 			$workflowRepository = new \Tchooz\Repositories\Workflow\WorkflowRepository();
-			$workflow = $workflowRepository->getWorkflowByFnum($fnum);
-
+			$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
 
 			if (!class_exists('EmundusModelWorkflow')) {
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			}
 			$workflowModel = new EmundusModelWorkflow();
+			
+			$steps = [];
+			// merge steps of workflow and child workflows
+			$steps = array_merge($steps, $workflow->getSteps());
+			foreach ($workflow->getChildWorkflows() as $childWorkflow) {
+				$steps = array_merge($steps, $childWorkflow->getSteps());
+			}
 
 			$stepsWithEvaluations = [];
-			foreach ($workflow->getSteps() as $step)
+			foreach ($steps as $step)
 			{
 				assert($step instanceof Tchooz\Entities\Workflow\StepEntity);
 
-				if ($step->isEvaluationStep())
+				if ($step->isEvaluationStep() && !empty($step->getTable()))
 				{
 					$updateAccess = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'u', $this->_user->id, $fnum);
 					$readAccess = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'r', $this->_user->id, $fnum);

@@ -97,7 +97,6 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			$current_url .= '&rowid=' . $current_row_id;
 		}
 
-
 		if (!empty($current_row_id))
 		{
 			$query->clear()
@@ -152,7 +151,8 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 					}
 				}
 			}
-		} else
+		}
+		else
 		{
 			// no current row id, try to find existing evaluation for this user
 			$query->clear()
@@ -168,6 +168,22 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			if (!empty($evaluationRow->id))
 			{
 				$current_row_id = $evaluationRow->id;
+			}
+			else if ($step->getMultiple() === 0)
+			{
+				$query->clear()
+					->select('*')
+					->from($step->getTable())
+					->where('step_id = ' . $step->getId())
+					->where('ccid = ' . $ccid);
+
+				$db->setQuery($query);
+				$evaluationRow = $db->loadObject();
+
+				if (!empty($evaluationRow->id))
+				{
+					$current_row_id = $evaluationRow->id;
+				}
 			}
 		}
 
