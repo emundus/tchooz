@@ -19,6 +19,8 @@ class WorkflowEntity {
 
 	public array $program_ids = [];
 
+	private array $childWorkflows = [];
+
 	/**
 	 * @param   int     $id
 	 * @param   string  $label
@@ -26,13 +28,14 @@ class WorkflowEntity {
 	 * @param   array<StepEntity>   $steps
 	 * @param   array<int>   $program_ids
 	 */
-	public function __construct(int $id, string $label = '', int $published = 1, array $steps = [], array $program_ids = [])
+	public function __construct(int $id, string $label = '', int $published = 1, array $steps = [], array $program_ids = [], array $childWorkflows = [])
 	{
 		$this->id = $id;
 		$this->label = $label;
 		$this->published = $published;
 		$this->steps = $steps;
 		$this->program_ids = $program_ids;
+		$this->childWorkflows = $childWorkflows;
 
 		Log::addLogger(['text_file' => 'com_emundus.entity.workflow.php'], Log::ALL, ['com_emundus.entity.workflow']);
 	}
@@ -169,5 +172,21 @@ class WorkflowEntity {
 		return array_values(array_filter($this->steps, function ($step) use ($state) {
 			return in_array($step->state, $state, true) && $step->isApplicantStep();
 		}));
+	}
+
+	/**
+	 *
+	 * @return array<WorkflowEntity>
+	 *
+	 * @since version
+	 */
+	public function getChildWorkflows(): array
+	{
+		return $this->childWorkflows;
+	}
+
+	public function setChildWorkflows(array $childWorkflows): void
+	{
+		$this->childWorkflows = $childWorkflows;
 	}
 }

@@ -423,34 +423,54 @@ class PdfService extends Export implements ExportInterface
 
 	private function mergePdfs(array $files, string $exportFilename): bool
 	{
-		$merged = false;
-
-		$emConfig = ComponentHelper::getParams('com_emundus');
-
-		$gotenberg_url = $emConfig->get('gotenberg_url', 'http://localhost:3000');
-
-		if (!empty($gotenberg_url))
+		try
 		{
-			$got_files = [];
-			foreach ($files as $item)
-			{
-				$got_files[] = Stream::path($item);
-			}
-			$request  = Gotenberg::pdfEngines($gotenberg_url)
-				->merge(...$got_files);
-			$response = Gotenberg::send($request);
-			$content  = $response->getBody()->getContents();
+			$merged = false;
 
-			$filename = $exportFilename;
-			$fp       = fopen($filename, 'w');
-			$pieces   = str_split($content, 1024 * 16);
-			if ($fp)
+			$emConfig = ComponentHelper::getParams('com_emundus');
+
+			require_once(JPATH_LIBRARIES . '/emundus/fpdi.php');
+
+			$gotenberg_merge_activation = $emConfig->get('gotenberg_merge_activation', 0);
+			$gotenberg_url = $emConfig->get('gotenberg_url', 'http://localhost:3000');
+
+			if(!$gotenberg_merge_activation)
 			{
-				foreach ($pieces as $piece)
+				$pdf = new \ConcatPdf();
+				$pdf->setFiles($files);
+				$pdf->concat();
+				$pdf->Output($exportFilename, 'F');
+
+				$merged = true;
+			}
+			elseif (!empty($gotenberg_url))
+			{
+				$got_files = [];
+				foreach ($files as $item)
 				{
-					$merged = fwrite($fp, $piece, strlen($piece)) !== false;
+					$got_files[] = Stream::path($item);
+				}
+				$request  = Gotenberg::pdfEngines($gotenberg_url)
+					->merge(...$got_files);
+				$response = Gotenberg::send($request);
+				$content  = $response->getBody()->getContents();
+
+				$filename = $exportFilename;
+				$fp       = fopen($filename, 'w');
+				$pieces   = str_split($content, 1024 * 16);
+				if ($fp)
+				{
+					foreach ($pieces as $piece)
+					{
+						$merged = fwrite($fp, $piece, strlen($piece)) !== false;
+					}
 				}
 			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add($e->getMessage(), Log::ERROR);
+			$merged = false;
 		}
 
 		return $merged;

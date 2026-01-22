@@ -7,6 +7,10 @@
 // no direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\User\EmundusUserRepository;
+use Joomla\CMS\Factory;
+
 /**
  * @package        Joomla.Site
  * @subpackage     mod_emundusmenu
@@ -14,27 +18,20 @@ defined('_JEXEC') or die;
  */
 class modEmundusProfileHelper
 {
-
-	static function getProfilePicture()
+	static function getProfilePicture(): string
 	{
-		$db = JFactory::getDBO();
-		$pp = '';
+		$pp = '/media/com_emundus/images/profile/default-profile.jpg';
 
 		try {
-			$query = $db->getQuery(true);
-			$query->select('profile_picture')
-				->from($db->quoteName('#__emundus_users'))
-				->where($db->quoteName('user_id') . ' = ' . $db->quote(JFactory::getUser()->id));
-			$db->setQuery($query);
-			$pp = $db->loadResult();
+			$emundusUserRepository = new EmundusUserRepository();
+			$emundusUser = $emundusUserRepository->getByUserId(Factory::getApplication()->getIdentity()->id);
 
-			if (empty($pp)) {
-				$pp = '/media/com_emundus/images/profile/default-profile.jpg';
+			if (!empty($emundusUser->getProfilePicture())) {
+				$pp = $emundusUser->getProfilePicture();
 			}
-
 		}
 		catch (Exception $e) {
-			JLog::add($e->getMessage(), JLog::ERROR, 'com_emundus');
+			Log::add($e->getMessage(), Log::ERROR, 'com_emundus');
 		}
 
 		return $pp;
