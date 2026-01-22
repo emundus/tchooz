@@ -7,6 +7,7 @@ use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 use Tchooz\Factories\Workflow\WorkflowFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseDriver;
 
@@ -49,11 +50,13 @@ class WorkflowRepository
 	}
 
 	/**
+	 * TODO: give the applicationFileEntity directly instead of fnum ?
 	 * @param   string  $fnum
+	 * @param   bool    $loadChilds load children workflow if there are any
 	 *
 	 * @return WorkflowEntity|null
 	 */
-	public function getWorkflowByFnum(string $fnum): ?WorkflowEntity
+	public function getWorkflowByFnum(string $fnum, bool $loadChilds = false): ?WorkflowEntity
 	{
 		$workflow = null;
 
@@ -76,7 +79,9 @@ class WorkflowRepository
 
 				if ($result)
 				{
-					$workflow = WorkflowFactory::fromDbObjects([$result])[0];
+					$applicationFileRepository = new ApplicationFileRepository();
+					$applicationFile = $applicationFileRepository->getByFnum($fnum);
+					$workflow = WorkflowFactory::fromDbObjects([$result], $loadChilds, $applicationFile)[0];
 				}
 			}
 			catch (\Exception $e)

@@ -129,8 +129,9 @@ class Evaluations extends Files
 
 				$query->clear()
 					->select('distinct esp.id')
-					->from($db->quoteName('#__emundus_setup_programmes', 'esp'))
-					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training'))
+					->from($db->quoteName('#__emundus_setup_campaigns', 'esc'))
+					->leftJoin($db->quoteName('#__emundus_setup_campaigns', 'esc_child') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('esc_child.parent_id'))
+					->leftJoin($db->quoteName('#__emundus_setup_programmes', 'esp') . ' ON ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc.training') . ' OR ' . $db->quoteName('esp.code') . ' = ' . $db->quoteName('esc_child.training'))
 					->leftJoin($db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $db->quoteName('esc.id') . ' = ' . $db->quoteName('ecc.campaign_id'))
 					->where($db->quoteName('ecc.fnum') . ' IN (' . implode(',', $db->quote($fnums)) . ')');
 
