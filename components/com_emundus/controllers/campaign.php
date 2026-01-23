@@ -348,7 +348,10 @@ class EmundusControllerCampaign extends BaseController
 						if (!empty($campaign->parent_id))
 						{
 							$campaign_parent       = $campaignRepository->getById($campaign->parent_id);
-							$campaign_parent_label = $campaign_parent->getLabel();
+
+							if (!empty($campaign_parent)) {
+								$campaign_parent_label = $campaign_parent->getLabel();
+							}
 						}
 						$campaign->additional_columns[] = [
 							'key'      => Text::_('COM_EMUNDUS_ONBOARD_CAMPAIGNS_PARENT'),
