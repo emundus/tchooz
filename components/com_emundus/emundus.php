@@ -1313,6 +1313,8 @@ Text::script('COM_EMUNDUS_EXPORTS_ATTACHMENT_TAB');
 Text::script('COM_EMUNDUS_EXPORT_NO_ATTACHMENTS_SELECTED');
 Text::script('COM_EMUNDUS_GO_TO_EXPORTS_PAGE');
 Text::script('COM_EMUNDUS_STAY_ON_PAGE');
+Text::script('COM_EMUNDUS_EXPORT_ERROR_TITLE');
+Text::script('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
