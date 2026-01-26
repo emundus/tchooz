@@ -1512,7 +1512,7 @@ class ExcelService extends Export implements ExportInterface
 			$result->setProgress($progress);
 		}
 
-		if ($result->getProgress() === 100)
+		if ($result->getProgress() === 100.00)
 		{
 			$csvPath = JPATH_SITE . '/tmp/' . $tmpFile;
 
