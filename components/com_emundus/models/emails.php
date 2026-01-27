@@ -655,15 +655,29 @@ class EmundusModelEmails extends JModelList
 
 			$activation = $user->get('activation');
 
+			$timezone = $app->get('offset', 'Europe/Paris');
+			$timezone = new DateTimeZone($timezone);
+			$now = Factory::getDate('now', $timezone);
+
+			// TODO: Use a modifier to specify the date format and language?
+			$currentDate = $now->format(Text::_('DATE_FORMAT_LC3'));
+			$currentDateEnglish = new IntlDateFormatter(
+				'en_US',
+				IntlDateFormatter::LONG,
+				IntlDateFormatter::NONE,
+				$timezone
+			);
+			$currentDateEnglish = $currentDateEnglish->format($now);
+
 			$patterns     = array(
 				'/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
 				'/\[ACTIVATION_URL\]/', '/\[ACTIVATION_URL_RELATIVE\]/', '/\[SITE_URL\]/', '/\[SITE_NAME\]/',
-				'/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[LOGO\]/'
+				'/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[CURRENT_DATE_ENGLISH\]/', '/\[LOGO\]/'
 			);
 			$replacements = array(
 				$user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
 				$base_url . "index.php?option=com_users&task=registration.activate&token=" . $activation, "index.php?option=com_users&task=registration.activate&token=" . $activation, $base_url, $sitename,
-				$user->id, $user->name, $user->email, $user->username, Factory::getDate('now')->format(Text::_('DATE_FORMAT_LC3')), $logo
+				$user->id, $user->name, $user->email, $user->username, $currentDate, $currentDateEnglish, $logo
 			);
 
 			if (!empty($fnum)) {
