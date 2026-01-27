@@ -246,7 +246,7 @@ class Export
 					$result['data'][$file->getFnum()] = '';
 					if ($elementValue && !empty($elementValue[$element->getId()]) && !empty($elementValue[$element->getId()][$file->getFnum()]))
 					{
-						if (isset($elementValue[$element->getId()][$file->getFnum()]['val']))
+						if (isset($elementValue[$element->getId()][$file->getFnum()]['raw']))
 						{
 							$result['data'][$file->getFnum()] = $elementValue[$element->getId()][$file->getFnum()]['val'];
 						}
