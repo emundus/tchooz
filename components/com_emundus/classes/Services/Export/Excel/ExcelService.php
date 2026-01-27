@@ -122,12 +122,12 @@ class ExcelService extends Export implements ExportInterface
 			$this->registerClasses($exportVersion);
 
 			$result = new ExportResult(false);
-			if (empty($this->fnums) || empty($this->user))
+			if (empty($this->fnums) || empty($this->user) || empty($this->exportEntity))
 			{
 				return $result;
 			}
 
-			if (!empty($this->exportEntity) && (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())))
+			if (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
 			{
 				throw new \Exception('Export has been cancelled.');
 			}
