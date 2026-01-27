@@ -2679,6 +2679,13 @@ class EmundusModelForm extends ListModel
 				if (!empty($where)) {
 					$query->where(str_replace('WHERE', '', $where));
 				}
+				else {
+					// Check if table have a published column
+					$columns = $this->db->getTableColumns($table);
+					if (array_key_exists('published', $columns)) {
+						$query->where($this->db->quoteName('published') . ' = 1');
+					}
+				}
 				$this->db->setQuery($query);
 
 				$options = $this->db->loadObjectList();
