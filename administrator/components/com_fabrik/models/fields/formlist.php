@@ -60,7 +60,7 @@ class JFormFieldFormList extends ListField
 
 		$db = FabrikWorker::getDbo(true);
 		$query = $db->getQuery(true);
-		$query->select('id AS value, label AS ' . $db->quote('text') . ', published');
+		$query->select('id AS value, concat(label," (id ",id,")") AS ' . $db->quote('text') . ', published');
 		$query->from('#__fabrik_forms');
 
 		if (!$this->element['showtrashed'])

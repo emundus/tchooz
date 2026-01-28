@@ -262,7 +262,8 @@ class FabrikFEModelListfilter extends FabModel
 	 */
 	private function getAdvancedSearchMode()
 	{
-		if ($this->app->getInput()->get('option', '') === 'com_search')
+		//if ($this->app->getInput()->get('option', '') === 'com_search' || $this->app->getInput()->get('option', '') === 'com_remsearch')
+		if (defined('COM_FABRIK_SEARCH_RUN') && COM_FABRIK_SEARCH_RUN==true) 
 		{
 			$mode = $this->app->getInput()->get(
 				'searchphrase',
@@ -467,14 +468,25 @@ class FabrikFEModelListfilter extends FabModel
 			$search = (array) $search;
 		}
 
+		$searchremoved = [];
 		foreach ($search as $k => $s)
 		{
+			//If in J!search add * to short search terms. This will create identical search results but avoid issue with different min length
+			if (defined('COM_FABRIK_SEARCH_RUN') && COM_FABRIK_SEARCH_RUN==true && StringHelper::strlen($s) == $min-1) {
+				$s = $s .'*';
+			}
 			if (StringHelper::strlen($s) < $min)
 			{
+				$searchremoved[] = $s;
 				unset($search[$k]);
 			}
 		}
 
+		if (!empty($searchremoved) && !(defined('COM_FABRIK_SEARCH_RUN') && COM_FABRIK_SEARCH_RUN==true) ) {
+			$msg = sprintf(Text::_('COM_FABRIK_NOTICE_SEARCH_STRING_REMOVED'), $min, implode(', ',$searchremoved));
+			$this->app->enqueueMessage($msg);
+		}
+		
 		$search = implode(' ', $search);
 
 		return $search;

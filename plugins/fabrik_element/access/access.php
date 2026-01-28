@@ -87,7 +87,7 @@ class PlgFabrik_ElementAccess extends PlgFabrik_Element
 		$displayData->id = $id;
 		$displayData->name = $name;
 		$displayData->options = $this->getOpts();
-		$displayData->selected =  $arSelected[0];
+		$displayData->selected = (int) $arSelected[0];
 
 		return $layout->render($displayData);
 	}

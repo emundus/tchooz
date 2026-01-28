@@ -1133,6 +1133,10 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		$local = $local === true ? $local : $value != 'now';
 		
 //		$local = $formModel->hasErrors() || $params->get('jdate_store_as_local', 0) == 1) && $value != 'now' ? false : true;
+		//As stated in date element: ...not sure what the logic is but testing seems to indicate this to be true...
+		//$local must be false (i.e. no offset) in case of failed validation and store as UTC
+		if ($formModel->hasErrors() && $params->get('jdate_store_as_local', 0) == 0) $local=false;		
+		
 		$value = $date->toSQL($local);
 
 		return $value;
@@ -2622,8 +2626,6 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 			//$calOpts['readonly'] = 'readonly';
 		}
 
-		$calOpts['weekNumbers'] = $params->get('jdate_show_week_numbers', '0') === '1';
-
 		return $calOpts;
 	}
 
@@ -2724,7 +2726,7 @@ class PlgFabrik_ElementJdate extends PlgFabrik_ElementList
 		if ($params->get('jdate_store_as_local', '0') !== '1')
 		{
 			$timeZone = new \DateTimeZone($this->config->get('offset'));
-			$zoneDate = new Date('now', $timeZone);
+			$zoneDate = new DateTime('now', $timeZone);
 			$tzStr    = $zoneDate->format('P');
 			$key = 'CONVERT_TZ(' . $key . ', "+0:00", "' . $tzStr . '")';
 		}

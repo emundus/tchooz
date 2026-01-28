@@ -1860,8 +1860,8 @@ class Worker
 			$driver   = $conf->get('dbtype');
 
 			// Test for swapping db table names
-			$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,
-				'prefix' => $dbPrefix);
+			$options = array('driver' => $driver, 'host' => $host, 'user' => $user, 'password' => $password, 'database' => $database,'prefix' => $dbPrefix,
+			   'utf8mb4' => true);
 
 			self::$database[$sig] = DatabaseDriver::getInstance($options);
 
@@ -2491,7 +2491,7 @@ class Worker
 
 		$app = Factory::getApplication();
 
-		if (!$app->isClient('administrator') && !$app->isCli())
+		if (!$app->isClient('administrator'))
 		{
 			// Attempt to get Itemid from possible list menu item.
 			if (!is_null($listId))
@@ -2566,7 +2566,7 @@ class Worker
 
             $val = $input->get($name, $val, 'string');
 
-            if (!$app->isClient('administrator') && !$app->isCli())
+            if (!$app->isClient('administrator'))
             {
                 if (!$mambot)
                 {
@@ -2598,7 +2598,7 @@ class Worker
         }
         else
         {
-            if (!$app->isClient('administrator')  && !$app->isCli())
+            if (!$app->isClient('administrator'))
             {
                 $menus = $app->getMenu();
                 $menu  = $menus->getActive();

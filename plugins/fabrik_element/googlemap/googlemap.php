@@ -347,7 +347,7 @@ class PlgFabrik_ElementGooglemap extends PlgFabrik_Element
 
 		if ($opts->geocode == '2')
 		{
-			foreach (array('addr1', 'addr2', 'city', 'state', 'zip', 'country') as $which_field)
+			foreach (array('addr1', 'addr2', 'city', 'state', 'zip', 'country','formatted_address') as $which_field)
 			{
 				$field_id = '';
 

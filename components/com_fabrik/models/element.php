@@ -4689,7 +4689,7 @@ class PlgFabrik_Element extends FabrikPlugin
 				$query = ' YEAR(' . $key . ') = YEAR(NOW()) ';
 				break;
 			case 'lastyear':
-				$query = ' YEAR(' . $this->addConvert($key) . ') = YEAR(NOW()) - 1 ';
+				$query = ' YEAR(' .$key . ') = YEAR(NOW()) - 1 ';
 				break;
 			case 'earlierthisyear':
 				$query = ' (DAYOFYEAR(' . $key . ') <= DAYOFYEAR(NOW()) AND YEAR(' . $key . ') = YEAR(NOW())) ';
@@ -4920,10 +4920,11 @@ class PlgFabrik_Element extends FabrikPlugin
 		$name       = $this->getFullName(false, false);
 		$groupModel = $this->getGroup();
 		$roundTo    = (int) $this->getParams()->get('avg_round');
+		$joinDisplay = $listModel->getParams()->get('join-display','default');
 
-		if ($groupModel->isJoin())
+		if ($groupModel->isJoin() && $joinDisplay != 'reduce')
 		{
-			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
+			// Element is in a joined column and join display mode is not set to "Merge and reduce" - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
 			$sql = "SELECT ROUND(AVG($name), $roundTo) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name)
 				. " $joinSQL $whereSQL " . $this->additionalElementCalcJoin('avg_split');
 		}
@@ -4959,10 +4960,11 @@ class PlgFabrik_Element extends FabrikPlugin
 		$whereSQL   = $listModel->buildQueryWhere();
 		$name       = $this->getFullName(false, false);
 		$groupModel = $this->getGroup();
+		$joinDisplay = $listModel->getParams()->get('join-display','default');
 
-		if ($groupModel->isJoin())
+		if ($groupModel->isJoin() && $joinDisplay != 'reduce')
 		{
-			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
+			// Element is in a joined column and join display mode is not set to "Merge and reduce" - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
 			$sql = "SELECT SUM($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL " . $this->additionalElementCalcJoin('sum_split');
 		}
 		else
@@ -5106,10 +5108,11 @@ class PlgFabrik_Element extends FabrikPlugin
 		}
 
 		$groupModel = $this->getGroup();
+		$joinDisplay = $listModel->getParams()->get('join-display','default');
 
-		if ($groupModel->isJoin())
+		if ($groupModel->isJoin() && $joinDisplay != 'reduce')
 		{
-			// Element is in a joined column - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
+			// Element is in a joined column and join display mode is not set to "Merge and reduce" - lets presume the user wants to sum all cols, rather than reducing down to the main cols totals
 			$sql = "SELECT COUNT($name) AS value, $label FROM " . FabrikString::safeColName($item->db_table_name) . " $joinSQL $whereSQL " . $this->additionalElementCalcJoin('count_split');
 		}
 		else

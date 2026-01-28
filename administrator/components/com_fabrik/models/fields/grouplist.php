@@ -55,7 +55,7 @@ class JFormFieldGroupList extends GroupedlistField
 
 		$sql_where   = (string) $this->element['sql_where'];
 
-		$query->select('g.id AS value, g.name AS text, f.label AS form');
+		$query->select('g.id AS value, g.name AS text, concat(f.label," (id ",f.id,")") AS form');
 		$query->from('#__fabrik_groups AS g');
 		$query->where('g.published <> -2')
 		->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id')

@@ -21,7 +21,7 @@ $i = 0;
 		$i==0 ? $selected = 'true' : $selected = 'false';
 		?>
 		<li role="presentation" class="nav-item" <?php echo implode(' ', $style); ?>>
-			<button class="nav-link <?php echo $active . $tab_class; ?>" id="<?php echo $tab->id; ?>" data-bs-toggle="tab" data-bs-target="#<?php echo $href; ?>" type="button" role="tab" aria-controls="<?php echo $tab->href; ?>" aria-selected="<?php echo $selected;?>">
+			<button class="d-block nav-link <?php echo $active . $tab_class; ?>" id="<?php echo $tab->id; ?>" data-bs-toggle="tab" data-bs-target="#<?php echo $href; ?>" type="button" role="tab" aria-controls="<?php echo $tab->href; ?>" aria-selected="<?php echo $selected;?>">
 				<?php echo Text::_($tab->label); ?>
 			</button>
 		</li>

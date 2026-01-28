@@ -48,8 +48,14 @@ function onFabrikReady() {
             }    
             setTimeout(onFabrikReady, 50);
        } else {
-			jQuery(actionsSelector).unwrap();
-			jQuery(tabsSelector).unwrap();
+
+			if (jQuery(actionsSelector).parent().attr('id') === 'blockDiv') {
+				jQuery(actionsSelector).unwrap();
+			}
+			if (jQuery(tabsSelector).parent().attr('id') === 'blockDivTabs') {
+				jQuery(tabsSelector).unwrap();
+			}
+			
         }
     }
 }
