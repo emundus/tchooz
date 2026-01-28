@@ -468,7 +468,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 						$evaluation_data['fnum'] = $old_evaluation->fnum;
 						$evaluation_data['ccid'] = \EmundusHelperFiles::getIdFromFnum($old_evaluation->fnum);
-						$evaluation_data['evaluator'] = $old_evaluation->evaluator;
+						$evaluation_data['evaluator'] = $old_evaluation->user ?? null;
 						$evaluation_data['step_id'] = $evaluation_step_id;
 
 						unset($evaluation_data['id']);
@@ -503,6 +503,15 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 					// do the same with repeatable elements
 					$migrated_task[] = $this->migrateDataFromRepeatableElements($stepEntity, $elements, $mapping_old_row_id_new_row_id);
+				}
+
+				if (!$this->removeUnnecessaryColumnsFromNewEvaluationForm($stepEntity))
+				{
+					$this->output->writeln($this->colors['warning'] . 'Failed to remove unnecessary columns from new evaluation form ' . $stepEntity->getFormId() . $this->colors['reset']);
+				}
+				else
+				{
+					Log::add('Removed unnecessary columns from new evaluation form ' . $stepEntity->getFormId(), Log::INFO, self::getJobName());
 				}
 			}
 		}
@@ -995,6 +1004,38 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		}
 
 		return $added;
+	}
+
+	private function removeUnnecessaryColumnsFromNewEvaluationForm(StepEntity $step): bool
+	{
+		$removed = false;
+
+		if (!empty($step->getFormId()))
+		{
+			$db = $this->databaseService->getDatabase();
+			$query = $db->createQuery();
+			$query->select('jfe.id')
+				->from($db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+				->where('jffg.form_id = ' . $step->getFormId())
+				->where('jfe.name IN (' . $db->quote('user') . ', ' . $db->quote('student_id') . ')');
+			$db->setQuery($query);
+			$elementIds = $db->loadColumn();
+
+			// unpublish user and student_id elements
+			if (!empty($elementIds)) {
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set('published = 0')
+					->where('id IN (' . implode(',', $elementIds) . ')');
+				$db->setQuery($query);
+				$removed = $db->execute();
+			} else {
+				$removed = true;
+			}
+		}
+
+		return $removed;
 	}
 
 	public static function getJobName(): string {
