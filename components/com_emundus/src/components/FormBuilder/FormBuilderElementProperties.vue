@@ -78,7 +78,7 @@
 							:key="'form_builder_element_options_' + reloadOptions"
 							:element="element"
 							:type="element.plugin === 'radiobutton' ? 'radio' : element.plugin"
-							:display-values="true"
+							:display-values="false"
 							:dynamically-save="false"
 							@update-element="$emit('update-element')"
 						></form-builder-element-options>
