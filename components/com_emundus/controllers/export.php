@@ -23,6 +23,7 @@ use Tchooz\Entities\Fabrik\FabrikFormEntity;
 use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\CrudEnum;
@@ -314,7 +315,9 @@ class EmundusControllerExport extends BaseController
 						{
 							foreach ($workflow->getSteps() as $step)
 							{
-								if ($step->getType()->getCode() === null && !empty($step->getFormId()) && !in_array($step->getFormId(), array_keys($elements)))
+								assert($step instanceof StepEntity);
+
+								if ($step->isEvaluationStep() && !empty($step->getFormId()) && !in_array($step->getFormId(), array_keys($elements)))
 								{
 									$elements[$step->getFormId()] = [
 										'label'          => $step->getLabel(),
@@ -324,7 +327,7 @@ class EmundusControllerExport extends BaseController
 										'campaign_count' => 1,
 									];
 								}
-								elseif ($step->getType()->getCode() === null && !empty($step->getFormId()) && in_array($step->getFormId(), array_keys($elements)))
+								elseif ($step->isEvaluationStep() && !empty($step->getFormId()) && in_array($step->getFormId(), array_keys($elements)))
 								{
 									$elements[$step->getFormId()]['campaign_count']++;
 								}
@@ -377,10 +380,11 @@ class EmundusControllerExport extends BaseController
 			}
 			elseif ($type === 'other')
 			{
-				$elements['campaign']  = Export::getCampaignColumns();
-				$elements['programme'] = Export::getProgramColumns();
-				$elements['others']    = Export::getMiscellaneousColumns();
-				$elements['user']      = Export::getUserColumns();
+				$elements['campaign']   = Export::getCampaignColumns();
+				$elements['programme']  = Export::getProgramColumns();
+				$elements['others']     = Export::getMiscellaneousColumns();
+				$elements['management'] = Export::getManagementColumns();
+				$elements['user']       = Export::getUserColumns();
 			}
 
 			// Update keys to have sequential numeric keys
@@ -956,6 +960,11 @@ class EmundusControllerExport extends BaseController
 				}
 
 				// Delete export record and task associated if any
+				if (!$this->exportRepository->delete($export->getId()))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+
 				$task = $export->getTask();
 				if (!empty($task))
 				{
@@ -964,11 +973,6 @@ class EmundusControllerExport extends BaseController
 					{
 						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_ASSOCIATED_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
 					}
-				}
-
-				if (!$this->exportRepository->delete($export->getId()))
-				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
 				}
 			}
 

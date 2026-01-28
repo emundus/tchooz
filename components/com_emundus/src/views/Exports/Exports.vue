@@ -328,7 +328,7 @@ export default defineComponent({
 							}
 						});
 					} else {
-						if (response.msg.includes('The operation was aborted.')) {
+						if (response.title === 'AbortError') {
 							// Rerun export with async flag
 							this.runExport(true);
 						} else {

@@ -161,6 +161,11 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 										throw new \Exception('Failed to add emundusstepevaluation plugin to new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')');
 									}
 
+									if (!$this->updateOverallElement($new_evaluation_form_id))
+									{
+										$this->output->writeln($this->colors['red'] . 'Failed to update overall element in new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
+									}
+
 									$form_index = new IndexEntity(0, 'fabrik_form_id', $evaluation_form_id, $new_evaluation_form_id);
 									$form_index->save();
 								}
@@ -468,7 +473,7 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 						$evaluation_data['fnum'] = $old_evaluation->fnum;
 						$evaluation_data['ccid'] = \EmundusHelperFiles::getIdFromFnum($old_evaluation->fnum);
-						$evaluation_data['evaluator'] = $old_evaluation->evaluator;
+						$evaluation_data['evaluator'] = $old_evaluation->user ?? null;
 						$evaluation_data['step_id'] = $evaluation_step_id;
 
 						unset($evaluation_data['id']);
@@ -503,6 +508,15 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 
 					// do the same with repeatable elements
 					$migrated_task[] = $this->migrateDataFromRepeatableElements($stepEntity, $elements, $mapping_old_row_id_new_row_id);
+				}
+
+				if (!$this->removeUnnecessaryColumnsFromNewEvaluationForm($stepEntity))
+				{
+					$this->output->writeln($this->colors['warning'] . 'Failed to remove unnecessary columns from new evaluation form ' . $stepEntity->getFormId() . $this->colors['reset']);
+				}
+				else
+				{
+					Log::add('Removed unnecessary columns from new evaluation form ' . $stepEntity->getFormId(), Log::INFO, self::getJobName());
 				}
 			}
 		}
@@ -995,6 +1009,78 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		}
 
 		return $added;
+	}
+
+	/**
+	 * Update overall element to be used as total to calculate averages of evaluations
+	 * @param   int  $evaluationFormId
+	 *
+	 * @return bool
+	 */
+	private function updateOverallElement(int $evaluationFormId): bool
+	{
+		$updated = false;
+
+		if (!empty($evaluationFormId)) {
+			$db = $this->databaseService->getDatabase();
+			$query = $db->createQuery();
+
+			$query->select('jfe.id, jfe.params')
+				->from($db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+				->where('jffg.form_id = ' . $evaluationFormId)
+				->where('jfe.name = ' . $db->quote('overall'));
+
+			$db->setQuery($query);
+			$overall_element = $db->loadObject();
+
+			if (!empty($overall_element)) {
+				$params = json_decode($overall_element->params, true);
+				$params['used_as_total'] = 1;
+				$overall_element->params = json_encode($params);
+
+				try {
+					$updated = $db->updateObject('#__fabrik_elements', $overall_element, 'id');
+				} catch (\Exception $e) {
+					$this->output->writeln('Failed to update overall element id ' . $overall_element->id . ': ' . $e->getMessage());
+					Log::add('Failed to update overall element id ' . $overall_element->id . ': ' . $e->getMessage(), Log::ERROR, self::getJobName());
+				}
+			}
+		}
+
+		return $updated;
+	}
+
+	private function removeUnnecessaryColumnsFromNewEvaluationForm(StepEntity $step): bool
+	{
+		$removed = false;
+
+		if (!empty($step->getFormId()))
+		{
+			$db = $this->databaseService->getDatabase();
+			$query = $db->createQuery();
+			$query->select('jfe.id')
+				->from($db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+				->where('jffg.form_id = ' . $step->getFormId())
+				->where('jfe.name IN (' . $db->quote('user') . ', ' . $db->quote('student_id') . ')');
+			$db->setQuery($query);
+			$elementIds = $db->loadColumn();
+
+			// unpublish user and student_id elements
+			if (!empty($elementIds)) {
+				$query->clear()
+					->update($db->quoteName('#__fabrik_elements'))
+					->set('published = 0')
+					->where('id IN (' . implode(',', $elementIds) . ')');
+				$db->setQuery($query);
+				$removed = $db->execute();
+			} else {
+				$removed = true;
+			}
+		}
+
+		return $removed;
 	}
 
 	public static function getJobName(): string {

@@ -14,6 +14,9 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
+use Joomla\CMS\Application\ApplicationHelper;
+use Joomla\CMS\Application\SiteApplication;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
@@ -21,6 +24,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Uri\Uri;
+use Joomla\CMS\User\UserHelper;
 
 /**
  * eMundus Component Controller
@@ -861,6 +865,8 @@ class EmundusControllerMessages extends BaseController
 			die(Text::_("ACCESS_DENIED"));
 		}
 
+		$app = Factory::getApplication();
+
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
 		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'campaign.php');
@@ -895,12 +901,12 @@ class EmundusControllerMessages extends BaseController
 		$sent   = [];
 		$failed = [];
 
+		$db    = Factory::getContainer()->get('DatabaseDriver');
 		if (!empty($template_id)) {
 			// Loading the message template is not used for getting the message text as that can be modified on the frontend by the user before sending.
 			$template = $m_messages->getEmail($template_id);
 		}
 		else {
-			$db    = Factory::getContainer()->get('DatabaseDriver');
 			$query = $db->getQuery(true);
 
 			$query->clear()
@@ -925,8 +931,46 @@ class EmundusControllerMessages extends BaseController
 			$post     = [
 				'USER_NAME'  => $user->name,
 				'SITE_URL'   => Uri::base(),
-				'USER_EMAIL' => $user->email
+				'USER_EMAIL' => $user->email,
+				'BUTTON_TEXT'    => $template->button ?? ''
 			];
+
+			if(isset($template->lbl) && $template->lbl === 'new_account')
+			{
+				$baseUrl = Uri::base();
+				if($app->isClient('api'))
+				{
+					// Remove /api from base URL
+					$baseUrl = rtrim(str_ireplace('/api', '', $baseUrl), '/').'/';
+				}
+
+				$token       = ApplicationHelper::getHash(UserHelper::genRandomPassword());
+				$hashedToken = UserHelper::hashPassword($token);
+
+				$update = (object)[
+					'activation' => $hashedToken,
+					'id'         => $user->id
+				];
+				$db->updateObject('#__users', $update, 'id');
+
+				$siteApplication = Factory::getContainer()->get(SiteApplication::class);
+				$menu_item = $siteApplication->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+				$account_menu_id = ComponentHelper::getComponent('com_emundus')->getParams()->get('account_creation_link',0);
+				if(!empty($account_menu_id)) {
+					$menu_item = $siteApplication->getMenu()->getItem($account_menu_id);
+				}
+
+				if(!empty($menu_item)) {
+					$link = $menu_item->alias.'?layout=confirm&token=' . $token . '&username=' . $user->username;
+				}
+				else {
+					$link = 'index.php?option=com_users&view=reset&layout=confirm&token=' . $token . '&username=' . $user->username . '&new_account=1';
+				}
+
+				$link = str_replace('+', '%2B', $link);
+
+				$post['ACCOUNT_CREATION_URL'] = $baseUrl . $link;
+			}
 
 			$tags = $m_emails->setTags($user->id, $post, null, '', $mail_from . $mail_from_name . $mail_subject . $mail_message);
 

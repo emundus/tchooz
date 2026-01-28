@@ -530,7 +530,7 @@ class EmundusViewApplication extends HtmlView
                                 }
 							}
 						}
-
+						
 						$profiles_by_phase = array();
 
 						/* group profiles by phase */

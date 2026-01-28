@@ -18,13 +18,14 @@ use Joomla\Plugin\Emundus\MicrosoftDynamics\Repository\MicrosoftDynamicsReposito
 
 class MicrosoftDynamicsFactory
 {
+	private ?\EmundusHelperFabrik $helperFabrik = null;
+
 	public function __construct(
 		private readonly DatabaseInterface           $database,
 		private readonly \EmundusModelApplication    $modelApplication,
 		private readonly MicrosoftDynamicsRepository $repository,
 	)
-	{
-	}
+	{}
 
 	public function getMicrosoftDynamicsConfig($name, $data, $training = null, $check_status = true): array
 	{
@@ -83,6 +84,7 @@ class MicrosoftDynamicsFactory
 
 	public function prepareDatas(object $api, array $config, array $data, bool $withData = true): bool
 	{
+		$this->helperFabrik = new \EmundusHelperFabrik();
 		switch ($config['action'])
 		{
 			case 'create':
@@ -202,18 +204,27 @@ class MicrosoftDynamicsFactory
 				else
 				{
 					$element = explode('___', $field['elementId']);
+					if(count($element) > 1)
+					{
+						$query->clear()
+							->select('fe.id,ffg.form_id')
+							->from($this->database->quoteName('#__fabrik_elements', 'fe'))
+							->leftJoin($this->database->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->database->quoteName('ffg.group_id') . ' = ' . $this->database->quoteName('fe.group_id'))
+							->leftJoin($this->database->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->database->quoteName('fl.form_id') . ' = ' . $this->database->quoteName('ffg.form_id'))
+							->where($this->database->quoteName('fl.db_table_name') . ' = ' . $this->database->quote($element[0]))
+							->where($this->database->quoteName('fe.name') . ' = ' . $this->database->quote($element[1]));
+						$this->database->setQuery($query);
+						$elementDetails = $this->database->loadObject();
 
-					$query->clear()
-						->select('fe.id,ffg.form_id')
-						->from($this->database->quoteName('#__fabrik_elements', 'fe'))
-						->leftJoin($this->database->quoteName('#__fabrik_formgroup', 'ffg') . ' ON ' . $this->database->quoteName('ffg.group_id') . ' = ' . $this->database->quoteName('fe.group_id'))
-						->leftJoin($this->database->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->database->quoteName('fl.form_id') . ' = ' . $this->database->quoteName('ffg.form_id'))
-						->where($this->database->quoteName('fl.db_table_name') . ' = ' . $this->database->quote($element[0]))
-						->where($this->database->quoteName('fe.name') . ' = ' . $this->database->quote($element[1]));
-					$this->database->setQuery($query);
-					$elementDetails = $this->database->loadObject();
-
-					$value = $this->modelApplication->getValuesByElementAndFnum($data['fnum'], $elementDetails->id, $elementDetails->form_id, 1);
+						$value = $this->modelApplication->getValuesByElementAndFnum($data['fnum'], $elementDetails->id, $elementDetails->form_id, 1);
+					}
+					else {
+						$value = $this->helperFabrik->getValueByAlias($element[0], $data['fnum']);
+						if(!empty($value))
+						{
+							$value = $value['raw'];
+						}
+					}
 				}
 			}
 			elseif (!empty($field['value']))

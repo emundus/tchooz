@@ -1,5 +1,5 @@
 /**
- * PickList Element
+ * PickList Element 
  *
  * @copyright: Copyright (C) 2005-2016  Media A-Team, Inc. - All rights reserved.
  * @license:   GNU/GPL http://www.gnu.org/copyleft/gpl.html
@@ -7,7 +7,7 @@
 
 define(['jquery', 'fab/element'], function (jQuery, FbElement) {
     window.FbPicklist = new Class({
-        Extends   : FbElement,
+        Extends: FbElement,
         initialize: function (element, options) {
             this.setPlugin('fabrikpicklist');
             this.parent(element, options);
@@ -16,6 +16,116 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 this.watchAdd();
             }
             this.makeSortable();
+            this.addMobileSupport();
+        },
+
+        /**
+         * Add minimal mobile touch support
+         */
+        addMobileSupport: function () {
+            if (!this.options.editable) return;
+
+            var c = this.getContainer();
+            var from = c.getElement('.fromList');
+            var to = c.getElement('.toList');
+
+            if (!from || !to) return;
+
+            var that = this;
+
+            [from, to].each(function (list) {
+                list.addEvent('touchstart', function (e) {
+                    var target = e.target;
+                    if (target.tagName !== 'LI' || target.hasClass('emptypicklist')) {
+                        return;
+                    }
+                    e.preventDefault();
+                    that.handleTouch(e, target, from, to);
+                });
+            });
+        },
+
+        handleTouch: function (e, item, from, to) {
+            var that = this;
+            var touch = e.touches[0];
+
+            // Make original semi-transparent
+            var originalOpacity = item.getStyle('opacity');
+            item.setStyle('opacity', '0.3');
+
+            // Clone for dragging
+            var clone = item.clone();
+            var rect = item.getBoundingClientRect();
+
+            clone.setStyles({
+                'position': 'fixed',
+                'left': rect.left + 'px',
+                'top': rect.top + 'px',
+                'width': rect.width + 'px',
+                'z-index': '9999',
+                'pointer-events': 'none',
+                'border': '2px solid #40a9ff',
+                'box-shadow': '0 2px 8px rgba(0,0,0,0.2)'
+            });
+
+            document.body.adopt(clone);
+
+            var currentTarget = null;
+
+            var onMove = function (e) {
+                e.preventDefault();
+                var t = e.touches[0];
+
+                // Move clone
+                clone.setStyles({
+                    'left': (t.clientX - rect.width / 2) + 'px',
+                    'top': (t.clientY - rect.height / 2) + 'px'
+                });
+
+                // Check drop target
+                var overFrom = that.isOverElement(t.clientX, t.clientY, from);
+                var overTo = that.isOverElement(t.clientX, t.clientY, to);
+
+                var newTarget = overFrom ? from : (overTo ? to : null);
+
+                if (newTarget !== currentTarget) {
+                    if (currentTarget) {
+                        currentTarget.setStyle('background-color', '');
+                    }
+                    if (newTarget) {
+                        newTarget.setStyle('background-color', '#e3f2fd');
+                    }
+                    currentTarget = newTarget;
+                }
+            };
+
+            var onEnd = function (e) {
+                e.preventDefault();
+                document.removeEvent('touchmove', onMove);
+                document.removeEvent('touchend', onEnd);
+
+                clone.destroy();
+                item.setStyle('opacity', originalOpacity);
+
+                // Reset background
+                from.setStyle('background-color', '');
+                to.setStyle('background-color', '');
+
+                // Move item if valid drop
+                if (currentTarget && currentTarget !== item.getParent()) {
+                    currentTarget.adopt(item);
+                    that.setData();
+                    that.showNotices();
+                }
+            };
+
+            document.addEvent('touchmove', onMove);
+            document.addEvent('touchend', onEnd);
+        },
+
+        isOverElement: function (x, y, element) {
+            var rect = element.getBoundingClientRect();
+            return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
         },
 
         /**
@@ -29,9 +139,9 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                     dropcolour = from.getStyle('background-color'),
                     that = this;
                 this.sortable = new Sortables([from, to], {
-                    clone     : true,
-                    revert    : true,
-                    opacity   : 0.7,
+                    clone: true,
+                    revert: true,
+                    opacity: 0.7,
                     hovercolor: this.options.bghovercolour,
                     onComplete: function (element) {
                         this.setData();
@@ -39,7 +149,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                         that.fadeOut(from, dropcolour);
                         that.fadeOut(to, dropcolour);
                     }.bind(this),
-                    onSort    : function (element, clone) {
+                    onSort: function (element, clone) {
                         this.showNotices(element, clone);
 
                     }.bind(this),
@@ -67,7 +177,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
         fadeOut: function (droppable, colour) {
             var hoverFx = new Fx.Tween(droppable, {
-                wait    : false,
+                wait: false,
                 duration: 600
             });
             hoverFx.start('background-color', colour);
@@ -135,7 +245,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
 
                         var li = new Element('li', {
                             'class': 'picklist',
-                            'id'   : this.element.id + '_value_' + val
+                            'id': this.element.id + '_value_' + val
                         }).set('text', label);
 
                         to.adopt(li);
@@ -187,6 +297,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                 this.watchAdd();
             }
             this.makeSortable();
+            this.addMobileSupport();
             this.parent(c);
         }
     });

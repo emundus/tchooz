@@ -62,7 +62,12 @@ class FabrikViewList extends FabrikViewListBase
 
 		if (empty($model->asfields))
 		{
-			throw new LengthException('CSV Export - no fields found', 500);
+			$notice = new stdClass;
+			$notice->err = Text::_('CSV Export - no fields found');
+			echo json_encode($notice);
+
+			return;
+			//throw new LengthException('CSV Export - no fields found', 500);
 		}
 
 		$request = $model->getRequestData();

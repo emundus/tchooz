@@ -34,10 +34,10 @@ class LoadSpreadsheet extends Xls
             $xls->spreadsheet->removeCellXfByIndex(0); // remove the default style
         }
 
-        // Read the summary information stream (containing meta data)
+        // Read the summary information stream (containing metadata)
         $xls->readSummaryInformation();
 
-        // Read the Additional document summary information stream (containing application-specific meta data)
+        // Read the Additional document summary information stream (containing application-specific metadata)
         $xls->readDocumentSummaryInformation();
 
         // total byte size of Excel data (workbook global substream + sheet substreams)
@@ -153,6 +153,7 @@ class LoadSpreadsheet extends Xls
 
         // Parse the individual sheets
         $xls->activeSheetSet = false;
+        $sheetCreated = false;
         foreach ($xls->sheets as $sheet) {
             $selectedCells = '';
             if ($sheet['sheetType'] != 0x00) {
@@ -167,6 +168,7 @@ class LoadSpreadsheet extends Xls
 
             // add sheet to PhpSpreadsheet object
             $xls->phpSheet = $xls->spreadsheet->createSheet();
+            $sheetCreated = true;
             //    Use false for $updateFormulaCellReferences to prevent adjustment of worksheet references in formula
             //        cells... during the load, all formulae should be correct, and we're simply bringing the worksheet
             //        name in line with the formula, not the reverse
@@ -433,7 +435,7 @@ class LoadSpreadsheet extends Xls
 
                 // get all spContainers in one long array, so they can be mapped to OBJ records
                 /** @var SpContainer[] $allSpContainers */
-                $allSpContainers = method_exists($escherWorksheet, 'getDgContainer') ? $escherWorksheet->getDgContainer()->getSpgrContainer()->getAllSpContainers() : [];
+                $allSpContainers = $escherWorksheet->getDgContainerOrThrow()->getSpgrContainerOrThrow()->getAllSpContainers();
             }
 
             // treat OBJ records
@@ -488,14 +490,14 @@ class LoadSpreadsheet extends Xls
                             // If there is no BSE Index, we will fail here and other fields are not read.
                             // Fix by checking here.
                             // TODO: Why is there no BSE Index? Is this a new Office Version? Password protected field?
-                            // More likely : a uncompatible picture
+                            // More likely: an incompatible picture
                             if (!$BSEindex) {
                                 continue 2;
                             }
 
                             if ($escherWorkbook) {
                                 /** @var BSE[] */
-                                $BSECollection = method_exists($escherWorkbook, 'getDggContainer') ? $escherWorkbook->getDggContainer()->getBstoreContainer()->getBSECollection() : [];
+                                $BSECollection = $escherWorkbook->getDggContainerOrThrow()->getBstoreContainerOrThrow()->getBSECollection();
                                 $BSE = $BSECollection[$BSEindex - 1];
                                 $blipType = $BSE->getBlipType();
 
@@ -547,6 +549,7 @@ class LoadSpreadsheet extends Xls
                 foreach ($xls->sharedFormulaParts as $cell => $baseCell) {
                     /** @var int $row */
                     [$column, $row] = Coordinate::coordinateFromString($cell);
+                    /** @var string $baseCell */
                     if ($xls->getReadFilter()->readCell($column, $row, $xls->phpSheet->getTitle())) {
                         /** @var string */
                         $temp = $xls->sharedFormulas[$baseCell];
@@ -581,6 +584,9 @@ class LoadSpreadsheet extends Xls
             if ($selectedCells !== '') {
                 $xls->phpSheet->setSelectedCells($selectedCells);
             }
+        }
+        if ($xls->createBlankSheetIfNoneRead && !$sheetCreated) {
+            $xls->spreadsheet->createSheet();
         }
         if ($xls->activeSheetSet === false) {
             $xls->spreadsheet->setActiveSheetIndex(0);

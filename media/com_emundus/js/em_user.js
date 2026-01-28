@@ -1094,6 +1094,7 @@ $(document).ready(function () {
 				title = 'COM_EMUNDUS_MAILS_SEND_EMAIL';
 				swal_popup_class = 'em-w-100 em-h-100';
 				swal_confirm_button = 'COM_EMUNDUS_MAIL_SEND_NEW';
+				swal_actions_class = 'em-actions-fixed';
 				html = '<div id="data"></div>';
 
 				var formData = new FormData();

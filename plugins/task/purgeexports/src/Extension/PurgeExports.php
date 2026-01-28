@@ -46,9 +46,12 @@ class PurgeExports extends CMSPlugin implements SubscriberInterface
 	protected function purgeExports(ExecuteTaskEvent $event): int
 	{
 		$failed = false;
-		
+
+		$expiredDate = new \DateTime();
+		$expiredDate->modify('-7 days');
+
 		$exportRepository = new ExportRepository();
-		$expiredExports = $exportRepository->getExpiredExports();
+		$expiredExports = $exportRepository->getExpiredExports($expiredDate);
 
 		foreach ($expiredExports as $exportEntity) {
 			// Delete the export
