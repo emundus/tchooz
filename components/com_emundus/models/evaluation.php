@@ -2416,39 +2416,52 @@ class EmundusModelEvaluation extends JModelList
 	}
 
 	/**
-	 * @deprecated since 2.1.0
+	 * @param         $fnums
+	 * @param   null  $user_id
 	 *
-	 * @param $fnums
+	 * @return array
 	 *
-	 * @return mixed
-	 * @throws Exception
 	 */
-	public function getEvaluationAverageByFnum($fnums)
+	public function getEvaluationAverageByFnum($fnums, $user_id = null): array
 	{
-		$evaluations_average = array();
-		$query               = $this->db->getQuery(true);
+		$evaluationsAverage = [];
 
-		$query->select('ROUND(AVG(overall),2) AS overall, fnum')
-			->from($this->db->quoteName('#__emundus_evaluations'))
-			->where($this->db->quoteName('fnum') . ' IN (' . implode(',', $fnums) . ') AND overall IS NOT NULL')
-			->group($this->db->quoteName('fnum'));
-
-		try
+		if (empty($user_id))
 		{
-			$this->db->setQuery($query);
-			$evaluations_average = $this->db->loadAssocList('fnum', 'overall');
-		}
-		catch (Exception $e)
-		{
-			Log::add('Error getting evaluation averages : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			$user_id = $this->app->getIdentity()->id;
 		}
 
-		return $evaluations_average;
+		if(!empty($fnums))
+		{
+			$averageByStepsByFnums = $this->getEvaluationAverageBySteps($fnums, $user_id);
+
+			// Calculate overall average by fnum
+			foreach($averageByStepsByFnums as $stepId => $averagesByFnum)
+			{
+				foreach ($averagesByFnum as $fnum => $average)
+				{
+					if (!isset($evaluationsAverage[$fnum]))
+					{
+						$evaluationsAverage[$fnum] = [];
+					}
+					$evaluationsAverage[$fnum][] = $average;
+				}
+			}
+		}
+
+		// Calculate final average
+		foreach($evaluationsAverage as $fnum => $averages)
+		{
+			$evaluationsAverage[$fnum] = round(array_sum($averages) / count($averages), 2);
+		}
+
+		return $evaluationsAverage;
 	}
 
 
 	/**
 	 * @param   array  $fnums
+	 * @param   int    $user_id
 	 * @param   array  $step_ids
 	 *
 	 * @return array
@@ -2458,6 +2471,11 @@ class EmundusModelEvaluation extends JModelList
 		$evaluations_average = [];
 
 		if (!empty($fnums)) {
+			if(empty($user_id))
+			{
+				$user_id = $this->app->getIdentity()->id;
+			}
+
 			if (!class_exists('EmundusModelWorkflow')) {
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			}
@@ -2515,7 +2533,7 @@ class EmundusModelEvaluation extends JModelList
 				->leftJoin($this->db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
 				->where('jffg.form_id = ' . $step->form_id)
 				->andWhere('jfe.published = 1')
-				->andWhere('jfe.plugin = ' . $this->db->quote('average'));
+				->andWhere('jfe.plugin = ' . $this->db->quote('average') . ' OR jfe.params LIKE ' . $this->db->quote('%used_as_total%'));
 
 			try {
 				$this->db->setQuery($query);

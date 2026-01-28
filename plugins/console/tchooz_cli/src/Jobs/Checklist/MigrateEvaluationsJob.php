@@ -161,6 +161,11 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 										throw new \Exception('Failed to add emundusstepevaluation plugin to new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')');
 									}
 
+									if (!$this->updateOverallElement($new_evaluation_form_id))
+									{
+										$this->output->writeln($this->colors['red'] . 'Failed to update overall element in new evaluation form ' . $new_evaluation_form_id . ' for programme ' . $program->id . ' (' . $program->label . ')' . $this->colors['reset']);
+									}
+
 									$form_index = new IndexEntity(0, 'fabrik_form_id', $evaluation_form_id, $new_evaluation_form_id);
 									$form_index->save();
 								}
@@ -1004,6 +1009,46 @@ class MigrateEvaluationsJob extends TchoozChecklistJob
 		}
 
 		return $added;
+	}
+
+	/**
+	 * Update overall element to be used as total to calculate averages of evaluations
+	 * @param   int  $evaluationFormId
+	 *
+	 * @return bool
+	 */
+	private function updateOverallElement(int $evaluationFormId): bool
+	{
+		$updated = false;
+
+		if (!empty($evaluationFormId)) {
+			$db = $this->databaseService->getDatabase();
+			$query = $db->createQuery();
+
+			$query->select('jfe.id, jfe.params')
+				->from($db->quoteName('#__fabrik_elements', 'jfe'))
+				->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON jffg.group_id = jfe.group_id')
+				->where('jffg.form_id = ' . $evaluationFormId)
+				->where('jfe.name = ' . $db->quote('overall'));
+
+			$db->setQuery($query);
+			$overall_element = $db->loadObject();
+
+			if (!empty($overall_element)) {
+				$params = json_decode($overall_element->params, true);
+				$params['used_as_total'] = 1;
+				$overall_element->params = json_encode($params);
+
+				try {
+					$updated = $db->updateObject('#__fabrik_elements', $overall_element, 'id');
+				} catch (\Exception $e) {
+					$this->output->writeln('Failed to update overall element id ' . $overall_element->id . ': ' . $e->getMessage());
+					Log::add('Failed to update overall element id ' . $overall_element->id . ': ' . $e->getMessage(), Log::ERROR, self::getJobName());
+				}
+			}
+		}
+
+		return $updated;
 	}
 
 	private function removeUnnecessaryColumnsFromNewEvaluationForm(StepEntity $step): bool

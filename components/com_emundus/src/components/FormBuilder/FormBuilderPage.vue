@@ -148,7 +148,7 @@ export default {
 
 								allSectionsElements.push({
 									label: section.label + ' - ' + element.label,
-									value: null,
+									value: element.db_table_name + '___' + element.name,
 									publish: element.publish,
 									plugin: element.plugin,
 									element_id: element.id,
