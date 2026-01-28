@@ -187,7 +187,7 @@ class StepEntity {
 
 	public function isEvaluationStep(): bool
 	{
-		return !$this->isApplicantStep() && !$this->isPaymentStep();
+		return $this->getType()->getCode() === 'evaluator' || (!$this->isApplicantStep() && !$this->isPaymentStep() && $this->getType()->getCode() !== 'choices');
 	}
 
 	public function isPaymentStep(): bool

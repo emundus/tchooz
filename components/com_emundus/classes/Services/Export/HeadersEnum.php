@@ -42,6 +42,8 @@ enum HeadersEnum: string
 	case PROGRAM_NAME = 'program_name';
 	case PROGRAM_CATEGORY = 'program_category';
 
+	case AVERAGE_SCORE_BY_STEPS = 'average_score_by_steps';
+
 	public function getLabel(): string
 	{
 		return match ($this)
@@ -67,6 +69,8 @@ enum HeadersEnum: string
 
 			self::PROGRAM_NAME => Text::_('COM_EMUNDUS_PROGRAMME'),
 			self::PROGRAM_CATEGORY => Text::_('COM_EMUNDUS_PROGRAMME_CATEGORY'),
+
+			self::AVERAGE_SCORE_BY_STEPS => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS'),
 		};
 	}
 

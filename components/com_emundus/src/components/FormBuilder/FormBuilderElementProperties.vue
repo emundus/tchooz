@@ -268,7 +268,7 @@ export default {
 			globalStore: useGlobalStore(),
 		};
 	},
-	mounted() {
+	created() {
 		if (this.element.plugin === 'databasejoin') {
 			this.getDatabases();
 		}

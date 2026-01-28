@@ -56,7 +56,7 @@ class EmundusViewForm extends JsonView
 			$app    = Factory::getApplication();
 			$formid = $app->input->getString('formid', null);
 
-			$fabrikRepository = new FabrikRepository();
+			$fabrikRepository = new FabrikRepository(true);
 			$fabrikFactory    = new FabrikFactory($fabrikRepository);
 			$fabrikRepository->setFactory($fabrikFactory);
 
@@ -148,6 +148,7 @@ class EmundusViewForm extends JsonView
 					$elementObject->plugin   = $element->getPlugin()->value;
 					$elementObject->hidden   = $element->getHidden();
 					$elementObject->eval     = $element->getEval();
+					$elementObject->db_table_name = $element->getDbTableName();
 
 					$elementObject->default = $element->getDefault();
 					if ($element->getPlugin() === ElementPluginEnum::PANEL)
