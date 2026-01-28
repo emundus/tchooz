@@ -39,7 +39,6 @@
                     name="used_as_total"
                     label="PLG_ELEMENT_AVERAGE_USED_AS_TOTAL"
                     description="PLG_ELEMENT_AVERAGE_USED_AS_TOTAL_DESC"
-                    default="0"
             />
             <field
                     type="field"

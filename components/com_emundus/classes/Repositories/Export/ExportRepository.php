@@ -96,12 +96,24 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		{
 			try
 			{
+				$exportEntity = $this->getById($id);
+
 				$query = $this->db->getQuery(true)
 					->delete($this->db->qn($this->tableName, $this->alias))
 					->where('id = :id')
 					->bind(':id', $id, ParameterType::INTEGER);
 				$this->db->setQuery($query);
 				$deleted = $this->db->execute();
+				
+				if($deleted && !empty($exportEntity) && !empty($exportEntity->getFilename()) && str_starts_with($exportEntity->getFilename(), 'images/emundus/exports/'))
+				{
+					// Delete the export file from the filesystem
+					$exportFilePath = JPATH_ROOT . '/' . $exportEntity->getFilename();
+					if (file_exists($exportFilePath))
+					{
+						unlink($exportFilePath);
+					}
+				}
 			}
 			catch (\Exception $e)
 			{
@@ -217,19 +229,22 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 	 * @return array<ExportEntity>
 	 *
 	 */
-	public function getExpiredExports(): array
+	public function getExpiredExports(\DateTime $expiredDate): array
 	{
 		$expiredExports = [];
 
 		$query = $this->db->getQuery(true);
 
-		// Get exports expired before now
+		// Get exports expired before expiredDate
+		$expiredDate = $expiredDate->format('Y-m-d H:i:s');
 		$now = (new \DateTime())->format('Y-m-d H:i:s');
 
 		$query->select($this->columns)
 			->from($this->db->qn($this->tableName, $this->alias))
-			->where('expired_at <= :expired_at')
-			->bind(':expired_at', $now);
+			->where('expired_at <= :now')
+			->orWhere('created_at <= :expired_at')
+			->bind(':expired_at', $expiredDate)
+			->bind(':now', $now);
 		$this->db->setQuery($query);
 		$dbObjects = $this->db->loadObjectList();
 

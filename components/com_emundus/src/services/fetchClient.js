@@ -122,8 +122,11 @@ export class FetchClient {
 				if (timeout && timeoutId) {
 					clearTimeout(timeoutId);
 				}
+
 				if (error.name === 'TimeoutError') {
 					throw new Error('The request timed out. ' + error.message + '.');
+				} else if (error.name === 'AbortError') {
+					throw error;
 				} else {
 					throw new Error(error.message);
 				}

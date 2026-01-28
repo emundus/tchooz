@@ -122,12 +122,12 @@ class ExcelService extends Export implements ExportInterface
 			$this->registerClasses($exportVersion);
 
 			$result = new ExportResult(false);
-			if (empty($this->fnums) || empty($this->user))
+			if (empty($this->fnums) || empty($this->user) || empty($this->exportEntity))
 			{
 				return $result;
 			}
 
-			if (!empty($this->exportEntity) && (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId())))
+			if (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
 			{
 				throw new \Exception('Export has been cancelled.');
 			}
@@ -146,6 +146,9 @@ class ExcelService extends Export implements ExportInterface
 			else
 			{
 				$json = [];
+				$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
+				$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;
+
 				if (!empty($this->exportEntity->getFilename()) && str_ends_with($this->exportEntity->getFilename(), '.json'))
 				{
 					$jsonFilePath = JPATH_SITE . '/' . $this->exportEntity->getFilename();
@@ -161,32 +164,69 @@ class ExcelService extends Export implements ExportInterface
 
 				$files = $this->applicationFileRepository->getAll(['fnum' => $this->fnums]);
 
+				$processStartTime = microtime(true);
 				if (empty($json))
 				{
 					$json['headers'] = [];
-					foreach ($this->options->getSynthesis() as $synthesis)
+					// Store json file in export path
+					$jsonContent  = json_encode($json);
+					file_put_contents($jsonFilePath, $jsonContent);
+					$this->exportEntity->setFilename($exportPath . $jsonFileName);
+
+					$this->exportRepository->flush($this->exportEntity);
+				}
+
+
+				$synthesisIds = $this->options->getSynthesis() ?? [];
+
+				$last_header      = $json['headers'] ? array_key_last($json['headers']) : null;
+				if ($last_header)
+				{
+					$last_synthesis_id = $last_header;
+					if (str_starts_with($last_header, 'header_'))
 					{
-						$key = 'header_'.$synthesis;
+						$last_synthesis_id = str_replace('header_', '', $last_header);
+					}
+
+					$last_synthesis_key = array_search($last_synthesis_id, $synthesisIds);
+					if ($last_synthesis_key !== false)
+					{
+						$synthesisIds = array_slice($synthesisIds, $last_synthesis_key + 1);
+					}
+				}
+
+				if(!empty($synthesisIds))
+				{
+					foreach ($synthesisIds as $synthesis)
+					{
+						if (
+							(microtime(true) - $processStartTime) >= self::TIME_LIMIT ||
+							(empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
+						)
+						{
+							// Store json file in export path
+							$jsonContent  = json_encode($json);
+							file_put_contents($jsonFilePath, $jsonContent);
+
+							$result->setStatus(true);
+							$result->setFilePath($exportPath . $jsonFileName);
+
+							return $result;
+						}
+
+						$key              = 'header_' . $synthesis;
 						$customHeaderData = $this->getData($synthesis, $files);
-							
+
 						$json['headers'][$key] = $customHeaderData['label'];
 						foreach ($files as $file)
 						{
 							$json['files'][$file->getFnum()][$key] = $customHeaderData['data'][$file->getFnum()];
 						}
 					}
-					
-					if (!empty($this->exportEntity))
-					{
-						// Store json file in export path
-						$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
-						$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;
-						$jsonContent  = json_encode($json);
-						file_put_contents($jsonFilePath, $jsonContent);
-						$this->exportEntity->setFilename($exportPath . $jsonFileName);
 
-						$this->exportRepository->flush($this->exportEntity);
-					}
+					// Store json file in export path
+					$jsonContent = json_encode($json);
+					file_put_contents($jsonFilePath, $jsonContent);
 				}
 
 				// Fill elements data
@@ -200,7 +240,7 @@ class ExcelService extends Export implements ExportInterface
 					$last_element_id = $last_header;
 					if (str_starts_with($last_header, 'element_'))
 					{
-						$last_element_id = (int) str_replace('element_', '', $last_header);
+						$last_element_id = str_replace('element_', '', $last_header);
 					}
 
 					$last_element_key = array_search($last_element_id, $elementIds);
@@ -210,9 +250,6 @@ class ExcelService extends Export implements ExportInterface
 					}
 				}
 
-				$campaignMoreData = [];
-
-				$processStartTime = microtime(true);
 				foreach ($elementIds as $key => $elementId)
 				{
 					if (
@@ -221,8 +258,6 @@ class ExcelService extends Export implements ExportInterface
 					)
 					{
 						// Store json file in export path
-						$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
-						$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;
 						$jsonContent  = json_encode($json);
 						file_put_contents($jsonFilePath, $jsonContent);
 
@@ -235,9 +270,9 @@ class ExcelService extends Export implements ExportInterface
 					$data = $this->getData($elementId, $files);
 
 					// If data is from evaluation check if we have a evaluator_db_table_name
-					if($data['is_evaluation'] && !array_key_exists(('evaluator_'.$data['db_table_name']), $json['headers']))
+					if ($data['is_evaluation'] && !array_key_exists(('evaluator_' . $data['db_table_name']), $json['headers']))
 					{
-						$evaluatorElementId = 'evaluator_'.$data['db_table_name'];
+						$evaluatorElementId = 'evaluator_' . $data['db_table_name'];
 
 						$json['headers'][$evaluatorElementId] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 						foreach ($files as $file)
@@ -1512,7 +1547,7 @@ class ExcelService extends Export implements ExportInterface
 			$result->setProgress($progress);
 		}
 
-		if ($result->getProgress() === 100)
+		if ($result->getProgress() === 100.00)
 		{
 			$csvPath = JPATH_SITE . '/tmp/' . $tmpFile;
 

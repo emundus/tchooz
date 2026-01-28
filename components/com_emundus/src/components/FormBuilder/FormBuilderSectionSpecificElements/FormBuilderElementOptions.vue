@@ -135,6 +135,13 @@ export default {
 			if (!isNaN(this.arraySubValues[options_length - 1].sub_value)) {
 				new_value = parseInt(this.arraySubValues[options_length - 1].sub_value) + 1;
 			}
+			// Check that new_value is not already used
+			let exists = this.arraySubValues.find((option) => option.sub_value == new_value);
+			while (exists) {
+				new_value = parseInt(new_value) + 1;
+				exists = this.arraySubValues.find((option) => option.sub_value == new_value);
+			}
+
 			// Add the new option to the array
 			this.arraySubValues.push({
 				sub_value: new_value,

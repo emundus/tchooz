@@ -7,6 +7,7 @@ use DOMDocument;
 use DOMElement;
 use DOMNode;
 use DOMText;
+use LibXMLError;
 use PhpOffice\PhpSpreadsheet\Calculation\Calculation;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -18,6 +19,7 @@ use PhpOffice\PhpSpreadsheet\Helper\Html as HelperHtml;
 use PhpOffice\PhpSpreadsheet\Reader\Security\XmlScanner;
 use PhpOffice\PhpSpreadsheet\Shared\StringHelper;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Color;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
@@ -132,6 +134,32 @@ class Html extends BaseReader
     protected array $rowspan = [];
 
     /**
+     * Default setting uses current setting of libxml_use_internal_errors.
+     * It will probably change to 'true' in a future release.
+     */
+    protected ?bool $suppressLoadWarnings = null;
+
+    /** @var LibXMLError[] */
+    protected array $libxmlMessages = [];
+
+    /**
+     * Suppress load warning messages, keeping them available
+     * in $this->libxmlMessages().
+     */
+    public function setSuppressLoadWarnings(?bool $suppressLoadWarnings): self
+    {
+        $this->suppressLoadWarnings = $suppressLoadWarnings;
+
+        return $this;
+    }
+
+    /** @return LibXMLError[] */
+    public function getLibxmlMessages(): array
+    {
+        return $this->libxmlMessages;
+    }
+
+    /**
      * Create a new HTML Reader instance.
      */
     public function __construct()
@@ -223,6 +251,8 @@ class Html extends BaseReader
      * Data Array used for testing only, should write to
      * Spreadsheet object on completion of tests.
      *
+     * @deprecated 5.4.0 No replacement.
+     *
      * @var mixed[][]
      */
     protected array $dataArray = [];
@@ -291,20 +321,30 @@ class Html extends BaseReader
                     }
 
                     //catching the Exception and ignoring the invalid data types
+                    $hyperlink = $sheet->hyperlinkExists($column . $row) ? $sheet->getHyperlink($column . $row) : null;
+
                     try {
                         $sheet->setCellValueExplicit($column . $row, $cellContent, $attributeArray['data-type']);
                     } catch (SpreadsheetException) {
                         $sheet->setCellValue($column . $row, $cellContent);
                     }
+                    $sheet->setHyperlink($column . $row, $hyperlink);
                 } else {
+                    $hyperlink = null;
+                    if ($sheet->hyperlinkExists($column . $row)) {
+                        $hyperlink = $sheet->getHyperlink($column . $row);
+                    }
                     $sheet->setCellValue($column . $row, $cellContent);
+                    $sheet->setHyperlink($column . $row, $hyperlink);
                 }
-                $this->dataArray[$row][$column] = $cellContent;
+                $this->dataArray[$row][$column] = $cellContent; // @phpstan-ignore-line
             }
         } else {
-            //    We have a Rich Text run
+            //    We have a Rich Text run.
+            //    I don't actually see any way to reach this line.
             //    TODO
-            $this->dataArray[$row][$column] = 'RICH TEXT: ' . StringHelper::convertToString($cellContent);
+            // @phpstan-ignore-next-line
+            $this->dataArray[$row][$column] = 'RICH TEXT: ' . StringHelper::convertToString($cellContent); // @codeCoverageIgnore
         }
         $cellContent = (string) '';
     }
@@ -532,6 +572,10 @@ class Html extends BaseReader
                 $sheet->setShowGridlines(in_array('gridlines', $classes, true));
                 $sheet->setPrintGridlines(in_array('gridlinesp', $classes, true));
             }
+            if (isset($attributeArray['data-printarea'])) {
+                $sheet->getPageSetup()
+                    ->setPrintArea($attributeArray['data-printarea']);
+            }
             if ('rtl' === ($attributeArray['dir'] ?? '')) {
                 $sheet->setRightToLeft(true);
             }
@@ -544,7 +588,7 @@ class Html extends BaseReader
             $this->processDomElement($child, $sheet, $row, $column, $cellContent);
             $column = $this->releaseTableStartColumn();
             if ($this->tableLevel > 1) {
-                ++$column; //* @phpstan-ignore-line
+                StringHelper::stringIncrement($column);
             } else {
                 ++$row;
             }
@@ -558,7 +602,7 @@ class Html extends BaseReader
     {
         if ($child->nodeName === 'col') {
             $this->applyInlineStyle($sheet, -1, $this->currentColumn, $attributeArray);
-            ++$this->currentColumn;
+            StringHelper::stringIncrement($this->currentColumn);
         } elseif ($child->nodeName === 'tr') {
             $column = $this->getTableStartColumn();
             $cellContent = '';
@@ -644,10 +688,9 @@ class Html extends BaseReader
     {
         while (isset($this->rowspan[$column . $row])) {
             $temp = (string) $column;
-            ++$temp;
-            $column = (string) $temp;
+            $column = StringHelper::stringIncrement($temp);
         }
-        $this->processDomElement($child, $sheet, $row, $column, $cellContent); // ++$column above confuses Phpstan
+        $this->processDomElement($child, $sheet, $row, $column, $cellContent);
 
         // apply inline style
         $this->applyInlineStyle($sheet, $row, $column, $attributeArray);
@@ -666,16 +709,14 @@ class Html extends BaseReader
             //create merging rowspan and colspan
             $columnTo = $column;
             for ($i = 0; $i < (int) $attributeArray['colspan'] - 1; ++$i) {
-                /** @var string $columnTo */
-                ++$columnTo;
+                StringHelper::stringIncrement($columnTo);
             }
             $range = $column . $row . ':' . $columnTo . ($row + (int) $attributeArray['rowspan'] - 1);
             foreach (Coordinate::extractAllCellReferencesInRange($range) as $value) {
                 $this->rowspan[$value] = true;
             }
             $sheet->mergeCells($range);
-            //* @phpstan-ignore-next-line
-            $column = $columnTo; // ++$columnTo above confuses phpstan
+            $column = $columnTo;
         } elseif (isset($attributeArray['rowspan'])) {
             //create merging rowspan
             $range = $column . $row . ':' . $column . ($row + (int) $attributeArray['rowspan'] - 1);
@@ -687,15 +728,13 @@ class Html extends BaseReader
             //create merging colspan
             $columnTo = $column;
             for ($i = 0; $i < (int) $attributeArray['colspan'] - 1; ++$i) {
-                /** @var string $columnTo */
-                ++$columnTo;
+                StringHelper::stringIncrement($columnTo);
             }
             $sheet->mergeCells($column . $row . ':' . $columnTo . $row);
-            //* @phpstan-ignore-next-line
-            $column = $columnTo; // ++$columnTo above confuses phpstan
+            $column = $columnTo;
         }
 
-        ++$column; //* @phpstan-ignore-line
+        StringHelper::stringIncrement($column);
     }
 
     protected function processDomElement(DOMNode $element, Worksheet $sheet, int &$row, string &$column, string &$cellContent): void
@@ -730,15 +769,26 @@ class Html extends BaseReader
         $dom = new DOMDocument();
 
         // Reload the HTML file into the DOM object
+        if (is_bool($this->suppressLoadWarnings)) {
+            $useErrors = libxml_use_internal_errors($this->suppressLoadWarnings);
+        } else {
+            $useErrors = null;
+        }
+
         try {
             $convert = $this->getSecurityScannerOrThrow()->scanFile($filename);
-            $convert = self::replaceNonAsciiIfNeeded($convert);
+            $convert = static::replaceNonAsciiIfNeeded($convert);
             $loaded = ($convert === null) ? false : $dom->loadHTML($convert);
         } catch (Throwable $e) {
             $loaded = false;
+        } finally {
+            $this->libxmlMessages = libxml_get_errors();
+            if (is_bool($useErrors)) {
+                libxml_use_internal_errors($useErrors);
+            }
         }
         if ($loaded === false) {
-            throw new Exception('Failed to load ' . $filename . ' as a DOM Document', 0, $e ?? null);
+            throw new Exception('Failed to load file ' . $filename . ' as a DOM Document', 0, $e ?? null);
         }
         self::loadProperties($dom, $spreadsheet);
 
@@ -826,7 +876,8 @@ class Html extends BaseReader
         return '&#' . mb_ord($matches[0], 'UTF-8') . ';';
     }
 
-    private static function replaceNonAsciiIfNeeded(string $convert): ?string
+    /** @internal */
+    protected static function replaceNonAsciiIfNeeded(string $convert): ?string
     {
         if (preg_match(self::STARTS_WITH_BOM, $convert) !== 1 && preg_match(self::DECLARES_CHARSET, $convert) !== 1) {
             $lowend = "\u{80}";
@@ -849,12 +900,23 @@ class Html extends BaseReader
         $dom = new DOMDocument();
 
         //    Reload the HTML file into the DOM object
+        if (is_bool($this->suppressLoadWarnings)) {
+            $useErrors = libxml_use_internal_errors($this->suppressLoadWarnings);
+        } else {
+            $useErrors = null;
+        }
+
         try {
             $convert = $this->getSecurityScannerOrThrow()->scan($content);
-            $convert = self::replaceNonAsciiIfNeeded($convert);
+            $convert = static::replaceNonAsciiIfNeeded($convert);
             $loaded = ($convert === null) ? false : $dom->loadHTML($convert);
         } catch (Throwable $e) {
             $loaded = false;
+        } finally {
+            $this->libxmlMessages = libxml_get_errors();
+            if (is_bool($useErrors)) {
+                libxml_use_internal_errors($useErrors);
+            }
         }
         if ($loaded === false) {
             throw new Exception('Failed to load content as a DOM Document', 0, $e ?? null);
@@ -919,7 +981,7 @@ class Html extends BaseReader
      * and only takes 'background-color' and 'color'; property with HEX color
      *
      * TODO :
-     * - Implement to other propertie, such as border
+     * - Implement to other properties, such as border
      *
      * @param string[] $attributeArray
      */
@@ -934,8 +996,7 @@ class Html extends BaseReader
         } elseif (isset($attributeArray['rowspan'], $attributeArray['colspan'])) {
             $columnTo = $column;
             for ($i = 0; $i < (int) $attributeArray['colspan'] - 1; ++$i) {
-                /** @var string $columnTo */
-                ++$columnTo;
+                StringHelper::stringIncrement($columnTo);
             }
             $range = $column . $row . ':' . $columnTo . ($row + (int) $attributeArray['rowspan'] - 1);
             $cellStyle = $sheet->getStyle($range);
@@ -945,8 +1006,7 @@ class Html extends BaseReader
         } elseif (isset($attributeArray['colspan'])) {
             $columnTo = $column;
             for ($i = 0; $i < (int) $attributeArray['colspan'] - 1; ++$i) {
-                /** @var string $columnTo */
-                ++$columnTo;
+                StringHelper::stringIncrement($columnTo);
             }
             $range = $column . $row . ':' . $columnTo . $row;
             $cellStyle = $sheet->getStyle($range);
@@ -1021,6 +1081,17 @@ class Html extends BaseReader
 
                     break;
 
+                case 'direction':
+                    if ($styleValue === 'rtl') {
+                        $cellStyle->getAlignment()
+                            ->setReadOrder(Alignment::READORDER_RTL);
+                    } elseif ($styleValue === 'ltr') {
+                        $cellStyle->getAlignment()
+                            ->setReadOrder(Alignment::READORDER_LTR);
+                    }
+
+                    break;
+
                 case 'font-weight':
                     if ($styleValue === 'bold' || $styleValue >= 500) {
                         $cellStyle->getFont()->setBold(true);
@@ -1090,8 +1161,11 @@ class Html extends BaseReader
                     break;
 
                 case 'text-indent':
+                    $indentDimension = new CssDimension($styleValueString);
+                    $indent = $indentDimension
+                        ->toUnit(CssDimension::UOM_PIXELS);
                     $cellStyle->getAlignment()->setIndent(
-                        (int) str_replace(['px'], '', $styleValueString)
+                        (int) ($indent / Alignment::INDENT_UNITS_TO_PIXELS)
                     );
 
                     break;
@@ -1121,7 +1195,7 @@ class Html extends BaseReader
         $styleArray = self::getStyleArray($attributes);
 
         $src = $attributes['src'];
-        if (substr($src, 0, 5) !== 'data:') {
+        if (!str_starts_with($src, 'data:')) {
             $src = urldecode($src);
         }
         $width = isset($attributes['width']) ? (float) $attributes['width'] : ($styleArray['width'] ?? null);
@@ -1187,16 +1261,16 @@ class Html extends BaseReader
                     $arrayKey = trim($value[0]);
                     $arrayValue = trim($value[1]);
                     if ($arrayKey === 'width') {
-                        if (substr($arrayValue, -2) === 'px') {
+                        if (str_ends_with($arrayValue, 'px')) {
                             $arrayValue = (string) (((float) substr($arrayValue, 0, -2)));
                         } else {
-                            $arrayValue = (new CssDimension($arrayValue))->width();
+                            $arrayValue = (new CssDimension($arrayValue))->toUnit(CssDimension::UOM_PIXELS);
                         }
                     } elseif ($arrayKey === 'height') {
-                        if (substr($arrayValue, -2) === 'px') {
+                        if (str_ends_with($arrayValue, 'px')) {
                             $arrayValue = substr($arrayValue, 0, -2);
                         } else {
-                            $arrayValue = (new CssDimension($arrayValue))->height();
+                            $arrayValue = (new CssDimension($arrayValue))->toUnit(CssDimension::UOM_PIXELS);
                         }
                     }
                     $styleArray[$arrayKey] = $arrayValue;

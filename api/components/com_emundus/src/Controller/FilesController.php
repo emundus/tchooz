@@ -97,6 +97,9 @@ class FilesController extends ApiController
 		if (!class_exists('EmundusHelperFabrik')) {
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 		}
+		if (!class_exists('EmundusModelUsers')) {
+			require_once(JPATH_ROOT . '/components/com_emundus/models/users.php');
+		}
 
 		if ($fnum === null)
 		{
@@ -151,15 +154,6 @@ class FilesController extends ApiController
 
 				if (empty($user->id))
 				{
-					// Get registered group of Joomla
-					$query->clear()
-						->select($db->quoteName('id'))
-						->from($db->quoteName('#__usergroups'))
-						->where($db->quoteName('title') . ' = ' . $db->quote('Registered'));
-					$db->setQuery($query);
-					$registered_group_id = $db->loadResult();
-
-
 					// Create it otherwise
 					$user               = clone($userFactory->loadUserById(0));
 					$user->name         = $data['firstname'] . ' ' . $data['lastname'];
@@ -167,10 +161,10 @@ class FilesController extends ApiController
 					$user->email        = $data['email'];
 					$user->block        = 0;
 					$user->registerDate = Factory::getDate()->toSql();
-					$user->activation   = 0;
+					$user->activation   = 1;
 					$user->password     = UserHelper::genRandomPassword(30);
 					$user->password     = UserHelper::hashPassword($user->password);
-					$user->groups       = [$registered_group_id];
+					$user->groups       = [2];
 					$user->usertype     = 'Registered';
 
 					if (!$user->save())

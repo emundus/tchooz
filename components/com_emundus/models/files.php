@@ -6005,6 +6005,11 @@ class EmundusModelFiles extends JModelLegacy
 		$dataresult = array();
 
 		if (!empty($validFnums) && !empty($file)) {
+			if (!class_exists('EmundusHelperExport'))
+			{
+				require_once (JPATH_ROOT . '/components/com_emundus/helpers/export.php');
+			}
+
 			$eMConfig = ComponentHelper::getParams('com_emundus');
 
 			$formids    = explode(',', $formid);

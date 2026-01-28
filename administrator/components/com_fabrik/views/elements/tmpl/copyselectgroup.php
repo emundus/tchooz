@@ -22,8 +22,15 @@ use Joomla\CMS\HTML\HTMLHelper;
 //HTMLHelper::_('script', 'media/com_fabrik/js/mootools-core.js');
 //HTMLHelper::_('script', 'media/com_fabrik/js/mootools-more.js');
 
-?>
 
+//Build form - groups
+
+$formGroups = [];
+
+foreach ($this->groups as $group) {
+    $formGroups[$group->form][] = $group;
+}
+?>
 <form action="<?php Route::_('index.php?option=com_fabrik'); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
 	<table class="adminlist">
 	<tbody>
@@ -31,17 +38,27 @@ use Joomla\CMS\HTML\HTMLHelper;
 		$element = $this->items[$i];?>
   		<tr>
   		<td>
-  			<input type="text" value="<?php echo $element->name?>" name="name[<?php echo $element->id?>]">
+  			<input type="text" value="<?php echo $element->name?>" name="name[<?php echo $element->id?>]" class="form-control">
   		</td>
   		<td>
-	  		<select id="copy-<?php echo $element->id?>" name="cid[<?php echo $element->id;?>]">
- 						<?php foreach ($this->groups as $group) :
+			<select id="copy-<?php echo $element->id?>" name="cid[<?php echo $element->id;?>]" class="form-control-success form-select required valid" required="" aria-invalid="false">
+				<option value=""><?php echo Text::_('COM_FABRIK_SELECT_GROUP')?></option>
+
+			<?php foreach ($formGroups as $formname => $form) :
+			?>
+				<optgroup label="<?php echo $formname;?> ">
+
+
+				<?php foreach ($form as $group) :
+				?>
+					<option value="<?php echo $group->id?>"><?php echo $group->name?></option>
+				<?php endforeach;
 						?>
- 							<option value="<?php echo $group->id?>"><?php echo $group->name?></option>
- 						<?php endforeach;
-						?>
- 					</select>
- 					</td>
+				</optgroup>
+			<?php endforeach;
+			?>
+ 			</select>
+ 		</td>
   		</tr>
 		<?php endfor;
 		?>

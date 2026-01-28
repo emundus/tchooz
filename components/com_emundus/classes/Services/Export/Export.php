@@ -9,6 +9,7 @@
 
 namespace Tchooz\Services\Export;
 
+use EmundusModelEvaluation;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
@@ -23,6 +24,7 @@ use Tchooz\Factories\TransformerFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Label\LabelRepository;
+use Tchooz\Repositories\Workflow\StepRepository;
 
 class Export
 {
@@ -93,6 +95,13 @@ class Export
 		],
 	];
 
+	const MANAGEMENT_OTHER_ELEMENTS = [
+		[
+			'id'    => 'average_score_by_steps',
+			'label' => 'COM_EMUNDUS_EXPORT_AVERAGE_SCORE_BY_STEPS',
+		]
+	];
+
 	const USER_ELEMENTS = [
 		1 => [
 			'id'    => 'lastname',
@@ -148,10 +157,42 @@ class Export
 			$header = HeadersEnum::tryFrom($elementId);
 			if (!empty($header))
 			{
-				$result['label'] = $this->getTranslation($header->getLabel());
-				foreach ($files as $file)
+				// todo: change this, it looks rough to handle header specificity here
+				if ($header === HeadersEnum::AVERAGE_SCORE_BY_STEPS)
 				{
-					$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
+					$fnums = array_map(function ($file) {
+						return $file->getFnum();
+					}, $files);
+
+					if (!class_exists('EmundusModelEvaluation'))
+					{
+						require_once(JPATH_ROOT.'/components/com_emundus/models/evaluation.php');
+					}
+					$evaluationModel = new EmundusModelEvaluation();
+					$averagesBySteps = $evaluationModel->getEvaluationAverageBySteps($fnums, 0);
+
+					if (!empty($averagesBySteps))
+					{
+						$stepRepository = new StepRepository();
+
+						foreach ($averagesBySteps as $stepId => $averageByFnum)
+						{
+							$step = $stepRepository->getStepById($stepId);
+							$result['label'] = $this->getTranslation($header->getLabel()) . ' - ' . Text::_($step->label);
+							foreach ($files as $file)
+							{
+								$result['data'][$file->getFnum()] = $averageByFnum[$file->getFnum()] ?? '';
+							}
+						}
+					}
+				}
+				else
+				{
+					$result['label'] = $this->getTranslation($header->getLabel());
+					foreach ($files as $file)
+					{
+						$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
+					}
 				}
 
 				return $result;
@@ -246,7 +287,7 @@ class Export
 					$result['data'][$file->getFnum()] = '';
 					if ($elementValue && !empty($elementValue[$element->getId()]) && !empty($elementValue[$element->getId()][$file->getFnum()]))
 					{
-						if (isset($elementValue[$element->getId()][$file->getFnum()]['val']))
+						if (isset($elementValue[$element->getId()][$file->getFnum()]['raw']))
 						{
 							$result['data'][$file->getFnum()] = $elementValue[$element->getId()][$file->getFnum()]['val'];
 						}
@@ -546,6 +587,33 @@ class Export
 		return $moreColumns;
 	}
 
+	public static function getManagementColumns(): array
+	{
+		$managementElements = self::MANAGEMENT_OTHER_ELEMENTS;
+		foreach ($managementElements as &$element)
+		{
+			$element['label']       = Text::_($element['label']);
+			$element['plugin_name'] = Text::_('COM_EMUNDUS_MANAGEMENT');
+		}
+
+		return [
+			'label'      => Text::_('COM_EMUNDUS_MANAGEMENT'),
+			'profile_id' => 'management',
+			'forms'      => [
+				'management_other' => [
+					'id'     => 'management_other',
+					'label'  => Text::_('COM_EMUNDUS_FORM_BUILDER_ELEMENT_PROPERTIES_GENERAL'),
+					'groups' => [
+						1 => [
+							'label'    => '',
+							'elements' => $managementElements
+						]
+					]
+				]
+			]
+		];
+	}
+
 	public static function getUserColumns(): array
 	{
 		$userElements = self::USER_ELEMENTS;
@@ -579,6 +647,7 @@ class Export
 			[self::getCampaignColumns()],
 			[self::getProgramColumns()],
 			[self::getMiscellaneousColumns()],
+			[self::getManagementColumns()],
 			[self::getUserColumns()]
 		);
 

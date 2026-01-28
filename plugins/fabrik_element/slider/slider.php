@@ -61,21 +61,22 @@ class PlgFabrik_ElementSlider extends PlgFabrik_Element
 		$params = $this->getParams();
 		$width = (int) $params->get('slider_width', 250);
 		$val = $this->getValue($data, $repeatCounter);
+		$layout = $this->getLayout('form');
 
 		if (!$this->isEditable())
 		{
-			return $val;
+			$layout = $this->getLayout('details');
 		}
 
 		$labels = (explode(',', $params->get('slider-labels')));
 		FabrikHelperHTML::addPath(COM_FABRIK_BASE . 'plugins/fabrik_element/slider/images/', 'image', 'form', false);
 
-		$layout = $this->getLayout('form');
 		$layoutData = new stdClass;
 		$layoutData->id = $this->getHTMLId($repeatCounter);;
 		$layoutData->name = $this->getHTMLName($repeatCounter);;
 		$layoutData->value = $val;
 		$layoutData->width = $width;
+		$layoutData->steps = (int) $params->get('slider-steps', 100);
 		$layoutData->showNone = $params->get('slider-shownone');
 		$layoutData->outSrc = FabrikHelperHTML::image('clear_rating_out.png', 'form', $this->tmpl, array(), true);
 		$layoutData->labels = $labels;

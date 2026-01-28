@@ -79,7 +79,9 @@ export default {
 		} catch (e) {
 			return {
 				status: false,
+				title: e.name ? e.name : 'Error',
 				msg: e.message,
+				code: e.code ? e.code : null,
 			};
 		}
 	},

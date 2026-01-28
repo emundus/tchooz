@@ -225,7 +225,7 @@ class EmundusModelMessages extends ListModel
 	{
 		$query = $this->db->getQuery(true);
 
-		$query->select('e.*, et.*, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments, GROUP_CONCAT(r.receivers) AS receivers')
+		$query->select('e.*, et.*, e.lbl, GROUP_CONCAT(etr.tags) as tags, GROUP_CONCAT(ca.candidate_attachment) AS candidate_attachments, GROUP_CONCAT(la.letter_attachment) AS letter_attachments, GROUP_CONCAT(r.receivers) AS receivers')
 			->from($this->db->quoteName('#__emundus_setup_emails', 'e'))
 			->leftJoin($this->db->quoteName('#__emundus_email_templates', 'et') . ' ON ' . $this->db->quoteName('e.email_tmpl') . ' = ' . $this->db->quoteName('et.id'))
 			->leftJoin($this->db->quoteName('#__emundus_setup_emails_repeat_tags', 'etr') . ' ON ' . $this->db->quoteName('e.id') . ' = ' . $this->db->quoteName('etr.parent_id'))

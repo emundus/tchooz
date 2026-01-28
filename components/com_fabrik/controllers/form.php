@@ -307,7 +307,7 @@ class FabrikControllerForm extends BaseController
 		}
 
 		JDEBUG ? $profiler->mark('controller process validate: start') : null;
-		
+
 		if (!$model->validate())
 		{
 			$this->handleError($view, $model);

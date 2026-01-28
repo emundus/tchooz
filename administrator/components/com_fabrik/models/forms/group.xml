@@ -258,6 +258,7 @@
 				<option value="3">COM_FABRIK_FORM_VIEW_ONLY</option>
 				<option value="4">COM_FABRIK_SHOW_GROUP_USABLE_ELEMENTS_ONLY</option>
 				<option value="5">COM_FABRIK_SHOW_GROUP_ALWAYS_READ_ONLY</option>
+				<option value="6">COM_FABRIK_LOAD_GROUP_HIDDEN_FOR_UNHIDING</option>
 				<option value="0">JNO</option>
 			</field>
 

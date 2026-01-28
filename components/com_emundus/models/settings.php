@@ -3781,8 +3781,19 @@ class EmundusModelSettings extends ListModel
 
 		try
 		{
+			$columns = ['idp_entity_id'];
+
+			$queryString = 'SHOW COLUMNS FROM ' . $this->db->quoteName('#__miniorange_saml_config') . ' LIKE ' . $this->db->quote('idp_name');
+			$this->db->setQuery($queryString);
+			$columnExists = $this->db->loadResult();
+
+			if(!empty($columnExists))
+			{
+				$columns[] = 'idp_name';
+			}
+
 			$query->clear()
-				->select('idp_name,idp_entity_id')
+				->select($columns)
 				->from($this->db->quoteName('#__miniorange_saml_config'));
 			$this->db->setQuery($query);
 			$config = $this->db->loadAssoc();
@@ -3790,6 +3801,8 @@ class EmundusModelSettings extends ListModel
 			if (!empty($config) && !empty($config['idp_entity_id']))
 			{
 				$config['metadata_url'] = Uri::base() . '?morequest=sso&idp=' . $config['idp_entity_id'];
+
+				$config['idp_name'] = $config['idp_name'] ?? 'SAML';
 			}
 		}
 		catch (Exception $e)

@@ -25,6 +25,17 @@
 			<option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		
+		<field name="connid1_is_not_JDB"
+			   class="radio btn-group"
+			   type="radio"
+			   default="0"
+			   label="COM_FABRIK_FIELD_CON1_NOT_JDB_LABEL"
+				layout="joomla.form.field.radio.switcher"
+			   description="COM_FABRIK_FIELD_CON1_NOT_JDB_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 
 		<field name="google_api_key"
 			type="text"

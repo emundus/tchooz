@@ -1197,7 +1197,9 @@ class EmundusModelProfile extends ListModel
 					$query = $this->_db->getQuery(true);
 					$query->select('DISTINCT (jesp.id) AS pid, jesp.label, jesp.description, jesp.published, jesp.schoolyear, jesp.candidature_start, jesp.candidature_end, jesp.menutype, jesp.acl_aro_groups, jesp.is_evaluator, jesp.evaluation_start, jesp.evaluation_end, jesp.evaluation, jesp.status, jesp.class, null AS step, 1 AS phase, null AS lbl')
 						->from($this->_db->quoteName('#__emundus_setup_profiles', 'jesp'))
-						->where('jesp.id IN (' . implode(',', $workflow_profiles) . ')');
+						->where('jesp.id IN (' . implode(',', $workflow_profiles) . ')')
+						// Keep order consistent
+						->order('FIELD(jesp.id, ' . implode(',', $workflow_profiles) . ')');
 					$this->_db->setQuery($query);
 
 					if ($return == 'column')

@@ -313,7 +313,7 @@ class FabrikFEModelImportcsv extends FormModel
 		$this->data      = array();
 		$data            = $this->getFormData();
 		$field_delimiter = $this->getFieldDelimiter();
-		$text_delimiter  = stripslashes(FArrayHelper::getValue($data, 'text_delimiter', '"'));
+		$text_delimiter  = stripcslashes(FArrayHelper::getValue($data, 'text_delimiter', '"'));
 
 		if (!File::exists($baseDir . '/' . $file))
 		{
