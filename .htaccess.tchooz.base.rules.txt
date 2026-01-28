@@ -415,39 +415,15 @@ ServerSignature Off
 	# Add Referrer-Policy HTTP header to enhance privacy
 	Header always set Referrer-Policy "strict-origin-when-cross-origin"
 
-	# Add Content-Security-Policy for few urls
-	Header set Content-Security-Policy
-        default-src 'self';
-        script-src
-          'self'
-          https://unpkg.com
-          https://cdn.jsdelivr.net
-          https://cdn.addpipe.com;
-        style-src
-          'self'
-          'unsafe-inline'
-          https://unpkg.com
-          https://cdn.jsdelivr.net;
-        img-src
-          'self'
-          data:
-          https://*.tile.openstreetmap.org
-          https://*.insee.fr
-          https://*.gouv.fr;
-        connect-src
-          'self'
-          https://*.insee.fr
-          https://*.gouv.fr
-          https://cdn.addpipe.com;
-        media-src
-          'self'
-          https://cdn.addpipe.com;
-        font-src
-          'self'
-          https://cdn.jsdelivr.net;
-        frame-src
-          'self'
-          https://cdn.addpipe.com;
+    # Add Content-Security-Policy for few urls
+    Header set Content-Security-Policy "default-src 'self'; \
+    script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://cdn.addpipe.com; \
+    style-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; \
+    img-src 'self' data: https://*.tile.openstreetmap.org https://*.insee.fr https://*.gouv.fr; \
+    connect-src 'self' https://*.insee.fr https://*.gouv.fr https://cdn.addpipe.com; \
+    media-src 'self' https://cdn.addpipe.com; \
+    font-src 'self' https://cdn.jsdelivr.net; \
+    frame-src 'self' https://cdn.addpipe.com;"
 </IfModule>
 
 ############################################
