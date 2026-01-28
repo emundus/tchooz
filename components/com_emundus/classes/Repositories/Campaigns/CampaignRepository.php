@@ -26,6 +26,7 @@ use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Traits\TraitTable;
 
 #[TableAttribute(table: '#__emundus_setup_campaigns')]
@@ -434,7 +435,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		$query = $this->db->getQuery(true);
 		$query->select(self::COLUMNS)
 			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.label = ' . $this->db->quote($label));
+			->where('TRIM(t.label) = ' . $this->db->quote(trim($label)));
 		$this->db->setQuery($query);
 		$campaign = $this->db->loadAssoc();
 
@@ -523,7 +524,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		{
 			$campaign = $this->getById($campaignId);
 
-			if (!empty($campaign) && !empty($campaign->getProfileId()))
+			if (!empty($campaign) && !empty($campaign->getProfileId()) && $campaign->getProfileId() !== 1000)
 			{
 				if (!class_exists('EmundusModelForm'))
 				{
@@ -546,21 +547,48 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		{
 			$campaign = $this->getById($campaignId);
 
-			if (!empty($campaign) && !empty($campaign->getProfileId()))
+			if (!empty($campaign))
 			{
-				$query = $this->db->getQuery(true);
-
-				$query->select('fl.db_table_name')
-					->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
-					->leftJoin($this->db->quoteName('#__menu', 'm') . ' ON ' . $this->db->quoteName('m.menutype') . ' = ' . $this->db->quoteName('esp.menutype'))
-					->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = SUBSTRING_INDEX(SUBSTRING(' . $this->db->quoteName('m.link') . ', LOCATE("formid=",' . $this->db->quoteName('m.link') . ')+7, 4), "&", 1)')
-					->where($this->db->quoteName('esp.id') . ' = ' . $this->db->quote($campaign->getProfileId()))
-					->where($this->db->quoteName('fl.db_table_name') . ' IS NOT NULL');
-				$this->db->setQuery($query);
-				$tables = $this->db->loadColumn();
-
-				// TODO: Get tables from workflows
+				if(!empty($campaign->getProfileId()))
+				{
+					$tables = $this->getTablesByProfileId($campaign->getProfileId());
+				}
+				
+				$workflowRepository = new WorkflowRepository();
+				$workflow = $workflowRepository->getWorkflowByProgramId($campaign->getProgram()->getId());
+				if(!empty($workflow) && !empty($workflow->getApplicantSteps()))
+				{
+					foreach($workflow->getSteps() as $step)
+					{
+						if(!empty($step->getProfileId()))
+						{
+							$step_tables = $this->getTablesByProfileId($step->getProfileId());
+							$tables      = array_merge($tables, $step_tables);
+						}
+					}
+				}
 			}
+		}
+
+		return $tables;
+	}
+	
+	private function getTablesByProfileId(int $profileId): array
+	{
+		$tables = [];
+
+		if (!empty($profileId))
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('fl.db_table_name')
+				->from($this->db->quoteName('#__emundus_setup_profiles', 'esp'))
+				->leftJoin($this->db->quoteName('#__menu', 'm') . ' ON ' . $this->db->quoteName('m.menutype') . ' = ' . $this->db->quoteName('esp.menutype'))
+				->leftJoin($this->db->quoteName('#__fabrik_lists', 'fl') . ' ON ' . $this->db->quoteName('fl.form_id') . ' = SUBSTRING_INDEX(SUBSTRING(' . $this->db->quoteName('m.link') . ', LOCATE("formid=",' . $this->db->quoteName('m.link') . ')+7, 4), "&", 1)')
+				->where($this->db->quoteName('esp.id') . ' = ' . $this->db->quote($profileId))
+				->where($this->db->quoteName('fl.db_table_name') . ' IS NOT NULL');
+			$this->db->setQuery($query);
+			$tables = $this->db->loadColumn();
 		}
 
 		return $tables;
