@@ -103,7 +103,19 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 			$formData = json_decode(json_encode($formModel->formDataWithTableName));
 			$this->swapValuesForLabels($formData);
 			$this->setStoreDatabaseFormat($formData, $repeatCounter);
-			$data[$element->name] = $data[$element->name . '_raw'] = $this->getSequence($formData);
+			$sequenceValue = $this->getSequence($formData);
+			$data[$element->name] = $data[$element->name . '_raw'] = $sequenceValue;
+
+			// Update formDataWithTableName so email/PDF plugins can access the sequence number
+			$fullName = $this->getFullName(true, false);
+			$formModel->formDataWithTableName[$fullName] = $sequenceValue;
+			$formModel->formDataWithTableName[$fullName . '_raw'] = $sequenceValue;
+			$formModel->formData[$fullName] = $sequenceValue;
+			$formModel->formData[$fullName . '_raw'] = $sequenceValue;
+
+			// Reset cached values so PDF attachment generation picks up the real value
+			$this->default = $sequenceValue;
+			$this->defaults = array();
 		}
 		else if ($method !== 'pk')
 		{
@@ -334,11 +346,24 @@ class PlgFabrik_ElementSequence extends PlgFabrik_Element
 			$rowid = ArrayHelper::getValue($formModel->formData, 'rowid', '');
 			if (!empty($rowid))
 			{
+				$sequenceValue = $this->getSequence($formModel->formData);
+
 				$this->getListModel()->storeCell(
 					$rowid,
 					$this->getElement()->name,
-					$this->getSequence($formModel->formData)
+					$sequenceValue
 				);
+
+				// Update formDataWithTableName so email/PDF plugins can access the sequence number
+				$fullName = $this->getFullName(true, false);
+				$formModel->formDataWithTableName[$fullName] = $sequenceValue;
+				$formModel->formDataWithTableName[$fullName . '_raw'] = $sequenceValue;
+				$formModel->formData[$fullName] = $sequenceValue;
+				$formModel->formData[$fullName . '_raw'] = $sequenceValue;
+
+				// Reset cached values so PDF attachment generation picks up the real value
+				$this->default = $sequenceValue;
+				$this->defaults = array();
 			}
 		}
 	}

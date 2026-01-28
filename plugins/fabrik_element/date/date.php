@@ -2755,7 +2755,7 @@ class PlgFabrik_ElementDate extends PlgFabrik_ElementList
 		if ($params->get('date_store_as_local', '0') !== '1')
 		{
 			$timeZone = new \DateTimeZone($this->config->get('offset'));
-			$zoneDate = new Date('now', $timeZone);
+			$zoneDate = new DateTime('now', $timeZone);
 			$tzStr    = $zoneDate->format('P');
 			$key = 'CONVERT_TZ(' . $key . ', "+0:00", "' . $tzStr . '")';
 		}

@@ -2,11 +2,11 @@
 <extension client="site" method="upgrade" type="component" version="4">
   <name>com_fabrik</name>
   <author>Fabrikar</author>
-  <creationDate>2025-08-20</creationDate>
-  <copyright>Copyright (C) 2005-2025 Fabrikar - All rights reserved.</copyright>
+  <creationDate>2026-01-17</creationDate>
+  <copyright>Copyright (C) 2005-2026 Fabrikar - All rights reserved.</copyright>
   <license>GNU General Public License version 3 or later; see software_license.txt</license>
-  <version>4.5.6</version>
-  <gitdate>2025-08-20</gitdate>
+  <version>4.6.2</version>
+  <gitdate>2026-01-17</gitdate>
   <description>COM_FABRIK_XML_DESCRIPTION</description>
   <scriptfile>com_fabrik.manifest.class.php</scriptfile>
   <files folder="site">

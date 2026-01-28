@@ -5085,6 +5085,8 @@ class FabrikFEModelList extends FormModel
 						throw new ErrorException('alter structure: ' . $fabrikDb->getErrorMsg(), 500);
 					}
 				}
+				//New element
+				return $return;
 			}
 			// Commented out as it stops the update when changing an element name
 			// return $return;
@@ -5140,10 +5142,10 @@ class FabrikFEModelList extends FormModel
 			// No changes to the element name or field type
 			return $return;
 		}
-		elseif ($this->canAlterFields() === false)
+		elseif ($this->canAlterFields() === false && $this->app->getInput()->get('task') !== 'save2copy')
 		{
-			// Give a notice if the user cant alter the field type but selections he has made would normally do so:
-			$this->app->enqueueMessage(Text::_('COM_FABRIK_NOTICE_ELEMENT_SAVED_BUT_STRUCTUAL_CHANGES_NOT_APPLIED'), 'notice');
+			// Give a warning if the user cant alter the field type but selections he has made would normally do so:
+			$this->app->enqueueMessage(Text::_('COM_FABRIK_NOTICE_ELEMENT_SAVED_BUT_STRUCTUAL_CHANGES_NOT_APPLIED'), 'warning');
 
 			return $return;
 		}

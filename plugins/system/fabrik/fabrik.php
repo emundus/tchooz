@@ -148,6 +148,17 @@ class PlgSystemFabrik extends CMSPlugin
 		require_once $defines;
 
 		$this->setBigSelects();
+
+		//Test if connection id1 is pointing to J!DB with identical parameters
+		if ($app->isClient('administrator')) {
+			$cn       = Fabrik\Helpers\Worker::getConnection('1');
+
+			if (!$cn->isJdb() && $fbConfig->get('connid1_is_not_JDB', '0') === '0') {
+				$app->enqueueMessage('Fabrik Connection ID1 is not pointing to the J!DB, problably you are using a copy of an other Joomla site. <br> 
+				<a href="index.php?option=com_fabrik&view=connections">Please open and resave your Fabrik connection ID1</a>. <br>Then reload the page to remove this message.<br><br>If you intentionally set connection ID1 to some other DB confirm this <a href="index.php?option=com_config&view=component&component=com_fabrik">by setting the corresponding Fabrik Option to YES</a>', 'warning');
+			}
+			
+		}
 	}
 
 	/**
@@ -243,14 +254,14 @@ class PlgSystemFabrik extends CMSPlugin
 		$session = Factory::getSession();
 		$doc = Factory::getDocument();
 		$app = Factory::getApplication();
-		$key = md5($app->input->server->get('REQUEST_URI', '', 'string'));
+		$key = md5($app->getInput()->server->get('REQUEST_URI', '', 'string'));
 
 		if (!empty($key))
 		{
 			$key = 'fabrik.js.head.cache.' . $key;
 
 			// if this is 'html', it's a main page load, so clear the cache for this page and start again
-			if ($app->input->get('format', 'html') === 'html')
+			if ($app->getInput()->get('format', 'html') === 'html')
 			{
 				$session->clear($key);
 			}
@@ -345,7 +356,7 @@ class PlgSystemFabrik extends CMSPlugin
 		$app    = Factory::getApplication();
 
 		/*
-		if (!in_array($app->input->get('format', 'html'), $formats))
+		if (!in_array($app->getInput()->get('format', 'html'), $formats))
 		{
 			return;
 		}
@@ -456,7 +467,7 @@ class PlgSystemFabrik extends CMSPlugin
 			return;
 		}
 
-		$input = $app->input;
+		$input = $app->getInput();
 		define('COM_FABRIK_SEARCH_RUN', true);
 		BaseDatabaseModel::addIncludePath(COM_FABRIK_FRONTEND . '/models', 'FabrikFEModel');
 
@@ -595,6 +606,15 @@ class PlgSystemFabrik extends CMSPlugin
 			$listModel->setLimits(0, $fbConfig->get('filter_list_max', 100));
 
 			$allRows      = $listModel->getData();
+
+			if (empty($listModel->filters) ||  !in_array('searchall',$listModel->filters['search_type'])) {
+				$language = Factory::getApplication()->getLanguage();
+				$language->load('plg_search_fabrik', JPATH_SITE . '/plugins/search/fabrik');
+				$msg = sprintf(Text::_('PLG_FABRIK_SEARCH_SKIPPED'), $section);
+				$app->enqueueMessage($msg);
+				continue;
+			}
+			
 			$elementModel = $listModel->getFormModel()->getElement($params->get('search_description', $table->label), true);
 			$descName     = is_object($elementModel) ? $elementModel->getFullName() : '';
 

@@ -44,7 +44,7 @@ class FabTable extends Table
 	 */
 	public static function getInstance($type, $prefix = 'Table', $config = array())
 	{
-		$config['dbo'] = FabrikWorker::getDbo(true);
+		$config['dbo'] = Fabrik\Helpers\Worker::getDbo(true);
 
 		$instance = parent::getInstance($type, $prefix, $config);//H so we go to Table
 

@@ -946,6 +946,7 @@ class FabrikFEModelGroup extends FabModel
 
 			$group->editable  = $this->editable;
 			$group->canRepeat = $params->get('repeat_group_button', '0');
+			$group->classArray = array();
 			$showGroup        = $params->def('repeat_group_show_first', '1');
 			$pages            = $formModel->getPages();
 			$startPage        = isset($formModel->sessionModel->last_page) ? $formModel->sessionModel->last_page : 0;
@@ -954,7 +955,12 @@ class FabrikFEModelGroup extends FabModel
 			{
 				$groupTable->css .= ";display:none;";
 			}
-
+			
+			if ($showGroup == 6) {
+				$groupTable->css .= ";opacity: 0; visibility: hidden;";
+				$group->classArray[] = 'fabrikHide'; 
+			}
+			
 			$group->css = trim(str_replace(array("<br />", "<br>"), "", $groupTable->css));
 			$group->id  = $groupTable->id;
 
@@ -989,7 +995,6 @@ class FabrikFEModelGroup extends FabModel
 			$group->showLegend       = $this->showLegend($group);
 			$group->labels           = $params->get('labels_above', -1);
 			$group->dlabels          = $params->get('labels_above_details', -1);
-			$group->classArray       = array();
 			$group->class            = '';
 			$group->canOrder         = $params->get('repeat_sortable', '') === '1';
 

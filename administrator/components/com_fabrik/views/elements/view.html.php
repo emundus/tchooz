@@ -235,7 +235,13 @@ class FabrikAdminViewElements extends HtmlView
 		$this->items = $this->get('Items');
 		$db = Factory::getDbo();
 		$query = $db->getQuery(true);
-		$query->select('id, name')->from('#__fabrik_groups')->order('name');
+		//$query->select('id, name')->from('#__fabrik_groups')->order('name');
+		$query->select('g.id AS id, g.name AS name, concat(f.label," (id ",f.id,")") AS form');
+		$query->from('#__fabrik_groups AS g');
+		$query->where('g.published <> -2')
+		->join('INNER', '#__fabrik_formgroup AS fg ON fg.group_id = g.id')
+		->join('INNER', '#__fabrik_forms AS f on fg.form_id = f.id');
+		$query->order('form, g.name');
 		$db->setQuery($query);
 		$this->groups = $db->loadObjectList();
 		$this->addConfirmCopyToolbar();

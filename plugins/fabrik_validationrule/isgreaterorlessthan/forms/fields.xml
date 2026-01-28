@@ -38,7 +38,7 @@
 			<field name="isgreaterorlessthan-allow_empty"
 				type="radio"
 				class="btn-group"
-				default="1"
+				default="0"
 				layout="joomla.form.field.radio.switcher"
 				description="PLG_VALIDATIONRULE_ISGREATERORLESSTHAN_ALLOW_EMPTY_DESC"
 				label="PLG_VALIDATIONRULE_ISGREATERORLESSTHAN_ALLOW_EMPTY_LABEL"

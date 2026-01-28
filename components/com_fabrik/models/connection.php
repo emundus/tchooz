@@ -127,7 +127,7 @@ class FabrikFEModelConnection extends FabModel
 			return;
 		}
 
-		$crypt = FabrikWorker::getCrypt();
+		$crypt = Fabrik\Helpers\Worker::getCrypt();
 		$params = json_decode($cnn->params);
 
 		if (is_object($params) && $params->encryptedPw == true)
@@ -206,6 +206,8 @@ class FabrikFEModelConnection extends FabModel
 			else
 			{
 				$options = $this->getConnectionOptions($cn);
+				//Use utf8mb4 if available
+				$options['utf8mb4'] = true;
 				$db = $this->getDriverInstance($options);
 			}
 
@@ -282,7 +284,7 @@ class FabrikFEModelConnection extends FabModel
 	 */
 	private function getBaseDriverName($driverName = '')
 	{
-		return FabrikString::rtrimword($driverName, '_fab');
+		return Fabrik\Helpers\StringHelper::rtrimword($driverName, '_fab');
 	}
 
 	/**

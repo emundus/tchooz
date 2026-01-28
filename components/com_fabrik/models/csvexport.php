@@ -144,10 +144,10 @@ class FabrikFEModelCSVExport extends FabModel
 		{
 			if (empty($headings))
 			{
-				$url = $input->server->get('HTTP_REFERER', '');
-				$this->app->enqueueMessage(Text::_('No data to export'));
-				$this->app->redirect($url);
-
+				$msg = empty($this->model->csvMessage) ? Text::_('No data to export') : $this->model->csvMessage;
+				$res              = new stdClass;
+				$res->err = $msg;
+				echo json_encode($res);
 				return;
 			}
 
@@ -166,6 +166,7 @@ class FabrikFEModelCSVExport extends FabModel
 			foreach ($group as $row)
 			{
 				$a = ArrayHelper::fromObject($row);
+				$this->model->csvExportRow_fullData = $a; 
 
 				// Remove all row data which doesn't have a matching key in headings
 				foreach ($a as $aKey => $aValue) {
