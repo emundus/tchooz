@@ -96,12 +96,24 @@ class ExportRepository extends EmundusRepository implements RepositoryInterface
 		{
 			try
 			{
+				$exportEntity = $this->getById($id);
+
 				$query = $this->db->getQuery(true)
 					->delete($this->db->qn($this->tableName, $this->alias))
 					->where('id = :id')
 					->bind(':id', $id, ParameterType::INTEGER);
 				$this->db->setQuery($query);
 				$deleted = $this->db->execute();
+				
+				if($deleted && !empty($exportEntity) && !empty($exportEntity->getFilename()) && str_starts_with($exportEntity->getFilename(), 'images/emundus/exports/'))
+				{
+					// Delete the export file from the filesystem
+					$exportFilePath = JPATH_ROOT . '/' . $exportEntity->getFilename();
+					if (file_exists($exportFilePath))
+					{
+						unlink($exportFilePath);
+					}
+				}
 			}
 			catch (\Exception $e)
 			{

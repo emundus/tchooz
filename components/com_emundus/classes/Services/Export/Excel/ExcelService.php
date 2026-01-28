@@ -178,6 +178,11 @@ class ExcelService extends Export implements ExportInterface
 					
 					if (!empty($this->exportEntity))
 					{
+						if($this->exportRepository->isCancelled($this->exportEntity->getId()))
+						{
+							$this->exportEntity = $this->exportRepository->getById($this->exportEntity->getId());
+						}
+
 						// Store json file in export path
 						$jsonFileName = 'export_' . $this->exportEntity->getId() . '.json';
 						$jsonFilePath = JPATH_SITE . '/' . $exportPath . $jsonFileName;

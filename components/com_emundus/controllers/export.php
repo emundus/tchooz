@@ -956,6 +956,11 @@ class EmundusControllerExport extends BaseController
 				}
 
 				// Delete export record and task associated if any
+				if (!$this->exportRepository->delete($export->getId()))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				}
+
 				$task = $export->getTask();
 				if (!empty($task))
 				{
@@ -964,11 +969,6 @@ class EmundusControllerExport extends BaseController
 					{
 						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_ASSOCIATED_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
 					}
-				}
-
-				if (!$this->exportRepository->delete($export->getId()))
-				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
 				}
 			}
 
