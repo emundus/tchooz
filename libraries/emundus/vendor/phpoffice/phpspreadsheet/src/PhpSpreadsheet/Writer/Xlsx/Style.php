@@ -37,7 +37,6 @@ class Style extends WriterPart
 
         // styleSheet
         $objWriter->startElement('styleSheet');
-        $objWriter->writeAttribute('xml:space', 'preserve');
         $objWriter->writeAttribute('xmlns', Namespaces::MAIN);
 
         // numFmts
@@ -273,6 +272,9 @@ class Style extends WriterPart
         $objWriter->endElement();
     }
 
+    /**
+     * @param-out true $fontStarted
+     */
     private function startFont(XMLWriter $objWriter, bool &$fontStarted): void
     {
         if (!$fontStarted) {
