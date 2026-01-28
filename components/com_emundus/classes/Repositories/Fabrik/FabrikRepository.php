@@ -268,7 +268,7 @@ class FabrikRepository
 
 			if (empty($elements))
 			{
-				$query   = $this->buildElementQuery();
+				$query   = $this->buildElementQuery($this->withRelations);
 				$this->elementFilters = array_merge($this->elementFilters, ['group_id' => $groupId]);
 				$this->applyElementFilters($query);
 
