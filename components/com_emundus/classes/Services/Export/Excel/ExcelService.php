@@ -86,6 +86,8 @@ class ExcelService extends Export implements ExportInterface
 
 	public function __construct(array $fnums = [], User $user = null, array|object $options = null, ExportEntity $exportEntity = null)
 	{
+		Log::addLogger(['text_file' => 'com_emundus.service.export.php'], Log::ALL, ['com_emundus.service.export']);
+
 		$this->fnums = $fnums;
 		$this->user  = $user;
 
@@ -498,7 +500,7 @@ class ExcelService extends Export implements ExportInterface
 		}
 		catch (\Exception $e)
 		{
-			Log::add('Excel conversion failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
+			Log::add('Excel conversion failed: ' . $e->getMessage(), Log::ERROR, 'com_emundus.service.export');
 
 			return false;
 		}

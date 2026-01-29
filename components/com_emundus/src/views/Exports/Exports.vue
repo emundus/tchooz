@@ -328,7 +328,9 @@ export default defineComponent({
 							}
 						});
 					} else {
-						if (response.title === 'AbortError') {
+						const allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
+
+						if (response.title === 'AbortError' && allowAsync == 1) {
 							// Rerun export with async flag
 							this.runExport(true);
 						} else {

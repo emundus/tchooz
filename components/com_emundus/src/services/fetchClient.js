@@ -87,7 +87,7 @@ export class FetchClient {
 		parameters.headers = headers;
 
 		let timeoutId = null;
-		if (timeout) {
+		if (timeout && timeout > 0) {
 			const controller = new AbortController();
 			timeoutId = setTimeout(() => controller.abort(), timeout);
 			parameters.signal = controller.signal;
