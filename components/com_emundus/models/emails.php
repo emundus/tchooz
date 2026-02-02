@@ -625,11 +625,18 @@ class EmundusModelEmails extends JModelList
 			else {
 				$user = $current_user;
 			}
-		}
-		else {
-			$user = !empty($user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id) : null;
+		} else if (!empty($user_id))
+		{
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 			$current_user = $user;
 		}
+		else {
+			$emConfig   = JComponentHelper::getParams('com_emundus');
+			$automated_task_user = $emConfig->get('automated_task_user', 1);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($automated_task_user);
+			$current_user = $user;
+		}
+
 		$config = $app->getConfig();
 
 		if (!empty($user) && !empty($user->id)) {
@@ -879,7 +886,7 @@ class EmundusModelEmails extends JModelList
 			$patterns[] = $tagEntity->getFullPatternName();
 			$replacements[] = $tagEntity->getValue();
 		}
-		
+
 		// Check modifiers tags
 		if(!empty($content)) {
 			foreach ($tags_content as $tag)
@@ -941,7 +948,8 @@ class EmundusModelEmails extends JModelList
 
 		$query = $db->getQuery(true);
 		$query->select('tag, request')
-			->from($db->quoteName('#__emundus_setup_tags'));
+			->from($db->quoteName('#__emundus_setup_tags'))
+			->where($db->quoteName('published') . ' = 1');
 		$db->setQuery($query);
 		$tags = $db->loadAssocList();
 
@@ -949,22 +957,23 @@ class EmundusModelEmails extends JModelList
 
 		$patterns     = array();
 		$replacements = array();
-		foreach ($tags as $tag) {
+		foreach ($tags as $tag)
+		{
 			$tagEntity = new TagEntity($tag['tag'], $tag['description']);
 
 			// If fnum is set, we call setTagsFabrik to replace tags like {fabrik_element_id} by the application form value
-			$request      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
-			if(str_contains($request, 'php|') && !empty($fnum))
+			$request = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
+			if (str_contains($request, 'php|') && !empty($fnum))
 			{
 				$request = str_replace('php|', '', $request);
-				$request     = $this->setTagsFabrik($request, array($fnum));
+				$request = $this->setTagsFabrik($request, array($fnum));
 
 				$request = 'php|' . $request;
 			}
 			$tagEntity->setRequest($request);
 			$tagEntity->calculateValue($user_id, false, $fnum);
 
-			$patterns[] = $tagEntity->getFullName();
+			$patterns[]     = $tagEntity->getFullName();
 			$replacements[] = $tagEntity->getValue();
 		}
 
