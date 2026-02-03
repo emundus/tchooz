@@ -51,6 +51,7 @@ export default {
 		let fnum = this.fnum || '';
 
 		this.loading = true;
+		await this.getStates();
 		await this.getChoicesConfiguration(fnum);
 		await this.getApplicationChoices(fnum);
 		await this.getAvailableChoices(fnum);
@@ -106,6 +107,16 @@ export default {
 			return new Promise((resolve) => {
 				applicationService.getChoicesConfiguration(fnum).then((res) => {
 					this.configuration = res.data;
+
+					resolve();
+				});
+			});
+		},
+
+		getStates() {
+			return new Promise((resolve) => {
+				applicationService.getChoicesStates().then((res) => {
+					this.status = res.data;
 
 					resolve();
 				});
