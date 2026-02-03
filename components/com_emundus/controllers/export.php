@@ -162,18 +162,10 @@ class EmundusControllerExport extends BaseController
 
 	public function elements(): void
 	{
-		try
-		{
+		try {
 			if (!$this->exportAction)
 			{
 				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
-			}
-
-			$format = $this->input->getString('format', 'xlsx');
-			$format = ExportFormatEnum::tryFrom($format);
-			if (empty($format))
-			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), Response::HTTP_BAD_REQUEST);
 			}
 
 			$type = $this->input->getString('type', 'applicant');
@@ -184,218 +176,235 @@ class EmundusControllerExport extends BaseController
 				$fnums = $this->app->getUserState('com_emundus.files.export.fnums');
 			}
 
-			$applicationFileRepository = new ApplicationFileRepository();
-			$campaignIds               = $applicationFileRepository->getCampaignIds($fnums);
-			$campaignIds               = array_unique($campaignIds);
+			if (empty($fnums))
+			{
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), Response::HTTP_BAD_REQUEST);
+			}
+
+			$worlflowRepository = new WorkflowRepository();
+			$workflows = $worlflowRepository->getWorkflowsByFnums($fnums);
 
 			$elements = [];
 
-			$fabrikRepository = new FabrikRepository();
-			$fabrikFactory    = new FabrikFactory($fabrikRepository);
-			$fabrikRepository->setFactory($fabrikFactory);
-
-			$elmentsFilters = [
-				'published'        => 1,
-				'hidden'           => 0,
-				'exluded_elements' => ['panel', 'display', 'emundus_fileupload']
-			];
-			$fabrikRepository->setElementFilters($elmentsFilters);
-
-			$campaignRepository = new CampaignRepository();
-			$hFiles             = new EmundusHelperFiles();
-
-			if ($type === 'applicant' || $type === 'management' || $type === 'attachments')
+			switch($type)
 			{
-				foreach ($campaignIds as $selectedCampaignId)
-				{
-					// Get workflows for the selected campaign
-					$campaign   = $campaignRepository->getById($selectedCampaignId);
-					$programIds = [$campaign->getProgram()->getId()];
+				case 'applicant':
+					$campaignRepository = new CampaignRepository(false);
+					$campaigns = $campaignRepository->getCampaignsByFnums($fnums);
 
-					if (!empty($campaign->getProfileId()))
+					foreach ($campaigns as $campaign)
 					{
-						if (!class_exists('EmundusModelProfile'))
+						if (!in_array($campaign->getProfileId(), array_keys($elements)))
 						{
-							require_once(JPATH_ROOT . '/components/com_emundus/models/profile.php');
+							$elements[$campaign->getProfileId()] = [
+								'label' => $campaign->getLabel(),
+								'profile_id' => $campaign->getProfileId(),
+								'campaign_id' => $campaign->getId(),
+								'campaign_label' => sizeof($campaigns) > 1 ? $campaign->getLabel() : '',
+								'forms'          => []
+							];
 						}
-						$mProfile     = new EmundusModelProfile();
-						$campaignStep = $mProfile->getProfileById($campaign->getProfileId());
+					}
 
-						if (!empty($campaignStep))
+					foreach ($workflows as $workflow)
+					{
+						$applicantSteps = array_filter($workflow->getSteps(), function($step)
 						{
-							if ($type === 'applicant')
+							return $step->isApplicantStep();
+						});
+
+						foreach ($applicantSteps as $applicantStep)
+						{
+							if (!in_array($applicantStep->getProfileId(), array_keys($elements)))
 							{
-								$elements[$campaign->getProfileId()] = [
-									'label'          => $campaignStep['label'],
-									'profile_id'     => $campaign->getProfileId(),
-									'campaign_id'    => $campaign->getId(),
-									'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
-									'campaign_count' => 1,
+								$elements[$applicantStep->getProfileId()] = [
+									'label'          => $applicantStep->getLabel(),
+									'profile_id'     => $applicantStep->getProfileId(),
+									'campaign_id'    => $workflow->getId(),
+									'campaign_label' => sizeof($workflows) > 1 ? $workflow->getLabel() : '',
+									'forms'          => []
 								];
 							}
-							elseif ($type === 'attachments')
-							{
-								$attachments = $hFiles->getAttachmentsTypesByProfileID([$campaign->getProfileId()]);
-
-								if (!empty($attachments))
-								{
-									$elements[$campaign->getProfileId()] = [
-										'label'          => $campaignStep['label'],
-										'profile_id'     => $campaign->getProfileId(),
-										'campaign_id'    => $campaign->getId(),
-										'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
-										'campaign_count' => 1,
-										'forms'          => ['attachments' => ['id' => 'attachments', 'label' => '', 'groups' => [1 => ['label' => '', 'elements' => []]]]]
-									];
-
-									foreach ($attachments as $attachment)
-									{
-										$attachmentObject                                                                       = new stdClass();
-										$attachmentObject->id                                                                   = $attachment->id;
-										$attachmentObject->label                                                                = $attachment->value;
-										$elements[$campaign->getProfileId()]['forms']['attachments']['groups'][1]['elements'][] = $attachmentObject;
-									}
-								}
-							}
 						}
 					}
 
-					$programIds = array_merge($programIds, $campaignRepository->getLinkedProgramsIds($campaign->getId()));
-
-					$workflowRepository = new WorkflowRepository();
-					$workflows          = [];
-					foreach ($programIds as $programId)
+					break;
+				case 'management':
+					foreach ($workflows as $workflow)
 					{
-						$workflows[] = $workflowRepository->getWorkflowByProgramId($programId);
+						$managementSteps = array_filter($workflow->getSteps(), function($step)
+						{
+							return $step->isEvaluationStep();
+						});
+
+						foreach ($managementSteps as $managementStep)
+						{
+							if (!in_array($managementStep->getFormId(), array_keys($elements)))
+							{
+								$elements[$managementStep->getFormId()] = [
+									'label'          => $managementStep->getLabel(),
+									'profile_id'     => $managementStep->getFormId(),
+									'campaign_id'    => $workflow->getId(),
+									'campaign_label' => sizeof($workflows) > 1 ? $workflow->getLabel() : '',
+									'forms'          => []
+								];
+							}
+						}
 					}
-					$workflows = array_filter($workflows);
+					break;
+				case 'attachments':
+					$campaignRepository = new CampaignRepository(true);
+					$campaigns = $campaignRepository->getCampaignsByFnums($fnums);
 
-					// TODO: Improve readability of the code below
-					if ($type === 'applicant')
+					$hFiles = new EmundusHelperFiles();
+					if (!empty($campaigns))
 					{
+						$nbStepsAttachments = 0;
+						$nbLettersAttachments = 0;
+						$campaignAttachments = [];
+						$attachmentTypeRepository = new AttachmentTypeRepository();
+						foreach ($campaigns as $campaign)
+						{
+							$campaignAttachments = $hFiles->getAttachmentsTypesByProfileID([$campaign->getProfileId()]);
+						}
+
+						$workflowAttachments = [];
 						foreach ($workflows as $workflow)
 						{
 							foreach ($workflow->getSteps() as $step)
 							{
-								if ($step->getType()->getCode() === 'applicant' && !empty($step->getProfileId()) && !in_array($step->getProfileId(), array_keys($elements)))
+								if ($step->isApplicantStep() && !empty($step->getProfileId()) && !in_array($step->getProfileId(), array_keys($elements)))
 								{
-									$elements[$step->getProfileId()] = [
-										'label'          => $step->getLabel(),
-										'profile_id'     => $step->getProfileId(),
-										'campaign_id'    => $campaign->getId(),
-										'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
-										'campaign_count' => 1,
-									];
-								}
-								elseif ($step->getType()->getCode() === 'applicant' && !empty($step->getProfileId()) && in_array($step->getProfileId(), array_keys($elements)))
-								{
-									$elements[$step->getProfileId()]['campaign_count']++;
+									$workflowAttachments = $hFiles->getAttachmentsTypesByProfileID([$step->getProfileId()]);
 								}
 							}
 						}
 
-						// Find fabrik forms by profile ids
-						foreach ($elements as $step => $element)
+						if (!empty($campaignAttachments) || !empty($workflowAttachments))
 						{
-							$forms = $fabrikRepository->getFormsByProfileId($element['profile_id']);
-							if (!empty($forms))
+							$elements['attachments'] = [
+								'label'          => Text::_('COM_EMUNDUS_EXPORTS_ATTACHMENT_TAB'),
+								'profile_id'     => 'attachments',
+								'campaign_id'    => 'attachments',
+								'campaign_label' => '',
+								'forms'          => [
+									'attachments' => [
+										'id' => 'attachments',
+										'label' => Text::_('COM_EMUNDUS_EXPORTS_ATTACHMENT_TAB'),
+										'groups' => [
+											'attachments' => ['label' => '', 'elements' => []],
+										]
+									],
+								]
+							];
+
+							$allAttachments = array_merge($campaignAttachments, $workflowAttachments);
+							$alreadyAdded = [];
+							foreach ($allAttachments as $attachment)
 							{
-								foreach ($forms as $form)
+								if (!in_array($attachment->id, $alreadyAdded))
 								{
-									assert($form instanceof FabrikFormEntity);
-									$elements[$step]['forms']['form_' . $form->getId()] = $form->__serialize();
+									$attachmentObject                                                                       = new stdClass();
+									$attachmentObject->id                                                                   = $attachment->id;
+									$attachmentObject->label                                                                = $attachment->value;
+									$elements['attachments']['forms']['attachments']['groups']['attachments']['elements'][] = $attachmentObject;
+									$alreadyAdded[] = $attachment->id;
+									$nbStepsAttachments++;
 								}
 							}
+							$elements['attachments']['forms']['attachments']['label'] .= ' (' . $nbStepsAttachments . ')';
 						}
-					}
-					elseif ($type === 'management')
-					{
-						$workflows = array_filter($workflows);
-						foreach ($workflows as $workflow)
+
+						$attachmentLetters = $attachmentTypeRepository->getAttachmentLettersByCampaigns($campaigns);
+						if (!empty($attachmentLetters))
 						{
-							foreach ($workflow->getSteps() as $step)
+							$elements['attachments']['forms']['letters'] = [
+								'id' => 'letters',
+								'label' => Text::_('COM_EMUNDUS_EVENT_CATEGORY_LETTERS'),
+								'groups' => [
+									'letters' => ['label' => '', 'elements' => []]
+								]
+							];
+
+							foreach ($attachmentLetters as $attachmentLetter)
 							{
-								assert($step instanceof StepEntity);
-
-								if ($step->isEvaluationStep() && !empty($step->getFormId()) && !in_array($step->getFormId(), array_keys($elements)))
-								{
-									$elements[$step->getFormId()] = [
-										'label'          => $step->getLabel(),
-										'profile_id'     => $step->getFormId(),
-										'campaign_id'    => $campaign->getId(),
-										'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
-										'campaign_count' => 1,
-									];
-								}
-								elseif ($step->isEvaluationStep() && !empty($step->getFormId()) && in_array($step->getFormId(), array_keys($elements)))
-								{
-									$elements[$step->getFormId()]['campaign_count']++;
-								}
+								$attachmentObject                                                           = new stdClass();
+								$attachmentObject->id                                                       = $attachmentLetter->getId();
+								$attachmentObject->label                                                    = $attachmentLetter->getName();
+								$elements['attachments']['forms']['letters']['groups']['letters']['elements'][] = $attachmentObject;
+								$nbLettersAttachments++;
 							}
+							$elements['attachments']['forms']['letters']['label'] .= ' (' . $nbLettersAttachments . ')';
 						}
 
-						// Find fabrik forms by profile ids
-						foreach ($elements as $step => $element)
-						{
-							$form = $fabrikRepository->getFormById($element['profile_id']);
-
-							assert($form instanceof FabrikFormEntity);
-							$elements[$step]['forms']['form_' . $form->getId()] = $form->__serialize();
-						}
+						$elements['attachments']['label'] .= ' (' . ($nbStepsAttachments+$nbLettersAttachments) . ')';
 					}
-					elseif ($type === 'attachments')
-					{
-						foreach ($workflows as $workflow)
-						{
-							foreach ($workflow->getSteps() as $step)
-							{
-								if ($step->getType()->getCode() === 'applicant' && !empty($step->getProfileId()) && !in_array($step->getProfileId(), array_keys($elements)))
-								{
-									$attachments = $hFiles->getAttachmentsTypesByProfileID([$step->getProfileId()]);
 
-									if (!empty($attachments))
-									{
-										$elements[$step->getProfileId()] = [
-											'label'          => $step->getLabel(),
-											'profile_id'     => $step->getProfileId(),
-											'campaign_id'    => $campaign->getId(),
-											'campaign_label' => sizeof($campaignIds) > 1 ? $campaign->getLabel() : '',
-											'campaign_count' => 1,
-											'forms'          => ['attachments' => ['id' => 'attachments', 'label' => '', 'groups' => [1 => ['label' => '', 'elements' => []]]]]
-										];
-
-										foreach ($attachments as $attachment)
-										{
-											$attachmentObject                                                                   = new stdClass();
-											$attachmentObject->id                                                               = $attachment->id;
-											$attachmentObject->label                                                            = $attachment->value;
-											$elements[$step->getProfileId()]['forms']['attachments']['groups'][1]['elements'][] = $attachmentObject;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+					break;
+				case 'other':
+					$elements['campaign']   = Export::getCampaignColumns();
+					$elements['programme']  = Export::getProgramColumns();
+					$elements['others']     = Export::getMiscellaneousColumns();
+					$elements['management'] = Export::getManagementColumns();
+					$elements['user']       = Export::getUserColumns();
+					break;
 			}
-			elseif ($type === 'other')
-			{
-				$elements['campaign']   = Export::getCampaignColumns();
-				$elements['programme']  = Export::getProgramColumns();
-				$elements['others']     = Export::getMiscellaneousColumns();
-				$elements['management'] = Export::getManagementColumns();
-				$elements['user']       = Export::getUserColumns();
-			}
-
-			// Update keys to have sequential numeric keys
 			$elements = array_values($elements);
 
-			$response = Response::ok($elements, Text::_('COM_EMUNDUS_EXPORT_ELEMENTS_RETRIEVED_SUCCESSFULLY'));
+			$response = Response::ok($elements, Text::_('COM_EMUNDUS_EXPORT_STEPS_RETRIEVED_SUCCESSFULLY'));
 		}
 		catch (Exception $e)
 		{
 			$response = Response::fail($e->getMessage(), $e->getCode());
 		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function getSubElements(): void
+	{
+		try {
+			if (!$this->exportAction)
+			{
+				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+			}
+
+			$type = $this->input->getString('type', 'applicant');
+			$elementId = $this->input->getInt('elementId', 0);
+
+			if (empty($elementId))
+			{
+				throw new Exception(Text::_('MISSING_PARAMETER'), Response::HTTP_BAD_REQUEST);
+			}
+			$subElements = [];
+
+			$fabrikRepository = new FabrikRepository();
+			$fabrikFactory    = new FabrikFactory($fabrikRepository);
+			$fabrikRepository->setFactory($fabrikFactory);
+			switch ($type)
+			{
+				case 'applicant':
+					$forms       = $fabrikRepository->getFormsByProfileId($elementId);
+					$subElements = array_map(function ($form) {
+						return $form->__serialize();
+					}, $forms);
+
+					break;
+				case 'management':
+					$form        = $fabrikRepository->getFormById($elementId);
+					$subElements = [$form->__serialize()];
+					break;
+				default:
+			}
+
+
+			$response = Response::ok($subElements, Text::_('COM_EMUNDUS_EXPORT_STEPS_RETRIEVED_SUCCESSFULLY'));
+
+		} catch (\Exception $e)
+		{
+			$response = Response::fail($e->getMessage(), $e->getCode());
+		}
+
 
 		$this->sendJsonResponse($response);
 	}
