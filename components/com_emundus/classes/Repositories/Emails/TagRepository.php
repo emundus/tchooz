@@ -162,17 +162,17 @@ final class TagRepository
 		$available_profiles = $m_form->getAllForms('', '', '', 0, 0, $user_id);
 		$available_profiles = array_keys(array_column($available_profiles['datas'], null, 'id'));
 
+		if (!empty($campaign_id))
+		{
+			// intersect available profiles with campaign profiles
+			$available_profiles = array_intersect($available_profiles, $campaign_profiles);
+		}
+
 		$fl       = array();
 		$menutype = array();
 
 		foreach ($available_profiles as $profile)
 		{
-			// If filtering by campaign and this profile is not in the campaign profiles then skip
-			if (!empty($campaign_id) && !in_array($profile, $campaign_profiles))
-			{
-				continue;
-			}
-
 			if (!empty($step_id) && !empty($profile_filters) && !in_array($profile, $profile_filters))
 			{
 				continue;
