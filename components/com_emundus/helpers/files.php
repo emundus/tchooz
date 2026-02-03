@@ -593,32 +593,35 @@ class EmundusHelperFiles
 		return $db->loadObjectList();
 	}
 
+	/**
+	 * @param $pid
+	 *
+	 * @return array
+	 */
 	public function getAttachmentsTypesByProfileID($pid)
 	{
-		$attachments_by_profile = [];
+		$attachmentsByProfile = [];
 
-		$db    = JFactory::getDBO();
-		$query = $db->getQuery(true);
+		try {
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
-		$query->select('attachment_id')
-			->from($db->quoteName('#__emundus_setup_attachment_profiles'))
-			->where($db->quoteName('profile_id') . ' IN (' . implode(',', $pid) . ')');
-		$db->setQuery($query);
-		$attachments = $db->loadColumn();
-
-		if (!empty($attachments))
-		{
-			$query->clear()
-				->select('*')
-				->from($db->quoteName('#__emundus_setup_attachments'))
-				->where($db->quoteName('id') . ' IN (' . implode(',', $attachments) . ')')
-				->order('ordering');
-
+			$query->select('esa.*, esap.mandatory')
+				->from($db->quoteName('#__emundus_setup_attachments', 'esa'))
+				->innerJoin($db->quoteName('#__emundus_setup_attachment_profiles', 'esap') . ' ON ' . $db->quoteName('esa.id') . ' = ' . $db->quoteName('esap.attachment_id'))
+				->where($db->quoteName('esap.profile_id') . ' IN (' . implode(',', $pid) . ')')
+				->order('esa.ordering');
 			$db->setQuery($query);
-			$attachments_by_profile = $db->loadObjectList();
+			$attachmentsByProfile = $db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Failed to get Attachments Types By Profile ID: ' . $e->getMessage(), Log::ERROR, 'com_emundus.helper.files');
 		}
 
-		return $attachments_by_profile;
+
+
+		return $attachmentsByProfile;
 	}
 
 	public function getEvaluation_doc($status)

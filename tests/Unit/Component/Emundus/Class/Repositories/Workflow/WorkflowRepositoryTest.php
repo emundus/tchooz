@@ -180,4 +180,35 @@ class WorkflowRepositoryTest extends UnitTestCase
 		$retrievedWorkflow = $this->repository->getWorkflowByFnum($this->dataset['fnum'], false);
 		$this->assertEmpty($retrievedWorkflow->getChildWorkflows(), 'Child workflows should not be loaded when not requested.');
 	}
+
+	/**
+	 * @covers WorkflowRepository::getWorkflowsByFnums
+	 * @return void
+	 */
+	public function testGetWorkflowsByFnums(): void
+	{
+		try {
+			$fnum1 = $this->dataset['fnum'];
+			$program2 = $this->h_dataset->createSampleProgram();
+			$campaign2 = $this->h_dataset->createSampleCampaign($program2);
+			$fnum2 = $this->h_dataset->createSampleFile($campaign2, $this->dataset['applicant']);
+
+			$workflow1 = new WorkflowEntity(0, 'Workflow 1', 1, [], [$this->programId]);
+			$saved = $this->repository->save($workflow1);
+			$this->assertTrue($saved, 'Workflow 1 should be saved successfully.');
+
+			$workflow2 = new WorkflowEntity(0, 'Workflow 2', 1, [], [$program2['programme_id']]);
+			$saved = $this->repository->save($workflow2);
+			$this->assertTrue($saved, 'Workflow 2 should be saved successfully.');
+
+			$workflows = $this->repository->getWorkflowsByFnums([$fnum1, $fnum2]);
+
+			$this->assertCount(2, $workflows, 'Should retrieve two workflows for the given fnums.');
+			$workflowIds = array_map(fn($wf) => $wf->getId(), $workflows);
+			$this->assertContains($workflow1->getId(), $workflowIds, 'Workflow 1 should be in the retrieved workflows.');
+			$this->assertContains($workflow2->getId(), $workflowIds, 'Workflow 2 should be in the retrieved workflows.');
+		} catch (\Exception $e) {
+			$this->fail('Exception occurred during testGetWorkflowsByFnums: ' . $e->getMessage());
+		}
+	}
 }

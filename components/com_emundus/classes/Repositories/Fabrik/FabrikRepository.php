@@ -348,6 +348,8 @@ class FabrikRepository
 	{
 		$query = $this->db->getQuery(true);
 
+
+		// todo: group concat on fabrik joins, and create a specific FabrikJoinEntity if needed in future
 		$columns = self::FABRIK_ELEMENT_COLUMNS;
 		if ($withJoins)
 		{
@@ -364,10 +366,11 @@ class FabrikRepository
 				->leftJoin(
 					$this->db->quoteName('#__fabrik_joins', 'fj') . ' ON (' .
 					$this->db->quoteName('fl.id') . ' = ' . $this->db->quoteName('fj.list_id') .
-					' AND (' . $this->db->quoteName('fg.id') . '= ' . $this->db->quoteName('fj.group_id') . ' OR ' . $this->db->quoteName('fe.id') . '= ' . $this->db->quoteName('fj.element_id') . '))');
+					' AND ((' . $this->db->quoteName('fg.id') . '= ' . $this->db->quoteName('fj.group_id') . '  AND JSON_EXTRACT(fj.params,"$.type") = "group")  OR ' . $this->db->quoteName('fe.id') . '= ' . $this->db->quoteName('fj.element_id') . '))');
 		}
 
-		$query->order('fe.ordering');
+		$query->group('fe.id')
+			->order('fe.ordering');
 
 		return $query;
 	}
