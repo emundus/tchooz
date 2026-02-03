@@ -15,7 +15,6 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
-use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\ValueFormatEnum;
@@ -128,17 +127,14 @@ class Export
 	public function __construct(string $langCode = 'fr-FR')
 	{
 		$this->registerClasses();
-
-		$this->loadOverrideTranslations($langCode);
 	}
 
 	/**
 	 * @param   int|string                    $elementId
 	 * @param   array<ApplicationFileEntity>  $files
+	 * @param   ValueFormatEnum               $format
 	 *
 	 * @return array
-	 *
-	 * @throws \Exception
 	 */
 	public function getData(int|string $elementId, array $files, ValueFormatEnum $format = ValueFormatEnum::RAW): array
 	{
@@ -178,7 +174,7 @@ class Export
 						foreach ($averagesBySteps as $stepId => $averageByFnum)
 						{
 							$step = $stepRepository->getStepById($stepId);
-							$result['label'] = $this->getTranslation($header->getLabel()) . ' - ' . Text::_($step->label);
+							$result['label'] = Text::_($header->getLabel()) . ' - ' . Text::_($step->label);
 							foreach ($files as $file)
 							{
 								$result['data'][$file->getFnum()] = $averageByFnum[$file->getFnum()] ?? '';
@@ -188,7 +184,7 @@ class Export
 				}
 				else
 				{
-					$result['label'] = $this->getTranslation($header->getLabel());
+					$result['label'] = Text::_($header->getLabel());
 					foreach ($files as $file)
 					{
 						$result['data'][$file->getFnum()] = $header->transform($file, $this->labelRepository, null, $format);
@@ -207,7 +203,7 @@ class Export
 					$element = $this->fabrikRepository->getElementById($moreFieldId);
 					if (!empty($element))
 					{
-						$result['label'] = $this->getTranslation($element->getLabel());
+						$result['label'] = Text::_($element->getLabel());
 
 						foreach ($files as $file)
 						{
@@ -250,7 +246,7 @@ class Export
 					$elementsByAliases = \EmundusHelperFabrik::getElementsByAlias($eltParams->alias);
 				}
 
-				$result['label'] = $this->getTranslation($element->getLabel());
+				$result['label'] = Text::_($element->getLabel());
 				$result['db_table_name'] = $element->getDbTableName();
 
 				foreach ($files as $file)
@@ -277,6 +273,7 @@ class Export
 							}
 						}
 
+						$elementValue[$element->getId()][$file->getFnum()]['raw'] = true;
 						$elementValue[$element->getId()][$file->getFnum()]['val'] = implode(',', $evaluationValues);
 					}
 					else
@@ -350,14 +347,14 @@ class Export
 								$transformedValues = [];
 								foreach ($values as $value)
 								{
-									$transformedValues[] = $this->getTranslation($value);
+									$transformedValues[] = Text::_($value);
 								}
 								$result['data'][$file->getFnum()] = implode(', ', $transformedValues);
 							}
 							else
 							{
 								// Translate value
-								$result['data'][$file->getFnum()] = $this->getTranslation($result['data'][$file->getFnum()]);
+								$result['data'][$file->getFnum()] = Text::_($result['data'][$file->getFnum()]);
 							}
 						}
 					}
@@ -372,38 +369,6 @@ class Export
 		}
 
 		return $result;
-	}
-
-	protected function getTranslation(string $key): string
-	{
-		$key = trim($key);
-		if (isset($this->translations[$key]))
-		{
-			return $this->translations[$key];
-		}
-
-		return Text::_($key);
-	}
-
-	private function loadOverrideTranslations(string $code = 'fr-FR'): void
-	{
-		try
-		{
-			$file = JPATH_ROOT . '/language/overrides/' . $code . '.override.ini';
-			if (file_exists($file))
-			{
-				$this->translations = parse_ini_file($file);
-
-				if ($this->translations === false)
-				{
-					$this->translations = [];
-				}
-			}
-		}
-		catch (\Exception $e)
-		{
-			$this->translations = [];
-		}
 	}
 
 	private function registerClasses(): void
