@@ -1,5 +1,7 @@
 <?php
 // No direct access to this file
+use Joomla\CMS\Factory;
+
 defined('_JEXEC') or die('Restricted access');
 require_once JPATH_CONFIGURATION . '/configuration.php';
 
@@ -13,8 +15,8 @@ class com_emundusInstallerScript
 	public function __construct()
 	{
 		// Get component manifest cache
-		$db    = JFactory::getDBO();
-		$query = $db->getQuery(true);
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->createQuery();
 
 		$query->select('manifest_cache')
 			->from('#__extensions')
@@ -81,8 +83,8 @@ class com_emundusInstallerScript
 
 		if ($this->manifest_cache)
 		{
-			$db    = JFactory::getDbo();
-			$query = $db->getQuery(true);
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
 
 			# First run condition
 			if (version_compare($cache_version, '1.33.0', '<') || $firstrun)
