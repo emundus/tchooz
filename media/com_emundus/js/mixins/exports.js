@@ -177,8 +177,8 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
         body: formData,
     };
 
-    var allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
-    if(allowAsync == 0)
+    const allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
+    if(allowAsync != 1)
     {
         timeout = null;
     }
@@ -243,7 +243,7 @@ function generate_csv(json, eltJson, objJson, options, objclass, letter, stepEle
             if (timeout && timeoutId) {
                 clearTimeout(timeoutId);
             }
-            if (error.name === 'TimeoutError' || error.name === 'AbortError') {
+            if ((error.name === 'TimeoutError' || error.name === 'AbortError') && allowAsync == 1) {
                 generate_csv(json, eltJson, objJson, options, objclass, letter, stepElements, campaign, 0, true);
             }
         });
