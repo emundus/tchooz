@@ -27,6 +27,8 @@ use PhpOffice\PhpSpreadsheet\Style\Fill;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Upload\UploadFormatEnum;
@@ -164,8 +166,6 @@ class ExcelService extends Export implements ExportInterface
 					}
 				}
 
-				$files = $this->applicationFileRepository->getAll(['fnum' => $this->fnums]);
-
 				$processStartTime = microtime(true);
 				if (empty($json))
 				{
@@ -176,8 +176,32 @@ class ExcelService extends Export implements ExportInterface
 					$this->exportEntity->setFilename($exportPath . $jsonFileName);
 
 					$this->exportRepository->flush($this->exportEntity);
+
+					// Check access to files
+					$validFnums = [];
+					$format     = ExportFormatEnum::XLSX;
+					foreach ($this->fnums as $fnum)
+					{
+						if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($format->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
+						{
+							$validFnums[] = $fnum;
+						}
+					}
+
+					if(empty($validFnums))
+					{
+						throw new \Exception('No valid files to export.');
+					}
+
+					if(Factory::getApplication()->isClient('site'))
+					{
+						Factory::getApplication()->setUserState('com_emundus.files.export.fnums', $validFnums);
+					}
+
+					$this->fnums = $validFnums;
 				}
 
+				$files = $this->applicationFileRepository->getAll(['fnum' => $this->fnums]);
 
 				$synthesisIds = $this->options->getSynthesis() ?? [];
 

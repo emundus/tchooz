@@ -577,21 +577,12 @@ class EmundusControllerExport extends BaseController
 				$fnums = $this->app->getUserState('com_emundus.files.export.fnums');
 			}
 			// Filter fnums that we can actually export
-			$validFnums = [];
-
 			if (!is_array($fnums))
 			{
 				$fnums = explode(',', $fnums);
 			}
-			foreach ($fnums as $fnum)
-			{
-				if (is_string($fnum) && EmundusHelperAccess::asAccessAction($format->getAccessName(), CrudEnum::CREATE->value, $this->_user->id, $fnum))
-				{
-					$validFnums[] = $fnum;
-				}
-			}
 
-			if (empty($validFnums))
+			if(empty($fnums))
 			{
 				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), Response::HTTP_BAD_REQUEST);
 			}
@@ -600,7 +591,7 @@ class EmundusControllerExport extends BaseController
 			if (empty($campaign))
 			{
 				$applicationFileRepository = new ApplicationFileRepository();
-				$campaignIds               = $applicationFileRepository->getCampaignIds($validFnums);
+				$campaignIds               = $applicationFileRepository->getCampaignIds($fnums);
 
 				// Get campaigns of fnums and keep the campaign with max occurrences
 				$campaignIdCounts = array_count_values($campaignIds);
@@ -714,29 +705,33 @@ class EmundusControllerExport extends BaseController
 			$exportAction = new ActionExport($parameters);
 			$targets      = array_map(function ($fnum) use ($exportEntity) {
 				return new ActionTargetEntity($this->_user, $fnum, null, ['export_id' => $exportEntity->getId()]);
-			}, $validFnums);
+			}, $fnums);
 
 			if ($async)
 			{
-				// If export asynchronous, create a task
-				$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'actionTargetEntities' => array_map(function ($target) {
-					return $target->serialize();
-				}, $targets)]);
-
-				$taskRepository = new TaskRepository();
-				if (!$taskRepository->saveTask($task))
+				// Check if we have an existing pending or in-progress task for this export
+				if(empty($exportEntity->getTask()))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					// If export asynchronous, create a task
+					$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'actionTargetEntities' => array_map(function ($target) {
+						return $target->serialize();
+					}, $targets)]);
+
+					$taskRepository = new TaskRepository();
+					if (!$taskRepository->saveTask($task))
+					{
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					}
+
+					$exportEntity->setCancelled(true);
+					$exportEntity->setTask($task);
+					if (!$this->exportRepository->flush($exportEntity))
+					{
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					}
 				}
 
-				$exportEntity->setCancelled(true);
-				$exportEntity->setTask($task);
-				if (!$this->exportRepository->flush($exportEntity))
-				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
-				}
-
-				$response = Response::ok(['task_id' => $task->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
+				$response = Response::ok(['task_id' => $exportEntity->getTask()->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
 				//
 			}
 			else
