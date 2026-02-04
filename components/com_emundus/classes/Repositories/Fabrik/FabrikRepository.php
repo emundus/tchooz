@@ -407,9 +407,9 @@ class FabrikRepository
 			$query->where($this->db->quoteName('fe.hidden') . ' = ' . $this->db->quote($filters['hidden']));
 		}
 
-		if (in_array('exluded_elements', array_keys($filters)))
+		if (in_array('excluded_elements', array_keys($filters)))
 		{
-			$query->where($this->db->quoteName('fe.plugin') . ' NOT IN (' . implode(',', array_map([$this->db, 'quote'], $filters['exluded_elements'])) . ')');
+			$query->where($this->db->quoteName('fe.name') . ' NOT IN (' . implode(',', array_map([$this->db, 'quote'], $filters['excluded_elements'])) . ')');
 		}
 	}
 
