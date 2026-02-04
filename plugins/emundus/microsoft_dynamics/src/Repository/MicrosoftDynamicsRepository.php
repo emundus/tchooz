@@ -55,9 +55,7 @@ class MicrosoftDynamicsRepository
 			->select('id,config')
 			->from($this->db->quoteName('#__emundus_microsoft_dynamics_queue'))
 			->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($dynamicsEntity->getFnum()))
-			->where($this->db->quoteName('collectionname') . ' = ' . $this->db->quote($collectionname))
-			->where($this->db->quoteName('name') . ' = ' . $this->db->quote($name))
-			->where($this->db->quoteName('action') . ' = ' . $this->db->quote($action));
+			->where('JSON_EXTRACT(config,"$.id")' . ' = ' . $dynamicsEntity->getConfig()['id']);
 		$this->db->setQuery($this->query);
 		$imports = $this->db->loadAssocList();
 
@@ -66,6 +64,14 @@ class MicrosoftDynamicsRepository
 			if (!empty($import['id']))
 			{
 				$importConfig = json_decode($import['config'], true);
+				if(!empty($dynamicsEntity->getConfig()['repeat_row']) && !empty($dynamicsEntity->getConfig()['repeat_row']->id))
+				{
+					if(!empty($importConfig['repeat_row']) && $importConfig['repeat_row']['id'] != $dynamicsEntity->getConfig()['repeat_row']->id)
+					{
+						continue;
+					}
+				}
+
 				if (!empty($importConfig['data']))
 				{
 					$importConfig['data'] = json_decode($importConfig['data'], true);
