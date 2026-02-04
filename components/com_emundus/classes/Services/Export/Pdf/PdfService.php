@@ -23,6 +23,8 @@ use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\Export\ExportEntity;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
@@ -99,6 +101,11 @@ class PdfService extends Export implements ExportInterface
 
 			foreach ($this->fnums as $fnum)
 			{
+				if(!\EmundusHelperAccess::asAccessAction(ExportFormatEnum::PDF->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
+				{
+					continue;
+				}
+
 				$html = '';
 
 				$applicationFile = $this->applicationFileRepository->getByFnum($fnum);
