@@ -2229,7 +2229,7 @@ class EmundusModelApplication extends ListModel
 									}
 									unset($element);
 
-									$forms .= '<fieldset class="em-personalDetail !tw-overflow-y-hidden" style="scrollbar-width: auto;">';
+									$forms .= '<fieldset class="em-personalDetail !tw-overflow-y-hidden" style="scrollbar-width: none;">';
 									$forms .= '<div class="tw-flex tw-flex-row justify-between form-group-title tw-sticky tw-left-0">';
 									$forms .= (!empty($itemg->label)) ? '<h3 style="font-size: var(--em-coordinator-h3); font-weight: inherit; padding-left: 0;">' . Text::_($itemg->label) . '</h3>' : '';
 
@@ -2596,6 +2596,7 @@ class EmundusModelApplication extends ListModel
 										$forms .= '</tbody>';
 									}
 									$forms .= '</table>';
+									$forms .= '<div class="fake-scroll"><div class="fake-scroll-content"></div></div>';
 									$forms .= '</fieldset>';
 								}
 								// AFFICHAGE EN LIGNE

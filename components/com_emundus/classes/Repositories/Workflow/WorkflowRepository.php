@@ -94,6 +94,47 @@ class WorkflowRepository
 	}
 
 	/**
+	 * @param   array  $fnums
+	 *
+	 * @return array<WorkflowEntity>
+	 */
+	public function getWorkflowsByFnums(array $fnums): array
+	{
+		$workflows = [];
+
+		if (!empty($fnums))
+		{
+			$query = $this->db->createQuery();
+
+			$query->select('DISTINCT w.*, GROUP_CONCAT(p.program_id) AS program_ids')
+				->from($this->db->quoteName($this->getTableName(self::class), 'w'))
+				->leftJoin($this->db->quoteName('jos_emundus_setup_workflows_programs', 'p') . ' ON ' . $this->db->quoteName('w.id') . ' = ' . $this->db->quoteName('p.workflow_id'))
+				->leftJoin($this->db->quoteName('jos_emundus_setup_programmes', 'pr') . ' ON ' . $this->db->quoteName('p.program_id') . ' = ' . $this->db->quoteName('pr.id'))
+				->leftJoin($this->db->quoteName('jos_emundus_setup_campaigns', 'esc') . ' ON ' . $this->db->quoteName('esc.training') . ' = ' . $this->db->quoteName('pr.code'))
+				->leftJoin($this->db->quoteName('jos_emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.campaign_id') . ' = ' . $this->db->quoteName('esc.id'))
+				->where($this->db->quoteName('ecc.fnum') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $fnums)) . ')')
+				->group('w.id');
+
+			try
+			{
+				$this->db->setQuery($query);
+				$results = $this->db->loadObjectList();
+
+				if ($results)
+				{
+					$workflows = WorkflowFactory::fromDbObjects($results);
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add('Error fetching workflows by fnums: ' . implode(',', $fnums) . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.workflow');
+			}
+		}
+
+		return $workflows;
+	}
+
+	/**
 	 * @param int $programId
 	 *
 	 * @return WorkflowEntity|null

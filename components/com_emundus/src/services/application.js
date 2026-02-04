@@ -120,4 +120,15 @@ export default {
 			};
 		}
 	},
+
+	async getChoicesStates() {
+		try {
+			return await client.get('getchoicesstates');
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };

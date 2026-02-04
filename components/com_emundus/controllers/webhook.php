@@ -1103,6 +1103,7 @@ class EmundusControllerWebhook extends BaseController
 					}
 				} else {
 					// TODO: when signature is not verified, we should check IP and blacklist it after 5 wrong attempts
+					Log::add('Signature verification failed, potential malicious attempt', Log::WARNING, 'com_emundus.payment');
 				}
 			}
 			catch (Exception $e)
@@ -1130,6 +1131,17 @@ class EmundusControllerWebhook extends BaseController
 					switch ($transaction->getStatus()) {
 						case TransactionStatus::CONFIRMED:
 							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_CONFIRMED_MESASGE'));
+
+							if (!class_exists('EmundusModelWorkflow')) {
+								require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+							}
+							$workflowModel = new EmundusModelWorkflow();
+							// todo: use Step Repository to get current step + check dates before redirecting
+							$newCurrentStep = $workflowModel->getCurrentWorkflowStepFromFile($transaction->getFnum());
+
+							if (!empty($newCurrentStep) && !empty($newCurrentStep->id)) {
+								$this->app->redirect('index.php?option=com_emundus&task=openfile&fnum=' . $transaction->getFnum());
+							}
 							break;
 						case TransactionStatus::CANCELLED:
 							$this->app->enqueueMessage(Text::_('COM_EMUNDUS_TRANSACTION_CANCELLED_MESASGE'));

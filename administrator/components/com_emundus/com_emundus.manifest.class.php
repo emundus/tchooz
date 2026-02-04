@@ -152,6 +152,16 @@ class Com_EmundusInstallerScript
 							}
 							else
 							{
+								// Run only once for 2.13.0
+								if($release_version === '2.13.0')
+								{
+									$dbLanguage = new DbLanguage();
+									if (!$dbLanguage->filesToDatabase())
+									{
+										EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour de la base de données des langue.', 'error');
+									}
+								}
+
 								if (!$this->createVersion($this->db, $release_version, $date))
 								{
 									EmundusHelperUpdate::displayMessage('Version ' . $release_version . ' creation failed', 'error');
@@ -198,11 +208,6 @@ class Com_EmundusInstallerScript
 		}
 
 		$dbLanguage = new DbLanguage();
-		if (!$dbLanguage->filesToDatabase())
-		{
-			EmundusHelperUpdate::displayMessage('Erreur lors de la mise à jour de la base de données des langue.', 'error');
-		}
-
 		if (!$dbLanguage->repairOrphans())
 		{
 			EmundusHelperUpdate::displayMessage('Erreur lors de la réparation des entrées orphelines de la base de données des langues.', 'error');

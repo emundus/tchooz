@@ -29,7 +29,7 @@ use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Traits\TraitTable;
 
-#[TableAttribute(table: '#__emundus_setup_campaigns')]
+#[TableAttribute(table: '#__emundus_setup_campaigns', alias: 'esc')]
 class CampaignRepository extends EmundusRepository implements RepositoryInterface
 {
 	use TraitTable;
@@ -56,7 +56,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		parent::__construct($withRelations, $exceptRelations, 'campaign');
+		parent::__construct($withRelations, $exceptRelations, 'campaign', self::class);
 
 		$this->factory = new CampaignFactory();
 	}
@@ -467,6 +467,46 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		return $campaign_ids;
+	}
+
+	/**
+	 * @param   array  $fnums
+	 *
+	 * @return array<CampaignEntity>
+	 */
+	public function getCampaignsByFnums(array $fnums): array
+	{
+		$campaigns = [];
+
+		if (!empty($fnums))
+		{
+			$query = $this->db->createQuery();
+			$query->select('DISTINCT ' . $this->alias . '.*')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = ' . $this->alias . '.id' )
+				->where('ecc.fnum IN (' . implode(',', $fnums) . ')');
+
+			try
+			{
+				$this->db->setQuery($query);
+				$objects = $this->db->loadObjectList();
+
+				if (!empty($objects))
+				{
+					foreach ($objects as $object)
+					{
+						$campaigns[] = $this->factory->fromDbObject($object, $this->withRelations);
+					}
+				}
+			}
+			catch (\Exception $exception)
+			{
+				dd($exception->getMessage());
+				Log::add('Failed to fetch campaigns: ' . $exception->getMessage(), Log::ERROR, 'com_emundus.repository.campaign');
+			}
+		}
+
+		return $campaigns;
 	}
 
 	public function getLinkedProgramsIds(int $campaign_id, string $fnum = ''): array

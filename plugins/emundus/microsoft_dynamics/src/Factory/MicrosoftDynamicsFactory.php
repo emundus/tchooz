@@ -27,7 +27,7 @@ class MicrosoftDynamicsFactory
 	)
 	{}
 
-	public function getMicrosoftDynamicsConfig($name, $data, $training = null, $check_status = true): array
+	public function getMicrosoftDynamicsConfig($name, $data, $training = null, $check_status = true, $id = 0): array
 	{
 		$configurations = [];
 
@@ -51,7 +51,7 @@ class MicrosoftDynamicsFactory
 					{
 						foreach ($params['configurations'] as $config)
 						{
-							if (($config['event'] == $name || $name === 'onMicrosftDynamicsSync') && (!empty($config['programs']) && in_array($training, $config['programs'])))
+							if ((!empty($id) && $config['id'] == $id) || (empty($id) && $config['event'] == $name || $name === 'onMicrosftDynamicsSync') && (!empty($config['programs']) && in_array($training, $config['programs'])))
 							{
 								if($check_status)
 								{
@@ -96,6 +96,18 @@ class MicrosoftDynamicsFactory
 			default:
 				return false;
 		}
+	}
+
+	public function getRepeatRows($table, $data)
+	{
+		$query = $this->database->getQuery(true);
+
+		$query->clear()
+			->select('*')
+			->from($this->database->quoteName($table))
+			->where($this->database->quoteName('fnum') . ' = ' . $this->database->quote($data['fnum']));
+		$this->database->setQuery($query);
+		return $this->database->loadObjectList();
 	}
 
 	private function createCRM(object $api, array $config, array $data, bool $withData = true): bool
@@ -154,6 +166,16 @@ class MicrosoftDynamicsFactory
 			}
 		}
 
+		$repeatRow = null;
+		if(!empty($config['repeat_row']))
+		{
+			$repeatRow = $config['repeat_row'];
+		}
+		elseif (!empty($data['repeat_row']))
+		{
+			$repeatRow = $data['repeat_row'];
+		}
+
 		$applicant = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($data['fnumInfos']['applicant_id']);
 
 		$microsoftDynamicsEntity = new MicrosoftDynamicsEntity(
@@ -162,7 +184,7 @@ class MicrosoftDynamicsFactory
 			$applicant,
 			$params,
 			$filters,
-			['event' => $config['event'], 'training' => $data['fnumInfos']['training'], 'data' => json_encode(['state' => $config['eventParams']['state'], 'oldstate' => $config['eventParams']['oldstate'], 'name' => $config['name'], 'collectionname' => $config['collectionname']])],
+			['id' => $config['id'], 'repeat' => $config['repeat'] ?: '','repeat_row' => $repeatRow, 'event' => $config['event'], 'training' => $data['fnumInfos']['training'], 'data' => json_encode(['state' => $config['eventParams']['state'], 'oldstate' => $config['eventParams']['oldstate'], 'name' => $config['name'], 'collectionname' => $config['collectionname']])],
 			$data['fnum']
 		);
 
@@ -198,6 +220,27 @@ class MicrosoftDynamicsFactory
 						->select($element[1])
 						->from($this->database->quoteName('jos_emundus_campaign_candidature'))
 						->where($this->database->quoteName('fnum') . ' = ' . $this->database->quote($data['fnum']));
+					$this->database->setQuery($query);
+					$value = $this->database->loadResult();
+				}
+				elseif (strpos($field['elementId'], 'jos_emundus_setup_campaigns_more') !== false)
+				{
+					$element = explode('___', $field['elementId']);
+
+					$query->clear()
+						->select($element[1])
+						->from($this->database->quoteName('jos_emundus_setup_campaigns_more'));
+
+					if(!empty($field['joinColumn']) && !empty($data['repeat_row']))
+					{
+						$query->where($this->database->quoteName($field['joinColumn']) . ' = ' . $this->database->quote($data['repeat_row']['campaign_id']));
+					}
+					else
+					{
+						$query->leftJoin($this->database->quoteName('jos_emundus_campaign_candidature', 'jecc') . ' ON ' . $this->database->quoteName('jecc.campaign_id') . ' = ' . $this->database->quoteName('jos_emundus_setup_campaigns_more.campaign_id'));
+						$query->where($this->database->quoteName('jecc.fnum') . ' = ' . $this->database->quote($data['fnum']));
+					}
+
 					$this->database->setQuery($query);
 					$value = $this->database->loadResult();
 				}
@@ -519,6 +562,12 @@ class MicrosoftDynamicsFactory
 		else {
 			return '';
 		}
+	}
+
+	private function convertToDecimal(string $number): float
+	{
+		$number = str_replace(',', '.', $number);
+		return (float)$number;
 	}
 
 	private function remove_accents(string $string): string
