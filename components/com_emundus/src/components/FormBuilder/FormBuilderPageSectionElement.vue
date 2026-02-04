@@ -2,7 +2,7 @@
 	<div
 		class="form-builder-page-section-element tw-my-3 tw-flex tw-cursor-pointer tw-flex-col tw-items-start tw-justify-start tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-3 hover:tw-border-profile-full hover:tw-bg-neutral-300"
 		:id="'element_' + element.id"
-		v-show="(!element.hidden && element.publish !== -2) || (element.hidden && sysadmin)"
+		v-show="element.publish !== -2"
 		:class="{
 			unpublished: !element.publish || element.hidden,
 		}"
@@ -24,7 +24,7 @@
 						:class="element.label === '' ? 'tw-italic tw-text-neutral-500' : ''"
 						>{{
 							element.label !== ''
-								? element.label
+								? element.label + (element.hidden ? ' (' + translate('COM_EMUNDUS_FORM_BUILDER_HIDDEN') + ')' : '')
 								: translate('COM_EMUNDUS_ONBOARD_TYPE_' + element.plugin.toUpperCase())
 						}}</span
 					>

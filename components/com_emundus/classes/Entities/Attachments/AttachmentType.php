@@ -31,7 +31,34 @@ class AttachmentType
 
 	private ?bool $isRequired;
 
-	private AttachmentTypeProperty $properties;
+	private ?AttachmentTypeProperty $properties;
+
+	public function __construct(
+		int $id,
+		string $lbl,
+		string $name,
+		?string $description,
+		string $allowedTypes,
+		int $nbMax,
+		?int $ordering = 0,
+		bool $published = true,
+		?string $category = null,
+		?bool $isRequired = false,
+		?AttachmentTypeProperty $properties = null
+	)
+	{
+		$this->id = $id;
+		$this->lbl = $lbl;
+		$this->name = $name;
+		$this->description = $description;
+		$this->allowedTypes = $allowedTypes;
+		$this->nbMax = $nbMax;
+		$this->ordering = $ordering;
+		$this->published = $published;
+		$this->category = $category;
+		$this->isRequired = $isRequired;
+		$this->properties = $properties;
+	}
 
 	public function getId(): int
 	{

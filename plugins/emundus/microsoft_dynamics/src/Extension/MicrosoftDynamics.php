@@ -94,9 +94,24 @@ final class MicrosoftDynamics extends CMSPlugin implements SubscriberInterface
 							{
 								if (!empty($config['action']) && !empty($config['collectionname']) && !empty($config['name']))
 								{
-									if (!$crmFactory->prepareDatas($api, $config, $data, false))
+									if(!empty($config['repeat']))
 									{
-										Log::add('Error while preparing datas for Microsoft Dynamics', Log::ERROR, 'com_emundus.microsoft_dynamics');
+										$rows = $crmFactory->getRepeatRows($config['repeat'], $data);
+										foreach ($rows as $row)
+										{
+											$config['repeat_row'] = $row;
+											if (!$crmFactory->prepareDatas($api, $config, $data, false))
+											{
+												Log::add('Error while preparing datas for Microsoft Dynamics', Log::ERROR, 'com_emundus.microsoft_dynamics');
+											}
+										}
+									}
+									else
+									{
+										if (!$crmFactory->prepareDatas($api, $config, $data, false))
+										{
+											Log::add('Error while preparing datas for Microsoft Dynamics', Log::ERROR, 'com_emundus.microsoft_dynamics');
+										}
 									}
 								}
 							}

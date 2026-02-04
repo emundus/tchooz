@@ -386,6 +386,11 @@ div#frame.outline {
   padding: 4px;
 }
 
+.dropdown-menu > li > a
+{
+  border: unset;
+}
+
 .gantry.view-list .dropdown-menu > li > a:hover,
 .gantry.view-list .dropdown-menu > li > a:focus,
 .gantry.view-list .dropdown-submenu:hover > a,

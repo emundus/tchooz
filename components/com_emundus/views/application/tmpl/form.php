@@ -194,9 +194,58 @@ $emundus_config = ComponentHelper::getParams('com_emundus');
             console.error('Function export_pdf does not exist')
         }
     })
+
+    document
+        .querySelectorAll('.em-personalDetail')
+        .forEach(enableHorizontalDragScroll);
+
+
+    function enableHorizontalDragScroll(container) {
+        if (container.scrollWidth <= container.clientWidth) return;
+
+        let isDown = false;
+        let startX = 0;
+        let scrollLeft = 0;
+
+        container.addEventListener('pointerdown', (e) => {
+            // Do not prevent if the target is comment-icon or an interactive element
+            if (e.target.classList.contains('comment-icon')) return;
+            const interactiveTags = ['BUTTON', 'A', 'INPUT', 'SELECT', 'TEXTAREA', 'LABEL'];
+            if (interactiveTags.includes(e.target.tagName)) return;
+
+            isDown = true;
+            container.setPointerCapture(e.pointerId);
+
+            startX = e.clientX;
+            scrollLeft = container.scrollLeft;
+        });
+
+        container.addEventListener('pointerup', () => isDown = false);
+        container.addEventListener('pointerleave', () => isDown = false);
+
+        container.addEventListener('pointermove', (e) => {
+            if (!isDown) return;
+
+            e.preventDefault();
+            container.scrollLeft = scrollLeft - (e.clientX - startX);
+        });
+    }
 </script>
 
 <style>
+    .em-personalDetail thead,
+    .em-personalDetail th {
+        cursor: grab !important;
+        user-select: none !important;;
+    }
+
+    .em-personalDetail:active thead,
+    .em-personalDetail:active th
+    {
+        cursor: grabbing !important;
+        user-select: none !important;;
+    }
+
     #aside-comment-section #comments {
         height: calc(100vh - 120px);
         overflow: scroll;

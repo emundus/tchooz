@@ -1,4 +1,5 @@
 import { FetchClient } from './fetchClient.js';
+import { useExportStore } from '../stores/export.js';
 
 const client = new FetchClient('export');
 
@@ -15,12 +16,40 @@ export default {
 	},
 
 	async getElements(type, format, abortController = null) {
+		const exportStore = useExportStore();
+		if (exportStore.hasElement(type)) {
+			return exportStore.getElement(type);
+		}
 		try {
-			return await client.get(
+			const result = await client.get(
 				'elements',
 				{ type: type, format: format },
-				abortController.signal ? abortController.signal : null,
+				abortController && abortController.signal ? abortController.signal : null,
 			);
+			exportStore.setElement(type, result);
+			return result;
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+
+	async getSubElements(elementId, type, abortController = null) {
+		const exportStore = useExportStore();
+		const key = `${elementId}_${type}`;
+		if (exportStore.hasSubElement(key)) {
+			return exportStore.getSubElement(key);
+		}
+		try {
+			const result = await client.get(
+				'getSubElements',
+				{ elementId: elementId, type: type },
+				abortController && abortController.signal ? abortController.signal : null,
+			);
+			exportStore.setSubElement(key, result);
+			return result;
 		} catch (e) {
 			return {
 				status: false,

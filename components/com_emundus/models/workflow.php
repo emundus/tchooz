@@ -1110,7 +1110,9 @@ class EmundusModelWorkflow extends JModelList
 	}
 
 	/**
-	 * @param $fnum
+	 * @param           $file_identifier
+	 * @param   int     $type
+	 * @param   string  $column
 	 *
 	 * @return null|object if a step is found, it returns a workflow step object, otherwise null
 	 */

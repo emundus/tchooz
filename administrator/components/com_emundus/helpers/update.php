@@ -9,6 +9,8 @@
 // No direct access
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Cache\CacheController;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
@@ -55,29 +57,33 @@ class EmundusHelperUpdate
 
 	public static function clearJoomlaCache(?array $groups = [])
 	{
-		require_once(JPATH_BASE . '/administrator/components/com_cache/src/Model/CacheModel.php');
-		$m_cache = new CacheModel();
-		$clients = array(1, 0);
+		$cleaned = true;
 
-		foreach ($clients as $client)
+		$cache = Factory::getApplication()->bootComponent('com_cache')->getMVCFactory();
+
+		/** @var \Joomla\Component\Cache\Administrator\Model\CacheModel $model */
+		$model = $cache->createModel('Cache', 'Administrator', ['ignore_request' => true]);
+		$mCache = $model->getCache();
+
+		if (!empty($groups))
 		{
-			$mCache = $m_cache->getCache($client);
-
-			foreach ($mCache->getAll() as $cache)
+			foreach ($groups as $group)
 			{
-				if (!empty($groups) && !in_array($cache->group, $groups))
+				if (!$mCache->clean($group))
 				{
-					continue;
+					$cleaned = false;
 				}
-
-				if ($mCache->clean($cache->group) === false)
-				{
-					return false;
+			}
+		} else
+		{
+			foreach ($mCache->getAll() as $cache) {
+				if ($mCache->clean($cache->group) === false) {
+					$cleaned = false;
 				}
 			}
 		}
 
-		return true;
+		return $cleaned;
 	}
 
 	/**

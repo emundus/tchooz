@@ -1715,6 +1715,31 @@ class EmundusControllerApplication extends BaseController
 		echo json_encode($response);
 		exit;
 	}
+	
+	public function getchoicesstates(): void
+	{
+		if ($this->_user->guest)
+		{
+			$response['code']    = 403;
+			$response['message'] = 'Access denied.';
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$choices_states          = ChoicesStateEnum::cases();
+		$data = [];
+		foreach ($choices_states as $state)
+		{
+			$data[strtolower($state->name)] = $state->getLabel();
+		}
+
+		$response = [];
+		$response['code']   = 200;
+		$response['status'] = true;
+		$response['data']   = $data;
+		$this->sendJsonResponse($response);
+	}
 
 	public function getchoicesconfiguration(): void
 	{

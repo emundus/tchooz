@@ -76,6 +76,8 @@ class ActionUpdateCartDiscounts extends ActionEntity
 
 				if (!empty($cart))
 				{
+					$actionDiscountIds = array_map('intval', (array) $actionDiscountIds);
+
 					foreach ($actionDiscountIds as $actionDiscountId)
 					{
 						$allActionsSuccessful = true;
