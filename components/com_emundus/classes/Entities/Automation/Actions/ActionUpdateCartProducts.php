@@ -74,6 +74,8 @@ class ActionUpdateCartProducts extends ActionEntity
 
 				if (!empty($cart)) {
 					$actionProducts = (array) $this->getParameterValue('products');
+					$actionProducts = array_map('intval', $actionProducts);
+
 					switch($this->getParameterValue(self::ADD_OR_REMOVE_PARAMETER))
 					{
 						case self::ADD:

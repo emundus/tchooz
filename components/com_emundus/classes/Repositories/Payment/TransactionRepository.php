@@ -12,13 +12,13 @@ use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Payment\CartEntity;
 use Tchooz\Entities\Payment\PaymentMethodEntity;
-use Tchooz\Entities\Payment\PaymentStepEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Payment\TransactionEntity;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Synchronizers\Payment\Sogecommerce;
 use Tchooz\Synchronizers\Payment\Stripe;
@@ -303,6 +303,11 @@ class TransactionRepository
 									$m_files->updateState([$transaction->getFnum()], $payment_step->getOutputStatus(), $user_id);
 								}
 
+								$applicationRepository = new ApplicationFileRepository();
+								$applicationFile = $applicationRepository->getByFnum($transaction->getFnum());
+								$applicationFile->setDateSubmitted(new \Datetime());
+								$applicationRepository->flush($applicationFile, $user_id);
+
 								$cart_repository = new CartRepository();
 								$cart = $cart_repository->getCartById($transaction->getCartId());
 								$reset = $cart_repository->resetCart($cart, $user_id);
@@ -321,15 +326,15 @@ class TransactionRepository
 
 				$details = ['updated' => []];
 
-				if ($old_data['status'] != $transaction->getStatus()->value) {
+				if (isset($old_data['status']) && $old_data['status'] != $transaction->getStatus()->value) {
 					$details['updated'][] = ['old' => $old_data['status'], 'new' => $transaction->getStatus()->value];
 				}
 
-				if ($old_data['external_reference'] != $transaction->getExternalReference()) {
-					$details['updated'][] = ['old' => !empty($old_data['external_reference']) ? $old_data['external_reference'] : '' , 'new' => $transaction->getExternalReference()];
+				if (!empty($old_data['external_reference']) && $old_data['external_reference'] != $transaction->getExternalReference()) {
+					$details['updated'][] = ['old' => $old_data['external_reference'] , 'new' => $transaction->getExternalReference()];
 				}
 
-				if ($old_data['amount'] != $transaction->getAmount()) {
+				if (!empty($old_data['amount']) && $old_data['amount'] != $transaction->getAmount()) {
 					$details['updated'][] = ['old' => $old_data['amount'], 'new' => $transaction->getAmount()];
 				}
 			} else {

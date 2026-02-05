@@ -2099,11 +2099,9 @@ class EmundusHelperEvents
 		if (!empty($params['plugin_options']))
 		{
 			$go_to_next_step = false;
-			if (intval($params['plugin_options']->get('trigger_confirmpost_redirect_to_next_step_first_page_url')) === 1)
+			if($new_status != $old_status)
 			{
-
 				$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($student->fnum);
-
 				if (!empty($current_phase->id))
 				{
 					$go_to_next_step = true;

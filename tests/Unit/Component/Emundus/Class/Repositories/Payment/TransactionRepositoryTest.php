@@ -2,6 +2,7 @@
 
 namespace Unit\Component\Emundus\Class\Repositories\Payment;
 
+use Tchooz\Entities\Payment\CurrencyEntity;
 use Tchooz\Entities\Payment\ProductEntity;
 use Tchooz\Entities\Payment\TransactionStatus;
 use Tchooz\Repositories\Payment\CartRepository;
@@ -208,6 +209,36 @@ class TransactionRepositoryTest extends UnitTestCase
 		}
 
 		return $entities;
+	}
+
+	/**
+	 * @covers TransactionRepository::saveTransaction
+	 * @return void
+	 * @throws \Exception
+	 */
+	public function testSaveTransaction(): void
+	{
+		$this->createWorkflowWithPayment();
+		$cart_repository = new CartRepository();
+		$cart_id         = $cart_repository->createCart($this->dataset['fnum'], $this->payment_step->getId());
+		$transaction = new TransactionEntity(0);
+		$transaction->setCartId($cart_id);
+		$transaction->setAmount(50.00);
+		$transaction->setFnum($this->dataset['fnum']);
+		$transaction->setStatus(TransactionStatus::INITIATED);
+		$currency = new CurrencyEntity(1, 'Euro', 'EUR', '€');
+		$transaction->setCurrency($currency);
+		$transaction->setStepId($this->payment_step->getId());
+		$transaction->setSynchronizerId($this->payment_step->getSynchronizerId());
+
+		$payment_repository = new PaymentRepository();
+		$payment_methods    = $payment_repository->getPaymentMethods();
+
+		$transaction->setPaymentMethod($payment_methods[0]);
+
+		$saved = $this->model->saveTransaction($transaction, 1);
+		$this->assertTrue($saved, 'Transaction should be saved successfully');
+		$this->assertGreaterThan(0, $transaction->getId(), 'Transaction ID should be set after saving');
 	}
 
 	/**

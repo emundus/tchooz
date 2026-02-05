@@ -250,10 +250,10 @@ class TagEntity
 		$result = '';
 		$db = Factory::getContainer()->get('DatabaseDriver');
 
-		if(empty($user_id))
+		if (empty($user_id))
 		{
-			$user_id = Factory::getApplication()->getIdentity()->id;
-			if(empty($user_id))
+			$user_id = !empty(Factory::getApplication()->getIdentity()) ? Factory::getApplication()->getIdentity()->id : 0;
+			if (empty($user_id))
 			{
 				$user_id = ComponentHelper::getParams('com_emundus')->get('automated_task_user', 1);
 			}

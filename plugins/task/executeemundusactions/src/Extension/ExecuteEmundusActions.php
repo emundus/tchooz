@@ -2,15 +2,18 @@
 
 namespace Joomla\Plugin\Task\ExecuteEmundusActions\Extension;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\Component\Scheduler\Administrator\Event\ExecuteTaskEvent;
 use Joomla\Component\Scheduler\Administrator\Task\Status as TaskStatus;
 use Joomla\Component\Scheduler\Administrator\Traits\TaskPluginTrait;
+use Joomla\DI\Container;
 use Joomla\Event\SubscriberInterface;
-use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Factories\Language\DbLanguageFactory;
+use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Repositories\Task\TaskRepository;
 
 class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
@@ -55,6 +58,36 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 
 		if (!empty($tasks))
 		{
+			// load front languages
+			if (Factory::getApplication()->isClient('cli'))
+			{
+				if (!class_exists('DbLanguageFactory'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/classes/Factories/Language/DbLanguageFactory.php';
+				}
+				if (!class_exists('DbLanguage'))
+				{
+					require_once JPATH_SITE . '/components/com_emundus/classes/Services/Language/DbLanguage.php';
+				}
+
+				$defaultLangCode = LanguageFactory::getDefaultLanguageCode();
+
+				$container = Factory::getContainer();
+				$container->alias('language.factory', DbLanguageFactory::class)
+					->share(
+						DbLanguageFactory::class,
+						function (Container $container) {
+							return new DbLanguageFactory();
+						},
+						true
+					);
+
+				$lang = $container->get(DbLanguageFactory::class)->createLanguage($defaultLangCode, false);
+
+				// Register the language object with Factory
+				Factory::$language = $lang;
+			}
+
 			Log::add('Found ' . count($tasks) . ' pending tasks to execute.', Log::DEBUG, 'task_executeemundusactions');
 			foreach ($tasks as $task) {
 				try {

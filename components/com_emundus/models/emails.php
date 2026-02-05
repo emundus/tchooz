@@ -625,11 +625,18 @@ class EmundusModelEmails extends JModelList
 			else {
 				$user = $current_user;
 			}
-		}
-		else {
-			$user = !empty($user_id) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id) : null;
+		} else if (!empty($user_id))
+		{
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id);
 			$current_user = $user;
 		}
+		else {
+			$emConfig   = JComponentHelper::getParams('com_emundus');
+			$automated_task_user = $emConfig->get('automated_task_user', 1);
+			$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($automated_task_user);
+			$current_user = $user;
+		}
+
 		$config = $app->getConfig();
 
 		if (!empty($user) && !empty($user->id)) {
@@ -655,15 +662,29 @@ class EmundusModelEmails extends JModelList
 
 			$activation = $user->get('activation');
 
+			$timezone = $app->get('offset', 'Europe/Paris');
+			$timezone = new DateTimeZone($timezone);
+			$now = Factory::getDate('now', $timezone);
+
+			// TODO: Use a modifier to specify the date format and language?
+			$currentDate = $now->format(Text::_('DATE_FORMAT_LC3'));
+			$currentDateEnglish = new IntlDateFormatter(
+				'en_US',
+				IntlDateFormatter::LONG,
+				IntlDateFormatter::NONE,
+				$timezone
+			);
+			$currentDateEnglish = $currentDateEnglish->format($now);
+
 			$patterns     = array(
 				'/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
 				'/\[ACTIVATION_URL\]/', '/\[ACTIVATION_URL_RELATIVE\]/', '/\[SITE_URL\]/', '/\[SITE_NAME\]/',
-				'/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[LOGO\]/'
+				'/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[CURRENT_DATE_ENGLISH\]/', '/\[LOGO\]/'
 			);
 			$replacements = array(
 				$user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
 				$base_url . "index.php?option=com_users&task=registration.activate&token=" . $activation, "index.php?option=com_users&task=registration.activate&token=" . $activation, $base_url, $sitename,
-				$user->id, $user->name, $user->email, $user->username, Factory::getDate('now')->format(Text::_('DATE_FORMAT_LC3')), $logo
+				$user->id, $user->name, $user->email, $user->username, $currentDate, $currentDateEnglish, $logo
 			);
 
 			if (!empty($fnum)) {
@@ -879,7 +900,7 @@ class EmundusModelEmails extends JModelList
 			$patterns[] = $tagEntity->getFullPatternName();
 			$replacements[] = $tagEntity->getValue();
 		}
-		
+
 		// Check modifiers tags
 		if(!empty($content)) {
 			foreach ($tags_content as $tag)
@@ -941,7 +962,8 @@ class EmundusModelEmails extends JModelList
 
 		$query = $db->getQuery(true);
 		$query->select('tag, request')
-			->from($db->quoteName('#__emundus_setup_tags'));
+			->from($db->quoteName('#__emundus_setup_tags'))
+			->where($db->quoteName('published') . ' = 1');
 		$db->setQuery($query);
 		$tags = $db->loadAssocList();
 
@@ -949,22 +971,23 @@ class EmundusModelEmails extends JModelList
 
 		$patterns     = array();
 		$replacements = array();
-		foreach ($tags as $tag) {
+		foreach ($tags as $tag)
+		{
 			$tagEntity = new TagEntity($tag['tag'], $tag['description']);
 
 			// If fnum is set, we call setTagsFabrik to replace tags like {fabrik_element_id} by the application form value
-			$request      = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
-			if(str_contains($request, 'php|') && !empty($fnum))
+			$request = preg_replace($constants['patterns'], $constants['replacements'], $tag['request']);
+			if (str_contains($request, 'php|') && !empty($fnum))
 			{
 				$request = str_replace('php|', '', $request);
-				$request     = $this->setTagsFabrik($request, array($fnum));
+				$request = $this->setTagsFabrik($request, array($fnum));
 
 				$request = 'php|' . $request;
 			}
 			$tagEntity->setRequest($request);
 			$tagEntity->calculateValue($user_id, false, $fnum);
 
-			$patterns[] = $tagEntity->getFullName();
+			$patterns[]     = $tagEntity->getFullName();
 			$replacements[] = $tagEntity->getValue();
 		}
 

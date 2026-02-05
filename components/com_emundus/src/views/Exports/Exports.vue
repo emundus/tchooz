@@ -28,6 +28,7 @@ export default defineComponent({
 		return {
 			loading: false,
 			subLoading: false,
+			subElementsLoading: 0,
 			formatLoading: false,
 			elementsLoading: false,
 			exportLoading: false,
@@ -328,7 +329,9 @@ export default defineComponent({
 							}
 						});
 					} else {
-						if (response.title === 'AbortError') {
+						const allowAsync = Joomla.getOptions('plg_system_emundus.async_export', 0);
+
+						if (response.title === 'AbortError' && allowAsync == 1) {
 							// Rerun export with async flag
 							this.runExport(true);
 						} else {
@@ -405,6 +408,27 @@ export default defineComponent({
 			});
 		},
 		updateOpenedSections(sectionId, type) {
+			// check if subelements are loaded, if not, load them, then display
+			if (type === 'step') {
+				let foundElement = this.elements.find((element) => {
+					return element.profile_id == sectionId;
+				});
+
+				if (foundElement && foundElement.forms.length < 1) {
+					this.subElementsLoading = sectionId;
+
+					exportService
+						.getSubElements(sectionId, this.activeTab.code)
+						.then((response) => {
+							foundElement.forms = response.data;
+							this.subElementsLoading = 0;
+						})
+						.catch((error) => {
+							this.subElementsLoading = 0;
+						});
+				}
+			}
+
 			const idToUpdate = type + '-' + sectionId;
 			if (this.openedSections.includes(idToUpdate)) {
 				this.openedSections = this.openedSections.filter((id) => id !== idToUpdate);
@@ -418,9 +442,31 @@ export default defineComponent({
 		},
 
 		addSelectedStep(step) {
-			Object.values(step.forms).forEach((form) => {
-				this.addSelectedForm(form);
+			let foundElement = this.elements.find((element) => {
+				return element.profile_id == step.profile_id;
 			});
+
+			if (foundElement && foundElement.forms.length < 1) {
+				this.subElementsLoading = step.profile_id;
+
+				exportService
+					.getSubElements(step.profile_id, this.activeTab.code)
+					.then((response) => {
+						foundElement.forms = response.data;
+						this.subElementsLoading = 0;
+
+						Object.values(step.forms).forEach((form) => {
+							this.addSelectedForm(form);
+						});
+					})
+					.catch((error) => {
+						this.subElementsLoading = 0;
+					});
+			} else {
+				Object.values(step.forms).forEach((form) => {
+					this.addSelectedForm(form);
+				});
+			}
 		},
 
 		addSelectedForm(form) {
@@ -578,6 +624,11 @@ export default defineComponent({
 				}
 			}
 			return false;
+		},
+		activeTab() {
+			return this.tabs.find((tab) => {
+				return tab.active;
+			});
 		},
 	},
 	watch: {
@@ -777,6 +828,15 @@ export default defineComponent({
 
 									<div class="tw-flex tw-flex-col tw-gap-2 tw-p-3" v-if="checkOpenedSections(step.profile_id, 'step')">
 										<div
+											v-if="subElementsLoading > 0 && subElementsLoading === step.profile_id"
+											class="tw-flex tw-flex-col tw-items-center tw-justify-center"
+										>
+											<div class="em-loader"></div>
+											<span class="tw-mt-1">{{ this.translate('COM_EMUNDUS_EXPORT_ELEMENTS_LOADER') }}</span>
+										</div>
+
+										<div
+											v-else
 											v-for="form in step.forms"
 											:key="form.id"
 											class="tw-relative tw-rounded-coordinator-cards tw-border tw-border-main-50 tw-bg-white tw-p-0"

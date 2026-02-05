@@ -1724,7 +1724,7 @@ class EmundusControllerCampaign extends BaseController
 		$m_form = new EmundusModelForm();
 		foreach ($more_elements as $element)
 		{
-			if ($element['hidden'])
+			if ($element['hidden'] || $element['show_in_list_summary'] == 0)
 			{
 				continue;
 			}
