@@ -156,7 +156,7 @@ class EmundusViewChecklist extends JViewLegacy
 				$this->show_shortdesc_input = $menu_params->get('show_shortdesc_input', 0);
 				$this->show_info_panel      = $menu_params->get('show_info_panel', 0);
 				$this->show_info_legend     = $menu_params->get('show_info_legend', 0);
-				$this->show_nb_column       = $menu_params->get('show_nb_column', 0);
+				$this->show_nb_column       = $menu_params->get('show_nb_column', 1);
 				$this->custom_title         = $menu_params->get('custom_title', null);
 				$this->is_admission         = $menu_params->get('is_admission', 0);
 				$this->required_desc        = $menu_params->get('required_desc', 0);
