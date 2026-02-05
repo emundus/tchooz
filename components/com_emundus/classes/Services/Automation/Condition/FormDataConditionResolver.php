@@ -240,16 +240,18 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 				}
 				$helper = new EmundusHelperFabrik();
 
-				$elementValue = $helper->getFabrikElementValue((array)$element, $context->getFile(), 0, $format, $context->getUserId());
-
 				if (!empty($context->getFile()))
 				{
+					$elementValue = $helper->getFabrikElementValue((array)$element, $context->getFile(), 0, $format);
+
 					if (isset($elementValue[$element->id][$context->getFile()]['val'])) {
 						$foundValue = $elementValue[$element->id][$context->getFile()]['val'];
 					}
 				}
 				else
 				{
+					$elementValue = $helper->getFabrikElementValue((array)$element, null, 0, $format, $context->getUserId());
+
 					if (isset($elementValue[$element->id][$context->getUserId()]['val'])) {
 						$foundValue = $elementValue[$element->id][$context->getUserId()]['val'];
 					}

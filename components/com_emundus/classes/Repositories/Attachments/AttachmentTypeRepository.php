@@ -12,6 +12,7 @@ namespace Tchooz\Repositories\Attachments;
 use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Attachments\AttachmentType;
+use Tchooz\Entities\Campaigns\CampaignEntity;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Traits\TraitTable;
 
@@ -59,18 +60,17 @@ class AttachmentTypeRepository extends EmundusRepository
 
 		if(!empty($attachment_type_object))
 		{
-			$attachment_type = new AttachmentType();
-			$attachment_type->setId($attachment_type_object->id);
-			$attachment_type->setLbl($attachment_type_object->lbl);
-			$attachment_type->setName($attachment_type_object->value);
-			$attachment_type->setDescription($attachment_type_object->description);
-			$attachment_type->setAllowedTypes($attachment_type_object->allowed_types);
-			$attachment_type->setNbMax($attachment_type_object->nbmax);
-			$attachment_type->setOrdering($attachment_type_object->ordering);
-			$attachment_type->setPublished($attachment_type_object->published);
-			$attachment_type->setCategory($attachment_type_object->category);
-
-			return $attachment_type;
+			return new AttachmentType(
+				$attachment_type_object->id,
+				$attachment_type_object->lbl,
+				$attachment_type_object->value,
+				$attachment_type_object->description,
+				$attachment_type_object->allowed_types,
+				$attachment_type_object->nbmax,
+				$attachment_type_object->ordering,
+				$attachment_type_object->published == 1,
+				$attachment_type_object->category
+			);
 		}
 
 		return null;
@@ -109,17 +109,17 @@ class AttachmentTypeRepository extends EmundusRepository
 
 			foreach ($objects as $object)
 			{
-				$attachmentType = new AttachmentType();
-				$attachmentType->setId($object->id);
-				$attachmentType->setLbl($object->lbl);
-				$attachmentType->setName($object->value);
-				$attachmentType->setDescription($object->description);
-				$attachmentType->setAllowedTypes($object->allowed_types);
-				$attachmentType->setNbMax($object->nbmax);
-				$attachmentType->setOrdering($object->ordering);
-				$attachmentType->setPublished($object->published);
-				$attachmentType->setCategory($object->category);
-				$types[] = $attachmentType;
+				$types[] = new AttachmentType(
+					$object->id,
+					$object->lbl,
+					$object->value,
+					$object->description,
+					$object->allowed_types,
+					$object->nbmax,
+					$object->ordering,
+					$object->published == 1,
+					$object->category
+				);
 			}
 		}
 		catch (\Exception $e)
@@ -146,5 +146,57 @@ class AttachmentTypeRepository extends EmundusRepository
 				$query->where($this->tableName . '.' . $field . ' = ' . $this->db->quote($value));
 			}
 		}
+	}
+
+	/**
+	 * @param   array<CampaignEntity>  $campaigns
+	 *
+	 * @return array<AttachmentType>
+	 */
+	public function getAttachmentLettersByCampaigns(array $campaigns): array
+	{
+		$attachmentTypes = [];
+
+		if (!empty($campaigns))
+		{
+			$campaignIds = array_map(fn($c) => $c->getId(), $campaigns);
+			$programCodes = array_map(fn($c) => $c->getProgram()->getCode(), $campaigns);
+
+			$query = $this->db->createQuery();
+			$query->select('DISTINCT ' . $this->alias . '.*')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__emundus_setup_letters', 'esl') . ' ON ' . $this->db->quoteName('esl.attachment_id') . ' = ' . $this->db->quoteName($this->alias . '.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_campaign', 'eslrc') . ' ON ' . $this->db->quoteName('eslrc.parent_id') . ' = ' . $this->db->quoteName('esl.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_letters_repeat_training', 'eslrt') . ' ON ' . $this->db->quoteName('eslrt.parent_id') . ' = ' . $this->db->quoteName('esl.id'))
+				->where('(' . $this->db->quoteName('eslrc.campaign') . ' IN (' . implode(',', $campaignIds) . ') OR ' . $this->db->quoteName('eslrt.training') . ' IN (' . implode(',', array_map(fn($code) => $this->db->quote($code), $programCodes)) . '))')
+				->andWhere($this->db->quoteName($this->alias . '.published') . ' = 1');
+
+			try
+			{
+				$this->db->setQuery($query);
+				$objects = $this->db->loadObjectList();
+
+				foreach ($objects as $object)
+				{
+					$attachmentTypes[] = new AttachmentType(
+						$object->id,
+						$object->lbl,
+						$object->value,
+						$object->description,
+						$object->allowed_types,
+						$object->nbmax,
+						$object->ordering,
+						$object->published == 1,
+						$object->category
+					);
+				}
+			}
+			catch (\Exception $e)
+			{
+				Log::add($e->getMessage(), Log::ERROR, 'com_emundus.attachment_type.repository');
+			}
+		}
+
+		return $attachmentTypes;
 	}
 }

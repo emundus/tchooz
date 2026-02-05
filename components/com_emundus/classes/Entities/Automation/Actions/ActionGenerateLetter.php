@@ -88,6 +88,16 @@ class ActionGenerateLetter extends ActionEntity
 
 				if (!empty($letters))
 				{
+					if (!defined('EMUNDUS_PATH_ABS'))
+					{
+						define('EMUNDUS_PATH_ABS', JPATH_ROOT . '/images/emundus/files/');
+					}
+
+					if (!defined('EMUNDUS_PATH_REL'))
+					{
+						define('EMUNDUS_PATH_REL', 'images/emundus/files/');
+					}
+
 					if (!class_exists('EmundusModelEvaluation'))
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/evaluation.php');

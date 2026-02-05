@@ -105,7 +105,8 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 					{
 						$data           = json_decode($config['data'], true);
 						$data['fnum']   = $dataToImport['fnum'];
-						$configurations = $crmFactory->getMicrosoftDynamicsConfig($config['event'], $data, $config['training'], false);
+						$data['repeat_row'] = $config['repeat_row'];
+						$configurations = $crmFactory->getMicrosoftDynamicsConfig($config['event'], $data, $config['training'], false, $config['id']);
 
 						if (!empty($configurations))
 						{
@@ -141,7 +142,6 @@ class Microsoftdynamics extends CMSPlugin implements SubscriberInterface
 							}
 						}
 					}
-
 
 					$rowId = $repository->getRowId($dataToImport['name'], $dataToImport['collectionname'], $api, $lookupFilters);
 					if (!empty($rowId))

@@ -50,4 +50,4 @@ $data = LayoutFactory::prepareVueData();
     </div>
 </div>
 
-<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>
+<script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] . uniqid() ?>"></script>

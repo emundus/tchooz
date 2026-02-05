@@ -150,7 +150,7 @@ class AliasDataConditionResolver implements ConditionTargetResolverInterface
 		if (!empty($context->getFile()))
 		{
 			$fabrikHelper = new \EmundusHelperFabrik();
-			$value = $fabrikHelper->getValueByAlias($fieldName, $context->getFile(), $context->getUserId());
+			$value = $fabrikHelper->getValueByAlias($fieldName, $context->getFile());
 
 			if ($format === ValueFormatEnum::FORMATTED)
 			{

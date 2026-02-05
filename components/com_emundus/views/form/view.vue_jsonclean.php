@@ -60,17 +60,6 @@ class EmundusViewForm extends JsonView
 			$fabrikFactory    = new FabrikFactory($fabrikRepository);
 			$fabrikRepository->setFactory($fabrikFactory);
 
-			$elementsFilters = [];
-			$user = Factory::getApplication()->getIdentity();
-			if(!EmundusHelperAccess::asAdministratorAccessLevel($user->id))
-			{
-				$elementsFilters['hidden'] = 0;
-			}
-			$fabrikRepository->setElementFilters($elementsFilters);
-
-			$languageRepository = new LanguageRepository();
-			$languages          = LanguageHelper::getLanguages();
-
 			$form          = $fabrikRepository->getFormById($formid);
 			$data->id      = $form->getId();
 			$data->menu_id = $fabrikRepository->getMenuItemIdByFormId($form->getId());
@@ -139,7 +128,11 @@ class EmundusViewForm extends JsonView
 						$display_group = true;
 					}
 
-					// TODO: Test with a referent element
+					if(in_array($element->getName(), ['id', 'user', 'time_date', 'fnum', 'date_time', 'parent_id']))
+					{
+						continue;
+					}
+
 					$elementParams = $element->getParams();
 
 					$elementObject->id       = $element->getId();

@@ -2962,6 +2962,19 @@ HTMLHelper::stylesheet(JURI::Base()."media/com_fabrik/css/fabrik.css");'
 		return $dompdf->stream($filename, array("Attachment" => false));
 	}
 
+	/**
+	 * todo: check inconstency between raw and val, sometimes, raw is null and val appears as empty string
+	 * @param   array            $fabrik_element
+	 * @param   string|null      $fnum
+	 * @param   int              $row_id
+	 * @param   ValueFormatEnum  $return
+	 * @param   int              $user_id
+	 * @param   ExportModeEnum   $exportMode
+	 * @param   array            $translations
+	 *
+	 * @return array|string[]
+	 * @throws Exception
+	 */
 	public function getFabrikElementValue(
 		array           $fabrik_element,
 		?string         $fnum = null,
