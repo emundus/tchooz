@@ -647,11 +647,12 @@ if (!empty($this->custom_title)) :?>
 
 			$file_upload++;
 		}
-		?>
 
+        $nbColumnClass = $this->show_nb_column > 0 ? 'col-md-' . (12 / $this->show_nb_column) : 'col-md-12';
+        ?>
 
         <div class="row">
-            <div class="col-md-<?= (int) (12 / $this->show_nb_column); ?>">
+            <div class="<?= $nbColumnClass; ?>">
 				<?php
 				if ($attachment_list_mand != '') {
 					echo '<div id="attachment_list_mand" class="em-container-attachments em-w-100"><h3 class="after-em-border after:bg-neutral-500">' . Text::_('COM_EMUNDUS_ATTACHMENTS_MANDATORY_DOCUMENTS') . '</h3>' . $attachment_list_mand . '</div>';
@@ -663,7 +664,7 @@ if (!empty($this->custom_title)) :?>
 				echo '<div class="ui vertical divider"></div>';
 			}
 			?>
-            <div class="col-md-<?= (int) (12 / $this->show_nb_column); ?>">
+            <div class="<?= $nbColumnClass; ?>">
 				<?php
 				if ($attachment_list_opt != '') {
 					echo '<div id="attachment_list_opt" class="em-container-attachmentsOpt em-mt-16 em-w-100"><h3 class="after-em-border after:bg-neutral-500">' . Text::_('COM_EMUNDUS_ATTACHMENTS_OPTIONAL_DOCUMENTS') . '</h3>' . $attachment_list_opt . '</div>';
