@@ -905,19 +905,19 @@ class ExcelService extends Export implements ExportInterface
 						{
 							if (in_array("form-title", $opts) && in_array("form-group", $opts))
 							{
-								$line .= $this->getTranslation($fLine->form_label) . " > " . $this->getTranslation($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', $this->getTranslation($fLine->element_label)) . "\t";
+								$line .= Text::_($fLine->form_label) . " > " . Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 								$nbcol++;
 							}
 							elseif (count($opts) == 1)
 							{
 								if (in_array("form-title", $opts))
 								{
-									$line .= $this->getTranslation($fLine->form_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', $this->getTranslation($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->form_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 								elseif (in_array("form-group", $opts))
 								{
-									$line .= $this->getTranslation($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', $this->getTranslation($fLine->element_label)) . "\t";
+									$line .= Text::_($fLine->group_label) . " > " . preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 									$nbcol++;
 								}
 							}
@@ -977,7 +977,7 @@ class ExcelService extends Export implements ExportInterface
 								$phonenumber_elements[] = $elt_name;
 							}
 
-							$line .= preg_replace('#<[^>]+>|\t#', ' ', $this->getTranslation($fLine->element_label)) . "\t";
+							$line .= preg_replace('#<[^>]+>|\t#', ' ', Text::_($fLine->element_label)) . "\t";
 							$nbcol++;
 						}
 					}
@@ -1143,7 +1143,7 @@ class ExcelService extends Export implements ExportInterface
 
 							foreach ($hierarchy_form_elements as $form_element)
 							{
-								$element_csv[0] .= strip_tags($this->getTranslation($form_element['label'])) . "\t";
+								$element_csv[0] .= strip_tags(Text::_($form_element['label'])) . "\t";
 
 								foreach ($files_rankings as $ranking_row)
 								{
@@ -1433,17 +1433,17 @@ class ExcelService extends Export implements ExportInterface
 													}
 													elseif (count($opts) > 0 && in_array("upper-case", $opts))
 													{
-														$line .= $this->getTranslation(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
+														$line .= Text::_(preg_replace("/\r|\n|\t/", "", mb_strtoupper($v))) . "\t";
 													}
 													else
 													{
 														if (!empty($key_element) && in_array($key_element, $excel_elts_to_escape))
 														{
-															$line .= "'" . $this->getTranslation(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
+															$line .= "'" . Text::_(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
 														}
 														else
 														{
-															$line .= $this->getTranslation(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
+															$line .= Text::_(preg_replace("/\r|\n|\t/", "", $v)) . "\t";
 														}
 													}
 												}
