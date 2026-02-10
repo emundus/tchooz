@@ -51,7 +51,12 @@ class CampaignEntity
 	// TODO: Refactor when Fabrik was moved into Entities
 	private ?array $moreProperties;
 
-	public function __construct(string $label, DateTime $start_date, DateTime $end_date, ?ProgramEntity $program , string $year , ?string $description = '', ?string $short_description = '', int $profile_id = 0, bool $published = true, bool $pinned = false, ?string $alias = '', bool $visible = true, ?CampaignEntity $parent = null, int $id = 0, array $moreProperties = [])
+	/**
+	 * @var bool Indicates if the campaign is accesible to the public (true) or only to registered users (false)
+	 */
+	private bool $isPublic;
+
+	public function __construct(string $label, DateTime $start_date, DateTime $end_date, ?ProgramEntity $program , string $year , ?string $description = '', ?string $short_description = '', int $profile_id = 0, bool $published = true, bool $pinned = false, ?string $alias = '', bool $visible = true, ?CampaignEntity $parent = null, int $id = 0, array $moreProperties = [], bool $isPublic = false)
 	{
 		$this->id = $id;
 		$this->label = $label;
@@ -68,6 +73,7 @@ class CampaignEntity
 		$this->visible = $visible;
 		$this->parent = $parent;
 		$this->moreProperties = $moreProperties;
+		$this->isPublic = $isPublic;
 
 		// Determine status based on dates
 		$this->timezone = Factory::getApplication()->get('offset', 'Europe/Paris');
@@ -251,6 +257,16 @@ class CampaignEntity
 	public function setMoreProperties(?array $moreProperties): void
 	{
 		$this->moreProperties = $moreProperties;
+	}
+
+	public function isPublic(): bool
+	{
+		return $this->isPublic;
+	}
+
+	public function setIsPublic(bool $isPublic): void
+	{
+		$this->isPublic = $isPublic;
 	}
 
 	public function __serialize(): array

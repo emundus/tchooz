@@ -79,7 +79,8 @@ class CampaignFactory implements DBFactory
 			visible: (bool) $dbObject['visible'],
 			parent: (!empty($dbObject['parent_id']) && $withRelations) ? $campaignRepository->getById((int)$dbObject['parent_id']) : null,
 			id: (int) $dbObject['id'],
-			moreProperties: $dbObject['more_properties']
+			moreProperties: $dbObject['more_properties'],
+			isPublic: isset($dbObject['is_public']) && $dbObject['is_public'] == 1,
 		);
 	}
 }

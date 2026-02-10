@@ -33,6 +33,16 @@ class ApplicationFileEntity
 
 	private ?User $updated_by;
 
+	/**
+	 * @var bool Indicates if the application file content is anonymous (true) or identifiable (false). If true, the application file content will not be identifiable to a specific user, even if the application file is created by a registered user.
+	 */
+	private bool $isAnonymous;
+
+	/**
+	 * @var bool Indicates if the application file has been created by a public user (true) or a registered user (false)
+	 */
+	private bool $isPublic;
+
 	public function __construct(
 		User                  $user,
 		string                $fnum = '',
@@ -47,6 +57,8 @@ class ApplicationFileEntity
 		int                   $attachmentProgress = 0,
 		\DateTime             $updated_at = null,
 		User                  $updated_by = null,
+		bool                  $isAnonymous = false,
+		bool                  $isPublic = false
 	)
 	{
 		$this->user               = $user;
@@ -62,6 +74,8 @@ class ApplicationFileEntity
 		$this->attachmentProgress = $attachmentProgress;
 		$this->updated_at         = $updated_at;
 		$this->updated_by         = $updated_by;
+		$this->isAnonymous        = $isAnonymous;
+		$this->isPublic           = $isPublic;
 	}
 
 	public function getId(): int

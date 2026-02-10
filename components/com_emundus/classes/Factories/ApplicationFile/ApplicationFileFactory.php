@@ -76,6 +76,8 @@ class ApplicationFileFactory implements DBFactory
 			attachmentProgress: (int) $dbObject->attachment_progress,
 			updated_at: !empty($dbObject->updated_at) ? new \DateTime($dbObject->updated_at) : null,
 			updated_by: !empty($dbObject->updated_by) ? Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById((int) $dbObject->updated_by) : null,
+			isAnonymous: isset($dbObject->is_anonymous) && $dbObject->is_anonymous == 1,
+			isPublic: isset($dbObject->is_public) && $dbObject->is_public == 1
 		);
 	}
 
