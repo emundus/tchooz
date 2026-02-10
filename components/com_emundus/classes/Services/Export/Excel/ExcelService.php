@@ -93,7 +93,11 @@ class ExcelService extends Export implements ExportInterface
 		$this->fnums = $fnums;
 		$this->user  = $user;
 
-		// TODO: Manage old version options
+		if (empty($options))
+		{
+			$options = ['export_version' => 'next'];
+		}
+
 		if ($options['export_version'] === 'next')
 		{
 			if (is_array($options))
@@ -112,6 +116,14 @@ class ExcelService extends Export implements ExportInterface
 		$this->exportEntity = $exportEntity;
 	}
 
+	/**
+	 * @param   string           $exportPath
+	 * @param   TaskEntity|null  $task
+	 * @param   string|null      $langCode
+	 *
+	 * @return ExportResult
+	 * @throws \Exception
+	 */
 	public function export(string $exportPath, ?TaskEntity $task, ?string $langCode = 'fr-FR'): ExportResult
 	{
 		try
@@ -134,6 +146,11 @@ class ExcelService extends Export implements ExportInterface
 			if (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
 			{
 				throw new \Exception('Export has been cancelled.');
+			}
+
+			if (!str_starts_with($exportPath, 'tmp/') && !str_starts_with($exportPath, 'images/emundus/'))
+			{
+				throw new \Exception('Forbidden export path.');
 			}
 
 			$metadata = [];
@@ -180,6 +197,12 @@ class ExcelService extends Export implements ExportInterface
 					// Check access to files
 					$validFnums = [];
 					$format     = ExportFormatEnum::XLSX;
+
+					if (!class_exists('EmundusHelperAccess'))
+					{
+						require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+					}
+
 					foreach ($this->fnums as $fnum)
 					{
 						if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($format->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
@@ -303,11 +326,10 @@ class ExcelService extends Export implements ExportInterface
 						$json['headers'][$evaluatorElementId] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 						foreach ($files as $file)
 						{
-							// Get evaluators name
 							$query->clear()
-								->select('u.name')
-								->from($db->quoteName('#__users', 'u'))
-								->leftJoin($db->quoteName($data['db_table_name'], 'd') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
+								->select('CASE WHEN u.name IS NULL THEN "' . Text::_("COM_EMUNDUS_UNKNOWN_EVALUATOR") . '" ELSE u.name END AS name')
+								->from($db->quoteName($data['db_table_name'], 'd'))
+								->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
 								->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
 								->order('d.evaluator ASC');
 							$db->setQuery($query);
@@ -1250,7 +1272,16 @@ class ExcelService extends Export implements ExportInterface
 										}
 									}
 								}
-								list($key_table, $key_element) = explode('___', $k);
+
+								if (str_contains($k, '___'))
+								{
+									list($key_table, $key_element) = explode('___', $k);
+								}
+								else
+								{
+									$key_table = '';
+									$key_element = '';
+								}
 
 								if ($v == "")
 								{
