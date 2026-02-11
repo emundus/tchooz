@@ -69,9 +69,26 @@ final class Teams extends CMSPlugin implements SubscriberInterface
 		$name = $event->getName();
 		$data = $event->getArguments();
 
-
 		if (!empty($this->api) && is_object($data['availability']) && !empty($data['availability']->event_id))
 		{
+			$teams_id = null;
+			if(!empty($data['registrantInfos']))
+			{
+				// Link already exists, do not create a new one
+				$teams_id = $data['registrantInfos']['teams_id'] ?? null;
+			}
+			elseif (!empty($data['registrant_id']))
+			{
+				// Get via registrant_id
+				$teams_id = $this->getTeamsId($data['registrant_id']);
+			}
+
+			if(!empty($teams_id))
+			{
+				// Link already exists, do not create a new one
+				return;
+			}
+
 			$event = $this->checkTeamsEnabled($data['availability']->event_id);
 			if(!empty($event))
 			{
@@ -164,6 +181,20 @@ final class Teams extends CMSPlugin implements SubscriberInterface
 			->from($db->quoteName('#__emundus_campaign_candidature', 'cc'))
 			->leftJoin($db->quoteName('#__emundus_users', 'eu') . ' ON ' . $db->quoteName('eu.user_id') . ' = ' . $db->quoteName('cc.applicant_id'))
 			->where('cc.id = ' . $ccid);
+		$db->setQuery($query);
+
+		return $db->loadResult();
+	}
+
+	private function getTeamsId(int $registrant_id): string|null
+	{
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+		$query = $db->getQuery(true);
+
+		$query->clear()
+			->select($db->quoteName('teams_id'))
+			->from($db->quoteName('#__emundus_registrants'))
+			->where($db->quoteName('id') . ' = ' . $registrant_id);
 		$db->setQuery($query);
 
 		return $db->loadResult();
