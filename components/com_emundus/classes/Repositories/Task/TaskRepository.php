@@ -77,7 +77,7 @@ class TaskRepository
 					. ' AND ' . $this->db->quoteName('attempts') . ' < 3'
 					. ' AND ' . $this->db->quoteName('updated_at') . ' <= ' . $this->db->quote((new \DateTimeImmutable('-' . $retryAfterMin . ' minutes'))->format('Y-m-d H:i:s'))
 				)
-				->order($this->db->quoteName('created_at') . ' ASC')
+				->order($this->db->quoteName('priority') . 'DESC, '. $this->db->quoteName('created_at') . ' ASC')
 				->setLimit($limit);
 
 			$this->db->setQuery($query);
@@ -253,6 +253,7 @@ class TaskRepository
 					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'metadata'    => json_encode($task->getMetadata()),
 					'attempts'    => $task->getAttempts(),
+					'priority'    => $task->getPriority()->value,
 				];
 				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
 				{
@@ -273,6 +274,7 @@ class TaskRepository
 					'started_at'  => ($task->getStartedAt()?->format('Y-m-d H:i:s')),
 					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'attempts'    => $task->getAttempts(),
+					'priority'    => $task->getPriority()->value,
 				];
 
 				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
