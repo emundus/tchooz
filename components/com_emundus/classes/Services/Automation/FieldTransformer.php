@@ -9,6 +9,7 @@ use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\DateField;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\FieldGroup;
+use Tchooz\Entities\Fields\NumericField;
 use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Fields\YesnoField;
 use Tchooz\Services\Field\FieldResearch;
@@ -63,6 +64,9 @@ class FieldTransformer
 					break;
 				case 'yesno':
 					$field = new YesnoField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
+					break;
+				case 'currency':
+					$field = new NumericField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
 					break;
 				default:
 					$field = new StringField($fieldId, Text::_( $fabrikElement->label ), false, $fieldGroup);
