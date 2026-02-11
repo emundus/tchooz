@@ -3653,6 +3653,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('esa.start_date', 'start'),
 				$this->db->quoteName('esa.end_date', 'end'),
 				$this->db->quoteName('esa.capacity'),
+				$this->db->quoteName('er.link'),
+				$this->db->quoteName('er.teams_id'),
 			];
 
 			$query->select($columns)
@@ -3673,7 +3675,7 @@ class EmundusModelEvents extends BaseDatabaseModel
 			$onAfterBookingRegistrant = new GenericEvent(
 				'onAfterBookingRegistrant',
 				// Datas to pass to the event
-				['fnum' => $registrantInfos['fnum'], 'ccid' => (int) $registrantInfos['ccid'], 'availability' => $availability, 'registrant_id' => $id]
+				['fnum' => $registrantInfos['fnum'], 'ccid' => (int) $registrantInfos['ccid'], 'availability' => $availability, 'registrant_id' => $id, 'registrantInfos' => $registrantInfos]
 			);
 			$event_results            = $dispatcher->dispatch('onAfterBookingRegistrant', $onAfterBookingRegistrant);
 
