@@ -234,7 +234,7 @@ class WorkflowModelTest extends UnitTestCase
 		$fnum = $this->h_dataset->createSampleFile($campaign_id, $user_id);
 		$this->assertNotEmpty($fnum);
 
-		$step = $this->model->getCurrentWorkflowStepFromFile($fnum, 1, 'fnum');
+		$step = $this->model->getCurrentWorkflowStepFromFile($fnum, [1], 'fnum');
 		$this->assertEmpty($step, 'No step should be returned for a file that is not associated to a workflow');
 
 		$workflow_id = $this->model->add();

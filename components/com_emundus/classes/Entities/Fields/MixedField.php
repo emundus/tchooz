@@ -11,12 +11,6 @@ class MixedField extends Field
 
 	public function toSchema(): array
 	{
-		return [
-			'type' => $this->getType(),
-			'name' => $this->getName(),
-			'label' => $this->getLabel(),
-			'required' => $this->isRequired(),
-			'group' => $this->getGroup()?->toSchema(),
-		];
+		return  $this->defaultSchema();
 	}
 }

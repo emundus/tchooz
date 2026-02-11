@@ -76,4 +76,19 @@ class StepTypeRepositoryTest extends UnitTestCase
 		$this->assertEquals($stepType->getId(), $retrievedStepType->getId(), 'Step type ID should match the requested id');
 		$this->assertEquals($stepType->getActionId(), $retrievedStepType->getActionId(), 'Step type action ID should match the requested id');
 	}
+
+	/**
+	 * @covers StepTypeRepository::get
+	 * @return void
+	 */
+	public function testGet(): void
+	{
+		$stepTypes = $this->repository->get();
+
+		$this->assertIsArray($stepTypes, 'Expected get to return an array');
+		$this->assertNotEmpty($stepTypes, 'Expected get to return a non-empty array');
+		foreach ($stepTypes as $stepType) {
+			$this->assertInstanceOf(StepTypeEntity::class, $stepType, 'Expected each item to be an instance of StepTypeEntity');
+		}
+	}
 }

@@ -10,6 +10,7 @@
 namespace Tchooz\Repositories\Attachments;
 
 use Joomla\CMS\Log\Log;
+use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Attachments\AttachmentType;
 use Tchooz\Entities\Campaigns\CampaignEntity;
@@ -75,15 +76,19 @@ class AttachmentTypeRepository extends EmundusRepository
 	}
 
 	/**
-	 * @param   array  $filters
-	 * @param   int    $limit
-	 * @param   int    $page
+	 * @param   array   $filters
+	 * @param   int     $limit
+	 * @param   int     $page
+	 * @param   string  $select
+	 * @param   string  $order
 	 *
 	 * @return array<AttachmentType>
 	 */
-	public function get(array $filters = [], int $limit = 10, int $page = 1): array
+	public function get(array $filters = [], int $limit = 10, int $page = 1, string $select = '*', string $order = ''): array
 	{
 		$types = [];
+
+		// todo: use EmundusRepository get method
 
 		$query = $this->db->createQuery();
 		$query->select($this->alias . '.*')

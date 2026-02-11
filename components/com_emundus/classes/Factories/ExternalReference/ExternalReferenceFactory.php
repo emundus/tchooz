@@ -6,7 +6,7 @@ use Tchooz\Entities\ExternalReference\ExternalReferenceEntity;
 
 class ExternalReferenceFactory
 {
-	public function fromDbObjects(array $dbObjects): array
+	public static function fromDbObjects(array $dbObjects): array
 	{
 		$externalReferences = [];
 
