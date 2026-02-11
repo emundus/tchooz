@@ -10,6 +10,7 @@ use Joomla\Database\ParameterType;
 use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
+use Tchooz\Entities\Fabrik\FabrikElementEntity;
 use Tchooz\Factories\ApplicationFile\ApplicationFileFactory;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\EmundusRepository;
@@ -311,7 +312,7 @@ class ApplicationFileRepository extends EmundusRepository implements RepositoryI
 		return $ccid;
 	}
 
-	private function insertDatas(array $datas, string $table, string $fnum, int $ccid, int $user_id = 0): bool
+	public function insertDatas(array $datas, string $table, string $fnum, int $ccid, int $user_id = 0): bool
 	{
 		$result = false;
 

@@ -513,10 +513,35 @@ export default {
 			return await workflowService
 				.getStepTypes()
 				.then((response) => {
-					this.stepTypes = response.data.map((type) => {
+					const stepTypesUnordered = response.data.map((type) => {
 						type.group_ids = type.group_ids.map((groupId) => parseInt(groupId));
 
 						return type;
+					});
+
+					// group steps by parent_id
+					let childStepsByParentId = {};
+					stepTypesUnordered.forEach((type) => {
+						if (type.parent_id > 0) {
+							if (!childStepsByParentId[type.parent_id]) {
+								childStepsByParentId[type.parent_id] = [];
+							}
+							childStepsByParentId[type.parent_id].push(type);
+						}
+					});
+
+					this.stepTypes = [];
+
+					stepTypesUnordered.forEach((stepType) => {
+						if (stepType.parent_id === 0) {
+							this.stepTypes.push(stepType);
+
+							if (childStepsByParentId[stepType.id]) {
+								childStepsByParentId[stepType.id].forEach((childStep) => {
+									this.stepTypes.push(childStep);
+								});
+							}
+						}
 					});
 				})
 				.catch((e) => {
@@ -953,11 +978,23 @@ export default {
 			return stepType.code === 'choices';
 		},
 		isPaymentStep(step) {
+			let isPaymentStep = false;
+
 			let stepType = this.stepTypes.find((stepType) => stepType.id === step.type);
 			if (!stepType) {
 				return false;
 			}
-			return stepType.code === 'payment';
+
+			if (stepType.code === 'payment') {
+				isPaymentStep = true;
+			} else if (stepType.parent_id > 0) {
+				const parentStepType = this.stepTypes.find((type) => type.id === stepType.parent_id);
+				if (parentStepType && parentStepType.code === 'payment') {
+					isPaymentStep = true;
+				}
+			}
+
+			return isPaymentStep;
 		},
 		isProgramAssociatedToAnotherWorkflow(program) {
 			return program.workflows && program.workflows.length > 0 && !program.workflows.includes(this.workflow.id);

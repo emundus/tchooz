@@ -28,6 +28,7 @@ class MappingFactory
 					(string) $dbObject->label,
 					(int) $dbObject->synchronizer_id,
 					$dbObject->target_object ?? '',
+					$dbObject->params ? json_decode($dbObject->params, true) : [],
 					$mappingRowRepository->getByMappingId((int) $dbObject->id),
 				);
 			}
@@ -72,6 +73,7 @@ class MappingFactory
 				isset($json['label']) ? (string) $json['label'] : '',
 				isset($json['synchronizer_id']) ? (int) $json['synchronizer_id'] : 0,
 				isset($json['target_object']) ? (string) $json['target_object'] : '',
+				isset($json['params']) && is_array($json['params']) ? $json['params'] : [],
 				$rows
 			);
 		}

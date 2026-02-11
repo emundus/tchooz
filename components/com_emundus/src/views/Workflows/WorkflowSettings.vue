@@ -44,7 +44,7 @@ export default {
 					});
 
 					// Filter to not include payment and choices step types
-					this.stepTypes = this.stepTypes.filter((type) => !['payment', 'choices'].includes(type.code));
+					this.stepTypes = this.stepTypes.filter((type) => !['choices'].includes(type.code));
 				})
 				.catch((error) => {
 					console.log(error);

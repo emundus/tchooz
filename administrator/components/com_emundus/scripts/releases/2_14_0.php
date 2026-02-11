@@ -86,6 +86,13 @@ class Release2_14_0Installer extends ReleaseInstaller
 				}
 			}
 
+			$addedResult = \EmundusHelperUpdate::addColumn('jos_emundus_connector_mapping', 'params', 'JSON');
+			$this->tasks[] = $addedResult['status'];
+			if (!$addedResult['status'])
+			{
+				$result['message'] .= $addedResult['message'];
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)

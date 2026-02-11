@@ -50,7 +50,11 @@
 					:class="widget.name + '-' + widget.class"
 					:key="widget.name + '_' + index"
 				>
-					<Custom v-if="widget.name === 'custom' || widget.name === 'tasks_status'" :widget="widget" @forceUpdate="$forceUpdate" />
+					<Custom
+						v-if="widget.name === 'custom' || widget.name === 'tasks_status'"
+						:widget="widget"
+						@forceUpdate="$forceUpdate"
+					/>
 				</div>
 			</div>
 		</div>
