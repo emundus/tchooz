@@ -3144,7 +3144,7 @@ class EmundusHelperUpdate
 
 	public static function addWidget($label, $params = null)
 	{
-		$result = ['status' => false, 'message' => ''];
+		$result = ['status' => false, 'message' => '', 'id' => 0];
 
 		if (empty($label))
 		{
@@ -3165,22 +3165,67 @@ class EmundusHelperUpdate
 
 		try
 		{
-			$inserting_datas = array();
+			// check if widget already exists
+			$query->select('id')
+				->from($db->quoteName('#__emundus_widgets'))
+				->where($db->quoteName('label') . ' = ' . $db->quote($label));
+			$db->setQuery($query);
+			$is_existing = $db->loadResult();
 
-			foreach ($params as $key => $value)
+			if ($is_existing)
 			{
-				$inserting_datas[] = $db->quoteName($key) . ' = ' . $db->quote($value);
+				$result['status'] = true;
+				$result['message'] = 'CREATING WIDGET : A widget with this label already exists.';
+
+				return $result;
 			}
 
-			$query->insert($db->quoteName('#__emundus_widgets'))
-				->columns($db->quoteName(array_keys($inserting_datas)))
-				->values(implode(',', $db->quote(array_values($inserting_datas))));
-			$db->setQuery($query);
-			$result['status'] = $db->execute();
+			$object = (object) array_merge(['label' => $label], $params);
+
+			$result['status'] = $db->insertObject('jos_emundus_widgets', $object);
+
+			if ($result['status'])
+			{
+				$result['id'] = $db->insertid();
+			}
 		}
 		catch (Exception $e)
 		{
 			$result['message'] = 'CREATING WIDGET : Error : ' . $e->getMessage();
+		}
+
+		return $result;
+	}
+
+	public static function addWidgetToProfile(int $widgetId, int $profileId, int $default = 0, int $position = 1)
+	{
+		$result = ['status' => false, 'message' => ''];
+
+		$db    = Factory::getContainer()->get('DatabaseDriver');
+
+		try {
+			$object = (object) [
+				'profile' => $profileId,
+				'parent_id' => $widgetId,
+				'default' => $default,
+				'position' => $position,
+				'access_level' => null
+			];
+
+			$inserted = $db->insertObject('jos_emundus_widgets_repeat_access', $object);
+		} catch (Exception $e)
+		{
+			$inserted = false;
+		}
+
+		if (!$inserted)
+		{
+			$result['message'] = 'ADDING WIDGET TO PROFILE : Error while inserting the widget to the profile in database.';
+			Log::add('Error while inserting the widget to the profile in database.', Log::ERROR, 'com_emundus.error');
+		}
+		else
+		{
+			$result['status'] = true;
 		}
 
 		return $result;

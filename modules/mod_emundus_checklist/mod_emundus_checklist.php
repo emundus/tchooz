@@ -259,7 +259,7 @@ if (!empty($user->fnum)) {
 		}
 	}
 
-	$current_phase        = $m_workflow->getCurrentWorkflowStepFromFile($user->fnum, 1);
+	$current_phase        = $m_workflow->getCurrentWorkflowStepFromFile($user->fnum);
 	$current_phase        = !empty($current_phase->id) ? $current_phase : null;
 	$attachments_progress = $m_application->getAttachmentsProgress($user->fnum, null, $use_session);
 	$forms_progress       = $m_application->getFormsProgress($user->fnum, null, $use_session);

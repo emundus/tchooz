@@ -342,6 +342,77 @@ class Api
 		return $response;
 	}
 
+	/**
+	 * @param   string  $url
+	 * @param           $body
+	 * @param   array   $headers
+	 *
+	 * @return array
+	 */
+	public function put(string $url, mixed $body = null, array $headers = []): array
+	{
+		$response = ['status' => 200, 'message' => '', 'data' => ''];
+
+		try
+		{
+			$params            = array();
+			$params['headers'] = $this->getHeaders();
+
+			if (is_array($body))
+			{
+				$params['form_params'] = $body;
+			}
+			elseif (!empty($body))
+			{
+				$params['body'] = $body;
+			}
+
+			if (!empty($headers))
+			{
+				$params['headers'] = array_merge($params['headers'], $headers);
+			}
+			else
+			{
+				$params['headers']['Content-Type'] = 'application/json';
+				$params['headers']['Accept']       = 'application/json';
+
+				if (is_array($body))
+				{
+					$params['headers']['Content-Type'] = 'application/x-www-form-urlencoded';
+				}
+			}
+
+			if (str_contains($url, 'https'))
+			{
+				$request = $this->client->put($url, $params);
+			}
+			else
+			{
+				$request = $this->client->put($this->baseUrl . '/' . $url, $params);
+			}
+
+			$response['status'] = $request->getStatusCode();
+			$response['data']   = json_decode($request->getBody());
+		}
+		catch (ClientException $e)
+		{
+			if ($this->getRetry())
+			{
+				$this->setRetry(false);
+				$this->put($url, $body, $headers);
+			}
+
+			Log::add('[PUT] ' . $e->getMessage(), Log::ERROR, 'com_emundus.api');
+
+			$response['status']  = $e->getResponse()->getStatusCode();
+			$response['message'] = $e->getResponse()->getReasonPhrase();
+			$response['headers'] = $e->getResponse()->getHeaders();
+			$response['error']   = $e->getResponse()->getBody()->getContents();
+		}
+
+		return $response;
+	}
+
 	public function delete($url, $params = array())
 	{
 		$response = ['status' => 200, 'message' => '', 'data' => ''];

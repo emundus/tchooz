@@ -485,6 +485,7 @@ export default {
 					searchable: true,
 					internalSearch: true,
 					asyncRoute: '',
+					optionsProvider: null,
 					optionsLimit: 100,
 					optionsPlaceholder: 'COM_EMUNDUS_MULTISELECT_ADDKEYWORDS',
 					selectLabel: 'PRESS_ENTER_TO_SELECT',
@@ -567,7 +568,10 @@ export default {
 		this.parameter = this.parameterObject;
 
 		if (this.parameter.type === 'multiselect') {
-			if (this.$props.multiselectOptions.asyncRoute && this.$props.multiselectOptions.options.length < 1) {
+			if (
+				(this.$props.multiselectOptions.asyncRoute || this.$props.multiselectOptions.optionsProvider) &&
+				this.$props.multiselectOptions.options.length < 1
+			) {
 				await this.asyncFind('');
 			} else {
 				this.multiOptions = this.$props.multiselectOptions.options;
@@ -789,6 +793,51 @@ export default {
 									this.multiOptions = response.data;
 								}
 
+								this.isLoading = false;
+								this.$emit('ajaxOptionsLoaded', this.multiOptions, this.parameter.param);
+								resolve(true);
+							});
+					}, 500);
+				});
+			} else if (this.$props.multiselectOptions.optionsProvider) {
+				return new Promise((resolve, reject) => {
+					if (this.abortController) {
+						this.abortController.abort();
+					}
+
+					this.abortController = new AbortController();
+					const signal = this.abortController.signal;
+
+					clearTimeout(this.debounceTimeout);
+					this.debounceTimeout = setTimeout(() => {
+						this.isLoading = true;
+
+						let values = {
+							search_query: search_query,
+						};
+
+						if (this.$props.multiselectOptions.optionsProvider.dependenciesValues) {
+							values = {
+								...values,
+								...this.$props.multiselectOptions.optionsProvider.dependenciesValues,
+							};
+						}
+
+						settingsService
+							.getAsyncOptions(
+								this.$props.multiselectOptions.optionsProvider.method,
+								values,
+								{ signal },
+								this.$props.multiselectOptions.optionsProvider.controller,
+							)
+							.then((response) => {
+								this.multiOptions = response.data.map((item) => {
+									return {
+										...item,
+										label: item.label,
+										value: item.value ?? item.name ?? item.id,
+									};
+								});
 								this.isLoading = false;
 								this.$emit('ajaxOptionsLoaded', this.multiOptions, this.parameter.param);
 								resolve(true);

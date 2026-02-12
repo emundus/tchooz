@@ -7,10 +7,11 @@ import mappingService from '@/services/mapping.js';
 import alerts from '@/mixins/alerts.js';
 import MappingRow from '@/components/Mapping/MappingRow.vue';
 import { useMappingStore } from '@/stores/mapping.js';
+import MappingParams from '@/components/Mapping/MappingParams.vue';
 
 export default {
 	name: 'MappingEdit',
-	components: { MappingRow, Back, Parameter, ParameterForm },
+	components: { MappingParams, MappingRow, Back, Parameter, ParameterForm },
 	props: {
 		mapping: {
 			type: Object,
@@ -38,10 +39,17 @@ export default {
 			loading: true,
 			formGroups: [],
 			defaultParameters: [],
+			requiredFields: [],
+			requiredFieldsKey: 0,
 		};
 	},
 	mixins: [transformMixin, alerts],
 	created() {
+		this.mapping.params = this.mapping.params || {};
+		// if it is an array, convert to object
+		if (Array.isArray(this.mapping.params)) {
+			this.mapping.params = {};
+		}
 		this.getFormGroups();
 	},
 	mounted() {
@@ -51,7 +59,9 @@ export default {
 	},
 	methods: {
 		async getFormGroups() {
-			this.formGroups = await this.fieldsToParameterFormGroups(this.fields, this.mapping);
+			this.fieldsToParameterFormGroups(this.fields, this.mapping).then((groups) => {
+				this.formGroups = groups;
+			});
 		},
 		addMappingRow() {
 			this.mapping.rows.push({
@@ -73,7 +83,41 @@ export default {
 			}
 		},
 		onParameterValueUpdated(param) {
+			let sameValue = false;
+			if (param.value === this.mapping[param.param]) {
+				sameValue = true;
+			}
+
 			this.mapping[param.param] = param.value;
+
+			if (param.param === 'target_object') {
+				// clean existing fields
+				if (!sameValue) {
+					this.mapping.rows = {};
+				}
+				this.constructRequiredFields();
+			}
+		},
+		constructRequiredFields() {
+			this.requiredFields = [];
+
+			// find the target_object field in this.formGroups and get its choices
+			const targetObjectParam = this.formGroups[0].parameters.find((param) => param.param === 'target_object');
+			if (targetObjectParam) {
+				const option = targetObjectParam.options.find((option) => option.value === this.mapping.target_object);
+
+				if (option?.requiredFields) {
+					this.requiredFields = option.requiredFields.map((field) =>
+						this.fromFieldEntityToParameter(field, this.mapping.params[field.name] || null),
+					);
+				} else {
+					this.requiredFields = [];
+				}
+				this.requiredFieldsKey += 1;
+			}
+		},
+		onMappingParamsUpdated(params) {
+			this.mapping.params = params;
 		},
 		save() {
 			mappingService.save(this.mapping).then((response) => {
@@ -107,6 +151,13 @@ export default {
 				:groups="formGroups"
 				:fields="fields"
 				@parameterValueUpdated="onParameterValueUpdated"
+			/>
+
+			<MappingParams
+				:key="requiredFieldsKey"
+				:fields="requiredFields"
+				:params="mapping.params"
+				@mappingParamsUpdated="onMappingParamsUpdated"
 			/>
 
 			<div id="mapping-rows">

@@ -254,7 +254,7 @@ class FabrikFormEntity
 	{
 		$serialized = [
 			'id' => $this->id,
-			'label' => Text::_($this->label),
+			'label' => strip_tags(Text::_($this->label)),
 		];
 
 		if(!empty($this->groups))

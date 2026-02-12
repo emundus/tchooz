@@ -4,6 +4,7 @@ namespace Tchooz\Entities\Task;
 
 use Tchooz\Entities\Automation\ActionEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Automation\ActionFactory;
 use Tchooz\Factories\Automation\ActionTargetFactory;
@@ -30,7 +31,9 @@ class TaskEntity
 
 	private int $attempts = 0;
 
-	public function __construct(int $id, TaskStatusEnum $status, ?ActionEntity $action = null, int $userId = null, array $metadata = [], ?\DateTimeImmutable $createdAt = null, ?\DateTimeImmutable $updatedAt = null, ?\DateTimeImmutable $startedAt = null, ?\DateTimeImmutable $finishedAt = null, int $attempts = 0)
+	private TaskPriorityEnum $priority;
+
+	public function __construct(int $id, TaskStatusEnum $status, ?ActionEntity $action = null, int $userId = null, array $metadata = [], ?\DateTimeImmutable $createdAt = null, ?\DateTimeImmutable $updatedAt = null, ?\DateTimeImmutable $startedAt = null, ?\DateTimeImmutable $finishedAt = null, int $attempts = 0, TaskPriorityEnum $priority = TaskPriorityEnum::MEDIUM)
 	{
 		$this->id = $id;
 		$this->status = $status;
@@ -42,6 +45,7 @@ class TaskEntity
 		$this->startedAt = $startedAt;
 		$this->finishedAt = $finishedAt;
 		$this->attempts = $attempts;
+		$this->priority = $priority;
 	}
 
 	public function getId(): int
@@ -158,6 +162,18 @@ class TaskEntity
 		return $this;
 	}
 
+	public function getPriority(): TaskPriorityEnum
+	{
+		return $this->priority;
+	}
+
+	public function setPriority(TaskPriorityEnum $priority): static
+	{
+		$this->priority = $priority;
+
+		return $this;
+	}
+
 	public function execute(): void
 	{
 		$this->setAttempts($this->getAttempts() + 1);
@@ -166,6 +182,20 @@ class TaskEntity
 		{
 			$actionTargetEntityData = $this->metadata['actionTargetEntity'] ?? null;
 			$actionTargetEntitiesData = $this->metadata['actionTargetEntities'] ?? null;
+
+			if (empty($actionTargetEntitiesData) && !empty($this->metadata['fnums']))
+			{
+				$actionTargetEntitiesData = array_map(function ($fnum) {
+					return [
+						'triggeredBy' => $this->getUserId(),
+						'file' => $fnum,
+						'user' => null,
+						'parameters' => [],
+						'custom' => null,
+						'originalContext' => null,
+					];
+				}, $this->metadata['fnums']);
+			}
 
 			if (empty($actionTargetEntityData) && empty($actionTargetEntitiesData)) {
 				throw new \Exception('Action target entity data is missing in task metadata.');
@@ -189,7 +219,7 @@ class TaskEntity
 				}
 			}
 			
-			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? null);
+			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? []);
 			if (empty($action))
 			{
 				throw new \Exception('Action not found for task id ' . $this->getId());
@@ -237,6 +267,8 @@ class TaskEntity
 			'updatedAt' => $this->updatedAt?->format('d/m/Y H:i:s'),
 			'startedAt' => $this->startedAt?->format('d/m/Y H:i:s'),
 			'finishedAt' => $this->finishedAt?->format('d/m/Y H:i:s'),
+			'attempts' => $this->attempts,
+			'priority' => $this->priority->value,
 		];
 	}
 }

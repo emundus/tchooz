@@ -2204,7 +2204,7 @@ class EmundusControllersettings extends BaseController
 			'data'    => []
 		];
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
 		{
 			header('HTTP/1.1 403 Forbidden');
 		}

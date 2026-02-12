@@ -25,10 +25,15 @@ export default {
 						label: choice.label,
 					}));
 
-					if (field.multiple || (field.research && field.research.controller && field.research.method)) {
+					if (
+						field.multiple ||
+						(field.research && field.research.controller && field.research.method) ||
+						field.optionsProvider
+					) {
 						let asyncRoute = '';
 						let asyncController = '';
 						let asyncAttributes = null;
+
 						if (field.research) {
 							if (field.research.controller) {
 								asyncController = field.research.controller;
@@ -60,6 +65,7 @@ export default {
 							asyncRoute: asyncRoute,
 							asyncController: asyncController,
 							asyncAttributes: asyncAttributes,
+							optionProvider: field.optionsProvider ? field.optionsProvider : null,
 							optionsLimit: 100,
 							optionsPlaceholder: 'COM_EMUNDUS_MULTISELECT_ADDKEYWORDS',
 							selectLabel: 'PRESS_ENTER_TO_SELECT',
@@ -148,6 +154,7 @@ export default {
 							.then((response) => {
 								if (response.status) {
 									param.choices = response.data.map((item) => ({
+										...item,
 										value: item.value,
 										label: item.label,
 									}));
@@ -238,12 +245,9 @@ export default {
 			return groups;
 		},
 
-		async provideParameterOptions(param, values) {
+		getParamDependenciesValues(param, values) {
 			let dependenciesValues = {};
 			if (param.optionsProvider.dependencies.length > 0) {
-				console.log(Object.keys(values), 'object keys');
-				console.log(values, 'values');
-
 				Object.keys(values).forEach((key) => {
 					if (param.optionsProvider.dependencies.includes(key)) {
 						if (values[key] !== null && values[key] !== undefined) {
@@ -258,6 +262,15 @@ export default {
 					}
 				});
 			}
+			return dependenciesValues;
+		},
+
+		async provideParameterOptions(param, values, search = null) {
+			let dependenciesValues = this.getParamDependenciesValues(param, values);
+
+			if (search) {
+				dependenciesValues.search_query = search;
+			}
 
 			if (param.optionsProvider.method && param.optionsProvider.controller) {
 				const promise = providerService
@@ -265,7 +278,8 @@ export default {
 					.then((response) => {
 						if (response.status) {
 							param.choices = response.data.map((item) => ({
-								value: item.value,
+								...item,
+								value: item.value ?? item.name ?? item.id,
 								label: item.label,
 							}));
 						}

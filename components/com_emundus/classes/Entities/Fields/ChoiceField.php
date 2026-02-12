@@ -3,6 +3,7 @@
 namespace Tchooz\Entities\Fields;
 
 use Joomla\CMS\Language\Text;
+use Tchooz\Factories\Field\ChoiceFieldFactory;
 use Tchooz\Services\Field\FieldOptionProvider;
 
 class ChoiceField extends Field
@@ -87,6 +88,31 @@ class ChoiceField extends Field
 	public function getOptionsProvider(): ?FieldOptionProvider
 	{
 		return $this->optionsProvider;
+	}
+
+	/**
+	 * @return self
+	 *
+	 * @throws \Exception
+	 */
+	public function provideOptions(): self
+	{
+		if (!empty($this->optionsProvider) && !empty($this->optionsProvider->getRepository()))
+		{
+			$method = $this->optionsProvider->getRepositoryMethod();
+
+			if (method_exists($this->optionsProvider->getRepository(), $method))
+			{
+				$options = ChoiceFieldFactory::makeOptions($this->optionsProvider->getRepository(), $method, $this->optionsProvider->getRepositoryMethodArgs(), $this->optionsProvider->getLabelMethod(), $this->optionsProvider->getValueMethod());
+				$this->setChoices($options);
+			}
+			else
+			{
+				throw new \Exception("Method {$method} does not exist in the provided repository.");
+			}
+		}
+
+		return $this;
 	}
 
 	public function toSchema(): array

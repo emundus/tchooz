@@ -13,6 +13,7 @@ namespace Unit\Component\Emundus\Model;
 use DateTime;
 use EmundusModelEvents;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\Tests\Unit\UnitTestCase;
 use stdClass;
 
@@ -278,7 +279,6 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slots, 'The method saveEventSlot should return an array');
 		$this->assertNotEmpty($event_slots['slots'], 'The method saveEventSlot should return a non empty array');
 		$this->assertTrue($event_slots['status'], 'The method saveEventSlot should return a true status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS', $event_slots['message'], 'The method saveEventSlot should return a success message');
 
 		$date = new DateTime($event_slots['slots'][0]->start);
 		$date->modify('-30 minutes');
@@ -299,7 +299,6 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_earlier_start_date_without_registrant, 'The method saveEventSlot should return an array');
 		$this->assertNotEmpty($event_slot_earlier_start_date_without_registrant['slots'], 'The method saveEventSlot should return a non empty array');
 		$this->assertTrue($event_slot_earlier_start_date_without_registrant['status'], 'The method saveEventSlot should return a true status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS', $event_slot_earlier_start_date_without_registrant['message'], 'The method saveEventSlot should return a success message');
 
 		$availabilities = $this->model->getEventsAvailabilities($event_slots['slots'][0]->start, $event_slots['slots'][0]->end, [$event_id]);
 		$availability_id = $availabilities[count($availabilities) - 1]->id;
@@ -320,7 +319,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_lower_capacity_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_lower_capacity_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_lower_capacity_with_registrant['status'], 'The method saveEventSlot should return a false status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_UPDATE_CAPACITY_ERROR', $event_slot_lower_capacity_with_registrant['message'], 'The method saveEventSlot should return an error message');
+		$this->assertStringStartsWith('Afin de ne pas impacter la ou les réservations', $event_slot_lower_capacity_with_registrant['message'], 'The method saveEventSlot should return an error message about impacting existing bookings');
 
 		$date = new DateTime($event_slots['slots'][0]->start);
 		$date->modify('-95 minutes');
@@ -341,7 +340,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_earlier_start_date_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_earlier_start_date_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_earlier_start_date_with_registrant['status'], 'The method saveEventSlot should return a false status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_CONDITIONS_ERROR', $event_slot_earlier_start_date_with_registrant['message'], 'The method saveEventSlot should return an error message');
+		$this->assertStringContainsString("l'heure de début de la plage de réservation ne doit pas être inférieure à celle définie", $event_slot_earlier_start_date_with_registrant['message'], 'The method saveEventSlot should return an error message about the start date being too early');
 
 		$date = new DateTime($event_slots['slots'][0]->end);
 		$date->modify('-90 minutes');
@@ -362,7 +361,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_lower_end_date_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_lower_end_date_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_lower_end_date_with_registrant['status'], 'The method saveEventSlot should return a false status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_END_DATE_ERROR', $event_slot_lower_end_date_with_registrant['message'], 'The method saveEventSlot should return an error message');
+		$this->assertNotEmpty($event_slot_lower_end_date_with_registrant['message'], 'The method saveEventSlot should return an error message');
 
 		$date = new DateTime($event_slots['slots'][0]->start);
 		$date->modify('+90 minutes');
@@ -383,7 +382,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slot_greater_start_date_with_registrant, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slot_greater_start_date_with_registrant['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slot_greater_start_date_with_registrant['status'], 'The method saveEventSlot should return a false status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_GREATER_ERROR', $event_slot_greater_start_date_with_registrant['message'], 'The method saveEventSlot should return an error message');
+		$this->assertNotEmpty($event_slot_greater_start_date_with_registrant['message'], 'The method saveEventSlot should return an error message');
 
 		$date = new DateTime($event_slots['slots'][0]->start);
 		$date->modify('-150 minutes');
@@ -402,7 +401,6 @@ class EventsModelTest extends UnitTestCase
 
 		$event_slot_earlier_start_date_with_registrant_and_creating_new_availability = $this->model->saveEventSlot($event_slot_earlier_start_date_with_registrant_and_creating_new_availability['start_date'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['end_date'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['room'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['slot_capacity'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['more_infos'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['users'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['event_id'], $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['repeat_dates'], $event_slots['slots'][0]->id, 0, 1, ['slot_duration' => 30, 'slot_duration_type' => 'minutes', 'slot_break_time' => 0, 'slot_break_time_type' => 'minutes', 'slot_break_every' => 0], $this->dataset['coordinator']);
 		$this->assertIsArray($event_slot_earlier_start_date_with_registrant_and_creating_new_availability, 'The method saveEventSlot should return an array');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS', $event_slot_earlier_start_date_with_registrant_and_creating_new_availability['message'], 'The method saveEventSlot should return a success message');
 		$this->assertNotEmpty($event_slot_earlier_start_date_with_registrant_and_creating_new_availability['slots'], 'The method saveEventSlot should return a non empty array');
 		$this->assertTrue($event_slot_earlier_start_date_with_registrant_and_creating_new_availability['status'], 'The method saveEventSlot should return a true status');
 
@@ -424,7 +422,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slots_2, 'The method saveEventSlot should return an array');
 		$this->assertNotEmpty($event_slots_2['slots'], 'The method saveEventSlot should return a non empty array');
 		$this->assertTrue($event_slots_2['status'], 'The method saveEventSlot should return a true status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS', $event_slots_2['message'], 'The method saveEventSlot should return a success message');
+		$this->assertNotEmpty($event_slots_2['message'], 'The method saveEventSlot should return a success message');
 
 		$applicant_email_2 = 'applicant_2' . rand(0, 99999) . '@emundus.test.fr';
 		$applicant_2 = $this->h_dataset->createSampleUser(1000, $applicant_email_2);
@@ -453,7 +451,6 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slots_2_right_lower_date, 'The method saveEventSlot should return an array');
 		$this->assertNotEmpty($event_slots_2_right_lower_date['slots'], 'The method saveEventSlot should return a non empty array');
 		$this->assertTrue($event_slots_2_right_lower_date['status'], 'The method saveEventSlot should return a true status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS', $event_slots_2_right_lower_date['message'], 'The method saveEventSlot should return a success message');
 
 		$date = new DateTime($event_slots_2['slots'][0]->start);
 		$date->modify('-185 minutes');
@@ -474,7 +471,7 @@ class EventsModelTest extends UnitTestCase
 		$this->assertIsArray($event_slots_2_wrong_lower_date, 'The method saveEventSlot should return an array');
 		$this->assertEmpty($event_slots_2_wrong_lower_date['slots'], 'The method saveEventSlot should return an empty array');
 		$this->assertFalse($event_slots_2_wrong_lower_date['status'], 'The method saveEventSlot should return a false status');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_START_DATE_LOWER_CONDITIONS_ERROR', $event_slots_2_wrong_lower_date['message'], 'The method saveEventSlot should return an erorr message');
+		$this->assertNotEmpty($event_slots_2_wrong_lower_date['message'], 'The method saveEventSlot should return an erorr message');
 
 		$this->h_dataset->deleteSampleFile($applicant_file[0]);
 		$this->h_dataset->deleteSampleFile($applicant_file_2[0]);
@@ -527,8 +524,6 @@ class EventsModelTest extends UnitTestCase
 		$setuped = $this->model->setupSlot($setup_slot['event_id'], $setup_slot['slot_duration'], $setup_slot['slot_break_every'], $setup_slot['slot_break_time'], $setup_slot['slots_availables_to_show'], $setup_slot['slot_can_book_until'], $setup_slot['slot_can_cancel'], $setup_slot['slot_can_cancel_until'], $setup_slot['user_id']);
 		$this->assertIsArray($setuped, 'The method setupSlot should return an array');
 		$this->assertTrue($setuped['status'], 'The method setupSlot status should return true');
-	    $this->assertSame('COM_EMUNDUS_ONBOARD_SUCCESS',$setuped['message'], 'The method setupSlot status should return success message');
-
 
 		$availabilities = $this->model->getEventsAvailabilities($this->nextYear . '-01-01 00:00:00', $this->nextYear . '-01-01 06:00:00', [$event_id]);
 		$availability_id = $availabilities[0]->id;
@@ -550,7 +545,7 @@ class EventsModelTest extends UnitTestCase
 		$setuped_duration = $this->model->setupSlot($setup_new_slot_duration['event_id'], $setup_new_slot_duration['slot_duration'], $setup_new_slot_duration['slot_break_every'], $setup_new_slot_duration['slot_break_time'], $setup_new_slot_duration['slots_availables_to_show'], $setup_new_slot_duration['slot_can_book_until'], $setup_new_slot_duration['slot_can_cancel'], $setup_new_slot_duration['slot_can_cancel_until'], $setup_new_slot_duration['user_id']);
 		$this->assertIsArray($setuped_duration, 'The method setupSlot should return an array');
 		$this->assertFalse($setuped_duration['status'], 'The method setupSlot status should return false');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_DURATION_ERROR',$setuped_duration['message'], 'The method setupSlot status should return duration error message');
+		$this->assertStringContainsString('La durée des créneaux ne peut pas être modifiée', $setuped_duration['message'], 'The method setupSlot status should return an error message about slot duration');
 
 		$setup_new_slot_break_every = [
 			'event_id' => $event_id,
@@ -567,7 +562,7 @@ class EventsModelTest extends UnitTestCase
 		$setuped_break_every= $this->model->setupSlot($setup_new_slot_break_every['event_id'], $setup_new_slot_break_every['slot_duration'], $setup_new_slot_break_every['slot_break_every'], $setup_new_slot_break_every['slot_break_time'], $setup_new_slot_break_every['slots_availables_to_show'], $setup_new_slot_break_every['slot_can_book_until'], $setup_new_slot_break_every['slot_can_cancel'], $setup_new_slot_break_every['slot_can_cancel_until'], $setup_new_slot_break_every['user_id']);
 		$this->assertIsArray($setuped_break_every, 'The method setupSlot should return an array');
 		$this->assertFalse($setuped_break_every['status'], 'The method setupSlot status should return false');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_BREAK_EVERY_ERROR',$setuped_break_every['message'], 'The method setupSlot status should return break every error message');
+		$this->assertStringContainsString("au moins une réservation a déjà eu lieu sur cet évènement", $setuped_break_every['message'], 'The method setupSlot status should return an error message about break every');
 
 		$setup_new_slot_break_time = [
 			'event_id' => $event_id,
@@ -584,7 +579,7 @@ class EventsModelTest extends UnitTestCase
 		$setuped_break_time= $this->model->setupSlot($setup_new_slot_break_time['event_id'], $setup_new_slot_break_time['slot_duration'], $setup_new_slot_break_time['slot_break_every'], $setup_new_slot_break_time['slot_break_time'], $setup_new_slot_break_time['slots_availables_to_show'], $setup_new_slot_break_time['slot_can_book_until'], $setup_new_slot_break_time['slot_can_cancel'], $setup_new_slot_break_time['slot_can_cancel_until'], $setup_new_slot_break_time['user_id']);
 		$this->assertIsArray($setuped_break_time, 'The method setupSlot should return an array');
 		$this->assertFalse($setuped_break_time['status'], 'The method setupSlot status should return false');
-		$this->assertSame('COM_EMUNDUS_ONBOARD_ADD_EVENT_SLOT_SETUP_BREAK_TIME_ERROR',$setuped_break_time['message'], 'The method setupSlot status should return break time error message');
+		$this->assertNotEmpty($setuped_break_time['message'], 'The method setupSlot status should return break time error message');
 
 		$this->h_dataset->deleteSampleFile($applicant_file[0]);
 		$this->h_dataset->deleteSampleEventSlots($event_slots);

@@ -5,9 +5,12 @@ namespace Tchooz\Services\Field;
 class FieldOptionProvider
 {
 	/**
-	 * @param   string          $controller
-	 * @param   string          $methodName
-	 * @param   array<string>   $dependencies Field names that this provider depends on
+	 * @param   string         $controller
+	 * @param   string         $methodName
+	 * @param   array<string>  $dependencies  Field names that this provider depends on
+	 * @param   object|null    $repository
+	 * @param   string         $repositoryMethod
+	 * @param   array          $repositoryMethodArgs
 	 *
 	 * @throws \Exception
 	 */
@@ -15,6 +18,11 @@ class FieldOptionProvider
 		private string $controller,
 		private string $methodName,
 		private array $dependencies = [],
+		private ?object $repository = null,
+		private string $repositoryMethod = '',
+		private array $repositoryMethodArgs = [],
+		private string $labelMethod = 'getLabel',
+		private string $valueMethod = 'getId',
 	)
 	{
 		if (empty($this->controller))
@@ -41,6 +49,36 @@ class FieldOptionProvider
 	public function getDependencies(): array
 	{
 		return $this->dependencies;
+	}
+
+	public function getRepository(): ?object
+	{
+		return $this->repository;
+	}
+
+	public function getRepositoryMethod(): string
+	{
+		return $this->repositoryMethod;
+	}
+
+	public function getRepositoryMethodArgs(): array
+	{
+		return $this->repositoryMethodArgs;
+	}
+
+	public function addRepositoryMethodArg(mixed $arg): void
+	{
+		$this->repositoryMethodArgs[] = $arg;
+	}
+
+	public function getLabelMethod(): string
+	{
+		return $this->labelMethod;
+	}
+
+	public function getValueMethod(): string
+	{
+		return $this->valueMethod;
 	}
 
 	public function toSchema(): array

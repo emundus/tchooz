@@ -40,12 +40,15 @@ export default {
 		this.initialized = true;
 	},
 	methods: {
-		onParameterValueUpdated(parameter, group, rowIndex = null) {
+		onParameterValueUpdated(parameter, group, rowIndex = null, oldValue = null, newValue = null) {
+			if (oldValue !== null && newValue !== null && oldValue === newValue) {
+				return;
+			}
 			if (parameter) {
 				this.$emit('parameterValueUpdated', parameter, group, rowIndex);
 			}
 
-			if (this.initialized) {
+			if (this.initialized && oldValue !== null) {
 				this.reloadParametersRules();
 
 				this.fields.forEach((field) => {
@@ -54,15 +57,32 @@ export default {
 							if (watcher.field === parameter.param && watcher.events.includes('onChange')) {
 								let values = {};
 								let fieldParameter = this.findParameterByName(field.name);
+								group.parameters.forEach(function (param) {
+									// key is the parameter name, value is the parameter value
+									values[param.param] = param.value;
+								});
 
 								if (fieldParameter.type === 'select') {
-									group.parameters.forEach(function (param) {
-										// key is the parameter name, value is the parameter value
-										values[param.param] = param.value;
-									});
-
 									fieldParameter.options = await this.provideParameterOptions(field, values);
-									fieldParameter.reload += 1;
+
+									// force reload of the multiselect, if NaN,
+									if (isNaN(fieldParameter.reload)) {
+										fieldParameter.reload = 1;
+									} else {
+										fieldParameter.reload += 1;
+									}
+								} else if (fieldParameter.type === 'multiselect' && field.optionsProvider) {
+									fieldParameter.multiselectOptions.options = await this.provideParameterOptions(field, values);
+									fieldParameter.multiselectOptions.optionsProvider = field.optionsProvider;
+									fieldParameter.multiselectOptions.optionsProvider.dependenciesValues =
+										this.getParamDependenciesValues(field, values);
+
+									// force reload of the multiselect, if NaN,
+									if (isNaN(fieldParameter.reload)) {
+										fieldParameter.reload = 1;
+									} else {
+										fieldParameter.reload += 1;
+									}
 								}
 							}
 						});
@@ -219,7 +239,10 @@ export default {
 										:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 										:parameter-object="row.parameters[index]"
 										:key="row.parameters[index].param + '-' + rowIndex + '-' + index"
-										@valueUpdated="onParameterValueUpdated(row.parameters[index], group, rowIndex)"
+										@valueUpdated="
+											(parameter, oldVal, newVal) =>
+												onParameterValueUpdated(row.parameters[index], group, rowIndex, oldVal, newVal)
+										"
 									/>
 								</td>
 								<td class="tw-border tw-border-neutral-300 tw-px-4 tw-py-2 tw-text-center">
@@ -254,7 +277,10 @@ export default {
 								:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 								:parameter-object="row.parameters[index]"
 								:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
-								@valueUpdated="onParameterValueUpdated(row.parameters[index], group, rowIndex)"
+								@valueUpdated="
+									(parameter, oldVal, newVal) =>
+										onParameterValueUpdated(row.parameters[index], group, rowIndex, oldVal, newVal)
+								"
 							/>
 						</div>
 					</div>
@@ -275,7 +301,7 @@ export default {
 						:multiselect-options="field.type === 'multiselect' ? field.multiselectOptions : null"
 						:parameter-object="field"
 						:asyncAttributes="field.type === 'multiselect' ? field.multiselectOptions.asyncAttributes : null"
-						@valueUpdated="onParameterValueUpdated(field, group)"
+						@valueUpdated="(parameter, oldVal, newVal) => onParameterValueUpdated(field, group, null, oldVal, newVal)"
 					/>
 				</div>
 			</div>
