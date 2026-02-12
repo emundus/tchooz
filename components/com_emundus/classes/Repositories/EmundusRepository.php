@@ -12,6 +12,8 @@ namespace Tchooz\Repositories;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
+use Joomla\Database\QueryInterface;
+use Tchooz\Factories\Workflow\StepTypeFactory;
 use Tchooz\Traits\TraitTable;
 
 class EmundusRepository
@@ -139,5 +141,113 @@ class EmundusRepository
 		}
 
 		return $items;
+	}
+
+	/**
+	 * @param   array   $filters
+	 * @param   int     $limit
+	 * @param   int     $page
+	 * @param   string  $select
+	 * @param   string  $order
+	 *
+	 * @return array
+	 */
+	public function get(array $filters = [], int $limit = 0, int $page = 1, string $select = '*', string $order = ''): array
+	{
+		$objects = [];
+
+		if ($select === '*')
+		{
+			$select = $this->alias . '.*';
+		}
+		else
+		{
+			$selectFields = [];
+			$fields = is_array($select) ? $select : explode(',', $select);
+
+			foreach ($fields as $field)
+			{
+				$field = trim($field);
+
+				if (!str_starts_with($field, $this->alias))
+				{
+					$field = $this->alias . '.' . $field;
+				}
+
+				if (!in_array($field, $this->columns))
+				{
+					throw new \InvalidArgumentException("Field '{$field}' not allowed.");
+				}
+
+				$selectFields = $field;
+			}
+
+			$select = implode(', ', $selectFields);
+		}
+
+		$query = $this->db->createQuery()
+			->select($select)
+			->from($this->db->quoteName($this->tableName, $this->alias));
+
+		if (!empty($order))
+		{
+			$query->order($order);
+		} else {
+			$query->order($this->alias . '.id ASC');
+		}
+
+		if (!empty($filters))
+		{
+			$this->applyFilters($query, $filters);
+		}
+
+		if (!empty($limit))
+		{
+			$offset = ($page - 1) * $limit;
+			$query->setLimit($limit, $offset);
+		}
+
+		$this->db->setQuery($query);
+		$results = $this->db->loadObjectList();
+
+		if ($results && !empty($this->getFactory())) {
+			$objects = $this->getFactory()::fromDbObjects($results);
+		}
+
+		return $objects;
+	}
+
+	public function applyFilters(QueryInterface $query, array $filters): void
+	{
+		if (!empty($filters))
+		{
+			$query->where('1 = 1');
+
+			foreach ($filters as $field => $value)
+			{
+				if (!str_starts_with($field, $this->alias . '.') && !str_contains($field, '.')) {
+					$field = $this->alias . '.' . $field;
+				}
+
+				if (!in_array($field, $this->columns))
+				{
+					throw new \InvalidArgumentException("Invalid filter field: {$field}");
+				}
+
+				if (is_array($value))
+				{
+					$query->andWhere($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+				}
+				else
+				{
+					$query->andWhere($this->db->quoteName($field) . ' = ' . $this->db->quote($value));
+				}
+			}
+		}
+	}
+
+	public function getFactory(): ?object
+	{
+		return null;
 	}
 }

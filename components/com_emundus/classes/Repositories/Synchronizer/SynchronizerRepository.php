@@ -4,6 +4,7 @@ namespace Tchooz\Repositories\Synchronizer;
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Factories\Synchronizer\SynchronizerFactory;
@@ -155,7 +156,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 		return $entity;
 	}
 
-	public function applyFilters(array $filters, object $query): void
+	public function applyFilters(QueryInterface $query, array $filters): void
 	{
 		if (empty($filters)) {
 			$filters = ['published' => 1];
@@ -191,7 +192,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 			->from($this->db->quoteName($this->tableName, $this->alias))
 			->where('1 = 1');
 
-		$this->applyFilters($filters, $query);
+		$this->applyFilters($query, $filters);
 
 		$query->setLimit($limit, ($page - 1) * $limit);
 

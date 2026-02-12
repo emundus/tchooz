@@ -66,6 +66,25 @@ class PaymentAddonHandler implements AddonHandlerInterface
 
 			$db->setQuery($query);
 			$updates[] = $db->execute();
+
+			$query->clear()
+				->select('value')
+				->from($db->quoteName('#__emundus_setup_config'))
+				->where($db->quoteName('namekey') . ' = ' . $db->quote('payment'));
+
+			$db->setQuery($query);
+			$payment_config = $db->loadResult();
+
+			$payment_config = json_decode($payment_config, true);
+			$payment_config['enabled'] = $state ? 1 : 0;
+
+			$query->clear()
+				->update($db->quoteName('#__emundus_setup_config'))
+				->set($db->quoteName('value') . ' = ' . $db->quote(json_encode($payment_config)))
+				->where($db->quoteName('namekey') . ' = ' . $db->quote('payment'));
+
+			$db->setQuery($query);
+			$updates[] = $db->execute();
 		}
 		catch (\Exception $e)
 		{

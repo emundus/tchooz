@@ -197,7 +197,7 @@ class StepEntity {
 			$this->paymentRepository = new PaymentRepository();
 		}
 
-		return $this->getType()->getId() === $this->paymentRepository->getPaymentStepTypeId();
+		return in_array($this->getType()->getId(), $this->paymentRepository->getPaymentStepTypeIds());
 	}
 
 	public function setOrdering(int $ordering): void

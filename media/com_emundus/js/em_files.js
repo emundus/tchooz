@@ -482,27 +482,7 @@ function openFiles(fnum, page = 0, vue = false) {
     var cid = parseInt(fnum.fnum.substr(14, 7));
     var sid = parseInt(fnum.fnum.substr(21, 7));
 
-    if (document.getElementById('em-assoc-files')) {
-        $('#em-assoc-files .panel-body').empty();
-
-        $.ajax({
-            type: 'get',
-            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum.fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
-            dataType: 'html',
-            success: function (result) {
-                if (result) {
-                    $('#em-assoc-files .panel-body').append(result);
-                    document.getElementById('em-assoc-files').style.display = 'block';
-                } else {
-                    document.getElementById('em-assoc-files').style.display = 'none';
-                }
-
-            },
-            error: function (jqXHR) {
-                console.log(jqXHR.responseText);
-            }
-        });
-    }
+    loadAssocFilesSection(fnum.fnum);
 
     $.ajax({
         type: 'get',
@@ -688,6 +668,33 @@ function openFiles(fnum, page = 0, vue = false) {
     });
 
 }
+
+
+function loadAssocFilesSection(fnum)
+{
+    if (document.getElementById('em-assoc-files')) {
+        $('#em-assoc-files .panel-body').empty();
+
+        $.ajax({
+            type: 'get',
+            url: '/index.php?option=com_emundus&view=application&fnum=' + fnum + '&Itemid=' + itemId + '&format=raw&layout=assoc_files',
+            dataType: 'html',
+            success: function (result) {
+                if (result) {
+                    $('#em-assoc-files .panel-body').append(result);
+                    document.getElementById('em-assoc-files').style.display = 'block';
+                } else {
+                    document.getElementById('em-assoc-files').style.display = 'none';
+                }
+
+            },
+            error: function (jqXHR) {
+                console.log(jqXHR.responseText);
+            }
+        });
+    }
+}
+
 
 function menuBar1() {
     $('.nav.navbar-nav').show();
@@ -6538,3 +6545,15 @@ function deleteEvaluation(fnum, stepId, rowId) {
             console.log(error);
         });
 }
+
+// listen to a post message from the evaluation iframe
+window.addEventListener('message', (event) => {
+    if (event.origin !== window.location.origin) {
+        return;
+    }
+
+    if (event.data &&  event.data.event && event.data.event === 'evaluationSubmitted')
+    {
+        loadAssocFilesSection(event.data.fnum);
+    }
+});

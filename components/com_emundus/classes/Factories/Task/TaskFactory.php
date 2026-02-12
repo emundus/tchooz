@@ -5,6 +5,7 @@ namespace Tchooz\Factories\Task;
 use Joomla\CMS\Factory;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Repositories\Automation\ActionRepository;
 
@@ -45,7 +46,8 @@ class TaskFactory
 					isset($obj->updated_at) ? new \DateTimeImmutable($obj->updated_at) : null,
 					isset($obj->started_at) ? new \DateTimeImmutable($obj->started_at) : null,
 					isset($obj->finished_at) ? new \DateTimeImmutable($obj->finished_at) : null,
-					$obj->attempts ?? 0
+					$obj->attempts ?? 0,
+					!empty($obj->priority) ? TaskPriorityEnum::from($obj->priority) : TaskPriorityEnum::MEDIUM
 				);
 			}
 		}

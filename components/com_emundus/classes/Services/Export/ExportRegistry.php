@@ -46,7 +46,7 @@ class ExportRegistry
 						}
 					}
 				}
-				
+
 				$this->cache->store($this->exportServices, 'export_services');
 			}
 		} else {
@@ -59,8 +59,7 @@ class ExportRegistry
 		if (class_exists($className)) {
 			$reflection = new \ReflectionClass($className);
 			if (!$reflection->isAbstract() && $reflection->implementsInterface(ExportInterface::class)) {
-				$instance = $reflection->newInstance();
-				$this->exportServices[$instance->getType()] = $instance;
+				$this->exportServices[$className::getType()] = $className;
 			}
 		}
 	}
@@ -68,7 +67,7 @@ class ExportRegistry
 	public function getExportServiceInstance(string $type, array $fnums, User $user, ?array $options = null, ExportEntity $exportEntity = null): ?ExportInterface
 	{
 		if (isset($this->exportServices[$type])) {
-			$className = get_class($this->exportServices[$type]);
+			$className = $this->exportServices[$type];
 			return new $className($fnums, $user, $options, $exportEntity);
 		}
 		return null;

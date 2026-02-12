@@ -10,6 +10,7 @@ use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationEntity;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Repositories\Task\TaskRepository;
 
@@ -45,6 +46,13 @@ class TaskRepositoryTest extends UnitTestCase
 		$this->assertTrue($saved, 'Task should be saved successfully.');
 		$this->assertGreaterThan(0, $task->getId(), 'Task ID should be set after saving.');
 		$this->h_dataset->addToSamples('tasks', $task->getId());
+
+		$task->setPriority(TaskPriorityEnum::HIGH);
+		$updated = $this->repository->saveTask($task);
+		$this->assertTrue($updated, 'Task should be updated successfully.');
+
+		$retrievedTask = $this->repository->getTaskById($task->getId());
+		$this->assertEquals(TaskPriorityEnum::HIGH, $retrievedTask->getPriority(), 'Task priority should be updated to HIGH.');
 	}
 
 	/**
@@ -263,5 +271,79 @@ class TaskRepositoryTest extends UnitTestCase
 		$retrievedTask = $this->repository->getTaskById($notStuckTask->getId());
 		$this->assertInstanceOf(TaskEntity::class, $retrievedTask, 'Retrieved task should be an instance of TaskEntity.');
 		$this->assertEquals(TaskStatusEnum::IN_PROGRESS, $retrievedTask->getStatus(), 'Not stuck task status should remain IN_PROGRESS after health check.');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getPendingTasks
+	 * Vérifie que les tâches sont retournées par ordre de priorité croissante
+	 */
+	public function testGetPendingTasksReturnsTasksOrderedByPriority(): void
+	{
+		$actionTargetEntity = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);
+		$metadata = ['actionTargetEntity' => $actionTargetEntity->serialize()];
+
+		$taskLow = new TaskEntity(0, TaskStatusEnum::PENDING, $this->automationEntity->getActions()[0], $this->dataset['coordinator'], $metadata, null, null, null, null, 0, TaskPriorityEnum::LOW);
+		$this->repository->saveTask($taskLow);
+		$this->h_dataset->addToSamples('tasks', $taskLow->getId());
+
+		$taskHigh = new TaskEntity(0, TaskStatusEnum::PENDING, $this->automationEntity->getActions()[0], $this->dataset['coordinator'], $metadata, null, null, null, null, 0, TaskPriorityEnum::HIGH);
+		$this->repository->saveTask($taskHigh);
+		$this->h_dataset->addToSamples('tasks', $taskHigh->getId());
+
+		$taskMedium = new TaskEntity(0, TaskStatusEnum::PENDING, $this->automationEntity->getActions()[0], $this->dataset['coordinator'], $metadata);
+		$this->repository->saveTask($taskMedium);
+		$this->h_dataset->addToSamples('tasks', $taskMedium->getId());
+
+		$pendingTasks = $this->repository->getPendingTasks();
+
+		$foundHighIndex = null;
+		$foundMediumIndex = null;
+		$foundLowIndex = null;
+
+		foreach ($pendingTasks as $index => $task) {
+			if ($task->getPriority() === TaskPriorityEnum::HIGH && $foundHighIndex === null) {
+				$foundHighIndex = $index;
+			} elseif ($task->getPriority() === TaskPriorityEnum::MEDIUM && $foundMediumIndex === null) {
+				$foundMediumIndex = $index;
+			} elseif ($task->getPriority() === TaskPriorityEnum::LOW && $foundLowIndex === null) {
+				$foundLowIndex = $index;
+			}
+
+			if ($foundHighIndex !== null && $foundMediumIndex !== null && $foundLowIndex !== null) {
+				break; // Found all priorities, no need to continue loop
+			}
+		}
+
+		$this->assertNotNull($foundHighIndex, 'High priority task should be found in pending tasks.');
+		$this->assertNotNull($foundMediumIndex, 'Medium priority task should be found in pending tasks.');
+		$this->assertNotNull($foundLowIndex, 'Low priority task should be found in pending tasks.');
+		$this->assertTrue($foundHighIndex < $foundMediumIndex, 'High priority task should be returned before medium priority task.');
+		$this->assertTrue($foundMediumIndex < $foundLowIndex, 'Medium priority task should be returned before low priority task.');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getPendingTasks
+	 * @return void
+	 * check if process can handle sorting a hundred pending tasks with heavy metadata without timing out or running out of memory. This is important to ensure that the system can handle real-world scenarios where there may be many tasks with large metadata without performance degradation or crashes.
+	 */
+	public function testGetPendingTasksWithHeavyMetadata(): void
+	{
+		$actionTargetEntity = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);
+		$fnums = [];
+		for ($i = 0; $i < 5000; $i++) {
+			// add string of 28 characters to fnums array to create heavy metadata (28 characters is the maximum length of fnum in emundus, so this is a realistic scenario)
+			$fnums[] = str_pad((string)$i, 28, '0', STR_PAD_LEFT);
+		}
+		$metadata = ['actionTargetEntity' => $actionTargetEntity->serialize(), 'fnums' => $fnums];
+
+		for ($i = 0; $i < 100; $i++) {
+			$task = new TaskEntity(0, TaskStatusEnum::PENDING, $this->automationEntity->getActions()[0], $this->dataset['coordinator'], $metadata);
+			$this->repository->saveTask($task);
+			$this->h_dataset->addToSamples('tasks', $task->getId());
+		}
+
+		$pendingTasks = $this->repository->getPendingTasks();
+		$this->assertIsArray($pendingTasks, 'Pending tasks should be returned as an array.');
+		$this->assertGreaterThan(0, count($pendingTasks), 'There should be at least one pending task.');
 	}
 }

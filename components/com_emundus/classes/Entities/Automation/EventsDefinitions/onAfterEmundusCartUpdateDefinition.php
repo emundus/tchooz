@@ -108,7 +108,7 @@ class onAfterEmundusCartUpdateDefinition extends EventDefinition
 		}
 		$m_workflow = new \EmundusModelWorkflow();
 		$repository = new PaymentRepository();
-		$steps = $m_workflow->getSteps(0, [$repository->getPaymentStepTypeId()]);
+		$steps = $m_workflow->getSteps(0, $repository->getPaymentStepTypeIds());
 
 		foreach ($steps as $step)
 		{

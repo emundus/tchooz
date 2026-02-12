@@ -442,7 +442,7 @@ class FabrikElementEntity
 			'group_id'      => $this->groupId,
 			'plugin'        => $this->plugin->value,
 			'plugin_name'   => $translate ? Text::_($this->plugin->getLabel()) : $this->plugin->getLabel(),
-			'label'         => $translate ? Text::_($this->label) : $this->label,
+			'label'         => $translate ? strip_tags(Text::_($this->label)) : strip_tags($this->label),
 			'default'       => $this->default,
 			'ordering'      => $this->ordering,
 			'published'     => $this->published,
