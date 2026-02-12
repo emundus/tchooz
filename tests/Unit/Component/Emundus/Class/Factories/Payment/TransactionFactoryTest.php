@@ -17,6 +17,9 @@ class TransactionFactoryTest extends UnitTestCase
 		$this->factory = new TransactionFactory();
 	}
 
+	/**
+	 * @covers TransactionFactory::getTransactionTitle
+	 */
 	public function testGetTransactionTitle()
 	{
 		$transaction = new TransactionEntity(1);

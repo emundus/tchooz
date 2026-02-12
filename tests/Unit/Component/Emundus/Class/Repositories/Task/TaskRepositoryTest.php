@@ -294,7 +294,7 @@ class TaskRepositoryTest extends UnitTestCase
 		$this->repository->saveTask($taskMedium);
 		$this->h_dataset->addToSamples('tasks', $taskMedium->getId());
 
-		$pendingTasks = $this->repository->getPendingTasks(10);
+		$pendingTasks = $this->repository->getPendingTasks();
 
 		$foundHighIndex = null;
 		$foundMediumIndex = null;
@@ -319,5 +319,31 @@ class TaskRepositoryTest extends UnitTestCase
 		$this->assertNotNull($foundLowIndex, 'Low priority task should be found in pending tasks.');
 		$this->assertTrue($foundHighIndex < $foundMediumIndex, 'High priority task should be returned before medium priority task.');
 		$this->assertTrue($foundMediumIndex < $foundLowIndex, 'Medium priority task should be returned before low priority task.');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getPendingTasks
+	 * @return void
+	 * check if process can handle sorting a hundred pending tasks with heavy metadata without timing out or running out of memory. This is important to ensure that the system can handle real-world scenarios where there may be many tasks with large metadata without performance degradation or crashes.
+	 */
+	public function testGetPendingTasksWithHeavyMetadata(): void
+	{
+		$actionTargetEntity = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);
+		$fnums = [];
+		for ($i = 0; $i < 5000; $i++) {
+			// add string of 28 characters to fnums array to create heavy metadata (28 characters is the maximum length of fnum in emundus, so this is a realistic scenario)
+			$fnums[] = str_pad((string)$i, 28, '0', STR_PAD_LEFT);
+		}
+		$metadata = ['actionTargetEntity' => $actionTargetEntity->serialize(), 'fnums' => $fnums];
+
+		for ($i = 0; $i < 100; $i++) {
+			$task = new TaskEntity(0, TaskStatusEnum::PENDING, $this->automationEntity->getActions()[0], $this->dataset['coordinator'], $metadata);
+			$this->repository->saveTask($task);
+			$this->h_dataset->addToSamples('tasks', $task->getId());
+		}
+
+		$pendingTasks = $this->repository->getPendingTasks();
+		$this->assertIsArray($pendingTasks, 'Pending tasks should be returned as an array.');
+		$this->assertGreaterThan(0, count($pendingTasks), 'There should be at least one pending task.');
 	}
 }
