@@ -183,6 +183,20 @@ class TaskEntity
 			$actionTargetEntityData = $this->metadata['actionTargetEntity'] ?? null;
 			$actionTargetEntitiesData = $this->metadata['actionTargetEntities'] ?? null;
 
+			if (empty($actionTargetEntitiesData) && !empty($this->metadata['fnums']))
+			{
+				$actionTargetEntitiesData = array_map(function ($fnum) {
+					return [
+						'triggeredBy' => $this->getUserId(),
+						'file' => $fnum,
+						'user' => null,
+						'parameters' => [],
+						'custom' => null,
+						'originalContext' => null,
+					];
+				}, $this->metadata['fnums']);
+			}
+
 			if (empty($actionTargetEntityData) && empty($actionTargetEntitiesData)) {
 				throw new \Exception('Action target entity data is missing in task metadata.');
 			}
@@ -205,7 +219,7 @@ class TaskEntity
 				}
 			}
 			
-			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? null);
+			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? []);
 			if (empty($action))
 			{
 				throw new \Exception('Action not found for task id ' . $this->getId());

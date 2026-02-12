@@ -59,26 +59,34 @@ class ActionUpdateStatus extends ActionEntity
 			throw new \RuntimeException(Text::_('TCHOOZ_AUTOMATION_ACTION_UPDATE_STATUS_ERROR_MISSING_STATUS_PARAMETER'));
 		}
 
-		if (empty($context->getFile()))
+		if (!is_array($context))
 		{
-			throw new \RuntimeException(Text::_('TCHOOZ_AUTOMATION_ACTION_UPDATE_STATUS_ERROR_NO_FILES_IN_CONTEXT'));
+			$context = [$context];
 		}
 
-		if (!class_exists('EmundusModelFiles'))
+		foreach($context as $target)
 		{
-			require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
-		}
-		$m_files      = new EmundusModelFiles();
-		$result       = $m_files->updateState($context->getFile(), $status, $context->getTriggeredBy()->id, $executionContext);
-		$resultStatus = is_bool($result) ? $result : $result['status'];
+			if (empty($target->getFile()))
+			{
+				throw new \RuntimeException(Text::_('TCHOOZ_AUTOMATION_ACTION_UPDATE_STATUS_ERROR_NO_FILES_IN_CONTEXT'));
+			}
 
-		if ($resultStatus)
-		{
-			$actionStatus = ActionExecutionStatusEnum::COMPLETED;
-		}
-		else
-		{
-			$actionStatus = ActionExecutionStatusEnum::FAILED;
+			if (!class_exists('EmundusModelFiles'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/files.php');
+			}
+			$m_files      = new EmundusModelFiles();
+			$result       = $m_files->updateState($target->getFile(), $status, $target->getTriggeredBy()->id, $executionContext);
+			$resultStatus = is_bool($result) ? $result : $result['status'];
+
+			if ($resultStatus)
+			{
+				$actionStatus = ActionExecutionStatusEnum::COMPLETED;
+			}
+			else
+			{
+				$actionStatus = ActionExecutionStatusEnum::FAILED;
+			}
 		}
 
 		return $actionStatus;
