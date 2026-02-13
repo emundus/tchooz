@@ -37,7 +37,7 @@ class MappingRepositoryTest extends UnitTestCase
 		$rows = [];
 		$rows[] = new MappingRowEntity(0, 0, 0, ConditionTargetTypeEnum::CALCULATED, 'test', 'target_field_1');
 
-		$mappingEntity = new MappingEntity(0, 'Test Mapping', $this->synchronizerEntity->getId(), 'test', $rows);
+		$mappingEntity = new MappingEntity(0, 'Test Mapping', $this->synchronizerEntity->getId(), 'test', [], $rows);
 		$this->assertTrue($this->repository->flush($mappingEntity), 'The flush method should return true on success.');
 		$this->assertGreaterThan(0, $mappingEntity->getId(), 'The mapping entity ID should be greater than 0 after flush.');
 	}
@@ -54,7 +54,7 @@ class MappingRepositoryTest extends UnitTestCase
 		$rows = [];
 		$rows[] = new MappingRowEntity(0, 0, 0, ConditionTargetTypeEnum::CALCULATED, 'test', 'target_field_1', $transformations);
 
-		$mappingEntity = new MappingEntity(0, 'Test Mapping', $this->synchronizerEntity->getId(), 'test', $rows);
+		$mappingEntity = new MappingEntity(0, 'Test Mapping', $this->synchronizerEntity->getId(), 'test', [], $rows);
 		$this->assertTrue($this->repository->flush($mappingEntity), 'The flush method should return true on success.');
 		$this->assertGreaterThan(0, $mappingEntity->getId(), 'The mapping entity ID should be greater than 0 after flush.');
 

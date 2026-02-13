@@ -10,14 +10,12 @@
 namespace Tchooz\Services\Export\Excel;
 
 
-use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserHelper;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -30,11 +28,8 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
-use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Upload\UploadFormatEnum;
-use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
-use Tchooz\Factories\TransformerFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
@@ -45,7 +40,6 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Services\Export\Export;
 use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
-use Tchooz\Services\Export\HeadersEnum;
 use Tchooz\Services\UploadService;
 
 class ExcelService extends Export implements ExportInterface
@@ -93,7 +87,11 @@ class ExcelService extends Export implements ExportInterface
 		$this->fnums = $fnums;
 		$this->user  = $user;
 
-		// TODO: Manage old version options
+		if (empty($options))
+		{
+			$options = ['export_version' => 'next'];
+		}
+
 		if ($options['export_version'] === 'next')
 		{
 			if (is_array($options))
@@ -112,6 +110,14 @@ class ExcelService extends Export implements ExportInterface
 		$this->exportEntity = $exportEntity;
 	}
 
+	/**
+	 * @param   string           $exportPath
+	 * @param   TaskEntity|null  $task
+	 * @param   string|null      $langCode
+	 *
+	 * @return ExportResult
+	 * @throws \Exception
+	 */
 	public function export(string $exportPath, ?TaskEntity $task, ?string $langCode = 'fr-FR'): ExportResult
 	{
 		try
@@ -134,6 +140,11 @@ class ExcelService extends Export implements ExportInterface
 			if (empty($task) && $this->exportRepository->isCancelled($this->exportEntity->getId()))
 			{
 				throw new \Exception('Export has been cancelled.');
+			}
+
+			if (!str_starts_with($exportPath, 'tmp/') && !str_starts_with($exportPath, 'images/emundus/'))
+			{
+				throw new \Exception('Forbidden export path.');
 			}
 
 			$metadata = [];
@@ -180,6 +191,12 @@ class ExcelService extends Export implements ExportInterface
 					// Check access to files
 					$validFnums = [];
 					$format     = ExportFormatEnum::XLSX;
+
+					if (!class_exists('EmundusHelperAccess'))
+					{
+						require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
+					}
+
 					foreach ($this->fnums as $fnum)
 					{
 						if (is_string($fnum) && \EmundusHelperAccess::asAccessAction($format->getAccessName(), CrudEnum::CREATE->value, $this->user->id, $fnum))
@@ -218,6 +235,10 @@ class ExcelService extends Export implements ExportInterface
 					if ($last_synthesis_key !== false)
 					{
 						$synthesisIds = array_slice($synthesisIds, $last_synthesis_key + 1);
+					}
+					else
+					{
+						$synthesisIds = [];
 					}
 				}
 
@@ -303,11 +324,10 @@ class ExcelService extends Export implements ExportInterface
 						$json['headers'][$evaluatorElementId] = Text::_('COM_EMUNDUS_EVALUATION_EVALUATOR');
 						foreach ($files as $file)
 						{
-							// Get evaluators name
 							$query->clear()
-								->select('u.name')
-								->from($db->quoteName('#__users', 'u'))
-								->leftJoin($db->quoteName($data['db_table_name'], 'd') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
+								->select('CASE WHEN u.name IS NULL THEN "' . Text::_("COM_EMUNDUS_UNKNOWN_EVALUATOR") . '" ELSE u.name END AS name')
+								->from($db->quoteName($data['db_table_name'], 'd'))
+								->leftJoin($db->quoteName('#__users', 'u') . ' ON ' . $db->quoteName('d.evaluator') . ' = ' . $db->quoteName('u.id'))
 								->where($db->quoteName('d.fnum') . ' = ' . $db->quote($file->getFnum()))
 								->order('d.evaluator ASC');
 							$db->setQuery($query);
@@ -731,9 +751,9 @@ class ExcelService extends Export implements ExportInterface
 			if (!empty($task))
 			{
 				$targetToRemoves = [];
-				foreach ($metadata['actionTargetEntities'] as $key => $target)
+				foreach ($metadata['fnums'] as $key => $metadaFnum)
 				{
-					if (in_array($target['file'], $fnums))
+					if (in_array($metadaFnum, $fnums))
 					{
 						$targetToRemoves[] = $key;
 					}
@@ -741,13 +761,10 @@ class ExcelService extends Export implements ExportInterface
 
 				foreach ($targetToRemoves as $key)
 				{
-					unset($metadata['actionTargetEntities'][$key]);
+					unset($metadata['fnums'][$key]);
 				}
 
-				$metadata['actionTargetEntities'] = array_values($metadata['actionTargetEntities']);
-
-				// Remove fnum
-				//$metadata['actionTargetEntity']['parameters']['fnums'] = array_values($not_already_handled_fnums);
+				$metadata['fnums'] = array_values($metadata['fnums']);
 			}
 
 			foreach ($colsup as $colsupkey => $col)
@@ -1250,7 +1267,16 @@ class ExcelService extends Export implements ExportInterface
 										}
 									}
 								}
-								list($key_table, $key_element) = explode('___', $k);
+
+								if (str_contains($k, '___'))
+								{
+									list($key_table, $key_element) = explode('___', $k);
+								}
+								else
+								{
+									$key_table = '';
+									$key_element = '';
+								}
 
 								if ($v == "")
 								{

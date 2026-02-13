@@ -199,7 +199,16 @@ class ActionExport extends ActionEntity
 		if (empty($this->parameters))
 		{
 			$this->parameters = [
-				new ChoiceField(self::FORMAT_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXPORT_PARAMETER_FORMAT_LABEL'), $this->getFormatChoices(), true, true)
+				new ChoiceField(self::FORMAT_PARAMETER, Text::_('COM_EMUNDUS_AUTOMATION_ACTION_EXPORT_PARAMETER_FORMAT_LABEL'), $this->getFormatChoices(), true, true),
+				// todo: add more parameters here, to validate from task that metadata is correct for export
+				/**
+				 * 'export_version' => $exportVersion,
+				 * 'elements'       => $elements ?? [],
+				 * 'headers'        => $headers ?? [],
+				 * 'synthesis'      => $synthesis ?? [],
+				 * 'attachments'    => $attachments ?? [],
+				 * 'lang'           => $currentLang,
+				 */
 			];
 		}
 

@@ -10,9 +10,11 @@
 namespace Tchooz\Repositories\Attachments;
 
 use Joomla\CMS\Log\Log;
+use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Attachments\AttachmentType;
 use Tchooz\Entities\Campaigns\CampaignEntity;
+use Tchooz\Factories\Attachments\AttachmentTypeFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Traits\TraitTable;
 
@@ -33,10 +35,14 @@ class AttachmentTypeRepository extends EmundusRepository
 {
 	use TraitTable;
 
+	private AttachmentTypeFactory $factory;
+
 	public function __construct($withRelations = true, $exceptRelations = [], $name = '', $className = self::class)
 	{
 		parent::__construct($withRelations, $exceptRelations, $name, $className);
 		Log::addLogger(['text_file' => 'com_emundus.attachment_type.repository.php'], Log::ALL, ['com_emundus.attachment_type.repository']);
+
+		$this->factory = new AttachmentTypeFactory();
 	}
 
 	public function flush(): bool
@@ -50,6 +56,8 @@ class AttachmentTypeRepository extends EmundusRepository
 
 	public function loadAttachmentTypeById(int $id): ?AttachmentType
 	{
+		$attachmentType = null;
+
 		$query = $this->db->createQuery();
 
 		$query->select('*')
@@ -60,32 +68,27 @@ class AttachmentTypeRepository extends EmundusRepository
 
 		if(!empty($attachment_type_object))
 		{
-			return new AttachmentType(
-				$attachment_type_object->id,
-				$attachment_type_object->lbl,
-				$attachment_type_object->value,
-				$attachment_type_object->description,
-				$attachment_type_object->allowed_types,
-				$attachment_type_object->nbmax,
-				$attachment_type_object->ordering,
-				$attachment_type_object->published == 1,
-				$attachment_type_object->category
-			);
+			$attachmentTypes = $this->factory::fromDbObjects([$attachment_type_object]);
+			$attachmentType = $attachmentTypes[0] ?? null;
 		}
 
-		return null;
+		return $attachmentType;
 	}
 
 	/**
-	 * @param   array  $filters
-	 * @param   int    $limit
-	 * @param   int    $page
+	 * @param   array   $filters
+	 * @param   int     $limit
+	 * @param   int     $page
+	 * @param   string  $select
+	 * @param   string  $order
 	 *
 	 * @return array<AttachmentType>
 	 */
-	public function get(array $filters = [], int $limit = 10, int $page = 1): array
+	public function get(array $filters = [], int $limit = 10, int $page = 1, string $select = '*', string $order = ''): array
 	{
 		$types = [];
+
+		// todo: use EmundusRepository get method
 
 		$query = $this->db->createQuery();
 		$query->select($this->alias . '.*')
@@ -107,20 +110,7 @@ class AttachmentTypeRepository extends EmundusRepository
 			$this->db->setQuery($query);
 			$objects = $this->db->loadObjectList();
 
-			foreach ($objects as $object)
-			{
-				$types[] = new AttachmentType(
-					$object->id,
-					$object->lbl,
-					$object->value,
-					$object->description,
-					$object->allowed_types,
-					$object->nbmax,
-					$object->ordering,
-					$object->published == 1,
-					$object->category
-				);
-			}
+			$types = $this->factory::fromDbObjects($objects);
 		}
 		catch (\Exception $e)
 		{
@@ -175,21 +165,7 @@ class AttachmentTypeRepository extends EmundusRepository
 			{
 				$this->db->setQuery($query);
 				$objects = $this->db->loadObjectList();
-
-				foreach ($objects as $object)
-				{
-					$attachmentTypes[] = new AttachmentType(
-						$object->id,
-						$object->lbl,
-						$object->value,
-						$object->description,
-						$object->allowed_types,
-						$object->nbmax,
-						$object->ordering,
-						$object->published == 1,
-						$object->category
-					);
-				}
+				$attachmentTypes = $this->factory::fromDbObjects($objects);
 			}
 			catch (\Exception $e)
 			{

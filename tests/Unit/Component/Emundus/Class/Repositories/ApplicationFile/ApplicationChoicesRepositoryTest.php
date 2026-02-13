@@ -172,7 +172,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($this->dataset['applicant']);
 
 		$this->expectException(\InvalidArgumentException::class);
-		$this->expectExceptionMessage('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID_PARENT');
+		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID_PARENT'));
 		$otherCampaignChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[2]);
 		$this->model->flush($otherCampaignChoice);
 
@@ -190,7 +190,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		// Try to create another choice for the same campaign
 		$this->expectException(\InvalidArgumentException::class);
-		$this->expectExceptionMessage('PLG_EMUNDUS_APPLICATION_CHOICES_ALREADY');
+		$this->expectExceptionMessage('Ce voeu a déjà été sélectionné.');
 		$duplicateChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
 		$this->model->flush($duplicateChoice);
 
@@ -206,7 +206,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 		$this->campaignsFixtures[0]->setPublished(false);
 		// Try to create another choice for an unpublished campaign
 		$this->expectException(\InvalidArgumentException::class);
-		$this->expectExceptionMessage('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID');
+		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_INVALID'));
 		$unpublishedCampaignChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
 		$this->model->flush($unpublishedCampaignChoice);
 

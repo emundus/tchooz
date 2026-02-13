@@ -106,6 +106,7 @@ export default {
 			:title="null"
 			:description="null"
 			:groups="formGroups"
+			:fields="this.action.parameters"
 			@parameterValueUpdated="onParameterValueUpdated"
 		>
 		</ParameterForm>

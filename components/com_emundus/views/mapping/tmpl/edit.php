@@ -23,7 +23,7 @@ if (!empty($mappingId))
 }
 else
 {
-	$mapping = new MappingEntity(0, Text::_('COM_EMUNDUS_NEW_MAPPING'), 0, '', []);
+	$mapping = new MappingEntity(0, Text::_('COM_EMUNDUS_NEW_MAPPING'), 0, '', [], []);
 }
 
 $mappingFactory = new MappingFactory();
@@ -74,6 +74,8 @@ Text::script('COM_EMUNDUS_MAPPING_ROW_NO_TRANSFORMATIONS_DEFINED');
 Text::script('COM_EMUNDUS_MAPPING_ROW_EDIT_TRANSFORMATIONS_TOOLTIP');
 Text::script('COM_EMUNDUS_MAPPING_ROW_TRANSFORMATIONS_MODAL_DESCRIPTION');
 Text::script('COM_EMUNDUS_MAPPING_SAVE_ERROR');
+Text::script('COM_EMUNDUS_MAPPING_OTHER_PARAMETERS');
+Text::script('COM_EMUNDUS_MAPPING_DELETE_CONFIRM');
 ?>
 
 <div id="em-component-vue"

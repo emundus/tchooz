@@ -70,22 +70,38 @@ class TaskRepository
 
 		try {
 			$query = $this->db->createQuery();
-			$query->select('*')
+			$query->select('id')
 				->from($this->getTableName(self::class))
 				->where($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::PENDING->value))
 				->orWhere($this->db->quoteName('status') . ' = ' . $this->db->quote(TaskStatusEnum::FAILED->value)
 					. ' AND ' . $this->db->quoteName('attempts') . ' < 3'
 					. ' AND ' . $this->db->quoteName('updated_at') . ' <= ' . $this->db->quote((new \DateTimeImmutable('-' . $retryAfterMin . ' minutes'))->format('Y-m-d H:i:s'))
 				)
-				->order($this->db->quoteName('created_at') . ' ASC')
+				->order($this->db->quoteName('priority') . 'DESC, '. $this->db->quoteName('created_at') . ' ASC')
 				->setLimit($limit);
 
 			$this->db->setQuery($query);
-			$dbObjects = $this->db->loadObjectList();
+			$ids = $this->db->loadColumn();
 
-			if (!empty($dbObjects))
+			if (!empty($ids))
 			{
-				$pendingTasks = TaskFactory::fromDbObjects($dbObjects, $this->db);
+				$query->clear()
+					->select('*')
+					->from($this->getTableName(self::class))
+					->where($this->db->quoteName('id') . ' IN (' . implode(',', $ids) . ')');
+
+				$this->db->setQuery($query);
+				$dbObjects = $this->db->loadObjectList('id');
+
+				$orderedObjects = [];
+				foreach ($ids as $id) {
+					if (isset($dbObjects[$id])) {
+						$orderedObjects[] = $dbObjects[$id];
+					}
+				}
+
+				unset($dbObjects);
+				$pendingTasks = TaskFactory::fromDbObjects($orderedObjects, $this->db);
 			}
 		} catch (\Exception $e) {
 			Log::add('Error getting pending tasks: ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
@@ -253,6 +269,7 @@ class TaskRepository
 					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'metadata'    => json_encode($task->getMetadata()),
 					'attempts'    => $task->getAttempts(),
+					'priority'    => $task->getPriority()->value,
 				];
 				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
 				{
@@ -273,6 +290,7 @@ class TaskRepository
 					'started_at'  => ($task->getStartedAt()?->format('Y-m-d H:i:s')),
 					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'attempts'    => $task->getAttempts(),
+					'priority'    => $task->getPriority()->value,
 				];
 
 				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))

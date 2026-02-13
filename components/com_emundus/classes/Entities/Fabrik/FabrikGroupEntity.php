@@ -217,7 +217,7 @@ class FabrikGroupEntity
 		$serialized = [
 			'id'          => $this->id,
 			'name'        => $this->name,
-			'label'       => Text::_($this->label),
+			'label'       => strip_tags(Text::_($this->label)),
 			'published'   => $this->published,
 		];
 

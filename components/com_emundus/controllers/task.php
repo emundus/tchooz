@@ -12,6 +12,7 @@ use Tchooz\Entities\List\AdditionalColumnTag;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\List\ListColumnTypesEnum;
 use Tchooz\Enums\List\ListDisplayEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Automation\ActionTargetFactory;
 use Tchooz\Repositories\Task\TaskRepository;
@@ -186,6 +187,13 @@ class EmundusControllerTask extends BaseController
 						],
 						ListColumnTypesEnum::TAGS
 					),
+					new AdditionalColumn(
+						Text::_('COM_EMUNDUS_TASK_PRIORITY'),
+						'',
+						ListDisplayEnum::ALL,
+						'',
+						$task->getPriority()->getHtmlBadge(),
+					)
 				];
 
 				return $serializedTask;

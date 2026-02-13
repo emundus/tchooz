@@ -36,10 +36,10 @@ export default {
 								{
 									action: 'delete',
 									label: 'COM_EMUNDUS_ACTIONS_DELETE',
-									controller: 'automation',
+									controller: 'mapping',
 									type: 'delete',
 									name: 'delete',
-									confirm: 'COM_EMUNDUS_AUTOMATION_DELETE_CONFIRM',
+									confirm: 'COM_EMUNDUS_MAPPING_DELETE_CONFIRM',
 								},
 							],
 							filters: [],
