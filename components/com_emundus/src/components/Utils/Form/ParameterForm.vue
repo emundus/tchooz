@@ -36,7 +36,6 @@ export default {
 		};
 	},
 	mounted() {
-		this.reloadParametersRules();
 		this.initialized = true;
 	},
 	methods: {
@@ -130,12 +129,21 @@ export default {
 									parameter.displayed = true;
 									parameter.hidden = false;
 									parameter.hideLabel = false;
-									parameter.reload += 1;
+
+									if (isNaN(parameter.reload)) {
+										parameter.reload = 1;
+									} else {
+										parameter.reload += 1;
+									}
 								} else {
 									parameter.displayed = false;
 									parameter.hidden = true;
 									parameter.hideLabel = true;
-									parameter.reload += 1;
+									if (isNaN(parameter.reload)) {
+										parameter.reload = 1;
+									} else {
+										parameter.reload += 1;
+									}
 
 									if (parameter.value != null) {
 										parameter.value = null;
@@ -162,9 +170,11 @@ export default {
 
 							if (everyRulesSucceed) {
 								parameter.displayed = true;
+								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
 							} else {
 								parameter.displayed = false;
 								parameter.value = null;
+								parameter.reload = parameter.reload ? parameter.reload + 1 : 1;
 							}
 						}
 					});
@@ -192,6 +202,13 @@ export default {
 				return parameter ? parameter.value : null;
 			}
 			return null;
+		},
+	},
+	watch: {
+		groups: {
+			handler() {
+				this.reloadParametersRules();
+			},
 		},
 	},
 };

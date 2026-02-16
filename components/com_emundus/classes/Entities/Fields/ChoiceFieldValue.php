@@ -9,11 +9,14 @@ class ChoiceFieldValue
 
 	private ?FieldGroup $group = null;
 
-	public function __construct(?string $value, string $label, ?FieldGroup $group = null)
+	private array $params = [];
+
+	public function __construct(?string $value, string $label, ?FieldGroup $group = null, array $params = [])
 	{
 		$this->value = $value;
 		$this->label = $label;
 		$this->group = $group;
+		$this->params = $params;
 	}
 
 	public function getValue(): ?string
@@ -31,12 +34,18 @@ class ChoiceFieldValue
 		return $this->group;
 	}
 
+	public function getParams(): array
+	{
+		return $this->params;
+	}
+
 	public function toSchema(): array
 	{
 		return [
+			...$this->params,
 			'value' => $this->value,
 			'label' => $this->label,
-			'group' => $this->group?->toSchema()
+			'group' => $this->group?->toSchema(),
 		];
 	}
 }
