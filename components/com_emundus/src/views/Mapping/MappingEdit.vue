@@ -61,6 +61,7 @@ export default {
 		async getFormGroups() {
 			this.fieldsToParameterFormGroups(this.fields, this.mapping).then((groups) => {
 				this.formGroups = groups;
+				this.constructRequiredFields();
 			});
 		},
 		addMappingRow() {
@@ -84,16 +85,17 @@ export default {
 		},
 		onParameterValueUpdated(param) {
 			let sameValue = false;
-			if (param.value === this.mapping[param.param]) {
+
+			if (param.value == this.mapping[param.param]) {
 				sameValue = true;
 			}
+			const oldValue = this.mapping[param.param];
 
 			this.mapping[param.param] = param.value;
 
-			if (param.param === 'target_object') {
-				// clean existing fields
+			if (param.param === 'target_object' && oldValue != param.value && oldValue != param.value.value) {
 				if (!sameValue) {
-					this.mapping.rows = {};
+					this.mapping.rows = [];
 				}
 				this.constructRequiredFields();
 			}
@@ -104,7 +106,11 @@ export default {
 			// find the target_object field in this.formGroups and get its choices
 			const targetObjectParam = this.formGroups[0].parameters.find((param) => param.param === 'target_object');
 			if (targetObjectParam) {
-				const option = targetObjectParam.options.find((option) => option.value === this.mapping.target_object);
+				const option = targetObjectParam.options.find((option) =>
+					typeof this.mapping.target_object === 'object'
+						? option.value === this.mapping.target_object.value
+						: option.value === this.mapping.target_object,
+				);
 
 				if (option?.requiredFields) {
 					this.requiredFields = option.requiredFields.map((field) =>

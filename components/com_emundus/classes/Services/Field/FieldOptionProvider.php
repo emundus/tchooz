@@ -56,9 +56,23 @@ class FieldOptionProvider
 		return $this->repository;
 	}
 
+	public function setRepository(object $repository): self
+	{
+		$this->repository = $repository;
+
+		return $this;
+	}
+
 	public function getRepositoryMethod(): string
 	{
 		return $this->repositoryMethod;
+	}
+
+	public function setRepositoryMethod(string $repositoryMethod): self
+	{
+		$this->repositoryMethod = $repositoryMethod;
+
+		return $this;
 	}
 
 	public function getRepositoryMethodArgs(): array

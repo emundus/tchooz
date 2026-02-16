@@ -219,34 +219,25 @@ class EmundusControllermapping extends BaseController
 
 			if (!empty($synchronizerEntity))
 			{
-				$factory = new SynchronizerFactory();
-				$synchronizer = $factory->getApiInstance($synchronizerEntity);
 
-				if (!empty($synchronizer) && $synchronizer instanceof ApiMapDataInterface)
+				$objectDefinitions = $synchronizerRepository->getMappingObjectsDefinitions($synchronizerEntity);
+				$options           = [];
+
+				foreach ($objectDefinitions as $objectDefinition)
 				{
-					$objectDefinitions = $synchronizer->getMappingObjectsDefinitions();
-					$options = [];
-
-					foreach ($objectDefinitions as $objectDefinition)
-					{
-						$options[] = [
-							'value' => $objectDefinition->getName(),
-							'label' => $objectDefinition->getLabel(),
-							'requiredFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
-						];
-					}
-
-					$response = new Response(
-						true,
-						Text::_('COM_EMUNDUS_MAPPING_OBJECTS_RETRIEVED_SUCCESSFULLY'),
-						200,
-						$options
-					);
+					$options[] = [
+						'value'          => $objectDefinition->getName(),
+						'label'          => $objectDefinition->getLabel(),
+						'requiredFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+					];
 				}
-				else
-				{
-					$response = new Response(false, Text::_('COM_EMUNDUS_MAPPING_SYNCHRONIZER_DOES_NOT_SUPPORT_MAPPING'), 400);
-				}
+
+				$response = new Response(
+					true,
+					Text::_('COM_EMUNDUS_MAPPING_OBJECTS_RETRIEVED_SUCCESSFULLY'),
+					200,
+					$options
+				);
 			}
 		}
 

@@ -48,7 +48,7 @@ $datas = [
     'fields'             => array_map(function ($field) {
         assert($field instanceof Field);
         return $field->toSchema();
-    }, $mappingFactory->getFormFields()),
+    }, $mappingFactory->getFormFields($mapping)),
     'dataResolvers'      => $dataResolvers,
     'transformers'       => $mappingTransformationsRegistry->getTransformersSchemas(),
     ...$defaultData
