@@ -21,6 +21,7 @@ export default {
 			switch (field.type) {
 				case 'choice':
 					parameter.options = field.choices.map((choice) => ({
+						...choice,
 						value: choice.value,
 						label: choice.label,
 					}));
