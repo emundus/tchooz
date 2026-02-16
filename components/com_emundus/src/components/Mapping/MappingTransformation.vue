@@ -130,7 +130,7 @@ export default {
 			let displayMapValuesOption = false;
 			let displayMapDatabaseJoinOption = false;
 
-			if (resolver.fields) {
+			if (resolver && resolver.fields) {
 				const field = resolver.fields.find((field) => {
 					return field.name === this.row.source_field.value;
 				});
