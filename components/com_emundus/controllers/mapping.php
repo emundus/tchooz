@@ -266,27 +266,4 @@ class EmundusControllermapping extends BaseController
 
 		$this->sendJsonResponse($response);
 	}
-
-	public function delete(): void
-	{
-		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
-		{
-			$mappingId = $this->input->getInt('id', 0);
-
-			$deleted = $this->repository->delete($mappingId);
-
-			if ($deleted)
-			{
-				$response = new Response(true, Text::_('COM_EMUNDUS_MAPPING_DELETED_SUCCESSFULLY'), 200);
-			}
-			else
-			{
-				$response = new Response(false, Text::_('COM_EMUNDUS_MAPPING_DELETE_FAILED'), 500);
-			}
-		}
-
-		$this->sendJsonResponse($response);
-	}
 }
