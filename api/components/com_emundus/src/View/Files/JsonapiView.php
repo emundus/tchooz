@@ -57,8 +57,7 @@ class JsonapiView extends BaseApiView
 		'campaign_id',
 		'applicant_id',
 		'program_id',
-		'profile_ids',
-		'choices'
+		'profile_ids'
 	];
 
 	/**
