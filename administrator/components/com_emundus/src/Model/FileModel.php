@@ -9,7 +9,10 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Filter\InputFilter;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 class FileModel extends AdminModel
 {
@@ -80,6 +83,27 @@ class FileModel extends AdminModel
 						$this->getDatabase()->setQuery($query);
 						$item->stickers = $this->getDatabase()->loadObjectList();
 
+						// Add application choices
+						$addonRepository    = new AddonRepository();
+						$choices_addon      = $addonRepository->getByName('choices');
+						if ($choices_addon->getValue()->isEnabled())
+						{
+							$applicationChoicesRepository = new ApplicationChoicesRepository();
+							$choices = $applicationChoicesRepository->getChoicesByFnum($item->fnum);
+							if(!empty($choices))
+							{
+								$item->choices = [];
+								foreach($choices as $choice)
+								{
+									$item->choices[] = $choice->__serialize();
+								}
+							}
+						}
+						
+						$emundusUserRepository = new EmundusUserRepository();
+						$applicant = $emundusUserRepository->getByUserId($item->applicant_id);
+						$item->applicant = $applicant?->__serialize();
+
 						$profile_ids = [$item->profile_id];
 
 						if (!class_exists('EmundusHelperFabrik'))
@@ -135,7 +159,7 @@ class FileModel extends AdminModel
 								if (!empty($form_ids)) {
 									foreach ($form_ids as $form_id) {
 										$query->clear()
-											->select('jfe.id, jfe.name, jfe.label, jfe.plugin, jfg.params as group_params, jfg.id as group_id, jff.id AS form_id, jff.label AS form_label, jfl.db_table_name')
+											->select('jfe.id, jfe.name, jfe.label, jfe.alias, jfe.plugin, jfg.params as group_params, jfg.id as group_id, jff.id AS form_id, jff.label AS form_label, jfl.db_table_name')
 											->from($db->quoteName('#__fabrik_elements', 'jfe'))
 											->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
 											->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jfg.id') . ' = ' . $db->quoteName('jffg.group_id'))
@@ -175,6 +199,7 @@ class FileModel extends AdminModel
 
 												$form['elements'][] = [
 													'id' => $element['id'],
+													'alias' => $element['alias'],
 													'name' => $element['name'],
 													'label' => $this->translations[$element['label']] ?? Text::_($element['label']),
 													'raw' => $row->{$element['name']} ?? '',
