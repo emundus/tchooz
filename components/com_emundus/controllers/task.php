@@ -37,7 +37,7 @@ class EmundusControllerTask extends BaseController
 	{
 		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-		if (EmundusHelperAccess::asAdministratorAccessLevel($this->app->getIdentity()->id))
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 		{
 			$taskIds = $this->input->getString('ids', '');
 			if (empty($taskIds))
@@ -95,7 +95,7 @@ class EmundusControllerTask extends BaseController
 	{
 		$response = ['code' => 403, 'status' => false, 'msg' => Text::_('ACCESS_DENIED'), 'data' => []];
 
-		if (EmundusHelperAccess::asAdministratorAccessLevel($this->app->getIdentity()->id))
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 		{
 			$limit = $this->input->getInt('lim', 10);
 			$page  = $this->input->getInt('page', 1);
