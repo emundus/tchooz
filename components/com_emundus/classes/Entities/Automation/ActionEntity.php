@@ -442,10 +442,12 @@ abstract class ActionEntity
 						}
 					}
 					if (!$hasValue) {
+						$this->addExecutionMessage(new ActionExecutionMessage(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName(), ActionMessageTypeEnum::WARNING));
 						throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
 					}
 				}
 			} else if ($parameter->isRequired() && !isset($this->parameterValues[$parameter->getName()])) {
+				$this->addExecutionMessage(new ActionExecutionMessage(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName(), ActionMessageTypeEnum::WARNING));
 				throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
 			}
 		}
