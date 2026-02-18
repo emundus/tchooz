@@ -33,10 +33,19 @@ $synchronizers = $synchronizersRepository->getAll(['published' => 1, 'enabled' =
 
 $mappingTransformationsRegistry = new MappingTransformationsRegistry();
 $conditionsRegistry = new ConditionRegistry();
+
+$storedValuesByType = [];
+foreach ($mapping->getRows() as $row)
+{
+    if (!isset($storedValuesByType[$row->getSourceType()->value]))
+    {
+        $storedValuesByType[$row->getSourceType()->value] = [];
+    }
+    $storedValuesByType[$row->getSourceType()->value][] = $row->getSourceField();
+}
+
 $dataResolvers = array_filter($conditionsRegistry->getAvailableConditionSchemas([
-    'storedValues' => array_map(function ($row) {
-        return $row->getSourceField();
-    }, $mapping->getRows()),
+    'storedValues' => $storedValuesByType,
 ]), function ($resolver) {
 	return $resolver['targetType'] !== 'context_data' && $resolver['targetType'] !== 'group_data';
 });
