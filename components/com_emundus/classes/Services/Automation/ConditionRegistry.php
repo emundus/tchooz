@@ -107,7 +107,6 @@ class ConditionRegistry
 			}
 		}
 
-		$storedValuesByTypes = [];
 		if (!empty($contextFilters['automationId']))
 		{
 			$automationRepo = new AutomationRepository();
