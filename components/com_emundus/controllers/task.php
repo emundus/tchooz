@@ -134,6 +134,7 @@ class EmundusControllerTask extends BaseController
 				}
 
 				$serializedTask          = $task->serialize();
+				$serializedTask['metadata'] = null; // We don't want to send all the metadata to the frontend, it can be heavy and not useful in most cases. We can add specific metadata fields if needed.
 				$serializedTask['label'] = [
 					'fr' => '[#' . $task->getId() . '] ' . (!empty($task->getAction()) ? $task->getAction()->getLabelForLog() : '') . (!empty($to) ? Text::_('COM_EMUNDUS_TASK_TARGET') .' : ' . $to : ''),
 				];
@@ -141,6 +142,25 @@ class EmundusControllerTask extends BaseController
 				$createdAt = EmundusHelperDate::displayDate($task->getCreatedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0);
 				$startedAt = !empty($task->getStartedAt()) ? EmundusHelperDate::displayDate($task->getStartedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0) : Text::_('COM_EMUNDUS_TASK_NOT_STARTED');
 				$finishedAt = !empty($task->getFinishedAt()) ? EmundusHelperDate::displayDate($task->getFinishedAt()->format('Y-m-d H:i:s'), 'd/m/Y H:i', 0) : Text::_('COM_EMUNDUS_TASK_NOT_FINISHED');
+
+				if (!empty($task->getExecutionMessages()))
+				{
+					$content = '';
+					foreach ($task->getExecutionMessages() as $i => $message) {
+						if ($i > 0) {
+							$content .= '<hr>';
+						}
+
+						$content .= '<div class="tw-flex tw-gap-4 tw-items-center">';
+						$content .= $message->getType()->getHtmlBadge();
+						$content .= '<div class="tw-w-3/4">' . $message->getMessage() . '</div>';
+						$content .= '</div>';
+					}
+					$serializedTask['executionMessages'] = $content;
+				} else
+				{
+					$serializedTask['executionMessages'] = Text::_('COM_EMUNDUS_NO_EXECUTION_MESSAGES');
+				}
 
 				$serializedTask['additional_columns'] = [
 					new AdditionalColumn(

@@ -6,7 +6,9 @@ use EmundusHelperEmails;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
+use Joomla\Plugin\Task\ExecuteEmundusActions\Extension\ExecuteEmundusActions;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
@@ -54,7 +56,12 @@ class ActionSendEmail extends ActionEntity
 		if (!empty($context->getFile())) {
 			if ($m_emails->sendEmail($context->getFile(), $emailId, null, [], false, $this->getAutomatedTaskUserId()))
 			{
+				$this->addExecutionMessage(new ActionExecutionMessage('Email sent to file ' . $context->getFile()));
 				$sent = true;
+			}
+			else
+			{
+				$this->addExecutionMessage(new ActionExecutionMessage('Failed to send email to file ' . $context->getFile(), \Tchooz\Enums\Automation\ActionMessageTypeEnum::ERROR));
 			}
 		} else {
 			$fnum = null;
@@ -66,7 +73,12 @@ class ActionSendEmail extends ActionEntity
 			{
 				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($context->getUserId());
 				if ($m_emails->sendEmailNoFnum($user->email, $emailId, null, $context->getUserId(), [], $fnum, true, [], $this->getAutomatedTaskUserId())) {
+					$this->addExecutionMessage(new ActionExecutionMessage('Email sent to user ' . $user->email));
 					$sent = true;
+				}
+				else
+				{
+					$this->addExecutionMessage(new ActionExecutionMessage('Failed to send email to user ' . $user->email, \Tchooz\Enums\Automation\ActionMessageTypeEnum::ERROR));
 				}
 			} else if (!empty($context->getCustom()))
 			{
@@ -74,7 +86,12 @@ class ActionSendEmail extends ActionEntity
 				if ($h_emails->correctEmail($context->getCustom()))
 				{
 					if ($m_emails->sendEmailNoFnum($context->getCustom(), $emailId, null, null, [], $fnum, true, [], $this->getAutomatedTaskUserId())) {
+						$this->addExecutionMessage(new ActionExecutionMessage('Email sent to ' . $context->getCustom()));
 						$sent = true;
+					}
+					else
+					{
+						$this->addExecutionMessage(new ActionExecutionMessage('Failed to send email to ' . $context->getCustom(), \Tchooz\Enums\Automation\ActionMessageTypeEnum::ERROR));
 					}
 				}
 			}

@@ -5,6 +5,7 @@ namespace Tchooz\Entities\Automation\Actions;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationExecutionContext;
 use Tchooz\Entities\Fields\ChoiceField;
@@ -12,6 +13,7 @@ use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Api\ApiMethodEnum;
 use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
@@ -78,6 +80,7 @@ class ActionApiMap extends ActionEntity
 				}
 				catch (\Exception $e)
 				{
+					$this->addExecutionMessage(new ActionExecutionMessage($e->getMessage(), ActionMessageTypeEnum::ERROR));
 					Log::add('Error executing API map action: ' . $e->getMessage(), Log::ERROR, 'com_emundus.action');
 				}
 			}

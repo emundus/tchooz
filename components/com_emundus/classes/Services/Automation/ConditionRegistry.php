@@ -139,7 +139,10 @@ class ConditionRegistry
 		}
 
 		foreach ($availableResolvers as $type => $resolver) {
-			$contextFilters['storedValues'] = $storedValuesByTypes[$type] ?? [];
+			if (!empty($storedValuesByTypes))
+			{
+				$contextFilters['storedValues'] = $storedValuesByTypes[$type] ?? [];
+			}
 
 			$schemas[] = [
 				'targetType' => $type,

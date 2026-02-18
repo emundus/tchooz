@@ -215,6 +215,12 @@
       "version": "32671a"
     },
     {
+      "name": "plg_editors_codemirror",
+      "type": "style",
+      "uri": "plg_editors_codemirror/codemirror.css",
+      "version": "ace1a2"
+    },
+    {
       "name": "webcomponent.editor-codemirror",
       "type": "script",
       "uri": "plg_editors_codemirror/joomla-editor-codemirror.min.js",
@@ -228,12 +234,6 @@
         "type": "module"
       },
       "version": "f7a8a9"
-    },
-    {
-      "name": "plg_editors_codemirror",
-      "type": "style",
-      "uri": "plg_editors_codemirror/codemirror.css",
-      "version": "ace1a2"
     }
   ]
 }

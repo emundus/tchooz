@@ -37,6 +37,14 @@ export default {
 										value: 'completed',
 									},
 								},
+								{
+									action: 'preview',
+									label: 'COM_EMUNDUS_ONBOARD_VISUALIZE',
+									controller: 'task',
+									name: 'preview',
+									title: this.translate('COM_EMUNDUS_TASK_EXECUTION_PREVIEW'),
+									content: 'executionMessages',
+								},
 							],
 							filters: [
 								{

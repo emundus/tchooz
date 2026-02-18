@@ -18,16 +18,10 @@
       "version": "23b63d"
     },
     {
-      "name": "com_menus.admin-item-edit-modules",
-      "type": "script",
-      "uri": "com_menus/admin-item-edit_modules.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "version": "bc3cea"
+      "name": "com_menus.admin-item-edit-container",
+      "type": "style",
+      "uri": "com_menus/admin-item-edit_container.min.css",
+      "version": "67209f"
     },
     {
       "name": "com_menus.admin-item-edit-container",
@@ -40,6 +34,32 @@
         "type": "module"
       },
       "version": "36dfe0"
+    },
+    {
+      "name": "com_menus.admin-item-edit-modules",
+      "type": "script",
+      "uri": "com_menus/admin-item-edit_modules.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "version": "bc3cea"
+    },
+    {
+      "name": "com_menus.admin-items-modal",
+      "type": "script",
+      "uri": "com_menus/admin-items-modal.min.js",
+      "dependencies": [
+        "core"
+      ],
+      "attributes": {
+        "type": "module"
+      },
+      "deprecated": true,
+      "deprecatedMsg": "Replaced with [modal-content-select-field] asset. To be removed in Joomla 6.",
+      "version": "18f50c"
     },
     {
       "name": "com_menus.admin-item-modal",
@@ -56,12 +76,6 @@
       "version": "9b90e4"
     },
     {
-      "name": "com_menus.admin-item-edit-container",
-      "type": "style",
-      "uri": "com_menus/admin-item-edit_container.min.css",
-      "version": "67209f"
-    },
-    {
       "name": "com_menus.admin-menus",
       "type": "script",
       "uri": "com_menus/admin-menus-default.min.js",
@@ -72,20 +86,6 @@
         "type": "module"
       },
       "version": "8c28f6"
-    },
-    {
-      "name": "com_menus.admin-items-modal",
-      "type": "script",
-      "uri": "com_menus/admin-items-modal.min.js",
-      "dependencies": [
-        "core"
-      ],
-      "attributes": {
-        "type": "module"
-      },
-      "deprecated": true,
-      "deprecatedMsg": "Replaced with [modal-content-select-field] asset. To be removed in Joomla 6.",
-      "version": "18f50c"
     },
     {
       "name": "com_menus.batch-body",

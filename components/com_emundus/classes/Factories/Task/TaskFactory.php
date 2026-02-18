@@ -7,6 +7,7 @@ use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Factories\Automation\ActionExecutionMessageFactory;
 use Tchooz\Repositories\Automation\ActionRepository;
 
 class TaskFactory
@@ -36,6 +37,20 @@ class TaskFactory
 					$action = $actionRepository->getActionById($obj->action_id);
 				}
 
+				$executionMessages = [];
+				if (!empty($obj->messages))
+				{
+					$messages = json_decode($obj->messages, true);
+
+					if (!empty($messages))
+					{
+						foreach ($messages as $messageData)
+						{
+							$executionMessages[] = ActionExecutionMessageFactory::fromArray($messageData);
+						}
+					}
+				}
+
 				$tasks[] = new TaskEntity(
 					$obj->id,
 					TaskStatusEnum::from($obj->status),
@@ -47,7 +62,8 @@ class TaskFactory
 					isset($obj->started_at) ? new \DateTimeImmutable($obj->started_at) : null,
 					isset($obj->finished_at) ? new \DateTimeImmutable($obj->finished_at) : null,
 					$obj->attempts ?? 0,
-					!empty($obj->priority) ? TaskPriorityEnum::from($obj->priority) : TaskPriorityEnum::MEDIUM
+					!empty($obj->priority) ? TaskPriorityEnum::from($obj->priority) : TaskPriorityEnum::MEDIUM,
+					$executionMessages
 				);
 			}
 		}
