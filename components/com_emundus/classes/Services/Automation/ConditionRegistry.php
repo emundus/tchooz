@@ -122,34 +122,32 @@ class ConditionRegistry
 					{
 						foreach ($subGroup->getConditions() as $subCondition)
 						{
-							if (!isset($storedValuesByTypes[$subCondition->getTargetType()->value])) {
-								$storedValuesByTypes[$subCondition->getTargetType()->value] = [];
+							if (!isset($contextFilters['storedValues'][$subCondition->getTargetType()->value])) {
+								$contextFilters['storedValues'][$subCondition->getTargetType()->value] = [];
 							}
 
-							$storedValuesByTypes[$subCondition->getTargetType()->value][] = $subCondition->getField();
+							$contextFilters['storedValues'][$subCondition->getTargetType()->value][] = $subCondition->getField();
 						}
 					}
 
-					if (!isset($storedValuesByTypes[$condition->getTargetType()->value])) {
-						$storedValuesByTypes[$condition->getTargetType()->value] = [];
+					if (!isset($contextFilters['storedValues'][$condition->getTargetType()->value])) {
+						$contextFilters['storedValues'][$condition->getTargetType()->value] = [];
 					}
-					$storedValuesByTypes[$condition->getTargetType()->value][] = $condition->getField();
+					$contextFilters['storedValues'][$condition->getTargetType()->value][] = $condition->getField();
 				}
 			}
 		}
 
 		foreach ($availableResolvers as $type => $resolver) {
-			if (!empty($storedValuesByTypes))
-			{
-				$contextFilters['storedValues'] = $storedValuesByTypes[$type] ?? [];
-			}
+			$resolverFilters = $contextFilters;
+			$resolverFilters['storedValues'] = $contextFilters['storedValues'][$type] ?? [];
 
 			$schemas[] = [
 				'targetType' => $type,
 				'label' => Text::_(ConditionTargetTypeEnum::from($type)->getLabel()),
 				'fields' => array_map(function ($field) {
 					return $field->toSchema();
-				}, $resolver->getAvailableFields($contextFilters)),
+				}, $resolver->getAvailableFields($resolverFilters)),
 				'allowedActionTargetTypes' => array_map(function ($targetType) {
 					return $targetType->value;
 				}, $resolver->getAllowedActionTargetTypes()),

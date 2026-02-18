@@ -152,57 +152,53 @@ if (!empty($applications))
 		$m_email = new EmundusModelEmails();
 	}
 
-	foreach ($applications[0]['all']['applications'] as $key => $sub_applications)
-	{
-		foreach ($sub_applications as $a_key => $application)
-		{
-			$applications[0]['all']['applications'][$key][$a_key]->is_admission = false;
-			if (!empty($admission_status))
-			{
-				$applications[0]['all']['applications'][$key][$a_key]->is_admission = in_array($application->status, $admission_status);
-			}
-			$applications[0]['all']['applications'][$key][$a_key]->display_app = true;
-			if (!empty($show_status) && !in_array($application->status, $show_status))
-			{
-				$applications[0]['all']['applications'][$key][$a_key]->display_app = false;
-			}
+    foreach ($applications[0] as $sub_groups) {
+        foreach ($sub_groups['applications'] as $key => $sub_applications) {
+            foreach ($sub_applications as $a_key => $application) {
+                $sub_groups['applications'][$key][$a_key]->is_admission = false;
+                if (!empty($admission_status)) {
+                    $sub_groups['applications'][$key][$a_key]->is_admission = in_array($application->status, $admission_status);
+                }
+                $sub_groups['applications'][$key][$a_key]->display_app = true;
+                if (!empty($show_status) && !in_array($application->status, $show_status)) {
+                    $sub_groups['applications'][$key][$a_key]->display_app = false;
+                }
 
-			$applications[0]['all']['applications'][$key][$a_key]->first_page_url = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
+                $sub_groups['applications'][$key][$a_key]->first_page_url = (($absolute_urls === 1) ? '/' : '') . 'index.php?option=com_emundus&task=openfile&fnum=' . $application->fnum;
 
-			$post = array(
-				'APPLICANT_ID'   => $user->id,
-				'DEADLINE'       => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
-				'CAMPAIGN_LABEL' => $application->label,
-				'CAMPAIGN_YEAR'  => $application->year,
-				'CAMPAIGN_START' => $application->start_date,
-				'CAMPAIGN_END'   => $application->end_date,
-				'CAMPAIGN_CODE'  => $application->training,
-				'FNUM'           => $application->fnum
-			);
+                $post = array(
+                        'APPLICANT_ID' => $user->id,
+                        'DEADLINE' => strftime("%A %d %B %Y %H:%M", strtotime($application->end_date)),
+                        'CAMPAIGN_LABEL' => $application->label,
+                        'CAMPAIGN_YEAR' => $application->year,
+                        'CAMPAIGN_START' => $application->start_date,
+                        'CAMPAIGN_END' => $application->end_date,
+                        'CAMPAIGN_CODE' => $application->training,
+                        'FNUM' => $application->fnum
+                );
 
-			if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override)))))
-			{
-				$title_override_display = $title_override;
+                if (!empty($title_override) && !empty(str_replace(array(' ', "\t", "\n", "\r", "&nbsp;"), '', htmlentities(strip_tags($title_override))))) {
+                    $title_override_display = $title_override;
 
-				$tags                   = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display, false, true);
-				$title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
-				$title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
+                    $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $title_override_display, false, true);
+                    $title_override_display = preg_replace($tags['patterns'], $tags['replacements'], $title_override_display);
+                    $title_override_display = $m_email->setTagsFabrik($title_override_display, array($application->fnum));
 
-				$applications[0]['all']['applications'][$key][$a_key]->label = $title_override_display;
-			}
+                    $sub_groups['applications'][$key][$a_key]->label = $title_override_display;
+                }
 
-			if ($file_tags != '')
-			{
-				$tags              = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
-				$file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
-				$file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
+                if ($file_tags != '') {
+                    $tags = $m_email->setTags($user->id, $post, $application->fnum, '', $file_tags, false, true);
+                    $file_tags_display = preg_replace($tags['patterns'], $tags['replacements'], $file_tags);
+                    $file_tags_display = $m_email->setTagsFabrik($file_tags_display, array($application->fnum));
 
-				$applications[0]['all']['applications'][$key][$a_key]->file_tags_display = $file_tags_display;
-			}
+                    $sub_groups['applications'][$key][$a_key]->file_tags_display = $file_tags_display;
+                }
 
-			$applications[0]['all']['applications'][$key][$a_key]->current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
-		}
-	}
+                $sub_groups['applications'][$key][$a_key]->current_phase = $m_workflow->getCurrentWorkflowStepFromFile($application->fnum);
+            }
+        }
+    }
 }
 
 ?>
