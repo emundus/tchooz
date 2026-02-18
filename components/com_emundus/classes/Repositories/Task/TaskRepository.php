@@ -7,8 +7,10 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Factory;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Task\TaskFactory;
 use Tchooz\Response;
@@ -270,6 +272,7 @@ class TaskRepository
 					'metadata'    => json_encode($task->getMetadata()),
 					'attempts'    => $task->getAttempts(),
 					'priority'    => $task->getPriority()->value,
+					'messages'    => !empty($task->getExecutionMessages()) ? json_encode(array_map(fn($message) => $message->serialize(), $task->getExecutionMessages())) : null
 				];
 				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
 				{
@@ -291,6 +294,7 @@ class TaskRepository
 					'finished_at' => ($task->getFinishedAt()?->format('Y-m-d H:i:s')),
 					'attempts'    => $task->getAttempts(),
 					'priority'    => $task->getPriority()->value,
+					'messages'    => !empty($task->getExecutionMessages()) ? json_encode(array_map(fn($message) => $message->serialize(), $task->getExecutionMessages())) : null
 				];
 
 				if (!empty($task->getAction()) && !empty($task->getAction()->getId()))
@@ -410,6 +414,7 @@ class TaskRepository
 		}
 		catch (\Exception $e)
 		{
+			$task->addExecutionMessage(new ActionExecutionMessage($e->getMessage(), ActionMessageTypeEnum::ERROR));
 			Log::add('Error executing task ID ' . $task->getId() . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.task.repository');
 			$task->setStatus(TaskStatusEnum::FAILED);
 		}

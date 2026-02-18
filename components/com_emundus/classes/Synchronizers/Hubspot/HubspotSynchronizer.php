@@ -189,6 +189,16 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 							else
 							{
 								Log::add('Error on Hubspot mapping PATCH request : ' . json_encode($response), Log::ERROR, 'com_emundus.hubspot');
+
+								if (!empty($response['error']))
+								{
+									$hubspotError = json_decode($response['error'], true);
+
+									if (!empty($hubspotError['message']))
+									{
+										throw new \Exception($hubspotError['message']);
+									}
+								}
 							}
 						}
 						else
@@ -231,6 +241,16 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 						else
 						{
 							Log::add('Error on Hubspot mapping request : ' . json_encode($response), Log::ERROR, 'com_emundus.hubspot');
+
+							if (!empty($response['error']))
+							{
+								$hubspotError = json_decode($response['error'], true);
+
+								if (!empty($hubspotError['message']))
+								{
+									throw new \Exception($hubspotError['message']);
+								}
+							}
 						}
 						break;
 				}
