@@ -344,6 +344,11 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 				if (!empty($workflow)) {
 					$steps = $workflow->getApplicantSteps();
+					if(!empty($workflow->getParentWorkflow()))
+					{
+						$parentSteps = $workflow->getParentWorkflow()->getApplicantSteps();
+						$steps = array_merge($steps, $parentSteps);
+					}
 
 					$initialStep = array_filter($steps, function($step) {
 						assert($step instanceof StepEntity);
