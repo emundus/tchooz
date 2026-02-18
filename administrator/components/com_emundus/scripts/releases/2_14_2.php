@@ -10,7 +10,7 @@
 
 namespace scripts;
 
-class Release2_15_0Installer extends ReleaseInstaller
+class Release2_14_2Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
 
