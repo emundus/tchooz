@@ -38,7 +38,9 @@ class JsonapiView extends BaseApiView
 		'stickers',
 		'campaign_id',
 		'program_id',
-		'steps'
+		'steps',
+		'choices',
+		'applicant'
 	];
 
 	/**
@@ -55,7 +57,8 @@ class JsonapiView extends BaseApiView
 		'campaign_id',
 		'applicant_id',
 		'program_id',
-		'profile_ids'
+		'profile_ids',
+		'choices'
 	];
 
 	/**

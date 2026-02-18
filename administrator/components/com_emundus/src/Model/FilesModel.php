@@ -17,6 +17,8 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\QueryInterface;
 use Joomla\Registry\Registry;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
@@ -230,6 +232,23 @@ class FilesModel extends ListModel
 					if ($status->getStep() == $item->status) {
 						$item->status = $status->__serialize();
 						break;
+					}
+				}
+				
+				// Add application choices
+				$addonRepository    = new AddonRepository();
+				$choices_addon      = $addonRepository->getByName('choices');
+				if ($choices_addon->getValue()->isEnabled())
+				{
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$choices = $applicationChoicesRepository->getChoicesByFnum($item->fnum);
+					if(!empty($choices))
+					{
+						$item->choices = [];
+						foreach($choices as $choice)
+						{
+							$item->choices[] = $choice->__serialize();
+						}
 					}
 				}
 			}
