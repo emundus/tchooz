@@ -143,6 +143,4 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 
 		return $emundus_user_entity;
 	}
-
-
 }

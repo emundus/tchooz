@@ -29,21 +29,22 @@ class EmundusUserEntity
 	private bool $anonym;
 
 	public function __construct(
-		int $id,
-		User $user,
-		string $firstname,
-		string $lastname,
-		string $profile_picture = null,
+		int                $id,
+		User               $user,
+		string             $firstname,
+		string             $lastname,
+		string             $profile_picture = null,
 		UserCategoryEntity $user_category = null,
-		bool $is_anonym = false
-	) {
-		$this->id = $id;
-		$this->user = $user;
-		$this->firstname = $firstname;
-		$this->lastname = $lastname;
+		bool               $is_anonym = false
+	)
+	{
+		$this->id              = $id;
+		$this->user            = $user;
+		$this->firstname       = $firstname;
+		$this->lastname        = $lastname;
 		$this->profile_picture = $profile_picture;
-		$this->user_category = $user_category;
-		$this->anonym = $is_anonym;
+		$this->user_category   = $user_category;
+		$this->anonym          = $is_anonym;
 	}
 
 	public function getId(): int
@@ -114,5 +115,18 @@ class EmundusUserEntity
 	public function setAnonym(bool $anonym): void
 	{
 		$this->anonym = $anonym;
+	}
+
+	public function __serialize(): array
+	{
+		return [
+			'id'              => $this->getId(),
+			'user_id'         => $this->getUser()->id,
+			'firstname'       => $this->getFirstname(),
+			'lastname'        => $this->getLastname(),
+			'profile_picture' => $this->getProfilePicture(),
+			'user_category'   => $this->getUserCategory()?->__serialize(),
+			'is_anonym'       => $this->isAnonym()
+		];
 	}
 }
