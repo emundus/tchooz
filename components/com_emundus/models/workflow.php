@@ -1127,7 +1127,7 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$step = null;
 
-		if (!empty($file_identifier) && in_array($column, ['fnum', 'id']))
+		if (!empty($file_identifier) && in_array($column, ['fnum', 'id']) && !empty($types))
 		{
 			$query = $this->db->createQuery();
 
@@ -2205,7 +2205,7 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$step = null;
 
-		if (!empty($fnum))
+		if (!empty($fnum) && !empty($this->paymentStepTypeIds))
 		{
 			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, $this->paymentStepTypeIds);
 
@@ -2299,29 +2299,32 @@ class EmundusModelWorkflow extends JModelList
 			$this->db->setQuery($query);
 			$choices_step_type = $this->db->loadResult();
 
-			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, [$choices_step_type]);
-
-			if (empty($current_step) && !$only_current)
+			if(!empty($choices_step_type))
 			{
-				// TODO: get last applicant payment step
-				// We should determine based on the current step of the applicant what is the last payment step is had accessed
-				$workflow_data = $this->getWorkflowByFnum($fnum);
+				$current_step = $this->getCurrentWorkflowStepFromFile($fnum, [$choices_step_type]);
 
-				if (!empty($workflow_data['steps']))
+				if (empty($current_step) && !$only_current)
 				{
-					foreach ($workflow_data['steps'] as $workflow_step)
+					// TODO: get last applicant payment step
+					// We should determine based on the current step of the applicant what is the last payment step is had accessed
+					$workflow_data = $this->getWorkflowByFnum($fnum);
+
+					if (!empty($workflow_data['steps']))
 					{
-						if ($workflow_step->type === $choices_step_type)
+						foreach ($workflow_data['steps'] as $workflow_step)
 						{
-							$step = $workflow_step;
-							break;
+							if ($workflow_step->type === $choices_step_type)
+							{
+								$step = $workflow_step;
+								break;
+							}
 						}
 					}
 				}
-			}
-			else
-			{
-				$step = $current_step;
+				else
+				{
+					$step = $current_step;
+				}
 			}
 		}
 

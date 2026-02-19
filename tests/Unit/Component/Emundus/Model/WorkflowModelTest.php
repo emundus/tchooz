@@ -263,6 +263,9 @@ class WorkflowModelTest extends UnitTestCase
 		$this->assertEquals('Test Step', $step->label);
 		$this->assertEquals('1000', $step->profile_id, 'The profile_id should be set to the one from the step');
 
+		$step = $this->model->getCurrentWorkflowStepFromFile($fnum, []);
+		$this->assertEmpty($step, 'No step should be returned if types filter is empty');
+
 		// adding another step on another status should not change the result of the getCurrentWorkflowStepFromFile
 		$workflow_data = $this->model->getWorkflow($workflow_id);
 		$steps[0]['id'] = $workflow_data['steps'][0]->id;
