@@ -40,6 +40,7 @@ use Tchooz\Repositories\CountryRepository;
 use Tchooz\Response;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
+use Tchooz\Services\UploadService;
 use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
@@ -1656,8 +1657,7 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	// TODO: Refactor to use UploadService and remove media specific code from this method
-	public function uploadmedia()
+	public function uploadmedia(): void
 	{
 		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'url' => ''];
 
@@ -1665,75 +1665,22 @@ class EmundusControllersettings extends BaseController
 		{
 			$file = $_FILES['file'];
 
-			// Limit to 10MB
-			if ($file['size'] > 10 * 1024 * 1024)
+			try
 			{
-				$result['msg'] = Text::_('FILE_TOO_LARGE');
-				echo json_encode((object) $result);
-				exit;
-			}
-
-			if (!file_exists('images/emundus/custom/'))
-			{
-				mkdir('images/emundus/custom/');
-			}
-
-			$target_dir = 'images/emundus/custom/media/';
-			if (!file_exists($target_dir))
-			{
-				mkdir($target_dir);
-			}
-
-			$target_dir = $target_dir . '/' . $this->user->id . '/';
-			if (!file_exists($target_dir))
-			{
-				mkdir($target_dir);
-			}
-
-			$target_file = $target_dir . basename($file['name']);
-
-			// Check if extension is allowed (images onyl)
-			$finfo = finfo_open(FILEINFO_MIME_TYPE);
-			$mtype = finfo_file($finfo, $file['tmp_name']);
-			finfo_close($finfo);
-
-			// If svg we have to sanitize it
-			if ($mtype == 'image/svg+xml')
-			{
-				$sanitizer = new Sanitizer();
-
-				$svg_file    = file_get_contents($file['tmp_name']);
-				$cleaned_svg = $sanitizer->sanitize($svg_file);
-
-				file_put_contents($file['tmp_name'], $cleaned_svg);
-			}
-
-			// Remove exif data from jpeg files
-			if ($mtype == 'image/jpeg')
-			{
-				$img = imagecreatefromjpeg($file['tmp_name']);
-				imagejpeg($img, $file['tmp_name'], 100);
-				imagedestroy($img);
-			}
-
-			$allowed = ['jpg', 'jpeg', 'png', 'gif', 'svg'];
-			$ext     = pathinfo($target_file, PATHINFO_EXTENSION);
-			if (in_array($ext, $allowed))
-			{
-				if (move_uploaded_file($file['tmp_name'], $target_file))
+				$uploader = new UploadService('images/emundus/custom/media/'. $this->user->id);
+				$uploaded = $uploader->upload($file);
+				if(empty($uploaded))
 				{
-					$result['status'] = 1;
-					$result['msg']    = Text::_('UPLOAD_SUCCESS');
-					$result['url']    = '/' . $target_file;
+					throw new Exception(Text::_('UPLOAD_FAILED'));
 				}
-				else
-				{
-					$result['msg'] = Text::_('UPLOAD_FAILED');
-				}
+
+				$result['status'] = 1;
+				$result['msg']    = Text::_('UPLOAD_SUCCESS');
+				$result['url']    = '/' . $uploaded;
 			}
-			else
+			catch (Exception $e)
 			{
-				$result['msg'] = Text::_('INVALID_EXTENSION');
+				$result['msg'] = $e->getMessage();
 			}
 		}
 
