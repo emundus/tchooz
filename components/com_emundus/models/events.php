@@ -2196,10 +2196,13 @@ class EmundusModelEvents extends BaseDatabaseModel
 								'ea.start_date as start',
 								'ea.end_date as end',
 								'ea.capacity',
-								'COUNT(er.id) as registered_count'
+								'COUNT(er.id) as registered_count',
+								'del.name as location_name'
 							])
 							->from($this->db->quoteName('#__emundus_setup_availabilities', 'ea'))
 							->leftJoin($this->db->quoteName('#__emundus_registrants', 'er') . ' ON ' . $this->db->quoteName('er.availability') . ' = ' . $this->db->quoteName('ea.id'))
+							->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('ea.event'))
+							->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ese.location'))
 							->where($this->db->quoteName('ea.event') . ' = ' . $event);
 
 						if (!empty($start))

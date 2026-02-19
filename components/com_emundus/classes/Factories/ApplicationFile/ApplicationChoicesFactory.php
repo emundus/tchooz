@@ -23,6 +23,11 @@ class ApplicationChoicesFactory implements DBFactory
 
 	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null, array $elements = []): ApplicationChoicesEntity
 	{
+		if(!class_exists('EmundusHelperFabrik'))
+		{
+			require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
+		}
+
 		if(is_object($dbObject))
 		{
 			$dbObject = (array) $dbObject;

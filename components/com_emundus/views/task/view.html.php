@@ -22,7 +22,7 @@ class EmundusViewTask extends JViewLegacy
 		$app        = Factory::getApplication();
 		$this->user = $app->getIdentity();
 
-		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
 			$this->hash = EmundusHelperCache::getCurrentGitHash();

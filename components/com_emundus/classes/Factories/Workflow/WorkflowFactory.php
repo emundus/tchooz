@@ -64,6 +64,18 @@ class WorkflowFactory
 						}
 					}
 				}
+
+				// Check if the campaign have a parent
+				$parentWorkflow = null;
+				if(!empty($applicationFile) && !empty($applicationFile->getCampaign()->getParent()))
+				{
+					// Get workflow linked to parent campaign
+					$workflow = $workflowRepository->getWorkflowByProgramId($applicationFile->getCampaign()->getParent()->getProgram()->getId());
+					if(!empty($workflow) && $workflow->getId() !== $dbObject->id && !in_array($workflow->getId(), array_keys($childWorkflows)))
+					{
+						$parentWorkflow = $workflow;
+					}
+				}
 				
 				$workflows[] = new WorkflowEntity(
 					id: $dbObject->id,
@@ -71,7 +83,8 @@ class WorkflowFactory
 					published: $dbObject->published,
 					steps: $steps,
 					program_ids: $programIds,
-					childWorkflows: $childWorkflows
+					childWorkflows: $childWorkflows,
+					parentWorkflow: $parentWorkflow
 				);
 			}
 		}
