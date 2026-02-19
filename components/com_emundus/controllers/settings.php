@@ -1656,6 +1656,7 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
+	// TODO: Refactor to use UploadService and remove media specific code from this method
 	public function uploadmedia()
 	{
 		$result = ['status' => 0, 'msg' => Text::_('ACCESS_DENIED'), 'url' => ''];
@@ -1663,6 +1664,14 @@ class EmundusControllersettings extends BaseController
 		if (!$this->user->guest)
 		{
 			$file = $_FILES['file'];
+
+			// Limit to 10MB
+			if ($file['size'] > 10 * 1024 * 1024)
+			{
+				$result['msg'] = Text::_('FILE_TOO_LARGE');
+				echo json_encode((object) $result);
+				exit;
+			}
 
 			if (!file_exists('images/emundus/custom/'))
 			{
