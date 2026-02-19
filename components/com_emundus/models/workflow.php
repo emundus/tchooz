@@ -1127,7 +1127,7 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$step = null;
 
-		if (!empty($file_identifier) && in_array($column, ['fnum', 'id']))
+		if (!empty($file_identifier) && in_array($column, ['fnum', 'id']) && !empty($types))
 		{
 			$query = $this->db->createQuery();
 
