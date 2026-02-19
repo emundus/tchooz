@@ -2205,7 +2205,7 @@ class EmundusModelWorkflow extends JModelList
 	{
 		$step = null;
 
-		if (!empty($fnum))
+		if (!empty($fnum) && !empty($this->paymentStepTypeIds))
 		{
 			$current_step = $this->getCurrentWorkflowStepFromFile($fnum, $this->paymentStepTypeIds);
 
