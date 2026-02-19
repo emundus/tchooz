@@ -145,6 +145,7 @@ class UploadService
 
 		// fallback: basic sanitization
 		$name = preg_replace('/[^\w\-. ]+/', '', $name);
+		$name = preg_replace('/\s+/', '-', $name);
 		$name = trim($name);
 		return $name === '' ? 'file' : $name;
 	}
