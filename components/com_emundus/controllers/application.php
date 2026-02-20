@@ -2504,9 +2504,9 @@ class EmundusControllerApplication extends BaseController
 				if (!empty($systemUserId))
 				{
 					$systemUser = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($systemUserId);
-					$fnum = EmundusHelperFiles::createFnum($campaignId, $systemUserId, false);
 					$applicationRepository = new ApplicationFileRepository();
-					$applicationEntity = new ApplicationFileEntity($systemUser, $fnum, 0, $campaignId);
+					$applicationEntity = new ApplicationFileEntity($systemUser, '', 0, $campaignId);
+					$applicationEntity->generateFnum($campaignId, $systemUserId);
 					$applicationEntity->setIsPublic(true);
 
 					if ($applyAnonymously)
@@ -2524,7 +2524,7 @@ class EmundusControllerApplication extends BaseController
 					$response->status = true;
 					$response->msg = Text::_('COM_EMUNDUS_PUBLIC_CAMPAIGN_APPLICATION_SUCCESS');
 					$response->data = [
-						'fnum' => $fnum,
+						'fnum' => $applicationEntity->getFnum(),
 						'token' => $token,
 					];
 				}
