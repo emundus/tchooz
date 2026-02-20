@@ -12,17 +12,20 @@ class MappingEntity
 
 	private string $targetObject = '';
 
+	private ?array $params = [];
+
 	/**
 	 * @var array<MappingRowEntity>
 	 */
 	private array $rows = [];
 
-	public function __construct(int $id = 0, string $label = '', int $synchronizerId = 0, string $targetObject = '', array $rows = [])
+	public function __construct(int $id = 0, string $label = '', int $synchronizerId = 0, string $targetObject = '', array $params = [], array $rows = [])
 	{
 		$this->id = $id;
 		$this->label = $label;
 		$this->synchronizerId = $synchronizerId;
 		$this->targetObject = $targetObject;
+		$this->params = $params;
 		$this->rows = $rows;
 	}
 
@@ -66,6 +69,16 @@ class MappingEntity
 		$this->targetObject = $targetObject;
 	}
 
+	public function getParams(): ?array
+	{
+		return $this->params;
+	}
+
+	public function setParams(?array $params): void
+	{
+		$this->params = $params;
+	}
+
 	/**
 	 * @return array<MappingRowEntity>
 	 */
@@ -94,6 +107,7 @@ class MappingEntity
 			'label'           => $this->getLabel(),
 			'synchronizer_id' => $this->getSynchronizerId(),
 			'target_object'   => $this->getTargetObject(),
+			'params'          => $this->getParams(),
 			'rows'            => array_map(fn($row) => $row->serialize(), $this->getRows()),
 		];
 	}

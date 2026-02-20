@@ -2,6 +2,7 @@
 
 namespace Tchooz\Factories\Field;
 
+use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 
@@ -15,7 +16,7 @@ class ChoiceFieldFactory
 	 *
 	 * @return array<ChoiceFieldValue>
 	 */
-	public static function makeOptions(object $repository, string $method, array $args = [],  string $getLabelMethod = ''): array
+	public static function makeOptions(object $repository, string $method, array $args = [],  string $getLabelMethod = '', string $getValueMethod = 'getId'): array
 	{
 		$options = [];
 		$items = call_user_func_array([$repository, $method], $args);
@@ -38,11 +39,32 @@ class ChoiceFieldFactory
 				}
 				else
 				{
-					$label = $item->getId();
+					$label = $item->{$getValueMethod}();
 				}
 			}
 
-			$options[] = new ChoiceFieldValue($item->getId(), $label);
+			if (method_exists($item, $getValueMethod))
+			{
+				$id = $item->{$getValueMethod}();
+			}
+			else
+			{
+				if (method_exists($item, 'getId'))
+				{
+					$id = $item->getId();
+				} else if (method_exists($item, 'getName'))
+				{
+					$id = $item->getName();
+				}
+				else
+				{
+					Log::add('Item does not have a method to get value/id.', Log::ERROR, 'com_emundus.factory.field.choice');
+					break;
+				}
+			}
+
+
+			$options[] = new ChoiceFieldValue($id, $label);
 		}
 
 		return $options;

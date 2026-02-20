@@ -3,7 +3,10 @@
 namespace Tchooz\Entities\Task;
 
 use Tchooz\Entities\Automation\ActionEntity;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
+use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Automation\ActionFactory;
 use Tchooz\Factories\Automation\ActionTargetFactory;
@@ -30,7 +33,14 @@ class TaskEntity
 
 	private int $attempts = 0;
 
-	public function __construct(int $id, TaskStatusEnum $status, ?ActionEntity $action = null, int $userId = null, array $metadata = [], ?\DateTimeImmutable $createdAt = null, ?\DateTimeImmutable $updatedAt = null, ?\DateTimeImmutable $startedAt = null, ?\DateTimeImmutable $finishedAt = null, int $attempts = 0)
+	private TaskPriorityEnum $priority;
+
+	/**
+	 * @var array<ActionExecutionMessage>
+	 */
+	private ?array $executionMessages;
+
+	public function __construct(int $id, TaskStatusEnum $status, ?ActionEntity $action = null, int $userId = null, array $metadata = [], ?\DateTimeImmutable $createdAt = null, ?\DateTimeImmutable $updatedAt = null, ?\DateTimeImmutable $startedAt = null, ?\DateTimeImmutable $finishedAt = null, int $attempts = 0, TaskPriorityEnum $priority = TaskPriorityEnum::MEDIUM, ?array $executionMessages = null)
 	{
 		$this->id = $id;
 		$this->status = $status;
@@ -42,6 +52,8 @@ class TaskEntity
 		$this->startedAt = $startedAt;
 		$this->finishedAt = $finishedAt;
 		$this->attempts = $attempts;
+		$this->priority = $priority;
+		$this->executionMessages = $executionMessages;
 	}
 
 	public function getId(): int
@@ -158,6 +170,42 @@ class TaskEntity
 		return $this;
 	}
 
+	public function getPriority(): TaskPriorityEnum
+	{
+		return $this->priority;
+	}
+
+	public function setPriority(TaskPriorityEnum $priority): static
+	{
+		$this->priority = $priority;
+
+		return $this;
+	}
+
+	public function getExecutionMessages(): ?array
+	{
+		return $this->executionMessages;
+	}
+
+	public function addExecutionMessage(ActionExecutionMessage $message): static
+	{
+		if (empty($this->executionMessages))
+		{
+			$this->executionMessages = [];
+		}
+
+		$this->executionMessages[] = $message;
+
+		return $this;
+	}
+
+	public function setExecutionMessages(?array $executionMessages): static
+	{
+		$this->executionMessages = $executionMessages;
+
+		return $this;
+	}
+
 	public function execute(): void
 	{
 		$this->setAttempts($this->getAttempts() + 1);
@@ -166,6 +214,20 @@ class TaskEntity
 		{
 			$actionTargetEntityData = $this->metadata['actionTargetEntity'] ?? null;
 			$actionTargetEntitiesData = $this->metadata['actionTargetEntities'] ?? null;
+
+			if (empty($actionTargetEntitiesData) && !empty($this->metadata['fnums']))
+			{
+				$actionTargetEntitiesData = array_map(function ($fnum) {
+					return [
+						'triggeredBy' => $this->getUserId(),
+						'file' => $fnum,
+						'user' => null,
+						'parameters' => [],
+						'custom' => null,
+						'originalContext' => null,
+					];
+				}, $this->metadata['fnums']);
+			}
 
 			if (empty($actionTargetEntityData) && empty($actionTargetEntitiesData)) {
 				throw new \Exception('Action target entity data is missing in task metadata.');
@@ -189,9 +251,10 @@ class TaskEntity
 				}
 			}
 			
-			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? null);
+			$action = $this->getAction() ?: ActionFactory::fromSerialized($this->metadata['actionEntity'] ?? []);
 			if (empty($action))
 			{
+				$this->addExecutionMessage(new ActionExecutionMessage('No valid action found for task execution.', ActionMessageTypeEnum::ERROR));
 				throw new \Exception('Action not found for task id ' . $this->getId());
 			}
 
@@ -200,7 +263,15 @@ class TaskEntity
 			} elseif (isset($actionTargetEntities)) {
 				$actionResult = $action->with($this)->execute($actionTargetEntities, null);
 			} else {
+				$this->addExecutionMessage(new ActionExecutionMessage('No valid action target entity/entities found for task execution.', ActionMessageTypeEnum::ERROR));
 				throw new \Exception('No valid action target entity/entities found for task id ' . $this->getId());
+			}
+
+			if (!empty($action->getExecutionMessages()))
+			{
+				foreach ($action->getExecutionMessages() as $message) {
+					$this->addExecutionMessage($message);
+				}
 			}
 
 			if ($actionResult === ActionExecutionStatusEnum::COMPLETED)
@@ -216,6 +287,7 @@ class TaskEntity
 				$this->setStatus(TaskStatusEnum::FAILED);
 			}
 		} catch(\Exception $e) {
+			$this->addExecutionMessage(new ActionExecutionMessage('Exception during task execution: ' . $e->getMessage(), ActionMessageTypeEnum::ERROR));
 			$this->setStatus(TaskStatusEnum::FAILED);
 		}
 	}
@@ -237,6 +309,11 @@ class TaskEntity
 			'updatedAt' => $this->updatedAt?->format('d/m/Y H:i:s'),
 			'startedAt' => $this->startedAt?->format('d/m/Y H:i:s'),
 			'finishedAt' => $this->finishedAt?->format('d/m/Y H:i:s'),
+			'attempts' => $this->attempts,
+			'priority' => $this->priority->value,
+			'executionMessages' => !empty($this->executionMessages) ? array_map(function (ActionExecutionMessage $message) {
+				return $message->serialize();
+			}, $this->executionMessages) : null,
 		];
 	}
 }

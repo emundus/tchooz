@@ -68,4 +68,17 @@ class ExternalReferenceEntity
 	{
 		return $this->referenceAttribute;
 	}
+
+	public function serialize(): array
+	{
+		return [
+			'id' => $this->id,
+			'column' => $this->column,
+			'internId' => $this->internId,
+			'reference' => $this->reference,
+			'synchronizerId' => $this->synchronizerId,
+			'referenceObject' => $this->referenceObject,
+			'referenceAttribute' => $this->referenceAttribute,
+		];
+	}
 }

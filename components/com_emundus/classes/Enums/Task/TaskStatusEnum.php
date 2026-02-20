@@ -21,6 +21,19 @@ enum TaskStatusEnum: string
 		};
 	}
 
+	/**
+	 * @return string hex color code for the status
+	 */
+	public function getColor()
+	{
+		return match($this) {
+			self::PENDING => '#f59e0b', // yellow-500
+			self::IN_PROGRESS => '#3b82f6', // blue-500
+			self::COMPLETED => '#10b981', // green-500
+			self::FAILED => '#ef4444', // red-500
+		};
+	}
+
 	public function getLabel(): string
 	{
 		return match($this) {

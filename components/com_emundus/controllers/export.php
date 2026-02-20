@@ -712,11 +712,11 @@ class EmundusControllerExport extends BaseController
 			if ($async)
 			{
 				// Check if we have an existing pending or in-progress task for this export
-				if(empty($exportEntity->getTask()))
+				if (empty($exportEntity->getTask()))
 				{
 					// If export asynchronous, create a task
-					$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'actionTargetEntities' => array_map(function ($target) {
-						return $target->serialize();
+					$task = new TaskEntity(0, TaskStatusEnum::PENDING, null, $this->_user->id, ['actionEntity' => $exportAction->serialize(), 'fnums' => array_map(function ($target) {
+						return $target->getFile();
 					}, $targets)]);
 
 					$taskRepository = new TaskRepository();

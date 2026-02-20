@@ -310,8 +310,12 @@ class PlgFabrik_FormEmundusstepevaluation extends plgFabrik_Form
 			}
 			</style>';
 
+		$targetOrigin = Uri::base();
 		die("<script>
 	     document.addEventListener('DOMContentLoaded', function() {
+             // post a message to the parent window to trigger a reload of the evaluations list
+             window.parent.postMessage({event: 'evaluationSubmitted', fnum: '" . $fnum . "'}, '" .  $targetOrigin . "');
+             
 	        Swal.fire({
 	          position: 'top',
 	          icon: 'success',

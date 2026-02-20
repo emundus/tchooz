@@ -17,7 +17,10 @@ use Joomla\CMS\MVC\Factory\MVCFactoryInterface;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\QueryInterface;
 use Joomla\Registry\Registry;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
+use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
 
 // phpcs:disable PSR1.Files.SideEffects
 \defined('_JEXEC') or die;
@@ -205,6 +208,20 @@ class FilesModel extends ListModel
 		if (!empty($items)) {
 			$statusRepository = new StatusRepository();
 			$statuses = $statusRepository->getAll();
+			$statusReferences = [];
+
+			$externalReferenceRepository = new ExternalReferenceRepository();
+			foreach ($statuses as $status) {
+				$statusReferences[$status->getStep()] = [];
+				$externalReferences          = $externalReferenceRepository->getItemsByFields(['column' => 'jos_emundus_setup_status.step', 'intern_id' => $status->getStep()]);
+				foreach ($externalReferences as $externalReference) {
+					$statusReferences[$status->getStep()][] = [
+						'reference'           => $externalReference->reference,
+						'reference_object'    => $externalReference->reference_object,
+						'reference_attribute' => $externalReference->reference_attribute,
+					];
+				}
+			}
 
 			foreach ($items as $item) {
 				$item->typeAlias = 'com_emundus.files';
@@ -229,9 +246,33 @@ class FilesModel extends ListModel
 				foreach ($statuses as $status) {
 					if ($status->getStep() == $item->status) {
 						$item->status = $status->__serialize();
+						if (isset($statusReferences[$status->getStep()])) {
+							$item->status['external_references'] = $statusReferences[$status->getStep()];
+						} else {
+							$item->status['external_references'] = [];
+						}
 						break;
 					}
 				}
+				
+				// Add application choices
+				/*$addonRepository    = new AddonRepository();
+				$choices_addon      = $addonRepository->getByName('choices');
+				if ($choices_addon->getValue()->isEnabled())
+				{
+					$choicesArray = [];
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$choices = $applicationChoicesRepository->getChoicesByFnum($item->fnum);
+					if(!empty($choices))
+					{
+						foreach($choices as $choice)
+						{
+							$choicesArray[] = $choice->__serialize();
+						}
+					}
+
+					$item->choices = $choicesArray;
+				}*/
 			}
 		}
 

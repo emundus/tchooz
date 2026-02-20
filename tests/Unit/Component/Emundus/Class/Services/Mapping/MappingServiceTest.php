@@ -39,7 +39,7 @@ class MappingServiceTest extends UnitTestCase
 		$elementId = $this->h_dataset->getFormElementForTest(102, 'fnum');
 		$fieldName = '102.' . $elementId;
 
-		$mapping = new MappingEntity(1, 'Test Mapping', 0, 'test', []);
+		$mapping = new MappingEntity(1, 'Test Mapping', 0, 'test', [], []);
 		$rows[]  = new MappingRowEntity(1, 1, 1, ConditionTargetTypeEnum::FORMDATA, $fieldName, 'json_fnum_entry', []);
 		$mapping->setRows($rows);
 
@@ -58,7 +58,7 @@ class MappingServiceTest extends UnitTestCase
 		$elementId = $this->h_dataset->getFormElementForTest(102, 'status');
 		$fieldName = '102.' . $elementId;
 
-		$mapping = new MappingEntity(1, 'Test Mapping', 0, 'test', []);
+		$mapping = new MappingEntity(1, 'Test Mapping', 0, 'test', [], []);
 		$rows[]  = new MappingRowEntity(1, 1, 1, ConditionTargetTypeEnum::FORMDATA, $fieldName, 'json_status_entry', [
 			new MappingTransformEntity(1, 1, 1, MappingTransformersEnum::MAP_VALUES, [
 				'mapping' => [['map_from' => '0', 'map_to' => 'Brouillon'], ['map_from' => '1', 'map_to' => 'Publié']]
@@ -82,7 +82,7 @@ class MappingServiceTest extends UnitTestCase
 		$elementId = $this->h_dataset->getFormElementForTest(102, 'status');
 		$fieldName = '102.' . $elementId;
 
-		$mapping = new MappingEntity(1, 'Test Mapping', 0, 'test', []);
+		$mapping = new MappingEntity(1, 'Test Mapping', 0, 'test', [], []);
 		$rows[]  = new MappingRowEntity(1, 1, 1, ConditionTargetTypeEnum::FORMDATA, $fieldName, 'json_status_entry', [
 			new MappingTransformEntity(1, 1, 1, MappingTransformersEnum::MAP_VALUES, [
 				'mapping' => [['map_from' => '0', 'map_to' => 'brouillon'], ['map_from' => '1', 'map_to' => 'publié']]

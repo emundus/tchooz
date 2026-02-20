@@ -23,7 +23,7 @@ if (!empty($mappingId))
 }
 else
 {
-	$mapping = new MappingEntity(0, Text::_('COM_EMUNDUS_NEW_MAPPING'), 0, '', []);
+	$mapping = new MappingEntity(0, Text::_('COM_EMUNDUS_NEW_MAPPING'), 0, '', [], []);
 }
 
 $mappingFactory = new MappingFactory();
@@ -33,10 +33,19 @@ $synchronizers = $synchronizersRepository->getAll(['published' => 1, 'enabled' =
 
 $mappingTransformationsRegistry = new MappingTransformationsRegistry();
 $conditionsRegistry = new ConditionRegistry();
+
+$storedValuesByType = [];
+foreach ($mapping->getRows() as $row)
+{
+    if (!isset($storedValuesByType[$row->getSourceType()->value]))
+    {
+        $storedValuesByType[$row->getSourceType()->value] = [];
+    }
+    $storedValuesByType[$row->getSourceType()->value][] = $row->getSourceField();
+}
+
 $dataResolvers = array_filter($conditionsRegistry->getAvailableConditionSchemas([
-    'storedValues' => array_map(function ($row) {
-        return $row->getSourceField();
-    }, $mapping->getRows()),
+    'storedValues' => $storedValuesByType,
 ]), function ($resolver) {
 	return $resolver['targetType'] !== 'context_data' && $resolver['targetType'] !== 'group_data';
 });
@@ -48,7 +57,7 @@ $datas = [
     'fields'             => array_map(function ($field) {
         assert($field instanceof Field);
         return $field->toSchema();
-    }, $mappingFactory->getFormFields()),
+    }, $mappingFactory->getFormFields($mapping)),
     'dataResolvers'      => $dataResolvers,
     'transformers'       => $mappingTransformationsRegistry->getTransformersSchemas(),
     ...$defaultData
@@ -74,6 +83,8 @@ Text::script('COM_EMUNDUS_MAPPING_ROW_NO_TRANSFORMATIONS_DEFINED');
 Text::script('COM_EMUNDUS_MAPPING_ROW_EDIT_TRANSFORMATIONS_TOOLTIP');
 Text::script('COM_EMUNDUS_MAPPING_ROW_TRANSFORMATIONS_MODAL_DESCRIPTION');
 Text::script('COM_EMUNDUS_MAPPING_SAVE_ERROR');
+Text::script('COM_EMUNDUS_MAPPING_OTHER_PARAMETERS');
+Text::script('COM_EMUNDUS_MAPPING_DELETE_CONFIRM');
 ?>
 
 <div id="em-component-vue"

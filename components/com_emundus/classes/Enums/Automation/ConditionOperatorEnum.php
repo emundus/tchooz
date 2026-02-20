@@ -15,8 +15,8 @@ enum ConditionOperatorEnum: string
 	case NOT_EQUALS = '!=';
 	case GREATER_THAN = '>';
 	case GREATER_THAN_OR_EQUAL = '>=';
-	case LESS_THAN = '<';
-	case LESS_THAN_OR_EQUAL = '<=';
+	case LESS_THAN = 'inferior';
+	case LESS_THAN_OR_EQUAL = 'inferior_or_equal';
 	case CONTAINS = 'contains';
 	case NOT_CONTAINS = 'not_contains';
 	case IS_EMPTY = 'empty';

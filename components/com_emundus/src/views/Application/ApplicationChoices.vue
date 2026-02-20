@@ -349,12 +349,14 @@ export default {
 		},
 
 		canMoreBeEdited(choice) {
+			if (this.$props.fnum && this.configuration.crud) {
+				return this.configuration.crud.u || this.configuration.crud.c;
+			}
+
 			if (this.configuration.can_be_confirmed === 1) {
-				return choice.state.value === 1;
+				return false;
 			} else if (this.configuration.can_be_updated === 1) {
 				return true;
-			} else if (this.$props.fnum && this.configuration.crud) {
-				return this.configuration.crud.u || this.configuration.crud.c;
 			}
 
 			return false;

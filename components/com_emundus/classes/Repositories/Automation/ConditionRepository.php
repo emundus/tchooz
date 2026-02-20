@@ -10,6 +10,7 @@ use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionsAndorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
+use Tchooz\Services\Automation\ConditionRegistry;
 
 
 class ConditionRepository
@@ -343,5 +344,25 @@ class ConditionRepository
 		}
 
 		return $conditions;
+	}
+
+	/**
+	 * @param   string  $type
+	 * @param   array   $parameters
+	 *
+	 * @return array
+	 */
+	public function getAvailableConditionFields(string $type, array $parameters = []): array
+	{
+		$fields             = [];
+
+		$conditionsRegistry = new ConditionRegistry();
+		$resolver           = $conditionsRegistry->getResolver($type);
+		if ($resolver)
+		{
+			$fields = $resolver->getAvailableFields($parameters);
+		}
+
+		return $fields;
 	}
 }

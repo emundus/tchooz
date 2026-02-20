@@ -23,11 +23,11 @@ class UserCategoryEntity
 
 	public function __construct(int $id, string $label, ?int $created_by = 0, ?string $created_at = '', bool $published = true)
 	{
-		$this->id = $id;
+		$this->id         = $id;
 		$this->created_at = $created_at;
-		$this->label = $label;
+		$this->label      = $label;
 		$this->created_by = $created_by;
-		$this->published = $published;
+		$this->published  = $published;
 	}
 
 	public function getId(): int
@@ -78,5 +78,13 @@ class UserCategoryEntity
 	public function setCreatedBy(?int $created_by): void
 	{
 		$this->created_by = $created_by;
+	}
+
+	public function __serialize(): array
+	{
+		return [
+			'id'    => $this->id,
+			'label' => $this->label
+		];
 	}
 }

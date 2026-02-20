@@ -5,7 +5,8 @@ namespace Tchooz\Entities\Workflow;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseDriver;
 
-class WorkflowEntity {
+class WorkflowEntity
+{
 	private int $id;
 
 	public string $label;
@@ -21,21 +22,24 @@ class WorkflowEntity {
 
 	private array $childWorkflows = [];
 
+	private ?WorkflowEntity $parentWorkflow;
+
 	/**
-	 * @param   int     $id
-	 * @param   string  $label
-	 * @param   int     $published
-	 * @param   array<StepEntity>   $steps
-	 * @param   array<int>   $program_ids
+	 * @param   int                $id
+	 * @param   string             $label
+	 * @param   int                $published
+	 * @param   array<StepEntity>  $steps
+	 * @param   array<int>         $program_ids
 	 */
-	public function __construct(int $id, string $label = '', int $published = 1, array $steps = [], array $program_ids = [], array $childWorkflows = [])
+	public function __construct(int $id, string $label = '', int $published = 1, array $steps = [], array $program_ids = [], array $childWorkflows = [], WorkflowEntity $parentWorkflow = null)
 	{
-		$this->id = $id;
-		$this->label = $label;
-		$this->published = $published;
-		$this->steps = $steps;
-		$this->program_ids = $program_ids;
+		$this->id             = $id;
+		$this->label          = $label;
+		$this->published      = $published;
+		$this->steps          = $steps;
+		$this->program_ids    = $program_ids;
 		$this->childWorkflows = $childWorkflows;
+		$this->parentWorkflow = $parentWorkflow;
 
 		Log::addLogger(['text_file' => 'com_emundus.entity.workflow.php'], Log::ALL, ['com_emundus.entity.workflow']);
 	}
@@ -115,36 +119,44 @@ class WorkflowEntity {
 	{
 		$added = false;
 
-		if ($step->isApplicantStep()) {
+		if ($step->isApplicantStep())
+		{
 			// two steps of same type cannot be on same entry_status, if not evaluation type
 			// check if step on same entry_status already exists
 			$already_used_entry_status = [];
-			foreach ($this->getApplicantSteps() as $existingApplicantStep) {
+			foreach ($this->getApplicantSteps() as $existingApplicantStep)
+			{
 				$already_used_entry_status = array_merge($already_used_entry_status, $existingApplicantStep->entry_status);
 			}
 
 			$intersect = array_intersect($already_used_entry_status, $step->entry_status);
 
-			if (empty($intersect)) {
+			if (empty($intersect))
+			{
 				$step->setWorkflowId($this->getId());
 				$this->steps[] = $step;
-				$added = true;
-			} else {
+				$added         = true;
+			}
+			else
+			{
 				$alreadyUsingSteps = [];
 
 				foreach ($this->getApplicantSteps() as $step)
 				{
-					if (array_intersect($step->getEntryStatus(), $intersect)) {
+					if (array_intersect($step->getEntryStatus(), $intersect))
+					{
 						$alreadyUsingSteps[] = $step->getLabel() . '[' . $step->getId() . ']';
 					}
 				}
 
 				Log::add('Can not add step on entry status ' . implode(', ', $intersect) . ' already have steps using it : ' . implode(', ', $alreadyUsingSteps), Log::WARNING, 'com_emundus.entity.workflow');
 			}
-		} else {
+		}
+		else
+		{
 			$step->setWorkflowId($this->getId());
 			$this->steps[] = $step;
-			$added = true;
+			$added         = true;
 		}
 
 		return $added;
@@ -163,7 +175,7 @@ class WorkflowEntity {
 	}
 
 	/**
-	 * @param array  $state
+	 * @param   array  $state
 	 *
 	 * @return array<StepEntity>
 	 */
@@ -188,5 +200,15 @@ class WorkflowEntity {
 	public function setChildWorkflows(array $childWorkflows): void
 	{
 		$this->childWorkflows = $childWorkflows;
+	}
+
+	public function getParentWorkflow(): ?WorkflowEntity
+	{
+		return $this->parentWorkflow;
+	}
+
+	public function setParentWorkflow(?WorkflowEntity $parentWorkflow): void
+	{
+		$this->parentWorkflow = $parentWorkflow;
 	}
 }

@@ -99,6 +99,12 @@ class PdfOptions extends ExportOptions
 
 		$eMConfig              = ComponentHelper::getParams('com_emundus');
 		$application_form_name = $eMConfig->get('application_form_name', '');
+
+		if ($application_form_name === 'application_form_pdf')
+		{
+			$application_form_name = $application_form_name . '_[FNUM]';
+		}
+
 		$pdfOptions->setFilename($application_form_name);
 
 		return $pdfOptions;

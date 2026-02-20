@@ -4,11 +4,13 @@ namespace Tchooz\Repositories\Synchronizer;
 
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Joomla\Database\QueryInterface;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\Synchronizer\SynchronizerEntity;
 use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Services\Mapping\ApiMapDataInterface;
 
 #[TableAttribute('#__emundus_setup_sync', 'sync')]
 class SynchronizerRepository extends EmundusRepository implements RepositoryInterface
@@ -155,7 +157,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 		return $entity;
 	}
 
-	public function applyFilters(array $filters, object $query): void
+	public function applyFilters(QueryInterface $query, array $filters): void
 	{
 		if (empty($filters)) {
 			$filters = ['published' => 1];
@@ -191,7 +193,7 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 			->from($this->db->quoteName($this->tableName, $this->alias))
 			->where('1 = 1');
 
-		$this->applyFilters($filters, $query);
+		$this->applyFilters($query, $filters);
 
 		$query->setLimit($limit, ($page - 1) * $limit);
 
@@ -243,5 +245,24 @@ class SynchronizerRepository extends EmundusRepository implements RepositoryInte
 		}
 
 		return $entity;
+	}
+
+	/**
+	 * @param   SynchronizerEntity  $entity
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+	public function getMappingObjectsDefinitions(SynchronizerEntity $entity): array
+	{
+		$objectDefinitions = [];
+		$synchronizer = $this->factory->getApiInstance($entity);
+
+		if (!empty($synchronizer) && $synchronizer instanceof ApiMapDataInterface)
+		{
+			$objectDefinitions = $synchronizer->getMappingObjectsDefinitions();
+		}
+
+		return $objectDefinitions;
 	}
 }

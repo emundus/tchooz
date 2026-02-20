@@ -12,7 +12,9 @@ use Tchooz\Repositories\RepositoryInterface;
 #[TableAttribute('#__emundus_connector_mapping', 'mapping', [
 	'id',
 	'label',
-	'synchronizer_id'
+	'synchronizer_id',
+	'target_object',
+	'params',
 ])]
 class MappingRepository extends EmundusRepository implements RepositoryInterface
 {
@@ -89,6 +91,7 @@ class MappingRepository extends EmundusRepository implements RepositoryInterface
 				'label'           => $mappingEntity->getLabel(),
 				'synchronizer_id' => $mappingEntity->getSynchronizerId(),
 				'target_object'   => $mappingEntity->getTargetObject(),
+				'params'          => $mappingEntity->getParams() ? json_encode($mappingEntity->getParams()) : null,
 			];
 
 			$flushed = $this->db->insertObject($this->tableName, $object, $this->primaryKey);
@@ -104,6 +107,7 @@ class MappingRepository extends EmundusRepository implements RepositoryInterface
 				'label'           => $mappingEntity->getLabel(),
 				'synchronizer_id' => $mappingEntity->getSynchronizerId(),
 				'target_object'   => $mappingEntity->getTargetObject(),
+				'params'          => $mappingEntity->getParams() ? json_encode($mappingEntity->getParams()) : null,
 			];
 
 			$flushed = $this->db->updateObject($this->tableName, $object, $this->primaryKey);

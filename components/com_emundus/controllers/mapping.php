@@ -157,9 +157,18 @@ class EmundusControllermapping extends BaseController
 			$sourceType = $this->input->getString('source_type', '');
 			$sourceField = $this->input->getString('source_field', '');
 
-			list($formId, $elementId) = explode('.', $sourceField);
-			$elements = \EmundusHelperEvents::getFormElements((int)$formId, (int)$elementId, true, [], []);
-			$element = $elements[0] ?? null;
+			if ($sourceType === \Tchooz\Enums\Automation\ConditionTargetTypeEnum::FORMDATA->value)
+			{
+				list($formId, $elementId) = explode('.', $sourceField);
+				$elements = \EmundusHelperEvents::getFormElements((int)$formId, (int)$elementId, true, [], []);
+				$element = $elements[0] ?? null;
+			} else if
+			($sourceType === \Tchooz\Enums\Automation\ConditionTargetTypeEnum::ALIASDATA->value)
+			{
+				$fabrikHelper = new \EmundusHelperFabrik();
+				$elements = $fabrikHelper::getElementsByAlias($sourceField);
+				$element = $elements[0] ?? null;
+			}
 
 			if (!empty($element) && $element->plugin === 'databasejoin')
 			{
@@ -210,32 +219,48 @@ class EmundusControllermapping extends BaseController
 
 			if (!empty($synchronizerEntity))
 			{
-				$factory = new SynchronizerFactory();
-				$synchronizer = $factory->getApiInstance($synchronizerEntity);
 
-				if (!empty($synchronizer) && $synchronizer instanceof ApiMapDataInterface)
+				$objectDefinitions = $synchronizerRepository->getMappingObjectsDefinitions($synchronizerEntity);
+				$options           = [];
+
+				foreach ($objectDefinitions as $objectDefinition)
 				{
-					$objectDefinitions = $synchronizer->getMappingObjectsDefinitions();
-					$options = [];
-
-					foreach ($objectDefinitions as $objectDefinition)
-					{
-						$options[] = new ChoiceFieldValue($objectDefinition->getName(), $objectDefinition->getName());
-					}
-
-					$response = new Response(
-						true,
-						Text::_('COM_EMUNDUS_MAPPING_OBJECTS_RETRIEVED_SUCCESSFULLY'),
-						200,
-						array_map(function ($option) {
-							return $option->toSchema();
-						}, $options)
-					);
+					$options[] = [
+						'value'          => $objectDefinition->getName(),
+						'label'          => $objectDefinition->getLabel(),
+						'requiredFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+					];
 				}
-				else
-				{
-					$response = new Response(false, Text::_('COM_EMUNDUS_MAPPING_SYNCHRONIZER_DOES_NOT_SUPPORT_MAPPING'), 400);
-				}
+
+				$response = new Response(
+					true,
+					Text::_('COM_EMUNDUS_MAPPING_OBJECTS_RETRIEVED_SUCCESSFULLY'),
+					200,
+					$options
+				);
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function delete(): void
+	{
+		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
+		{
+			$mappingId = $this->input->getInt('id', 0);
+
+			$deleted = $this->repository->delete($mappingId);
+
+			if ($deleted)
+			{
+				$response = new Response(true, Text::_('COM_EMUNDUS_MAPPING_DELETED_SUCCESSFULLY'), 200);
+			}
+			else
+			{
+				$response = new Response(false, Text::_('COM_EMUNDUS_MAPPING_DELETE_FAILED'), 500);
 			}
 		}
 

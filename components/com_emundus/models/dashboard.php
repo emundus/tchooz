@@ -16,7 +16,9 @@ jimport('joomla.application.component.model');
 
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
+use Tchooz\Repositories\Task\TaskRepository;
 
 JModelLegacy::addIncludePath(JPATH_SITE . '/components/com_emundus/models');
 
@@ -294,28 +296,91 @@ class EmundusModelDashboard extends JModelList
 		}
 	}
 
-	public function renderchartbytag($id)
+	/**
+	 * @param $id
+	 *
+	 * @return mixed
+	 */
+	public function renderchartbytag($id): mixed
 	{
+		$renderedChart = ['dataset' => ''];
+
 		try
 		{
-			$query = $this->_db->getQuery(true);
+			$query = $this->_db->createQuery();
 
-			$query->select('eval')
+			$query->select('*')
 				->from($this->_db->quoteName('#__emundus_widgets'))
 				->where($this->_db->quoteName('id') . ' = ' . $this->_db->quote($id));
 			$this->_db->setQuery($query);
-			$value = $this->_db->loadResult();
+			$widget = $this->_db->loadObject();
 
-			$request = explode('php|', $value);
+			if (!empty($widget))
+			{
+				if ($widget->name === 'custom')
+				{
+					$request = explode('php|', $widget->eval);
+					$renderedChart = eval("$request[1]");
+				}
+				else
+				{
+					// todo: define a registry of charts and call the right function with parameters instead of eval
 
-			return eval("$request[1]");
+					switch($widget->name)
+					{
+						case 'tasks_status':
+							$dataSource = new \stdClass;
+							$dataSource->chart = [
+								'caption'           => Text::_($widget->label),
+								'xaxisname'         => Text::_($widget->label . '_XAXIS'),
+								'yaxisname'         => Text::_($widget->label . '_YAXIS'),
+								"animation"         => 1,
+								"numberScaleValue"  => "1",
+								"numDivLines"       => 1,
+								"numbersuffix"      => '',
+								"showValues"        => 1,
+								"decimalSeparator"  => ',',
+								"thousandSeparator" => ' ',
+								"yAxisMaxValue"     => 0,
+								"theme"             => 'fusion',
+							];
+							$repository = new TaskRepository();
+							$dataSource->data = [
+								[
+									'label' => \Tchooz\Enums\Task\TaskStatusEnum::PENDING->getLabel(),
+									'color' => \Tchooz\Enums\Task\TaskStatusEnum::PENDING->getColor(),
+									'value' => $repository->getTasksCount(['status' => \Tchooz\Enums\Task\TaskStatusEnum::PENDING->value])
+								],
+								[
+									'label' => \Tchooz\Enums\Task\TaskStatusEnum::IN_PROGRESS->getLabel(),
+									'color' => \Tchooz\Enums\Task\TaskStatusEnum::IN_PROGRESS->getColor(),
+									'value' => $repository->getTasksCount(['status' => \Tchooz\Enums\Task\TaskStatusEnum::IN_PROGRESS->value])
+								],
+								[
+									'label' => \Tchooz\Enums\Task\TaskStatusEnum::COMPLETED->getLabel(),
+									'color' => \Tchooz\Enums\Task\TaskStatusEnum::COMPLETED->getColor(),
+									'value' => $repository->getTasksCount(['status' => \Tchooz\Enums\Task\TaskStatusEnum::COMPLETED->value])
+								],
+								[
+									'label' => \Tchooz\Enums\Task\TaskStatusEnum::FAILED->getLabel(),
+									'color' => \Tchooz\Enums\Task\TaskStatusEnum::FAILED->getColor(),
+									'value' => $repository->getTasksCount(['status' => \Tchooz\Enums\Task\TaskStatusEnum::FAILED->value])
+								]
+							];
+
+							$renderedChart = $dataSource;
+
+							break;
+					}
+				}
+			}
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/models/dashboard | Error when get datas : ' . preg_replace("/[\r\n]/", " ", $e->getMessage()), Log::ERROR, 'com_emundus');
-
-			return array('dataset' => '');
 		}
+
+		return $renderedChart;
 	}
 
 	public function getarticle($id, $article)

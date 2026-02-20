@@ -180,7 +180,7 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 	 *
 	 * @return array<ChoiceFieldValue>
 	 */
-	public function searchFieldValues(string $fieldName, string $search)
+	public function searchFieldValues(string $fieldName, string $search): array
 	{
 		$values = [];
 

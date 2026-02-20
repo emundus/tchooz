@@ -44,7 +44,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 				->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName($this->alias . '.event_id') . ' = ' . $this->db->quoteName('e.id'))
 				->where('1=1');
 
-			$this->applyFilters($filters, $query);
+			$this->applyFilters($query, $filters);
 
 			$this->db->setQuery($query);
 			$count = (int) $this->db->loadResult();
@@ -72,7 +72,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 			->leftJoin($this->db->quoteName('#__emundus_plugin_events', 'e') . ' ON ' . $this->db->quoteName($this->alias . '.event_id') . ' = ' . $this->db->quoteName('e.id'))
 			->where('1=1');
 
-		$this->applyFilters($filters, $query);
+		$this->applyFilters($query, $filters);
 
 		$query->group($this->alias . '.id')
 			->setLimit($limit, ($page - 1) * $limit);
@@ -94,7 +94,7 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 	 *
 	 * @return void
 	 */
-	public function applyFilters(array $filters, object $query): void
+	public function applyFilters(object $query, array $filters): void
 	{
 		if (empty($filters)) {
 			$filters = ['published' => 1];

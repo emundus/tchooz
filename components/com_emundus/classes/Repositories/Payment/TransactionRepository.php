@@ -18,24 +18,46 @@ use Joomla\Database\DatabaseDriver;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Payment\TransactionEntity;
+use Tchooz\Factories\Payment\TransactionFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Contacts\ContactRepository;
+use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Synchronizers\Payment\Sogecommerce;
 use Tchooz\Synchronizers\Payment\Stripe;
 use Tchooz\Traits\TraitTable;
 
-#[TableAttribute(table: '#__emundus_payment_transaction')]
-class TransactionRepository
+#[TableAttribute(table: '#__emundus_payment_transaction', alias: 'transaction', columns: [
+	'id',
+	'cart_id',
+	'amount',
+	'currency_id',
+	'payment_method_id',
+	'status',
+	'synchronizer_id',
+	'created_at',
+	'created_by',
+	'updated_at',
+	'updated_by',
+	'step_id',
+	'data',
+	'fnum'
+])]
+class TransactionRepository extends EmundusRepository
 {
 	use TraitTable;
 
-	private DatabaseDriver $db;
+	private TransactionFactory $factory;
 
-	public function __construct()
+	public function __construct($withRelations = true, $exceptRelations = [])
 	{
-		Log::addLogger(['text_file' => 'com_emundus.repository.transaction.php'], Log::ALL, ['com_emundus.repository.transaction']);
+		parent::__construct($withRelations, $exceptRelations, 'transaction', self::class);
 
-		$this->db = Factory::getContainer()->get('DatabaseDriver');
+		$this->factory = new TransactionFactory();
+	}
+
+	public function getFactory(): ?TransactionFactory
+	{
+		return $this->factory;
 	}
 
 	public function getById(int $id, ?CartEntity $cart = null): ?TransactionEntity

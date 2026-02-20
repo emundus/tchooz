@@ -157,16 +157,6 @@ html[dir="rtl"] joomla-alert .joomla-alert--close, html[dir="rtl"] joomla-alert 
   position: relative;
 }
 
-#system-message-container joomla-alert .btn-primary {
-  color: var(--states-btn-primary-color);
-  background: var(--states-btn-primary-bg);
-  border-color: var(--states-btn-primary-bg-hover);
-}
-
-#system-message-container joomla-alert .btn-primary:hover {
-  background: var(--states-btn-primary-bg-hover);
-}
-
 #system-message-container joomla-alert[type="success"], #system-message-container joomla-alert[type="message"] {
   --alert-accent-color: var(--state-success-text);
   --alert-bg-color: var(--state-success-bg);
@@ -175,7 +165,7 @@ html[dir="rtl"] joomla-alert .joomla-alert--close, html[dir="rtl"] joomla-alert 
   --alert-link-color: var(--state-success-link-color, var(--states-link-color));
 }
 
-#system-message-container joomla-alert[type="success"] a, #system-message-container joomla-alert[type="message"] a {
+#system-message-container joomla-alert[type="success"] a:not(.btn), #system-message-container joomla-alert[type="success"] .btn-link, #system-message-container joomla-alert[type="message"] a:not(.btn), #system-message-container joomla-alert[type="message"] .btn-link {
   color: var(--state-success-text);
   text-decoration: underline;
 }
@@ -188,7 +178,7 @@ html[dir="rtl"] joomla-alert .joomla-alert--close, html[dir="rtl"] joomla-alert 
   --alert-link-color: var(--state-success-link-color, var(--states-link-color));
 }
 
-#system-message-container joomla-alert[type="info"] a, #system-message-container joomla-alert[type="notice"] a {
+#system-message-container joomla-alert[type="info"] a:not(.btn), #system-message-container joomla-alert[type="info"] .btn-link, #system-message-container joomla-alert[type="notice"] a:not(.btn), #system-message-container joomla-alert[type="notice"] .btn-link {
   color: var(--state-info-text);
   text-decoration: underline;
 }
@@ -205,7 +195,7 @@ html[dir="rtl"] joomla-alert .joomla-alert--close, html[dir="rtl"] joomla-alert 
   --alert-link-color: var(--state-success-link-color, var(--states-link-color));
 }
 
-#system-message-container joomla-alert[type="warning"] a {
+#system-message-container joomla-alert[type="warning"] a:not(.btn), #system-message-container joomla-alert[type="warning"] .btn-link {
   color: var(--state-warning-text);
   text-decoration: underline;
 }
@@ -218,7 +208,7 @@ html[dir="rtl"] joomla-alert .joomla-alert--close, html[dir="rtl"] joomla-alert 
   --alert-link-color: var(--state-success-link-color, var(--states-link-color));
 }
 
-#system-message-container joomla-alert[type="error"] a, #system-message-container joomla-alert[type="danger"] a {
+#system-message-container joomla-alert[type="error"] a:not(.btn), #system-message-container joomla-alert[type="error"] .btn-link, #system-message-container joomla-alert[type="danger"] a:not(.btn), #system-message-container joomla-alert[type="danger"] .btn-link {
   color: var(--state-danger-text);
   text-decoration: underline;
 }

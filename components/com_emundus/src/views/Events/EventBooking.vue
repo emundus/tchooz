@@ -125,11 +125,14 @@ export default {
 								this.availableDates = [];
 							}
 						});
+
+						if (location_filter_elt.value) {
+							this.location = location_filter_elt.value;
+						}
 					}
 
 					if (application_choices_filter_elt) {
 						application_choices_filter_elt.addEventListener('change', (event) => {
-							console.log(event);
 							this.application_choice = event.target.value;
 
 							this.currentStartIndex = 0;
@@ -421,7 +424,8 @@ export default {
 					text = this.translate('COM_EMUNDUS_EVENT_SLOT_RECAP')
 						.replace('{{date}}', start.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' }))
 						.replace('{{time}}', start.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }))
-						.replace('{{duration}}', durationText);
+						.replace('{{duration}}', durationText)
+						.replace('{{location}}', selectedSlot.location_name);
 				}
 			}
 

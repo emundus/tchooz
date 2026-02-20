@@ -2,6 +2,7 @@
 
 namespace Tchooz\Entities\Automation\TargetPredefinitions;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\TargetPredefinitionEntity;
@@ -33,9 +34,25 @@ class ApplicantCollaboratorsUserPredefinition extends TargetPredefinitionEntity
 			$applicationModel = new \EmundusModelApplication();
 			$collaborators = $applicationModel->getSharedFileUsers(null, $context->getFile());
 
+			$db = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
 			foreach ($collaborators as $collaborator)
 			{
-				$targets[] = new ActionTargetEntity($context->getTriggeredBy(), null, $collaborator->user_id, $context->getParameters(), $context->getCustom(), $context);
+				if (!empty($collaborator->email))
+				{
+					$query->clear()
+						->select($db->quoteName('id'))
+						->from($db->quoteName('#__users'))
+						->where($db->quoteName('email') . ' = ' . $db->quote($collaborator->email));
+					$db->setQuery($query);
+					$userId = $db->loadResult();
+
+					if (!empty($userId))
+					{
+						$targets[] = new ActionTargetEntity($context->getTriggeredBy(), null, $userId, $context->getParameters(), $context->getCustom(), $context);
+					}
+				}
 			}
 		}
 

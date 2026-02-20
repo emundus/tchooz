@@ -27,7 +27,10 @@
 					:level="level + 1"
 				></StepTypesByLevel>
 			</div>
-			<div class="tw-flex tw-w-full tw-flex-row tw-items-center" v-if="level < levelMax && type.id == 2">
+			<div
+				class="tw-flex tw-w-full tw-flex-row tw-items-center"
+				v-if="level < levelMax && (type.code === 'evaluator' || type.code === 'payment')"
+			>
 				<button @click="addChildrenStepType(type)" class="tw-btn-secondary tw-mb-2 tw-mt-2">
 					{{ translate('COM_EMUNDUS_WORKFLOW_ADD_CHILDREN_STEP_TYPE') }}
 				</button>

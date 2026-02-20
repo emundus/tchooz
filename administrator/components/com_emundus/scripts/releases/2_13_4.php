@@ -10,6 +10,8 @@
 
 namespace scripts;
 
+use scripts\ReleaseInstaller;
+
 class Release2_13_4Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
@@ -22,11 +24,10 @@ class Release2_13_4Installer extends ReleaseInstaller
 	public function install()
 	{
 		$result = ['status' => false, 'message' => ''];
-
-		$query = $this->db->createQuery();
-
 		try
 		{
+			$query = $this->db->createQuery();
+
 			// Check noprofile
 			$query->clear()
 				->select('*')

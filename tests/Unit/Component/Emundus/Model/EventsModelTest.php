@@ -759,7 +759,6 @@ class EventsModelTest extends UnitTestCase
 
 	public function testGetAvailabilitiesByCampaignsAndPrograms()
 	{
-
 		$campaign_id = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
 		$campaign_id_2 = $this->h_dataset->createSampleCampaign($this->dataset['program'], $this->dataset['coordinator']);
 
@@ -778,6 +777,8 @@ class EventsModelTest extends UnitTestCase
 		$this->assertObjectHasProperty('event_id', $availabilities[0], 'The availability should have an event_id property');
 		$this->assertObjectHasProperty('capacity', $availabilities[0], 'The availability should have a capacity property');
 		$this->assertObjectHasProperty('slot', $availabilities[0], 'The availability should have a slot property');
+		$this->assertObjectHasProperty('location_name', $availabilities[0], 'The availability should have a location_name property');
+		$this->assertEquals('Lieu de test', $availabilities[0]->location_name, 'The availability location name should be "Lieu de test"');
 
 		$availabilities = $this->model->getAvailabilitiesByCampaignsAndPrograms($campaign_id_2);
 		$this->assertIsArray($availabilities, 'The method getAvailabilitiesByCampaignsAndPrograms should return an array');

@@ -1228,11 +1228,22 @@ export default {
 					confirmButtonText: this.translate('COM_EMUNDUS_LIST_CLOSE_PREVIEW'),
 				});
 			} else if (this.previewAction && (this.previewAction.title || this.previewAction.content)) {
+				let title = '';
+
+				// check if there is an item key to use as title
+				if (this.previewAction.title) {
+					if (item[this.previewAction.title]) {
+						title =
+							this.previewAction.title === 'label'
+								? item[this.previewAction.title][this.params.shortlang]
+								: item[this.previewAction.title];
+					} else {
+						title = this.translate(this.previewAction.title);
+					}
+				}
+
 				Swal.fire({
-					title:
-						this.previewAction.title === 'label'
-							? item[this.previewAction.title][this.params.shortlang]
-							: item[this.previewAction.title],
+					title: title,
 					html: '<div style="text-align: left;">' + item[this.previewAction.content] + '</div>',
 					reverseButtons: true,
 					customClass: {

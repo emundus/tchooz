@@ -235,6 +235,24 @@ abstract class ActionEntity
 
 		if (!empty($parameter)) {
 			if ($parameter instanceof ChoiceField) {
+				if (!empty($parameter->getOptionsProvider()))
+				{
+					try {
+						if (!empty($parameter->getOptionsProvider()->getDependencies()))
+						{
+							foreach ($parameter->getOptionsProvider()->getDependencies() as $dependency)
+							{
+								$parameter->getOptionsProvider()->addRepositoryMethodArg($this->getParameterValue($dependency));
+							}
+						}
+
+						$parameter->provideOptions();
+					} catch (\Exception $exception)
+					{
+						Log::add('Error providing options for parameter "' . $name . '": ' . $exception->getMessage(), Log::ERROR, 'com_emundus.action');
+					}
+				}
+
 				if (empty($parameter->getResearch()))
 				{
 					$availableValues = array_map(fn($choice) => $choice->getValue(), $parameter->getChoices());
@@ -424,10 +442,12 @@ abstract class ActionEntity
 						}
 					}
 					if (!$hasValue) {
+						$this->addExecutionMessage(new ActionExecutionMessage(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName(), ActionMessageTypeEnum::WARNING));
 						throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
 					}
 				}
 			} else if ($parameter->isRequired() && !isset($this->parameterValues[$parameter->getName()])) {
+				$this->addExecutionMessage(new ActionExecutionMessage(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName(), ActionMessageTypeEnum::WARNING));
 				throw new \RuntimeException(Text::_('MISSING_REQUIRED_PARAMETER') . $parameter->getName());
 			}
 		}

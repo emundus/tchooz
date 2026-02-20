@@ -205,6 +205,18 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		return $application_choices_entity;
 	}
 
+	public function getMoreFormId(): int
+	{
+		$query = $this->db->getQuery(true);
+
+		$query->select('DISTINCT form_id')
+			->from($this->db->quoteName('#__emundus_setup_workflow_step_choices_rules'));
+		$this->db->setQuery($query);
+		$formId = $this->db->loadColumn();
+
+		return !empty($formId) ? (int) $formId[0] : 0;
+	}
+
 	public function getChoicesMoreElements(int $form_id): array
 	{
 		$elements = [];

@@ -10,14 +10,12 @@
 namespace Tchooz\Services\Export\Excel;
 
 
-use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
-use Joomla\CMS\User\UserHelper;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -30,11 +28,8 @@ use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Enums\Export\ExportFormatEnum;
 use Tchooz\Enums\Export\ExportModeEnum;
-use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Enums\Upload\UploadFormatEnum;
-use Tchooz\Enums\ValueFormatEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
-use Tchooz\Factories\TransformerFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Export\ExportRepository;
@@ -45,7 +40,6 @@ use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Services\Export\Export;
 use Tchooz\Services\Export\ExportInterface;
 use Tchooz\Services\Export\ExportResult;
-use Tchooz\Services\Export\HeadersEnum;
 use Tchooz\Services\UploadService;
 
 class ExcelService extends Export implements ExportInterface
@@ -241,6 +235,10 @@ class ExcelService extends Export implements ExportInterface
 					if ($last_synthesis_key !== false)
 					{
 						$synthesisIds = array_slice($synthesisIds, $last_synthesis_key + 1);
+					}
+					else
+					{
+						$synthesisIds = [];
 					}
 				}
 
@@ -753,9 +751,9 @@ class ExcelService extends Export implements ExportInterface
 			if (!empty($task))
 			{
 				$targetToRemoves = [];
-				foreach ($metadata['actionTargetEntities'] as $key => $target)
+				foreach ($metadata['fnums'] as $key => $metadaFnum)
 				{
-					if (in_array($target['file'], $fnums))
+					if (in_array($metadaFnum, $fnums))
 					{
 						$targetToRemoves[] = $key;
 					}
@@ -763,13 +761,10 @@ class ExcelService extends Export implements ExportInterface
 
 				foreach ($targetToRemoves as $key)
 				{
-					unset($metadata['actionTargetEntities'][$key]);
+					unset($metadata['fnums'][$key]);
 				}
 
-				$metadata['actionTargetEntities'] = array_values($metadata['actionTargetEntities']);
-
-				// Remove fnum
-				//$metadata['actionTargetEntity']['parameters']['fnums'] = array_values($not_already_handled_fnums);
+				$metadata['fnums'] = array_values($metadata['fnums']);
 			}
 
 			foreach ($colsup as $colsupkey => $col)

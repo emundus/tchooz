@@ -45,6 +45,11 @@ class MappingService
 					}
 				}
 
+				if (!class_exists('HtmlSanitizerSingleton'))
+				{
+					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
+				}
+
 				if (is_string($value))
 				{
 					$sanitizer = HtmlSanitizerSingleton::getInstance();

@@ -9,7 +9,11 @@ use Joomla\CMS\MVC\Model\AdminModel;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Filter\InputFilter;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\ApplicationFile\StatusRepository;
+use Tchooz\Repositories\ExternalReference\ExternalReferenceRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 class FileModel extends AdminModel
 {
@@ -22,8 +26,8 @@ class FileModel extends AdminModel
 	 * @param   array                 $config   An array of configuration options (name, state, dbo, table_path, ignore_request).
 	 * @param   ?MVCFactoryInterface  $factory  The factory.
 	 *
-	 * @since   3.7.0
 	 * @throws  \Exception
+	 * @since   3.7.0
 	 */
 	public function __construct($config = [], ?MVCFactoryInterface $factory = null)
 	{
@@ -38,15 +42,17 @@ class FileModel extends AdminModel
 	{
 		$item = null;
 
-		if (empty($pk)) {
+		if (empty($pk))
+		{
 			// Load language ?
 			$lang = Factory::getContainer()->get(LanguageFactoryInterface::class)->createLanguage('fr-FR', false);
 			$this->loadOverrideTranslations();
 
 			$app = Factory::getApplication();
-			$pk = $app->input->getString('fnum', '');
+			$pk  = $app->input->getString('fnum', '');
 
-			if (!empty($pk)) {
+			if (!empty($pk))
+			{
 				Log::add('FileModel::getItem() - fnum: ' . $pk, Log::DEBUG, 'com_emundus.api');
 
 				$db    = $this->getDatabase();
@@ -60,14 +66,34 @@ class FileModel extends AdminModel
 
 				$filters = $app->input->get('filter', [], 'array');
 
-				try {
+				try
+				{
 					$db->setQuery($query);
 					$item = $db->loadObject();
 
-					if (!empty($item)) {
+					if (!empty($item))
+					{
 						$statusRepository = new StatusRepository();
-						$status = $statusRepository->getByStep($item->status);
-						$item->status = $status->__serialize();
+						$status           = $statusRepository->getByStep($item->status);
+						$item->status     = $status->__serialize();
+						$statusReferences = [];
+
+						// TODO: Manage external references
+						$externalReferenceRepository = new ExternalReferenceRepository();
+						$externalReferences          = $externalReferenceRepository->getItemsByFields(['column' => 'jos_emundus_setup_status.step', 'intern_id' => $status->getStep()]);
+						if (!empty($externalReferences))
+						{
+							foreach ($externalReferences as $externalReference)
+							{
+								$statusReferences[] = [
+									'reference'           => $externalReference->reference,
+									'reference_object'    => $externalReference->reference_object,
+									'reference_attribute' => $externalReference->reference_attribute,
+								];
+							}
+						}
+						$item->status['external_references'] = $statusReferences;
+
 
 						$query->clear()
 							->select('esat.id, esat.label')
@@ -80,25 +106,51 @@ class FileModel extends AdminModel
 						$this->getDatabase()->setQuery($query);
 						$item->stickers = $this->getDatabase()->loadObjectList();
 
+						// Add application choices
+						$addonRepository = new AddonRepository();
+						$choices_addon   = $addonRepository->getByName('choices');
+						if ($choices_addon->getValue()->isEnabled())
+						{
+							$applicationChoicesRepository = new ApplicationChoicesRepository();
+							$moreFormId = $applicationChoicesRepository->getMoreFormId();
+							$choices                      = $applicationChoicesRepository->getChoicesByFnum($item->fnum, [], null, $moreFormId);
+							if (!empty($choices))
+							{
+								$item->choices = [];
+								foreach ($choices as $choice)
+								{
+									$item->choices[] = $choice->__serialize();
+								}
+							}
+						}
+
+						$emundusUserRepository = new EmundusUserRepository();
+						$applicant             = $emundusUserRepository->getByUserId($item->applicant_id);
+						$item->applicant       = $applicant?->__serialize();
+
 						$profile_ids = [$item->profile_id];
 
 						if (!class_exists('EmundusHelperFabrik'))
 						{
 							require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
 						}
-						if (!class_exists('EmundusModelWorkflow')) {
+						if (!class_exists('EmundusModelWorkflow'))
+						{
 							require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 						}
 						$m_workflow = new \EmundusModelWorkflow();
-						$workflow = $m_workflow->getWorkflowByFnum($item->fnum);
+						$workflow   = $m_workflow->getWorkflowByFnum($item->fnum);
 
-						foreach ($workflow['steps'] as $step) {
-							if (!empty($step->profile_id) && $m_workflow->isApplicantStep($step->type)) {
+						foreach ($workflow['steps'] as $step)
+						{
+							if (!empty($step->profile_id) && $m_workflow->isApplicantStep($step->type))
+							{
 								$profile_ids[] = $step->profile_id;
 							}
 						}
 
-						if (!empty($profile_ids)) {
+						if (!empty($profile_ids))
+						{
 							$item->steps = [];
 
 							$query->clear()
@@ -109,10 +161,12 @@ class FileModel extends AdminModel
 								->andWhere($db->quoteName('m.link') . ' LIKE ' . $db->quote('%option=com_fabrik&view=form&formid=%'))
 								->group($db->quoteName('esp.id'));
 
-							if (\array_key_exists('profile_id', $filters)) {
+							if (\array_key_exists('profile_id', $filters))
+							{
 								$profile_id = InputFilter::getInstance()->clean($filters['profile_id'], 'INT');
 
-								if ($profile_id > 0) {
+								if ($profile_id > 0)
+								{
 									$query->andWhere($db->quoteName('esp.id') . ' = ' . $db->quote($profile_id));
 								}
 							}
@@ -120,22 +174,27 @@ class FileModel extends AdminModel
 							$db->setQuery($query);
 							$profiles = $db->loadObjectList();
 
-							foreach ($profiles as $profile) {
+							foreach ($profiles as $profile)
+							{
 								$form_ids = [];
 
 								$profile->form_links = explode(',', $profile->form_links);
-								foreach ($profile->form_links as $link) {
+								foreach ($profile->form_links as $link)
+								{
 									// Extract the form ID from the link
-									if (preg_match('/formid=(\d+)/', $link, $matches)) {
+									if (preg_match('/formid=(\d+)/', $link, $matches))
+									{
 										$form_ids[] = (int) $matches[1];
 									}
 								}
 
 								$forms = [];
-								if (!empty($form_ids)) {
-									foreach ($form_ids as $form_id) {
+								if (!empty($form_ids))
+								{
+									foreach ($form_ids as $form_id)
+									{
 										$query->clear()
-											->select('jfe.id, jfe.name, jfe.label, jfe.plugin, jfg.params as group_params, jfg.id as group_id, jff.id AS form_id, jff.label AS form_label, jfl.db_table_name')
+											->select('jfe.id, jfe.name, jfe.label, jfe.alias, jfe.plugin, jfg.params as group_params, jfg.id as group_id, jff.id AS form_id, jff.label AS form_label, jfl.db_table_name')
 											->from($db->quoteName('#__fabrik_elements', 'jfe'))
 											->leftJoin($db->quoteName('#__fabrik_groups', 'jfg') . ' ON ' . $db->quoteName('jfe.group_id') . ' = ' . $db->quoteName('jfg.id'))
 											->leftJoin($db->quoteName('#__fabrik_formgroup', 'jffg') . ' ON ' . $db->quoteName('jfg.id') . ' = ' . $db->quoteName('jffg.group_id'))
@@ -149,13 +208,14 @@ class FileModel extends AdminModel
 										$elements = $db->loadAssocList();
 
 										$form = [
-											'id' => $form_id,
-											'label' => '',
+											'id'             => $form_id,
+											'label'          => '',
 											'count_elements' => count($elements),
-											'elements' => []
+											'elements'       => []
 										];
 
-										if (!empty($elements)) {
+										if (!empty($elements))
+										{
 											$form['label'] = $this->translations[$elements[0]['form_label']] ?? Text::_($elements[0]['form_label']);
 
 											$query->clear()
@@ -165,19 +225,23 @@ class FileModel extends AdminModel
 											$db->setQuery($query);
 											$row = $db->loadObject();
 
-											foreach ($elements as $element) {
+											foreach ($elements as $element)
+											{
 												$value = \EmundusHelperFabrik::formatElementValue($element['name'], $row->{$element['name']}, $element['group_id']);
-												if (!empty($value)) {
-													if (in_array($element['plugin'], ['radiobutton', 'dropdown', 'checkbox']) && isset($this->translations[$value])) {
+												if (!empty($value))
+												{
+													if (in_array($element['plugin'], ['radiobutton', 'dropdown', 'checkbox']) && isset($this->translations[$value]))
+													{
 														$value = $this->translations[$value];
 													}
 												}
 
 												$form['elements'][] = [
-													'id' => $element['id'],
-													'name' => $element['name'],
+													'id'    => $element['id'],
+													'alias' => $element['alias'],
+													'name'  => $element['name'],
 													'label' => $this->translations[$element['label']] ?? Text::_($element['label']),
-													'raw' => $row->{$element['name']} ?? '',
+													'raw'   => $row->{$element['name']} ?? '',
 													'value' => $value
 												];
 											}
@@ -189,14 +253,16 @@ class FileModel extends AdminModel
 
 								// get the form_ids and then the elements
 								$item->steps[] = [
-									'id' => $profile->id,
+									'id'    => $profile->id,
 									'label' => $profile->label,
 									'forms' => $forms
 								];
 							}
 						}
 					}
-				} catch (\Exception $e) {
+				}
+				catch (\Exception $e)
+				{
 					$app->enqueueMessage($e->getMessage(), 'error');
 				}
 			}
@@ -227,8 +293,9 @@ class FileModel extends AdminModel
 	 */
 	private function loadOverrideTranslations(string $code = 'fr-FR'): void
 	{
-		$file = JPATH_ROOT . '/language/overrides/'. $code .'.override.ini';
-		if (file_exists($file)) {
+		$file = JPATH_ROOT . '/language/overrides/' . $code . '.override.ini';
+		if (file_exists($file))
+		{
 			$this->translations = parse_ini_file($file);
 		}
 	}

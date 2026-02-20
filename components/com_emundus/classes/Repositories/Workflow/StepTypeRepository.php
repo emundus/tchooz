@@ -10,18 +10,32 @@ use Tchooz\Entities\Actions\CrudEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Factories\Workflow\StepTypeFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Traits\TraitTable;
 use Joomla\Database\DatabaseDriver;
 
-#[TableAttribute(table: 'jos_emundus_setup_step_types')]
-class StepTypeRepository
+#[TableAttribute(table: 'jos_emundus_setup_step_types', alias: 'steptypes', columns:
+	[
+		'id',
+		'parent_id',
+		'label',
+		'code',
+		'action_id',
+		'system',
+		'published',
+		'class',
+	])]
+class StepTypeRepository extends EmundusRepository
 {
 	use TraitTable;
-	private DatabaseDriver $db;
 
-	public function __construct(?DatabaseDriver $db = null)
+	protected StepTypeFactory $factory;
+
+	public function __construct($withRelations = true, $exceptRelations = [], $name = '', $className = self::class)
 	{
-		$this->db = $db ?? Factory::getContainer()->get('DatabaseDriver');
+		parent::__construct($withRelations, $exceptRelations, $name, $className);
+		$this->factory = new StepTypeFactory();
+
 		Log::addLogger(['text_file' => 'com_emundus.repository.step.php'], Log::ALL, ['com_emundus.repository.step']);
 	}
 
@@ -45,7 +59,7 @@ class StepTypeRepository
 			$result = $this->db->loadObject();
 
 			if ($result) {
-				$stepType = StepTypeFactory::fromDbObjects([$result])[0];
+				$stepType = $this->factory::fromDbObjects([$result])[0];
 			}
 		}
 
@@ -72,11 +86,31 @@ class StepTypeRepository
 			$result = $this->db->loadObject();
 
 			if ($result) {
-				$stepType = StepTypeFactory::fromDbObjects([$result])[0];
+				$stepType = $this->factory::fromDbObjects([$result])[0];
 			}
 		}
 
 		return $stepType;
+	}
+
+	public function getChildStepTypes(int $parentId): array
+	{
+		$stepTypes = [];
+
+		$query = $this->db->createQuery()
+			->select('est.*')
+			->from($this->db->quoteName($this->getTableName(self::class), 'est'))
+			->where('est.parent_id = ' . $parentId)
+			->order('est.label ASC');
+
+		$this->db->setQuery($query);
+		$results = $this->db->loadObjectList();
+
+		if ($results) {
+			$stepTypes = $this->factory::fromDbObjects($results);
+		}
+
+		return $stepTypes;
 	}
 
 	/**
@@ -148,5 +182,13 @@ class StepTypeRepository
 		}
 
 		return $flushed;
+	}
+
+	/**
+	 * @return StepTypeFactory
+	 */
+	public function getFactory(): StepTypeFactory
+	{
+		return $this->factory;
 	}
 }

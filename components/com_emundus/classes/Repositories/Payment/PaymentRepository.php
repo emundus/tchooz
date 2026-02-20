@@ -16,8 +16,10 @@ use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Settings\AddonEntity;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Factories\Payment\PaymentStepFactory;
 use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Repositories\Workflow\StepTypeRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
@@ -32,7 +34,16 @@ class PaymentRepository
 
 	public bool $activated = false;
 
+	/**
+	 * @deprecated
+	 * @var int $payment_step_type
+	 */
 	private int $payment_step_type = 0;
+
+	/**
+	 * @var array<StepTypeEntity> $paymentStepTypes
+	 */
+	private array $paymentStepTypes = [];
 
 	private \EmundusHelperCache $h_cache;
 
@@ -47,6 +58,7 @@ class PaymentRepository
 
 		$this->loadAddon();
 		$this->setPaymentStepTypeId();
+		$this->getPaymentStepTypes();
 
 		if (!empty($this->action_id) && $this->addon->enabled == 1) {
 			$this->activated = true;
@@ -122,6 +134,51 @@ class PaymentRepository
 		return $this->addon;
 	}
 
+	/**
+	 * @return array<StepTypeEntity>
+	 */
+	public function getPaymentStepTypes(): array
+	{
+		if (empty($this->paymentStepTypes))
+		{
+			$stepTypeRepository = new StepTypeRepository();
+			$paymentStepType = $stepTypeRepository->getStepTypeByCode('payment');
+			if (!empty($paymentStepType))
+			{
+				$this->paymentStepTypes[] = $paymentStepType;
+				$subStepTypes = $stepTypeRepository->getChildStepTypes($paymentStepType->getId());
+
+				foreach ($subStepTypes as $subStepType)
+				{
+					assert($subStepType instanceof StepTypeEntity);
+					$this->paymentStepTypes[] = $subStepType;
+				}
+			}
+		}
+
+		return $this->paymentStepTypes;
+	}
+
+	/**
+	 * @return array<int>
+	 */
+	public function getPaymentStepTypeIds(): array
+	{
+		$ids = [];
+		$stepTypes = $this->getPaymentStepTypes();
+
+		foreach ($stepTypes as $stepType)
+		{
+			$ids[] = $stepType->getId();
+		}
+
+		return $ids;
+	}
+
+	/**
+	 * @deprecated
+	 * @return void
+	 */
 	private function setPaymentStepTypeId(): void
 	{
 		$payment_action_id = $this->getActionId();
@@ -136,6 +193,10 @@ class PaymentRepository
 		$this->payment_step_type = (int)$this->db->loadResult();
 	}
 
+	/**
+	 * @deprecated
+	 * @return int
+	 */
 	public function getPaymentStepTypeId(): int
 	{
 		return $this->payment_step_type;

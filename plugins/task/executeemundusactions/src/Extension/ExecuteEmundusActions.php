@@ -21,6 +21,8 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 	use DatabaseAwareTrait;
 	use TaskPluginTrait;
 
+	private const TIMEOUT_SECONDS = 30;
+
 	/**
 	 * @var string[]
 	 * @since 5.0.0
@@ -89,7 +91,16 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 			}
 
 			Log::add('Found ' . count($tasks) . ' pending tasks to execute.', Log::DEBUG, 'task_executeemundusactions');
-			foreach ($tasks as $task) {
+
+			$startTime = microtime(true);
+			$timeoutReached = false;
+			foreach ($tasks as $i => $task) {
+				if ((microtime(true) - $startTime) >= self::TIMEOUT_SECONDS) {
+					Log::add('Execution stopped: timeout of ' . self::TIMEOUT_SECONDS . ' seconds reached. Executed ' . $i . ' out of ' . count($tasks) . ' tasks.', Log::INFO, 'task_executeemundusactions');
+					$timeoutReached = true;
+					break;
+				}
+
 				try {
 					$repository->executeTask($task);
 					if ($task->getStatus() === TaskStatusEnum::FAILED)
@@ -107,6 +118,13 @@ class ExecuteEmundusActions extends CMSPlugin implements SubscriberInterface
 					}
 					$failed = true;
 				}
+			}
+
+			if ($timeoutReached)
+			{
+				// If timeout reached, check health of in progress tasks to ensure no tasks are stuck
+				$repository->checkInProgressTasksHealth();
+				Log::add('Checked health of in progress tasks after timeout.', Log::DEBUG, 'task_executeemundusactions');
 			}
 		} else {
 			Log::add('No pending tasks found to execute.', Log::DEBUG, 'task_executeemundusactions');

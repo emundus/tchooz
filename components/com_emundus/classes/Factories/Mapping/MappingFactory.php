@@ -4,14 +4,17 @@ namespace Tchooz\Factories\Mapping;
 
 use Joomla\CMS\Language\Text;
 use Tchooz\Entities\Fields\ChoiceField;
+use Tchooz\Entities\Fields\ChoiceFieldValue;
 use Tchooz\Entities\Fields\Field;
 use Tchooz\Entities\Fields\StringField;
 use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Factories\Field\ChoiceFieldFactory;
+use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\Mapping\MappingRowRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Field\FieldOptionProvider;
 use Tchooz\Services\Field\FieldWatcher;
+use Tchooz\Services\Mapping\ApiMapDataInterface;
 
 class MappingFactory
 {
@@ -28,6 +31,7 @@ class MappingFactory
 					(string) $dbObject->label,
 					(int) $dbObject->synchronizer_id,
 					$dbObject->target_object ?? '',
+					$dbObject->params ? json_decode($dbObject->params, true) : [],
 					$mappingRowRepository->getByMappingId((int) $dbObject->id),
 				);
 			}
@@ -72,6 +76,7 @@ class MappingFactory
 				isset($json['label']) ? (string) $json['label'] : '',
 				isset($json['synchronizer_id']) ? (int) $json['synchronizer_id'] : 0,
 				isset($json['target_object']) ? (string) $json['target_object'] : '',
+				isset($json['params']) && is_array($json['params']) ? $json['params'] : [],
 				$rows
 			);
 		}
@@ -82,7 +87,7 @@ class MappingFactory
 	/**
 	 * @return array<Field>
 	 */
-	public function getFormFields(): array
+	public function getFormFields(?MappingEntity $mappingEntity = null): array
 	{
 		$fields = [];
 
@@ -91,12 +96,48 @@ class MappingFactory
 
 		try
 		{
-			$optionsProvider = new FieldOptionProvider('mapping', 'getMappingObjectsOptions', ['synchronizer_id']);
+			$optionsProvider = new FieldOptionProvider(
+				'mapping',
+				'getMappingObjectsOptions',
+				['synchronizer_id'],
+
+			);
 			$watcher = new FieldWatcher('synchronizer_id');
 			$fields[] = (new ChoiceField('target_object', Text::_('COM_EMUNDUS_MAPPING_FIELD_TARGET_OBJECT_LABEL'), [], true, false))->setOptionsProvider($optionsProvider)->addWatcher($watcher);
 		} catch (\Exception $e)
 		{
 			$fields[] = new StringField('target_object', Text::_('COM_EMUNDUS_MAPPING_FIELD_TARGET_OBJECT_LABEL'), true);
+		}
+
+		if (!empty($mappingEntity))
+		{
+			$targetObjectField = end($fields);
+
+			if (!empty($mappingEntity->getSynchronizerId()) && $targetObjectField instanceof ChoiceField)
+			{
+				$synchronizerRepository = new SynchronizerRepository();
+				$synchronizerEntity = $synchronizerRepository->getById($mappingEntity->getSynchronizerId());
+
+				if (!empty($synchronizerEntity))
+				{
+					$objectDefinitions = $synchronizerRepository->getMappingObjectsDefinitions($synchronizerEntity);
+					$choices = [];
+
+					foreach ($objectDefinitions as $objectDefinition)
+					{
+						$choices[] = new ChoiceFieldValue(
+							$objectDefinition->getName(),
+							$objectDefinition->getLabel(),
+							null,
+							[
+								'requiredFields' => array_map(fn($field) => $field->toSchema(), $objectDefinition->getRequiredFields()),
+							]
+						);
+					}
+
+					$targetObjectField->setChoices($choices);
+				}
+			}
 		}
 
 		return $fields;

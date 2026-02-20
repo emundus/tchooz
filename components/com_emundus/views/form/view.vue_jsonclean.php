@@ -209,9 +209,9 @@ class EmundusViewForm extends JsonView
 						}
 						else
 						{
-							$joinValColumnConcat = str_replace('{thistable}', '', $elementParams->join_val_column_concat);
+							$joinValColumnConcat = str_replace('{thistable}', $elementParams->join_db_name, $elementParams->join_val_column_concat);
 							$joinValColumnConcat = str_replace('{shortlang}', $lang, $joinValColumnConcat);
-							$select[]            = $db->quoteName($joinValColumnConcat, 'label');
+							$select[]            = 'CONCAT(' . $joinValColumnConcat . ') AS label';
 						}
 
 						$query->clear()
