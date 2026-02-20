@@ -127,6 +127,25 @@ class FileModel extends AdminModel
 						$emundusUserRepository = new EmundusUserRepository();
 						$applicant             = $emundusUserRepository->getByUserId($item->applicant_id);
 						$item->applicant       = $applicant?->__serialize();
+						if(!empty($applicant->getUserCategory()))
+						{
+							$userCategoryReferences = [];
+							$externalReferences = $externalReferenceRepository->getItemsByFields(['column' => 'data_user_category.id', 'intern_id' => $applicant->getUserCategory()->getId()]);
+							if (!empty($externalReferences))
+							{
+								foreach ($externalReferences as $externalReference)
+								{
+									$userCategoryReferences[] = [
+										'reference'           => $externalReference->reference,
+										'reference_object'    => $externalReference->reference_object,
+										'reference_attribute' => $externalReference->reference_attribute,
+									];
+								}
+							}
+
+							$item->applicant['user_category']['external_references'] = $userCategoryReferences;
+
+						}
 
 						$profile_ids = [$item->profile_id];
 

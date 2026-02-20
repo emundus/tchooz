@@ -413,6 +413,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$campaign_entity = null;
 
+		$elements = $this->getCampaignMoreElements();
+
 		$query = $this->db->getQuery(true);
 		$query->select(self::COLUMNS)
 			->from($this->db->quoteName($this->getTableName(self::class), 't'))
@@ -422,7 +424,9 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		if (!empty($campaign))
 		{
-			$campaign_entity = $this->factory->fromDbObject($campaign, $this->withRelations);
+			$campaign['more_data'] = $this->getMoreData((int) $campaign['id'], $elements);
+
+			$campaign_entity = $this->factory->fromDbObject($campaign, $this->withRelations, [], null, $elements);
 		}
 
 		return $campaign_entity;
