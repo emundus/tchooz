@@ -228,7 +228,36 @@
 							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PIN') }}
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayPinnedCampaignTip"
+								@click="
+									displayTip('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT')
+								"
+								>help_outline</span
+							>
+						</span>
+					</div>
+
+					<div class="tw-flex tw-items-center">
+						<div class="em-toggle">
+							<input
+								type="checkbox"
+								true-value="1"
+								false-value="0"
+								class="em-toggle-check tw-mt-2"
+								id="public"
+								name="public"
+								v-model="form.public"
+								@click="onFormChange()"
+							/>
+							<strong class="b em-toggle-switch"></strong>
+							<strong class="b em-toggle-track"></strong>
+						</div>
+						<span for="pinned" class="tw-ml-2 tw-flex tw-items-center"
+							>{{ translate('COM_EMUNDUS_CAMPAIGNS_PUBLIC') }}
+							<span
+								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
+								@click="
+									displayTip('COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP', 'COM_EMUNDUS_ONBOARD_PUBLIC_CAMPAIGN_TIP_TEXT')
+								"
 								>help_outline</span
 							>
 						</span>
@@ -281,7 +310,9 @@
 							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME') }}</label>
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayCampaignResumeTip"
+								@click="
+									displayTip('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP', 'COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP_TEXT')
+								"
 								>help_outline</span
 							>
 						</div>
@@ -302,7 +333,7 @@
 							<label class="tw-mb-0 tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION') }}</label>
 							<span
 								class="material-symbols-outlined tw-ml-1 tw-cursor-pointer tw-text-base tw-text-neutral-600"
-								@click="displayCampaignDescriptionTip"
+								@click="displayTip(COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP, COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT)"
 								>help_outline</span
 							>
 						</div>
@@ -692,40 +723,10 @@ export default {
 			throw new Error("It's not an Error, please ignore.");
 		},
 
-		displayPinnedCampaignTip() {
+		displayTip(title, text) {
 			Swal.fire({
-				title: this.translate('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP'),
-				text: this.translate('COM_EMUNDUS_ONBOARD_PINNED_CAMPAIGN_TIP_TEXT'),
-				showCancelButton: false,
-				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
-		},
-
-		displayCampaignResumeTip() {
-			Swal.fire({
-				title: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP'),
-				text: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_RESUME_TIP_TEXT'),
-				showCancelButton: false,
-				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
-		},
-
-		displayCampaignDescriptionTip() {
-			Swal.fire({
-				title: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP'),
-				text: this.translate('COM_EMUNDUS_ONBOARD_ADDCAMP_DESCRIPTION_TIP_TEXT'),
+				title: this.translate(title),
+				text: this.translate(text),
 				showCancelButton: false,
 				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
 				reverseButtons: true,
