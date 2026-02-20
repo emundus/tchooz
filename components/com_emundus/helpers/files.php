@@ -19,6 +19,7 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Component\ComponentHelper;
+use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 
 /**
  * eMundus Component Query Helper

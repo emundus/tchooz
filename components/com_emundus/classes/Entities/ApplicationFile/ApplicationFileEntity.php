@@ -223,6 +223,26 @@ class ApplicationFileEntity
 		$this->updated_by = $updated_by;
 	}
 
+	public function isAnonymous(): bool
+	{
+		return $this->isAnonymous;
+	}
+
+	public function setIsAnonymous(bool $isAnonymous): void
+	{
+		$this->isAnonymous = $isAnonymous;
+	}
+
+	public function isPublic(): bool
+	{
+		return $this->isPublic;
+	}
+
+	public function setIsPublic(bool $isPublic): void
+	{
+		$this->isPublic = $isPublic;
+	}
+
 	public function __serialize(): array
 	{
 		return [
