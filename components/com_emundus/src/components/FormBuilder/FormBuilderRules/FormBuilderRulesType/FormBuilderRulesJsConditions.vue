@@ -24,7 +24,7 @@
 			<div
 				class="tw-ml-4 tw-flex tw-flex-col tw-gap-2"
 				v-for="(condition, condition_key) in conditions"
-				:key="condition_key"
+				:key="condition.id"
 			>
 				<span v-if="conditions.length > 1 && condition_key != 0" class="tw-ml-1 tw-mr-2 tw-font-medium">{{
 					translate('COM_EMUNDUS_FORM_BUILDER_RULE_CONDITION_' + conditions_group)

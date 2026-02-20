@@ -6,7 +6,7 @@
 		<div id="form-builder-rules-js-conditions-block">
 			<div
 				v-for="(grouped_condition, index) in conditions"
-				:key="'condition-' + index"
+				:key="'condition-' + grouped_condition.id"
 				class="tw-mt-2 tw-flex tw-flex-col tw-gap-6 tw-rounded-lg tw-bg-white tw-px-3 tw-py-4"
 			>
 				<form-builder-rules-js-conditions
@@ -112,15 +112,30 @@ export default {
 			group: 'OR',
 			label: '',
 			loading: false,
+			nextConditionId: 1,
+			nextGroupedConditionId: 1,
 		};
 	},
 	mounted() {
 		if (this.page.id) {
 			if (this.rule !== null && Object.values(this.rule.conditions).length > 0) {
-				this.conditions = Object.values(this.rule.conditions);
+				const incomingGroups = Object.values(this.rule.conditions);
+
+				if (incomingGroups.length > 0) {
+					this.conditions = incomingGroups;
+					this.conditions.forEach((group) => {
+						if (group.id == null) group.id = this.nextGroupedConditionId++;
+
+						group.forEach((condition) => {
+							if (condition.id == null) condition.id = this.nextConditionId++;
+						});
+					});
+				}
 			} else {
 				let first_condition = [];
+				first_condition.id = this.nextGroupedConditionId++;
 				first_condition.push({
+					id: this.nextConditionId++,
 					field: '',
 					values: '',
 					state: '=',
@@ -150,6 +165,7 @@ export default {
 	methods: {
 		addCondition(index) {
 			this.conditions[index].push({
+				id: this.nextConditionId++,
 				field: '',
 				values: '',
 				state: '=',
@@ -159,7 +175,9 @@ export default {
 		},
 		addGroupedCondition() {
 			let grouped_condition = [];
+			grouped_condition.id = this.nextGroupedConditionId++;
 			grouped_condition.push({
+				id: this.nextConditionId++,
 				field: '',
 				values: '',
 				state: '=',
