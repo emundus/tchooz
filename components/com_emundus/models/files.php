@@ -4425,7 +4425,16 @@ class EmundusModelFiles extends JModelLegacy
 		if ($rawValue) {
 			$format = ValueFormatEnum::RAW;
 		}
-		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format);
+
+        if ($elt['plugin'] == 'date') {
+            $date_form_format = $params->date_form_format;
+        } else if ($elt['plugin'] == 'jdate') {
+            $date_form_format = $params->jdate_form_format;
+        } else {
+            $date_form_format = '';
+        }
+
+		return $helper->getFabrikValueRepeat($elt, $fnums, $params, $groupRepeat, $parent_row_id, $format, $date_form_format);
 	}
 
 	/**
