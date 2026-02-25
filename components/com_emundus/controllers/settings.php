@@ -2340,7 +2340,7 @@ class EmundusControllersettings extends EmundusController
 		if ($response['status'])
 		{
 			// clear cache
-			$cache = Factory::getCache('com_menu');
+			$cache = Factory::getCache('com_menus');
 			$cache->clean('com_menus');
 
 			$cache = Factory::getCache('com_emundus');
