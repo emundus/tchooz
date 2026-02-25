@@ -39,6 +39,7 @@ use Tchooz\Enums\Analytics\PeriodEnum;
 use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\Emails\TagRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\Upload\UploadRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
@@ -2431,7 +2432,9 @@ class EmundusControllersettings extends EmundusController
 			{
 				try
 				{
-					$response['data'] = $this->m_settings->getFileInfosFromUploadId($upload_id);
+					$uploadRepository = new UploadRepository();
+					$upload           = $uploadRepository->getById($upload_id);
+					$response['data'] = $this->m_settings->getFileInfosFromUploadEntity($upload);
 
 					if (!empty($response['data']))
 					{
@@ -2448,8 +2451,47 @@ class EmundusControllersettings extends EmundusController
 			}
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$this->sendJsonResponse($response);
+	}
+
+	public function getfilethumbnail(): void
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => ''];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$response['code']    = 500;
+			$response['message'] = Text::_('MISSING_PARAMS');
+
+			$upload_id = $this->input->getInt('upload_id', 0);
+			$page = $this->input->getInt('page', 1);
+
+			if (!empty($upload_id))
+			{
+				try
+				{
+					$uploadRepository = new UploadRepository();
+					$upload = $uploadRepository->getById($upload_id);
+					$response['data'] = $this->m_settings->getFileThumbnail($upload, $page);
+
+					if (!empty($response['data']))
+					{
+						$response['status']  = true;
+						$response['code']    = 200;
+						$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_GENERATE_THUMBNAIL_SUCCESS');
+					}
+				}
+				catch (Exception $e)
+				{
+					$response['code']    = 500;
+					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_GENERATE_THUMBNAIL_FAILED') . ': ' . $e->getMessage();
+				}
+			}
+		}
+
+		$this->sendJsonResponse($response);
 	}
 
 	public function get2faenablemethods(): void
