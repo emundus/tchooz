@@ -43,6 +43,7 @@ import CartAppFile from '@/views/Payment/CartAppFile.vue';
 import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
 import ApplicationChoices from '@/views/Application/ApplicationChoices.vue';
 import Exports from '@/views/Exports/Exports.vue';
+import ApplicationChoicesList from '@/views/Application/ApplicationChoicesList.vue';
 
 if (document) {
 	let app = null;
@@ -245,6 +246,15 @@ if (document) {
 						}
 
 						app = createApp(ApplicationChoices, {
+							...datas,
+						});
+						break;
+					case 'Application/ApplicationChoicesList':
+						if (el.getAttribute('data')) {
+							datas = JSON.parse(el.getAttribute('data'));
+						}
+
+						app = createApp(ApplicationChoicesList, {
 							...datas,
 						});
 						break;

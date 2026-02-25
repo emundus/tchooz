@@ -36,6 +36,7 @@
 				:items="items"
 				:checked-items="checkedItems"
 				:views="viewTypeOptions"
+				:displayPresavedFilters="displayPresavedFilters"
 				v-model:view="viewType"
 				v-model:searches="searches"
 				v-model:tab="currentTab"
@@ -314,28 +315,27 @@
 												</span>
 											</button>
 
-											<div v-if="showModal && currentComponentElementId === item.id">
-												<Teleport to=".com_emundus">
-													<modal
-														:name="'modal-component'"
-														transition="nice-modal-fade"
-														:classes="'!tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
-														:height="modalHeight"
-														:width="'600px'"
-														:delay="100"
-														:adaptive="true"
-														:clickToClose="false"
-														@click.stop
-													>
-														<component
-															:is="resolvedComponent"
-															:item="item"
-															@close="closePopup()"
-															@update-items="getListItems()"
-														/>
-													</modal>
-												</Teleport>
-											</div>
+											<Teleport to=".com_emundus" v-if="showModal && currentComponentElementId === item.id">
+												<modal
+													:name="'modal-component'"
+													transition="nice-modal-fade"
+													:classes="'!tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+													:height="modalHeight"
+													:width="'600px'"
+													:delay="100"
+													:adaptive="true"
+													:clickToClose="false"
+													@click.stop
+												>
+													<component
+														:is="resolvedComponent"
+														:item="item"
+														@close="closePopup()"
+														@update-items="getListItems()"
+													/>
+												</modal>
+											</Teleport>
+
 											<popover
 												:position="'left'"
 												v-if="
@@ -406,7 +406,7 @@
 					<modal
 						:name="'modal-component'"
 						transition="nice-modal-fade"
-						:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-px-4 tw-shadow-modal'"
+						:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
 						:width="'600px'"
 						:delay="100"
 						:adaptive="true"
@@ -452,6 +452,7 @@ import EventDetails from '@/components/Events/EventDetails.vue';
 import EmailDetails from '@/components/Emails/EmailDetails.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
+import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -486,6 +487,7 @@ export default {
 		EventDetails,
 		EmailDetails,
 		SaveRequest,
+		UpdateApplicationChoiceState,
 	},
 	props: {
 		defaultLists: {
@@ -516,6 +518,10 @@ export default {
 			type: Object,
 			default: () => [],
 		},
+		displayPresavedFilters: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	mixins: [alerts],
 	data() {
@@ -537,6 +543,7 @@ export default {
 				EmailDetails,
 				Import,
 				SaveRequest,
+				UpdateApplicationChoiceState,
 			},
 
 			lists: {},
@@ -722,10 +729,18 @@ export default {
 
 							if (typeof this.filters[tab.key] !== 'undefined') {
 								this.filters[tab.key].forEach((filter) => {
-									const filterValue =
-										typeof filter.value === 'object' && filter.value !== null && 'value' in filter.value
-											? filter.value.value
-											: filter.value;
+									let filterValue = '';
+									if (filter.type === 'multiselect' && Array.isArray(filter.value)) {
+										const values = filter.value.map((val) =>
+											typeof val === 'object' && val !== null && 'value' in val ? val.value : val,
+										);
+										filterValue = values.join(',');
+									} else {
+										filterValue =
+											typeof filter.value === 'object' && filter.value !== null && 'value' in filter.value
+												? filter.value.value
+												: filter.value;
+									}
 
 									if (filterValue !== '' && filterValue !== 'all') {
 										url += '&' + filter.key + '=' + encodeURIComponent(filterValue);
@@ -838,6 +853,7 @@ export default {
 										alwaysDisplay: filter.alwaysDisplay || false,
 										options: [],
 										type: filter.multiselect ? 'multiselect' : filter.type || 'select',
+										multiple: !!(filter.multiselect && filter.multiple),
 									});
 
 									await this.setFilterOptions(
@@ -854,6 +870,7 @@ export default {
 										alwaysDisplay: filter.alwaysDisplay || false,
 										options: filter.values || [],
 										type: filter.multiselect ? 'multiselect' : filter.type || 'select',
+										multiple: !!(filter.multiselect && filter.multiple),
 									});
 								}
 							} else {
@@ -864,6 +881,7 @@ export default {
 									alwaysDisplay: filter.alwaysDisplay || false,
 									options: filter.values || [],
 									type: filter.multiselect ? 'multiselect' : filter.type || 'select',
+									multiple: !!(filter.multiselect && filter.multiple),
 								});
 							}
 						}
@@ -912,10 +930,12 @@ export default {
 							}));
 						}
 
-						options.unshift({
-							value: 'all',
-							label: this.translate(filter.allLabel),
-						});
+						if (!filter.multiple) {
+							options.unshift({
+								value: 'all',
+								label: this.translate(filter.allLabel),
+							});
+						}
 
 						this.filters[tabKey].find((f) => f.key === filter.key).options = options;
 					} else {

@@ -34,6 +34,7 @@ use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\Actions\ActionRepository as AccessActionRepository;
+use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Attachments\AttachmentTypeRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -347,6 +348,14 @@ class EmundusControllerExport extends BaseController
 					$elements['others']     = Export::getMiscellaneousColumns();
 					$elements['management'] = Export::getManagementColumns();
 					$elements['user']       = Export::getUserColumns();
+
+					// If application choices module enabled add application choice columns
+					$addonRepository    = new AddonRepository();
+					$choices_addon      = $addonRepository->getByName('choices');
+					if ($choices_addon->getValue()->isEnabled())
+					{
+						$elements['application_choices'] = Export::getApplicationChoiceColumns();
+					}
 					break;
 			}
 			$elements = array_values($elements);

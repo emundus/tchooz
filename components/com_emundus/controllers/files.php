@@ -26,6 +26,10 @@ use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Entities\Filters\FilterEntity;
+use Tchooz\Enums\Filters\FilterModeEnum;
+use Tchooz\Factories\Filters\FilterFactory;
+use Tchooz\Repositories\Filters\FilterRepository;
 use \Tchooz\Traits\TraitResponse;
 use Tchooz\Enums\Export\ExportModeEnum;
 use Tchooz\Controller\EmundusController;
@@ -4761,6 +4765,139 @@ class EmundusControllerFiles extends EmundusController
 			}
 		}
 
+		$this->sendJsonResponse($response);
+	}
+
+	public function getlistfilters(): void
+	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response['code'] = 403;
+			$response['status'] = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		$filterRepository = new FilterRepository();
+		$filters = $filterRepository->get(['user' => $this->_user->id, 'mode' => FilterModeEnum::LIST]);
+
+		$data = [];
+		foreach ($filters as $filter) {
+			$data[] = $filter->__serialize();
+		}
+
+		$response['code'] = 200;
+		$response['status'] = true;
+		$response['message'] = Text::_('SUCCESS');
+		$response['data'] = $data;
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function savelistfilters(): void
+	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		$name = $this->input->getString('name', '');
+		$filters = $this->input->getString('filters', '');
+		$view = $this->input->getString('view', '');
+		$id = $this->input->getInt('id', 0);
+
+		if(empty($name) || empty($filters))
+		{
+			$response['code'] = 400;
+			$response['status'] = true;
+			$response['message'] = Text::_('MISSING_PARAMS');
+			$this->sendJsonResponse($response);
+		}
+
+		$filters = json_decode($filters, true);
+		$filters['view'] = $view;
+
+		$filterRepository = new FilterRepository();
+		if(!empty($id))
+		{
+			$filterObject = $filterRepository->getItemByField('id', $id);
+			$filterEntity = FilterFactory::buildEntity($filterObject);
+
+			$filterEntity->setName($name);
+			$filterEntity->setConstraints($filters);
+		}
+		else {
+			$filterEntity = new FilterEntity(
+				$name,
+				$filters,
+				Factory::getApplication()->getIdentity(),
+				FilterModeEnum::LIST,
+				0
+			);
+		}
+
+		try
+		{
+			$filterRepository->flush($filterEntity);
+
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['data'] = $filterEntity->__serialize();
+			$response['message'] = Text::_('FILTER_SAVED');
+		}
+		catch (Exception $e)
+		{
+			$response['code'] = $e->getCode();
+			$response['status'] = false;
+			$response['message'] = $e->getMessage();
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function deletelistfilters(): void
+	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		$id = $this->input->getInt('id', 0);
+		if(empty($id))
+		{
+			$response['code'] = 400;
+			$response['status'] = true;
+			$response['message'] = Text::_('MISSING_PARAMS');
+			$this->sendJsonResponse($response);
+		}
+
+		$filterRepository = new FilterRepository();
+		$filterObject = $filterRepository->getItemByField('id', $id);
+		if(empty($filterObject) || $filterObject->user != $this->_user->id)
+		{
+			$response['code']    = 403;
+			$response['status']  = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		if(!$filterRepository->delete($id))
+		{
+			$response['code']    = 500;
+			$response['status']  = false;
+			$response['message'] = Text::_('ERROR_DELETING_FILTER');
+			$this->sendJsonResponse($response);
+		}
+
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['message'] = Text::_('FILTER_DELETED');
 		$this->sendJsonResponse($response);
 	}
 }

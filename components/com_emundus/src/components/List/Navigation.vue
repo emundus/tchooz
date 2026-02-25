@@ -55,6 +55,10 @@ export default {
 			type: [Number, String],
 			default: 5,
 		},
+		displayPresavedFilters: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	emits: ['update:views', 'update:searches', 'update:tab', 'update:tabKey', 'update:numberOfItemsToDisplay'],
 	data() {
@@ -141,7 +145,13 @@ export default {
 		</nav>
 
 		<section id="actions" class="tw-mb-4 tw-mt-4 tw-flex tw-items-start tw-justify-between tw-gap-8">
-			<Filters :filters="filters" :currentTabKey="currentTabKey" @update-filter="onChangeFilter" />
+			<Filters
+				:filters="filters"
+				:currentTabKey="currentTabKey"
+				:current-tab="currentTab"
+				:displayPresavedFilters="displayPresavedFilters"
+				@update-filter="onChangeFilter"
+			/>
 
 			<Actions
 				:items="items"
