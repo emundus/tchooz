@@ -32,7 +32,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::save
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::save
 	 * @return void
 	 */
 	public function testSave()
@@ -45,7 +45,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::save
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::save
 	 * @return void
 	 */
 	public function testSaveWithSteps()
@@ -71,7 +71,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::save
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::save
 	 * @return void
 	 */
 	public function testSaveWithStepsOnSameEntryStatus()
@@ -88,7 +88,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::getWorkflowById
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::getWorkflowById
 	 * @return void
 	 */
 	public function testGetWorkflowById()
@@ -107,7 +107,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::getWorkflowByProgramId
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::getWorkflowByProgramId
 	 * @return void
 	 */
 	public function testGetWorkflowByProgramId()
@@ -125,7 +125,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::delete
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::delete
 	 * @return void
 	 */
 	public function testDelete()
@@ -141,7 +141,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::getWorkflowByFnum
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::getWorkflowByFnum
 	 * @return void
 	 */
 	public function testGetWorkflowWithChildrenLoaded(): void
@@ -182,7 +182,7 @@ class WorkflowRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers WorkflowRepository::getWorkflowsByFnums
+	 * @covers \Tchooz\Repositories\Workflow\WorkflowRepository::getWorkflowsByFnums
 	 * @return void
 	 */
 	public function testGetWorkflowsByFnums(): void

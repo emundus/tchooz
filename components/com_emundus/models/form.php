@@ -24,7 +24,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Factories\Language\LanguageFactory;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusModelForm extends ListModel
@@ -226,13 +226,20 @@ class EmundusModelForm extends ListModel
 					$query->andWhere($this->db->quoteName('ff.created_by') . ' = ' . $user_id .
 						(!empty($steps_form_ids) ? ' OR ff.id IN (' . implode(',', $steps_form_ids) . ')' : ''));
 				}
-
 				$this->db->setQuery($query);
 				$evaluation_forms_user_can_access_to = $this->db->loadColumn();
 
-				$evaluation_forms = array_filter($evaluation_forms, function ($form) use ($evaluation_forms_user_can_access_to) {
-					return in_array($form->id, $evaluation_forms_user_can_access_to);
+				$query->clear()
+					->select('form_id')
+					->from($this->db->quoteName('#__emundus_setup_workflows_steps'));
+				$this->db->setQuery($query);
+				$workflow_form_ids = $this->db->loadColumn();
+				$evaluationsFormsNotAssociatedToWorkflow = array_diff($evaluation_form_ids, $workflow_form_ids);
+
+				$evaluation_forms = array_filter($evaluation_forms, function ($form) use ($evaluation_forms_user_can_access_to, $evaluationsFormsNotAssociatedToWorkflow) {
+					return in_array($form->id, $evaluation_forms_user_can_access_to) || in_array($form->id, $evaluationsFormsNotAssociatedToWorkflow);
 				});
+				// Merge forms that are not associated to any workflow with forms associated to workflows that user can access to
 				$evaluation_forms = array_values($evaluation_forms);
 			}
 

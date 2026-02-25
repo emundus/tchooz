@@ -340,6 +340,9 @@ class EmundusModelWorkflow extends JModelList
 								$this->saveChoicesStepRules($step);
 							}
 						}
+
+						// purge cache of 'workflow_programs'
+						$this->h_cache->set('workflow_programs', null);
 					}
 					catch (Exception $e)
 					{
@@ -551,7 +554,7 @@ class EmundusModelWorkflow extends JModelList
 	 *
 	 * @return array
 	 */
-	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by = 'esw.id', $order = 'DESC', $search = ''): array
+	public function getWorkflows($ids = [], $limit = 0, $page = 0, $programs = [], $order_by = 'esw.id', $order = 'DESC', $search = '', $displayNoAssociated = false): array
 	{
 		$workflows = [];
 
@@ -569,7 +572,13 @@ class EmundusModelWorkflow extends JModelList
 
 		if (!empty($programs) && !in_array('all', $programs))
 		{
-			$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
+			if($displayNoAssociated)
+			{
+				$query->where('(' . $this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ') OR ' . $this->db->quoteName('eswp.program_id') . ' IS NULL)');
+			}
+			else {
+				$query->where($this->db->quoteName('eswp.program_id') . ' IN (' . implode(',', $programs) . ')');
+			}
 		}
 
 		if (!empty($search))
@@ -1175,7 +1184,7 @@ class EmundusModelWorkflow extends JModelList
 						$campaignRepository = new CampaignRepository();
 						$campaign           = $campaignRepository->getById($file_infos['campaign_id']);
 						$parent_campaigns   = !empty($campaign->getParent()) ? [$campaign->getParent()->getId()] : [];
-						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 't.id', null, $file_infos['campaign_id'], null, $parent_campaigns);
+						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 't.id', null, $file_infos['campaign_id'], null, null, null, [], $parent_campaigns);
 
 						if ($linked_campaigns->getTotalItems() > 0)
 						{

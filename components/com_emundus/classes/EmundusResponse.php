@@ -9,7 +9,7 @@
 
 namespace Tchooz;
 
-class Response implements \JsonSerializable
+class EmundusResponse implements \JsonSerializable
 {
 	public const HTTP_CONTINUE = 100;
 	public const HTTP_SWITCHING_PROTOCOLS = 101;
@@ -109,6 +109,31 @@ class Response implements \JsonSerializable
 			'data'        => $this->data,
 			'description' => $this->description,
 		];
+	}
+
+	public function isStatus(): bool
+	{
+		return $this->status;
+	}
+
+	public function getMsg(): string
+	{
+		return $this->msg;
+	}
+
+	public function getCode(): int
+	{
+		return $this->code;
+	}
+
+	public function getData(): mixed
+	{
+		return $this->data;
+	}
+
+	public function getDescription(): string
+	{
+		return $this->description;
 	}
 
 	public static array $statusTexts = [

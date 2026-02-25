@@ -21,7 +21,7 @@ class ActionExportTest extends UnitTestCase
 
 	/**
 	 * Assert XLSX export is created successfully with valid parameters.
-	 * @covers ActionExport::execute()
+	 * @covers \Tchooz\Entities\Automation\Actions\ActionExport::execute()
 	 */
 	public function testExecute(): void
 	{

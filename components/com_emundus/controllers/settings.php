@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.controller');
 
 use enshrined\svgSanitize\Sanitizer;
+use Http\Discovery\Exception\NotFoundException;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
@@ -25,9 +26,12 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\Component\Users\Administrator\Helper\Mfa;
 use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\Attributes\AccessAttribute;
 use Tchooz\Entities\Contacts\ContactEntity;
 use Tchooz\Entities\Contacts\OrganizationEntity;
 use Tchooz\Entities\User\UserCategoryEntity;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Contacts\ContactRepository;
 use Tchooz\Repositories\Contacts\OrganizationRepository;
 use Tchooz\Repositories\Addons\AddonRepository;
@@ -35,9 +39,10 @@ use Tchooz\Enums\Analytics\PeriodEnum;
 use Tchooz\Repositories\Analytics\PageAnalyticsRepository;
 use Tchooz\Repositories\Emails\TagRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\User\UserCategoryRepository;
 use Tchooz\Repositories\CountryRepository;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Services\Addons\AddonHandlerResolver;
 use Tchooz\Services\Addons\EmundusAnalyticsAddonHandler;
 use Tchooz\Services\UploadService;
@@ -45,194 +50,103 @@ use Tchooz\Synchronizers\NumericSign\DocaposteSynchronizer;
 use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
-use Tchooz\Traits\TraitResponse;
+use Tchooz\Controller\EmundusController;
 
-class EmundusControllersettings extends BaseController
+class EmundusControllersettings extends EmundusController
 {
-	use TraitResponse;
-
-	private $user;
-
 	private EmundusModelSettings $m_settings;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		if(!class_exists('EmundusHelperAccess'))
+		if (!class_exists('EmundusHelperAccess'))
 		{
-			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/access.php');
+			require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
 		}
-		if(!class_exists('EmundusModelSettings'))
+		if (!class_exists('EmundusModelSettings'))
 		{
-			require_once(JPATH_BASE . DS . '/components/com_emundus/models/settings.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/settings.php');
 		}
+
 		$this->m_settings = new EmundusModelSettings();
-
-		$this->user = $this->app->getIdentity();
 	}
 
-	public function getstatus()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getstatus(): EmundusResponse
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$status = $this->m_settings->getStatus();
-
-			if (!empty($status))
-			{
-				$tab = array('status' => 1, 'msg' => JText::_('STATUS_RETRIEVED'), 'data' => $status);
-			}
-			else
-			{
-				$tab = array('status' => 0, 'msg' => JText::_('ERROR_CANNOT_RETRIEVE_STATUS'), 'data' => $status);
-			}
-		}
-		echo json_encode((object) $tab);
-		exit;
+		$status = $this->m_settings->getStatus();
+		return EmundusResponse::ok($status);
 	}
 
-	public function gettags()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function gettags(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
-		$user     = $this->user;
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$tags     = $this->m_settings->getTags();
-			$response = ['status' => true, 'msg' => Text::_('TAGS_RETRIEVED'), 'data' => $tags];
-		}
-
-		echo json_encode($response);
-		exit;
+		$tags     = $this->m_settings->getTags();
+		return EmundusResponse::ok($tags);
 	}
 
-	public function createtag()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function createtag(): void
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$changeresponse = $this->m_settings->createTag();
-		}
-		echo json_encode((object) $changeresponse);
-		exit;
+		$this->sendJsonResponse($this->m_settings->createTag());
 	}
 
-	public function createstatus()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function createstatus(): void
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$changeresponse = $this->m_settings->createStatus();
-		}
-		echo json_encode((object) $changeresponse);
-		exit;
+		$this->sendJsonResponse($this->m_settings->createStatus());
 	}
 
-	public function deletetag()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function deletetag(): void
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		$id = $this->input->getInt('id');
+		if(empty($id))
 		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			throw new InvalidArgumentException('Tag ID is required');
 		}
-		else
-		{
 
-
-			$id = $this->input->getInt('id');
-
-			$changeresponse = $this->m_settings->deleteTag($id);
-		}
-		echo json_encode((object) $changeresponse);
-		exit;
+		$this->sendJsonResponse($this->m_settings->deleteTag($id));
 	}
 
-	public function deletestatus()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function deletestatus(): void
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		$id   = $this->input->getInt('id');
+		$step = $this->input->getInt('step');
+		if(empty($id) || empty($step))
 		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			throw new InvalidArgumentException('Status ID and step are required');
 		}
-		else
-		{
 
-
-			$id   = $this->input->getInt('id');
-			$step = $this->input->getInt('step');
-
-			$changeresponse = $this->m_settings->deleteStatus($id, $step);
-		}
-		echo json_encode((object) $changeresponse);
-		exit;
+		$this->sendJsonResponse($this->m_settings->deleteStatus($id, $step));
 	}
 
-	public function updatestatus()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function updatestatus(): void
 	{
-		$changeresponse = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
-		$user           = $this->user;
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		$status = $this->input->getInt('status');
+		$label  = $this->input->getString('label');
+		$color  = $this->input->getString('color');
+		if(empty($status))
 		{
-			$status = $this->input->getInt('status');
-			$label  = $this->input->getString('label');
-			$color  = $this->input->getString('color');
-
-			$changeresponse = $this->m_settings->updateStatus($status, $label, $color);
+			throw new InvalidArgumentException('Status ID is required');
 		}
 
-		echo json_encode((object) $changeresponse);
-		exit;
+		$this->sendJsonResponse($this->m_settings->updateStatus($status, $label, $color));
 	}
 
-	public function updatestatusorder()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function updatestatusorder(): void
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		$status = $this->input->getString('status');
+		if(empty($status))
 		{
-			$result         = 0;
-			$changeresponse = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
+			throw new InvalidArgumentException('Status order is required');
 		}
-		else
-		{
 
-
-			$status = $this->input->getString('status');
-
-			$changeresponse = $this->m_settings->updateStatusOrder(explode(',', $status));
-		}
+		$changeresponse = $this->m_settings->updateStatusOrder(explode(',', $status));
 		echo json_encode((object) $changeresponse);
 		exit;
 	}
@@ -247,8 +161,10 @@ class EmundusControllersettings extends BaseController
 			$label = $this->input->getString('label');
 			$color = $this->input->getString('color');
 
-			try {
-				if ($this->m_settings->updateTags($tag, $label, $color)) {
+			try
+			{
+				if ($this->m_settings->updateTags($tag, $label, $color))
+				{
 					$response = array('status' => true, 'msg' => Text::_('SUCCESS'), 'code' => 200);
 				}
 				else
@@ -256,9 +172,11 @@ class EmundusControllersettings extends BaseController
 					$response['code'] = 400;
 					$response['msg']  = Text::_('FAILED');
 				}
-			} catch (\Exception $e) {
+			}
+			catch (\Exception $e)
+			{
 				$response['code'] = 400;
-				$response['msg'] = $e->getMessage();
+				$response['msg']  = $e->getMessage();
 			}
 		}
 
@@ -948,25 +866,14 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function getactivelanguages()
+	public function getactivelanguages(): EmundusResponse
 	{
-		$user = $this->user;
+		$datas = LanguageHelper::getLanguages();
+		usort($datas, function ($a, $b) {
+			return (int) $a->lang_id > (int) $b->lang_id ? 1 : -1;
+		});
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result   = 0;
-			$response = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$datas = JLanguageHelper::getLanguages();
-			usort($datas, function ($a, $b) {
-				return (int) $a->lang_id > (int) $b->lang_id ? 1 : -1;
-			});
-			$response = array('status' => '1', 'msg' => 'SUCCESS', 'data' => $datas);
-		}
-		echo json_encode((object) $response);
-		exit;
+		return EmundusResponse::ok($datas);
 	}
 
 	public function uploadimages()
@@ -1040,80 +947,64 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function uploaddropfiledoc()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'campaign', 'mode' => CrudEnum::CREATE],
+		['id' => 'campaign', 'mode' => CrudEnum::UPDATE]
+	])]
+	public function uploaddropfiledoc(): EmundusResponse
 	{
-		$response = array('status' => 0, 'msg' => JText::_('ACCESS_DENIED'));
+		$m_campaign = $this->getModel('Campaign');
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$file = $this->input->files->get('file');
+		$cid  = $this->input->get('cid');
+
+		if (empty($file))
 		{
-			//require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
-			$m_campaign = $this->getModel('Campaign');
-
-			$file = $this->input->files->get('file');
-			$cid  = $this->input->get('cid');
-
-			if (isset($file))
-			{
-				$campaign_category = $m_campaign->getCampaignCategory($cid);
-
-				$path     = $file['name'];
-				$ext      = pathinfo($path, PATHINFO_EXTENSION);
-				$filename = pathinfo($path, PATHINFO_FILENAME);
-
-				if (!file_exists('media/com_dropfiles') || !is_dir('media/com_dropfiles'))
-				{
-					mkdir('media/com_dropfiles');
-				}
-				$target_dir = "media/com_dropfiles/$campaign_category/";
-				if (!file_exists($target_dir))
-				{
-					$created = mkdir($target_dir);
-				}
-
-				if (!file_exists($target_dir))
-				{
-					$response['msg'] = 'Error while trying to create the dropbox folder.';
-				}
-				else
-				{
-					do
-					{
-						$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
-					} while (file_exists($target_file));
-
-					if (move_uploaded_file($file['tmp_name'], $target_file))
-					{
-						$did      = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
-						$response = $m_campaign->getDropfileDocument($did);
-					}
-					else
-					{
-						$response['msg'] = 'Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.';
-					}
-				}
-			}
-			else
-			{
-				$response['msg'] = 'Missing file';
-			}
+			throw new InvalidArgumentException('No file uploaded', 400);
 		}
 
-		echo json_encode($response);
-		exit;
+		$campaign_category = $m_campaign->getCampaignCategory($cid);
+
+		$path     = $file['name'];
+		$ext      = pathinfo($path, PATHINFO_EXTENSION);
+		$filename = pathinfo($path, PATHINFO_FILENAME);
+
+		if (!file_exists('media/com_dropfiles') || !is_dir('media/com_dropfiles'))
+		{
+			mkdir('media/com_dropfiles');
+		}
+		$target_dir = "media/com_dropfiles/$campaign_category/";
+		if (!file_exists($target_dir))
+		{
+			mkdir($target_dir);
+		}
+
+		if (!file_exists($target_dir))
+		{
+			throw new RuntimeException('Error while trying to create the dropbox folder.', 500);
+		}
+
+		do
+		{
+			$target_file = $target_dir . rand(1000, 90000) . '.' . $ext;
+		} while (file_exists($target_file));
+
+		if(!move_uploaded_file($file['tmp_name'], $target_file))
+		{
+			throw new RuntimeException('Error while trying to move the file to the dropbox folder. File ' . $file['name'] . ' not uploaded to ' . $target_file . '.', 500);
+		}
+
+		$did      = $this->m_settings->moveUploadedFileToDropbox(pathinfo($target_file, PATHINFO_BASENAME), $filename, $ext, $campaign_category, filesize($target_file));
+		$response = $m_campaign->getDropfileDocument($did);
+
+		return EmundusResponse::ok($response);
 	}
 
-	public function getemundusparams()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getemundusparams(): EmundusResponse
 	{
-		$params = ['emundus' => [], 'joomla' => [], 'msg' => JText::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$params        = $this->m_settings->getEmundusParams();
-			$params['msg'] = JText::_('SUCCESS');
-		}
-
-		echo json_encode($params);
-		exit;
+		return EmundusResponse::ok($this->m_settings->getEmundusParams());
 	}
 
 	public function updateemundusparam()
@@ -1955,7 +1846,7 @@ class EmundusControllersettings extends BaseController
 	{
 		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
 		{
 			$extension    = $this->input->getString('extension', '');
 			$only_pending = $this->input->getString('only_pending', false);
@@ -1988,240 +1879,139 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function updatehistorystatus()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::ADMINISTRATOR)]
+	public function updatehistorystatus(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id))
+		$action_log_id     = $this->input->getInt('id', 0);
+		$action_log_status = $this->input->getString('status', 'done');
+		if(empty($action_log_id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$action_log_id     = $this->input->getInt('id', 0);
-			$action_log_status = $this->input->getString('status', 'done');
-
-			if (!empty($action_log_id))
-			{
-				$response['status'] = $this->m_settings->updateHistoryStatus($action_log_id, $action_log_status);
-				if ($response['status'])
-				{
-					$response['code']    = 200;
-					$response['message'] = Text::_('STATUS_UPDATED');
-				}
-			}
+			throw new InvalidArgumentException('Action log ID is required');
 		}
 
-		echo json_encode((object) $response);
-		exit;
-	}
-
-	public function getapplicants()
-	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if(!$this->m_settings->updateHistoryStatus($action_log_id, $action_log_status))
 		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-			$properties   = $this->input->getString('properties', '');
-
-			if (!empty($properties))
-			{
-				$properties = explode(',', $properties);
-			}
-
-			$event_id             = $properties[0] ?? null;
-			$applicantsExceptions = isset($properties[1]) ? [$properties[1]] : [];
-
-			$applicants = $this->m_settings->getApplicants($search_query, $limit, $event_id, $applicantsExceptions);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('APPLICANTS_FOUND');
-			$response['data']    = $applicants;
+			throw new RuntimeException('Failed to update history status');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		return EmundusResponse::ok([], Text::_('STATUS_UPDATED'));
 	}
 
-	public function getavailablemanagers()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getapplicants(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
+		$properties   = $this->input->getString('properties', '');
+		if (!empty($properties))
 		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-
-			$managers = $this->m_settings->getAvailableManagers($search_query, $limit);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('MANAGERS_FOUND');
-			$response['data']    = $managers;
+			$properties = explode(',', $properties);
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$event_id             = $properties[0] ?? null;
+		$applicantsExceptions = isset($properties[1]) ? [$properties[1]] : [];
+
+		$applicants = $this->m_settings->getApplicants($search_query, $limit, $event_id, $applicantsExceptions);
+		return EmundusResponse::ok($applicants, Text::_('APPLICANTS_FOUND'));
 	}
 
-	public function getavailablegroups()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getavailablemanagers(): EmundusResponse
+	{
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
+
+		$managers = $this->m_settings->getAvailableManagers($search_query, $limit);
+		return EmundusResponse::ok($managers, Text::_('MANAGERS_FOUND'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getavailablegroups(): EmundusResponse
 	{
 		$this->checkToken();
 
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-
-			$profiles = $this->m_settings->getAvailableGroups($search_query, $limit);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('PROFILES_FOUND');
-			$response['data']    = $profiles;
-		}
-
-		echo json_encode((object) $response);
-		exit;
+		$profiles = $this->m_settings->getAvailableGroups($search_query, $limit);
+		return EmundusResponse::ok($profiles, Text::_('GROUPS_FOUND'));
 	}
 
-	public function getavailablecampaigns()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getavailablecampaigns(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$emundusUserRepository = new EmundusUserRepository();
+
+		$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
+		if(empty($userPrograms))
 		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-
-			$campaigns = $this->m_settings->getAvailableCampaigns($search_query, $limit);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('CAMPAIGNS_FOUND');
-			$response['data']    = $campaigns;
+			throw new RuntimeException('User has no program assigned');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$campaigns = $this->m_settings->getAvailableCampaigns($search_query, $limit, $userPrograms);
+		return EmundusResponse::ok($campaigns, Text::_('CAMPAIGNS_FOUND'));
 	}
 
-	public function getavailableprograms()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getavailableprograms(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$emundusUserRepository = new EmundusUserRepository();
+
+		$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
+		if(empty($userPrograms))
 		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-
-			$programs = $this->m_settings->getAvailablePrograms($search_query, $limit);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('PROGRAMS_FOUND');
-			$response['data']    = $programs;
+			throw new RuntimeException('User has no program assigned');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$programs = $this->m_settings->getAvailablePrograms($search_query, $limit, $userPrograms);
+		return EmundusResponse::ok($programs, Text::_('PROGRAMS_FOUND'));
 	}
 
-	public function getavailableprofiles(): void
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getavailableprofiles(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-
-			$profiles = $this->m_settings->getAvailableProfiles($search_query, $limit);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('PROFILES_FOUND');
-			$response['data']    = $profiles;
-		}
-
-		echo json_encode((object) $response);
-		exit;
+		$profiles = $this->m_settings->getAvailableProfiles($search_query, $limit);
+		return EmundusResponse::ok($profiles, Text::_('PROFILES_FOUND'));
 	}
 
-	public function getevents()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getevents(): EmundusResponse
 	{
-		$response = [
-			'status'  => false,
-			'message' => Text::_('COM_EMUNDUS_ONBOARD_ACCESS_DENIED'),
-			'data'    => []
-		];
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
 
-		if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
-		{
-			header('HTTP/1.1 403 Forbidden');
-		}
-		else
-		{
-			$search_query = $this->input->getString('search_query', '');
-			$limit        = $this->input->getInt('limit', 100);
-
-			$events = $this->m_settings->getEvents($search_query, $limit);
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('EVENTS_FOUND');
-			$response['data']    = $events;
-		}
-
-		echo json_encode($response);
-		exit();
+		$events = $this->m_settings->getEvents($search_query, $limit);
+		return EmundusResponse::ok($events, Text::_('EVENTS_FOUND'));
 	}
 
-
-	public function getapps()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getapps(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$apps = $this->m_settings->getApps();
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('APPS_FOUND');
-			$response['data']    = $apps;
-		}
-
-		echo json_encode((object) $response);
-		exit;
+		$apps = $this->m_settings->getApps();
+		return EmundusResponse::ok($apps, Text::_('APPLICATIONS_FOUND'));
 	}
 
-	public function getapp()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getapp(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => null];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$app_id   = $this->input->getInt('app_id', 0);
+		$app_type = $this->input->getString('app_type', '');
+		if(empty($app_id) && empty($app_type))
 		{
-			$app_id   = $this->input->getInt('app_id', 0);
-			$app_type = $this->input->getString('app_type', '');
-
-			if (!empty($app_id) || !empty($app_type))
-			{
-				$app = $this->m_settings->getApp($app_id, $app_type);
-
-				$response['status']  = true;
-				$response['code']    = 200;
-				$response['message'] = Text::_('APP_FOUND');
-				$response['data']    = $app;
-			}
+			throw new InvalidArgumentException('App ID or App Type is required');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		$app = $this->m_settings->getApp($app_id, $app_type);
+		return EmundusResponse::ok($app, Text::_('APP_FOUND'));
 	}
 
 	public function setupapp()
@@ -2337,26 +2127,35 @@ class EmundusControllersettings extends BaseController
 							break;
 
 						case 'docusign':
-							try {
+							try
+							{
 								$docusignSynchronizer = new DocuSignSynchronizer();
-							} catch (Exception $e) {
+							}
+							catch (Exception $e)
+							{
 								$response['status'] = false;
 								break;
 							}
 							break;
 
 						case 'docusign':
-							try {
+							try
+							{
 								$docusignSynchronizer = new DocuSignSynchronizer();
-							} catch (Exception $e) {
+							}
+							catch (Exception $e)
+							{
 								$response['status'] = false;
 								break;
 							}
 							break;
 						case 'docaposte':
-							try {
+							try
+							{
 								$docaposteSynchronizer = new DocaposteSynchronizer();
-							} catch (Exception $e) {
+							}
+							catch (Exception $e)
+							{
 								$response['status'] = false;
 								break;
 							}
@@ -2392,77 +2191,48 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function disableapp()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function disableapp(): EmundusResponse
 	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$app_id  = $this->input->getInt('app_id', 0);
+		$enabled = $this->input->getInt('enabled', 1);
+		if(empty($app_id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$app_id  = $this->input->getInt('app_id', 0);
-			$enabled = $this->input->getInt('enabled', 1);
-
-			if (!empty($app_id))
-			{
-				$response['status'] = $this->m_settings->toggleEnable($app_id, $enabled);
-				if ($response['status'])
-				{
-					$response['code']    = 200;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
-				}
-			}
+			throw new InvalidArgumentException('App ID is required');
 		}
 
-		echo json_encode((object) $response);
-		exit;
-	}
-
-	public function historyretryevent()
-	{
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if(!$this->m_settings->toggleEnable($app_id, $enabled))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-
-			$action_log_row_id = $this->input->getInt('action_log_row_id', 0);
-
-			if (!empty($action_log_row_id))
-			{
-				$response['status'] = $this->m_settings->historyRetryEvent($action_log_row_id);
-				if ($response['status'])
-				{
-					$response['code']    = 200;
-					$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_DISABLED');
-				}
-			}
+			throw new RuntimeException('Failed to update app status');
 		}
 
-		echo json_encode((object) $response);
-		exit;
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_APP_STATUS_UPDATED'));
 	}
 
-	public function getaddons()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function historyretryevent(): EmundusResponse
+	{
+		$action_log_row_id = $this->input->getInt('action_log_row_id', 0);
+		if(empty($action_log_row_id))
+		{
+			throw new InvalidArgumentException('Action log row ID is required');
+		}
+
+		if(!$this->m_settings->historyRetryEvent($action_log_row_id))
+		{
+			throw new RuntimeException('Failed to retry event');
+		}
+
+		return EmundusResponse::ok([], Text::_('EVENT_RETRY_SUCCESS'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getaddons(): EmundusResponse
 	{
 		$this->checkToken('get');
 
-		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403, 'data' => []];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$addons = $this->m_settings->getAddons();
-
-			$response['status']  = true;
-			$response['code']    = 200;
-			$response['message'] = Text::_('ADDONS_FOUND');
-			$response['data']    = $addons;
-		}
-
-		echo json_encode((object) $response);
-		exit;
+		$addons = $this->m_settings->getAddons();
+		return EmundusResponse::ok($addons, Text::_('ADDONS_FOUND'));
 	}
 
 	public function saveaddon()
@@ -2506,44 +2276,50 @@ class EmundusControllersettings extends BaseController
 		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
 			$this->sendJsonResponse($response);
+
 			return;
 		}
 
 		$addon_type = $this->input->getString('addon_type', 0);
 		$enabled    = $this->input->getInt('enabled', 1);
 
-		if(empty($addon_type))
+		if (empty($addon_type))
 		{
 			$response['message'] = Text::_('MUST_SELECT_ADDON_TYPE');
 			$response['code']    = 400;
 
 			$this->sendJsonResponse($response);
+
 			return;
 		}
 
-		if(!class_exists('AddonRepository'))
+		if (!class_exists('AddonRepository'))
 		{
 			require_once JPATH_ROOT . '/components/com_emundus/classes/Repositories/Addons/AddonRepository.php';
 		}
 		$addonRepository = new AddonRepository();
-		$addon = $addonRepository->getByName($addon_type);
+		$addon           = $addonRepository->getByName($addon_type);
 
-		if(empty($addon))
+		if (empty($addon))
 		{
 			$response['message'] = Text::_('ADDON_NOT_FOUND');
 			$response['code']    = 404;
 
 			$this->sendJsonResponse($response);
+
 			return;
 		}
 
 		// Check if we have a handler for this addon (name must be the same as the factory class)
-		try {
+		try
+		{
 			$resolver = new AddonHandlerResolver();
 
-			$handler = $resolver->resolve($addon_type, $addon);
+			$handler            = $resolver->resolve($addon_type, $addon);
 			$response['status'] = $handler->toggle($enabled);
-		} catch (RuntimeException $e) {
+		}
+		catch (RuntimeException $e)
+		{
 			$response['status'] = $this->m_settings->toggleAddon($addon_type, $enabled);
 		}
 
@@ -2612,56 +2388,30 @@ class EmundusControllersettings extends BaseController
 		exit;
 	}
 
-	public function checkaddonstatus(): void
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function checkaddonstatus(): EmundusResponse
 	{
 		$this->checkToken('get');
 
-		$response = ['code' => 400, 'status' => false, 'message' => '', 'data' => []];
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$addon = $this->input->getString('addon_type');
+		if (empty($addon))
 		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
-
-			return;
+			throw new InvalidArgumentException(Text::_('MUST_SELECT_ADDON_TYPE'), EmundusResponse::HTTP_BAD_REQUEST);
 		}
 
-		$addon = $this->input->getString('addon_type');
+		$addonRepository = new AddonRepository();
+		$addon           = $addonRepository->getByName($addon);
 
 		if (empty($addon))
 		{
-			$response['code']    = 400;
-			$response['message'] = 'Addon type is required.';
-			$this->sendJsonResponse($response);
-
-			return;
+			throw new NotFoundException(Text::_('ADDON_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 		}
 
-		try
-		{
-			$addon_status = $this->m_settings->getAddonStatus($addon);
+		$addonStatus['enabled']   = $addon->getValue()->isEnabled();
+		$addonStatus['displayed'] = $addon->getValue()->isDisplayed();
+		$addonStatus['params']    = $addon->getValue()->getParams();
 
-			if ($addon_status)
-			{
-				$response['code']    = 200;
-				$response['status']  = true;
-				$response['message'] = 'Addon status retrieved successfully.';
-				$response['data']    = $addon_status;
-			}
-			else
-			{
-				$response['code']    = 404;
-				$response['message'] = 'Addon not found.';
-			}
-		}
-		catch (Exception $e)
-		{
-			$response['code']    = 500;
-			$response['message'] = 'An error occurred while retrieving the addon status: ' . $e->getMessage();
-		}
-
-		$this->sendJsonResponse($response);
+		return EmundusResponse::ok($addonStatus);
 	}
 
 	public function getfileinfosfromuploadid(): void
@@ -2740,7 +2490,7 @@ class EmundusControllersettings extends BaseController
 				$parameters = $this->m_settings->get2faparameters();
 				if (!empty($parameters))
 				{
-					$profiles  = $parameters['2faForceForProfiles'];
+					$profiles  = $parameters['2faForceForProfiles'] ?? [];
 					$profiles  = array_filter($profiles);
 					$mfaForSso = $parameters['2faforSSO'] ?? 0;
 				}
@@ -3203,7 +2953,7 @@ class EmundusControllersettings extends BaseController
 		{
 			if (!EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$alias = $this->input->getString('id', 0);
@@ -3212,23 +2962,24 @@ class EmundusControllersettings extends BaseController
 				$aliases = $this->input->getString('ids');
 				$aliases = explode(',', $aliases);
 			}
-			else {
+			else
+			{
 				$aliases = [$alias];
 			}
 
 			if (empty($aliases))
 			{
-				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ALIAS_DELETE_NO_ID'), Response::HTTP_BAD_REQUEST);
+				throw new InvalidArgumentException(Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ALIAS_DELETE_NO_ID'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$fabrikRepository = new FabrikRepository();
-			$deleted = $fabrikRepository->deleteAliases($aliases);
+			$deleted          = $fabrikRepository->deleteAliases($aliases);
 
-			$response = Response::ok($deleted, Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ALIAS_DELETED'));
+			$response = EmundusResponse::ok($deleted, Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ALIAS_DELETED'));
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -3245,9 +2996,9 @@ class EmundusControllersettings extends BaseController
 			$recherche = $this->input->getString('recherche', '');
 			$lim       = $this->input->getInt('lim', 0);
 			$page      = $this->input->getInt('page', 0);
-			$formtype   = $this->input->getString('formtype', 'all');
-			$campaign = $this->input->getInt('campaign', 0);
-			$step = $this->input->getInt('step', 0);
+			$formtype  = $this->input->getString('formtype', 'all');
+			$campaign  = $this->input->getInt('campaign', 0);
+			$step      = $this->input->getInt('step', 0);
 
 			$response['code']    = 200;
 			$response['status']  = true;
@@ -3278,7 +3029,7 @@ class EmundusControllersettings extends BaseController
 					$path = [
 						[
 							'key'     => $tag->element_name,
-							'value'   => $path_value . '<strong>'.$tag->element_label.'</strong>',
+							'value'   => $path_value . '<strong>' . $tag->element_label . '</strong>',
 							'classes' => 'tw-flex tw-flex-row tw-items-center tw-gap-2 tw-text-base tw-rounded-coordinator tw-px-2 tw-py-1 tw-font-medium tw-text-sm tw-bg-neutral-300'
 						]
 					];
@@ -3292,7 +3043,7 @@ class EmundusControllersettings extends BaseController
 						],
 						[
 							'key'     => Text::_('COM_EMUNDUS_TAG_PLUGIN'),
-							'value'  => $tag->plugin_label,
+							'value'   => $tag->plugin_label,
 							'display' => 'table'
 						]
 					];
@@ -3337,7 +3088,7 @@ class EmundusControllersettings extends BaseController
 					$tag->additional_columns = [
 						[
 							'key'     => Text::_('COM_EMUNDUS_TAG_DESCRIPTION'),
-							'value'  => Text::_($tag->description),
+							'value'   => Text::_($tag->description),
 							'display' => 'table'
 						]
 					];
@@ -3365,8 +3116,8 @@ class EmundusControllersettings extends BaseController
 			{
 				require_once(JPATH_ROOT . '/components/com_emundus/models/campaign.php');
 			}
-			$m_campaigns             = new EmundusModelCampaign();
-			$campaigns = $m_campaigns->getAssociatedCampaigns('', 'DESC', '', 0);
+			$m_campaigns = new EmundusModelCampaign();
+			$campaigns   = $m_campaigns->getAssociatedCampaigns('', 'DESC', '', 0);
 
 			$campaigns_filters = [];
 			foreach ($campaigns['datas'] as $campaign)
@@ -3401,10 +3152,10 @@ class EmundusControllersettings extends BaseController
 			{
 				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			}
-			$m_workflow             = new EmundusModelWorkflow();
+			$m_workflow = new EmundusModelWorkflow();
 
 			$steps = [];
-			if(!empty($campaign))
+			if (!empty($campaign))
 			{
 				$steps = $m_workflow->getCampaignSteps($campaign);
 			}
@@ -3412,14 +3163,14 @@ class EmundusControllersettings extends BaseController
 			$steps_filters = [];
 			foreach ($steps as $step)
 			{
-				if(!empty($formtype) && $formtype !== 'all')
+				if (!empty($formtype) && $formtype !== 'all')
 				{
-					if($formtype === 'applicant' && empty($step->profile_id))
+					if ($formtype === 'applicant' && empty($step->profile_id))
 					{
 						continue;
 					}
 
-					if($formtype === 'management' && empty($step->form_id))
+					if ($formtype === 'management' && empty($step->form_id))
 					{
 						continue;
 					}
@@ -3451,18 +3202,18 @@ class EmundusControllersettings extends BaseController
 			$lang = $lang->getTag();
 			$lang = substr($lang, 0, 2);
 
-			if(!class_exists('CountryRepository'))
+			if (!class_exists('CountryRepository'))
 			{
 				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/CountryRepository.php';
 			}
 			$countryRepository = new CountryRepository();
 			$countries         = $countryRepository->getAllCountries();
-			$data = [];
-			foreach($countries as $country)
+			$data              = [];
+			foreach ($countries as $country)
 			{
 				// If we found a label_xx property for the current language, we use it
 				$label = $country->label_fr;
-				if(property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
+				if (property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
 				{
 					$label = $country->{'label_' . $lang};
 				}
@@ -3491,19 +3242,19 @@ class EmundusControllersettings extends BaseController
 			$lang = $lang->getTag();
 			$lang = substr($lang, 0, 2);
 
-			if(!class_exists('CountryRepository'))
+			if (!class_exists('CountryRepository'))
 			{
 				require_once JPATH_SITE . '/components/com_emundus/classes/Repositories/CountryRepository.php';
 			}
 			$countryRepository = new CountryRepository();
 			$countries         = $countryRepository->getAllCountries();
-			$data = [];
-			$data[] = ['value' => 'no_nationality', 'label' => Text::_('COM_EMUNDUS_ONBOARD_CONTACT_FILTER_NO_NATIONALITY')];
-			foreach($countries as $country)
+			$data              = [];
+			$data[]            = ['value' => 'no_nationality', 'label' => Text::_('COM_EMUNDUS_ONBOARD_CONTACT_FILTER_NO_NATIONALITY')];
+			foreach ($countries as $country)
 			{
 				// If we found a label_xx property for the current language, we use it
 				$label = $country->label_fr;
-				if(property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
+				if (property_exists($country, 'label_' . $lang) && !empty($country->{'label_' . $lang}))
 				{
 					$label = $country->{'label_' . $lang};
 				}
@@ -3540,10 +3291,10 @@ class EmundusControllersettings extends BaseController
 				't.id',
 				true
 			);
-			$data = [];
-			foreach($organizations['datas'] as $organization)
+			$data                   = [];
+			foreach ($organizations['datas'] as $organization)
 			{
-				if(!$organization instanceof OrganizationEntity)
+				if (!$organization instanceof OrganizationEntity)
 				{
 					continue;
 				}
@@ -3580,10 +3331,10 @@ class EmundusControllersettings extends BaseController
 				't.id',
 				true
 			);
-			$data = [];
-			foreach($contacts['datas'] as $contact)
+			$data              = [];
+			foreach ($contacts['datas'] as $contact)
 			{
-				if(!$contact instanceof ContactEntity)
+				if (!$contact instanceof ContactEntity)
 				{
 					continue;
 				}
@@ -3635,7 +3386,7 @@ class EmundusControllersettings extends BaseController
 			try
 			{
 				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
-				$enabled = $analyticsAddonHandler->checkEnabled();
+				$enabled               = $analyticsAddonHandler->checkEnabled();
 
 				$response['status']  = true;
 				$response['code']    = 200;
@@ -3667,7 +3418,7 @@ class EmundusControllersettings extends BaseController
 				$enabled = filter_var($enabled, FILTER_VALIDATE_BOOLEAN);
 
 				$analyticsAddonHandler = new EmundusAnalyticsAddonHandler();
-				$enabled = $analyticsAddonHandler->toggle($enabled);
+				$enabled               = $analyticsAddonHandler->toggle($enabled);
 				if ($enabled)
 				{
 					$response['status']  = true;
@@ -3703,7 +3454,7 @@ class EmundusControllersettings extends BaseController
 			{
 				$period = $this->input->getString('period', 'all_time');
 				$period = PeriodEnum::tryFrom($period);
-				if($period === null)
+				if ($period === null)
 				{
 					$period = PeriodEnum::ALL_TIME;
 				}
@@ -3711,7 +3462,7 @@ class EmundusControllersettings extends BaseController
 				$dates = $period->getPeriodDates();
 
 				$pageAnalyticsRepository = new PageAnalyticsRepository();
-				$pages_visited = $pageAnalyticsRepository->get(0, '', null, $dates['start_date'], $dates['end_date'], null);
+				$pages_visited           = $pageAnalyticsRepository->get(0, '', null, $dates['start_date'], $dates['end_date'], null);
 
 				$response['status']  = true;
 				$response['code']    = 200;

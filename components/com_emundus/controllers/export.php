@@ -41,7 +41,7 @@ use Tchooz\Repositories\Export\ExportRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
 use Tchooz\Repositories\Task\TaskRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Services\Export\Excel\ExcelService;
 use Tchooz\Services\Export\Export;
 use Tchooz\Traits\TraitResponse;
@@ -136,7 +136,7 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$formats       = [];
@@ -150,11 +150,11 @@ class EmundusControllerExport extends BaseController
 				];
 			}
 
-			$response = Response::ok($formats, Text::_('COM_EMUNDUS_EXPORT_FORMATS_RETRIEVED_SUCCESSFULLY'));
+			$response = EmundusResponse::ok($formats, Text::_('COM_EMUNDUS_EXPORT_FORMATS_RETRIEVED_SUCCESSFULLY'));
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -165,7 +165,7 @@ class EmundusControllerExport extends BaseController
 		try {
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$type = $this->input->getString('type', 'applicant');
@@ -351,11 +351,11 @@ class EmundusControllerExport extends BaseController
 			}
 			$elements = array_values($elements);
 
-			$response = Response::ok($elements, Text::_('COM_EMUNDUS_EXPORT_STEPS_RETRIEVED_SUCCESSFULLY'));
+			$response = EmundusResponse::ok($elements, Text::_('COM_EMUNDUS_EXPORT_ELEMENTS_RETRIEVED_SUCCESSFULLY'));
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -417,14 +417,14 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$format = $this->input->getString('format', 'xlsx');
 			$format = ExportFormatEnum::tryFrom($format);
 			if (empty($format))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$fabrikRepository = new FabrikRepository();
@@ -460,11 +460,11 @@ class EmundusControllerExport extends BaseController
 				}
 			}
 
-			$response = Response::ok($data, Text::_('COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_RETRIEVED_SUCCESSFULLY'));
+			$response = EmundusResponse::ok($data, Text::_('COM_EMUNDUS_EXPORT_DEFAULT_SYNTHESIS_RETRIEVED_SUCCESSFULLY'));
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -476,7 +476,7 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$fabrikRepository = new FabrikRepository();
@@ -510,11 +510,11 @@ class EmundusControllerExport extends BaseController
 				}
 			}
 
-			$response = Response::ok($data, Text::_('COM_EMUNDUS_EXPORT_DEFAULT_HEADER_RETRIEVED_SUCCESSFULLY'));
+			$response = EmundusResponse::ok($data, Text::_('COM_EMUNDUS_EXPORT_DEFAULT_HEADER_RETRIEVED_SUCCESSFULLY'));
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -526,7 +526,7 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$currentLang = $this->app->getLanguage()->getTag();
@@ -546,7 +546,7 @@ class EmundusControllerExport extends BaseController
 			$format = ExportFormatEnum::tryFrom($format);
 			if (empty($format))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			if ($format === ExportFormatEnum::XLSX && $exportVersion === 'default')
@@ -554,7 +554,7 @@ class EmundusControllerExport extends BaseController
 				$elts = $this->input->getString('elts', '');
 				if (empty($elts))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_ELEMENTS_SELECTED'), Response::HTTP_BAD_REQUEST);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_ELEMENTS_SELECTED'), EmundusResponse::HTTP_BAD_REQUEST);
 				}
 			}
 			else
@@ -562,7 +562,7 @@ class EmundusControllerExport extends BaseController
 				$elements = $this->input->post->getString('elements', '');
 				if (empty($elements))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_ELEMENTS_SELECTED'), Response::HTTP_BAD_REQUEST);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_ELEMENTS_SELECTED'), EmundusResponse::HTTP_BAD_REQUEST);
 				}
 			}
 
@@ -586,7 +586,7 @@ class EmundusControllerExport extends BaseController
 
 			if(empty($fnums))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$campaign = $this->input->getInt('campaign', 0);
@@ -700,7 +700,7 @@ class EmundusControllerExport extends BaseController
 				);
 				if (!$this->exportRepository->flush($exportEntity))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_EXPORT_RECORD'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_EXPORT_RECORD'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
 			}
 
@@ -722,18 +722,18 @@ class EmundusControllerExport extends BaseController
 					$taskRepository = new TaskRepository();
 					if (!$taskRepository->saveTask($task))
 					{
-						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_SAVE_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 					}
 
 					$exportEntity->setCancelled(true);
 					$exportEntity->setTask($task);
 					if (!$this->exportRepository->flush($exportEntity))
 					{
-						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_EXPORT_WITH_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 					}
 				}
 
-				$response = Response::ok(['task_id' => $exportEntity->getTask()->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
+				$response = EmundusResponse::ok(['task_id' => $exportEntity->getTask()->getId()], Text::_('COM_EMUNDUS_EXPORT_TASK_QUEUED_SUCCESSFULLY'));
 				//
 			}
 			else
@@ -741,18 +741,18 @@ class EmundusControllerExport extends BaseController
 				// Synchronous export
 				if ($exportAction->with($exportEntity)->execute($targets) !== ActionExecutionStatusEnum::COMPLETED)
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
 
 				// Get last export for user
 				$exportResult = $this->exportRepository->getLastExportByUser($this->_user->id);
 
-				$response = Response::ok($exportResult->__serialize(), Text::_('COM_EMUNDUS_EXPORT_COMPLETED_SUCCESSFULLY'));
+				$response = EmundusResponse::ok($exportResult->__serialize(), Text::_('COM_EMUNDUS_EXPORT_COMPLETED_SUCCESSFULLY'));
 			}
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -764,7 +764,7 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$lim    = $this->input->getInt('lim', 0);
@@ -852,14 +852,14 @@ class EmundusControllerExport extends BaseController
 					return $export;
 				}, $exports->getItems());
 
-				$response = Response::ok(
+				$response = EmundusResponse::ok(
 					['datas' => $exportsSerialized, 'count' => $exports->getTotalItems()],
 					Text::_('COM_EMUNDUS_EXPORTS_RETRIEVED_SUCCESSFULLY')
 				);
 			}
 			else
 			{
-				$response = Response::ok(
+				$response = EmundusResponse::ok(
 					['datas' => [], 'count' => 0],
 					Text::_('COM_EMUNDUS_EXPORTS_NO_EXPORTS_FOUND')
 				);
@@ -867,7 +867,7 @@ class EmundusControllerExport extends BaseController
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -883,20 +883,20 @@ class EmundusControllerExport extends BaseController
 			$export = $this->exportRepository->getById($id);
 			if (empty($export))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 			}
 
 			// Check if user has access to download this export
 			if ($export->getCreatedBy() !== $this->_user->id && !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			// Update hits
 			$export->setHits($export->getHits() + 1);
 			if (!$this->exportRepository->flush($export))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_HITS'), Response::HTTP_INTERNAL_SERVER_ERROR);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_UPDATE_HITS'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 			}
 
 			if (str_ends_with($export->getFilename(), '.json'))
@@ -907,14 +907,14 @@ class EmundusControllerExport extends BaseController
 				$data = json_decode(file_get_contents($jsonFilePath), true);
 				if (empty($data) || !is_array($data))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_READ_JSON_FILE'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_READ_JSON_FILE'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
 
 				$excelService = new ExcelService();
 				$filePath     = $excelService->fillCsv('tmp/', $data);
 				if (empty($filePath))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_CREATE_CSV_FILE'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_CREATE_CSV_FILE'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
 			}
 			else
@@ -922,14 +922,14 @@ class EmundusControllerExport extends BaseController
 				$filePath = $export->getFilename();
 			}
 
-			$response = Response::ok(
+			$response = EmundusResponse::ok(
 				['download_file' => '/' . $filePath],
 				Text::_('COM_EMUNDUS_EXPORT_RETRIEVED_SUCCESSFULLY')
 			);
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -956,13 +956,13 @@ class EmundusControllerExport extends BaseController
 				$export = $this->exportRepository->getById($id);
 				if (empty($export))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 				}
 
 				// Check if user has access to download this export
 				if ($export->getCreatedBy() !== $this->_user->id && !EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 				{
-					throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+					throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 				}
 
 				// Delete export record and task associated if any
@@ -977,19 +977,24 @@ class EmundusControllerExport extends BaseController
 					$taskRepository = new TaskRepository();
 					if (!$taskRepository->deleteTaskById($task->getId()))
 					{
-						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_ASSOCIATED_TASK'), Response::HTTP_INTERNAL_SERVER_ERROR);
+						throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_ASSOCIATED_TASK'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 					}
+				}
+
+				if (!$this->exportRepository->delete($export->getId()))
+				{
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
 			}
 
-			$response = Response::ok(
+			$response = EmundusResponse::ok(
 				[],
 				Text::_('COM_EMUNDUS_EXPORT_DELETED_SUCCESSFULLY')
 			);
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -1001,19 +1006,19 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$templates = $this->exportRepository->getAllExportTemplates($this->_user->id);
 
-			$response = Response::ok(
+			$response = EmundusResponse::ok(
 				$templates,
 				Text::_('COM_EMUNDUS_EXPORT_TEMPLATES_RETRIEVED_SUCCESSFULLY')
 			);
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -1025,19 +1030,19 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$id = $this->input->getInt('id', 0);
 			if ($id <= 0)
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$exportTemplate = $this->exportRepository->getExportTemplate($id);
 			if (empty($exportTemplate) || $exportTemplate->user !== $this->_user->id)
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 			}
 
 			$fabrikRepository = new FabrikRepository();
@@ -1136,14 +1141,14 @@ class EmundusControllerExport extends BaseController
 				}
 			}
 
-			$response = Response::ok(
+			$response = EmundusResponse::ok(
 				$data,
 				Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_RETRIEVED_SUCCESSFULLY')
 			);
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -1155,7 +1160,7 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$id = $this->input->getInt('id', 0);
@@ -1165,7 +1170,7 @@ class EmundusControllerExport extends BaseController
 				$exportTemplate = $this->exportRepository->getExportTemplate($id);
 				if (empty($exportTemplate) || $exportTemplate->user !== $this->_user->id)
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 				}
 			}
 
@@ -1175,13 +1180,13 @@ class EmundusControllerExport extends BaseController
 			$format = $this->input->getString('format', '');
 			if (empty($name) || empty($format))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$format = ExportFormatEnum::tryFrom($format);
 			if (empty($format))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_FORMAT'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$elements    = $this->input->getString('elements', '');
@@ -1195,14 +1200,14 @@ class EmundusControllerExport extends BaseController
 
 			$saved = $this->exportRepository->saveExportTemplate($name, $format, $elements, $headers, $synthesis, $attachments, $this->_user->id, $id);
 
-			$response = Response::ok(
+			$response = EmundusResponse::ok(
 				$saved,
 				Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_SAVED_SUCCESSFULLY')
 			);
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);
@@ -1214,31 +1219,31 @@ class EmundusControllerExport extends BaseController
 		{
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$id = $this->input->getInt('id', 0);
 			if ($id <= 0)
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_INVALID_PARAMETERS'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$exportTemplate = $this->exportRepository->getExportTemplate($id);
 			if (empty($exportTemplate) || $exportTemplate->user !== $this->_user->id)
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), Response::HTTP_NOT_FOUND);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_NOT_FOUND'), EmundusResponse::HTTP_NOT_FOUND);
 			}
 
 			$this->exportRepository->deleteExportTemplate($id);
 
-			$response = Response::ok(
+			$response = EmundusResponse::ok(
 				[],
 				Text::_('COM_EMUNDUS_EXPORT_TEMPLATE_DELETED_SUCCESSFULLY')
 			);
 		}
 		catch (Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 		$this->sendJsonResponse($response);

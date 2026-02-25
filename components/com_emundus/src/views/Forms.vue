@@ -1,6 +1,6 @@
 <template>
 	<div id="forms-list">
-		<list :default-lists="configString" :default-type="'forms'"></list>
+		<list :default-lists="configString" :default-type="'forms'" :crud="crud"></list>
 	</div>
 </template>
 
@@ -9,6 +9,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Forms',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
@@ -31,6 +37,7 @@ export default {
 									controller: 'form',
 									method: 'post',
 									name: 'duplicate',
+									acl: 'form|c',
 								},
 								{
 									action: 'unpublishform',
@@ -44,6 +51,7 @@ export default {
 										operator: '=',
 										value: '1',
 									},
+									acl: 'form|u',
 								},
 								{
 									action: 'publishform',
@@ -56,6 +64,7 @@ export default {
 										operator: '=',
 										value: '0',
 									},
+									acl: 'form|u',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&profile=applicant_%id%',
@@ -63,12 +72,21 @@ export default {
 									controller: 'form',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'form|u',
 								},
 								{
 									action: 'createform',
 									controller: 'form',
 									label: 'COM_EMUNDUS_ONBOARD_ADD_FORM',
 									name: 'add',
+									acl: 'form|c',
+								},
+								{
+									action:
+										'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&profile=applicant_%id%&readonly=1',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'redirect',
+									name: 'show',
 								},
 							],
 							filters: [
@@ -105,6 +123,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_EVAL_FORM',
 									controller: 'form',
 									name: 'add',
+									acl: 'form|c',
 								},
 								{
 									action:
@@ -113,6 +132,7 @@ export default {
 									controller: 'form',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'form|u',
 								},
 								{
 									action: 'publishFabrikForm',
@@ -126,6 +146,7 @@ export default {
 										value: '0',
 									},
 									multiple: true,
+									acl: 'form|u',
 								},
 								{
 									action: 'unpublishFabrikForm',
@@ -140,6 +161,7 @@ export default {
 										value: '1',
 									},
 									multiple: true,
+									acl: 'form|u',
 								},
 								{
 									action: 'duplicateFabrikForm',
@@ -147,6 +169,14 @@ export default {
 									controller: 'form',
 									method: 'post',
 									name: 'duplicate',
+									acl: 'form|c',
+								},
+								{
+									action:
+										'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%id%&mode=eval&profile=evaluation_%id%&readonly=1',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'redirect',
+									name: 'show',
 								},
 							],
 							filters: [
@@ -184,6 +214,7 @@ export default {
 									controller: 'formbuilder',
 									name: 'delete',
 									method: 'delete',
+									acl: 'form|d',
 								},
 								{
 									action: '\/index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models',
@@ -191,6 +222,14 @@ export default {
 									controller: 'form',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'form|u',
+								},
+								{
+									action:
+										'index.php?option=com_emundus&view=form&layout=formbuilder&prid=%form_id%&mode=models&readonly=1',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'redirect',
+									name: 'show',
 								},
 							],
 							filters: [],

@@ -127,6 +127,7 @@ export default {
 				<li
 					v-for="tab in tabs"
 					:key="tab.key"
+					v-show="tab.display"
 					class="tw-cursor-pointer tw-font-normal"
 					:class="{
 						'em-light-tabs em-light-selected-tab': currentTabKey === tab.key,

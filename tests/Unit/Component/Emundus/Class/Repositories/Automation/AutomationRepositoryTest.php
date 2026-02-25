@@ -28,7 +28,7 @@ class AutomationRepositoryTest extends UnitTestCase
 
 
 	/**
-	 * @covers AutomationRepository::flush
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::flush
 	 * @return void
 	 */
 	public function testSave()
@@ -53,7 +53,7 @@ class AutomationRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AutomationRepository::flush
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::flush
 	 * @return void
 	 */
 	public function testUpdate()
@@ -103,7 +103,7 @@ class AutomationRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AutomationRepository::delete
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::delete
 	 * @return void
 	 */
 	public function testDelete()
@@ -129,7 +129,7 @@ class AutomationRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AutomationRepository::getById
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::getById
 	 * @return void
 	 */
 	public function testGetAutomationById()
@@ -167,7 +167,7 @@ class AutomationRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AutomationRepository::getAutomationByEventName
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::getAutomationsByEventName
 	 * @return void
 	 */
 	public function testGetAutomationByEventName(): void

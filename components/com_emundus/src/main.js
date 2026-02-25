@@ -103,7 +103,6 @@ if (document) {
 				const componentNames = [
 					'Attachments',
 					'Comments',
-					'Workflows/WorkflowEdit',
 					'Program/ProgramEdit',
 					'History',
 					'Expert/Expert',
@@ -166,11 +165,6 @@ if (document) {
 							border: datas.border ? datas.border == 1 : true,
 						});
 						break;
-					case 'Workflows/WorkflowEdit':
-						app = createApp(WorkflowEdit, {
-							workflowId: Number(datas.workflowid),
-						});
-						break;
 					case 'SMS/SMSEdit':
 						app = createApp(SMSEdit, {
 							id: Number(datas.smsid),
@@ -191,6 +185,7 @@ if (document) {
 					case 'Program/ProgramEdit':
 						app = createApp(ProgramEdit, {
 							programId: Number(datas.program_id),
+							crud: JSON.parse(datas.crud),
 						});
 						break;
 					case 'History':

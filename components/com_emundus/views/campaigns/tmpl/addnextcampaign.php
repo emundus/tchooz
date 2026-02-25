@@ -13,6 +13,7 @@ defined('_JEXEC') or die('Restricted Access');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 Text::script('COM_EMUNDUS_ONBOARD_FROM');
 Text::script('COM_EMUNDUS_ONBOARD_ACTIONS_REQUIRED');
@@ -274,19 +275,32 @@ Text::script('COM_EMUNDUS_CAMPAIGNS_MORE_INFO');
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARENT');
 Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_PARENT');
 
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC_NEW');
+
 $app = Factory::getApplication();
 
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$workflowAction   = $actionRepository->getByName('workflow');
+$formAction       = $actionRepository->getByName('form');
+$data['crud']     = [
+    'workflow' => [
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($workflowAction->getId(), 'r', $user->id),
+    ],
+    'form'     => [
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'r', $user->id),
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'c', $user->id),
+    ]
+];
 ?>
 
 <div id="em-component-vue"
      component="CampaignEdition"
      campaignId="<?= $app->input->get('cid') ?>"
-     shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>"
-     defaultLang="<?= $data['default_lang'] ?>"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
      index="<?= $app->input->get('index') ?>"
      tabs="<?= $this->tabs_to_display ?>"
 ></div>

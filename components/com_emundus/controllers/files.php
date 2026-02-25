@@ -21,8 +21,12 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
+use Tchooz\Enums\AccessLevelEnum;
 use \Tchooz\Traits\TraitResponse;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Controller\EmundusController;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
@@ -40,23 +44,11 @@ jimport('joomla.user.helper');
 /**
  * Class EmundusControllerFiles
  */
-class EmundusControllerFiles extends BaseController
+class EmundusControllerFiles extends EmundusController
 {
-	protected $app;
-
 	private $_user;
 	private $_db;
 
-	use TraitResponse;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -73,7 +65,6 @@ class EmundusControllerFiles extends BaseController
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
-		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
 		$this->_db = Factory::getContainer()->get('DatabaseDriver');
 	}
@@ -4721,21 +4712,11 @@ class EmundusControllerFiles extends BaseController
 		exit;
 	}
 
-	public function getProfiles()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getProfiles(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
-		$user = $this->app->getIdentity();
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$m_files = new EmundusModelFiles();
-			$response['data'] = array_values($m_files->getProfiles());
-
-			$response['status'] = true;
-			$response['msg'] = Text::_('SUCCESS');
-		}
-
-		echo json_encode($response);
-		exit;
+		$m_files = new EmundusModelFiles();
+		return EmundusResponse::ok(array_values($m_files->getProfiles()));
 	}
 
 	private function isEvaluationMenu(int $menu_id): bool

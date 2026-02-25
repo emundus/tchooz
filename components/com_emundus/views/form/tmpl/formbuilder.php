@@ -15,6 +15,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 $app  = Factory::getApplication();
 $user = $app->getIdentity();
@@ -631,6 +632,17 @@ $condition_builder = ComponentHelper::getParams('com_emundus')->get('condition_b
 JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$formAction   = $actionRepository->getByName('form');
+
+$data['crud'] = [
+    'form' => [
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'u', $user->id),
+    ]
+];
 ?>
 
 <div id="em-component-vue"
@@ -638,6 +650,7 @@ $data = LayoutFactory::prepareVueData();
      prid="<?= Factory::getApplication()->input->get('prid') ?>"
      index="<?= Factory::getApplication()->input->get('index') ?>"
      cid="<?= Factory::getApplication()->input->get('cid') ?>"
+     readonly="<?= Factory::getApplication()->input->get('readonly') ?>"
      shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
      manyLanguages="<?= $data['many_languages'] ?>"
      defaultLang="<?= $data['default_lang'] ?>"
@@ -645,6 +658,7 @@ $data = LayoutFactory::prepareVueData();
      sysadminAccess="<?= $data['sysadmin_access'] ?>"
      settingsMenuAlias="<?= $settings_menu_alias ?>"
      enableConditionBuilder="<?= $condition_builder ?>"
+     crud="<?= htmlspecialchars(json_encode($data['crud']), ENT_QUOTES, 'UTF-8'); ?>"
     <?php if (!empty($mode)) : ?>
         mode="<?= $mode ?>"
     <?php endif; ?>

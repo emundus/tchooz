@@ -26,7 +26,7 @@ use Joomla\Component\Users\Administrator\Model\MethodsModel;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Services\UploadService;
 use Tchooz\Traits\TraitResponse;
 
@@ -570,7 +570,7 @@ class EmundusControllerUsers extends BaseController
 	public function changeblock(): void
 	{
 		$this->checkToken();
-		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
 
 		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id) || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
@@ -620,9 +620,9 @@ class EmundusControllerUsers extends BaseController
 					}
 				}
 
-				$response = new Response(true, $msg, 200);
+				$response = new EmundusResponse(true, $msg, 200);
 			} else {
-				$response = new Response(false, Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500);
+				$response = new EmundusResponse(false, Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500);
 			}
 		}
 

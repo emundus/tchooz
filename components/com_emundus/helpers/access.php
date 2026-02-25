@@ -14,6 +14,7 @@
 
 // no direct access
 use Joomla\CMS\Access\Access;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
@@ -41,9 +42,23 @@ class EmundusHelperAccess
 
 	static function isAllowedAccessLevel($user_id, $current_menu_access)
 	{
+		$accesses = [];
+
+		$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access', 'caching' => true]);
+		$cache_key = 'access_levels_' . $user_id;
+		if($cache->contains($cache_key)) {
+			$accesses = $cache->get($cache_key);
+			if(is_array($accesses) && in_array($current_menu_access, array_keys($accesses))) {
+				return $accesses[$current_menu_access];
+			}
+		}
+
 		$user_access_level = Access::getAuthorisedViewLevels($user_id);
 
-		return in_array($current_menu_access, $user_access_level);
+		$accesses[$current_menu_access] = in_array($current_menu_access, $user_access_level);
+		$cache->store($accesses, $cache_key);
+
+		return $accesses[$current_menu_access];
 	}
 
 	static function asAdministratorAccessLevel($user_id)
@@ -213,6 +228,12 @@ class EmundusHelperAccess
 			}
 			else
 			{
+				$cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access', 'caching' => true]);
+				$cache_key = 'access_action_' . $action_id . '_' . $crud . '_' . (!empty($user_id) ? $user_id : 'current');
+				if($cache->contains($cache_key)) {
+					return $cache->get($cache_key);
+				}
+				
 				if (!empty($user_id)) {
 					$groups = $m_users->getUserGroups($user_id, 'Column');
 				} else
@@ -221,6 +242,7 @@ class EmundusHelperAccess
 				}
 
 				$has_access = EmundusHelperAccess::canAccessGroup($groups, $action_id, $crud);
+				$cache->store($has_access, $cache_key);
 			}
 		}
 

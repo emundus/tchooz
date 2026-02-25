@@ -44,7 +44,9 @@ class LayoutFactory
 		}
 
 		$data['coordinator_access'] = \EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
+		$data['coordinatorAccess'] = $data['coordinator_access'];
 		$data['sysadmin_access']    = \EmundusHelperAccess::isAdministrator($user->id);
+		$data['sysadminAccess']    = $data['sysadmin_access'];
 
 		$data['hash'] = \EmundusHelperCache::getCurrentGitHash();
 

@@ -16,36 +16,20 @@ jimport('joomla.application.component.controller');
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Traits\TraitResponse;
+use Tchooz\Controller\EmundusController;
 
-
-/**
- * eMundus Component Controller
- *
- * @package    Joomla.Tutorials
- * @subpackage Components
- */
-class EmundusControllerGroups extends BaseController
+class EmundusControllerGroups extends EmundusController
 {
-	use TraitResponse;
-
-	protected $app;
-
 	private $_user;
 
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
 
-		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getIdentity();
 	}
 
@@ -383,20 +367,14 @@ class EmundusControllerGroups extends BaseController
 		exit;
 	}
 
-	public function getGroups()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getGroups(): EmundusResponse
 	{
-		$response = array('status' => false, 'msg' => Text::_('ACCESS_DENIED'));
+		require_once(JPATH_ROOT . '/components/com_emundus/models/groups.php');
+		$m_groups = new EmundusModelGroups();
+		$groups = $m_groups->getGroups();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->_user->id)) {
-			require_once(JPATH_ROOT . '/components/com_emundus/models/groups.php');
-			$m_groups = new EmundusModelGroups();
-			$groups = $m_groups->getGroups();
-
-			$response = array('status' => true, 'msg' => Text::_('GROUPS_RETRIEVED'), 'data' => array_values($groups));
-		}
-
-		echo json_encode((object) $response);
-		exit;
+		return EmundusResponse::ok(array_values($groups), Text::_('GROUPS_RETRIEVED'));
 	}
 
 	public function getuserstoshareto()
