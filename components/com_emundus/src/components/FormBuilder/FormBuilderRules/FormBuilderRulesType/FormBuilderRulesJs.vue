@@ -197,6 +197,7 @@ export default {
 								state: condition.state,
 								group_type: condition.group_type,
 								type: condition.type,
+								params: condition.params ? condition.params : {},
 							});
 						} else if (condition.values) {
 							tmp_conditions.push({
@@ -205,6 +206,7 @@ export default {
 								state: condition.state,
 								group_type: condition.group_type,
 								type: condition.type,
+								params: condition.params ? condition.params : {},
 							});
 						}
 					}

@@ -1,5 +1,6 @@
 <?php
 
+
 /**
  * @package     scripts
  * @subpackage
@@ -66,6 +67,20 @@ class Release2_15_0Installer extends ReleaseInstaller
 					$programsList->params = json_encode($params);
 					$this->tasks[]        = $this->db->updateObject('#__fabrik_lists', $programsList, 'id');
 				}
+			}
+
+			$addedColumn = \EmundusHelperUpdate::addColumn('jos_emundus_setup_form_rules_js_conditions', 'params', 'JSON' );
+			$this->tasks[] = $addedColumn['status'];
+			if (!$addedColumn['status'])
+			{
+				$result['message'] .= $addedColumn['message'];
+			}
+
+			$installed = \EmundusHelperUpdate::installExtension('plg_fabrik_element_orderlist', 'orderlist', null, 'plugin', 1, 'fabrik_element');
+			$this->tasks[] = $installed;
+			if (!$installed)
+			{
+				$result['message'] .= 'Failed to install orderlist plugin. ';
 			}
 
 			$result['status'] = !in_array(false, $this->tasks);

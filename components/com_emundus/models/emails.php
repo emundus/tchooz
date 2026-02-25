@@ -1076,8 +1076,6 @@ class EmundusModelEmails extends JModelList
 					if (empty($fabrikValues[$elt['id']])) {
 						$fabrikValues[$elt['id']] = $m_files->getFabrikValue($fnumsArray, $elt['db_table_name'], $elt['name']);
 					}
-
-
 				}
 				else {
 					if ($isDate) {
@@ -1121,6 +1119,33 @@ class EmundusModelEmails extends JModelList
 						}
 
 						$fabrikValues[$elt['id']][$fnum]['val'] = implode(', ', $elm);
+					}
+				}
+
+				if ($elt['plugin'] === \Tchooz\Enums\Fabrik\ElementPluginEnum::ORDERLIST->value)
+				{
+					$params = json_decode($elt['params']);
+
+					foreach ($fabrikValues[$elt['id']] as $fnum => $val) {
+						$elm    = '<ol>';
+
+						if(!empty($val['val']))
+						{
+							$orderedValues = explode(',', $val['val']);
+							$orderedValues = array_map(function($value) {
+								return trim($value, '"');
+							}, $orderedValues);
+
+							foreach ($orderedValues as $orderedValue)
+							{
+								$key   = array_search($orderedValue, $params->sub_options->sub_values);
+								$elm .= '<li>' . (!$raw ? Text::_($params->sub_options->sub_labels[$key]) : $orderedValue) . '</li>';
+							}
+						}
+
+						$elm .= '</ol>';
+
+						$fabrikValues[$elt['id']][$fnum]['val'] = $elm;
 					}
 				}
 

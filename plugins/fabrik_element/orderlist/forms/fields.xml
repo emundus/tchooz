@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<form>
+    <fields name="params">
+        <fieldset name="plg-orderlist"
+                  label="PLG_ELEMENT_ORDERLIST_FILTERS_LABEL">
+            <field name="sub_options"
+                   type="suboptions"
+                   default_max="1"
+                   label="COM_FABRIK_SUBOPTIONS"/>
+        </fieldset>
+    </fields>
+</form>

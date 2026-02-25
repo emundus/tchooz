@@ -115,6 +115,8 @@
 
 			<form-builder-element-checkbox v-else-if="element.plugin === 'checkbox'" type="checkbox" :element="element" />
 
+			<form-builder-element-orderlist v-else-if="element.plugin === 'orderlist'" type="orderlist" :element="element" />
+
 			<form-builder-element-databasejoin
 				v-else-if="element.plugin === 'databasejoin'"
 				type="databasejoin"
@@ -181,9 +183,11 @@ import FormBuilderElementYesno from '@/components/FormBuilder/FormBuilderSection
 import FormBuilderElementPanel from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPanel.vue';
 import FormBuilderElementAction from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementAction.vue';
 import FormBuilderElementFileUpload from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementFileUpload.vue';
+import FormBuilderElementOrderlist from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementOrderlist.vue';
 
 export default {
 	components: {
+		FormBuilderElementOrderlist,
 		FormBuilderElementFileUpload,
 		FormBuilderElementAction,
 		FormBuilderElementPanel,
