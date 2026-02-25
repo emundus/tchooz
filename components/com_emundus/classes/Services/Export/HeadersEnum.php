@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
 use Tchooz\Entities\ApplicationFile\ApplicationFileEntity;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Enums\ValueFormatEnum;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Label\LabelRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 
@@ -44,6 +45,8 @@ enum HeadersEnum: string
 
 	case AVERAGE_SCORE_BY_STEPS = 'average_score_by_steps';
 
+	case APPLICATION_CHOICE_CAMPAIGN = 'application_choice_campaign';
+
 	public function getLabel(): string
 	{
 		return match ($this)
@@ -71,6 +74,7 @@ enum HeadersEnum: string
 			self::PROGRAM_CATEGORY => Text::_('COM_EMUNDUS_PROGRAMME_CATEGORY'),
 
 			self::AVERAGE_SCORE_BY_STEPS => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS'),
+			self::APPLICATION_CHOICE_CAMPAIGN => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
 		};
 	}
 
@@ -198,6 +202,23 @@ enum HeadersEnum: string
 				return $file->getCampaign()->getProgram()->getLabel();
 			case self::PROGRAM_CATEGORY:
 				return $file->getCampaign()->getProgram()->getProgrammes();
+			case self::APPLICATION_CHOICE_CAMPAIGN:
+				if(is_null($file->getApplicationChoices()))
+				{
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$moreFormId                   = $applicationChoicesRepository->getMoreFormId();
+					$choices = $applicationChoicesRepository->getChoicesByFnum($file->getFnum(), [], null, $moreFormId);
+
+					$file->setApplicationChoices($choices);
+				}
+
+				$choicesString = [];
+				foreach($file->getApplicationChoices() as $applicationChoice)
+				{
+					$choicesString[] = $applicationChoice->getCampaign()->getLabel();
+				}
+
+				return !empty($choices) ? implode(', ', $choicesString) : Text::_('COM_EMUNDUS_NO_APPLICATION_CHOICE');
 			default:
 				return null;
 		}

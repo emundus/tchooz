@@ -2339,6 +2339,16 @@ class EmundusControllersettings extends EmundusController
 
 		if ($response['status'])
 		{
+			// clear cache
+			$cache = Factory::getCache('com_menu');
+			$cache->clean('com_menus');
+
+			$cache = Factory::getCache('com_emundus');
+			$cache->clean('com_emundus');
+
+			$cache = Factory::getCache('_system');
+			$cache->clean('_system');
+
 			$response['code']    = 200;
 			$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ADDON_TOGGLED');
 		}

@@ -9,6 +9,9 @@
 
 namespace Tchooz\Repositories\User;
 
+use Joomla\CMS\Cache\CacheController;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
+use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
 use Tchooz\Entities\User\EmundusUserEntity;

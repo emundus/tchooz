@@ -490,15 +490,18 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	 *
 	 * @return array<CampaignEntity>
 	 */
-	public function getChildrenCampaigns(int $parent_id): array
+	public function getChildrenCampaigns(int $parent_id = 0): array
 	{
 		$children_campaigns = [];
 
 		$query = $this->db->getQuery(true);
 		$query->select($this->columns)
 			->from($this->db->quoteName($this->tableName, $this->alias))
-			->where($this->alias . '.parent_id = ' . $this->db->quote($parent_id))
 			->order($this->alias . '.label ASC');
+		if(!empty($parent_id))
+		{
+			$query->where($this->alias . '.parent_id = ' . $this->db->quote($parent_id));
+		}
 		$this->db->setQuery($query);
 		$campaigns = $this->db->loadAssocList();
 

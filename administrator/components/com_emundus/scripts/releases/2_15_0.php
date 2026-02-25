@@ -11,6 +11,7 @@
 namespace scripts;
 
 use scripts\ReleaseInstaller;
+use Joomla\CMS\Component\ComponentHelper;
 use Tchooz\Repositories\Language\LanguageRepository;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Factories\Language\LanguageFactory;
@@ -275,6 +276,20 @@ class Release2_15_0Installer extends ReleaseInstaller
 					], $ms365MenuId)['status'];
 				}
 			}
+
+			$result = \EmundusHelperUpdate::addJoomlaMenu([
+				'menutype' => 'onboardingmenu',
+				'title' => 'Liste des voeux',
+				'alias' => 'application-choices-list',
+				'link' => 'index.php?option=com_emundus&view=application_choices&layout=list',
+				'published' => 0,
+				'type' => 'component',
+				'component_id' => ComponentHelper::getComponent('com_emundus')->id,
+				'params' => [
+					'menu_image_css' => 'format_list_numbered'
+				]
+			], 1, 0);
+			$this->tasks[] = $result['status'];
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}

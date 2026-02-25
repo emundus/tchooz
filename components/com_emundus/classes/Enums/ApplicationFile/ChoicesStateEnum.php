@@ -79,6 +79,23 @@ enum ChoicesStateEnum: int
 		);
 	}
 
+	public function getCssClasses(): string
+	{
+		[$bg, $text] = match ($this)
+		{
+			self::WAITING, self::WAITING_DECISION, self::WAITING_JURY, self::WAITING_LIST => ['tw-bg-yellow-500', 'tw-text-black'],
+			self::DRAFT, self::CALLED, self::BOOKING_SELECTED => ['tw-bg-blue-700', 'tw-text-white'],
+			self::ACCEPTED, self::CONFIRMED, self::CONFIRMED_DEF => ['tw-bg-green-600', 'tw-text-white'],
+			self::REJECTED, self::REJECTED_FOR_APPLICATION, self::RESIGNATION, self::CONFIRMED_REJECTED, self::CHOICE_NOT_OPEN, self::CHOICE_COMPLETED => ['tw-bg-red-600', 'tw-text-white'],
+			self::DISABLED => ['tw-bg-neutral-500', 'tw-text-white'],
+		};
+
+		return sprintf(
+			'tw-text-center tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold %s',
+			$bg . ' ' . $text
+		);
+	}
+
 	public static function isValidState(string $value): ChoicesStateEnum|null
 	{
 		return match (strtolower($value))
