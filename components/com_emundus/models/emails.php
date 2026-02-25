@@ -3000,7 +3000,7 @@ class EmundusModelEmails extends JModelList
 
 			$query = $this->_db->getQuery(true);
 
-			$query->select(['DISTINCT(et.id) AS trigger_id', 'se.subject AS subject', 'ss.step AS status', 'ep.profile_id AS profile', 'et.to_current_user AS candidate', 'et.to_applicant AS manual'])
+			$query->select(['DISTINCT(et.id) AS trigger_id', 'se.subject AS subject', 'ss.step AS status', 'ep.profile_id AS profile', 'et.to_current_user AS candidate', 'et.to_applicant AS '.$this->_db->quoteName('manual')])
 				->from($this->_db->quoteName('#__emundus_setup_emails_trigger_repeat_programme_id', 'etrp'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_trigger', 'et') . ' ON ' . $this->_db->quoteName('etrp.parent_id') . ' = ' . $this->_db->quoteName('et.id'))
 				->leftJoin($this->_db->quoteName('#__emundus_setup_emails', 'se') . ' ON ' . $this->_db->quoteName('et.email_id') . ' = ' . $this->_db->quoteName('se.id'))
