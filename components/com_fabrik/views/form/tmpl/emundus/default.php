@@ -340,7 +340,7 @@ if (empty($fnum))
     $fnum = $app->getSession()->get('emundusUser')->fnum;
 }
 
-if ($this->display_comments)
+if ($this->display_comments && !empty($fnum))
 {
     Text::script('COM_EMUNDUS_COMMENTS_ADD_COMMENT');
     Text::script('COM_EMUNDUS_COMMENTS_ERROR_PLEASE_COMPLETE');
