@@ -178,7 +178,7 @@ export default {
 				.get('getmediasize')
 				.then((response) => {
 					if (response.status) {
-						this.dropzoneOptions.maxFilesize = parseInt(response.size);
+						this.dropzoneOptions.maxFilesize = parseInt(response.data);
 					}
 				})
 				.finally(() => {
@@ -191,7 +191,7 @@ export default {
 			campaignService
 				.get('getdocumentsdropfiles', { cid: this.campaignId })
 				.then((response) => {
-					this.documents = response.documents;
+					this.documents = response.data;
 				})
 				.finally(() => {
 					this.loading = false;
@@ -265,7 +265,9 @@ export default {
 			}
 		},
 		onComplete: function (response) {
-			this.documents.push(JSON.parse(response.xhr.response));
+			let responseJson = JSON.parse(response.xhr.response);
+
+			this.documents.push(responseJson.data);
 			this.$refs.dropzone.removeFile(response);
 		},
 		catchError: function (file, message) {

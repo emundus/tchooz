@@ -11,7 +11,7 @@ use Tchooz\Services\Export\Excel\ExcelService;
 class ExcelServiceTest extends UnitTestCase
 {
 	/**
-	 * @covers ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
 	 * @return void
 	 */
 	public function testExport(): void
@@ -47,7 +47,7 @@ class ExcelServiceTest extends UnitTestCase
 
 	/**
 	 * Assert that the ExcelService can successfully export data using the default export version.
-	 * @covers ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
 	 * @return void
 	 * @throws Exception
 	 */
@@ -86,7 +86,7 @@ class ExcelServiceTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
 	 * @return void
 	 */
 	public function testExportCannotUploadToAnyDirectory(): void
@@ -119,7 +119,7 @@ class ExcelServiceTest extends UnitTestCase
 
 	/**
 	 * Assert that an applicant user cannot use the ExcelService to export data.
-	 * @covers ExcelService::export()
+	 * @covers \Tchooz\Services\Export\Excel\ExcelService::export()
 	 * @return void
 	 */
 	public function testApplicantCannotUseExcelService(): void

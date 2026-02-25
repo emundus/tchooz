@@ -66,7 +66,7 @@ class EmailsModelTest extends UnitTestCase
 			'published' => 1
 		];
 
-		$created = $this->model->createEmail($data);
+		$created = $this->model->createEmail($data, null, null, null, null, null, $this->dataset['coordinator']);
 		$this->assertNotFalse($created, 'La création de l\'email a fonctionné');
 		$created_email = $this->model->getEmailById($created);
 
@@ -99,7 +99,7 @@ class EmailsModelTest extends UnitTestCase
 		];
 
 		sleep(1);
-		$created = $this->model->createEmail($data);
+		$created = $this->model->createEmail($data, null, null, null, null, null, $this->dataset['coordinator']);
 		$this->assertNotFalse($created, 'La création de l\'email a fonctionnée');
 
 		$deleted = $this->model->deleteEmail($created);

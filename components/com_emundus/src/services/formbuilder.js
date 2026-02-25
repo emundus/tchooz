@@ -267,9 +267,7 @@ export default {
 			})
 				.then((response) => response.json())
 				.then((response) => {
-					return {
-						status: response.scalar,
-					};
+					return response;
 				})
 				.catch((error) => {
 					throw error;

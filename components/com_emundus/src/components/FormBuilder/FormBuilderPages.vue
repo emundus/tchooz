@@ -2,7 +2,12 @@
 	<div id="form-builder-pages">
 		<p class="form-builder-title tw-flex tw-items-center tw-p-4 md:tw-justify-center lg:tw-justify-between">
 			<span>{{ translate('COM_EMUNDUS_FORM_BUILDER_EVERY_PAGE') }}</span>
-			<span id="add-page" class="material-symbols-outlined tw-cursor-pointer" @click="$emit('open-page-create')">
+			<span
+				v-if="canUpdate"
+				id="add-page"
+				class="material-symbols-outlined tw-cursor-pointer"
+				@click="$emit('open-page-create')"
+			>
 				add
 			</span>
 		</p>
@@ -10,7 +15,7 @@
 			:model-value="pages"
 			@update:model-value="pages = $event"
 			group="form-builder-pages"
-			:sort="true"
+			:sort="canUpdate"
 			class="draggables-list"
 			@end="onDragEnd"
 		>
@@ -30,6 +35,7 @@
 							{{ page.label !== '' ? translate(page.label) : translate('COM_EMUNDUS_FILES_PAGE') + ' ' + (index + 1) }}
 						</p>
 						<div
+							v-if="canUpdate"
 							class="tw-flex tw-items-center tw-p-4"
 							:style="pageOptionsShown === page.id ? 'opacity:1' : 'opacity: 0'"
 						>
@@ -99,6 +105,10 @@ export default {
 		profile_id: {
 			type: Number,
 			required: true,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [formBuilderMixin],

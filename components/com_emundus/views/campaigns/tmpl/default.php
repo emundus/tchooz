@@ -10,10 +10,15 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
-require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+if (!class_exists('EmundusHelperAccess'))
+{
+    require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
+}
 
 ## GLOBAL ##
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
@@ -196,17 +201,38 @@ Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PROGRAMS');
 Text::script('COM_EMUNDUS_ONBOARD_ALL_PROGRAM_CATEGORIES_LABEL');
 Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGNS_FILTER_PARENT');
 
+Text::script('PUBLISHED');
+Text::script('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS');
+Text::script('COM_EMUNDUS_ONBOARD_CAMPAIGN_ASSOCIATED_DETAILS');
+
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$campaignAction   = $actionRepository->getByName('campaign');
+$programAction    = $actionRepository->getByName('program');
+
+$data['crud'] = [
+    'campaign' => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($campaignAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($campaignAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($campaignAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($campaignAction->getId(), 'd', $user->id),
+    ],
+    'program'  => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($programAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($programAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($programAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($programAction->getId(), 'd', $user->id),
+    ]
+];
 ?>
 
 <div id="em-component-vue"
      component="Campaigns"
-     coordinatoraccess="<?php echo $data['coordinator_access'] ?>"
-     sysadminaccess="<?php echo $data['sysadmin_access'] ?>"
-     shortlang="<?php echo $data['short_lang'] ?>"
-     currentlanguage="<?php echo $data['current_lang'] ?>"
-     manylanguages="<?php echo $data['many_languages'] ?>"
-     defaultlang="<?php echo $data['default_lang'] ?>">
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>">
 </div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

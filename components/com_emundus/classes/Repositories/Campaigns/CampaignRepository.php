@@ -11,6 +11,7 @@ namespace Tchooz\Repositories\Campaigns;
 
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
+use Joomla\CMS\Date\Date;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\ParameterType;
@@ -23,42 +24,45 @@ use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
 use Tchooz\Factories\Campaigns\CampaignFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
 use Tchooz\Repositories\RepositoryInterface;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Traits\TraitTable;
 
-#[TableAttribute(table: '#__emundus_setup_campaigns', alias: 'esc')]
+#[TableAttribute(
+	table: '#__emundus_setup_campaigns',
+	alias: 'esc',
+	columns: [
+		'id',
+		'user',
+		'label',
+		'short_description',
+		'description',
+		'start_date',
+		'end_date',
+		'profile_id',
+		'training',
+		'year',
+		'published',
+		'pinned',
+		'alias',
+		'visible',
+		'parent_id'
+	]
+)]
 class CampaignRepository extends EmundusRepository implements RepositoryInterface
 {
-	use TraitTable;
-
 	private CampaignFactory $factory;
-
-	private const COLUMNS = [
-		't.id',
-		't.label',
-		't.short_description',
-		't.description',
-		't.start_date',
-		't.end_date',
-		't.profile_id',
-		't.training',
-		't.year',
-		't.published',
-		't.pinned',
-		't.alias',
-		't.visible',
-		't.parent_id'
-	];
-
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
 		parent::__construct($withRelations, $exceptRelations, 'campaign', self::class);
-
 		$this->factory = new CampaignFactory();
+
+		$this->cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+			->createCacheController('output', ['defaultgroup' => 'com_emundus.campaigns']);
 	}
 
 	public function getAllCampaigns(
@@ -66,133 +70,235 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		$search = '',
 		$lim = 25,
 		$page = 0,
-		$order_by = 't.id',
+		$order_by = 'esc.id',
 		$published = null,
 		$parent_id = null,
 		$user_category = null,
+		$date_filter = null,
+		$session = null,
+		$codes = [],
 		$ids = [],
 		$filters = []
 	): ListResult
 	{
 		$result = new ListResult([], 0);
 
-		if (empty($lim) || $lim == 'all')
-		{
-			$limit = '';
-		}
-		else
-		{
-			$limit = $lim;
-		}
-
-		if (empty($page) || empty($limit))
-		{
-			$offset = 0;
-		}
-		else
-		{
-			$offset = ($page - 1) * $limit;
-		}
-
-		if (empty($sort))
-		{
-			$sort = 'DESC';
-		}
-
-		$elements = $this->getCampaignMoreElements();
-
-		$query = $this->db->getQuery(true);
-
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'));
-
-		// Apply filters if needed
-		if (!empty($search))
-		{
-			$search     = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
-			$conditions = [
-				$this->db->quoteName('t.label') . ' LIKE ' . $search,
-				$this->db->quoteName('t.description') . ' LIKE ' . $search,
-				$this->db->quoteName('t.short_description') . ' LIKE ' . $search,
-			];
-			$query->where('(' . implode(' OR ', $conditions) . ')');
-		}
-
-		if (!empty($published) && $published !== 'all')
-		{
-			$published = $published == 'true' ? 1 : 0;
-			$query->where($this->db->quoteName('t.published') . ' = ' . $published);
-		}
-
-		if (!empty($parent_id))
-		{
-			$where = $this->db->quoteName('t.parent_id') . ' = ' . (int) $parent_id;
-			if (!empty($ids) && is_array($ids))
-			{
-				$where .= (' OR ' . $this->db->quoteName('t.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
-			}
-
-			$query->where('(' . $where . ')');
-		}
-		else
-		{
-			if (!empty($ids) && is_array($ids))
-			{
-				$query->where($this->db->quoteName('t.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
-			}
-		}
-
-		if (!empty($user_category))
-		{
-			$query->leftJoin($this->db->quoteName('#__emundus_setup_campaigns_user_category', 'escuc') . ' ON escuc.campaign_id = t.id')
-				->where('(escuc.user_category_id = ' . $this->db->quote($user_category) . ' OR escuc.user_category_id IS NULL)');
-		}
-
-		// Apply orders and limits if needed
-		$query->group('t.id')
-			->order($order_by . ' ' . $sort);
-
 		try
 		{
-			$this->db->setQuery($query);
-			$campaigns_count = sizeof($this->db->loadObjectList());
-
-			$this->db->setQuery($query, $offset, $limit);
-			$campaigns = $this->db->loadObjectList();
-
-			foreach ($campaigns as $key => $campaign)
+			$cache_key = 'getAllCampaigns_' . md5(serialize(func_get_args()));
+			if ($this->cache->contains($cache_key))
 			{
-				$campaign->more_data = $this->getMoreData((int) $campaign->id, $elements);
-				if (!empty($filters))
+				$result = $this->cache->get($cache_key);
+			}
+
+			$elements = $this->getCampaignMoreElements();
+
+			if(empty($result->getTotalItems()))
+			{
+				if (empty($lim) || $lim == 'all')
 				{
-					foreach ($filters as $filter_key => $filter)
+					$limit = '';
+				}
+				else
+				{
+					$limit = $lim;
+				}
+
+				if (empty($page) || empty($limit))
+				{
+					$offset = 0;
+				}
+				else
+				{
+					$offset = ($page - 1) * $limit;
+				}
+
+				if (empty($sort))
+				{
+					$sort = 'DESC';
+				}
+
+				$query = $this->db->getQuery(true);
+
+				$applicationFileAlias = $this->getTableAlias(ApplicationFileRepository::class);
+				$columns              = $this->columns;
+				$columns[]            = 'COUNT(' . $this->db->quoteName($applicationFileAlias . '.id') . ') AS files_count';
+
+				$query->select($columns)
+					->from($this->db->quoteName($this->tableName, $this->alias))
+					->leftJoin(
+						$this->db->quoteName('#__emundus_campaign_candidature', $applicationFileAlias) .
+						' ON ' .
+						$this->db->quoteName($applicationFileAlias . '.campaign_id') .
+						' = ' .
+						$this->db->quoteName($this->alias . '.id') .
+						' AND ' .
+						$this->db->quoteName($applicationFileAlias . '.published') . ' = 1'
+					)
+					->leftJoin(
+						$this->db->quoteName('#__users', 'u') .
+						' ON ' .
+						$this->db->quoteName('u.id') .
+						' = ' .
+						$this->db->quoteName($applicationFileAlias . '.applicant_id') .
+						' AND ' .
+						$this->db->quoteName('u.block') . ' = 0'
+					);
+
+
+				// Apply filters if needed
+				if (!empty($search))
+				{
+					$search     = $this->db->quote('%' . $this->db->escape($search, true) . '%', false);
+					$conditions = [
+						$this->db->quoteName($this->alias . '.label') . ' LIKE ' . $search,
+						$this->db->quoteName($this->alias . '.description') . ' LIKE ' . $search,
+						$this->db->quoteName($this->alias . '.short_description') . ' LIKE ' . $search,
+					];
+					$query->where('(' . implode(' OR ', $conditions) . ')');
+				}
+
+				if (!empty($published) && $published !== 'all')
+				{
+					$published = $published == 'true' ? 1 : 0;
+					$query->where($this->db->quoteName($this->alias . '.published') . ' = ' . $published);
+				}
+
+				if (!empty($parent_id))
+				{
+					$where = $this->db->quoteName($this->alias . '.parent_id') . ' = ' . (int) $parent_id;
+					if (!empty($ids) && is_array($ids))
 					{
-						if (isset($campaign->more_data[$filter_key]))
+						$where .= (' OR ' . $this->db->quoteName($this->alias . '.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
+					}
+
+					$query->where('(' . $where . ')');
+				}
+				else
+				{
+					if (!empty($ids) && is_array($ids))
+					{
+						$query->where($this->db->quoteName($this->alias . '.id') . ' IN (' . implode(',', array_map('intval', $ids)) . ')');
+					}
+				}
+
+				if (!empty($user_category))
+				{
+					$query->leftJoin($this->db->quoteName('#__emundus_setup_campaigns_user_category', 'escuc') . ' ON escuc.campaign_id = ' . $this->alias . '.id')
+						->where('(escuc.user_category_id = ' . $this->db->quote($user_category) . ' OR escuc.user_category_id IS NULL)');
+				}
+
+				$date       = new Date();
+				$filterDate = null;
+				if ($date_filter == 'yettocome')
+				{
+					$filterDate = 'Date(' . $this->db->quoteName($this->alias . '.start_date') . ') > ' . $this->db->quote($date);
+				}
+				elseif ($date_filter == 'ongoing')
+				{
+					$filterDate =
+						'(Date(' .
+						$this->db->quoteName($this->alias . '.end_date') .
+						')' .
+						' >= ' .
+						$this->db->quote($date) .
+						' OR end_date = "0000-00-00 00:00:00") AND ' .
+						$this->db->quoteName($this->alias . '.start_date') .
+						' <= ' .
+						$this->db->quote($date);
+				}
+				elseif ($date_filter == 'Terminated')
+				{
+					$filterDate =
+						'Date(' .
+						$this->db->quoteName($this->alias . '.end_date') .
+						')' .
+						' <= ' .
+						$this->db->quote($date) .
+						' AND end_date != "0000-00-00 00:00:00"';
+				}
+				elseif ($date_filter == 'Publish')
+				{
+					$filterDate = $this->db->quoteName($this->alias . '.published') . ' = 1';
+				}
+				elseif ($date_filter == 'Unpublish')
+				{
+					$filterDate = $this->db->quoteName($this->alias . '.published') . ' = 0';
+				}
+				if (!empty($filterDate))
+				{
+					$query->where($filterDate);
+				}
+
+				if (!empty($session) && $session !== 'all')
+				{
+					$query->where($this->db->quoteName($this->alias . '.year') . ' = ' . $this->db->quote($session));
+				}
+
+				if (!empty($codes))
+				{
+					$query->where($this->db->quoteName($this->alias . '.training') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $codes)) . ')');
+				}
+
+				if ($order_by === 'esp.label')
+				{
+					$query->leftJoin(
+						$this->db->quoteName('#__emundus_setup_programmes', 'esp') .
+						' ON ' .
+						$this->db->quoteName('esp.code') .
+						' LIKE ' .
+						$this->db->quoteName($this->alias . '.training')
+					);
+				}
+
+				// Apply orders and limits if needed
+				$query->group($this->alias . '.id')
+					->order($order_by . ' ' . $sort);
+
+				$this->db->setQuery($query);
+				$campaigns_count = sizeof($this->db->loadObjectList());
+
+				$this->db->setQuery($query, $offset, $limit);
+				$campaigns = $this->db->loadObjectList();
+
+				foreach ($campaigns as $key => $campaign)
+				{
+					$campaign->more_data = $this->getMoreData((int) $campaign->id, $elements);
+					if (!empty($filters))
+					{
+						foreach ($filters as $filter_key => $filter)
 						{
-							if (is_array($campaign->more_data[$filter_key]))
+							if (isset($campaign->more_data[$filter_key]))
 							{
-								if (!in_array($filter, $campaign->more_data[$filter_key]))
+								if (is_array($campaign->more_data[$filter_key]))
 								{
-									unset($campaigns[$key]);
-									continue 2;
+									if (!in_array($filter, $campaign->more_data[$filter_key]))
+									{
+										unset($campaigns[$key]);
+										continue 2;
+									}
 								}
-							}
-							else
-							{
-								if ($campaign->more_data[$filter_key] != $filter)
+								else
 								{
-									unset($campaigns[$key]);
-									continue 2;
+									if ($campaign->more_data[$filter_key] != $filter)
+									{
+										unset($campaigns[$key]);
+										continue 2;
+									}
 								}
 							}
 						}
 					}
 				}
-				$campaigns[$key] = $this->factory->fromDbObject($campaign, $this->withRelations, [], null, $elements);
+
+				$result->setItems($campaigns);
+				$result->setTotalItems($campaigns_count);
+
+				$this->cache->store($result, $cache_key);
 			}
 
+			$campaigns = $this->factory->fromDbObjects($result->getItems(), $this->withRelations, [], null, $elements);
 			$result->setItems($campaigns);
-			$result->setTotalItems($campaigns_count);
 		}
 		catch (\Exception $e)
 		{
@@ -206,12 +312,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$query = $this->db->getQuery(true);
 
-		$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
-			->createCacheController('output', ['defaultgroup' => 'com_emundus']);
 		$cache_key = 'campaign_more_form_id';
-		if ($cache->contains($cache_key))
+		if ($this->cache->contains($cache_key))
 		{
-			return $cache->get($cache_key);
+			return $this->cache->get($cache_key);
 		}
 
 		try
@@ -237,7 +341,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 				if (!empty($elements_count))
 				{
-					$cache->store($form_id, $cache_key);
+					$this->cache->store($form_id, $cache_key);
 
 					return $form_id;
 				}
@@ -259,12 +363,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		if (!empty($form_id))
 		{
-			$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
-				->createCacheController('output', ['defaultgroup' => 'com_emundus']);
 			$cache_key = 'elements_' . $form_id;
-			if ($cache->contains($cache_key))
+			if ($this->cache->contains($cache_key))
 			{
-				return $cache->get($cache_key);
+				return $this->cache->get($cache_key);
 			}
 
 			$query = $this->db->getQuery(true);
@@ -279,7 +381,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 			if (!empty($elements))
 			{
-				$cache->store($elements, $cache_key);
+				$this->cache->store($elements, $cache_key);
 			}
 		}
 
@@ -294,12 +396,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		try
 		{
-			$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
-				->createCacheController('output', ['defaultgroup' => 'com_emundus']);
 			$cache_key = 'joins_jos_emundus_setup_campaigns_more';
-			if ($cache->contains($cache_key))
+			if ($this->cache->contains($cache_key))
 			{
-				$join_tables = $cache->get($cache_key);
+				$join_tables = $this->cache->get($cache_key);
 			}
 
 			if (empty($join_tables))
@@ -310,6 +410,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					->where($this->db->quoteName('join_from_table') . ' = ' . $this->db->quote('jos_emundus_setup_campaigns_more'));
 				$this->db->setQuery($query);
 				$join_tables = $this->db->loadAssocList('element_id');
+
+				$this->cache->store($join_tables, $cache_key);
 			}
 
 			if (empty($elements))
@@ -323,7 +425,6 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				->where('t.campaign_id = ' . $this->db->quote($campaign_id));
 			$this->db->setQuery($query);
 			$more_data = $this->db->loadAssoc();
-
 
 			foreach ($elements as $key => $element)
 			{
@@ -356,15 +457,19 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	/**
 	 * @var CampaignEntity[]
 	 */
-	public function getParentCampaigns(): array
+	public function getParentCampaigns(array $programs = []): array
 	{
 		$parent_campaigns = [];
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.parent_id IS NULL OR t.parent_id = 0')
-			->order('t.label ASC');
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where('('.$this->alias . '.parent_id IS NULL OR ' . $this->alias . '.parent_id = 0)')
+			->order($this->alias . '.label ASC');
+		if(!empty($programs))
+		{
+			$query->where($this->alias . '.training IN (' . implode(',', array_map([$this->db, 'quote'], $programs)) . ')');
+		}
 		$this->db->setQuery($query);
 		$campaigns = $this->db->loadAssocList();
 
@@ -390,10 +495,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		$children_campaigns = [];
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.parent_id = ' . $this->db->quote($parent_id))
-			->order('t.label ASC');
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->where($this->alias . '.parent_id = ' . $this->db->quote($parent_id))
+			->order($this->alias . '.label ASC');
 		$this->db->setQuery($query);
 		$campaigns = $this->db->loadAssocList();
 
@@ -413,14 +518,27 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$campaign_entity = null;
 
-		$elements = $this->getCampaignMoreElements();
+		$cache_key = 'campaign_' . $id . '_' . ($this->withRelations ? 'with' : 'without') . '_relations';
+		if ($this->cache->contains($cache_key))
+		{
+			$campaign = $this->cache->get($cache_key);
+		}
 
-		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.id = ' . $this->db->quote($id));
-		$this->db->setQuery($query);
-		$campaign = $this->db->loadAssoc();
+		$elements = $this->getCampaignMoreElements();
+		if(empty($campaign))
+		{
+			$query = $this->db->getQuery(true);
+			$query->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where($this->alias . '.id = ' . $this->db->quote($id));
+			$this->db->setQuery($query);
+			$campaign = $this->db->loadAssoc();
+
+			if (!empty($campaign))
+			{
+				$this->cache->store($campaign, $cache_key);
+			}
+		}
 
 		if (!empty($campaign))
 		{
@@ -436,12 +554,26 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$campaign_entity = null;
 
-		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('TRIM(t.label) = ' . $this->db->quote(trim($label)));
-		$this->db->setQuery($query);
-		$campaign = $this->db->loadAssoc();
+		$cache_key = 'campaign_label_' . md5($label) . '_' . ($this->withRelations ? 'with' : 'without') . '_relations';
+		if ($this->cache->contains($cache_key))
+		{
+			$campaign = $this->cache->get($cache_key);
+		}
+
+		if(empty($campaign))
+		{
+			$query = $this->db->getQuery(true);
+			$query->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->where('TRIM(' . $this->alias . '.label) = ' . $this->db->quote(trim($label)));
+			$this->db->setQuery($query);
+			$campaign = $this->db->loadAssoc();
+
+			if (!empty($campaign))
+			{
+				$this->cache->store($campaign, $cache_key);
+			}
+		}
 
 		if (!empty($campaign))
 		{
@@ -455,11 +587,17 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$campaign_ids = [];
 
+		$cache_key = 'campaign_ids_by_programs_' . md5(serialize($programs));
+		if ($this->cache->contains($cache_key))
+		{
+			return $this->cache->get($cache_key);
+		}
+
 		$query = $this->db->getQuery(true);
 
-		$query->select('t.id')
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = t.training')
+		$query->select($this->alias . 'id')
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = ' . $this->alias . '.training')
 			->where('p.id IN (' . implode(',', array_map('intval', $programs)) . ')');
 
 		$this->db->setQuery($query);
@@ -468,6 +606,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		if (!empty($campaigns))
 		{
 			$campaign_ids = array_map('intval', $campaigns);
+
+			$this->cache->store($campaign_ids, $cache_key);
 		}
 
 		return $campaign_ids;
@@ -517,16 +657,22 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$programs_ids = [];
 
+		$cache_key = 'linked_programs_ids_' . $campaign_id . '_' . $fnum;
+		if ($this->cache->contains($cache_key))
+		{
+			return $this->cache->get($cache_key);
+		}
+
 		$query = $this->db->getQuery(true);
 
 		$query->select('p.id')
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = t.training')
-			->where('t.parent_id = ' . $this->db->quote($campaign_id));
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = ' . $this->alias . '.training')
+			->where($this->alias . '.parent_id = ' . $this->db->quote($campaign_id));
 
 		if (!empty($fnum))
 		{
-			$query->leftJoin($this->db->quoteName($this->getTableName(ApplicationChoicesRepository::class), 'ac') . ' ON ac.campaign_id = t.id')
+			$query->leftJoin($this->db->quoteName($this->getTableName(ApplicationChoicesRepository::class), 'ac') . ' ON ac.campaign_id = ' . $this->alias . '.id')
 				->where('ac.fnum = ' . $this->db->quote($fnum));
 		}
 
@@ -550,6 +696,12 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				$linked_programs_ids = $this->getLinkedProgramsIds($campaign->getParent()->getId(), $fnum);
 				$programs_ids        = array_merge($programs_ids, $linked_programs_ids);
 			}
+		}
+
+		$programs_ids = array_unique($programs_ids);
+		if(!empty($programs_ids))
+		{
+			$this->cache->store($programs_ids, $cache_key);
 		}
 
 		return $programs_ids;
@@ -589,40 +741,58 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		if (!empty($campaignId))
 		{
+			$cache_key = 'db_tables_by_campaign_id_' . $campaignId;
+			if ($this->cache->contains($cache_key))
+			{
+				return $this->cache->get($cache_key);
+			}
+
 			$campaign = $this->getById($campaignId);
 
 			if (!empty($campaign))
 			{
-				if(!empty($campaign->getProfileId()))
+				if (!empty($campaign->getProfileId()))
 				{
 					$tables = $this->getTablesByProfileId($campaign->getProfileId());
 				}
-				
+
 				$workflowRepository = new WorkflowRepository();
-				$workflow = $workflowRepository->getWorkflowByProgramId($campaign->getProgram()->getId());
-				if(!empty($workflow) && !empty($workflow->getApplicantSteps()))
+				$workflow           = $workflowRepository->getWorkflowByProgramId($campaign->getProgram()->getId());
+				if (!empty($workflow) && !empty($workflow->getApplicantSteps()))
 				{
-					foreach($workflow->getSteps() as $step)
+					foreach ($workflow->getSteps() as $step)
 					{
-						if(!empty($step->getProfileId()))
+						if (!empty($step->getProfileId()))
 						{
 							$step_tables = $this->getTablesByProfileId($step->getProfileId());
 							$tables      = array_merge($tables, $step_tables);
 						}
 					}
 				}
+
+				$tables = array_unique($tables);
+				if(!empty($tables))
+				{
+					$this->cache->store($tables, $cache_key);
+				}
 			}
 		}
 
 		return $tables;
 	}
-	
+
 	private function getTablesByProfileId(int $profileId): array
 	{
 		$tables = [];
 
 		if (!empty($profileId))
 		{
+			$cache_key = 'tables_by_profile_id_' . $profileId;
+			if ($this->cache->contains($cache_key))
+			{
+				return $this->cache->get($cache_key);
+			}
+
 			$query = $this->db->getQuery(true);
 
 			$query->select('fl.db_table_name')
@@ -633,34 +803,38 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				->where($this->db->quoteName('fl.db_table_name') . ' IS NOT NULL');
 			$this->db->setQuery($query);
 			$tables = $this->db->loadColumn();
+
+			if (!empty($tables))
+			{
+				$this->cache->store($tables, $cache_key);
+			}
 		}
 
 		return $tables;
 	}
 
 	public function buildQuery(): QueryInterface
-	{
-
-	}
+	{}
 
 	public function flush(CampaignEntity $campaignEntity): bool
 	{
 		$flushed = false;
 
-		try {
+		try
+		{
 			if (empty($campaignEntity->getId()))
 			{
-				$insert = (object)[
+				$insert = (object) [
 					'label'             => $campaignEntity->getLabel(),
 					'short_description' => $campaignEntity->getShortDescription(),
 					'description'       => $campaignEntity->getDescription(),
 					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
 					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
 					'profile_id'        => $campaignEntity->getProfileId(),
-					'training'         => $campaignEntity->getProgram()->getCode(),
+					'training'          => $campaignEntity->getProgram()->getCode(),
 					'year'              => $campaignEntity->getYear(),
-					'published'        => $campaignEntity->isPublished() ? 1 : 0,
-					'pinned'           => $campaignEntity->isPinned() ? 1 : 0,
+					'published'         => $campaignEntity->isPublished() ? 1 : 0,
+					'pinned'            => $campaignEntity->isPinned() ? 1 : 0,
 					'alias'             => $campaignEntity->getAlias(),
 					'visible'           => $campaignEntity->isVisible() ? 1 : 0,
 					'parent_id'         => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null
@@ -672,7 +846,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			}
 			else
 			{
-				$update = (object)[
+				$update = (object) [
 					'id'                => $campaignEntity->getId(),
 					'label'             => $campaignEntity->getLabel(),
 					'short_description' => $campaignEntity->getShortDescription(),
@@ -680,10 +854,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
 					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
 					'profile_id'        => $campaignEntity->getProfileId(),
-					'training'         => $campaignEntity->getProgram()->getCode(),
+					'training'          => $campaignEntity->getProgram()->getCode(),
 					'year'              => $campaignEntity->getYear(),
-					'published'        => $campaignEntity->isPublished() ? 1 : 0,
-					'pinned'           => $campaignEntity->isPinned() ? 1 : 0,
+					'published'         => $campaignEntity->isPublished() ? 1 : 0,
+					'pinned'            => $campaignEntity->isPinned() ? 1 : 0,
 					'alias'             => $campaignEntity->getAlias(),
 					'visible'           => $campaignEntity->isVisible() ? 1 : 0,
 					'parent_id'         => !empty($campaignEntity->getParent()) ? $campaignEntity->getParent()->getId() : null
@@ -691,6 +865,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 				$flushed = $this->db->updateObject('#__emundus_setup_campaigns', $update, 'id');
 			}
+
+			$this->cleanCache();
 		}
 		catch (\Exception $exception)
 		{
@@ -716,5 +892,10 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			'campaign_show_timezone'   => $emConfig->get('campaign_show_timezone', 1),
 			'campaign_show_programme'  => $emConfig->get('campaign_show_programme', 1)
 		];
+	}
+
+	public function cleanCache(): void
+	{
+		$this->cache->clean();
 	}
 }

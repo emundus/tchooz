@@ -28,6 +28,7 @@ use Joomla\Registry\Registry;
 use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Entities\Messages\TriggerEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 class EmundusModelEmails extends JModelList
 {
@@ -2138,9 +2139,14 @@ class EmundusModelEmails extends JModelList
 	 *
 	 * @since version 1.0
 	 */
-	function getAllEmails($lim, $page, string $filter = '', string $sort = 'DESC', string $recherche = '', string $category = '', string $order_by = 'se.id')
+	function getAllEmails($lim, $page, string $filter = '', string $sort = 'DESC', string $recherche = '', string $category = '', string $order_by = 'se.id', int $user_id = 0, bool $emailAccess = true, bool $adminAccess = true)
 	{
 		$query = $this->_db->getQuery(true);
+
+		if(empty($user_id))
+		{
+			$user_id = Factory::getApplication()->getIdentity()?->id;
+		}
 
 		if (empty($lim) || $lim == 'all') {
 			$limit = '';
@@ -2180,7 +2186,7 @@ class EmundusModelEmails extends JModelList
 			$fullRecherche     = $rechercheSubject . ' OR ' . $rechercheMessage . ' OR ' . $rechercheEmail . ' OR ' . $rechercheType . ' OR ' . $rechercheCategory;
 		}
 
-		$query->select('*')
+		$query->select('count(id)')
 			->from($this->_db->quoteName('#__emundus_setup_emails', 'se'))
 			->where($filterDate)
 			->andWhere($fullRecherche);
@@ -2189,12 +2195,49 @@ class EmundusModelEmails extends JModelList
 			$query->andWhere($this->_db->quoteName('se.category') . ' = ' . $this->_db->quote($category));
 		}
 
-		$query->group('se.id')
-			->order($order_by . ' ' . $sort);
+		if(!$emailAccess)
+		{
+			$query->andWhere($this->_db->quoteName('se.created_by') . ' = ' . $user_id);
+		}
+
+		if(!$adminAccess)
+		{
+			$query->andWhere($this->_db->quoteName('se.type') . ' <> 1');
+		}
+
+		$query->order($order_by . ' ' . $sort);
 
 		try {
 			$this->_db->setQuery($query);
-			$count_emails = sizeof($this->_db->loadObjectList());
+			$count_emails = $this->_db->loadResult();
+
+			$query->clear('select')
+				->select([
+					'se.id',
+					'se.lbl',
+					'se.subject',
+					'se.emailfrom',
+					'se.message',
+					'se.name',
+					'se.type',
+					'se.published',
+					'se.email_tmpl',
+					'se.category',
+					'se.button',
+					'group_concat(DISTINCT esa.value) as candidate_attachments',
+					'group_concat(DISTINCT esl.title) as letter_attachments',
+					'group_concat(DISTINCT esrrr.receivers) as receivers',
+					'group_concat(DISTINCT esat.label) as tags',
+				])
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_candidate_attachment', 'eserca') . ' ON ' . $this->_db->quoteName('eserca.parent_id') . ' = ' . $this->_db->quoteName('se.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_attachments', 'esa') . ' ON ' . $this->_db->quoteName('esa.id') . ' = ' . $this->_db->quoteName('eserca.candidate_attachment'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_letter_attachment', 'eserla') . ' ON ' . $this->_db->quoteName('eserla.parent_id') . ' = ' . $this->_db->quoteName('se.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_letters', 'esl') . ' ON ' . $this->_db->quoteName('esl.attachment_id') . ' = ' . $this->_db->quoteName('eserla.letter_attachment'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_receivers', 'esrrr') . ' ON ' . $this->_db->quoteName('esrrr.parent_id') . ' = ' . $this->_db->quoteName('se.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_emails_repeat_tags', 'esert') . ' ON ' . $this->_db->quoteName('esert.parent_id') . ' = ' . $this->_db->quoteName('se.id'))
+				->leftJoin($this->_db->quoteName('#__emundus_setup_action_tag', 'esat') . ' ON ' . $this->_db->quoteName('esat.id') . ' = ' . $this->_db->quoteName('esert.tags'))
+				->group('se.id');
+
 			$this->_db->setQuery($query, $offset, $limit);
 
 			$emails = $this->_db->loadObjectList();
@@ -2515,8 +2558,13 @@ class EmundusModelEmails extends JModelList
 	 *
 	 * @since version 1.0
 	 */
-	public function createEmail($data, $receiver_cc = null, $receiver_bcc = null, $letters = null, $documents = null, $tags = null)
+	public function createEmail($data, $receiver_cc = null, $receiver_bcc = null, $letters = null, $documents = null, $tags = null, $user_id = 0)
 	{
+		if(empty($user_id))
+		{
+			$user_id = Factory::getApplication()->getIdentity()?->id;
+		}
+
 		$created = false;
 		$query   = $this->_db->getQuery(true);
 
@@ -2524,6 +2572,8 @@ class EmundusModelEmails extends JModelList
 		$fabrik_pattern = '/\${(.+[0-9])\}/';
 
 		if (!empty($data)) {
+			$data['created_by'] = $user_id;
+
 			$query->insert($this->_db->quoteName('#__emundus_setup_emails'))
 				->columns($this->_db->quoteName(array_keys($data)))
 				->values(implode(',', $this->_db->quote(array_values($data))));

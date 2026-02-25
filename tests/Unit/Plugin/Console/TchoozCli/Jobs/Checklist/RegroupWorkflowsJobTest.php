@@ -76,7 +76,7 @@ class RegroupWorkflowsJobTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers RegroupWorkflowsJob::getWorkflowsGroupedBySameSignature
+	 * @covers \Emundus\Plugin\Console\Tchooz\Jobs\Checklist\RegroupWorkflowsJob::getWorkflowsGroupedBySameSignature
 	 * @return void
 	 */
 	public function testGetWorkflowsGroupedBySameSignature(): void
@@ -104,7 +104,7 @@ class RegroupWorkflowsJobTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers RegroupWorkflowsJob::regroupWorkflows
+	 * @covers \Emundus\Plugin\Console\Tchooz\Jobs\Checklist\RegroupWorkflowsJob::regroupWorkflows
 	 * @return void
 	 */
 	public function testRegroupWorkflows(): void
@@ -125,7 +125,7 @@ class RegroupWorkflowsJobTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers RegroupWorkflowsJob::regroupWorkflows
+	 * @covers \Emundus\Plugin\Console\Tchooz\Jobs\Checklist\RegroupWorkflowsJob::regroupWorkflows
 	 * @return void
 	 * @throws \Exception
 	 */

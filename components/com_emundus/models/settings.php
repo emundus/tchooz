@@ -2765,7 +2765,7 @@ class EmundusModelSettings extends ListModel
 		return $managers;
 	}
 
-	public function getAvailableCampaigns($search_query, $limit = 100)
+	public function getAvailableCampaigns($search_query, $limit = 100, array $programs = [])
 	{
 		$campaigns = [];
 
@@ -2787,6 +2787,11 @@ class EmundusModelSettings extends ListModel
 				$query->where($this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
 			}
 
+			if(!empty($programs))
+			{
+				$query->where($this->db->quoteName('p.id') . ' IN (' . implode(',', $programs) . ')');
+			}
+
 			$query->order($this->db->quoteName('c.label') . ' ASC');
 
 			$this->db->setQuery($query);
@@ -2801,7 +2806,7 @@ class EmundusModelSettings extends ListModel
 	}
 
 
-	public function getAvailablePrograms($search_query, $limit = 100)
+	public function getAvailablePrograms($search_query, $limit = 100, $filteredPrograms = [])
 	{
 		$programs = [];
 
@@ -2836,6 +2841,11 @@ class EmundusModelSettings extends ListModel
 
 				$query->where($this->db->quoteName('esp.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%')
 					. ' OR ' . $this->db->quoteName('fc.value') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+			}
+
+			if(!empty($filteredPrograms))
+			{
+				$query->where($this->db->quoteName('esp.id') . ' IN (' . implode(',', $filteredPrograms) . ')');
 			}
 
 			$query->order($this->db->quoteName('esp.label') . ' ASC');

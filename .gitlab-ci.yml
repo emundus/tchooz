@@ -63,6 +63,7 @@ build-db-to-test-job:
 phpunit-job:
   stage: test
   image: emundus/tchooz-test-app:latest
+  coverage: '/^\s*Lines:\s*\d+.\d+\%/'
   services:
     - name: emundus/tchooz-test-db:latest
       alias: database
@@ -74,7 +75,7 @@ phpunit-job:
     - cat configuration.php
     - apache2-foreground &
   script:
-    - tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --no-coverage
+    - tests/vendor/phpunit/phpunit/phpunit -c tests/phpunit.xml --coverage-text --colors=never
   only:
     - merge_request
 

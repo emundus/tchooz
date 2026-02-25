@@ -99,7 +99,7 @@ export default {
 	methods: {
 		getEmundusParams() {
 			axios.get('index.php?option=com_emundus&controller=settings&task=getemundusparams').then((response) => {
-				this.config = response.data;
+				this.config = response.data.data;
 
 				Object.values(this.parameters).forEach((parameter) => {
 					if (parameter.type === 'keywords') {

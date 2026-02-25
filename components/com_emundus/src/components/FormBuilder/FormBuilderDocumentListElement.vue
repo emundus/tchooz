@@ -1,5 +1,5 @@
 <template>
-	<div id="form-builder-document-list-element" @click="editDocument">
+	<div id="form-builder-document-list-element" @click="canUpdate ? editDocument : null">
 		<div class="section-card tw-mb-8 tw-mt-8 tw-flex tw-w-full tw-flex-col">
 			<div class="section-identifier tw-cursor-pointer tw-bg-profile-full">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }}
@@ -10,7 +10,7 @@
 					<div class="tw-flex tw-w-full tw-items-center tw-justify-between">
 						<span class="section-title">{{ documentData.name[shortDefaultLang] }}</span>
 
-						<div>
+						<div v-if="canUpdate">
 							<span
 								class="material-symbols-outlined hover-opacity tw-cursor-pointer"
 								@click="moveDocument('up')"
@@ -30,6 +30,7 @@
 							>
 						</div>
 					</div>
+
 					<p>{{ documentData.description[shortDefaultLang] }}</p>
 					<p>
 						{{ translate('COM_EMUNDUS_FORM_BUILDER_ALLOWED_TYPES') }} :
@@ -71,6 +72,10 @@ export default {
 		profile_id: {
 			type: Number,
 			required: true,
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [formBuilderMixin],

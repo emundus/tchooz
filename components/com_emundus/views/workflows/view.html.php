@@ -13,7 +13,9 @@ defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Payment\PaymentRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 
 /**
  * eMundus Onboard Campaign View
@@ -31,12 +33,14 @@ class EmundusViewWorkflows extends JViewLegacy
 	public int $step_id = 0;
 	public ?object $step = null;
 
+	protected int $readOnly = 0;
+
 	function display($tpl = null)
 	{
 		$app = Factory::getApplication();
 		$this->user = $app->getIdentity();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id) || EmundusHelperAccess::asAccessAction('workflow', CrudEnum::READ->value, $this->user->id)) {
 			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			$this->model = new EmundusModelWorkflow();
 
@@ -58,6 +62,7 @@ class EmundusViewWorkflows extends JViewLegacy
 			if ($layout === 'edit')
 			{
 				$this->current_workflow_id = $jinput->getInt('wid', 0);
+				$this->readOnly = $jinput->getInt('readonly', 0);
 
 				if (empty($this->current_workflow_id))
 				{
@@ -65,7 +70,23 @@ class EmundusViewWorkflows extends JViewLegacy
 					$app->redirect('/workflows');
 				}
 
+				$emundusUserRepository = new EmundusUserRepository();
+
+				$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
+
 				$this->current_workflow = $this->model->getWorkflow($this->current_workflow_id);
+				if (
+					empty($this->current_workflow) ||
+					(
+						!empty($this->current_workflow->programs) &&
+						empty(array_intersect($userPrograms, $this->current_workflow->programs))
+					)
+				)
+				{
+					$app->enqueueMessage(Text::_('COM_EMUNDUS_WORKFLOW_NOT_FOUND'), 'error');
+					$app->redirect('/workflows');
+				}
+
 			}
 
 			if ($layout === 'editpaymentstep') {

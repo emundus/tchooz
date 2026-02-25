@@ -9,11 +9,9 @@ use Tchooz\Entities\List\AdditionalColumn;
 use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Factories\Mapping\MappingFactory;
-use Tchooz\Factories\Synchronizer\SynchronizerFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
-use Tchooz\Response;
-use Tchooz\Services\Mapping\ApiMapDataInterface;
+use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusControllermapping extends BaseController
@@ -150,7 +148,7 @@ class EmundusControllermapping extends BaseController
 	 */
 	public function getDatabaseJoinElementColumnsOptions(): void
 	{
-		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 		{
@@ -189,7 +187,7 @@ class EmundusControllermapping extends BaseController
 					);
 				}
 
-				$response = new Response(
+				$response = new EmundusResponse(
 					true,
 					Text::_('COM_EMUNDUS_MAPPING_DATABASEJOIN_ELEMENT_COLUMNS_RETRIEVED_SUCCESSFULLY'),
 					200,
@@ -200,7 +198,7 @@ class EmundusControllermapping extends BaseController
 			}
 			else
 			{
-				$response = new Response(false, Text::_('COM_EMUNDUS_MAPPING_INVALID_DATABASEJOIN_ELEMENT'), 400);
+				$response = new EmundusResponse(false, Text::_('COM_EMUNDUS_MAPPING_INVALID_DATABASEJOIN_ELEMENT'), 400);
 			}
 		}
 
@@ -209,7 +207,7 @@ class EmundusControllermapping extends BaseController
 
 	public function getMappingObjectsOptions(): void
 	{
-		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 		{
@@ -232,7 +230,7 @@ class EmundusControllermapping extends BaseController
 					];
 				}
 
-				$response = new Response(
+				$response = new EmundusResponse(
 					true,
 					Text::_('COM_EMUNDUS_MAPPING_OBJECTS_RETRIEVED_SUCCESSFULLY'),
 					200,
@@ -246,7 +244,7 @@ class EmundusControllermapping extends BaseController
 
 	public function delete(): void
 	{
-		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
 
 		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->app->getIdentity()->id))
 		{
@@ -256,11 +254,11 @@ class EmundusControllermapping extends BaseController
 
 			if ($deleted)
 			{
-				$response = new Response(true, Text::_('COM_EMUNDUS_MAPPING_DELETED_SUCCESSFULLY'), 200);
+				$response = new EmundusResponse(true, Text::_('COM_EMUNDUS_MAPPING_DELETED_SUCCESSFULLY'), 200);
 			}
 			else
 			{
-				$response = new Response(false, Text::_('COM_EMUNDUS_MAPPING_DELETE_FAILED'), 500);
+				$response = new EmundusResponse(false, Text::_('COM_EMUNDUS_MAPPING_DELETE_FAILED'), 500);
 			}
 		}
 

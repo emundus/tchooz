@@ -52,8 +52,6 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 
 	private string $langCode;
 
-	private CacheController $cache;
-
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
 		parent::__construct($withRelations, $exceptRelations, 'language', self::class);

@@ -10,8 +10,10 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -97,6 +99,7 @@ Text::script('COM_EMUNDUS_CAMPAIGNS_PIN');
 Text::script('COM_EMUNDUS_CAMPAIGNS_VISIBLE');
 
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_USER_CATEGORY');
+Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC_NEW');
 Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_USERCATEGORY');
 
 Text::script('COM_EMUNDUS_ONBOARD_ADDCAMP_PARENT');
@@ -104,18 +107,30 @@ Text::script('COM_EMUNDUS_ONBOARD_CHOOSE_PARENT');
 ## END ##
 
 $data = LayoutFactory::prepareVueData();
+
+$actionRepository = new ActionRepository();
+$workflowAction   = $actionRepository->getByName('workflow');
+$formAction       = $actionRepository->getByName('form');
+$user = Factory::getApplication()->getIdentity();
+$data['crud']     = [
+    'workflow' => [
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($workflowAction->getId(), 'r', $user->id),
+    ],
+    'form'     => [
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'r', $user->id),
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'c', $user->id),
+    ]
+];
+$data['campaign'] = $this->id;
+$data['campaignId'] = $this->id;
 ?>
 
 
 <div id="em-component-vue"
      component="addCampaign"
      campaign="<?= $this->id; ?>"
-     shortLang="<?= $data['short_lang'] ?>"
-     currentLanguage="<?= $data['current_lang'] ?>"
-     defaultLang="<?= $data['default_lang'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
+     campaignId="<?= $this->id; ?>"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
 ></div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

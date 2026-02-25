@@ -143,4 +143,82 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 
 		return $emundus_user_entity;
 	}
+
+	public function getUserProgramsCodes($user_id): array
+	{
+		$codes = [];
+
+		$cacheKey = 'emundus_user_programs_' . $user_id;
+		if($this->cache && $this->cache->contains($cacheKey)) {
+			return $this->cache->get($cacheKey);
+		}
+
+		if (!empty($user_id))
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('sp.code')
+				->from($this->db->quoteName('#__emundus_groups', 'g'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'sg') . ' ON ' . $this->db->quoteName('g.group_id') . ' = ' . $this->db->quoteName('sg.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->db->quoteName('sg.id') . ' = ' . $this->db->quoteName('sgr.parent_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sgr.course') . ' = ' . $this->db->quoteName('sp.code'))
+				->where($this->db->quoteName('g.user_id') . ' = ' . $this->db->quote($user_id));
+
+			try {
+				$this->db->setQuery($query);
+				$programs = $this->db->loadColumn();
+
+				$codes = array_filter(array_unique($programs));
+
+				if(!empty($codes) && $this->cache)
+				{
+					$this->cache->store($codes, $cacheKey);
+				}
+			}
+			catch (\Exception $e) {
+				Log::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $codes;
+	}
+
+	public function getUserProgramsIds($user_id): array
+	{
+		$ids = [];
+
+		$cacheKey = 'emundus_user_programs_ids_' . $user_id;
+		if($this->cache && $this->cache->contains($cacheKey)) {
+			return $this->cache->get($cacheKey);
+		}
+
+		if (!empty($user_id))
+		{
+			$query = $this->db->getQuery(true);
+
+			$query->select('sp.id')
+				->from($this->db->quoteName('#__emundus_groups', 'g'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups', 'sg') . ' ON ' . $this->db->quoteName('g.group_id') . ' = ' . $this->db->quoteName('sg.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_groups_repeat_course', 'sgr') . ' ON ' . $this->db->quoteName('sg.id') . ' = ' . $this->db->quoteName('sgr.parent_id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_programmes', 'sp') . ' ON ' . $this->db->quoteName('sgr.course') . ' = ' . $this->db->quoteName('sp.code'))
+				->where($this->db->quoteName('g.user_id') . ' = ' . $this->db->quote($user_id));
+
+			try {
+				$this->db->setQuery($query);
+				$programs = $this->db->loadColumn();
+
+				$ids = array_filter(array_unique($programs));
+
+				if(!empty($ids) && $this->cache)
+				{
+					$this->cache->store($ids, $cacheKey);
+				}
+			}
+			catch (\Exception $e) {
+				Log::add('component/com_emundus/models/program | Error at getting programs of the user ' . $user_id . ' : ' . preg_replace("/[\r\n]/", " ", $query->__toString() . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
+			}
+		}
+
+		return $ids;
+	}
 }
