@@ -178,7 +178,7 @@ class EmundusControllerExport extends BaseController
 
 			if (empty($fnums))
 			{
-				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('COM_EMUNDUS_EXPORT_NO_FILES_SELECTED'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 
 			$worlflowRepository = new WorkflowRepository();
@@ -366,7 +366,7 @@ class EmundusControllerExport extends BaseController
 		try {
 			if (!$this->exportAction)
 			{
-				throw new AccessException(Text::_('ACCESS_DENIED'), Response::HTTP_FORBIDDEN);
+				throw new AccessException(Text::_('ACCESS_DENIED'), EmundusResponse::HTTP_FORBIDDEN);
 			}
 
 			$type = $this->input->getString('type', 'applicant');
@@ -374,7 +374,7 @@ class EmundusControllerExport extends BaseController
 
 			if (empty($elementId))
 			{
-				throw new Exception(Text::_('MISSING_PARAMETER'), Response::HTTP_BAD_REQUEST);
+				throw new Exception(Text::_('MISSING_PARAMETER'), EmundusResponse::HTTP_BAD_REQUEST);
 			}
 			$subElements = [];
 
@@ -400,11 +400,11 @@ class EmundusControllerExport extends BaseController
 			}
 
 
-			$response = Response::ok($subElements, Text::_('COM_EMUNDUS_EXPORT_STEPS_RETRIEVED_SUCCESSFULLY'));
+			$response = EmundusResponse::ok($subElements, Text::_('COM_EMUNDUS_EXPORT_STEPS_RETRIEVED_SUCCESSFULLY'));
 
 		} catch (\Exception $e)
 		{
-			$response = Response::fail($e->getMessage(), $e->getCode());
+			$response = EmundusResponse::fail($e->getMessage(), $e->getCode());
 		}
 
 
@@ -968,7 +968,7 @@ class EmundusControllerExport extends BaseController
 				// Delete export record and task associated if any
 				if (!$this->exportRepository->delete($export->getId()))
 				{
-					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), Response::HTTP_INTERNAL_SERVER_ERROR);
+					throw new Exception(Text::_('COM_EMUNDUS_EXPORT_FAILED_TO_DELETE_EXPORT'), EmundusResponse::HTTP_INTERNAL_SERVER_ERROR);
 				}
 
 				$task = $export->getTask();
