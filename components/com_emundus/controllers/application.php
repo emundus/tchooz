@@ -24,6 +24,7 @@ use Joomla\Utilities\ArrayHelper;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Enums\CrudEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
@@ -763,8 +764,12 @@ class EmundusControllerApplication extends BaseController
 	{
 		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(11, 'u', $this->_user->id, $fnum))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$actionRepository = new ActionRepository();
+			$accessFileGroupsAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
 			$state         = $this->input->getInt('state', null);
 			$accessid      = explode('-', $this->input->getString('access_id', null));
 			$type          = $this->input->getString('type', null);
@@ -772,11 +777,17 @@ class EmundusControllerApplication extends BaseController
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				if(EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				}
 			}
 			else
 			{
-				$res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				if(EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				}
 			}
 			echo json_encode($res);
 			exit();
@@ -800,19 +811,29 @@ class EmundusControllerApplication extends BaseController
 	{
 		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $fnum))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$actionRepository = new ActionRepository();
+			$accessFileGroupsAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
 			$id            = $this->input->getString('id', null);
 			$type          = $this->input->getString('type', null);
 			$m_application = $this->getModel('Application');
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->deleteGroupAccess($fnum, (int)$id);
+				if(EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->deleteGroupAccess($fnum, (int) $id);
+				}
 			}
 			else
 			{
-				$res->status = $m_application->deleteUserAccess($fnum, $id);
+				if(EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->deleteUserAccess($fnum, $id);
+				}
 			}
 			echo json_encode($res);
 			exit();

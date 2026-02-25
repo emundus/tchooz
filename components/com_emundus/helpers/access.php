@@ -18,6 +18,7 @@ use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Language\Text;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\NumericSign\RequestRepository;
 
@@ -195,8 +196,13 @@ class EmundusHelperAccess
 		require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
 		$m_users   = new EmundusModelUsers();
 
-		if (!is_numeric($action_id)) {
-			$action_id = EmundusHelperAccess::getActionIdByName($action_id);
+		if (!is_numeric($action_id) && !empty($action_id)) {
+			$actionRepository = new ActionRepository();
+			$actionEntity = $actionRepository->getByName($action_id);
+			if(!empty($actionEntity))
+			{
+				$action_id = $actionEntity->getId();
+			}
 		}
 
 		if (!empty($action_id)) {

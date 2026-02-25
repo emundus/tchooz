@@ -12,6 +12,9 @@ namespace scripts;
 
 use scripts\ReleaseInstaller;
 use Tchooz\Repositories\Language\LanguageRepository;
+use Tchooz\Entities\Actions\ActionEntity;
+use Tchooz\Factories\Language\LanguageFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 class Release2_15_0Installer extends ReleaseInstaller
 {
@@ -168,6 +171,52 @@ class Release2_15_0Installer extends ReleaseInstaller
 				}
 			}
 
+			LanguageFactory::deleteTranslation('COM_EMUNDUS_ACCESS_ACCESS_FILE');
+			$accessFileUsersAction = \EmundusHelperUpdate::createNewAction(
+				'access_file_users',
+				['multi' => true, 'c' => 1, 'r' => 1, 'u' => 1, 'd' => 1],
+				'',
+				'',
+				1
+			);
+			$this->tasks[]     = !empty($accessFileUsersAction);
+
+			$actionRepository = new ActionRepository();
+			$accessFileAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
+			// Update note of action menu with the new action name
+			$query->clear()
+				->select('id, note')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=files&format=raw&layout=access&users={fnums}'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('actions'));
+			$this->db->setQuery($query);
+			$menuItem = $this->db->loadObject();
+			if(!empty($menuItem))
+			{
+				$menuItem->note = $accessFileAction->getName().'|u|1,'.$accessFileUsersAction->getName().'|u|1';
+
+				$this->tasks[] = $this->db->updateObject('#__menu', $menuItem, 'id');
+			}
+
+			$query->clear()
+				->select('id, note')
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('link') . ' LIKE ' . $this->db->quote('index.php?option=com_emundus&view=application&format=raw&layout=share'))
+				->where($this->db->quoteName('menutype') . ' LIKE ' . $this->db->quote('application'));
+			$this->db->setQuery($query);
+			$menuItem = $this->db->loadObject();
+			if(!empty($menuItem))
+			{
+				$menuItem->note = $accessFileAction->getName().'|r,'.$accessFileUsersAction->getName().'|r';
+
+				$this->tasks[] = $this->db->updateObject('#__menu', $menuItem, 'id');
+			}
+
+			// We have to give this right to all groups and users that already have the "access_file" action, otherwise they will lose access to the file access management page after the update
+			$this->giveAccessFileUsersActionToExistingUsers($accessFileAction, $accessFileUsersAction);
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)
@@ -178,5 +227,69 @@ class Release2_15_0Installer extends ReleaseInstaller
 
 
 		return $result;
+	}
+
+	private function giveAccessFileUsersActionToExistingUsers(ActionEntity $accessFileAction, ActionEntity $accessFileUsersAction): void
+	{
+		$query = $this->db->createQuery();
+
+		// ACL -> Groups
+		$query->select('*')
+			->from($this->db->quoteName('#__emundus_acl'))
+			->where($this->db->quoteName('action_id') . ' = ' . $accessFileAction->getId());
+
+		$this->db->setQuery($query);
+		$accessFileActions = $this->db->loadObjectList();
+
+		foreach ($accessFileActions as $action)
+		{
+			// Check if the user/group already has the "access_file_users" action, if yes skip to avoid duplicates
+			$query->clear()
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_acl'))
+				->where($this->db->quoteName('action_id') . ' = ' . $accessFileUsersAction->getId())
+				->where($this->db->quoteName('group_id') . ' = ' . $action->group_id);
+			$this->db->setQuery($query);
+			$existingAccessFileUsersActionId = $this->db->loadResult();
+
+			if(!$existingAccessFileUsersActionId)
+			{
+				// Update action id with the new "access_file_users" action id and insert new record
+				unset($action->id);
+				$action->action_id = $accessFileUsersAction->getId();
+				$this->tasks[] = $this->db->insertObject('#__emundus_acl', $action);
+			}
+		}
+		//
+
+		// ACL -> Users
+		$query->clear()
+			->select('*')
+			->from($this->db->quoteName('#__emundus_users_assoc'))
+			->where($this->db->quoteName('action_id') . ' = ' . $accessFileAction->getId());
+
+		$this->db->setQuery($query);
+		$accessFileActions = $this->db->loadObjectList();
+
+		foreach ($accessFileActions as $action)
+		{
+			// Check if the user/group already has the "access_file_users" action, if yes skip to avoid duplicates
+			$query->clear()
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__emundus_users_assoc'))
+				->where($this->db->quoteName('action_id') . ' = ' . $accessFileUsersAction->getId())
+				->where($this->db->quoteName('user_id') . ' = ' . $action->user_id)
+				->where($this->db->quoteName('fnum') . ' = ' . $action->fnum);
+			$this->db->setQuery($query);
+			$existingAccessFileUsersActionId = $this->db->loadResult();
+
+			if(!$existingAccessFileUsersActionId)
+			{
+				// Update action id with the new "access_file_users" action id and insert new record
+				unset($action->id);
+				$action->action_id = $accessFileUsersAction->getId();
+				$this->tasks[] = $this->db->insertObject('#__emundus_users_assoc', $action);
+			}
+		}
 	}
 }
