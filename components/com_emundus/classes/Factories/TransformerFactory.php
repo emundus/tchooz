@@ -32,7 +32,7 @@ class TransformerFactory
 
 		return match ($normalized)
 		{
-			ElementPluginEnum::CHECKBOX->value, ElementPluginEnum::DROPDOWN->value, ElementPluginEnum::RADIO->value => new ChoicesTransformer($fabrikElementParams, $pluginElement, $translations),
+			ElementPluginEnum::CHECKBOX->value, ElementPluginEnum::DROPDOWN->value, ElementPluginEnum::RADIO->value, ElementPluginEnum::ORDERLIST->value => new ChoicesTransformer($fabrikElementParams, $pluginElement, $translations),
 			ElementPluginEnum::BIRTHDAY->value => new BirthdayTransformer($fabrikElementParams['details_date_format'] ?? ($fabrikElementParams['list_date_format'] ?? 'Y-m-d')),
 			ElementPluginEnum::DATE->value => new DateTransformer($fabrikElementParams['date_format'] ?? 'd/m/Y H:i:s'),
 			ElementPluginEnum::PHONENUMBER->value => new PhoneTransformer(),

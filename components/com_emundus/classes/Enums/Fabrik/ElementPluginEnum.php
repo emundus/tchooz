@@ -57,6 +57,8 @@ enum ElementPluginEnum: string
 	// DEPRECATED
 	case REFERENT = 'emundusreferent';
 
+	case ORDERLIST = 'orderlist';
+
 	public static function tryFromString(?string $plugin): ?self
 	{
 		if ($plugin === null || $plugin === '')
@@ -108,6 +110,7 @@ enum ElementPluginEnum: string
 
 			// DEPRECATED
 			self::REFERENT => 'COM_EMUNDUS_ONBOARD_TYPE_REFERENT',
+			self::ORDERLIST => 'COM_EMUNDUS_ONBOARD_TYPE_ORDERLIST',
 
 			default => 'COM_EMUNDUS_UNKNOWN',
 		};
@@ -141,7 +144,8 @@ enum ElementPluginEnum: string
 		{
 			self::CHECKBOX,
 			self::DROPDOWN,
-			self::RADIO => true,
+			self::RADIO,
+			self::ORDERLIST => true,
 			default => false,
 		};
 	}

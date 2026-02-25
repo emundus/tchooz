@@ -2858,7 +2858,7 @@ class EmundusModelForm extends ListModel
 			foreach ($js_conditions as $js_condition)
 			{
 				$query->clear()
-					->select($this->db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type', 'esfrjc.type']))
+					->select($this->db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type', 'esfrjc.type', 'esfrjc.params']))
 					->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group','esfrjcg').' ON '.$this->db->quoteName('esfrjcg.id').' = '.$this->db->quoteName('esfrjc.group'))
 					->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($js_condition->id));
@@ -2918,6 +2918,15 @@ class EmundusModelForm extends ListModel
 								$condition->options->sub_values[] = $databasejoin_option->primary_key;
 								$condition->options->sub_labels[] = $databasejoin_option->value;
 							}
+						}
+
+						if (!empty($condition->params))
+						{
+							$condition->params = json_decode($condition->params);
+						}
+						else
+						{
+							$condition->params = new stdClass();
 						}
 
 						if(!empty($condition->group)) {
@@ -3223,7 +3232,8 @@ class EmundusModelForm extends ListModel
 				'state'     => in_array($condition->state, $operators) ? $condition->state : '=',
 				'values'    => $condition->values,
 				'group'     => !empty($condition->group) ? $condition->group : null,
-				'type'      => $condition->type ?? 'form'
+				'type'      => $condition->type ?? 'form',
+				'params'   => !empty($condition->params) ? json_encode($condition->params) : null
 			];
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);

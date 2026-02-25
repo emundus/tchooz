@@ -2530,6 +2530,28 @@ class EmundusModelApplication extends ListModel
 															$elt = "";
 														}
 													}
+													else if ($elements[$j]->plugin == 'orderlist')
+													{
+														$elt = '';
+														if (!empty($r_elt)) {
+															$orderedValues = explode(',', $r_elt);
+															$orderedValues = array_map(function($value) {
+																return trim($value, '"');
+															}, $orderedValues);
+
+															$elt = '<ol>';
+															foreach ($orderedValues as $value) {
+																$index = array_search($value, $params->sub_options->sub_values);
+																if (strlen($index) > 0) {
+																	$elt .= '<li>' . Text::_($params->sub_options->sub_labels[$index]) . '</li>';
+																}
+																elseif (!empty($params->dropdown_populate)) {
+																	$elt .= '<li>' . $value . '</li>';
+																}
+															}
+															$elt .= '</ol>';
+														}
+													}
 													elseif ($elements[$j]->plugin == 'internalid') {
 														$elt = '';
 													}
@@ -2807,6 +2829,33 @@ class EmundusModelApplication extends ListModel
 												}
 												else {
 													$elt = "";
+												}
+											} elseif ($element->plugin === 'orderlist')
+											{
+												$params = json_decode($element->params);
+
+												if (!empty($element->content))
+												{
+													$orderedValues = explode(',', $element->content);
+													$labels = [];
+													foreach ($orderedValues as $value)
+													{
+														$value = trim($value, '"');
+														$index = array_search($value, $params->sub_options->sub_values);
+														if ($index !== false) {
+															$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+														}
+														else {
+															$labels[] = $value;
+														}
+													}
+
+													$elt = '<ol>';
+													foreach ($labels as $label)
+													{
+														$elt .= '<li>' . Text::_($label) . '</li>';
+													}
+													$elt .= "</ol>";
 												}
 											}
 											elseif ($element->plugin == 'internalid') {
@@ -3324,6 +3373,32 @@ class EmundusModelApplication extends ListModel
 														$elt = "";
 													}
 												}
+												elseif ($elements[$j]->plugin == 'orderlist')
+												{
+													if (!empty($r_elt))
+													{
+														$orderedValues = explode(',', $r_elt);
+														$labels = [];
+														foreach ($orderedValues as $value)
+														{
+															$value = trim($value, '"');
+															$index = array_search($value, $params->sub_options->sub_values);
+															if ($index !== false) {
+																$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+															}
+															else {
+																$labels[] = $value;
+															}
+														}
+
+														$elt = '<ol>';
+														foreach ($labels as $label)
+														{
+															$elt .= '<li>' . Text::_($label) . '</li>';
+														}
+														$elt .= "</ol>";
+													}
+												}
 												elseif ($elements[$j]->plugin == 'internalid') {
 													$elt = '';
 												}
@@ -3600,6 +3675,32 @@ class EmundusModelApplication extends ListModel
 														$elt = "";
 													}
 												}
+												elseif ($elements[$j]->plugin == 'orderlist')
+												{
+													if (!empty($r_elt))
+													{
+														$orderedValues = explode(',', $r_elt);
+														$labels = [];
+														foreach ($orderedValues as $value)
+														{
+															$value = trim($value, '"');
+															$index = array_search($value, $params->sub_options->sub_values);
+															if ($index !== false) {
+																$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+															}
+															else {
+																$labels[] = $value;
+															}
+														}
+
+														$elt = '<ol>';
+														foreach ($labels as $label)
+														{
+															$elt .= '<li>' . Text::_($label) . '</li>';
+														}
+														$elt .= "</ol>";
+													}
+												}
 												elseif ($elements[$j]->plugin == 'internalid') {
 													$elt = '';
 												}
@@ -3842,6 +3943,32 @@ class EmundusModelApplication extends ListModel
 												}
 												else {
 													$elt = "";
+												}
+											}
+											elseif ($element->plugin === 'orderlist')
+											{
+												if (!empty($element->content))
+												{
+													$orderedValues = explode(',', $element->content);
+													$labels = [];
+													foreach ($orderedValues as $value)
+													{
+														$value = trim($value, '"');
+														$index = array_search($value, $params->sub_options->sub_values);
+														if ($index !== false) {
+															$labels[] = Text::_($params->sub_options->sub_labels[$index]);
+														}
+														else {
+															$labels[] = $value;
+														}
+													}
+
+													$elt = '<ol>';
+													foreach ($labels as $label)
+													{
+														$elt .= '<li>' . Text::_($label) . '</li>';
+													}
+													$elt .= "</ol>";
 												}
 											}
 											elseif ($element->plugin == 'internalid') {

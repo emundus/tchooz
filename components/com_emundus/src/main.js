@@ -91,6 +91,11 @@ if (document) {
 		elements.push(exportsElement);
 	}
 
+	const fabrikVueElements = document.querySelectorAll('.fabrik-vue-element');
+	fabrikVueElements.forEach((fabrikElement) => {
+		elements.push(fabrikElement);
+	});
+
 	for (const el of elements) {
 		if (el) {
 			const componentName = el.getAttribute('component');
