@@ -2152,17 +2152,6 @@ class EmundusControllersettings extends EmundusController
 							}
 							break;
 
-						case 'docusign':
-							try
-							{
-								$docusignSynchronizer = new DocuSignSynchronizer();
-							}
-							catch (Exception $e)
-							{
-								$response['status'] = false;
-								break;
-							}
-							break;
 						case 'docaposte':
 							try
 							{
