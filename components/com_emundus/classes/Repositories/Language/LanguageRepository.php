@@ -190,6 +190,11 @@ class LanguageRepository extends EmundusRepository implements RepositoryInterfac
 
 	public function applyFilters(QueryInterface $query, array $filters): void
 	{
+		if (in_array('published', array_keys($filters)))
+		{
+			$query->where($this->db->qn('published') . ' = ' . (int) $filters['published']);
+		}
+
 		if (in_array('type', array_keys($filters)))
 		{
 			$query->where($this->db->qn('type') . ' = ' . $this->db->q($filters['type']));

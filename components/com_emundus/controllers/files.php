@@ -21,6 +21,8 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Attributes\AccessAttribute;
 use Tchooz\EmundusResponse;
 use Tchooz\Enums\AccessLevelEnum;
@@ -984,10 +986,6 @@ class EmundusControllerFiles extends EmundusController
 		exit;
 	}
 
-
-	/**
-	 *
-	 */
 	public function share()
 	{
 		$actions = $this->input->getString('actions', '');
@@ -996,6 +994,10 @@ class EmundusControllerFiles extends EmundusController
 		$notify  = $this->input->getVar('notify', 'false');
 		$itemId  = $this->input->getInt('Itemid', 0);
 
+		$actionRepository = new ActionRepository();
+		$accessFileGroupsAction = $actionRepository->getByName('access_file');
+		$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
 		$actions = (array) json_decode(stripslashes($actions));
 
 		$m_files = $this->getModel('Files');
@@ -1003,46 +1005,52 @@ class EmundusControllerFiles extends EmundusController
 		$fnums_post = $this->input->getString('fnums', null);
 		$fnums      = ($fnums_post) == 'all' ? $m_files->getAllFnums(false, $this->_user->id, $itemId) : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
-		$validFnums = array();
-		foreach ($fnums as $fnum) {
-			if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum)) {
-				$validFnums[] = $fnum;
+		$res = false;
+		if (!empty($groups)) {
+			$validFnums = array();
+			foreach ($fnums as $fnum) {
+				if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::CREATE->value, $this->_user->id, $fnum)) {
+					$validFnums[] = $fnum;
+				}
+			}
+
+			if(!empty($validFnums))
+			{
+				$groups = (array) json_decode(stripslashes($groups));
+				$res    = $m_files->shareGroups($groups, $actions, $validFnums);
+			}
+		}
+
+		if (!empty($evals)) {
+			$validFnums = array();
+			foreach ($fnums as $fnum) {
+				if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::CREATE->value, $this->_user->id, $fnum)) {
+					$validFnums[] = $fnum;
+				}
+			}
+
+			if(!empty($validFnums))
+			{
+				$evals = (array) json_decode(stripslashes($evals));
+				$res   = $m_files->shareUsers($evals, $actions, $validFnums);
 			}
 		}
 
 		unset($fnums);
-		if (count($validFnums) > 0) {
-			if (!empty($groups)) {
-				$groups = (array) json_decode(stripslashes($groups));
-				$res    = $m_files->shareGroups($groups, $actions, $validFnums);
-			}
 
-			if (!empty($evals)) {
-				$evals = (array) json_decode(stripslashes($evals));
-				$res   = $m_files->shareUsers($evals, $actions, $validFnums);
-			}
-
-			if ($res !== false) {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
-			}
-			else {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-			}
-		} else {
+		if ($res !== false) {
+			$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
+		}
+		else {
 			$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-			echo json_encode((object) (array('status' => '0', 'msg' => $msg)));
-			exit;
 		}
 
-		if ($notify !== 'false' && $res !== false && !empty($evals)) {
+		if ($notify !== 'false' && $res !== false && !empty($evals) && !empty($validFnums)) {
+			$fnums = $validFnums;
 
-			if (empty($fnums)) {
-				$fnums = $validFnums;
-			}
-
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/emails.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/users.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
 
 			$m_emails = new EmundusModelEmails();
 			$m_users    = $this->getModel('Users');
