@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="3.4" type="plugin" group="system" method="upgrade">
+	<name>PLG_SYSTEM_WEB357FRAMEWORK</name>
+	<author>Web357 (Yiannis Christodoulou)</author>
+	<creationDate>2025-10-27</creationDate>
+	<copyright>Copyright: (©) 2014-2024 Web357. All rights reserved.</copyright>
+	<license>GNU/GPLv3, https://www.gnu.org/licenses/gpl-3.0.html</license>
+	<authorEmail>support@web357.com</authorEmail>
+	<authorUrl>https://www.web357.com</authorUrl>
+	<version>2.0.0</version>
+	<variant>free</variant>
+	<description>PLG_SYSTEM_WEB357FRAMEWORK_XML_DESCRIPTION</description>
+
+	<files>
+		<folder>language</folder>
+		<folder>elements</folder>
+		<folder>Web357Framework</folder>
+		<filename>autoload.php</filename>
+		<filename>script.install.helper.php</filename>
+		<filename>web357framework.class.php</filename>
+		<filename plugin="web357framework">web357framework.php</filename>
+	</files>
+
+	<media folder="media" destination="plg_system_web357framework">
+		<folder>css</folder>
+		<folder>images</folder>
+		<folder>js</folder>
+	</media>
+
+	<languages folder="language">
+		<language tag="ca-ES">ca-ES/ca-ES.plg_system_web357framework.ini</language>
+		<language tag="ca-ES">ca-ES/ca-ES.plg_system_web357framework.sys.ini</language>
+
+		<language tag="da-DK">da-DK/da-DK.plg_system_web357framework.ini</language>
+		<language tag="da-DK">da-DK/da-DK.plg_system_web357framework.sys.ini</language>
+
+		<language tag="de-DE">de-DE/de-DE.plg_system_web357framework.ini</language>
+		<language tag="de-DE">de-DE/de-DE.plg_system_web357framework.sys.ini</language>
+
+		<language tag="el-GR">el-GR/el-GR.plg_system_web357framework.ini</language>
+		<language tag="el-GR">el-GR/el-GR.plg_system_web357framework.sys.ini</language>
+
+		<language tag="en-GB">en-GB/en-GB.plg_system_web357framework.ini</language>
+		<language tag="en-GB">en-GB/en-GB.plg_system_web357framework.sys.ini</language>
+
+		<language tag="es-ES">es-ES/es-ES.plg_system_web357framework.ini</language>
+		<language tag="es-ES">es-ES/es-ES.plg_system_web357framework.sys.ini</language>
+
+		<language tag="fa-IR">fa-IR/fa-IR.plg_system_web357framework.ini</language>
+		<language tag="fa-IR">fa-IR/fa-IR.plg_system_web357framework.sys.ini</language>
+
+		<language tag="fr-FR">fr-FR/fr-FR.plg_system_web357framework.ini</language>
+		<language tag="fr-FR">fr-FR/fr-FR.plg_system_web357framework.sys.ini</language>
+
+		<language tag="it-IT">it-IT/it-IT.plg_system_web357framework.ini</language>
+		<language tag="it-IT">it-IT/it-IT.plg_system_web357framework.sys.ini</language>
+
+		<language tag="nl-BE">nl-BE/nl-BE.plg_system_web357framework.ini</language>
+		<language tag="nl-BE">nl-BE/nl-BE.plg_system_web357framework.sys.ini</language>
+
+		<language tag="nl-NL">nl-NL/nl-NL.plg_system_web357framework.ini</language>
+		<language tag="nl-NL">nl-NL/nl-NL.plg_system_web357framework.sys.ini</language>
+
+		<language tag="ru-RU">ru-RU/ru-RU.plg_system_web357framework.ini</language>
+		<language tag="ru-RU">ru-RU/ru-RU.plg_system_web357framework.sys.ini</language>
+
+		<language tag="tr-TR">tr-TR/tr-TR.plg_system_web357framework.ini</language>
+		<language tag="tr-TR">tr-TR/tr-TR.plg_system_web357framework.sys.ini</language>
+	</languages>
+
+	<scriptfile>script.install.php</scriptfile>
+
+	<config>
+		<fields name="params">
+			
+			<fieldset name="basic" label="Web357 Framework - Parameters" addfieldpath="/plugins/system/web357framework/elements">
+
+				<!-- API Key -->
+				<field type="header" label="W357FRM_APIKEY_HEADER" />
+				<field name="apikeyinfo" type="w357note" />
+				<field name="apikey" id="apikey" type="apikey" label="" description="" />
+
+				<!-- Version Checker -->
+				<field type="header" label="W357FRM_HEADER_VERSION_CHECK" />
+				<field name="info" id="info" type="info" extension_type="plugin" extension_name="web357framework" real_name="PLG_SYSTEM_WEB357FRAMEWORK" plugin_type="system" label="" addfieldpath="/plugins/system/web357framework/elements" />
+		
+			</fieldset>
+
+			<fieldset name="description" label="W357FRM_HEADER_DESCRIPTION">
+				<field name="description_html" type="note" label="" description="PLG_SYSTEM_WEB357FRAMEWORK_XML_DESCRIPTION_HTML" />
+			</fieldset>
+
+		</fields>
+	</config>
+
+	<updateservers><server type="extension" priority="1" name="Web357 Framework"><![CDATA[https://updates.web357.com/web357framework/web357framework.xml]]></server></updateservers>
+
+</extension>

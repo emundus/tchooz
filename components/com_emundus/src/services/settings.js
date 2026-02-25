@@ -709,4 +709,14 @@ export default {
 			};
 		}
 	},
+	async revokeMicrosoftAccess() {
+		try {
+			return await fetchClient.post('revokemicrosoftaccess');
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
 };
