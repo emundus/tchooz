@@ -34,6 +34,7 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Upload\UploadEntity;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
@@ -4817,89 +4818,102 @@ class EmundusModelSettings extends ListModel
 		}
 	}
 
-	public function getFileInfosFromUploadId(int $upload_id): array
+	public function getFileInfosFromUploadEntity(UploadEntity $upload): array
 	{
 		$infos = [];
 
 		try
 		{
-			// Get file path
-			$query = $this->db->getQuery(true);
-
-			$query->select('eu.id, eu.filename, ecc.applicant_id, eu.thumbnail')
-				->from($this->db->quoteName('#__emundus_uploads', 'eu'))
-				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('eu.fnum'))
-				->where($this->db->quoteName('eu.id') . ' = :upload_id')
-				->bind(':upload_id', $upload_id, ParameterType::INTEGER);
-			$this->db->setQuery($query);
-			$file = $this->db->loadObject();
-
-			if (!empty($file->filename))
+			// Check if file exists
+			if (file_exists($upload->getFileInternalPath()))
 			{
-				$file_path = JPATH_ROOT . '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
-
-				// Check if file exists
-				if (file_exists($file_path))
+				if (empty($upload->getThumbnail()))
 				{
-					if (empty($file->thumbnail))
+					try
 					{
-						try
-						{
-							$thumbnail_width = 200;
+						$base64Thumbnail = $this->getFileThumbnail($upload, 1);
+						$upload->setThumbnail($base64Thumbnail);
 
-							if (!extension_loaded('imagick'))
-							{
-								throw new Exception('Imagick extension is not loaded.');
-							}
-
-							$imagick = new Imagick();
-							$imagick->setResolution(150, 150);
-							$imagick->readImage($file_path . '[0]');
-							$imagick->setImageFormat('png');
-							$imagick->thumbnailImage($thumbnail_width, 0);
-
-							// Convert image to base64
-							$thumbnailData   = $imagick->getImageBlob();
-							$base64Thumbnail = base64_encode($thumbnailData);
-
-							$file->thumbnail = $base64Thumbnail;
-
-							// Move to tmp directory instead of database or redis
-							$this->db->updateObject('#__emundus_uploads', $file, 'id');
-						}
-						catch (Exception $e)
-						{
-							Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-							$base64Thumbnail = '';
-						}
-
+						// Move to tmp directory instead of database or redis
+						$this->db->updateObject('#__emundus_uploads', $upload, 'id');
 					}
-					else
+					catch (Exception $e)
 					{
-						$base64Thumbnail = $file->thumbnail;
+						Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+						$base64Thumbnail = '';
 					}
 
-					$infos['thumbnail'] = $base64Thumbnail;
-
-					// If pdf, get text content
-					if (pathinfo($file->filename, PATHINFO_EXTENSION) === 'pdf')
-					{
-						$parser                = new Parser();
-						$pdf                   = $parser->parseFile($file_path);
-						$infos['pages_length'] = count($pdf->getPages());
-						$infos['text']         = $pdf->getText();
-					}
-
-					return $infos;
 				}
 				else
 				{
-					throw new Exception('File not found: ' . $file_path);
+					$base64Thumbnail = $upload->getThumbnail();
 				}
+
+				$infos['thumbnail'] = $base64Thumbnail;
+
+				// If pdf, get text content
+				if (pathinfo($upload->getFilename(), PATHINFO_EXTENSION) === 'pdf')
+				{
+					$parser                = new Parser();
+					$pdf                   = $parser->parseFile($upload->getFileInternalPath());
+					$infos['pages_length'] = count($pdf->getPages());
+					$infos['text']         = $pdf->getText();
+				}
+
+				return $infos;
 			}
 			else
 			{
-				throw new Exception('File not found for upload ID: ' . $upload_id);
+				throw new Exception('File not found: ' . $upload->getFileInternalPath());
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			throw $e;
+		}
+	}
+
+	public function getFileThumbnail(UploadEntity $uploadEntity, int $page = 1): string
+	{
+		$base64Thumbnail = "";
+
+		try
+		{
+			if (file_exists($uploadEntity->getFileInternalPath()))
+			{
+				try
+				{
+					$page      = max(1, $page);
+					$pageIndex = $page - 1;
+
+					$thumbnail_width = 200;
+
+					if (!extension_loaded('imagick'))
+					{
+						throw new Exception('Imagick extension is not loaded.');
+					}
+
+					$imagick = new Imagick();
+					$imagick->setResolution(150, 150);
+					$imagick->readImage($uploadEntity->getFileInternalPath() . '[' . $pageIndex . ']');
+					$imagick->setImageFormat('png');
+					$imagick->thumbnailImage($thumbnail_width, 0);
+
+					// Convert image to base64
+					$thumbnailData   = $imagick->getImageBlob();
+					$base64Thumbnail = base64_encode($thumbnailData);
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				}
+
+				return $base64Thumbnail;
+			}
+			else
+			{
+				throw new Exception('File not found: ' . $uploadEntity->getFileInternalPath());
 			}
 		}
 		catch (Exception $e)
