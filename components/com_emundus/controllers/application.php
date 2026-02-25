@@ -28,6 +28,8 @@ use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
+use Tchooz\Repositories\Upload\UploadRepository;
+use Tchooz\Response;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusControllerApplication extends BaseController
@@ -2457,6 +2459,35 @@ class EmundusControllerApplication extends BaseController
 		$response['status']  = true;
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
+		$this->sendJsonResponse($response);
+	}
+
+	public function getuploadbyid(): void
+	{
+		$response = new Response(false, Text::_('ACCESS_DENIED'), 403);
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$id = $this->input->getInt('id', 0);
+
+			try
+			{
+				$uploadRepository = new UploadRepository();
+				$upload           = $uploadRepository->getById($id);
+
+				if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $upload->getFnum()))
+				{
+					$response = $response::ok($upload->serialize());
+				}
+
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = $e->getCode();
+				$response['message'] = $e->getMessage();
+			}
+		}
+
 		$this->sendJsonResponse($response);
 	}
 }
