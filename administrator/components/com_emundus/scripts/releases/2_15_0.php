@@ -217,6 +217,65 @@ class Release2_15_0Installer extends ReleaseInstaller
 			// We have to give this right to all groups and users that already have the "access_file" action, otherwise they will lose access to the file access management page after the update
 			$this->giveAccessFileUsersActionToExistingUsers($accessFileAction, $accessFileUsersAction);
 
+			\EmundusHelperUpdate::installExtension('PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT', 'microsoftoutlook365mailconnect', null, 'plugin', 0, 'system');
+			\EmundusHelperUpdate::installExtension('PLG_SYSTEM_MICROSOFTOUTLOOK365MAILCONNECT', 'microsoftoutlook365mailconnect', null, 'plugin', 1, 'installer');
+			\EmundusHelperUpdate::installExtension('PLG_SYSTEM_WEB357FRAMEWORK', 'web357framework', null, 'plugin', 1, 'system');
+			\EmundusHelperUpdate::installExtension('PLG_SYSTEM_WEB357FRAMEWORK', 'web357framework', null, 'plugin', 1, 'ajax');
+
+
+			$query->clear()
+				->select($this->db->quoteName('id'))
+				->from($this->db->quoteName('#__menu'))
+				->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('ms365'));
+			$this->db->setQuery($query);
+			$ms365MenuId = $this->db->loadResult();
+
+			if(empty($ms365MenuId))
+			{
+				$ms365Menu = \EmundusHelperUpdate::addJoomlaMenu([
+					'menutype'     => 'topmenu',
+					'title'        => 'MS365',
+					'link'         => '#',
+					'path'         => 'ms365',
+					'alias'        => 'ms365',
+					'type'         => 'url',
+					'component_id' => 0,
+					'access'       => 1,
+					'params'       => [
+						'menu_show' => 0
+					]
+				]);
+				$ms365MenuId = $ms365Menu['id'];
+				$this->tasks[] = $ms365Menu['status'];
+			}
+
+			if(!empty($ms365MenuId))
+			{
+				$query->clear()
+					->select($this->db->quoteName('id'))
+					->from($this->db->quoteName('#__menu'))
+					->where($this->db->quoteName('alias') . ' = ' . $this->db->quote('microsoft-outlook-365-mail-connect-authorize'));
+				$this->db->setQuery($query);
+				$msConnectMenuId = $this->db->loadResult();
+
+				if(empty($msConnectMenuId))
+				{
+					$this->tasks[] = \EmundusHelperUpdate::addJoomlaMenu([
+						'menutype'     => 'topmenu',
+						'title'        => 'Microsoft Outlook 365 Mail Connect',
+						'link'         => '#',
+						'path'         => 'microsoft-outlook-365-mail-connect-authorize',
+						'alias'        => 'microsoft-outlook-365-mail-connect-authorize',
+						'type'         => 'url',
+						'component_id' => 0,
+						'access'       => 1,
+						'params'       => [
+							'menu_show' => 0
+						]
+					], $ms365MenuId)['status'];
+				}
+			}
+
 			$result['status'] = !in_array(false, $this->tasks);
 		}
 		catch (\Exception $e)

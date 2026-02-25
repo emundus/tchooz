@@ -52,6 +52,8 @@ use Tchooz\Synchronizers\NumericSign\DocuSignSynchronizer;
 use Tchooz\Synchronizers\NumericSign\YousignSynchronizer;
 use Tchooz\Synchronizers\SMS\OvhSMS;
 use Tchooz\Controller\EmundusController;
+use Tchooz\Traits\TraitResponse;
+use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlook365mailconnect;
 
 class EmundusControllersettings extends EmundusController
 {
@@ -1117,6 +1119,8 @@ class EmundusControllersettings extends EmundusController
 			$config              = [];
 			$mail_to             = $this->input->getString('testing_email', '');
 			$custom_email_config = $this->input->getInt('custom_email_conf', 0);
+			$config['server_type'] = $this->input->getString('custom_server_type', 'smtp');
+
 			if ($custom_email_config != 1)
 			{
 				// We get default email configuration
@@ -1129,7 +1133,7 @@ class EmundusControllersettings extends EmundusController
 				$config['mailfrom']   = $this->input->getString('default_email_mailfrom', $emConfig->get('default_email_smtpport', $this->app->get('mailfrom', '')));
 				$config['fromname']   = $this->input->getString('fromname', $emConfig->get('default_email_fromname', $this->app->get('fromname', '')));
 			}
-			else
+			elseif($config['server_type'] === 'smtp')
 			{
 				// We get custom email configuration
 				$config['smtpauth']   = $this->input->getString('custom_email_smtpauth', 0);
@@ -1167,7 +1171,7 @@ class EmundusControllersettings extends EmundusController
 			$config['replytoname'] = $this->input->getString('replytoname', $this->app->get('replytoname', ''));
 			$config['mailer']      = $this->app->get('mailer', 'smtp');
 
-			$model    = $this->getModel('settings', 'EmundusModel');
+			$model = $this->getModel('settings', 'EmundusModel');
 			$response = $model->sendTestMailSettings($config, $this->user, $mail_to);
 		}
 
@@ -1211,30 +1215,39 @@ class EmundusControllersettings extends EmundusController
 			}
 			else
 			{
-				// We get custom email configuration
-				$config['smtpauth']   = $this->input->getString('custom_email_smtpauth', 0);
-				$config['smtphost']   = $this->input->getString('custom_email_smtphost', '');
-				$config['smtpuser']   = $this->input->getString('custom_email_smtpuser', '');
-				$config['smtppass']   = $this->input->getString('custom_email_smtppass', '');
-				$config['smtpsecure'] = $this->input->getString('custom_email_smtpsecure', '');
-				$config['smtpport']   = $this->input->getInt('custom_email_smtpport', '');
+				$config['custom_server_type'] = $this->input->getString('custom_server_type', 'smtp');
 				$config['mailfrom']   = $this->input->getString('custom_email_mailfrom', '');
-				$config['fromname']   = $this->input->getString('fromname', $this->app->get('fromname', ''));
-
-				if (empty($config['smtphost']))
+				if($config['custom_server_type'] === 'smtp')
 				{
-					$response['title'] = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
-					$response['text']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR_SMTPHOST');
-					echo json_encode($response);
-					exit;
+					// We get custom email configuration
+					$config['smtpauth']   = $this->input->getString('custom_email_smtpauth', 0);
+					$config['smtphost']   = $this->input->getString('custom_email_smtphost', '');
+					$config['smtpuser']   = $this->input->getString('custom_email_smtpuser', '');
+					$config['smtppass']   = $this->input->getString('custom_email_smtppass', '');
+					$config['smtpsecure'] = $this->input->getString('custom_email_smtpsecure', '');
+					$config['smtpport']   = $this->input->getInt('custom_email_smtpport', '');
+					$config['fromname']   = $this->input->getString('fromname', $this->app->get('fromname', ''));
+
+					if (empty($config['smtphost']))
+					{
+						$response['title'] = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+						$response['text']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR_SMTPHOST');
+						echo json_encode($response);
+						exit;
+					}
+
+					if (empty($config['mailfrom']))
+					{
+						$response['title'] = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
+						$response['text']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR_MAILFROM');
+						echo json_encode($response);
+						exit;
+					}
 				}
-
-				if (empty($config['mailfrom']))
+				elseif ($config['custom_server_type'] === 'microsoftoutlook365mailconnect')
 				{
-					$response['title'] = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
-					$response['text']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR_MAILFROM');
-					echo json_encode($response);
-					exit;
+					$config['oauth_application_id']   = $this->input->getString('microsoft365_applicationid', '');
+					$config['oauth_client_secret']   = $this->input->getString('microsoft365_clientsecret', '');
 				}
 			}
 
@@ -3515,6 +3528,35 @@ class EmundusControllersettings extends EmundusController
 			{
 				$response['code']    = 500;
 				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_ANALYTICS_PAGES_VISITED_FETCH_FAILED') . ': ' . $e->getMessage();
+			}
+		}
+
+		echo json_encode((object) $response);
+		exit;
+	}
+
+	public function revokemicrosoftaccess()
+	{
+		$this->checkToken();
+
+		$response = ['status' => false, 'message' => Text::_('ACCESS_DENIED'), 'code' => 403];
+
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			try
+			{
+				Microsoftoutlook365mailconnect::savePluginParams([
+					'oauth_access_token' => '',
+				]);
+
+				$response['status']  = true;
+				$response['code']    = 200;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MICROSOFT_ACCESS_REVOKED');
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = 500;
+				$response['message'] = Text::_('COM_EMUNDUS_SETTINGS_INTEGRATION_MICROSOFT_ACCESS_REVOKE_FAILED') . ': ' . $e->getMessage();
 			}
 		}
 
