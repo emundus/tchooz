@@ -183,7 +183,7 @@ class EmundusControllerExport extends BaseController
 			}
 
 			$worlflowRepository = new WorkflowRepository();
-			$workflows = $worlflowRepository->getWorkflowsByFnums($fnums);
+			$workflows = $worlflowRepository->getWorkflowsByFnums($fnums, true);
 
 			$elements = [];
 
@@ -214,6 +214,16 @@ class EmundusControllerExport extends BaseController
 							return $step->isApplicantStep();
 						});
 
+						foreach ($workflow->getChildWorkflows() as $childWorkflow)
+						{
+							$childApplicantSteps = array_filter($childWorkflow->getSteps(), function($step)
+							{
+								return $step->isApplicantStep();
+							});
+
+							$applicantSteps = array_merge($applicantSteps, $childApplicantSteps);
+						}
+
 						foreach ($applicantSteps as $applicantStep)
 						{
 							if (!in_array($applicantStep->getProfileId(), array_keys($elements)))
@@ -222,7 +232,7 @@ class EmundusControllerExport extends BaseController
 									'label'          => $applicantStep->getLabel(),
 									'profile_id'     => $applicantStep->getProfileId(),
 									'campaign_id'    => $workflow->getId(),
-									'campaign_label' => sizeof($workflows) > 1 ? $workflow->getLabel() : '',
+									'campaign_label' => sizeof($workflows) > 1 ? $applicantStep->getWorkflowLabel() : '',
 									'forms'          => []
 								];
 							}
@@ -238,6 +248,16 @@ class EmundusControllerExport extends BaseController
 							return $step->isEvaluationStep();
 						});
 
+						foreach ($workflow->getChildWorkflows() as $childWorkflow)
+						{
+							$childManagementSteps = array_filter($childWorkflow->getSteps(), function($step)
+							{
+								return $step->isEvaluationStep();
+							});
+
+							$managementSteps = array_merge($managementSteps, $childManagementSteps);
+						}
+
 						foreach ($managementSteps as $managementStep)
 						{
 							if (!in_array($managementStep->getFormId(), array_keys($elements)))
@@ -246,7 +266,7 @@ class EmundusControllerExport extends BaseController
 									'label'          => $managementStep->getLabel(),
 									'profile_id'     => $managementStep->getFormId(),
 									'campaign_id'    => $workflow->getId(),
-									'campaign_label' => sizeof($workflows) > 1 ? $workflow->getLabel() : '',
+									'campaign_label' => sizeof($workflows) > 1 ? $managementStep->getWorkflowLabel() : '',
 									'forms'          => []
 								];
 							}
@@ -277,6 +297,18 @@ class EmundusControllerExport extends BaseController
 								if ($step->isApplicantStep() && !empty($step->getProfileId()) && !in_array($step->getProfileId(), array_keys($elements)))
 								{
 									$workflowAttachments = $hFiles->getAttachmentsTypesByProfileID([$step->getProfileId()]);
+								}
+							}
+
+							foreach ($workflow->getChildWorkflows() as $childWorkflow)
+							{
+								foreach ($childWorkflow->getSteps() as $step)
+								{
+									if ($step->isApplicantStep() && !empty($step->getProfileId()) && !in_array($step->getProfileId(), array_keys($elements)))
+									{
+										$childWorkflowAttachments = $hFiles->getAttachmentsTypesByProfileID([$step->getProfileId()]);
+										$workflowAttachments = array_merge($workflowAttachments, $childWorkflowAttachments);
+									}
 								}
 							}
 						}

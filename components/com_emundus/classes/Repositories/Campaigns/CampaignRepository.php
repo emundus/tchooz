@@ -598,7 +598,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		$query = $this->db->getQuery(true);
 
-		$query->select($this->alias . 'id')
+		$query->select($this->alias . '.id')
 			->from($this->db->quoteName($this->tableName, $this->alias))
 			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = ' . $this->alias . '.training')
 			->where('p.id IN (' . implode(',', array_map('intval', $programs)) . ')');

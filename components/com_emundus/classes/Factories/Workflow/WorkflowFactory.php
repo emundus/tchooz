@@ -34,6 +34,10 @@ class WorkflowFactory
 			{
 				// todo: check if steps are in dbObject, if so, use StepFactory to create them instead of querying again
 				$steps = $stepRepository->getStepsByWorkflowId($dbObject->id);
+				foreach ($steps as $step)
+				{
+					$step->setWorkflowLabel($dbObject->label);
+				}
 
 				$programIds = !empty($dbObject->program_ids) ? explode(',', $dbObject->program_ids) : [];
 				$programIds = array_map('intval', $programIds);

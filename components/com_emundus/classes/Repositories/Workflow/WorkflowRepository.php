@@ -98,7 +98,7 @@ class WorkflowRepository
 	 *
 	 * @return array<WorkflowEntity>
 	 */
-	public function getWorkflowsByFnums(array $fnums): array
+	public function getWorkflowsByFnums(array $fnums, bool $loadChilds = false): array
 	{
 		$workflows = [];
 
@@ -122,7 +122,7 @@ class WorkflowRepository
 
 				if ($results)
 				{
-					$workflows = WorkflowFactory::fromDbObjects($results);
+					$workflows = WorkflowFactory::fromDbObjects($results, $loadChilds);
 				}
 			}
 			catch (\Exception $e)
