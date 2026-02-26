@@ -3,6 +3,7 @@
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Uri\Uri;
+use Tchooz\Factories\Language\LanguageFactory;
 
 defined('_JEXEC') or die;
 
@@ -119,9 +120,10 @@ if (sizeof($tmp_campaigns) > 0)
 
 		foreach ($tmp_campaigns as $campaign)
 		{
-			$campaigns[$campaign->prog_type][]        = $campaign;
-			$campaigns[$campaign->prog_type]['label'] = JText::_($campaign->prog_type);
-			$campaigns_labels[$campaign->prog_type][] = $campaign;
+            $progTypeKey = strtolower(LanguageFactory::replaceAccents($campaign->prog_type));
+			$campaigns[$progTypeKey][]        = $campaign;
+			$campaigns[$progTypeKey]['label'] = Text::_($campaign->prog_type);
+			$campaigns_labels[$progTypeKey][] = $campaign;
 		}
 	}
     elseif ($group_by == 'month')
