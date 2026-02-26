@@ -49,6 +49,7 @@
 					<ul>
 						<li v-for="campaign in campaigns" :key="campaign.id">
 							<a
+								v-if="crud.campaign && crud.campaign.u"
 								class="em-profile-font tw-cursor-pointer"
 								@click="
 									redirectJRoute(
@@ -58,6 +59,7 @@
 								target="_blank"
 								>{{ campaign.label }}</a
 							>
+							<span v-else class="em-profile-font">{{ campaign.label }}</span>
 						</li>
 					</ul>
 					<a
@@ -116,6 +118,10 @@ export default {
 			type: Number,
 			required: true,
 		},
+		crud: {
+			type: Object,
+			default: () => ({}),
+		},
 	},
 	data() {
 		return {
@@ -155,6 +161,10 @@ export default {
 		this.getWorkflows();
 		this.getAssociatedCampaigns();
 		this.getAssociatedWorkflow();
+
+		this.tabs[1].displayed = this.crud.campaign && this.crud.campaign.r;
+		this.tabs[2].displayed = this.crud.workflow && this.crud.workflow.r;
+		console.log(this.crud);
 	},
 	methods: {
 		getWorkflows() {

@@ -37,7 +37,7 @@ class AliasDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AliasDataConditionResolver::getAvailableFields
+	 * @covers \Tchooz\Services\Automation\Condition\AliasDataConditionResolver::getAvailableFields
 	 * @return void
 	 */
 	public function testGetAvailableFields(): void
@@ -57,7 +57,7 @@ class AliasDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers AliasDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\AliasDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValue(): void

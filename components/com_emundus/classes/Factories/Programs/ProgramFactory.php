@@ -13,10 +13,22 @@ use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\Programs\ProgramEntity;
 use Tchooz\Factories\DBFactory;
 
-class ProgramFactory implements DBFactory
+class ProgramFactory
 {
 
-	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): ProgramEntity
+	public static function fromDbObjects(array $dbObjects, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): array
+	{
+		$programs = [];
+
+		foreach ($dbObjects as $dbObject)
+		{
+			$programs[] = self::fromDbObject($dbObject, $withRelations, $exceptRelations, $db);
+		}
+
+		return $programs;
+	}
+
+	public static function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): ProgramEntity
 	{
 		if(is_object($dbObject))
 		{

@@ -234,7 +234,7 @@ requirejs(['fab/fabrik'], function () {
     if (!form_loaded) {
       setTimeout(() => {
         fetch('/index.php?option=com_emundus&controller=form&task=getjsconditions&form_id=' + form.id).then(response => response.json()).then(data => {
-          if (data.status) {
+          if (data.status && data.data && data.data.conditions) {
             js_rules = data.data.conditions;
 
             // First check rules based on user data
@@ -406,6 +406,8 @@ requirejs(['fab/fabrik'], function () {
         let condition_state = [];
 
         rule.conditions.forEach((condition) => {
+          condition.params = condition.params && typeof condition.params === 'string' ? JSON.parse(condition.params) : condition.params;
+
           if (condition.group && !condition_state[condition.group]) {
             condition_state[condition.group] = {
               'type': condition.group_type,
@@ -433,7 +435,22 @@ requirejs(['fab/fabrik'], function () {
               let name = elt.origId ? elt.origId.split('___')[1] : elt.baseElementId.split('___')[1];
 
               if (name == condition.field && elt.getRepeatNum() == element.getRepeatNum()) {
-                if (operators[condition.state](elt.get('value'), condition.values, elt.plugin)) {
+                let value = elt.get('value');
+
+                // todo: it would be better to check the plugin of the element and transform the value accordingly instead of this workaround for options
+                if (condition.params && condition.params.option)
+                {
+                  // value is the index of the option selected, transform value into array, and get index of condition.params.option
+                  const orderedValues = value.split(',').map(v => v.replaceAll('"', ''));
+                  console.log(orderedValues, 'orderedValues');
+
+                  const optionIndex = orderedValues.findIndex(orderedValue => orderedValue == condition.params.option);
+                  console.log(optionIndex, 'optionIndex');
+
+                  value = optionIndex !== -1 ? optionIndex+1 : '';
+                }
+
+                if (operators[condition.state](value, condition.values, elt.plugin)) {
                   if (condition.group) {
                     condition_state[condition.group].states.push(true);
                   } else {
@@ -539,7 +556,9 @@ requirejs(['fab/fabrik'], function () {
               });
             }
           });
-        } else {
+        }
+        else
+        {
           let opposite_action = 'hide';
 
           rule.actions.forEach((action) => {

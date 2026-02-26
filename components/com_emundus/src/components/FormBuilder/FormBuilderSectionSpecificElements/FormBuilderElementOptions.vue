@@ -25,7 +25,7 @@
 						</div>
 
 						<input
-							v-if="type !== 'dropdown' && !displayValues"
+							v-if="type !== 'dropdown' && type !== 'orderlist' && !displayValues"
 							:type="type"
 							:name="'element-id-' + element.id"
 							:value="option.sub_label"

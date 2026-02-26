@@ -3,6 +3,12 @@ import List from '@/views/List.vue';
 
 export default {
 	name: 'Products',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		List,
 	},
@@ -26,6 +32,7 @@ export default {
 									controller: 'payment',
 									name: 'add',
 									type: 'redirect',
+									acl: 'payment|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=payment&layout=productedit&id=%id%',
@@ -33,6 +40,7 @@ export default {
 									controller: 'payment',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'payment|u',
 								},
 								{
 									action: 'duplicateproduct',
@@ -41,6 +49,7 @@ export default {
 									name: 'duplicate',
 									multiple: true,
 									method: 'post',
+									acl: 'payment|c',
 								},
 								{
 									action: 'deleteproduct',
@@ -50,6 +59,7 @@ export default {
 									multiple: true,
 									method: 'delete',
 									confirm: 'COM_EMUNDUS_ONBOARD_PRODUCT_DELETE',
+									acl: 'payment|d',
 								},
 							],
 							filters: [
@@ -78,6 +88,7 @@ export default {
 									controller: 'payment',
 									name: 'add',
 									type: 'redirect',
+									acl: 'payment|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=payment&layout=discountedit&id=%id%',
@@ -85,6 +96,7 @@ export default {
 									controller: 'payment',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'payment|u',
 								},
 								{
 									action: 'deletediscount',
@@ -94,6 +106,7 @@ export default {
 									multiple: true,
 									method: 'delete',
 									confirm: 'COM_EMUNDUS_ONBOARD_DISCOUNT_DELETE',
+									acl: 'payment|d',
 								},
 							],
 						},
@@ -107,7 +120,7 @@ export default {
 
 <template>
 	<div id="products-list">
-		<list :default-lists="config" :default-type="'products'" :encoded="false"></list>
+		<list :default-lists="config" :default-type="'products'" :encoded="false" :crud="crud"></list>
 	</div>
 </template>
 

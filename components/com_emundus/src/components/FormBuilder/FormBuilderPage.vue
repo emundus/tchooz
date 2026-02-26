@@ -1,6 +1,7 @@
 <template>
 	<div id="form-builder-page">
 		<div
+			v-if="canUpdate"
 			class="tw-flex tw-flex-col tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-2 hover:tw-border-profile-full hover:tw-bg-neutral-300"
 		>
 			<div class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between">
@@ -11,6 +12,7 @@
 					ref="pageTitle"
 					v-html="page.label"
 				></span>
+
 				<button id="add-page-modele" class="tw-btn-cancel !tw-w-auto" @click="$emit('open-create-model', page.id)">
 					<span
 						class="material-symbols-outlined tw-cursor-pointer"
@@ -21,6 +23,7 @@
 					{{ translate('COM_EMUNDUS_FORM_BUILDER_SAVE_AS_MODEL_TITLE') }}
 				</button>
 			</div>
+
 			<div
 				id="pageDescription"
 				ref="pageDescription"
@@ -29,16 +32,21 @@
 				@click="$emit('open-page-properties', page)"
 			></div>
 		</div>
+		<div v-else>
+			<h3 v-html="page.label"></h3>
+			<p v-html="page.intro"></p>
+		</div>
 
 		<div class="form-builder-page-sections tw-mt-2">
 			<button
-				v-if="sections.length > 0"
+				v-if="canUpdate && sections.length > 0"
 				id="add-section"
 				class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3"
 				@click="addSection()"
 			>
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
 			</button>
+
 			<form-builder-page-section
 				v-for="(section, index) in sections"
 				:key="section.group_id"
@@ -48,6 +56,7 @@
 				:index="index + 1"
 				:totalSections="sections.length"
 				:ref="'section-' + section.group_id"
+				:can-update="canUpdate"
 				@open-element-properties="$emit('open-element-properties', $event)"
 				@move-element="updateElementsOrder"
 				@delete-section="deleteSection"
@@ -57,7 +66,13 @@
 			>
 			</form-builder-page-section>
 		</div>
-		<button id="add-section" class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3" @click="addSection()">
+
+		<button
+			v-if="canUpdate"
+			id="add-section"
+			class="tw-btn-primary tw-rounded-coordinator tw-px-6 tw-py-3"
+			@click="addSection()"
+		>
 			{{ translate('COM_EMUNDUS_FORM_BUILDER_ADD_SECTION') }}
 		</button>
 
@@ -94,6 +109,10 @@ export default {
 		mode: {
 			type: String,
 			default: 'forms',
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [formBuilderMixin, globalMixin, errorMixin],

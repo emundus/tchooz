@@ -19,7 +19,7 @@ class StepTypeRepositoryTest extends UnitTestCase
 
 
 	/**
-	 * @covers StepTypeRepository::getStepTypeById
+	 * @covers \Tchooz\Repositories\Workflow\StepTypeRepository::getStepTypeById
 	 * @return void
 	 */
 	public function testGetStepTypeById(): void
@@ -35,7 +35,7 @@ class StepTypeRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers StepTypeRepository::flush
+	 * @covers \Tchooz\Repositories\Workflow\StepTypeRepository::flush
 	 * @return void
 	 */
 	public function testFlush(): void
@@ -47,7 +47,7 @@ class StepTypeRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers StepTypeRepository::flush
+	 * @covers \Tchooz\Repositories\Workflow\StepTypeRepository::flush
 	 * @return void
 	 */
 	public function testUpdate(): void
@@ -59,7 +59,7 @@ class StepTypeRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers StepTypeRepository::getStepTypeByCode
+	 * @covers \Tchooz\Repositories\Workflow\StepTypeRepository::getStepTypeByCode
 	 * @return void
 	 */
 	public function testGetStepTypeByCode(): void
@@ -78,7 +78,7 @@ class StepTypeRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers StepTypeRepository::get
+	 * @covers \Tchooz\Repositories\Workflow\StepTypeRepository::get
 	 * @return void
 	 */
 	public function testGet(): void

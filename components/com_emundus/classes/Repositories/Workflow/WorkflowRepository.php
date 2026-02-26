@@ -348,6 +348,10 @@ class WorkflowRepository
 			$saved = false;
 		}
 
+		// purge cache of 'workflow_programs'
+		$hCache = new \EmundusHelperCache();
+		$hCache->set('workflow_programs', null);
+
 		return $saved;
 	}
 

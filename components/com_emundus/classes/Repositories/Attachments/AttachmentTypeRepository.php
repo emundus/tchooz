@@ -120,24 +120,6 @@ class AttachmentTypeRepository extends EmundusRepository
 		return $types;
 	}
 
-	public function applyFilters($query, array $filters): void
-	{
-		foreach ($filters as $field => $value)
-		{
-			if (!in_array($field, $this->columns))
-			{
-				continue;
-			}
-
-			if (is_array($value))
-			{
-				$query->where($this->tableName . '.' . $field . ' IN (' . implode(',', $value) . ')');
-			} else {
-				$query->where($this->tableName . '.' . $field . ' = ' . $this->db->quote($value));
-			}
-		}
-	}
-
 	/**
 	 * @param   array<CampaignEntity>  $campaigns
 	 *

@@ -1,11 +1,15 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: brivalland
- * Date: 22/11/14
- * Time: 17:36
- */
-$current_user = JFactory::getUser();
+
+use Joomla\CMS\Language\Text;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
+
+$actionRepository = new ActionRepository();
+$accessFileGroupsAction = $actionRepository->getByName('access_file');
+$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
+$accessFileGroups = EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::CREATE->value, $this->user->id);
+$accessFileUsers = EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::CREATE->value, $this->user->id);
 ?>
 
 
@@ -52,17 +56,21 @@ $current_user = JFactory::getUser();
     <div class="em-access" style="min-height: 282px;">
         <div class="em-access-form">
             <div class="tw-flex tw-flex-col tw-items-start em-mt-12">
-                <label><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE') ?></label>
-                <div  class="em-mb-6" style="width: 100%;">
-                    <input type="checkbox" id="group-user-choice">
-                    <label for="group-user-choice"><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE_GROUP_USER') ?></label>
-                </div>
-                <div style="width: 100%;">
-                    <input type="checkbox" id="specific-user-choice">
-                    <label for="specific-user-choice"><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE_SPECIFIC_USER') ?></label>
-                </div>
+                <label><?= Text::_('COM_EMUNDUS_SHARE_MESSAGE') ?></label>
+                <?php if ($accessFileGroups) : ?>
+                    <div  class="em-mb-6" style="width: 100%;">
+                        <input type="checkbox" id="group-user-choice">
+                        <label for="group-user-choice"><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE_GROUP_USER') ?></label>
+                    </div>
+                <?php endif; ?>
+                <?php if ($accessFileUsers) : ?>
+                    <div style="width: 100%;">
+                        <input type="checkbox" id="specific-user-choice">
+                        <label for="specific-user-choice"><?= JText::_('COM_EMUNDUS_SHARE_MESSAGE_SPECIFIC_USER') ?></label>
+                    </div>
+                <?php endif; ?>
             </div>
-			<?php if (EmundusHelperAccess::asAccessAction(11, 'c', $current_user->id)) { ?>
+			<?php if ($accessFileGroups) : ?>
                 <div id="group-div" class="em-mt-12 hidden">
                     <label><?= JText::_('COM_EMUNDUS_GROUPS_SHARE') ?></label>
                     <select class="modal-chzn-select" multiple="true"
@@ -73,23 +81,26 @@ $current_user = JFactory::getUser();
 						<?php endforeach; ?>
                     </select>
                 </div>
-			<?php } ?>
-            <div id="specific-div" class="em-mt-12 hidden">
-                <label><?= JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS'); ?></label>
-                <select class="modal-chzn-select" multiple="true"
-                        data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'); ?>"
-                        name="em-access-evals" id="em-access-evals" value="">
-					<?php foreach ($this->evals as $eval) : ?>
-                        <option value="<?= $eval['user_id']; ?>"><?= $eval['name']; ?> (<?= $eval['email']; ?>)
-                            :: <?= $eval['label']; ?></option>
-					<?php endforeach; ?>
-                </select>
-            </div>
+			<?php endif; ?>
 
-            <div class="em-flex-row em-mt-12 hidden" id="evaluator-email-block">
-                <input type="checkbox" id="evaluator-email"><label for="evaluator-email"
-                                                                   class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_GROUPS_NOTIFY_EVALUATORS'); ?></label>
-            </div>
+            <?php if ($accessFileUsers) : ?>
+                <div id="specific-div" class="em-mt-12 hidden">
+                    <label><?= JText::_('COM_EMUNDUS_EVALUATION_EVALUATORS'); ?></label>
+                    <select class="modal-chzn-select" multiple="true"
+                            data-placeholder="<?= JText::_('COM_EMUNDUS_GROUPS_PLEASE_SELECT_ASSESSOR'); ?>"
+                            name="em-access-evals" id="em-access-evals" value="">
+                        <?php foreach ($this->evals as $eval) : ?>
+                            <option value="<?= $eval['user_id']; ?>"><?= $eval['name']; ?> (<?= $eval['email']; ?>)
+                                :: <?= $eval['label']; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+
+                <div class="em-flex-row em-mt-12 hidden" id="evaluator-email-block">
+                    <input type="checkbox" id="evaluator-email"><label for="evaluator-email"
+                                                                       class="em-mb-0-important"><?= JText::_('COM_EMUNDUS_GROUPS_NOTIFY_EVALUATORS'); ?></label>
+                </div>
+            <?php endif; ?>
         </div>
 
         <div class="<?= $this->hide_actions == 1 ? 'hidden ' : ''; ?>panel-body em-access em-access-body hidden">

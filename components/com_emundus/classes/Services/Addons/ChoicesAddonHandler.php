@@ -68,6 +68,16 @@ class ChoicesAddonHandler implements AddonHandlerInterface
 		$tasks[] = $db->execute();
 		//
 
+		// Toggle List menu
+		$query->clear()
+			->update($db->quoteName('#__menu'))
+			->set($db->quoteName('published') . ' = ' . $db->quote($state_integer))
+			->where($db->quoteName('link') . ' = ' . $db->quote('index.php?option=com_emundus&view=application_choices&layout=list'))
+			->where($db->quoteName('menutype') . ' = ' . $db->quote('onboardingmenu'));
+		$db->setQuery($query);
+		$tasks[] = $db->execute();
+		//
+
 		// Toggle the filter on all files views
 		$query->clear()
 			->select('id, params')

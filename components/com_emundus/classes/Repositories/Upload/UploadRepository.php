@@ -150,14 +150,14 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 				'local_filename' => $entity->getLocalFilename(),
 				'size' => $entity->getSize(),
 				'is_validated' => $entity->getValidationStatus()->value,
-				'is_signed' => $entity->isSigned() ? 1 : 0,
+				'signed_file' => $entity->isSigned() ? 1 : 0,
 				'thumbnail' => $entity->getThumbnail(),
 				'can_be_deleted' => (int) $entity->canBeDeleted(),
 				'can_be_viewed' => (int) $entity->canBeViewed(),
 				'modified' => (new \DateTimeImmutable())->format('Y-m-d H:i:s'),
 				'modified_by' => $entity->getModifiedBy() ?: null,
 			];
-
+			
 			$flushed = $this->db->updateObject($this->tableName, $object, 'id');
 		}
 

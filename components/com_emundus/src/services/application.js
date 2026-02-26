@@ -131,4 +131,17 @@ export default {
 			};
 		}
 	},
+
+	async getUploadById(id) {
+		try {
+			return await client.get('getuploadbyid', {
+				id: id,
+			});
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };

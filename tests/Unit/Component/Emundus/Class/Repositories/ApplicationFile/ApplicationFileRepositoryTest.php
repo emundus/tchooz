@@ -17,7 +17,7 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ApplicationFileRepository::getByFnum
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::getByFnum
 	 * @return void
 	 */
 	public function testGetByFnum(): void
@@ -28,7 +28,7 @@ class ApplicationFileRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ApplicationFileRepository::flush
+	 * @covers \Tchooz\Repositories\ApplicationFile\ApplicationFileRepository::flush
 	 * @return void
 	 */
 	public function testFlush(): void

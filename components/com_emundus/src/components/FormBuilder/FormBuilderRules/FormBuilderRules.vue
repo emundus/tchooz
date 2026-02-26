@@ -286,8 +286,8 @@ export default {
 		getConditions() {
 			this.loading = true;
 			formService.getConditions(this.page.id).then((response) => {
-				if (response.status && response.data != '') {
-					this.rules = response.data.conditions;
+				if (response.status) {
+					this.rules = response.data && response.data.conditions ? response.data.conditions : [];
 				} else {
 					this.displayError(this.translate('COM_EMUNDUS_FORM_BUILDER_ERROR'), this.translate(response.msg));
 				}

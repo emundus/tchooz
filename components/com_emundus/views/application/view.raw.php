@@ -18,6 +18,8 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\MVC\View\HtmlView;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Entities\Workflow\WorkflowEntity;
 
@@ -552,10 +554,14 @@ class EmundusViewApplication extends HtmlView
 					break;
 
 				case 'share':
-					if (EmundusHelperAccess::asAccessAction(11, 'r', $this->user->id, $fnum)) {
+					$actionRepository = new ActionRepository();
+					$accessFileGroupsAction = $actionRepository->getByName('access_file');
+					$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
+					if (EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::READ->value, $this->user->id, $fnum) || EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::READ->value, $this->user->id, $fnum)) {
 						$this->access          = $m_application->getAccessFnum($fnum);
 						$this->defaultActions  = $m_application->getActions();
-						$this->canUpdateAccess = EmundusHelperAccess::asAccessAction(11, 'u', $this->user->id, $fnum);
+						$this->canUpdateAccess = EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), 'u', $this->user->id, $fnum) || EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), 'u', $this->user->id, $fnum);
 					}
 					else {
 						echo Text::_("COM_EMUNDUS_ACCESS_RESTRICTED_ACCESS");

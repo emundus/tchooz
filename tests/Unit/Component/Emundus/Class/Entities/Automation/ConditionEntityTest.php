@@ -69,7 +69,7 @@ class ConditionEntityTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers \Tchooz\Entities\Automation\ConditionEntity::transformValue
+	 * @covers \Tchooz\Entities\Automation\ConditionEntity::getTransformedValue
 	 * @return void
 	 */
 	public function testTransformValue(): void

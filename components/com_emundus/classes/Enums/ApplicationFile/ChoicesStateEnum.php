@@ -30,6 +30,7 @@ enum ChoicesStateEnum: int
 	case RESIGNATION = 13;
 	case CHOICE_NOT_OPEN = 14;
 	case CHOICE_COMPLETED = 15;
+	case NEED_REQUIREMENTS = 16;
 	case DISABLED = 99;
 
 	public function getLabel(): string
@@ -52,6 +53,7 @@ enum ChoicesStateEnum: int
 			self::RESIGNATION => Text::_('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_RESIGNATION'),
 			self::CHOICE_NOT_OPEN => Text::_('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CHOICE_NOT_OPEN'),
 			self::CHOICE_COMPLETED => Text::_('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CHOICE_COMPLETED'),
+			self::NEED_REQUIREMENTS => Text::_('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_NEED_REQUIREMENTS'),
 			self::DISABLED => Text::_('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_DISABLED'),
 		};
 	}
@@ -63,7 +65,7 @@ enum ChoicesStateEnum: int
 			self::WAITING, self::WAITING_DECISION, self::WAITING_JURY, self::WAITING_LIST => ['tw-bg-yellow-500', 'tw-text-black'],
 			self::DRAFT, self::CALLED, self::BOOKING_SELECTED => ['tw-bg-blue-700', 'tw-text-white'],
 			self::ACCEPTED, self::CONFIRMED, self::CONFIRMED_DEF => ['tw-bg-green-600', 'tw-text-white'],
-			self::REJECTED, self::REJECTED_FOR_APPLICATION, self::RESIGNATION, self::CONFIRMED_REJECTED, self::CHOICE_NOT_OPEN, self::CHOICE_COMPLETED => ['tw-bg-red-600', 'tw-text-white'],
+			self::REJECTED, self::REJECTED_FOR_APPLICATION, self::RESIGNATION, self::CONFIRMED_REJECTED, self::CHOICE_NOT_OPEN, self::CHOICE_COMPLETED, self::NEED_REQUIREMENTS => ['tw-bg-red-600', 'tw-text-white'],
 			self::DISABLED => ['tw-bg-neutral-500', 'tw-text-white'],
 		};
 
@@ -74,6 +76,23 @@ enum ChoicesStateEnum: int
 			$bg,
 			$text,
 			htmlspecialchars($label, ENT_QUOTES, 'UTF-8')
+		);
+	}
+
+	public function getCssClasses(): string
+	{
+		[$bg, $text] = match ($this)
+		{
+			self::WAITING, self::WAITING_DECISION, self::WAITING_JURY, self::WAITING_LIST => ['tw-bg-yellow-500', 'tw-text-black'],
+			self::DRAFT, self::CALLED, self::BOOKING_SELECTED => ['tw-bg-blue-700', 'tw-text-white'],
+			self::ACCEPTED, self::CONFIRMED, self::CONFIRMED_DEF => ['tw-bg-green-600', 'tw-text-white'],
+			self::REJECTED, self::REJECTED_FOR_APPLICATION, self::RESIGNATION, self::CONFIRMED_REJECTED, self::CHOICE_NOT_OPEN, self::CHOICE_COMPLETED => ['tw-bg-red-600', 'tw-text-white'],
+			self::DISABLED => ['tw-bg-neutral-500', 'tw-text-white'],
+		};
+
+		return sprintf(
+			'tw-text-center tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold %s',
+			$bg . ' ' . $text
 		);
 	}
 
@@ -97,6 +116,7 @@ enum ChoicesStateEnum: int
 			'resignation' => self::RESIGNATION,
 			'choice_not_open' => self::CHOICE_NOT_OPEN,
 			'choice_completed' => self::CHOICE_COMPLETED,
+			'need_requirements' => self::NEED_REQUIREMENTS,
 			'disabled' => self::DISABLED,
 			default => null,
 		};

@@ -17,18 +17,12 @@
       <directory suffix=".php">../components/com_emundus/classes</directory>
       <directory suffix=".php">../components/com_emundus/helpers</directory>
       <directory suffix=".php">../components/com_emundus/models</directory>
-      <directory suffix=".php">../modules/mod_emundus_yousign_embed</directory>
-      <directory suffix=".php">../modules/mod_emundus_yousign_embed/tmpl</directory>
       <directory suffix=".php">../modules/mod_emundus_qcm</directory>
       <directory suffix=".php">../modules/mod_emundus_custom</directory>
-      <directory suffix=".php">../modules/mod_emundus_category_search</directory>
       <directory suffix=".php">../modules/mod_emundus_campaign_dropfiles</directory>
-      <directory suffix=".php">../modules/mod_emundus_filters</directory>
       <directory suffix=".php">../modules/mod_emundusuniv</directory>
       <directory suffix=".php">../modules/mod_emundus_rebecca</directory>
-      <directory suffix=".php">../modules/mod_emundus_tutorial</directory>
       <directory suffix=".php">../modules/mod_emundus_calendar_create_timeslots</directory>
-      <directory suffix=".php">../modules/mod_emundus_eb_googlemap</directory>
       <directory suffix=".php">../modules/mod_emundusflow</directory>
       <directory suffix=".php">../modules/mod_emundus_announcements</directory>
       <directory suffix=".php">../modules/mod_emundus_calendar_add</directory>
@@ -40,8 +34,7 @@
       <directory suffix=".php">../modules/mod_emundus_switch_profile</directory>
       <directory suffix=".php">../modules/mod_emundus_book_interview</directory>
       <directory suffix=".php">../modules/mod_emundus_graphs</directory>
-      <directory suffix=".php">../modules/mod_emundus_internet_explorerB</directory>
-      <directory suffix=".php">../modules/mod_emundus_internet_explorer/language/fr-FR</directory>
+      <directory suffix=".php">../modules/mod_emundus_internet_explorer</directory>
       <directory suffix=".php">../modules/mod_emundus_dashboard_vue</directory>
       <directory suffix=".php">../modules/mod_emundus_user_dropdown</directory>
       <directory suffix=".php">../modules/mod_emundus_checklist</directory>
@@ -59,16 +52,11 @@
       <directory suffix=".php">../modules/mod_emundus_footer</directory>
       <directory suffix=".php">../modules/mod_emundus_cas</directory>
       <directory suffix=".php">../modules/mod_emundus_query_builder</directory>
-      <directory suffix=".php">../modules/mod_emundus_cifre_offers</directory>
-      <directory suffix=".php">../modules/mod_emundus_cifre_suggestions</directory>
-      <directory suffix=".php">../modules/mod_emundus_update</directory>
-      <directory suffix=".php">../modules/mod_emunduswhosonline</directory>
       <directory suffix=".php">../modules/mod_emundusmenu</directory>
       <directory suffix=".php">../modules/mod_emundus_messenger_notifications</directory>
       <directory suffix=".php">../modules/mod_emundus_profile</directory>
       <directory suffix=".php">../plugins/fabrik_cron/emundusrecall</directory>
       <directory suffix=".php">../plugins/fabrik_cron/emundusdeleteoldfiles</directory>
-      <directory suffix=".php">../plugins/fabrik_cron/emundusnantesscholargpush</directory>
       <directory suffix=".php">../plugins/fabrik_cron/emundusupdatestatusendcampaign</directory>
       <directory suffix=".php">../plugins/fabrik_cron/emundusglobalrecall</directory>
       <directory suffix=".php">../plugins/fabrik_cron/emundusinsee</directory>
@@ -198,18 +186,6 @@
       <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus</directory>
       <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus_card</directory>
       <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus_faq</directory>
-      <directory suffix=".php">../libraries/emundus</directory>
-      <directory suffix=".php">../media/mod_emundus_qcm</directory>
-      <directory suffix=".php">../media/mod_emundus_filters</directory>
-      <directory suffix=".php">../media/mod_emundus_evaluations</directory>
-      <directory suffix=".php">../media/mod_emundus_filter_vue</directory>
-      <directory suffix=".php">../media/com_emundus</directory>
-      <directory suffix=".php">../media/mod_emundus_dashboard_vue</directory>
-      <directory suffix=".php">../media/com_emundus_vue</directory>
-      <directory suffix=".php">../media/mod_emundus_rsst_signalement_list</directory>
-      <directory suffix=".php">../media/mod_emundus_messenger_notifications</directory>
-      <directory suffix=".php">../images/emundus</directory>
-      <directory suffix=".php">../templates/g5_helium/html</directory>
     </include>
     <exclude>
       <file>../components/com_emundus/models/update.php</file>

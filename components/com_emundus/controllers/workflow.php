@@ -8,62 +8,77 @@ jimport('joomla.user.helper');
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Symfony\Component\OptionsResolver\Exception\AccessException;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\Workflow\StepEntity;
 use Tchooz\Entities\Workflow\StepTypeEntity;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\Repositories\Workflow\WorkflowRepository;
 use Tchooz\Traits\TraitResponse;
 use Tchooz\Entities\Workflow\WorkflowEntity;
+use Tchooz\Controller\EmundusController;
 
 require_once JPATH_ROOT . '/components/com_emundus/helpers/files.php';
 
-class EmundusControllerWorkflow extends JControllerLegacy
+class EmundusControllerWorkflow extends EmundusController
 {
-	use TraitResponse;
-
-	private $user = null;
-	protected $app = null;
-
 	private $model = null;
 
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
-		$this->app  = Factory::getApplication();
-		$this->user = $this->app->getIdentity();
 
 		require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 		$this->model = new EmundusModelWorkflow();
 	}
 
-	public function getworkflows()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::READ]])]
+	public function getworkflows(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+		$ids         = $this->app->input->getString('ids', '[]');
+		$ids         = json_decode($ids, true);
+		$lim         = $this->app->input->getInt('lim', 0);
+		$page        = $this->app->input->getInt('page', 0);
+		$search      = $this->app->input->getString('recherche', '');
+		$program_ids = $this->app->input->getString('program', '');
+		$program_ids = !empty($program_ids) ? explode(',', $program_ids) : [];
+		$sort        = $this->app->input->getString('sort', 'DESC');
+		$order_by    = $this->app->input->getString('order_by', 'esw.id');
+		$order_by    = $order_by == 'label' ? 'esw.label' : $order_by;
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$emundusUserRepository = new EmundusUserRepository();
+
+		$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
+		if(!empty($program_ids))
 		{
-			$ids         = $this->app->input->getString('ids', '[]');
-			$ids         = json_decode($ids, true);
-			$lim         = $this->app->input->getInt('lim', 0);
-			$page        = $this->app->input->getInt('page', 0);
-			$search        = $this->app->input->getString('recherche', '');
-			$program_ids = $this->app->input->getString('program', '');
-			$program_ids = !empty($program_ids) ? explode(',', $program_ids) : [];
-			$sort 	     = $this->app->input->getString('sort', 'DESC');
-			$order_by    = $this->app->input->getString('order_by', 'esw.id');
-			$order_by    = $order_by == 'label' ? 'esw.label' : $order_by;
+			$userPrograms = array_intersect($userPrograms, $program_ids);
+		}
+		$userPrograms = array_values($userPrograms);
 
-			$workflows = $this->model->getWorkflows($ids, $lim, $page, $program_ids, $order_by, $sort, $search);
+		$workflows = $this->model->getWorkflows($ids, $lim, $page, $userPrograms, $order_by, $sort, $search, empty($program_ids));
 
-			if (!empty($workflows))
+		if (!empty($workflows))
+		{
+			$actionRepository = new ActionRepository();
+			$programAction = $actionRepository->getByName('program');
+			$programReadAccess = EmundusHelperAccess::asAccessAction($programAction->getId(), CrudEnum::READ->value, $this->user->id);
+			$programEditAccess = EmundusHelperAccess::asAccessAction($programAction->getId(), CrudEnum::UPDATE->value, $this->user->id);
+
+			$db    = Factory::getContainer()->get('DatabaseDriver');
+			$query = $db->createQuery();
+
+			foreach ($workflows as $key => $workflow)
 			{
-				$db    = Factory::getContainer()->get('DatabaseDriver');
-				$query = $db->createQuery();
+				$workflow->label = ['fr' => $workflow->label, 'en' => $workflow->label];
 
-				foreach ($workflows as $key => $workflow)
+				if($programReadAccess)
 				{
-					$workflow->label = ['fr' => $workflow->label, 'en' => $workflow->label];
-
 					$associated_programmes_html = '<span class="label label-red-2">' . Text::_('COM_EMUNDUS_WORKFLOW_ZERO_ASSOCIATED_PROGRAMS') . '</span>';
 					if (!empty($workflow->programme_ids))
 					{
@@ -77,20 +92,20 @@ class EmundusControllerWorkflow extends JControllerLegacy
 
 						if (!empty($associated_programmes))
 						{
-							$associated_programmes_html = '';
+							$associated_programmes_html      = '';
 							$associated_programmes_html_long = '';
 							if (count($associated_programmes) < 2)
 							{
-								$associated_programmes_html .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=programme&layout=edit&id='.$associated_programmes[0]->id).'" target="_blank">' . $associated_programmes[0]->label . '</a>';
+								$associated_programmes_html .= $programEditAccess ? '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="' . EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=programme&layout=edit&id=' . $associated_programmes[0]->id) . '" target="_blank">' . $associated_programmes[0]->label . '</a>' : $associated_programmes[0]->label;
 							}
 							else
 							{
 								$associated_programmes_html_long = '<div>';
-								$associated_programmes_html_long       .= '<h2 class="tw-mb-2">' . Text::_('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED_TITLE') . '</h2>';
-								$associated_programmes_html_long       .= '<div class="tw-flex tw-flex-col tw-flex-wrap">';
+								$associated_programmes_html_long .= '<h2 class="tw-mb-2">' . Text::_('COM_EMUNDUS_WORKFLOW_PROGRAMS_ASSOCIATED_TITLE') . '</h2>';
+								$associated_programmes_html_long .= '<div class="tw-flex tw-flex-col tw-flex-wrap">';
 								foreach ($associated_programmes as $program)
 								{
-									$associated_programmes_html_long .= '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="'.EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=programme&layout=edit&id='.$program->id).'" target="_blank">' . $program->label . '</a>';
+									$associated_programmes_html_long .= $programEditAccess ? '<a class="tw-flex tw-flex-row tw-underline em-main-500-color tw-transition-all" href="' . EmundusHelperMenu::routeViaLink('index.php?option=com_emundus&view=programme&layout=edit&id=' . $program->id) . '" target="_blank">' . $program->label . '</a>' : $program->label;
 								}
 								$associated_programmes_html_long .= '</div></div>';
 
@@ -109,240 +124,205 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						'display' => 'all'
 					];
 
-					if (!empty($associated_programmes_html_long)) {
+					if (!empty($associated_programmes_html_long))
+					{
 						$additional_col['long_value'] = $associated_programmes_html_long;
 					}
 
 					$workflow->additional_columns = [$additional_col];
-					$workflows[$key]              = $workflow;
 				}
-			}
 
-			$response['data']   = ['datas' => array_values($workflows), 'count' => $this->model->countWorkflows($ids)];
-			$response['code']   = 200;
-			$response['status'] = true;
-		}
-
-		$this->sendJsonResponse($response);
-	}
-
-	public function getworkflow()
-	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$id = $this->app->input->getInt('id', 0);
-
-			$workflow = $this->model->getWorkflow($id, [], true);
-
-			if ($workflow)
-			{
-				$response['data']   = $workflow;
-				$response['code']   = 200;
-				$response['status'] = true;
+				$workflows[$key]              = $workflow;
 			}
 		}
 
-		$this->sendJsonResponse($response);
+		return EmundusResponse::ok(['datas' => array_values($workflows), 'count' => $this->model->countWorkflows($ids)]);
 	}
 
-	public function updateworkflow()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::READ]])]
+	public function getworkflow(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$id = $this->app->input->getInt('id', 0);
+		if (empty($id))
 		{
-			$workflow = $this->app->input->getString('workflow');
-			$workflow = json_decode($workflow, true);
+			throw new \InvalidArgumentException('Workflow ID is required');
+		}
 
-			$steps = $this->app->input->getString('steps');
-			$steps = json_decode($steps, true);
+		$workflow = $this->model->getWorkflow($id, [], true);
 
-			$programs = $this->app->input->getString('programs');
-			$programs = json_decode($programs, true);
+		return EmundusResponse::ok($workflow);
+	}
 
-			if (!empty($workflow['id']))
-			{
-				try
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::UPDATE]])]
+	public function updateworkflow(): EmundusResponse
+	{
+		$workflow = $this->app->input->getString('workflow');
+		$workflow = json_decode($workflow, true);
+
+		$steps = $this->app->input->getString('steps');
+		$steps = json_decode($steps, true);
+
+		$programs = $this->app->input->getString('programs');
+		$programs = json_decode($programs, true);
+
+		if (empty($workflow['id']))
+		{
+			throw new \InvalidArgumentException('Workflow ID is required');
+		}
+
+		if (!EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
+			if (!empty($programs)) {
+				$programsIds = array_map(function ($program) {
+					return $program['id'];
+				}, $programs);
+
+				if (!class_exists('EmundusModelProgramme')) {
+					require_once(JPATH_ROOT . '/components/com_emundus/models/programme.php');
+				}
+				$m_programs = new EmundusModelProgramme();
+				$userPrograms = $m_programs->getUserProgramIds($this->user->id);
+				$programsIds = array_intersect($programsIds, $userPrograms);
+
+				foreach ($programsIds as $program)
 				{
-					$updated = $this->model->updateWorkflow($workflow, $steps, $programs);
-
-					if ($updated)
-					{
-						$response['code']   = 200;
-						$response['status'] = true;
-					}
-					else
-					{
-						$response['code']    = 500;
-						$response['message'] = Text::_('ERROR_WHILE_UPDATING_WORKFLOW');
+					if (!in_array($program, $userPrograms)) {
+						throw new AccessException(Text::_('ACCESS_DENIED'));
 					}
 				}
-				catch (Exception $e)
+
+				// get already associated programs
+				$existingPrograms = $this->model->getWorkflowPrograms($workflow['id']);
+				foreach ($existingPrograms as $existingProgram)
 				{
-					$response['code']    = 500;
-					$response['message'] = $e->getMessage();
-				}
-			}
-		}
-
-		$this->sendJsonResponse($response);
-	}
-
-	public function deleteworkflowstep()
-	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-			$step_id             = $this->app->input->getInt('step_id', 0);
-			$response['code']    = 500;
-			$response['message'] = Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP');
-
-			if (!empty($step_id))
-			{
-				$can_delete = $this->model->canDeleteWorkflowStep($step_id);
-
-				if($can_delete)
-				{
-					$deleted = $this->model->deleteWorkflowStep($step_id);
-
-					if ($deleted)
-					{
-						$response['code']   = 200;
-						$response['status'] = true;
+					if (!in_array($existingProgram, $userPrograms)) {
+						throw new AccessException(Text::_('ACCESS_DENIED'));
 					}
 				}
-				else
-				{
-					$response['code']    = 500;
-					$response['message'] = Text::_('COM_EMUNDUS_WORKFLOW_STEP_CANNOT_BE_DELETED');
-				}
 			}
 		}
 
-		$this->sendJsonResponse($response);
-	}
 
-	public function delete()
-	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (!$this->model->updateWorkflow($workflow, $steps, $programs))
 		{
-			$id                  = $this->app->input->getInt('id', 0);
-			if(empty($id)) {
-				$ids = $this->app->input->getString('ids');
-				$id = explode(',', $ids);
-			}
-
-			$response['code']    = 500;
-			$response['message'] = Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP');
-
-			if (!empty($id))
-			{
-				$deleted = $this->model->delete($id, $this->user->id);
-
-				if ($deleted)
-				{
-					$response['code']   = 200;
-					$response['status'] = true;
-				}
-			}
+			throw new RuntimeException(Text::_('ERROR_WHILE_UPDATING_WORKFLOW'));
 		}
 
-		$this->sendJsonResponse($response);
+		return EmundusResponse::ok();
 	}
 
-	public function getsteptypes()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::UPDATE]])]
+	public function deleteworkflowstep(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$step_id = $this->app->input->getInt('step_id', 0);
+		if (empty($step_id))
 		{
-			$types = $this->model->getStepTypes();
-
-			if (!empty($types))
-			{
-				$response['data']   = $types;
-				$response['code']   = 200;
-				$response['status'] = true;
-			}
+			throw new \InvalidArgumentException('Step ID is required');
 		}
 
-		$this->sendJsonResponse($response);
-	}
-
-	public function saveStepTypes()
-	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$can_delete = $this->model->canDeleteWorkflowStep($step_id);
+		if (!$can_delete)
 		{
-			$types = $this->app->input->getString('types');
-			$types = json_decode($types, true);
-
-			// verify if the types are valid
-			if (empty($types))
-			{
-				$response['code']    = 500;
-				$response['message'] = Text::_('INVALID_STEP_TYPES');
-			}
-			else
-			{
-				$saved = $this->model->saveStepTypes($types);
-
-				if ($saved)
-				{
-					$response['code']   = 200;
-					$response['status'] = true;
-				}
-			}
+			throw new RuntimeException(Text::_('COM_EMUNDUS_WORKFLOW_STEP_CANNOT_BE_DELETED'));
 		}
 
-		$this->sendJsonResponse($response);
-	}
-
-	public function getcampaignsteps()
-	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		if (!$this->model->deleteWorkflowStep($step_id))
 		{
-			$response['code']    = 500;
-			$response['message'] = Text::_('MISSING_PARAMS');
-			$campaign_id         = $this->app->input->getInt('campaign_id', 0);
-
-			if (!empty($campaign_id))
-			{
-				$steps = $this->model->getCampaignSteps($campaign_id);
-
-				$response['data']   = $steps;
-				$response['code']   = 200;
-				$response['status'] = true;
-			}
+			throw new RuntimeException(Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP'));
 		}
 
-		$this->sendJsonResponse($response);
+		return EmundusResponse::ok();
 	}
 
-	public function getstepsfromfnum()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::DELETE]])]
+	public function delete(): EmundusResponse
+	{
+
+		$id = $this->app->input->getInt('id', 0);
+		if (empty($id))
+		{
+			$ids = $this->app->input->getString('ids');
+			$id  = explode(',', $ids);
+		}
+
+		if (empty($id))
+		{
+			throw new \InvalidArgumentException('Workflow ID(s) is required');
+		}
+
+
+		if (!$this->model->delete($id, $this->user->id))
+		{
+			throw new RuntimeException(Text::_('ERROR_WHILE_DELETING_WORKFLOW_STEP'));
+		}
+
+		return EmundusResponse::ok();
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::READ]])]
+	public function getsteptypes(): EmundusResponse
+	{
+		$types = $this->model->getStepTypes();
+
+		return EmundusResponse::ok($types);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::UPDATE]])]
+	public function saveStepTypes(): EmundusResponse
+	{
+		$types = $this->app->input->getString('types');
+		$types = json_decode($types, true);
+		if (empty($types))
+		{
+			throw new \InvalidArgumentException(Text::_('INVALID_STEP_TYPES'));
+		}
+
+		if (!$this->model->saveStepTypes($types))
+		{
+			throw new RuntimeException(Text::_('ERROR_WHILE_SAVING_STEP_TYPES'));
+		}
+
+		return EmundusResponse::ok();
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::READ]])]
+	public function getcampaignsteps(): EmundusResponse
+	{
+		$campaign_id = $this->app->input->getInt('campaign_id', 0);
+		if (empty($campaign_id))
+		{
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
+		}
+
+		$steps = $this->model->getCampaignSteps($campaign_id);
+
+		return EmundusResponse::ok($steps);
+	}
+
+	public function getstepsfromfnum(): void
 	{
 		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-		$fnum = $this->app->input->getString('fnum', '');
+		$fnum     = $this->app->input->getString('fnum', '');
 
 		if (!empty($fnum) && EmundusHelperAccess::asPartnerAccessLevel($this->user->id) && EmundusHelperAccess::asAccessAction(1, 'r', $this->user->id, $fnum) || EmundusHelperAccess::isFnumMine($this->user->id, $fnum))
 		{
-			$steps = [];
+			$steps       = [];
 			$files_infos = $this->model->getCampaignInfosFromFileIdentifier($fnum);
 			$isApplicant = EmundusHelperAccess::isFnumMine($this->user->id, $fnum) && !EmundusHelperAccess::asPartnerAccessLevel($this->user->id);
 
-			try {
+			try
+			{
 				$workflowRepository = new WorkflowRepository();
-				$workflow = $workflowRepository->getWorkflowByFnum($fnum);
+				$workflow           = $workflowRepository->getWorkflowByFnum($fnum);
 
-				if (!empty($workflow)) {
+				if (!empty($workflow))
+				{
 					$steps = $workflow->getApplicantSteps();
 					if(!empty($workflow->getParentWorkflow()))
 					{
@@ -350,8 +330,9 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						$steps = array_merge($steps, $parentSteps);
 					}
 
-					$initialStep = array_filter($steps, function($step) {
+					$initialStep = array_filter($steps, function ($step) {
 						assert($step instanceof StepEntity);
+
 						return in_array(0, $step->getEntryStatus()) && $step->getOutputStatus() === 1;
 					});
 				}
@@ -359,9 +340,9 @@ class EmundusControllerWorkflow extends JControllerLegacy
 				if (empty($initialStep))
 				{
 					$campaignRepository = new CampaignRepository();
-					$campaignStep = $campaignRepository->getCampaignDefaultStep($files_infos['campaign_id']);
+					$campaignStep       = $campaignRepository->getCampaignDefaultStep($files_infos['campaign_id']);
 
-					if(!empty($campaignStep))
+					if (!empty($campaignStep))
 					{
 						if (!empty($workflow))
 						{
@@ -371,42 +352,48 @@ class EmundusControllerWorkflow extends JControllerLegacy
 						// insert the step at the beginning of the steps array
 						array_unshift($steps, $campaignStep);
 					}
-					else {
+					else
+					{
 						$initialStep = $steps[0];
 					}
 				}
 
-				foreach($steps as $step) {
+				foreach ($steps as $step)
+				{
 					assert($step instanceof StepEntity);
-					if ($isApplicant && $step->getType()->getId() != 1) {
+					if ($isApplicant && $step->getType()->getId() != 1)
+					{
 						// display only form steps for applicants
 						continue;
 					}
 
-					$dates = $this->model->calculateStartAndEndDates($step, $fnum, $files_infos['campaign_id']);
-					$serialized_step = $step->serialize();
+					$dates                    = $this->model->calculateStartAndEndDates($step, $fnum, $files_infos['campaign_id']);
+					$serialized_step          = $step->serialize();
 					$serialized_step['dates'] = $dates;
 
 					// format dates
-					if (!empty($serialized_step['dates']['start_date'])) {
+					if (!empty($serialized_step['dates']['start_date']))
+					{
 						$serialized_step['dates']['start_date_raw'] = $serialized_step['dates']['start_date'];
-						$serialized_step['dates']['start_date'] = EmundusHelperDate::displayDate($serialized_step['dates']['start_date'], 'j F Y');
+						$serialized_step['dates']['start_date']     = EmundusHelperDate::displayDate($serialized_step['dates']['start_date'], 'j F Y');
 					}
-					if (!empty($serialized_step['dates']['end_date'])) {
+					if (!empty($serialized_step['dates']['end_date']))
+					{
 						$serialized_step['dates']['end_date_raw'] = $serialized_step['dates']['end_date'];
-						$serialized_step['dates']['end_date'] = EmundusHelperDate::displayDate($serialized_step['dates']['end_date'], 'j F Y');
+						$serialized_step['dates']['end_date']     = EmundusHelperDate::displayDate($serialized_step['dates']['end_date'], 'j F Y');
 					}
 
 					if (!class_exists('EmundusModelApplication'))
 					{
 						require_once(JPATH_ROOT . '/components/com_emundus/models/application.php');
 					}
-					$m_application = new EmundusModelApplication();
-					$serialized_step['forms_progress'] = $m_application->getFormsProgressWithProfile($fnum, $step->getProfileId());
+					$m_application                           = new EmundusModelApplication();
+					$serialized_step['forms_progress']       = $m_application->getFormsProgressWithProfile($fnum, $step->getProfileId());
 					$serialized_step['attachments_progress'] = $m_application->getAttachmentsProgressWithProfile($fnum, $step->getProfileId());
-					$serialized_step['completed'] = $serialized_step['forms_progress'] >= 100 && $serialized_step['attachments_progress'] >= 100;
+					$serialized_step['completed']            = $serialized_step['forms_progress'] >= 100 && $serialized_step['attachments_progress'] >= 100;
 
-					if ($isApplicant && $serialized_step['completed'] === false && (!in_array($files_infos['status'], $step->getEntryStatus()) || (in_array($files_infos['status'], $step->getEntryStatus()) && $serialized_step['dates']['start_date_raw'] > date('Y-m-d H:i:s')))) {
+					if ($isApplicant && $serialized_step['completed'] === false && (!in_array($files_infos['status'], $step->getEntryStatus()) || (in_array($files_infos['status'], $step->getEntryStatus()) && $serialized_step['dates']['start_date_raw'] > date('Y-m-d H:i:s'))))
+					{
 						// if applicant, skip non completed steps that are not yet accessible
 						continue;
 					}
@@ -414,12 +401,14 @@ class EmundusControllerWorkflow extends JControllerLegacy
 					$serialized_steps[] = $serialized_step;
 				}
 
-				usort($serialized_steps, function($a, $b) {
+				usort($serialized_steps, function ($a, $b) {
 					return $a['ordering'] <=> $b['ordering'];
 				});
-				$response['data']   = $serialized_steps;
-				$response['code']   = 200;
-			} catch (Exception $e) {
+				$response['data'] = $serialized_steps;
+				$response['code'] = 200;
+			}
+			catch (Exception $e)
+			{
 				$response['code']    = 500;
 				$response['message'] = $e->getMessage();
 			}
@@ -428,163 +417,130 @@ class EmundusControllerWorkflow extends JControllerLegacy
 		$this->sendJsonResponse($response);
 	}
 
-	public function savecampaignstepsdates()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'campaign', 'mode' => CrudEnum::CREATE],
+		['id' => 'campaign', 'mode' => CrudEnum::UPDATE]
+	])]
+	public function savecampaignstepsdates(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$campaign_id = $this->app->input->getInt('campaign_id', 0);
+		$steps       = $this->app->input->getString('steps', '[]');
+		$steps       = json_decode($steps, true);
+		if (empty($campaign_id) || empty($steps))
 		{
-			$campaign_id = $this->app->input->getInt('campaign_id', 0);
-			$steps       = $this->app->input->getString('steps', '[]');
-			$steps       = json_decode($steps, true);
-
-			if (!empty($campaign_id) && !empty($steps))
-			{
-				$saved = $this->model->saveCampaignStepsDates($campaign_id, $steps);
-
-				if ($saved)
-				{
-					$response['code']   = 200;
-					$response['status'] = true;
-				}
-			}
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		$this->sendJsonResponse($response);
+		if (!$this->model->saveCampaignStepsDates($campaign_id, $steps))
+		{
+			throw new RuntimeException(Text::_('ERROR_WHILE_SAVING_CAMPAIGN_STEPS_DATES'));
+		}
+
+		return EmundusResponse::ok();
 	}
 
-	public function getworkflowsbyprogramid()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::READ]])]
+	public function getworkflowsbyprogramid(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$program_id = $this->app->input->getInt('program_id', 0);
+		if (empty($program_id))
 		{
-			$program_id = $this->app->input->getInt('program_id', 0);
-
-			if (!empty($program_id))
-			{
-				$workflows = $this->model->getWorkflows([], 0, 0, [$program_id]);
-
-				$response = [
-					'data'   => $workflows,
-					'code'   => 200,
-					'status' => true
-				];
-			}
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		$this->sendJsonResponse($response);
+		$emundusUserRepository = new EmundusUserRepository();
+
+		$userPrograms  = $emundusUserRepository->getUserProgramsIds($this->user->id);
+		if(empty($userPrograms) || !in_array($program_id, $userPrograms))
+		{
+			throw new AccessException(Text::_('ACCESS_DENIED'));
+		}
+
+		$workflows = $this->model->getWorkflows([], 0, 0, [$program_id]);
+
+		return EmundusResponse::ok($workflows);
 	}
 
-	public function updateprogramworkflows()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::UPDATE]])]
+	public function updateprogramworkflows(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$program_id = $this->app->input->getInt('program_id', 0);
+		$workflows  = $this->app->input->getString('workflows', '');
+		$workflows  = json_decode($workflows, true);
+		if (empty($program_id) || empty($workflows))
 		{
-			$program_id = $this->app->input->getInt('program_id', 0);
-			$workflows  = $this->app->input->getString('workflows', '');
-			$workflows  = json_decode($workflows, true);
-
-			if (!empty($program_id))
-			{
-				$updated = $this->model->updateProgramWorkflows($program_id, $workflows);
-
-				if ($updated)
-				{
-					$response['code']   = 200;
-					$response['status'] = true;
-				}
-			}
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		$this->sendJsonResponse($response);
+		if (!$this->model->updateProgramWorkflows($program_id, $workflows))
+		{
+			throw new RuntimeException(Text::_('ERROR_WHILE_UPDATING_PROGRAM_WORKFLOWS'));
+		}
+
+		return EmundusResponse::ok();
 	}
 
-	public function updatestepstate()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::UPDATE]])]
+	public function updatestepstate(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$step_id = $this->app->input->getInt('step_id', 0);
+		$state   = $this->app->input->getInt('state', 0);
+		if (empty($step_id))
 		{
-			$step_id             = $this->app->input->getInt('step_id', 0);
-			$state               = $this->app->input->getInt('state', 0);
-			$response['code']    = 500;
-			$response['message'] = Text::_('ERROR_WHILE_UPDATING_WORKFLOW_STEP_STATE');
-
-			if (!empty($step_id))
-			{
-				try
-				{
-					$updated = $this->model->updateStepState($step_id, $state);
-
-					if ($updated)
-					{
-						$response['code']   = 200;
-						$response['status'] = true;
-					}
-				}
-				catch (Exception $e)
-				{
-					$response['message'] = $e->getMessage();
-				}
-			}
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		$this->sendJsonResponse($response);
+		try
+		{
+			if (!$this->model->updateStepState($step_id, $state))
+			{
+				throw new RuntimeException(Text::_('ERROR_WHILE_UPDATING_WORKFLOW_STEP_STATE'));
+			}
+
+			return EmundusResponse::ok();
+		}
+		catch (Exception $e)
+		{
+			throw new RuntimeException($e->getMessage());
+		}
 	}
 
-	public function getprogramsworkflows()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::READ]])]
+	public function getprogramsworkflows(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
+		$workflows = $this->model->getProgramsWorkflows();
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
-		{
-
-			$workflows = $this->model->getProgramsWorkflows();
-
-			$response = [
-				'data'   => $workflows,
-				'code'   => 200,
-				'status' => true
-			];
-		}
-
-		$this->sendJsonResponse($response);
+		return EmundusResponse::ok($workflows);
 	}
 
-	public function duplicate()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'workflow', 'mode' => CrudEnum::CREATE]])]
+	public function duplicate(): EmundusResponse
 	{
-		$response = ['status' => false, 'code' => 403, 'message' => Text::_('ACCESS_DENIED')];
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		$workflow_id = $this->app->input->getInt('id', 0);
+		if (empty($workflow_id))
 		{
-			$workflow_id = $this->app->input->getInt('id', 0);
-
-			if (!empty($workflow_id))
-			{
-				$workflowRepository = new WorkflowRepository();
-				$workflowToDuplicate = $workflowRepository->getWorkflowById($workflow_id);
-
-				if (!empty($workflowToDuplicate))
-				{
-					$new_workflow_id = $workflowRepository->duplicate($workflowToDuplicate);
-
-					if (!empty($new_workflow_id))
-					{
-						$response['code']   = 200;
-						$response['status'] = true;
-					}
-				} else {
-					$response['code']    = 500;
-					$response['message'] = Text::_('ERROR_WHILE_DUPLICATING_WORKFLOW');
-				}
-			} else {
-				$response['code']    = 500;
-				$response['message'] = Text::_('ERROR_WHILE_DUPLICATING_WORKFLOW');
-			}
+			throw new \InvalidArgumentException(Text::_('MISSING_PARAMS'));
 		}
 
-		$this->sendJsonResponse($response);
+		$workflowRepository  = new WorkflowRepository();
+		$workflowToDuplicate = $workflowRepository->getWorkflowById($workflow_id);
+		if(empty($workflowToDuplicate))
+		{
+			throw new \InvalidArgumentException(Text::_('WORKFLOW_NOT_FOUND'));
+		}
+
+		$new_workflow_id = $workflowRepository->duplicate($workflowToDuplicate);
+		if(empty($new_workflow_id))
+		{
+			throw new RuntimeException(Text::_('ERROR_WHILE_DUPLICATING_WORKFLOW'));
+		}
+
+		return EmundusResponse::ok($new_workflow_id);
 	}
 }
