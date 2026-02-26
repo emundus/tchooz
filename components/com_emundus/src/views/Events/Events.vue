@@ -1,6 +1,6 @@
 <template>
 	<div id="events-list">
-		<list :default-lists="configString" :default-type="'events'"></list>
+		<list :default-lists="configString" :default-type="'events'" :crud="crud"></list>
 	</div>
 </template>
 
@@ -9,6 +9,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Events',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
@@ -32,6 +38,7 @@ export default {
 									controller: 'events',
 									name: 'add',
 									type: 'redirect',
+									acl: 'event|c',
 								},
 								{
 									action: 'duplicateevent',
@@ -39,6 +46,7 @@ export default {
 									controller: 'events',
 									name: 'duplicate',
 									method: 'post',
+									acl: 'event|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=events&layout=add&event=%id%',
@@ -46,6 +54,7 @@ export default {
 									controller: 'events',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'event|u',
 								},
 								{
 									action: 'deleteevent',
@@ -60,6 +69,14 @@ export default {
 										operator: '<',
 										value: '1',
 									},
+									acl: 'event|d',
+								},
+								{
+									action: 'show',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'modal',
+									component: 'EventDetails',
+									name: 'show',
 								},
 							],
 							filters: [

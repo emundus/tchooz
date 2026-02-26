@@ -15,6 +15,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 $app  = Factory::getApplication();
 $user = $app->getIdentity();
@@ -580,6 +581,7 @@ Text::script('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_EMPTY');
 Text::script('COM_EMUNDUS_FORMBUILDER_RULE_OPERATOR_NOT_EMPTY');
 Text::script('COM_EMUNDUS_FORMBUILDER_RULE_TYPE_FORM');
 Text::script('COM_EMUNDUS_FORMBUILDER_RULE_TYPE_USER');
+Text::script('COM_EMUNDUS_FORMBUILDER_RULE_ORDERLIST_OPTION');
 
 Text::script('COM_EMUNDUS_ONBOARD_TYPE_BOOKING');
 
@@ -598,6 +600,8 @@ Text::script('COM_EMUNDUS_ONBOARD_TYPE_APPLICATIONCHOICES');
 Text::script('COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_UPDATE_STATUS');
 Text::script('COM_EMUNDUS_ONBOARD_BUILDER_APPLICATIONCHOICES_ELEMENT_PREVIEW');
 Text::script('COM_EMUNDUS_FORM_BUILDER_UNNAMED_SECTION');
+
+Text::script('COM_EMUNDUS_ONBOARD_TYPE_ORDERLIST');
 
 Text::script('COM_EMUNDUS_CLOSE');
 Text::script('COM_EMUNDUS_FABRIK_ELEMENT_FILEUPLOAD_TEXT');
@@ -631,6 +635,17 @@ $condition_builder = ComponentHelper::getParams('com_emundus')->get('condition_b
 JHTML::script('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js');
 
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$formAction   = $actionRepository->getByName('form');
+
+$data['crud'] = [
+    'form' => [
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($formAction->getId(), 'u', $user->id),
+    ]
+];
 ?>
 
 <div id="em-component-vue"
@@ -638,6 +653,7 @@ $data = LayoutFactory::prepareVueData();
      prid="<?= Factory::getApplication()->input->get('prid') ?>"
      index="<?= Factory::getApplication()->input->get('index') ?>"
      cid="<?= Factory::getApplication()->input->get('cid') ?>"
+     readonly="<?= Factory::getApplication()->input->get('readonly') ?>"
      shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
      manyLanguages="<?= $data['many_languages'] ?>"
      defaultLang="<?= $data['default_lang'] ?>"
@@ -645,6 +661,7 @@ $data = LayoutFactory::prepareVueData();
      sysadminAccess="<?= $data['sysadmin_access'] ?>"
      settingsMenuAlias="<?= $settings_menu_alias ?>"
      enableConditionBuilder="<?= $condition_builder ?>"
+     crud="<?= htmlspecialchars(json_encode($data['crud']), ENT_QUOTES, 'UTF-8'); ?>"
     <?php if (!empty($mode)) : ?>
         mode="<?= $mode ?>"
     <?php endif; ?>

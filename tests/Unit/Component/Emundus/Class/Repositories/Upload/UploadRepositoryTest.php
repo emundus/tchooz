@@ -21,7 +21,7 @@ class UploadRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers UploadRepository::flush
+	 * @covers \Tchooz\Repositories\Upload\UploadRepository::flush
 	 */
 	public function testFlush(): void
 	{
@@ -41,7 +41,7 @@ class UploadRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers UploadRepository::getByFnum
+	 * @covers \Tchooz\Repositories\Upload\UploadRepository::getByFnum
 	 */
 	public function testGetByFnum(): void
 	{
@@ -65,7 +65,7 @@ class UploadRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers UploadRepository::getById
+	 * @covers \Tchooz\Repositories\Upload\UploadRepository::getById
 	 */
 	public function testGetById(): void
 	{

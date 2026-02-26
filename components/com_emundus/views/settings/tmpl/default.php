@@ -8,7 +8,9 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Uri\Uri;
 use Tchooz\Factories\LayoutFactory;
 
 defined('_JEXEC') or die('Restricted Access');
@@ -471,6 +473,13 @@ Text::script('COM_EMUNDUS_GLOBAL_WEB_SECURITY_NEW_ADDRESS_WARNING_2');
 Text::script('COM_EMUNDUS_GLOBAL_WEB_SECURITY_OWN_SSL_ASK');
 Text::script('COM_EMUNDUS_GLOBAL_EMAIL_ERRORS_DETAILS');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_PORT_WARNING_SEE_ALL');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SERVER_TYPE');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REDIRECT_URI');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_APPLICATION_ID');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_CLIENT_SECRET');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_HELPTEXT');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_LOGIN_WITH');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_LOGIN_HELPTEXT');
 
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO_ADRESS_HELPTEXT');
 Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_REPLYTO_HELPTEXT');
@@ -744,6 +753,10 @@ Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_PERIOD_TODAY');
 Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_INFO');
 
 $data = LayoutFactory::prepareVueData();
+
+$baseUrl = rtrim(Uri::root(), '/') . '/';
+$wa = Factory::getApplication()->getDocument()->getWebAssetManager();
+$wa->registerAndUseStyle('web357.microsoft-outlook.css.configuration.style', $baseUrl . 'plugins/system/microsoftoutlook365mailconnect/asset/css/web357-microsoft-oulook-configuration.min.css')
 ?>
 
 <style link="media/com_emundus_vue/app_emundus.css?<?php echo $data['hash'] ?>"></style>

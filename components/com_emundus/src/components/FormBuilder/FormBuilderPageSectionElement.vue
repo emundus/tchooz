@@ -1,13 +1,14 @@
 <template>
 	<div
-		class="form-builder-page-section-element tw-my-3 tw-flex tw-cursor-pointer tw-flex-col tw-items-start tw-justify-start tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-3 hover:tw-border-profile-full hover:tw-bg-neutral-300"
+		class="form-builder-page-section-element tw-my-3 tw-flex tw-flex-col tw-items-start tw-justify-start tw-rounded-coordinator tw-border-2 tw-border-transparent tw-p-3"
 		:id="'element_' + element.id"
 		v-show="element.publish !== -2"
 		:class="{
 			unpublished: !element.publish || element.hidden,
+			'tw-cursor-pointer hover:tw-border-profile-full hover:tw-bg-neutral-300': canUpdate,
 		}"
 	>
-		<div class="tw-mb-2 tw-flex tw-w-full tw-items-start tw-justify-between">
+		<div v-if="canUpdate" class="tw-mb-2 tw-flex tw-w-full tw-items-start tw-justify-between">
 			<div class="tw-w-11/12" @click="triggerElementProperties">
 				<label class="fabrikLabel control-label tw-mb-0 tw-flex tw-w-full tw-cursor-pointer tw-items-center">
 					<span
@@ -35,6 +36,7 @@
 					>{{ element.params.rollover.replace(/(<([^>]+)>)/gi, '') }}</span
 				>
 			</div>
+
 			<div id="element-action-icons" class="tw-mt-2 tw-flex tw-items-end">
 				<span class="material-symbols-outlined handle tw-cursor-grab">drag_indicator</span>
 				<span
@@ -48,7 +50,30 @@
 				>
 			</div>
 		</div>
-		<div :class="'element-field fabrikElement' + element.plugin" @click="triggerElementProperties">
+		<div v-else>
+			<label class="fabrikLabel control-label tw-mb-0">
+				<span
+					v-if="element.FRequire"
+					class="material-symbols-outlined tw-mr-0 !tw-text-xs tw-text-red-600"
+					style="top: -5px; position: relative"
+					>emergency</span
+				>
+				<span
+					v-if="element.label_tag"
+					:ref="'element-label-' + element.id"
+					:id="'element-label-' + element.id"
+					class="element-title tw-ml-2"
+					:class="element.label === '' ? 'tw-italic tw-text-neutral-500' : ''"
+					>{{
+						element.label !== ''
+							? element.label + (element.hidden ? ' (' + translate('COM_EMUNDUS_FORM_BUILDER_HIDDEN') + ')' : '')
+							: translate('COM_EMUNDUS_ONBOARD_TYPE_' + element.plugin.toUpperCase())
+					}}</span
+				>
+			</label>
+		</div>
+
+		<div :class="'element-field fabrikElement' + element.plugin" @click="canUpdate ? triggerElementProperties : null">
 			<form-builder-element-wysiwig
 				v-if="element.plugin === 'display'"
 				:element="element"
@@ -89,6 +114,8 @@
 			<form-builder-element-radio v-else-if="element.plugin === 'radiobutton'" type="radio" :element="element" />
 
 			<form-builder-element-checkbox v-else-if="element.plugin === 'checkbox'" type="checkbox" :element="element" />
+
+			<form-builder-element-orderlist v-else-if="element.plugin === 'orderlist'" type="orderlist" :element="element" />
 
 			<form-builder-element-databasejoin
 				v-else-if="element.plugin === 'databasejoin'"
@@ -156,9 +183,11 @@ import FormBuilderElementYesno from '@/components/FormBuilder/FormBuilderSection
 import FormBuilderElementPanel from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementPanel.vue';
 import FormBuilderElementAction from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementAction.vue';
 import FormBuilderElementFileUpload from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementFileUpload.vue';
+import FormBuilderElementOrderlist from '@/components/FormBuilder/FormBuilderSectionSpecificElements/FormBuilderElementOrderlist.vue';
 
 export default {
 	components: {
+		FormBuilderElementOrderlist,
 		FormBuilderElementFileUpload,
 		FormBuilderElementAction,
 		FormBuilderElementPanel,
@@ -183,6 +212,10 @@ export default {
 		element: {
 			type: Object,
 			default: {},
+		},
+		canUpdate: {
+			type: Boolean,
+			default: false,
 		},
 	},
 	mixins: [formBuilderMixin, mixin],

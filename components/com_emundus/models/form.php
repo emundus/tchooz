@@ -24,7 +24,7 @@ use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
 use Tchooz\Factories\Language\LanguageFactory;
-use Tchooz\Response;
+use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitResponse;
 
 class EmundusModelForm extends ListModel
@@ -226,13 +226,20 @@ class EmundusModelForm extends ListModel
 					$query->andWhere($this->db->quoteName('ff.created_by') . ' = ' . $user_id .
 						(!empty($steps_form_ids) ? ' OR ff.id IN (' . implode(',', $steps_form_ids) . ')' : ''));
 				}
-
 				$this->db->setQuery($query);
 				$evaluation_forms_user_can_access_to = $this->db->loadColumn();
 
-				$evaluation_forms = array_filter($evaluation_forms, function ($form) use ($evaluation_forms_user_can_access_to) {
-					return in_array($form->id, $evaluation_forms_user_can_access_to);
+				$query->clear()
+					->select('form_id')
+					->from($this->db->quoteName('#__emundus_setup_workflows_steps'));
+				$this->db->setQuery($query);
+				$workflow_form_ids = $this->db->loadColumn();
+				$evaluationsFormsNotAssociatedToWorkflow = array_diff($evaluation_form_ids, $workflow_form_ids);
+
+				$evaluation_forms = array_filter($evaluation_forms, function ($form) use ($evaluation_forms_user_can_access_to, $evaluationsFormsNotAssociatedToWorkflow) {
+					return in_array($form->id, $evaluation_forms_user_can_access_to) || in_array($form->id, $evaluationsFormsNotAssociatedToWorkflow);
 				});
+				// Merge forms that are not associated to any workflow with forms associated to workflows that user can access to
 				$evaluation_forms = array_values($evaluation_forms);
 			}
 
@@ -2851,7 +2858,7 @@ class EmundusModelForm extends ListModel
 			foreach ($js_conditions as $js_condition)
 			{
 				$query->clear()
-					->select($this->db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type', 'esfrjc.type']))
+					->select($this->db->quoteName(['esfrjc.id','esfrjc.parent_id','esfrjc.field','esfrjc.state','esfrjc.values','esfrjc.group','esfrjcg.group_type', 'esfrjc.type', 'esfrjc.params']))
 					->from($this->db->quoteName('#__emundus_setup_form_rules_js_conditions','esfrjc'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_conditions_group','esfrjcg').' ON '.$this->db->quoteName('esfrjcg.id').' = '.$this->db->quoteName('esfrjc.group'))
 					->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($js_condition->id));
@@ -2911,6 +2918,15 @@ class EmundusModelForm extends ListModel
 								$condition->options->sub_values[] = $databasejoin_option->primary_key;
 								$condition->options->sub_labels[] = $databasejoin_option->value;
 							}
+						}
+
+						if (!empty($condition->params))
+						{
+							$condition->params = json_decode($condition->params);
+						}
+						else
+						{
+							$condition->params = new stdClass();
 						}
 
 						if(!empty($condition->group)) {
@@ -3216,7 +3232,8 @@ class EmundusModelForm extends ListModel
 				'state'     => in_array($condition->state, $operators) ? $condition->state : '=',
 				'values'    => $condition->values,
 				'group'     => !empty($condition->group) ? $condition->group : null,
-				'type'      => $condition->type ?? 'form'
+				'type'      => $condition->type ?? 'form',
+				'params'   => !empty($condition->params) ? json_encode($condition->params) : null
 			];
 			$insert = (object) $insert;
 			$this->db->insertObject('#__emundus_setup_form_rules_js_conditions', $insert);

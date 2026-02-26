@@ -16,24 +16,32 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
 use Joomla\Utilities\ArrayHelper;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
 use Tchooz\Entities\Actions\ActionEntity;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
+use Tchooz\Entities\List\AdditionalColumn;
+use Tchooz\Entities\List\AdditionalColumnTag;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\List\ListColumnTypesEnum;
+use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
+use Tchooz\Repositories\ApplicationFile\StatusRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 use Tchooz\Repositories\Programs\ProgramRepository;
-use Tchooz\Traits\TraitResponse;
+use Tchooz\Repositories\Upload\UploadRepository;
+use Tchooz\Repositories\User\EmundusUserRepository;
+use Tchooz\Controller\EmundusController;
 
-class EmundusControllerApplication extends BaseController
+class EmundusControllerApplication extends EmundusController
 {
-	use TraitResponse;
-
 	/**
 	 * @var User|mixed|null
 	 */
@@ -45,10 +53,6 @@ class EmundusControllerApplication extends BaseController
 	{
 		parent::__construct($config);
 
-		if (!class_exists('EmundusHelperAccess'))
-		{
-			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/access.php');
-		}
 		if (!class_exists('EmundusHelperExport'))
 		{
 			require_once(JPATH_BASE . DS . '/components/com_emundus/helpers/export.php');
@@ -763,8 +767,12 @@ class EmundusControllerApplication extends BaseController
 	{
 		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(11, 'u', $this->_user->id, $fnum))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$actionRepository = new ActionRepository();
+			$accessFileGroupsAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
 			$state         = $this->input->getInt('state', null);
 			$accessid      = explode('-', $this->input->getString('access_id', null));
 			$type          = $this->input->getString('type', null);
@@ -772,11 +780,17 @@ class EmundusControllerApplication extends BaseController
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				if(EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->updateGroupAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				}
 			}
 			else
 			{
-				$res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				if(EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::UPDATE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->updateUserAccess($fnum, $accessid[0], $accessid[1], $accessid[2], $state);
+				}
 			}
 			echo json_encode($res);
 			exit();
@@ -800,19 +814,29 @@ class EmundusControllerApplication extends BaseController
 	{
 		$fnum = $this->input->getString('fnum', null);
 
-		if (EmundusHelperAccess::asAccessAction(11, 'd', $this->_user->id, $fnum))
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
 		{
+			$actionRepository = new ActionRepository();
+			$accessFileGroupsAction = $actionRepository->getByName('access_file');
+			$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
 			$id            = $this->input->getString('id', null);
 			$type          = $this->input->getString('type', null);
 			$m_application = $this->getModel('Application');
 			$res           = new stdClass();
 			if ($type == 'groups')
 			{
-				$res->status = $m_application->deleteGroupAccess($fnum, (int)$id);
+				if(EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->deleteGroupAccess($fnum, (int) $id);
+				}
 			}
 			else
 			{
-				$res->status = $m_application->deleteUserAccess($fnum, $id);
+				if(EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::DELETE->value, $this->_user->id, $fnum))
+				{
+					$res->status = $m_application->deleteUserAccess($fnum, $id);
+				}
 			}
 			echo json_encode($res);
 			exit();
@@ -1715,26 +1739,54 @@ class EmundusControllerApplication extends BaseController
 		echo json_encode($response);
 		exit;
 	}
-	
+
 	public function getchoicesstates(): void
 	{
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
 		}
 
-		$choices_states          = ChoicesStateEnum::cases();
-		$data = [];
+		$choices_states = ChoicesStateEnum::cases();
+		$data           = [];
 		foreach ($choices_states as $state)
 		{
 			$data[strtolower($state->name)] = $state->getLabel();
 		}
 
-		$response = [];
+		$response           = [];
+		$response['code']   = 200;
+		$response['status'] = true;
+		$response['data']   = $data;
+		$this->sendJsonResponse($response);
+	}
+
+	public function getchoicesstatesforfilter(): void
+	{
+		if ($this->_user->guest)
+		{
+			$response['code']    = 403;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+
+			return;
+		}
+
+		$choices_states = ChoicesStateEnum::cases();
+		$data           = [];
+		foreach ($choices_states as $state)
+		{
+			$data[] = [
+				'label' => $state->getLabel(),
+				'value' => $state->value,
+			];
+		}
+
+		$response           = [];
 		$response['code']   = 200;
 		$response['status'] = true;
 		$response['data']   = $data;
@@ -1746,7 +1798,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -1785,7 +1837,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			$choicesConfiguration['can_be_updated']   = 0;
 			$choicesConfiguration['can_be_confirmed'] = 0;
-			$choicesConfiguration['can_be_sent'] = 0;
+			$choicesConfiguration['can_be_sent']      = 0;
 		}
 		$choicesConfiguration['crud'] = [];
 		if (!empty($fnum))
@@ -1811,7 +1863,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -1841,7 +1893,7 @@ class EmundusControllerApplication extends BaseController
 
 			if (!empty($step_id))
 			{
-				$step_data  = $m_workflow->getStepData($step_id);
+				$step_data = $m_workflow->getStepData($step_id);
 
 				if (!empty($step_data) && !empty($step_data->programs))
 				{
@@ -1893,17 +1945,17 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
 		}
 
 		$checkRules = true;
-		$fnum = $this->input->getString('fnum');
+		$fnum       = $this->input->getString('fnum');
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'c', $this->_user->id, $fnum))
 		{
-			$checkRules = false;
+			$checkRules   = false;
 			$current_fnum = $fnum;
 		}
 		else
@@ -1969,7 +2021,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2052,7 +2104,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2127,7 +2179,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2180,9 +2232,9 @@ class EmundusControllerApplication extends BaseController
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/groups.php';
 		}
-		$m_groups = new EmundusModelGroups();
-		$eMConfig                       = ComponentHelper::getParams('com_emundus');
-		$all_rights_group_id            = $eMConfig->get('all_rights_group', 1);
+		$m_groups            = new EmundusModelGroups();
+		$eMConfig            = ComponentHelper::getParams('com_emundus');
+		$all_rights_group_id = $eMConfig->get('all_rights_group', 1);
 
 		$repository = new ApplicationChoicesRepository();
 		$choices    = $repository->getChoicesByFnum($current_fnum);
@@ -2191,11 +2243,11 @@ class EmundusControllerApplication extends BaseController
 			$groups = $m_groups->getGroupsIdByCourse($choice->getCampaign()->getProgram()->getCode());
 			$groups = array_column($groups, 'id');
 			$groups = array_diff($groups, [$all_rights_group_id]);
-			if(!empty($groups))
+			if (!empty($groups))
 			{
 				$actions = [
-					['id' => 1,'r' => 1,'c' => 0,'u' => 0,'d' => 0],
- 				];
+					['id' => 1, 'r' => 1, 'c' => 0, 'u' => 0, 'd' => 0],
+				];
 				$m_files->shareGroups($groups, $actions, [$current_fnum]);
 			}
 
@@ -2211,9 +2263,9 @@ class EmundusControllerApplication extends BaseController
 			$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $current_fnum;
 		}
 
-		$response['code']    = 200;
-		$response['status']  = true;
-		$response['message'] = 'Choices step email sent successfully.';
+		$response['code']     = 200;
+		$response['status']   = true;
+		$response['message']  = 'Choices step email sent successfully.';
 		$response['redirect'] = $redirect_url;
 		$this->sendJsonResponse($response);
 	}
@@ -2223,17 +2275,20 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
 		}
 
-		$id     = $this->input->getInt('id', 0);
+		$ids = $this->input->getString('id', '');
+		$ids = explode(',', $ids);
+		$ids = array_filter($ids, function ($id) { return is_numeric($id) && !empty($id); });
+
 		$status = $this->input->getString('status', '');
 		$status = ChoicesStateEnum::isValidState($status);
 
-		if (empty($id) || empty($status))
+		if (!is_array($ids) || empty($ids) || empty($status))
 		{
 			$response['code']    = 400;
 			$response['message'] = 'Missing parameters.';
@@ -2242,48 +2297,54 @@ class EmundusControllerApplication extends BaseController
 			return;
 		}
 
-		$repository = new ApplicationChoicesRepository();
-		$choice     = $repository->getById($id);
-
-		if (empty($choice))
+		$choicesObjects = [];
+		foreach ($ids as $id)
 		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
+			$repository = new ApplicationChoicesRepository();
+			$choice     = $repository->getById($id);
 
-			return;
+			if (empty($choice))
+			{
+				$response['code']    = 403;
+				$response['message'] = Text::_('ACCESS_DENIED');
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			if (!EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $choice->getFnum()))
+			{
+				$response['code']    = 403;
+				$response['message'] = Text::_('ACCESS_DENIED');
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			$old_status = $choice->getState();
+
+			$choice->setState($status);
+
+			if (!$repository->flush($choice, false))
+			{
+				$response['code']    = 500;
+				$response['message'] = 'Failed to update choice status.';
+				$this->sendJsonResponse($response);
+
+				return;
+			}
+
+			EmundusModelLogs::log($this->_user->id, $this->_user->id, $choice->getFnum(), $this->applicationChoicesAction->getId(), 'u', 'COM_EMUNDUS_LOGS_UPDATE_STATUS_CHOICE', json_encode(['updated' => [['old' => $old_status->getLabel(), 'new' => $status->getLabel()]]]));
+
+			$choiceObject               = $choice->__serialize();
+			$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
+
+			$choicesObjects[] = $choiceObject;
 		}
-
-		if (!EmundusHelperAccess::asAccessAction($this->applicationChoicesAction->getId(), 'u', $this->_user->id, $choice->getFnum()))
-		{
-			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
-			$this->sendJsonResponse($response);
-
-			return;
-		}
-
-		$old_status = $choice->getState();
-
-		$choice->setState($status);
-
-		if (!$repository->flush($choice, false))
-		{
-			$response['code']    = 500;
-			$response['message'] = 'Failed to update choice status.';
-			$this->sendJsonResponse($response);
-
-			return;
-		}
-
-		EmundusModelLogs::log($this->_user->id, $this->_user->id, $choice->getFnum(), $this->applicationChoicesAction->getId(), 'u', 'COM_EMUNDUS_LOGS_UPDATE_STATUS_CHOICE', json_encode(['updated' => [['old' => $old_status->getLabel(), 'new' => $status->getLabel()]]]));
-
-		$choiceObject               = $choice->__serialize();
-		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
 
 		$response['code']    = 200;
 		$response['status']  = true;
-		$response['data']    = $choiceObject;
+		$response['data']    = $choicesObjects;
 		$response['message'] = 'Choice status updated successfully.';
 		$this->sendJsonResponse($response);
 	}
@@ -2293,7 +2354,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2335,7 +2396,7 @@ class EmundusControllerApplication extends BaseController
 		if (empty($choice))
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2367,7 +2428,7 @@ class EmundusControllerApplication extends BaseController
 		{
 			require_once JPATH_SITE . '/components/com_emundus/models/workflow.php';
 		}
-		$m_workflow  = new EmundusModelWorkflow();
+		$m_workflow = new EmundusModelWorkflow();
 
 		$choicesStep = $m_workflow->getChoicesStepFromFnum($current_fnum);
 
@@ -2377,7 +2438,7 @@ class EmundusControllerApplication extends BaseController
 		$choiceObject               = $choice->__serialize();
 		$choiceObject['state_html'] = $choice->getState()->getHtmlBadge();
 
-		$m_workflow = new EmundusModelWorkflow();
+		$m_workflow    = new EmundusModelWorkflow();
 		$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($current_fnum);
 
 		$redirect_url = 'index.php';
@@ -2386,10 +2447,10 @@ class EmundusControllerApplication extends BaseController
 			$redirect_url = 'index.php?option=com_emundus&task=openfile&fnum=' . $current_fnum;
 		}
 
-		$response['code']    = 200;
-		$response['status']  = true;
-		$response['data']    = $choiceObject;
-		$response['message'] = 'Choice confirmed successfully.';
+		$response['code']     = 200;
+		$response['status']   = true;
+		$response['data']     = $choiceObject;
+		$response['message']  = 'Choice confirmed successfully.';
 		$response['redirect'] = $redirect_url;
 		$this->sendJsonResponse($response);
 	}
@@ -2399,7 +2460,7 @@ class EmundusControllerApplication extends BaseController
 		if ($this->_user->guest)
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2441,7 +2502,7 @@ class EmundusControllerApplication extends BaseController
 		if (empty($choice))
 		{
 			$response['code']    = 403;
-			$response['message'] = 'Access denied.';
+			$response['message'] = Text::_('ACCESS_DENIED');
 			$this->sendJsonResponse($response);
 
 			return;
@@ -2458,5 +2519,229 @@ class EmundusControllerApplication extends BaseController
 		$response['data']    = $choiceObject;
 		$response['message'] = 'Choice refused successfully.';
 		$this->sendJsonResponse($response);
+	}
+
+	public function getuploadbyid(): void
+	{
+		$response = new EmundusResponse(false, Text::_('ACCESS_DENIED'), 403);
+
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$id = $this->input->getInt('id', 0);
+
+			try
+			{
+				$uploadRepository = new UploadRepository();
+				$upload           = $uploadRepository->getById($id);
+
+				if (EmundusHelperAccess::asAccessAction(4, 'r', $this->_user->id, $upload->getFnum()))
+				{
+					$response = $response::ok($upload->serialize());
+				}
+
+			}
+			catch (Exception $e)
+			{
+				$response['code']    = $e->getCode();
+				$response['message'] = $e->getMessage();
+			}
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function getallapplicationchoices(): EmundusResponse
+	{
+		$filter    = $this->input->getString('filter', '');
+		$sort      = $this->input->getString('sort', 'DESC');
+		$recherche = $this->input->getString('recherche', '');
+		$lim       = $this->input->getInt('lim', 0);
+		$page      = $this->input->getInt('page', 0);
+		$order_by  = $this->input->getString('order_by', 'sc.id');
+		$order_by  = $order_by == 'label' ? 'sc.label' : $order_by;
+
+		$campaignsFilter = [];
+		$campaigns       = $this->input->getString('campaign', '');
+		if (!empty($campaigns))
+		{
+			$campaigns       = explode(',', $campaigns);
+			$campaignsFilter = $campaigns;
+		}
+
+		$statesFilter = [];
+		$states       = $this->input->getString('state', '');
+		$states       = explode(',', $states);
+		if (!empty($states))
+		{
+			foreach ($states as $state)
+			{
+				if (is_numeric($state))
+				{
+					$statesFilter[] = ChoicesStateEnum::tryFrom($state);
+				}
+			}
+			$statesFilter = array_filter($statesFilter);
+		}
+
+		$indexesFilter = [];
+		$indexes       = $this->input->getString('index', '');
+		if (!empty($indexes))
+		{
+			$indexes       = explode(',', $indexes);
+			$indexesFilter = $indexes;
+		}
+
+		$fileStatusesFilter = [];
+		$fileStatuses       = $this->input->getString('file_status', '');
+		$fileStatuses       = explode(',', $fileStatuses);
+		if (!empty($fileStatuses))
+		{
+			foreach ($fileStatuses as $fileStatus)
+			{
+				if (is_numeric($fileStatus))
+				{
+					$fileStatusesFilter[] = $fileStatus;
+				}
+			}
+			$fileStatusesFilter = array_filter($fileStatusesFilter);
+		}
+
+		$applicationChoicesRepository = new ApplicationChoicesRepository();
+		$emundusUserRepository        = new EmundusUserRepository();
+
+		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->_user->id);
+		if (!empty($program) && $program != 'all')
+		{
+			$userPrograms = array_intersect($userPrograms, [$program]);
+		}
+
+		$applicationChoices = $applicationChoicesRepository->getAllChoices($sort, $recherche, $lim, $page, $order_by, $userPrograms, $statesFilter, 0, $campaignsFilter, $indexesFilter, $fileStatusesFilter);
+
+		$applicationChoicesSerialized = [
+			'datas' => [],
+			'count' => $applicationChoices->getTotalItems()
+		];
+
+		// Search for a files or evaluation view
+		$menu        = Factory::getApplication()->getMenu();
+		$emundusUser = $this->app->getSession()->get('emundusUser');
+		$files_menu  = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=files', $emundusUser->menutype], 'true');
+		if (empty($files_menu))
+		{
+			$files_menu = $menu->getItems(['link', 'menutype'], ['index.php?option=com_emundus&view=evaluation', $emundusUser->menutype], 'true');
+		}
+
+		foreach ($applicationChoices->getItems() as $key => $applicationChoice)
+		{
+			if (empty($applicationChoice->getApplicationFile()))
+			{
+				continue;
+			}
+
+			assert($applicationChoice instanceof ApplicationChoicesEntity);
+
+			$applicationChoiceObject        = new stdClass();
+			$applicationChoiceObject->id    = $applicationChoice->getId();
+			$applicationChoiceObject->label = ['fr' => Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $applicationChoice->getOrder()) . ' - ' . $applicationChoice->getCampaign()->getLabel(), 'en' => Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $applicationChoice->getOrder()) . ' - ' . $applicationChoice->getCampaign()->getLabel()];
+
+			$applicationChoiceObject->additional_columns = [
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					'',
+					[
+						new AdditionalColumnTag(
+							Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
+							$applicationChoice->getState()->getLabel(),
+							'',
+							$applicationChoice->getState()->getCssClasses()
+						)
+					],
+					ListColumnTypesEnum::TAGS
+				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					!empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="' . $files_menu->route . '#' . $applicationChoice->getFnum() . '" target="_blank">' . $applicationChoice->getApplicationFile()->getUser()->name . '</a>' : $applicationChoice->getApplicationFile()->getUser()->name
+				),
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+					'',
+					ListDisplayEnum::ALL,
+					'',
+					'',
+					[
+						new AdditionalColumnTag(
+							Text::_('COM_EMUNDUS_ACCESS_STATUS'),
+							$applicationChoice->getApplicationFile()->getStatus()->getLabel(),
+							'',
+							'label label-' . $applicationChoice->getApplicationFile()->getStatus()->getColor()
+						)
+					],
+					ListColumnTypesEnum::TAGS
+				),
+			];
+
+			$applicationChoicesSerialized['datas'][$key] = $applicationChoiceObject;
+		}
+
+		return EmundusResponse::ok($applicationChoicesSerialized, Text::_('APPLICATION_CHOICES_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'campaign', 'mode' => CrudEnum::READ],
+		['id' => 'application_choices', 'mode' => CrudEnum::READ]
+	])]
+	public function getallcampaignsforfilter(): EmundusResponse
+	{
+		$emundusUserRepository = new EmundusUserRepository();
+		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->user->id);
+
+		$campaignRepository = new CampaignRepository();
+		$campaigns          = $campaignRepository->getChildrenCampaigns();
+
+		$data = [];
+		foreach ($campaigns as $campaign)
+		{
+			if(!in_array($campaign->getProgram()->getCode(), $userPrograms))
+			{
+				continue;
+			}
+
+			$data[] = [
+				'value' => $campaign->getId(),
+				'label' => $campaign->getLabel(),
+			];
+		}
+
+		return EmundusResponse::ok($data, Text::_('CAMPAIGNS_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getapplicationstatusforfilter(): EmundusResponse
+	{
+		$statusRepository = new StatusRepository();
+		$statuses          = $statusRepository->getAll();
+
+		$data = [];
+		foreach ($statuses as $status)
+		{
+			$data[] = [
+				'value' => $status->getStep(),
+				'label' => $status->getLabel(),
+			];
+		}
+
+		return EmundusResponse::ok($data, Text::_('STATUSES_RETRIEVED'));
 	}
 }

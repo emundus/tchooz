@@ -16,10 +16,62 @@ use Joomla\Database\DatabaseDriver;
 use Tchooz\Entities\ApplicationFile\ApplicationChoicesEntity;
 use Tchooz\Enums\ApplicationFile\ChoicesStateEnum;
 use Tchooz\Factories\DBFactory;
+use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Campaigns\CampaignRepository;
 
 class ApplicationChoicesFactory implements DBFactory
 {
+	public function fromDbObjects(array $dbObjects, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null, array $elements = []): array
+	{
+		if($withRelations)
+		{
+			$campaignRepository = new CampaignRepository();
+			$applicationFileRepository = new ApplicationFileRepository();
+		}
+
+		foreach($dbObjects as $dbObject)
+		{
+			if(is_array($dbObject))
+			{
+				$dbObject = (object) $dbObject;
+			}
+
+			$dbObject->more_properties = [];
+			if(!empty($elements) && !empty($dbObject->more_data))
+			{
+				foreach ($elements as $element)
+				{
+					if(isset($dbObject->more_data[$element['name']]))
+					{
+						if(is_array($dbObject->more_data[$element['name']])) {
+							$formatted_value = [];
+							foreach ($dbObject->more_data[$element['name']] as $key => $value) {
+								$formatted_value[] = \EmundusHelperFabrik::formatElementValue($element['name'], $value, $element['group_id']);
+							}
+
+							$formatted_value = implode(', ', $formatted_value);
+						}
+						else
+						{
+							$formatted_value = \EmundusHelperFabrik::formatElementValue($element['name'], $dbObject->more_data[$element['name']]);
+						}
+
+						$dbObject->more_properties[$element['name']] = [
+							'id'              => $element['id'],
+							'label'           => Text::_($element['label']),
+							'value'           => $dbObject->more_data[$element['name']],
+							'hidden'          => $element['hidden'] == 1 || $element['plugin'] === 'internalid',
+							'formatted_value' => $formatted_value
+						];
+					}
+				}
+			}
+
+			$entities[] = $this->buildEntity($dbObject, $withRelations, $campaignRepository ?? null, $applicationFileRepository ?? null);
+		}
+
+		return $entities ?? [];
+	}
 
 	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null, array $elements = []): ApplicationChoicesEntity
 	{
@@ -28,26 +80,27 @@ class ApplicationChoicesFactory implements DBFactory
 			require_once JPATH_SITE . '/components/com_emundus/helpers/fabrik.php';
 		}
 
-		if(is_object($dbObject))
+		if(is_array($dbObject))
 		{
-			$dbObject = (array) $dbObject;
+			$dbObject = (object) $dbObject;
 		}
 
 		if($withRelations)
 		{
 			$campaignRepository = new CampaignRepository();
+			$applicationFileRepository = new ApplicationFileRepository();
 		}
 
-		$dbObject['more_properties'] = [];
-		if(!empty($elements) && !empty($dbObject['more_data']))
+		$dbObject->more_properties = [];
+		if(!empty($elements) && !empty($dbObject->more_data))
 		{
 			foreach ($elements as $element)
 			{
-				if(isset($dbObject['more_data'][$element['name']]))
+				if(isset($dbObject->more_data[$element['name']]))
 				{
-					if(is_array($dbObject['more_data'][$element['name']])) {
+					if(is_array($dbObject->more_data[$element['name']])) {
 						$formatted_value = [];
-						foreach ($dbObject['more_data'][$element['name']] as $key => $value) {
+						foreach ($dbObject->more_data[$element['name']] as $key => $value) {
 							$formatted_value[] = \EmundusHelperFabrik::formatElementValue($element['name'], $value, $element['group_id']);
 						}
 
@@ -55,13 +108,13 @@ class ApplicationChoicesFactory implements DBFactory
 					}
 					else
 					{
-						$formatted_value = \EmundusHelperFabrik::formatElementValue($element['name'], $dbObject['more_data'][$element['name']]);
+						$formatted_value = \EmundusHelperFabrik::formatElementValue($element['name'], $dbObject->more_data[$element['name']]);
 					}
 
-					$dbObject['more_properties'][$element['name']] = [
+					$dbObject->more_properties[$element['name']] = [
 						'id'              => $element['id'],
 						'label'           => Text::_($element['label']),
-						'value'           => $dbObject['more_data'][$element['name']],
+						'value'           => $dbObject->more_data[$element['name']],
 						'hidden'          => $element['hidden'] == 1 || $element['plugin'] === 'internalid',
 						'formatted_value' => $formatted_value
 					];
@@ -69,14 +122,20 @@ class ApplicationChoicesFactory implements DBFactory
 			}
 		}
 
+		return $this->buildEntity($dbObject, $withRelations, $campaignRepository ?? null, $applicationFileRepository ?? null);
+	}
+
+	private function buildEntity(object $dbObject, bool $withRelations, ?CampaignRepository $campaignRepository, ?ApplicationFileRepository $applicationFileRepository): ApplicationChoicesEntity
+	{
 		return new ApplicationChoicesEntity(
-			fnum: $dbObject['fnum'],
-			user: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject['user_id']),
-			campaign: $withRelations ? $campaignRepository->getById((int) $dbObject['campaign_id']) : null,
-			order: (int) $dbObject['order'],
-			state: ChoicesStateEnum::tryFrom($dbObject['state']),
-			id: (int) $dbObject['id'],
-			moreProperties: $dbObject['more_properties']
+			fnum: $dbObject->fnum,
+			user: Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($dbObject->user_id),
+			campaign: $withRelations ? $campaignRepository->getById((int) $dbObject->campaign_id) : null,
+			order: (int) $dbObject->order,
+			state: ChoicesStateEnum::tryFrom($dbObject->state),
+			id: (int) $dbObject->id,
+			moreProperties: $dbObject->more_properties,
+			application_file: $withRelations ? $applicationFileRepository->getByFnum($dbObject->fnum) : null
 		);
 	}
 }

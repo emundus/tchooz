@@ -746,6 +746,10 @@
 
         <field showon="custom_email_conf:1" name="custom_mail_conf_note" label="COM_EMUNDUS_EMAILS_CUSTOM_CONFIG" type="note" description="" />
 
+        <field showon="custom_email_conf:1" name="custom_server_type" label="COM_EMUNDUS_EMAILS_SERVER_TYPE" type="list" default="smtp" description="">
+            <option value="smtp">SMTP</option>
+            <option value="microsoftoutlook365mailconnect">Microsoft/Outlook 365</option>
+        </field>
         <field showon="custom_email_conf:1" name="custom_email_mailfrom" label="COM_EMUNDUS_EMAILS_FROM_ADDRESS" type="email" default="" description="" />
         <field showon="custom_email_conf:1" name="custom_email_fromname" label="COM_EMUNDUS_EMAILS_FROM_NAME" type="text" default="" description="" />
         <field showon="custom_email_conf:1" name="custom_email_replyto" label="COM_EMUNDUS_EMAILS_REPLY_TO" type="email" default="" description="" />

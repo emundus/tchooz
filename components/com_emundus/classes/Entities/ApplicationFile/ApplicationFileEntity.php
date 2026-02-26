@@ -33,6 +33,11 @@ class ApplicationFileEntity
 
 	private ?User $updated_by;
 
+	/**
+	 * @var array<ApplicationChoicesEntity>
+	 */
+	private ?array $applicationChoices = null;
+
 	public function __construct(
 		User                  $user,
 		string                $fnum = '',
@@ -207,6 +212,16 @@ class ApplicationFileEntity
 	public function setUpdatedBy(User $updated_by): void
 	{
 		$this->updated_by = $updated_by;
+	}
+
+	public function getApplicationChoices(): ?array
+	{
+		return $this->applicationChoices;
+	}
+
+	public function setApplicationChoices(array $applicationChoices): void
+	{
+		$this->applicationChoices = $applicationChoices;
 	}
 
 	public function __serialize(): array

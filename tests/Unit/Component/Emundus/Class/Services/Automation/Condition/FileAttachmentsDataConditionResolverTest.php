@@ -26,7 +26,7 @@ class FileAttachmentsDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FileAttachmentsDataConditionResolver::getAvailableFields
+	 * @covers \Tchooz\Services\Automation\Condition\FileAttachmentsDataConditionResolver::getAvailableFields
 	 * @return void
 	 */
 	public function testGetAvailableFields(): void
@@ -37,7 +37,7 @@ class FileAttachmentsDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers FileAttachmentsDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\FileAttachmentsDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValue(): void

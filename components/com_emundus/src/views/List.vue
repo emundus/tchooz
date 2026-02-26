@@ -36,6 +36,7 @@
 				:items="items"
 				:checked-items="checkedItems"
 				:views="viewTypeOptions"
+				:displayPresavedFilters="displayPresavedFilters"
 				v-model:view="viewType"
 				v-model:searches="searches"
 				v-model:tab="currentTab"
@@ -158,7 +159,10 @@
 								>
 									<div class="tw-flex tw-w-full tw-justify-between">
 										<span
-											v-if="editAction"
+											v-if="
+												editAction &&
+												(typeof editAction.showon === 'undefined' || evaluateShowOn(item, editAction.showon))
+											"
 											@click="onClickAction(editAction, item.id, false, $event)"
 											class="hover:tw-underline"
 											:class="{
@@ -241,14 +245,18 @@
 										}"
 									>
 										<a
-											v-if="viewType === 'blocs' && editAction"
+											v-if="
+												viewType === 'blocs' &&
+												editAction &&
+												(typeof editAction.showon === 'undefined' || evaluateShowOn(item, editAction.showon))
+											"
 											@click="onClickAction(editAction, item.id, false, $event)"
 											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
 										>
 											{{ translate(editAction.label) }}
 										</a>
 										<a
-											v-else-if="viewType === 'blocs' && showAction"
+											v-if="viewType === 'blocs' && showAction"
 											@click="onClickAction(showAction, item.id, false, $event)"
 											class="tw-btn-primary tw-w-auto tw-cursor-pointer tw-rounded-coordinator tw-text-sm"
 										>
@@ -256,7 +264,11 @@
 										</a>
 										<div class="tw-flex tw-items-center tw-justify-end tw-gap-2">
 											<button
-												v-if="editAction && viewType === 'table'"
+												v-if="
+													editAction &&
+													viewType === 'table' &&
+													(typeof editAction.showon === 'undefined' || evaluateShowOn(item, editAction.showon))
+												"
 												@click="onClickAction(editAction, item.id)"
 												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
 												style="padding: 0.5rem"
@@ -267,7 +279,7 @@
 												}}</span>
 											</button>
 											<button
-												v-else-if="showAction && viewType === 'table'"
+												v-if="showAction && viewType === 'table'"
 												@click="onClickAction(showAction, item.id)"
 												class="tw-btn-primary tw-flex !tw-w-auto tw-items-center tw-gap-1 tw-rounded-coordinator"
 												style="padding: 0.5rem"
@@ -303,28 +315,27 @@
 												</span>
 											</button>
 
-											<div v-if="showModal && currentComponentElementId === item.id">
-												<Teleport to=".com_emundus">
-													<modal
-														:name="'modal-component'"
-														transition="nice-modal-fade"
-														:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
-														:height="modalHeight"
-														:width="'600px'"
-														:delay="100"
-														:adaptive="true"
-														:clickToClose="false"
-														@click.stop
-													>
-														<component
-															:is="resolvedComponent"
-															:item="item"
-															@close="closePopup()"
-															@update-items="getListItems()"
-														/>
-													</modal>
-												</Teleport>
-											</div>
+											<Teleport to=".com_emundus" v-if="showModal && currentComponentElementId === item.id">
+												<modal
+													:name="'modal-component'"
+													transition="nice-modal-fade"
+													:classes="'!tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
+													:height="modalHeight"
+													:width="'600px'"
+													:delay="100"
+													:adaptive="true"
+													:clickToClose="false"
+													@click.stop
+												>
+													<component
+														:is="resolvedComponent"
+														:item="item"
+														@close="closePopup()"
+														@update-items="getListItems()"
+													/>
+												</modal>
+											</Teleport>
+
 											<popover
 												:position="'left'"
 												v-if="
@@ -395,7 +406,7 @@
 					<modal
 						:name="'modal-component'"
 						transition="nice-modal-fade"
-						:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-px-4 tw-shadow-modal'"
+						:classes="' tw-max-h-[80vh] tw-overflow-y-auto tw-rounded-coordinator tw-p-8 tw-shadow-modal'"
 						:width="'600px'"
 						:delay="100"
 						:adaptive="true"
@@ -435,8 +446,13 @@ import EditSlot from '@/views/Events/EditSlot.vue';
 import AssociateUser from '@/components/Events/Popup/AssociateUser.vue';
 import ContactDetails from '@/components/Contacts/ContactDetails.vue';
 import OrganizationDetails from '@/components/Organizations/OrganizationDetails.vue';
+import CampaignDetails from '@/components/Campaigns/CampaignDetails.vue';
+import ProgramDetails from '@/components/Campaigns/ProgramDetails.vue';
+import EventDetails from '@/components/Events/EventDetails.vue';
+import EmailDetails from '@/components/Emails/EmailDetails.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
+import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -466,7 +482,12 @@ export default {
 		AssociateUser,
 		ContactDetails,
 		OrganizationDetails,
+		CampaignDetails,
+		ProgramDetails,
+		EventDetails,
+		EmailDetails,
 		SaveRequest,
+		UpdateApplicationChoiceState,
 	},
 	props: {
 		defaultLists: {
@@ -493,6 +514,14 @@ export default {
 			type: String,
 			default: 'auto',
 		},
+		crud: {
+			type: Object,
+			default: () => [],
+		},
+		displayPresavedFilters: {
+			type: Boolean,
+			default: false,
+		},
 	},
 	mixins: [alerts],
 	data() {
@@ -508,8 +537,13 @@ export default {
 				AssociateUser,
 				ContactDetails,
 				OrganizationDetails,
+				CampaignDetails,
+				ProgramDetails,
+				EventDetails,
+				EmailDetails,
 				Import,
 				SaveRequest,
+				UpdateApplicationChoiceState,
 			},
 
 			lists: {},
@@ -651,23 +685,16 @@ export default {
 						};
 					}
 
+					tab.display = true;
+					if (tab.acl) {
+						tab.display = this.checkAcl(tab.acl);
+					}
+
 					for (const action of tab.actions) {
 						action.display = true;
 
 						if (action.acl) {
-							const acl_options = action.acl.split('|');
-
-							if (acl_options.length === 2) {
-								userService.getAcl(acl_options[0], acl_options[1]).then((response) => {
-									if (response.status) {
-										action.display = response.right;
-									} else {
-										action.display = false;
-									}
-								});
-							} else {
-								action.display = false;
-							}
+							action.display = this.checkAcl(action.acl);
 						}
 					}
 
@@ -683,8 +710,6 @@ export default {
 					this.setTabFilters(tab, refreshFilters).then(() => {
 						if (typeof tab.getter !== 'undefined') {
 							let url =
-								'/' +
-								useGlobalStore().getShortLang +
 								'/index.php?option=com_emundus&controller=' +
 								tab.controller +
 								'&task=' +
@@ -704,10 +729,18 @@ export default {
 
 							if (typeof this.filters[tab.key] !== 'undefined') {
 								this.filters[tab.key].forEach((filter) => {
-									const filterValue =
-										typeof filter.value === 'object' && filter.value !== null && 'value' in filter.value
-											? filter.value.value
-											: filter.value;
+									let filterValue = '';
+									if (filter.type === 'multiselect' && Array.isArray(filter.value)) {
+										const values = filter.value.map((val) =>
+											typeof val === 'object' && val !== null && 'value' in val ? val.value : val,
+										);
+										filterValue = values.join(',');
+									} else {
+										filterValue =
+											typeof filter.value === 'object' && filter.value !== null && 'value' in filter.value
+												? filter.value.value
+												: filter.value;
+									}
 
 									if (filterValue !== '' && filterValue !== 'all') {
 										url += '&' + filter.key + '=' + encodeURIComponent(filterValue);
@@ -766,6 +799,29 @@ export default {
 			}
 		},
 
+		checkAcl(acl) {
+			const acl_options = acl.split('|');
+
+			// Check CRUD first
+			if (Object.keys(this.crud).length > 0) {
+				if (this.crud.hasOwnProperty(acl_options[0]) && this.crud[acl_options[0]].hasOwnProperty(acl_options[1])) {
+					return this.crud[acl_options[0]][acl_options[1]];
+				}
+			}
+
+			if (acl_options.length === 2) {
+				userService.getAcl(acl_options[0], acl_options[1]).then((response) => {
+					if (response.status) {
+						return response.right;
+					} else {
+						return false;
+					}
+				});
+			} else {
+				return false;
+			}
+		},
+
 		async setTabFilters(tab, refreshFilters = false) {
 			return new Promise(async (resolve) => {
 				const urlParams = new URLSearchParams(window.location.search);
@@ -797,6 +853,7 @@ export default {
 										alwaysDisplay: filter.alwaysDisplay || false,
 										options: [],
 										type: filter.multiselect ? 'multiselect' : filter.type || 'select',
+										multiple: !!(filter.multiselect && filter.multiple),
 									});
 
 									await this.setFilterOptions(
@@ -813,6 +870,7 @@ export default {
 										alwaysDisplay: filter.alwaysDisplay || false,
 										options: filter.values || [],
 										type: filter.multiselect ? 'multiselect' : filter.type || 'select',
+										multiple: !!(filter.multiselect && filter.multiple),
 									});
 								}
 							} else {
@@ -823,6 +881,7 @@ export default {
 									alwaysDisplay: filter.alwaysDisplay || false,
 									options: filter.values || [],
 									type: filter.multiselect ? 'multiselect' : filter.type || 'select',
+									multiple: !!(filter.multiselect && filter.multiple),
 								});
 							}
 						}
@@ -871,10 +930,12 @@ export default {
 							}));
 						}
 
-						options.unshift({
-							value: 'all',
-							label: this.translate(filter.allLabel),
-						});
+						if (!filter.multiple) {
+							options.unshift({
+								value: 'all',
+								label: this.translate(filter.allLabel),
+							});
+						}
 
 						this.filters[tabKey].find((f) => f.key === filter.key).options = options;
 					} else {
@@ -1297,35 +1358,49 @@ export default {
 			}
 
 			let show = [];
+			let showActions = [];
+
+			if (showon.length > 1) {
+				showActions = Object.values(showon);
+			} else {
+				showActions = [showon];
+			}
 
 			items.forEach((item) => {
 				// If item is an id, we get the item from the list
 				if (typeof item === 'number') {
 					item = this.items[this.selectedListTab].find((i) => i.id === item);
 				}
-				switch (showon.operator) {
-					case '==':
-					case '=':
-						show.push(item[showon.key] == showon.value);
-						break;
-					case '!=':
-						show.push(item[showon.key] != showon.value);
-						break;
-					case '>':
-						show.push(item[showon.key] > showon.value);
-						break;
-					case '<':
-						show.push(item[showon.key] < showon.value);
-						break;
-					case '>=':
-						show.push(item[showon.key] >= showon.value);
-						break;
-					case '<=':
-						show.push(item[showon.key] <= showon.value);
-						break;
-					default:
-						show.push(true);
+
+				let itemShow = [];
+
+				for (const showon of showActions) {
+					switch (showon.operator) {
+						case '==':
+						case '=':
+							itemShow.push(item[showon.key] == showon.value);
+							break;
+						case '!=':
+							itemShow.push(item[showon.key] != showon.value);
+							break;
+						case '>':
+							itemShow.push(item[showon.key] > showon.value);
+							break;
+						case '<':
+							itemShow.push(item[showon.key] < showon.value);
+							break;
+						case '>=':
+							itemShow.push(item[showon.key] >= showon.value);
+							break;
+						case '<=':
+							itemShow.push(item[showon.key] <= showon.value);
+							break;
+						default:
+							itemShow.push(true);
+					}
 				}
+
+				show.push(itemShow.every((s) => s === true));
 			});
 
 			// Return true if all items match the condition
@@ -1353,7 +1428,11 @@ export default {
 
 		onCheckItem(id, e) {
 			// Do not check item if the click is on a link or a popover button
-			if (e.target.tagName === 'A' || e.target.classList.contains('popover-toggle-btn')) {
+			if (
+				e.target.tagName === 'A' ||
+				e.target.classList.contains('popover-toggle-btn') ||
+				e.target.children[0].classList.contains('popover-toggle-btn')
+			) {
 				return;
 			}
 
@@ -1417,7 +1496,7 @@ export default {
 			return typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.filter((action) => {
 						return (
-							!['add', 'edit', 'secondary-head'].includes(action.name) &&
+							!['add', 'edit', 'secondary-head', 'show'].includes(action.name) &&
 							!Object.prototype.hasOwnProperty.call(action, 'icon') &&
 							action.display
 						);
@@ -1428,7 +1507,11 @@ export default {
 		editAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {
-						return action.name === 'edit' && (action.view === this.viewType || typeof action.view === 'undefined');
+						return (
+							action.name === 'edit' &&
+							action.display &&
+							(action.view === this.viewType || typeof action.view === 'undefined')
+						);
 					})
 				: false;
 		},
@@ -1436,7 +1519,11 @@ export default {
 		showAction() {
 			return typeof this.currentTab !== 'undefined' && typeof this.currentTab.actions !== 'undefined'
 				? this.currentTab.actions.find((action) => {
-						return action.name === 'show' && (action.view === this.viewType || typeof action.view === 'undefined');
+						return (
+							action.name === 'show' &&
+							action.display &&
+							(action.view === this.viewType || typeof action.view === 'undefined')
+						);
 					})
 				: false;
 		},
@@ -1530,7 +1617,15 @@ export default {
 				this.getListItems(newPage, this.selectedListTab);
 			}
 		},
-		numberOfItemsToDisplay() {
+		numberOfItemsToDisplay(value, oldValue) {
+			const storageNbItemsDisplay = localStorage.getItem(
+				'tchooz_number_of_items_to_display/' + document.location.hostname,
+			);
+
+			if (storageNbItemsDisplay && parseInt(storageNbItemsDisplay) === value) {
+				return;
+			}
+
 			this.getListItems();
 			localStorage.setItem(
 				'tchooz_number_of_items_to_display/' + document.location.hostname,

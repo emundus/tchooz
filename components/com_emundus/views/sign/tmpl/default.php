@@ -15,6 +15,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Language\LanguageHelper;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 ## GLOBAL ##
 Text::script('COM_EMUNDUS_ERROR');
@@ -92,15 +93,25 @@ Text::script('COM_EMUNDUS_ONBOARD_ACTION_SEND_REMINDER');
 Text::script('COM_EMUNDUS_ONBOARD_REQUEST_SEND_REMINDER_CONFIRM');
 
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$signAction   = $actionRepository->getByName('sign_request');
+
+$data['crud'] = [
+    'sign_request' => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($signAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($signAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($signAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($signAction->getId(), 'd', $user->id),
+    ],
+];
 ?>
 
 <div id="em-component-vue"
      component="Sign/Requests"
-     shortLang="<?= $data['short_lang'] ?>" currentLanguage="<?= $data['current_lang'] ?>"
-     defaultLang="<?= $data['default_lang'] ?>"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
 >
 </div>
 

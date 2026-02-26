@@ -523,6 +523,27 @@ export default {
 		};
 	},
 
+	async getFileThumbnail(uploadId, page) {
+		if (typeof uploadId !== 'undefined') {
+			try {
+				return await fetchClient.get('getfilethumbnail', {
+					upload_id: uploadId,
+					page: page,
+				});
+			} catch (e) {
+				return {
+					status: false,
+					msg: e.message,
+				};
+			}
+		}
+
+		return {
+			status: false,
+			msg: 'WRONG_PARAMETERS',
+		};
+	},
+
 	async get2faEnableMethods() {
 		try {
 			return await fetchClient.get('get2faenablemethods');
@@ -681,6 +702,16 @@ export default {
 			return await fetchClient.get('getpagesvisited', {
 				period: period,
 			});
+		} catch (e) {
+			return {
+				status: false,
+				msg: e.message,
+			};
+		}
+	},
+	async revokeMicrosoftAccess() {
+		try {
+			return await fetchClient.post('revokemicrosoftaccess');
 		} catch (e) {
 			return {
 				status: false,

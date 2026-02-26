@@ -812,14 +812,7 @@ class EmundusModelProgramme extends ListModel
 		return $added;
 	}
 
-	/**
-	 * @param   array  $data  the row to delete in table.
-	 *
-	 * @return boolean
-	 * Delete program(s) in DB
-	 * @since version 1.0
-	 */
-	public function deleteProgram($data)
+	public function deleteProgram(int|array $data): bool
 	{
 		$deleted = false;
 
@@ -829,9 +822,8 @@ class EmundusModelProgramme extends ListModel
 			}
 
 			// Call plugin event before we delete the programme
-			JPluginHelper::importPlugin('emundus');
-
-			JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
+			PluginHelper::importPlugin('emundus');
+			Factory::getApplication()->triggerEvent('onCallEventHandler', ['onBeforeProgramDelete', ['data' => $data]]);
 
 
 			$query = $this->_db->getQuery(true);
@@ -864,7 +856,7 @@ class EmundusModelProgramme extends ListModel
 
 				if ($deleted) {
 
-					JFactory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterProgramDelete', ['id' => JFactory::getUser()->id, 'data' => $data]]);
+					Factory::getApplication()->triggerEvent('onCallEventHandler', ['onAfterProgramDelete', ['id' => Factory::getApplication()->getIdentity()->id, 'data' => $data]]);
 				}
 			}
 			catch (Exception $e) {

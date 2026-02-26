@@ -9,6 +9,8 @@
 
 namespace Tchooz\Repositories;
 
+use Joomla\CMS\Cache\CacheController;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Joomla\Database\DatabaseInterface;
@@ -30,6 +32,9 @@ class EmundusRepository
 	protected string $alias = 't';
 	protected array $columns = [];
 
+	protected string $name = '';
+	protected ?CacheController $cache = null;
+
 	public function __construct(
 		$withRelations = true,
 		$exceptRelations = [],
@@ -48,6 +53,11 @@ class EmundusRepository
 
 		if (!empty($name))
 		{
+			$this->name = $name;
+
+			$this->cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+				->createCacheController('output', ['defaultgroup' => 'com_emundus.'.$name]);
+
 			Log::addLogger(['text_file' => "com_emundus.repository.{$name}.php"], Log::ALL, ["com_emundus.repository.{$name}"]);
 		}
 	}
@@ -210,7 +220,7 @@ class EmundusRepository
 		$this->db->setQuery($query);
 		$results = $this->db->loadObjectList();
 
-		if ($results && !empty($this->getFactory())) {
+		if ($results && !empty($this->getFactory()) && method_exists($this->getFactory(), 'fromDbObjects')) {
 			$objects = $this->getFactory()::fromDbObjects($results);
 		}
 

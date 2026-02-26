@@ -15,6 +15,7 @@ defined('_JEXEC') or die('Restricted access');
 jimport('joomla.application.component.model');
 
 use Component\Emundus\Helpers\HtmlSanitizerSingleton;
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Date\Date;
 use Joomla\CMS\Event\GenericEvent;
@@ -34,10 +35,13 @@ use Symfony\Component\HtmlSanitizer\HtmlSanitizerConfig;
 use Symfony\Component\Yaml\Yaml;
 use Tchooz\Entities\Fields\PasswordField;
 use Tchooz\Entities\Settings\AddonEntity;
+use Tchooz\Entities\Upload\UploadEntity;
 use Tchooz\Repositories\Addons\AddonRepository;
 use Tchooz\Repositories\Payment\PaymentRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
 use Tchooz\Services\Integrations\IntegrationConfigurationRegistry;
+use Web357\Plugin\System\Microsoftoutlook365mailconnect\Extension\Microsoftoutlook365mailconnect;
+use Web357\Plugin\System\Microsoftoutlook365mailconnect\Helper\MicrosoftOutlookApplicationHelper;
 
 class EmundusModelSettings extends ListModel
 {
@@ -2094,12 +2098,14 @@ class EmundusModelSettings extends ListModel
 	{
 		$params   = [];
 		$emConfig = ComponentHelper::getComponent('com_emundus')->getParams();
+		$microsoftParams = Microsoftoutlook365mailconnect::getPluginParams();
 
 		$params['mailonline']              = $this->app->get('mailonline');
 		$params['replyto']                 = $this->app->get('replyto', '');
 		$params['replytoname']             = $this->app->get('replytoname', '');
 		$params['fromname']                = $this->app->get('fromname', '');
 		$params['custom_email_conf']       = $emConfig->get('custom_email_conf', 0);
+		$params['custom_server_type']      = $emConfig->get('custom_server_type', 'smtp');
 		$params['custom_email_mailfrom']   = $emConfig->get('custom_email_mailfrom', '');
 		$params['custom_email_smtphost']   = $emConfig->get('custom_email_smtphost', '');
 		$params['custom_email_smtpport']   = $emConfig->get('custom_email_smtpport', '');
@@ -2108,6 +2114,11 @@ class EmundusModelSettings extends ListModel
 		$params['custom_email_smtpuser']   = $emConfig->get('custom_email_smtpuser', '');
 		$params['custom_email_smtppass']   = '************';
 		$params['default_email_mailfrom']  = $emConfig->get('default_email_mailfrom', $this->app->get('mailfrom'));
+
+		$params['microsoft365_applicationid'] =  $microsoftParams->get('oauth_application_id', '');
+		$params['microsoft365_clientsecret'] = $microsoftParams->get('oauth_client_secret', '');
+		$params['microsoft365_redirecturi'] = MicrosoftOutlookApplicationHelper::getInstance()->getRedirectUrl();
+		$params['microsoft365_isauthorized'] = MicrosoftOutlookApplicationHelper::getInstance()->isAuthorized();
 
 		return $params;
 	}
@@ -2283,10 +2294,20 @@ class EmundusModelSettings extends ListModel
 
 	public function sendTestMailSettings($variables, $user = null, $mail_to = null)
 	{
+		if($variables['server_type'] === 'microsoftoutlook365mailconnect')
+		{
+			$pluginParams = Microsoftoutlook365mailconnect::getPluginParams();
+			$oauthAccessToken = $pluginParams->get('oauth_access_token');
+			if(!empty($oauthAccessToken))
+			{
+				$oauthAccessToken = json_decode($oauthAccessToken);
+			}
+		}
+
 		$result = [
 			'status' => false,
 			'title'  => Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS'),
-			'text'   => Text::sprintf('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS_BODY', !empty($mail_to) ? $mail_to : $variables['mailfrom']),
+			'text'   => Text::sprintf('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_SUCCESS_BODY', !empty($mail_to) ? $mail_to : $user->email),
 			'desc'   => ''
 		];
 
@@ -2336,10 +2357,15 @@ class EmundusModelSettings extends ListModel
 			$config->set($key, $variable);
 		}
 
-		$mail_to = !empty($mail_to) ? $mail_to : $variables['mailfrom'];
+		$mail_to = !empty($mail_to) ? $mail_to : $user->email;
 
-		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer($config);
-		$mailer->setSender($variables['mailfrom'], $variables['fromname']);
+		$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
+		if($variables['server_type'] === 'smtp')
+		{
+			$mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer($config);
+			$mailer->setSender($variables['mailfrom'], $variables['fromname']);
+		}
+
 		$mailer->addRecipient($mail_to, $variables['fromname']);
 		if (!empty($variables['replyto']))
 		{
@@ -2363,7 +2389,7 @@ class EmundusModelSettings extends ListModel
 			$result['desc']   = Text::_($this->convertTextException($e->getMessage()));
 		}
 
-		if ($result['status'] && $mailer->Mailer !== $app->get('mailer'))
+		if ($result['status'] && ($variables['server_type'] !== 'microsoftoutlook365mailconnect' && $mailer->Mailer !== $app->get('mailer')))
 		{
 			$result['title']  = Text::_('COM_EMUNDUS_GLOBAL_PARAMS_SECTION_MAIL_TEST_MAIL_ERROR');
 			$result['status'] = false;
@@ -2435,6 +2461,8 @@ class EmundusModelSettings extends ListModel
 				{
 					$emConfig->set('custom_email_smtppass', $config['smtppass']);
 				}
+
+				$emConfig->set('custom_server_type', $config['custom_server_type']);
 			}
 			else
 			{
@@ -2452,6 +2480,48 @@ class EmundusModelSettings extends ListModel
 					->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($componentid));
 				$this->db->setQuery($query);
 				$saved = $this->db->execute();
+
+				if($saved && $config['custom_server_type'] === 'microsoftoutlook365mailconnect')
+				{
+					$query->clear()
+						->select('extension_id, params')
+						->from('#__extensions')
+						->where('element = ' . $this->db->quote('microsoftoutlook365mailconnect'))
+						->where('folder = ' . $this->db->quote('system'));
+					$this->db->setQuery($query);
+					$result = $this->db->loadObject();
+
+					if(!empty($result))
+					{
+						$params = json_decode($result->params, true);
+						$params['oauth_application_id'] = $config['oauth_application_id'];
+						$params['oauth_client_secret'] = $config['oauth_client_secret'];
+						$params['oauth_from_email'] = $config['mailfrom'];
+
+						$query->clear()
+							->update('#__extensions')
+							->set($this->db->quoteName('params') . ' = ' . $this->db->quote(json_encode($params)))
+							->set($this->db->quoteName('enabled') . ' = ' . $this->db->quote(1))
+							->where($this->db->quoteName('extension_id') . ' = ' . $this->db->quote($result->extension_id));
+						$this->db->setQuery($query);
+						$saved = $this->db->execute();
+
+						$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+							->createCacheController('output', ['defaultgroup' => 'com_plugins']);
+						$cache->clean('com_plugins');
+					}
+				}
+				else
+				{
+					// Be sure to disable microsoftoutlook365mailconnect plugin if the custom server type is set to smtp to avoid conflict between the 2 plugins
+					$query->clear()
+						->update('#__extensions')
+						->set($this->db->quoteName('enabled') . ' = ' . $this->db->quote(0))
+						->where($this->db->quoteName('element') . ' = ' . $this->db->quote('microsoftoutlook365mailconnect'))
+						->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'));
+					$this->db->setQuery($query);
+					$saved = $this->db->execute();
+				}
 			}
 			catch (Exception $e)
 			{
@@ -2765,7 +2835,7 @@ class EmundusModelSettings extends ListModel
 		return $managers;
 	}
 
-	public function getAvailableCampaigns($search_query, $limit = 100)
+	public function getAvailableCampaigns($search_query, $limit = 100, array $programs = [])
 	{
 		$campaigns = [];
 
@@ -2787,6 +2857,11 @@ class EmundusModelSettings extends ListModel
 				$query->where($this->db->quoteName('c.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
 			}
 
+			if(!empty($programs))
+			{
+				$query->where($this->db->quoteName('p.id') . ' IN (' . implode(',', $programs) . ')');
+			}
+
 			$query->order($this->db->quoteName('c.label') . ' ASC');
 
 			$this->db->setQuery($query);
@@ -2801,7 +2876,7 @@ class EmundusModelSettings extends ListModel
 	}
 
 
-	public function getAvailablePrograms($search_query, $limit = 100)
+	public function getAvailablePrograms($search_query, $limit = 100, $filteredPrograms = [])
 	{
 		$programs = [];
 
@@ -2836,6 +2911,11 @@ class EmundusModelSettings extends ListModel
 
 				$query->where($this->db->quoteName('esp.label') . ' LIKE ' . $this->db->quote('%' . $search_query . '%')
 					. ' OR ' . $this->db->quoteName('fc.value') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));
+			}
+
+			if(!empty($filteredPrograms))
+			{
+				$query->where($this->db->quoteName('esp.id') . ' IN (' . implode(',', $filteredPrograms) . ')');
 			}
 
 			$query->order($this->db->quoteName('esp.label') . ' ASC');
@@ -2920,8 +3000,8 @@ class EmundusModelSettings extends ListModel
 						$app->config->authentication->password = '************';
 					}
 				}
-				
-				$registry = new IntegrationConfigurationRegistry();
+
+				$registry                 = new IntegrationConfigurationRegistry();
 				$integrationConfiguration = $registry->getConfiguration($app->type);
 				if (!empty($integrationConfiguration))
 				{
@@ -2942,7 +3022,7 @@ class EmundusModelSettings extends ListModel
 				}
 				else
 				{
-					$app->config = json_encode($app->config);
+					$app->config     = json_encode($app->config);
 					$app->parameters = [];
 				}
 			}
@@ -3025,7 +3105,8 @@ class EmundusModelSettings extends ListModel
 							break;
 						case 'docaposte':
 							$updated = $this->defaultSetup($app, $setup);
-							if($updated) {
+							if ($updated)
+							{
 								$updated = $this->setupDocaposte();
 							}
 							break;
@@ -3651,7 +3732,7 @@ class EmundusModelSettings extends ListModel
 						$this->db->execute();
 					}
 					// TODO handle with a EmundusIntegrationConfiguration class toggle method
-					if($app_type === 'docaposte')
+					if ($app_type === 'docaposte')
 					{
 						// Update publish state email template
 						$labels = [
@@ -3787,7 +3868,7 @@ class EmundusModelSettings extends ListModel
 			$this->db->setQuery($queryString);
 			$columnExists = $this->db->loadResult();
 
-			if(!empty($columnExists))
+			if (!empty($columnExists))
 			{
 				$columns[] = 'idp_name';
 			}
@@ -4727,9 +4808,9 @@ class EmundusModelSettings extends ListModel
 
 		if (!empty($app) && !empty($setup))
 		{
-			$synchronizerRepository = new SynchronizerRepository();
-			$synchronizer = $synchronizerRepository->getById($app->id);
-			$registry = new IntegrationConfigurationRegistry();
+			$synchronizerRepository   = new SynchronizerRepository();
+			$synchronizer             = $synchronizerRepository->getById($app->id);
+			$registry                 = new IntegrationConfigurationRegistry();
 			$integrationConfiguration = $registry->getConfiguration($synchronizer->getType());
 
 			$config = $synchronizer->getConfig();
@@ -4807,89 +4888,102 @@ class EmundusModelSettings extends ListModel
 		}
 	}
 
-	public function getFileInfosFromUploadId(int $upload_id): array
+	public function getFileInfosFromUploadEntity(UploadEntity $upload): array
 	{
 		$infos = [];
 
 		try
 		{
-			// Get file path
-			$query = $this->db->getQuery(true);
-
-			$query->select('eu.id, eu.filename, ecc.applicant_id, eu.thumbnail')
-				->from($this->db->quoteName('#__emundus_uploads', 'eu'))
-				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ' . $this->db->quoteName('ecc.fnum') . ' = ' . $this->db->quoteName('eu.fnum'))
-				->where($this->db->quoteName('eu.id') . ' = :upload_id')
-				->bind(':upload_id', $upload_id, ParameterType::INTEGER);
-			$this->db->setQuery($query);
-			$file = $this->db->loadObject();
-
-			if (!empty($file->filename))
+			// Check if file exists
+			if (file_exists($upload->getFileInternalPath()))
 			{
-				$file_path = JPATH_ROOT . '/images/emundus/files/' . $file->applicant_id . '/' . $file->filename;
-
-				// Check if file exists
-				if (file_exists($file_path))
+				if (empty($upload->getThumbnail()))
 				{
-					if (empty($file->thumbnail))
+					try
 					{
-						try
-						{
-							$thumbnail_width = 200;
+						$base64Thumbnail = $this->getFileThumbnail($upload, 1);
+						$upload->setThumbnail($base64Thumbnail);
 
-							if (!extension_loaded('imagick'))
-							{
-								throw new Exception('Imagick extension is not loaded.');
-							}
-
-							$imagick = new Imagick();
-							$imagick->setResolution(150, 150);
-							$imagick->readImage($file_path . '[0]');
-							$imagick->setImageFormat('png');
-							$imagick->thumbnailImage($thumbnail_width, 0);
-
-							// Convert image to base64
-							$thumbnailData   = $imagick->getImageBlob();
-							$base64Thumbnail = base64_encode($thumbnailData);
-
-							$file->thumbnail = $base64Thumbnail;
-
-							// Move to tmp directory instead of database or redis
-							$this->db->updateObject('#__emundus_uploads', $file, 'id');
-						}
-						catch (Exception $e)
-						{
-							Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
-							$base64Thumbnail = '';
-						}
-
+						// Move to tmp directory instead of database or redis
+						$this->db->updateObject('#__emundus_uploads', $upload, 'id');
 					}
-					else
+					catch (Exception $e)
 					{
-						$base64Thumbnail = $file->thumbnail;
+						Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+						$base64Thumbnail = '';
 					}
 
-					$infos['thumbnail'] = $base64Thumbnail;
-
-					// If pdf, get text content
-					if (pathinfo($file->filename, PATHINFO_EXTENSION) === 'pdf')
-					{
-						$parser                = new Parser();
-						$pdf                   = $parser->parseFile($file_path);
-						$infos['pages_length'] = count($pdf->getPages());
-						$infos['text']         = $pdf->getText();
-					}
-
-					return $infos;
 				}
 				else
 				{
-					throw new Exception('File not found: ' . $file_path);
+					$base64Thumbnail = $upload->getThumbnail();
 				}
+
+				$infos['thumbnail'] = $base64Thumbnail;
+
+				// If pdf, get text content
+				if (pathinfo($upload->getFilename(), PATHINFO_EXTENSION) === 'pdf')
+				{
+					$parser                = new Parser();
+					$pdf                   = $parser->parseFile($upload->getFileInternalPath());
+					$infos['pages_length'] = count($pdf->getPages());
+					$infos['text']         = $pdf->getText();
+				}
+
+				return $infos;
 			}
 			else
 			{
-				throw new Exception('File not found for upload ID: ' . $upload_id);
+				throw new Exception('File not found: ' . $upload->getFileInternalPath());
+			}
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+			throw $e;
+		}
+	}
+
+	public function getFileThumbnail(UploadEntity $uploadEntity, int $page = 1): string
+	{
+		$base64Thumbnail = "";
+
+		try
+		{
+			if (file_exists($uploadEntity->getFileInternalPath()))
+			{
+				try
+				{
+					$page      = max(1, $page);
+					$pageIndex = $page - 1;
+
+					$thumbnail_width = 200;
+
+					if (!extension_loaded('imagick'))
+					{
+						throw new Exception('Imagick extension is not loaded.');
+					}
+
+					$imagick = new Imagick();
+					$imagick->setResolution(150, 150);
+					$imagick->readImage($uploadEntity->getFileInternalPath() . '[' . $pageIndex . ']');
+					$imagick->setImageFormat('png');
+					$imagick->thumbnailImage($thumbnail_width, 0);
+
+					// Convert image to base64
+					$thumbnailData   = $imagick->getImageBlob();
+					$base64Thumbnail = base64_encode($thumbnailData);
+				}
+				catch (Exception $e)
+				{
+					Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+				}
+
+				return $base64Thumbnail;
+			}
+			else
+			{
+				throw new Exception('File not found: ' . $uploadEntity->getFileInternalPath());
 			}
 		}
 		catch (Exception $e)

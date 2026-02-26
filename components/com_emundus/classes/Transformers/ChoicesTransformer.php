@@ -38,6 +38,7 @@ class ChoicesTransformer implements FabrikTransformerInterface
 		else
 		{
 			$arr = $value === '' ? [] : explode(',', $value);
+			$arr = array_map(function ($item) {return trim($item, '"');}, $arr);
 		}
 
 		if (count($arr) > 0 && !empty($this->params['sub_options']))

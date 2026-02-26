@@ -21,8 +21,18 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Joomla\CMS\Factory;
+use Tchooz\Enums\CrudEnum;
+use Tchooz\Repositories\Actions\ActionRepository;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\EmundusResponse;
+use Tchooz\Enums\AccessLevelEnum;
+use Tchooz\Entities\Filters\FilterEntity;
+use Tchooz\Enums\Filters\FilterModeEnum;
+use Tchooz\Factories\Filters\FilterFactory;
+use Tchooz\Repositories\Filters\FilterRepository;
 use \Tchooz\Traits\TraitResponse;
 use Tchooz\Enums\Export\ExportModeEnum;
+use Tchooz\Controller\EmundusController;
 
 use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
@@ -40,23 +50,11 @@ jimport('joomla.user.helper');
 /**
  * Class EmundusControllerFiles
  */
-class EmundusControllerFiles extends BaseController
+class EmundusControllerFiles extends EmundusController
 {
-	protected $app;
-
 	private $_user;
 	private $_db;
 
-	use TraitResponse;
-
-	/**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     \JController
-	 * @since   1.0.0
-	 */
 	public function __construct($config = array())
 	{
 		parent::__construct($config);
@@ -73,7 +71,6 @@ class EmundusControllerFiles extends BaseController
 		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'application.php');
         require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'programme.php');
 
-		$this->app   = Factory::getApplication();
 		$this->_user = $this->app->getSession()->get('emundusUser');
 		$this->_db = Factory::getContainer()->get('DatabaseDriver');
 	}
@@ -993,10 +990,6 @@ class EmundusControllerFiles extends BaseController
 		exit;
 	}
 
-
-	/**
-	 *
-	 */
 	public function share()
 	{
 		$actions = $this->input->getString('actions', '');
@@ -1005,6 +998,10 @@ class EmundusControllerFiles extends BaseController
 		$notify  = $this->input->getVar('notify', 'false');
 		$itemId  = $this->input->getInt('Itemid', 0);
 
+		$actionRepository = new ActionRepository();
+		$accessFileGroupsAction = $actionRepository->getByName('access_file');
+		$accessFileUsersAction = $actionRepository->getByName('access_file_users');
+
 		$actions = (array) json_decode(stripslashes($actions));
 
 		$m_files = $this->getModel('Files');
@@ -1012,46 +1009,52 @@ class EmundusControllerFiles extends BaseController
 		$fnums_post = $this->input->getString('fnums', null);
 		$fnums      = ($fnums_post) == 'all' ? $m_files->getAllFnums(false, $this->_user->id, $itemId) : (array) json_decode(stripslashes($fnums_post), false, 512, JSON_BIGINT_AS_STRING);
 
-		$validFnums = array();
-		foreach ($fnums as $fnum) {
-			if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction(11, 'c', $this->_user->id, $fnum)) {
-				$validFnums[] = $fnum;
+		$res = false;
+		if (!empty($groups)) {
+			$validFnums = array();
+			foreach ($fnums as $fnum) {
+				if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction($accessFileGroupsAction->getId(), CrudEnum::CREATE->value, $this->_user->id, $fnum)) {
+					$validFnums[] = $fnum;
+				}
+			}
+
+			if(!empty($validFnums))
+			{
+				$groups = (array) json_decode(stripslashes($groups));
+				$res    = $m_files->shareGroups($groups, $actions, $validFnums);
+			}
+		}
+
+		if (!empty($evals)) {
+			$validFnums = array();
+			foreach ($fnums as $fnum) {
+				if ($fnum != 'em-check-all' && EmundusHelperAccess::asAccessAction($accessFileUsersAction->getId(), CrudEnum::CREATE->value, $this->_user->id, $fnum)) {
+					$validFnums[] = $fnum;
+				}
+			}
+
+			if(!empty($validFnums))
+			{
+				$evals = (array) json_decode(stripslashes($evals));
+				$res   = $m_files->shareUsers($evals, $actions, $validFnums);
 			}
 		}
 
 		unset($fnums);
-		if (count($validFnums) > 0) {
-			if (!empty($groups)) {
-				$groups = (array) json_decode(stripslashes($groups));
-				$res    = $m_files->shareGroups($groups, $actions, $validFnums);
-			}
 
-			if (!empty($evals)) {
-				$evals = (array) json_decode(stripslashes($evals));
-				$res   = $m_files->shareUsers($evals, $actions, $validFnums);
-			}
-
-			if ($res !== false) {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
-			}
-			else {
-				$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-			}
-		} else {
+		if ($res !== false) {
+			$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_SUCCESS');
+		}
+		else {
 			$msg = Text::_('COM_EMUNDUS_ACCESS_SHARE_ERROR');
-			echo json_encode((object) (array('status' => '0', 'msg' => $msg)));
-			exit;
 		}
 
-		if ($notify !== 'false' && $res !== false && !empty($evals)) {
+		if ($notify !== 'false' && $res !== false && !empty($evals) && !empty($validFnums)) {
+			$fnums = $validFnums;
 
-			if (empty($fnums)) {
-				$fnums = $validFnums;
-			}
-
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'emails.php');
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'users.php');
-			require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/emails.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/users.php');
+			require_once(JPATH_BASE . '/components/com_emundus/models/profile.php');
 
 			$m_emails = new EmundusModelEmails();
 			$m_users    = $this->getModel('Users');
@@ -4721,21 +4724,11 @@ class EmundusControllerFiles extends BaseController
 		exit;
 	}
 
-	public function getProfiles()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getProfiles(): EmundusResponse
 	{
-		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
-		$user = $this->app->getIdentity();
-
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($user->id)) {
-			$m_files = new EmundusModelFiles();
-			$response['data'] = array_values($m_files->getProfiles());
-
-			$response['status'] = true;
-			$response['msg'] = Text::_('SUCCESS');
-		}
-
-		echo json_encode($response);
-		exit;
+		$m_files = new EmundusModelFiles();
+		return EmundusResponse::ok(array_values($m_files->getProfiles()));
 	}
 
 	private function isEvaluationMenu(int $menu_id): bool
@@ -4772,6 +4765,139 @@ class EmundusControllerFiles extends BaseController
 			}
 		}
 
+		$this->sendJsonResponse($response);
+	}
+
+	public function getlistfilters(): void
+	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response['code'] = 403;
+			$response['status'] = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		$filterRepository = new FilterRepository();
+		$filters = $filterRepository->get(['user' => $this->_user->id, 'mode' => FilterModeEnum::LIST]);
+
+		$data = [];
+		foreach ($filters as $filter) {
+			$data[] = $filter->__serialize();
+		}
+
+		$response['code'] = 200;
+		$response['status'] = true;
+		$response['message'] = Text::_('SUCCESS');
+		$response['data'] = $data;
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function savelistfilters(): void
+	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		$name = $this->input->getString('name', '');
+		$filters = $this->input->getString('filters', '');
+		$view = $this->input->getString('view', '');
+		$id = $this->input->getInt('id', 0);
+
+		if(empty($name) || empty($filters))
+		{
+			$response['code'] = 400;
+			$response['status'] = true;
+			$response['message'] = Text::_('MISSING_PARAMS');
+			$this->sendJsonResponse($response);
+		}
+
+		$filters = json_decode($filters, true);
+		$filters['view'] = $view;
+
+		$filterRepository = new FilterRepository();
+		if(!empty($id))
+		{
+			$filterObject = $filterRepository->getItemByField('id', $id);
+			$filterEntity = FilterFactory::buildEntity($filterObject);
+
+			$filterEntity->setName($name);
+			$filterEntity->setConstraints($filters);
+		}
+		else {
+			$filterEntity = new FilterEntity(
+				$name,
+				$filters,
+				Factory::getApplication()->getIdentity(),
+				FilterModeEnum::LIST,
+				0
+			);
+		}
+
+		try
+		{
+			$filterRepository->flush($filterEntity);
+
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['data'] = $filterEntity->__serialize();
+			$response['message'] = Text::_('FILTER_SAVED');
+		}
+		catch (Exception $e)
+		{
+			$response['code'] = $e->getCode();
+			$response['status'] = false;
+			$response['message'] = $e->getMessage();
+		}
+
+		$this->sendJsonResponse($response);
+	}
+
+	public function deletelistfilters(): void
+	{
+		if(!EmundusHelperAccess::asPartnerAccessLevel($this->_user->id))
+		{
+			$response['code'] = 200;
+			$response['status'] = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		$id = $this->input->getInt('id', 0);
+		if(empty($id))
+		{
+			$response['code'] = 400;
+			$response['status'] = true;
+			$response['message'] = Text::_('MISSING_PARAMS');
+			$this->sendJsonResponse($response);
+		}
+
+		$filterRepository = new FilterRepository();
+		$filterObject = $filterRepository->getItemByField('id', $id);
+		if(empty($filterObject) || $filterObject->user != $this->_user->id)
+		{
+			$response['code']    = 403;
+			$response['status']  = true;
+			$response['message'] = Text::_('ACCESS_DENIED');
+			$this->sendJsonResponse($response);
+		}
+
+		if(!$filterRepository->delete($id))
+		{
+			$response['code']    = 500;
+			$response['status']  = false;
+			$response['message'] = Text::_('ERROR_DELETING_FILTER');
+			$this->sendJsonResponse($response);
+		}
+
+		$response['code']    = 200;
+		$response['status']  = true;
+		$response['message'] = Text::_('FILTER_DELETED');
 		$this->sendJsonResponse($response);
 	}
 }
