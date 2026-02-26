@@ -3365,6 +3365,41 @@ class EmundusModelFiles extends JModelLegacy
 							}
 						}
 						break;
+					case 'orderlist':
+						if ($is_repeat) {
+							$element_table_alias = array_search($element->table_join, $already_joined);
+						}
+
+						// value is saved as string 'value1, value2' in the database
+						$query            .= ', (';
+						$regexp_sub_query = $element_table_alias . '.' . $element->element_name . ' '; // default value if no sub_options
+
+						$element_params = json_decode($element->element_attribs, true);
+						if (!empty($element_params['sub_options']['sub_values'])) {
+							foreach ($element_params['sub_options']['sub_values'] as $sub_key => $sub_value) {
+								if(!empty($translations) && isset($translations[$element_params['sub_options']['sub_labels'][$sub_key]])) {
+									$sub_label = $translations[$element_params['sub_options']['sub_labels'][$sub_key]];
+								}
+								else
+								{
+									$sub_label = Text::_($element_params['sub_options']['sub_labels'][$sub_key]);
+								}
+								$sub_label = $sub_label === '' ? $element_params['sub_options']['sub_labels'][$sub_key] : $sub_label;
+								$sub_label = str_replace("'", "\'", $sub_label); // escape sub label single quotes for SQL query
+								$sub_value = str_replace("'", "\'", $sub_value);
+
+
+								if ($sub_key === 0) {
+									$regexp_sub_query = 'regexp_replace(' . $element_table_alias . '.' . $element->element_name . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+								}
+								else {
+									$regexp_sub_query = 'regexp_replace(' . $regexp_sub_query . ', \'"' . $sub_value . '"\', \'' . $sub_label . '\')';
+								}
+							}
+						}
+
+						$query .= $regexp_sub_query . ') AS ' . $element->tab_name . '___' . $element->element_name;
+						break;
 					case 'birthday':
 						if ($is_repeat) {
 							$query            .= ', DATE_FORMAT(' . $child_element_table_alias . '.' . $element->element_name . ', \'%Y-%m-%d\') AS ' . $already_joined[$child_element_table_alias] . '___' . $element->element_name;

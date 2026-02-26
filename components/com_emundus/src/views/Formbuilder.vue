@@ -31,7 +31,9 @@
 							{{ translate('COM_EMUNDUS_FORM_BUILDER_SAVED_AT') }} {{ lastSave }}
 						</p>
 					</div>
+
 					<span
+						v-if="canUpdate"
 						class="editable-data tw-text-center tw-text-sm tw-font-semibold"
 						contenteditable="true"
 						ref="formTitle"
@@ -42,7 +44,9 @@
 					>
 						{{ title }}
 					</span>
-					<div class="tw-flex tw-items-center tw-justify-end tw-gap-3">
+					<h2 v-else>{{ title }}</h2>
+
+					<div v-if="canUpdate" class="tw-flex tw-items-center tw-justify-end tw-gap-3">
 						<a
 							:href="'/' + this.aliasLink"
 							target="_blank"
@@ -50,6 +54,7 @@
 							>{{ translate('COM_EMUNDUS_ONBOARD_SHOW_ALIAS_LIST') }}
 							<span class="material-symbols-outlined">open_in_new</span>
 						</a>
+
 						<div class="tw-flex tw-flex-col tw-items-end">
 							<button
 								class="em-w-auto tw-btn-primary !tw-h-auto tw-gap-3 tw-rounded-coordinator tw-px-3 tw-py-2"
@@ -83,6 +88,7 @@
 
 			<div v-if="principalContainer === 'default'" class="body tw-flex tw-items-center tw-justify-between">
 				<aside
+					v-if="canUpdate"
 					class="left-panel tw-relative tw-flex tw-h-full tw-justify-start"
 					v-show="!previewForm"
 					:class="leftPanelClasses"
@@ -146,6 +152,7 @@
 						>
 					</div>
 				</aside>
+
 				<section
 					v-if="!previewForm && (activeTab === '' || activeTab === 'Elements')"
 					class="tw-flex tw-h-full tw-w-full tw-flex-col"
@@ -160,6 +167,7 @@
 							:mode="mode"
 							:page="currentPage"
 							:profile_id="parseInt(profile_id)"
+							:can-update="canUpdate"
 							@open-element-properties="onOpenElementProperties"
 							@open-section-properties="onOpenSectionProperties"
 							@open-page-properties="onOpenPageProperties"
@@ -171,6 +179,7 @@
 							ref="formBuilderDocumentList"
 							:campaign_id="parseInt(campaign_id)"
 							:profile_id="parseInt(profile_id)"
+							:can-update="canUpdate"
 							@add-document="onOpenCreateDocument"
 							@edit-document="onEditDocument"
 							@delete-document="onDeleteDocument"
@@ -262,6 +271,7 @@
 										:pages="pages"
 										:selected="parseInt(selectedPage)"
 										:profile_id="parseInt(profile_id)"
+										:can-update="canUpdate"
 										@select-page="selectPage($event)"
 										@add-page="getPages(currentPage.id)"
 										@delete-page="afterDeletedPage($event)"
@@ -275,36 +285,39 @@
 										ref="formBuilderDocuments"
 										:profile_id="parseInt(profile_id)"
 										:campaign_id="parseInt(campaign_id)"
+										:can-update="canUpdate"
 										@show-documents="setSectionShown('documents')"
 										@open-create-document="onOpenCreateDocument"
 									></form-builder-documents>
 								</div>
 
 								<form-builder-element-properties
-									v-if="showInRightPanel === 'element-properties'"
+									v-if="canUpdate && showInRightPanel === 'element-properties'"
 									@close="onCloseElementProperties"
 									:element="selectedElement"
 									:profile_id="parseInt(profile_id)"
 								></form-builder-element-properties>
 								<form-builder-section-properties
-									v-else-if="showInRightPanel === 'section-properties'"
+									v-else-if="canUpdate && showInRightPanel === 'section-properties'"
 									@close="onCloseSectionProperties"
 									:section_id="selectedSection.group_id"
 									:profile_id="parseInt(profile_id)"
 								></form-builder-section-properties>
 								<form-builder-page-properties
-									v-else-if="showInRightPanel === 'page-properties'"
+									v-else-if="canUpdate && showInRightPanel === 'page-properties'"
 									@close="onClosePageProperties"
 									:profile_id="parseInt(profile_id)"
 									:page="selectedPageProperties"
 								></form-builder-page-properties>
 								<form-builder-create-model
-									v-else-if="showInRightPanel === 'create-model'"
+									v-else-if="canUpdate && showInRightPanel === 'create-model'"
 									:page="selectedPage"
 									@close="showInRightPanel = 'hierarchy'"
 								></form-builder-create-model>
 								<form-builder-create-document
-									v-else-if="showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')"
+									v-else-if="
+										canUpdate && showInRightPanel === 'create-document' && rightPanel.tabs.includes('create-document')
+									"
 									ref="formBuilderCreateDocument"
 									:key="formBuilderCreateDocumentKey"
 									:profile_id="parseInt(profile_id)"
@@ -319,7 +332,7 @@
 					</aside>
 				</transition>
 			</div>
-			<div v-else-if="principalContainer === 'create-page'">
+			<div v-else-if="canUpdate && principalContainer === 'create-page'">
 				<form-builder-create-page
 					:profile_id="parseInt(profile_id)"
 					@close="onCloseCreatePage"
@@ -478,6 +491,12 @@ export default {
 			loading: false,
 
 			aliasLink: '',
+			crud: {
+				form: {
+					u: true,
+				},
+			},
+			readOnly: false,
 		};
 	},
 	setup() {
@@ -506,6 +525,14 @@ export default {
 
 		if (data && data.settingsmenualias && data.settingsmenualias.value) {
 			this.leftPanel.tabs[2].url = '/' + data.settingsmenualias.value;
+		}
+
+		if (data && data.crud && data.crud.value) {
+			this.crud = JSON.parse(data.crud.value);
+		}
+
+		if (data && data.readonly && data.readonly.value) {
+			this.readOnly = data.readonly.value == 1;
 		}
 
 		if (data && data.enableconditionbuilder && data.enableconditionbuilder.value == 1) {
@@ -592,7 +619,7 @@ export default {
 					this.principalContainer = 'default';
 
 					formService.getSubmissionPage(this.profile_id).then((response) => {
-						const formId = response.link.match(/formid=(\d+)/)[1];
+						const formId = response.data.link.match(/formid=(\d+)/)[1];
 						if (formId) {
 							// check if the form is already in the pages
 							const page = this.pages.find((page) => page.id === formId);
@@ -879,6 +906,9 @@ export default {
 			}
 
 			return '';
+		},
+		canUpdate() {
+			return this.crud.form.u && !this.readOnly;
 		},
 	},
 	watch: {

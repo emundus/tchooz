@@ -23,8 +23,8 @@ export default {
 		this.loading = true;
 
 		settingsService.getEmundusParams().then((response) => {
-			this.enable_user_category = response.emundus.enable_user_categories;
-			this.mandatory = response.emundus.user_category_mandatory;
+			this.enable_user_category = response.data.emundus.enable_user_categories;
+			this.mandatory = response.data.emundus.user_category_mandatory;
 
 			this.getCategories();
 		});

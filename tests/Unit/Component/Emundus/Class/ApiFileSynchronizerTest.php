@@ -14,22 +14,11 @@ use Joomla\Tests\Unit\UnitTestCase;
 
 require_once JPATH_BASE . '/components/com_emundus/classes/api/FileSynchronizer.php';
 
-/**
- * @package     Unit\Component\Emundus\Helper
- *
- * @since       version 1.0.0
- * @covers      \classes\api\FileSynchronizer
- */
 class ApiFileSynchronizerTest extends UnitTestCase
 {
 	public function __construct(?string $name = null, array $data = [], $dataName = '')
 	{
 		parent::__construct('sync', $data, $dataName, 'EmundusModelSync');
-	}
-
-	public function testConstruct()
-	{
-		$this->assertTrue(true);
 	}
 
 	/**

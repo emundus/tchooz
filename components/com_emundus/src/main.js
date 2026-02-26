@@ -43,6 +43,7 @@ import CartAppFile from '@/views/Payment/CartAppFile.vue';
 import OrganizationForm from '@/views/Organizations/OrganizationForm.vue';
 import ApplicationChoices from '@/views/Application/ApplicationChoices.vue';
 import Exports from '@/views/Exports/Exports.vue';
+import ApplicationChoicesList from '@/views/Application/ApplicationChoicesList.vue';
 
 if (document) {
 	let app = null;
@@ -91,6 +92,11 @@ if (document) {
 		elements.push(exportsElement);
 	}
 
+	const fabrikVueElements = document.querySelectorAll('.fabrik-vue-element');
+	fabrikVueElements.forEach((fabrikElement) => {
+		elements.push(fabrikElement);
+	});
+
 	for (const el of elements) {
 		if (el) {
 			const componentName = el.getAttribute('component');
@@ -103,7 +109,6 @@ if (document) {
 				const componentNames = [
 					'Attachments',
 					'Comments',
-					'Workflows/WorkflowEdit',
 					'Program/ProgramEdit',
 					'History',
 					'Expert/Expert',
@@ -166,11 +171,6 @@ if (document) {
 							border: datas.border ? datas.border == 1 : true,
 						});
 						break;
-					case 'Workflows/WorkflowEdit':
-						app = createApp(WorkflowEdit, {
-							workflowId: Number(datas.workflowid),
-						});
-						break;
 					case 'SMS/SMSEdit':
 						app = createApp(SMSEdit, {
 							id: Number(datas.smsid),
@@ -191,6 +191,7 @@ if (document) {
 					case 'Program/ProgramEdit':
 						app = createApp(ProgramEdit, {
 							programId: Number(datas.program_id),
+							crud: JSON.parse(datas.crud),
 						});
 						break;
 					case 'History':
@@ -245,6 +246,15 @@ if (document) {
 						}
 
 						app = createApp(ApplicationChoices, {
+							...datas,
+						});
+						break;
+					case 'Application/ApplicationChoicesList':
+						if (el.getAttribute('data')) {
+							datas = JSON.parse(el.getAttribute('data'));
+						}
+
+						app = createApp(ApplicationChoicesList, {
 							...datas,
 						});
 						break;

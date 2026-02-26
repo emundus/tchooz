@@ -71,7 +71,7 @@
 					</div>
 
 					<!-- OPTIONS -->
-					<div v-if="['radiobutton', 'checkbox', 'dropdown'].includes(element.plugin)">
+					<div v-if="['radiobutton', 'checkbox', 'dropdown', 'orderlist'].includes(element.plugin)">
 						<hr />
 						<form-builder-element-options
 							ref="form-builder-element-options"
@@ -291,7 +291,7 @@ export default {
 		saveProperties() {
 			this.loading = true;
 			if (
-				['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin) &&
+				['radiobutton', 'checkbox', 'dropdown', 'orderlist'].includes(this.element.plugin) &&
 				this.$refs['form-builder-element-options']
 			) {
 				this.element.params.sub_options.sub_values = [];
@@ -309,7 +309,7 @@ export default {
 					this.updateLastSave();
 					this.$emit('close');
 
-					if (['radiobutton', 'checkbox', 'dropdown'].includes(this.element.plugin)) {
+					if (['radiobutton', 'checkbox', 'dropdown', 'orderlist'].includes(this.element.plugin)) {
 						formBuilderService.getJTEXTA(this.element.params.sub_options.sub_labels).then((response) => {
 							if (response) {
 								this.element.params.sub_options.sub_labels.forEach((label, index) => {

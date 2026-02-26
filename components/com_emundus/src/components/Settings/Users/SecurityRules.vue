@@ -36,7 +36,7 @@ export default {
 			this.loading = true;
 
 			settingsService.getEmundusParams().then((response) => {
-				this.fields[0].value = response.emundus.disable_inactive_accounts_after_delay;
+				this.fields[0].value = response.data.emundus.disable_inactive_accounts_after_delay;
 
 				this.loading = false;
 			});

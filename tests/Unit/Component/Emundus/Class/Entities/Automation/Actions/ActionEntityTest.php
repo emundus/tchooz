@@ -10,11 +10,12 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Task\TaskEntity;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
+use Tchooz\Entities\Automation\ActionEntity;
 
 class ActionEntityTest extends UnitTestCase
 {
 	/**
-	 * @covers ActionEntity::with()
+	 * @covers \Tchooz\Entities\Automation\ActionEntity::with()
 	 */
 	public function testWith(): void
 	{
@@ -32,8 +33,8 @@ class ActionEntityTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ActionEntity::isExecutedWith()
-	 * @covers ActionEntity::getWithOfType()
+	 * @covers \Tchooz\Entities\Automation\ActionEntity::isExecutedWith()
+	 * @covers \Tchooz\Entities\Automation\ActionEntity::getWithOfType()
 	 */
 	public function testRetrieveWithEntity(): void
 	{

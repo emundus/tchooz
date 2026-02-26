@@ -16,7 +16,7 @@ class SynchronizerRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers SynchronizerRepository::getByType
+	 * @covers \Tchooz\Repositories\Synchronizer\SynchronizerRepository::getByType
 	 */
 	public function testGetByType(): void
 	{
@@ -26,7 +26,7 @@ class SynchronizerRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers SynchronizerRepository::getById
+	 * @covers \Tchooz\Repositories\Synchronizer\SynchronizerRepository::getById
 	 */
 	public function testGetById(): void
 	{
@@ -38,7 +38,7 @@ class SynchronizerRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers SynchronizerRepository::flush
+	 * @covers \Tchooz\Repositories\Synchronizer\SynchronizerRepository::flush
 	 */
 	public function testFlush(): void
 	{

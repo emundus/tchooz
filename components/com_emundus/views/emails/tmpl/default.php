@@ -9,12 +9,17 @@
  */
 
 // No direct access to this file
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 defined('_JEXEC') or die('Restricted Access');
 
 ## GLOBAL ##
+Text::script('PUBLISHED');
+Text::script('COM_EMUNDUS_ONBOARD_FILTER_UNPUBLISH');
+
 Text::script('COM_EMUNDUS_ONBOARD_MODIFY');
 Text::script('COM_EMUNDUS_ONBOARD_VISUALIZE');
 Text::script('COM_EMUNDUS_ONBOARD_OK');
@@ -29,6 +34,7 @@ Text::script('COM_EMUNDUS_ONBOARD_CANT_REVERT');
 Text::script('COM_EMUNDUS_ONBOARD_EMPTY_LIST');
 Text::script('COM_EMUNDUS_ONBOARD_LABEL_EMAILS');
 Text::script('COM_EMUNDUS_LIST_CLOSE_PREVIEW');
+Text::script('COM_EMUNDUS_ONBOARD_ADDEMAIL_SENDER_EMAIL');
 ## END ##
 
 ## ACTIONS ##
@@ -171,15 +177,32 @@ Text::script('COM_EMUNDUS_ONBOARD_NOSMS');
 Text::script('COM_EMUNDUS_SMS_PLACEHOLDER');
 
 $data = LayoutFactory::prepareVueData();
+
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$emailAction   = $actionRepository->getByName('email');
+$smsAction    = $actionRepository->getByName('sms');
+
+$data['crud'] = [
+    'email' => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($emailAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($emailAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($emailAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($emailAction->getId(), 'd', $user->id),
+    ],
+    'sms'  => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($smsAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($smsAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($smsAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($smsAction->getId(), 'd', $user->id),
+    ]
+];
 ?>
 
 <div id="em-component-vue"
      component="Emails"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
-     shortLang="<?= $data['short_lang'] ?>"
-     currentLanguage="<?= $data['current_lang'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>">
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>">
 </div>
 
 <script type="module" src="media/com_emundus_vue/app_emundus.js?<?php echo $data['hash'] ?>"></script>

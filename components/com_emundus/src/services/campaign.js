@@ -299,11 +299,9 @@ export default {
 		}
 	},
 
-	async isImportActivated(campaignId) {
+	async isImportActivated() {
 		try {
-			return await client.get('isimportactivated', {
-				campaign_id: campaignId,
-			});
+			return await client.get('isimportactivated');
 		} catch (e) {
 			return {
 				status: false,

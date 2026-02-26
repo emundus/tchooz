@@ -323,9 +323,9 @@
 					</div>
 				</div>
 
-				<hr class="tw-mb-4 tw-mt-1.5" />
+				<hr class="tw-mb-4 tw-mt-1.5" v-if="displayPrograms" />
 
-				<div class="tw-flex tw-flex-col tw-gap-4">
+				<div class="tw-flex tw-flex-col tw-gap-4" v-if="displayPrograms">
 					<div>
 						<h2>{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_PROGRAM') }}</h2>
 						<div class="tw-mt-2">
@@ -415,7 +415,13 @@
 					</h2>
 
 					<div>
-						<label class="tw-font-medium">{{ translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC') }}</label>
+						<label class="tw-font-medium">
+							{{
+								crud.form && crud.form.c
+									? translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC_NEW')
+									: translate('COM_EMUNDUS_ONBOARD_ADDCAMP_FORM_DESC')
+							}}
+						</label>
 
 						<div class="tw-mb-1 tw-mt-1 tw-flex tw-items-center">
 							<select class="tw-w-full" v-model="form.profile_id">
@@ -429,6 +435,7 @@
 							<span class="material-symbols-outlined tw-ml-2 tw-cursor-pointer" @click="getAllForms">refresh</span>
 						</div>
 						<a
+							v-if="crud.form && crud.form.r"
 							@click="redirectJRoute('index.php?option=com_emundus&view=form')"
 							target="_blank"
 							class="tw-cursor-pointer tw-underline"
@@ -543,6 +550,7 @@ export default {
 
 	props: {
 		campaign: Number,
+		crud: Object,
 	},
 
 	data: () => ({
@@ -636,6 +644,7 @@ export default {
 
 		submitted: false,
 		ready: false,
+		displayPrograms: true,
 	}),
 
 	created() {
@@ -653,7 +662,7 @@ export default {
 
 		this.getLanguages().then(() => {
 			settingsService.getEmundusParams().then((response) => {
-				this.userCategoryEnabled = response.emundus.enable_user_categories == 1;
+				this.userCategoryEnabled = response.data.emundus.enable_user_categories == 1;
 				if (this.userCategoryEnabled) {
 					settingsService.getUserCategories().then((res) => {
 						this.userCategories = res.data;
@@ -820,10 +829,14 @@ export default {
 			programmeService
 				.getAllPrograms('', '', 0, 0, 'p.label')
 				.then((response) => {
-					if (response.status) {
-						this.programs = response.data.datas;
+					if (response.code !== 200) {
+						this.displayPrograms = false;
 					} else {
-						this.programs = [];
+						if (response.status) {
+							this.programs = response.data.datas;
+						} else {
+							this.programs = [];
+						}
 					}
 				})
 				.catch((e) => {

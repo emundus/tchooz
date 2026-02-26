@@ -23,26 +23,26 @@ use Tchooz\Repositories\Payment\PaymentRepository;
 $app = Factory::getApplication();
 
 // Require the base controller
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controller.php');
+require_once(JPATH_BASE . '/components/com_emundus/controller.php');
 
 // Helpers
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'array.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'checklist.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'date.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'emails.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'events.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'fabrik.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'files.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'filters.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'javascript.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'list.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'menu.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'messages.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'module.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'tags.php');
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'users.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/array.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/cache.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/checklist.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/date.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/emails.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/events.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/fabrik.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/files.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/filters.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/javascript.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/list.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/menu.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/messages.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/module.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/tags.php');
+require_once(JPATH_BASE . '/components/com_emundus/helpers/users.php');
 
 // LOGGER
 jimport('joomla.log.log');
@@ -619,6 +619,7 @@ Text::script('COM_EMUNDUS_ACCESS_PAYMENT_DESC');
 Text::script('COM_EMUNDUS_ACL_IMPORT');
 Text::script('COM_EMUNDUS_ACL_IMPORT_DESC');
 Text::script('COM_EMUNDUS_ACL_EXPORT');
+Text::script('COM_EMUNDUS_ACL_EVENT');
 
 
 // EXPORT EXCEL MODEL
@@ -1034,7 +1035,8 @@ Text::script('COM_EMUNDUS_DOWNLOAD_EXTRACTION_CSV');
 
 # CART / PRODUCT
 $payment_repository = new PaymentRepository();
-if ($payment_repository->activated) {
+if ($payment_repository->activated)
+{
 	Text::script('COM_EMUNDUS_CART');
 	Text::script('COM_EMUNDUS_CART_RECAP');
 	Text::script('COM_EMUNDUS_PRICE');
@@ -1230,6 +1232,8 @@ Text::script('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_REJECTED');
 Text::script('COM_TCHOOZ_ENUMS_APPLICATIONFILE_CHOICESSTATE_CONFIRMED');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TITLE');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_SUCCESS_TEXT');
+Text::script('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TITLE');
+Text::script('COM_EMUNDUS_APPLICATION_CHOICES_UPDATE_STATUS_ERROR_TEXT');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_CONFIRM_TITLE');
 Text::script('COM_EMUNDUS_APPLICATION_CHOICES_CONFIRM_CHOICE_CONFIRM_TEXT');
@@ -1316,6 +1320,12 @@ Text::script('COM_EMUNDUS_GO_TO_EXPORTS_PAGE');
 Text::script('COM_EMUNDUS_STAY_ON_PAGE');
 Text::script('COM_EMUNDUS_EXPORT_ERROR_TITLE');
 Text::script('COM_EMUNDUS_EXPORT_FAILED_TO_EXECUTE_EXPORT');
+Text::script('COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REVOKE_ACCESS');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REVOKE_ACCESS_CONFIRM_TITLE');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REVOKE_ACCESS_CONFIRM_TEXT');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_CONFIGURATION_MICROSOFT_REDIRECT_URI_COPIED');
+Text::script('COM_EMUNDUS_ONBOARD_SETTINGS_EMAIL_SERVER_TYPE_HELPTEXT');
 
 // Load translations for action log plugin
 $actionlog_translation_tags = parse_ini_file(JPATH_ADMINISTRATOR . '/language/fr-FR/plg_actionlog_emundus.ini');
@@ -1327,7 +1337,7 @@ foreach ($actionlog_translation_tags as $tag => $translation)
 // Require specific controller if requested
 if ($controller = $app->input->get('controller', '', 'WORD'))
 {
-	$path = JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'controllers' . DS . $controller . '.php';
+	$path = JPATH_BASE . '/components/com_emundus/controllers/' . $controller . '.php';
 	if (file_exists($path))
 	{
 		require_once $path;
@@ -1350,7 +1360,6 @@ $task   = $app->input->get('task', '', 'CMD');
 $format = $app->input->get('format', '', 'CMD');
 $token  = $app->input->get('token', '', 'ALNUM');
 
-require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
 $hash = EmundusHelperCache::getCurrentGitHash();
 
 $document = $app->getDocument();
@@ -1394,43 +1403,47 @@ if ($user->authorise('core.viewjob', 'com_emundus') && ($name == 'jobs' || $name
 {
 	$controller->execute($task);
 }
-elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task,  ['yousigncallback', 'docusigncallback']))) {
-	$controller->execute($task);
-}
-else if ($user->guest && $app->input->getString('controller') === 'webhook' && $task === 'updatePaymentTransaction')
+elseif ($user->guest && ((($name === 'webhook' || $app->input->get('controller', '', 'WORD') === 'webhook') && $format === 'raw') && ($secret === $token || $webhook_token == ApplicationHelper::getHash($token)) || $task == 'getfilereferent' || $app->input->get('controller', '', 'WORD') === 'vote' || (($name == 'form' || $app->input->get('controller', '', 'WORD') === 'form') && $task == 'getjsconditions') || in_array($task, ['yousigncallback', 'docusigncallback'])))
 {
 	$controller->execute($task);
-}
-elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
-{
-	if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
-	{
-		$currentUrl = Uri::getInstance()->toString();
-		$app->setUserState('users.login.activation.return', $currentUrl);
-		
-		$app->enqueueMessage(Text::_('COM_EMUNDUS_PLEASE_LOGIN_TO_COMPLETE_ACTIVATION'));
-		$app->redirect(Route::_('index.php?option=com_users&view=login'));
-	}
-	else
-	{
-		if($task === 'openfile')
-		{
-			$app->setUserState('users.openfile.return', base64_encode(Uri::getInstance()->toString()));
-			$app->redirect(Route::_('index.php?option=com_users&view=login'));
-		}
-
-		PluginHelper::importPlugin('emundus', 'custom_event_handler');
-		$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
-
-		throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
-	}
 }
 else
 {
-	if ($name != 'search_engine')
+	if ($user->guest && $app->input->getString('controller') === 'webhook' && $task === 'updatePaymentTransaction')
 	{
-		// Perform the Request task
 		$controller->execute($task);
+	}
+	elseif ($user->guest && $name !== 'accessibility' && $name != 'emailalert' && $name != 'programme' && $name != 'search_engine' && $name != 'ccirs' && ($name != 'campaign') && $task != 'passrequest' && $task != 'getusername' && $task != 'getpasswordsecurity' && $task != 'activation_anonym_user')
+	{
+		if ($name == 'user' && $app->input->get('emailactivation', 0) == 1)
+		{
+			$currentUrl = Uri::getInstance()->toString();
+			$app->setUserState('users.login.activation.return', $currentUrl);
+
+			$app->enqueueMessage(Text::_('COM_EMUNDUS_PLEASE_LOGIN_TO_COMPLETE_ACTIVATION'));
+			$app->redirect(Route::_('index.php?option=com_users&view=login'));
+		}
+		else
+		{
+			if ($task === 'openfile')
+			{
+				$app->setUserState('users.openfile.return', base64_encode(Uri::getInstance()->toString()));
+				$app->redirect(Route::_('index.php?option=com_users&view=login'));
+			}
+
+			PluginHelper::importPlugin('emundus', 'custom_event_handler');
+			$app->triggerEvent('onCallEventHandler', ['onAccessDenied', []]);
+
+			throw new EmundusException(Text::_('JERROR_ALERTNOAUTHOR'), 403, null, false, false);
+		}
+	}
+	else
+	{
+		if ($name != 'search_engine')
+		{
+			// Perform the Request task
+			$controller->execute($task);
+		}
 	}
 }
 // Redirect if set by the controller

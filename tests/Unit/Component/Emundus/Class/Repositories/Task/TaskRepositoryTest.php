@@ -33,7 +33,7 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TaskRepository::saveTask
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::saveTask
 	 * @return void
 	 */
 	public function testSaveTask(): void
@@ -56,7 +56,7 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TaskRepository::getTaskById
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getTaskById
 	 * @return void
 	 */
 	public function testGetTaskById(): void
@@ -82,7 +82,7 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TaskRepository::getPendingTasks
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getPendingTasks
 	 * @return void
 	 */
 	public function testGetPendingTasks(): void
@@ -109,7 +109,7 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TaskRepository::getPendingTasks
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getPendingTasks
 	 * @return void
 	 */
 	public function testGetPendingTasksThatFailed(): void
@@ -190,7 +190,7 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TaskRepository::executeTask
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::executeTask
 	 * @return void
 	 */
 	public function testExecuteTask()
@@ -224,7 +224,7 @@ class TaskRepositoryTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers TaskRepository::checkInProgressTasksHealth
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::checkInProgressTasksHealth
 	 * @return void
 	 */
 	public function testCheckInProgressTasksHealth(): void

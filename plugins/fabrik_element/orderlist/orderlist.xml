@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<extension group="fabrik_element" method="upgrade" type="plugin" version="4">
+    <name>plg_fabrik_element_orderlist</name>
+    <author>Fabrikar</author>
+    <creationDate>2026-01-17</creationDate>
+    <copyright>Copyright (C) 2005-2026 Fabrikar - All rights reserved.</copyright>
+    <license>GNU General Public License version 3 or later; see software_license.txt</license>
+    <authorEmail>team@fabrikar.com</authorEmail>
+    <authorUrl>https://www.fabrikar.com</authorUrl>
+    <version>2.15.0</version>
+    <help url="PLG_ELEMENT_ORDERLIST_HELP_SERVER"></help>
+    <description>PLG_ELEMENT_ORDERLIST_DESCRIPTION</description>
+    <files>
+        <filename plugin="orderlist">orderlist.php</filename>
+        <filename>orderlist.js</filename>
+        <filename>orderlist-min.js</filename>
+        <filename>index.html</filename>
+        <folder>forms</folder>
+        <folder>language</folder>
+        <folder>layouts</folder>
+    </files>
+</extension>

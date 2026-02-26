@@ -63,7 +63,7 @@ class DbLanguage extends Language
 		$this->load('joomla', JPATH_BASE, $lang, true);
 
 		// Do not load entities here to avoid performance issues
-		$emundusLanguages = $this->languageRepository->getAll(['lang_code' => $lang], true, 0, 0, false);
+		$emundusLanguages = $this->languageRepository->getAll(['lang_code' => $lang, 'published' => 1], true, 0, 0, false);
 		foreach ($emundusLanguages as $language)
 		{
 			$this->strings[$language->tag] = $language->override;

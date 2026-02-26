@@ -2,6 +2,7 @@
 
 namespace Joomla\Plugin\User\Emundus\Extension;
 
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Event\User\AfterDeleteEvent;
@@ -50,7 +51,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	public static function getSubscribedEvents(): array
 	{
 		return [
-			'onUserBeforeSave'     => 'onUserBeforeSave',
+			'onUserBeforeSave'         => 'onUserBeforeSave',
 			'onUserAfterDelete'        => 'onUserAfterDelete',
 			'onUserAfterSave'          => 'onUserAfterSave',
 			'onUserLogin'              => 'onUserLogin',
@@ -63,14 +64,14 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 	{
 		$data = $event->getData();
 
-		if(!empty($data['password1']) && !empty($data['password2']) && isset($data['old_password']))
+		if (!empty($data['password1']) && !empty($data['password2']) && isset($data['old_password']))
 		{
 			$user = $this->getUserFactory()->loadUserById($data['id']);
 
 			$this->loadLanguage();
 
 			$result = UserHelper::verifyPassword($data['old_password'], $user->password, $data['id']);
-			if(!$result)
+			if (!$result)
 			{
 				$this->getApplication()->enqueueMessage(Text::_('PLG_USER_EMUNDUS_WRONG_OLD_PASSWORD'), 'error');
 				$event->addResult(false);
@@ -139,12 +140,12 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			{
 				continue;
 			}
-			
+
 			$columns = $db->getTableColumns($table);
 
 			if (in_array($table, ['jos_emundus_files_request', 'jos_emundus_final_grade', 'jos_emundus_evaluations']))
 			{
-				if(!in_array('student_id', array_keys($columns)))
+				if (!in_array('student_id', array_keys($columns)))
 				{
 					continue;
 				}
@@ -155,7 +156,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 			elseif (in_array($table, ['jos_emundus_uploads', 'jos_emundus_groups', 'jos_emundus_users', 'jos_emundus_emailalert']))
 			{
-				if(!in_array('user_id', array_keys($columns)))
+				if (!in_array('user_id', array_keys($columns)))
 				{
 					continue;
 				}
@@ -166,7 +167,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 			elseif (in_array($table, ['jos_emundus_comments', 'jos_emundus_campaign_candidature']))
 			{
-				if(!in_array('applicant_id', array_keys($columns)))
+				if (!in_array('applicant_id', array_keys($columns)))
 				{
 					continue;
 				}
@@ -177,7 +178,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 			elseif (str_contains($table, 'jos_emundus_evaluations_'))
 			{
-				if(!in_array('evaluator', array_keys($columns)))
+				if (!in_array('evaluator', array_keys($columns)))
 				{
 					continue;
 				}
@@ -256,10 +257,10 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 			$m_emails = new \EmundusModelEmails();
 			$post     = [
-				'NAME'      => $user['name'],
+				'NAME'           => $user['name'],
 				'APPLICANT_NAME' => $user['name'],
-				'LOGO'      => \EmundusHelperEmails::getLogo(),
-				'SITE_NAME' => $this->getApplication()->get('sitename'),
+				'LOGO'           => \EmundusHelperEmails::getLogo(),
+				'SITE_NAME'      => $this->getApplication()->get('sitename'),
 			];
 
 			$m_emails->sendEmailNoFnum($user['email'], 'delete_user', $post);
@@ -350,7 +351,7 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 				$profile  = $eMConfig->get('saml_default_profile', 1000);
 			}
 
-			if(empty($details))
+			if (empty($details))
 			{
 				$username        = explode(' ', $user["name"]);
 				$details['name'] = count($username) > 2 ? implode(' ', array_slice($username, 1)) : $username[1];
@@ -387,8 +388,8 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 					// catch any database errors.
 					Log::add($e->getMessage(), Log::WARNING, 'com_emundus');
 				}
-				
-				if($task === 'adduser')
+
+				if ($task === 'adduser')
 				{
 					$profile = $input->getInt('profile', 0);
 				}
@@ -522,12 +523,17 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 			}
 		}
 
-		PluginHelper::importPlugin('emundus','custom_event_handler');
-		$app = Factory::getApplication();
+		if (!empty($user['id']))
+		{
+			$this->clearCache($user['id']);
+		}
+
+		PluginHelper::importPlugin('emundus', 'custom_event_handler');
+		$app   = Factory::getApplication();
 		$event = new GenericEvent('onCallEventHandler', [
 			'onAfterSaveEmundusUser',
 			[
-				'context'    => new EventContextEntity(
+				'context' => new EventContextEntity(
 					$this->getApplication()->getIdentity(),
 					[],
 					[$user['id']],
@@ -537,12 +543,24 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		]);
 		$app->getDispatcher()->dispatch('onCallEventHandler', $event);
 	}
-	
+
+	private function clearCache($userId): void
+	{
+		$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+			->createCacheController('output', ['defaultgroup' => 'com_emundus.emundususer']);
+		$cache_key = 'emundus_user_programs_' . $userId;
+		$cache->remove($cache_key);
+
+		$cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)->createCacheController('output', ['defaultgroup' => 'com_emundus.access', 'caching' => true]);
+		$cache_key = 'access_levels_' . $userId;
+		$cache->remove($cache_key);
+	}
+
 	public function onUserAfterResetComplete(AfterResetCompleteEvent $event): void
 	{
 		$user = $event->getUser();
 
-		if(!empty($user->id))
+		if (!empty($user->id))
 		{
 			$db = $this->getDatabase();
 			// Update lastResetTime
@@ -589,11 +607,13 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 		if ($id)
 		{
 			$instance->load($id);
+
+			$this->clearCache($id);
 		}
 
-		$emConfig = ComponentHelper::getParams('com_emundus');
+		$emConfig           = ComponentHelper::getParams('com_emundus');
 		$ask_reset_password = $emConfig->get('ask_reset_password', 0);
-		if($ask_reset_password == 1)
+		if ($ask_reset_password == 1)
 		{
 			$version_date = $this->getVersionDate($db, self::VERSION);
 
@@ -946,23 +966,24 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 
 	public function onUserLogout(LogoutEvent $event)
 	{
-		$user     = $event->getParameters();
-		$options  = $event->getOptions();
+		$user    = $event->getParameters();
+		$options = $event->getOptions();
 
 		$my      = $this->getApplication()->getIdentity();
 		$session = Factory::getSession();
 
 		$userid = (int) $user['id'];
 
-		if(empty($options['redirect_link']))
+		if (empty($options['redirect_link']))
 		{
 			include_once(JPATH_SITE . '/components/com_emundus/helpers/menu.php');
 			$url = \EmundusHelperMenu::getLogoutRedirectLink();
 
 			$this->getApplication()->redirect(Uri::base(true) . $url);
 		}
-		else {
-			if(!empty($options['redirect_message']))
+		else
+		{
+			if (!empty($options['redirect_message']))
 			{
 				$this->getApplication()->enqueueMessage($options['redirect_message']);
 			}

@@ -5,6 +5,7 @@
 			:default-lists="config"
 			:default-type="'emails'"
 			:key="renderingKey"
+			:crud="crud"
 			:encoded="false"
 		></list>
 	</div>
@@ -17,6 +18,12 @@ import { useSmsStore } from '@/stores/sms.js';
 
 export default {
 	name: 'Emails',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
@@ -41,6 +48,7 @@ export default {
 									label: 'COM_EMUNDUS_ONBOARD_ADD_EMAIL',
 									name: 'add',
 									type: 'redirect',
+									acl: 'email|c',
 								},
 								{
 									action: 'index.php?option=com_emundus&view=emails&layout=add&eid=%id%',
@@ -48,6 +56,7 @@ export default {
 									controller: 'email',
 									type: 'redirect',
 									name: 'edit',
+									acl: 'email|u',
 								},
 								{
 									action: 'deleteemail',
@@ -62,6 +71,7 @@ export default {
 										operator: '!=',
 										value: '1',
 									},
+									acl: 'email|d',
 								},
 								{
 									action: 'preview',
@@ -70,6 +80,13 @@ export default {
 									name: 'preview',
 									title: 'subject',
 									content: 'message',
+								},
+								{
+									action: 'show',
+									label: 'COM_EMUNDUS_ONBOARD_ACTION_SHOW_DETAILS',
+									type: 'modal',
+									component: 'EmailDetails',
+									name: 'show',
 								},
 							],
 							filters: [
@@ -100,6 +117,7 @@ export default {
 						label: 'COM_EMUNDUS_ONBOARD_ADD_SMS',
 						name: 'add',
 						type: 'redirect',
+						acl: 'sms|c',
 					},
 					{
 						action: 'index.php?option=com_emundus&view=sms&layout=edit&sms_id=%id%',
@@ -107,6 +125,7 @@ export default {
 						controller: 'sms',
 						type: 'redirect',
 						name: 'edit',
+						acl: 'sms|u',
 					},
 					{
 						action: 'preview',
@@ -122,6 +141,7 @@ export default {
 						controller: 'sms',
 						name: 'delete',
 						multiple: true,
+						acl: 'sms|d',
 					},
 				],
 				filters: [

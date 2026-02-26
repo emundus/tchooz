@@ -1701,7 +1701,7 @@ class EmundusModelFormbuilder extends ListModel
 						//
 
 						// Init a default subvalue for checkboxes
-						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown')
+						if ($plugin === 'checkbox' || $plugin === 'radiobutton' || $plugin === 'dropdown' || $plugin === 'orderlist')
 						{
 							$sub_values = [];
 							$sub_labels = [];
@@ -2263,7 +2263,7 @@ class EmundusModelFormbuilder extends ListModel
 			//
 
 			// PARAMETERS BY PLUGIN
-			if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin')
+			if ($element['plugin'] === 'checkbox' || $element['plugin'] === 'radiobutton' || $element['plugin'] === 'dropdown' || $element['plugin'] === 'databasejoin' || $element['plugin'] === 'orderlist')
 			{
 				$old_params = json_decode($dbElement->params, true);
 

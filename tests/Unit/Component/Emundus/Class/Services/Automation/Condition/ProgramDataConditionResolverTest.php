@@ -29,7 +29,7 @@ class ProgramDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ProgramDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\ProgramDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValue()
@@ -45,7 +45,7 @@ class ProgramDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ProgramDataConditionResolver::resolveValue
+	 * @covers \Tchooz\Services\Automation\Condition\ProgramDataConditionResolver::resolveValue
 	 * @return void
 	 */
 	public function testResolveValueWithInvalidField()
@@ -56,7 +56,7 @@ class ProgramDataConditionResolverTest extends UnitTestCase
 	}
 
 	/**
-	 * @covers ProgramDataConditionResolver::getAvailableFields
+	 * @covers \Tchooz\Services\Automation\Condition\ProgramDataConditionResolver::getAvailableFields
 	 * @return void
 	 */
 	public function testGetAvailableFields()
