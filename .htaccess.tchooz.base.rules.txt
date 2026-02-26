@@ -420,7 +420,7 @@ ServerSignature Off
     script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://cdn.addpipe.com 'unsafe-eval' 'unsafe-inline'; \
     style-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://use.fontawesome.com https://fonts.googleapis.com; \
     img-src 'self' data: https://*.tile.openstreetmap.org https://*.insee.fr https://*.gouv.fr; \
-    connect-src 'self' https://*.insee.fr https://*.gouv.fr https://cdn.addpipe.com https://webaim.org; \
+    connect-src 'self' https://*.insee.fr https://*.gouv.fr https://cdn.addpipe.com https://webaim.org https://s3b-eu2.addpipe.com/upload; \
     media-src 'self' https://cdn.addpipe.com; \
     font-src 'self' https://cdn.jsdelivr.net  https://fonts.gstatic.com https://use.fontawesome.com; \
     frame-src 'self' https://cdn.addpipe.com;"
