@@ -418,7 +418,7 @@ ServerSignature Off
 	# Add Content-Security-Policy for few urls
     Header set Content-Security-Policy "default-src 'self'; \
     script-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://cdn.addpipe.com 'unsafe-eval' 'unsafe-inline'; \
-    style-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://use.fontawesome.com https://fonts.googleapis.com; \
+    style-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://use.fontawesome.com https://fonts.googleapis.com https://cdn.addpipe.com; \
     img-src 'self' data: https://*.tile.openstreetmap.org https://*.insee.fr https://*.gouv.fr; \
     connect-src 'self' https://*.insee.fr https://*.gouv.fr https://cdn.addpipe.com https://webaim.org https://s3b-eu2.addpipe.com/upload; \
     media-src 'self' https://cdn.addpipe.com; \
