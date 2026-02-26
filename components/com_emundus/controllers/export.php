@@ -391,7 +391,7 @@ class EmundusControllerExport extends BaseController
 			$fabrikFactory    = new FabrikFactory($fabrikRepository);
 			$fabrikRepository->setFactory($fabrikFactory);
 
-			$fabrikRepository->setElementFilters(['excluded_elements' => ['id', 'user', 'time_date', 'fnum', 'date_time', 'parent_id']]);
+			$fabrikRepository->setElementFilters(['excluded_elements' => ['id', 'user', 'time_date', 'fnum', 'date_time', 'parent_id'], 'published' => 1]);
 			switch ($type)
 			{
 				case 'applicant':
