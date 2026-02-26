@@ -46,6 +46,7 @@ enum HeadersEnum: string
 	case AVERAGE_SCORE_BY_STEPS = 'average_score_by_steps';
 
 	case APPLICATION_CHOICE_CAMPAIGN = 'application_choice_campaign';
+	case APPLICATION_CHOICE_STATUS = 'application_choice_status';
 
 	public function getLabel(): string
 	{
@@ -75,6 +76,7 @@ enum HeadersEnum: string
 
 			self::AVERAGE_SCORE_BY_STEPS => Text::_('COM_EMUNDUS_AVERAGE_SCORE_BY_STEPS'),
 			self::APPLICATION_CHOICE_CAMPAIGN => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
+			self::APPLICATION_CHOICE_STATUS => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
 		};
 	}
 
@@ -218,7 +220,24 @@ enum HeadersEnum: string
 					$choicesString[] = $applicationChoice->getCampaign()->getLabel();
 				}
 
-				return !empty($choices) ? implode(', ', $choicesString) : Text::_('COM_EMUNDUS_NO_APPLICATION_CHOICE');
+				return !empty($choicesString) ? implode(', ', $choicesString) : Text::_('COM_EMUNDUS_NO_APPLICATION_CHOICE');
+			case self::APPLICATION_CHOICE_STATUS:
+				if(is_null($file->getApplicationChoices()))
+				{
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$moreFormId                   = $applicationChoicesRepository->getMoreFormId();
+					$choices = $applicationChoicesRepository->getChoicesByFnum($file->getFnum(), [], null, $moreFormId);
+
+					$file->setApplicationChoices($choices);
+				}
+
+				$choicesString = [];
+				foreach($file->getApplicationChoices() as $applicationChoice)
+				{
+					$choicesString[] = $applicationChoice->getState()->getLabel();
+				}
+
+				return !empty($choicesString) ? implode(', ', $choicesString) : Text::_('COM_EMUNDUS_NO_APPLICATION_CHOICE');
 			default:
 				return null;
 		}
