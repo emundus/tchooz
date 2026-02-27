@@ -478,6 +478,10 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 			if ($this->flush($clonedAutomation)) {
 				$duplicatedAutomation = $this->getById($clonedAutomation->getId());
 			}
+			else
+			{
+				Log::add('Failed to duplicate automation: ' . $automation->getName(), Log::ERROR, 'com_emundus.automation');
+			}
 		}
 
 		return $duplicatedAutomation;

@@ -216,4 +216,36 @@ class AutomationRepositoryTest extends UnitTestCase
 	{
 		$this->h_dataset->resetAutomations();
 	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::duplicateAutomation
+	 * @return void
+	 */
+	public function testDuplicateAutomation(): void
+	{
+		$automationToDuplicate = new AutomationEntity(0, 'Automation to duplicate', 'This automation will be duplicated');
+		$eventsRepository = new EventsRepository();
+		$event = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automationToDuplicate->setEvent($event);
+		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
+		$action->addTarget($target);
+		$automationToDuplicate->addAction($action);
+		$this->h_dataset->addToSamples('automations', $automationToDuplicate->getId());
+
+		$saved = $this->repository->flush($automationToDuplicate);
+		$this->assertTrue($saved);
+
+		$duplicatedAutomation = $this->repository->duplicateAutomation($automationToDuplicate);
+		$this->assertNotNull($duplicatedAutomation);
+		$this->h_dataset->addToSamples('automations', $duplicatedAutomation->getId());
+		// Verify that the duplicated automation has a different ID but the same properties
+		$this->assertNotEquals($automationToDuplicate->getId(), $duplicatedAutomation->getId(), 'IDs should be different');
+		$this->assertNotEquals($automationToDuplicate->getName(), $duplicatedAutomation->getName(), 'Name should be the same');
+		$this->assertEquals($automationToDuplicate->getDescription(), $duplicatedAutomation->getDescription(), 'Description should be the same');
+		$this->assertEquals($automationToDuplicate->getEvent()->getId(), $duplicatedAutomation->getEvent()->getId(), 'Event should be the same');
+		$this->assertCount(1, $duplicatedAutomation->getActions(), 'There should be one action in the duplicated automation');
+		$this->assertEquals($automationToDuplicate->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), $duplicatedAutomation->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), 'Action parameters should be the same');
+		$this->assertNotEquals($automationToDuplicate->getActions()[0]->getId(), $duplicatedAutomation->getActions()[0]->getId(), 'Action IDs should be different');
+	}
 }
