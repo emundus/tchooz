@@ -1,6 +1,6 @@
 <template>
 	<div id="registrants-list">
-		<list :default-lists="configString" :default-type="'registrants'"></list>
+		<list :default-lists="configString" :default-type="'registrants'" :crud="crud"></list>
 	</div>
 </template>
 
@@ -9,6 +9,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Registrants',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
