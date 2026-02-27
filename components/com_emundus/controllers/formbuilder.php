@@ -14,17 +14,14 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport('joomla.application.component.controller');
 
-use Joomla\CMS\Factory;
 use Joomla\CMS\Language\LanguageHelper;
 use Joomla\CMS\Language\Text;
-use Joomla\CMS\MVC\Controller\BaseController;
 use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Controller\EmundusController;
 use Tchooz\EmundusResponse;
 use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\CrudEnum;
 use Tchooz\Factories\Language\LanguageFactory;
-use \Tchooz\Traits\TraitResponse;
-use Tchooz\Controller\EmundusController;
 
 require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
 
