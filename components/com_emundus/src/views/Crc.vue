@@ -1,6 +1,12 @@
 <template>
 	<div id="crc-list">
-		<list :default-lists="configString" :default-type="'crc'" :key="renderingKey" :modal-height="'60vh'"></list>
+		<list
+			:default-lists="configString"
+			:default-type="'crc'"
+			:key="renderingKey"
+			:modal-height="'60vh'"
+			:crud="crud"
+		></list>
 	</div>
 </template>
 
@@ -9,6 +15,12 @@ import list from '@/views/list.vue';
 
 export default {
 	name: 'Crc',
+	props: {
+		crud: {
+			type: Object,
+			default: [],
+		},
+	},
 	components: {
 		list,
 	},
