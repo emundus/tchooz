@@ -1431,7 +1431,9 @@ export default {
 			if (
 				e.target.tagName === 'A' ||
 				e.target.classList.contains('popover-toggle-btn') ||
-				e.target.children[0].classList.contains('popover-toggle-btn')
+				(e.target.children &&
+					e.target.children.length > 0 &&
+					e.target.children[0].classList.contains('popover-toggle-btn'))
 			) {
 				return;
 			}
