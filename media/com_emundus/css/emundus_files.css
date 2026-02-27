@@ -786,6 +786,8 @@ div#em-appli-block .legend::before {
 
 div#em-appli-block td {
     border: none;
+    word-break: break-word;
+    hyphens: inherit;
 }
 
 div#em-appli-block tr:nth-child(odd) {
