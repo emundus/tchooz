@@ -234,7 +234,7 @@ class EmundusControllerEvents extends EmundusController
 			$users_id = [];
 		}
 
-		if (empty($registrant_id) || empty($availability) || empty($event_id))
+		if (empty($availability) || empty($event_id))
 		{
 			throw new InvalidArgumentException('Missing required parameters');
 		}
@@ -968,6 +968,8 @@ class EmundusControllerEvents extends EmundusController
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 			}
 		}
+		$response['code'] = 200;
+		$response['status'] = true;
 
 		$this->sendJsonResponse($response);
 	}
@@ -1027,6 +1029,8 @@ class EmundusControllerEvents extends EmundusController
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 			}
 		}
+		$response['code'] = 200;
+		$response['status'] = true;
 
 		$this->sendJsonResponse($response);
 	}
