@@ -509,6 +509,13 @@ class PlgFabrik_ElementYesno extends PlgFabrik_ElementRadiobutton
 
 		$value = $this->getValue($data, $repeatCounter);
 
+		//Bandaid for issue if in repeat group and readonly: fetch and set default
+		if ($value == '') {
+			$default = $this->getDefaultValue($data);
+			$value = FArrayHelper::getValue($default,0);
+			$data[$this->element->name] = $value;
+		}
+
 		if ($value == '1')
 		{
 			$params = $this->getParams();
