@@ -453,6 +453,7 @@ import EmailDetails from '@/components/Emails/EmailDetails.vue';
 import Import from '@/components/Campaigns/Import.vue';
 import SaveRequest from '@/views/Sign/SaveRequest.vue';
 import UpdateApplicationChoiceState from '@/components/Application/UpdateApplicationChoiceState.vue';
+import AddUser from '@/components/Users/AddUser.vue';
 
 /* Services */
 import settingsService from '@/services/settings.js';
@@ -488,6 +489,7 @@ export default {
 		EmailDetails,
 		SaveRequest,
 		UpdateApplicationChoiceState,
+		AddUser,
 	},
 	props: {
 		defaultLists: {
@@ -544,6 +546,7 @@ export default {
 				Import,
 				SaveRequest,
 				UpdateApplicationChoiceState,
+				AddUser,
 			},
 
 			lists: {},
