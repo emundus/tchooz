@@ -1,7 +1,9 @@
 <template>
 	<div id="application-choices-list">
 		<list
-			:default-lists="configString"
+			v-if="!loading"
+			:default-lists="config"
+			:encoded="false"
 			:default-type="'applicationchoices'"
 			:key="renderingKey"
 			:display-presaved-filters="true"
@@ -12,9 +14,7 @@
 
 <script>
 import list from '@/views/list.vue';
-import { useCampaignStore } from '@/stores/campaign.js';
-import campaignService from '@/services/campaign.js';
-import settingsService from '@/services/settings.js';
+import applicationService from '@/services/application.js';
 
 export default {
 	name: 'ApplicationChoicesList',
@@ -29,6 +29,7 @@ export default {
 	},
 	data() {
 		return {
+			loading: true,
 			renderingKey: 1,
 
 			config: {
@@ -51,6 +52,17 @@ export default {
 									name: 'updatestate',
 									multiple: true,
 									acl: 'application_choices|u',
+								},
+							],
+							exports: [
+								{
+									action: 'exportapplicationchoices',
+									label: 'COM_EMUNDUS_APPLICATION_CHOICES_EXPORT_EXCEL',
+									controller: 'application',
+									name: 'exportapplicationchoices',
+									method: 'get',
+									multiple: true,
+									exportModal: false,
 								},
 							],
 							filters: [
@@ -113,10 +125,26 @@ export default {
 			},
 		};
 	},
-	computed: {
-		configString() {
-			return btoa(JSON.stringify(this.config));
-		},
+	created() {
+		applicationService.getApplicationChoicesMoreFilters().then((response) => {
+			if (response.status && response.data.length > 0) {
+				// Merge this.config.applicationchoices.tabs[0].filters with the response.data
+				for (const filter of response.data) {
+					const existingFilterIndex = this.config.applicationchoices.tabs[0].filters.findIndex(
+						(f) => f.key === filter.key,
+					);
+					if (existingFilterIndex !== -1) {
+						// If the filter already exists, update its values
+						this.config.applicationchoices.tabs[0].filters[existingFilterIndex].values = filter.values;
+					} else {
+						// If the filter does not exist, add it to the filters array
+						this.config.applicationchoices.tabs[0].filters.push(filter);
+					}
+				}
+
+				this.loading = false;
+			}
+		});
 	},
 };
 </script>

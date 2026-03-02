@@ -91,7 +91,7 @@ enum ChoicesStateEnum: int
 		};
 
 		return sprintf(
-			'tw-text-center tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold %s',
+			'tw-text-center tw-rounded-status tw-px-3 tw-py-1 tw-font-semibold tw-text-sm tw-whitespace-nowrap %s',
 			$bg . ' ' . $text
 		);
 	}
