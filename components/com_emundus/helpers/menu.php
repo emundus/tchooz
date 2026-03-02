@@ -26,16 +26,18 @@ use Joomla\CMS\User\UserFactoryInterface;
 
 class EmundusHelperMenu
 {
-
 	public static function buildMenuQuery($profile, $formids = null, $checklevel = true, int $userId = 0)
 	{
 		if (empty($profile)) {
 			return false;
 		}
 
-		require_once(JPATH_ROOT . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'cache.php');
-		$h_cache = new EmundusHelperCache();
-		$list = $h_cache->get('menus_'.$profile);
+		if(!class_exists('EmundusHelperCache'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/cache.php');
+		}
+		$hCache = new EmundusHelperCache('com_emundus.menus');
+		$list = $hCache->get('menus_'.$profile);
 
 		if (empty($list) || !empty($formids) || !$checklevel) {
 			$app  = Factory::getApplication();
@@ -109,7 +111,7 @@ class EmundusHelperMenu
 				}
 
 				if(empty($formids) && $checklevel) {
-					$h_cache->set('menus_' . $profile, $list);
+					$hCache->set('menus_' . $profile, $list);
 				}
 			}
 			catch (Exception $e) {
