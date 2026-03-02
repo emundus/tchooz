@@ -9,6 +9,7 @@ use Tchooz\Entities\Automation\ConditionEntity;
 use Tchooz\Entities\Automation\ConditionGroupEntity;
 use Tchooz\Entities\Automation\TargetEntity;
 use Tchooz\Entities\Automation\TargetPredefinitions\ApplicantCurrentFilePredefinition;
+use Tchooz\Entities\Automation\TargetPredefinitions\UsersAssociatedToFilePredefinition;
 use Tchooz\Enums\Automation\ConditionOperatorEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
@@ -28,21 +29,22 @@ class AutomationRepositoryTest extends UnitTestCase
 
 
 	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::__construct
 	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::flush
 	 * @return void
 	 */
 	public function testSave()
 	{
-		$newStatus = 1;
-		$condition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$newStatus      = 1;
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
 		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
-		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
-		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action         = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
+		$target         = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
 		$action->addTarget($target);
 
 		$eventsRepository = new EventsRepository();
-		$event = $eventsRepository->getEventByName('onAfterStatusChange');
-		$automation = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation       = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
 		$automation->addConditionGroup($conditionGroup);
 		$automation->addAction($action);
 		$automation->setEvent($event);
@@ -58,16 +60,16 @@ class AutomationRepositoryTest extends UnitTestCase
 	 */
 	public function testUpdate()
 	{
-		$automation = new AutomationEntity(0, 'Test Automation to update', 'This is a test automation to update');
+		$automation       = new AutomationEntity(0, 'Test Automation to update', 'This is a test automation to update');
 		$eventsRepository = new EventsRepository();
-		$event = $eventsRepository->getEventByName('onAfterStatusChange');
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
 		$automation->setEvent($event);
 		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
 		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
 		$action->addTarget($target);
 
 		$automation->addAction($action);
-		$condition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
 		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
 		$automation->addConditionGroup($conditionGroup);
 
@@ -108,14 +110,17 @@ class AutomationRepositoryTest extends UnitTestCase
 	 */
 	public function testDelete()
 	{
-		$automation = new AutomationEntity(0, 'Test Automation to delete', 'This is a test automation to delete');
+		$automation       = new AutomationEntity(0, 'Test Automation to delete', 'This is a test automation to delete');
 		$eventsRepository = new EventsRepository();
-		$event = $eventsRepository->getEventByName('onAfterStatusChange');
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
 		$automation->setEvent($event);
 		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
 		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
 		$action->addTarget($target);
 		$automation->addAction($action);
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+		$automation->addConditionGroup($conditionGroup);
 
 		$saved = $this->repository->flush($automation);
 		$this->assertTrue($saved);
@@ -134,15 +139,15 @@ class AutomationRepositoryTest extends UnitTestCase
 	 */
 	public function testGetAutomationById()
 	{
-		$newStatus = 1;
-		$condition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$newStatus      = 1;
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
 		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
-		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
-		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action         = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
+		$target         = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
 		$action->addTarget($target);
 		$eventsRepository = new EventsRepository();
-		$event = $eventsRepository->getEventByName('onAfterStatusChange');
-		$automation = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation       = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
 		$automation->addConditionGroup($conditionGroup);
 		$automation->addAction($action);
 		$automation->setEvent($event);
@@ -172,16 +177,16 @@ class AutomationRepositoryTest extends UnitTestCase
 	 */
 	public function testGetAutomationByEventName(): void
 	{
-		$newStatus = 1;
-		$condition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$newStatus      = 1;
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
 		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
-		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
-		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action         = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => $newStatus]);
+		$target         = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
 		$action->addTarget($target);
 
 		$eventsRepository = new EventsRepository();
-		$event = $eventsRepository->getEventByName('onAfterStatusChange');
-		$automation = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation       = new AutomationEntity(0, 'Test Automation', 'This is a test automation');
 		$automation->addConditionGroup($conditionGroup);
 		$automation->addAction($action);
 		$automation->setEvent($event);
@@ -197,8 +202,10 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertInstanceOf(AutomationEntity::class, $automations[0]);
 
 		$foundAutomation = null;
-		foreach ($automations as $a) {
-			if ($a->getId() === $automation->getId()) {
+		foreach ($automations as $a)
+		{
+			if ($a->getId() === $automation->getId())
+			{
 				$foundAutomation = $a;
 				break;
 			}
@@ -224,21 +231,29 @@ class AutomationRepositoryTest extends UnitTestCase
 	public function testDuplicateAutomation(): void
 	{
 		$automationToDuplicate = new AutomationEntity(0, 'Automation to duplicate', 'This automation will be duplicated');
-		$eventsRepository = new EventsRepository();
-		$event = $eventsRepository->getEventByName('onAfterStatusChange');
+		$eventsRepository      = new EventsRepository();
+		$event                 = $eventsRepository->getEventByName('onAfterStatusChange');
 		$automationToDuplicate->setEvent($event);
-		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$target = new TargetEntity(0, TargetTypeEnum::USER, new UsersAssociatedToFilePredefinition());
+
+		$targetCondition = new ConditionEntity(0, 0, ConditionTargetTypeEnum::USERDATA, 'group', ConditionOperatorEnum::EQUALS, [1]);
+		$target->setConditions([$targetCondition]);
+
 		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
 		$action->addTarget($target);
 		$automationToDuplicate->addAction($action);
-		$this->h_dataset->addToSamples('automations', $automationToDuplicate->getId());
+		$condition	  = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+		$automationToDuplicate->addConditionGroup($conditionGroup);
 
 		$saved = $this->repository->flush($automationToDuplicate);
 		$this->assertTrue($saved);
+		$this->h_dataset->addToSamples('automations', $automationToDuplicate->getId());
 
 		$duplicatedAutomation = $this->repository->duplicateAutomation($automationToDuplicate);
 		$this->assertNotNull($duplicatedAutomation);
 		$this->h_dataset->addToSamples('automations', $duplicatedAutomation->getId());
+
 		// Verify that the duplicated automation has a different ID but the same properties
 		$this->assertNotEquals($automationToDuplicate->getId(), $duplicatedAutomation->getId(), 'IDs should be different');
 		$this->assertNotEquals($automationToDuplicate->getName(), $duplicatedAutomation->getName(), 'Name should be the same');
@@ -247,5 +262,186 @@ class AutomationRepositoryTest extends UnitTestCase
 		$this->assertCount(1, $duplicatedAutomation->getActions(), 'There should be one action in the duplicated automation');
 		$this->assertEquals($automationToDuplicate->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), $duplicatedAutomation->getActions()[0]->getParameterValue(ActionUpdateStatus::STATUS_PARAMETER), 'Action parameters should be the same');
 		$this->assertNotEquals($automationToDuplicate->getActions()[0]->getId(), $duplicatedAutomation->getActions()[0]->getId(), 'Action IDs should be different');
+
+		// Verify that the target of the action is also duplicated
+		$this->assertCount(1, $duplicatedAutomation->getActions()[0]->getTargets(), 'There should be one target in the action of the duplicated automation');
+		$this->assertEquals($automationToDuplicate->getActions()[0]->getTargets()[0]->getType(), $duplicatedAutomation->getActions()[0]->getTargets()[0]->getType(), 'Target types should be the same');
+		$this->assertNotEquals($automationToDuplicate->getActions()[0]->getTargets()[0]->getId(), $duplicatedAutomation->getActions()[0]->getTargets()[0]->getId(), 'Target IDs should be different');
+
+		$targetToDuplicate = $automationToDuplicate->getActions()[0]->getTargets()[0];
+		$duplicatedTarget  = $duplicatedAutomation->getActions()[0]->getTargets()[0];
+		$this->assertCount(1, $duplicatedTarget->getConditions(), 'There should be one condition in the target of the duplicated automation');
+		$this->assertEquals($targetToDuplicate->getConditions()[0]->getField(), $duplicatedTarget->getConditions()[0]->getField(), 'Condition fields should be the same');
+		$this->assertEquals($targetToDuplicate->getConditions()[0]->getOperator(), $duplicatedTarget->getConditions()[0]->getOperator(), 'Condition operators should be the same');
+		$this->assertEquals($targetToDuplicate->getConditions()[0]->getValue(), $duplicatedTarget->getConditions()[0]->getValue(), 'Condition values should be the same');
+		$this->assertNotEquals($targetToDuplicate->getConditions()[0]->getId(), $duplicatedTarget->getConditions()[0]->getId(), 'Condition IDs should be different');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::getAutomations
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::applyFilters
+	 * @return void
+	 */
+	public function testGetAutomations(): void
+	{
+		$automationEntity = new AutomationEntity(0, 'Test Automation for getAutomations', 'This is a test automation for getAutomations');
+		$eventsRepository = new EventsRepository();
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automationEntity->setEvent($event);
+		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
+		$action->addTarget($target);
+		$automationEntity->addAction($action);
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+		$automationEntity->addConditionGroup($conditionGroup);
+		$saved = $this->repository->flush($automationEntity);
+		$this->assertTrue($saved);
+		$this->h_dataset->addToSamples('automations', $automationEntity->getId());
+
+		$automations = $this->repository->getAutomations();
+		$this->assertIsArray($automations);
+		$this->assertGreaterThan(0, count($automations));
+		$this->assertInstanceOf(AutomationEntity::class, $automations[0]);
+
+		$filteredAutomations = $this->repository->getAutomations(['search' => 'Test Automation for getAutomations']);
+		$this->assertIsArray($filteredAutomations);
+		$this->assertCount(1, $filteredAutomations);
+		$this->assertEquals($automationEntity->getId(), $filteredAutomations[0]->getId());
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::getAutomationsCount
+	 * @return void
+	 */
+	public function testGetAutomationsCount(): void
+	{
+		$initialCount = $this->repository->getAutomationsCount();
+
+		$automationEntity = new AutomationEntity(0, 'Test Automation for getAutomationsCount', 'This is a test automation for getAutomationsCount');
+		$eventsRepository = new EventsRepository();
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automationEntity->setEvent($event);
+		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
+		$action->addTarget($target);
+		$automationEntity->addAction($action);
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+		$automationEntity->addConditionGroup($conditionGroup);
+		$saved = $this->repository->flush($automationEntity);
+		$this->assertTrue($saved);
+		$this->h_dataset->addToSamples('automations', $automationEntity->getId());
+
+		$countAfterAdding = $this->repository->getAutomationsCount();
+		$this->assertEquals($initialCount + 1, $countAfterAdding);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::togglePublishedAutomations
+	 * @return void
+	 */
+	public function testTogglePublishedAutomations(): void
+	{
+
+		$automationEntity = new AutomationEntity(0, 'Test Automation for getAutomationsCount', 'This is a test automation for getAutomationsCount');
+		$eventsRepository = new EventsRepository();
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automationEntity->setEvent($event);
+		$target = new TargetEntity(0, TargetTypeEnum::FILE, new ApplicantCurrentFilePredefinition());
+		$action = new ActionUpdateStatus([ActionUpdateStatus::STATUS_PARAMETER => 1]);
+		$action->addTarget($target);
+		$automationEntity->addAction($action);
+		$condition      = new ConditionEntity(0, 0, ConditionTargetTypeEnum::CONTEXTDATA, 'status', ConditionOperatorEnum::EQUALS, 1);
+		$conditionGroup = new ConditionGroupEntity(0, [$condition]);
+		$automationEntity->addConditionGroup($conditionGroup);
+		$saved = $this->repository->flush($automationEntity);
+
+		$this->assertTrue($saved);
+		$this->h_dataset->addToSamples('automations', $automationEntity->getId());
+
+		$toggled = $this->repository->togglePublishedAutomations([$automationEntity->getId()], false);
+		$this->assertTrue($toggled);
+
+		$retrievedAutomation = $this->repository->getById($automationEntity->getId());
+		$this->assertNotNull($retrievedAutomation);
+		$this->assertFalse($retrievedAutomation->isPublished(), 'Automation should be unpublished');
+
+		$toggledBack = $this->repository->togglePublishedAutomations([$automationEntity->getId()], true);
+		$this->assertTrue($toggledBack);
+
+		$retrievedAutomation = $this->repository->getById($automationEntity->getId());
+		$this->assertNotNull($retrievedAutomation);
+		$this->assertTrue($retrievedAutomation->isPublished(), 'Automation should be published');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::validateAutomation
+	 * @return void
+	 */
+	public function testValidateAutomationEmptyName(): void
+	{
+		$invalidNameAutomation = new AutomationEntity(0, '');
+
+		$this->expectException(\InvalidArgumentException::class);
+		$this->repository->flush($invalidNameAutomation);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::validateAutomation
+	 * @return void
+	 */
+	public function testValidateAutomationInvalidName(): void
+	{
+		$moreThan255CharsName  = str_repeat('a', 256);
+		$invalidNameAutomation = new AutomationEntity(0, $moreThan255CharsName);
+
+		$this->expectException(\InvalidArgumentException::class);
+		$this->repository->flush($invalidNameAutomation);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::validateAutomation
+	 * @return void
+	 */
+	public function testValidateAutomationInvalidEvent(): void
+	{
+		$automation = new AutomationEntity(0, 'Automation with invalid event');
+		$this->expectException(\InvalidArgumentException::class);
+		$this->repository->flush($automation);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::validateAutomation
+	 * @return void
+	 */
+	public function testValidateAutomationNoActions(): void
+	{
+		$eventsRepository = new EventsRepository();
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation       = new AutomationEntity(0, 'Automation with no actions', 'This automation has no actions');
+		$automation->setEvent($event);
+
+		$this->expectException(\InvalidArgumentException::class);
+		$this->repository->flush($automation);
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::validateAutomation
+	 * @covers \Tchooz\Repositories\Automation\AutomationRepository::flush
+	 * @return void
+	 */
+	public function testValidateAutomationActionsButMissingRequiredParameters(): void
+	{
+		$eventsRepository = new EventsRepository();
+		$event            = $eventsRepository->getEventByName('onAfterStatusChange');
+		$automation       = new AutomationEntity(0, 'Automation with no actions', 'This automation has no actions');
+		$automation->setEvent($event);
+
+		$action = new ActionUpdateStatus([]);
+		$automation->addAction($action);
+
+		$this->expectException(\InvalidArgumentException::class);
+		$this->repository->flush($automation);
 	}
 }
