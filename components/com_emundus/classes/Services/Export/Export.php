@@ -216,13 +216,16 @@ class Export
 								$file->setApplicationChoices($choices);
 							}
 
+							$result['data'][$file->getFnum()] = [];
 							foreach ($file->getApplicationChoices() as $applicationChoice)
 							{
 								if (!empty($applicationChoice->getMoreProperties()) && in_array($element->getName(), array_keys($applicationChoice->getMoreProperties())))
 								{
-									$result['data'][$file->getFnum()] = $applicationChoice->getMoreProperties()[$element->getName()]['formatted_value'] ?? '';
+									$result['data'][$file->getFnum()][] = $applicationChoice->getMoreProperties()[$element->getName()]['formatted_value'] ?? '';
 								}
 							}
+
+							$result['data'][$file->getFnum()] = !empty($result['data'][$file->getFnum()]) ? implode('; ', $result['data'][$file->getFnum()]) : '';
 						}
 					}
 				}
@@ -646,6 +649,10 @@ class Export
 			[
 				'id'    => 'application_choice_campaign',
 				'label' => Text::_('COM_EMUNDUS_CAMPAIGN'),
+			],
+			[
+				'id'    => 'application_choice_status',
+				'label' => Text::_('COM_EMUNDUS_APPLICATION_CHOICE_STATUS'),
 			],
 		];
 		$applicationChoicesRepository = new ApplicationChoicesRepository();

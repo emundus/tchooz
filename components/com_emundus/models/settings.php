@@ -4511,6 +4511,10 @@ class EmundusModelSettings extends ListModel
 			Log::add('Error : ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
 		}
 
+		// Clear cache plugins and _system
+		$hCache = new EmundusHelperCache('_system');
+		$hCache->clean();
+
 		return $updated;
 	}
 

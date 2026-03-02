@@ -96,89 +96,95 @@ class PlgFabrik_Cronemail extends PlgFabrik_Cron
 						}
 					}
 
-					foreach ($to as $thisTo)
+					foreach ($to as $toPart)
 					{
-						$thisTo = trim($w->parseMessageForPlaceHolder($thisTo, $row));
+						$toPart = trim($w->parseMessageForPlaceHolder($toPart, $row));
+						
+						//Placeholder may contain comma separeted addresses
+						$toPart = explode(',', $toPart);
+						
+						foreach ($toPart as $thisTo) {
 
-						if ($nodups)
-						{
-							if (in_array($thisTo, $sentTos))
+							if ($nodups)
 							{
-								if ($testMode)
+								if (in_array($thisTo, $sentTos))
 								{
-									$this->app->enqueueMessage($x . ': Found dupe, skipping: ' . $thisTo);
-								}
+									if ($testMode)
+									{
+										$this->app->enqueueMessage($x . ': Found dupe, skipping: ' . $thisTo);
+									}
 
-								continue;
-							}
-							else
-							{
-								$sentTos[] = $thisTo;
-							}
-						}
-
-						if (FabrikWorker::isEmail($thisTo))
-						{
-							$thisMsg = $w->parseMessageForPlaceHolder($msg, $row);
-
-							if ($eval)
-							{
-								FabrikWorker::clearEval();
-								$thisMsg = Php::Eval(['code' => $thisMsg, 'vars'=>['data'=>$row]]);
-								FabrikWorker::logEval($thisMsg, 'Caught exception on eval of fabrik_cron/email message: %s');
-							}
-
-							$thisSubject = $w->parseMessageForPlaceHolder($subject, $row);
-							$thisReplyTo = $w->parseMessageForPlaceHolder($replyTo, $row);
-							$thisReplyToName = $w->parseMessageForPlaceHolder($replyToName, $row);
-
-							if ($testMode)
-							{
-								$this->app->enqueueMessage($x . ': Would send subject: ' . $thisSubject);
-								$this->app->enqueueMessage($x . ': Would send to: ' . $thisTo);
-								$this->app->enqueueMessage($x . ': Would send Reply to: ' . $thisReplyTo);
-								$this->app->enqueueMessage($x . ': Would send Reply to name: ' . $thisReplyToName);
-							}
-							else
-							{
-								$res = FabrikWorker::sendMail(
-									$MailFrom,
-									$FromName,
-									$thisTo,
-									$thisSubject,
-									$thisMsg,
-									true,
-									null,
-									null,
-									null,
-									$thisReplyTo,
-									$thisReplyToName
-								);
-
-								if (!$res)
-								{
-									//$this->log .= "\n failed sending to $thisTo";
-									FabrikWorker::log('plg.cron.email.information', $row['__pk_val'].' Failed sending to: ' . $thisTo);
-									$failedIds[] = $row['__pk_val'];
+									continue;
 								}
 								else
 								{
-									//$this->log .= "\n sent to $thisTo";
-									FabrikWorker::log('plg.cron.email.information', $row['__pk_val'].' Sent to: ' . $thisTo.' Replyto: '.$thisReplyTo);
-									$sentIds[] = $row['__pk_val'];
+									$sentTos[] = $thisTo;
 								}
 							}
-						}
-						else
-						{
-							if ($testMode)
+
+							if (FabrikWorker::isEmail($thisTo))
 							{
-								$this->app->enqueueMessage('Not an email address: ' . $thisTo);
+								$thisMsg = $w->parseMessageForPlaceHolder($msg, $row);
+
+								if ($eval)
+								{
+									FabrikWorker::clearEval();
+									$thisMsg = Php::Eval(['code' => $thisMsg, 'vars'=>['data'=>$row]]);
+									FabrikWorker::logEval($thisMsg, 'Caught exception on eval of fabrik_cron/email message: %s');
+								}
+
+								$thisSubject = $w->parseMessageForPlaceHolder($subject, $row);
+								$thisReplyTo = $w->parseMessageForPlaceHolder($replyTo, $row);
+								$thisReplyToName = $w->parseMessageForPlaceHolder($replyToName, $row);
+
+								if ($testMode)
+								{
+									$this->app->enqueueMessage($x . ': Would send subject: ' . $thisSubject);
+									$this->app->enqueueMessage($x . ': Would send to: ' . $thisTo);
+									$this->app->enqueueMessage($x . ': Would send Reply to: ' . $thisReplyTo);
+									$this->app->enqueueMessage($x . ': Would send Reply to name: ' . $thisReplyToName);
+								}
+								else
+								{
+									$res = FabrikWorker::sendMail(
+										$MailFrom,
+										$FromName,
+										$thisTo,
+										$thisSubject,
+										$thisMsg,
+										true,
+										null,
+										null,
+										null,
+										$thisReplyTo,
+										$thisReplyToName
+									);
+
+									if (!$res)
+									{
+										//$this->log .= "\n failed sending to $thisTo";
+										FabrikWorker::log('plg.cron.email.information', $row['__pk_val'].' Failed sending to: ' . $thisTo);
+										$failedIds[] = $row['__pk_val'];
+									}
+									else
+									{
+										//$this->log .= "\n sent to $thisTo";
+										FabrikWorker::log('plg.cron.email.information', $row['__pk_val'].' Sent to: ' . $thisTo.' Replyto: '.$thisReplyTo);
+										$sentIds[] = $row['__pk_val'];
+									}
+								}
 							}
 							else
 							{
-								FabrikWorker::log('plg.cron.email.information', 'Not an email address: ' . $thisTo);
-								$failedIds[] = $row['__pk_val'];
+								if ($testMode)
+								{
+									$this->app->enqueueMessage('Not an email address: ' . $thisTo);
+								}
+								else
+								{
+									FabrikWorker::log('plg.cron.email.information', 'Not an email address: ' . $thisTo);
+									$failedIds[] = $row['__pk_val'];
+								}
 							}
 						}
 					}

@@ -185,7 +185,6 @@ export default {
 		settingsService
 			.redirectJRoute('index.php?option=com_emundus&view=emails', useGlobalStore().getCurrentLang, false)
 			.then((response) => {
-				console.log(response);
 				this.emailLink = response;
 			});
 	},
