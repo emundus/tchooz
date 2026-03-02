@@ -530,6 +530,15 @@ class EmundusControllerApplication extends EmundusController
 
 		if (EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum))
 		{
+			if(!class_exists('EmundusModelWorkflow'))
+			{
+				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			}
+			$m_workflow = new EmundusModelWorkflow();
+			
+			$actionRepository = new ActionRepository();
+			$paymentAction = $actionRepository->getByName('payment');
+			
 			$m_application = $this->getModel('Application');
 			$menus         = $m_application->getApplicationMenu($this->_user->id, $fnum);
 			$ccid          = EmundusHelperFiles::getIdFromFnum($fnum);
@@ -574,6 +583,15 @@ class EmundusControllerApplication extends EmundusController
 							$m_comments             = $this->getModel('Comments');
 							$notifications_comments = sizeof($m_comments->getComments($ccid, $this->_user->id, false, [], 0, 1));
 							$menu['notifications']  = $notifications_comments;
+						}
+						if($action_id == $paymentAction->getId())
+						{
+							// Check if we have a payment step for this fnum
+							$paymentStep = $m_workflow->getPaymentStepFromFnum($fnum);
+							if(empty($paymentStep))
+							{
+								continue;
+							}
 						}
 
 						$menu_application[] = $menu;
