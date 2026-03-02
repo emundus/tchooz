@@ -12,6 +12,8 @@ class StepEntity {
 
 	public int $workflow_id;
 
+	public string $workflow_label = '';
+
 	public string $label;
 
 	public StepTypeEntity $type;
@@ -246,6 +248,18 @@ class StepEntity {
 		}
 
 		return null;
+	}
+
+	public function getWorkflowLabel(): string
+	{
+		return $this->workflow_label;
+	}
+
+	public function setWorkflowLabel(string $workflow_label): StepEntity
+	{
+		$this->workflow_label = $workflow_label;
+
+		return $this;
 	}
 
 	public function serialize()
