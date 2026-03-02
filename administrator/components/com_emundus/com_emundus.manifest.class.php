@@ -1885,4 +1885,36 @@ class Com_EmundusInstallerScript
 
 		return !in_array(false, $inserts);
 	}
+
+	#[PostflightAttribute(name: "Repair comments table")]
+	private function repairCommentsTable(): bool
+	{
+		$repaired = true;
+
+		// Get comments that have ccid to 0 and rebuild ccid via fnum
+		$query = $this->db->getQuery(true)
+			->select('id, fnum, ccid')
+			->from($this->db->quoteName('#__emundus_comments'))
+			->where($this->db->quoteName('ccid') . ' = 0');
+		$this->db->setQuery($query);
+		$comments = $this->db->loadObjectList();
+
+		foreach ($comments as $comment)
+		{
+			$query->clear()
+				->select('id')
+				->from($this->db->quoteName('#__emundus_campaign_candidature'))
+				->where($this->db->quoteName('fnum') . ' = ' . $this->db->quote($comment->fnum));
+			$this->db->setQuery($query);
+			$ccid = $this->db->loadResult();
+
+			if(!empty($ccid))
+			{
+				$comment->ccid = $ccid;
+				$repaired = $this->db->updateObject('#__emundus_comments', $comment, 'id') && $repaired;
+			}
+		}
+
+		return $repaired;
+	}
 }

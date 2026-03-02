@@ -449,10 +449,13 @@ class EmundusModelFormbuilder extends ListModel
 				$this->db->setQuery($query);
 				$this->db->execute();
 			}
-
 			//
 
+			$hCache = new EmundusHelperCache('com_emundus.menus');
+			$hCache->clean();
+
 			return array(
+				'code'          => 200,
 				'status'        => true,
 				'msg'           => 'SUCCESS',
 				'id'            => $formid,
@@ -982,6 +985,7 @@ class EmundusModelFormbuilder extends ListModel
 
 	function deleteMenu($menu)
 	{
+		$deleted = false;
 		$query = $this->db->getQuery(true);
 
 		try
@@ -992,14 +996,20 @@ class EmundusModelFormbuilder extends ListModel
 				->where($this->db->quoteName('id') . ' = ' . (int) $menu);
 			$this->db->setQuery($query);
 
-			return $this->db->execute();
+			if($deleted = $this->db->execute())
+			{
+				$hCache = new EmundusHelperCache('com_emundus.menus');
+				$hCache->clean();
+			}
 		}
 		catch (Exception $e)
 		{
 			Log::add('component/com_emundus/models/formbuilder | Error at move to trash the menu with the fabrik_form ' . $menu . ' : ' . preg_replace("/[\r\n]/", " ", $query . ' -> ' . $e->getMessage()), Log::ERROR, 'com_emundus');
 
-			return false;
+			$deleted = false;
 		}
+
+		return $deleted;
 	}
 
 	function saveAsTemplate($menu, $template)
@@ -2181,7 +2191,7 @@ class EmundusModelFormbuilder extends ListModel
 				$lang = substr($lang->getTag(), 0, 2);
 			}
 
-			if($element['label'] != $dbElement->label)
+			if ($element['label'] != $dbElement->label)
 			{
 				$key                = 'ELEMENT_' . $element['id'] . '_LABEL';
 				$languageRepository = new LanguageRepository();
@@ -2645,7 +2655,7 @@ class EmundusModelFormbuilder extends ListModel
 			{
 				$show_in_list_summary = $element['show_in_list_summary'] ? 1 : 0;
 			}
-			
+
 			// Update the element
 			$fields = array(
 				$this->db->quoteName('plugin') . ' = ' . $this->db->quote($element['plugin']),
@@ -2666,11 +2676,11 @@ class EmundusModelFormbuilder extends ListModel
 				{
 					require_once(JPATH_ROOT . '/components/com_emundus/helpers/html.php');
 				}
-				$htmlSanitizer             = HtmlSanitizerSingleton::getInstance();
+				$htmlSanitizer      = HtmlSanitizerSingleton::getInstance();
 				$element['default'] = $htmlSanitizer->sanitize($element['default']);
 
 				// Update translation of default label
-				$defaultKey                = 'ELEMENT_' . $element['id'] . '_DEFAULT';
+				$defaultKey         = 'ELEMENT_' . $element['id'] . '_DEFAULT';
 				$languageRepository = new LanguageRepository();
 				if (!empty($dbElement->default_text))
 				{
@@ -2920,6 +2930,7 @@ class EmundusModelFormbuilder extends ListModel
 			->set('intro = ' . $this->db->quote($introKey))
 			->where('id = ' . $this->db->quote($form_id));
 		$this->db->setQuery($query);
+
 		return $this->db->execute();
 	}
 
@@ -3454,11 +3465,12 @@ class EmundusModelFormbuilder extends ListModel
 
 		if (!empty($formid) && !empty($prid))
 		{
-			if(empty($userId))
+			if (empty($userId))
 			{
 				$user = Factory::getApplication()->getIdentity();
 			}
-			else {
+			else
+			{
 				$user = Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($userId);
 			}
 
@@ -3481,8 +3493,8 @@ class EmundusModelFormbuilder extends ListModel
 			$groups = $form->getGroups();
 
 			// Prepare languages
-			$model_prefix   = 'Model - ';
-			$languages      = LanguageHelper::getLanguages();
+			$model_prefix = 'Model - ';
+			$languages    = LanguageHelper::getLanguages();
 
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'falang.php');
 			$falang = new EmundusModelFalang();
@@ -3589,6 +3601,7 @@ class EmundusModelFormbuilder extends ListModel
 							$response['link']   = 'index.php?option=com_fabrik&view=form&formid=' . $newformid;
 							$response['rgt']    = array_values($rgts)[strval(sizeof($rgts) - 1)] + 2;
 							$response['status'] = true;
+							$response['code']   = 200;
 						}
 						else
 						{
@@ -3616,6 +3629,9 @@ class EmundusModelFormbuilder extends ListModel
 			}
 		}
 
+		$hCache = new EmundusHelperCache('com_emundus.menus');
+		$hCache->clean();
+
 		return $response;
 	}
 
@@ -3633,7 +3649,7 @@ class EmundusModelFormbuilder extends ListModel
 		foreach ($languages as $language)
 		{
 			$translated = LanguageFactory::getTranslation($key, $language->lang_code);
-			if(is_null($translated))
+			if (is_null($translated))
 			{
 				$translated = '';
 			}
@@ -4662,10 +4678,10 @@ class EmundusModelFormbuilder extends ListModel
 	}
 
 	/**
-	 * @deprecated
 	 * @param   string  $text
 	 *
 	 * @return bool
+	 * @deprecated
 	 */
 	public function deleteTranslation(string $text): bool
 	{

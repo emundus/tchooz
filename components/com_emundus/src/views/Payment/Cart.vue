@@ -56,7 +56,7 @@ export default {
 		CartDiscount,
 	},
 	created() {
-		if (!this.cart.selected_payment_method) {
+		if (this.cart && !this.cart.selected_payment_method) {
 			this.cart.selected_payment_method = {
 				id: 0,
 				label: '',
@@ -482,10 +482,15 @@ export default {
 		id="cart"
 		class="tw-mb-6 tw-flex tw-flex-col tw-gap-8 tw-rounded-coordinator-cards tw-border tw-border-neutral-300 !tw-bg-white tw-p-6 tw-shadow-standard"
 	>
-		<h1 v-if="!isManager">{{ translate('COM_EMUNDUS_CART') }}</h1>
-		<h1 v-else>{{ translate('COM_EMUNDUS_CART_MANAGER') }}</h1>
+		<div v-if="cart">
+			<h1 v-if="!isManager">{{ translate('COM_EMUNDUS_CART') }}</h1>
+			<h1 v-else>{{ translate('COM_EMUNDUS_CART_MANAGER') }}</h1>
+		</div>
+		<p v-else>
+			{{ translate('COM_EMUNDUS_CART_NO_PAYMENT_STEP') }}
+		</p>
 
-		<div id="recap" class="tw-flex tw-flex-col tw-gap-6">
+		<div id="recap" class="tw-flex tw-flex-col tw-gap-6" v-if="cart">
 			<h2 v-if="!isManager">{{ translate('COM_EMUNDUS_CART_RECAP') }}</h2>
 			<h2 v-else>{{ translate('COM_EMUNDUS_CART_MANAGER_RECAP') + ' ' + step.label }}</h2>
 
@@ -672,7 +677,7 @@ export default {
 			></CartDiscount>
 		</modal>
 
-		<div id="payment-rules" class="tw-flex tw-flex-col tw-gap-6">
+		<div id="payment-rules" class="tw-flex tw-flex-col tw-gap-6" v-if="cart">
 			<h2>{{ translate('COM_EMUNDUS_CART_PAYMENT_RULES') }}</h2>
 
 			<Info v-if="step.description.length > 0" :text="step.description" />
@@ -823,12 +828,12 @@ export default {
 			</div>
 		</div>
 
-		<div id="customer" class="tw-flex tw-flex-col tw-gap-6">
+		<div id="customer" class="tw-flex tw-flex-col tw-gap-6" v-if="cart">
 			<h2>{{ translate('COM_EMUNDUS_CART_CUSTOMER_ADDRESS') }}</h2>
 			<CustomerAddress :cart-id="cart.id" :customer="cart.customer" :readOnly="readOnly"></CustomerAddress>
 		</div>
 
-		<div class="tw-flex tw-justify-end">
+		<div class="tw-flex tw-justify-end" v-if="cart">
 			<button v-if="isManager !== true && !readOnly" id="checkout" class="tw-btn-primary" @click="checkoutCart">
 				{{ translate('COM_EMUNDUS_CHECKOUT') }}
 

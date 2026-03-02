@@ -14,160 +14,130 @@
  */
 
 // no direct access
+use Joomla\CMS\Cache\CacheControllerFactoryInterface;
+use Joomla\CMS\Cache\CacheController;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 
 defined('_JEXEC') or die('Restricted access');
-jimport('joomla.application.component.helper');
 
-/**
- * Content Component Cache Helper
- *
- * @static
- * @package        Joomla
- * @subpackage     Helper
- * @since          1.5
- */
 class EmundusHelperCache
 {
-	private $cache = null;
-	private $group = '';
-	private $cache_enabled = false;
+	private ?CacheController $cache;
 
-	public function __construct($group = 'com_emundus', $handler = '', $lifetime = '', $context = 'component')
+	private bool $cache_enabled;
+
+	private string $group;
+
+	public function __construct($group = 'com_emundus', $handler = '', $lifetime = null)
 	{
 		Log::addLogger(['text_file' => 'com_emundus.cache.error.php'], Log::ERROR, ['com_emundus.cache.error']);
 
-		$cache_path = JPATH_SITE . '/cache';
-		if (is_dir($cache_path)) {
-			$config        = Factory::getConfig();
-			$cache_enabled = $config->get('caching'); // 1 = conservative, 2 = progressive
-			$cache_handler = $config->get('cache_handler', 'file');
+		$this->cache = Factory::getContainer()
+			->get(CacheControllerFactoryInterface::class)
+			->createCacheController('output', ['defaultgroup' => $group, 'caching' => true, 'lifetime' => $lifetime]);
 
-			if ($cache_enabled > 0) {
-				if ($context === 'component' || $cache_enabled === 2) {
-					if (empty($lifetime)) {
-						$cache_time = $config->get('cachetime', 15);
-						$lifetime   = $cache_time * 60;
-					}
-
-					$this->group = $group;
-					$this->cache = Factory::getCache($group, $handler);
-					$this->cache->setLifeTime($lifetime);
-					$this->cache->setCaching(true);
-					$this->cache_enabled = true;
-				}
-			}
-		}
-		else {
-			error_log('Cache directory does not exists!');
-			Log::add('Cache directory does not exists!', Log::WARNING, 'com_emundus.cache.error');
-		}
+		$this->cache_enabled = Factory::getApplication()->get('caching') !== 0;
+		$this->group = $group;
 	}
 
 	/**
 	 * @codeCoverageIgnore
 	 */
-	public function isEnabled()
+	public function isEnabled(): bool
 	{
 		return $this->cache_enabled;
 	}
 
-	public function get($id)
+	public function get($key)
 	{
 		$cache = null;
 
-		if ($this->isEnabled()) {
-			$cache = $this->cache->get($id, $this->group);
+		if ($this->isEnabled() && $this->cache->contains($key))
+		{
+			$cache = $this->cache->get($key);
 		}
 
 		return $cache;
 	}
 
-	public function set($id, $data)
+	public function set($key, $data)
 	{
 		$stored = false;
 
-		if ($this->isEnabled()) {
-			$stored = $this->cache->store($data, $id, $this->group);
+		if ($this->isEnabled())
+		{
+			$stored = $this->cache->store($data, $key);
 		}
 
 		return $stored;
 	}
 
-	public function clean($admin = false, $group = '')
+	public function clean($currentGroup = true, array $groups = []): bool
 	{
-		$cleaned = false;
+		$cache = Factory::getApplication()->bootComponent('com_cache')->getMVCFactory();
 
-		if ($this->isEnabled()) {
-			$cleaned = $this->cache->__call('clean', array($this->group));
+		/** @var \Joomla\Component\Cache\Administrator\Model\CacheModel $model */
+		$model  = $cache->createModel('Cache', 'Administrator', ['ignore_request' => true]);
+		$mCache = $model->getCache();
 
-			if ($admin && !empty($group)) {
-				if (is_dir(JPATH_ADMINISTRATOR.'/cache/'.$group)) {
-					try {
-						$cleaned = $this->deleteDir($group);
-					} catch (Exception $e) {
-						$cleaned = false;
-						Log::add('Error cleaning cache of group ' . $group . ' : ' . $e->getMessage(), Log::ERROR, 'com_emundus.cache.error');
-					}
-				} else {
-					$cleaned = false;
-					Log::add('Cache directory of group ' . $group . ' does not exists!', Log::WARNING, 'com_emundus.cache.error');
+		if($currentGroup)
+		{
+			$groups[] = $this->group;
+		}
+
+		if (!empty($groups))
+		{
+			foreach ($groups as $group)
+			{
+				if (!$mCache->clean($group))
+				{
+					return false;
+				}
+			}
+		}
+		elseif(!$currentGroup)
+		{
+			foreach ($mCache->getAll() as $cache)
+			{
+				if ($mCache->clean($cache->group) === false)
+				{
+					return false;
 				}
 			}
 		}
 
-		return $cleaned;
+		return true;
 	}
 
 	/**
 	 * @codeCoverageIgnore
 	 */
-	public static function getCurrentGitHash()
+	public static function getCurrentGitHash(): string
 	{
 		$hash          = '';
 		$git_base_path = JPATH_SITE . '/.git';
 
-		if (file_exists($git_base_path . '/HEAD')) {
+		if (file_exists($git_base_path . '/HEAD'))
+		{
 			$git_str    = file_get_contents($git_base_path . '/HEAD');
 			$git_branch = rtrim(preg_replace("/(.*?\/){2}/", '', $git_str));
 
-			if (!empty($git_branch)) {
+			if (!empty($git_branch))
+			{
 				$hash = trim(file_get_contents($git_base_path . '/refs/heads/' . $git_branch));
 			}
 		}
 
-		if (empty($hash)) {
+		if (empty($hash))
+		{
 			$xmlDoc = new DOMDocument();
-			if ($xmlDoc->load(JPATH_SITE . '/administrator/components/com_emundus/emundus.xml')) {
+			if ($xmlDoc->load(JPATH_SITE . '/administrator/components/com_emundus/emundus.xml'))
+			{
 				$hash = $xmlDoc->getElementsByTagName('version')->item(0)->textContent;
 			}
 		}
 
 		return $hash;
-	}
-
-	/**
-	 * @codeCoverageIgnore
-	 */
-	private function deleteDir($group) {
-		$dirPath = JPATH_ADMINISTRATOR . '/cache/' . $group;
-
-		if (!is_dir($dirPath)) {
-			throw new InvalidArgumentException("$dirPath must be a directory");
-		}
-		if (substr($dirPath, strlen($dirPath) - 1, 1) != '/') {
-			$dirPath .= '/';
-		}
-		$files = glob($dirPath . '*', GLOB_MARK);
-		foreach ($files as $file) {
-			if (is_dir($file)) {
-				$this->deleteDir($file);
-			} else {
-				unlink($file);
-			}
-		}
-
-		return rmdir($dirPath);
 	}
 }

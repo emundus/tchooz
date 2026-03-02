@@ -329,7 +329,10 @@ class PlgFabrik_FormEmundusReferentLetter extends plgFabrik_Form
 
 				$attachment_id = $recipient['attachment_id'];
 
-                $allow_multiple_requests = $this->getParam('allow_multiple_requests',false);
+                $allow_multiple_requests = filter_var(
+                    $this->getParam('allow_multiple_requests', false),
+                    FILTER_VALIDATE_BOOLEAN
+                );
                 if ($allow_multiple_requests) {
                     $isSelectedReferent = 0;
                 } else {

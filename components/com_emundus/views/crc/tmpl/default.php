@@ -10,8 +10,10 @@
 // No direct access to this file
 defined('_JEXEC') or die('Restricted Access');
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Tchooz\Factories\LayoutFactory;
+use Tchooz\Repositories\Actions\ActionRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 
@@ -76,11 +78,33 @@ Text::script('COM_EMUNDUS_URL_UNVERIFIED_AND_UNSECURED');
 
 $data = LayoutFactory::prepareVueData();
 
+$user = Factory::getApplication()->getIdentity();
+
+$actionRepository = new ActionRepository();
+$contactAction    = $actionRepository->getByName('contact');
+$orgAction        = $actionRepository->getByName('organization');
+
+$data['crud'] = [
+    'contact'      => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($contactAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($contactAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($contactAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($contactAction->getId(), 'd', $user->id),
+    ],
+    'organization' => [
+        'c' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($orgAction->getId(), 'c', $user->id),
+        'r' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($orgAction->getId(), 'r', $user->id),
+        'u' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($orgAction->getId(), 'u', $user->id),
+        'd' => $data['coordinator_access'] || $data['sysadmin_access'] || EmundusHelperAccess::asAccessAction($orgAction->getId(), 'd', $user->id),
+    ],
+];
+
 $datas = [
     'shortLang'       => $data['short_lang'],
     'currentLanguage' => $data['current_lang'],
     'defaultLang'     => $data['default_lang'],
     'manyLanguages'   => $data['many_languages'],
+    'crud'            => $data['crud'],
 ];
 ?>
 

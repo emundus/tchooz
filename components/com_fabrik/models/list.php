@@ -8535,6 +8535,12 @@ class FabrikFEModelList extends FormModel
 		$item->name = $item->label = 'parent_id';
 		$item->hidden = 1;
 		$item->group_id = $groupId;
+		
+		//Override default field params
+		$params = json_decode($item->params);
+		$params->text_format = 'integer';
+		$params->integer_length = '11';
+		$item->set('params', json_encode($params));	
 
 		// PR#2031 do not show repeat group parent_id in list by default
 		$item->show_in_list_summary = 0;
