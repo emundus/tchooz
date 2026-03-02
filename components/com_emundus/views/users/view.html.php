@@ -219,6 +219,8 @@ class EmundusViewUsers extends JViewLegacy
 			case 'edit':
 				$edit_profile = 1;
 				break;
+			case 'exceptions':
+				break;
 			default :
 				$document = Factory::getApplication()->getDocument();
 				$wa = $document->getWebAssetManager();
