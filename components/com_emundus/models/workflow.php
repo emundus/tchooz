@@ -1184,7 +1184,7 @@ class EmundusModelWorkflow extends JModelList
 						$campaignRepository = new CampaignRepository();
 						$campaign           = $campaignRepository->getById($file_infos['campaign_id']);
 						$parent_campaigns   = !empty($campaign->getParent()) ? [$campaign->getParent()->getId()] : [];
-						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 't.id', null, $file_infos['campaign_id'], null, null, null, [], $parent_campaigns);
+						$linked_campaigns   = $campaignRepository->getAllCampaigns('ASC', '', 0, 0, 'esc.id', null, $file_infos['campaign_id'], null, null, null, [], $parent_campaigns);
 
 						if ($linked_campaigns->getTotalItems() > 0)
 						{
