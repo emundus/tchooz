@@ -34,7 +34,7 @@ class Release2_15_2Installer extends ReleaseInstaller
 
 		try
 		{
-			\EmundusHelperUpdate::addYamlVariable('error-page', 'block")', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
+			\EmundusHelperUpdate::addYamlVariable('error-page', 'block', JPATH_ROOT . '/templates/g5_helium/custom/config/default/styles.yaml', 'tchoozy', false, true, false);
 
 			$result['status'] = !in_array(false, $this->tasks);
 		}
