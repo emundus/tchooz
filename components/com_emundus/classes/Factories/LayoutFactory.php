@@ -32,15 +32,15 @@ class LayoutFactory
 		$lang = $app->getLanguage();
 		$user = $app->getIdentity();
 
-		$data['short_lang']   = substr($lang->getTag(), 0, 2);
-		$data['current_lang'] = $lang->getTag();
-		$data['many_languages'] = '0';
-		$data['default_lang'] = $data['current_lang'];
+		$data['shortLang']   = substr($lang->getTag(), 0, 2);
+		$data['currentLang'] = $lang->getTag();
+		$data['manyLanguages'] = '0';
+		$data['defaultLang'] = $data['currentLang'];
 
 		$languages    = LanguageHelper::getLanguages();
 		if (count($languages) > 1) {
-			$data['many_languages'] = '1';
-			$data['default_lang'] = LanguageFactory::getDefaultLanguageCode();
+			$data['manyLanguages'] = '1';
+			$data['defaultLang'] = LanguageFactory::getDefaultLanguageCode();
 		}
 
 		$data['coordinator_access'] = \EmundusHelperAccess::asCoordinatorAccessLevel($user->id);
