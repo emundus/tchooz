@@ -752,6 +752,8 @@ Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_PERIOD_LAST_7_DAYS');
 Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_PERIOD_TODAY');
 Text::script('COM_EMUNDUS_SETTINGS_ANALYTICS_INFO');
 
+Text::script('COM_EMUNDUS_SETTINGS_THEME_HIDE_TCHOOZY');
+
 $data = LayoutFactory::prepareVueData();
 
 $baseUrl = rtrim(Uri::root(), '/') . '/';
