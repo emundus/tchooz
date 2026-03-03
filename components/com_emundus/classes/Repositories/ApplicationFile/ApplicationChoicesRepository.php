@@ -183,7 +183,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 	}
 
 	public function getAllChoices(
-		$sort = 'DESC',
+		$sort = 'ASC',
 		$search = '',
 		$lim = 25,
 		$page = 0,
@@ -220,13 +220,13 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 		if (empty($sort))
 		{
-			$sort = 'DESC';
+			$sort = 'ASC';
 		}
 
 		$elements   = $this->getChoicesMoreElements($more_form_id);
 		$table_name = $this->getMoreTableName($more_form_id);
 
-		$query = $this->buildQuery('', $user_programs, $state, $campaigns, $search, $orderings, $fileStatuses, $ids);
+		$query = $this->buildQuery('', $user_programs, $state, $campaigns, $search, $orderings, $fileStatuses, $ids, $order_by, $sort);
 
 		$application_choices_count = 0;
 		$this->db->setQuery($query);
@@ -500,7 +500,9 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		string $search = '',
 		array $orderings = [],
 		array $fileStatuses = [],
-		array $ids = []
+		array $ids = [],
+		string $order_by = 'eccc.order',
+		string $sort = 'ASC'
 	): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
@@ -510,21 +512,33 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			->leftJoin(
 				$this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') .
 				' ON ' .
-				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias . '.fnum'))
-			->order($this->alias . '.order ASC');
+				$this->db->quoteName('af.fnum') . ' = ' . $this->db->quoteName($this->alias . '.fnum'));
+
+		if(empty($order_by) || !in_array($order_by, ['eccc.id', 'eccc.order', 'c.label', 'u.name', 'af.fnum']))
+		{
+			$order_by = 'eccc.order';
+		}
+		if(empty($sort) || !in_array(strtoupper($sort), ['ASC', 'DESC']))
+		{
+			$sort = 'ASC';
+		}
 
 		if (!empty($fnum))
 		{
 			$query->where($this->alias . '.fnum = ' . $this->db->quote($fnum));
 		}
 
-		if (!empty($user_programs))
+		if(!empty($user_programs) || $order_by === 'c.label')
 		{
 			$query->leftJoin(
-					$this->db->quoteName($this->getTableName(CampaignRepository::class), 'c') .
-					' ON ' .
-					$this->db->quoteName('c.id') . ' = ' . $this->db->quoteName($this->alias . '.campaign_id'))
-				->where('c.training IN (' . implode(',', array_map([$this->db, 'quote'], $user_programs)) . ')');
+				$this->db->quoteName($this->getTableName(CampaignRepository::class), 'c') .
+				' ON ' .
+				$this->db->quoteName('c.id') . ' = ' . $this->db->quoteName($this->alias . '.campaign_id'));
+		}
+
+		if (!empty($user_programs))
+		{
+			$query->where('c.training IN (' . implode(',', array_map([$this->db, 'quote'], $user_programs)) . ')');
 		}
 
 		if (!empty($state))
@@ -543,14 +557,18 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 			$query->where($this->alias . '.campaign_id IN (' . implode(',', array_map([$this->db, 'quote'], $campaigns)) . ')');
 		}
 
+		if(!empty($search) || $order_by === 'u.name')
+		{
+			$query->leftJoin(
+					$this->db->quoteName('#__users', 'u') .
+					' ON ' .
+					$this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('af.applicant_id'));
+		}
+
 		if(!empty($search))
 		{
 			// Search in applicant name
-			$query->leftJoin(
-				$this->db->quoteName('#__users', 'u') .
-				' ON ' .
-				$this->db->quoteName('u.id') . ' = ' . $this->db->quoteName('af.applicant_id'))
-				->where('u.name LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR u.email LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR af.fnum LIKE ' . $this->db->quote('%' . $search . '%', false));
+			$query->where('u.name LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR u.email LIKE ' . $this->db->quote('%' . $search . '%', false) . ' OR af.fnum LIKE ' . $this->db->quote('%' . $search . '%', false));
 		}
 
 		if(!empty($orderings)) {
@@ -564,6 +582,13 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		if(!empty($ids))
 		{
 			$query->where($this->alias . '.id IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
+		}
+
+		$query->order($order_by . ' ' . $sort);
+		if($order_by !== 'eccc.order')
+		{
+			// Add it always as secondary order to keep a consistent order
+			$query->order('eccc.order ' . $sort);
 		}
 
 		return $query;
