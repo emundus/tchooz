@@ -4,6 +4,7 @@ namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozCommand;
 use Joomla\CMS\Factory;
+use Joomla\Language\Language;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Joomla\Database\DatabaseAwareTrait;
 use Joomla\Database\DatabaseInterface;
@@ -43,43 +44,78 @@ class TchoozLanguage extends TchoozCommand
 		{
 			$this->output->writeln("Fix language");
 
-			$question = new ChoiceQuestion(
-				'Please select what you want to fix ?',
-				[
-					'database' => 'Fix languages in database',
-					'files' => 'Fix override files'
-				]
-			);
+			$job = $input->getOption('job');
 
-			$response = $this->ioStyle->askQuestion($question);
+			if(empty($job))
+			{
+				$question = new ChoiceQuestion(
+					'Please select what you want to fix ?',
+					[
+						'database'     => 'Fix languages in database',
+						'files'        => 'Fix override files',
+						'check_health' => 'Check health of languages and fix if needed',
+					]
+				);
 
-			if(!in_array($response, ['database', 'files']))
+				$job = $this->ioStyle->askQuestion($question);
+			}
+
+			if(!in_array($job, ['database', 'files', 'check_health']))
 			{
 				throw new \Exception("Invalid option selected");
 			}
 
-			if($response == 'database')
+			if($job == 'database')
 			{
 				$dbLanguage = new DbLanguage();
 				if (!$dbLanguage->filesToDatabase())
 				{
 					throw new \Exception("Error while fixing languages in database");
 				}
+
+				$this->output->writeln("Languages fixed\n");
 			}
-			else
+			elseif($job == 'files')
 			{
 				$dbLanguage = new DbLanguage();
 				if (!$dbLanguage->databaseToFiles())
 				{
 					throw new \Exception("Error while fixing override files");
 				}
-			}
 
-			$this->output->writeln("Languages fixed\n");
+				$this->output->writeln("Languages fixed\n");
+			}
+			elseif($job == 'check_health')
+			{
+				$languageClass = Factory::getApplication()->getLanguage();
+
+				$filesToDebug = [
+					JPATH_ROOT . '/components/com_emundus/language/en-GB/en-GB.com_emundus.ini',
+					JPATH_ROOT . '/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini',
+				];
+				foreach ($filesToDebug as $file)
+				{
+					if (!file_exists($file))
+					{
+						throw new \Exception("File $file does not exist");
+					}
+					if (!is_readable($file))
+					{
+						throw new \Exception("File $file is not readable");
+					}
+
+					$debug = $languageClass->debugFile($file);
+					if (!empty($debug)) {
+						throw new \Exception("File $file has errors in lines : " . implode(', ', $languageClass->getErrorFiles()[$file]));
+					}
+				}
+
+				$this->output->writeln("Languages are healthy");
+			}
 		}
 		catch (\Exception $e)
 		{
-			$this->output->writeln($e->getMessage(), 'e');
+			$this->output->writeln($e->getMessage());
 
 			return Command::FAILURE;
 		}
@@ -92,6 +128,8 @@ class TchoozLanguage extends TchoozCommand
 		$help = "<info>%command.name%</info> will fix languages by updating database or files.
 		\nUsage: <info>php %command.full_name%</info>";
 
+		$this->addOption('job', null, InputOption::VALUE_OPTIONAL, 'Job to execute');
+		
 		$this->setDescription('Fix languages by update database or files');
 		$this->setHelp($help);
 	}
