@@ -768,12 +768,7 @@ $wa->registerAndUseStyle('web357.microsoft-outlook.css.configuration.style', $ba
 
 <div id="em-component-vue"
      component="Settings"
-     shortLang="<?= $data['short_lang'] ?>"
-     currentLanguage="<?= $data['current_lang'] ?>"
-     defaultLang="<?= $data['default_lang'] ?>"
-     coordinatorAccess="<?= $data['coordinator_access'] ?>"
-     sysadminAccess="<?= $data['sysadmin_access'] ?>"
-     manyLanguages="<?= $data['many_languages'] ?>"
+     data="<?= htmlspecialchars(json_encode($data), ENT_QUOTES, 'UTF-8'); ?>"
 ></div>
 
 <script src="media/com_emundus/js/settings.js?<?php echo $data['hash'] ?>"></script>
