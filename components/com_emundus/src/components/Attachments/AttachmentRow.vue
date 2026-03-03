@@ -39,6 +39,9 @@
 				<option value="0" :selected="attachment.is_validated == 0">
 					{{ translate('INVALID') }}
 				</option>
+				<option value="2" :selected="attachment.is_validated == 2">
+					{{ translate('COM_EMUNDUS_ATTACHMENTS_WARNING') }}
+				</option>
 				<option value="-2" :selected="attachment.is_validated == -2 || attachment.is_validated === null">
 					{{ translate('COM_EMUNDUS_ATTACHMENTS_WAITING') }}
 				</option>
