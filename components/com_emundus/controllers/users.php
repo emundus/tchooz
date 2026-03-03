@@ -19,6 +19,7 @@ use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
+use Joomla\CMS\Router\Route;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
@@ -1030,14 +1031,13 @@ class EmundusControllerUsers extends EmundusController
 	 */
 	public function passrequest()
 	{
-
 		$m_users  = $this->getModel('Users');
 		$response = array('status' => true, 'msg' => '');
 
 		// Check the request token.
 		if ($this->app->getIdentity()->guest)
 		{
-			$this->checkToken('post');
+			$this->checkToken();
 
 			$data = $this->input->post->get('jform', array(), 'array');
 
@@ -1045,13 +1045,15 @@ class EmundusControllerUsers extends EmundusController
 
 			$message = Text::sprintf('COM_USERS_RESET_REQUEST_FAILED', $return->message);
 			$menu    = $this->app->getMenu()->getItems('link', 'index.php?option=com_users&view=reset', true);
+
+			$this->app->enqueueMessage($message, 'notice');
 			if (!empty($menu))
 			{
-				$this->setRedirect($menu->alias, $message, 'notice');
+				$this->app->redirect($menu->alias);
 			}
 			else
 			{
-				$this->setRedirect(Route('index.php?option=com_users&view=reset&layout=confirm'), $message, 'notice');
+				$this->app->redirect(Route::_('index.php?option=com_users&view=reset&layout=confirm'));
 			}
 		}
 		elseif (EmundusHelperAccess::asAccessAction(12, 'u') || EmundusHelperAccess::asAccessAction(20, 'u'))
@@ -1092,7 +1094,8 @@ class EmundusControllerUsers extends EmundusController
 			$response['msg']    = Text::_('ACCESS_DENIED');
 		}
 
-		if (!JFactory::getUser()->guest)
+
+		if (!$this->app->getIdentity()->guest)
 		{
 			echo json_encode($response);
 			exit;
