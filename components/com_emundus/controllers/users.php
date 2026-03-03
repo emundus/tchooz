@@ -1095,6 +1095,7 @@ class EmundusControllerUsers extends EmundusController
 		}
 
 
+
 		if (!$this->app->getIdentity()->guest)
 		{
 			echo json_encode($response);
