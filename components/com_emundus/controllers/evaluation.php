@@ -1250,6 +1250,9 @@ class EmundusControllerEvaluation extends BaseController
 		$fnum = $this->input->getString('fnum', null);
 
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
+			$stepsWithEvaluations = [];
+			$steps = [];
+			
 			$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
 			/*
 			 * 3 cases possible
@@ -1261,36 +1264,39 @@ class EmundusControllerEvaluation extends BaseController
 			$workflowRepository = new \Tchooz\Repositories\Workflow\WorkflowRepository();
 			$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
 
-			if (!class_exists('EmundusModelWorkflow')) {
-				require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
-			}
-			$workflowModel = new EmundusModelWorkflow();
-			
-			$steps = [];
-
-			$applicationChoicesProgram = [];
-			$addonRepository = new AddonRepository();
-			$choicesAddon = $addonRepository->getByName('choices');
-			if($choicesAddon->getValue()->isEnabled())
+			if(!empty($workflow))
 			{
-				$applicationChoicesRepository = new ApplicationChoicesRepository();
-				$applicationChoices = $applicationChoicesRepository->getChoicesByFnum($fnum);
-				foreach($applicationChoices as $choice)
+				if (!class_exists('EmundusModelWorkflow'))
 				{
-					$applicationChoicesProgram[] = $choice->getCampaign()->getProgram()->getId();
+					require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+				}
+				$workflowModel = new EmundusModelWorkflow();
+
+				$applicationChoicesProgram = [];
+				$addonRepository           = new AddonRepository();
+				$choicesAddon              = $addonRepository->getByName('choices');
+				if ($choicesAddon->getValue()->isEnabled())
+				{
+					$applicationChoicesRepository = new ApplicationChoicesRepository();
+					$applicationChoices           = $applicationChoicesRepository->getChoicesByFnum($fnum);
+					foreach ($applicationChoices as $choice)
+					{
+						$applicationChoicesProgram[] = $choice->getCampaign()->getProgram()->getId();
+					}
+				}
+
+				// merge steps of workflow and child workflows
+				$steps = array_merge($steps, $workflow->getSteps());
+				foreach ($workflow->getChildWorkflows() as $childWorkflow)
+				{
+					if (!empty($applicationChoicesProgram) && count(array_intersect($applicationChoicesProgram, $childWorkflow->getProgramIds())) === 0)
+					{
+						continue;
+					}
+					$steps = array_merge($steps, $childWorkflow->getSteps());
 				}
 			}
 			
-			// merge steps of workflow and child workflows
-			$steps = array_merge($steps, $workflow->getSteps());
-			foreach ($workflow->getChildWorkflows() as $childWorkflow) {
-				if(!empty($applicationChoicesProgram) && count(array_intersect($applicationChoicesProgram, $childWorkflow->getProgramIds())) === 0) {
-					continue;
-				}
-				$steps = array_merge($steps, $childWorkflow->getSteps());
-			}
-
-			$stepsWithEvaluations = [];
 			foreach ($steps as $step)
 			{
 				assert($step instanceof Tchooz\Entities\Workflow\StepEntity);

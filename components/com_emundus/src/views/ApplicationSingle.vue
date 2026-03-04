@@ -475,6 +475,10 @@ export default {
 			return url.replace('{fnum}', this.selectedFile.fnum);
 		},
 		updateTab(tabName) {
+			if (tabName === 'application') {
+				this.getApplicationForm();
+			}
+
 			this.selected = tabName;
 
 			let menu = window.location.pathname.replace(/^\//, '').replace(/\//g, '_');
