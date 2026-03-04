@@ -90,15 +90,19 @@ class EmundusControllersettings extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	public function createtag(): void
+	public function createtag(): EmundusResponse
 	{
-		$this->sendJsonResponse($this->m_settings->createTag());
+		$tag = $this->m_settings->createTag();
+
+		return EmundusResponse::ok($tag);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	public function createstatus(): void
+	public function createstatus(): EmundusResponse
 	{
-		$this->sendJsonResponse($this->m_settings->createStatus());
+		$status = $this->m_settings->createStatus();
+
+		return EmundusResponse::ok($status);
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
@@ -127,7 +131,7 @@ class EmundusControllersettings extends EmundusController
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
-	public function updatestatus(): void
+	public function updatestatus(): EmundusResponse
 	{
 		$status = $this->input->getInt('status');
 		$label  = $this->input->getString('label');
@@ -137,7 +141,13 @@ class EmundusControllersettings extends EmundusController
 			throw new InvalidArgumentException('Status ID is required');
 		}
 
-		$this->sendJsonResponse($this->m_settings->updateStatus($status, $label, $color));
+		$results = $this->m_settings->updateStatus($status, $label, $color);
+		if(in_array(false, $results))
+		{
+			throw new RuntimeException('Failed to update status');
+		}
+
+		return EmundusResponse::ok();
 	}
 
 	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]

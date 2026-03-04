@@ -68,7 +68,7 @@ class ActionGenerateSignatureRequest extends ActionEntity
 			{
 				try
 				{
-					$ordered = $this->getParameterValue('ordered');
+					$ordered = $this->getParameterValue('ordered') ?? false;
 					$signers = $this->getSignersFromParameters($context);
 
 					if (empty($signers))
@@ -85,8 +85,21 @@ class ActionGenerateSignatureRequest extends ActionEntity
 					{
 						require_once JPATH_ROOT . '/components/com_emundus/models/sign.php';
 					}
-					$m_sign     = new \EmundusModelSign();
-					$request_id = $m_sign->saveRequest(0, 'to_sign', $ccid, $this->getAutomatedTaskUserId(), $context->getFile(), $attachment, $this->getParameterValue('synchronizer'), $signers, 0, $this->getAutomatedTaskUserId(), $ordered, $this->getParameterValue('subject'));
+					$m_sign     = new \EmundusModelSign([], null, $this->getAutomatedTaskUser());
+					$request_id = $m_sign->saveRequest(
+						0,
+						'to_sign',
+						$ccid,
+						$this->getAutomatedTaskUserId(),
+						$context->getFile(),
+						$attachment,
+						$this->getParameterValue('synchronizer'),
+						$signers,
+						0,
+						$this->getAutomatedTaskUserId(),
+						$ordered,
+						$this->getParameterValue('subject') ?? ''
+					);
 					if (!empty($request_id))
 					{
 						$requestRepository = new RequestRepository();

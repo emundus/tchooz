@@ -79,6 +79,22 @@ phpunit-job:
   only:
     - merge_request
 
+check-language-files-health:
+  stage: test
+  image: emundus/tchooz-test-app:latest
+  services:
+    - name: emundus/tchooz-test-db:latest
+      alias: database
+    - redis:7
+  before_script:
+    - php -v
+    - /entrypoint.sh
+    - apache2-foreground &
+  script:
+    - php cli/joomla.php tchooz:language --job=check_health -n
+  only:
+    - merge_request
+
 repo_scanning:
   stage: test
   image:

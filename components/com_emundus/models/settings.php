@@ -2225,6 +2225,9 @@ class EmundusModelSettings extends ListModel
 			}
 		}
 
+		$hCache = new EmundusHelperCache('_system');
+		$hCache->clean();
+
 		return $updated;
 
 	}

@@ -9,7 +9,9 @@
 						"
 						:parameter-object="parameter"
 						:multiselect-options="parameter.multiselectOptions ? parameter.multiselectOptions : null"
+						:help-text-type="'above'"
 						@needSaving="updateParameterToSaving"
+						@valueUpdated="checkConditional"
 					/>
 				</div>
 
@@ -95,7 +97,6 @@ export default {
 
 		this.getEmundusParams();
 	},
-	mounted() {},
 	methods: {
 		getEmundusParams() {
 			axios.get('index.php?option=com_emundus&controller=settings&task=getemundusparams').then((response) => {
@@ -140,21 +141,6 @@ export default {
 			}
 		},
 
-		displayHelp(message) {
-			Swal.fire({
-				title: this.translate('COM_EMUNDUS_SWAL_HELP_TITLE'),
-				text: this.translate(message),
-				showCancelButton: false,
-				confirmButtonText: this.translate('COM_EMUNDUS_SWAL_OK_BUTTON'),
-				reverseButtons: true,
-				customClass: {
-					title: 'em-swal-title',
-					confirmButton: 'em-swal-confirm-button',
-					actions: 'em-swal-single-action',
-				},
-			});
-		},
-
 		async saveSiteSettings() {
 			let params = [];
 			this.parametersUpdated.forEach((param) => {
@@ -178,6 +164,9 @@ export default {
 							title: 'em-swal-title',
 						},
 						timer: 2000,
+					}).then(() => {
+						this.loading = true;
+						this.getEmundusParams();
 					});
 				})
 				.catch(() => {
@@ -199,6 +188,23 @@ export default {
 		async saveMethod() {
 			await this.saveSiteSettings();
 			return true;
+		},
+
+		checkConditional(parameter, oldValue, value) {
+			// Find all fields that are displayed based on the current field
+			let fields = this.parameters.filter((field) => field.displayedOn === parameter.param);
+
+			// Check if the current field is displayed based on the value
+			for (let field of fields) {
+				field.displayed = field.displayedOnValue == value;
+				if (!field.displayed) {
+					if (field.default) {
+						field.value = field.default;
+					} else {
+						field.value = '';
+					}
+				}
+			}
 		},
 	},
 	computed: {
