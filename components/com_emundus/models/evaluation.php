@@ -34,6 +34,7 @@ require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_SITE . '/components/com_emundus/models/files.php');
 
 use Joomla\CMS\Factory;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\Emails\TagEntity;
 use Tchooz\Enums\Emails\TagTypeEnum;
 use Tchooz\Traits\TraitDispatcher;
@@ -2913,6 +2914,28 @@ class EmundusModelEvaluation extends JModelList
 		return $letter_ids;
 	}
 
+	public function getLetters(): array
+	{
+		$letters = [];
+
+		$query = $this->db->createQuery();
+
+		try
+		{
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_letters'));
+
+			$this->db->setQuery($query);
+			$letters = $this->db->loadObjectList();
+		}
+		catch (Exception $e)
+		{
+			Log::add('Error in getLetters: ' . $e->getMessage(), Log::ERROR, 'com_emundus.error');
+		}
+
+		return $letters;
+	}
+
 	/// get uploaded files by document type and fnums
 	public function getFilesByAttachmentFnums($attachment, $fnums = array())
 	{
@@ -3417,24 +3440,25 @@ class EmundusModelEvaluation extends JModelList
 		$lettersToGenerateCopy = $lettersToGenerate;
 		$query = $this->db->createQuery();
 
+		PluginHelper::importPlugin('emundus');
+		$dispatcher         = Factory::getApplication()->getDispatcher();
 
 		if (!Factory::getApplication()->isCli())
 		{
-			PluginHelper::importPlugin('emundus');
 			PluginHelper::importPlugin('actionlog');
-			$dispatcher = Factory::getApplication()->getDispatcher();
-			$onCallEventHandler = new GenericEvent(
-				'onCallEventHandler',
-				[
-					'onBeforeGenerateLetters',
-					[
-						'letters' => &$lettersToGenerate,
-						'fnum' => $fnum,
-					]
-				]
-			);
-			$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 		}
+
+		$onCallEventHandler = new GenericEvent(
+			'onCallEventHandler',
+			[
+				'onBeforeGenerateLetters',
+				[
+					'letters' => &$lettersToGenerate,
+					'fnum'    => $fnum,
+				]
+			]
+		);
+		$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 
 		// Make sure that only letters that were originally selected are generated
 		// This is to avoid issues with plugins that add letters
@@ -3453,7 +3477,6 @@ class EmundusModelEvaluation extends JModelList
 		{
 			$lettersToGenerate = $lettersToGenerateCopy;
 		}
-
 
 		if (!class_exists('EmundusModelFiles'))
 		{
@@ -4264,6 +4287,27 @@ class EmundusModelEvaluation extends JModelList
 			{
 				$logs_params = ['created' => ['filename' => $letter->title]];
 				EmundusModelLogs::log($user->id, (int)$fnumInfo[$fnum]['applicant_id'], $fnum, 27, 'c', 'COM_EMUNDUS_ACCESS_LETTERS', json_encode($logs_params, JSON_UNESCAPED_UNICODE));
+
+				$context = new EventContextEntity(
+					$user,
+					[$fnum],
+					[$fnumInfo[$fnum]['applicant_id']],
+					[
+						'letter_id' => $letter->id,
+						'attachment_id' => $letter->attachment_id,
+					]
+				);
+
+				$onCallEventHandler = new GenericEvent(
+					'onCallEventHandler',
+					[
+						'onAfterGenerateLetter',
+						[
+							'context' => $context,
+						]
+					]
+				);
+				$dispatcher->dispatch('onCallEventHandler', $onCallEventHandler);
 			}
 		}
 
