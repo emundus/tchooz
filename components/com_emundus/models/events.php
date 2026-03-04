@@ -2931,6 +2931,19 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 		try
 		{
+			$query = $this->db->getQuery(true);
+
+			// Get registrants directly associated
+			$query->clear()
+				->select('er.id')
+				->from($this->db->quoteName('#__emundus_registrants', 'er'))
+				->leftJoin($this->db->quoteName('#__emundus_registrants_users', 'esru') . ' ON ' . $this->db->quoteName('esru.registrant') . ' = ' . $this->db->quoteName('er.id'))
+				->leftJoin($this->db->quoteName('#__emundus_setup_slot_users', 'essu') . ' ON ' . $this->db->quoteName('essu.slot') . ' = ' . $this->db->quoteName('er.slot'))
+				->where('esru.user = ' . $user_id)
+				->orWhere('essu.user = ' . $user_id);
+			$this->db->setQuery($query);
+			$registrants_ids_associated = $this->db->loadColumn();
+
 			// $booking_acl = EmundusHelperAccess::getActionIdFromActionName('booking');
 
 			require_once(JPATH_SITE . '/components/com_emundus/models/programme.php');
@@ -2955,8 +2968,6 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$offset = ($page - 1) * $limit;
 			}
 
-			$query = $this->db->getQuery(true);
-
 			$columns = [
 				$this->db->quoteName('er.id'),
 				$this->db->quoteName('er.ccid'),
@@ -2979,7 +2990,8 @@ class EmundusModelEvents extends BaseDatabaseModel
 				$this->db->quoteName('ese.color'),
 			];
 
-			$query->select('count(distinct er.id)')
+			$query->clear()
+				->select('count(distinct er.id)')
 				->from($this->db->quoteName('#__emundus_registrants', 'er'))
 				->leftJoin($this->db->quoteName('#__emundus_setup_events', 'ese') . ' ON ' . $this->db->quoteName('ese.id') . ' = ' . $this->db->quoteName('er.event'))
 				->leftJoin($this->db->quoteName('data_events_location', 'del') . ' ON ' . $this->db->quoteName('del.id') . ' = ' . $this->db->quoteName('ese.location'))
@@ -2994,8 +3006,20 @@ class EmundusModelEvents extends BaseDatabaseModel
 
 			if (!empty($programs))
 			{
-				$query->where($this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')');
+				$programsCondition = $this->db->quoteName('esc.training') . ' IN (' . implode(',', $this->_db->quote($programs)) . ')';
+				if(!empty($registrants_ids_associated))
+				{
+					$programsCondition = '(' . $programsCondition . ' OR er.id IN (' . implode(',', $registrants_ids_associated) . '))';
+				}
+
+				$query->where($programsCondition);
 			}
+			elseif(!empty($registrants_ids_associated))
+			{
+				$query->where('er.id IN (' . implode(',', $registrants_ids_associated) . ')');
+			}
+
+			// Add a or where to get the events that are not linked to any program but that the user has access to
 
 			if (!empty($event))
 			{

@@ -117,6 +117,11 @@ class EmundusUserEntity
 		$this->anonym = $anonym;
 	}
 
+	public function getFullname(): string
+	{
+		return $this->getFirstname() . ' ' . $this->getLastname();
+	}
+
 	public function __serialize(): array
 	{
 		return [

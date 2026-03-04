@@ -29,33 +29,44 @@ class EmundusUserFactory implements DBFactory
 		$this->userFactory = Factory::getContainer()->get(UserFactoryInterface::class);
 	}
 
+	public function fromDbObjects(array $dbObjects, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): array
+	{
+		$entities = [];
+		foreach ($dbObjects as $dbObject)
+		{
+			$entities[] = $this->fromDbObject($dbObject, $withRelations, $exceptRelations, $db);
+		}
+
+		return $entities;
+	}
+
 	public function fromDbObject(object|array $dbObject, $withRelations = true, $exceptRelations = [], ?DatabaseDriver $db = null): EmundusUserEntity
 	{
-		if (is_object($dbObject))
+		if (is_array($dbObject))
 		{
-			$dbObject = (array) $dbObject;
+			$dbObject = (object) $dbObject;
 		}
 
 		$user         = null;
 		$userCategory = null;
 		if ($withRelations)
 		{
-			if (!empty($dbObject['user_id']))
+			if (!empty($dbObject->user_id))
 			{
-				$user = $this->userFactory->loadUserById($dbObject['user_id']);
+				$user = $this->userFactory->loadUserById($dbObject->user_id);
 			}
 			$userCategoryRepository = new UserCategoryRepository();
-			$userCategory           = $userCategoryRepository->getCategoryById((int) $dbObject['user_category']);
+			$userCategory           = $userCategoryRepository->getCategoryById((int) $dbObject->user_category);
 		}
 
 		return new EmundusUserEntity(
-			id: (int) $dbObject['id'],
+			id: (int) $dbObject->id,
 			user: $user,
-			firstname: $dbObject['firstname'],
-			lastname: $dbObject['lastname'],
-			profile_picture: $dbObject['profile_picture'] ?? null,
+			firstname: $dbObject->firstname,
+			lastname: $dbObject->lastname,
+			profile_picture: $dbObject->profile_picture ?? null,
 			user_category: $userCategory,
-			is_anonym: isset($dbObject['is_anonym']) && $dbObject['is_anonym'] == 1
+			is_anonym: isset($dbObject->is_anonym) && $dbObject->is_anonym == 1
 		);
 	}
 }

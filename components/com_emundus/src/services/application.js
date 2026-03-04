@@ -144,4 +144,15 @@ export default {
 			};
 		}
 	},
+
+	async getApplicationChoicesMoreFilters() {
+		try {
+			return await client.get('getapplicationchoicesmorefilters');
+		} catch (e) {
+			return {
+				status: false,
+				error: e.message,
+			};
+		}
+	},
 };

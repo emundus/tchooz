@@ -968,6 +968,8 @@ class EmundusControllerEvents extends EmundusController
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 			}
 		}
+		$response['code'] = 200;
+		$response['status'] = true;
 
 		$this->sendJsonResponse($response);
 	}
@@ -1027,6 +1029,8 @@ class EmundusControllerEvents extends EmundusController
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 			}
 		}
+		$response['code'] = 200;
+		$response['status'] = true;
 
 		$this->sendJsonResponse($response);
 	}

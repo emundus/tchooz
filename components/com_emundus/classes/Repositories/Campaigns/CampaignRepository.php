@@ -61,7 +61,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		parent::__construct($withRelations, $exceptRelations, 'campaign', self::class);
 		$this->factory = new CampaignFactory();
 
-		$this->cache     = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
+		$this->cache = Factory::getContainer()->get(CacheControllerFactoryInterface::class)
 			->createCacheController('output', ['defaultgroup' => 'com_emundus.campaigns']);
 	}
 
@@ -93,7 +93,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 			$elements = $this->getCampaignMoreElements();
 
-			if(empty($result->getTotalItems()))
+			if (empty($result->getTotalItems()))
 			{
 				if (empty($lim) || $lim == 'all')
 				{
@@ -464,9 +464,9 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		$query = $this->db->getQuery(true);
 		$query->select($this->columns)
 			->from($this->db->quoteName($this->tableName, $this->alias))
-			->where('('.$this->alias . '.parent_id IS NULL OR ' . $this->alias . '.parent_id = 0)')
+			->where('(' . $this->alias . '.parent_id IS NULL OR ' . $this->alias . '.parent_id = 0)')
 			->order($this->alias . '.label ASC');
-		if(!empty($programs))
+		if (!empty($programs))
 		{
 			$query->where($this->alias . '.training IN (' . implode(',', array_map([$this->db, 'quote'], $programs)) . ')');
 		}
@@ -494,24 +494,32 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	{
 		$children_campaigns = [];
 
-		$query = $this->db->getQuery(true);
-		$query->select($this->columns)
-			->from($this->db->quoteName($this->tableName, $this->alias))
-			->order($this->alias . '.label ASC');
-		if(!empty($parent_id))
+		$campaigns = [];
+		$cacheKey  = 'children_campaigns_' . $parent_id;
+		if ($this->cache->contains($cacheKey))
 		{
-			$query->where($this->alias . '.parent_id = ' . $this->db->quote($parent_id));
+			$campaigns = $this->cache->get($cacheKey);
 		}
-		$this->db->setQuery($query);
-		$campaigns = $this->db->loadAssocList();
+
+		if (empty($campaigns))
+		{
+			$query = $this->db->getQuery(true);
+			$query->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->order($this->alias . '.label ASC');
+			if (!empty($parent_id))
+			{
+				$query->where($this->alias . '.parent_id = ' . $this->db->quote($parent_id));
+			}
+			$this->db->setQuery($query);
+			$campaigns = $this->db->loadObjectList();
+
+			$this->cache->store($campaigns, $cacheKey);
+		}
 
 		if (!empty($campaigns))
 		{
-			foreach ($campaigns as $campaign)
-			{
-				$campaign_entity      = $this->factory->fromDbObject($campaign, $this->withRelations);
-				$children_campaigns[] = $campaign_entity;
-			}
+			$children_campaigns = $this->factory->fromDbObjects($campaigns, $this->withRelations);
 		}
 
 		return $children_campaigns;
@@ -528,7 +536,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		$elements = $this->getCampaignMoreElements();
-		if(empty($campaign))
+		if (empty($campaign))
 		{
 			$query = $this->db->getQuery(true);
 			$query->select($this->columns)
@@ -563,7 +571,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			$campaign = $this->cache->get($cache_key);
 		}
 
-		if(empty($campaign))
+		if (empty($campaign))
 		{
 			$query = $this->db->getQuery(true);
 			$query->select($this->columns)
@@ -598,7 +606,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 
 		$query = $this->db->getQuery(true);
 
-		$query->select($this->alias . 'id')
+		$query->select($this->alias . '.id')
 			->from($this->db->quoteName($this->tableName, $this->alias))
 			->leftJoin($this->db->quoteName($this->getTableName(ProgramRepository::class), 'p') . ' ON p.code = ' . $this->alias . '.training')
 			->where('p.id IN (' . implode(',', array_map('intval', $programs)) . ')');
@@ -630,7 +638,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			$query = $this->db->createQuery();
 			$query->select('DISTINCT ' . $this->alias . '.*')
 				->from($this->db->quoteName($this->tableName, $this->alias))
-				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = ' . $this->alias . '.id' )
+				->leftJoin($this->db->quoteName('#__emundus_campaign_candidature', 'ecc') . ' ON ecc.campaign_id = ' . $this->alias . '.id')
 				->where('ecc.fnum IN (' . implode(',', $fnums) . ')');
 
 			try
@@ -702,7 +710,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 		}
 
 		$programs_ids = array_unique($programs_ids);
-		if(!empty($programs_ids))
+		if (!empty($programs_ids))
 		{
 			$this->cache->store($programs_ids, $cache_key);
 		}
@@ -774,7 +782,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 				}
 
 				$tables = array_unique($tables);
-				if(!empty($tables))
+				if (!empty($tables))
 				{
 					$this->cache->store($tables, $cache_key);
 				}
@@ -817,7 +825,8 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 	}
 
 	public function buildQuery(): QueryInterface
-	{}
+	{
+	}
 
 	public function flush(CampaignEntity $campaignEntity): bool
 	{

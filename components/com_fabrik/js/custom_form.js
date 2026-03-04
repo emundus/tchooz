@@ -134,7 +134,7 @@ requirejs(['fab/fabrik'], function () {
     var user_items = document.querySelectorAll('#userDropdown a');
     var flow_items = document.querySelectorAll('.mod_emundus_flow___intro a');
     var footer_items = document.querySelectorAll('#g-footer a');
-    var back_button_form = document.querySelectorAll('.fabrikActions .goback-btn');
+    var back_button_form = document.querySelectorAll('.goback-btn');
 
     links = [...checklist_items, ...menu_items, ...user_items, ...flow_items, ...logo, ...footer_items, ...back_button_form];
 

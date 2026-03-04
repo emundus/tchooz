@@ -23,12 +23,17 @@ use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\CMS\User\UserHelper;
 use Joomla\Component\Users\Administrator\Model\MethodsModel;
+use Tchooz\Attributes\AccessAttribute;
+use Tchooz\Entities\List\AdditionalColumn;
+use Tchooz\Entities\User\EmundusUserEntity;
+use Tchooz\Enums\AccessLevelEnum;
 use Tchooz\Enums\CrudEnum;
+use Tchooz\Enums\List\ListDisplayEnum;
 use Tchooz\Repositories\Actions\ActionRepository;
 use Tchooz\Repositories\User\EmundusUserRepository;
 use Tchooz\EmundusResponse;
 use Tchooz\Services\UploadService;
-use Tchooz\Traits\TraitResponse;
+use Tchooz\Controller\EmundusController;
 
 /**
  * Emundus Component Users Controller
@@ -37,9 +42,8 @@ use Tchooz\Traits\TraitResponse;
  * @subpackage eMundus
  * @since      2.0.0
  */
-class EmundusControllerUsers extends BaseController
+class EmundusControllerUsers extends EmundusController
 {
-	use TraitResponse;
 	/**
 	 * Emundus user session
 	 *
@@ -47,14 +51,6 @@ class EmundusControllerUsers extends BaseController
 	 * @since version 1.0.0
 	 */
 	private $euser;
-
-	/**
-	 * Joomla user
-	 *
-	 * @var User|JUser|mixed|null
-	 * @since version 1.0.0
-	 */
-	private ?User $user;
 
 	/**
 	 * Constructor.
@@ -68,17 +64,15 @@ class EmundusControllerUsers extends BaseController
 	{
 		parent::__construct($config);
 
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/filters.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/files.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/access.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/helpers/date.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/users.php');
-		require_once(JPATH_BASE . DS . 'components' . DS . 'com_emundus' . '/models/logs.php');
+		require_once(JPATH_BASE . '/components/com_emundus/helpers/filters.php');
+		require_once(JPATH_BASE . '/components/com_emundus/helpers/files.php');
+		require_once(JPATH_BASE . '/components/com_emundus/helpers/access.php');
+		require_once(JPATH_BASE . '/components/com_emundus/helpers/date.php');
+		require_once(JPATH_BASE . '/components/com_emundus/models/users.php');
+		require_once(JPATH_BASE . '/components/com_emundus/models/logs.php');
 		require_once(JPATH_SITE . '/components/com_emundus/helpers/date.php');
 
-		$this->user = $this->app->getIdentity();
-		$session    = $this->app->getSession();
-
+		$session     = $this->app->getSession();
 		$this->euser = $session->get('emundusUser');
 	}
 
@@ -159,7 +153,8 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 
-		if (empty($profile)) {
+		if (empty($profile))
+		{
 			$profile = 1000;
 		}
 
@@ -183,15 +178,15 @@ class EmundusControllerUsers extends BaseController
 		$user->block         = 0;
 		$user->authProvider  = $auth_provider == 1 ? 'sso' : '';
 
-		$other_param['firstname']    = $firstname;
-		$other_param['lastname']     = $lastname;
-		$other_param['profile']      = $profile;
-		$other_param['em_oprofiles'] = !empty($oprofiles) ? explode(',', $oprofiles) : $oprofiles;
-		$other_param['univ_id']      = $univ_id;
-		$other_param['em_groups']    = !empty($groups) ? explode(',', $groups) : $groups;
-		$other_param['em_campaigns'] = !empty($campaigns) ? explode(',', $campaigns) : $campaigns;
-		$other_param['news']         = $news;
-		$other_param['user_category']         = $user_category;
+		$other_param['firstname']     = $firstname;
+		$other_param['lastname']      = $lastname;
+		$other_param['profile']       = $profile;
+		$other_param['em_oprofiles']  = !empty($oprofiles) ? explode(',', $oprofiles) : $oprofiles;
+		$other_param['univ_id']       = $univ_id;
+		$other_param['em_groups']     = !empty($groups) ? explode(',', $groups) : $groups;
+		$other_param['em_campaigns']  = !empty($campaigns) ? explode(',', $campaigns) : $campaigns;
+		$other_param['news']          = $news;
+		$other_param['user_category'] = $user_category;
 
 		$m_users        = $this->getModel('Users');
 		$acl_aro_groups = $m_users->getDefaultGroup($profile);
@@ -224,7 +219,7 @@ class EmundusControllerUsers extends BaseController
 			$email_tmpl = 'new_account_sso';
 		}
 
-		if($do_not_notify != 1)
+		if ($do_not_notify != 1)
 		{
 			$m_users->passwordReset($data, '', '', true, $email_tmpl);
 		}
@@ -574,8 +569,8 @@ class EmundusControllerUsers extends BaseController
 
 		if (EmundusHelperAccess::asAdministratorAccessLevel($this->user->id) || EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
 		{
-			$users = $this->input->getString('users', null);
-			$state = $this->input->getInt('state', null);
+			$users   = $this->input->getString('users', null);
+			$state   = $this->input->getInt('state', null);
 			$m_users = $this->getModel('Users');
 
 			if ($users === 'all')
@@ -621,7 +616,9 @@ class EmundusControllerUsers extends BaseController
 				}
 
 				$response = new EmundusResponse(true, $msg, 200);
-			} else {
+			}
+			else
+			{
 				$response = new EmundusResponse(false, Text::_('COM_EMUNDUS_ERROR_OCCURED'), 500);
 			}
 		}
@@ -729,19 +726,19 @@ class EmundusControllerUsers extends BaseController
 
 			if ($res === true)
 			{
-				$response['code'] = 200;
+				$response['code']   = 200;
 				$response['status'] = true;
-				$response['msg'] = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
+				$response['msg']    = Text::_('COM_EMUNDUS_GROUPS_USERS_AFFECTED_SUCCESS');
 			}
 			elseif ($res === 0)
 			{
 				$response['code'] = 200;
-				$response['msg'] = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
+				$response['msg']  = Text::_('COM_EMUNDUS_GROUPS_NO_GROUP_AFFECTED');
 			}
 			else
 			{
 				$response['code'] = 500;
-				$response['msg'] = Text::_('COM_EMUNDUS_ERROR_OCCURED');
+				$response['msg']  = Text::_('COM_EMUNDUS_ERROR_OCCURED');
 			}
 		}
 
@@ -760,23 +757,25 @@ class EmundusControllerUsers extends BaseController
 			return;
 		}
 
-		$newuser['id']               = $this->input->getInt('id', 0);
+		$newuser['id'] = $this->input->getInt('id', 0);
 
 
 		// if is anonym, do not update firstname, lastname, username, login
-		$m_users = $this->getModel('Users');
+		$m_users      = $this->getModel('Users');
 		$current_user = $m_users->getUserInfos($newuser['id']);
 		if ($current_user['is_anonym'] == 1)
 		{
-			$newuser['firstname']        = $current_user['firstname'];
-			$newuser['lastname']         = $current_user['lastname'];
-			$newuser['username']         = $current_user['login'];
-			$newuser['email']            = $current_user['email'];
-		} else {
-			$newuser['firstname']        = $this->input->getString('firstname');
-			$newuser['lastname']         = $this->input->getString('lastname');
-			$newuser['username']         = $this->input->getString('login');
-			$newuser['email']            = $this->input->getString('email');
+			$newuser['firstname'] = $current_user['firstname'];
+			$newuser['lastname']  = $current_user['lastname'];
+			$newuser['username']  = $current_user['login'];
+			$newuser['email']     = $current_user['email'];
+		}
+		else
+		{
+			$newuser['firstname'] = $this->input->getString('firstname');
+			$newuser['lastname']  = $this->input->getString('lastname');
+			$newuser['username']  = $this->input->getString('login');
+			$newuser['email']     = $this->input->getString('email');
 		}
 
 		$newuser['name']             = $newuser['firstname'] . ' ' . $newuser['lastname'];
@@ -803,18 +802,18 @@ class EmundusControllerUsers extends BaseController
 			exit;
 		}
 
-		$res     = $m_users->editUser($newuser);
-		
+		$res = $m_users->editUser($newuser);
+
 		if (EmundusHelperAccess::asAccessAction(EmundusHelperAccess::getActionIdFromActionName('edit_user_role'), 'u', $current_user->id) && !empty($newuser['profile']))
 		{
 			$other_profiles = explode(',', $newuser['em_oprofiles']);
 			$other_profiles = array_values(array_filter($other_profiles));
-			
+
 			$user_groups = explode(',', $newuser['em_groups']);
 			$user_groups = array_values(array_filter($user_groups));
 
-			$edited = $m_users->editUserProfiles((int)$newuser['id'], (int)$newuser['profile'], $other_profiles, $user_groups);
-			
+			$edited = $m_users->editUserProfiles((int) $newuser['id'], (int) $newuser['profile'], $other_profiles, $user_groups);
+
 			if ($edited === false)
 			{
 				$res = false;
@@ -1369,11 +1368,11 @@ class EmundusControllerUsers extends BaseController
 				$target_dir = $root_dir . '/profile/';
 
 				$uploadService = new UploadService($target_dir);
-				$uploaded = $uploadService->upload($file);
+				$uploaded      = $uploadService->upload($file);
 				if (!empty($uploaded))
 				{
 					$userRepository = new EmundusUserRepository();
-					$emundusUser = $userRepository->getByUserId($user->id);
+					$emundusUser    = $userRepository->getByUserId($user->id);
 					$emundusUser->setProfilePicture($uploaded);
 					$flushed = $userRepository->flush($emundusUser);
 
@@ -1619,7 +1618,7 @@ class EmundusControllerUsers extends BaseController
 
 	public function activation_anonym_user()
 	{
-		$app = $this->app;
+		$app     = $this->app;
 		$user_id = $this->input->getInt('user_id', 0);
 		$token   = $this->input->getString('token', '');
 
@@ -1632,7 +1631,8 @@ class EmundusControllerUsers extends BaseController
 			{
 				$activated = $m_users->activateAnonymUser($token, $user_id);
 
-				if ($activated) {
+				if ($activated)
+				{
 					$app->enqueueMessage(Text::_('COM_EMUNDUS_USERS_ANONYM_USER_ACTIVATION_SUCCESS'), 'success');
 					$ip = $app->input->server->get('REMOTE_ADDR');
 					$m_users->connectUserFromToken($token, $ip);
@@ -1831,7 +1831,7 @@ class EmundusControllerUsers extends BaseController
 
 			if (!empty($em_users->profile))
 			{
-				$response['data'] = array_map(function($column) {
+				$response['data'] = array_map(function ($column) {
 					return array_merge((array) $column, ['label' => Text::_($column->label)]);
 				}, $m_users->getColumnsFromProfileForm());
 
@@ -1867,17 +1867,18 @@ class EmundusControllerUsers extends BaseController
 		if (is_string($action))
 		{
 			$actionRepository = new ActionRepository();
-			$action = $actionRepository->getByName($action);
-			if(!empty($action->getId()))
+			$action           = $actionRepository->getByName($action);
+			if (!empty($action->getId()))
 			{
 				$action_id = $action->getId();
 			}
 		}
-		else {
+		else
+		{
 			$action_id = (int) $action;
 		}
 
-		if(!empty($action_id))
+		if (!empty($action_id))
 		{
 			$right = EmundusHelperAccess::asAccessAction($action_id, $crud, $this->user->id, $fnum);
 		}
@@ -1937,14 +1938,15 @@ class EmundusControllerUsers extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id)) {
-			$m_users = $this->getModel('Users');
-			$response['data'] = $m_users->getUserACL($this->user->id);
+		if (EmundusHelperAccess::asPartnerAccessLevel($this->user->id))
+		{
+			$m_users            = $this->getModel('Users');
+			$response['data']   = $m_users->getUserACL($this->user->id);
 			$response['status'] = true;
-			$response['msg'] = Text::_('COM_EMUNDUS_SUCCESS');
+			$response['msg']    = Text::_('COM_EMUNDUS_SUCCESS');
 		}
 
-		echo json_encode((object)$response);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -1952,14 +1954,15 @@ class EmundusControllerUsers extends BaseController
 	{
 		$response = ['status' => false, 'msg' => Text::_('ACCESS_DENIED')];
 
-		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id)) {
-			$m_users = $this->getModel('Users');
-			$response['data'] = array_values($m_users->getProfiles());
+		if (EmundusHelperAccess::asCoordinatorAccessLevel($this->user->id))
+		{
+			$m_users            = $this->getModel('Users');
+			$response['data']   = array_values($m_users->getProfiles());
 			$response['status'] = true;
-			$response['msg'] = Text::_('COM_EMUNDUS_SUCCESS');
+			$response['msg']    = Text::_('COM_EMUNDUS_SUCCESS');
 		}
 
-		echo json_encode((object)$response);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -1998,7 +2001,7 @@ class EmundusControllerUsers extends BaseController
 			$user_ids = (array) json_decode(stripslashes($users));
 		}
 
-		if(!empty($user_ids))
+		if (!empty($user_ids))
 		{
 			// Get the category id
 			$user_category = $this->input->getInt('user_category', 0);
@@ -2008,7 +2011,7 @@ class EmundusControllerUsers extends BaseController
 			$response = ['status' => $affected, 'msg' => Text::_('COM_EMUNDUS_USERS_CATEGORY_AFFECTED')];
 		}
 
-		echo json_encode((object)$response);
+		echo json_encode((object) $response);
 		exit;
 	}
 
@@ -2058,5 +2061,132 @@ class EmundusControllerUsers extends BaseController
 		}
 
 		$this->sendJsonResponse($response);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'user', 'mode' => CrudEnum::READ]
+	])]
+	public function getallexceptions(): EmundusResponse
+	{
+		$sort      = $this->input->getString('sort', 'DESC');
+		$recherche = $this->input->getString('recherche', '');
+		$lim       = $this->input->getInt('lim', 0);
+		$page      = $this->input->getInt('page', 0);
+		$order_by  = $this->input->getString('order_by', 'id');
+		$order_by = $order_by === 'label' ? 'eu.firstname' : $order_by;
+
+		$emundusUserRepository        = new EmundusUserRepository();
+		$exceptions    = $emundusUserRepository->getExceptions($sort, $recherche, $lim, $page, $order_by);
+
+		$exceptionsSerialized = [
+			'datas' => [],
+			'count' => $exceptions->getTotalItems()
+		];
+
+		foreach ($exceptions->getItems() as $key => $exception)
+		{
+			assert($exception instanceof EmundusUserEntity);
+
+			$exceptionObject = new stdClass();
+			$exceptionObject->id = $exception->getUser()->id;
+			$exceptionObject->label = ['fr' => $exception->getUser()->name, 'en' => $exception->getUser()->name];
+
+			$exceptionObject->additional_columns = [
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_ONBOARD_EMAIL'),
+					'',
+					ListDisplayEnum::ALL,
+					'u.email',
+					$exception->getUser()->email
+				),
+			];
+
+			$exceptionsSerialized['datas'][$key] = $exceptionObject;
+		}
+
+		return EmundusResponse::ok($exceptionsSerialized, Text::_('EXCEPTIONS_RETRIEVED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER)]
+	public function getapplicants(): EmundusResponse
+	{
+		$search_query = $this->input->getString('search_query', '');
+		$limit        = $this->input->getInt('limit', 100);
+
+		$emundusUserRepository = new EmundusUserRepository();
+
+		$exceptions    = $emundusUserRepository->getExceptions();
+		$exceptionsIds = [];
+		if(!$exceptions->getTotalItems() > 0)
+		{
+			$exceptionsIds = array_map(function ($exception) {
+				return $exception->getUser()->id;
+			}, $exceptions->getItems());
+		}
+		$applicants    = $emundusUserRepository->getApplicants($search_query, $limit);
+
+		$data = [];
+		foreach ($applicants as $applicant)
+		{
+			if (in_array($applicant->getUser()->id, $exceptionsIds))
+			{
+				continue;
+			}
+
+			$data[] = [
+				'name'  => $applicant->getUser()->name . ' (' . $applicant->getUser()->email . ')',
+				'value' => $applicant->getUser()->id
+			];
+		}
+
+		return EmundusResponse::ok($data);
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'user', 'mode' => CrudEnum::UPDATE]
+	])]
+	public function addexception(): EmundusResponse
+	{
+		$userId        = $this->input->getInt('userId', 0);
+		if(empty($userId))
+		{
+			throw new \InvalidArgumentException('User ID is required.', 400);
+		}
+
+		$emundusUserRepository = new EmundusUserRepository();
+		if(!$emundusUserRepository->addException($userId))
+		{
+			throw new \RuntimeException('Failed to add exception.', 500);
+		}
+
+		return EmundusResponse::ok([], Text::_('EXCEPTION_ADDED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [
+		['id' => 'user', 'mode' => CrudEnum::UPDATE]
+	])]
+	public function deleteexception(): EmundusResponse
+	{
+		$ids        = $this->input->getInt('id', 0);
+		$ids = is_array($ids) ? $ids : [$ids];
+		$ids = array_filter($ids);
+		if(empty($ids))
+		{
+			$ids = $this->input->getString('ids', '');
+			$ids = explode(',', $ids);
+		}
+
+		if(empty($ids))
+		{
+			throw new \InvalidArgumentException('User ID(s) are required.', 400);
+		}
+
+		$emundusUserRepository = new EmundusUserRepository();
+		if(!$emundusUserRepository->deleteExceptions($ids))
+		{
+			throw new \RuntimeException('Failed to add exception.', 500);
+		}
+
+		return EmundusResponse::ok([], Text::_('EXCEPTION_ADDED'));
 	}
 }

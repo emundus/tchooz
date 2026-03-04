@@ -21,8 +21,6 @@ use Tchooz\Traits\TraitTable;
 )]
 class AutomationRepository extends EmundusRepository implements RepositoryInterface
 {
-	use TraitTable;
-
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
 		parent::__construct($withRelations, $exceptRelations, 'automation', self::class);
@@ -451,6 +449,14 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 				foreach ($action->getTargets() as $target) {
 					$clonedTarget = clone $target;
 					$clonedTarget->setId(0); // Reset ID for new insertion
+					$clonedTargetConditions = [];
+					foreach ($target->getConditions() as $targetCondition)
+					{
+						$clonedCondition = clone $targetCondition;
+						$clonedCondition->setId(0); // Reset ID for new insertion
+						$clonedTargetConditions[] = $clonedCondition;
+					}
+					$clonedTarget->setConditions($clonedTargetConditions);
 					$targets[] = $clonedTarget;
 				}
 				$clonedAction->setTargets($targets);
@@ -477,6 +483,10 @@ class AutomationRepository extends EmundusRepository implements RepositoryInterf
 
 			if ($this->flush($clonedAutomation)) {
 				$duplicatedAutomation = $this->getById($clonedAutomation->getId());
+			}
+			else
+			{
+				Log::add('Failed to duplicate automation: ' . $automation->getName(), Log::ERROR, 'com_emundus.automation');
 			}
 		}
 

@@ -193,7 +193,9 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		int $more_form_id = 0,
 		array $campaigns = [],
 		array $orderings = [],
-		array $fileStatuses = []
+		array $fileStatuses = [],
+		array $moreFilters = [],
+		array $ids = []
 	): ListResult
 	{
 		$result = new ListResult([], 0);
@@ -224,20 +226,81 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		$elements   = $this->getChoicesMoreElements($more_form_id);
 		$table_name = $this->getMoreTableName($more_form_id);
 
-		$query = $this->buildQuery('', $user_programs, $state, $campaigns, $search, $orderings, $fileStatuses);
+		$query = $this->buildQuery('', $user_programs, $state, $campaigns, $search, $orderings, $fileStatuses, $ids);
 
+		$application_choices_count = 0;
 		$this->db->setQuery($query);
-		$application_choices_count = sizeof($this->db->loadObjectList());
+		if (empty($moreFilters))
+		{
+			$application_choices_count = sizeof($this->db->loadObjectList());
 
-		$this->db->setQuery($query, $offset, $limit);
+			$this->db->setQuery($query, $offset, $limit);
+		}
 		$application_choices = $this->db->loadObjectList();
 
+		$applicationChoicesObjects = [];
 		foreach ($application_choices as $application_choice)
 		{
 			$application_choice->more_data = $this->getMoreData((int) $application_choice->id, $more_form_id, $elements, $table_name);
+
+			// If there are more filters, apply them on the more data
+			if (!empty($moreFilters))
+			{
+				$match = true;
+				foreach ($moreFilters as $key => $value)
+				{
+					if(!isset($application_choice->more_data[$key]))
+					{
+						$match = false;
+						break;
+					}
+
+					// Value can be array in case of multi select, check if at least one value matches
+					if (is_array($value) && is_array($application_choice->more_data[$key]) && count(array_intersect($application_choice->more_data[$key], $value)) === 0)
+					{
+						$match = false;
+						break;
+					}
+					elseif(is_array($value) && !is_array($application_choice->more_data[$key]) && !in_array($application_choice->more_data[$key], $value))
+					{
+						$match = false;
+						break;
+					}
+					elseif (!is_array($value) && is_array($application_choice->more_data[$key]) && !in_array($value, $application_choice->more_data[$key]))
+					{
+						$match = false;
+						break;
+					}
+					elseif (!is_array($value) && !is_array($application_choice->more_data[$key]) && $application_choice->more_data[$key] != $value)
+					{
+						$match = false;
+						break;
+					}
+				}
+
+				if (!$match)
+				{
+					continue;
+				}
+
+				$application_choices_count++;
+			}
+
+			// Apply limit and offset after filtering
+			if (!empty($moreFilters))
+			{
+				if (empty($limit) || ($application_choices_count > $offset && $application_choices_count <= ($offset + $limit)))
+				{
+					$applicationChoicesObjects[] = $application_choice;
+				}
+			}
+			else
+			{
+				$applicationChoicesObjects[] = $application_choice;
+			}
 		}
 
-		$application_choices_entity  = $this->factory->fromDbObjects($application_choices, $this->withRelations, [], null, $elements);
+		$application_choices_entity  = $this->factory->fromDbObjects($applicationChoicesObjects, $this->withRelations, [], null, $elements);
 
 		$result->setItems($application_choices_entity);
 		$result->setTotalItems($application_choices_count);
@@ -436,7 +499,8 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 		array $campaigns = [],
 		string $search = '',
 		array $orderings = [],
-		array $fileStatuses = []
+		array $fileStatuses = [],
+		array $ids = []
 	): QueryInterface
 	{
 		$query = $this->db->getQuery(true);
@@ -495,6 +559,11 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 		if(!empty($fileStatuses)) {
 			$query->where('af.status IN (' . implode(',', array_map([$this->db, 'quote'], $fileStatuses)) . ')');
+		}
+
+		if(!empty($ids))
+		{
+			$query->where($this->alias . '.id IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
 		}
 
 		return $query;

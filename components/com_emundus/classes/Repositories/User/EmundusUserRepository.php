@@ -11,17 +11,20 @@ namespace Tchooz\Repositories\User;
 
 use Joomla\CMS\Cache\CacheController;
 use Joomla\CMS\Cache\CacheControllerFactoryInterface;
+use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Log\Log;
 use Tchooz\Attributes\TableAttribute;
+use Tchooz\Entities\List\ListResult;
 use Tchooz\Entities\User\EmundusUserEntity;
 use Tchooz\Factories\User\EmundusUserFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
+use Tchooz\Services\ExtensionService;
 use Tchooz\Traits\TraitTable;
 
-#[TableAttribute(table: 'jos_emundus_users', alias: 't', columns: [
+#[TableAttribute(table: 'jos_emundus_users', alias: 'eu', columns: [
 	'id',
 	'user_id',
 	'firstname',
@@ -35,16 +38,6 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 	use TraitTable;
 
 	private EmundusUserFactory $factory;
-
-	private const COLUMNS = [
-		't.id',
-		't.user_id',
-		't.firstname',
-		't.lastname',
-		't.profile_picture',
-		't.user_category',
-		't.is_anonym'
-	];
 
 	public function __construct($withRelations = true, $exceptRelations = [])
 	{
@@ -114,12 +107,7 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 	{
 		$emundus_user_entity = null;
 
-		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->where('t.user_id = ' . $this->db->quote($user_id));
-		$this->db->setQuery($query);
-		$emundus_user = $this->db->loadAssoc();
+		$emundus_user = $this->getItemByField('user_id', $user_id);
 
 		if (!empty($emundus_user)) {
 			$emundus_user_entity = $this->factory->fromDbObject($emundus_user, $this->withRelations);
@@ -128,17 +116,22 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		return $emundus_user_entity;
 	}
 
+	/**
+	 * @param   string  $fnum
+	 *
+	 * @return EmundusUserEntity|null
+	 */
 	public function getByFnum(string $fnum): ?EmundusUserEntity
 	{
 		$emundus_user_entity = null;
 
 		$query = $this->db->getQuery(true);
-		$query->select(self::COLUMNS)
-			->from($this->db->quoteName($this->getTableName(self::class), 't'))
-			->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON af.applicant_id = t.user_id')
+		$query->select($this->columns)
+			->from($this->db->quoteName($this->tableName, $this->alias))
+			->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON af.applicant_id = '.$this->alias.'.user_id')
 			->where('af.fnum = ' . $this->db->quote($fnum));
 		$this->db->setQuery($query);
-		$emundus_user = $this->db->loadAssoc();
+		$emundus_user = $this->db->loadObject();
 
 		if (!empty($emundus_user)) {
 			$emundus_user_entity = $this->factory->fromDbObject($emundus_user, $this->withRelations);
@@ -147,7 +140,12 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		return $emundus_user_entity;
 	}
 
-	public function getUserProgramsCodes($user_id): array
+	/**
+	 * @param   int  $user_id
+	 *
+	 * @return array<string>
+	 */
+	public function getUserProgramsCodes(int $user_id): array
 	{
 		$codes = [];
 
@@ -186,7 +184,12 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 		return $codes;
 	}
 
-	public function getUserProgramsIds($user_id): array
+	/**
+	 * @param   int  $user_id
+	 *
+	 * @return array<int>
+	 */
+	public function getUserProgramsIds(int $user_id): array
 	{
 		$ids = [];
 
@@ -222,6 +225,248 @@ class EmundusUserRepository extends EmundusRepository implements RepositoryInter
 			}
 		}
 
+		$ids = array_unique($ids);
+		$ids = array_map('intval', $ids);
+
 		return $ids;
+	}
+
+	/**
+	 * @param   string  $search
+	 * @param   int     $limit
+	 *
+	 * @return array<EmundusUserEntity>
+	 * @throws \Exception
+	 */
+	public function getApplicants(string $search = '', int $limit = 0): array
+	{
+		$applicants = [];
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->select($this->columns)
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName($this->getTableName(ApplicationFileRepository::class), 'af') . ' ON ' . $this->db->quoteName('af.applicant_id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+				->where($this->db->quoteName('af.published') . ' = 1');
+			if(!empty($search))
+			{
+				$searchEscaped = $this->db->quote('%' . $this->db->escape($search, true) . '%');
+				$query->where('(' . $this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped
+					. ' OR ' . $this->db->quoteName($this->alias . '.lastname') . ' LIKE ' . $searchEscaped
+					. ' OR ' . $this->db->quoteName($this->alias . '.user_id') . ' LIKE ' . $searchEscaped
+					. ')');
+			}
+
+			$this->db->setQuery($query, 0, $limit);
+			$applicantsObjects = $this->db->loadObjectList();
+
+			if (!empty($applicantsObjects))
+			{
+				$applicants = $this->factory->fromDbObjects($applicantsObjects, $this->withRelations);
+			}
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Error fetching applicants: ' . $e->getMessage());
+		}
+
+		return $applicants;
+	}
+
+	/**
+	 * @param   string  $sort
+	 * @param   string  $search
+	 * @param   int     $lim
+	 * @param   int     $page
+	 * @param   string  $order_by
+	 *
+	 * @return ListResult
+	 * @throws \Exception
+	 */
+	public function getExceptions(
+		string $sort = 'DESC',
+		string $search = '',
+		int $lim = 25,
+		int $page = 0,
+		string $order_by = 'eu.id',
+	): ListResult
+	{
+		$result = new ListResult([], 0);
+
+		if (empty($lim) || $lim == 'all')
+		{
+			$limit = '';
+		}
+		else
+		{
+			$limit = $lim;
+		}
+
+		if (empty($page) || empty($limit))
+		{
+			$offset = 0;
+		}
+		else
+		{
+			$offset = ($page - 1) * $limit;
+		}
+
+		$exceptions = [];
+
+		try
+		{
+			$query = $this->db->createQuery();
+			$query->select('DISTINCT ' . $this->alias . '.id')
+				->from($this->db->quoteName($this->tableName, $this->alias))
+				->leftJoin($this->db->quoteName('#__emundus_setup_exceptions', 'ese') . ' ON ' . $this->db->quoteName('ese.user') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+				->leftJoin($this->db->quoteName('#__users', 'u') . ' ON ' . $this->db->quoteName('u.id') . ' = ' . $this->db->quoteName($this->alias . '.user_id'))
+				->where($this->db->quoteName('ese.id') . ' IS NOT NULL');
+
+			if(!empty($search))
+			{
+				$searchEscaped = $this->db->quote('%' . $this->db->escape($search, true) . '%');
+				$query->where('(' . $this->db->quoteName($this->alias . '.firstname') . ' LIKE ' . $searchEscaped
+					. ' OR ' . $this->db->quoteName($this->alias . '.lastname') . ' LIKE ' . $searchEscaped
+					. ' OR ' . $this->db->quoteName($this->alias . '.user_id') . ' LIKE ' . $searchEscaped
+					. ')');
+			}
+			$sort = strtoupper($sort) === 'ASC' ? 'ASC' : 'DESC';
+			$query->order($this->db->quoteName($order_by) . ' ' . $sort);
+
+			$this->db->setQuery($query);
+			$exceptions_count = sizeof($this->db->loadObjectList());
+
+			$query->select($this->columns);
+			$this->db->setQuery($query, $offset, $limit);
+			$exceptionsObjects = $this->db->loadObjectList();
+
+			if(!empty($exceptionsObjects))
+			{
+				$exceptions = $this->factory->fromDbObjects($exceptionsObjects, $this->withRelations);
+			}
+
+			$result->setItems($exceptions);
+			$result->setTotalItems($exceptions_count);
+		}
+		catch (\Exception $e)
+		{
+			throw new \Exception('Error fetching exceptions: ' . $e->getMessage());
+		}
+
+		return $result;
+	}
+
+	public function getExceptionByUserId(int $user_id): ?object
+	{
+		$exception = null;
+
+		try
+		{
+			$query = $this->db->getQuery(true);
+			$query->select('*')
+				->from($this->db->quoteName('#__emundus_setup_exceptions'))
+				->where($this->db->quoteName('user') . ' = ' . $this->db->quote($user_id));
+			$this->db->setQuery($query);
+			$exception = $this->db->loadObject();
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error fetching exception for user ' . $user_id . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.emundususer');
+		}
+
+		return $exception;
+	}
+
+	/**
+	 * @param   int  $user_id
+	 *
+	 * @return bool
+	 */
+	public function addException(int $user_id): bool
+	{
+		$added = false;
+
+		try
+		{
+			$exceptionParameters = ExtensionService::getParamValue('com_emundus', 'id_applicants', []);
+			if(!empty($exceptionParameters) && !is_array($exceptionParameters))
+			{
+				$exceptionParameters = explode(',', $exceptionParameters);
+			}
+
+			// First check if not already exist
+			$exceptionExist = $this->getExceptionByUserId($user_id);
+
+			if(empty($exceptionExist))
+			{
+				$insert = (object) [
+					'date_time' => Factory::getDate()->toSql(),
+					'user'      => $user_id
+				];
+
+				$added = $this->db->insertObject('#__emundus_setup_exceptions', $insert);
+			}
+			else
+			{
+				// Already exist, consider as added
+				$added = true;
+			}
+
+			if($added && !in_array($user_id, $exceptionParameters))
+			{
+				$exceptionParameters[] = $user_id;
+				ExtensionService::updateExtensionParam('com_emundus', 'id_applicants', implode(',', $exceptionParameters));
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error adding exception for user ' . $user_id . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.emundususer');
+		}
+
+		return $added;
+	}
+
+	/**
+	 * @param   array<int>  $ids
+	 *
+	 * @return bool
+	 */
+	public function deleteExceptions(array $ids): bool
+	{
+		$deleted = false;
+
+		try
+		{
+			$exceptionParameters = ExtensionService::getParamValue('com_emundus', 'id_applicants', []);
+			if(!empty($exceptionParameters) && !is_array($exceptionParameters))
+			{
+				$exceptionParameters = explode(',', $exceptionParameters);
+			}
+
+			$query = $this->db->getQuery(true);
+			$query->delete($this->db->quoteName('#__emundus_setup_exceptions'))
+				->where($this->db->quoteName('user') . ' IN (' . implode(',', array_map([$this->db, 'quote'], $ids)) . ')');
+			$this->db->setQuery($query);
+			$deleted = $this->db->execute();
+
+			if($deleted)
+			{
+				foreach ($ids as $id) {
+					if(in_array($id, $exceptionParameters))
+					{
+						$exceptionParameters = array_diff($exceptionParameters, [$id]);
+					}
+				}
+
+				ExtensionService::updateExtensionParam('com_emundus', 'id_applicants', implode(',', $exceptionParameters));
+			}
+		}
+		catch (\Exception $e)
+		{
+			Log::add('Error deleting exceptions with ids ' . implode(',', $ids) . ': ' . $e->getMessage(), Log::ERROR, 'com_emundus.repository.emundususer');
+		}
+
+		return $deleted;
 	}
 }

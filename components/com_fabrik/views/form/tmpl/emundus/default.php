@@ -139,6 +139,8 @@ Text::script('COM_EMUNDUS_ONBOARD_OK');
 Text::script('COM_EMUNDUS_ONBOARD_CANCEL');
 Text::script('COM_EMUNDUS_ACTIONS_DELETE');
 
+Text::script('COM_FABRIK_NO_REPEAT_GROUP_DATA');
+
 if ($pageClass !== '') :
     echo '<div class="' . $pageClass . '">';
 endif;

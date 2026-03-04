@@ -161,6 +161,17 @@
 			</div>
 		</div>
 
+		<hr />
+		<div class="tw-mt-4 tw-flex tw-flex-col">
+			<label class="tw-font-medium">
+				{{ translate('COM_EMUNDUS_SETTINGS_THEME_HIDE_TCHOOZY') }}
+			</label>
+			<select v-model="hideTchoozy" class="tw-rounded-md tw-border tw-border-neutral-300">
+				<option :value="0">{{ translate('JNO') }}</option>
+				<option :value="1">{{ translate('JYES') }}</option>
+			</select>
+		</div>
+
 		<button class="btn btn-primary tw-float-right tw-mt-3" v-if="changes" @click="saveColors">
 			{{ translate('COM_EMUNDUS_ONBOARD_SETTINGS_GENERAL_SAVE') }}
 		</button>
@@ -192,6 +203,7 @@ export default {
 
 			primary: null,
 			secondary: null,
+			hideTchoozy: null,
 			changes: false,
 
 			rgaaState: 0,
@@ -205,23 +217,11 @@ export default {
 		this.changes = false;
 
 		await this.getAppColors();
-		//await this.getVariable();
 
 		this.loading = false;
 	},
 
 	methods: {
-		getVariable() {
-			return new Promise((resolve) => {
-				axios({
-					method: 'get',
-					url: 'index.php?option=com_emundus&controller=settings&task=getappVariablegantry',
-				}).then(() => {
-					resolve(true);
-				});
-			});
-		},
-
 		getAppColors() {
 			return new Promise((resolve) => {
 				axios({
@@ -230,6 +230,7 @@ export default {
 				}).then((rep) => {
 					this.primary = rep.data.primary;
 					this.secondary = rep.data.secondary;
+					this.hideTchoozy = rep.data.hideTchoozy;
 
 					this.rgaaState = this.checkSimilarity(this.primary, this.secondary);
 					this.checkContrast('#FFFFFF', this.primary).then((response) => {
@@ -245,7 +246,7 @@ export default {
 		},
 
 		async saveColors() {
-			let preset = { id: 7, primary: this.primary, secondary: this.secondary };
+			let preset = { id: 7, primary: this.primary, secondary: this.secondary, hideTchoozy: this.hideTchoozy };
 			settingsService.saveColors(preset).then((response) => {
 				if (response.status == 1) {
 					this.changes = false;
@@ -363,6 +364,12 @@ export default {
 				this.checkContrast('#FFFFFF', val).then((response) => {
 					this.contrastSecondary = response;
 				});
+			}
+		},
+		hideTchoozy: function (val, oldVal) {
+			if (oldVal !== null) {
+				this.$emit('needSaving', true);
+				this.changes = true;
 			}
 		},
 	},

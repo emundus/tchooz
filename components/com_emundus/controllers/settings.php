@@ -576,78 +576,78 @@ class EmundusControllersettings extends EmundusController
 		exit;
 	}
 
-	public function getappcolors()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function getappcolors(): void
 	{
-		$user = $this->user;
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
 
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
-		{
-			$result = 0;
-			$tab    = array('status' => $result, 'msg' => JText::_("ACCESS_DENIED"));
-		}
-		else
-		{
-			$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+		$primary   = $yaml['base']['primary-color'];
+		$secondary = $yaml['base']['secondary-color'];
 
-			$primary   = $yaml['base']['primary-color'];
-			$secondary = $yaml['base']['secondary-color'];
-			$tab       = array('status' => '1', 'msg' => JText::_("SUCCESS"), 'primary' => $primary, 'secondary' => $secondary);
-		}
-		echo json_encode((object) $tab);
-		exit;
+		$tchoozy = $yaml['tchoozy'];
+		// If all values of tchoozy is none return true
+		$tchoozy = array_filter($tchoozy, function ($value) {
+			return $value !== 'none';
+		});
+		$hideTchoozy = empty($tchoozy);
+
+		$this->sendJsonResponse([
+			'code' => 200,
+			'status' => true,
+			'primary' => $primary,
+			'secondary' => $secondary,
+			'hideTchoozy' => $hideTchoozy ? 1 : 0,
+		]);
 	}
 
-	public function updatecolor()
+	#[AccessAttribute(accessLevel: AccessLevelEnum::COORDINATOR)]
+	public function updatecolor(): EmundusResponse
 	{
-		$user = $this->user;
-
-		if (!EmundusHelperAccess::asCoordinatorAccessLevel($user->id))
+		$preset = $this->input->getRaw('preset');
+		if (!empty($preset))
 		{
-			$result = 0;
-			$tab    = array('status' => '0', 'msg' => JText::_("ACCESS_DENIED"));
+			$preset = json_decode($preset, true);
 		}
 		else
 		{
-
-			$preset = $this->input->getRaw('preset');
-			if (!empty($preset))
-			{
-				$preset = json_decode($preset, true);
-			}
-			else
-			{
-				$preset = array('primary' => '#000000', 'secondary' => '#000000');
-			}
-
-			$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
-
-			$yaml['base']['primary-color']   = $preset['primary'];
-			$yaml['accent']['color-1']       = $preset['primary'];
-			$yaml['base']['secondary-color'] = $preset['secondary'];
-			$yaml['accent']['color-2']       = $preset['secondary'];
-			$yaml['link']['regular']         = $preset['secondary'];
-			$yaml['link']['hover']           = $preset['secondary'];
-
-			$new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
-
-			file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
-
-			// Recompile Gantry5 css at each update
-			$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
-			if (!empty($dir))
-			{
-				foreach (glob($dir . '/*') as $file)
-				{
-					unlink($file);
-				}
-
-				rmdir($dir);
-			}
-
-			$tab = array('status' => '1', 'msg' => JText::_("SUCCESS"));
+			$preset = array('primary' => '#000000', 'secondary' => '#000000', 'hideTchoozy' => 0);
 		}
-		echo json_encode((object) $tab);
-		exit;
+
+		$yaml = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/config/default/styles.yaml'));
+		$tchoozyConfig = \Symfony\Component\Yaml\Yaml::parse(file_get_contents('templates/g5_helium/custom/blueprints/styles/tchoozy.yaml'));
+
+		$yaml['base']['primary-color']   = $preset['primary'];
+		$yaml['accent']['color-1']       = $preset['primary'];
+		$yaml['base']['secondary-color'] = $preset['secondary'];
+		$yaml['accent']['color-2']       = $preset['secondary'];
+		$yaml['link']['regular']         = $preset['secondary'];
+		$yaml['link']['hover']           = $preset['secondary'];
+		
+		$hideTchoozy = $preset['hideTchoozy'] == 1 ? 'none' : 'default';
+		
+		foreach($yaml['tchoozy'] as $key => $value)
+		{
+			$newValue = $hideTchoozy == 'none' ? 'none' : ($tchoozyConfig['form']['fields'][$key]['default'] ?? 'block');
+			$yaml['tchoozy'][$key] = $newValue;
+		}
+
+		$new_yaml = \Symfony\Component\Yaml\Yaml::dump($yaml, 5);
+
+		file_put_contents('templates/g5_helium/custom/config/default/styles.yaml', $new_yaml);
+
+		// Recompile Gantry5 css at each update
+		$dir = JPATH_BASE . '/templates/g5_helium/custom/css-compiled';
+		if (!empty($dir))
+		{
+			foreach (glob($dir . '/*') as $file)
+			{
+				unlink($file);
+			}
+
+			rmdir($dir);
+		}
+
+		return EmundusResponse::ok([], Text::_('COLORS_UPDATED'));
 	}
 
 	public function getdatasfromtable()

@@ -680,18 +680,16 @@ class EmundusModelEmails extends JModelList
 			$patterns     = array(
 				'/\[ID\]/', '/\[NAME\]/', '/\[EMAIL\]/', '/\[SENDER_MAIL\]/', '/\[USERNAME\]/', '/\[USER_ID\]/', '/\[USER_NAME\]/', '/\[USER_EMAIL\]/', '/\n/', '/\[USER_USERNAME\]/', '/\[PASSWORD\]/',
 				'/\[ACTIVATION_URL\]/', '/\[ACTIVATION_URL_RELATIVE\]/', '/\[SITE_URL\]/', '/\[SITE_NAME\]/',
-				'/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[CURRENT_DATE_ENGLISH\]/', '/\[LOGO\]/'
+				'/\[APPLICANT_ID\]/', '/\[APPLICANT_NAME\]/', '/\[APPLICANT_EMAIL\]/', '/\[APPLICANT_USERNAME\]/', '/\[CURRENT_DATE\]/', '/\[CURRENT_DATE_ENGLISH\]/', '/\[LOGO\]/', '/\[FNUM\]/'
 			);
 			$replacements = array(
 				$user->id, $user->name, $user->email, $current_user->email, $user->username, $current_user->id, $current_user->name, $current_user->email, ' ', $current_user->username, $passwd,
 				$base_url . "index.php?option=com_users&task=registration.activate&token=" . $activation, "index.php?option=com_users&task=registration.activate&token=" . $activation, $base_url, $sitename,
-				$user->id, $user->name, $user->email, $user->username, $currentDate, $currentDateEnglish, $logo
+				$user->id, $user->name, $user->email, $user->username, $currentDate, $currentDateEnglish, $logo, !empty($fnum) ? $fnum : ''
 			);
 
 			if (!empty($fnum)) {
 				$ccid = EmundusHelperFiles::getIdFromFnum($fnum);
-				$patterns[] = '/\[FNUM\]/';
-				$replacements[] = $fnum;
 
 				require_once(JPATH_SITE . DS . 'components/com_emundus/models/files.php');
 				$m_files = new EmundusModelFiles();

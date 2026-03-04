@@ -176,7 +176,7 @@ class ActionGenerateSignatureRequest extends ActionEntity
 						$email     = $resolver->resolveValue($context, $signerParam['email_element']);
 						$lastname  = $resolver->resolveValue($context, $signerParam['lastname_element']);
 						$firstname = $resolver->resolveValue($context, $signerParam['firstname_element']);
-						$phone     = $resolver->resolveValue($context, $signerParam['phone_element']);
+						$phone     = !empty($signerParam['phone_element']) ? $resolver->resolveValue($context, $signerParam['phone_element']) : '';
 					}
 					else
 					{
@@ -184,7 +184,7 @@ class ActionGenerateSignatureRequest extends ActionEntity
 						$email     = $resolver->resolveValue($context, $signerParam['email_element_alias']);
 						$lastname  = $resolver->resolveValue($context, $signerParam['lastname_element_alias']);
 						$firstname = $resolver->resolveValue($context, $signerParam['firstname_element_alias']);
-						$phone     = $resolver->resolveValue($context, $signerParam['phone_element_alias']);
+						$phone     = !empty($signerParam['phone_element_alias']) ? $resolver->resolveValue($context, $signerParam['phone_element_alias']) : '';
 					}
 
 					if (!empty($email))

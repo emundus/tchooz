@@ -1102,7 +1102,7 @@ class FabrikFEModelListfilter extends FabModel
 				continue;
 			}
 
-			$eval = is_array($val) ? FArrayHelper::getValue($val, 'eval', FABRIKFILTER_TEXT) : FABRIKFILTER_TEXT;
+			$eval = FABRIKFILTER_TEXT;
 			$condition = is_array($val) ? FArrayHelper::getValue($val, 'condition', $elementModel->getDefaultFilterCondition())
 				: $elementModel->getDefaultFilterCondition();
 
@@ -1415,7 +1415,7 @@ class FabrikFEModelListfilter extends FabModel
 					}
 				}
 
-				$eval = is_array($value) ? FArrayHelper::getValue($value, 'eval', FABRIKFILTER_TEXT) : FABRIKFILTER_TEXT;
+				$eval = FABRIKFILTER_TEXT;
 
 				if (!is_a($elementModel, 'PlgFabrik_ElementDatabasejoin'))
 				{

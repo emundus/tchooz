@@ -18,6 +18,8 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Plugin\PluginHelper;
+use Tchooz\Repositories\Addons\AddonRepository;
+use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
 
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/access.php');
 require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
@@ -1265,9 +1267,26 @@ class EmundusControllerEvaluation extends BaseController
 			$workflowModel = new EmundusModelWorkflow();
 			
 			$steps = [];
+
+			$applicationChoicesProgram = [];
+			$addonRepository = new AddonRepository();
+			$choicesAddon = $addonRepository->getByName('choices');
+			if($choicesAddon->getValue()->isEnabled())
+			{
+				$applicationChoicesRepository = new ApplicationChoicesRepository();
+				$applicationChoices = $applicationChoicesRepository->getChoicesByFnum($fnum);
+				foreach($applicationChoices as $choice)
+				{
+					$applicationChoicesProgram[] = $choice->getCampaign()->getProgram()->getId();
+				}
+			}
+			
 			// merge steps of workflow and child workflows
 			$steps = array_merge($steps, $workflow->getSteps());
 			foreach ($workflow->getChildWorkflows() as $childWorkflow) {
+				if(!empty($applicationChoicesProgram) && count(array_intersect($applicationChoicesProgram, $childWorkflow->getProgramIds())) === 0) {
+					continue;
+				}
 				$steps = array_merge($steps, $childWorkflow->getSteps());
 			}
 
