@@ -11,6 +11,8 @@ class FieldOptionProvider
 	 * @param   object|null    $repository
 	 * @param   string         $repositoryMethod
 	 * @param   array          $repositoryMethodArgs
+	 * @param   string         $labelMethod
+	 * @param   string         $valueMethod
 	 *
 	 * @throws \Exception
 	 */
@@ -101,6 +103,11 @@ class FieldOptionProvider
 			'controller' => $this->getController(),
 			'method' => $this->getMethodName(),
 			'dependencies' => $this->getDependencies(),
+			'repository' => !empty($this->getRepository()) ? get_class($this->getRepository()) : null,
+			'repositoryMethod' => $this->getRepositoryMethod(),
+			'repositoryMethodArgs' => $this->getRepositoryMethodArgs(),
+			'labelMethod' => $this->getLabelMethod(),
+			'valueMethod' => $this->getValueMethod(),
 		];
 	}
 }
