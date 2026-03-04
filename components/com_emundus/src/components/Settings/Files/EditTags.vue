@@ -211,9 +211,9 @@ export default {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			}).then((newtag) => {
-				this.tags.unshift(newtag.data);
+				this.tags.unshift(newtag.data.data);
 				setTimeout(() => {
-					this.getHexColors(newtag.data);
+					this.getHexColors(newtag.data.data);
 				}, 100);
 
 				this.$emit('updateSaving', false);

@@ -78,7 +78,7 @@ class ChoiceField extends Field
 		return $this->choicesGrouped;
 	}
 
-	public function setOptionsProvider(FieldOptionProvider $provider): self
+	public function setOptionsProvider(?FieldOptionProvider $provider): self
 	{
 		$this->optionsProvider = $provider;
 

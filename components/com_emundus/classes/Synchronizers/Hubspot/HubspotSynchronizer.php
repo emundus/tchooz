@@ -141,6 +141,39 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 								$method   = ApiMethodEnum::PATCH;
 								$objectId = $foundReferences[0]->getReference();
 							}
+							else
+							{
+								$emundusUserRepository = new \Tchooz\Repositories\User\EmundusUserRepository();
+								$emundusUser = $emundusUserRepository->getByUserId($context->getUserId());
+
+								if (!empty($emundusUser))
+								{
+									$hsContacts = $this->searchObjects($mappingObjectDefinition->getExternalReference()->getReferenceObject(), ['email' => $emundusUser->getUser()->email]);
+
+									if (!empty($hsContacts))
+									{
+										$method = ApiMethodEnum::PATCH;
+										$objectId = $hsContacts[0]->id;
+										Log::add('Contact found in Hubspot with email ' . $emundusUser->getUser()->email . ' and Hubspot ID : ' . $objectId, Log::INFO, 'com_emundus.hubspot');
+
+										$externalReference = new ExternalReferenceEntity(
+											0,
+											$mappingObjectDefinition->getExternalReference()->getColumn(),
+											(string) $internalId,
+											(string) $objectId,
+											$mappingEntity->getSynchronizerId(),
+											$mappingObjectDefinition->getExternalReference()->getReferenceObject(),
+											$mappingObjectDefinition->getExternalReference()->getReferenceAttribute()
+										);
+
+										if (!$externalReferenceRepository->flush($externalReference))
+										{
+											Log::add('Error saving external reference for contact with user ID : ' . $context->getUserId() . ' Hubspot Id : ' . $objectId, Log::ERROR, 'com_emundus.hubspot');
+											throw new \Exception('Failed to save external reference for contact with user ID ' . $context->getUserId());
+										}
+									}
+								}
+							}
 						}
 
 						$mappedData = ['properties' => $mappedData];
@@ -264,6 +297,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 										$mapped = true;
 									} else {
 										Log::add('Error on associating objects for target object : ' . $mappingEntity->getTargetObject(), Log::ERROR, 'com_emundus.hubspot');
+										throw new \Exception('Failed to associate objects for target object ' . $mappingEntity->getTargetObject());
 									}
 								} else {
 									$mapped = true;
@@ -298,6 +332,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 
 	/**
 	 * @param   UploadEntity  $upload
+	 * @param   int           $synchronizerId
 	 *
 	 * @return string|null
 	 */
@@ -476,6 +511,38 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 					'intern_id'           => $associationInternalId
 				], 1);
 
+
+				if (empty($foundReferences) && $association->targetObject === 'contact') {
+					$emundusUserRepository = new \Tchooz\Repositories\User\EmundusUserRepository();
+					$emundusUser = $emundusUserRepository->getByUserId($context->getUserId());
+
+					if (!empty($emundusUser))
+					{
+						$hsContacts = $this->searchObjects($associatedMappingObjectDefinition->getExternalReference()->getReferenceObject(), ['email' => $emundusUser->getUser()->email]);
+
+						if (!empty($hsContacts))
+						{
+							$externalReference = new ExternalReferenceEntity(
+								0,
+								$associatedMappingObjectDefinition->getExternalReference()->getColumn(),
+								(string) $associationInternalId,
+								(string) $hsContacts[0]->id,
+								$synchronizerId,
+								$associatedMappingObjectDefinition->getExternalReference()->getReferenceObject(),
+								$associatedMappingObjectDefinition->getExternalReference()->getReferenceAttribute()
+							);
+
+							if ($externalReferenceRepository->flush($externalReference)) {
+								$foundReferences = [$externalReference];
+							}
+							else
+							{
+								Log::add('Error saving external reference for contact association with user ID : ' . $context->getUserId() . ' Hubspot Id : ' . $hsContacts[0]->id, Log::ERROR, 'com_emundus.hubspot');
+							}
+						}
+					}
+				}
+
 				if (!empty($foundReferences))
 				{
 					$targetReference = $foundReferences[0];
@@ -517,10 +584,6 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 						Log::add('Exception on Hubspot association request : ' . $e->getMessage(), Log::ERROR, 'com_emundus.hubspot');
 					}
 				}
-				else
-				{
-					Log::add('No external reference found for associated object : ' . $association->targetObject . ' and internal ID : ' . $associationInternalId, Log::ERROR, 'com_emundus.hubspot');
-				}
 			}
 			else
 			{
@@ -529,5 +592,56 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 		}
 
 		return $associated;
+	}
+
+	/**
+	 * @param   string  $searchedObject
+	 * @param   array   $filters
+	 * @param   int     $limit
+	 * @param   array   $returnedProperties
+	 *
+	 * @return array
+	 * @throws \Exception
+	 */
+	public function searchObjects(string $searchedObject, array $filters, int $limit = 1, array $returnedProperties = ['hs_object_id']): array
+	{
+		$hubspotObjects = [];
+
+		if (!empty($searchedObject))
+		{
+			$hubspotFilters = [];
+			foreach ($filters as $attribute => $value)
+			{
+				$hubspotFilters[] = [
+					'operator'     => 'EQ',
+					'propertyName' => $attribute,
+					'value'        => $value,
+				];
+			}
+
+			$body = [
+				'filterGroups' => [
+					[
+						'filters' => $hubspotFilters
+					]
+				],
+				'limit' => $limit,
+				'properties'   => $returnedProperties
+			];
+
+			$response = $this->post($this->getBaseUrl() . '/crm/v3/objects/' . $searchedObject . '/search', json_encode($body), ['Content-Type' => 'application/json', 'Accept' => 'application/json']);
+			if (!empty($response) && in_array($response['status'], [200, 201]) && !empty($response['data']->results))
+			{
+				$hubspotObjects = $response['data']->results;
+				Log::add('Found ' . count($hubspotObjects) . ' ' . $searchedObject . '(s) in Hubspot with filters ' . json_encode($hubspotFilters), Log::INFO, 'com_emundus.hubspot');
+			}
+			else
+			{
+				Log::add('Error searching contact in Hubspot : ' . json_encode($response) . ' with search ' . json_encode($hubspotFilters), Log::ERROR, 'com_emundus.hubspot');
+				throw new \Exception('Error searching contact in Hubspot with filters ' . json_encode($hubspotFilters));
+			}
+		}
+
+		return $hubspotObjects;
 	}
 }
