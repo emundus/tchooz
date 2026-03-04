@@ -23,6 +23,16 @@ export default {
 				row.source_field = row.source_field.value;
 			}
 
+			row.transformations = row.transformations.map((transformation) => {
+				Object.entries(transformation.parameters).forEach(([key, param]) => {
+					if (typeof param === 'object' && !Array.isArray(param) && param !== null) {
+						transformation.parameters[key] = param.value;
+					}
+				});
+
+				return transformation;
+			});
+
 			return row;
 		});
 
