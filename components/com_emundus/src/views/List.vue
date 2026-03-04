@@ -1206,9 +1206,19 @@ export default {
 
 				if (method === 'get') {
 					response = await fetchClient.get(task, data).catch((error) => {
-						console.log(error);
-
-						this.alertError('COM_EMUNDUS_ERROR', error.message);
+						// if error is a json with a message, display it, otherwise display a generic error message
+						const parsedMessage = JSON.parse(error.message);
+						if (parsedMessage) {
+							if (parsedMessage.message) {
+								this.alertError('COM_EMUNDUS_ERROR', parsedMessage.message);
+							} else if (parsedMessage.msg) {
+								this.alertError('COM_EMUNDUS_ERROR', parsedMessage.msg);
+							} else {
+								this.alertError('COM_EMUNDUS_ERROR', 'COM_EMUNDUS_UNKNOWN_ERROR');
+							}
+						} else {
+							this.alertError('COM_EMUNDUS_ERROR', error.message);
+						}
 						removeLoader();
 					});
 				} else if (method === 'post') {
