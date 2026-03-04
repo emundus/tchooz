@@ -4,6 +4,7 @@ namespace Emundus\Plugin\Console\Tchooz\CliCommand\Commands;
 
 use Emundus\Plugin\Console\Tchooz\CliCommand\TchoozCommand;
 use Joomla\CMS\Factory;
+use Joomla\CMS\Language\LanguageHelper;
 use Joomla\Language\Language;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Joomla\Database\DatabaseAwareTrait;
@@ -93,6 +94,7 @@ class TchoozLanguage extends TchoozCommand
 					JPATH_ROOT . '/components/com_emundus/language/en-GB/en-GB.com_emundus.ini',
 					JPATH_ROOT . '/components/com_emundus/language/fr-FR/fr-FR.com_emundus.ini',
 				];
+				$keys = [];
 				foreach ($filesToDebug as $file)
 				{
 					if (!file_exists($file))
@@ -107,6 +109,39 @@ class TchoozLanguage extends TchoozCommand
 					$debug = $languageClass->debugFile($file);
 					if (!empty($debug)) {
 						throw new \Exception("File $file has errors in lines : " . implode(', ', $languageClass->getErrorFiles()[$file]));
+					}
+
+					$strings = LanguageHelper::parseIniFile($file);
+					if (empty($strings))
+					{
+						throw new \Exception("File $file is empty or has invalid format");
+					}
+					
+					$keys[$file] = array_keys($strings);
+				}
+				
+				// Check if keys are the same in both files
+				$keysToCheck = array_shift($keys);
+				foreach ($keys as $file => $fileKeys)
+				{
+					$missingKeys = array_diff($keysToCheck, $fileKeys);
+					if (!empty($missingKeys))
+					{
+						foreach ($missingKeys as $missingKey)
+						{
+							$this->output->writeln("Missing key : $missingKey\n");
+						}
+						throw new \Exception("File $file has missing keys that found in other files");
+					}
+					$extraKeys = array_diff($fileKeys, $keysToCheck);
+					if (!empty($extraKeys))
+					{
+						foreach ($extraKeys as $extraKey)
+						{
+							$this->output->writeln("Extra key : $extraKey\n");
+						}
+
+						throw new \Exception("File $file has extra keys that not found in other files");
 					}
 				}
 
