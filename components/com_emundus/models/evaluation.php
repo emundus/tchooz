@@ -1273,6 +1273,13 @@ class EmundusModelEvaluation extends JModelList
 			}
 		}
 
+		$selected_evaluators = [];
+		foreach ($applied_filters as $filter) {
+			if($filter['uid'] == 'evaluators' && !empty($filter['value']) && !in_array('all', $filter['value']) && $filter['operator'] === 'IN') {
+				$selected_evaluators = !is_array($filter['value']) ? [$filter['value']] : $filter['value'];
+			}
+		}
+
 		$this->_applicants = [];
 		if (!empty($step_ids))  {
 			foreach ($step_ids as $step_id) {
@@ -1289,6 +1296,10 @@ class EmundusModelEvaluation extends JModelList
 			$list = [];
 			foreach($grouped_list as $fnum => $items) {
 				foreach ($items as $item) {
+					if(!empty($selected_evaluators) && in_array('evaluator_id', array_keys($item)) && !in_array($item['evaluator_id'], $selected_evaluators)) {
+						continue;
+					}
+
 					$list[] = $item;
 				}
 			}
