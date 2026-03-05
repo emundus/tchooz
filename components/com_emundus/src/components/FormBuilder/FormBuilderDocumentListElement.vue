@@ -1,5 +1,5 @@
 <template>
-	<div id="form-builder-document-list-element" @click="canUpdate ? editDocument : null">
+	<div id="form-builder-document-list-element" @click="editDocument">
 		<div class="section-card tw-mb-8 tw-mt-8 tw-flex tw-w-full tw-flex-col">
 			<div class="section-identifier tw-cursor-pointer tw-bg-profile-full">
 				{{ translate('COM_EMUNDUS_FORM_BUILDER_DOCUMENT') }}
@@ -127,6 +127,10 @@ export default {
 			}
 		},
 		editDocument(event) {
+			if (!this.canUpdate) {
+				return;
+			}
+
 			if (event.target.id === 'delete-section') {
 				return;
 			}
