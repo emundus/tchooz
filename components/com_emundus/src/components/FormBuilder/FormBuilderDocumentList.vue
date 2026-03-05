@@ -15,6 +15,7 @@
 							:documentIndex="index + 1"
 							:totalDocuments="requiredDocuments.length"
 							:profile_id="profile_id"
+							:can-update="canUpdate"
 							@edit-document="editDocument(document)"
 							@delete-document="deleteDocument"
 							@move-document="moveDocument"
