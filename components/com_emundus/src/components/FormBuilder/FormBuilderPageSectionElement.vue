@@ -73,7 +73,7 @@
 			</label>
 		</div>
 
-		<div :class="'element-field fabrikElement' + element.plugin" @click="canUpdate ? triggerElementProperties : null">
+		<div :class="'element-field fabrikElement' + element.plugin" @click="triggerElementProperties">
 			<form-builder-element-wysiwig
 				v-if="element.plugin === 'display'"
 				:element="element"
@@ -276,6 +276,10 @@ export default {
 			});
 		},
 		triggerElementProperties() {
+			if (!this.canUpdate) {
+				return;
+			}
+
 			this.$emit('open-element-properties');
 		},
 		cancelDelete(event) {
