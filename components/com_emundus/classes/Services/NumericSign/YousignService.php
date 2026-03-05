@@ -13,6 +13,7 @@ use EmundusModelEmails;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\User\User;
 use Smalot\PdfParser\Parser;
+use Tchooz\Entities\Automation\EventContextEntity;
 use Tchooz\Entities\NumericSign\Request;
 use Tchooz\Entities\NumericSign\YousignRequests;
 use Tchooz\Enums\ApiStatusEnum;
@@ -568,7 +569,8 @@ class YousignService
 								'api_request'      => $yousign_request,
 								'request'          => $request,
 								'application_file' => $application_file,
-								'fnum'             => $application_file['fnum']
+								'fnum'             => $application_file['fnum'],
+								'context'          => new EventContextEntity($this->user, [$application_file['fnum']])
 							]);
 
 							//TODO: Create link between upload_id and signed_upload_id in a reference table

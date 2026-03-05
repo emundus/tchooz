@@ -222,9 +222,9 @@ export default {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			}).then((newstatus) => {
-				this.status.push(newstatus.data);
+				this.status.push(newstatus.data.data);
 				setTimeout(() => {
-					this.getHexColors(newstatus.data);
+					this.getHexColors(newstatus.data.data);
 				}, 100);
 
 				this.$emit('updateSaving', false);

@@ -46,8 +46,9 @@
 					</span>
 					<h2 v-else>{{ title }}</h2>
 
-					<div v-if="canUpdate" class="tw-flex tw-items-center tw-justify-end tw-gap-3">
+					<div class="tw-flex tw-items-center tw-justify-end tw-gap-3">
 						<a
+							v-if="canUpdate"
 							:href="'/' + this.aliasLink"
 							target="_blank"
 							class="em-main-500-color em-hover-main-600 tw-flex tw-items-center tw-gap-1 tw-whitespace-nowrap"

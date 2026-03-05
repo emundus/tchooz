@@ -406,6 +406,8 @@ class EmundusControllerWorkflow extends EmundusController
 				});
 				$response['data'] = $serialized_steps;
 				$response['code'] = 200;
+				$response['status'] = true;
+				$response['message'] = 'Success';
 			}
 			catch (Exception $e)
 			{

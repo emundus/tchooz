@@ -86,6 +86,7 @@ class MappingFactory
 
 	/**
 	 * @return array<Field>
+	 * @throws \Exception
 	 */
 	public function getFormFields(?MappingEntity $mappingEntity = null): array
 	{

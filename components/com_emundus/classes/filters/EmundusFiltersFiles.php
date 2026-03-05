@@ -951,10 +951,11 @@ class EmundusFiltersFiles extends EmundusFilters
 					$at_least_one = true;
 
 					$query->clear()
-						->select('DISTINCT ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
+						->select('ju.id as value, CONCAT(ju.name, " ", ju.email ) as label')
 						->from('#__users as ju')
 						->leftJoin($step->table . ' AS eval_table ON eval_table.evaluator = ju.id')
-						->where('eval_table.step_id = ' . $step->id);
+						->where('eval_table.step_id = ' . $step->id)
+						->group('ju.id');
 
 					try
 					{
@@ -967,6 +968,10 @@ class EmundusFiltersFiles extends EmundusFilters
 					}
 				}
 			}
+			
+			// array unique by value (user id)
+			$evaluators = array_intersect_key($evaluators, array_unique(array_column($evaluators, 'value')));
+			$evaluators = array_values($evaluators);
 
 			if ($at_least_one) {
 				$this->applied_filters[] = [

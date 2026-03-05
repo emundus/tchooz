@@ -218,7 +218,7 @@ export default {
 		if (this.filter.andorOperator === null || typeof this.filter.andorOperator === 'undefined') {
 			this.filter.andorOperator = 'OR';
 		}
-		this.originalFilterValue = this.filter.value;
+		this.originalFilterValue = [...this.filter.value];
 		this.originalFilterOperator = this.filter.operator;
 		this.originalFilterAndorOperator = this.filter.andorOperator;
 	},
@@ -316,7 +316,7 @@ export default {
 			const andorOperatorDifferences = this.filter.andorOperator !== this.originalFilterAndorOperator;
 
 			if (valueDifferences.length > 0 || operatorDifferences || andorOperatorDifferences) {
-				this.originalFilterValue = this.filter.value;
+				this.originalFilterValue = [...this.filter.value];
 				this.originalFilterOperator = this.filter.operator;
 				this.originalFilterAndorOperator = this.filter.andorOperator;
 				this.$emit('filter-changed');

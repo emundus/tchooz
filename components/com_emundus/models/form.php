@@ -2942,7 +2942,9 @@ class EmundusModelForm extends ListModel
 					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields,group_concat(esfrr_fields.params SEPARATOR "|") as params')
 					->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$this->db->quoteName('esfrr_fields.parent_id').' = '.$this->db->quoteName('esfrr.id'))
+					->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.name').' = '.$this->db->quoteName('esfrr_fields.fields'))
 					->where($this->db->quoteName('esfrr.parent_id') . ' = ' . $this->db->quote($js_condition->id))
+					->where($this->db->quoteName('fe.published') . ' <> -2')
 					->group('esfrr.id');
 				$this->db->setQuery($query);
 				$js_condition->actions = $this->db->loadObjectList();
@@ -3083,10 +3085,26 @@ class EmundusModelForm extends ListModel
 				$this->db->execute();
 
 				$query->clear()
-					->delete($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
+					->select('DISTINCT id')
+					->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
 					->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule_id));
 				$this->db->setQuery($query);
-				$this->db->execute();
+				$oldActions = $this->db->loadColumn();
+
+				if(!empty($oldActions))
+				{
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields'))
+						->where($this->db->quoteName('parent_id') . ' IN (' . implode(',', $this->db->quote($oldActions)) . ')');
+					$this->db->setQuery($query);
+					$this->db->execute();
+
+					$query->clear()
+						->delete($this->db->quoteName('#__emundus_setup_form_rules_js_actions'))
+						->where($this->db->quoteName('parent_id') . ' = ' . $this->db->quote($rule_id));
+					$this->db->setQuery($query);
+					$this->db->execute();
+				}
 
 				foreach ($grouped_conditions as $grouped_condition)
 				{

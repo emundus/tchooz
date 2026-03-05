@@ -48,6 +48,14 @@ class EventDefinitionRegistry
 			$reflection = new \ReflectionClass($className);
 			if (!$reflection->isAbstract() && $reflection->isSubclassOf('Tchooz\\Entities\\Automation\\EventsDefinitions\\Defaults\\EventDefinition')) {
 				$instance = $reflection->newInstance();
+
+				// Remove options providers from parameters to avoid keeping references to repositories or other services in the registry, which could lead to memory leaks or unintended side effects.
+				foreach ($instance->getParameters() as $parameter) {
+					if (method_exists($parameter, 'setOptionsProvider')) {
+						$parameter->setOptionsProvider(null);
+					}
+				}
+
 				$this->eventDefinitions[$instance->getName()] = $instance;
 			}
 		}

@@ -2578,12 +2578,12 @@ class EmundusControllerApplication extends EmundusController
 	public function getallapplicationchoices(): EmundusResponse
 	{
 		$filter    = $this->input->getString('filter', '');
-		$sort      = $this->input->getString('sort', 'DESC');
+		$sort      = $this->input->getString('sort', 'ASC');
 		$recherche = $this->input->getString('recherche', '');
 		$lim       = $this->input->getInt('lim', 0);
 		$page      = $this->input->getInt('page', 0);
-		$order_by  = $this->input->getString('order_by', 'sc.id');
-		$order_by  = $order_by == 'label' ? 'sc.label' : $order_by;
+		$order_by  = $this->input->getString('order_by', 'af.fnum');
+		$order_by  = $order_by == 'label' ? 'eccc.order' : $order_by;
 
 		$campaignsFilter = [];
 		$campaigns       = $this->input->getString('campaign', '');
@@ -2689,12 +2689,19 @@ class EmundusControllerApplication extends EmundusController
 
 			$applicationChoiceObject        = new stdClass();
 			$applicationChoiceObject->id    = $applicationChoice->getId();
-			$applicationChoiceObject->label = ['fr' => Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $applicationChoice->getOrder()) . ' - ' . $applicationChoice->getCampaign()->getLabel(), 'en' => Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $applicationChoice->getOrder()) . ' - ' . $applicationChoice->getCampaign()->getLabel()];
+			$applicationChoiceObject->label = ['fr' => $applicationChoice->getOrder(), 'en' => $applicationChoice->getOrder()];
 
 			$labels = $labelRepository->getByFnum($applicationChoice->getApplicationFile()->getFnum());
 
 			// Add more elements
 			$applicationChoiceObject->additional_columns = [
+				new AdditionalColumn(
+					Text::_('COM_EMUNDUS_APPLICATION_CHOICE_CAMPAIGN'),
+					'',
+					ListDisplayEnum::ALL,
+					'c.label',
+					$applicationChoice->getCampaign()->getLabel()
+				),
 				new AdditionalColumn(
 					Text::_('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_STATUS'),
 					'',
@@ -2715,8 +2722,8 @@ class EmundusControllerApplication extends EmundusController
 					Text::_('COM_EMUNDUS_REGISTRANTS_USER'),
 					'',
 					ListDisplayEnum::ALL,
-					'',
-					!empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="' . $files_menu->route . '#' . $applicationChoice->getFnum() . '" target="_blank">' . $applicationChoice->getApplicationFile()->getUser()->name . '</a>' : $applicationChoice->getApplicationFile()->getUser()->name
+					'u.name',
+					!empty($files_menu) ? '<a class="tw-cursor-pointer hover:tw-underline" href="' . $files_menu->route . '#' . $applicationChoice->getFnum() . '" target="_blank">' . $applicationChoice->getUser()->name . '</a>' : $applicationChoice->getUser()->name
 				),
 				new AdditionalColumn(
 					Text::_('COM_EMUNDUS_ACCESS_STATUS'),

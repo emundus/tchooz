@@ -1331,7 +1331,7 @@ class EmundusControllerCampaign extends EmundusController
 		$categoryUser          = $emundusUser->getUserCategory();
 
 		$campaign_parameters = $this->campaignRepository->getParameters();
-		$campaign_choices    = $this->campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 't.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), null, null, [], [], $filters);
+		$campaign_choices    = $this->campaignRepository->getAllCampaigns('ASC', $search, 0, 0, 'esc.label', true, $applicationFile->getCampaignId(), $categoryUser?->getId(), null, null, [], [], $filters);
 		if ($campaign_choices->getTotalItems() > 0)
 		{
 			foreach ($campaign_choices->getItems() as $choice)

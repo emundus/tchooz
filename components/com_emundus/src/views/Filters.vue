@@ -411,6 +411,12 @@ export default {
 			sessionStorage.removeItem('emundus-current-filter');
 			this.selectedRegisteredFilter = 0;
 			this.globalSearch = [];
+
+			// Remove filter that have not default property
+			this.appliedFilters = this.appliedFilters.filter((filter) => {
+				return filter.default === true;
+			});
+
 			// reset applied filters values
 			this.appliedFilters = this.appliedFilters.map((filter) => {
 				filter.operator = '=';

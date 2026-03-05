@@ -45,14 +45,14 @@ else
                     ?>
                 </h3>
 	            <?php
-	            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->user->id, $this->fnum)) {
-		            ?>
-                    <button id="download-evaluation-step-pdf" class="em-mt-8 em-ml-8 tw-cursor-pointer" data-fnum="<?= $this->fnum ?>" data-toggle="tooltip" data-placement="right" title="Télécharger le formulaire d'évaluation">
-                        <span class="material-symbols-outlined tw-cursor-pointer tw-text-white" data-fnum="<?= $this->fnum ?>">file_download</span>
+/*	            if (EmundusHelperAccess::asAccessAction(8, 'c', $this->user->id, $this->fnum)) {
+		            */?><!--
+                    <button id="download-evaluation-step-pdf" class="em-mt-8 em-ml-8 tw-cursor-pointer" data-fnum="<?php /*= $this->fnum */?>" data-toggle="tooltip" data-placement="right" title="Télécharger le formulaire d'évaluation">
+                        <span class="material-symbols-outlined tw-cursor-pointer tw-text-white" data-fnum="<?php /*= $this->fnum */?>">file_download</span>
                     </button>
-		            <?php
-	            }
-	            ?>
+		            --><?php
+/*	            }
+	            */?>
             </div>
             <div class="btn-group pull-right">
                 <button id="em-prev-file" class="btn btn-info btn-xxl"><span class="material-symbols-outlined">arrow_back</span>
@@ -127,7 +127,7 @@ else
         iframeElement.contentWindow.document.body.style.height = '100%';
     }
 
-    document.getElementById('download-evaluation-step-pdf').addEventListener('click', function (e) {
+    /*document.getElementById('download-evaluation-step-pdf').addEventListener('click', function (e) {
         if (typeof export_pdf === 'function') {
             let pdf_elements = {
                 profiles: [
@@ -144,5 +144,5 @@ else
         } else {
             console.error('Function export_pdf does not exist');
         }
-    });
+    });*/
 </script>
