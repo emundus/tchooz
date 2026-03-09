@@ -15,73 +15,73 @@ class TchoozChecklistJob extends TchoozJob
 		[
 			'type'   => 'comment',
 			'word'   => '->updateState(',
-			'advice' => 'It contains updateState, maybe you can replace it with new event handler.',
-			'group'  => 'event_handler'
+			'advice' => 'It contains updateState, maybe you can replace it with new automation builder.',
+			'groups' => ['event_handler', 'form']
 		],
 		[
 			'type'   => 'comment',
 			'word'   => '->sendEmail(',
-			'advice' => 'It contains sendEmail(), maybe you can replace it with new event handler.',
-			'group'  => 'event_handler'
+			'advice' => 'It contains sendEmail(), maybe you can replace it with new automation builder.',
+			'groups' => ['event_handler', 'form']
 		],
 		[
 			'type'   => 'comment',
 			'word'   => '->sendEmailNoFnum(',
-			'advice' => 'It contains sendEmailNoFnum(), maybe you can replace it with new event handler.',
-			'group'  => 'event_handler'
+			'advice' => 'It contains sendEmailNoFnum(), maybe you can replace it with new automation builder.',
+			'groups' => ['event_handler', 'form']
 		],
 		[
 			'type'   => 'comment',
 			'word'   => '->tagFile(',
-			'advice' => 'It contains tagFile(), maybe you can replace it with new event handler.',
-			'group'  => 'event_handler'
+			'advice' => 'It contains tagFile(), maybe you can replace it with new automation builder.',
+			'groups' => ['event_handler', 'form']
 		],
 		[
 			'type'   => 'error',
 			'word'   => 'Factory::getMailer',
-			'advice' => 'It contains Factory::getMailer. You should at least replace it by using sendEmail method.'
+			'advice' => 'It contains Factory::getMailer. You should at least replace it by using sendEmail or sendEmailNoFnum method.'
 		],
 		[
 			'type'   => 'error',
 			'word'   => 'EmundusController',
-			'advice' => 'You should not use controller in event handler code. You should call models methods directly instead.'
+			'advice' => 'You should not use controller in event handler code. You should call Respositories or Models methods directly instead.'
 		],
 		[
-			'type'  => 'warning',
-			'word'  => '_emundus_evaluations___',
+			'type'   => 'warning',
+			'word'   => '_emundus_evaluations___',
 			'advice' => 'Table emundus_evaluations used, it has been replaced by emundus_evaluations_n as it can now contain multiple evaluations for the same file.',
-			'group' => 'evaluations',
-			'table' => 'jos_emundus_evaluations'
+			'groups' => ['evaluations', 'calc', 'event_handler', 'form'],
+			'table'  => 'jos_emundus_evaluations'
 		],
 		[
-			'type'  => 'warning',
-			'word'  => 'emundus_final_grade',
+			'type'   => 'warning',
+			'word'   => 'emundus_final_grade',
 			'advice' => 'Table emundus_final_grade used, it has been replaced by evaluations steps, you should use emundus_evaluations_n instead.',
-			'group' => 'evaluations',
-			'table' => 'jos_emundus_final_grade'
+			'groups' => ['evaluations', 'calc', 'event_handler', 'form'],
+			'table'  => 'jos_emundus_final_grade'
 		],
 		[
-			'type'  => 'warning',
-			'word'  => 'emundus_admission',
+			'type'   => 'warning',
+			'word'   => 'emundus_admission',
 			'advice' => 'Table emundus_admission used, it has been replaced by evaluations steps, you should use emundus_evaluations_n instead.',
-			'group' => 'evaluations',
-			'table' => 'jos_emundus_admission'
+			'groups' => ['evaluations', 'calc', 'event_handler', 'form'],
+			'table'  => 'jos_emundus_admission'
 		],
 		[
-			'type'      => 'error',
-			'word'      => 'rowid',
-			'advice'    => 'Fnum is no more stored in rowid, you should not get it this way. The fnum field in the form should be enough to get the fnum.',
-			'group'     => 'calc'
+			'type'   => 'error',
+			'word'   => 'rowid',
+			'advice' => 'Fnum is no more stored in rowid, you should not get it this way. The fnum field in the form should be enough to get the fnum.',
+			'groups' => ['calc']
 		],
 		[
-			'type'      => 'error',
-			'word'      => 'rowid',
-			'advice'    => 'Fnum is no more stored in rowid, you should not get it this way. Maybe use session instead or EmundusHelperFiles::getFnumFromId() method if no other way.',
-			'group'     => 'fnum'
+			'type'   => 'error',
+			'word'   => 'rowid',
+			'advice' => 'Fnum is no more stored in rowid, you should not get it this way. Maybe use session instead or EmundusHelperFiles::getFnumFromId() method if no other way.',
+			'groups' => ['fnum']
 		],
 		[
-			'type' 	=> 'error',
-			'word' 	=> 'EmundusModelCustom',
+			'type'   => 'error',
+			'word'   => 'EmundusModelCustom',
 			'advice' => 'EmundusModelCustom is deprecated, the functions should be moved to a generic model.',
 		]
 	];
@@ -132,7 +132,7 @@ class TchoozChecklistJob extends TchoozJob
 
 		// catch some keywords that could be replaced or are deprecated
 		foreach (self::KEYWORDS as $keyword) {
-			if ($keyword['group'] && $keyword['group'] !== $group) {
+			if (!empty($keyword['groups']) && in_array($group, $keyword['groups'])) {
 				continue;
 			}
 
@@ -143,7 +143,7 @@ class TchoozChecklistJob extends TchoozJob
 
 				$output->writeln('<' . $keyword['type'] . '> Code [' . implode(',', $matches[0]) . ']: ' . $keyword['advice'] . '</' . $keyword['type'] . '>');
 
-				if ($keyword['group'] === 'evaluations')
+				if (in_array('evaluations', $keyword['groups']))
 				{
 					// todo: search where new element is
 				}
