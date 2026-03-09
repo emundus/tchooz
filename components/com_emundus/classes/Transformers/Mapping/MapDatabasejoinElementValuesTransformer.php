@@ -118,4 +118,13 @@ class MapDatabasejoinElementValuesTransformer extends MappingTranformer
 
 		return $this;
 	}
+
+	public function reset(): self
+	{
+		parent::reset();
+		$this->formId = null;
+		$this->elementId = null;
+
+		return $this;
+	}
 }

@@ -56,7 +56,14 @@ class MappingTransformationsRegistry
 
 	public function getTransformer(MappingTransformersEnum $transformerType): ?MappingTranformer
 	{
-		return $this->transformers[$transformerType->value] ?? null;
+		$transformer = $this->transformers[$transformerType->value] ?? null;
+
+		if ($transformer)
+		{
+			$transformer->reset();
+		}
+
+		return $transformer;
 	}
 
 	public function getTransformersSchemas(): array
