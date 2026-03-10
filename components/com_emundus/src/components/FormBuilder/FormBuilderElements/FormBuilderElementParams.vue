@@ -441,6 +441,23 @@ export default {
 
 						this.element.params['database_join_where_sql'] +=
 							'ORDER BY {thistable}.' + this.element.params['join_key_column'];
+					} else {
+						let orderByColumn = this.element.params['database_join_where_sql']
+							.split('ORDER BY')[1]
+							.trim()
+							.split(' ')[0]
+							.replace('{thistable}.', '')
+							.replace('{shortlang}', 'fr');
+
+						let columnExists = response.data.some((option) => option.COLUMN_NAME === orderByColumn);
+
+						if (!columnExists) {
+							// reset order by clause to use the new join_key_column
+							this.element.params['database_join_where_sql'] =
+								this.element.params['database_join_where_sql'].split('ORDER BY')[0] +
+								'ORDER BY {thistable}.' +
+								this.element.params['join_key_column'];
+						}
 					}
 
 					this.reloadOptionsCascade += 1;
