@@ -168,6 +168,7 @@ class ApplicationChoicesRepository extends EmundusRepository implements Reposito
 
 		$query = $this->db->getQuery(true);
 		$query->select($this->columns)
+			->select('ROW_NUMBER() OVER (PARTITION BY eccc.fnum ORDER BY eccc.order ASC) AS `order`')
 			->from($this->db->quoteName($this->tableName, $this->alias))
 			->where($this->alias . '.id = ' . $this->db->quote($id));
 		$this->db->setQuery($query);
