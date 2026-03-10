@@ -265,6 +265,7 @@ class EmundusControllerEvents extends EmundusController
 			throw new RuntimeException('Error duplicating event');
 		}
 
+        $response['code']     = 200;
 		$response['data']     = $event_id;
 		$response['redirect'] = $redirect_link->route . '?event=' . $event_id;
 		$response['status']   = true;
