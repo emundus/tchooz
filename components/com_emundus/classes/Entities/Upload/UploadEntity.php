@@ -3,7 +3,6 @@
 namespace Tchooz\Entities\Upload;
 
 use DateTimeImmutable;
-use Joomla\CMS\Uri\Uri;
 use Tchooz\Enums\Upload\UploadValidationStatusEnum;
 
 class UploadEntity
@@ -249,7 +248,13 @@ class UploadEntity
 
 	public function getFileInternalPath(): string
 	{
-		return JPATH_SITE. '/images/emundus/files/' . $this->getUserId() . '/' . $this->filename;
+		if (!class_exists('EmundusHelperFiles'))
+		{
+			require_once(JPATH_ROOT . '/components/com_emundus/helpers/files.php');
+		}
+		$applicantId = \EmundusHelperFiles::getApplicantIdFromFnum($this->fnum);
+
+		return JPATH_SITE . '/images/emundus/files/' . $applicantId . '/' . $this->filename;
 	}
 
 	public function getExtension(): string
