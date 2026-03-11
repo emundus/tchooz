@@ -58,20 +58,21 @@ class EmundusControllerEvents extends EmundusController
 		$lim       = $this->input->getInt('lim', 0);
 		$page      = $this->input->getInt('page', 0);
 		$location  = $this->input->getInt('location', 0);
+		$published = $this->input->getString('published', 'all');
 
 		$actionRepository = new ActionRepository();
-		$bookingAction = $actionRepository->getByName('booking');
-		$bookingAccess = EmundusHelperAccess::asAccessAction($bookingAction->getId(), CrudEnum::READ->value, $this->user->id);
+		$bookingAction    = $actionRepository->getByName('booking');
+		$bookingAccess    = EmundusHelperAccess::asAccessAction($bookingAction->getId(), CrudEnum::READ->value, $this->user->id);
 
 		$emundusUserRepository = new EmundusUserRepository();
 
-		$userPrograms  = $emundusUserRepository->getUserProgramsCodes($this->user->id);
-		if(empty($userPrograms))
+		$userPrograms = $emundusUserRepository->getUserProgramsCodes($this->user->id);
+		if (empty($userPrograms))
 		{
 			throw new RuntimeException('User has no program assigned');
 		}
 
-		$events = $this->m_events->getEvents($order_by, $sort, $recherche, $lim, $page, $location, 0, $userPrograms);
+		$events = $this->m_events->getEvents($order_by, $sort, $recherche, $lim, $page, $location, 0, $userPrograms, $published);
 		if (count($events) > 0)
 		{
 			// Search menu by link index.php?option=com_emundus&view=events&layout=registrants
@@ -100,7 +101,8 @@ class EmundusControllerEvents extends EmundusController
 				}
 
 
-				$event->registrant_count = $this->m_events->getRegistrantCount($event->id);
+				$event->registrant_count          = $this->m_events->getRegistrantCount($event->id);
+				$event->upcoming_registrant_count = $this->m_events->getRegistrantCount($event->id, true);
 
 				$event->additional_columns = [
 					[
@@ -111,7 +113,7 @@ class EmundusControllerEvents extends EmundusController
 					],
 					[
 						'key'     => Text::_('COM_EMUNDUS_ONBOARD_EVENTS_COUNT_REGISTRANTS'),
-						'value'   => $bookingAccess ? '<a class="em-profile-color hover:tw-font-semibold hover:tw-underline tw-font-semibold" href="/' . $registrants_menu->route . '?event=' . $event->id . '" style="line-height: unset;font-size: unset;">' . $event->registrant_count . ' ' . Text::_('COM_EMUNDUS_EVENTS_BOOKING') . '</a>': $event->registrant_count . ' ' . Text::_('COM_EMUNDUS_EVENTS_BOOKING'),
+						'value'   => $bookingAccess ? '<a class="em-profile-color hover:tw-font-semibold hover:tw-underline tw-font-semibold" href="/' . $registrants_menu->route . '?event=' . $event->id . '" style="line-height: unset;font-size: unset;">' . $event->registrant_count . ' ' . Text::_('COM_EMUNDUS_EVENTS_BOOKING') . '</a>' : $event->registrant_count . ' ' . Text::_('COM_EMUNDUS_EVENTS_BOOKING'),
 						'classes' => 'go-to-campaign-link',
 						'display' => 'table'
 					],
@@ -265,7 +267,7 @@ class EmundusControllerEvents extends EmundusController
 			throw new RuntimeException('Error duplicating event');
 		}
 
-        $response['code']     = 200;
+		$response['code']     = 200;
 		$response['data']     = $event_id;
 		$response['redirect'] = $redirect_link->route . '?event=' . $event_id;
 		$response['status']   = true;
@@ -969,7 +971,7 @@ class EmundusControllerEvents extends EmundusController
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 			}
 		}
-		$response['code'] = 200;
+		$response['code']   = 200;
 		$response['status'] = true;
 
 		$this->sendJsonResponse($response);
@@ -1030,7 +1032,7 @@ class EmundusControllerEvents extends EmundusController
 				$response['message'] = Text::_('COM_EMUNDUS_ONBOARD_ERROR');
 			}
 		}
-		$response['code'] = 200;
+		$response['code']   = 200;
 		$response['status'] = true;
 
 		$this->sendJsonResponse($response);
@@ -1077,11 +1079,93 @@ class EmundusControllerEvents extends EmundusController
 		$slots       = explode(',', $slots);
 		$assoc_users = explode(',', $assoc_users);
 
-		if(!$this->m_events->getAssocUsers($slots, $assoc_users, $replace))
+		if (!$this->m_events->getAssocUsers($slots, $assoc_users, $replace))
 		{
 			throw new RuntimeException('Error associating users to slots');
 		}
 
 		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_ONBOARD_SUCCESS'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'booking', 'mode' => CrudEnum::UPDATE]])]
+	public function unpublishevent(): EmundusResponse
+	{
+		$events_id = [];
+		$ids       = $this->input->getString('ids', '');
+		if (!empty($ids))
+		{
+			$events_id = explode(',', $ids);
+		}
+		$id = $this->input->getInt('id', 0);
+		if ($id > 0)
+		{
+			$events_id[] = $id;
+		}
+
+		if (empty($events_id))
+		{
+			throw new InvalidArgumentException('Event ID(s) is required');
+		}
+
+		try
+		{
+			$tasks = [];
+			foreach ($events_id as $event_id)
+			{
+				$tasks[] = $this->m_events->togglePublished($event_id, false);
+			}
+
+			if (in_array(false, $tasks))
+			{
+				throw new RuntimeException(Text::_('COM_EMUNDUS_EVENTS_UNPUBLISHED_FAILED'));
+			}
+		}
+		catch (Exception $e)
+		{
+			throw new RuntimeException($e->getMessage());
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_EVENTS_UNPUBLISHED_SUCCESSED'));
+	}
+
+	#[AccessAttribute(accessLevel: AccessLevelEnum::PARTNER, actions: [['id' => 'booking', 'mode' => CrudEnum::UPDATE]])]
+	public function publishevent(): EmundusResponse
+	{
+		$events_id = [];
+		$ids       = $this->input->getString('ids', '');
+		if (!empty($ids))
+		{
+			$events_id = explode(',', $ids);
+		}
+		$id = $this->input->getInt('id', 0);
+		if ($id > 0)
+		{
+			$events_id[] = $id;
+		}
+
+		if(empty($events_id))
+		{
+			throw new InvalidArgumentException('Event ID(s) is required');
+		}
+
+		try
+		{
+			$tasks = [];
+			foreach ($events_id as $event_id)
+			{
+				$tasks[] = $this->m_events->togglePublished($event_id, true);
+			}
+
+			if(in_array(false, $tasks))
+			{
+				throw new RuntimeException(Text::_('COM_EMUNDUS_EVENTS_PUBLISHED_FAILED'));
+			}
+		}
+		catch (Exception $e)
+		{
+			throw new RuntimeException($e->getMessage());
+		}
+
+		return EmundusResponse::ok([], Text::_('COM_EMUNDUS_EVENTS_PUBLISHED_SUCCESSED'));
 	}
 }
