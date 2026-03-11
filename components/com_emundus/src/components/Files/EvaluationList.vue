@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import evaluationService from '@/services/evaluation.js';
 import Tabs from '@/components/Utils/Tabs.vue';
 
 export default {
@@ -71,6 +70,11 @@ export default {
 					.querySelector('body .platform-content > div')
 					.classList.add('eval-form-split-view-container', 'tw-bg-white');
 			}
+
+			let iframeEl = document.querySelector('.iframe-selected-evaluation');
+			if (iframeEl) {
+				iframeEl.style.height = iframeEl.contentWindow.document.body.scrollHeight + 32 + 'px';
+			}
 		},
 	},
 	computed: {
@@ -91,7 +95,6 @@ export default {
 
 <style scoped>
 .iframe-selected-evaluation {
-	height: calc(100vh - 258px);
 	width: 95%;
 }
 </style>
