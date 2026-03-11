@@ -4639,7 +4639,7 @@ class EmundusModelApplication extends ListModel
 		}
 	}
 
-	public function getAttachmentsByFnum($fnum, $ids = null, $attachment_id = null, $profile = null)
+	public function getAttachmentsByFnum($fnum, $ids = null, $attachment_id = null, $profile = null, ?int $current_user_id = null)
 	{
 		try {
 			require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'models' . DS . 'profile.php');
@@ -4648,7 +4648,6 @@ class EmundusModelApplication extends ListModel
 			$m_profiles = new EmundusModelProfile;
 			$m_files    = new EmundusModelFiles;
 			$fnumInfos  = $m_files->getFnumInfos($fnum);
-
 			$profiles_by_campaign = $m_profiles->getProfilesIDByCampaign([$fnumInfos['id']]);
 
 			// TODO : Group attachments by profile and adding profile column in jos_emundus_uploads
@@ -4682,9 +4681,15 @@ class EmundusModelApplication extends ListModel
 			return false;
 		}
 
-		require_once(JPATH_SITE . DS . 'components' . DS . 'com_emundus' . DS . 'helpers' . DS . 'access.php');
+
+		if (empty($current_user_id))
+		{
+			$current_user_id = Factory::getApplication()->getIdentity()->id;
+		}
+
+		require_once(JPATH_SITE . '/components/com_emundus/helpers/access.php');
 		// Sort the docs out that are not allowed to be exported by the user.
-		$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs(JFactory::getUser()->id);
+		$allowed_attachments = EmundusHelperAccess::getUserAllowedAttachmentIDs($current_user_id);
 		if ($allowed_attachments !== true) {
 			foreach ($docs as $key => $doc) {
 				if (!in_array($doc->attachment_id, $allowed_attachments)) {
