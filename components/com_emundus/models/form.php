@@ -2850,7 +2850,8 @@ class EmundusModelForm extends ListModel
 				->from($this->db->quoteName('#__emundus_setup_form_rules'))
 				->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id))
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('js'));
-			if($format == 'raw') {
+
+			if ($format == 'raw') {
 				$query->where($this->db->quoteName('published') . ' = 1');
 			}
 			$this->db->setQuery($query);
@@ -2940,7 +2941,7 @@ class EmundusModelForm extends ListModel
 				}
 
 				$query->clear()
-					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields,group_concat(esfrr_fields.params SEPARATOR "|") as params')
+					->select('esfrr.action,group_concat(DISTINCT(esfrr_fields.fields)) as fields,group_concat(DISTINCT(esfrr_fields.params) SEPARATOR "|") as params')
 					->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$this->db->quoteName('esfrr_fields.parent_id').' = '.$this->db->quoteName('esfrr.id'))
 					->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.name').' = '.$this->db->quoteName('esfrr_fields.fields'))
