@@ -130,7 +130,7 @@ class ActionPrintApplication extends ActionEntity
 					unlink($tmp_link);
 				}
 
-				$result = $mFiles->generatePDF([$fnum], $file_name, 1, 0, 1, 1);
+				$result = $mFiles->generatePDF([$fnum], $file_name, 1, 0, 1, 1, 0, 0, 0, null, null, null, null, [], $context->getTriggeredBy()->id);
 
 				// If export path is defined
 				if (!empty($export_path))

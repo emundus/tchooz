@@ -32,7 +32,7 @@ class Sogecommerce
 			$this->setConfig();
 			$this->setEndpoint();
 		} catch (\Exception $e) {
-			Log::add('Error on Ovh api connection : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sms');
+			Log::add('Error on Sogecommerce connection : ' . $e->getMessage(), Log::ERROR, 'com_emundus.sogecommerce');
 		}
 	}
 
@@ -398,6 +398,15 @@ class Sogecommerce
 				$transaction->setUpdatedAt(date('Y-m-d H:i:s'));
 				$transaction->setUpdatedBy($user_id);
 				$updated = $transaction_repository->saveTransaction($transaction, $user_id);
+
+				if ($updated)
+				{
+					Log::add('Transaction ' . $transaction->getId() . ' updated successfully from Sogecommerce callback', Log::INFO, 'com_emundus.sogecommerce');
+				}
+				else
+				{
+					Log::add('Failed to update transaction ' . $transaction->getId() . ' from Sogecommerce callback', Log::ERROR, 'com_emundus.sogecommerce');
+				}
 			} else {
 				Log::add('Transaction not found or external reference mismatch', Log::ERROR, 'com_emundus.sogecommerce');
 				throw new \Exception('Transaction not found or external reference mismatch');
