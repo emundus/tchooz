@@ -795,11 +795,16 @@ class EmundusController extends JControllerLegacy
 		$this->app->redirect(Route::_($redirect));
 	}
 
-	// *****************switch profile controller************
-	function switchprofile()
+	function switchprofile(): void
 	{
-		include_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
-		include_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		if(!class_exists('EmundusModelProfile'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/profile.php');
+		}
+		if(!class_exists('EmundusModelUsers'))
+		{
+			require_once(JPATH_SITE . '/components/com_emundus/models/users.php');
+		}
 
 		$profile_fnum = $this->input->get('profnum', null);
 		$redirect     = $this->input->get('redirect', null);
@@ -810,14 +815,39 @@ class EmundusController extends JControllerLegacy
 		$session = $this->app->getSession();
 		$aid     = $session->get('emundusUser');
 
-		$m_profile          = $this->getModel('Profile');
+		$m_profile          = new EmundusModelProfile();
 		$applicant_profiles = $m_profile->getApplicantsProfilesArray();
+
 		foreach ($aid->emProfiles as $emProfile) {
 			if ($emProfile->id == $profile) {
 
+				// By default, we unset all the variables that are specific to a fnum, if a fnum is provided, we will fill them with the correct data, otherwise they will stay unset, which means that the user will be able to access the profiles pages but not the application pages.
+				if (isset($aid->start_date))
+					unset($aid->start_date);
+				if (isset($aid->end_date))
+					unset($aid->end_date);
+				if (isset($aid->candidature_posted))
+					unset($aid->candidature_posted);
+				if (isset($aid->candidature_incomplete))
+					unset($aid->candidature_incomplete);
+				if (isset($aid->schoolyear))
+					unset($aid->schoolyear);
+				if (isset($aid->code))
+					unset($aid->code);
+				if (isset($aid->campaign_id))
+					unset($aid->campaign_id);
+				if (isset($aid->campaign_name))
+					unset($aid->campaign_name);
+				if (isset($aid->fnum))
+					unset($aid->fnum);
+				if (isset($aid->status))
+					unset($aid->status);
+				if (isset($aid->fnums))
+					unset($aid->fnums);
+				
 				if (in_array($profile, $applicant_profiles)) {
 					$fnum = $ids[1];
-					if ($fnum !== "") {
+					if ($fnum !== '') {
 						$infos = $m_profile->getFnumDetails($fnum);
 
 						$profile     = $m_profile->getProfileByCampaign($infos['campaign_id']);
@@ -845,7 +875,6 @@ class EmundusController extends JControllerLegacy
 					}
 					else {
 						$aid->profile       = $profile;
-						$aid->fnum          = $ids[1];
 						$profiles           = $m_profile->getProfileById($profile);
 						$aid->applicant     = 1;
 						$aid->profile_label = $profiles["label"];
@@ -853,29 +882,6 @@ class EmundusController extends JControllerLegacy
 					}
 				}
 				else {
-					if (isset($aid->start_date))
-						unset($aid->start_date);
-					if (isset($aid->end_date))
-						unset($aid->end_date);
-					if (isset($aid->candidature_posted))
-						unset($aid->candidature_posted);
-					if (isset($aid->candidature_incomplete))
-						unset($aid->candidature_incomplete);
-					if (isset($aid->schoolyear))
-						unset($aid->schoolyear);
-					if (isset($aid->code))
-						unset($aid->code);
-					if (isset($aid->campaign_id))
-						unset($aid->campaign_id);
-					if (isset($aid->campaign_name))
-						unset($aid->campaign_name);
-					if (isset($aid->fnum))
-						unset($aid->fnum);
-					if (isset($aid->status))
-						unset($aid->status);
-					if (isset($aid->fnums))
-						unset($aid->fnums);
-
 					$aid->profile = $profile;
 
 					$profiles = $m_profile->getProfileById($profile);
@@ -891,6 +897,7 @@ class EmundusController extends JControllerLegacy
 		if (!empty($redirect)) {
 			$this->app->redirect($redirect);
 		}
+
 		echo json_encode((object) (array('status' => true)));
 		exit;
 	}

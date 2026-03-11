@@ -101,6 +101,7 @@ class ParcoursupRepository
 				$this->db->setQuery($this->query);
 				$userId = $this->db->loadResult();
 
+				// Associate Parcoursup category if exist
 				if (empty($userId))
 				{
 					$userId = $this->userRepository->flushUser($datas->getUser());

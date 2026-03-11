@@ -134,7 +134,7 @@ class FormbuilderModelTest extends UnitTestCase
 		$form = $this->db->loadObject();
 
 		$this->assertSame($form->label, 'FORM_' . $prid . '_' . $form_id, 'Le label du formulaire est bien formaté.');
-		$this->assertSame($form->intro, '<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>', "L'introduction du formulaire est bien formaté");
+		$this->assertSame($form->intro, 'FORM_' . $form_id . '_INTRO', "L'introduction du formulaire est bien formaté");
 		$this->assertSame((int)$form->published, 1, 'Le formulaire est bien publié à sa création');
 
 		$deleted = $this->h_dataset->deleteSampleForm($form_id);

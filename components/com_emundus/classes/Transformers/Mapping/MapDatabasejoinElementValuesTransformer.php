@@ -4,6 +4,7 @@ namespace Tchooz\Transformers\Mapping;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
+use Joomla\CMS\Log\Log;
 use Tchooz\Entities\Fields\ChoiceField;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Fabrik\ElementPluginEnum;
@@ -47,7 +48,25 @@ class MapDatabasejoinElementValuesTransformer extends MappingTranformer
 
 			if (empty($mappingRow) || $mappingRow->getSourceType() !== ConditionTargetTypeEnum::FORMDATA)
 			{
-				return $value;
+				if ($mappingRow->getSourceType() === ConditionTargetTypeEnum::ALIASDATA)
+				{
+					if (!class_exists('\EmundusHelperFabrik'))
+					{
+						require_once(JPATH_ROOT . '/components/com_emundus/helpers/fabrik.php');
+					}
+					$elements = \EmundusHelperFabrik::getElementsByAlias($mappingRow->getSourceField());
+
+					if (!empty($elements))
+					{
+						$element = $elements[0];
+						$formId = $element->form_id;
+						$elementId = $element->id;
+					}
+					else
+					{
+						return $value;
+					}
+				}
 			}
 			else
 			{
@@ -80,12 +99,18 @@ class MapDatabasejoinElementValuesTransformer extends MappingTranformer
 						->from($db->quoteName($table))
 						->where($db->quoteName($identifierColumn) . ' = ' . $db->quote($value));
 
-					$db->setQuery($query);
-					$result = $db->loadResult();
+					try {
+						$db->setQuery($query);
+						$result = $db->loadResult();
 
-					if ($result !== null)
+						if ($result !== null)
+						{
+							$value = $result;
+						}
+					}
+					catch (\Exception $e)
 					{
-						$value = $result;
+						Log::add('Error executing database query in MapDatabasejoinElementValuesTransformer: ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 					}
 				}
 			}
@@ -115,6 +140,15 @@ class MapDatabasejoinElementValuesTransformer extends MappingTranformer
 	public function setElementId(int $elementId): self
 	{
 		$this->elementId = $elementId;
+
+		return $this;
+	}
+
+	public function reset(): self
+	{
+		parent::reset();
+		$this->formId = null;
+		$this->elementId = null;
 
 		return $this;
 	}

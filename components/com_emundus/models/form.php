@@ -23,6 +23,7 @@ use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\ListModel;
 use Joomla\Database\DatabaseDriver;
+use Tchooz\Enums\Fabrik\ElementPluginEnum;
 use Tchooz\Factories\Language\LanguageFactory;
 use Tchooz\EmundusResponse;
 use Tchooz\Traits\TraitResponse;
@@ -1362,7 +1363,7 @@ class EmundusModelForm extends ListModel
 	 * @return int
 	 * @throws Exception
 	 */
-	public function createFormEval($user = null, $label = ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], $intro =  ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'])
+	public function createFormEval($user = null, $label = ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], $intro =  ['fr' => '', 'en' => ''])
 	{
 		$new_form_id = 0;
 		require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
@@ -2849,7 +2850,8 @@ class EmundusModelForm extends ListModel
 				->from($this->db->quoteName('#__emundus_setup_form_rules'))
 				->where($this->db->quoteName('form_id') . ' = ' . $this->db->quote($form_id))
 				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('js'));
-			if($format == 'raw') {
+
+			if ($format == 'raw') {
 				$query->where($this->db->quoteName('published') . ' = 1');
 			}
 			$this->db->setQuery($query);
@@ -2939,7 +2941,7 @@ class EmundusModelForm extends ListModel
 				}
 
 				$query->clear()
-					->select('esfrr.action,group_concat(esfrr_fields.fields) as fields,group_concat(esfrr_fields.params SEPARATOR "|") as params')
+					->select('esfrr.action,group_concat(DISTINCT(esfrr_fields.fields)) as fields,group_concat(DISTINCT(esfrr_fields.params) SEPARATOR "|") as params')
 					->from($this->db->quoteName('#__emundus_setup_form_rules_js_actions','esfrr'))
 					->leftJoin($this->db->quoteName('#__emundus_setup_form_rules_js_actions_fields','esfrr_fields').' ON '.$this->db->quoteName('esfrr_fields.parent_id').' = '.$this->db->quoteName('esfrr.id'))
 					->leftJoin($this->db->quoteName('#__fabrik_elements','fe').' ON '.$this->db->quoteName('fe.name').' = '.$this->db->quoteName('esfrr_fields.fields'))
@@ -2958,16 +2960,35 @@ class EmundusModelForm extends ListModel
 						$action->params = !empty($action->params) ? explode('|',$action->params) : [];
 
 						$query->clear()
-							->select('fe.label')
+							->select('fe.label, fe.plugin, fe.default as default_value')
 							->from($this->db->quoteName('#__fabrik_elements','fe'))
 							->leftJoin($this->db->quoteName('#__fabrik_formgroup','ffg').' ON '.$this->db->quoteName('ffg.group_id').' = '.$this->db->quoteName('fe.group_id'))
 							->where($this->db->quoteName('fe.name') . ' IN (' . implode(',',$this->db->quote($action->fields)) . ')')
 							->where($this->db->quoteName('ffg.form_id') . ' = ' . $this->db->quote($form_id));
 						$this->db->setQuery($query);
-						$labels = $this->db->loadColumn();
-						foreach ($labels as $label)
+						$actionElements = $this->db->loadObjectList();
+						foreach ($actionElements as $actionElement)
 						{
-							$action->labels[] = Text::_($label);
+							$label = Text::_($actionElement->label);
+
+							$plugin = ElementPluginEnum::tryFrom($actionElement->plugin);
+							if($actionElement->plugin === 'panel' && empty($label))
+							{
+								// Plugin name and start of default value
+								// Truncate to 30 characters and remove html tags for panel default values
+								$label = Text::_($actionElement->default_value);
+								$label = strip_tags($label);
+								if(strlen($label) > 30) {
+									$label = substr($label, 0, 30) . '...';
+								}
+								$label = '['.Text::_($plugin->getLabel()).'] - ' . $label;
+							}
+							elseif (empty($label) && !empty($plugin))
+							{
+								$label = '[' . Text::_($plugin->getLabel()) . ']';
+							}
+
+							$action->labels[] = $label;
 						}
 					}
 				}

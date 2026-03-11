@@ -34,7 +34,7 @@ class UseFormattedValueTransformer extends MappingTranformer
 			if ($resolver)
 			{
 				$foundFormattedValue = false;
-				$availableFields = $resolver->getAvailableFields([]);
+				$availableFields = $resolver->getAvailableFields(['storedValues' => [$mappingRow->getSourceField()]]);
 
 				foreach ($availableFields as $availableField)
 				{

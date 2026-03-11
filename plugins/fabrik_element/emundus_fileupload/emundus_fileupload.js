@@ -318,7 +318,7 @@ define(['jquery', 'fab/element'], function (jQuery, FbElement) {
                             if(inputHidden.value !== '') {
                                 var new_value = inputHidden.value.split(',');
                                 if(res.upload_id) {
-                                    new_value.splice(new_value.indexOf(res.upload_id), 1);
+                                    new_value.splice(new_value.indexOf(res.upload_id.toString()), 1);
                                 } else {
                                     new_value.splice(new_value.indexOf(fileName), 1);
                                 }

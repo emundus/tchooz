@@ -11,7 +11,8 @@ use Tchooz\Factories\LayoutFactory;
 use Tchooz\Factories\Mapping\MappingFactory;
 use Tchooz\Repositories\Mapping\MappingRepository;
 use Tchooz\Repositories\Synchronizer\SynchronizerRepository;
-use Tchooz\Services\Automation\ConditionRegistry;use Tchooz\Services\Mapping\MappingTransformationsRegistry;
+use Tchooz\Services\Automation\ConditionRegistry;
+use Tchooz\Services\Transformation\TransformationsRegistry;
 
 $app = Factory::getApplication();
 $mappingId = $app->getInput()->getInt('id', 0);
@@ -31,7 +32,7 @@ $mappingFactory = new MappingFactory();
 $synchronizersRepository = new SynchronizerRepository();
 $synchronizers = $synchronizersRepository->getAll(['published' => 1, 'enabled' => 1], 0);
 
-$mappingTransformationsRegistry = new MappingTransformationsRegistry();
+$mappingTransformationsRegistry = new TransformationsRegistry();
 $conditionsRegistry = new ConditionRegistry();
 
 $storedValuesByType = [];

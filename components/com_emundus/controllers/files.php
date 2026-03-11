@@ -1102,7 +1102,7 @@ class EmundusControllerFiles extends EmundusController
 				foreach ($fnums as $fnum) {
 					if(!empty($userLink))
 					{
-						$fnumList .= '<li><a href="' . Uri::base() . $userLink . '#' . $fnum['fnum'] . ($openSuffix ? '|open' : '') . '">' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</a></li>';
+						$fnumList .= '<li><a href="' . Uri::base() . $userLink . '#' . $fnum['fnum'] . ($openSuffix ? '|open' : '') . '">' . ($fnum['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $fnum['name']) . ' (' . $fnum['fnum'] . ')</a></li>';
 					}
 					else {
 						$fnumList .= '<li>' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</li>';

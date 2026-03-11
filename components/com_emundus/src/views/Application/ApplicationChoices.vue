@@ -522,7 +522,8 @@ export default {
 		</modal>
 
 		<Back class="tw-mb-4" link="index.php" v-if="!$props.fnum" />
-		<h1>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_TITLE') }}</h1>
+		<h1 v-if="!$props.fnum && canBeConfirm">{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_TITLE_CONFIRM') }}</h1>
+		<h1 v-else>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_TITLE') }}</h1>
 
 		<div class="tw-mt-4" v-if="canBeCreate">
 			<Button
@@ -540,8 +541,9 @@ export default {
 		</div>
 
 		<!-- Intro -->
-		<div class="tw-mt-4">
-			<p>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION').replace('%s', configuration.max) }}</p>
+		<div class="tw-mt-4" v-if="!$props.fnum && canBeUpdate">
+			<p v-if="canBeConfirm">{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_CONFIRM') }}</p>
+			<p v-else>{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION').replace('%s', configuration.max) }}</p>
 			<p v-if="configuration.can_be_ordering === 1">
 				{{ translate('COM_EMUNDUS_APPLICATION_CHOICES_DESCRIPTION_REORDER') }}
 			</p>

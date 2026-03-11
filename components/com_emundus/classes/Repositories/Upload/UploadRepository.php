@@ -9,7 +9,7 @@ use Tchooz\Factories\Upload\UploadFactory;
 use Tchooz\Repositories\EmundusRepository;
 use Tchooz\Repositories\RepositoryInterface;
 
-#[TableAttribute(table: '#__emundus_uploads', alias: 'upload', columns: ['id', 'fnum', 'attachment_id'])]
+#[TableAttribute(table: '#__emundus_uploads', alias: 'upload', columns: ['id', 'timedate', 'user_id', 'fnum', 'attachment_id', 'filename', 'local_filename', 'campaign_id', 'description', 'can_be_deleted', 'can_be_viewed', 'is_validated'])]
 class UploadRepository extends EmundusRepository implements RepositoryInterface
 {
 	private UploadFactory $factory;

@@ -1055,11 +1055,16 @@ class EmundusHelperEvents
 
 					foreach ($elements as $element)
 					{
+						assert($element instanceof PlgFabrik_Element);
+						if($element->getName() === 'PlgFabrik_ElementEmundus_fileupload')
+						{
+							continue;
+						}
 						$fullName = $element->getFullName();
 
 						if (in_array($fullName, $session_elements))
 						{
-							if (!empty($session_datas[$fullName]))
+							if (!empty($session_datas[$fullName]) )
 							{
 								$formModel->data[$fullName]          = $session_datas[$fullName];
 								$formModel->data[$fullName . '_raw'] = $session_datas[$fullName];
