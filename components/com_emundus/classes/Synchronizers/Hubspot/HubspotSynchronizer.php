@@ -630,7 +630,7 @@ class HubspotSynchronizer extends Api implements ApiMapDataInterface
 			];
 
 			$response = $this->post($this->getBaseUrl() . '/crm/v3/objects/' . $searchedObject . '/search', json_encode($body), ['Content-Type' => 'application/json', 'Accept' => 'application/json']);
-			if (!empty($response) && in_array($response['status'], [200, 201]) && !empty($response['data']->results))
+			if (!empty($response) && in_array($response['status'], [200, 201]))
 			{
 				$hubspotObjects = $response['data']->results;
 				Log::add('Found ' . count($hubspotObjects) . ' ' . $searchedObject . '(s) in Hubspot with filters ' . json_encode($hubspotFilters), Log::INFO, 'com_emundus.hubspot');

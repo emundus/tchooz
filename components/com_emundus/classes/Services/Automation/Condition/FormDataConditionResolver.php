@@ -278,6 +278,12 @@ class FormDataConditionResolver implements ConditionTargetResolverInterface
 								$foundValue = $foundValue[0];
 							}
 							break;
+						case ElementPluginEnum::ORDERLIST->value:
+							if ($format === ValueFormatEnum::RAW && is_string($foundValue)) {
+								$foundValue = str_replace('"', '', $foundValue);
+								$foundValue = explode(',', $foundValue);
+							}
+							break;
 						default:
 							// no transformation needed
 					}

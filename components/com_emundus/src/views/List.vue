@@ -1048,34 +1048,49 @@ export default {
 					parameters = { ids: this.checkedItems };
 				}
 
-				if (Object.prototype.hasOwnProperty.call(action, 'confirm')) {
-					Swal.fire({
-						icon: 'warning',
-						title: this.translate(action.label),
-						text: this.translate(action.confirm),
-						input: action.input ? action.input : null,
-						inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
-						showCancelButton: true,
-						confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
-						cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
-						reverseButtons: true,
-						customClass: {
-							title: 'em-swal-title',
-							confirmButton: 'em-swal-confirm-button',
-							cancelButton: 'em-swal-cancel-button',
-							actions: 'em-swal-double-action',
-						},
-					}).then((result) => {
-						if (result.isConfirmed) {
-							if (action.input) {
-								parameters['input'] = result.value;
-							}
-							this.executeAction(url, parameters, action.method);
-						}
-					});
-				} else {
+				const hasConfirm = Object.prototype.hasOwnProperty.call(action, 'confirm');
+				if (!hasConfirm) {
 					this.executeAction(url, parameters, action.method);
+					return;
 				}
+
+				const hasShowConfirmOn = Object.prototype.hasOwnProperty.call(action, 'showConfirmOn');
+				let shouldShowConfirm = false;
+				if (this.checkedItems.length > 0) {
+					shouldShowConfirm = hasShowConfirmOn && this.evaluateShowOn(null, action.showConfirmOn, true);
+				} else {
+					shouldShowConfirm = hasShowConfirmOn && this.evaluateShowOn(item, action.showConfirmOn);
+				}
+
+				if (hasShowConfirmOn && !shouldShowConfirm) {
+					this.executeAction(url, parameters, action.method);
+					return;
+				}
+
+				Swal.fire({
+					icon: 'warning',
+					title: this.translate(action.label),
+					text: this.translate(action.confirm),
+					input: action.input ? action.input : null,
+					inputLabel: action.inputLabel ? this.translate(action.inputLabel) : null,
+					showCancelButton: true,
+					confirmButtonText: this.translate('COM_EMUNDUS_ONBOARD_OK'),
+					cancelButtonText: this.translate('COM_EMUNDUS_ONBOARD_CANCEL'),
+					reverseButtons: true,
+					customClass: {
+						title: 'em-swal-title',
+						confirmButton: 'em-swal-confirm-button',
+						cancelButton: 'em-swal-cancel-button',
+						actions: 'em-swal-double-action',
+					},
+				}).then((result) => {
+					if (result.isConfirmed) {
+						if (action.input) {
+							parameters['input'] = result.value;
+						}
+						this.executeAction(url, parameters, action.method);
+					}
+				});
 			}
 		},
 		closePopup() {
@@ -1358,7 +1373,7 @@ export default {
 			});
 		},
 
-		evaluateShowOn(item = null, showon = null) {
+		evaluateShowOn(item = null, showon = null, atleastOne = false) {
 			if (item === null && showon === null) {
 				return false;
 			}
@@ -1416,8 +1431,12 @@ export default {
 				show.push(itemShow.every((s) => s === true));
 			});
 
-			// Return true if all items match the condition
-			return show.every((s) => s === true);
+			if (!atleastOne) {
+				// Return true if all items match the condition
+				return show.every((s) => s === true);
+			}
+			// Return true if at least one item matches the condition
+			return show.some((s) => s === true);
 		},
 
 		onCheckAllitems(e) {
