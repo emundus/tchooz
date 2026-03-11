@@ -44,7 +44,7 @@ class EmundusHelperExport
 	 *
 	 * @return string
 	 */
-	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null, $attachments = true, $override_filename = ''): string
+	public static function buildFormPDF($fnumInfos, $sid, $fnum, $form_post = 0, $form_ids = null, $options = null, $application_form_order = null, $elements = null, $attachments = true, $override_filename = '', ?int $current_user_id = null): string
 	{
 		$file        = JPATH_LIBRARIES . DS . 'emundus' . DS . 'pdf_' . $fnumInfos['training'] . '.php';
 		$file_custom = JPATH_LIBRARIES . DS . 'emundus' . DS . 'custom' . DS . 'pdf_' . $fnumInfos['training'] . '.php';
@@ -68,7 +68,7 @@ class EmundusHelperExport
 			require_once($file);
 		}
 
-		$result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, $override_filename, $elements, $attachments);
+		$result = application_form_pdf($sid, $fnum, false, $form_post, $form_ids, $options, $application_form_order, null, $override_filename, $elements, $attachments, $current_user_id);
 
 		if ($result) {
 

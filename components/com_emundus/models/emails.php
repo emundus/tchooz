@@ -1645,7 +1645,7 @@ class EmundusModelEmails extends JModelList
 				$fnums_infos = $m_files->getFnumsInfos($fnums);
 				$fnums_html  = '<ul>';
 				foreach ($fnums_infos as $fnum) {
-					$fnums_html .= '<li>' . $fnum['name'] . ' (' . $fnum['fnum'] . ')</li>';
+					$fnums_html .= '<li>' . ($fnum['is_anonym'] == 1 ? Text::_('COM_EMUNDUS_ANONYM_ACCOUNT') : $fnum['name']) . ' (' . $fnum['fnum'] . ')</li>';
 				}
 				$fnums_html .= '</ul>';
 

@@ -4681,8 +4681,15 @@ class EmundusHelperFiles
 
 				foreach ($quick_search_filters as $index => $filter)
 				{
+					$anonym_scopes = [
+						'u.username',
+						'eu.firstname',
+						'eu.lastname',
+						'u.email'
+					];
 					if (!empty($filter['scope']))
 					{
+						$anonymScopeFound = false;
 						if ($filter['scope'] === 'everywhere')
 						{
 							$at_least_one = true;
@@ -4695,18 +4702,32 @@ class EmundusHelperFiles
 									$quick_search_where .= ' OR ';
 								}
 
+								// Regroup scopes firstname and lastname for better search experience when user search with "firstname lastname" or "lastname firstname"
+								if(in_array($scope, $anonym_scopes) && !$anonymScopeFound)
+								{
+									$anonymScopeFound = true;
+									$quick_search_where .= '((';
+								}
+
 								$quick_search_where .= $this->writeQueryWithOperator($scope, $filter['value'], 'LIKE');
 								$scope_index++;
+
+								if($scope_index === count($scopes) && $anonymScopeFound)
+								{
+									$quick_search_where .= ') AND eu.is_anonym <> 1)';
+								}
 							}
 							// if filter value is a concat of firstname and lastname
 							// in this case, we split the value and search for each part
 							$pattern_fullname = '/^([a-zA-Z]+) ([a-zA-Z]+)$/';
 							if (preg_match($pattern_fullname, $filter['value'])) {
-								$quick_search_where .= ' OR ';
+								$quick_search_where .= ' OR ((';
 								$quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.firstname, " ", eu.lastname)', $filter['value'], 'LIKE');
 
 								$quick_search_where .= ' OR ';
 								$quick_search_where .= $this->writeQueryWithOperator('CONCAT(eu.lastname, " ", eu.firstname)', $filter['value'], 'LIKE');
+
+								$quick_search_where .= ') AND eu.is_anonym <> 1)';
 							}
 						}
 						else if (in_array($filter['scope'], $scopes))
@@ -4717,7 +4738,20 @@ class EmundusHelperFiles
 							{
 								$quick_search_where .= ' OR ';
 							}
+
+							// Regroup scopes firstname and lastname for better search experience when user search with "firstname lastname" or "lastname firstname"
+							if(in_array($filter['scope'], $anonym_scopes))
+							{
+								$anonymScopeFound = true;
+								$quick_search_where .= '(';
+							}
+
 							$quick_search_where .= $this->writeQueryWithOperator($scope_alias, $filter['value'], '=');
+
+							if($anonymScopeFound)
+							{
+								$quick_search_where .= ' AND eu.is_anonym <> 1)';
+							}
 						}
 					}
 				}
