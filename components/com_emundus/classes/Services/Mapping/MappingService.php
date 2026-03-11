@@ -7,6 +7,8 @@ use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Mapping\MappingEntity;
 use Tchooz\Entities\Mapping\MappingRowEntity;
 use Tchooz\Services\Automation\ConditionRegistry;
+use Tchooz\Services\Transformation\TransformationEngine;
+use Tchooz\Services\Transformation\TransformationsRegistry;
 
 class MappingService
 {
@@ -20,13 +22,21 @@ class MappingService
 		if (!empty($context->getFile()))
 		{
 			$conditionsRegistry      = new ConditionRegistry();
-			$transformationsRegistry = new MappingTransformationsRegistry();
+			$transformationsRegistry = new TransformationsRegistry();
+			// $transformationEngine = new TransformationEngine(); TODO: use it to replace the inner loop of transformations and the use of transformations registry
 
 			foreach ($mapping->getRows() as $mappingRow)
 			{
 				assert($mappingRow instanceof MappingRowEntity);
 				$resolver = $conditionsRegistry->getResolver($mappingRow->getSourceType()->value);
 				$value    = $resolver->resolveValue($context, $mappingRow->getSourceField());
+
+				/*
+				 * TODO: make it work, replace $mappingRow->getTransformations() to use TransformationEntity instead of MappingRowTransformationEntity
+				$value    = $transformationEngine->setValue($value)
+					->setTransformations($mappingRow->getTransformations())
+					->transformValue([$mappingRow, $context]);
+				*/
 
 				if (!empty($mappingRow->getTransformations()))
 				{
