@@ -503,7 +503,7 @@ class EmundusModelFormbuilder extends ListModel
 					'label'               => 'FORM_' . $prid,
 					'record_in_database'  => 1,
 					'error'               => 'FORM_ERROR',
-					'intro'               => '<p>' . 'FORM_' . $prid . '_INTRO</p>',
+					'intro'               => 'FORM_' . $prid . '_INTRO',
 					'created'             => gmdate('Y-m-d h:i:s'),
 					'created_by'          => $user->id,
 					'created_by_alias'    => $user->username,
@@ -532,7 +532,7 @@ class EmundusModelFormbuilder extends ListModel
 					$query->clear()
 						->update($this->db->quoteName('#__fabrik_forms'))
 						->set($this->db->quoteName('label') . ' = ' . $this->db->quote('FORM_' . $prid . '_' . $form_id))
-						->set($this->db->quoteName('intro') . ' = ' . $this->db->quote('<p>' . 'FORM_' . $prid . '_INTRO_' . $form_id . '</p>'));
+						->set($this->db->quoteName('intro') . ' = ' . $this->db->quote('FORM_' . $form_id . '_INTRO'));
 					$query->where($this->db->quoteName('id') . ' = ' . $this->db->quote($form_id));
 					$this->db->setQuery($query);
 					$this->db->execute();
@@ -542,7 +542,7 @@ class EmundusModelFormbuilder extends ListModel
 
 					if (!empty($intro) && is_array($intro))
 					{
-						LanguageFactory::translate('FORM_' . $prid . '_INTRO_' . $form_id, $intro, 'fabrik_forms', $form_id, 'intro', $user->id);
+						LanguageFactory::translate('FORM_' . $form_id . '_INTRO', $intro, 'fabrik_forms', $form_id, 'intro', $user->id);
 					}
 				}
 			}

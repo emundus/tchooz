@@ -1363,7 +1363,7 @@ class EmundusModelForm extends ListModel
 	 * @return int
 	 * @throws Exception
 	 */
-	public function createFormEval($user = null, $label = ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], $intro =  ['fr' => 'Introduction de l\'évaluation', 'en' => 'Evaluation introduction'])
+	public function createFormEval($user = null, $label = ['fr' => 'Nouvelle Évaluation', 'en' => 'New Evaluation'], $intro =  ['fr' => '', 'en' => ''])
 	{
 		$new_form_id = 0;
 		require_once(JPATH_ROOT . '/components/com_emundus/models/formbuilder.php');
