@@ -68,6 +68,8 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 
 		if (!empty($requests))
 		{
+			Log::add('Found ' . count($requests) . ' signature requests to manage.', Log::INFO, 'plg_emundus_signature_requests');
+
 			foreach ($requests as $request)
 			{
 				try
@@ -77,7 +79,12 @@ class SignatureRequests extends CMSPlugin implements SubscriberInterface
 					if (method_exists($service, 'managesRequest')) {
 						if (!$service->managesRequest($request))
 						{
+							Log::add('Failed to manage signature request with ID ' . $request->getId(), Log::WARNING, 'plg_emundus_signature_requests');
 							$failed = true;
+						}
+						else
+						{
+							Log::add('Successfully managed signature request with ID ' . $request->getId(), Log::INFO, 'plg_emundus_signature_requests');
 						}
 					} else {
 						throw new Exception(Text::_('COM_EMUNDUS_MANAGES_REQUEST_METHOD_NOT_IMPLEMENTED'));

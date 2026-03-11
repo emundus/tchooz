@@ -7,7 +7,7 @@
 			<div class="tw-flex tw-cursor-pointer tw-items-center tw-justify-between">
 				<span
 					@click="$emit('open-page-properties', page)"
-					class="tw-w-full tw-text-2xl tw-font-semibold"
+					class="tw-min-h-[30px] tw-w-full tw-text-2xl tw-font-semibold"
 					id="page-title"
 					ref="pageTitle"
 					v-html="page.label"

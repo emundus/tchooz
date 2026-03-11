@@ -46,7 +46,8 @@ class FormDataConditionResolverTest extends UnitTestCase
 				'2023-07-13 00:00:00',
 				'["0","1"]',
 				0,
-				''
+				'',
+				'"3","2","1"',
 			]);
 	}
 
@@ -280,6 +281,19 @@ class FormDataConditionResolverTest extends UnitTestCase
 		$fieldName = $this->unitTesFormId . '.' . $elementId;
 		$value = $this->resolver->resolveValue($this->context, $fieldName);
 		$this->assertEquals(17, $value);
+	}
+
+	/**
+	 * @covers \Tchooz\Services\Automation\Condition\FormDataConditionResolver::resolveValue
+	 * @return void
+	 */
+	public function testResolveValueOrderListElement(): void
+	{
+		$elementId = $this->h_dataset->getFormElementForTest($this->unitTesFormId, $this->h_dataset::FORM_KEYS['ELEMENT_ORDERLIST']);
+		$fieldName = $this->unitTesFormId . '.' . $elementId;
+
+		$value = $this->resolver->resolveValue($this->context, $fieldName);
+		$this->assertEquals([3, 2, 1], $value);
 	}
 
 	/**

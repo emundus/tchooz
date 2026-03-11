@@ -3850,6 +3850,37 @@ class EmundusModelEvaluation extends JModelList
 										}
 
 									}
+									else if ($elt['plugin'] === 'orderlist')
+									{
+										foreach ($fabrikValues[$elt['id']] as $fnum => $val)
+										{
+											if (is_string($val['val']) && !empty($val['val']))
+											{
+												$orderedValues = explode(',', $val['val']);
+												$labels = [];
+												$orderIndex = 1;
+												foreach ($orderedValues as $value)
+												{
+													$value = trim($value, '"');
+													$index = array_search($value, $params->sub_options->sub_values);
+													if ($index !== false) {
+														$labels[] = $orderIndex . '. ' . Text::_($params->sub_options->sub_labels[$index]);
+													}
+													else {
+														$labels[] = $orderIndex . '. ' . $value;
+													}
+
+													$orderIndex++;
+												}
+
+												$fabrikValues[$elt['id']][$fnum]['val'] = implode("\n", $labels);
+											}
+											else
+											{
+												$fabrikValues[$elt['id']][$fnum]['val'] = '';
+											}
+										}
+									}
 									elseif ($elt['plugin'] == "birthday")
 									{
 										foreach ($fabrikValues[$elt['id']] as $fnum => $val)

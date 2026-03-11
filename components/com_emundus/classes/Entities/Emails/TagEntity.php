@@ -349,6 +349,7 @@ class TagEntity
 								}
 							}
 
+							$displayNo = empty($applicationChoiceState);
 							foreach ($applicationChoices as $key => $choice)
 							{
 								if (!empty($applicationChoiceState))
@@ -364,7 +365,7 @@ class TagEntity
 									$index = $key + 1;
 								}
 
-								$result .= Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $index) . ' : ' . $choice->getCampaign()->getLabel();
+								$result .= ($displayNo ? Text::sprintf('COM_EMUNDUS_APPLICATION_CHOICES_APPLICATION_CHOICE_NO', $index) . ' : ' : '') . $choice->getCampaign()->getLabel();
 							}
 						}
 					}

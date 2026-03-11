@@ -24,11 +24,9 @@ use Gotenberg\Gotenberg;
 use Gotenberg\Stream;
 use Joomla\CMS\Event\GenericEvent;
 use Joomla\CMS\Factory;
-use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Log\Log;
-use Joomla\CMS\Mail\MailerFactoryInterface;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
@@ -6039,14 +6037,20 @@ class EmundusModelFiles extends JModelLegacy
 	 * @param $attachids
 	 * @param $options
 	 * @param $pdf_data
+	 * @param int|null $current_user_id
 	 *
 	 * @return array
 	 * @throws \Gotenberg\Exceptions\GotenbergApiErrored
 	 */
-	public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [])
+	public function generatePDF($validFnums, $file, $totalfile = 1, $start = 0, $forms = 0, $attachment = 0, $assessment = 0, $decision = 0, $admission = 0, $ids = null, $formid = null, $attachids = null, $options = null, $pdf_data = [], ?int $current_user_id = null)
 	{
 		$response_status = false;
 		$dataresult = array();
+
+		if (empty($current_user_id))
+		{
+			$current_user_id = $this->app->getIdentity()->id;
+		}
 
 		if (!empty($validFnums) && !empty($file)) {
 			if (!class_exists('EmundusHelperExport'))
@@ -6122,7 +6126,7 @@ class EmundusModelFiles extends JModelLegacy
 							$infos = $m_profile->getFnumDetails($fnum);
 							$campaign_id = $infos['campaign_id'];
 
-							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data, in_array("upload", $options));
+							$files_list[] = EmundusHelperExport::buildFormPDF($fnumsInfo[$fnum], $fnumsInfo[$fnum]['applicant_id'], $fnum, $forms, $forms_to_export, $options, null, $pdf_data, in_array("upload", $options), '', $current_user_id);
 						}
 					}
 
@@ -6137,12 +6141,12 @@ class EmundusModelFiles extends JModelLegacy
 							}
 						}
 						if ($attachment || !empty($attachment_to_export)) {
-							$files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export);
+							$files = $m_application->getAttachmentsByFnum($fnum, $ids, $attachment_to_export, null, $current_user_id);
 							$files_export = EmundusHelperExport::getAttachmentPDF($files_list, $tmpArray, $files, $fnumsInfo[$fnum]['applicant_id']);
 						}
 					}
 
-					EmundusModelLogs::log($this->app->getIdentity()->id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
+					EmundusModelLogs::log($current_user_id, (int) $fnumsInfo[$fnum]['applicant_id'], $fnum, 8, 'c', 'COM_EMUNDUS_ACCESS_EXPORT_PDF');
 				}
 
 			}
@@ -6215,7 +6219,7 @@ class EmundusModelFiles extends JModelLegacy
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILES_ADDED')//.' : '.$fnum
 				];
 				$response_status = true;
 			}
@@ -6225,7 +6229,7 @@ class EmundusModelFiles extends JModelLegacy
 				$dataresult = [
 					'start' => $start, 'totalfile' => $totalfile, 'forms' => $forms, 'formids' => $formid, 'attachids' => $attachids,
 					'options' => $options, 'attachment' => $attachment, 'assessment' => $assessment, 'decision' => $decision,
-					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => JText::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
+					'admission' => $admission, 'file' => $file, 'ids' => $ids, 'path'=>JURI::base(), 'msg' => Text::_('COM_EMUNDUS_EXPORTS_FILE_NOT_FOUND')
 				];
 			}
 		}

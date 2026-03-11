@@ -32,7 +32,7 @@ class modEmundusCampaignDropfilesHelper
 		if (!empty($fnum))
 		{
 			// we should check current campaign workflow and get files from it if there are any
-			require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
+			/*require_once(JPATH_ROOT . '/components/com_emundus/models/workflow.php');
 			$m_workflow    = new EmundusModelWorkflow;
 			$current_phase = $m_workflow->getCurrentWorkflowStepFromFile($fnum);
 
@@ -55,7 +55,11 @@ class modEmundusCampaignDropfilesHelper
 				}
 
 				return $files;
-			}
+			}*/
+
+			// todo
+
+
 		}
 
 		$current_profile = $app->getSession()->get('emundusUser')->profile;

@@ -190,7 +190,7 @@ class ApplicationChoicesRepositoryTest extends UnitTestCase
 
 		// Try to create another choice for the same campaign
 		$this->expectException(\InvalidArgumentException::class);
-		$this->expectExceptionMessage('Ce voeu a déjà été sélectionné.');
+		$this->expectExceptionMessage(Text::_('PLG_EMUNDUS_APPLICATION_CHOICES_ALREADY_EXIST'));
 		$duplicateChoice = new ApplicationChoicesEntity($this->dataset['fnum'], $user, $this->campaignsFixtures[0]);
 		$this->model->flush($duplicateChoice);
 

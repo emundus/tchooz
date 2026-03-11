@@ -4605,7 +4605,8 @@ class EmundusModelSettings extends ListModel
 					$query->clear()
 						->select('ese.id as value, ese.name')
 						->from($this->db->quoteName('#__emundus_setup_events', 'ese'))
-						->where($this->db->quoteName('ese.id') . ' IN (' . implode(',', $event_ids) . ')');
+						->where($this->db->quoteName('ese.id') . ' IN (' . implode(',', $event_ids) . ')')
+						->where($this->db->quoteName('ese.published') . ' = 1');
 					if (!empty($search_query))
 					{
 						$query->where($this->db->quoteName('ese.name') . ' LIKE ' . $this->db->quote('%' . $search_query . '%'));

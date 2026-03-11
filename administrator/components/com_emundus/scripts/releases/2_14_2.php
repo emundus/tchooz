@@ -10,6 +10,8 @@
 
 namespace scripts;
 
+use EmundusHelperUpdate;
+
 class Release2_14_2Installer extends ReleaseInstaller
 {
 	private array $tasks = [];
