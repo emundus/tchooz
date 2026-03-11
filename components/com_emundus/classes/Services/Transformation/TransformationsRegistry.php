@@ -1,12 +1,12 @@
 <?php
 
-namespace Tchooz\Services\Mapping;
+namespace Tchooz\Services\Transformation;
 
 use EmundusHelperCache;
 use Tchooz\Enums\Mapping\MappingTransformersEnum;
 use Tchooz\Transformers\Mapping\MappingTranformer;
 
-class MappingTransformationsRegistry
+class TransformationsRegistry
 {
 	private CONST TRANSFORMERS_DIRECTORY = JPATH_ROOT . '/components/com_emundus/classes/Transformers';
 
