@@ -53,6 +53,7 @@ class FieldTransformer
 				case 'dropdown':
 				case 'checkbox':
 				case 'radiobutton':
+				case 'orderlist':
 					$choices = self::getElementOptions($fabrikElement);
 					$field = new ChoiceField($fieldId, Text::_( $fabrikElement->label ), $choices, false, true, $fieldGroup);
 					break;
@@ -135,6 +136,7 @@ class FieldTransformer
 			case 'dropdown':
 			case 'checkbox':
 			case 'radiobutton':
+			case 'orderlist':
 				if (!empty($fabrikElement->params)) {
 					$params = json_decode($fabrikElement->params);
 					if (!empty($params->sub_options)) {
