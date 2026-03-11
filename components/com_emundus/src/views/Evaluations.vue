@@ -75,9 +75,9 @@ export default {
 			type: Number,
 			default: 0,
 		},
-		onlyEditionAccess: {
-			type: Boolean,
-			default: true,
+		stepId: {
+			type: Number,
+			default: 0,
 		},
 	},
 	data() {
@@ -110,7 +110,7 @@ export default {
 			this.loading = true;
 			// there can be multiple evaluations forms, based on fnums and evaluator access
 			evaluationService
-				.getEvaluationsForms(this.fnum)
+				.getEvaluationsForms(this.fnum, false, this.stepId)
 				.then((response) => {
 					this.evaluationsSteps = response.data;
 

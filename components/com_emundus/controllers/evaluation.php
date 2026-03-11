@@ -1248,6 +1248,7 @@ class EmundusControllerEvaluation extends BaseController
 		$response = ['status' => false, 'code' => 403, 'msg' => Text::_('ACCESS_DENIED')];
 
 		$fnum = $this->input->getString('fnum', null);
+		$stepId = $this->input->getInt('step_id', 0);
 
 		if (!empty($fnum) && EmundusHelperAccess::asAccessAction(1, 'r', $this->_user->id, $fnum)) {
 			$stepsWithEvaluations = [];
@@ -1264,7 +1265,7 @@ class EmundusControllerEvaluation extends BaseController
 			$workflowRepository = new \Tchooz\Repositories\Workflow\WorkflowRepository();
 			$workflow = $workflowRepository->getWorkflowByFnum($fnum, true);
 
-			if(!empty($workflow))
+			if (!empty($workflow))
 			{
 				if (!class_exists('EmundusModelWorkflow'))
 				{
@@ -1301,6 +1302,11 @@ class EmundusControllerEvaluation extends BaseController
 			{
 				assert($step instanceof Tchooz\Entities\Workflow\StepEntity);
 
+				if (!empty($stepId) && $step->getId() != $stepId)
+				{
+					continue;
+				}
+
 				if ($step->isEvaluationStep() && !empty($step->getTable()))
 				{
 					$updateAccess = EmundusHelperAccess::asAccessAction($step->getType()->getActionId(), 'u', $this->_user->id, $fnum);
@@ -1335,7 +1341,6 @@ class EmundusControllerEvaluation extends BaseController
 							if ($createAccess)
 							{
 								$allEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid, 'form', $this->_user->id);
-
 							}
 
 							$otherEvaluations = $workflowModel->getStepEvaluationsForFile($step->getId(), $ccid);
