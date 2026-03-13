@@ -7,6 +7,7 @@
  */
 
 // no direct access
+use Component\Emundus\Helpers\HtmlSanitizerSingleton;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 use Tchooz\Repositories\ApplicationFile\ApplicationChoicesRepository;
@@ -201,6 +202,12 @@ if (!empty($applications))
     }
 }
 
+// sanitize tab name to prevent XSS
+if (!class_exists('HtmlSanitizerSingleton')) {
+    require_once(JPATH_SITE . '/components/com_emundus/helpers/html.php');
+}
+$sanitizer = HtmlSanitizerSingleton::getInstance();
+
 ?>
 <div class="mod_emundus_applications___header mod_emundus_applications___tmp_tchooz">
 	<?php if ($mod_em_applications_show_hello_text == 1 && !$is_anonym_user) : ?>
@@ -274,7 +281,9 @@ if (!empty($applications))
 <?php if ($show_tabs == 1 && sizeof($applications) > 0) : ?>
     <div class="em-mt-12 em-flex-row em-border-bottom-neutral-400"
          style="height: 50px; overflow:hidden; overflow-x: auto;">
-		<?php foreach ($tabs as $tab) : ?>
+		<?php foreach ($tabs as $tab) :
+            $tab['name'] = $sanitizer->sanitize($tab['name']);
+            ?>
             <div id="tab_link_<?php echo $tab['id'] ?>" onclick="updateTab(<?php echo $tab['id'] ?>)"
                  class="em-flex-row em-light-tabs em-pointer <?php if ($current_tab == $tab['id']) : ?>em-light-selected-tab<?php endif; ?>">
                 <p class="em-font-size-14"
