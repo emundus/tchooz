@@ -246,7 +246,10 @@ class EmundusRepository
 
 				if (is_array($value))
 				{
-					$query->andWhere($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+					if (!empty($value))
+					{
+						$query->andWhere($this->db->quoteName($field) . ' IN (' . implode(',', array_map([$this->db, 'quote'], $value)) . ')');
+					}
 				}
 				else
 				{
