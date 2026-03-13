@@ -1412,8 +1412,8 @@ class EmundusControllerUsers extends EmundusController
 
 			if (!empty($uid))
 			{
-				$db    = Factory::getDbo();
-				$query = $db->getQuery(true);
+				$db    = Factory::getContainer()->get('DatabaseDriver');
+				$query = $db->createQuery();
 
 				// check user is not already activated
 				$query->select('activation')
@@ -1427,7 +1427,7 @@ class EmundusControllerUsers extends EmundusController
 				}
 				catch (Exception $e)
 				{
-					JLog::add('Error checking if user is already activated or not : ' . $e->getMessage(), JLog::ERROR, 'com_emundus');
+					Log::add('Error checking if user is already activated or not : ' . $e->getMessage(), Log::ERROR, 'com_emundus');
 					echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_FAILED_TO_CHECK_ACTIVATION'))));
 					exit();
 				}
@@ -1461,8 +1461,26 @@ class EmundusControllerUsers extends EmundusController
 						$db->setQuery($query);
 						$result = $db->loadObject();
 
-						$token = json_decode($result->params);
-						$token = $token->emailactivation_token;
+						$params = json_decode($result->params);
+						$token = EmundusHelperUsers::generateToken(32);
+						$params->emailactivation_token = $token;
+
+						$query->clear()
+							->update($db->quoteName('#__users'))
+							->set($db->quoteName('params') . ' = ' . $db->quote(json_encode($params)))
+							->where($db->quoteName('id') . ' = ' . $db->quote($uid));
+
+						try
+						{
+							$db->setQuery($query);
+							$db->execute();
+						}
+						catch (Exception $e)
+						{
+							Log::add('Error updating token in database: ' . $e->getMessage(), Log::ERROR, 'com_emundus.users');
+							echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAIL_ERROR_AT_SEND'))));
+							exit();
+						}
 
 						$emailSent = $m_user->sendActivationEmail($user->getProperties(), $token, $email);
 
@@ -1483,7 +1501,8 @@ class EmundusControllerUsers extends EmundusController
 					}
 					else
 					{
-						echo json_encode((object) (array('status' => false, 'msg' => Text::_('COM_EMUNDUS_MAIL_ALREADY_USE'))));
+						// ! The email is already used, but we LIE to the user and say that the mail has been sent, to avoid giving information about existing emails in the system.
+						echo json_encode((object) (array('status' => true, 'msg' => Text::_('COM_EMUNDUS_MAIL_SUCCESSFULLY_SENT'))));
 						exit();
 					}
 				}
