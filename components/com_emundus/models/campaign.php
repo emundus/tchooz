@@ -2918,6 +2918,25 @@ class EmundusModelCampaign extends ListModel
 
 			if (!empty($params['file']) && $params['has_sample'])
 			{
+				// Delete old file if exist
+				$subQuery = $this->_db->getQuery(true);
+				$subQuery->clear()
+					->select('sample_filepath')
+					->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+					->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+					->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+				$this->_db->setQuery($subQuery);
+				$sampleFilename = $this->_db->loadResult();
+
+				if(!empty($sampleFilename))
+				{
+					$filepath = JPATH_ROOT . "/images/custom/attachments/$did/$pid/" . basename($sampleFilename);
+					if(file_exists($filepath))
+					{
+						unlink($filepath);
+					}
+				}
+
 				$allowed_ext = array('jpg', 'jpeg', 'png', 'doc', 'docx', 'pdf', 'xls', 'xlsx');
 				$ext         = strtolower(pathinfo($params['file']['name'], PATHINFO_EXTENSION));
 				if (in_array($ext, $allowed_ext))
@@ -2967,9 +2986,32 @@ class EmundusModelCampaign extends ListModel
 			{
 				$query->clear()
 					->update($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
-					->set('has_sample = 0')
+					->set('has_sample = ' . $params['has_sample'])
 					->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
 					->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+
+				if($params['has_sample'] == 0)
+				{
+					$query->set($this->_db->quoteName('sample_filepath') . ' = null');
+
+					$subQuery = $this->_db->getQuery(true);
+					$subQuery->clear()
+						->select('sample_filepath')
+						->from($this->_db->quoteName('#__emundus_setup_attachment_profiles'))
+						->where($this->_db->quoteName('profile_id') . ' = ' . $this->_db->quote($pid))
+						->andWhere($this->_db->quoteName('attachment_id') . ' = ' . $this->_db->quote($did));
+					$this->_db->setQuery($subQuery);
+					$sampleFilename = $this->_db->loadResult();
+
+					if(!empty($sampleFilename))
+					{
+						$filepath = JPATH_ROOT . "/images/custom/attachments/$did/$pid/" . basename($sampleFilename);
+						if(file_exists($filepath))
+						{
+							unlink($filepath);
+						}
+					}
+				}
 
 				$this->_db->setQuery($query);
 				$this->_db->execute();
