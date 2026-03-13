@@ -356,10 +356,10 @@ class Dataset
 		return $deleted;
 	}
 
-	public function createSampleProgram($label = 'Programme Test Unitaire',$user_id = 1)
+	public function createSampleProgram($label = 'Programme Test Unitaire',$user_id = 1, $programmes = null)
 	{
 		$m_programme = new EmundusModelProgramme;
-		$program = $m_programme->addProgram(['label' => $label, 'published' => 1],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
+		$program = $m_programme->addProgram(['label' => $label, 'published' => 1, 'programmes' => $programmes],Factory::getContainer()->get(UserFactoryInterface::class)->loadUserById($user_id));
 		$m_programme->addProgramToGroup($program['programme_code'], 1);
 
 		return $program;

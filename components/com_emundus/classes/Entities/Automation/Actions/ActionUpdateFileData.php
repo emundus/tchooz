@@ -13,6 +13,7 @@ use Tchooz\Enums\Automation\ActionCategoryEnum;
 use Tchooz\Enums\Automation\ActionExecutionStatusEnum;
 use Tchooz\Enums\Automation\ConditionTargetTypeEnum;
 use Tchooz\Enums\Automation\TargetTypeEnum;
+use Tchooz\Factories\Fabrik\FabrikFactory;
 use Tchooz\Repositories\ApplicationFile\ApplicationFileRepository;
 use Tchooz\Repositories\Automation\ConditionRepository;
 use Tchooz\Repositories\Fabrik\FabrikRepository;
@@ -86,12 +87,16 @@ class ActionUpdateFileData extends ActionEntity
 			{
 				case ConditionTargetTypeEnum::FORMDATA->value:
 					list($formId, $elementId) = explode('.', $fieldName, 2);
-					$fabrikRepository          = new FabrikRepository(true);
+					$fabrikRepository = new FabrikRepository(true);
+					$fabrikFactory    = new FabrikFactory($fabrikRepository);
+					$fabrikRepository->setFactory($fabrikFactory);
 					$element                   = $fabrikRepository->getElementById($elementId);
 					$applicationFileRepository = new ApplicationFileRepository();
-					$applicationFileRepository->insertDatas([
+					$result                  = $applicationFileRepository->insertDatas([
 						$element->getName() => $newValue
 					], $element->getDbTableName(), $context->getFile(), 0, $context->getTriggeredBy()->id);
+
+					$executionStatus = $result ? ActionExecutionStatusEnum::COMPLETED : ActionExecutionStatusEnum::FAILED;
 
 					break;
 				case ConditionTargetTypeEnum::ALIASDATA->value:

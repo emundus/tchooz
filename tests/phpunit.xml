@@ -186,6 +186,7 @@
       <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus</directory>
       <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus_card</directory>
       <directory suffix=".php">../components/com_fabrik/views/list/tmpl/emundus_faq</directory>
+      <file>../libraries/com_emundus/pdf.php</file>
     </include>
     <exclude>
       <file>../components/com_emundus/models/update.php</file>
@@ -214,6 +215,7 @@
     </exclude>
     <report>
       <text outputFile="php://stdout" showOnlySummary="true"/>
+      <html outputDirectory="tmp/html/" />
     </report>
   </coverage>
   <testsuite name="Unit">

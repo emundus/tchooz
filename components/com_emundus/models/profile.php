@@ -1649,18 +1649,7 @@ class EmundusModelProfile extends ListModel
 			$emundus_user->fnum                   = $campaign["fnum"];
 			$emundus_user->fnums                  = $this->getApplicantFnums($current_user->id, null, $profile["start_date"], $profile["end_date"]);
 			$emundus_user->status                 = @$campaign["status"];
-
-			if (!class_exists('EmundusModelSettings')) {
-				require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
-			}
-			$m_settings = new EmundusModelSettings();
-			$addon_status = $m_settings->getAddonStatus('anonymous');
-			$allow_anonym_files = $addon_status['enabled'];
-			if ($allow_anonym_files)
-			{
-				$emundus_user->anonym       = $this->checkIsAnonymUser($current_user->id);
-				$emundus_user->is_anonym = $emundus_user->anonym;
-			}
+			$emundus_user->is_anonym 			  = 0;
 		}
 		else
 		{
@@ -1669,6 +1658,19 @@ class EmundusModelProfile extends ListModel
 			$emundus_user->menutype      = $profile["menutype"];
 			$emundus_user->university_id = $profile["university_id"];
 			$emundus_user->applicant     = 0;
+			$emundus_user->is_anonym     = 0;
+		}
+
+		if (!class_exists('EmundusModelSettings')) {
+			require_once JPATH_ROOT . '/components/com_emundus/models/settings.php';
+		}
+		$m_settings = new EmundusModelSettings();
+		$addon_status = $m_settings->getAddonStatus('anonymous');
+		$allow_anonym_files = $addon_status['enabled'];
+		if ($allow_anonym_files)
+		{
+			$emundus_user->anonym       = $this->checkIsAnonymUser($current_user->id);
+			$emundus_user->is_anonym = $emundus_user->anonym;
 		}
 
 		return $emundus_user;

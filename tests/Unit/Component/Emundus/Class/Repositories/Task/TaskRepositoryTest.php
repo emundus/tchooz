@@ -6,10 +6,12 @@ use Joomla\CMS\Factory;
 use Joomla\CMS\User\User;
 use Joomla\CMS\User\UserFactoryInterface;
 use Joomla\Tests\Unit\UnitTestCase;
+use Tchooz\Entities\Automation\ActionExecutionMessage;
 use Tchooz\Entities\Automation\Actions\ActionUpdateStatus;
 use Tchooz\Entities\Automation\ActionTargetEntity;
 use Tchooz\Entities\Automation\AutomationEntity;
 use Tchooz\Entities\Task\TaskEntity;
+use Tchooz\Enums\Automation\ActionMessageTypeEnum;
 use Tchooz\Enums\Task\TaskPriorityEnum;
 use Tchooz\Enums\Task\TaskStatusEnum;
 use Tchooz\Repositories\Task\TaskRepository;
@@ -345,5 +347,77 @@ class TaskRepositoryTest extends UnitTestCase
 		$pendingTasks = $this->repository->getPendingTasks();
 		$this->assertIsArray($pendingTasks, 'Pending tasks should be returned as an array.');
 		$this->assertGreaterThan(0, count($pendingTasks), 'There should be at least one pending task.');
+	}
+
+	/**
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::saveTask
+	 * @covers \Tchooz\Repositories\Task\TaskRepository::getTaskById
+	 * @return void
+	 */
+	public function testTaskExecutionMessagesArePersistedAndHydrated(): void
+	{
+		$actionTargetEntity = new ActionTargetEntity($this->coordinatorUser, $this->dataset['fnum'], $this->dataset['applicant']);
+		$metadata           = ['actionTargetEntity' => $actionTargetEntity->serialize()];
+
+		$task = new TaskEntity(0, TaskStatusEnum::PENDING, $this->automationEntity->getActions()[0], $this->dataset['coordinator'], $metadata);
+
+		$task->addExecutionMessage(new ActionExecutionMessage('Test info message', ActionMessageTypeEnum::INFO));
+		$task->addExecutionMessage(new ActionExecutionMessage('Boom AN ERROR', ActionMessageTypeEnum::ERROR));
+
+		$saved = $this->repository->saveTask($task);
+		$this->assertTrue($saved, 'Task should be saved successfully');
+		$this->assertGreaterThan(0, $task->getId(), 'Task ID should be set after saving');
+		$this->h_dataset->addToSamples('tasks', $task->getId());
+
+		$query = $this->db->createQuery()
+			->select($this->db->quoteName('messages'))
+			->from($this->db->quoteName('jos_emundus_task'))
+			->where($this->db->quoteName('id') . ' = ' . $task->getId());
+
+		$this->db->setQuery($query);
+		$messages = $this->db->loadResult();
+
+		$this->assertNotEmpty($messages, 'DB messages column should not be empty');
+		$this->assertIsString($messages, 'DB messages column should be a string (JSON format)');
+
+		$decodedMessages = json_decode($messages, true);
+		$this->assertIsArray($decodedMessages, 'DB messages should be valid JSON array');
+		$this->assertCount(2, $decodedMessages, 'DB messages JSON should contain 2 entries');
+
+		foreach ($decodedMessages as $i => $decodedMessage)
+		{
+			$this->assertIsArray($decodedMessage, "DB messages[$i] should be an array.");
+			$this->assertArrayHasKey('type', $decodedMessage);
+			$this->assertArrayHasKey('message', $decodedMessage);
+			$this->assertArrayHasKey('timestamp', $decodedMessage);
+
+			$this->assertIsString($decodedMessage['type']);
+			$this->assertIsString($decodedMessage['message']);
+			$this->assertNotEmpty($decodedMessage['timestamp']);
+		}
+
+		$this->assertSame('Test info message', $decodedMessages[0]['message']);
+		$this->assertSame(ActionMessageTypeEnum::INFO->value, $decodedMessages[0]['type']);
+		$this->assertSame('Boom AN ERROR', $decodedMessages[1]['message']);
+		$this->assertSame(ActionMessageTypeEnum::ERROR->value, $decodedMessages[1]['type']);
+
+		$retrievedTask = $this->repository->getTaskById($task->getId());
+		$this->assertInstanceOf(TaskEntity::class, $retrievedTask);
+
+		$executionMessages = $retrievedTask->getExecutionMessages();
+		$this->assertIsArray($executionMessages, 'Execution messages should be an array after hydration');
+		$this->assertCount(2, $executionMessages, 'There should be 2 execution messages after hydration');
+
+		foreach ($executionMessages as $msg)
+		{
+			$this->assertInstanceOf(ActionExecutionMessage::class, $msg, 'Each execution message should be an ActionExecutionMessage object');
+			$this->assertNotEmpty($msg->getMessage());
+			$this->assertNotNull($msg->getTimestamp());
+		}
+
+		$this->assertSame('Test info message', $executionMessages[0]->getMessage());
+		$this->assertSame(ActionMessageTypeEnum::INFO, $executionMessages[0]->getType());
+		$this->assertSame('Boom AN ERROR', $executionMessages[1]->getMessage());
+		$this->assertSame(ActionMessageTypeEnum::ERROR, $executionMessages[1]->getType());
 	}
 }

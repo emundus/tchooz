@@ -656,7 +656,6 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 			}
 			catch (\Exception $exception)
 			{
-				dd($exception->getMessage());
 				Log::add('Failed to fetch campaigns: ' . $exception->getMessage(), Log::ERROR, 'com_emundus.repository.campaign');
 			}
 		}
@@ -842,7 +841,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					'description'       => $campaignEntity->getDescription(),
 					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
 					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
-					'profile_id'        => $campaignEntity->getProfileId(),
+					'profile_id'        => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
 					'training'          => $campaignEntity->getProgram()->getCode(),
 					'year'              => $campaignEntity->getYear(),
 					'published'         => $campaignEntity->isPublished() ? 1 : 0,
@@ -865,7 +864,7 @@ class CampaignRepository extends EmundusRepository implements RepositoryInterfac
 					'description'       => $campaignEntity->getDescription(),
 					'start_date'        => $campaignEntity->getStartDate()->format('Y-m-d H:i:s'),
 					'end_date'          => $campaignEntity->getEndDate()->format('Y-m-d H:i:s'),
-					'profile_id'        => $campaignEntity->getProfileId(),
+					'profile_id'        => !empty($campaignEntity->getProfileId()) ? $campaignEntity->getProfileId() : null,
 					'training'          => $campaignEntity->getProgram()->getCode(),
 					'year'              => $campaignEntity->getYear(),
 					'published'         => $campaignEntity->isPublished() ? 1 : 0,
