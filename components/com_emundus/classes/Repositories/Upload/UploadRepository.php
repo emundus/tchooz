@@ -26,6 +26,11 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		$this->factory = new UploadFactory();
 	}
 
+	public function getFactory(): UploadFactory
+	{
+		return $this->factory;
+	}
+
 	public function delete(int $id): bool
 	{
 		$deleted = false;
@@ -56,7 +61,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 
 		if (!empty($objects))
 		{
-			$entities = $this->factory->fromDbObjects($objects);
+			$entities = $this->factory::fromDbObjects($objects);
 		}
 
 		return $entities;
@@ -74,7 +79,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 		$objects = $this->getItemsByFields($params);
 		if (!empty($objects))
 		{
-			$entities = $this->factory->fromDbObjects($objects);
+			$entities = $this->factory::fromDbObjects($objects);
 		}
 
 		return $entities;
@@ -92,7 +97,7 @@ class UploadRepository extends EmundusRepository implements RepositoryInterface
 
 		if (!empty($object))
 		{
-			$entities = $this->factory->fromDbObjects([$object]);
+			$entities = $this->factory::fromDbObjects([$object]);
 			$entity = $entities[0];
 		}
 

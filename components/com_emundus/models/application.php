@@ -3032,7 +3032,7 @@ class EmundusModelApplication extends ListModel
 		$forms     = '';
 
 		if (isset($tableuser)) {
-			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($this->_user->id);
+			$allowed_groups = EmundusHelperAccess::getUserFabrikGroups($current_user_id);
 
 			foreach ($tableuser as $key => $itemt) {
 				$query = $this->_db->getQuery(true);
@@ -3098,6 +3098,8 @@ class EmundusModelApplication extends ListModel
 					if (!EmundusHelperAccess::isAllowedAccessLevel($current_user_id, (int) $g_params->access)) {
 						continue;
 					}
+
+					$g_params->repeated = $g_params->repeated ?? 0;
 
 					if ($allowed_groups !== true && !in_array($itemg->group_id, $allowed_groups)) {
 						if(!in_array($g_params->repeat_group_show_first, $hidden_group_param_values) && !empty(Text::_($itemg->label)))
