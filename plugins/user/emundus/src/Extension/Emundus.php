@@ -537,7 +537,9 @@ final class Emundus extends CMSPlugin implements SubscriberInterface
 					$this->getApplication()->getIdentity(),
 					[],
 					[$user['id']],
-					[]
+					[
+						'is_new' => $event->getIsNew()
+					]
 				)
 			]
 		]);
